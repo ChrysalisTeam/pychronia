@@ -1,0 +1,78 @@
+
+{% extends "base_one_column.html" %}
+
+{% load i18n helpers %}  
+
+
+{% block headers %}  
+    {{ block.super }}
+    <script type="text/javascript" src="{{ MEDIA_URL }}jqchat.js"></script>
+    <script type="text/javascript">
+    
+   
+        $(document).ready(function(){
+            InitChatWindow("{% gameurl rpgweb.views.ajax_chat %}", 
+                            {% if is_master %}false{% else %}true{% endif %},
+                            HandleChattersList);
+        });
+  
+    </script>
+{% endblock %}
+
+
+
+{% block content %}  
+    
+    <div id="chatwindow"><span id="loading">Loading...</span></div>
+    <div align="center">
+    {% if not game_is_started %}
+        <b>{% trans "Chat messaging is currently disabled." %}</b>
+    {% else %}
+        {% if player.is_master %}
+            <br/><div><b>{% trans "The master cannot participate to the conversation." %}</b></div>
+        {% else %}
+            
+                <form id="chatform">
+                    <input type="text" id="msg" size="80" autocomplete="off" />
+                    <!--input type="submit" value="Send message" /><br /-->
+                </form>
+                 
+     
+            <script type="text/javascript">document.getElementById("msg").focus();</script>
+        {% endif %}
+        
+        <div id="errordiv" style="text-align:center; visibility:hidden; color:red">
+            {% trans "Communication channel seems faulty..." %}
+        </div>
+    </div>
+    {% endif %}
+
+    
+{% endblock %}
+
+
+
+{% comment %}
+
+        // material to test asynchronous system of javascript
+        // actually, all operations are serialized in a single javascript thread, 
+        // even when using ajax callbacks
+        
+        function sleep(milliSeconds){
+            var startTime = new Date().getTime(); // get the current time
+            while (new Date().getTime() < startTime + milliSeconds) {}; // hog cpu
+        }
+        
+        $.get("http://www.google.fr/",
+            {
+            },
+            function(payload) {
+                             window.alert("interruption");
+                            }
+        );
+        
+        sleep(10000);
+        window.alert("over");
+        
+        
+{% endcomment %}

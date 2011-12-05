@@ -1,0 +1,39 @@
+{% extends "base_one_column.html" %}
+
+{% load i18n helpers %}  
+
+{% block content %}  
+    
+    <p>
+    {% blocktrans %}
+        Our scanning system is ready to search the entire world for objects similar to the one you'll provide. 
+        You may provide a detailed description of the item to analyse, or provide an object your team own 
+        (a description isn't useful in the latter case).
+    {% endblocktrans %}
+    </p>
+    
+    {% if not available_items %}
+    <p>
+    {% blocktrans %}
+        At the moment, your team still hasn't acquired any object which could help us find the orbs.
+    {% endblocktrans %}
+    </p>
+    {% endif %}
+
+
+    {% if scanning_form %}
+    <form action="{% gameurl rpgweb.views.scanning_management %}" method="post">
+    <table style="margin:auto;width:450px;">
+    {{ scanning_form.as_table }}
+    <tr>
+        <td colspan="2">
+            <br/>
+            <input type="submit" name="scan" value="{% trans "Submit Scanning Request" %}" />
+        </td>
+    </tr>
+    </table>
+    </form>
+    {% endif %}
+    
+
+{% endblock %}

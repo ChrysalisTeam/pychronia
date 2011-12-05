@@ -1,0 +1,168 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+{% load i18n helpers %} 
+ 
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title>{% if page_title %}{{ page_title}}{% else %}Welcome to The Hatching{% endif %}</title>
+<link href="{{ MEDIA_URL }}Burned/default_styles.css" rel="stylesheet" type="text/css" />
+
+<script src="{{ MEDIA_URL }}jquery-1.4.2.patched.js" type="text/javascript"></script>
+<script src="{{ MEDIA_URL }}jquery.ba-outside-events.js" type="text/javascript"></script>
+
+<script src="{{ MEDIA_URL }}combobox.js" type="text/javascript"></script>
+<script src="{{ MEDIA_URL }}utilities.js" type="text/javascript"></script>
+
+<script src="{{ MEDIA_URL }}videoplayers/quicktimeplayer/AC_QuickTime.js" type="text/javascript"></script>
+<script src="{{ MEDIA_URL }}videoplayers/wmvplayer/wmvplayer.js" type="text/javascript"></script>
+<!--script src="{{ MEDIA_URL }}videoplayers/wmvplayer/silverlight.js" type="text/javascript"></script-->
+
+<script src="{{ MEDIA_URL }}jquery.dropmenu-1.1.4.js" type="text/javascript"></script>
+<link href="{{ MEDIA_URL }}dropmenu.css" rel="stylesheet" type="text/css" />
+
+<script language="javascript" type="text/javascript">
+    $(document).ready(function() {
+        $('#menulist').dropmenu(
+            {
+                effect          : "slide",       //  "slide", "fade", or "none"
+                speed           : "fast", //  "normal", "fast", "slow", 100, 1000, etc
+                timeout         : 50,
+                nbsp            : true,
+                maxWidth        : 0
+
+            }
+        );
+    });
+</script>
+
+
+
+{% block headers %}  
+
+{% endblock %}
+
+</head>
+<body>
+<div id="outer">
+  <div id="header">
+    <h2>
+	    <a href="{% gameurl rpgweb.views.homepage %}">
+		    {% if user.is_authenticated %}
+		          {% blocktrans with user.username|capfirst as user_name %}
+		              Welcome to your Realm, {{ user_name }} 
+		          {% endblocktrans %}
+		    {% else %}
+		    	{% trans "Welcome, Visitor" %}
+		    {% endif %}
+	    </a>
+    </h2>
+    {% if not game_is_started %} <h2>{% trans "Server in maintenance mode - no form submission possible" %}</h2> {% endif %}
+  </div>
+  <div id="menu">
+    <ul id="menulist" class="dropmenu" style="z-index: 100">
+        {% for section_title, submenu in menus %} 
+        
+             <li id="submenu" class="toplevel">
+                 <a href="#">{{ section_title }}</a>
+                 <ul>
+                 
+                	{% for item_name, item_url in submenu %} 
+                  		<li {% comment %}{% if user.is_master %} style="padding: 1px;" {% endif %}{% endcomment %}>
+                  		    <a {% comment %}{% if user.is_master %} style="font-size: 0.6em; line-height: 0.5em;" {% endif %}{% endcomment %}
+                  		        href="{{ item_url }}" accesskey="{{ forloop.counter }}">{{ item_name }}</a>
+                  		</li>
+                  	{% endfor %}
+                  	
+              	 </ul>
+          	</li>
+        {% endfor %}
+    </ul>
+  </div>
+  <div id="content">
+    <div id="xbg1">&nbsp;</div>
+    <div id="primaryContentContainer">
+      <div id="primaryContent">
+      
+		{% if page_title %}<h2>{{ page_title }}</h2>{% endif %}
+
+        {% if user.errors %}
+        <div class="error_notifications">
+	        <strong>{% trans "Error" %}{{ user.errors|length|pluralize }}</strong>
+			<ul>
+			    {% for error in user.errors %}
+			    <li>{{ error|linebreaksbr }}</li>
+			    {% endfor %}
+			</ul>
+        </div>
+  		{% endif %}
+
+        {% if user.messages %}
+        <div class="message_notifications">
+            <strong>
+                {% blocktrans count user.messages|length|pluralize as msg_count %}
+                    Message
+                {% plural %}
+                    Messages
+                {% endblocktrans %}
+            </strong>
+            <ul>
+                {% for message in user.messages %}
+                <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+               
+        {% block content %}  
+      
+        
+		{% endblock %}
+		
+		
+
+      </div>
+    </div>
+   
+   
+   {% block additional_column %} 
+
+    
+	{% endblock %}
+   
+   
+    <div class="clear"></div>
+  </div>
+  <div id="footer">
+  
+    
+        <b><i>
+        {% if online_users %}
+            {% blocktrans count online_users|length as counter %}
+                Online user:
+            {% plural %}
+                Online users:
+            {% endblocktrans %}
+            {{ online_users|join:", " }}
+        {% else %}
+            {% trans "No users currently online." %} 
+        {% endif %}
+        </i></b>
+        
+        <br/>
+        
+        <b>{% trans "Pangea Cybernetics Network" %}</b> -
+        
+        <form id="change_language_fr" style="display:inline; vertical-align: middle;" method="POST" action="{% url django.views.i18n.set_language %}">
+        <input type="hidden" name="language" value="fr"/>
+        <a href="javascript:document.getElementById('change_language_fr').submit()"><img src="{{ MEDIA_URL }}images/France.jpg"/></a>
+        </form> 
+
+        <form id="change_language_en" style="display:inline; vertical-align: middle;" method="POST" action="{% url django.views.i18n.set_language %}">
+        <input type="hidden" name="language" value="en"/>
+        <a href="javascript:document.getElementById('change_language_en').submit()"><img src="{{ MEDIA_URL }}images/UK.jpg"/></a>
+        </form>         
+
+  </div>
+</div>
+</body>
+</html>

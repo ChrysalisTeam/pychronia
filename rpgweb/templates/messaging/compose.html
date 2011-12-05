@@ -1,0 +1,43 @@
+{% extends "messaging/base.html" %}
+
+{% load i18n helpers %}  
+
+
+{% block content %}  
+
+    {{ block.super }}
+    
+        
+    {% if message_form %}
+        <p>
+            {% blocktrans %}
+            The "recipients" field may contain a list of values separated with commas or semi-colons.
+            Each value may be a full email (of an user or an external entity), or the login of an existing user.
+            You may attach to your message one of your personal files, or any url.
+            {% endblocktrans %}
+        </p>
+    
+    
+        <form action="{% gameurl rpgweb.views.compose_message %}" method="post">
+        <table class="same_width_widgets" style="margin: 20px auto;width:500px;">
+        {{ message_form.as_table }}
+        <tr>
+        
+            <td colspan="2">
+                <br/>
+                <input type="submit" style="width: 200px" name="send_message" value="{% trans "Send Message" %}" />
+            </td>
+        
+        </tr>
+        </table>
+        </form>
+    
+    {% else %}
+    <br/>
+    <p>
+        <b>{% blocktrans %}Sorry, the sending of digital messages is currently disabled for maintenance.{% endblocktrans %}</b>
+    </p>    
+    
+    {% endif %}
+
+{% endblock %}

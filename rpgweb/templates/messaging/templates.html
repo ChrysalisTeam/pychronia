@@ -1,0 +1,67 @@
+{% extends "messaging/base.html" %}
+
+{% load i18n helpers markup %}  
+
+
+
+{% block content %}  
+    {{ block.super }}
+    
+        
+    {% for name,message in messages %}
+        
+        <div class="email">
+            <p>
+                <strong>
+                    [ {{ name }} ]
+                </strong>
+            </p>
+            
+            {% if message.sender_email or recipient_emails %}
+                <table style="margin:2px 24px; line-height:0.6em;">
+                
+                {% if message.sender_email %}
+                <tr>
+                <td><strong>{% trans "From:" %}</strong></td>
+                <td>{{ message.sender_email }}</td>
+                </tr>  
+                {% endif %}
+                
+                {% if message.recipient_emails %}
+                <tr>
+                <td><strong>{% trans "To:" %}</strong></td>
+                <td>{{ message.recipient_emails|join:"; " }}</td>
+                </tr>               
+                {% endif %}
+    
+                </table>
+            {% endif %}
+            
+            <p>
+                <strong>
+                    {{ message.subject }}
+                </strong>
+            </p>
+            
+            
+            <p>
+                {{ message.body|restructuredtext }}
+            </p>
+            
+            {% if message.attachment %}
+                {{ message.attachment|mediaplayer:"false" }}
+            {% endif %}
+            
+            
+            <span class="message_operation">
+                <a href="{% gameurl rpgweb.views.compose_message %}?use_template={{ name }}">
+                    {% trans "Use Template" %} {% if message.is_used %}({% trans "already done" %}){% endif %}
+                </a>
+            </span>
+        </div>
+       
+    {% endfor %}
+
+{% endblock %}
+
+

@@ -1,0 +1,142 @@
+{% extends "base_one_column.html" %}
+
+{% load i18n helpers %}  
+
+{% block content %}  
+
+{% comment %}
+    USELESS STUFFS - forget it !
+    {% if user.is_master %}
+    <p>
+        {% trans "Digital funds currently available in the bank, for conversions between cold cash and digital money:" %}
+        <strong>
+        {% blocktrans count bank_data.1 as money_amount %}
+            {{ money_amount }} kash.
+        {% plural %}
+            {{ money_amount }} kashes.
+        {% endblocktrans %}
+        </strong>
+    
+    </p>
+    {% endif %}
+{% endcomment %}
+
+
+
+<table class="fullwidth">
+	<tbody>
+	
+		<tr>
+			<th>{% trans "Identity" %}</th>
+			<th>{% trans "Bank account" %}</th>
+			<th>{% trans "Items bought" %}</th>
+			<th>{% trans "Gems owned" %}</th>
+		</tr>
+	
+	
+	{% for char_set in char_sets %} 
+		
+		<tr>	
+	    	<td colspan="5" style="height:8px;padding:0;"></td>
+	    </tr>
+	   
+		{% for char_name, char_details in char_set %}   {% comment %} char_details is at least {'gems': [], 'items': [], 'domain': 'acharis.com', 'password': 'xxxx', 'account': 0} {% endcomment %}
+	    
+
+	    <tr class="{% cycle 'rowA' 'rowB' %}">	
+
+		    	<td class="bigtext">
+		    	
+		    		<strong {% if user.is_master %} title="{% trans "Password:" %} {{ char_details.password }}" {% endif %}>
+		    		    {% if show_official_identities %}
+		    		        {{ char_details.official_name }} <br/>
+		    		    {% endif %}
+		    		    {{ char_name }}@{{ pangea_domain }}
+		    		    {% if user.is_master %}
+		    		        <br/>[{{ char_details.real_life_identity }}]
+		    		    {% endif %}
+		    		</strong>
+		    	</td>
+		    	
+	
+		    	<td class="bigtext">
+		    		{{ char_details.account }}
+		    	</td>
+		    	
+		    	<td class="bigtext">
+		    		{% for item_name in char_details.items %} 
+		    			<img class="minithumbnail" title="{{ item_name }}" src="/files/sales/{{ item_name }}.jpg"/><br/>
+		    		{% empty %}
+		    			{% trans "None" %}
+		    		{% endfor %}
+		    	</td>
+		    
+		    	<td class="bigtext">
+		    		{% if char_details.gems %} 
+		    			{{ char_details.gems|join:", " }}
+		    		{% else %}
+		    			{% trans "None" %}
+		    		{% endif %}
+		    	</td>	    
+		
+	    </tr>
+	    {% endfor %}
+	{% endfor %}
+	</tbody>
+</table>
+
+
+
+
+
+{% if money_form %}
+<div>
+    <form action="{% gameurl rpgweb.views.view_characters %}" method="post">
+    <table style="margin:auto;width:280px;">
+    <tr>
+        <td colspan="2">
+            <h3>{% trans "Digital Money Transfer" %}</h3>
+        </td>
+    </tr>
+    
+    {{ money_form.as_table }}
+    
+    <tr>
+        <td colspan="2">
+            <input type="submit" name="money_transfer" value="{% trans "Transfer money" %}" />
+        </td>
+    </tr>
+    </table>
+    </form>
+</div>
+{% endif %}
+
+
+
+{% if gems_form %}
+<div>
+    <form action="{% gameurl rpgweb.views.view_characters %}" method="post">
+    <table style="margin:auto;width:280px;">
+    <tr>
+        <td colspan="2">
+            <h3>{% trans "Gems Transfer" %}</h3>
+        </td>
+    </tr>
+    
+    {{ gems_form.as_table }}
+    
+    <tr>
+        <td colspan="2">
+            <input type="submit" name="gems_transfer" value="{% trans "Transfer gems" %}" />
+        </td>
+    </tr>
+    </table>
+    </form>
+</div>
+{% endif %} 
+    
+
+
+
+{% endblock %}
+

@@ -1,0 +1,99 @@
+
+{% extends "base_one_column.html" %}
+
+{% load i18n helpers %}
+
+
+
+{% block headers %}
+    {{ block.super }}
+
+    <script type="text/javascript">
+
+        function append_digit(digit){
+            curlen = $('#password_display').html().length
+            if (curlen < 6){
+                $('#password_display').append(digit);
+            }
+        }
+
+
+        function submit_password(digit){
+            $('#password').val($('#password_display').html()); // transferring password value
+            $('#unlocking_form').submit();
+        }
+
+
+    </script>
+
+{% endblock %}
+
+{% block content %}
+
+    <div align="center">
+
+        {% if are_doors_open %}
+
+            <p>
+                {% blocktrans %}
+                You may here activate the locking of the doors of the manor.
+                {% endblocktrans %}
+            </p><br/>
+
+            <form id="locking_form" action="" method="post">
+                <input type="hidden" name="_action_" value="lock"/>
+                <input type="submit" class="digit" value="{% trans "Lock Doors" %}"/>
+            </form>
+
+
+        {% else %}
+
+            <p>
+                {% blocktrans %}
+                Please provide the proper password to unlock the doors of the manor.
+                {% endblocktrans %}
+            </p><br/>
+
+
+             <div id="password_display"></div>
+
+
+             <br/>
+             <table>
+                 <tr>
+                    <td><input type="button" class="digit" value="7" onclick="javascript:append_digit('7');"/></td>
+                    <td><input type="button" class="digit" value="8" onclick="javascript:append_digit('8');"/></td>
+                    <td><input type="button" class="digit" value="9" onclick="javascript:append_digit('9');"/></td>
+                 </tr>
+                 <tr>
+                    <td><input type="button" class="digit" value="4" onclick="javascript:append_digit('4');"/></td>
+                    <td><input type="button" class="digit" value="5" onclick="javascript:append_digit('5');"/></td>
+                    <td><input type="button" class="digit" value="6" onclick="javascript:append_digit('6');"/></td>
+                 </tr>
+                 <tr>
+                    <td><input type="button" class="digit" value="1" onclick="javascript:append_digit('1');"/></td>
+                    <td><input type="button" class="digit" value="2" onclick="javascript:append_digit('2');"/></td>
+                    <td><input type="button" class="digit" value="3" onclick="javascript:append_digit('3');"/></td>
+                 </tr>
+                 <tr>
+                    <td><input type="button" class="digit" value="0" onclick="javascript:append_digit('0');"/></td>
+                    <td><input type="button" class="digit" value="{% trans "Reset" %}" onclick="javascript:$('#password_display').html('');"/></td>
+                    <td><input type="button" class="digit" value="{% trans "Submit" %}" onclick="submit_password();"/></td>
+                 </tr>
+             </table>
+
+             <form id="unlocking_form" action="" method="post">
+                <input id="password" type="hidden" name="password" value=""/>
+                <input type="hidden" name="_action_" value="unlock"/>
+            </form>
+
+         {% endif %}
+
+    </div>
+
+
+{% endblock %}
+
+
+
+

@@ -1,0 +1,128 @@
+{% extends "base_one_column.html" %}
+
+{% load i18n helpers %}  
+
+{% block content %}  
+
+
+<h3>{% trans "Web Radio Control" %}</h3>
+<div align="center">
+<strong>
+ {% if radio_is_on %}
+    {% blocktrans %}Pangea radio is currently ON.{% endblocktrans %}
+ {%else %}
+    {% blocktrans %}Pangea radio is currently OFF.{% endblocktrans %}
+ {% endif %}
+ </strong>
+</div>
+
+<div align="center">
+<form action="{% gameurl rpgweb.views.manage_audio_messages %}" method="POST">
+{% if radio_is_on %}
+    <input type="submit" name="turn_radio_off" value="{% trans "Turn Radio Off" %}"/>
+{%else %}
+    <input type="submit" name="turn_radio_on" value="{% trans "Turn Radio On" %}"/>
+{% endif %}
+</form>
+<br/>
+<form action="{% gameurl rpgweb.views.manage_audio_messages %}" method="GET">
+    <input type="submit" value="{% trans "Refresh Radio State" %}"/>
+</form>
+</div>
+
+
+<h3>{% trans "Current Playlist" %}</h3>
+<div align="center">
+
+{% if pending_audio_messages %}
+
+<table>
+    <tbody>
+    {% for audio_id, audio_properties in pending_audio_messages %}  
+            <tr class="rowB" >  
+                
+                <td style="text-align: left;">
+                    {{ forloop.counter }} - {{ audio_id }} : &quot;{{ audio_properties.text }}&quot; <br/>
+                      {{ audio_properties.url|mediaplayer:"false" }}
+                </td>
+                
+            </tr>
+    {% endfor %}
+    
+    </tbody>
+</table>
+
+<form action="{% gameurl rpgweb.views.manage_audio_messages %}" method="POST">
+    <input type="submit" name="reset_playlist" value="Reset Playlist"/>
+</form>
+
+{% else %}
+    
+    <span>{% blocktrans %}Web radio playlist is currently empty.{% endblocktrans %}</span>
+
+{% endif %}
+
+</div>
+
+
+<h3>{% trans "Auto Playlists" %}</h3>
+
+<div align="center">
+    <span>{% blocktrans %}Players needing to be notified about new messages: {% endblocktrans %}
+    {{ players_with_new_messages.keys|join:", "|default:_("None") }}.</span>
+    <br/><br/>
+    {% if players_with_new_messages.keys %}
+    <form action="{% gameurl rpgweb.views.manage_audio_messages %}" method="POST">
+        <input type="submit" name="notify_new_messages" value="{% trans "Notify Users About New Messages" %}"/>
+    </form>
+    {% endif %}
+</div>
+
+
+<a name="anchor_playlist_building">
+<h3>{% trans "Manual Playlist Building" %}</h3>
+</a>
+
+<div align="center">
+    
+   
+    <table>
+        <tbody>
+        {% for audio_id, audio_properties in special_audio_messages %}  
+                <tr class="rowB" >  
+                    
+                    <td style="text-align: left;">
+                      {{ audio_id }}  : &quot;{{ audio_properties.text }}&quot; <br/>
+                      {{ audio_properties.url|mediaplayer:"false" }}
+                    </td>
+                    
+                    <td width="30px">
+                        <a name="anchor{{ audio_id }}">
+                        <form action="{% gameurl rpgweb.views.manage_audio_messages %}#anchor_playlist_building" method="POST">
+                            <input type="hidden" name="audio_message_added" value="{{ audio_id }}"/>
+                            <input type="submit" name="add_audio_message" value="Add"/><br/><br/>
+                        </form>
+                        </a>
+                    </td>
+                </tr>
+        {% endfor %}
+        
+        </tbody>
+    </table>
+    
+    
+    
+    
+    
+    
+</div>
+
+
+{% endblock %}
+
+
+
+
+
+
+

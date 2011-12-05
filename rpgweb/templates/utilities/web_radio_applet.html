@@ -1,0 +1,230 @@
+
+{% extends "base_one_column.html" %}
+
+{% load i18n helpers %}  
+
+
+{% block headers %}  
+    {{ block.super }}
+    
+    {% if access_authorized %}
+    
+        <!--link href="{{ MEDIA_URL }}webradio/niftyplayer.css" rel="stylesheet" type="text/css" /-->
+        
+        <script src="{{ MEDIA_URL }}webradio/niftyplayer.js" type="text/javascript"></script>
+        
+        <script type="text/javascript">
+            
+            var next_file_url = "{% gameurl rpgweb.views.ajax_get_next_audio_message %}"
+            var notification_url = "{% gameurl rpgweb.views.ajax_notify_audio_message_finished %}"
+        
+            var current_audio_id = null;
+            var ajax_call_in_process = false;
+            
+            var ajax_timeout_ms = 5000;
+            var playlist_refreshing_delay_ms = 5000;
+            
+            function plan_next_audio_fetching(){
+                setTimeout('get_next_audio_message();', playlist_refreshing_delay_ms);
+            }
+            
+            function process_next_audio_message(data){
+                
+                //if (!data) return; // may only happen in buggy jquery 1.4.2
+                
+                if (data && data[0] && data[1]){
+                    current_audio_id = data[0];
+                    //alert("launching play "+data[1]);
+                    niftyplayer('niftyPlayer1').loadAndPlay(data[1]); // will trigger error handler after a moment, if bad url
+                }
+                else{
+                    plan_next_audio_fetching();
+                }  
+            }
+            
+            function get_next_audio_message(){
+                if (ajax_call_in_process) return;
+                ajax_call_in_process = true;
+                
+                $.ajax({
+                      url: next_file_url,
+                      type: "GET",
+                      data: {},
+                      dataType: "json",
+                      timeout: ajax_timeout_ms, // in ms
+                      success: process_next_audio_message,
+                      error: function(){ plan_next_audio_fetching(); },
+                      complete: function(){ ajax_call_in_process = false; } // always called
+                      });
+              
+                // UNSAFE - $.getJSON(next_file_url, process_next_audio_message);
+            }
+            
+            
+            function notify_play_termination(){
+                 // no need to check ajax_call_in_process for that one !
+                 
+                 $.ajax({
+                      url: notification_url,
+                      type: "GET",
+                      data: {"audio_id": current_audio_id},
+                      // not json !
+                      timeout: ajax_timeout_ms, // in ms
+                      success: get_next_audio_message,
+                      error: function(){ setTimeout('notify_play_termination();', playlist_refreshing_delay_ms); }, // we retry, if network pb
+                      complete: function(){ } // always called
+                      });
+                      
+                // UNSAFE - $.get(notification_url, {"audio_id": current_audio_id}, function(data){get_next_audio_message();}); // we notify the termination of the audio sample
+            }
+            
+            function initialize_webradio(){
+                niftyplayer('niftyPlayer1').registerEvent('onSongOver', 'notify_play_termination();');
+                niftyplayer('niftyPlayer1').registerEvent('onError', 'plan_next_audio_fetching();'); 
+                
+                setTimeout('get_next_audio_message();', 500);        
+            }
+            
+            $(window).load(function() {setTimeout('initialize_webradio();', 1000);});
+    
+            
+        </script>
+    
+    {% endif %}
+    
+    
+{% endblock %}
+        
+    
+
+
+
+
+{% block content %}  
+
+    <div align="center">
+    
+        {% if access_authorized %}
+             <p>
+                {% blocktrans %}
+                Pangea radio, the world's greatest broadcasting system, is pleased to provide its services in a totally open and free manner !
+                {% endblocktrans %}
+             </p>
+        
+             <br/><br/>
+             <object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,0,0" 
+                     width="170" height="40" id="niftyPlayer1" align="">
+             <param name="movie" value="/media/webradio/niftyplayer.swf?file=/files/tests/betty.mp3&as=0" />
+             <param name="quality" value="high" />
+             <param name="scale" value="showall" />
+             <param name="bgcolor" value="#FFFFFF" />
+             <embed src="/media/webradio/niftyplayer.swf?file=&as=0" scale="showall" quality="high" bgcolor="#FFFFFF"
+                    width="170" height="40" name="niftyPlayer1" align="" 
+                    type="application/x-shockwave-flash" swLiveConnect="true" pluginspage="http://www.macromedia.com/go/getflashplayer">
+                    <!-- test : /files/tests/betty.mp3 -->
+             </embed>
+             </object>
+         
+         {% else %}
+            
+            <p>
+            {% blocktrans %}
+                Please provide the frequency of your favorite radio station.
+            {% endblocktrans %}
+            </p>
+         
+            <form action="{% gameurl rpgweb.views.listen_to_audio_messages %}" method="post">
+            <table style="margin: 20px auto;width:400px;">
+            {{ form.as_table }}
+            <tr>
+                <td colspan="2">
+                    <br/>
+                    <input type="submit" style="width: 200px" name="listen_radio" value="{% trans "Listen to Radio" %}" />
+                </td>
+            </tr>
+            </table>
+            </form>
+         
+         {% endif %}
+         
+    </div>
+        
+        {% comment %}
+        
+            <br/>
+            <a href="javascript:niftyplayer('niftyPlayer1').playToggle()">play toggle</a>
+            (or
+            <a href="javascript:niftyplayer('niftyPlayer1').play()">play</a>
+            |
+            <a href="javascript:niftyplayer('niftyPlayer1').pause()">pause</a>
+            )
+            <a href="javascript:niftyplayer('niftyPlayer1').stop()">stop</a>
+            <br />
+            <a href="javascript:niftyplayer('niftyPlayer1').load('betty.mp3')">load file 1</a>
+            |
+            <a href="javascript:niftyplayer('niftyPlayer1').load('creeeeak.mp3')">load file 2</a>
+            |
+            <a href="javascript:niftyplayer('niftyPlayer1').loadAndPlay('creeeeak.mp3')">load file 2 and play it</a>
+            <br />
+            <br />
+            <a href="javascript:niftyplayer('niftyPlayer1').registerEvent('onSongOver', 'alert(\'Playing!\')')">register onPlay event</a> (then click the play button to see the result)
+            <br />
+            <a href="javascript:alert(niftyplayer('niftyPlayer1').getState())">get current file state</a>
+            
+        {% comment %}
+        
+        
+     
+    <!--[if IE]>
+    <script type="text/javascript" event="FSCommand(command,args)" for="myFlash">
+    eval(args);
+    </script>
+    <![endif]-->
+    
+    <object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0" 
+        id="myFlash" style="display:none;" type="application/x-shockwave-flash" data="/media/webradio/player_mp3_js.swf" width="100" height="100">
+        <param name="movie" value="/media/webradio/player_mp3_js.swf" />
+        <param name="AllowScriptAccess" value="always" />
+        <param name="FlashVars" value="listener=myListener&amp;interval=500&amp;useexternalinterface=1" />
+        <p>Flash Radio Applet Couldn't be loaded.</p>
+        <embed id="embFlash" src="/media/webradio/player_mp3_js.swf" type="application/x-shockwave-flash" 
+                pluginspage="http://www.macromedia.com/go/getflashplayer" allowScriptAccess="always" swliveconnect="true" ></embed>
+    </object> 
+
+    
+    
+    <div id="player">
+        <div id="playerplay" class="button play"><a href="#">PLAY</a></div> <!-- <a href="javascript:play()"> -->
+        <div id="playerpause" class="button pause"><a href="#">PAUSE</a></div>
+        <div id="playerstop" class="button stop"><a href="#">STOP</a></div>
+        <div id="timeline"><a id="playerslider" href="javascript:void(0);">SLIDER</a></div>
+    </div>
+            
+    <h2>Informations</h2>
+    <div style="width: 400px;">
+    <ul>
+        <li>url : <span id="info_url">undefined</span></li>
+        <li>isPlaying : <span id="info_playing">undefined</span></li>
+        <li>bytes : <span id="info_bytes">undefined</span></li>
+        <li>position : <span id="info_position">undefined</span></li>
+        <li>duration : <span id="info_duration">undefined</span></li>
+        <li>volume : <span id="info_volume">undefined</span></li>
+        
+        <li>ID3 Artist : <span id="info_id3_artist">undefined</span></li>
+        <li>ID3 Album : <span id="info_id3_album">undefined</span></li>
+        <li>ID3 Songname : <span id="info_id3_songname">undefined</span></li>
+        <li>ID3 Genre : <span id="info_id3_genre">undefined</span></li>
+        <li>ID3 Year : <span id="info_id3_year">undefined</span></li>
+        <li>ID3 Track : <span id="info_id3_track">undefined</span></li>
+        <li>ID3 Comment : <span id="info_id3_comment">undefined</span></li>
+    </ul>
+    </div>
+   
+   {% endcomment %}
+
+{% endblock %}        
+
+        
+        
+       
+  

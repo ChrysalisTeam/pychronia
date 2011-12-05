@@ -1,0 +1,31 @@
+{% extends "base_one_column.html" %}
+
+{% load i18n helpers markup %}  
+
+{% block content %}  
+
+    {% if intro_data.prologue_music %}
+        <div style=""> 
+        {{ intro_data.prologue_music|mediaplayer:"false" }}
+        </div>
+    {% endif %}
+
+
+    <div class="intro">
+    {{ intro_data.global_introduction|restructuredtext }}
+    </div>
+    
+    {% if intro_data.team_introduction %}
+        <div class="intro">
+        {{ intro_data.team_introduction|restructuredtext }}
+        </div>
+    {% endif %}
+    
+    <div align="center">
+    <strong>
+        {% trans "Further information is available in your mailbox." %}
+    </strong>
+    </div>
+    <br/>
+
+{% endblock %} 

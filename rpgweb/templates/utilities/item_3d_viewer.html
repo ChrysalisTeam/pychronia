@@ -1,0 +1,434 @@
+<html>
+<head>
+	
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta http-equiv="imagetoolbar" content="no">
+<title>3DNP - (C) 2006 Thorsten Schl&uuml;ter - www.thoro.de</title>
+
+<style type="text/css">
+    body	{ background-repeat:no-repeat; overflow:hidden; margin: 0px; padding: 0px; border-style:none; background-color: #BCBCBC;}
+    html	{ border-style:none; }
+    td,p	{ font-size: 10px; font-family: Verdana, Arial, Helvetica, sans-serif; color: #424242; text-decoration:none; }
+    a		{ color: #424242; text-decoration: underline; font-weight:bold; }
+    a:hover	{ color: #FEFEFE; text-decoration: underline; font-weight:bold; }
+</style>
+
+<!-- WARNING - URL to displayed images must not contain underscores, else these 3D images are flashing ! -->
+
+<script type="text/javaScript">
+<!--
+
+// 3DNP 1.2a
+// Copyright (C) 2006 Thorsten Schlueter - www.thoro.de
+// Modified by Pascal Chambon, 2010
+
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+
+
+
+// config to customize
+
+total		= {{ settings.total }};			// total number of UNIQUE images
+levels		= {{ settings.levels }};			// number of Y axis levels
+startlevel	= {{ settings.startlevel }};			// defines the starting axis
+
+filemode	= 'NameNumber';		// filemode ('NameNumber'/'RowShot') - NameNumber reads a series of images filename#### (for example 0001 to 0252) / RowShot reads images in Row##shot## mode
+filedir     = '{{ settings.filedir }}';
+filename	= '{{ settings.filename }}';		// filename for images, is not used if filemode is set to 'RowShot'
+suffix		= '{{ settings.suffix }}';		// image suffix
+barLength	= 160;			// defines the length of the loading bar
+
+imagewidth  = {{ settings.imagewidth }};
+imageheight = {{ settings.imageheight }};
+
+viewmode	= '{{ settings.mode }}';		// camera mode ('object'/'camera') 
+x_coefficient = {{ settings.x_coefficient }}; // the higher it is, the slower the camera moves
+y_coefficient = {{ settings.y_coefficient }}; // the higher it is, the slower the camera moves
+
+
+/* currently, autoreverse only works if there is only ONE level of 3D view, and filemode == NameNumber... */
+autoreverse = ({% if settings.autoreverse %} true {% else %} false {% endif %} && filemode == 'NameNumber' && levels == 1);
+
+
+
+steps = {% if settings.steps %} {{ settings.steps }} {% else %} 1 {% endif %};
+
+rotomatic	= {% if settings.rotomatic %} {{ settings.rotomatic }} {% else %} 0 {% endif %};	// automatic rotation speed - negative or positive value, smaller values = faster rotation, 0 disables
+rotoresume	= 1;			// the time in seconds 3DNP waits before resuming the autorotation, 0 disables
+
+keycodes	= [38, 39, 40, 37] //<- keyboard arrows   //[119,100,115,97]	// keycodes for keyboard input (up,right,down,left) - default is [119,100,115,97] for 'W/D/S/A' keys, another example: [56,54,50,52] for '8/6/2/4' on num block
+
+
+
+// internal parameters - do not change
+perlevel	= total/levels;
+if (autoreverse) {
+    perlevel = perlevel * 2;
+}
+
+var time	= 40;
+var timer	= null;
+
+var imagenumber;
+var ThreeDNPImage;
+
+if ( viewmode == 'object' ) {multiplicator = 1;}
+else {multiplicator = -1;}
+imagesProcessed = 0;
+loadingcomplete = false;
+
+
+
+if (document.captureEvents) {
+	document.captureEvents( Event.MOUSEMOVE | Event.MOUSEDOWN | Event.MOUSEUP | Event.KEYPRESS | Event.KEYDOWN | Event.KEYUP );
+}
+
+document.onmousemove = mousepos;
+document.onmousedown = startHandler;
+document.onmouseup   = stopHandler;
+document.onkeypress  = keypressed; 
+/*document.onkeydown   = startHandler; 
+document.onkeyup     = stopHandler;*/
+
+// Functions
+
+function startHandler(e) {
+	rotate();
+}
+
+
+function stopHandler(e) {
+	stop();
+}
+
+
+function stop() {
+	clearTimeout(timer);
+	
+	if ( (rotomatic != 0) && (rotoresume != 0) ) {
+		setTimeout('autorotate()',Math.abs(rotoresume * 1000));	
+	}	
+}
+
+
+
+var new_x=0, new_y=0;
+var rest_x=0, rest_y=0;
+
+function rotate(old_x, old_y) { 
+	
+	if ( loadingcomplete != true ) return;
+	
+	clearTimeout(timer);
+
+	imagenumy = Math.ceil(imagenumber/perlevel);
+	imagenumx = imagenumber-((imagenumy-1)*perlevel);
+
+	if ( old_x == undefined || old_y == undefined ) {
+		old_x = new_x;
+		old_y = new_y;
+		xdif = 0;
+ 		ydif = 0;
+	}
+	else {
+		xdif = new_x - old_x + rest_x;
+		ydif = new_y - old_y + rest_y;
+	}
+	
+	increment_x = Math.round(xdif/x_coefficient);
+	increment_y = Math.round(ydif/y_coefficient);
+	rest_x = xdif - increment_x*x_coefficient;
+	rest_y = ydif - increment_y*y_coefficient;
+	
+	//console.log(rest_y+ "--- "+increment_y) // Firebug console
+
+	imagenumxnew = imagenumx - increment_x * multiplicator;
+	imagenumynew = imagenumy + increment_y * multiplicator;
+	
+	if ( imagenumxnew < 1 ) imagenumxnew = (perlevel);
+	if ( imagenumxnew > (perlevel) ) imagenumxnew = 1;
+	if ( imagenumynew < 1 ) imagenumynew = 1;
+	if ( imagenumynew > levels ) imagenumynew = levels;
+
+	imagenumbernew = ((imagenumynew-1)*perlevel)+imagenumxnew;
+	
+	imagenumber = imagenumbernew;
+	document.body.background = ThreeDNPImage[imagenumber].src; 
+	
+	timer = setTimeout('rotate('+new_x+','+new_y+')',time);
+}
+
+
+
+function mousepos(e) {
+
+	if (document.layers) {
+		new_x = e.x;
+		new_y = e.y;
+	}
+	else if (document.all) {
+		new_x = event.clientX;
+		new_y = event.clientY;
+	}
+	else if (document.getElementById) {
+		new_x = e.clientX;
+		new_y = e.clientY;
+	}
+}
+
+
+
+function leadingZero(source,n) { 
+	
+	filled = source;
+	for (i=0;i<(n-source.length);i++) {
+		filled = '0'+filled;
+	}
+	return(filled);
+}
+
+
+
+function preloadImages() {
+
+    // to help preventing image flickering on IE
+    ie = document.all;
+    if(ie)
+    {
+    try {
+    document.execCommand("BackgroundImageCache", false, true);
+    } catch(err) {}
+    }
+        
+	ThreeDNPImage = new Array();
+	// only in loader: document.getElementById('3D_image').width = barLength;
+	
+	if ( filemode == 'NameNumber' ) { 
+
+		for ( u=1; u<=total; u++) {
+
+			ThreeDNPImage[u] 	 = new Image();
+			imagenumberstring    = (u*steps).toString();
+			imagename            = filename+leadingZero(imagenumberstring, 4);
+			ThreeDNPImage[u].src = filedir+imagename+suffix;
+		
+		    setTimeout('updateBar('+u+')', 200);
+		
+		}
+		
+		if (autoreverse) {
+		    for ( k=1; k<=total; k++) {
+                u = k + total;
+                ThreeDNPImage[u]     = new Image();
+                imagenumberstring    = ((total*steps+steps)-(k*steps)).toString();
+                imagename            = filename+leadingZero(imagenumberstring,4);
+                ThreeDNPImage[u].src = filedir+imagename+suffix;
+                // NO - already loading images !! setTimeout('checkLoad('+u+')', 200);
+            }
+		}
+		
+		setTimeout('checkLoad(0)', 200);
+		
+	}
+			
+	if ( filemode == 'RowShot' ) {
+		r=1; 
+		s=1;
+		
+		for ( u=1; u<=total; u++) {
+			ThreeDNPImage[u]     = new Image();
+			rownumberstring      = r.toString();
+			shotnumberstring     = s.toString();			
+			imagename            = 'Row'+leadingZero(rownumberstring,2)+'shot'+leadingZero(shotnumberstring,2);
+			ThreeDNPImage[u].src = filedir+imagename+suffix;
+			s++;
+			if ( s > perlevel ) { 
+				r++;	
+				s=1;
+			}
+			setTimeout('checkLoad('+u+')', 200);
+		}
+	}
+}
+
+
+
+function updateBar(number) {
+    (ThreeDNPImage[number].complete)? displayBar() : setTimeout('updateBar('+number+')', 200); //100
+}
+
+
+function checkLoad(iter) {
+	
+	//opera.postError(iter);
+	//console.log(iter);
+	
+	if (iter >= 20){ // 10 s total
+	   setTimeout('launch();', 200);  // we FORCE the launching even if some images can't be loaded
+	   return;
+	}
+	
+	for (l=1; l<=total; l++){
+	   if(!ThreeDNPImage[l].complete){
+	       //opera.postError("Image not loaded : "+l)
+	       var temp = ThreeDNPImage[l].src; // we try to reload the image, as Opera fails on that...
+	       ThreeDNPImage[l].src = "";
+	       ThreeDNPImage[l].src = temp;
+	       //opera.postError("Image : "+temp)
+	       setTimeout('checkLoad('+(iter+1)+')', 500);
+	       return;
+	   }
+	}
+	
+	setTimeout('launch();', 200);
+}
+
+
+function displayBar() {
+
+	imagesProcessed++; // race issues around that variable ?
+
+	document.getElementById('loadingbar').width = Math.ceil((barLength * imagesProcessed) / total);
+    
+	/*if (imagesProcessed >= total) {
+		setTimeout('launch();', 200); 
+	}*/
+	
+	//opera.postError(imagesProcessed+" -- "+total)
+	// console.log(imagesProcessed+" -- "+total)
+}
+
+
+
+function launch() {
+	
+	loadingcomplete = true;
+	
+	document.getElementById('temporary').style.display= "none";
+
+	imagenumber = (((startlevel-1)*perlevel)+1);
+	document.body.background = ThreeDNPImage[imagenumber].src;
+	
+	{% load helpers %} 
+	//player = "{% if settings.music %}{{ settings.music|mediaplayer:"true"|escapejs }}{% endif %}";
+	{% if settings.music %}
+    player = '<object width="300px" height="24px" type="application/x-shockwave-flash" data="/media/audioplayer/player.swf" class="audioplayer">\
+            <param name="movie" value="/media/audioplayer/player.swf" />\
+            <param name="FlashVars" value="bg=0x000000&leftbg=0x000000&lefticon=0x000000&voltrack=0x000000&volslider=0x000000&rightbg=0x000000&rightbghover=0x000000&righticon=0x000000&righticonhover=0x000000&text=0x000000&track=0x000000&tracker=0x000000&border=0x000000&loader=0x000000&skip=0x000000&loop=yes&autostart=yes&animation=no&initialvolume=60&soundFile={{ settings.music }}" />\
+            <param name="quality" value="high" />\
+            <param name="scale" value="showall" />\
+            <param name="menu" value="true" />  <!-- add or not additional right-click menu entries -->\
+            <param name="wmode" value="transparent" /> <!--  opacity of background in shrinked mode - alternatives : opaque, window -->\
+            <p>Error - Your browser does not seem to support Flash, please install it from <a target="_blank" href="http://get.adobe.com/flashplayer/">the Adobe site</a>.</p>\
+            </object>';
+	document.getElementById('music').innerHTML = player;
+	{% endif %}
+	
+	
+	if ( (rotomatic != 0) ) {
+		autorotate();	
+	}
+}
+
+
+function autorotate() { 
+	
+	clearTimeout(timer);
+	
+	imagenumy = Math.ceil(imagenumber/perlevel);
+	imagenumx = imagenumber-((imagenumy-1)*perlevel);
+	
+	if ( rotomatic > 0 ) imagenumxnew = imagenumx + 1;
+	if ( rotomatic < 0 ) imagenumxnew = imagenumx - 1;
+	imagenumynew = imagenumy;
+
+	if ( imagenumxnew < 1 ) imagenumxnew = (perlevel);
+	if ( imagenumxnew > perlevel ) imagenumxnew = 1;
+
+	imagenumbernew = ((imagenumynew-1)*perlevel)+imagenumxnew;
+	
+	imagenumber = imagenumbernew;
+	document.body.background = ThreeDNPImage[imagenumber].src; 
+	timer = setTimeout('autorotate()',Math.abs(rotomatic));
+}
+
+
+
+
+function keypressed(e) {
+	
+	// window.alert(e.keyCode)
+	
+	var code;
+    
+	if (!e) var e = window.event;
+	if (e.keyCode) code = e.keyCode;
+	else if (e.which) code = e.which;
+
+	imagenumy = Math.ceil(imagenumber/perlevel);
+	imagenumx = imagenumber-((imagenumy-1)*perlevel);
+	imagenumxnew = imagenumx;
+	imagenumynew = imagenumy;
+	
+	if ( code == keycodes[0] ){ imagenumynew = imagenumy +1 * multiplicator; }
+	else if ( code == keycodes[1] ){ imagenumxnew = imagenumx -1 * multiplicator; }
+	else if ( code == keycodes[2] ){ imagenumynew = imagenumy -1 * multiplicator; }
+	else if ( code == keycodes[3] ){  imagenumxnew = imagenumx +1 * multiplicator; }
+	
+	if ( imagenumxnew < 1 ) imagenumxnew = (perlevel);
+	if ( imagenumxnew > (perlevel) ) imagenumxnew = 1;
+	if ( imagenumynew < 1 ) imagenumynew = 1;
+	if ( imagenumynew > levels ) imagenumynew = levels;
+
+	imagenumbernew = ((imagenumynew-1)*perlevel)+imagenumxnew;
+	
+	imagenumber = imagenumbernew;
+	document.body.background = ThreeDNPImage[imagenumber].src; 	
+}
+
+
+-->
+</script>
+
+
+
+</head>
+<body style="background-color:#000000;" onload="preloadImages();">
+
+<!--img style="visibility:hidden" src="background.gif" id="3D_image" name="3D_image" width="1" height="1" border="0"-->
+<div id="temporary">
+	<br/><br/>
+	<p align="center" style="color:#CCCCCC">loading images - please wait</p>
+	<p align="center"><img src="{{ MEDIA_URL }}images/loadingbar.gif"  id="loadingbar" width="0" height="5"></p>
+</div>
+
+
+<div align="center" id="music" style="margin-top:{{ settings.imageheight|add:10 }}px;"></div>
+
+
+{% if image_urls %}
+    {% for image_url in image_urls %}
+        <img src="{{ image_url }}" style="display:none;"/>
+    {% endfor %}
+{% endif %}
+
+
+
+</body>
+
+</html>
+
+

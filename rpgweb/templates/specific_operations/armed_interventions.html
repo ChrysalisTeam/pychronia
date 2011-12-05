@@ -1,0 +1,40 @@
+{% extends "base_one_column.html" %}
+
+{% load i18n helpers markup %}  
+
+{% block content %}  
+
+
+<p>
+    {{ instructions|restructuredtext }}
+</p>
+
+{% if intervention_impossible_msg %}
+
+    <p><strong>
+    {{ intervention_impossible_msg }}
+    </strong></p>
+
+{% else %}
+
+    {% if intervention_form %}
+        <form action="{{ target_url }}" method="post">
+        <div align="center">
+        <table {% if same_width_widgets %} class="same_width_widgets" style="width:450px;" {% endif %}>
+        {{ intervention_form.as_table }}
+        <tr>
+            <td colspan="2">
+                <br/>
+                <input type="submit" style="width: 200px" name="intervention" value="{% trans "Launch Operation" %}" />
+            </td>
+        </tr>
+        </table>
+        </div>
+        </form>
+    {% endif %}
+
+{% endif %}
+
+
+{% endblock %}
+

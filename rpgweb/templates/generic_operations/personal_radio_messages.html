@@ -1,0 +1,50 @@
+{% extends "base_one_column.html" %}
+
+{% load i18n helpers %}  
+
+{% block content %}  
+
+    <div align="center">
+  
+    <p>
+    {% blocktrans %}
+        Since it is the only radio broadcasting its content over the whole of Pangea, <strong>Pangea Radio</strong> has quickly been 
+        used by the most powerful political, economic and scientific organizations as a means to efficiently broadcast personal messages to their members. 
+    {% endblocktrans %}
+    </p>
+    
+    </div>
+    
+    {% if is_master %}
+    <p>{% trans "As a game master, none of these personal messages is for you." %}</p>
+    
+    {% else %}
+    
+        <p>
+            {% trans "You're part of one of these organizations, so here are the french texts or animal sounds you will have to listen to, and their meaning." %}
+        </p>
+        
+        <div style="margin: 2px 5%;">
+            <ul>
+                <li>{% trans "When you have received new email messages:" %} <i>&quot;{{ new_messages_text }}&quot;</i></li>
+                <li>{% trans "When one of your missions had a successful ending:" %} <i>{{ victory_text }}</i></li>
+                <li>{% trans "When one of your missions ended with an epic failure:" %} <i>{{ defeat_text }}</i></li>
+                {% comment %} UNUSED !! <li>When your team must immediately send a report to its superiors: <i>&quot;{{ request_for_report_text }}&quot;</i></li>{% endcomment %}
+            </ul>
+        </div> 
+        
+        {% if can_wiretap %}
+        <p>
+            {% blocktrans %}
+                Concerning wiretapping : If you manage to guess which radio messages other guests are concerned by, 
+                you'll detect more quickly the moments when you may have intercepted new email conversations. 
+            {% endblocktrans %}
+        </p>
+        {% endif %}
+    {% endif %}
+    
+{% endblock %}
+
+
+
+

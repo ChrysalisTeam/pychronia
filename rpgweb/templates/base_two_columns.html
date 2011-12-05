@@ -1,0 +1,19 @@
+ 
+{% extends "base_main.html" %}
+ 
+{% block headers %}  
+    {{ block.super }}
+    <link href="{{ MEDIA_URL }}Burned/two_columns.css" rel="stylesheet" type="text/css" />
+{% endblock %}
+ 
+{% block additional_column %} 
+
+ 	<div id="secondaryContent">
+    
+		{% block sidebar %}
+		
+		{% endblock %}    
+		
+    </div>
+    
+{% endblock %}

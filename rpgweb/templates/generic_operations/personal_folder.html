@@ -1,0 +1,76 @@
+
+{% extends "base_two_columns.html" %}
+
+{% load i18n helpers %}  
+
+
+{% block headers %}  
+    {{ block.super }}
+    <script type="text/javaScript">
+    
+    function load_media_frame(fileurl) {
+    
+        //alert("{% gameurl rpgweb.views.view_media %}?url=" + fileurl);
+        
+        // DO NOT use escape(), as it's for latin1 encoding (blerh...)
+        
+        $("#media_url").html('<a href="'+encodeURI(fileurl)+'">'+encodeURI(fileurl)+'</a>')
+        
+        $("#media_viewer").load("{% gameurl rpgweb.views.view_media %}?autostart=true&url=" + encodeURIComponent(fileurl)); 
+    
+    }
+    
+    </script>
+{% endblock %}
+
+
+
+
+{% block sidebar %}
+
+    {% if display_maintenance_notice %}
+    <div style="width:80%; border: solid 1px #DFBF99; padding:10px;">
+        <strong>{% trans "System Notification" %}</strong>
+        <p style="font-size:11px;">
+        {% blocktrans %}
+            Due to heavy maintenance operations on our front-end servers, 
+            the upload of files is disabled until next decade.
+            We apologize for the inconvenience.
+        {% endblocktrans %}
+        </p>
+    </div>
+    <br/>
+    {% else %}
+    <br/><br/><br/>
+    {% endif %}
+    
+
+    <ul>
+        {% for filename, fileurl in files %}
+            <li><a href="{{ fileurl }}" onclick="load_media_frame('{{ fileurl|escapejs }}'); return false;">{{ filename }}</a></li>
+        {% endfor %}
+    </ul>
+
+{% endblock %}    
+
+
+
+{% block content %}  
+
+
+        
+            
+        <div align="center">
+            <strong>
+            <div style="width:90%; font-size:0.9em; padding:3px; margin:auto; border:solid 1px #DFBF99;" id="media_url">
+                {% trans "Click left menu links to display content." %}
+            </div>
+            </strong>
+        </div>
+        
+        <div align="center" id="media_viewer">&nbsp;</div>
+
+    <br/>
+{% endblock %}
+
+

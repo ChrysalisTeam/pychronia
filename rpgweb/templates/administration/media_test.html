@@ -1,0 +1,29 @@
+{% extends "base_one_column.html" %}
+
+{% load i18n helpers %}  
+
+{% block headers %}  
+    {{ block.super }}
+    <script src="{{ MEDIA_URL }}videoplayers/quicktimeplayer/AC_QuickTime.js" type="text/javascript"></script>
+    <script src="{{ MEDIA_URL }}videoplayers/wmvplayer/silverlight.js" type="text/javascript"></script>
+    <script src="{{ MEDIA_URL }}videoplayers/wmvplayer/wmvplayer.js" type="text/javascript"></script>
+{% endblock %}
+
+
+{% block content %}  
+
+
+<p>
+    {{ audioplayer|safe }}
+</p>
+
+
+{% for videoplayer in videoplayers %}
+<p>
+    {{ forloop.counter }}
+    {{ videoplayer|safe }}
+</p>
+{% endfor %}
+
+
+{% endblock %}

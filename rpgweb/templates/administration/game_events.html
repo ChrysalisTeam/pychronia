@@ -1,0 +1,57 @@
+{% extends "base_one_column.html" %}
+
+{% load i18n helpers %}  
+
+{% block content %}  
+
+<p>
+{% blocktrans %} 
+All important events which have occurred so far are logged below. Actions performed by the game master are in italic. 
+Some events point to other pages, where more details can be found.
+{% endblocktrans %}
+</p>
+
+{% if events %}
+
+    <table style="margin:10px auto;" class=""> <!--fullwidth-->
+        <tbody>
+        
+            <tr>
+                <th>{% trans "Time" %}</th>
+                <th>{% trans "Message" %}</th>
+            </tr>
+        
+        
+            {% for event in events %} 
+            
+            <tr>    
+                <td style="width:70px">{{ event.time|utctolocal|date:"H:i:s" }}</td>   {%comment %}{% load humanize %}{{ event.time|utctolocal|naturalday:"d/N/Y" }}{% endcomment %}
+                <td style="text-align: left;">
+                    {% if event.url %}
+                        <a href="{{ event.url }}">
+                    {% endif %}
+                        <span class="{% if event.is_master_action %}master_action{% endif %}">{{ event.trans_message }}</span>
+                    {% if event.url %}
+                        </a>
+                    {% endif %}            
+                </td>
+                
+            </tr>
+           
+            {% endfor %}
+    
+        </tbody>
+    </table>
+
+{% else %}
+
+<p>
+    <b>{% blocktrans %}No events have yet been recorded.{% endblocktrans %}</b>
+</p>
+
+{% endif %}
+
+{% endblock %}
+
+
+

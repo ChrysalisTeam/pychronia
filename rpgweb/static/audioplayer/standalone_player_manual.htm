@@ -1,0 +1,390 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="en-US">
+
+<head profile="http://gmpg.org/xfn/11">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+<meta name="verify-v1" content="Ib/Fgj4WXfiogd8ifnF4QDunHHTyZYYdQlGV5e7hbOc=" />
+
+<title>WordPress Audio Player   &raquo; Standalone version</title>
+
+<link rel="alternate" type="application/rss+xml" title="WordPress Audio Player RSS Feed" href="http://wpaudioplayer.com/feed" />
+
+<link rel="stylesheet" href="http://wpaudioplayer.com/wp-content/themes/wpap/style.css" type="text/css" media="screen" />
+<!--[if lte IE 7]><link href="http://wpaudioplayer.com/wp-content/themes/wpap/assets/css/ie-filters/lteIE7.css" rel="stylesheet" type="text/css" /><![endif]-->
+<!--[if lte IE 6]><link href="http://wpaudioplayer.com/wp-content/themes/wpap/assets/css/ie-filters/lteIE6.css" rel="stylesheet" type="text/css" /><![endif]-->
+
+<link type="text/css" rel="stylesheet" href="http://wpaudioplayer.com/wp-content/themes/wpap/assets/syntax-highlighter/styles/SyntaxHighlighter.css"/>
+
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://wpaudioplayer.com/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="http://wpaudioplayer.com/wp-includes/wlwmanifest.xml" /> 
+<link rel='index' title='WordPress Audio Player' href='http://wpaudioplayer.com' />
+<meta name="generator" content="WordPress 2.9.2" />
+<link rel='canonical' href='http://wpaudioplayer.com/standalone' />
+<script type="text/javascript" src="http://wpaudioplayer.com/wp-content/plugins/audio-player/assets/audio-player.js?ver=2.0.4.1"></script>
+<script type="text/javascript">AudioPlayer.setup("http://wpaudioplayer.com/wp-content/plugins/audio-player/assets/player.swf?ver=2.0.4.1", {width:"290",animation:"yes",encode:"yes",initialvolume:"60",remaining:"no",noinfo:"no",buffer:"5",checkpolicy:"no",rtl:"no",bg:"E5E5E5",text:"333333",leftbg:"CCCCCC",lefticon:"333333",volslider:"666666",voltrack:"FFFFFF",rightbg:"B4B4B4",rightbghover:"999999",righticon:"333333",righticonhover:"FFFFFF",track:"FFFFFF",loader:"009900",border:"CCCCCC",tracker:"DDDDDD",skip:"666666",pagebg:"FFFFFF",transparentpagebg:"yes"});</script>
+</head>
+<body>
+
+<div id="wrapper">
+	<h1>WordPress Audio Player</h1>
+
+	<div id="menu">
+	<ul>
+		<li><a href="http://wpaudioplayer.com/">Home</a></li>
+		<li class="page_item page-item-21"><a href="http://wpaudioplayer.com/installation" title="Installation">Installation</a></li>
+<li class="page_item page-item-59"><a href="http://wpaudioplayer.com/usage" title="Usage">Usage</a></li>
+<li class="page_item page-item-14"><a href="http://wpaudioplayer.com/whatsnew" title="What&#8217;s new">What&#8217;s new</a></li>
+<li class="page_item page-item-6"><a href="http://wpaudioplayer.com/frequently-asked-questions" title="Frequently asked questions">Frequently asked questions</a></li>
+<li class="page_item page-item-13"><a href="http://wpaudioplayer.com/support" title="Support">Support</a>
+<ul>
+	<li class="page_item page-item-33"><a href="http://wpaudioplayer.com/support/troubleshooting" title="Troubleshooting">Troubleshooting</a></li>
+</ul>
+</li>
+<li class="page_item page-item-22 current_page_item"><a href="http://wpaudioplayer.com/standalone" title="Standalone version">Standalone version</a></li>
+<li class="page_item page-item-11"><a href="http://wpaudioplayer.com/download" title="Download">Download</a></li>
+<li class="page_item page-item-4"><a href="http://wpaudioplayer.com/source" title="Source">Source</a></li>
+<li class="page_item page-item-3"><a href="http://wpaudioplayer.com/license" title="License">License</a></li>
+	</ul>
+	
+	<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+		<input type="hidden" name="cmd" value="_s-xclick" />
+		<input type="hidden" name="hosted_button_id" value="243G98SBP3THN" />
+		<input type="image" src="https://www.paypal.com/en_GB/i/btn/btn_donate_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online." />
+		<img alt="" src="https://www.paypal.com/en_GB/i/scr/pixel.gif" width="1" height="1" />
+	</form>
+</div>
+<div id="content">
+		<h2>Standalone version</h2>
+
+	<p>The standalone version comes with a JavaScript file to simplify configuring and embedding the player. This file includes the <a href="http://code.google.com/p/swfobject/">swfobject</a> library.</p>
+<p><strong>Note</strong>: the zip file includes two other files:</p>
+<ul>
+<li><strong>audio-player-noswfobject.js</strong> (a version of audio-player.js without the swfobject library if you are including it separately)</li>
+<li><strong>audio-player-uncompressed.js</strong> (same as above but uncompressed so you can read the code)</li>
+</ul>
+<h3>Installation and usage</h3>
+<ol>
+<li><a href="download.htm">Download</a> the zip file</li>
+<li>Extract and upload the files to your server (only two files are required: <strong>audio-player.js</strong> and <strong>player.swf</strong>)</li>
+<li>Include the <strong>audio-player.js</strong> file in the HEAD section of your html page</li>
+<li>Still in the HEAD section, setup Audio Player as seen in the example below (the only required option is <strong>width</strong>)</li>
+<li>To insert a player on the page, place an HTML element (a P tag in the example but it can be anything) and give it a unique ID</li>
+<li>This element will be replaced with a player. If the browser doesn&#8217;t support Audio Player, the element will not be replaced so use it to show alternative content (maybe a message telling the user to download Flash)</li>
+<li>Insert the script tag after the element as shown below</li>
+</ol>
+<h4>Example</h4>
+<p>Ensure you replace &#8220;http://yoursite.com/path/to&#8221; with the correct paths to all files.</p>
+<pre class="html:nocontrols" title="code">&lt;html&gt;
+	&lt;head&gt;
+		&lt;title&gt;Your website&lt;/title&gt;
+
+		...
+
+		&lt;script type="text/javascript" src="path/to/audio-player.js"&gt;&lt;/script&gt;
+		&lt;script type="text/javascript"&gt;
+			AudioPlayer.setup("http://yoursite.com/path/to/player.swf", {
+				width: 290
+			});
+		&lt;/script&gt;
+
+	&lt;/head&gt;
+	&lt;body&gt;
+
+		&lt;p id="audioplayer_1"&gt;Alternative content&lt;/p&gt;
+		&lt;script type="text/javascript"&gt;
+		AudioPlayer.embed("audioplayer_1", {soundFile: "http://yoursite.com/path/to/mp3_file.mp3"});
+		&lt;/script&gt;
+
+		&lt;p id="audioplayer_2"&gt;Alternative content&lt;/p&gt;
+		&lt;script type="text/javascript"&gt;
+		AudioPlayer.embed("audioplayer_2", {soundFile: "http://yoursite.com/path/to/mp3_file_2.mp3"});
+		&lt;/script&gt;
+
+	&lt;/body&gt;
+&lt;/html&gt;</pre>
+<h3>Configuration</h3>
+<p>You can configure Audio Player with the <strong>setup</strong> call in the HEAD section like this:</p>
+<pre class="html:nocontrols" title="code">&lt;script type="text/javascript" src="path/to/audio-player.js"&gt;&lt;/script&gt;
+&lt;script type="text/javascript"&gt;
+	AudioPlayer.setup("http://yoursite.com/path/to/player.swf", {
+		width: 290,
+		initialvolume: 100,
+		transparentpagebg: "yes",
+		left: "000000",
+		lefticon: "FFFFFF"
+	});
+&lt;/script&gt;</pre>
+<p>You can configure each separate player using the <strong>embed</strong> call like this:</p>
+<pre class="html:nocontrols" title="code">&lt;script type="text/javascript"&gt;
+AudioPlayer.embed("audioplayer_1", {
+	soundFile: "http://yoursite.com/path/to/mp3_file.mp3",
+	titles: "Title",
+	artists: "Artist name",
+	autostart: "yes"
+});
+&lt;/script&gt;</pre>
+<h3>To load multiple files</h3>
+<p>Simply set <strong>soundFile </strong>to a comma delimited list of mp3 files. Optionally, you can also provide a comma delimited list of titles and artists:</p>
+<pre class="html:nocontrols" title="code">&lt;script type="text/javascript"&gt;
+AudioPlayer.embed("audioplayer_1", {
+	soundFile: "http://yoursite.com/path/to/mp3_file_1.mp3,http://yoursite.com/path/to/mp3_file_2.mp3",
+	titles: "Title 1,Title 2",
+	artists: "Artist name 1,Artist name 2"
+});
+&lt;/script&gt;</pre>
+<h3>List of options</h3>
+<h4>Tracks</h4>
+<table border="0">
+<col></col>
+<col></col>
+<col class="max"></col>
+<thead>
+<tr>
+<th scope="col">Option</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th scope="row">soundFile</th>
+<td><strong>required</strong></td>
+<td>comma-delimited list of mp3 files</td>
+</tr>
+<tr>
+<th scope="row">titles</th>
+<td>overrides ID3 information</td>
+<td>comma-delimited list of titles</td>
+</tr>
+<tr>
+<th scope="row">artists</th>
+<td>overrides ID3 information</td>
+<td>comma-delimited list of artists</td>
+</tr>
+</tbody>
+</table>
+<h4>Options</h4>
+<table border="0">
+<col></col>
+<col></col>
+<col class="max"></col>
+<thead>
+<tr>
+<th scope="col">Option</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th scope="row">autostart</th>
+<td>no</td>
+<td>if yes, player starts automatically</td>
+</tr>
+<tr>
+<th scope="row">loop</th>
+<td>no</td>
+<td>if yes, player loops</td>
+</tr>
+<tr>
+<th scope="row">animation</th>
+<td>yes</td>
+<td>if no, player is always open</td>
+</tr>
+<tr>
+<th scope="row">remaining</th>
+<td>no</td>
+<td>if yes, shows remaining track time rather than ellapsed time</td>
+</tr>
+<tr>
+<th scope="row">noinfo</th>
+<td>no</td>
+<td>if yes, disables the track information display</td>
+</tr>
+<tr>
+<th scope="row">initialvolume</th>
+<td>60</td>
+<td>initial volume level (from 0 to 100)</td>
+</tr>
+<tr>
+<th scope="row">buffer</th>
+<td>5</td>
+<td>buffering time in seconds</td>
+</tr>
+<tr>
+<th scope="row">encode</th>
+<td>no</td>
+<td>indicates that the mp3 file urls are encoded</td>
+</tr>
+<tr>
+<th scope="row">checkpolicy</th>
+<td>no</td>
+<td>tells Flash to look for a policy file when loading mp3 files<br />
+(this allows Flash to read ID3 tags from files hosted on a different domain)</td>
+</tr>
+<tr>
+<th scope="row">rtl</th>
+<td>no</td>
+<td>switches the layout to RTL (right to left) for Hebrew and Arabic languages</td>
+</tr>
+</tbody>
+</table>
+<h4>Flash player options</h4>
+<table border="0">
+<col></col>
+<col></col>
+<col class="max"></col>
+<thead>
+<tr>
+<th scope="col">Option</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th scope="row">width</th>
+<td><strong>required</strong></td>
+<td>width of the player. e.g. 290 (290 pixels) or 100%</td>
+</tr>
+<tr>
+<th scope="row">transparentpagebg</th>
+<td>no</td>
+<td>if yes, the player background is transparent (matches the page background)</td>
+</tr>
+<tr>
+<th scope="row">pagebg</th>
+<td>NA</td>
+<td>player background color (set it to your page background when transparentbg is set to &#8216;no&#8217;)</td>
+</tr>
+</tbody>
+</table>
+<h4>Colour scheme options</h4>
+<p>All colour codes must be 6-digit HEX codes without &#8216;#&#8217; or &#8216;0x&#8217; in front.</p>
+<table border="0">
+<col></col>
+<col></col>
+<col class="max"></col>
+<thead>
+<tr>
+<th scope="col">Option</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th scope="row">bg</th>
+<td>E5E5E5</td>
+<td>Background</td>
+</tr>
+<tr>
+<th scope="row">leftbg</th>
+<td>CCCCCC</td>
+<td>Speaker icon/Volume control background</td>
+</tr>
+<tr>
+<th scope="row">lefticon</th>
+<td>333333</td>
+<td>Speaker icon</td>
+</tr>
+<tr>
+<th scope="row">voltrack</th>
+<td>F2F2F2</td>
+<td>Volume track</td>
+</tr>
+<tr>
+<th scope="row">volslider</th>
+<td>666666</td>
+<td>Volume slider</td>
+</tr>
+<tr>
+<th scope="row">rightbg</th>
+<td>B4B4B4</td>
+<td>Play/Pause button background</td>
+</tr>
+<tr>
+<th scope="row">rightbghover</th>
+<td>999999</td>
+<td>Play/Pause button background (hover state)</td>
+</tr>
+<tr>
+<th scope="row">righticon</th>
+<td>333333</td>
+<td>Play/Pause icon</td>
+</tr>
+<tr>
+<th scope="row">righticonhover</th>
+<td>FFFFFF</td>
+<td>Play/Pause icon (hover state)</td>
+</tr>
+<tr>
+<th scope="row">loader</th>
+<td>009900</td>
+<td>Loading bar</td>
+</tr>
+<tr>
+<th scope="row">track</th>
+<td>FFFFFF</td>
+<td>Loading/Progress bar track backgrounds</td>
+</tr>
+<tr>
+<th scope="row">tracker</th>
+<td>DDDDDD</td>
+<td>Progress track</td>
+</tr>
+<tr>
+<th scope="row">border</th>
+<td>CCCCCC</td>
+<td>Progress bar border</td>
+</tr>
+<tr>
+<th scope="row">skip</th>
+<td>666666</td>
+<td>Previous/Next skip buttons</td>
+</tr>
+<tr>
+<th scope="row">text</th>
+<td>333333</td>
+<td>Text</td>
+</tr>
+</tbody>
+</table>
+	</div>
+
+</div>
+
+<div id="footer">
+	<p>
+		<strong>Audio Player</strong> is a WordPress plugin developed by <a href="http://www.1pixelout.net">Martin Laine</a>.
+		This site is powered by <a href="http://wordpress.org/">WordPress</a> and hosted by <a href="http://www.site5.com/?affiliateid=298">Site 5</a>.
+	</p>
+</div>
+
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+var pageTracker = _gat._getTracker("UA-4543484-1");
+pageTracker._initData();
+pageTracker._trackPageview();
+</script>
+
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/mootools/1.2.4/mootools-yui-compressed.js"></script>
+<script type="text/javascript" src="http://wpaudioplayer.com/wp-content/themes/wpap/assets/js/enhancements.js"></script>
+
+<script type="text/javascript" src="http://wpaudioplayer.com/wp-content/themes/wpap/assets/syntax-highlighter/scripts/shCore.js"></script>
+<script type="text/javascript" src="http://wpaudioplayer.com/wp-content/themes/wpap/assets/syntax-highlighter/scripts/shBrushXml.js"></script>
+<script type="text/javascript" src="http://wpaudioplayer.com/wp-content/themes/wpap/assets/syntax-highlighter/scripts/shBrushPhp.js"></script>
+<script type="text/javascript" src="http://wpaudioplayer.com/wp-content/themes/wpap/assets/syntax-highlighter/scripts/shBrushCss.js"></script>
+<script type="text/javascript">
+//dp.SyntaxHighlighter.ClipboardSwf = "http://wpaudioplayer.com/wp-content/themes/wpap/assets/syntax-highlighter/scripts/clipboard.swf";
+dp.SyntaxHighlighter.HighlightAll("code");
+</script>
+
+
+</body>
+
+</html>

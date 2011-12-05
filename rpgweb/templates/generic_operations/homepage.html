@@ -1,0 +1,32 @@
+{% extends "base_one_column.html" %}
+
+{% load i18n helpers %}  
+
+{% block content %}  
+
+
+<div align="center">
+
+  
+    <p style="text-align:center; font-weight: bold; font-size:1.3em;">
+        <a href="{% gameurl rpgweb.views.opening %}">{% trans "View the Opening Screen once more." %}</a>
+    </p>
+  
+    <p width="90%" style="text-align:center;">
+        <i><b>
+        {% blocktrans with player.username|capfirst as player_name %}
+            Welcome to your private information technology system, {{player_name }}.<br/>
+            May it help you during the dark events that Pangea is about to encounter.
+        {% endblocktrans %}
+        </b></i>
+    </p>
+
+    <br/>
+    
+    <img src="/files/attachments/logo_rpgweb.png"/>
+    
+</div>
+
+{% endblock %}
+
+

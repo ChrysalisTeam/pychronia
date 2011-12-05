@@ -1,0 +1,98 @@
+
+FIX chatroom bug - cant enter text anymore when typing quickly
+
+
+Add colors specific to each chatter + "system" chatter
+Launch pychecker or pylint of each file of rpgweb package
+
+Add special logger, carrying the player name and gamer instance id !
+
+Add critical logging for some cases where no usageerror should be raised !! (eg wiretapping)  #OK DONE
+
+use usageError in all getters of datamanager instead of keyerror
+
+Include webradio widget in div with same color, and make it bigger, to avoid zoom/dezoom problems.
+
+CHECK THAT NO PB WHEN GAME PAUSED, FOR PERIODIC PROCESSING !!!
+
+* Main Site Structure *
+- intro
+- features
+- license
+- demo
+- create game
+- livre d'or
+
+self._normalize_recipient_email all buggy, while loading yaml data : needs to control access and data availability!
+
+Add periodic retrieval of chatters in chat !!
+
+TODO - check that no periodic task fails while game paused !!
+
+
+Add security to djinn chat - check authorizations
+
+Big problem - how to ensure javascript functions are well called periodically ??? with .ajaxError() reset
+
+Add thread-local variable to ensure no transaction is committed twice by transaction watcher !!
+
+Test that chatting presence works OK, when ajax calls made
+
+Remove also test constructions in utilities.AIML
+
+TODO - FIX secure door locking in paused game mode !!!
+
+Ajouter <instructions> possibilité échange objets archéologiques et lots entiers de gemmes (gamemamster must be aware of that)!
+
+Print description of partners in instruction page !
+
+-- bugfix --
+
+Some bots can require archéological objects too !
+
+Les achariths doivent avoir choix de trahir leur camp en milieu de partie plutôt !
+
+Ajouter interactions entre joueurs, chantages etc. 
+
+Ajouter aide déroulante dans chaque section (en particulier, mises sur écoute -> "intercepted" folder)
+
+- ajouter des details cruciaux à TOUTES runes !
+
+- clarifier règles absolues : pas de vol d'argent, pas de triche...
+
+- compléter les oracles, valeurs par défaut si pas de réponses surtout !
+
+- ajouter instructions ou systèmes pour éviter abus de mercenaires
+
+- automatiquement notifier autres camps s'ils chopent objets archéologiques ???
+
+- donner reductions aux gens, qu'ils peuvent perdre s'ils sont démasqués
+
+- refaire carte en découpant mieux pays
+
+
+Faire page d'introduction
+- situation de l'univers
+- situation géopolitique
+- bestaire des ennemis ?
+
+ADD DEPENDENCY LIST : docutils
+
+- internationalize personal documents (all in yaml ??)
+
+- make html templates cross-browser compatible (two-column layout !!!!!)
+- refactor CSS stylesheets ?
+
+- recode in simple html the door unlocker !
+
+- add better management of ajax errors (read/unread mails, oracle answers...)
+
+- switch to small JALICE bot !
+
+
+==FUTURE==
+
+- make wiretapping and agent hiring per-player or per-domain ?? not useful...
+
+
+
