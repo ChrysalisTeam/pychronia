@@ -3,6 +3,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from .datamanager_tools import UsageError
+from ..common import *
 import weakref, functools
 
 
@@ -20,7 +21,7 @@ class GameUser(object):
         anonymous_login = datamanager.get_global_parameter("anonymous_login")
 
         if username is not None and username not in datamanager.get_character_usernames() + [master_login]:
-            raise UsageError(_("Username %s is unknown in this game") % username)
+            raise UsageError(_("Username %s is unknown") % username)
 
         self.is_master = datamanager.is_master(username)
         self.is_character = datamanager.is_character(username)

@@ -1,4 +1,4 @@
-{% extends "base_one_column.html" %}
+ï»¿{% extends "base_one_column.html" %}
  
 {% load i18n helpers %}
  
@@ -15,11 +15,11 @@
     <li class="{% ifequal mode "outbox" %}highlight{% endifequal %}"><a href="{% gameurl rpgweb.views.outbox %}">{% trans "Outbox" %}</a></li>
     
     {% if user.is_master %}
-        <li class="{% ifequal mode "all_sent_messages" %}highlight{% endifequal %}"><a href="{% gameurl rpgweb.views.all_sent_messages %}">{% trans "All Transferred" %}</a></li>
+        <li class="{% ifequal mode "all_sent_messages" %}highlight{% endifequal %}"><a href="{% gameurl rpgweb.views.all_sent_messages %}">{% trans "AllÂ Transferred" %}</a></li>
     {% endif %}
     
     {% if user.is_master %}
-        <li class="{% ifequal mode "all_queued_messages" %}highlight{% endifequal %}"><a href="{% gameurl rpgweb.views.all_queued_messages %}">{% trans "All Queued" %}</a></li>
+        <li class="{% ifequal mode "all_queued_messages" %}highlight{% endifequal %}"><a href="{% gameurl rpgweb.views.all_queued_messages %}">{% trans "AllÂ Queued" %}</a></li>
     {% endif %}
     
     {% if user|has_permission:"manage_wiretaps" %}

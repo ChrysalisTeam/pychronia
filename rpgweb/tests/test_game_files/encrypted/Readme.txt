@@ -1,0 +1,1 @@
+All password folders must have a LOWER CASE name !

@@ -100,3 +100,16 @@ INSTALLED_APPS = (
 
 ROOT_URLCONF = 'rpgweb.tests._test_urls'
 
+
+
+
+_curdir = os.path.dirname(os.path.realpath(__file__))
+GAME_FILES_ROOT = os.path.join(_curdir, "test_game_files")
+GAME_FILES_URL = "/files/"
+GAME_INITIAL_DATA_PATH = os.path.join(GAME_FILES_ROOT, "game_initial_data.yaml")
+
+ACTIVATE_AIML_BOTS = False
+
+DB_RESET_ALLOWED = True
+
+

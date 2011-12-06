@@ -1,0 +1,338 @@
+---
+
+
+
+
+abilities:
+
+  house_locking:
+    settings:
+      house_doors_password: "7777" # must be max 6 digits long to fit the javascript form
+
+  wiretapping:
+    settings:
+      max_wiretapping_targets: 3
+
+
+  runic_translations:
+      settings:
+        translation_delays: [4, 6] # minutes
+        random_translation_words: >
+                         monkey apocalypse blood sun spear shelter wrath goat son uncle priest drugs moon fire water salt
+                               volcano law sacrifice bird squid camel
+        references:
+          
+            sacred_chest:
+                decoding: >
+                    su se | so sa | chi so #
+                    ku sa | su te #
+                    chi sa to | ta sa su
+                translation: >
+                    the miscreant | who dares laying | a hand #
+                    on a precious | divine tear #
+                    will immediately endure | a dreadful death
+
+
+
+
+global_parameters:
+
+    game_is_started: True # used to forbid access to some features before the party itself
+
+    global_email: everyone # shortcut to email every user at once
+    pangea_network_domain: pangea.com
+
+    anonymous_login: anonymous
+    master_login: master
+    master_password: ultimate
+    master_email: master@administration.com
+    master_real_life_email: dummy@gmail.com
+    
+    opening_music: sample.mp3
+
+    online_presence_timeout_s: 600
+    chatroom_presence_timeout_s: 15
+    chatroom_timestamp_display_threshold_s: 120
+
+    bank_name: bank
+    bank_account: 100000 # let's take huge margins
+    bank_gems: []
+    
+    spy_cost_money: 180
+    spy_cost_gems: 120
+    mercenary_cost_money: 350
+    mercenary_cost_gems: 200
+
+    spy_report_delays: [4, 8]
+    mercenary_intervention_delays: [5, 10]
+
+#    max_wiretapping_targets: 2
+
+    password_recovery_delays: [7, 10]
+
+    scanning_delays: [4, 10]
+
+    pangea_radio_frequency: "100.0" # string
+
+    # USELESS max_world_scans: 5
+
+
+    teldorian_teleportation_delays: [4, 8]
+    max_teldorian_teleportations: 4
+
+    acharith_attack_delays: [7, 12]
+
+    telecom_investigation_delays: [6, 7]
+    max_telecom_investigations: 3
+
+    radio_is_on: False
+    pending_radio_messages: []
+
+    corrupted_chunks_lengths: [7, 10] # min and max lengths of message parts retrieved by the investigator
+
+
+    bots_answer_delays_ms: [1000, 1500]
+    bots_max_answers: 10
+
+
+    # global parameters added at runtime: scanned_locations, total_gems_spent, total_digital_money_spent, total_gems_number,
+    # total_digital_money, teldorian_teleportations_done and telecom_investigations_done
+
+
+
+    global_introduction: |
+        Le *Dr Loyd Georges* est aux anges. Ce retraité sabarithe blablablah
+
+        .. note:: hello
+
+    history_summary: |
+        Hello voici le résumé de l'histoire...
+
+
+locations:
+
+    Baynon:
+        spy_message: "This city is famous for its jewelry industry and its huge archeological museum. It seems no Acharith has ever been so deep into the 'miscreant continent'."
+    Ouram:
+        spy_message: "People here are very healthy, but quite ignorant. They don't know anything about thye Great Atomic Chaos that took place in Midolia."
+ 
+ 
+scanning_sets:
+
+    banal_gems_locations: __everywhere__
+    varied_gems_locations: [Baynon]
+
+
+
+items_for_sale:
+
+    statue:
+        # for archaeologist
+        auction: "2-B"
+        is_gem: False
+        num_items: 1
+        total_price: 500
+        locations: varied_gems_locations
+        title: "Antic Statue"
+        comments: "An invaluable testimony to some great man of the past."
+        image: statue.jpg
+        
+    sacred_chest:
+        # for archaeologist
+        auction: "3-D"
+        is_gem: False
+        num_items: 1
+        total_price: 1000
+        locations: banal_gems_locations
+        title: "Sacred Chest"
+        comments:  "Only the most sacred acharith relics had a chance to be hosted by one of these divine chests."
+        image: sacred_chest.jpg
+   
+
+
+item_3d_settings:
+
+    sacred_chest:
+        steps: 1
+        total: 9
+        levels: 1
+        startlevel: 1
+        filedir: "/files/sales/chest/"
+        filename: "simpler_chest"
+        suffix: ".jpg"
+        imagewidth: 500
+        imageheight: 375
+        mode: "camera"
+        x_coefficient: 12
+        y_coefficient: 160
+
+
+ 
+
+domains:
+
+    acharis:
+    
+        show_official_identities: False
+        victory: victory_acharis
+        defeat: defeat_acharis
+        prologue_music: sample.mp3
+        instructions: |
+            *Il n’est d’autre Bien que la volonté des Dieux.*
+            
+    sciences:
+        show_official_identities: False
+        #request_for_report: request_for_report_masslavia
+        victory: new_messages_1
+        defeat: new_messages_2
+        prologue_music: sample.mp3
+        instructions: >
+            <i>Force, honneur et robustesse</i>
+
+            Rapport d’activité
+
+
+character_properties:
+
+    # WARNING - the values of global parameters anonymous_login and master_login and common_login are reserved and shall not be used here
+
+    guy1:
+        domains: ["acharis"]
+        password: elixir
+        account: 1000
+        secret_question: "What's the ultimate step of consciousness ?"
+        secret_answer: "" # let empty to prevent any password recovery
+        external_contacts: ["judicators@acharis.com", "baazel@acharis.com"]
+        new_messages_notification: new_messages_1
+        initial_cold_cash: 1000
+        official_name: "Simon Bladstaffulovza"
+        real_life_identity: "Flavien Soual"
+        real_life_email: flaviensoual@hotmail.com
+        description : "XXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXX XXXXXXXX"
+
+    guy2:
+        domains: ["sciences"]
+        password: awesome
+        account: 1000
+        secret_question: "The name of my first pet ?"
+        secret_answer: "Fluffy"
+        external_contacts: ["academy@sciences.com"]
+        new_messages_notification: new_messages_2
+        initial_cold_cash: 1000 
+        official_name: "Loyd Georges"
+        real_life_identity: "John Doe"
+        real_life_email: chambon.pascal@gmail.com
+        description : "XXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXX XXXXXXXX"
+
+
+audio_messages:
+
+    intro_audio_messages:
+        text: "Veuillez écouter maintenant quelques messages personnels."
+        file: "intro_messages.mp3"
+
+    new_messages_1:
+        text: "Tante Amélie fait du vélo en short."
+        file: "amelie.mp3"
+
+    new_messages_2:
+        text: "Tante Amélie fait du vélo en short."
+        file: "atalie.mp3"
+        
+    victory_acharis:
+        text: "Sound of a cat"
+        file: andromaque.mp3
+    defeat_acharis:
+        text: "Sound of a cicada"
+        file: "other.mp3"
+
+    info_spots_1:
+        text: "ambassadors eviction + nalavut council begins + alcohol exhibition"
+        file: "berce.mp3"
+
+  
+events_log: [] #-> list of event dicts
+
+scheduled_actions: [] #-> list of scheduled action dicts
+
+
+AI_bots:
+
+    common_properties:
+        version: ""
+        brain: "genius"
+        age: "18876"
+        gender: "Djinn"
+        location: "Olympia"
+        nationality: "Acharith"
+        birthplace: "Zorzas"
+
+    bot_properties:
+
+        "Bot Alpha":
+            gems_required: 7
+            bot_sessions: {}
+
+        "Bot Omega":
+            gems_required: 20
+            bot_sessions: {}
+
+    bot_terminal_answers:
+        - "I'm fed up, please stop boring me."
+        - "I think we've talked enough for today."
+
+
+wiretapping_targets: [] #-> list of characters whose messages will be intercepted
+
+
+messages_sent:  #-> list of messages processed
+
+    - id: instructions_bewitcher
+      sender_email: judicators@acharis.com
+      recipient_emails: guy1
+      subject: "Ordres de Missions"
+      attachment: "/files/attachments/image2.png"
+      sent_at: -8000
+      body: >
+        Xanthares, votre maîtrise des drogues et envoûtements sera d’une aide inestimable pour cette mission.
+        Vous vous présenterez chez Loyd Georges en tant que Simon Bladstaffulovza, négociant en matières premières
+        pour les bijouteries béelmoniennes (inventez le reste du personnage de façon aussi crédible que possible).
+
+
+    - id: instructions_oracle
+      sender_email: judicators@acharis.com
+      recipient_emails: guy2
+      subject: "Ordres de Missions"
+      attachment: "/files/attachments/image1.png"
+      sent_at: -8000
+      body: >
+        Salazur, l’intimité médiumnique que vous avez développée avec le monde invisible va nous être plus que vitale.
+
+
+
+messages_queued: [] #-> list of messages delayed for sending
+
+
+
+manual_messages_templates:
+
+    mind_opening_instructions_oracle:
+        sender_email: djinn-master@djinn-city.com
+        recipient_emails: guy2
+        subject: Reminder - mind opening operations
+        body: >
+            Good Evening
+
+    mind_opening_operation_sciences:
+        sender_email: djinn-master@djinn-city.com
+        recipient_emails: ""
+        subject: Mind Opening Report
+        body: >
+            This is a dedicated member of the academy of sciences,
+            the goal of which has always been to seek always further the secrets of light and matter.
+
+
+
+
+
+...

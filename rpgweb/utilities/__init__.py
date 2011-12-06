@@ -65,7 +65,7 @@ def open_zodb_file(zodb_file):
     #print ("RETRIEVING DB FROM FILE", zodb_file)
     URI = "file://" + zodb_file.replace("\\", "/")
     # .replace(":", "|") # or "mem://"    # we have problems with URIs in win32, so replace : with |
-    print (">>>>>>", URI)
+    #print (">>>>>>", URI)
     db = database.get_database_from_uris([URI])
     return db
 

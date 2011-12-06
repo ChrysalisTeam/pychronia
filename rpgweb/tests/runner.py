@@ -24,7 +24,7 @@ if __name__ == "__main__":
         from rpgweb import utilities
         DB = utilities.open_zodb_file(utilities.config.ZODB_FILE)
         DB.pack(days=1)
-        print "Successfully packed DB items older than 1 day"
+        print "Successfully packed ZODB items older than 1 day in %s" % utilities.config.ZODB_FILE
         
     elif "runserver" in sys.argv:
         sys.argv[1:] = ("runserver 127.0.0.1:8000 --settings=%s" % settings_module).split()
@@ -33,6 +33,6 @@ if __name__ == "__main__":
     else:
         print "Usage: python %s [reset|pack|runserver]" % sys.argv[0]
         print "- reset: reset django and ZODB databases to their initial state"
-        print "- pack: cleans and compresses ZODB file, in case it gets too heavy"
+        print "- pack: cleans and compresses ZODB file, in case it gets too heavy (test server must not be running)"
         print "- runserver: run local django dev server, against persistent databases"
         sys.exit(1)
