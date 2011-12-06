@@ -127,7 +127,6 @@ scanning_sets:
 items_for_sale:
 
     statue:
-        # for archaeologist
         auction: "2-B"
         is_gem: False
         num_items: 1
@@ -138,7 +137,6 @@ items_for_sale:
         image: statue.jpg
         
     sacred_chest:
-        # for archaeologist
         auction: "3-D"
         is_gem: False
         num_items: 1
@@ -148,6 +146,25 @@ items_for_sale:
         comments:  "Only the most sacred acharith relics had a chance to be hosted by one of these divine chests."
         image: sacred_chest.jpg
    
+    several_misc_gems:
+        auction: "3-D"
+        is_gem: True
+        num_items: 5
+        total_price: 1000
+        locations: banal_gems_locations
+        title: "Gems"
+        comments:  "Beautiful."
+        image: 7_misc_gems.jpg
+   
+    several_misc_gems2:
+        auction: "3-E"
+        is_gem: True
+        num_items: 8
+        total_price: 1000
+        locations: banal_gems_locations
+        title: "Gems again"
+        comments:  "Beautiful again."
+        image: 8_named_gems.jpg
 
 
 item_3d_settings:
@@ -207,7 +224,7 @@ character_properties:
         initial_cold_cash: 1000
         official_name: "Simon Bladstaffulovza"
         real_life_identity: "Flavien Soual"
-        real_life_email: flaviensoual@hotmail.com
+        real_life_email: dummy@hotmail.com
         description : "XXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXX XXXXXXXX"
 
     guy2:
@@ -215,14 +232,43 @@ character_properties:
         password: awesome
         account: 1000
         secret_question: "The name of my first pet ?"
-        secret_answer: "Fluffy"
+        secret_answer: "baggy"
         external_contacts: ["academy@sciences.com"]
         new_messages_notification: new_messages_2
         initial_cold_cash: 1000 
         official_name: "Loyd Georges"
         real_life_identity: "John Doe"
-        real_life_email: chambon.pascal@gmail.com
+        real_life_email: shalk@gmail.com
         description : "XXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXX XXXXXXXX"
+
+    guy3:
+        domains: []
+        password: awesome
+        account: 2000
+        secret_question: "The name of my first pet ?"
+        secret_answer: "Fluffy"
+        external_contacts: []
+        new_messages_notification: intro_audio_messages
+        initial_cold_cash: 1000 
+        official_name: "Salar"
+        real_life_identity: "John Doe"
+        real_life_email: belez@gmail.com
+        description : "XXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXX XXXXXXXX"
+
+    guy4:
+        domains: []
+        password: aasss
+        account: 0
+        secret_question: "The name of my first pet ?"
+        secret_answer: ""
+        external_contacts: []
+        new_messages_notification: info_spots_1
+        initial_cold_cash: 1000 
+        official_name: "Kha"
+        real_life_identity: "John Doe"
+        real_life_email: belez2@gmail.com
+        description : "XXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXX XXXXXXXX"
+
 
 
 audio_messages:

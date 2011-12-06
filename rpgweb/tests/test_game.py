@@ -267,7 +267,7 @@ class TestGame(TestCase):
         self.dm.commit()
 
 
-    TEST_LOGIN = "archaeologist" # because special private folders etc must exist. 
+    TEST_LOGIN = "guy1" # because special private folders etc must exist. 
     def _inject_test_user(self, name=TEST_LOGIN, **overrides):
         return # TODO FIXME
         properties = dict(
@@ -279,7 +279,7 @@ class TestGame(TestCase):
                         permissions=[],
 
                         external_contacts=[],
-                        new_messages_notification="new_messages_archaeologist",
+                        new_messages_notification="new_messages_guy1",
 
                         account=1000,
                         initial_cold_cash=100,
@@ -357,40 +357,40 @@ class TestGame(TestCase):
 
         time.sleep(1.2)
 
-        self.assertFalse(self.dm.get_online_status("archaeologist"))
-        self.assertFalse(self.dm.get_online_status("physicist"))
-        self.assertFalse(self.dm.get_chatting_status("archaeologist"))
-        self.assertFalse(self.dm.get_chatting_status("physicist"))
+        self.assertFalse(self.dm.get_online_status("guy1"))
+        self.assertFalse(self.dm.get_online_status("guy2"))
+        self.assertFalse(self.dm.get_chatting_status("guy1"))
+        self.assertFalse(self.dm.get_chatting_status("guy2"))
         self.assertEqual(self.dm.get_online_users(), [])
         self.assertEqual(self.dm.get_chatting_users(), [])
 
-        self.dm.set_online_status("archaeologist")
+        self.dm.set_online_status("guy1")
 
-        self.assertTrue(self.dm.get_online_status("archaeologist"))
-        self.assertFalse(self.dm.get_online_status("physicist"))
-        self.assertFalse(self.dm.get_chatting_status("archaeologist"))
-        self.assertFalse(self.dm.get_chatting_status("physicist"))
-        self.assertEqual(self.dm.get_online_users(), ["archaeologist"])
+        self.assertTrue(self.dm.get_online_status("guy1"))
+        self.assertFalse(self.dm.get_online_status("guy2"))
+        self.assertFalse(self.dm.get_chatting_status("guy1"))
+        self.assertFalse(self.dm.get_chatting_status("guy2"))
+        self.assertEqual(self.dm.get_online_users(), ["guy1"])
         self.assertEqual(self.dm.get_chatting_users(), [])
 
         time.sleep(1.2)
 
-        self.dm._set_chatting_status("physicist")
+        self.dm._set_chatting_status("guy2")
         self.dm.commit()
 
-        self.assertFalse(self.dm.get_online_status("archaeologist"))
-        self.assertFalse(self.dm.get_online_status("physicist"))
-        self.assertFalse(self.dm.get_chatting_status("archaeologist"))
-        self.assertTrue(self.dm.get_chatting_status("physicist"))
+        self.assertFalse(self.dm.get_online_status("guy1"))
+        self.assertFalse(self.dm.get_online_status("guy2"))
+        self.assertFalse(self.dm.get_chatting_status("guy1"))
+        self.assertTrue(self.dm.get_chatting_status("guy2"))
         self.assertEqual(self.dm.get_online_users(), [])
-        self.assertEqual(self.dm.get_chatting_users(), ["physicist"])
+        self.assertEqual(self.dm.get_chatting_users(), ["guy2"])
 
         time.sleep(1.2)
 
-        self.assertFalse(self.dm.get_online_status("archaeologist"))
-        self.assertFalse(self.dm.get_online_status("physicist"))
-        self.assertFalse(self.dm.get_chatting_status("archaeologist"))
-        self.assertFalse(self.dm.get_chatting_status("physicist"))
+        self.assertFalse(self.dm.get_online_status("guy1"))
+        self.assertFalse(self.dm.get_online_status("guy2"))
+        self.assertFalse(self.dm.get_chatting_status("guy1"))
+        self.assertFalse(self.dm.get_chatting_status("guy2"))
         self.assertEqual(self.dm.get_online_users(), [])
         self.assertEqual(self.dm.get_chatting_users(), [])
 
@@ -399,11 +399,11 @@ class TestGame(TestCase):
     def test_getters_setters(self):
         self._reset_messages()
 
-        self.assertEqual(self.dm.get_username_from_official_name(self.dm.get_official_name_from_username("bewitcher")), "bewitcher")
+        self.assertEqual(self.dm.get_username_from_official_name(self.dm.get_official_name_from_username("guy2")), "guy2")
 
-        # DEPRECATED self.assertEqual(self.dm.get_fellow_usernames("bewitcher"), ["oracle"])
+        # DEPRECATED self.assertEqual(self.dm.get_fellow_usernames("guy2"), ["guy1"])
 
-        self.assertEqual(len(self.dm.get_game_instructions("bewitcher")), 3)
+        self.assertEqual(len(self.dm.get_game_instructions("guy2")), 3)
 
         self.dm.set_game_state(started=False)
         self.assertEqual(self.dm.is_game_started(), False)
@@ -411,10 +411,10 @@ class TestGame(TestCase):
         self.assertEqual(self.dm.is_game_started(), True)
 
         self.assertEqual(self.dm.get_username_from_email("qdqsdqd@dqsd.fr"), self.dm.get_global_parameter("master_login"))
-        self.assertEqual(self.dm.get_username_from_email("networker@pangea.com"), "networker")
+        self.assertEqual(self.dm.get_username_from_email("guy1@pangea.com"), "guy1")
 
 
-    def test_initial_messages(self):
+    def __test_initial_messages(self):
         # we do NOT reset messages in this case !
 
         messages = self.dm.get_all_sent_messages()
@@ -423,7 +423,7 @@ class TestGame(TestCase):
         for name in self.dm.get_character_usernames():
             instructions = [msg for msg in self.dm.get_all_sent_messages() if msg["id"] == "instructions_" + name]
 
-            self.assertEqual(len(instructions), 1, name) # for physicist telecom investigations to work !
+            self.assertEqual(len(instructions), 1, name) # for guy2 telecom investigations to work !
 
             self.assertEqual(instructions[0]["recipient_emails"], [self.dm.get_character_email(name)])
 
@@ -438,8 +438,8 @@ class TestGame(TestCase):
     def test_item_transfers(self):
         self._reset_messages()
 
-        lg_old = copy.deepcopy(self.dm.get_character_properties("loyd.georges"))
-        nw_old = copy.deepcopy(self.dm.get_character_properties("networker"))
+        lg_old = copy.deepcopy(self.dm.get_character_properties("guy3"))
+        nw_old = copy.deepcopy(self.dm.get_character_properties("guy1"))
         items_old = copy.deepcopy(self.dm.get_items_for_sale())
         bank_old = self.dm.get_global_parameter("bank_account")
 
@@ -451,45 +451,45 @@ class TestGame(TestCase):
         object_name = object_names[0]
         bank_name = self.dm.get_global_parameter("bank_name")
 
-        self.assertRaises(Exception, self.dm.transfer_money_between_characters, bank_name, "networker", 10000000)
-        self.assertRaises(Exception, self.dm.transfer_money_between_characters, "loyd.georges", "networker", -100, is_master_action=True)
-        self.assertRaises(Exception, self.dm.transfer_money_between_characters, "loyd.georges", "networker", lg_old["account"] + 1)
-        self.assertRaises(Exception, self.dm.transfer_money_between_characters, "loyd.georges", "loyd.georges", 1)
-        self.assertRaises(Exception, self.dm.transfer_object_to_character, "dummy_name", "loyd.georges")
+        self.assertRaises(Exception, self.dm.transfer_money_between_characters, bank_name, "guy1", 10000000)
+        self.assertRaises(Exception, self.dm.transfer_money_between_characters, "guy3", "guy1", -100, is_master_action=True)
+        self.assertRaises(Exception, self.dm.transfer_money_between_characters, "guy3", "guy1", lg_old["account"] + 1)
+        self.assertRaises(Exception, self.dm.transfer_money_between_characters, "guy3", "guy3", 1)
+        self.assertRaises(Exception, self.dm.transfer_object_to_character, "dummy_name", "guy3")
         self.assertRaises(Exception, self.dm.transfer_object_to_character, object_name, "dummy_name")
 
 
         # data mustn't have changed when raising exceptions
-        self.assertEqual(self.dm.get_character_properties("loyd.georges"), lg_old)
-        self.assertEqual(self.dm.get_character_properties("networker"), nw_old)
+        self.assertEqual(self.dm.get_character_properties("guy3"), lg_old)
+        self.assertEqual(self.dm.get_character_properties("guy1"), nw_old)
         self.assertEqual(self.dm.get_items_for_sale(), items_old)
         self.assertEqual(self.dm.get_global_parameter("bank_account"), bank_old)
 
         # we check that real operations work OK
-        self.dm.transfer_object_to_character(gem_name1, "loyd.georges")
-        self.dm.transfer_object_to_character(object_name, "loyd.georges")
-        self.dm.transfer_money_between_characters("loyd.georges", "networker", 100)
+        self.dm.transfer_object_to_character(gem_name1, "guy3")
+        self.dm.transfer_object_to_character(object_name, "guy3")
+        self.dm.transfer_money_between_characters("guy3", "guy1", 100)
 
-        self.dm.transfer_money_between_characters("loyd.georges", "bank", 100)
+        self.dm.transfer_money_between_characters("guy3", "bank", 100)
         self.assertEqual(self.dm.get_global_parameter("bank_account"), bank_old + 100)
-        self.assertEqual(self.dm.get_character_properties("loyd.georges")["account"], lg_old["account"] - 200) # 100 to networker + 100 to bank
-        self.dm.transfer_money_between_characters("bank", "loyd.georges", 100)
+        self.assertEqual(self.dm.get_character_properties("guy3")["account"], lg_old["account"] - 200) # 100 to guy1 + 100 to bank
+        self.dm.transfer_money_between_characters("bank", "guy3", 100)
         self.assertEqual(self.dm.get_global_parameter("bank_account"), bank_old)
 
         # we test gems transfers
-        gems_given = self.dm.get_character_properties("loyd.georges")["gems"][0:3]
-        self.dm.transfer_gems_between_characters("loyd.georges", "networker", gems_given)
-        self.dm.transfer_gems_between_characters("networker", "loyd.georges", gems_given, is_master_action=True)
-        self.assertRaises(Exception, self.dm.transfer_gems_between_characters, "loyd.georges", "networker", gems_given + [27, 32])
-        self.assertRaises(Exception, self.dm.transfer_gems_between_characters, "loyd.georges", "networker", [])
+        gems_given = self.dm.get_character_properties("guy3")["gems"][0:3]
+        self.dm.transfer_gems_between_characters("guy3", "guy1", gems_given)
+        self.dm.transfer_gems_between_characters("guy1", "guy3", gems_given, is_master_action=True)
+        self.assertRaises(Exception, self.dm.transfer_gems_between_characters, "guy3", "guy1", gems_given + [27, 32])
+        self.assertRaises(Exception, self.dm.transfer_gems_between_characters, "guy3", "guy1", [])
 
         items_new = copy.deepcopy(self.dm.get_items_for_sale())
-        lg_new = self.dm.get_character_properties("loyd.georges")
-        nw_new = self.dm.get_character_properties("networker")
+        lg_new = self.dm.get_character_properties("guy3")
+        nw_new = self.dm.get_character_properties("guy1")
         self.assertEqual(lg_new["items"], [gem_name1, object_name])
         self.assertEqual(lg_new["gems"], [items_new[gem_name1]["unit_cost"]] * items_new[gem_name1]["num_items"])
-        self.assertEqual(items_new[gem_name1]["owner"], "loyd.georges")
-        self.assertEqual(items_new[object_name]["owner"], "loyd.georges")
+        self.assertEqual(items_new[gem_name1]["owner"], "guy3")
+        self.assertEqual(items_new[object_name]["owner"], "guy3")
         self.assertEqual(lg_new["account"], lg_old["account"] - 100)
         self.assertEqual(nw_new["account"], nw_old["account"] + 100)
 
@@ -497,34 +497,34 @@ class TestGame(TestCase):
         # we test possible and impossible undo operations
 
         self.assertRaises(Exception, self.dm.undo_object_transfer, gem_name1, "network") # bad owner
-        self.assertRaises(Exception, self.dm.undo_object_transfer, gem_name2, "loyd.georges") # unsold item
+        self.assertRaises(Exception, self.dm.undo_object_transfer, gem_name2, "guy3") # unsold item
 
         # check no changes occured
-        self.assertEqual(self.dm.get_character_properties("loyd.georges"), self.dm.get_character_properties("loyd.georges"))
-        self.assertEqual(self.dm.get_character_properties("networker"), self.dm.get_character_properties("networker"))
+        self.assertEqual(self.dm.get_character_properties("guy3"), self.dm.get_character_properties("guy3"))
+        self.assertEqual(self.dm.get_character_properties("guy1"), self.dm.get_character_properties("guy1"))
         self.assertEqual(self.dm.get_items_for_sale(), items_new)
 
         # undoing item sales
-        self.dm.undo_object_transfer(gem_name1, "loyd.georges")
-        self.dm.undo_object_transfer(object_name, "loyd.georges")
-        self.dm.transfer_money_between_characters("networker", "loyd.georges", 100)
+        self.dm.undo_object_transfer(gem_name1, "guy3")
+        self.dm.undo_object_transfer(object_name, "guy3")
+        self.dm.transfer_money_between_characters("guy1", "guy3", 100)
 
         # we're back to initial state
-        self.assertEqual(self.dm.get_character_properties("loyd.georges"), lg_old)
-        self.assertEqual(self.dm.get_character_properties("networker"), nw_old)
+        self.assertEqual(self.dm.get_character_properties("guy3"), lg_old)
+        self.assertEqual(self.dm.get_character_properties("guy1"), nw_old)
         self.assertEqual(self.dm.get_items_for_sale(), items_old)
 
         # undo failure
-        self.dm.transfer_object_to_character(gem_name1, "loyd.georges")
-        gem = self.dm.get_character_properties("loyd.georges")["gems"].pop()
+        self.dm.transfer_object_to_character(gem_name1, "guy3")
+        gem = self.dm.get_character_properties("guy3")["gems"].pop()
         self.dm.commit()
-        self.assertRaises(Exception, self.dm.undo_object_transfer, gem_name1, "loyd.georges") # one gem is lacking, so...
-        self.dm.get_character_properties("loyd.georges")["gems"].append(gem)
+        self.assertRaises(Exception, self.dm.undo_object_transfer, gem_name1, "guy3") # one gem is lacking, so...
+        self.dm.get_character_properties("guy3")["gems"].append(gem)
         self.dm.commit()
-        self.dm.undo_object_transfer(gem_name1, "loyd.georges")
+        self.dm.undo_object_transfer(gem_name1, "guy3")
 
-        self.assertEqual(self.dm.get_character_properties("loyd.georges"), lg_old)
-        self.assertEqual(self.dm.get_character_properties("networker"), nw_old)
+        self.assertEqual(self.dm.get_character_properties("guy3"), lg_old)
+        self.assertEqual(self.dm.get_character_properties("guy1"), nw_old)
         self.assertEqual(self.dm.get_items_for_sale(), items_old)
 
 
@@ -541,16 +541,16 @@ class TestGame(TestCase):
         gem_name3 = gem_names[2]
         object_name = object_names[0]
 
-        self.dm.transfer_object_to_character(gem_name1, "bewitcher")
-        self.dm.transfer_object_to_character(gem_name2, "oracle")
+        self.dm.transfer_object_to_character(gem_name1, "guy2")
+        self.dm.transfer_object_to_character(gem_name2, "guy1")
         self.dm.transfer_object_to_character(gem_name3, "scanner")
-        self.dm.transfer_object_to_character(object_name, "loyd.georges")
+        self.dm.transfer_object_to_character(object_name, "guy3")
 
         self.assertEqual(self.dm.get_available_items_for_user_domain("master"), self.dm.get_items_for_sale())
-        self.assertEqual(self.dm.get_available_items_for_user_domain("bewitcher"), self.dm.get_available_items_for_user_domain("oracle"))
-        self.assertEqual(set(self.dm.get_available_items_for_user_domain("bewitcher").keys()), set([gem_name1, gem_name2]))
+        self.assertEqual(self.dm.get_available_items_for_user_domain("guy2"), self.dm.get_available_items_for_user_domain("guy1"))
+        self.assertEqual(set(self.dm.get_available_items_for_user_domain("guy2").keys()), set([gem_name1, gem_name2]))
         self.assertEqual(set(self.dm.get_available_items_for_user_domain("listener").keys()), set([gem_name3]))
-        self.assertEqual(set(self.dm.get_available_items_for_user_domain("archaeologist").keys()), set([object_name]))
+        self.assertEqual(set(self.dm.get_available_items_for_user_domain("guy1").keys()), set([object_name]))
         self.assertEqual(set(self.dm.get_available_items_for_user_domain("hacker").keys()), set([]))
 
 
@@ -612,18 +612,18 @@ class TestGame(TestCase):
         translation_result = runic_translations._translate_rune_message(rune_item, transcription_attempt)
         self.assertEqual(translation_result, expected_result)
 
-        runic_translations._process_translation_submission("archaeologist", rune_item, transcription_attempt)
+        runic_translations._process_translation_submission("guy1", rune_item, transcription_attempt)
 
         msgs = self.dm.get_all_queued_messages()
         self.assertEqual(len(msgs), 1)
         msg = msgs[0]
-        self.assertEqual(msg["recipient_emails"], ["archaeologist@pangea.com"])
+        self.assertEqual(msg["recipient_emails"], ["guy1@pangea.com"])
         self.assertTrue("translation" in msg["body"].lower())
 
         msgs = self.dm.get_all_sent_messages()
         self.assertEqual(len(msgs), 1)
         msg = msgs[0]
-        self.assertEqual(msg["sender_email"], "archaeologist@pangea.com")
+        self.assertEqual(msg["sender_email"], "guy1@pangea.com")
         self.assertTrue(transcription_attempt.strip() in msg["body"], (transcription_attempt, msg["body"]))
         self.assertTrue(self.dm.get_global_parameter("master_login") in msg["has_read"])
 
@@ -648,7 +648,7 @@ class TestGame(TestCase):
 
 
         # corruption of team intro + personal instructions
-        text = self.dm._get_corrupted_introduction("bewitcher", "SiMoN  BladstaFfulOvza")
+        text = self.dm._get_corrupted_introduction("guy2", "SiMoN  BladstaFfulOvza")
 
         dump = set(text.split())
         parts1 = set(u"Depuis , notre Ordre Acharite fouille Ciel Terre retrouver Trois Orbes".split())
@@ -667,30 +667,30 @@ class TestGame(TestCase):
         self.assertEqual(telecom_investigations_done, 0)
         max_telecom_investigations = self.dm.get_global_parameter("max_telecom_investigations")
 
-        self.assertRaises(dm_module.UsageError, self.dm.launch_telecom_investigation, "bewitcher", "bewitcher")
+        self.assertRaises(dm_module.UsageError, self.dm.launch_telecom_investigation, "guy2", "guy2")
 
         self.assertEqual(len(self.dm.get_all_queued_messages()), initial_length_queued_msgs + 0)
 
-        self.dm.launch_telecom_investigation("physicist", "bewitcher")
+        self.dm.launch_telecom_investigation("guy2", "guy2")
 
         msgs = self.dm.get_all_queued_messages()
         self.assertEqual(len(msgs), initial_length_queued_msgs + 1)
         msg = msgs[-1]
-        self.assertEqual(msg["recipient_emails"], ["physicist@sciences.com"])
+        self.assertEqual(msg["recipient_emails"], ["guy2@sciences.com"])
 
         msgs = self.dm.get_all_sent_messages()
         self.assertEqual(len(msgs), initial_length_sent_msgs + 1)
         msg = msgs[-1]
-        self.assertEqual(msg["sender_email"], "physicist@sciences.com")
+        self.assertEqual(msg["sender_email"], "guy2@sciences.com")
         self.assertTrue("discover" in msg["body"])
         self.assertTrue(self.dm.get_global_parameter("master_login") in msg["has_read"])
 
         for i in range(max_telecom_investigations - 1):
-            self.dm.launch_telecom_investigation("physicist", "loyd.georges")
+            self.dm.launch_telecom_investigation("guy2", "guy3")
         msgs = self.dm.get_all_queued_messages()
         self.assertEqual(len(msgs), initial_length_queued_msgs + max_telecom_investigations)
 
-        self.assertRaises(dm_module.UsageError, self.dm.launch_telecom_investigation, "physicist", "loyd.georges") # max count exceeded
+        self.assertRaises(dm_module.UsageError, self.dm.launch_telecom_investigation, "guy2", "guy3") # max count exceeded
 
 
     def ___test_agent_hiring(self):
@@ -701,7 +701,7 @@ class TestGame(TestCase):
         mercenary_cost_money = self.dm.get_global_parameter("mercenary_cost_money")
         mercenary_cost_gems = self.dm.get_global_parameter("mercenary_cost_gems")
 
-        self.dm.get_character_properties("networker")["gems"] = PersistentList([spy_cost_gems, spy_cost_gems, spy_cost_gems, mercenary_cost_gems])
+        self.dm.get_character_properties("guy1")["gems"] = PersistentList([spy_cost_gems, spy_cost_gems, spy_cost_gems, mercenary_cost_gems])
         self.dm.commit()
 
         cities = self.dm.get_locations().keys()[0:5]
@@ -710,48 +710,48 @@ class TestGame(TestCase):
         # hiring with gems #
 
 
-        self.assertRaises(Exception, self.dm.hire_remote_agent, "networker",
+        self.assertRaises(Exception, self.dm.hire_remote_agent, "guy1",
                           cities[0], mercenary=False, pay_with_gems=True)
 
-        self.assertRaises(Exception, self.dm.hire_remote_agent, "networker",
+        self.assertRaises(Exception, self.dm.hire_remote_agent, "guy1",
                           cities[0], mercenary=True, pay_with_gems=True, gems_list=[spy_cost_gems]) # mercenary more expensive than spy
-        self.assertRaises(Exception, self.dm.hire_remote_agent, "networker",
+        self.assertRaises(Exception, self.dm.hire_remote_agent, "guy1",
                           cities[0], mercenary=False, pay_with_gems=True, gems_list=[mercenary_cost_gems, mercenary_cost_gems])
 
         self.assertEqual(len(self.dm.get_all_queued_messages()), 0)
 
-        self.dm.hire_remote_agent("networker", cities[0], mercenary=False, pay_with_gems=True, gems_list=[spy_cost_gems])
-        self.assertRaises(Exception, self.dm.hire_remote_agent, "networker", cities[0],
+        self.dm.hire_remote_agent("guy1", cities[0], mercenary=False, pay_with_gems=True, gems_list=[spy_cost_gems])
+        self.assertRaises(Exception, self.dm.hire_remote_agent, "guy1", cities[0],
                           mercenary=False, pay_with_gems=True, gems_list=[spy_cost_gems])
 
         msgs = self.dm.get_all_queued_messages()
         self.assertEqual(len(msgs), 1)
         msg = msgs[0]
-        self.assertEqual(msg["recipient_emails"], ["networker@masslavia.com"])
+        self.assertEqual(msg["recipient_emails"], ["guy1@masslavia.com"])
         self.assertTrue("report" in msg["body"].lower())
 
-        self.dm.hire_remote_agent("networker", cities[1], mercenary=True, pay_with_gems=True, gems_list=[spy_cost_gems, spy_cost_gems, mercenary_cost_gems])
-        self.assertEqual(self.dm.get_character_properties("networker")["gems"], [])
+        self.dm.hire_remote_agent("guy1", cities[1], mercenary=True, pay_with_gems=True, gems_list=[spy_cost_gems, spy_cost_gems, mercenary_cost_gems])
+        self.assertEqual(self.dm.get_character_properties("guy1")["gems"], [])
 
         self.assertEqual(len(self.dm.get_all_queued_messages()), 1)
 
         # hiring with money #
-        old_nw_account = self.dm.get_character_properties("networker")["account"]
-        self.dm.transfer_money_between_characters("loyd.georges", "networker", 2 * mercenary_cost_money) # loyd must have at least that on his account
+        old_nw_account = self.dm.get_character_properties("guy1")["account"]
+        self.dm.transfer_money_between_characters("guy3", "guy1", 2 * mercenary_cost_money) # loyd must have at least that on his account
 
-        self.assertRaises(Exception, self.dm.hire_remote_agent, "networker",
+        self.assertRaises(Exception, self.dm.hire_remote_agent, "guy1",
                           cities[0], mercenary=True, pay_with_gems=False, gems_list=[mercenary_cost_gems])
 
-        self.dm.hire_remote_agent("networker", cities[2], mercenary=False, pay_with_gems=False)
-        self.dm.hire_remote_agent("networker", cities[2], mercenary=True, pay_with_gems=False)
+        self.dm.hire_remote_agent("guy1", cities[2], mercenary=False, pay_with_gems=False)
+        self.dm.hire_remote_agent("guy1", cities[2], mercenary=True, pay_with_gems=False)
         self.assertEqual(self.dm.get_locations()[cities[2]]["has_mercenary"], True)
         self.assertEqual(self.dm.get_locations()[cities[2]]["has_spy"], True)
 
-        self.assertEqual(self.dm.get_character_properties("networker")["account"], old_nw_account + mercenary_cost_money - spy_cost_money)
+        self.assertEqual(self.dm.get_character_properties("guy1")["account"], old_nw_account + mercenary_cost_money - spy_cost_money)
 
-        self.dm.transfer_money_between_characters("networker", "loyd.georges", self.dm.get_character_properties("networker")["account"]) # we empty the account
+        self.dm.transfer_money_between_characters("guy1", "guy3", self.dm.get_character_properties("guy1")["account"]) # we empty the account
 
-        self.assertRaises(Exception, self.dm.hire_remote_agent, "networker",
+        self.assertRaises(Exception, self.dm.hire_remote_agent, "guy1",
                           cities[3], mercenary=False, pay_with_gems=False)
         self.assertEqual(self.dm.get_locations()[cities[3]]["has_spy"], False)
 
@@ -765,15 +765,15 @@ class TestGame(TestCase):
         self._reset_messages()
 
         cities = self.dm.get_locations().keys()[0:5]
-        self.dm.hire_remote_agent("networker", cities[3], mercenary=True, pay_with_gems=False) # no message queued, since it's not a spy
+        self.dm.hire_remote_agent("guy1", cities[3], mercenary=True, pay_with_gems=False) # no message queued, since it's not a spy
 
         self.assertEqual(len(self.dm.get_all_queued_messages()), 0)
 
-        self.assertRaises(dm_module.UsageError, self.dm.trigger_masslavian_mercenary_intervention, "networker", cities[4], "Please attack this city.") # no mercenary ready
+        self.assertRaises(dm_module.UsageError, self.dm.trigger_masslavian_mercenary_intervention, "guy1", cities[4], "Please attack this city.") # no mercenary ready
 
         self.assertEqual(len(self.dm.get_all_queued_messages()), 0)
 
-        self.dm.trigger_masslavian_mercenary_intervention("networker", cities[3], "Please attack this city.")
+        self.dm.trigger_masslavian_mercenary_intervention("guy1", cities[3], "Please attack this city.")
 
         self.assertEqual(len(self.dm.get_all_queued_messages()), 0)
 
@@ -781,7 +781,7 @@ class TestGame(TestCase):
         self.assertEqual(len(new_queue), 1)
 
         msg = new_queue[0]
-        self.assertEqual(msg["sender_email"], "networker@masslavia.com", msg) # we MUST use a dummy email to prevent forgery here
+        self.assertEqual(msg["sender_email"], "guy1@masslavia.com", msg) # we MUST use a dummy email to prevent forgery here
         self.assertEqual(msg["recipient_emails"], ["masslavian-army@special.com"], msg)
         self.assertTrue(msg["is_certified"], msg)
         self.assertTrue("attack" in msg["body"].lower())
@@ -831,7 +831,7 @@ class TestGame(TestCase):
 
         self.assertEqual(len(self.dm.get_all_queued_messages()), 0)
 
-        self.dm.trigger_acharith_attack("bewitcher", cities[3], "Please annihilate this city.")
+        self.dm.trigger_acharith_attack("guy2", cities[3], "Please annihilate this city.")
 
         self.assertEqual(len(self.dm.get_all_queued_messages()), 0)
 
@@ -839,7 +839,7 @@ class TestGame(TestCase):
         self.assertEqual(len(new_queue), 1)
 
         msg = new_queue[0]
-        self.assertEqual(msg["sender_email"], "bewitcher@acharis.com", msg) # we MUST use a dummy email to prevent forgery here
+        self.assertEqual(msg["sender_email"], "guy2@acharis.com", msg) # we MUST use a dummy email to prevent forgery here
         self.assertEqual(msg["recipient_emails"], ["acharis-army@special.com"], msg)
         self.assertTrue(msg["is_certified"], msg)
         self.assertTrue("annihilate" in msg["body"].lower())
@@ -937,11 +937,11 @@ class TestGame(TestCase):
     def test_personal_files(self):
         self._reset_messages()
 
-        files1 = self.dm.get_personal_files("bewitcher", absolute_urls=True)
+        files1 = self.dm.get_personal_files("guy2", absolute_urls=True)
         self.assertTrue(len(files1))
         self.assertTrue(files1[0].startswith("http"))
 
-        files1bis = self.dm.get_personal_files("bewitcher")
+        files1bis = self.dm.get_personal_files("guy2")
         self.assertEqual(len(files1), len(files1bis))
         self.assertTrue(files1bis[0].startswith("/"))
 
@@ -964,18 +964,18 @@ class TestGame(TestCase):
     def test_encrypted_folders(self):
         self._reset_messages()
 
-        self.assertTrue(self.dm.encrypted_folder_exists("physicist_report"))
+        self.assertTrue(self.dm.encrypted_folder_exists("guy2_report"))
         self.assertFalse(self.dm.encrypted_folder_exists("dummyarchive"))
 
         self.assertRaises(dm_module.UsageError, self.dm.get_encrypted_files, "hacker", "dummyarchive", "bagheera")
-        self.assertRaises(dm_module.UsageError, self.dm.get_encrypted_files, "hacker", "physicist_report", "badpassword")
+        self.assertRaises(dm_module.UsageError, self.dm.get_encrypted_files, "hacker", "guy2_report", "badpassword")
 
-        files = self.dm.get_encrypted_files("badusername", "physicist_report", "schamaalamoktuhg", absolute_urls=True) # no error raised for bad username !
+        files = self.dm.get_encrypted_files("badusername", "guy2_report", "schamaalamoktuhg", absolute_urls=True) # no error raised for bad username !
         self.assertTrue(files, files)
 
-        files1 = self.dm.get_encrypted_files("hacker", "physicist_report", "evans", absolute_urls=True)
+        files1 = self.dm.get_encrypted_files("hacker", "guy2_report", "evans", absolute_urls=True)
         self.assertTrue(files1, files1)
-        files2 = self.dm.get_encrypted_files("hacker", "physicist_report", "evans", absolute_urls=False)
+        files2 = self.dm.get_encrypted_files("hacker", "guy2_report", "evans", absolute_urls=False)
         self.assertEqual(len(files1), len(files2))
 
         c = Client() # file retrievals
@@ -990,13 +990,13 @@ class TestGame(TestCase):
     def __test_message_automated_state_changes(self):
         self._reset_messages()
 
-        msg_id = self.dm.post_message("networker@masslavia.com", "netsdfworkerds@masslavia.com", subject="ssd", body="qsdqsd")
+        msg_id = self.dm.post_message("guy1@masslavia.com", "netsdfworkerds@masslavia.com", subject="ssd", body="qsdqsd")
 
         msg = self.dm.get_sent_message_by_id(msg_id)
         self.assertFalse(msg["has_replied"])
         self.assertFalse(msg["has_read"])
 
-        msg_id2 = self.dm.post_message("networker@masslavia.com", "netsdfworkerds@masslavia.com", subject="ssd", body="qsdqsd", reply_to=msg_id)
+        msg_id2 = self.dm.post_message("guy1@masslavia.com", "netsdfworkerds@masslavia.com", subject="ssd", body="qsdqsd", reply_to=msg_id)
         msg_id3 = self.dm.post_message("hacker@masslavia.com", "netsdfworkerds@masslavia.com", subject="ssd", body="qsdqsd", reply_to=msg_id)
 
         msg = self.dm.get_sent_message_by_id(msg_id2) # new message isn't impacted
@@ -1005,10 +1005,10 @@ class TestGame(TestCase):
 
         msg = self.dm.get_sent_message_by_id(msg_id) # replied-to message impacted
         self.assertEqual(len(msg["has_replied"]), 2)
-        self.assertTrue("networker" in msg["has_replied"])
+        self.assertTrue("guy1" in msg["has_replied"])
         self.assertTrue("hacker" in msg["has_replied"])
         self.assertEqual(len(msg["has_read"]), 2)
-        self.assertTrue("networker" in msg["has_read"])
+        self.assertTrue("guy1" in msg["has_read"])
         self.assertTrue("hacker" in msg["has_read"])
 
         # -----
@@ -1016,7 +1016,7 @@ class TestGame(TestCase):
         (tpl_id, tpl) = self.dm.get_messages_templates().items()[0]
         self.assertEqual(tpl["is_used"], False)
 
-        msg_id3 = self.dm.post_message("networker@masslavia.com", "netsdfworkerds@masslavia.com", subject="ssd", body="qsdqsd", use_template=tpl_id)
+        msg_id3 = self.dm.post_message("guy1@masslavia.com", "netsdfworkerds@masslavia.com", subject="ssd", body="qsdqsd", use_template=tpl_id)
 
         msg = self.dm.get_sent_message_by_id(msg_id3) # new message isn't impacted
         self.assertFalse(msg["has_replied"])
@@ -1028,8 +1028,8 @@ class TestGame(TestCase):
 
     @for_core_module(TextMessaging)
     def test_email_recipients_parsing(self):
-        input1 = "oracle , ; ; bewitcher@acharis.com , master, ; everyone ,master"
-        input2 = ["everyone", "oracle@pangea.com", "bewitcher@acharis.com", "master@administration.com"]
+        input1 = "guy1 , ; ; guy2@acharis.com , master, ; everyone ,master"
+        input2 = ["everyone", "guy1@pangea.com", "guy2@acharis.com", "master@administration.com"]
 
         # unknown user login added
         self.assertRaises(dm_module.UsageError, self.dm._normalize_recipient_emails, input1 + " ; dummy value")
@@ -1052,7 +1052,7 @@ class TestGame(TestCase):
         self._set_user(None)
         self.assertRaises(dm_module.UsageError, self.dm.send_chatroom_message, " hello ")
 
-        self._set_user("archaeologist")
+        self._set_user("guy1")
         self.assertRaises(dm_module.UsageError, self.dm.send_chatroom_message, " ")
 
         self.assertEqual(self.dm.get_chatroom_messages(0), (0, None, []))
@@ -1060,7 +1060,7 @@ class TestGame(TestCase):
         self.dm.send_chatroom_message(" hello ! ")
         self.dm.send_chatroom_message(" re ")
 
-        self._set_user("physicist")
+        self._set_user("guy2")
         self.dm.send_chatroom_message("back")
 
         (slice_end, previous_msg_timestamp, msgs) = self.dm.get_chatroom_messages(0)
@@ -1071,7 +1071,7 @@ class TestGame(TestCase):
         self.assertEqual(sorted(msgs, key=lambda x: x["time"]), msgs)
 
         data = [(msg["username"], msg["message"]) for msg in msgs]
-        self.assertEqual(data, [("archaeologist", "hello !"), ("archaeologist", "re"), ("physicist", "back")])
+        self.assertEqual(data, [("guy1", "hello !"), ("guy1", "re"), ("guy2", "back")])
 
         (slice_end, previous_msg_timestamp, nextmsgs) = self.dm.get_chatroom_messages(3)
         self.assertEqual(slice_end, 3)
@@ -1083,7 +1083,7 @@ class TestGame(TestCase):
         self.assertEqual(previous_msg_timestamp, msgs[-2]["time"])
         self.assertEqual(len(renextmsgs), 1)
         data = [(msg["username"], msg["message"]) for msg in renextmsgs]
-        self.assertEqual(data, [("physicist", "back")])
+        self.assertEqual(data, [("guy2", "back")])
 
 
     def ___test_messaging(self):
@@ -1091,18 +1091,18 @@ class TestGame(TestCase):
 
         self._reset_messages()
 
-        self.assertEqual(self.dm.get_character_email("loyd.georges"), "loyd.georges@sciences.com")
+        self.assertEqual(self.dm.get_character_email("guy3"), "guy3@sciences.com")
         self.assertEqual(self.dm.get_character_email("master"), "master@administration.com")
 
         emails = self.dm.get_user_contacts(self.dm.get_global_parameter("master_login"))
         self.assertEqual(len(emails), len(self.dm.get_character_usernames()) + 7) # 5 external contacts, plus master_email and baazel
 
-        emails = self.dm.get_user_contacts("bewitcher")
-        self.assertEqual(len(emails), 5, emails) # himself, 1 fellow and 2 external contacts, + public email of loyd.georges
-        self.assertTrue("loyd.georges@sciences.com" in emails) # proper domain name...
-        self.assertTrue(all(email.endswith("acharis.com") or email == "loyd.georges@sciences.com" for email in emails)) # public and same-domain emails only
+        emails = self.dm.get_user_contacts("guy2")
+        self.assertEqual(len(emails), 5, emails) # himself, 1 fellow and 2 external contacts, + public email of guy3
+        self.assertTrue("guy3@sciences.com" in emails) # proper domain name...
+        self.assertTrue(all(email.endswith("acharis.com") or email == "guy3@sciences.com" for email in emails)) # public and same-domain emails only
 
-        emails = self.dm.get_external_emails("archaeologist")
+        emails = self.dm.get_external_emails("guy1")
         self.assertEqual(len(emails), 1, emails)
         self.assertTrue(all(email.endswith("sciences.com") for email in emails))
 
@@ -1110,8 +1110,8 @@ class TestGame(TestCase):
         self.assertEqual(len(emails), 7)
 
         record1 = {
-            "sender_email": "bewitcher@acharis.com",
-            "recipient_emails": ["loyd.georges@sciences.com"],
+            "sender_email": "guy2@acharis.com",
+            "recipient_emails": ["guy3@sciences.com"],
             "subject": "hello everybody 1",
             "body": "Here is the body of this message lalalal...",
             "date_or_delay_mn":-1
@@ -1128,7 +1128,7 @@ class TestGame(TestCase):
 
         record3 = {
             "sender_email": "scanner@teldorium.com",
-            "recipient_emails": ["loyd.georges@sciences.com"],
+            "recipient_emails": ["guy3@sciences.com"],
             "subject": "hello everybody 3",
             "body": "Here is the body of this message lulululu...",
             "date_or_delay_mn": None
@@ -1137,12 +1137,12 @@ class TestGame(TestCase):
 
         record4 = {
             "sender_email": "dummy-robot@masslavia.com",
-            "recipient_emails": ["bewitcher@acharis.com"],
+            "recipient_emails": ["guy2@acharis.com"],
             "subject": "hello everybody 4",
             "body": "Here is the body of this message lililili...",
             }
 
-        self.dm.post_message("networker@masslavia.com", "netsdfworkerds@masslavia.com", subject="ssd", body="qsdqsd") # this works too !
+        self.dm.post_message("guy1@masslavia.com", "netsdfworkerds@masslavia.com", subject="ssd", body="qsdqsd") # this works too !
         self.assertEqual(len(self.dm.get_game_master_messages()), 1)
         self.dm.get_game_master_messages()[0]["has_read"] = utilities.PersistentList(
             self.dm.get_character_usernames() + [self.dm.get_global_parameter("master_login")]) # we hack this message not to break following assertions
@@ -1150,7 +1150,7 @@ class TestGame(TestCase):
         self.dm.post_message(**record1)
         time.sleep(0.2)
 
-        self.dm.change_wiretapping_targets("listener", ["bewitcher"])
+        self.dm.change_wiretapping_targets("listener", ["guy2"])
 
         self.dm.post_message(**record2)
         time.sleep(0.2)
@@ -1160,7 +1160,7 @@ class TestGame(TestCase):
         time.sleep(0.2)
         self.dm.post_message(**record1) # this message will get back to the 2nd place of list !
 
-        self.assertEqual(self.dm.get_unread_messages_count("loyd.georges"), 3)
+        self.assertEqual(self.dm.get_unread_messages_count("guy3"), 3)
 
         self.assertEqual(self.dm.get_unread_messages_count(self.dm.get_global_parameter("master_login")), 1)
 
@@ -1168,30 +1168,30 @@ class TestGame(TestCase):
 
         self.assertEqual(len(self.dm.get_game_master_messages()), 2) # secret services + wrong email address
 
-        expected_notifications = {'bewitcher': "new_messages_bewitcher", 'loyd.georges': "new_messages_loyd.georges"}
+        expected_notifications = {'guy2': "new_messages_guy2", 'guy3': "new_messages_guy3"}
         self.assertEqual(self.dm.get_pending_new_message_notifications(), expected_notifications)
 
         self.assertEqual(self.dm.get_pending_new_message_notifications(), expected_notifications) # no disappearance
 
-        self.assertTrue(self.dm.has_new_message_notification("loyd.georges"))
-        self.assertEqual(len(self.dm.get_received_messages("loyd.georges@sciences.com", reset_notification=True)), 3)
-        self.assertFalse(self.dm.has_new_message_notification("loyd.georges"))
+        self.assertTrue(self.dm.has_new_message_notification("guy3"))
+        self.assertEqual(len(self.dm.get_received_messages("guy3@sciences.com", reset_notification=True)), 3)
+        self.assertFalse(self.dm.has_new_message_notification("guy3"))
 
         # here we can't do check messages of secret-services@masslavia.com since it's not a normal character
 
-        self.assertTrue(self.dm.has_new_message_notification("bewitcher"))
-        self.assertEqual(len(self.dm.get_received_messages("bewitcher@acharis.com", reset_notification=False)), 1)
-        self.assertTrue(self.dm.has_new_message_notification("bewitcher"))
-        self.dm.set_new_message_notification(utilities.PersistentList(["bewitcher@acharis.com"]), new_status=False)
-        self.assertFalse(self.dm.has_new_message_notification("bewitcher"))
+        self.assertTrue(self.dm.has_new_message_notification("guy2"))
+        self.assertEqual(len(self.dm.get_received_messages("guy2@acharis.com", reset_notification=False)), 1)
+        self.assertTrue(self.dm.has_new_message_notification("guy2"))
+        self.dm.set_new_message_notification(utilities.PersistentList(["guy2@acharis.com"]), new_status=False)
+        self.assertFalse(self.dm.has_new_message_notification("guy2"))
 
         self.assertEqual(self.dm.get_pending_new_message_notifications(), {}) # all have been reset
 
-        self.assertEqual(len(self.dm.get_received_messages(self.dm.get_character_email("networker"))), 0)
+        self.assertEqual(len(self.dm.get_received_messages(self.dm.get_character_email("guy1"))), 0)
 
-        self.assertEqual(len(self.dm.get_sent_messages("bewitcher@acharis.com")), 2)
+        self.assertEqual(len(self.dm.get_sent_messages("guy2@acharis.com")), 2)
         self.assertEqual(len(self.dm.get_sent_messages("scanner@teldorium.com")), 1)
-        self.assertEqual(len(self.dm.get_sent_messages("loyd.georges@sciences.com")), 0)
+        self.assertEqual(len(self.dm.get_sent_messages("guy3@sciences.com")), 0)
 
         res = self.dm.get_intercepted_messages()
         self.assertEqual(len(res), 2)
@@ -1200,13 +1200,13 @@ class TestGame(TestCase):
         # NO - we dont notify interceptions - self.assertTrue(self.dm.get_global_parameter("message_intercepted_audio_id") in self.dm.get_all_next_audio_messages(), self.dm.get_all_next_audio_messages())
 
         # msg has_read state changes
-        msg_id1 = self.dm.get_all_sent_messages()[0]["id"] # sent to loyd.georges
+        msg_id1 = self.dm.get_all_sent_messages()[0]["id"] # sent to guy3
         msg_id2 = self.dm.get_all_sent_messages()[3]["id"] # sent to external contact
 
         """ # NO PROBLEM with wrong msg owner
         self.assertRaises(Exception, self.dm.set_message_read_state, MASTER, msg_id1, True)
-        self.assertRaises(Exception, self.dm.set_message_read_state, "bewitcher", msg_id1, True)
-        self.assertRaises(Exception, self.dm.set_message_read_state, "archaeologist", msg_id2, True)
+        self.assertRaises(Exception, self.dm.set_message_read_state, "guy2", msg_id1, True)
+        self.assertRaises(Exception, self.dm.set_message_read_state, "guy1", msg_id2, True)
         # wrong msg id
         self.assertRaises(Exception, self.dm.set_message_read_state, "dummyid", False)
         """
@@ -1216,17 +1216,17 @@ class TestGame(TestCase):
 
         self.assertEqual(self.dm.get_all_sent_messages()[0]["is_certified"], False)
         self.assertFalse(self.dm.get_all_sent_messages()[0]["has_read"])
-        self.dm.set_message_read_state("loyd.georges", msg_id1, True)
-        self.dm.set_message_read_state("bewitcher", msg_id1, True)
+        self.dm.set_message_read_state("guy3", msg_id1, True)
+        self.dm.set_message_read_state("guy2", msg_id1, True)
 
         self.assertEqual(len(self.dm.get_all_sent_messages()[0]["has_read"]), 2)
-        self.assertTrue("bewitcher" in self.dm.get_all_sent_messages()[0]["has_read"])
-        self.assertTrue("loyd.georges" in self.dm.get_all_sent_messages()[0]["has_read"])
+        self.assertTrue("guy2" in self.dm.get_all_sent_messages()[0]["has_read"])
+        self.assertTrue("guy3" in self.dm.get_all_sent_messages()[0]["has_read"])
 
-        self.assertEqual(self.dm.get_unread_messages_count("loyd.georges"), 2)
-        self.dm.set_message_read_state("loyd.georges", msg_id1, False)
-        self.assertEqual(self.dm.get_all_sent_messages()[0]["has_read"], ["bewitcher"])
-        self.assertEqual(self.dm.get_unread_messages_count("loyd.georges"), 3)
+        self.assertEqual(self.dm.get_unread_messages_count("guy3"), 2)
+        self.dm.set_message_read_state("guy3", msg_id1, False)
+        self.assertEqual(self.dm.get_all_sent_messages()[0]["has_read"], ["guy2"])
+        self.assertEqual(self.dm.get_unread_messages_count("guy3"), 3)
 
         self.assertFalse(self.dm.get_all_sent_messages()[3]["has_read"])
         self.dm.set_message_read_state(MASTER, msg_id2, True)
@@ -1251,8 +1251,8 @@ class TestGame(TestCase):
         self.assertEqual(self.dm.get_global_parameter("radio_is_on"), True)
 
         record1 = {
-            "sender_email": "bewitcher@acharis.com",
-            "recipient_emails": ["loyd.georges@sciences.com"],
+            "sender_email": "guy2@acharis.com",
+            "recipient_emails": ["guy3@sciences.com"],
             "subject": "hello everybody 1",
             "body": "Here is the body of this message lalalal...",
             "date_or_delay_mn":-1
@@ -1263,12 +1263,12 @@ class TestGame(TestCase):
         res = self.dm.get_pending_new_message_notifications()
         self.assertEqual(len(res), 1)
         (username, audio_id) = res.items()[0]
-        self.assertEqual(username, "loyd.georges")
+        self.assertEqual(username, "guy3")
 
         properties = self.dm.get_audio_message_properties(audio_id)
         self.assertEqual(set(properties.keys()), set(["text", "file", "url"]))
 
-        #self.assertEqual(properties["new_messages_notification_for_user"], "loyd.georges")
+        #self.assertEqual(properties["new_messages_notification_for_user"], "guy3")
         #self.assertEqual(self.dm.get_audio_message_properties("request_for_report_teldorium")["new_messages_notification_for_user"], None)
 
         self.assertEqual(len(self.dm.get_all_next_audio_messages()), 0)
@@ -1284,7 +1284,7 @@ class TestGame(TestCase):
 
         self.assertEqual(len(self.dm.get_all_next_audio_messages()), 0)
 
-        audio_id_bis = self.dm.get_character_properties("bewitcher")["new_messages_notification"]
+        audio_id_bis = self.dm.get_character_properties("guy2")["new_messages_notification"]
         audio_id_ter = self.dm.get_character_properties("listener")["new_messages_notification"]
 
         self.assertRaises(dm_module.UsageError, self.dm.add_radio_message, "bad_audio_id")
@@ -1319,14 +1319,14 @@ class TestGame(TestCase):
 
         # delayed message sending
 
-        self.dm.post_message("loyd.georges@sciences.com", "bewitcher@acharis.com", "yowh1", "qhsdhqsdh", attachment=None, date_or_delay_mn=0.03)
+        self.dm.post_message("guy3@sciences.com", "guy2@acharis.com", "yowh1", "qhsdhqsdh", attachment=None, date_or_delay_mn=0.03)
         self.assertEqual(len(self.dm.get_all_sent_messages()), 0)
         queued_msgs = self.dm.get_all_queued_messages()
         self.assertEqual(len(queued_msgs), 1)
         #print datetime.utcnow(), " << ", queued_msgs[0]["sent_at"]
         self.assertTrue(datetime.utcnow() < queued_msgs[0]["sent_at"] < datetime.utcnow() + timedelta(minutes=0.22))
 
-        self.dm.post_message("loyd.georges@sciences.com", "bewitcher@acharis.com", "yowh2", "qhsdhqsdh", attachment=None, date_or_delay_mn=(0.04, 0.05)) # 3s delay range
+        self.dm.post_message("guy3@sciences.com", "guy2@acharis.com", "yowh2", "qhsdhqsdh", attachment=None, date_or_delay_mn=(0.04, 0.05)) # 3s delay range
         self.assertEqual(len(self.dm.get_all_sent_messages()), 0)
         queued_msgs = self.dm.get_all_queued_messages()
         self.assertEqual(len(queued_msgs), 2)
@@ -1336,7 +1336,7 @@ class TestGame(TestCase):
 
         # delayed message processing
 
-        self.dm.post_message("loyd.georges@sciences.com", "bewitcher@acharis.com", "yowh3", "qhsdhqsdh", attachment=None, date_or_delay_mn=0.01) # 0.6s
+        self.dm.post_message("guy3@sciences.com", "guy2@acharis.com", "yowh3", "qhsdhqsdh", attachment=None, date_or_delay_mn=0.01) # 0.6s
         self.assertEqual(len(self.dm.get_all_queued_messages()), 3)
         self.assertEqual(len(self.dm.get_all_sent_messages()), 0)
         res = self.dm.process_periodic_tasks()
@@ -1367,8 +1367,8 @@ class TestGame(TestCase):
 
 
         # forced sending of queued messages
-        myid1 = self.dm.post_message("loyd.georges@sciences.com", "bewitcher@acharis.com", "yowh2", "qhsdhqsdh", attachment=None, date_or_delay_mn=(1, 2)) # 3s delay range
-        myid2 = self.dm.post_message("loyd.georges@sciences.com", "bewitcher@acharis.com", "yowh2", "qhsdhqsdh", attachment=None, date_or_delay_mn=(1, 2)) # 3s delay range
+        myid1 = self.dm.post_message("guy3@sciences.com", "guy2@acharis.com", "yowh2", "qhsdhqsdh", attachment=None, date_or_delay_mn=(1, 2)) # 3s delay range
+        myid2 = self.dm.post_message("guy3@sciences.com", "guy2@acharis.com", "yowh2", "qhsdhqsdh", attachment=None, date_or_delay_mn=(1, 2)) # 3s delay range
         self.assertEqual(len(self.dm.get_all_queued_messages()), 2)
 
         self.assertFalse(self.dm.force_message_sending("dummyid"))
@@ -1414,11 +1414,11 @@ class TestGame(TestCase):
     def test_password_recovery(self):
         self._reset_messages()
 
-        res = self.dm.get_secret_question("loyd.georges")
+        res = self.dm.get_secret_question("guy3")
         self.assertTrue("pet" in res)
 
         self.assertEqual(len(self.dm.get_all_queued_messages()), 0)
-        res = self.dm.process_secret_answer_attempt("loyd.georges", "FluFFy", "loyd.georges@pangea.com")
+        res = self.dm.process_secret_answer_attempt("guy3", "FluFFy", "guy3@pangea.com")
         self.assertEqual(res, "awesome") # password
 
         msgs = self.dm.get_all_queued_messages()
@@ -1426,9 +1426,9 @@ class TestGame(TestCase):
         msg = msgs[0]
         self.assertTrue("password" in msg["body"].lower())
 
-        self.assertRaises(dm_module.UsageError, self.dm.process_secret_answer_attempt, "badusername", "badanswer", "loyd.georges@sciences.com")
-        self.assertRaises(dm_module.UsageError, self.dm.process_secret_answer_attempt, "loyd.georges", "badanswer", "loyd.georges@sciences.com")
-        self.assertRaises(dm_module.UsageError, self.dm.process_secret_answer_attempt, "loyd.georges", "MiLoU", "bademail@sciences.com")
+        self.assertRaises(dm_module.UsageError, self.dm.process_secret_answer_attempt, "badusername", "badanswer", "guy3@sciences.com")
+        self.assertRaises(dm_module.UsageError, self.dm.process_secret_answer_attempt, "guy3", "badanswer", "guy3@sciences.com")
+        self.assertRaises(dm_module.UsageError, self.dm.process_secret_answer_attempt, "guy3", "MiLoU", "bademail@sciences.com")
         self.assertEqual(len(self.dm.get_all_queued_messages()), 1) # untouched
 
 
@@ -1462,7 +1462,7 @@ class TestGame(TestCase):
 
         self._reset_messages()
 
-        username = "oracle"
+        username = "guy1"
 
         res = self.dm.get_bot_response(username, bot_name, "hello")
         self.assertTrue("hi" in res.lower())
@@ -1490,7 +1490,7 @@ class TestGame(TestCase):
         res = self.dm.get_bot_response(username, bot_name, "where is the gamma orb ?").lower()
         self.assertTrue("last treasure" in res, res)
 
-        res = self.dm.get_bot_response(username, bot_name, "where is the wife of the physicist ?").lower()
+        res = self.dm.get_bot_response(username, bot_name, "where is the wife of the guy2 ?").lower()
         self.assertTrue("young reporter" in res, res)
 
         res = self.dm.get_bot_response(username, bot_name, "who is cynthia ?").lower()
@@ -1537,17 +1537,18 @@ class TestGame(TestCase):
         B = self.dm.data["manual_messages_templates"]["domotics_password_change"]["body"]
         self.assertTrue("0x%X" % A in B, repr(B)) # in hexadecimal
 
-        # Number of telecom investigations authorized for physicist
+        # Number of telecom investigations authorized for guy2
         A = self.dm.get_global_parameter("max_telecom_investigations")
-        B = [msg for msg in self.dm.data["messages_sent"] if msg["id"] == "telecom_investigations_physicist"][0]["body"]
+        B = [msg for msg in self.dm.data["messages_sent"] if msg["id"] == "telecom_investigations_guy2"][0]["body"]
         self.assertTrue(" %d " % A in B, repr(B))
 
         # Enigma of TinEye photo
-        self.assertTrue(os.path.isdir(os.path.join(config.GAME_FILES_ROOT, "encrypted", "physicist_report", "evans")))
+        self.assertTrue(os.path.isdir(os.path.join(config.GAME_FILES_ROOT, "encrypted", "guy2_report", "evans")))
 
         # Official names of players, in their instructions
         for (name, value) in self.dm.get_character_sets().items():
-            if name != "loyd.georges": # this one doesn't need to be told his name...
+            AAAA
+            if name != "guy3": # this one doesn't need to be told his name...
                 official_name = value["official_name"].lower()
                 instructions = self.dm.get_sent_message_by_id("instructions_" + name)["body"]. lower()
                 self.assertTrue(official_name in instructions, (official_name, repr(instructions)))
@@ -1559,7 +1560,7 @@ class TestGame(TestCase):
         teldorian_official_names = [self.dm.get_character_properties(username)["official_name"] for username in teldorian_characters]
         for official_name in teldorian_official_names:
             self.assertTrue(official_name.lower() in instructions, (official_name.lower(), repr(instructions)))
-
+ 
 
     @for_datamanager_base
     def test_database_management(self):
@@ -1642,9 +1643,9 @@ class TestGame(TestCase):
                         ROOT_GAME_URL + "/djinn/": {"djinn": "Pay Rhuss"},
                         config.MEDIA_URL + "Burned/default_styles.css": None,
                         config.GAME_FILES_URL + "attachments/antic_runes.gif": None,
-                        config.GAME_FILES_URL + "encrypted/physicist_report/evans/report.rtf": None,
+                        config.GAME_FILES_URL + "encrypted/guy2_report/evans/report.rtf": None,
                         ROOT_GAME_URL + "/messages/view_single_message/instructions_listener/": None,
-                        ROOT_GAME_URL + "/secret_question/": dict(secret_answer="Milou", target_email="listener@teldorium.com", secret_username="loyd.georges"),
+                        ROOT_GAME_URL + "/secret_question/": dict(secret_answer="Milou", target_email="listener@teldorium.com", secret_username="guy3"),
                         ROOT_GAME_URL + "/webradio_applet/": dict(frequency=self.dm.get_global_parameter("pangea_radio_frequency"))
         }
         for url, value in special_urls.items():
@@ -1693,7 +1694,7 @@ class TestGame(TestCase):
         # PLAYER SETUP
         old_state = self.dm.is_game_started()
         self.dm.set_game_state(True)
-        username = "bewitcher"
+        username = "guy2"
         user_money = self.dm.get_character_properties(username)["account"]
         if user_money:
             self.dm.transfer_money_between_characters(username, self.dm.get_global_parameter("bank_name"), user_money) # we empty money
