@@ -1,6 +1,4 @@
 
-FIX chatroom bug - cant enter text anymore when typing quickly
-
 
 Add colors specific to each chatter + "system" chatter
 Launch pychecker or pylint of each file of rpgweb package
