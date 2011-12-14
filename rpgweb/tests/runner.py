@@ -7,7 +7,7 @@ from django.conf import settings
 settings._wrapped = None # forces lazy reloading, in case settings were already loaded
 
 
-from django.core.management import  execute_from_command_line
+from django.core.management import execute_from_command_line
 
 if __name__ == "__main__":
     

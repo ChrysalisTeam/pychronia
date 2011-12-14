@@ -171,7 +171,7 @@ item_3d_settings:
 
     sacred_chest:
         steps: 1
-        total: 9
+        total: 8
         levels: 1
         startlevel: 1
         filedir: "/files/sales/chest/"
