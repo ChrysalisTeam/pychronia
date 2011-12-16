@@ -218,6 +218,10 @@ def check_positive_int(value, non_zero=True):
         assert value != 0
     return True
 
+
+def is_email(email):
+    return email_re.match(email)
+
 def assert_sets_equal(set1, set2):
 
     # in case they are lists

@@ -1505,12 +1505,53 @@ def manage_databases(request, template_name='administration/database_management.
                             context_instance=RequestContext(request))
 
 
+@game_master_required
+def manage_characters(request, template_name='administration/character_management.html'):
 
-
-
-
-
-
+    domain_choices = request.datamanager.build_domain_select_choices()
+    
+    form = None
+    if request.method == "POST":
+        form = forms.CharacterForm(data=request.POST,
+                                   choices=domain_choices,
+                                   prefix=None)
+        
+        if form.is_valid():
+            target_username = form.cleaned_data["target_username"]
+            allegiances = form.cleaned_data["allegiances"]
+            real_life_identity = form.cleaned_data["real_life_identity"]
+            real_life_email = form.cleaned_data["real_life_email"]
+                         
+            with action_failure_handler(request, _("Character %s successfully updated.") % target_username):    
+                request.datamanager.update_allegiances(username=target_username,
+                                                       allegiances=allegiances)
+                request.datamanager.update_real_life_data(username=target_username, 
+                                                            real_life_identity=real_life_identity, 
+                                                            real_life_email=real_life_email)
+        else:
+            request.datamanager.user.add_error(_("Wrong data provided (see errors below)"))
+            
+    character_forms = []
+    
+    for (username, data) in sorted(request.datamanager.get_character_sets().items()):
+        print ("AZZZZ", form["target_username"].value(), username)
+        if form and form["target_username"].value() == username:
+            print (" REUSING FOR", username)
+            f = form
+        else:
+            f = forms.CharacterForm(choices=domain_choices,
+                                    prefix=None,
+                                    initial=dict(target_username=username,
+                                                 allegiances=data["domains"], 
+                                                 real_life_identity=data["real_life_identity"], 
+                                                 real_life_email=data["real_life_email"]))
+        character_forms.append(f)
+        
+    return render_to_response(template_name,
+                                dict(page_title=_("Manage characters"),
+                                     character_forms=character_forms),
+                                context_instance=RequestContext(request))
+    
 
 
 

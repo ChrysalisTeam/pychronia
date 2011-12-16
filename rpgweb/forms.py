@@ -12,6 +12,47 @@ from datamanager import UsageError
 
 
 
+"""
+class DropdownMultiSelect(forms.SelectMultiple):
+    
+    def render(self, name, value, attrs=None, choices=()):
+        if value is None: value = []
+        final_attrs = self.build_attrs(attrs, name=name)
+        output = [u'<select multiple="multiple"%s>' % flatatt(final_attrs)]
+        options = self.render_options(choices, value)
+        if options:
+            output.append(options)
+        output.append('</select>')
+        return mark_safe(u'\n'.join(output))
+
+    def value_from_datadict(self, data, files, name):
+        if isinstance(data, (MultiValueDict, MergeDict)):
+            return data.getlist(name)
+        return data.get(name, None)
+
+    def _has_changed(self, initial, data):
+        if initial is None:
+            initial = []
+        if data is None:
+            data = []
+        if len(initial) != len(data):
+            return True
+        initial_set = set([force_unicode(value) for value in initial])
+        data_set = set([force_unicode(value) for value in data])
+        return data_set != initial_set
+    """
+
+class CharacterForm(forms.Form):
+    target_username = forms.CharField(widget=forms.HiddenInput())
+    allegiances = forms.MultipleChoiceField(label=_lazy("Allegiances"), required=False, widget=forms.SelectMultiple(attrs={"class": "multichecklist"}))
+    real_life_identity = forms.CharField(label=_lazy("Real identity"), required=False, max_length=100)
+    real_life_email = forms.EmailField(label=_lazy("Real email"), required=False)
+    
+    def __init__(self, choices, *args, **kwargs):
+        super(CharacterForm, self).__init__(*args, **kwargs)
+        self.fields['allegiances'].choices = choices
+ 
+ 
 class SimplePasswordForm(forms.Form):
     simple_password = forms.CharField(label=_lazy("Password"), widget=forms.PasswordInput)
 

@@ -2,7 +2,7 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
-import os, sys
+import os, sys, pytest
 
 
 
@@ -345,9 +345,51 @@ class TestGame(TestCase):
     @for_datamanager_base
     def test_core_architecture(self):
         pass
-        #TODO test that each main method calls self properly !!
+        #TODO test that each main method calls super() properly !!
 
 
+    @for_core_module(CharacterHandling)
+    def test_character_handling(self):
+        
+        assert self.dm.update_real_life_data("guy1", real_life_identity="jjjj") 
+        assert self.dm.update_real_life_data("guy1", real_life_email="ss@pangea.com") 
+        
+        data = self.dm.get_character_properties("guy1")
+        assert data["real_life_identity"] == "jjjj"
+        assert data["real_life_email"] == "ss@pangea.com"
+        
+        assert self.dm.update_real_life_data("guy1", real_life_identity="kkkk", real_life_email="kkkk@pangea.com") 
+        assert data["real_life_identity"] == "kkkk"
+        assert data["real_life_email"] == "kkkk@pangea.com"    
+    
+        assert not self.dm.update_real_life_data("guy1", real_life_identity="", real_life_email=None)
+        assert data["real_life_identity"] == "kkkk"
+        assert data["real_life_email"] == "kkkk@pangea.com"          
+
+        with pytest.raises(UsageError):
+            self.dm.update_real_life_data("unexistinguy", real_life_identity="John")
+            
+        with pytest.raises(UsageError):
+            self.dm.update_real_life_data("guy1", real_life_email="bad_email")
+
+
+    @for_core_module(DomainHandling)
+    def test_domain_handling(self):
+        
+        self.dm.update_allegiances("guy1", [])
+        
+        assert self.dm.update_allegiances("guy1", ["sciences"]) == (["sciences"], [])
+        assert self.dm.update_allegiances("guy1", []) == ([], ["sciences"])
+        assert self.dm.update_allegiances("guy1", ["sciences", "acharis"]) == (["acharis", "sciences"], []) # sorted
+        assert self.dm.update_allegiances("guy1", ["sciences", "acharis"]) == ([], []) # no changes
+             
+        with pytest.raises(UsageError):
+            self.dm.update_allegiances("guy1", ["dummydomain"])
+            
+        with pytest.raises(UsageError):
+            self.dm.update_real_life_data("unexistinguy", real_life_identity=["sciences"])
+            
+            
     @for_core_module(OnlinePresence)
     def test_online_presence(self):
 

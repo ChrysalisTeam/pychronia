@@ -94,6 +94,7 @@ class TechnicalEvents(BaseDataManager):
 @register_module
 class CharacterHandling(BaseDataManager): # TODO REFINE
 
+    CHARACTER_REAL_LIFE_ATTRIBUTES = ["real_life_identity", "real_life_email"]
 
     def _load_initial_data(self, **kwargs):
         super(CharacterHandling, self)._load_initial_data(**kwargs)
@@ -116,7 +117,7 @@ class CharacterHandling(BaseDataManager): # TODO REFINE
             utilities.check_is_string(character["description"])
             utilities.check_is_string(character["official_name"])
             utilities.check_is_string(character["real_life_identity"])
-            utilities.check_is_string(character["real_life_email"])
+            utilities.check_is_email(character["real_life_email"])
 
             identities = [char["official_name"].replace(" ", "").lower() for char in
                           game_data["character_properties"].values()]
@@ -151,7 +152,7 @@ class CharacterHandling(BaseDataManager): # TODO REFINE
         try:
             return self.data["character_properties"][username]
         except KeyError:
-            raise UsageError("Unknown username %s" % username)
+            raise NormalUsageError(_("Unknown username %s") % username)
 
     @readonly_method
     def __get_fellow_usernames(self, username):
@@ -167,15 +168,30 @@ class CharacterHandling(BaseDataManager): # TODO REFINE
         others = [name for name in self.get_character_usernames() if name != username]
         return others
 
-    @transaction_watcher
+    @readonly_method
     def build_select_choices_from_usernames(self, usernames):
         official_names = sorted([self.get_official_name_from_username(username) for username in usernames])
         character_choices = zip(official_names, official_names)
         return character_choices
 
-
-
-
+    @transaction_watcher
+    def update_real_life_data(self, username, real_life_identity=None, real_life_email=None):
+        
+        data = self.get_character_properties(username)
+        
+        action_done = False
+        
+        if real_life_identity and real_life_identity != data["real_life_identity"]:
+            data["real_life_identity"] = real_life_identity
+            action_done = True
+            
+        if real_life_email and real_life_email != data["real_life_email"]:
+            if not utilities.is_email(real_life_email):
+                raise NormalUsageError(_("Wrong email %s") % real_life_email)
+            data["real_life_email"] = real_life_email            
+            action_done = True
+        
+        return action_done
 
 
 
@@ -214,13 +230,35 @@ class DomainHandling(BaseDataManager): # TODO REFINE
 
     @readonly_method
     def get_domain_names(self):
-        return self.data["domains"].keys()
+        return sorted(self.data["domains"].keys())
 
     @readonly_method
     def get_domain_properties(self, domain_name):
         return self.data["domains"][domain_name]
 
+    @transaction_watcher
+    def update_allegiances(self, username, allegiances):
+        
+        assert len(set(allegiances)) == len(allegiances)
+        
+        available_domains = self.get_domain_names()
+        data = self.get_character_properties(username)
+        
+        for allegiance in allegiances:
+            if allegiance not in available_domains:
+                raise AbnormalUsageError(_("Wrong domain name %s") % allegiance)
 
+        added_domains = sorted(set(allegiances) - set(data["domains"]))
+        removed_domains = sorted(set(data["domains"]) - set(allegiances))
+        
+        data["domains"] = PersistentList(set(allegiances)) # we make them unique, just in case
+        
+        return (added_domains, removed_domains)
+   
+    @readonly_method
+    def build_domain_select_choices(self):
+        domain_choices = [(name, name.capitalize()) for name in self.get_domain_names()]
+        return domain_choices
 
 @register_module
 class GameInstructions(BaseDataManager):

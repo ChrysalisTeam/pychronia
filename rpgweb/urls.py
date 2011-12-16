@@ -40,9 +40,14 @@ final_urlpatterns = patterns('rpgweb.views',
 
     (r'^view_sales/$', 'view_sales'),
     (r'^view_characters/$', 'view_characters'),
+    
+    
+    (r'^manage_characters/$', 'manage_characters'),
     (r'^webradio_management/$', 'manage_audio_messages'),
     (r'^game_events/$', 'game_events'),
     (r'^manage_databases/$', 'manage_databases'),
+
+
 
     #(r'^wiretapping_management/$', 'wiretapping_management'),
     #(r'^network_management/$', 'network_management'),
