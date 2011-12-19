@@ -470,6 +470,7 @@ class PermissionsHandling(BaseDataManager): # TODO REFINE
                           
     @classmethod
     def register_permissions(cls, names):
+        assert all((name.lower() == name and " " not in name) for name in names)
         cls.PERMISSIONS.update(names)
 
 
@@ -478,16 +479,23 @@ class PermissionsHandling(BaseDataManager): # TODO REFINE
 
         game_data = self.data
 
+        """
         for (name, character) in game_data["character_properties"].items():
-            character.setdefault("permissions", [])
+            character.setdefault("permissions", PersistentList())
 
         for (name, domain) in game_data["domains"].items():
-            domain.setdefault("permissions", [])
-
+            domain.setdefault("permissions", PersistentList())
+        """
 
     def _check_database_coherency(self, **kwargs):
         super(PermissionsHandling, self)._check_database_coherency(**kwargs)
-
+        
+        XXXXXXXXXXXXX
+        
+        for permission in self.PERMISSIONS: # check all available permissions
+            utilities.check_is_slug(permission)
+            assert permission.lower() == permission
+            
         game_data = self.data
 
         for (name, character) in game_data["character_properties"].items():
@@ -792,10 +800,9 @@ class TextMessaging(BaseDataManager): # TODO REFINE
         #    assert external_contacts <= set(self.data["character_properties"][username]["external_contacts"])
 
 
-    @transaction_watcher
-    def process_periodic_tasks(self, **kwargs):
 
-        report = super(TextMessaging, self).process_periodic_tasks(**kwargs)
+    def _process_periodic_tasks(self, report):
+        super(TextMessaging, self)._process_periodic_tasks(report)
 
         # WE SEND DELAYED MESSAGES #
 
@@ -819,7 +826,6 @@ class TextMessaging(BaseDataManager): # TODO REFINE
         else:
             report["messages_sent"] = 0
 
-        return report
 
 
     def _normalize_recipient_emails(self, recipient_emails):
@@ -1490,10 +1496,9 @@ class ActionScheduling(BaseDataManager):
                 assert hasattr(self, action["function"])
             utilities.check_dictionary_with_template(action, scheduled_action_reference)
 
-    @transaction_watcher
-    def process_periodic_tasks(self, **kwargs):
 
-        report = super(ActionScheduling, self).process_periodic_tasks(**kwargs)
+    def _process_periodic_tasks(self, report):
+        super(ActionScheduling, self)._process_periodic_tasks(report)
 
         last_index_processed = None
         utcnow = datetime.utcnow()
@@ -1521,7 +1526,6 @@ class ActionScheduling(BaseDataManager):
         else:
             report["actions_executed"] = 0
 
-        return report
 
 
 

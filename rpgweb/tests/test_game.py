@@ -344,10 +344,45 @@ class TestGame(TestCase):
 
     @for_datamanager_base
     def test_core_architecture(self):
-        pass
-        #TODO test that each main method calls super() properly !!
+        
+        assert len(MODULES_REGISTRY) > 4
+        
+        for core_module in MODULES_REGISTRY:
+            
+            # we ensure every module calls super() properly
+             
+            CastratedDataManager = type(str('Dummy'+core_module.__name__), (core_module,), {})
+            castrated_dm = CastratedDataManager.__new__(CastratedDataManager) # we bypass __init__() call there
+            
+            try:
+                castrated_dm.__init__(game_instance_id=TEST_GAME_INSTANCE_ID,
+                                      game_root=self.connection.root())
+            except:
+                pass
+            assert castrated_dm.get_event_count("BASE_DATA_MANAGER_INIT_CALLED") == 1
 
+            try:
+                castrated_dm._load_initial_data()
+            except:
+                pass
+            assert castrated_dm.get_event_count("BASE_LOAD_INITIAL_DATA_CALLED") == 1
+                
+            try:
+                castrated_dm._check_database_coherency()
+            except:
+                pass
+            assert castrated_dm.get_event_count("BASE_CHECK_DB_COHERENCY_CALLED") == 1
 
+            try:
+                report = PersistentList()
+                castrated_dm._process_periodic_tasks(report)
+            except:
+                pass
+            assert castrated_dm.get_event_count("BASE_PROCESS_PERIODIC_TASK_CALLED") == 1
+                                       
+             
+            
+            
     @for_core_module(CharacterHandling)
     def test_character_handling(self):
         

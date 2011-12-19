@@ -79,6 +79,7 @@ class BaseDataManager(utilities.TechnicalEventsMixin, Persistent):
         '''
         super(BaseDataManager, self).__init__(**kwargs)
         
+        self.notify_event("BASE_DATA_MANAGER_INIT_CALLED")
         
         self._in_transaction = False
 
@@ -172,7 +173,7 @@ class BaseDataManager(utilities.TechnicalEventsMixin, Persistent):
         as everything will be converted to ZODB types before committing, 
         anyway.
         """
-        pass
+        self.notify_event("BASE_LOAD_INITIAL_DATA_CALLED")
 
     @readonly_method
     def check_database_coherency(self, **kwargs):
@@ -246,7 +247,7 @@ class BaseDataManager(utilities.TechnicalEventsMixin, Persistent):
 
 
     def _check_database_coherency(self, **kwargs):
-        pass
+        self.notify_event("BASE_CHECK_DB_COHERENCY_CALLED")
 
 
     @transaction_watcher
@@ -255,9 +256,11 @@ class BaseDataManager(utilities.TechnicalEventsMixin, Persistent):
         Each core module performs its periodic tasks, and appends to the common report.
         """
         report = PersistentDict()
+        self._process_periodic_tasks(report)
         return report
 
-
+    def _process_periodic_tasks(self, report):
+        self.notify_event("BASE_PROCESS_PERIODIC_TASK_CALLED")
 
     @readonly_method
     def dump_zope_database(self, **kwargs):
