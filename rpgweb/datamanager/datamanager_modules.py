@@ -21,74 +21,106 @@ def register_module(Klass):
 
 
 
+@register_module
+class GameGlobalParameters(BaseDataManager):
+
+
+    @readonly_method
+    def check_database_coherency(self, **kwargs):
+        super(GameGlobalParameters, self)._check_database_coherency(**kwargs)
+        
+        game_data = self.data
+
+        utilities.check_is_bool(game_data["global_parameters"]["game_is_started"])
+
+        assert os.path.isfile(os.path.join(config.GAME_FILES_ROOT, "musics", game_data["global_parameters"]["opening_music"]))
+  
+
+
+    @readonly_method
+    def get_global_parameters(self):
+        return self.data["global_parameters"]
+
+    @readonly_method
+    def get_global_parameter(self, name):
+        return self.data["global_parameters"][name]
+
+    @readonly_method
+    def is_game_started(self):
+        return self.get_global_parameter("game_is_started")
+
+    @transaction_watcher(ensure_game_started=False)
+    def set_game_state(self, started):
+        self.data["global_parameters"]["game_is_started"] = started
+
+
 
 
 
 
 
 @register_module
-class TechnicalEvents(BaseDataManager):
-    """
-    This private registry keeps track of miscellaneous events sent throughout the datamanager system.
-    This feature should solely be used for debugging purpose, with function calls protected by
-    ``if __debug__:`` statements for optimization.
-    To prevent naming collisions, an error is raised if events with the same name
-    are sent from different locations.
-    """
+class GameEvents(BaseDataManager): # TODO REFINE
 
-    def __init__(self, **kwargs):
-        super(TechnicalEvents, self).__init__(**kwargs)
-        self._event_registry = {} # stores, for each event name, a (calling_frame, count) tuple
 
     def _load_initial_data(self, **kwargs):
-        super(TechnicalEvents, self)._load_initial_data(**kwargs)
+        super(GameEvents, self)._load_initial_data(**kwargs)
+
+        new_data = self.data
+        new_data.setdefault("events_log", PersistentList())
+        for evt in new_data["events_log"]:
+            if isinstance(evt["time"], (long, int)): # offset in minutes
+                evt["time"] = utilities.compute_remote_datetime(evt["time"])
+        new_data["events_log"].sort(key=lambda evt: evt["time"])
 
     def _check_database_coherency(self, **kwargs):
-        super(TechnicalEvents, self)._check_database_coherency(**kwargs)
+        super(GameEvents, self)._check_database_coherency(**kwargs)
 
-    @readonly_method
-    def notify_event(self, event_name):
-        """
-        Records the sending of event *event_name*.
-        """
-        calling_frame = traceback.extract_stack(limit=2)[0] # we capture the frame which called notify_event()
-        if not self._event_registry.has_key(event_name):
-            self._event_registry[event_name] = (calling_frame, 1)
-        else:
-            (old_calling_frame, cur_count) = self._event_registry[event_name]
-            if calling_frame != old_calling_frame:
-                raise RuntimeError("Duplicated event name %s found for locations '%s' and '%s'" % (
-                event_name, old_calling_frame, calling_frame))
-            self._event_registry[event_name] = (calling_frame, cur_count + 1)
+        event_reference = {
+            "time": datetime,
+            "message": basestring,
+            "substitutions": (types.NoneType, PersistentDict),
+            "url": (types.NoneType, basestring),
+            "is_master_action": bool
+        }
+        previous_time = None
+        for event in self.data["events_log"]:
+            assert event["message"]
+            if previous_time:
+                assert previous_time <= event["time"] # event lists are sorted by chronological order
+            previous_time = event["time"]
+            utilities.check_dictionary_with_template(event, event_reference)
 
-    @readonly_method
-    def get_event_count(self, event_name):
-        """
-        Returns the number of times the event *event_name* has been sent since the last
-        clearing of its statistics.
-        """
-        if not self._event_registry.has_key(event_name):
-            return 0
-        else:
-            return self._event_registry[event_name][1]
 
     @transaction_watcher
-    def clear_event_stats(self, event_name):
-        """
-        Resets to 0 the counter of the event *event_name*.
-        """
-        del self._event_registry[event_name]
+    def log_game_event(self, message, substitutions=None, url=None, is_master_action=False):
+        assert message, "log message must not be empty"
 
-    @transaction_watcher
-    def clear_all_event_stats(self):
-        """
-        Resets entirely the event system, eg. at the beginning of a test sequence.
-        """
-        self._event_registry = {}
+        if substitutions:
+            assert isinstance(substitutions, PersistentDict), (message, substitutions)
+            if config.DEBUG:
+                message % substitutions # may raise formatting errors if corrupt...
+        else:
+            assert "%(" not in message, "Message %s needs substitution arguments" % message
+            pass
+
+        utcnow = datetime.utcnow()
+
+        record = PersistentDict({
+            "time": utcnow,
+            "message": message, # UNTRANSLATED message !
+            "substitutions": substitutions,
+            "url": url,
+            "is_master_action": is_master_action
+        })
+        self.data["events_log"].append(record)
+
+    @readonly_method
+    def get_game_events(self):
+        return self.data["events_log"]
 
 
-
-
+ 
 
 
 @register_module
@@ -260,152 +292,7 @@ class DomainHandling(BaseDataManager): # TODO REFINE
         domain_choices = [(name, name.capitalize()) for name in self.get_domain_names()]
         return domain_choices
 
-@register_module
-class GameInstructions(BaseDataManager):
 
-
-    def _load_initial_data(self, **kwargs):
-        super(GameInstructions, self)._load_initial_data(**kwargs)
-
-    def _check_database_coherency(self, **kwargs):
-        super(GameInstructions, self)._check_database_coherency(**kwargs)
-
-        game_data = self.data
-
-        utilities.check_is_string(game_data["global_parameters"]["global_introduction"])
-        utilities.check_is_string(game_data["global_parameters"]["history_summary"])
-
-
-        for (name, content) in game_data["domains"].items():
-            assert isinstance(content["prologue_music"], basestring)
-            assert os.path.isfile(os.path.join(config.GAME_FILES_ROOT, "musics", content["prologue_music"]))
-            assert isinstance(content["instructions"], (types.NoneType, basestring)) # can be empty
-
-
-    @readonly_method
-    def get_game_instructions(self, username):
-        global_introduction = self.get_global_parameter("global_introduction")
-
-        team_introduction = None
-        prologue_music = None
-
-        '''
-        if self.is_master(username):
-            team_introduction = None
-            prologue_music = None
-        else:
-            domain = self.get_domain_properties(self.get_character_properties(username)["domain"])
-            team_introduction = domain["instructions"]
-            prologue_music = config.GAME_FILES_URL + "musics/" + domain["prologue_music"]
-        '''
-
-        return PersistentDict(prologue_music=prologue_music,
-                              global_introduction=global_introduction,
-                              team_introduction=team_introduction)
-
-
-
-
-
-
-
-
-@register_module
-class LocationsHandling(BaseDataManager):
-
-    def _load_initial_data(self, **kwargs):
-        super(LocationsHandling, self)._load_initial_data(**kwargs)
-
-        new_data = self.data
-        for (name, properties) in new_data["locations"].items():
-            properties.setdefault("spy_message", None)
-            properties.setdefault("spy_audio", False)
-
-
-    def _check_database_coherency(self, **kwargs):
-        super(LocationsHandling, self)._check_database_coherency(**kwargs)
-
-        game_data = self.data
-        assert game_data["locations"]
-        for (name, properties) in game_data["locations"].items():
-
-            utilities.check_is_slug(name)
-
-            if properties["spy_message"] is not None:
-                utilities.check_is_string(properties["spy_message"])
-            if properties["spy_audio"]:
-                assert os.path.isfile(os.path.join(config.GAME_FILES_ROOT, "spy_reports", "spy_" + name.lower() + ".mp3")), name
-
-
-    @readonly_method
-    def get_locations(self):
-        return self.data["locations"]
-
-
-
-
-
-
-
-@register_module
-class GameEvents(BaseDataManager): # TODO REFINE
-
-
-    def _load_initial_data(self, **kwargs):
-        super(GameEvents, self)._load_initial_data(**kwargs)
-
-        new_data = self.data
-        new_data.setdefault("events_log", PersistentList())
-        for evt in new_data["events_log"]:
-            if isinstance(evt["time"], (long, int)): # offset in minutes
-                evt["time"] = utilities.compute_remote_datetime(evt["time"])
-        new_data["events_log"].sort(key=lambda evt: evt["time"])
-
-    def _check_database_coherency(self, **kwargs):
-        super(GameEvents, self)._check_database_coherency(**kwargs)
-
-        event_reference = {
-            "time": datetime,
-            "message": basestring,
-            "substitutions": (types.NoneType, PersistentDict),
-            "url": (types.NoneType, basestring),
-            "is_master_action": bool
-        }
-        previous_time = None
-        for event in self.data["events_log"]:
-            assert event["message"]
-            if previous_time:
-                assert previous_time <= event["time"] # event lists are sorted by chronological order
-            previous_time = event["time"]
-            utilities.check_dictionary_with_template(event, event_reference)
-
-
-    @transaction_watcher
-    def log_game_event(self, message, substitutions=None, url=None, is_master_action=False):
-        assert message, "log message must not be empty"
-
-        if substitutions:
-            assert isinstance(substitutions, PersistentDict), (message, substitutions)
-            if config.DEBUG:
-                message % substitutions # may raise formatting errors if corrupt...
-        else:
-            assert "%(" not in message, "Message %s needs substitution arguments" % message
-            pass
-
-        utcnow = datetime.utcnow()
-
-        record = PersistentDict({
-            "time": utcnow,
-            "message": message, # UNTRANSLATED message !
-            "substitutions": substitutions,
-            "url": url,
-            "is_master_action": is_master_action
-        })
-        self.data["events_log"].append(record)
-
-    @readonly_method
-    def get_game_events(self):
-        return self.data["events_log"]
 
 
 
@@ -422,8 +309,7 @@ class PlayerAuthentication(BaseDataManager):
 
     def _load_initial_data(self, **kwargs):
         super(PlayerAuthentication, self)._load_initial_data(**kwargs)
-        for character in self.get_character_sets().values():
-            pass #TODO
+
 
     def _check_database_coherency(self, **kwargs):
         super(PlayerAuthentication, self)._check_database_coherency(**kwargs)
@@ -435,9 +321,19 @@ class PlayerAuthentication(BaseDataManager):
             utilities.check_is_slug(character["password"])
             utilities.check_is_string(character["secret_question"])
             assert not character["secret_answer"] or utilities.check_is_slug(character["secret_answer"])
+            
+        
+        # MASTER and ANONYMOUS cases
+
+        global_parameters = game_data["global_parameters"]
+
+        utilities.check_is_slug(global_parameters["anonymous_login"])
+        utilities.check_is_slug(global_parameters["master_login"])
+        utilities.check_is_slug(global_parameters["master_password"])
+        utilities.check_is_slug(global_parameters["master_email"])
+        utilities.check_is_slug(global_parameters["master_real_life_email"])
 
 
-    # TODO ADD CHECKS ON PERMISSIONS OF USERS - all lower case !!!!
 
 
     @transaction_watcher(ensure_game_started=False)
@@ -563,13 +459,17 @@ class PlayerAuthentication(BaseDataManager):
 @register_module
 class PermissionsHandling(BaseDataManager): # TODO REFINE
 
-    PERMISSIONS = Enum("""contact_djinns manage_agents 
+    PERMISSIONS = Enum() 
+
+    """"
+    contact_djinns manage_agents 
                         manage_wiretaps manage_teleportations 
                         manage_scans manage_scans manage_translations 
-                        launch_telecom_investigations""") # TODO transfer these to abilities and modules
-
+                        launch_telecom_investigations
+                        """ # TODO transfer these to abilities and modules
+                          
     @classmethod
-    def register_permissions(names):
+    def register_permissions(cls, names):
         cls.PERMISSIONS.update(names)
 
 
@@ -617,6 +517,97 @@ class PermissionsHandling(BaseDataManager): # TODO REFINE
                 return True
 
         return False
+
+
+
+
+
+
+@register_module
+class GameInstructions(BaseDataManager):
+
+
+    def _load_initial_data(self, **kwargs):
+        super(GameInstructions, self)._load_initial_data(**kwargs)
+
+    def _check_database_coherency(self, **kwargs):
+        super(GameInstructions, self)._check_database_coherency(**kwargs)
+
+        game_data = self.data
+
+        utilities.check_is_string(game_data["global_parameters"]["global_introduction"])
+        utilities.check_is_string(game_data["global_parameters"]["history_summary"])
+
+
+        for (name, content) in game_data["domains"].items():
+            assert isinstance(content["prologue_music"], basestring)
+            assert os.path.isfile(os.path.join(config.GAME_FILES_ROOT, "musics", content["prologue_music"]))
+            assert isinstance(content["instructions"], (types.NoneType, basestring)) # can be empty
+
+
+    @readonly_method
+    def get_game_instructions(self, username):
+        global_introduction = self.get_global_parameter("global_introduction")
+
+        team_introduction = None
+        prologue_music = None
+
+        '''
+        if self.is_master(username):
+            team_introduction = None
+            prologue_music = None
+        else:
+            domain = self.get_domain_properties(self.get_character_properties(username)["domain"])
+            team_introduction = domain["instructions"]
+            prologue_music = config.GAME_FILES_URL + "musics/" + domain["prologue_music"]
+        '''
+
+        return PersistentDict(prologue_music=prologue_music,
+                              global_introduction=global_introduction,
+                              team_introduction=team_introduction)
+
+
+
+
+
+
+
+
+@register_module
+class LocationsHandling(BaseDataManager):
+
+    def _load_initial_data(self, **kwargs):
+        super(LocationsHandling, self)._load_initial_data(**kwargs)
+
+        new_data = self.data
+        for (name, properties) in new_data["locations"].items():
+            properties.setdefault("spy_message", None)
+            properties.setdefault("spy_audio", False)
+
+
+    def _check_database_coherency(self, **kwargs):
+        super(LocationsHandling, self)._check_database_coherency(**kwargs)
+
+        game_data = self.data
+        assert game_data["locations"]
+        for (name, properties) in game_data["locations"].items():
+
+            utilities.check_is_slug(name)
+
+            if properties["spy_message"] is not None:
+                utilities.check_is_string(properties["spy_message"])
+            if properties["spy_audio"]:
+                assert os.path.isfile(os.path.join(config.GAME_FILES_ROOT, "spy_reports", "spy_" + name.lower() + ".mp3")), name
+
+
+    @readonly_method
+    def get_locations(self):
+        return self.data["locations"]
+
+
+
+
+
 
 
 
@@ -734,6 +725,9 @@ class TextMessaging(BaseDataManager): # TODO REFINE
         super(TextMessaging, self)._check_database_coherency(**kwargs)
 
         game_data = self.data
+
+        utilities.check_is_slug(game_data["global_parameters"]["global_email"]) # shortcut tag to send email to everyone
+         
 
         message_reference = {# the ids of emails are simply their location in the global message list !
                              "sender_email": basestring,

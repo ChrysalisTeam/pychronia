@@ -39,18 +39,17 @@ class Enum(set):
             names = names.split()
         set.__init__(self, names)
 
-    def update(self, *iterables):
-        for iterable in iterables:
-            if isinstance(iterable, basestring):
-                iterable = iterable.split()
-            set.update(iterable)
+    def update(self, iterable):
+        if isinstance(iterable, basestring):
+            iterable = iterable.split()
+        set.update(iterable)
 
     def __getattr__(self, name):
         if name in self:
             return name
         raise AttributeError(name)
 
-
+ 
 __all__ = [key for key in globals().copy() if not key.startswith("_")]
 __all__ += ["_", "_lazy", "_noop"] # we add translation shortcuts
 

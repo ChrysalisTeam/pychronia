@@ -31,7 +31,7 @@ logging.getLogger("txn").setLevel(logging.WARNING) # ZODB transactions
 
 
 
-class BaseDataManager(Persistent, object):
+class BaseDataManager(utilities.TechnicalEventsMixin, Persistent):
 
     class DB_STATES:
         CONNECTED = "CONNECTED" # initial state
@@ -77,7 +77,9 @@ class BaseDataManager(Persistent, object):
         self.connection.root()
 
         '''
-
+        super(BaseDataManager, self).__init__(**kwargs)
+        
+        
         self._in_transaction = False
 
         self.game_instance_id = game_instance_id
@@ -172,7 +174,6 @@ class BaseDataManager(Persistent, object):
         """
         pass
 
-
     @readonly_method
     def check_database_coherency(self, **kwargs):
 
@@ -181,12 +182,15 @@ class BaseDataManager(Persistent, object):
         # Heavy Check !
         utilities.check_object_tree(game_data, allowed_types=utilities.allowed_zodb_types, path=["game_data"])
 
+
+        self._check_database_coherency()
+        
+        
+        ''' # TO BE REDISPATCHED #
+
         _expected_game_params = set("""
-                                    game_is_started
-                                    global_email
                                     anonymous_login
                                     master_login master_password master_email master_real_life_email
-                                    opening_music
                                     """.split())
 
         _actual_game_params = set(game_data["global_parameters"].keys())
@@ -194,25 +198,9 @@ class BaseDataManager(Persistent, object):
         assert _expected_game_params <= _actual_game_params, ("Missing global params", _expected_game_params - _actual_game_params)
 
 
-        global_parameters = game_data["global_parameters"]
-
-        utilities.check_is_bool(global_parameters["game_is_started"])
-
-        utilities.check_is_slug(global_parameters["global_email"]) # shortcut tag to send email to everyone
-
-        utilities.check_is_slug(global_parameters["anonymous_login"])
-
-        utilities.check_is_slug(global_parameters["master_login"])
-        utilities.check_is_slug(global_parameters["master_password"])
-        utilities.check_is_slug(global_parameters["master_email"])
-        utilities.check_is_slug(global_parameters["master_real_life_email"])
-
-        assert os.path.isfile(os.path.join(config.GAME_FILES_ROOT, "musics", global_parameters["opening_music"]))
-
-        self._check_database_coherency()
 
 
-        ''' # TO BE REDISPATCHED #
+        
         for name, value in game_data["global_parameters"].items():
 
             elif name == "opening_music":
@@ -256,9 +244,9 @@ class BaseDataManager(Persistent, object):
         '''
 
 
+
     def _check_database_coherency(self, **kwargs):
         pass
-
 
 
     @transaction_watcher
@@ -271,20 +259,7 @@ class BaseDataManager(Persistent, object):
 
 
 
-
     @readonly_method
-    def is_game_started(self):
-        return self.get_global_parameter("game_is_started")
-
-
-
-    @transaction_watcher(ensure_game_started=False)
-    def set_game_state(self, started):
-        self.data["global_parameters"]["game_is_started"] = started
-
-
-
-    @transaction_watcher(ensure_game_started=False)
     def dump_zope_database(self, **kwargs):
 
         data_dump = copy.deepcopy(dict(self.data)) # beware - memory-intensive call
@@ -295,14 +270,6 @@ class BaseDataManager(Persistent, object):
         string = yaml.dump(data_dump, **kwargs) # TODO fix safe_dump() to accept unicode in input!!
 
         return string
-
-    @readonly_method
-    def get_global_parameters(self):
-        return self.data["global_parameters"]
-
-    @readonly_method
-    def get_global_parameter(self, name):
-        return self.data["global_parameters"][name]
 
 
 

@@ -19,6 +19,6 @@ GameDataManager = type(str('GameDataManager'), AllBases, {})
 
 #print(GameDataManager.__mro__)
 
-assert GameDataManager.__mro__[-3:] == (BaseDataManager, datamanager_core.Persistent, object) # IMPORTANT - modules must be BEFORE BaseDataManager
+assert GameDataManager.__mro__[-4:] == (BaseDataManager, utilities.TechnicalEventsMixin, datamanager_core.Persistent, object) # IMPORTANT - all modules must be BEFORE BaseDataManager
 
 
