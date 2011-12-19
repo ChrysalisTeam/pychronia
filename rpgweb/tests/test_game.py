@@ -343,7 +343,7 @@ class TestGame(TestCase):
 
 
     @for_datamanager_base
-    def test_core_architecture(self):
+    def test_modular_architecture(self):
         
         assert len(MODULES_REGISTRY) > 4
         
@@ -491,21 +491,6 @@ class TestGame(TestCase):
         self.assertEqual(self.dm.get_username_from_email("guy1@pangea.com"), "guy1")
 
 
-    def __test_initial_messages(self):
-        # we do NOT reset messages in this case !
-
-        messages = self.dm.get_all_sent_messages()
-        #all_ids = [message["id"] for message in messages]
-
-        for name in self.dm.get_character_usernames():
-            instructions = [msg for msg in self.dm.get_all_sent_messages() if msg["id"] == "instructions_" + name]
-
-            self.assertEqual(len(instructions), 1, name) # for guy2 telecom investigations to work !
-
-            self.assertEqual(instructions[0]["recipient_emails"], [self.dm.get_character_email(name)])
-
-        for message in messages:
-            self.assertTrue(message["sent_at"] <= datetime.utcnow()) # let's avoid weird futuristic messages
 
 
 
@@ -606,7 +591,7 @@ class TestGame(TestCase):
 
 
     @for_core_module(MoneyItemsOwnership)
-    def __test_available_items_listing(self):
+    def test_available_items_listing(self):
         self._reset_messages()
 
         items_old = copy.deepcopy(self.dm.get_items_for_sale())
@@ -615,20 +600,17 @@ class TestGame(TestCase):
 
         gem_name1 = gem_names[0]
         gem_name2 = gem_names[1]
-        gem_name3 = gem_names[2]
         object_name = object_names[0]
 
         self.dm.transfer_object_to_character(gem_name1, "guy2")
-        self.dm.transfer_object_to_character(gem_name2, "guy1")
-        self.dm.transfer_object_to_character(gem_name3, "scanner")
+        self.dm.transfer_object_to_character(gem_name2, "guy2")
         self.dm.transfer_object_to_character(object_name, "guy3")
 
-        self.assertEqual(self.dm.get_available_items_for_user_domain("master"), self.dm.get_items_for_sale())
-        self.assertEqual(self.dm.get_available_items_for_user_domain("guy2"), self.dm.get_available_items_for_user_domain("guy1"))
-        self.assertEqual(set(self.dm.get_available_items_for_user_domain("guy2").keys()), set([gem_name1, gem_name2]))
-        self.assertEqual(set(self.dm.get_available_items_for_user_domain("listener").keys()), set([gem_name3]))
-        self.assertEqual(set(self.dm.get_available_items_for_user_domain("guy1").keys()), set([object_name]))
-        self.assertEqual(set(self.dm.get_available_items_for_user_domain("hacker").keys()), set([]))
+        self.assertEqual(self.dm.get_available_items_for_user("master"), self.dm.get_items_for_sale())
+        self.assertEqual(set(self.dm.get_available_items_for_user("guy1").keys()), set([]))
+        self.assertNotEqual(self.dm.get_available_items_for_user("guy2"), self.dm.get_available_items_for_user("guy1")) # no sharing of objects, even shared allegiance
+        self.assertEqual(set(self.dm.get_available_items_for_user("guy2").keys()), set([gem_name1, gem_name2]))
+        self.assertEqual(set(self.dm.get_available_items_for_user("guy3").keys()), set([object_name]))
 
 
     @for_ability(RunicTranslationAbility)

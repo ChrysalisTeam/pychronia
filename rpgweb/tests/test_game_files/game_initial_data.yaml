@@ -228,7 +228,7 @@ character_properties:
         description : "XXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXX XXXXXXXX"
 
     guy2:
-        domains: ["sciences"]
+        domains: ["acharis"]
         password: awesome
         account: 1000
         secret_question: "The name of my first pet ?"

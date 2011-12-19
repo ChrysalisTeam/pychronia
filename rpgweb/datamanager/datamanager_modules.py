@@ -1869,17 +1869,17 @@ class MoneyItemsOwnership(BaseDataManager):
 
 
     @readonly_method
-    def get_available_items_for_user_domain(self, username):
+    def get_available_items_for_user(self, username):
         if username is None or self.is_master(username):
             available_items = self.get_items_for_sale()
         else:
-            all_domain_users = [username] # FIXME - which objects should we include?
+            all_sharing_users = [username] # FIXME - which objects should we include?
             # user_domain = self.get_character_properties(username)["domain"]
             # all_domain_users = [name for (name, value) in self.get_character_sets().items() if
             #                    value["domain"] == user_domain]
             available_items = PersistentDict([(name, value) for (name, value)
                                               in self.get_items_for_sale().items()
-                                              if value['owner'] in all_domain_users])
+                                              if value['owner'] in all_sharing_users])
         return available_items
 
 

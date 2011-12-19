@@ -761,12 +761,12 @@ def items_slideshow(request, template_name='generic_operations/items_slideshow.h
 
     if user.is_authenticated:
         page_title = _("Team Items")
-        items = request.datamanager.get_available_items_for_user_domain(user.username)
+        items = request.datamanager.get_available_items_for_user(user.username)
         items_3D_settings = request.datamanager.get_items_3d_settings()
     else:
         page_title = _("Auction Items")
-        items = request.datamanager.get_available_items_for_user_domain(None) # all iteams
-        items_3D_settings = {} # IMPORTANT
+        items = request.datamanager.get_available_items_for_user(None) # all items
+        items_3D_settings = {} # IMPORTANT - no access to 3D views here
 
     sorted_items = [(key, items[key]) for key in sorted(items.keys())]
 
