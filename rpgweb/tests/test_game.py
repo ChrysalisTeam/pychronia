@@ -173,7 +173,7 @@ class AutoCheckingDM(object):
     """
 
     def __init__(self, dm):
-        self._real_dm = dm
+        object.__setattr__(self, "_real_dm", dm) # bypass overriding of __setattr__ below
 
     def __getattribute__(self, name):
         real_dm = object.__getattribute__(self, "_real_dm")
@@ -193,8 +193,9 @@ class AutoCheckingDM(object):
 
             return _checked_method
 
-
-
+    def __setattr__(self, name, value):
+        return object.__getattribute__(self, "_real_dm").__setattr__(name, value)
+            
 
 
 class TestGame(TestCase):
@@ -1049,7 +1050,7 @@ class TestGame(TestCase):
     def test_message_automated_state_changes(self):
         self._reset_messages()
         
-        email = self.dm.get_character_email
+        email = self.dm.get_character_email # function
         
         msg_id = self.dm.post_message(email("guy1"), email("guy2"), subject="ssd", body="qsdqsd")
 
@@ -1299,9 +1300,11 @@ class TestGame(TestCase):
         self.assertEqual(self.dm.get_unread_messages_count(self.dm.get_global_parameter("master_login")), 1)
 
 
-    def ____test_audio_messages_management(self):
+    def test_audio_messages_management(self):
         self._reset_messages()
-
+        
+        email = self.dm.get_character_email # function
+        
         self.assertRaises(dm_module.UsageError, self.dm.check_radio_frequency, "dummyfrequency")
         self.assertEqual(self.dm.check_radio_frequency(self.dm.get_global_parameter("pangea_radio_frequency")), None) # no exception nor return value
 
@@ -1313,8 +1316,8 @@ class TestGame(TestCase):
         self.assertEqual(self.dm.get_global_parameter("radio_is_on"), True)
 
         record1 = {
-            "sender_email": "guy2@acharis.com",
-            "recipient_emails": ["guy3@sciences.com"],
+            "sender_email": email("guy2"),
+            "recipient_emails": [email("guy3")],
             "subject": "hello everybody 1",
             "body": "Here is the body of this message lalalal...",
             "date_or_delay_mn":-1
@@ -1347,7 +1350,7 @@ class TestGame(TestCase):
         self.assertEqual(len(self.dm.get_all_next_audio_messages()), 0)
 
         audio_id_bis = self.dm.get_character_properties("guy2")["new_messages_notification"]
-        audio_id_ter = self.dm.get_character_properties("listener")["new_messages_notification"]
+        audio_id_ter = self.dm.get_character_properties("guy1")["new_messages_notification"]
 
         self.assertRaises(dm_module.UsageError, self.dm.add_radio_message, "bad_audio_id")
         self.dm.add_radio_message(audio_id)
@@ -1375,20 +1378,22 @@ class TestGame(TestCase):
         self.assertEqual(self.dm.get_next_audio_message(), None)
         self.assertEqual(len(self.dm.get_all_next_audio_messages()), 0)
 
-
-    def __test_delayed_processing(self):
+        
+    def test_delayed_message_processing(self):
         self._reset_messages()
 
+        email = self.dm.get_character_email # function
+        
         # delayed message sending
 
-        self.dm.post_message("guy3@sciences.com", "guy2@acharis.com", "yowh1", "qhsdhqsdh", attachment=None, date_or_delay_mn=0.03)
+        self.dm.post_message(email("guy3"), email("guy2"), "yowh1", "qhsdhqsdh", attachment=None, date_or_delay_mn=0.03)
         self.assertEqual(len(self.dm.get_all_sent_messages()), 0)
         queued_msgs = self.dm.get_all_queued_messages()
         self.assertEqual(len(queued_msgs), 1)
         #print datetime.utcnow(), " << ", queued_msgs[0]["sent_at"]
         self.assertTrue(datetime.utcnow() < queued_msgs[0]["sent_at"] < datetime.utcnow() + timedelta(minutes=0.22))
 
-        self.dm.post_message("guy3@sciences.com", "guy2@acharis.com", "yowh2", "qhsdhqsdh", attachment=None, date_or_delay_mn=(0.04, 0.05)) # 3s delay range
+        self.dm.post_message(email("guy3"), email("guy2"), "yowh2", "qhsdhqsdh", attachment=None, date_or_delay_mn=(0.04, 0.05)) # 3s delay range
         self.assertEqual(len(self.dm.get_all_sent_messages()), 0)
         queued_msgs = self.dm.get_all_queued_messages()
         self.assertEqual(len(queued_msgs), 2)
@@ -1398,7 +1403,7 @@ class TestGame(TestCase):
 
         # delayed message processing
 
-        self.dm.post_message("guy3@sciences.com", "guy2@acharis.com", "yowh3", "qhsdhqsdh", attachment=None, date_or_delay_mn=0.01) # 0.6s
+        self.dm.post_message(email("guy3"), email("guy2"), "yowh3", "qhsdhqsdh", attachment=None, date_or_delay_mn=0.01) # 0.6s
         self.assertEqual(len(self.dm.get_all_queued_messages()), 3)
         self.assertEqual(len(self.dm.get_all_sent_messages()), 0)
         res = self.dm.process_periodic_tasks()
@@ -1429,8 +1434,8 @@ class TestGame(TestCase):
 
 
         # forced sending of queued messages
-        myid1 = self.dm.post_message("guy3@sciences.com", "guy2@acharis.com", "yowh2", "qhsdhqsdh", attachment=None, date_or_delay_mn=(1, 2)) # 3s delay range
-        myid2 = self.dm.post_message("guy3@sciences.com", "guy2@acharis.com", "yowh2", "qhsdhqsdh", attachment=None, date_or_delay_mn=(1, 2)) # 3s delay range
+        myid1 = self.dm.post_message(email("guy3"), email("guy2"), "yowh2", "qhsdhqsdh", attachment=None, date_or_delay_mn=(1, 2)) # 3s delay range
+        myid2 = self.dm.post_message(email("guy3"), email("guy2"), "yowh2", "qhsdhqsdh", attachment=None, date_or_delay_mn=(1, 2)) # 3s delay range
         self.assertEqual(len(self.dm.get_all_queued_messages()), 2)
 
         self.assertFalse(self.dm.force_message_sending("dummyid"))
@@ -1440,37 +1445,42 @@ class TestGame(TestCase):
         self.assertEqual(self.dm.get_all_queued_messages()[0]["id"], myid2)
         self.assertTrue(self.dm.get_sent_message_by_id(myid1))
 
+        
+     
+        
+    def test_delayed_action_processing(self):
 
-
-        # scheduled actions
-
+        def _dm_delayed_action(arg1):
+            self.dm.data["global_parameters"]["stuff"] = 23
+            self.dm.commit()
+        self.dm._dm_delayed_action = _dm_delayed_action # attribute of that precise instane, not class!
+        
         self.dm.schedule_delayed_action(0.01, dummyfunc, 12, item=24)
         self.dm.schedule_delayed_action((0.04, 0.05), dummyfunc) # will raise error
-        self.dm.schedule_delayed_action((0.035, 0.05), "_add_to_scanned_locations", ["Alifir"])
-
+        self.dm.schedule_delayed_action((0.035, 0.05), "_dm_delayed_action", "hello")
+ 
         res = self.dm.process_periodic_tasks()
-        self.assertEqual(res["messages_sent"], 0)
         self.assertEqual(res["actions_executed"], 0)
 
         time.sleep(0.7)
 
         res = self.dm.process_periodic_tasks()
-        self.assertEqual(res["messages_sent"], 0)
         self.assertEqual(res["actions_executed"], 1)
 
         self.assertEqual(self.dm.get_event_count("DELAYED_ACTION_ERROR"), 0)
-
+        assert self.dm.data["global_parameters"].get("stuff") is None
+        
         time.sleep(2.5)
 
         res = self.dm.process_periodic_tasks()
-        self.assertEqual(res["messages_sent"], 0)
         self.assertEqual(res["actions_executed"], 2)
 
         self.assertEqual(len(self.dm.data["scheduled_actions"]), 0)
 
         self.assertEqual(self.dm.get_event_count("DELAYED_ACTION_ERROR"), 1) # error raised but swallowed
-        self.assertEqual(self.dm.get_global_parameter("scanned_locations"), ["Alifir"])
-
+        assert self.dm.data["global_parameters"]["stuff"] == 23
+ 
+ 
 
     @for_core_module(PlayerAuthentication)
     def test_password_recovery(self):

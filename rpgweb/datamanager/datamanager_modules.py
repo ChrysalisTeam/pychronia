@@ -1545,14 +1545,13 @@ class ActionScheduling(BaseDataManager):
         #print >>sys.stderr, "REGISTERING ONE SHOT  ", function
 
         if isinstance(function, basestring):
+            #print ("SEARCHING", function, "IN", sorted(dir(self)))
             if not hasattr(self, function) or not hasattr(getattr(self, function), '__call__'):
-                raise TypeError(_(
-                    "Only strings representing DataManager methods can be scheduled as delayed actions, not %(function)s") % SDICT(
-                    function=function))
+                raise TypeError(_("Only strings representing DataManager methods can be scheduled as delayed actions, not %(function)s") % SDICT(
+                                    function=function))
         elif not hasattr(function, '__call__'):
-            raise TypeError(
-                _("You can only register a callable object as a delayed action, not a %(function)r") % SDICT(
-                    function=function))
+            raise TypeError(_("You can only register a callable object as a delayed action, not a %(function)r") % SDICT(
+                              function=function))
 
         if isinstance(date_or_delay_mn, datetime):
             time = date_or_delay_mn

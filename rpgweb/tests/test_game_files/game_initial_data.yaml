@@ -113,14 +113,14 @@ locations:
 
     Baynon:
         spy_message: "This city is famous for its jewelry industry and its huge archeological museum. It seems no Acharith has ever been so deep into the 'miscreant continent'."
-    Ouram:
+    Alifir:
         spy_message: "People here are very healthy, but quite ignorant. They don't know anything about thye Great Atomic Chaos that took place in Midolia."
  
  
 scanning_sets:
 
     banal_gems_locations: __everywhere__
-    varied_gems_locations: [Baynon]
+    varied_gems_locations: [Alifir]
 
 
 
