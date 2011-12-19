@@ -1046,45 +1046,48 @@ class TestGame(TestCase):
         self.assertEqual(response.status_code, 404)
 
 
-    def __test_message_automated_state_changes(self):
+    def test_message_automated_state_changes(self):
         self._reset_messages()
-
-        msg_id = self.dm.post_message("guy1@masslavia.com", "netsdfworkerds@masslavia.com", subject="ssd", body="qsdqsd")
+        
+        email = self.dm.get_character_email
+        
+        msg_id = self.dm.post_message(email("guy1"), email("guy2"), subject="ssd", body="qsdqsd")
 
         msg = self.dm.get_sent_message_by_id(msg_id)
         self.assertFalse(msg["has_replied"])
         self.assertFalse(msg["has_read"])
+        
+        # no strict checks on sender/recipient of original message, when using reply_to feature
+        msg_id2 = self.dm.post_message(email("guy2"), email("guy1"), subject="ssd", body="qsdqsd", reply_to=msg_id)
+        msg_id3 = self.dm.post_message(email("guy3"), email("guy2"), subject="ssd", body="qsdqsd", reply_to=msg_id)
 
-        msg_id2 = self.dm.post_message("guy1@masslavia.com", "netsdfworkerds@masslavia.com", subject="ssd", body="qsdqsd", reply_to=msg_id)
-        msg_id3 = self.dm.post_message("hacker@masslavia.com", "netsdfworkerds@masslavia.com", subject="ssd", body="qsdqsd", reply_to=msg_id)
-
-        msg = self.dm.get_sent_message_by_id(msg_id2) # new message isn't impacted
+        msg = self.dm.get_sent_message_by_id(msg_id2) # new message isn't impacted by reply_to
         self.assertFalse(msg["has_replied"])
         self.assertFalse(msg["has_read"])
 
         msg = self.dm.get_sent_message_by_id(msg_id) # replied-to message impacted
         self.assertEqual(len(msg["has_replied"]), 2)
-        self.assertTrue("guy1" in msg["has_replied"])
-        self.assertTrue("hacker" in msg["has_replied"])
+        self.assertTrue("guy2" in msg["has_replied"])
+        self.assertTrue("guy3" in msg["has_replied"])
         self.assertEqual(len(msg["has_read"]), 2)
-        self.assertTrue("guy1" in msg["has_read"])
-        self.assertTrue("hacker" in msg["has_read"])
+        self.assertTrue("guy2" in msg["has_read"])
+        self.assertTrue("guy3" in msg["has_read"])
 
         # -----
 
         (tpl_id, tpl) = self.dm.get_messages_templates().items()[0]
         self.assertEqual(tpl["is_used"], False)
 
-        msg_id3 = self.dm.post_message("guy1@masslavia.com", "netsdfworkerds@masslavia.com", subject="ssd", body="qsdqsd", use_template=tpl_id)
+        msg_id4 = self.dm.post_message(email("guy3"), email("guy1"), subject="ssd", body="qsdqsd", use_template=tpl_id)
 
-        msg = self.dm.get_sent_message_by_id(msg_id3) # new message isn't impacted
+        msg = self.dm.get_sent_message_by_id(msg_id4) # new message isn't impacted
         self.assertFalse(msg["has_replied"])
         self.assertFalse(msg["has_read"])
 
         tpl = self.dm.get_message_template(tpl_id)
-        self.assertEqual(tpl["is_used"], True)
+        self.assertEqual(tpl["is_used"], True) # template properly marked as used
 
-
+   
     @for_core_module(TextMessaging)
     def test_email_recipients_parsing(self):
         input1 = "guy1 , ; ; guy2@acharis.com , master, ; everyone ,master"
