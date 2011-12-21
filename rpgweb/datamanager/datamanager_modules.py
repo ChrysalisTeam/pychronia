@@ -8,7 +8,7 @@ from .datamanager_user import GameUser
 from .datamanager_core import *
 
 
-
+PLACEHOLDER = object()
 
 
 MODULES_REGISTRY = []  # IMPORTANT
@@ -81,7 +81,7 @@ class GameEvents(BaseDataManager): # TODO REFINE
             "message": basestring,
             "substitutions": (types.NoneType, PersistentDict),
             "url": (types.NoneType, basestring),
-            "is_master_action": bool
+            "username": basestring
         }
         previous_time = None
         for event in self.data["events_log"]:
@@ -90,7 +90,8 @@ class GameEvents(BaseDataManager): # TODO REFINE
                 assert previous_time <= event["time"] # event lists are sorted by chronological order
             previous_time = event["time"]
             utilities.check_dictionary_with_template(event, event_reference)
-
+            username = event["username"]
+            assert username in self.get_character_names() or username == self.get_global_parameter("master_login") or username is None
 
     @transaction_watcher
     def log_game_event(self, message, substitutions=None, url=None, is_master_action=False):
@@ -111,7 +112,7 @@ class GameEvents(BaseDataManager): # TODO REFINE
             "message": message, # UNTRANSLATED message !
             "substitutions": substitutions,
             "url": url,
-            "is_master_action": is_master_action
+            "username": self.user.username
         })
         self.data["events_log"].append(record)
 
@@ -184,7 +185,7 @@ class CharacterHandling(BaseDataManager): # TODO REFINE
         try:
             return self.data["character_properties"][username]
         except KeyError:
-            raise NormalUsageError(_("Unknown username %s") % username)
+            raise UsageError(_("Unknown username %s") % username)
 
     @readonly_method
     def __get_fellow_usernames(self, username):
@@ -432,8 +433,7 @@ class PlayerAuthentication(BaseDataManager):
 
             self.log_game_event(_noop("Password of %(username)s has been recovered by %(target_email)s."),
                                  PersistentDict(username=username, target_email=target_email),
-                                 url=self.get_message_viewer_url(msg_id),
-                                 is_master_action=False) # we actually don't know...
+                                 url=self.get_message_viewer_url(msg_id))
 
             return password
 
@@ -444,13 +444,19 @@ class PlayerAuthentication(BaseDataManager):
 
     # Utility functions for tests on other usernames than current player's one #
 
-    def is_anonymous(self, username):
+    def is_anonymous(self, username=PLACEHOLDER):
+        if username is PLACEHOLDER:
+            username = self.user.username
         return (username == None)
 
-    def is_master(self, username):
+    def is_master(self, username=PLACEHOLDER):
+        if username is PLACEHOLDER:
+            username = self.user.username
         return (username == self.get_global_parameter("master_login"))
 
-    def is_character(self, username):
+    def is_character(self, username=PLACEHOLDER):
+        if username is PLACEHOLDER:
+            username = self.user.username
         return (username in self.get_character_usernames())
 
 
@@ -681,6 +687,9 @@ class TextMessaging(BaseDataManager): # TODO REFINE
 
         new_data.setdefault("messages_sent", PersistentList())
         new_data.setdefault("messages_queued", PersistentList())
+        
+        for (name, data) in new_data["character_properties"].items():
+            data.setdefault("wiretapping_targets", PersistentList())
 
         for (index, msg) in enumerate(new_data["messages_sent"] + new_data["messages_queued"]):
             # we modify the dicts in place
@@ -697,7 +706,7 @@ class TextMessaging(BaseDataManager): # TODO REFINE
             if isinstance(msg["sent_at"], (long, int)): # offset in minutes
                 msg["sent_at"] = utilities.compute_remote_datetime(msg["sent_at"])
 
-            msg["intercepted"] = msg.get("intercepted", False)
+            msg["intercepted_by"] = msg.get("intercepted_by", PersistentList())
             msg["has_read"] = msg.get("has_read", PersistentList())
             msg["has_replied"] = msg.get("has_replied", PersistentList())
 
@@ -736,7 +745,11 @@ class TextMessaging(BaseDataManager): # TODO REFINE
 
         utilities.check_is_slug(game_data["global_parameters"]["global_email"]) # shortcut tag to send email to everyone
          
-
+        character_names = self.get_character_usernames()
+        for (name, data) in self.get_character_sets().items():
+            for char_name in data["wiretapping_targets"]:
+                assert char_name in character_names
+                
         message_reference = {# the ids of emails are simply their location in the global message list !
                              "sender_email": basestring,
                              "recipient_emails": PersistentList,
@@ -744,7 +757,7 @@ class TextMessaging(BaseDataManager): # TODO REFINE
                              "body": basestring,
                              "attachment": (types.NoneType, basestring), # None or string
                              "sent_at": datetime,
-                             "intercepted": bool,
+                             "intercepted_by": PersistentList,
                              "has_read": PersistentList,
                              "has_replied": PersistentList,
                              "is_certified": bool, # for messages sent via automated processes
@@ -765,10 +778,15 @@ class TextMessaging(BaseDataManager): # TODO REFINE
                 for recipient in msg["recipient_emails"]:
                     utilities.check_is_email(recipient)
 
-                all_chars = game_data["character_properties"].keys() + [game_data["global_parameters"]["master_login"]]
-                assert all((char in all_chars) for char in msg["has_read"]), msg["has_read"]
-                assert all((char in all_chars) for char in msg["has_replied"]), msg["has_replied"]
-
+                all_chars = game_data["character_properties"].keys()
+                for username in msg["intercepted_by"]:
+                    assert username in all_chars
+                utilities.check_no_duplciates(msg["intercepted_by"])
+                    
+                all_users = all_chars + [game_data["global_parameters"]["master_login"]]
+                assert all((char in all_users) for char in msg["has_read"]), msg["has_read"]
+                assert all((char in all_users) for char in msg["has_replied"]), msg["has_replied"]
+                
             all_ids = [msg["id"] for msg in msg_list]
             utilities.check_no_duplicates(all_ids)
 
@@ -926,7 +944,7 @@ class TextMessaging(BaseDataManager): # TODO REFINE
                               "body": body,
                               "attachment": attachment, # None or string
                               "sent_at": sent_at,
-                              "intercepted": False, # by default...
+                              "intercepted_by": PersistentList(), # by default...
                               "has_read": PersistentList(), # for dummy automated messages
                               "has_replied": PersistentList(),
                               "is_certified": is_certified,
@@ -1057,8 +1075,12 @@ class TextMessaging(BaseDataManager): # TODO REFINE
         return records # chronological order
 
     @readonly_method
-    def get_intercepted_messages(self): # for wiretapping
-        records = [record for record in self.data["messages_sent"] if record["intercepted"]]
+    def get_intercepted_messages(self, username=None): # for wiretapping
+        if username is not None:
+            assert username in self.get_character_usernames()
+            records = [record for record in self.data["messages_sent"] if username in record["intercepted_by"]]
+        else:
+            records = [record for record in self.data["messages_sent"] if record["intercepted_by"]] # intercepted by anyone
         return records # chronological order
 
     @readonly_method
@@ -1151,10 +1173,32 @@ class TextMessaging(BaseDataManager): # TODO REFINE
                 self.data["character_properties"][username]["has_new_messages"] = new_status
                 # thus, "invented" emails are simply ignored in this process
 
+
+    @transaction_watcher
+    def set_wiretapping_targets(self, username, target_names):
+
+        target_names = sorted(list(set(target_names))) # renormalization, just in case
+
+        character_names = self.get_character_usernames()
+        for name in target_names:
+            if name not in character_names:
+                raise AbnormalUsageError(_("Unknown target username %(target)s") % SDICT(target=name)) # we can show it
+
+        data = self.get_character_properties(username)
+        data["wiretapping_targets"] = PersistentList(target_names)
+
+        self.log_game_event(_noop("Wiretapping targets set to (%(targets)s) for %(username)s."),
+                             PersistentDict(targets="[%s]"%(", ".join(target_names)), username=username),
+                             url=None)
+    
+    def get_wiretapping_targets(self, username):
+        return self.get_character_properties(username)["wiretapping_targets"]
+
+
     @readonly_method
     def _get_external_contacts_updates(self, msg):
         """
-        Updates the *external_contacts* fields of character accounts,
+        Retrieve info to update the *external_contacts* fields of character accounts,
         when they send/receive a message.
         """
         all_characters_emails = set(self.get_players_emails())
@@ -1183,18 +1227,18 @@ class TextMessaging(BaseDataManager): # TODO REFINE
     @transaction_watcher
     def _immediately_send_message(self, msg):
 
-        # TODO CHANGE THIS !!! FIXME
-        #wiretapping_targets_emails = [self.get_character_email(target) 
-        #                              for target in self.get_wiretapping_targets()]
-        wiretapping_targets_emails = [] # WRONG
-
         # wiretapping
-        if (msg["sender_email"] in wiretapping_targets_emails or
-            any(True for recipient in msg["recipient_emails"] if recipient in wiretapping_targets_emails)):
-            msg["intercepted"] = True
+        for username in self.get_character_usernames():
+                
+            wiretapping_targets_emails = [self.get_character_email(target) 
+                                          for target in self.get_wiretapping_targets(username)]
+            
+            if (msg["sender_email"] in wiretapping_targets_emails or
+                any(True for recipient in msg["recipient_emails"] if recipient in wiretapping_targets_emails)):
+                msg["intercepted_by"].append(username)
 
-            # audio_notification = self.get_global_parameter("message_intercepted_audio_id")
-            # NO NOTIFICATION - self.add_radio_message(audio_notification)
+        # audio_notification = self.get_global_parameter("message_intercepted_audio_id")
+        # NO NOTIFICATION - self.add_radio_message(audio_notification)
 
         self._update_external_contacts(msg)
         self.set_new_message_notification(msg["recipient_emails"], new_status=True)
@@ -1622,7 +1666,7 @@ class PersonalFiles(BaseDataManager):
 
         self.log_game_event(_noop("Encrypted folder '%(folder)s/%(password)s' accessed by user '%(username)s'."),
                              PersistentDict(folder=folder, password=password, username=username),
-                             url=None, is_master_action=self.is_master(username))
+                             url=None)
 
         return decrypted_files
 
@@ -1787,7 +1831,7 @@ class MoneyItemsOwnership(BaseDataManager):
 
 
     @transaction_watcher
-    def transfer_money_between_characters(self, from_name, to_name, amount, is_master_action=False):
+    def transfer_money_between_characters(self, from_name, to_name, amount):
         amount = int(amount) # might raise error
         if amount <= 0:
             raise UsageError(_("Money amount must be positive"))
@@ -1815,8 +1859,7 @@ class MoneyItemsOwnership(BaseDataManager):
 
         self.log_game_event(_noop("Bank operation: %(amount)s kashes transferred from %(from_name)s to %(to_name)s."),
                              PersistentDict(amount=amount, from_name=from_name, to_name=to_name),
-                             url=None,
-                             is_master_action=is_master_action)
+                             url=None)
 
 
     @transaction_watcher
@@ -1884,7 +1927,7 @@ class MoneyItemsOwnership(BaseDataManager):
 
 
     @transaction_watcher
-    def transfer_gems_between_characters(self, from_name, to_name, gems_choices, is_master_action=False):
+    def transfer_gems_between_characters(self, from_name, to_name, gems_choices):
         sender_char = self.data["character_properties"][from_name] # may raise key error
         recipient_char = self.data["character_properties"][to_name] # may raise key error
         gems_choices = PersistentList(gems_choices)
@@ -1905,8 +1948,7 @@ class MoneyItemsOwnership(BaseDataManager):
 
         self.log_game_event(_noop("Gems transferred from %(from_name)s to %(to_name)s : %(gems_choices)s."),
                              PersistentDict(from_name=from_name, to_name=to_name, gems_choices=gems_choices),
-                             url=None,
-                             is_master_action=is_master_action)
+                             url=None)
 
 
 
@@ -1915,7 +1957,6 @@ class MoneyItemsOwnership(BaseDataManager):
 
 @register_module
 class Items3dViewing(BaseDataManager):
-
 
 
     def _load_initial_data(self, **kwargs):

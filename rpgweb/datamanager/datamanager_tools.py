@@ -50,14 +50,23 @@ def action_failure_handler(request, success_message=_lazy("Operation successful.
             user.add_message(success_message)
 
 
-
-
-def SDICT(**kwargs):
-    mydict = collections.defaultdict(lambda: "<UNKNOWN>") # for safe string substitutions
-    for (name, value) in kwargs.items():
-        mydict[name] = value # we mimic the normal dict constructor
-    return mydict
-
+class SDICT(dict):
+    def __getitem__(self, name):
+        try:
+            dict.__getitem__(self, name)
+        except KeyError:
+            logging.critical("Wrong key %s looked up in dict %r", name, self)
+            return "<UNKNOWN>"
+        
+    ''' obsolete
+    def SDICT(**kwargs):
+        import collections
+        # TODO - log errors when wrong lookup happens!!!
+        mydict = collections.defaultdict(lambda: "<UNKNOWN>") # for safe string substitutions
+        for (name, value) in kwargs.items():
+            mydict[name] = value # we mimic the normal dict constructor
+        return mydict
+    '''
 
 @contextlib.contextmanager
 def exception_swallower():

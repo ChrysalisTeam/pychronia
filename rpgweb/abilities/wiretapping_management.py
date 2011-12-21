@@ -75,7 +75,8 @@ class WiretappingAbility(AbstractAbilityHandler):
 
     @transaction_watcher
     def change_wiretapping_targets(self, target_names):
-
+        
+        ####### DUPLICATED OF MODULE'S
         target_names = sorted(list(set(target_names))) # renormalization, just in case
 
         character_names = self.datamanager.get_character_usernames()
@@ -90,8 +91,7 @@ class WiretappingAbility(AbstractAbilityHandler):
 
         self.datamanager.log_game_event(_noop("Wiretapping targets set to (%(targets)s) by %(username)s."),
                              PersistentDict(targets=", ".join(target_names), username=self.datamanager.player.username),
-                             url=None,
-                             is_master_action=(self.datamanager.is_master(self.datamanager.player.username)))
+                             url=None)
 
         return _("Wiretapping successfully set up.")
 

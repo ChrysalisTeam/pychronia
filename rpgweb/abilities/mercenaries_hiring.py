@@ -142,8 +142,7 @@ class MercenariesHiringAbility(AbstractAbilityHandler):
 
         self.log_game_event(_noop("Mercenary hired by %(employer_name)s in %(location)s"),
                              PersistentDict(employer_name=employer_name, location=location),
-                             url=None,
-                             is_master_action=self.is_master(employer_name)) #UGLY TODO
+                             url=None)
 
 
 

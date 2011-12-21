@@ -208,8 +208,7 @@ class RunicTranslationAbility(AbstractAbilityHandler):
 
         self.log_game_event(_noop("Translation request sent by %(username)s for item '%(item_title)s'."),
                               PersistentDict(username=username, item_title=item_title),
-                              url=self.get_message_viewer_url(msg_id),
-                              is_master_action=(self.is_master(username)))
+                              url=self.get_message_viewer_url(msg_id))
 
         return msg_id # id of the automated response
 

@@ -115,5 +115,4 @@ def launch_telecom_investigation(self, username, target_username):
 
     self.log_game_event(_noop('Character inquiry opened by %(username)s into %(target_official_name)s'),
                          PersistentDict(username=username, target_official_name=target_official_name),
-                         url=self.get_message_viewer_url(msg_id),
-                         is_master_action=self.is_master(username))
+                         url=self.get_message_viewer_url(msg_id))

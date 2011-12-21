@@ -671,8 +671,7 @@ def view_characters(request, template_name='generic_operations/view_characters.h
                 with action_failure_handler(request, _("Money transfer successful.")):
                     request.datamanager.transfer_money_between_characters(sender,
                                                                   recipient,
-                                                                  money_form.cleaned_data['amount'],
-                                                                  is_master_action=user.is_master) # amount can only be positive here
+                                                                  money_form.cleaned_data['amount']) # amount can only be positive here
             else:
                 user.add_error(_("Money transfer failed - invalid parameters."))
 
@@ -691,8 +690,7 @@ def view_characters(request, template_name='generic_operations/view_characters.h
                     selected_gems = [int(gem) for gem in gems_form.cleaned_data['gems_choices']]
                     request.datamanager.transfer_gems_between_characters(sender,
                                                                   request.datamanager.get_username_from_official_name(gems_form.cleaned_data['recipient_name']),
-                                                                  selected_gems,
-                                                                  is_master_action=user.is_master)
+                                                                  selected_gems)
             else:
                 user.add_error(_("Gems transfer failed - invalid parameters."))
 
@@ -1267,7 +1265,7 @@ def view_media(request, template_name='utilities/view_media.html'):
 @game_master_required
 def game_events(request, template_name='administration/game_events.html'):
 
-    events = request.datamanager.get_game_events() # keys : time, message, is_master_action
+    events = request.datamanager.get_game_events() # keys : time, message, username
 
     trans_events = []
     for event in events:

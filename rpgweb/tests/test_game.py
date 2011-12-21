@@ -515,7 +515,7 @@ class TestGame(TestCase):
         bank_name = self.dm.get_global_parameter("bank_name")
 
         self.assertRaises(Exception, self.dm.transfer_money_between_characters, bank_name, "guy1", 10000000)
-        self.assertRaises(Exception, self.dm.transfer_money_between_characters, "guy3", "guy1", -100, is_master_action=True)
+        self.assertRaises(Exception, self.dm.transfer_money_between_characters, "guy3", "guy1", -100)
         self.assertRaises(Exception, self.dm.transfer_money_between_characters, "guy3", "guy1", lg_old["account"] + 1)
         self.assertRaises(Exception, self.dm.transfer_money_between_characters, "guy3", "guy3", 1)
         self.assertRaises(Exception, self.dm.transfer_object_to_character, "dummy_name", "guy3")
@@ -542,7 +542,7 @@ class TestGame(TestCase):
         # we test gems transfers
         gems_given = self.dm.get_character_properties("guy3")["gems"][0:3]
         self.dm.transfer_gems_between_characters("guy3", "guy1", gems_given)
-        self.dm.transfer_gems_between_characters("guy1", "guy3", gems_given, is_master_action=True)
+        self.dm.transfer_gems_between_characters("guy1", "guy3", gems_given)
         self.assertRaises(Exception, self.dm.transfer_gems_between_characters, "guy3", "guy1", gems_given + [27, 32])
         self.assertRaises(Exception, self.dm.transfer_gems_between_characters, "guy3", "guy1", [])
 
@@ -1149,13 +1149,8 @@ class TestGame(TestCase):
         self.assertEqual(data, [("guy2", "back")])
 
 
-    def ___test_messaging(self):
-        MASTER = self.dm.get_global_parameter("master_login")
 
-        self._reset_messages()
-
-        self.assertEqual(self.dm.get_character_email("guy3"), "guy3@sciences.com")
-        self.assertEqual(self.dm.get_character_email("master"), "master@administration.com")
+    def ___test_external_contacts(self):
 
         emails = self.dm.get_user_contacts(self.dm.get_global_parameter("master_login"))
         self.assertEqual(len(emails), len(self.dm.get_character_usernames()) + 7) # 5 external contacts, plus master_email and baazel
@@ -1171,17 +1166,33 @@ class TestGame(TestCase):
 
         emails = self.dm.get_external_emails("master")
         self.assertEqual(len(emails), 7)
+    
+        
+                
+
+    def test_text_messaging(self):
+        
+        self._reset_messages()
+        
+        email = self.dm.get_character_email # function
+        
+        MASTER = self.dm.get_global_parameter("master_login")
+        
+        self.assertEqual(email("guy3"), "guy3@pangea.com")
+        with pytest.raises(AssertionError):
+            email("master") # not OK with get_character_email!
+
 
         record1 = {
-            "sender_email": "guy2@acharis.com",
-            "recipient_emails": ["guy3@sciences.com"],
+            "sender_email": "guy2@pangea.com",
+            "recipient_emails": ["guy3@pangea.com"],
             "subject": "hello everybody 1",
             "body": "Here is the body of this message lalalal...",
             "date_or_delay_mn":-1
         }
 
         record2 = {
-            "sender_email": "listener@teldorium.com",
+            "sender_email": "guy4@pangea.com",
             "recipient_emails": ["secret-services@masslavia.com"],
             "subject": "hello everybody 2",
             "body": "Here is the body of this message lililili...",
@@ -1190,8 +1201,8 @@ class TestGame(TestCase):
         }
 
         record3 = {
-            "sender_email": "scanner@teldorium.com",
-            "recipient_emails": ["guy3@sciences.com"],
+            "sender_email": "guy1@pangea.com",
+            "recipient_emails": ["guy3@pangea.com"],
             "subject": "hello everybody 3",
             "body": "Here is the body of this message lulululu...",
             "date_or_delay_mn": None
@@ -1200,7 +1211,7 @@ class TestGame(TestCase):
 
         record4 = {
             "sender_email": "dummy-robot@masslavia.com",
-            "recipient_emails": ["guy2@acharis.com"],
+            "recipient_emails": ["guy2@pangea.com"],
             "subject": "hello everybody 4",
             "body": "Here is the body of this message lililili...",
             }
@@ -1213,8 +1224,9 @@ class TestGame(TestCase):
         self.dm.post_message(**record1)
         time.sleep(0.2)
 
-        self.dm.change_wiretapping_targets("listener", ["guy2"])
-
+        self.dm.set_wiretapping_targets("guy1", ["guy2"])
+        self.dm.set_wiretapping_targets("guy2", ["guy4"])
+        
         self.dm.post_message(**record2)
         time.sleep(0.2)
         self.dm.post_message(**record3)
@@ -1231,35 +1243,43 @@ class TestGame(TestCase):
 
         self.assertEqual(len(self.dm.get_game_master_messages()), 2) # secret services + wrong email address
 
-        expected_notifications = {'guy2': "new_messages_guy2", 'guy3': "new_messages_guy3"}
+        expected_notifications = {'guy2': "new_messages_2", 'guy3': "new_messages_1"}
         self.assertEqual(self.dm.get_pending_new_message_notifications(), expected_notifications)
 
         self.assertEqual(self.dm.get_pending_new_message_notifications(), expected_notifications) # no disappearance
 
         self.assertTrue(self.dm.has_new_message_notification("guy3"))
-        self.assertEqual(len(self.dm.get_received_messages("guy3@sciences.com", reset_notification=True)), 3)
+        self.assertEqual(len(self.dm.get_received_messages("guy3@pangea.com", reset_notification=True)), 3)
         self.assertFalse(self.dm.has_new_message_notification("guy3"))
 
         # here we can't do check messages of secret-services@masslavia.com since it's not a normal character
 
         self.assertTrue(self.dm.has_new_message_notification("guy2"))
-        self.assertEqual(len(self.dm.get_received_messages("guy2@acharis.com", reset_notification=False)), 1)
+        self.assertEqual(len(self.dm.get_received_messages("guy2@pangea.com", reset_notification=False)), 1)
         self.assertTrue(self.dm.has_new_message_notification("guy2"))
-        self.dm.set_new_message_notification(utilities.PersistentList(["guy2@acharis.com"]), new_status=False)
+        self.dm.set_new_message_notification(utilities.PersistentList(["guy2@pangea.com"]), new_status=False)
         self.assertFalse(self.dm.has_new_message_notification("guy2"))
 
         self.assertEqual(self.dm.get_pending_new_message_notifications(), {}) # all have been reset
 
         self.assertEqual(len(self.dm.get_received_messages(self.dm.get_character_email("guy1"))), 0)
 
-        self.assertEqual(len(self.dm.get_sent_messages("guy2@acharis.com")), 2)
-        self.assertEqual(len(self.dm.get_sent_messages("scanner@teldorium.com")), 1)
-        self.assertEqual(len(self.dm.get_sent_messages("guy3@sciences.com")), 0)
+        self.assertEqual(len(self.dm.get_sent_messages("guy2@pangea.com")), 2)
+        self.assertEqual(len(self.dm.get_sent_messages("guy1@pangea.com")), 1)
+        self.assertEqual(len(self.dm.get_sent_messages("guy3@pangea.com")), 0)
 
-        res = self.dm.get_intercepted_messages()
+        assert not self.dm.get_intercepted_messages("guy3")
+        
+        res = self.dm.get_intercepted_messages("guy1")
         self.assertEqual(len(res), 2)
         self.assertEqual(set([msg["subject"] for msg in res]), set(["hello everybody 1", "hello everybody 4"]))
-        self.assertEqual(set([msg["intercepted"] for msg in res]), set([True]))
+        assert all(["guy1" in msg["intercepted_by"] for msg in res])
+        
+        res = self.dm.get_intercepted_messages()
+        self.assertEqual(len(res), 3)
+        self.assertEqual(set([msg["subject"] for msg in res]), set(["hello everybody 1", "hello everybody 2", "hello everybody 4"]))
+        assert all([msg["intercepted_by"] for msg in res])     
+           
         # NO - we dont notify interceptions - self.assertTrue(self.dm.get_global_parameter("message_intercepted_audio_id") in self.dm.get_all_next_audio_messages(), self.dm.get_all_next_audio_messages())
 
         # msg has_read state changes
@@ -1270,9 +1290,11 @@ class TestGame(TestCase):
         self.assertRaises(Exception, self.dm.set_message_read_state, MASTER, msg_id1, True)
         self.assertRaises(Exception, self.dm.set_message_read_state, "guy2", msg_id1, True)
         self.assertRaises(Exception, self.dm.set_message_read_state, "guy1", msg_id2, True)
+        """
+        
         # wrong msg id
         self.assertRaises(Exception, self.dm.set_message_read_state, "dummyid", False)
-        """
+   
 
         #self.assertEqual(self.dm.get_all_sent_messages()[0]["no_reply"], False)
         #self.assertEqual(self.dm.get_all_sent_messages()[4]["no_reply"], True)# msg from robot
@@ -1298,6 +1320,8 @@ class TestGame(TestCase):
         self.dm.set_message_read_state(MASTER, msg_id2, False)
         self.assertFalse(self.dm.get_all_sent_messages()[3]["has_read"])
         self.assertEqual(self.dm.get_unread_messages_count(self.dm.get_global_parameter("master_login")), 1)
+
+
 
 
     def test_audio_messages_management(self):
@@ -1507,19 +1531,21 @@ class TestGame(TestCase):
     @for_core_module(GameEvents)
     def test_event_logging(self):
         self._reset_messages()
-
+        
+        self._set_user("guy1")
         self.assertEqual(self.dm.get_game_events(), [])
-        self.dm.log_game_event("hello there 1", is_master_action=True)
-        self.dm.log_game_event("hello there 2", url="/my/url/", is_master_action=False)
+        self.dm.log_game_event("hello there 1")
+        self._set_user("master")
+        self.dm.log_game_event("hello there 2", url="/my/url/")
         self.dm.commit()
         events = self.dm.get_game_events()
         self.assertEqual(len(events), 2)
 
         self.assertEqual(events[0]["message"], "hello there 1")
-        self.assertEqual(events[0]["is_master_action"], True)
+        self.assertEqual(events[0]["username"], "guy1")
         self.assertEqual(events[0]["url"], None)
         self.assertEqual(events[1]["message"], "hello there 2")
-        self.assertEqual(events[1]["is_master_action"], False)
+        self.assertEqual(events[1]["username"], "master")
         self.assertEqual(events[1]["url"], "/my/url/")
 
         utcnow = datetime.utcnow()
