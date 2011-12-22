@@ -688,310 +688,6 @@ class TestGame(TestCase):
         self.assertTrue(self.dm.get_global_parameter("master_login") in msg["has_read"])
 
 
-    def __test_telecom_investigations(self):
-        # no reset of initial messages
-
-
-        initial_length_queued_msgs = len(self.dm.get_all_queued_messages())
-        initial_length_sent_msgs = len(self.dm.get_all_sent_messages())
-
-
-        # text processing #
-
-        res = self.dm._corrupt_text_parts("hello ca va bien coco?", (1, 1), "")
-        self.assertEqual(res, "hello ... va ... coco?")
-
-        msg = "hello ca va bien coco? Quoi de neuf ici ? Tout est OK ?"
-        res = self.dm._corrupt_text_parts(msg, (2, 4), "de neuf ici")
-        self.assertTrue("de neuf ici" in res, res)
-        self.assertTrue(14 < len(res) < len(msg), len(res))
-
-
-        # corruption of team intro + personal instructions
-        text = self.dm._get_corrupted_introduction("guy2", "SiMoN  BladstaFfulOvza")
-
-        dump = set(text.split())
-        parts1 = set(u"Depuis , notre Ordre Acharite fouille Ciel Terre retrouver Trois Orbes".split())
-        parts2 = set(u"votre drogues sera aide inestimable cette mission".split())
-
-        self.assertTrue(len(dump ^ parts1) > 2)
-        self.assertTrue(len(dump ^ parts2) > 2)
-
-        self.assertTrue("Simon Bladstaffulovza" in text, repr(text))
-
-
-
-        # whole inquiry requests
-
-        telecom_investigations_done = self.dm.get_global_parameter("telecom_investigations_done")
-        self.assertEqual(telecom_investigations_done, 0)
-        max_telecom_investigations = self.dm.get_global_parameter("max_telecom_investigations")
-
-        self.assertRaises(dm_module.UsageError, self.dm.launch_telecom_investigation, "guy2", "guy2")
-
-        self.assertEqual(len(self.dm.get_all_queued_messages()), initial_length_queued_msgs + 0)
-
-        self.dm.launch_telecom_investigation("guy2", "guy2")
-
-        msgs = self.dm.get_all_queued_messages()
-        self.assertEqual(len(msgs), initial_length_queued_msgs + 1)
-        msg = msgs[-1]
-        self.assertEqual(msg["recipient_emails"], ["guy2@sciences.com"])
-
-        msgs = self.dm.get_all_sent_messages()
-        self.assertEqual(len(msgs), initial_length_sent_msgs + 1)
-        msg = msgs[-1]
-        self.assertEqual(msg["sender_email"], "guy2@sciences.com")
-        self.assertTrue("discover" in msg["body"])
-        self.assertTrue(self.dm.get_global_parameter("master_login") in msg["has_read"])
-
-        for i in range(max_telecom_investigations - 1):
-            self.dm.launch_telecom_investigation("guy2", "guy3")
-        msgs = self.dm.get_all_queued_messages()
-        self.assertEqual(len(msgs), initial_length_queued_msgs + max_telecom_investigations)
-
-        self.assertRaises(dm_module.UsageError, self.dm.launch_telecom_investigation, "guy2", "guy3") # max count exceeded
-
-
-    def ___test_agent_hiring(self):
-        self._reset_messages()
-
-        spy_cost_money = self.dm.get_global_parameter("spy_cost_money")
-        spy_cost_gems = self.dm.get_global_parameter("spy_cost_gems")
-        mercenary_cost_money = self.dm.get_global_parameter("mercenary_cost_money")
-        mercenary_cost_gems = self.dm.get_global_parameter("mercenary_cost_gems")
-
-        self.dm.get_character_properties("guy1")["gems"] = PersistentList([spy_cost_gems, spy_cost_gems, spy_cost_gems, mercenary_cost_gems])
-        self.dm.commit()
-
-        cities = self.dm.get_locations().keys()[0:5]
-
-
-        # hiring with gems #
-
-
-        self.assertRaises(Exception, self.dm.hire_remote_agent, "guy1",
-                          cities[0], mercenary=False, pay_with_gems=True)
-
-        self.assertRaises(Exception, self.dm.hire_remote_agent, "guy1",
-                          cities[0], mercenary=True, pay_with_gems=True, gems_list=[spy_cost_gems]) # mercenary more expensive than spy
-        self.assertRaises(Exception, self.dm.hire_remote_agent, "guy1",
-                          cities[0], mercenary=False, pay_with_gems=True, gems_list=[mercenary_cost_gems, mercenary_cost_gems])
-
-        self.assertEqual(len(self.dm.get_all_queued_messages()), 0)
-
-        self.dm.hire_remote_agent("guy1", cities[0], mercenary=False, pay_with_gems=True, gems_list=[spy_cost_gems])
-        self.assertRaises(Exception, self.dm.hire_remote_agent, "guy1", cities[0],
-                          mercenary=False, pay_with_gems=True, gems_list=[spy_cost_gems])
-
-        msgs = self.dm.get_all_queued_messages()
-        self.assertEqual(len(msgs), 1)
-        msg = msgs[0]
-        self.assertEqual(msg["recipient_emails"], ["guy1@masslavia.com"])
-        self.assertTrue("report" in msg["body"].lower())
-
-        self.dm.hire_remote_agent("guy1", cities[1], mercenary=True, pay_with_gems=True, gems_list=[spy_cost_gems, spy_cost_gems, mercenary_cost_gems])
-        self.assertEqual(self.dm.get_character_properties("guy1")["gems"], [])
-
-        self.assertEqual(len(self.dm.get_all_queued_messages()), 1)
-
-        # hiring with money #
-        old_nw_account = self.dm.get_character_properties("guy1")["account"]
-        self.dm.transfer_money_between_characters("guy3", "guy1", 2 * mercenary_cost_money) # loyd must have at least that on his account
-
-        self.assertRaises(Exception, self.dm.hire_remote_agent, "guy1",
-                          cities[0], mercenary=True, pay_with_gems=False, gems_list=[mercenary_cost_gems])
-
-        self.dm.hire_remote_agent("guy1", cities[2], mercenary=False, pay_with_gems=False)
-        self.dm.hire_remote_agent("guy1", cities[2], mercenary=True, pay_with_gems=False)
-        self.assertEqual(self.dm.get_locations()[cities[2]]["has_mercenary"], True)
-        self.assertEqual(self.dm.get_locations()[cities[2]]["has_spy"], True)
-
-        self.assertEqual(self.dm.get_character_properties("guy1")["account"], old_nw_account + mercenary_cost_money - spy_cost_money)
-
-        self.dm.transfer_money_between_characters("guy1", "guy3", self.dm.get_character_properties("guy1")["account"]) # we empty the account
-
-        self.assertRaises(Exception, self.dm.hire_remote_agent, "guy1",
-                          cities[3], mercenary=False, pay_with_gems=False)
-        self.assertEqual(self.dm.get_locations()[cities[3]]["has_spy"], False)
-
-        # game master case
-        self.dm.hire_remote_agent("master", cities[3], mercenary=True, pay_with_gems=False, gems_list=[])
-        self.assertEqual(self.dm.get_locations()[cities[3]]["has_mercenary"], True)
-        self.assertEqual(self.dm.get_locations()[cities[3]]["has_spy"], False)
-
-
-    def ___test_mercenary_intervention(self):
-        self._reset_messages()
-
-        cities = self.dm.get_locations().keys()[0:5]
-        self.dm.hire_remote_agent("guy1", cities[3], mercenary=True, pay_with_gems=False) # no message queued, since it's not a spy
-
-        self.assertEqual(len(self.dm.get_all_queued_messages()), 0)
-
-        self.assertRaises(dm_module.UsageError, self.dm.trigger_masslavian_mercenary_intervention, "guy1", cities[4], "Please attack this city.") # no mercenary ready
-
-        self.assertEqual(len(self.dm.get_all_queued_messages()), 0)
-
-        self.dm.trigger_masslavian_mercenary_intervention("guy1", cities[3], "Please attack this city.")
-
-        self.assertEqual(len(self.dm.get_all_queued_messages()), 0)
-
-        new_queue = self.dm.get_all_sent_messages()
-        self.assertEqual(len(new_queue), 1)
-
-        msg = new_queue[0]
-        self.assertEqual(msg["sender_email"], "guy1@masslavia.com", msg) # we MUST use a dummy email to prevent forgery here
-        self.assertEqual(msg["recipient_emails"], ["masslavian-army@special.com"], msg)
-        self.assertTrue(msg["is_certified"], msg)
-        self.assertTrue("attack" in msg["body"].lower())
-        self.assertTrue("***" in msg["body"].lower())
-
-
-    def ___test_teldorian_teleportation(self):
-        self._reset_messages()
-
-        cities = self.dm.get_locations().keys()[0:6]
-        max_actions = self.dm.get_global_parameter("max_teldorian_teleportations")
-        self.assertTrue(max_actions >= 2)
-
-        self.assertEqual(len(self.dm.get_all_queued_messages()), 0)
-
-        for i in range(max_actions):
-            if i == (max_actions - 1):
-                self.dm._add_to_scanned_locations([cities[3]]) # the last attack will be on scanned location !
-            self.dm.trigger_teldorian_teleportation("scanner", cities[3], "Please destroy this city.")
-
-        self.assertEqual(len(self.dm.get_all_queued_messages()), 0) # immediate sending performed
-
-        new_queue = self.dm.get_all_sent_messages()
-        self.assertEqual(len(new_queue), max_actions)
-
-        self.assertTrue("on unscanned" in new_queue[0]["subject"])
-
-        msg = new_queue[-1]
-        self.assertEqual(msg["sender_email"], "scanner@teldorium.com", msg) # we MUST use a dummy email to prevent forgery here
-        self.assertEqual(msg["recipient_emails"], ["teldorian-army@special.com"], msg)
-        self.assertTrue("on scanned" in msg["subject"])
-        self.assertTrue(msg["is_certified"], msg)
-        self.assertTrue("destroy" in msg["body"].lower())
-        self.assertTrue("***" in msg["body"].lower())
-
-        msg = new_queue[-2]
-        self.assertTrue("on unscanned" in msg["subject"])
-
-        self.assertEqual(self.dm.get_global_parameter("teldorian_teleportations_done"), self.dm.get_global_parameter("max_teldorian_teleportations"))
-        self.assertRaises(dm_module.UsageError, self.dm.trigger_teldorian_teleportation, "scanner", cities[3], "Please destroy this city.") # too many teleportations
-
-
-    def ___test_acharith_attack(self):
-        self._reset_messages()
-
-        cities = self.dm.get_locations().keys()[0:5]
-
-        self.assertEqual(len(self.dm.get_all_queued_messages()), 0)
-
-        self.dm.trigger_acharith_attack("guy2", cities[3], "Please annihilate this city.")
-
-        self.assertEqual(len(self.dm.get_all_queued_messages()), 0)
-
-        new_queue = self.dm.get_all_sent_messages()
-        self.assertEqual(len(new_queue), 1)
-
-        msg = new_queue[0]
-        self.assertEqual(msg["sender_email"], "guy2@acharis.com", msg) # we MUST use a dummy email to prevent forgery here
-        self.assertEqual(msg["recipient_emails"], ["acharis-army@special.com"], msg)
-        self.assertTrue(msg["is_certified"], msg)
-        self.assertTrue("annihilate" in msg["body"].lower())
-        self.assertTrue("***" in msg["body"].lower())
-
-
-    def ___test_wiretapping_management(self):
-        self._reset_messages()
-
-        char_names = self.dm.get_character_usernames()
-
-        wiretapping = self.dm.abilities.wiretapping
-
-        wiretapping.change_wiretapping_targets(PersistentList())
-        self.assertEqual(wiretapping.get_current_targets(), [])
-
-        wiretapping.change_wiretapping_targets([char_names[0], char_names[0], char_names[1]])
-
-        self.assertEqual(set(wiretapping.get_current_targets()), set([char_names[0], char_names[1]]))
-        self.assertEqual(wiretapping.get_listeners_for(char_names[1]), [self.TEST_LOGIN])
-
-        self.assertRaises(UsageError, wiretapping.change_wiretapping_targets, ["dummy_name"])
-        self.assertRaises(UsageError, wiretapping.change_wiretapping_targets, [char_names[i] for i in range(wiretapping.get_ability_parameter("max_wiretapping_targets") + 1)])
-
-        self.assertEqual(set(wiretapping.get_current_targets()), set([char_names[0], char_names[1]])) # didn't change
-        self.assertEqual(wiretapping.get_listeners_for(char_names[1]), [self.TEST_LOGIN])
-
-
-    def ____test_scanning_management(self):
-        self._reset_messages()
-
-        self.dm.data["global_parameters"]["scanning_delays"] = 0.03
-        self.dm.commit()
-
-        res = self.dm._compute_scanning_result("sacred_chest")
-        self.assertEqual(res, "Alifir Endara Denkos Mastden Aklarvik Kosalam Nelm".split())
-
-        self.assertEqual(self.dm.get_global_parameter("scanned_locations"), [])
-
-        self.assertEqual(len(self.dm.get_all_sent_messages()), 0)
-        self.assertEqual(len(self.dm.get_all_queued_messages()), 0)
-
-        self.assertRaises(dm_module.UsageError, self.dm.process_scanning_submission, "scanner", "", None)
-
-        # AUTOMATED SCAN #
-        self.dm.process_scanning_submission("scanner", "sacred_chest", "dummydescription1")
-        #print datetime.utcnow(), "----", self.dm.data["scheduled_actions"]
-
-
-        msgs = self.dm.get_all_queued_messages()
-        self.assertEqual(len(msgs), 1)
-        msg = msgs[0]
-        self.assertEqual(msg["recipient_emails"], ["scanner@teldorium.com"])
-        self.assertTrue("scanning" in msg["body"].lower())
-
-        msgs = self.dm.get_all_sent_messages()
-        self.assertEqual(len(msgs), 1)
-        msg = msgs[0]
-        self.assertEqual(msg["sender_email"], "scanner@teldorium.com")
-        self.assertTrue("scan" in msg["body"])
-        self.assertTrue("dummydescription1" in msg["body"])
-        self.assertTrue(self.dm.get_global_parameter("master_login") in msg["has_read"])
-
-        self.dm.process_periodic_tasks()
-        self.assertEqual(self.dm.get_global_parameter("scanned_locations"), []) # still delayed action
-
-        time.sleep(3)
-
-        self.assertEqual(self.dm.process_periodic_tasks(), {"messages_sent": 1, "actions_executed": 1})
-
-        self.assertEqual(self.dm.get_event_count("DELAYED_ACTION_ERROR"), 0)
-        self.assertEqual(self.dm.get_event_count("DELAYED_MESSAGE_ERROR"), 0)
-
-        scanned_locations = self.dm.get_global_parameter("scanned_locations")
-        self.assertTrue("Alifir" in scanned_locations, scanned_locations)
-
-
-        # MANUAL SCAN #
-
-        self.dm.process_scanning_submission("scanner", "", "dummydescription2")
-
-        msgs = self.dm.get_all_queued_messages()
-        self.assertEqual(len(msgs), 0) # still empty
-
-        msgs = self.dm.get_all_sent_messages()
-        self.assertEqual(len(msgs), 3) # 2 messages from previous operation, + new one
-        msg = msgs[2]
-        self.assertEqual(msg["sender_email"], "scanner@teldorium.com")
-        self.assertTrue("scan" in msg["body"])
-        self.assertTrue("dummydescription2" in msg["body"])
-        self.assertFalse(self.dm.get_global_parameter("master_login") in msg["has_read"])
-
 
     @for_core_module(PersonalFiles)
     def test_personal_files(self):
@@ -1150,24 +846,21 @@ class TestGame(TestCase):
 
 
 
-    def ___test_external_contacts(self):
+    def test_external_contacts(self):
 
         emails = self.dm.get_user_contacts(self.dm.get_global_parameter("master_login"))
-        self.assertEqual(len(emails), len(self.dm.get_character_usernames()) + 7) # 5 external contacts, plus master_email and baazel
+
+        # guy1 and guy2 have 3 external contacts altogether, + 2 judicators @ implied by original sent msgs
+        self.assertEqual(len(emails), len(self.dm.get_character_usernames()) + 5)  
 
         emails = self.dm.get_user_contacts("guy2")
-        self.assertEqual(len(emails), 5, emails) # himself, 1 fellow and 2 external contacts, + public email of guy3
-        self.assertTrue("guy3@sciences.com" in emails) # proper domain name...
-        self.assertTrue(all(email.endswith("acharis.com") or email == "guy3@sciences.com" for email in emails)) # public and same-domain emails only
+        self.assertEqual(len(emails), len(self.dm.get_character_usernames()) + 2, emails) # himself & fellows, + 1 external contact + 1 implied by original msgs
+        self.assertTrue("guy3@pangea.com" in emails) # proper domain name...
 
-        emails = self.dm.get_external_emails("guy1")
-        self.assertEqual(len(emails), 1, emails)
-        self.assertTrue(all(email.endswith("sciences.com") for email in emails))
-
-        emails = self.dm.get_external_emails("master")
-        self.assertEqual(len(emails), 7)
-    
-        
+        emails = self.dm.get_user_contacts("guy3")
+        self.assertEqual(len(emails), len(self.dm.get_character_usernames()), emails)
+        emails = self.dm.get_external_emails("guy3")
+        self.assertEqual(len(emails), 0, emails)
                 
 
     def test_text_messaging(self):
@@ -1553,48 +1246,6 @@ class TestGame(TestCase):
             self.assertTrue(utcnow - timedelta(seconds=2) < event["time"] <= utcnow)
 
 
-    def ____test_bots(self):  # TODO PAKAL PUT BOTS BACK!!!
-
-        bot_name = "Pay Rhuss" #self.dm.data["AI_bots"]["Pay Rhuss"].keys()[0]
-        #print bot_name, " --- ",self.dm.data["AI_bots"]["bot_properties"]
-
-        self._reset_messages()
-
-        username = "guy1"
-
-        res = self.dm.get_bot_response(username, bot_name, "hello")
-        self.assertTrue("hi" in res.lower())
-
-        res = self.dm.get_bot_response(username, bot_name, "What's your name ?")
-        self.assertTrue(bot_name.lower() in res.lower())
-
-        res = self.dm.get_bot_response(username, bot_name, "What's my name ?")
-        self.assertTrue(username in res.lower())
-
-        res = self.dm.get_bot_history(bot_name)
-        self.assertEqual(len(res), 2)
-        self.assertEqual(len(res[0]), 3)
-        self.assertEqual(len(res[0]), len(res[1]))
-
-        res = self.dm.get_bot_response(username, bot_name, "do you know where the orbs are ?").lower()
-        self.assertTrue("celestial tears" in res, res)
-
-        res = self.dm.get_bot_response(username, bot_name, "Where is loyd georges' orb ?").lower()
-        self.assertTrue("father and his future son-in-law" in res, res)
-
-        res = self.dm.get_bot_response(username, bot_name, "who owns the beta orb ?").lower()
-        self.assertTrue("underground temple" in res, res)
-
-        res = self.dm.get_bot_response(username, bot_name, "where is the gamma orb ?").lower()
-        self.assertTrue("last treasure" in res, res)
-
-        res = self.dm.get_bot_response(username, bot_name, "where is the wife of the guy2 ?").lower()
-        self.assertTrue("young reporter" in res, res)
-
-        res = self.dm.get_bot_response(username, bot_name, "who is cynthia ?").lower()
-        self.assertTrue("future wife" in res, res)
-
-
     @for_ability(HouseLockingAbility)
     def test_house_locking(self):
 
@@ -1617,48 +1268,6 @@ class TestGame(TestCase):
 
 
 
-    def __test_enigma_coherency(self):
-        # no initial messages reset ! #
-
-        # Number of wiretapping targets allowed
-        A = self.dm.get_global_parameter("max_wiretapping_targets")
-        B = self.dm.get_sent_message_by_id("instructions_listener")["body"]
-        self.assertTrue(" %d " % A in B, repr(B))
-
-        # Number of teleporations authorized for teldorians
-        A = self.dm.get_global_parameter("max_teldorian_teleportations")
-        B = self.dm.get_sent_message_by_id("instructions_listener")["body"]
-        self.assertTrue(" %d " % A in B, repr(B))
-
-        # Password of automated doors
-        A = int(self.dm.get_global_parameter("house_doors_password"))
-        B = self.dm.data["manual_messages_templates"]["domotics_password_change"]["body"]
-        self.assertTrue("0x%X" % A in B, repr(B)) # in hexadecimal
-
-        # Number of telecom investigations authorized for guy2
-        A = self.dm.get_global_parameter("max_telecom_investigations")
-        B = [msg for msg in self.dm.data["messages_sent"] if msg["id"] == "telecom_investigations_guy2"][0]["body"]
-        self.assertTrue(" %d " % A in B, repr(B))
-
-        # Enigma of TinEye photo
-        self.assertTrue(os.path.isdir(os.path.join(config.GAME_FILES_ROOT, "encrypted", "guy2_report", "evans")))
-
-        # Official names of players, in their instructions
-        for (name, value) in self.dm.get_character_sets().items():
-            AAAA
-            if name != "guy3": # this one doesn't need to be told his name...
-                official_name = value["official_name"].lower()
-                instructions = self.dm.get_sent_message_by_id("instructions_" + name)["body"]. lower()
-                self.assertTrue(official_name in instructions, (official_name, repr(instructions)))
-
-        # teldorians
-        teldorian_properties = self.dm.get_domain_properties("teldorium.com") # must exist
-        instructions = teldorian_properties["instructions"].lower()
-        ### BUGGY teldorian_characters = [username for (username, properties) in self.dm.get_character_sets().items() if properties["domain"] == "teldorium.com"]
-        teldorian_official_names = [self.dm.get_character_properties(username)["official_name"] for username in teldorian_characters]
-        for official_name in teldorian_official_names:
-            self.assertTrue(official_name.lower() in instructions, (official_name.lower(), repr(instructions)))
- 
 
     @for_datamanager_base
     def test_database_management(self):
@@ -1850,6 +1459,394 @@ class TestGame(TestCase):
     def __test_player_game_paused_page_displays(self):
         self.dm.set_game_state(False)
         self._test_player_get_requests()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+class SpecialAbilityTests(object):
+
+
+
+
+    def __test_telecom_investigations(self):
+        # no reset of initial messages
+
+
+        initial_length_queued_msgs = len(self.dm.get_all_queued_messages())
+        initial_length_sent_msgs = len(self.dm.get_all_sent_messages())
+
+
+        # text processing #
+
+        res = self.dm._corrupt_text_parts("hello ca va bien coco?", (1, 1), "")
+        self.assertEqual(res, "hello ... va ... coco?")
+
+        msg = "hello ca va bien coco? Quoi de neuf ici ? Tout est OK ?"
+        res = self.dm._corrupt_text_parts(msg, (2, 4), "de neuf ici")
+        self.assertTrue("de neuf ici" in res, res)
+        self.assertTrue(14 < len(res) < len(msg), len(res))
+
+
+        # corruption of team intro + personal instructions
+        text = self.dm._get_corrupted_introduction("guy2", "SiMoN  BladstaFfulOvza")
+
+        dump = set(text.split())
+        parts1 = set(u"Depuis , notre Ordre Acharite fouille Ciel Terre retrouver Trois Orbes".split())
+        parts2 = set(u"votre drogues sera aide inestimable cette mission".split())
+
+        self.assertTrue(len(dump ^ parts1) > 2)
+        self.assertTrue(len(dump ^ parts2) > 2)
+
+        self.assertTrue("Simon Bladstaffulovza" in text, repr(text))
+
+
+
+        # whole inquiry requests
+
+        telecom_investigations_done = self.dm.get_global_parameter("telecom_investigations_done")
+        self.assertEqual(telecom_investigations_done, 0)
+        max_telecom_investigations = self.dm.get_global_parameter("max_telecom_investigations")
+
+        self.assertRaises(dm_module.UsageError, self.dm.launch_telecom_investigation, "guy2", "guy2")
+
+        self.assertEqual(len(self.dm.get_all_queued_messages()), initial_length_queued_msgs + 0)
+
+        self.dm.launch_telecom_investigation("guy2", "guy2")
+
+        msgs = self.dm.get_all_queued_messages()
+        self.assertEqual(len(msgs), initial_length_queued_msgs + 1)
+        msg = msgs[-1]
+        self.assertEqual(msg["recipient_emails"], ["guy2@sciences.com"])
+
+        msgs = self.dm.get_all_sent_messages()
+        self.assertEqual(len(msgs), initial_length_sent_msgs + 1)
+        msg = msgs[-1]
+        self.assertEqual(msg["sender_email"], "guy2@sciences.com")
+        self.assertTrue("discover" in msg["body"])
+        self.assertTrue(self.dm.get_global_parameter("master_login") in msg["has_read"])
+
+        for i in range(max_telecom_investigations - 1):
+            self.dm.launch_telecom_investigation("guy2", "guy3")
+        msgs = self.dm.get_all_queued_messages()
+        self.assertEqual(len(msgs), initial_length_queued_msgs + max_telecom_investigations)
+
+        self.assertRaises(dm_module.UsageError, self.dm.launch_telecom_investigation, "guy2", "guy3") # max count exceeded
+
+
+    def ___test_agent_hiring(self):
+        self._reset_messages()
+
+        spy_cost_money = self.dm.get_global_parameter("spy_cost_money")
+        spy_cost_gems = self.dm.get_global_parameter("spy_cost_gems")
+        mercenary_cost_money = self.dm.get_global_parameter("mercenary_cost_money")
+        mercenary_cost_gems = self.dm.get_global_parameter("mercenary_cost_gems")
+
+        self.dm.get_character_properties("guy1")["gems"] = PersistentList([spy_cost_gems, spy_cost_gems, spy_cost_gems, mercenary_cost_gems])
+        self.dm.commit()
+
+        cities = self.dm.get_locations().keys()[0:5]
+
+
+        # hiring with gems #
+
+
+        self.assertRaises(Exception, self.dm.hire_remote_agent, "guy1",
+                          cities[0], mercenary=False, pay_with_gems=True)
+
+        self.assertRaises(Exception, self.dm.hire_remote_agent, "guy1",
+                          cities[0], mercenary=True, pay_with_gems=True, gems_list=[spy_cost_gems]) # mercenary more expensive than spy
+        self.assertRaises(Exception, self.dm.hire_remote_agent, "guy1",
+                          cities[0], mercenary=False, pay_with_gems=True, gems_list=[mercenary_cost_gems, mercenary_cost_gems])
+
+        self.assertEqual(len(self.dm.get_all_queued_messages()), 0)
+
+        self.dm.hire_remote_agent("guy1", cities[0], mercenary=False, pay_with_gems=True, gems_list=[spy_cost_gems])
+        self.assertRaises(Exception, self.dm.hire_remote_agent, "guy1", cities[0],
+                          mercenary=False, pay_with_gems=True, gems_list=[spy_cost_gems])
+
+        msgs = self.dm.get_all_queued_messages()
+        self.assertEqual(len(msgs), 1)
+        msg = msgs[0]
+        self.assertEqual(msg["recipient_emails"], ["guy1@masslavia.com"])
+        self.assertTrue("report" in msg["body"].lower())
+
+        self.dm.hire_remote_agent("guy1", cities[1], mercenary=True, pay_with_gems=True, gems_list=[spy_cost_gems, spy_cost_gems, mercenary_cost_gems])
+        self.assertEqual(self.dm.get_character_properties("guy1")["gems"], [])
+
+        self.assertEqual(len(self.dm.get_all_queued_messages()), 1)
+
+        # hiring with money #
+        old_nw_account = self.dm.get_character_properties("guy1")["account"]
+        self.dm.transfer_money_between_characters("guy3", "guy1", 2 * mercenary_cost_money) # loyd must have at least that on his account
+
+        self.assertRaises(Exception, self.dm.hire_remote_agent, "guy1",
+                          cities[0], mercenary=True, pay_with_gems=False, gems_list=[mercenary_cost_gems])
+
+        self.dm.hire_remote_agent("guy1", cities[2], mercenary=False, pay_with_gems=False)
+        self.dm.hire_remote_agent("guy1", cities[2], mercenary=True, pay_with_gems=False)
+        self.assertEqual(self.dm.get_locations()[cities[2]]["has_mercenary"], True)
+        self.assertEqual(self.dm.get_locations()[cities[2]]["has_spy"], True)
+
+        self.assertEqual(self.dm.get_character_properties("guy1")["account"], old_nw_account + mercenary_cost_money - spy_cost_money)
+
+        self.dm.transfer_money_between_characters("guy1", "guy3", self.dm.get_character_properties("guy1")["account"]) # we empty the account
+
+        self.assertRaises(Exception, self.dm.hire_remote_agent, "guy1",
+                          cities[3], mercenary=False, pay_with_gems=False)
+        self.assertEqual(self.dm.get_locations()[cities[3]]["has_spy"], False)
+
+        # game master case
+        self.dm.hire_remote_agent("master", cities[3], mercenary=True, pay_with_gems=False, gems_list=[])
+        self.assertEqual(self.dm.get_locations()[cities[3]]["has_mercenary"], True)
+        self.assertEqual(self.dm.get_locations()[cities[3]]["has_spy"], False)
+
+
+    def ___test_mercenary_intervention(self):
+        self._reset_messages()
+
+        cities = self.dm.get_locations().keys()[0:5]
+        self.dm.hire_remote_agent("guy1", cities[3], mercenary=True, pay_with_gems=False) # no message queued, since it's not a spy
+
+        self.assertEqual(len(self.dm.get_all_queued_messages()), 0)
+
+        self.assertRaises(dm_module.UsageError, self.dm.trigger_masslavian_mercenary_intervention, "guy1", cities[4], "Please attack this city.") # no mercenary ready
+
+        self.assertEqual(len(self.dm.get_all_queued_messages()), 0)
+
+        self.dm.trigger_masslavian_mercenary_intervention("guy1", cities[3], "Please attack this city.")
+
+        self.assertEqual(len(self.dm.get_all_queued_messages()), 0)
+
+        new_queue = self.dm.get_all_sent_messages()
+        self.assertEqual(len(new_queue), 1)
+
+        msg = new_queue[0]
+        self.assertEqual(msg["sender_email"], "guy1@masslavia.com", msg) # we MUST use a dummy email to prevent forgery here
+        self.assertEqual(msg["recipient_emails"], ["masslavian-army@special.com"], msg)
+        self.assertTrue(msg["is_certified"], msg)
+        self.assertTrue("attack" in msg["body"].lower())
+        self.assertTrue("***" in msg["body"].lower())
+
+
+    def ___test_teldorian_teleportation(self):
+        self._reset_messages()
+
+        cities = self.dm.get_locations().keys()[0:6]
+        max_actions = self.dm.get_global_parameter("max_teldorian_teleportations")
+        self.assertTrue(max_actions >= 2)
+
+        self.assertEqual(len(self.dm.get_all_queued_messages()), 0)
+
+        for i in range(max_actions):
+            if i == (max_actions - 1):
+                self.dm._add_to_scanned_locations([cities[3]]) # the last attack will be on scanned location !
+            self.dm.trigger_teldorian_teleportation("scanner", cities[3], "Please destroy this city.")
+
+        self.assertEqual(len(self.dm.get_all_queued_messages()), 0) # immediate sending performed
+
+        new_queue = self.dm.get_all_sent_messages()
+        self.assertEqual(len(new_queue), max_actions)
+
+        self.assertTrue("on unscanned" in new_queue[0]["subject"])
+
+        msg = new_queue[-1]
+        self.assertEqual(msg["sender_email"], "scanner@teldorium.com", msg) # we MUST use a dummy email to prevent forgery here
+        self.assertEqual(msg["recipient_emails"], ["teldorian-army@special.com"], msg)
+        self.assertTrue("on scanned" in msg["subject"])
+        self.assertTrue(msg["is_certified"], msg)
+        self.assertTrue("destroy" in msg["body"].lower())
+        self.assertTrue("***" in msg["body"].lower())
+
+        msg = new_queue[-2]
+        self.assertTrue("on unscanned" in msg["subject"])
+
+        self.assertEqual(self.dm.get_global_parameter("teldorian_teleportations_done"), self.dm.get_global_parameter("max_teldorian_teleportations"))
+        self.assertRaises(dm_module.UsageError, self.dm.trigger_teldorian_teleportation, "scanner", cities[3], "Please destroy this city.") # too many teleportations
+
+
+    def ___test_acharith_attack(self):
+        self._reset_messages()
+
+        cities = self.dm.get_locations().keys()[0:5]
+
+        self.assertEqual(len(self.dm.get_all_queued_messages()), 0)
+
+        self.dm.trigger_acharith_attack("guy2", cities[3], "Please annihilate this city.")
+
+        self.assertEqual(len(self.dm.get_all_queued_messages()), 0)
+
+        new_queue = self.dm.get_all_sent_messages()
+        self.assertEqual(len(new_queue), 1)
+
+        msg = new_queue[0]
+        self.assertEqual(msg["sender_email"], "guy2@acharis.com", msg) # we MUST use a dummy email to prevent forgery here
+        self.assertEqual(msg["recipient_emails"], ["acharis-army@special.com"], msg)
+        self.assertTrue(msg["is_certified"], msg)
+        self.assertTrue("annihilate" in msg["body"].lower())
+        self.assertTrue("***" in msg["body"].lower())
+
+
+    def ___test_wiretapping_management(self):
+        self._reset_messages()
+
+        char_names = self.dm.get_character_usernames()
+
+        wiretapping = self.dm.abilities.wiretapping
+
+        wiretapping.change_wiretapping_targets(PersistentList())
+        self.assertEqual(wiretapping.get_current_targets(), [])
+
+        wiretapping.change_wiretapping_targets([char_names[0], char_names[0], char_names[1]])
+
+        self.assertEqual(set(wiretapping.get_current_targets()), set([char_names[0], char_names[1]]))
+        self.assertEqual(wiretapping.get_listeners_for(char_names[1]), [self.TEST_LOGIN])
+
+        self.assertRaises(UsageError, wiretapping.change_wiretapping_targets, ["dummy_name"])
+        self.assertRaises(UsageError, wiretapping.change_wiretapping_targets, [char_names[i] for i in range(wiretapping.get_ability_parameter("max_wiretapping_targets") + 1)])
+
+        self.assertEqual(set(wiretapping.get_current_targets()), set([char_names[0], char_names[1]])) # didn't change
+        self.assertEqual(wiretapping.get_listeners_for(char_names[1]), [self.TEST_LOGIN])
+
+
+    def ____test_scanning_management(self):
+        self._reset_messages()
+
+        self.dm.data["global_parameters"]["scanning_delays"] = 0.03
+        self.dm.commit()
+
+        res = self.dm._compute_scanning_result("sacred_chest")
+        self.assertEqual(res, "Alifir Endara Denkos Mastden Aklarvik Kosalam Nelm".split())
+
+        self.assertEqual(self.dm.get_global_parameter("scanned_locations"), [])
+
+        self.assertEqual(len(self.dm.get_all_sent_messages()), 0)
+        self.assertEqual(len(self.dm.get_all_queued_messages()), 0)
+
+        self.assertRaises(dm_module.UsageError, self.dm.process_scanning_submission, "scanner", "", None)
+
+        # AUTOMATED SCAN #
+        self.dm.process_scanning_submission("scanner", "sacred_chest", "dummydescription1")
+        #print datetime.utcnow(), "----", self.dm.data["scheduled_actions"]
+
+
+        msgs = self.dm.get_all_queued_messages()
+        self.assertEqual(len(msgs), 1)
+        msg = msgs[0]
+        self.assertEqual(msg["recipient_emails"], ["scanner@teldorium.com"])
+        self.assertTrue("scanning" in msg["body"].lower())
+
+        msgs = self.dm.get_all_sent_messages()
+        self.assertEqual(len(msgs), 1)
+        msg = msgs[0]
+        self.assertEqual(msg["sender_email"], "scanner@teldorium.com")
+        self.assertTrue("scan" in msg["body"])
+        self.assertTrue("dummydescription1" in msg["body"])
+        self.assertTrue(self.dm.get_global_parameter("master_login") in msg["has_read"])
+
+        self.dm.process_periodic_tasks()
+        self.assertEqual(self.dm.get_global_parameter("scanned_locations"), []) # still delayed action
+
+        time.sleep(3)
+
+        self.assertEqual(self.dm.process_periodic_tasks(), {"messages_sent": 1, "actions_executed": 1})
+
+        self.assertEqual(self.dm.get_event_count("DELAYED_ACTION_ERROR"), 0)
+        self.assertEqual(self.dm.get_event_count("DELAYED_MESSAGE_ERROR"), 0)
+
+        scanned_locations = self.dm.get_global_parameter("scanned_locations")
+        self.assertTrue("Alifir" in scanned_locations, scanned_locations)
+
+
+        # MANUAL SCAN #
+
+        self.dm.process_scanning_submission("scanner", "", "dummydescription2")
+
+        msgs = self.dm.get_all_queued_messages()
+        self.assertEqual(len(msgs), 0) # still empty
+
+        msgs = self.dm.get_all_sent_messages()
+        self.assertEqual(len(msgs), 3) # 2 messages from previous operation, + new one
+        msg = msgs[2]
+        self.assertEqual(msg["sender_email"], "scanner@teldorium.com")
+        self.assertTrue("scan" in msg["body"])
+        self.assertTrue("dummydescription2" in msg["body"])
+        self.assertFalse(self.dm.get_global_parameter("master_login") in msg["has_read"])
+
+
+
+
+    def ____test_bots(self):  # TODO PAKAL PUT BOTS BACK!!!
+
+        bot_name = "Pay Rhuss" #self.dm.data["AI_bots"]["Pay Rhuss"].keys()[0]
+        #print bot_name, " --- ",self.dm.data["AI_bots"]["bot_properties"]
+
+        self._reset_messages()
+
+        username = "guy1"
+
+        res = self.dm.get_bot_response(username, bot_name, "hello")
+        self.assertTrue("hi" in res.lower())
+
+        res = self.dm.get_bot_response(username, bot_name, "What's your name ?")
+        self.assertTrue(bot_name.lower() in res.lower())
+
+        res = self.dm.get_bot_response(username, bot_name, "What's my name ?")
+        self.assertTrue(username in res.lower())
+
+        res = self.dm.get_bot_history(bot_name)
+        self.assertEqual(len(res), 2)
+        self.assertEqual(len(res[0]), 3)
+        self.assertEqual(len(res[0]), len(res[1]))
+
+        res = self.dm.get_bot_response(username, bot_name, "do you know where the orbs are ?").lower()
+        self.assertTrue("celestial tears" in res, res)
+
+        res = self.dm.get_bot_response(username, bot_name, "Where is loyd georges' orb ?").lower()
+        self.assertTrue("father and his future son-in-law" in res, res)
+
+        res = self.dm.get_bot_response(username, bot_name, "who owns the beta orb ?").lower()
+        self.assertTrue("underground temple" in res, res)
+
+        res = self.dm.get_bot_response(username, bot_name, "where is the gamma orb ?").lower()
+        self.assertTrue("last treasure" in res, res)
+
+        res = self.dm.get_bot_response(username, bot_name, "where is the wife of the guy2 ?").lower()
+        self.assertTrue("young reporter" in res, res)
+
+        res = self.dm.get_bot_response(username, bot_name, "who is cynthia ?").lower()
+        self.assertTrue("future wife" in res, res)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 '''

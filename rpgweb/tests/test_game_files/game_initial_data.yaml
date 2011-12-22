@@ -219,7 +219,7 @@ character_properties:
         account: 1000
         secret_question: "What's the ultimate step of consciousness ?"
         secret_answer: "" # let empty to prevent any password recovery
-        external_contacts: ["judicators@acharis.com", "baazel@acharis.com"]
+        external_contacts: ["belasquez@acharis.com", "baazel@acharis.com"]
         new_messages_notification: info_spots_1
         initial_cold_cash: 1000
         official_name: "Simon Bladstaffulovza"
@@ -334,7 +334,7 @@ wiretapping_targets: [] #-> list of characters whose messages will be intercepte
 messages_sent:  #-> list of messages processed
 
     - id: instructions_bewitcher
-      sender_email: judicators@acharis.com
+      sender_email: judicators1@acharis.com
       recipient_emails: guy1
       subject: "Ordres de Missions"
       attachment: "/files/attachments/image2.png"
@@ -346,7 +346,7 @@ messages_sent:  #-> list of messages processed
 
 
     - id: instructions_oracle
-      sender_email: judicators@acharis.com
+      sender_email: judicators2@acharis.com
       recipient_emails: guy2
       subject: "Ordres de Missions"
       attachment: "/files/attachments/image1.png"

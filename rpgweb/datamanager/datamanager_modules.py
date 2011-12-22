@@ -674,7 +674,14 @@ class OnlinePresence(BaseDataManager):
 @register_module
 class TextMessaging(BaseDataManager): # TODO REFINE
 
-
+    def _recompute_all_external_contacts_via_msgs(self):
+        external_contacts_changed = False
+        for msg in self.data["messages_sent"]:
+            res = self._update_external_contacts(msg)
+            if res: 
+                external_contacts_changed = True
+        return external_contacts_changed
+    
     def _load_initial_data(self, **kwargs):
         super(TextMessaging, self)._load_initial_data(**kwargs)
 
@@ -733,9 +740,8 @@ class TextMessaging(BaseDataManager): # TODO REFINE
         #complete_messages_templates(new_data["automated_messages_templates"], is_manual=False)
         complete_messages_templates(new_data["manual_messages_templates"], is_manual=True)
 
-
-        for msg in new_data["messages_sent"]:
-            self._update_external_contacts(msg) # important
+        # we compute automatic external_contacts for the first time
+        self._recompute_all_external_contacts_via_msgs()
 
 
     def _check_database_coherency(self, **kwargs):
@@ -801,24 +807,15 @@ class TextMessaging(BaseDataManager): # TODO REFINE
         #all_msg_files += [self.data["audio_messages"][properties["request_for_report"]]["file"] for properties in self.data["domains"].values()]
         assert len(set(all_msg_files)) == len(self.data["character_properties"]) # + len(self.data["domains"])# users must NOT share new-message audio notifications
 
+        # we recompute external_contacts, and check everything is coherent
+        assert not self._recompute_all_external_contacts_via_msgs()
+
         for character_set in self.data["character_properties"].values():
+            utilities.check_no_duplicates(character_set["external_contacts"])
             for external_contact in character_set["external_contacts"]:
                 utilities.check_is_email(external_contact)
-
-        # we recompute external_contacts, and check everything is coherent
-        characters_external_contacts = dict((username, set()) for username in self.data["character_properties"].keys())
-        for msg in game_data["messages_sent"]:
-            (concerned_characters, external_emails) = self._get_external_contacts_updates(msg)
-            for concerned_character in concerned_characters:
-                characters_external_contacts[concerned_character].update(external_emails)
-
-        # NO - TOO OVERKILL CHECK!! 
-        #for (username, external_contacts) in characters_external_contacts.items():
-            # we check that all addresses used in msg exchanges appear in right external_contacts
-        #    assert external_contacts <= set(self.data["character_properties"][username]["external_contacts"])
-
-
-
+                
+                
     def _process_periodic_tasks(self, report):
         super(TextMessaging, self)._process_periodic_tasks(report)
 
@@ -1009,11 +1006,10 @@ class TextMessaging(BaseDataManager): # TODO REFINE
             char_sets = self.get_character_sets()
             all_contacts = [contact for (name, character) in char_sets.items()
                                          for contact in character["external_contacts"]]
-            return all_contacts
+            return sorted(set(all_contacts))
         else:
-            # FIXME - add here all addresses of previous mail exchanges
             character = self.get_character_properties(username)
-            return [self.get_global_parameter("master_email")] + character["external_contacts"]
+            return character["external_contacts"]
 
 
     @readonly_method
@@ -1198,8 +1194,8 @@ class TextMessaging(BaseDataManager): # TODO REFINE
     @readonly_method
     def _get_external_contacts_updates(self, msg):
         """
-        Retrieve info to update the *external_contacts* fields of character accounts,
-        when they send/receive a message.
+        Retrieve info needed to update the *external_contacts* fields of character accounts,
+        when they send/receive this single message.
         """
         all_characters_emails = set(self.get_players_emails())
         msg_emails = set(msg["recipient_emails"] + [msg["sender_email"]])
@@ -1219,10 +1215,13 @@ class TextMessaging(BaseDataManager): # TODO REFINE
 
         for username in concerned_characters:
             props = self.get_character_properties(username)
-            new_external_contacts = set(props["external_contacts"]) | external_emails
-            assert set(props["external_contacts"]) <= new_external_contacts # that list can only grow
-            props["external_contacts"] = PersistentList(new_external_contacts)
-
+            old_external_contacts = set(props["external_contacts"])
+            new_external_contacts = old_external_contacts | external_emails
+            assert set(props["external_contacts"]) <= new_external_contacts # that list can only grow - of course
+            props["external_contacts"] = PersistentList(new_external_contacts) # no particular sorting here, but unicity is ensured
+            
+            new_contacts_added = (new_external_contacts != old_external_contacts)
+            return new_contacts_added
 
     @transaction_watcher
     def _immediately_send_message(self, msg):
