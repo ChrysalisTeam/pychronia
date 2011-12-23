@@ -1072,7 +1072,7 @@ class TextMessaging(BaseDataManager): # TODO REFINE
 
     @readonly_method
     def get_intercepted_messages(self, username=None): # for wiretapping
-        if username is not None:
+        if username is not None and not self.is_master(username):
             assert username in self.get_character_usernames()
             records = [record for record in self.data["messages_sent"] if username in record["intercepted_by"]]
         else:

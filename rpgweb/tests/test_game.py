@@ -2,7 +2,7 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
-import os, sys, pytest
+import os, sys, pytest, unittest
 
 
 
@@ -29,7 +29,9 @@ import rpgweb.middlewares
 
 # we want django-specific checker methods
 # do NOT use the django.test.TestCase version, with SQL session management
-from django.utils.unittest.case import TestCase 
+#from django.utils.unittest.case import TestCase 
+#from django.test.testcases import TransactionTestCase as TestCase
+from django.test import TestCase
 
 from django.test.client import Client
 import django.utils.translation
@@ -72,10 +74,10 @@ def for_ability(klass):
 
 
 
-TEST_GAME_INSTANCE_ID = "default"
-ROOT_GAME_URL = "/rpgweb/%s" % TEST_GAME_INSTANCE_ID
+TEST_GAME_INSTANCE_ID = "TeStiNg"
+ROOT_GAME_URL = "/%s" % TEST_GAME_INSTANCE_ID
 
-sys.setrecursionlimit(120) # to help detect recursion problems
+sys.setrecursionlimit(200) # to help detect recursion problems
 
 logging.basicConfig() ## FIXME
 logging.disable(60)
@@ -93,7 +95,9 @@ logging.getLogger(0).setLevel(logging.DEBUG)
 
 class TestUtilities(TestCase):
 
-
+    def __call__(self, *args, **kwds):
+        return unittest.TestCase.run(self, *args, **kwds) # we bypass test setups from django's TestCase, to use py.test instead
+    
     def test_type_conversions(self):
 
         # test 1 #
@@ -199,11 +203,18 @@ class AutoCheckingDM(object):
 
 
 class TestGame(TestCase):
+    
     # WARNING - when directly modifying "self.dm.data" sub-objects, don't forget to commit() after !!
 
-    # Also, test launching always sets "DEBUG" to False !!
-
+    def __call__(self, *args, **kwds):
+        return unittest.TestCase.run(self, *args, **kwds) # we bypass test setups from django's TestCase, to use py.test instead
+    
+    
+    
     def setUp(self):
+        
+        assert settings.DEBUG == True
+        
         django.utils.translation.activate("en") # to test for error messages, just in case...
 
         logging.basicConfig() # in case ZODB or others have things to say...
@@ -220,9 +231,6 @@ class TestGame(TestCase):
 
             self.dm.reset_game_data()
 
-            self._inject_test_domain()
-            self._inject_test_user()
-
             self.dm.check_database_coherency() # important
 
             self.dm.set_game_state(True)
@@ -230,7 +238,7 @@ class TestGame(TestCase):
             self.dm.clear_all_event_stats()
 
             #self.default_player = self.dm.get_character_usernames()[0]
-            self._set_user(self.TEST_LOGIN)
+            #self._set_user(self.TEST_LOGIN)
 
             self.initial_msg_sent_length = len(self.dm.get_all_sent_messages())
             self.initial_msg_queue_length = len(self.dm.get_all_queued_messages())
@@ -238,7 +246,6 @@ class TestGame(TestCase):
 
             # comment this to have eclipse's autocompletion to work for datamanager anyway
             self.dm = AutoCheckingDM(self.dm) # protection against uncommitted, pending changes
-
 
             logging.disable(logging.CRITICAL) # to be commented if more output is wanted !!!
 
@@ -248,7 +255,7 @@ class TestGame(TestCase):
             self.tearDown(check=False) # cleanup of db and connection in any case
             raise
 
-
+    """
     TEST_DOMAIN = "dummy_domain"
     def _inject_test_domain(self, name=TEST_DOMAIN, **overrides):
         return # TODO FIXME
@@ -301,8 +308,8 @@ class TestGame(TestCase):
         properties = utilities.convert_object_tree(properties, utilities.python_to_zodb_types)
         self.dm.data["character_properties"][name] = properties
         self.dm.commit()
-
-
+    """
+    
     def tearDown(self, check=True):
 
         if hasattr(self, "dm") and check:
@@ -341,6 +348,13 @@ class TestGame(TestCase):
         self.dm.data["messages_sent"] = PersistentList()
         self.dm.data["messages_queued"] = PersistentList()
         self.dm.commit()
+
+
+    def _reset_django_db(self):
+        from django.test.utils import setup_test_environment ## ,???
+        from django.core import management
+        management.call_command('syncdb', verbosity=0, interactive=False)
+        management.call_command('flush', verbosity=0, interactive=False)
 
 
     @for_datamanager_base
@@ -1279,11 +1293,12 @@ class TestGame(TestCase):
 
 
     def _master_logging(self):
+        master_login = self.dm.get_global_parameter("master_login")
         login_page = reverse("rpgweb.views.login", kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID))
         response = self.client.get(login_page) # to set preliminary cookies
         self.assertEqual(response.status_code, 200)
 
-        response = self.client.post(login_page, data=dict(secret_username=self.dm.get_global_parameter("master_login"), secret_password=self.dm.get_global_parameter("master_password")))
+        response = self.client.post(login_page, data=dict(secret_username=master_login, secret_password=self.dm.get_global_parameter("master_password")))
 
         self.assertEqual(response.status_code, 302)
 
@@ -1291,11 +1306,12 @@ class TestGame(TestCase):
             self.assertRedirects(response, ROOT_GAME_URL + "/")
         else:
             self.assertRedirects(response, ROOT_GAME_URL + "/opening/") # beautiful intro for days before the game starts
-
+        
+        assert self.client.session["rpgweb_session_ticket"] == (TEST_GAME_INSTANCE_ID, master_login)
         self.assertTrue(self.client.cookies["sessionid"])
 
 
-    def _player_logging(self, username):
+    def ____player_logging(self, username):
         login_page = reverse("rpgweb.views.login", kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID))
         response = self.client.get(login_page) # to set preliminary cookies
         self.assertEqual(response.status_code, 200)
@@ -1319,42 +1335,50 @@ class TestGame(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, login_page)
 
+        assert not self.client.session.has_key("rpgweb_session_ticket")
         self.assertEqual(self.client.session.keys(), ["testcookie"]) # we get it once more
 
 
     def _simple_master_get_requests(self):
+        
+        self._reset_django_db()
+        
         self.dm.data["global_parameters"]["online_presence_timeout_s"] = 1
         self.dm.data["global_parameters"]["chatroom_presence_timeout_s"] = 1
         self.dm.commit()
         time.sleep(1.2) # online/chatting users list gets emptied
 
-        self._master_logging()
-
+        self._master_logging() # equivalent to self._set_user(self.dm.get_global_parameter("master_login"))
+        
         from django.core.urlresolvers import RegexURLResolver
-        from urls import final_urlpatterns
+        from rpgweb.urls import final_urlpatterns
 
-        skipped_patterns = "DATABASE_OPERATIONS FAIL_TEST ajax item_3d_view chat_with_djinn static.serve encrypted_folder view_single_message logout login secret_question".split()
-        views = [url._callback_str for url in final_urlpatterns if not isinstance(url, RegexURLResolver) and not [veto for veto in skipped_patterns if veto in url._callback_str]]
+        skipped_patterns = """ability instructions
+                              DATABASE_OPERATIONS FAIL_TEST ajax item_3d_view chat_with_djinn static.serve encrypted_folder view_single_message logout login secret_question""".split()
+        views = [url._callback_str for url in final_urlpatterns 
+                                   if not isinstance(url, RegexURLResolver) and 
+                                      not [veto for veto in skipped_patterns if veto in url._callback_str]
+                                      and "__" not in url._callback_str] # skip disabled views
         #print views
-
+        
         for view in views:
             url = reverse(view, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID))
-            #print " ====> ", url
+            #print(" ====> ", url)
             response = self.client.get(url)
-            #print response.content
+            #print(response._headers) #repr(response.content))
             self.assertEqual(response.status_code, 200, view + " | " + url + " | " + str(response.status_code))
-
-
+ 
+   
         # these urls and their post data might easily change, beware !
-        special_urls = {ROOT_GAME_URL + "/item3dview/sacred_book/": None,
-                        ROOT_GAME_URL + "/djinn/": {"djinn": "Pay Rhuss"},
+        special_urls = {ROOT_GAME_URL + "/item3dview/sacred_chest/": None,
+                        # FIXME NOT YET READYROOT_GAME_URL + "/djinn/": {"djinn": "Pay Rhuss"},
                         config.MEDIA_URL + "Burned/default_styles.css": None,
-                        config.GAME_FILES_URL + "attachments/antic_runes.gif": None,
-                        config.GAME_FILES_URL + "encrypted/guy2_report/evans/report.rtf": None,
-                        ROOT_GAME_URL + "/messages/view_single_message/instructions_listener/": None,
-                        ROOT_GAME_URL + "/secret_question/": dict(secret_answer="Milou", target_email="listener@teldorium.com", secret_username="guy3"),
+                        config.GAME_FILES_URL + "attachments/image1.png": None,
+                        config.GAME_FILES_URL + "encrypted/guy2_report/evans/orb.jpg": None,
+                        ROOT_GAME_URL + "/messages/view_single_message/instructions_bewitcher/": None,
+                        ROOT_GAME_URL + "/secret_question/": dict(secret_answer="Fluffy", target_email="guy3@pangea.com", secret_username="guy3"),
                         ROOT_GAME_URL + "/webradio_applet/": dict(frequency=self.dm.get_global_parameter("pangea_radio_frequency"))
-        }
+        } 
         for url, value in special_urls.items():
             #print ">>>>>>", url
 
@@ -1380,11 +1404,11 @@ class TestGame(TestCase):
         self._unlog()
 
 
-    def ___test_master_game_started_page_displays(self):
+    def test_master_game_started_page_displays(self):
         self.dm.set_game_state(True)
         self._simple_master_get_requests()
 
-    def ___test_master_game_paused_page_displays(self):
+    def test_master_game_paused_page_displays(self):
         self.dm.set_game_state(False)
         self._simple_master_get_requests()
 
@@ -1413,7 +1437,7 @@ class TestGame(TestCase):
 
         # VIEWS SELECTION
         from django.core.urlresolvers import RegexURLResolver
-        from urls import final_urlpatterns
+        from rpgweb.urls import final_urlpatterns
         # we test views for which there is a distinction between master and player
         selected_patterns = "inbox outbox compose_message intercepted_messages view_sales items_slideshow network_management personal_radio_messages_listing contact_djinns".split()
         views = [url._callback_str for url in final_urlpatterns if not isinstance(url, RegexURLResolver) and [match for match in selected_patterns if match in url._callback_str]]

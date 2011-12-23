@@ -424,10 +424,11 @@ def all_queued_messages(request, template_name='messaging/messages.html'):
                             context_instance=RequestContext(request))
 
 
-@game_player_required(permission="manage_wiretaps")
+@game_authenticated_required
 def intercepted_messages(request, template_name='messaging/messages.html'):
-
-    messages = request.datamanager.get_intercepted_messages() # TODO - make per-player !!!
+    
+    username = request.datamanager.user.username
+    messages = request.datamanager.get_intercepted_messages(username)
 
     messages = list(reversed(messages)) # most recent first
 
@@ -782,7 +783,7 @@ def item_3d_view(request, item, template_name='utilities/item_3d_viewer.html'):
 
     user = request.datamanager.user
 
-    available_items = request.datamanager.get_available_items_for_user_domain(user.username)
+    available_items = request.datamanager.get_available_items_for_user(user.username)
 
     if item not in available_items.keys():
         raise Http404
@@ -929,11 +930,11 @@ def wiretapping_management(request, template_name='specific_operations/wiretappi
 
 
 @game_player_required(permission="manage_scans")
-def scanning_management(request, template_name='specific_operations/scanning_management.html'):
+def __scanning_management(request, template_name='specific_operations/scanning_management.html'):
 
     user = request.datamanager.user
     form = None
-    available_items = request.datamanager.get_available_items_for_user_domain(user.username)
+    available_items = request.datamanager.get_available_items_for_user(user.username)
 
     # we process scanning management operations
     if request.method == "POST":
@@ -965,7 +966,7 @@ def scanning_management(request, template_name='specific_operations/scanning_man
 
 
 @game_player_required(permission="manage_teleportations")
-def teldorian_teleportations(request, template_name='specific_operations/armed_interventions.html'):
+def __teldorian_teleportations(request, template_name='specific_operations/armed_interventions.html'):
 
     user = request.datamanager.user
     form = None
@@ -1022,7 +1023,7 @@ def teldorian_teleportations(request, template_name='specific_operations/armed_i
 
 
 @game_player_required(permission="manage_agents")
-def mercenary_commandos(request, template_name='specific_operations/armed_interventions.html'):
+def __mercenary_commandos(request, template_name='specific_operations/armed_interventions.html'):
 
     user = request.datamanager.user
 
@@ -1070,7 +1071,7 @@ def mercenary_commandos(request, template_name='specific_operations/armed_interv
 
 
 @game_player_required(permission="launch_attacks")
-def acharith_attacks(request, template_name='specific_operations/armed_interventions.html'):
+def __acharith_attacks(request, template_name='specific_operations/armed_interventions.html'):
 
     user = request.datamanager.user
 
@@ -1113,7 +1114,7 @@ def acharith_attacks(request, template_name='specific_operations/armed_intervent
 
 
 @game_player_required(permission="launch_telecom_investigations")
-def telecom_investigation(request, template_name='specific_operations/telecom_investigation.html'):
+def __telecom_investigation(request, template_name='specific_operations/telecom_investigation.html'):
 
     user = request.datamanager.user
     form = None
@@ -1532,7 +1533,7 @@ def manage_characters(request, template_name='administration/character_managemen
     character_forms = []
     
     for (username, data) in sorted(request.datamanager.get_character_sets().items()):
-        print ("AZZZZ", form["target_username"].value(), username)
+        #print ("AZZZZ", form["target_username"].value(), username)
         if form and form["target_username"].value() == username:
             print (" REUSING FOR", username)
             f = form
