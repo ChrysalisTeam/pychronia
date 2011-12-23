@@ -41,7 +41,7 @@ def action_failure_handler(request, success_message=_lazy("Operation successful.
         import traceback
         traceback.print_exc()
         # we must locate this serious error, as often (eg. assertion errors) there is no specific message attached...
-        msg = _("Unexpected exception caught in action_failure_handler")
+        msg = _("Unexpected exception caught in action_failure_handler - %r") % e
         logging.critical(msg, exc_info=True)
         if config.DEBUG:
             user.add_error(msg)
@@ -55,7 +55,7 @@ def action_failure_handler(request, success_message=_lazy("Operation successful.
 class SDICT(dict):
     def __getitem__(self, name):
         try:
-            dict.__getitem__(self, name)
+            return dict.__getitem__(self, name)
         except KeyError:
             logging.critical("Wrong key %s looked up in dict %r", name, self)
             return "<UNKNOWN>"

@@ -14,7 +14,7 @@ class TranslationForm(AbstractAbilityForm):
     def __init__(self, datamanager, *args, **kwargs):
         super(TranslationForm, self).__init__(datamanager, *args, **kwargs)
 
-        _translatable_items_ids = datamanager.get_translatable_items().keys()
+        _translatable_items_ids = datamanager.abilities.runic_translation.get_translatable_items().keys()
         _translatable_items_pretty_names = [datamanager.get_items_for_sale()[item_name]["title"] for item_name in _translatable_items_ids]
         _translatable_items_choices = zip(_translatable_items_ids, _translatable_items_pretty_names)
         _translatable_items_choices.sort(key=lambda double: double[1])
@@ -28,7 +28,7 @@ class RunicTranslationAbility(AbstractAbilityHandler):
     
     TITLE = _lazy("Runic Translation")
     
-    NAME = "runic_translations"
+    NAME = "runic_translation"
 
     FORMS = {"translation_form": (TranslationForm, "process_translation")}
 
@@ -43,7 +43,7 @@ class RunicTranslationAbility(AbstractAbilityHandler):
 
         translation_form = self._instantiate_form(new_form_name="translation_form", hide_on_success=False,
                                                   **previous_form_data)
-        translation_delay = self.get_global_parameter("translation_delays")
+        translation_delay = self.get_ability_parameter("translation_delays")
 
         return {
                  'page_title': _("Runic translations"),
@@ -62,7 +62,7 @@ class RunicTranslationAbility(AbstractAbilityHandler):
 
     @readonly_method
     def get_translatable_items(self):
-        return self.data["rune_translations"]["references"]
+        return self.settings["references"]
 
     @classmethod
     def _tokenize_rune_message(cls, string): #, left_to_right=True, top_to_bottom=True

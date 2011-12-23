@@ -11,10 +11,13 @@ from django.core.management import execute_from_command_line
 
 if __name__ == "__main__":
     
-    if "reset" in sys.argv or "flush" in sys.argv:
+    if "reset_zodb" in sys.argv:
         
         if os.path.exists(settings.ZODB_FILE):
             os.remove(settings.ZODB_FILE)
+    
+    elif "reset_django" in sys.argv:
+        
         sys.argv[1:] = ("syncdb --noinput --settings=%s" % settings_module).split()
         execute_from_command_line()
         sys.argv[1:] = ("flush --noinput --settings=%s" % settings_module).split()
@@ -32,7 +35,8 @@ if __name__ == "__main__":
     
     else:
         print "Usage: python %s [reset|pack|runserver]" % sys.argv[0]
-        print "- reset: reset django and ZODB databases to their initial state"
+        print "- reset_zodb: reset ZODB databases (game data) to their initial state"
+        print "- reset_django: reset django databases (authentication sessions) to their initial state"
         print "- pack: cleans and compresses ZODB file, in case it gets too heavy (test server must not be running)"
         print "- runserver: run local django dev server, against persistent databases"
         sys.exit(1)

@@ -204,7 +204,7 @@ class CharacterHandling(BaseDataManager): # TODO REFINE
     @readonly_method
     def build_select_choices_from_usernames(self, usernames):
         official_names = sorted([self.get_official_name_from_username(username) for username in usernames])
-        character_choices = zip(official_names, official_names)
+        character_choices = zip(usernames, official_names)
         return character_choices
 
     @transaction_watcher
@@ -484,18 +484,15 @@ class PermissionsHandling(BaseDataManager): # TODO REFINE
 
         game_data = self.data
 
-        """
         for (name, character) in game_data["character_properties"].items():
             character.setdefault("permissions", PersistentList())
 
         for (name, domain) in game_data["domains"].items():
             domain.setdefault("permissions", PersistentList())
-        """
+ 
 
     def _check_database_coherency(self, **kwargs):
         super(PermissionsHandling, self)._check_database_coherency(**kwargs)
-        
-        XXXXXXXXXXXXX
         
         for permission in self.PERMISSIONS: # check all available permissions
             utilities.check_is_slug(permission)
@@ -513,9 +510,7 @@ class PermissionsHandling(BaseDataManager): # TODO REFINE
 
 
     def has_permission(self, permission):
-        """
-        Checks if 
-        """
+
         if not self.user.is_character:
             return False # anonymous and master must be handled differently
 
@@ -866,6 +861,7 @@ class TextMessaging(BaseDataManager): # TODO REFINE
             elif chunk in data["character_properties"].keys():
                 values = [chunk + "@" + pangea_domain] # we allow short usernames
             else:
+                print(data["character_properties"].keys())
                 raise UsageError(_("Unknown user login '%s' in recipients list") % chunk) # surely an input error of user!
             normalized_emails.update(values)
 
@@ -2037,6 +2033,7 @@ class SpecialAbilities(BaseDataManager):
         super(SpecialAbilities, self)._notify_user_change(username, **kwargs)
 
         self.abilities = SpecialAbilities.AbilityLazyLoader(self) # important - because of weak refs to old data!!
+
 
     @readonly_method
     def get_ability_data(self, ability_name):

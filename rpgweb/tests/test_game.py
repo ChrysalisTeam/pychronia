@@ -202,7 +202,9 @@ class AutoCheckingDM(object):
             
 
 
-class TestGame(TestCase):
+
+class BaseGameTestCase(TestCase):
+    
     
     # WARNING - when directly modifying "self.dm.data" sub-objects, don't forget to commit() after !!
 
@@ -255,61 +257,7 @@ class TestGame(TestCase):
             self.tearDown(check=False) # cleanup of db and connection in any case
             raise
 
-    """
-    TEST_DOMAIN = "dummy_domain"
-    def _inject_test_domain(self, name=TEST_DOMAIN, **overrides):
-        return # TODO FIXME
-        properties = dict(
-                        show_official_identities=False,
-                        victory="victory_masslavia",
-                        defeat="defeat_masslavia",
-                        prologue_music="prologue_masslavia.mp3",
-                        instructions="blablablabla",
-                        permissions=[]
-                        )
-        assert not (set(overrides.keys()) - set(properties.keys())) # don't inject unwanted params
-        properties.update(overrides)
 
-        properties = utilities.convert_object_tree(properties, utilities.python_to_zodb_types)
-        self.dm.data["domains"][name] = properties
-        self.dm.commit()
-
-
-    TEST_LOGIN = "guy1" # because special private folders etc must exist. 
-    def _inject_test_user(self, name=TEST_LOGIN, **overrides):
-        return # TODO FIXME
-        properties = dict(
-                        password=name.upper(),
-                        secret_question="What's the ultimate step of consciousness ?",
-                        secret_answer="unguessableanswer",
-
-                        domains=[self.TEST_DOMAIN],
-                        permissions=[],
-
-                        external_contacts=[],
-                        new_messages_notification="new_messages_guy1",
-
-                        account=1000,
-                        initial_cold_cash=100,
-                        gems=[],
-
-                        official_name="Strange Character",
-                        real_life_identity="John Doe",
-                        real_life_email="john@doe.com",
-                        description="Dummy test account",
-
-                        last_online_time=None,
-                        last_chatting_time=None
-                       )
-
-        assert not (set(overrides.keys()) - set(properties.keys())) # don't inject unwanted params
-        properties.update(overrides)
-
-        properties = utilities.convert_object_tree(properties, utilities.python_to_zodb_types)
-        self.dm.data["character_properties"][name] = properties
-        self.dm.commit()
-    """
-    
     def tearDown(self, check=True):
 
         if hasattr(self, "dm") and check:
@@ -355,6 +303,14 @@ class TestGame(TestCase):
         from django.core import management
         management.call_command('syncdb', verbosity=0, interactive=False)
         management.call_command('flush', verbosity=0, interactive=False)
+
+
+
+
+
+
+
+class TestGame(BaseGameTestCase):
 
 
     @for_datamanager_base
@@ -626,80 +582,6 @@ class TestGame(TestCase):
         self.assertNotEqual(self.dm.get_available_items_for_user("guy2"), self.dm.get_available_items_for_user("guy1")) # no sharing of objects, even shared allegiance
         self.assertEqual(set(self.dm.get_available_items_for_user("guy2").keys()), set([gem_name1, gem_name2]))
         self.assertEqual(set(self.dm.get_available_items_for_user("guy3").keys()), set([object_name]))
-
-
-    @for_ability(RunicTranslationAbility)
-    def test_runic_translation(self):
-        runic_translations = self.dm.abilities.runic_translations
-
-        assert runic_translations.ability_data
-
-        self._reset_messages()
-
-        message = """ hi |there,   | how  are \t you # today,\n| buddy, # are you  \t\n okay ? """
-
-        phrases = runic_translations._tokenize_rune_message(message)
-        self.assertEqual(phrases, ['hi', 'there,', 'how are you', 'today,', 'buddy,', 'are you okay ?'])
-
-        self.assertEqual(runic_translations._tokenize_rune_message(""), [])
-
-        """ Too wrong and complicated...
-        phrases = self.dm._tokenize_rune_message(message, left_to_right=True, top_to_bottom=False)
-        self.assertEqual(phrases, ['are you okay ?', 'today,', 'buddy,', 'hi', 'there,', 'how are you'])
-
-        phrases = self.dm._tokenize_rune_message(message, left_to_right=False, top_to_bottom=True)
-        self.assertEqual(phrases, ['how are you', 'there,', 'hi' , 'buddy,', 'today,', 'are you okay ?'])
-
-        phrases = self.dm._tokenize_rune_message(message, left_to_right=False, top_to_bottom=False)
-        self.assertEqual(phrases, ['are you okay ?', 'buddy,', 'today,', 'how are you', 'there,', 'hi'])
-        """
-
-        translator = runic_translations._build_translation_dictionary("na | tsu | me",
-                                                                      "yowh | man | cool")
-        self.assertEqual(translator, dict(na="yowh", tsu="man", me="cool"))
-
-        self.assertRaises(Exception, runic_translations._build_translation_dictionary, "na | tsu | me | no",
-                          "yowh | man | cool")
-
-        self.assertRaises(Exception, runic_translations._build_translation_dictionary, "me | tsu | me",
-                          "yowh | man | cool")
-
-        assert runic_translations.ability_data
-
-        decoded_rune_string = "na  hu,  \t yo la\ttsu ri !\n go"
-        translator = {"na hu": "welcome",
-                      "yo la tsu": "people"}
-        random_words = "hoy ma mi mo mu me".split()
-        translated_tokens = runic_translations._try_translating_runes(decoded_rune_string, translator=translator, random_words=random_words)
-
-        self.assertEqual(len(translated_tokens), 4, translated_tokens)
-        self.assertEqual(translated_tokens[0:2], ["welcome", "people"])
-        for translated_token in translated_tokens[2:4]:
-            self.assertTrue(translated_token in random_words)
-
-        # temporary solution to deal with currently untranslated runes... #FIXME
-        available_translations = [(item_name, settings) for (item_name, settings) in runic_translations.get_ability_parameter("references").items() if settings["decoding"].strip()]
-        (rune_item, translation_settings) = available_translations[0]
-
-        transcription_attempt = translation_settings["decoding"] # '|' and '#'symbols are automatically cleaned
-        expected_result = runic_translations._normalize_string(translation_settings["translation"].replace("#", " ").replace("|", " "))
-        translation_result = runic_translations._translate_rune_message(rune_item, transcription_attempt)
-        self.assertEqual(translation_result, expected_result)
-
-        runic_translations._process_translation_submission("guy1", rune_item, transcription_attempt)
-
-        msgs = self.dm.get_all_queued_messages()
-        self.assertEqual(len(msgs), 1)
-        msg = msgs[0]
-        self.assertEqual(msg["recipient_emails"], ["guy1@pangea.com"])
-        self.assertTrue("translation" in msg["body"].lower())
-
-        msgs = self.dm.get_all_sent_messages()
-        self.assertEqual(len(msgs), 1)
-        msg = msgs[0]
-        self.assertEqual(msg["sender_email"], "guy1@pangea.com")
-        self.assertTrue(transcription_attempt.strip() in msg["body"], (transcription_attempt, msg["body"]))
-        self.assertTrue(self.dm.get_global_parameter("master_login") in msg["has_read"])
 
 
 
@@ -1260,26 +1142,6 @@ class TestGame(TestCase):
             self.assertTrue(utcnow - timedelta(seconds=2) < event["time"] <= utcnow)
 
 
-    @for_ability(HouseLockingAbility)
-    def test_house_locking(self):
-
-        house_locking = self.dm.abilities.house_locking
-        expected_password = house_locking.get_ability_parameter("house_doors_password")
-
-        self.assertEqual(house_locking.are_house_doors_open(), True) # initial state
-
-        self.assertTrue(house_locking.lock_house_doors())
-        self.assertEqual(house_locking.are_house_doors_open(), False)
-
-        self.assertFalse(house_locking.lock_house_doors()) # already locked
-        self.assertEqual(house_locking.are_house_doors_open(), False)
-
-        self.assertFalse(house_locking.try_unlocking_house_doors(password="blablabla"))
-        self.assertEqual(house_locking.are_house_doors_open(), False)
-
-        self.assertTrue(house_locking.try_unlocking_house_doors(password=expected_password))
-        self.assertEqual(house_locking.are_house_doors_open(), True)
-
 
 
 
@@ -1341,7 +1203,7 @@ class TestGame(TestCase):
 
 
     def _simple_master_get_requests(self):
-        
+        # FIXME - currently not testing abilities
         self._reset_django_db()
         
         self.dm.data["global_parameters"]["online_presence_timeout_s"] = 1
@@ -1415,8 +1277,8 @@ class TestGame(TestCase):
 
 
     def _test_player_get_requests(self):
-        #def get_allowed_user(permission):
-        #    return [name for name, value in self.dm.get_character_sets().items() if permission in value["permissions"]][0]
+        
+        # FIXME - currently not testing abilities
         
         self._reset_django_db()
         
@@ -1424,9 +1286,11 @@ class TestGame(TestCase):
         self.dm.data["global_parameters"]["chatroom_presence_timeout_s"] = 1
         self.dm.commit()
         time.sleep(1.2) # online/chatting users list gets emptied
-
-        # PLAYER SETUP
+        
         old_state = self.dm.is_game_started()
+        
+        # PLAYER SETUP
+        
         self.dm.set_game_state(True)
         username = "guy2"
         user_money = self.dm.get_character_properties(username)["account"]
@@ -1455,14 +1319,12 @@ class TestGame(TestCase):
 
         test_views(views)
 
-        old_state = self.dm.is_game_started()
         self.dm.set_game_state(True)
         self.dm.transfer_money_between_characters(self.dm.get_global_parameter("bank_name"), username, 1000)
         self.dm.set_game_state(old_state)
 
         test_views(views)
 
-        old_state = self.dm.is_game_started()
         self.dm.set_game_state(True)
         gem_name = [key for key, value in self.dm.get_items_for_sale().items() if value["is_gem"] and value["num_items"] >= 6][0] # we only take numerous groups
         self.dm.transfer_object_to_character(gem_name, username)
@@ -1506,9 +1368,104 @@ class TestGame(TestCase):
 
 
 
-class SpecialAbilityTests(object):
+class TestSpecialAbilities(BaseGameTestCase):
 
 
+
+    @for_ability(RunicTranslationAbility)
+    def test_runic_translation(self):
+        runic_translation = self.dm.abilities.runic_translation
+
+        assert runic_translation.ability_data
+
+        self._reset_messages()
+
+        message = """ hi |there,   | how  are \t you # today,\n| buddy, # are you  \t\n okay ? """
+
+        phrases = runic_translation._tokenize_rune_message(message)
+        self.assertEqual(phrases, ['hi', 'there,', 'how are you', 'today,', 'buddy,', 'are you okay ?'])
+
+        self.assertEqual(runic_translation._tokenize_rune_message(""), [])
+
+        """ Too wrong and complicated...
+        phrases = self.dm._tokenize_rune_message(message, left_to_right=True, top_to_bottom=False)
+        self.assertEqual(phrases, ['are you okay ?', 'today,', 'buddy,', 'hi', 'there,', 'how are you'])
+
+        phrases = self.dm._tokenize_rune_message(message, left_to_right=False, top_to_bottom=True)
+        self.assertEqual(phrases, ['how are you', 'there,', 'hi' , 'buddy,', 'today,', 'are you okay ?'])
+
+        phrases = self.dm._tokenize_rune_message(message, left_to_right=False, top_to_bottom=False)
+        self.assertEqual(phrases, ['are you okay ?', 'buddy,', 'today,', 'how are you', 'there,', 'hi'])
+        """
+
+        translator = runic_translation._build_translation_dictionary("na | tsu | me",
+                                                                      "yowh | man | cool")
+        self.assertEqual(translator, dict(na="yowh", tsu="man", me="cool"))
+
+        self.assertRaises(Exception, runic_translation._build_translation_dictionary, "na | tsu | me | no",
+                          "yowh | man | cool")
+
+        self.assertRaises(Exception, runic_translation._build_translation_dictionary, "me | tsu | me",
+                          "yowh | man | cool")
+
+        assert runic_translation.ability_data
+
+        decoded_rune_string = "na  hu,  \t yo la\ttsu ri !\n go"
+        translator = {"na hu": "welcome",
+                      "yo la tsu": "people"}
+        random_words = "hoy ma mi mo mu me".split()
+        translated_tokens = runic_translation._try_translating_runes(decoded_rune_string, translator=translator, random_words=random_words)
+
+        self.assertEqual(len(translated_tokens), 4, translated_tokens)
+        self.assertEqual(translated_tokens[0:2], ["welcome", "people"])
+        for translated_token in translated_tokens[2:4]:
+            self.assertTrue(translated_token in random_words)
+
+        # temporary solution to deal with currently untranslated runes... #FIXME
+        available_translations = [(item_name, settings) for (item_name, settings) in runic_translation.get_ability_parameter("references").items() 
+                                    if settings["decoding"].strip()]
+        (rune_item, translation_settings) = available_translations[0]
+
+        transcription_attempt = translation_settings["decoding"] # '|' and '#'symbols are automatically cleaned
+        expected_result = runic_translation._normalize_string(translation_settings["translation"].replace("#", " ").replace("|", " "))
+        translation_result = runic_translation._translate_rune_message(rune_item, transcription_attempt)
+        self.assertEqual(translation_result, expected_result)
+
+        runic_translation._process_translation_submission("guy1", rune_item, transcription_attempt)
+
+        msgs = self.dm.get_all_queued_messages()
+        self.assertEqual(len(msgs), 1)
+        msg = msgs[0]
+        self.assertEqual(msg["recipient_emails"], ["guy1@pangea.com"])
+        self.assertTrue("translation" in msg["body"].lower())
+
+        msgs = self.dm.get_all_sent_messages()
+        self.assertEqual(len(msgs), 1)
+        msg = msgs[0]
+        self.assertEqual(msg["sender_email"], "guy1@pangea.com")
+        self.assertTrue(transcription_attempt.strip() in msg["body"], (transcription_attempt, msg["body"]))
+        self.assertTrue(self.dm.get_global_parameter("master_login") in msg["has_read"])
+
+
+    @for_ability(HouseLockingAbility)
+    def test_house_locking(self):
+
+        house_locking = self.dm.abilities.house_locking
+        expected_password = house_locking.get_ability_parameter("house_doors_password")
+
+        self.assertEqual(house_locking.are_house_doors_open(), True) # initial state
+
+        self.assertTrue(house_locking.lock_house_doors())
+        self.assertEqual(house_locking.are_house_doors_open(), False)
+
+        self.assertFalse(house_locking.lock_house_doors()) # already locked
+        self.assertEqual(house_locking.are_house_doors_open(), False)
+
+        self.assertFalse(house_locking.try_unlocking_house_doors(password="blablabla"))
+        self.assertEqual(house_locking.are_house_doors_open(), False)
+
+        self.assertTrue(house_locking.try_unlocking_house_doors(password=expected_password))
+        self.assertEqual(house_locking.are_house_doors_open(), True)
 
 
     def __test_telecom_investigations(self):
@@ -1729,9 +1686,12 @@ class SpecialAbilityTests(object):
         self.assertTrue("***" in msg["body"].lower())
 
 
-    def ___test_wiretapping_management(self):
+    def test_wiretapping_management(self):
+        
         self._reset_messages()
-
+        
+        self._set_user("guy1") # has all permissions
+        
         char_names = self.dm.get_character_usernames()
 
         wiretapping = self.dm.abilities.wiretapping
@@ -1742,13 +1702,13 @@ class SpecialAbilityTests(object):
         wiretapping.change_wiretapping_targets([char_names[0], char_names[0], char_names[1]])
 
         self.assertEqual(set(wiretapping.get_current_targets()), set([char_names[0], char_names[1]]))
-        self.assertEqual(wiretapping.get_listeners_for(char_names[1]), [self.TEST_LOGIN])
+        self.assertEqual(wiretapping.get_listeners_for(char_names[1]), ["guy1"])
 
         self.assertRaises(UsageError, wiretapping.change_wiretapping_targets, ["dummy_name"])
         self.assertRaises(UsageError, wiretapping.change_wiretapping_targets, [char_names[i] for i in range(wiretapping.get_ability_parameter("max_wiretapping_targets") + 1)])
 
         self.assertEqual(set(wiretapping.get_current_targets()), set([char_names[0], char_names[1]])) # didn't change
-        self.assertEqual(wiretapping.get_listeners_for(char_names[1]), [self.TEST_LOGIN])
+        self.assertEqual(wiretapping.get_listeners_for(char_names[1]), ["guy1"])
 
 
     def ____test_scanning_management(self):
@@ -1922,3 +1882,61 @@ class SpecialAbilityTests(object):
 
         # we won't test the MSG_TEMPLATE_FORMATTING_ERROR_2, as it'd complicate code uselessly
 """
+
+
+
+"""
+    TEST_DOMAIN = "dummy_domain"
+    def _inject_test_domain(self, name=TEST_DOMAIN, **overrides):
+        return # TODO FIXME
+        properties = dict(
+                        show_official_identities=False,
+                        victory="victory_masslavia",
+                        defeat="defeat_masslavia",
+                        prologue_music="prologue_masslavia.mp3",
+                        instructions="blablablabla",
+                        permissions=[]
+                        )
+        assert not (set(overrides.keys()) - set(properties.keys())) # don't inject unwanted params
+        properties.update(overrides)
+
+        properties = utilities.convert_object_tree(properties, utilities.python_to_zodb_types)
+        self.dm.data["domains"][name] = properties
+        self.dm.commit()
+
+
+    TEST_LOGIN = "guy1" # because special private folders etc must exist. 
+    def _inject_test_user(self, name=TEST_LOGIN, **overrides):
+        return # TODO FIXME
+        properties = dict(
+                        password=name.upper(),
+                        secret_question="What's the ultimate step of consciousness ?",
+                        secret_answer="unguessableanswer",
+
+                        domains=[self.TEST_DOMAIN],
+                        permissions=[],
+
+                        external_contacts=[],
+                        new_messages_notification="new_messages_guy1",
+
+                        account=1000,
+                        initial_cold_cash=100,
+                        gems=[],
+
+                        official_name="Strange Character",
+                        real_life_identity="John Doe",
+                        real_life_email="john@doe.com",
+                        description="Dummy test account",
+
+                        last_online_time=None,
+                        last_chatting_time=None
+                       )
+
+        assert not (set(overrides.keys()) - set(properties.keys())) # don't inject unwanted params
+        properties.update(overrides)
+
+        properties = utilities.convert_object_tree(properties, utilities.python_to_zodb_types)
+        self.dm.data["character_properties"][name] = properties
+        self.dm.commit()
+    """
+    

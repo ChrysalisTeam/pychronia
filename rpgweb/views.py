@@ -27,6 +27,7 @@ from .authentication import game_player_required, game_master_required, game_aut
         authenticate_with_credentials, logout_session
 import datamanager as dm_module
 from .datamanager import action_failure_handler, PermissionError
+from . import abilities
 from rpgweb.utilities import mediaplayers
 
 
@@ -34,7 +35,7 @@ from rpgweb.utilities import mediaplayers
 
 
 
-
+ 
 
 def ability(request, ability_name):
 
@@ -44,14 +45,16 @@ def ability(request, ability_name):
     # (to avoid meaningless lazy initialization of private ability data)
     ability_class = request.datamanager.ABILITIES_REGISTRY.get(ability_name, None)
     if not ability_class:
+        print(ability_name, "not in", request.datamanager.ABILITIES_REGISTRY)
         raise Http404
+    """
     try:
         ability_class.check_permissions(user)
     except PermissionError, e:
         user.add_error(unicode(e))
         # todo - put default page for abilities here
         raise Http404 ## temporary ##
-
+    """
     ability_handler = getattr(request.datamanager.abilities, ability_name) # instantiation here
 
     response = ability_handler.process_request(request)

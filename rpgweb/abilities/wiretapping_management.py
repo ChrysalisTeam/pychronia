@@ -19,14 +19,14 @@ class WiretappingTargetsForm(AbstractAbilityForm):
         user_choices = datamanager.build_select_choices_from_usernames(names)
 
         for i in range(datamanager.abilities.wiretapping.get_ability_parameter("max_wiretapping_targets")):
-            self.fields["target_%d"%i] = forms.ChoiceField(label=_("Target %d")%i, choices=[("", "")]+user_choices)
+            self.fields["target_%d"%i] = forms.ChoiceField(label=_("Target %d")%i, required=False, choices=[("", "")]+user_choices)
 
     def get_normalized_values(self):
         parameters = super(WiretappingTargetsForm, self).get_normalized_values()
 
         targets = set()
         for (key, value) in parameters.items():
-            if key.startswith("target_"):
+            if key.startswith("target_") and value:
                 targets.add(value) # no need to delete the "target_%d" field
         parameters["target_names"] = sorted(list(targets))
 
@@ -79,18 +79,19 @@ class WiretappingAbility(AbstractAbilityHandler):
         ####### DUPLICATED OF MODULE'S
         target_names = sorted(list(set(target_names))) # renormalization, just in case
 
-        character_names = self.datamanager.get_character_usernames()
+        character_names = self._datamanager.get_character_usernames()
         for name in target_names:
             if name not in character_names:
-                raise AbnormalUsageError(_("Unknown user %(target)s") % SDICT(target=name)) # we can show it
+                print("tRAGTES", target_names, name)
+                raise AbnormalUsageError(_("Unknown target user %(target)s") % SDICT(target=name)) # we can show it
 
         if len(target_names) > self.get_ability_parameter("max_wiretapping_targets"):
             raise AbnormalUsageError(_("Too many wiretapping targets"))
 
         self.private_data["wiretapping_targets"] = PersistentList(target_names)
 
-        self.datamanager.log_game_event(_noop("Wiretapping targets set to (%(targets)s) by %(username)s."),
-                             PersistentDict(targets=", ".join(target_names), username=self.datamanager.player.username),
+        self._datamanager.log_game_event(_noop("Wiretapping targets set to (%(targets)s) by %(username)s."),
+                             PersistentDict(targets=", ".join(target_names), username=self._datamanager.user.username),
                              url=None)
 
         return _("Wiretapping successfully set up.")
@@ -130,6 +131,6 @@ class WiretappingAbility(AbstractAbilityHandler):
 
             assert len(data["wiretapping_targets"]) <= settings["max_wiretapping_targets"]
 
-            character_names = self.datamanager.get_character_usernames()
+            character_names = self._datamanager.get_character_usernames()
             for char_name in data["wiretapping_targets"]:
                 assert char_name in character_names
