@@ -38,6 +38,8 @@ def action_failure_handler(request, success_message=_lazy("Operation successful.
             logging.critical(unicode(e), exc_info=True)
     except Exception, e:
         print (">OOOOOOO", repr(e))
+        import traceback
+        traceback.print_exc()
         # we must locate this serious error, as often (eg. assertion errors) there is no specific message attached...
         msg = _("Unexpected exception caught in action_failure_handler")
         logging.critical(msg, exc_info=True)

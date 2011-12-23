@@ -1305,12 +1305,13 @@ def personal_radio_messages_listing(request, template_name='generic_operations/p
         is_master = False
 
         character_properties = request.datamanager.get_character_properties(user.username)
-        domain_properties = request.datamanager.get_domain_properties(character_properties["domain"])
-
         new_messages_text = request.datamanager.get_audio_message_properties(character_properties["new_messages_notification"])["text"]
+        
+        # FIXME ALL BUGGY
+        #domain_properties = request.datamanager.get_domain_properties(character_properties["domain"])
         #request_for_report_text = request.datamanager.get_audio_message_properties(domain_properties["request_for_report"])["text"]
-        victory_text = request.datamanager.get_audio_message_properties(domain_properties["victory"])["text"]
-        defeat_text = request.datamanager.get_audio_message_properties(domain_properties["defeat"])["text"]
+        victory_text = "VICTORYYY" # request.datamanager.get_audio_message_properties(domain_properties["victory"])["text"]
+        defeat_text = "DEFEAAAT" ## request.datamanager.get_audio_message_properties(domain_properties["defeat"])["text"]
 
     return render_to_response(template_name,
                             {

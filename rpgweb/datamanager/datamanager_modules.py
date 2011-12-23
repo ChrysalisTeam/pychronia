@@ -337,12 +337,11 @@ class PlayerAuthentication(BaseDataManager):
 
 
 
-    @transaction_watcher(ensure_game_started=False)
-    def _notify_user_change(self, **kwargs):
-        """
-        To be extended by other core modules.
-        """
 
+    def _notify_user_change(self, username, **kwargs):
+        assert not hasattr(super(PlayerAuthentication, self), "_notify_user_change") # we're well top-level here
+        
+        
     @transaction_watcher(ensure_game_started=False)
     def _set_user(self, username):
 
@@ -351,7 +350,7 @@ class PlayerAuthentication(BaseDataManager):
         self._notify_user_change(username=username)
 
         return self.user
-
+ 
 
     @transaction_watcher(ensure_game_started=False)
     def logout_user(self):
@@ -381,8 +380,8 @@ class PlayerAuthentication(BaseDataManager):
         if username == self.get_global_parameter("master_login"): # do not use is_master here, just in case...
             wanted_pwd = self.get_global_parameter("master_password")
         else:
-            characters = self.get_character_properties(username)
-            wanted_pwd = characters[username]["password"]
+            data = self.get_character_properties(username)
+            wanted_pwd = data["password"]
 
         if password == wanted_pwd:
             self._set_user(username)
@@ -643,9 +642,9 @@ class OnlinePresence(BaseDataManager):
 
         utilities.check_positive_int(self.get_global_parameter("online_presence_timeout_s"))
 
-    @transaction_watcher
-    def _notify_player_change(self, username, **kwargs):
-        super(OnlinePresence, self)._notify_player_change(username=username, **kwargs)
+
+    def _notify_user_change(self, username, **kwargs):
+        super(OnlinePresence, self)._notify_user_change(username=username, **kwargs)
 
         if username in self.data["character_properties"]: # TODO improve
             self.set_online_status(username)
@@ -2034,8 +2033,8 @@ class SpecialAbilities(BaseDataManager):
             ability.check_data_sanity()
 
 
-    def _notify_player_change(self, **kwargs):
-        super(SpecialAbilities, self)._notify_player_change(**kwargs)
+    def _notify_user_change(self, username, **kwargs):
+        super(SpecialAbilities, self)._notify_user_change(username, **kwargs)
 
         self.abilities = SpecialAbilities.AbilityLazyLoader(self) # important - because of weak refs to old data!!
 

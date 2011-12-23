@@ -1292,7 +1292,7 @@ class TestGame(TestCase):
         assert isinstance(res, basestring) and len(res) > 1000
 
 
-    def _master_logging(self):
+    def _master_auth(self):
         master_login = self.dm.get_global_parameter("master_login")
         login_page = reverse("rpgweb.views.login", kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID))
         response = self.client.get(login_page) # to set preliminary cookies
@@ -1311,7 +1311,7 @@ class TestGame(TestCase):
         self.assertTrue(self.client.cookies["sessionid"])
 
 
-    def ____player_logging(self, username):
+    def _player_auth(self, username):
         login_page = reverse("rpgweb.views.login", kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID))
         response = self.client.get(login_page) # to set preliminary cookies
         self.assertEqual(response.status_code, 200)
@@ -1323,11 +1323,12 @@ class TestGame(TestCase):
             self.assertRedirects(response, ROOT_GAME_URL + "/")
         else:
             self.assertRedirects(response, ROOT_GAME_URL + "/opening/") # beautiful intro for days before the game starts
-
+            
+        assert self.client.session["rpgweb_session_ticket"] == (TEST_GAME_INSTANCE_ID, username)
         self.assertTrue(self.client.cookies["sessionid"])
 
 
-    def _unlog(self):
+    def _logout(self):
         login_page = reverse("rpgweb.views.login", kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID))
         logout_page = reverse("rpgweb.views.logout", kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID))
         response = self.client.get(logout_page) # to set preliminary cookies
@@ -1348,7 +1349,7 @@ class TestGame(TestCase):
         self.dm.commit()
         time.sleep(1.2) # online/chatting users list gets emptied
 
-        self._master_logging() # equivalent to self._set_user(self.dm.get_global_parameter("master_login"))
+        self._master_auth() # equivalent to self._set_user(self.dm.get_global_parameter("master_login"))
         
         from django.core.urlresolvers import RegexURLResolver
         from rpgweb.urls import final_urlpatterns
@@ -1401,7 +1402,7 @@ class TestGame(TestCase):
         self.assertEqual(self.dm.get_online_users(), [])
         self.assertEqual(self.dm.get_chatting_users(), [])
 
-        self._unlog()
+        self._logout()
 
 
     def test_master_game_started_page_displays(self):
@@ -1416,7 +1417,9 @@ class TestGame(TestCase):
     def _test_player_get_requests(self):
         #def get_allowed_user(permission):
         #    return [name for name, value in self.dm.get_character_sets().items() if permission in value["permissions"]][0]
-
+        
+        self._reset_django_db()
+        
         self.dm.data["global_parameters"]["online_presence_timeout_s"] = 1
         self.dm.data["global_parameters"]["chatroom_presence_timeout_s"] = 1
         self.dm.commit()
@@ -1432,16 +1435,17 @@ class TestGame(TestCase):
         self.dm.data["character_properties"][username]["permissions"] = PersistentList(["contact_djinns", "manage_agents", "manage_wiretaps"]) # we grant all necessary permissions
         self.dm.commit()
         self.dm.set_game_state(old_state)
-        self._player_logging(username)
+        self._player_auth(username)
 
 
         # VIEWS SELECTION
         from django.core.urlresolvers import RegexURLResolver
         from rpgweb.urls import final_urlpatterns
         # we test views for which there is a distinction between master and player
-        selected_patterns = "inbox outbox compose_message intercepted_messages view_sales items_slideshow network_management personal_radio_messages_listing contact_djinns".split()
+        selected_patterns = """inbox outbox compose_message intercepted_messages view_sales items_slideshow personal_radio_messages_listing""".split() # TODO LATER network_management contact_djinns 
         views = [url._callback_str for url in final_urlpatterns if not isinstance(url, RegexURLResolver) and [match for match in selected_patterns if match in url._callback_str]]
-
+        assert len(views) == len(selected_patterns)
+        
         def test_views(views):
             for view in views:
                 url = reverse(view, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID))
@@ -1469,10 +1473,10 @@ class TestGame(TestCase):
         self.assertEqual(self.dm.get_online_users(), [username])
         self.assertEqual(self.dm.get_chatting_users(), [])
 
-        self._unlog()
+        self._logout()
+   
 
-
-    def __test_player_game_started_page_displays(self):
+    def test_player_game_started_page_displays(self):
         self.dm.set_game_state(True)
         #print "STARTING"
         #import timeit
@@ -1480,7 +1484,7 @@ class TestGame(TestCase):
         self._test_player_get_requests()
         #print "OVER"
 
-    def __test_player_game_paused_page_displays(self):
+    def test_player_game_paused_page_displays(self):
         self.dm.set_game_state(False)
         self._test_player_get_requests()
 
