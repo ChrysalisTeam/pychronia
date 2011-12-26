@@ -44,14 +44,18 @@ class DropdownMultiSelect(forms.SelectMultiple):
 
 class CharacterForm(forms.Form):
     target_username = forms.CharField(widget=forms.HiddenInput())
-    allegiances = forms.MultipleChoiceField(label=_lazy("Allegiances"), required=False, widget=forms.SelectMultiple(attrs={"class": "multichecklist"}))
+
     real_life_identity = forms.CharField(label=_lazy("Real identity"), required=False, max_length=100)
     real_life_email = forms.EmailField(label=_lazy("Real email"), required=False)
     
-    def __init__(self, choices, *args, **kwargs):
+    allegiances = forms.MultipleChoiceField(label=_lazy("Allegiances"), required=False, widget=forms.SelectMultiple(attrs={"class": "multichecklist"}))
+    permissions = forms.MultipleChoiceField(label=_lazy("Permissions"), required=False, widget=forms.SelectMultiple(attrs={"class": "multichecklist"}))
+
+    
+    def __init__(self, allegiances_choices, permissions_choices, *args, **kwargs):
         super(CharacterForm, self).__init__(*args, **kwargs)
-        self.fields['allegiances'].choices = choices
- 
+        self.fields['allegiances'].choices = allegiances_choices
+        self.fields['permissions'].choices = permissions_choices
  
 class SimplePasswordForm(forms.Form):
     simple_password = forms.CharField(label=_lazy("Password"), widget=forms.PasswordInput)

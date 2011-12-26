@@ -269,7 +269,7 @@ class DomainHandling(BaseDataManager): # TODO REFINE
     def get_domain_properties(self, domain_name):
         return self.data["domains"][domain_name]
 
-    @transaction_watcher
+    @transaction_watcher(ensure_game_started=False)
     def update_allegiances(self, username, allegiances):
         
         assert len(set(allegiances)) == len(allegiances)
@@ -464,7 +464,7 @@ class PlayerAuthentication(BaseDataManager):
 @register_module
 class PermissionsHandling(BaseDataManager): # TODO REFINE
 
-    PERMISSIONS = Enum() 
+    PERMISSIONS_REGISTRY = Enum() 
 
     """"
     contact_djinns manage_agents 
@@ -476,7 +476,7 @@ class PermissionsHandling(BaseDataManager): # TODO REFINE
     @classmethod
     def register_permissions(cls, names):
         assert all((name.lower() == name and " " not in name) for name in names)
-        cls.PERMISSIONS.update(names)
+        cls.PERMISSIONS_REGISTRY.update(names)
 
 
     def _load_initial_data(self, **kwargs):
@@ -494,7 +494,7 @@ class PermissionsHandling(BaseDataManager): # TODO REFINE
     def _check_database_coherency(self, **kwargs):
         super(PermissionsHandling, self)._check_database_coherency(**kwargs)
         
-        for permission in self.PERMISSIONS: # check all available permissions
+        for permission in self.PERMISSIONS_REGISTRY: # check all available permissions
             utilities.check_is_slug(permission)
             assert permission.lower() == permission
             
@@ -502,11 +502,20 @@ class PermissionsHandling(BaseDataManager): # TODO REFINE
 
         for (name, character) in game_data["character_properties"].items():
             for permission in character["permissions"]:
-                assert permission in self.PERMISSIONS
+                assert permission in self.PERMISSIONS_REGISTRY
 
         for (name, domain) in game_data["domains"].items():
             for permission in domain["permissions"]:
-                assert permission in self.PERMISSIONS
+                assert permission in self.PERMISSIONS_REGISTRY
+
+
+    @transaction_watcher(ensure_game_started=False)
+    def update_permissions(self, username, permissions):
+        
+        assert self.is_character(username)
+        
+        data = self.get_character_properties(username)
+        data["permissions"] = permissions
 
 
     def has_permission(self, permission):
@@ -525,9 +534,10 @@ class PermissionsHandling(BaseDataManager): # TODO REFINE
                 return True
 
         return False
+    
 
-
-
+    def build_permission_select_choices(self):
+        return [(perm, perm) for perm in sorted(self.PERMISSIONS_REGISTRY)]
 
 
 

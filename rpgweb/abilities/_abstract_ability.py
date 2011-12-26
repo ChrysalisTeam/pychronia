@@ -10,7 +10,7 @@ from django.template import RequestContext, loader
 
 from ..datamanager import *
 from rpgweb.datamanager.datamanager_tools import NormalUsageError, AbnormalUsageError, PermissionError
-
+from ..datamanager.datamanager_modules import PermissionsHandling
 
 
 
@@ -151,6 +151,11 @@ class AbstractAbilityMetaclass(type):
 
             assert not GameDataManager.ABILITIES_REGISTRY.has_key(NewClass.NAME), NewClass.NAME
             GameDataManager.ABILITIES_REGISTRY[NewClass.NAME] = NewClass # we register the ability
+            
+            if NewClass.ACCESS == "player":
+                assert NewClass.NAME not in PermissionsHandling.PERMISSIONS_REGISTRY
+                PermissionsHandling.PERMISSIONS_REGISTRY.add(NewClass.NAME)
+            
 
 
 '''

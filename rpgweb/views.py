@@ -27,7 +27,7 @@ from .authentication import game_player_required, game_master_required, game_aut
         authenticate_with_credentials, logout_session
 import datamanager as dm_module
 from .datamanager import action_failure_handler, PermissionError
-from . import abilities
+from . import abilities # IMPORTANT to register all abilities/permissions
 from rpgweb.utilities import mediaplayers
 
 
@@ -1512,22 +1512,27 @@ def manage_databases(request, template_name='administration/database_management.
 def manage_characters(request, template_name='administration/character_management.html'):
 
     domain_choices = request.datamanager.build_domain_select_choices()
+    permissions_choices = request.datamanager.build_permission_select_choices()
     
     form = None
     if request.method == "POST":
         form = forms.CharacterForm(data=request.POST,
-                                   choices=domain_choices,
+                                   allegiances_choices=domain_choices,
+                                   permissions_choices=permissions_choices,
                                    prefix=None)
         
         if form.is_valid():
             target_username = form.cleaned_data["target_username"]
             allegiances = form.cleaned_data["allegiances"]
+            permissions = form.cleaned_data["permissions"]
             real_life_identity = form.cleaned_data["real_life_identity"]
             real_life_email = form.cleaned_data["real_life_email"]
                          
             with action_failure_handler(request, _("Character %s successfully updated.") % target_username):    
                 request.datamanager.update_allegiances(username=target_username,
                                                        allegiances=allegiances)
+                request.datamanager.update_permissions(username=target_username,
+                                                       permissions=permissions)
                 request.datamanager.update_real_life_data(username=target_username, 
                                                             real_life_identity=real_life_identity, 
                                                             real_life_email=real_life_email)
@@ -1542,12 +1547,16 @@ def manage_characters(request, template_name='administration/character_managemen
             print (" REUSING FOR", username)
             f = form
         else:
-            f = forms.CharacterForm(choices=domain_choices,
+            f = forms.CharacterForm(
+                                    allegiances_choices=domain_choices,
+                                    permissions_choices=permissions_choices,
                                     prefix=None,
                                     initial=dict(target_username=username,
                                                  allegiances=data["domains"], 
+                                                 permissions=data["permissions"],
                                                  real_life_identity=data["real_life_identity"], 
-                                                 real_life_email=data["real_life_email"]))
+                                                 real_life_email=data["real_life_email"])
+                                    )
         character_forms.append(f)
         
     return render_to_response(template_name,
