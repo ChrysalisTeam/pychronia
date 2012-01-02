@@ -6,9 +6,7 @@ from rpgweb.common import *
 
 from .datamanager_user import GameUser
 from .datamanager_core import *
-
-
-
+from rpgweb.utilities import color
 
 
 MODULES_REGISTRY = []  # IMPORTANT
@@ -442,13 +440,12 @@ class PlayerAuthentication(BaseDataManager):
 
         username = username.strip()
         password = password.strip()
-
         if username == self.get_global_parameter("master_login"): # do not use is_master here, just in case...
             wanted_pwd = self.get_global_parameter("master_password")
         else:
             characters = self.get_character_properties(username)
-            wanted_pwd = characters[username]["password"]
-
+            wanted_pwd = characters["password"]
+            
         if password == wanted_pwd:
             self._set_user(username)
 
@@ -1333,9 +1330,8 @@ class Chatroom(BaseDataManager):
 
         new_data["global_parameters"].setdefault("chatroom_presence_timeout_s", 20)
         new_data["global_parameters"].setdefault("chatroom_timestamp_display_threshold_s", 120)
-
-
-
+        new_data.setdefault("user_color", PersistentDict())
+    
     def _check_database_coherency(self, **kwargs):
         super(Chatroom, self)._check_database_coherency(**kwargs)
 
@@ -1363,8 +1359,6 @@ class Chatroom(BaseDataManager):
                 assert previous_time <= msg["time"] # chat messages are sorted by chronological order
             previous_time = msg["time"]
             assert msg["username"] is None or msg["username"] in game_data["character_properties"].keys()
-
-
 
     @transaction_watcher
     def _set_chatting_status(self, username):
@@ -1399,7 +1393,12 @@ class Chatroom(BaseDataManager):
 
         record = PersistentDict(time=datetime.utcnow(), username=self.user.username, message=message)
         self.data["chatroom_messages"].append(record)
-
+        if not self.data["user_color"].has_key(self.user.username):
+            while(True):
+                new_color = color.genarate_color()
+                if new_color not in self.data["user_color"].values():
+                    self.data["user_color"][self.user.username] = new_color
+                    break
 
     @readonly_method
     def get_chatroom_messages(self, from_slice_index): # from_slice_index might be negative
@@ -1416,11 +1415,15 @@ class Chatroom(BaseDataManager):
                 previous_msg_timestamp = None
 
         return (new_slice_index, previous_msg_timestamp, new_messages)
-
-
-
-
-
+        
+    @readonly_method
+    def get_colors(self):
+        if self.data.has_key("user_color"):
+            return self.data["user_color"]
+        else:
+            return None
+            
+        
 @register_module
 class ActionScheduling(BaseDataManager):
 

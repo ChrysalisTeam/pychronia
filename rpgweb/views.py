@@ -10,7 +10,6 @@ import traceback
 import logging
 import collections
 import copy
-
 from contextlib import contextmanager
 from django.conf import settings
 from django.core.mail import send_mail
@@ -150,8 +149,7 @@ def ajax_domotics_security(request):
     response = unicode(request.datamanager.are_house_doors_open())
     return HttpResponse(response) # "True" or "False"
 
-
-
+from rpgweb.utilities.color import genarate_color
 
 @game_authenticated_required
 def ajax_chat(request):
@@ -166,35 +164,38 @@ def ajax_chat(request):
         return HttpResponse("OK")
 
     else:
-
         slice_index = int(request.GET['slice_index']) # may raise exceptions
 
         (new_slice_index, previous_msg_timestamp, new_messages) = request.datamanager.get_chatroom_messages(slice_index)
-
         msg_format = "<b>%(official_name)s</b> - %(message)s"
         time_format = "<i>=== %d/%m/%Y - %H:%M:%S UTC ===</i>"
 
         threshold = request.datamanager.get_global_parameter("chatroom_timestamp_display_threshold_s")
         chatroom_timestamp_display_threshold = timedelta(seconds=threshold)
-
         text_lines = []
         for msg in new_messages:
             if not previous_msg_timestamp or (msg["time"] - previous_msg_timestamp) > chatroom_timestamp_display_threshold:
                 text_lines.append(msg["time"].strftime(time_format))
-
             if msg["username"] in request.datamanager.get_character_usernames():
                 official_name = request.datamanager.get_official_name_from_username(msg["username"])
+                user_colors = request.datamanager.get_colors()
+                if user_colors:
+                    color = user_colors[msg["username"]]
+                else:
+                    color = "#ccc" #default color
             else: # system message
                 official_name = _("system")
-
+                color = "#ea3f32"
             data = dict(official_name=official_name,
                         message=msg["message"])
-            text_lines.append(msg_format % data)
+            text_lines.append({"username": msg["username"], 
+                            "color": color,
+                            "message": msg_format % data})
             previous_msg_timestamp = msg["time"]
-
-        data = {"slice_index":new_slice_index,
-                "messages":text_lines}
-
+            
+        data = {"slice_index": new_slice_index,
+                "messages": text_lines
+                }
         response = HttpResponse(json.dumps(data))
         response['Content-Type'] = 'text/plain; charset=utf-8'
         response['Cache-Control'] = 'no-cache'
@@ -211,7 +212,6 @@ def chatroom(request, template_name='generic_operations/chatroom.html'):
      # TODO - move "chatting users" to ajax part, because it must be updated !!
     chatting_users = [request.datamanager.get_official_name_from_username(username)
                       for username in request.datamanager.get_chatting_users()]
-
     return render_to_response(template_name,
                             {
                              'page_title': _("Common Chatroom"),
@@ -737,9 +737,8 @@ def view_characters(request, template_name='generic_operations/view_characters.h
     if user.is_master:
         show_official_identities = True
     else:
-        domain = request.datamanager.get_character_properties(user.username)["domain"]
+        domain = request.datamanager.get_character_properties(user.username)["domains"]
         show_official_identities = request.datamanager.get_domain_properties(domain)["show_official_identities"]
-
     return render_to_response(template_name,
                                 {
                                  'page_title': _("Account Management"),

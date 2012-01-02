@@ -28,10 +28,6 @@ var prCallback = null;
 var get_request_in_progress = false;
 var post_request_in_progress = false;
 
-
-
-
-
 function callServer(){
 
 	// At each call to the server we pass data.
@@ -54,7 +50,6 @@ function callServer(){
 }
 
 
-
 function processResponse(payload) {
 
     //if (!payload) return; // may only happen in buggy jquery 1.4.2
@@ -65,7 +60,13 @@ function processResponse(payload) {
 	slice_index = payload.slice_index;
 	
 	for(id in payload.messages) {
-		$("#chatwindow").append(payload.messages[id]+"<br/>");
+	    if(payload.messages[id]["message"]) {
+	        var span = document.createElement("span")
+	        span.style.color = payload.messages[id]["color"]
+	        span.innerHTML = payload.messages[id]["message"]
+	         $("#chatwindow").append(span);
+	         $("#chatwindow").append("<br/>");
+	    }
 	}
 	// Scroll down if messages fill up the div.
 	var objDiv = document.getElementById("chatwindow");

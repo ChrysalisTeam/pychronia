@@ -75,7 +75,7 @@ MIDDLEWARE_CLASSES = (
 'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
 
-
+SITE_ID = 1
 
 TEMPLATE_DIRS = (
     os.path.join(GAME_ROOT, "templates")
@@ -94,6 +94,7 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.humanize',
     'django.contrib.markup',
+    'sentry.client',
     'rpgweb',
 )
 
@@ -112,4 +113,7 @@ ACTIVATE_AIML_BOTS = False
 
 DB_RESET_ALLOWED = True
 
-
+try:
+  from local_settings import *
+except ImportError:
+  pass

@@ -1,0 +1,56 @@
+Downloading/unpacking PyYAML
+  Running setup.py egg_info for package PyYAML
+Installing collected packages: PyYAML
+  Running setup.py install for PyYAML
+    checking if libyaml is compilable
+    gcc-4.2 -fno-strict-aliasing -fno-common -dynamic -DNDEBUG -g -fwrapv -Os -Wall -Wstrict-prototypes -DENABLE_DTRACE -arch i386 -arch ppc -arch x86_64 -pipe -I/System/Library/Frameworks/Python.framework/Versions/2.6/include/python2.6 -c build/temp.macosx-10.6-universal-2.6/check_libyaml.c -o build/temp.macosx-10.6-universal-2.6/check_libyaml.o
+    build/temp.macosx-10.6-universal-2.6/check_libyaml.c:2:18: error: yaml.h: No such file or directory
+    build/temp.macosx-10.6-universal-2.6/check_libyaml.c: In function ‘main’:
+    build/temp.macosx-10.6-universal-2.6/check_libyaml.c:5: error: ‘yaml_parser_t’ undeclared (first use in this function)
+    build/temp.macosx-10.6-universal-2.6/check_libyaml.c:5: error: (Each undeclared identifier is reported only once
+    build/temp.macosx-10.6-universal-2.6/check_libyaml.c:5: error: for each function it appears in.)
+    build/temp.macosx-10.6-universal-2.6/check_libyaml.c:5: error: expected ‘;’ before ‘parser’
+    build/temp.macosx-10.6-universal-2.6/check_libyaml.c:6: error: ‘yaml_emitter_t’ undeclared (first use in this function)
+    build/temp.macosx-10.6-universal-2.6/check_libyaml.c:6: error: expected ‘;’ before ‘emitter’
+    build/temp.macosx-10.6-universal-2.6/check_libyaml.c:8: warning: implicit declaration of function ‘yaml_parser_initialize’
+    build/temp.macosx-10.6-universal-2.6/check_libyaml.c:8: error: ‘parser’ undeclared (first use in this function)
+    build/temp.macosx-10.6-universal-2.6/check_libyaml.c:9: warning: implicit declaration of function ‘yaml_parser_delete’
+    build/temp.macosx-10.6-universal-2.6/check_libyaml.c:11: warning: implicit declaration of function ‘yaml_emitter_initialize’
+    build/temp.macosx-10.6-universal-2.6/check_libyaml.c:11: error: ‘emitter’ undeclared (first use in this function)
+    build/temp.macosx-10.6-universal-2.6/check_libyaml.c:12: warning: implicit declaration of function ‘yaml_emitter_delete’
+    build/temp.macosx-10.6-universal-2.6/check_libyaml.c:2:18: error: yaml.h: No such file or directory
+    build/temp.macosx-10.6-universal-2.6/check_libyaml.c: In function ‘main’:
+    build/temp.macosx-10.6-universal-2.6/check_libyaml.c:5: error: ‘yaml_parser_t’ undeclared (first use in this function)
+    build/temp.macosx-10.6-universal-2.6/check_libyaml.c:5: error: (Each undeclared identifier is reported only once
+    build/temp.macosx-10.6-universal-2.6/check_libyaml.c:5: error: for each function it appears in.)
+    build/temp.macosx-10.6-universal-2.6/check_libyaml.c:5: error: expected ‘;’ before ‘parser’
+    build/temp.macosx-10.6-universal-2.6/check_libyaml.c:6: error: ‘yaml_emitter_t’ undeclared (first use in this function)
+    build/temp.macosx-10.6-universal-2.6/check_libyaml.c:6: error: expected ‘;’ before ‘emitter’
+    build/temp.macosx-10.6-universal-2.6/check_libyaml.c:8: warning: implicit declaration of function ‘yaml_parser_initialize’
+    build/temp.macosx-10.6-universal-2.6/check_libyaml.c:8: error: ‘parser’ undeclared (first use in this function)
+    build/temp.macosx-10.6-universal-2.6/check_libyaml.c:9: warning: implicit declaration of function ‘yaml_parser_delete’
+    build/temp.macosx-10.6-universal-2.6/check_libyaml.c:11: warning: implicit declaration of function ‘yaml_emitter_initialize’
+    build/temp.macosx-10.6-universal-2.6/check_libyaml.c:11: error: ‘emitter’ undeclared (first use in this function)
+    build/temp.macosx-10.6-universal-2.6/check_libyaml.c:12: warning: implicit declaration of function ‘yaml_emitter_delete’
+    build/temp.macosx-10.6-universal-2.6/check_libyaml.c:2:18: error: yaml.h: No such file or directory
+    build/temp.macosx-10.6-universal-2.6/check_libyaml.c: In function ‘main’:
+    build/temp.macosx-10.6-universal-2.6/check_libyaml.c:5: error: ‘yaml_parser_t’ undeclared (first use in this function)
+    build/temp.macosx-10.6-universal-2.6/check_libyaml.c:5: error: (Each undeclared identifier is reported only once
+    build/temp.macosx-10.6-universal-2.6/check_libyaml.c:5: error: for each function it appears in.)
+    build/temp.macosx-10.6-universal-2.6/check_libyaml.c:5: error: expected ‘;’ before ‘parser’
+    build/temp.macosx-10.6-universal-2.6/check_libyaml.c:6: error: ‘yaml_emitter_t’ undeclared (first use in this function)
+    build/temp.macosx-10.6-universal-2.6/check_libyaml.c:6: error: expected ‘;’ before ‘emitter’
+    build/temp.macosx-10.6-universal-2.6/check_libyaml.c:8: warning: implicit declaration of function ‘yaml_parser_initialize’
+    build/temp.macosx-10.6-universal-2.6/check_libyaml.c:8: error: ‘parser’ undeclared (first use in this function)
+    build/temp.macosx-10.6-universal-2.6/check_libyaml.c:9: warning: implicit declaration of function ‘yaml_parser_delete’
+    build/temp.macosx-10.6-universal-2.6/check_libyaml.c:11: warning: implicit declaration of function ‘yaml_emitter_initialize’
+    build/temp.macosx-10.6-universal-2.6/check_libyaml.c:11: error: ‘emitter’ undeclared (first use in this function)
+    build/temp.macosx-10.6-universal-2.6/check_libyaml.c:12: warning: implicit declaration of function ‘yaml_emitter_delete’
+    lipo: can't open input file: /var/folders/-i/-itqmaCVH389c1uc7jJpXk+++TI/-Tmp-//ccRWoz3W.out (No such file or directory)
+    
+    libyaml is not found or a compiler error: forcing --without-libyaml
+    (if libyaml is installed correctly, you may need to
+     specify the option --include-dirs or uncomment and
+     modify the parameter include_dirs in setup.cfg)
+Successfully installed PyYAML
+Cleaning up...
