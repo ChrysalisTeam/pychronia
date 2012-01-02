@@ -1393,12 +1393,16 @@ class Chatroom(BaseDataManager):
 
         record = PersistentDict(time=datetime.utcnow(), username=self.user.username, message=message)
         self.data["chatroom_messages"].append(record)
+        if not self.data.has_key("user_color"):
+            self.data.setdefault("user_color", PersistentDict())
+        
         if not self.data["user_color"].has_key(self.user.username):
             while(True):
                 new_color = color.genarate_color()
                 if new_color not in self.data["user_color"].values():
                     self.data["user_color"][self.user.username] = new_color
                     break
+            
 
     @readonly_method
     def get_chatroom_messages(self, from_slice_index): # from_slice_index might be negative
