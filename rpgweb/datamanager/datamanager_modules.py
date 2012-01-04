@@ -216,8 +216,10 @@ class DomainHandling(BaseDataManager): # TODO REFINE
 
     @readonly_method
     def get_domain_properties(self, domain_name):
-        return self.data["domains"][domain_name]
-
+        if isinstance(domain_name, str):
+            return self.data["domains"][domain_name]
+        elif isinstance(domain_name, PersistentList):
+            return self.data["domains"][domain_name.data[0]]
 
 
 @register_module
@@ -1399,7 +1401,7 @@ class Chatroom(BaseDataManager):
         if not self.data["user_color"].has_key(self.user.username):
             while(True):
                 new_color = color.genarate_color()
-                if new_color not in self.data["user_color"].values():
+                if not new_color in self.data["user_color"].values():
                     self.data["user_color"][self.user.username] = new_color
                     break
             

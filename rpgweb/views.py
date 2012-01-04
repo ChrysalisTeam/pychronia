@@ -1305,7 +1305,7 @@ def personal_radio_messages_listing(request, template_name='generic_operations/p
         is_master = False
 
         character_properties = request.datamanager.get_character_properties(user.username)
-        domain_properties = request.datamanager.get_domain_properties(character_properties["domain"])
+        domain_properties = request.datamanager.get_domain_properties(character_properties["domains"])
 
         new_messages_text = request.datamanager.get_audio_message_properties(character_properties["new_messages_notification"])["text"]
         #request_for_report_text = request.datamanager.get_audio_message_properties(domain_properties["request_for_report"])["text"]
