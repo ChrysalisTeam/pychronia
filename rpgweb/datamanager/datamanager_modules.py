@@ -1395,17 +1395,20 @@ class Chatroom(BaseDataManager):
 
         record = PersistentDict(time=datetime.utcnow(), username=self.user.username, message=message)
         self.data["chatroom_messages"].append(record)
-        if not self.data.has_key("user_color"):
-            self.data.setdefault("user_color", PersistentDict())
-        
-        if not self.data["user_color"].has_key(self.user.username):
+        if self.user.username!="master" and not self.data["character_properties"][self.user.username].has_key("color"):
             while(True):
                 new_color = color.genarate_color()
-                if not new_color in self.data["user_color"].values():
-                    self.data["user_color"][self.user.username] = new_color
+                if not new_color in self.get_all_colors():
+                    self.data["character_properties"][self.user.username]["color"] = new_color
                     break
             
-
+    def get_all_colors(self):
+        all_colors = []
+        for key, value in self.data["character_properties"].items():
+            if value.has_key("color"):
+                all_colors.append(value["color"])
+        return all_colors
+        
     @readonly_method
     def get_chatroom_messages(self, from_slice_index): # from_slice_index might be negative
         new_messages = self.data["chatroom_messages"][from_slice_index:]
@@ -1421,13 +1424,6 @@ class Chatroom(BaseDataManager):
                 previous_msg_timestamp = None
 
         return (new_slice_index, previous_msg_timestamp, new_messages)
-        
-    @readonly_method
-    def get_colors(self):
-        if self.data.has_key("user_color"):
-            return self.data["user_color"]
-        else:
-            return None
             
         
 @register_module

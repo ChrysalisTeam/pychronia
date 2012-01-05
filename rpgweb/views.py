@@ -178,11 +178,7 @@ def ajax_chat(request):
                 text_lines.append(msg["time"].strftime(time_format))
             if msg["username"] in request.datamanager.get_character_usernames():
                 official_name = request.datamanager.get_official_name_from_username(msg["username"])
-                user_colors = request.datamanager.get_colors()
-                if user_colors:
-                    color = user_colors[msg["username"]]
-                else:
-                    color = "#ccc" #default color
+                color = request.datamanager.data["character_properties"][msg["username"]]["color"]
             else: # system message
                 official_name = _("system")
                 color = "#ea3f32"
