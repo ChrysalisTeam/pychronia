@@ -50,7 +50,7 @@ def utctolocal(value, arg=None):
     # poor man's timezone system, base on current time offset
     # all we want is to avoid dealing with the nightmare of TZ and DST...
     try:    
-        timedelta = datetime.now() - datetime.utcnow()
+        timedelta = datetime.datetime.now() - datetime.datetime.utcnow()
         return value + timedelta
     except:
         logging.error("utctolocal filter failed", exc_info=True)

@@ -43,10 +43,9 @@
 		{% for char_name, char_details in char_set %}   {% comment %} char_details is at least {'gems': [], 'items': [], 'domain': 'acharis.com', 'password': 'xxxx', 'account': 0} {% endcomment %}
 	    
 
-	    <tr class="{% cycle 'rowA' 'rowB' %}">	
+	    <tr class="{% cycle 'rowA' 'rowB' %}"  style="color:{{ char_details.character_color }};">	
 
 		    	<td class="bigtext">
-		    	
 		    		<strong {% if user.is_master %} title="{% trans "Password:" %} {{ char_details.password }}" {% endif %}>
 		    		    {% if show_official_identities %}
 		    		        {{ char_details.official_name }} <br/>
@@ -55,9 +54,8 @@
 		    		    {% if user.is_master %}
 		    		        <br/>[{{ char_details.real_life_identity }}]
 		    		    {% endif %}
-		    		</strong>
+					</strong>
 		    	</td>
-		    	
 	
 		    	<td class="bigtext">
 		    		{{ char_details.account }}

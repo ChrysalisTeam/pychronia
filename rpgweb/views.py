@@ -178,7 +178,7 @@ def ajax_chat(request):
                 text_lines.append(msg["time"].strftime(time_format))
             if msg["username"] in request.datamanager.get_character_usernames():
                 official_name = request.datamanager.get_official_name_from_username(msg["username"])
-                color = request.datamanager.data["character_properties"][msg["username"]]["color"]
+                color = request.datamanager.get_character_color(msg["username"])
             else: # system message
                 official_name = _("system")
                 color = "#ea3f32"
@@ -743,7 +743,7 @@ def view_characters(request, template_name='generic_operations/view_characters.h
                                  'gems_form': new_gems_form,
                                  'char_sets': char_sets,
                                  'bank_data': (request.datamanager.get_global_parameter("bank_name"), request.datamanager.get_global_parameter("bank_account")),
-                                 'show_official_identities': show_official_identities
+                                 'show_official_identities': show_official_identities,
                                 },
                                 context_instance=RequestContext(request))
 

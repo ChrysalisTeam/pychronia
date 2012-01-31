@@ -226,7 +226,8 @@ character_properties:
         real_life_identity: "Flavien Soual"
         real_life_email: dummy@hotmail.com
         description : "XXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXX XXXXXXXX"
-
+        character_color : "#0033CC"
+        
     guy2:
         domains: ["sciences",]
         password: awesome
@@ -240,7 +241,8 @@ character_properties:
         real_life_identity: "John Doe"
         real_life_email: shalk@gmail.com
         description : "XXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXX XXXXXXXX"
-
+        character_color : "#33FFFF"
+        
     guy3:
         domains: []
         password: awesome
@@ -254,6 +256,7 @@ character_properties:
         real_life_identity: "John Doe"
         real_life_email: belez@gmail.com
         description : "XXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXX XXXXXXXX"
+        character_color : "#CC3399"
 
     guy4:
         domains: []
@@ -268,7 +271,7 @@ character_properties:
         real_life_identity: "John Doe"
         real_life_email: belez2@gmail.com
         description : "XXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXX XXXXXXXX"
-
+        character_color : "#33FF33"
 
 
 audio_messages:

@@ -115,11 +115,16 @@ class CharacterHandling(BaseDataManager): # TODO REFINE
             utilities.check_is_string(character["official_name"])
             utilities.check_is_string(character["real_life_identity"])
             utilities.check_is_string(character["real_life_email"])
-
+            utilities.check_is_slug(character["character_color"])
+            
             identities = [char["official_name"].replace(" ", "").lower() for char in
                           game_data["character_properties"].values()]
             utilities.check_no_duplicates(identities)
-
+            
+    @readonly_method
+    def get_character_color(self, username):
+        return self.data["character_properties"][username]["character_color"]
+    
     @readonly_method
     def get_character_sets(self):
         return self.data["character_properties"]
