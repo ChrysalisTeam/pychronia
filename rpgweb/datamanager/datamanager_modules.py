@@ -297,82 +297,7 @@ class DomainHandling(BaseDataManager): # TODO REFINE
         return domain_choices
 
 
-@register_module
-class GameInstructions(BaseDataManager):
 
-
-    def _load_initial_data(self, **kwargs):
-        super(GameInstructions, self)._load_initial_data(**kwargs)
-
-    def _check_database_coherency(self, **kwargs):
-        super(GameInstructions, self)._check_database_coherency(**kwargs)
-
-        game_data = self.data
-
-        utilities.check_is_string(game_data["global_parameters"]["global_introduction"])
-        utilities.check_is_string(game_data["global_parameters"]["history_summary"])
-
-        for (name, content) in game_data["domains"].items():
-            assert isinstance(content["prologue_music"], basestring)
-            assert os.path.isfile(os.path.join(config.GAME_FILES_ROOT, "musics", content["prologue_music"]))
-            assert isinstance(content["instructions"], (types.NoneType, basestring)) # can be empty
-
-            
-    @readonly_method
-    def get_game_instructions(self, username):
-        global_introduction = self.get_global_parameter("global_introduction")
-
-        team_introduction = None
-        prologue_music = None
-
-        '''
-        if self.is_master(username):
-            team_introduction = None
-            prologue_music = None
-        else:
-            domain = self.get_domain_properties(self.get_character_properties(username)["domain"])
-            team_introduction = domain["instructions"]
-            prologue_music = config.GAME_FILES_URL + "musics/" + domain["prologue_music"]
-        '''
-
-        return PersistentDict(prologue_music=prologue_music,
-                              global_introduction=global_introduction,
-                              team_introduction=team_introduction)
-
-
- 
-
-
-@register_module
-class LocationsHandling(BaseDataManager):
-
-    def _load_initial_data(self, **kwargs):
-        super(LocationsHandling, self)._load_initial_data(**kwargs)
-
-        new_data = self.data
-        for (name, properties) in new_data["locations"].items():
-            properties.setdefault("spy_message", None)
-            properties.setdefault("spy_audio", False)
-
-
-    def _check_database_coherency(self, **kwargs):
-        super(LocationsHandling, self)._check_database_coherency(**kwargs)
-
-        game_data = self.data
-        assert game_data["locations"]
-        for (name, properties) in game_data["locations"].items():
-
-            utilities.check_is_slug(name)
-
-            if properties["spy_message"] is not None:
-                utilities.check_is_string(properties["spy_message"])
-            if properties["spy_audio"]:
-                assert os.path.isfile(os.path.join(config.GAME_FILES_ROOT, "spy_reports", "spy_" + name.lower() + ".mp3")), name
-
-
-    @readonly_method
-    def get_locations(self):
-        return self.data["locations"]
 
 
 
@@ -617,6 +542,94 @@ class PermissionsHandling(BaseDataManager): # TODO REFINE
 
     def build_permission_select_choices(self):
         return [(perm, perm) for perm in sorted(self.PERMISSIONS_REGISTRY)]
+
+
+
+@register_module
+class GameInstructions(BaseDataManager):
+
+
+    def _load_initial_data(self, **kwargs):
+        super(GameInstructions, self)._load_initial_data(**kwargs)
+
+    def _check_database_coherency(self, **kwargs):
+        super(GameInstructions, self)._check_database_coherency(**kwargs)
+
+        game_data = self.data
+
+        utilities.check_is_string(game_data["global_parameters"]["global_introduction"])
+        utilities.check_is_string(game_data["global_parameters"]["history_summary"])
+
+
+        for (name, content) in game_data["domains"].items():
+            assert isinstance(content["prologue_music"], basestring)
+            assert os.path.isfile(os.path.join(config.GAME_FILES_ROOT, "musics", content["prologue_music"]))
+            assert isinstance(content["instructions"], (types.NoneType, basestring)) # can be empty
+
+
+    @readonly_method
+    def get_game_instructions(self, username):
+        global_introduction = self.get_global_parameter("global_introduction")
+
+        team_introduction = None
+        prologue_music = None
+
+        '''
+        if self.is_master(username):
+            team_introduction = None
+            prologue_music = None
+        else:
+            domain = self.get_domain_properties(self.get_character_properties(username)["domain"])
+            team_introduction = domain["instructions"]
+            prologue_music = config.GAME_FILES_URL + "musics/" + domain["prologue_music"]
+        '''
+
+        return PersistentDict(prologue_music=prologue_music,
+                              global_introduction=global_introduction,
+                              team_introduction=team_introduction)
+
+
+
+
+
+
+
+
+@register_module
+class LocationsHandling(BaseDataManager):
+
+    def _load_initial_data(self, **kwargs):
+        super(LocationsHandling, self)._load_initial_data(**kwargs)
+
+        new_data = self.data
+        for (name, properties) in new_data["locations"].items():
+            properties.setdefault("spy_message", None)
+            properties.setdefault("spy_audio", False)
+
+
+    def _check_database_coherency(self, **kwargs):
+        super(LocationsHandling, self)._check_database_coherency(**kwargs)
+
+        game_data = self.data
+        assert game_data["locations"]
+        for (name, properties) in game_data["locations"].items():
+
+            utilities.check_is_slug(name)
+
+            if properties["spy_message"] is not None:
+                utilities.check_is_string(properties["spy_message"])
+            if properties["spy_audio"]:
+                assert os.path.isfile(os.path.join(config.GAME_FILES_ROOT, "spy_reports", "spy_" + name.lower() + ".mp3")), name
+
+
+    @readonly_method
+    def get_locations(self):
+        return self.data["locations"]
+
+
+
+
+
 
 
 
@@ -2067,7 +2080,6 @@ class SpecialAbilities(BaseDataManager):
             except Exception, e:
                 #print "error", e, traceback.print_exc() # TODO REMOVE
                 raise
-
 
 
 

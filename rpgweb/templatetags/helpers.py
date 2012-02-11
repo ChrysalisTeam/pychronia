@@ -1,4 +1,5 @@
-import django.template, datetime, logging
+import django.template, logging
+from datetime import datetime
 from django.template import defaulttags
 
 from rpgweb.utilities import mediaplayers
@@ -50,7 +51,7 @@ def utctolocal(value, arg=None):
     # poor man's timezone system, base on current time offset
     # all we want is to avoid dealing with the nightmare of TZ and DST...
     try:    
-        timedelta = datetime.datetime.now() - datetime.datetime.utcnow()
+        timedelta = datetime.now() - datetime.utcnow()
         return value + timedelta
     except:
         logging.error("utctolocal filter failed", exc_info=True)

@@ -214,7 +214,7 @@ character_properties:
     # WARNING - the values of global parameters anonymous_login and master_login and common_login are reserved and shall not be used here
 
     guy1:
-        domains: ["acharis",]
+        domains: ["acharis"]
         password: elixir
         account: 1000
         secret_question: "What's the ultimate step of consciousness ?"

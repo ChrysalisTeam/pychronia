@@ -60,13 +60,11 @@ function processResponse(payload) {
 	slice_index = payload.slice_index;
 	
 	for(id in payload.messages) {
-	    if(payload.messages[id]["message"]) {
-	        var span = document.createElement("span")
-	        span.style.color = payload.messages[id]["color"]
-	        span.innerHTML = payload.messages[id]["message"]
-	         $("#chatwindow").append(span);
-	         $("#chatwindow").append("<br/>");
-	    }
+	    var span = document.createElement("span")
+	    span.style.color = payload.messages[id]["color"]
+	    span.innerHTML = payload.messages[id]["message"]
+	    $("#chatwindow").append(span);
+	    $("#chatwindow").append("<br/>");
 	}
 	// Scroll down if messages fill up the div.
 	var objDiv = document.getElementById("chatwindow");

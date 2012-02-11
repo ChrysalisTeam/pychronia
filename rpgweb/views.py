@@ -152,8 +152,6 @@ def ajax_domotics_security(request):
     response = unicode(request.datamanager.are_house_doors_open())
     return HttpResponse(response) # "True" or "False"
 
-from rpgweb.utilities.color import genarate_color
-
 @game_authenticated_required
 def ajax_chat(request):
 
@@ -188,14 +186,14 @@ def ajax_chat(request):
             data = dict(official_name=official_name,
                         message=msg["message"])
             text_lines.append({"username": msg["username"], 
-                            "color": color,
-                            "message": msg_format % data})
+                               "color": color,
+                               "message": msg_format % data})
             previous_msg_timestamp = msg["time"]
             
-        data = {"slice_index": new_slice_index,
-                "messages": text_lines
+        all_data = {"slice_index": new_slice_index,
+                    "messages": text_lines
                 }
-        response = HttpResponse(json.dumps(data))
+        response = HttpResponse(json.dumps(all_data))
         response['Content-Type'] = 'text/plain; charset=utf-8'
         response['Cache-Control'] = 'no-cache'
 

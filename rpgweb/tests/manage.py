@@ -2,10 +2,8 @@
 
 import os, sys
 
-root = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 sys.path.insert(0, root)
-(head, tail) = os.path.split(root)
-sys.path.insert(0, head)
 
 os.environ["DJANGO_SETTINGS_MODULE"] = settings_module = "rpgweb.tests._persistent_settings" # with DB not in temp dir
 
