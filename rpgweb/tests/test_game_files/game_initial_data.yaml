@@ -14,7 +14,7 @@ abilities:
       max_wiretapping_targets: 3
 
 
-  runic_translations:
+  runic_translation:
       settings:
         translation_delays: [4, 6] # minutes
         random_translation_words: >
@@ -113,14 +113,14 @@ locations:
 
     Baynon:
         spy_message: "This city is famous for its jewelry industry and its huge archeological museum. It seems no Acharith has ever been so deep into the 'miscreant continent'."
-    Ouram:
+    Alifir:
         spy_message: "People here are very healthy, but quite ignorant. They don't know anything about thye Great Atomic Chaos that took place in Midolia."
  
  
 scanning_sets:
 
     banal_gems_locations: __everywhere__
-    varied_gems_locations: [Baynon]
+    varied_gems_locations: [Alifir]
 
 
 
@@ -195,7 +195,7 @@ domains:
         defeat: defeat_acharis
         prologue_music: sample.mp3
         instructions: |
-            *Il n’est d’autre Bien que la volonté des Dieux.*
+            *Il n’est d'autre Bien que la volonté des Dieux.*
             
     sciences:
         show_official_identities: False
@@ -219,17 +219,18 @@ character_properties:
         account: 1000
         secret_question: "What's the ultimate step of consciousness ?"
         secret_answer: "" # let empty to prevent any password recovery
-        external_contacts: ["judicators@acharis.com", "baazel@acharis.com"]
-        new_messages_notification: new_messages_1
+        external_contacts: ["belasquez@acharis.com", "baazel@acharis.com"]
+        new_messages_notification: info_spots_1
         initial_cold_cash: 1000
         official_name: "Simon Bladstaffulovza"
-        real_life_identity: "Flavien Soual"
+        real_life_identity: "John Smith"
         real_life_email: dummy@hotmail.com
         description : "XXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXX XXXXXXXX"
         character_color : "#0033CC"
-        
+        permissions: ["runic_translation", "wiretapping"]
+       
     guy2:
-        domains: ["sciences",]
+        domains: ["acharis"]
         password: awesome
         account: 1000
         secret_question: "The name of my first pet ?"
@@ -250,7 +251,7 @@ character_properties:
         secret_question: "The name of my first pet ?"
         secret_answer: "Fluffy"
         external_contacts: []
-        new_messages_notification: intro_audio_messages
+        new_messages_notification: new_messages_1
         initial_cold_cash: 1000 
         official_name: "Salar"
         real_life_identity: "John Doe"
@@ -285,7 +286,7 @@ audio_messages:
         file: "amelie.mp3"
 
     new_messages_2:
-        text: "Tante Amélie fait du vélo en short."
+        text: "Tante Atalie fait du vélo en short."
         file: "atalie.mp3"
         
     victory_acharis:
@@ -337,7 +338,7 @@ wiretapping_targets: [] #-> list of characters whose messages will be intercepte
 messages_sent:  #-> list of messages processed
 
     - id: instructions_bewitcher
-      sender_email: judicators@acharis.com
+      sender_email: judicators1@acharis.com
       recipient_emails: guy1
       subject: "Ordres de Missions"
       attachment: "/files/attachments/image2.png"
@@ -349,7 +350,7 @@ messages_sent:  #-> list of messages processed
 
 
     - id: instructions_oracle
-      sender_email: judicators@acharis.com
+      sender_email: judicators2@acharis.com
       recipient_emails: guy2
       subject: "Ordres de Missions"
       attachment: "/files/attachments/image1.png"

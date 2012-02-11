@@ -85,7 +85,7 @@ TEMPLATE_DIRS = (
 )
 
 
-INSTALLED_APPS = (
+INSTALLED_APPS = [
     'debug_toolbar',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -94,9 +94,14 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.humanize',
     'django.contrib.markup',
-    'sentry.client',
     'rpgweb',
-)
+]
+
+try:
+    import sentryt.client
+    INSTALLED_APPS.append('sentry.client')
+except ImportError:
+    pass # sentry is OPTIONAL
 
 
 ROOT_URLCONF = 'rpgweb.tests._test_urls'

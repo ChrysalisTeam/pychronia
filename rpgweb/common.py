@@ -34,23 +34,21 @@ class Enum(set):
     """
     Takes a string of values, or a list, and exposes the corresponding enumeration.
     """
-    def __init__(self, names=[]):
-        if isinstance(names, basestring):
-            names = names.split()
-        set.__init__(self, names)
+    def __init__(self, iterable=[]):
+        set.__init__(self)
+        self.update(iterable)
 
-    def update(self, *iterables):
-        for iterable in iterables:
-            if isinstance(iterable, basestring):
-                iterable = iterable.split()
-            set.update(iterable)
+    def update(self, iterable):
+        if isinstance(iterable, basestring):
+            iterable = iterable.split()
+        set.update(self, iterable)
 
     def __getattr__(self, name):
         if name in self:
             return name
         raise AttributeError(name)
 
-
+ 
 __all__ = [key for key in globals().copy() if not key.startswith("_")]
 __all__ += ["_", "_lazy", "_noop"] # we add translation shortcuts
 

@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 
 ### NO import from rpgweb.common, else circular import !! ###
 
-import sys, os, collections, logging, inspect, types
+import sys, os, collections, logging, inspect, types, traceback
 import yaml, random, contextlib
 from .counter import Counter
 from datetime import datetime, timedelta
@@ -218,6 +218,10 @@ def check_positive_int(value, non_zero=True):
         assert value != 0
     return True
 
+
+def is_email(email):
+    return email_re.match(email)
+
 def assert_sets_equal(set1, set2):
 
     # in case they are lists
@@ -342,3 +346,62 @@ def exception_swallower():
 
         if __debug__:
             raise RuntimeError(_("Unexpected exception occurred in exception swallower context : %r !") % e)
+
+
+
+
+
+
+class TechnicalEventsMixin(object):
+    """
+    This private registry keeps track of miscellaneous events sent throughout the datamanager system.
+    This feature should solely be used for debugging purpose, with function calls protected by
+    ``if __debug__:`` statements for optimization.
+    To prevent naming collisions, an error is raised if events with the same name
+    are sent from different locations.
+    """
+
+    def __init__(self, *args, **kwargs):
+        super(TechnicalEventsMixin, self).__init__(*args, **kwargs)
+        self._event_registry = {} # stores, for each event name, a (calling_frame, count) tuple
+
+
+    def notify_event(self, event_name):
+        """
+        Records the sending of event *event_name*.
+        """
+        calling_frame = traceback.extract_stack(limit=2)[0] # we capture the frame which called notify_event()
+        if not self._event_registry.has_key(event_name):
+            self._event_registry[event_name] = (calling_frame, 1)
+        else:
+            (old_calling_frame, cur_count) = self._event_registry[event_name]
+            if calling_frame != old_calling_frame:
+                raise RuntimeError("Duplicated event name %s found for locations '%s' and '%s'" % (
+                                    event_name, old_calling_frame, calling_frame))
+            self._event_registry[event_name] = (calling_frame, cur_count + 1)
+
+
+    def get_event_count(self, event_name):
+        """
+        Returns the number of times the event *event_name* has been sent since the last
+        clearing of its statistics.
+        """
+        if not self._event_registry.has_key(event_name):
+            return 0
+        else:
+            return self._event_registry[event_name][1]
+
+
+    def clear_event_stats(self, event_name):
+        """
+        Resets to 0 the counter of the event *event_name*.
+        """
+        del self._event_registry[event_name]
+
+
+    def clear_all_event_stats(self):
+        """
+        Resets entirely the event system, eg. at the beginning of a test sequence.
+        """
+        self._event_registry = {}
+

@@ -2,7 +2,7 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
-import os, sys
+import os, sys, pytest, unittest
 
 
 
@@ -29,7 +29,9 @@ import rpgweb.middlewares
 
 # we want django-specific checker methods
 # do NOT use the django.test.TestCase version, with SQL session management
-from django.utils.unittest.case import TestCase 
+#from django.utils.unittest.case import TestCase 
+#from django.test.testcases import TransactionTestCase as TestCase
+from django.test import TestCase
 
 from django.test.client import Client
 import django.utils.translation
@@ -72,10 +74,10 @@ def for_ability(klass):
 
 
 
-TEST_GAME_INSTANCE_ID = "default"
-ROOT_GAME_URL = "/rpgweb/%s" % TEST_GAME_INSTANCE_ID
+TEST_GAME_INSTANCE_ID = "TeStiNg"
+ROOT_GAME_URL = "/%s" % TEST_GAME_INSTANCE_ID
 
-sys.setrecursionlimit(120) # to help detect recursion problems
+sys.setrecursionlimit(200) # to help detect recursion problems
 
 logging.basicConfig() ## FIXME
 logging.disable(60)
@@ -93,7 +95,9 @@ logging.getLogger(0).setLevel(logging.DEBUG)
 
 class TestUtilities(TestCase):
 
-
+    def __call__(self, *args, **kwds):
+        return unittest.TestCase.run(self, *args, **kwds) # we bypass test setups from django's TestCase, to use py.test instead
+    
     def test_type_conversions(self):
 
         # test 1 #
@@ -173,7 +177,7 @@ class AutoCheckingDM(object):
     """
 
     def __init__(self, dm):
-        self._real_dm = dm
+        object.__setattr__(self, "_real_dm", dm) # bypass overriding of __setattr__ below
 
     def __getattribute__(self, name):
         real_dm = object.__getattribute__(self, "_real_dm")
@@ -193,16 +197,26 @@ class AutoCheckingDM(object):
 
             return _checked_method
 
+    def __setattr__(self, name, value):
+        return object.__getattribute__(self, "_real_dm").__setattr__(name, value)
+            
 
 
 
-
-class TestGame(TestCase):
+class BaseGameTestCase(TestCase):
+    
+    
     # WARNING - when directly modifying "self.dm.data" sub-objects, don't forget to commit() after !!
 
-    # Also, test launching always sets "DEBUG" to False !!
-
+    def __call__(self, *args, **kwds):
+        return unittest.TestCase.run(self, *args, **kwds) # we bypass test setups from django's TestCase, to use py.test instead
+    
+    
+    
     def setUp(self):
+        
+        assert settings.DEBUG == True
+        
         django.utils.translation.activate("en") # to test for error messages, just in case...
 
         logging.basicConfig() # in case ZODB or others have things to say...
@@ -219,9 +233,6 @@ class TestGame(TestCase):
 
             self.dm.reset_game_data()
 
-            self._inject_test_domain()
-            self._inject_test_user()
-
             self.dm.check_database_coherency() # important
 
             self.dm.set_game_state(True)
@@ -229,7 +240,7 @@ class TestGame(TestCase):
             self.dm.clear_all_event_stats()
 
             #self.default_player = self.dm.get_character_usernames()[0]
-            self._set_user(self.TEST_LOGIN)
+            #self._set_user(self.TEST_LOGIN)
 
             self.initial_msg_sent_length = len(self.dm.get_all_sent_messages())
             self.initial_msg_queue_length = len(self.dm.get_all_queued_messages())
@@ -238,7 +249,6 @@ class TestGame(TestCase):
             # comment this to have eclipse's autocompletion to work for datamanager anyway
             self.dm = AutoCheckingDM(self.dm) # protection against uncommitted, pending changes
 
-
             logging.disable(logging.CRITICAL) # to be commented if more output is wanted !!!
 
             self.client = Client()
@@ -246,60 +256,6 @@ class TestGame(TestCase):
         except:
             self.tearDown(check=False) # cleanup of db and connection in any case
             raise
-
-
-    TEST_DOMAIN = "dummy_domain"
-    def _inject_test_domain(self, name=TEST_DOMAIN, **overrides):
-        return # TODO FIXME
-        properties = dict(
-                        show_official_identities=False,
-                        victory="victory_masslavia",
-                        defeat="defeat_masslavia",
-                        prologue_music="prologue_masslavia.mp3",
-                        instructions="blablablabla",
-                        permissions=[]
-                        )
-        assert not (set(overrides.keys()) - set(properties.keys())) # don't inject unwanted params
-        properties.update(overrides)
-
-        properties = utilities.convert_object_tree(properties, utilities.python_to_zodb_types)
-        self.dm.data["domains"][name] = properties
-        self.dm.commit()
-
-
-    TEST_LOGIN = "guy1" # because special private folders etc must exist. 
-    def _inject_test_user(self, name=TEST_LOGIN, **overrides):
-        return # TODO FIXME
-        properties = dict(
-                        password=name.upper(),
-                        secret_question="What's the ultimate step of consciousness ?",
-                        secret_answer="unguessableanswer",
-
-                        domains=[self.TEST_DOMAIN],
-                        permissions=[],
-
-                        external_contacts=[],
-                        new_messages_notification="new_messages_guy1",
-
-                        account=1000,
-                        initial_cold_cash=100,
-                        gems=[],
-
-                        official_name="Strange Character",
-                        real_life_identity="John Doe",
-                        real_life_email="john@doe.com",
-                        description="Dummy test account",
-
-                        last_online_time=None,
-                        last_chatting_time=None
-                       )
-
-        assert not (set(overrides.keys()) - set(properties.keys())) # don't inject unwanted params
-        properties.update(overrides)
-
-        properties = utilities.convert_object_tree(properties, utilities.python_to_zodb_types)
-        self.dm.data["character_properties"][name] = properties
-        self.dm.commit()
 
 
     def tearDown(self, check=True):
@@ -342,12 +298,104 @@ class TestGame(TestCase):
         self.dm.commit()
 
 
+    def _reset_django_db(self):
+        from django.test.utils import setup_test_environment ## ,???
+        from django.core import management
+        management.call_command('syncdb', verbosity=0, interactive=False)
+        management.call_command('flush', verbosity=0, interactive=False)
+
+
+
+
+
+
+
+class TestGame(BaseGameTestCase):
+
+
     @for_datamanager_base
-    def test_core_architecture(self):
-        pass
-        #TODO test that each main method calls self properly !!
+    def test_modular_architecture(self):
+        
+        assert len(MODULES_REGISTRY) > 4
+        
+        for core_module in MODULES_REGISTRY:
+            
+            # we ensure every module calls super() properly
+             
+            CastratedDataManager = type(str('Dummy'+core_module.__name__), (core_module,), {})
+            castrated_dm = CastratedDataManager.__new__(CastratedDataManager) # we bypass __init__() call there
+            
+            try:
+                castrated_dm.__init__(game_instance_id=TEST_GAME_INSTANCE_ID,
+                                      game_root=self.connection.root())
+            except:
+                pass
+            assert castrated_dm.get_event_count("BASE_DATA_MANAGER_INIT_CALLED") == 1
+
+            try:
+                castrated_dm._load_initial_data()
+            except:
+                pass
+            assert castrated_dm.get_event_count("BASE_LOAD_INITIAL_DATA_CALLED") == 1
+                
+            try:
+                castrated_dm._check_database_coherency()
+            except:
+                pass
+            assert castrated_dm.get_event_count("BASE_CHECK_DB_COHERENCY_CALLED") == 1
+
+            try:
+                report = PersistentList()
+                castrated_dm._process_periodic_tasks(report)
+            except:
+                pass
+            assert castrated_dm.get_event_count("BASE_PROCESS_PERIODIC_TASK_CALLED") == 1
+                                       
+             
+            
+            
+    @for_core_module(CharacterHandling)
+    def test_character_handling(self):
+        
+        assert self.dm.update_real_life_data("guy1", real_life_identity="jjjj") 
+        assert self.dm.update_real_life_data("guy1", real_life_email="ss@pangea.com") 
+        
+        data = self.dm.get_character_properties("guy1")
+        assert data["real_life_identity"] == "jjjj"
+        assert data["real_life_email"] == "ss@pangea.com"
+        
+        assert self.dm.update_real_life_data("guy1", real_life_identity="kkkk", real_life_email="kkkk@pangea.com") 
+        assert data["real_life_identity"] == "kkkk"
+        assert data["real_life_email"] == "kkkk@pangea.com"    
+    
+        assert not self.dm.update_real_life_data("guy1", real_life_identity="", real_life_email=None)
+        assert data["real_life_identity"] == "kkkk"
+        assert data["real_life_email"] == "kkkk@pangea.com"          
+
+        with pytest.raises(UsageError):
+            self.dm.update_real_life_data("unexistinguy", real_life_identity="John")
+            
+        with pytest.raises(UsageError):
+            self.dm.update_real_life_data("guy1", real_life_email="bad_email")
 
 
+    @for_core_module(DomainHandling)
+    def test_domain_handling(self):
+        
+        self.dm.update_allegiances("guy1", [])
+        
+        assert self.dm.update_allegiances("guy1", ["sciences"]) == (["sciences"], [])
+        assert self.dm.update_allegiances("guy1", []) == ([], ["sciences"])
+        assert self.dm.update_allegiances("guy1", ["sciences", "acharis"]) == (["acharis", "sciences"], []) # sorted
+        assert self.dm.update_allegiances("guy1", ["sciences", "acharis"]) == ([], []) # no changes
+             
+        with pytest.raises(UsageError):
+            self.dm.update_allegiances("guy1", ["dummydomain"])
+            
+        with pytest.raises(UsageError):
+            self.dm.update_real_life_data("unexistinguy", real_life_identity=["sciences"])
+            
+            
     @for_core_module(OnlinePresence)
     def test_online_presence(self):
 
@@ -414,21 +462,6 @@ class TestGame(TestCase):
         self.assertEqual(self.dm.get_username_from_email("guy1@pangea.com"), "guy1")
 
 
-    def __test_initial_messages(self):
-        # we do NOT reset messages in this case !
-
-        messages = self.dm.get_all_sent_messages()
-        #all_ids = [message["id"] for message in messages]
-
-        for name in self.dm.get_character_usernames():
-            instructions = [msg for msg in self.dm.get_all_sent_messages() if msg["id"] == "instructions_" + name]
-
-            self.assertEqual(len(instructions), 1, name) # for guy2 telecom investigations to work !
-
-            self.assertEqual(instructions[0]["recipient_emails"], [self.dm.get_character_email(name)])
-
-        for message in messages:
-            self.assertTrue(message["sent_at"] <= datetime.utcnow()) # let's avoid weird futuristic messages
 
 
 
@@ -452,7 +485,7 @@ class TestGame(TestCase):
         bank_name = self.dm.get_global_parameter("bank_name")
 
         self.assertRaises(Exception, self.dm.transfer_money_between_characters, bank_name, "guy1", 10000000)
-        self.assertRaises(Exception, self.dm.transfer_money_between_characters, "guy3", "guy1", -100, is_master_action=True)
+        self.assertRaises(Exception, self.dm.transfer_money_between_characters, "guy3", "guy1", -100)
         self.assertRaises(Exception, self.dm.transfer_money_between_characters, "guy3", "guy1", lg_old["account"] + 1)
         self.assertRaises(Exception, self.dm.transfer_money_between_characters, "guy3", "guy3", 1)
         self.assertRaises(Exception, self.dm.transfer_object_to_character, "dummy_name", "guy3")
@@ -479,7 +512,7 @@ class TestGame(TestCase):
         # we test gems transfers
         gems_given = self.dm.get_character_properties("guy3")["gems"][0:3]
         self.dm.transfer_gems_between_characters("guy3", "guy1", gems_given)
-        self.dm.transfer_gems_between_characters("guy1", "guy3", gems_given, is_master_action=True)
+        self.dm.transfer_gems_between_characters("guy1", "guy3", gems_given)
         self.assertRaises(Exception, self.dm.transfer_gems_between_characters, "guy3", "guy1", gems_given + [27, 32])
         self.assertRaises(Exception, self.dm.transfer_gems_between_characters, "guy3", "guy1", [])
 
@@ -529,7 +562,7 @@ class TestGame(TestCase):
 
 
     @for_core_module(MoneyItemsOwnership)
-    def __test_available_items_listing(self):
+    def test_available_items_listing(self):
         self._reset_messages()
 
         items_old = copy.deepcopy(self.dm.get_items_for_sale())
@@ -538,36 +571,821 @@ class TestGame(TestCase):
 
         gem_name1 = gem_names[0]
         gem_name2 = gem_names[1]
-        gem_name3 = gem_names[2]
         object_name = object_names[0]
 
         self.dm.transfer_object_to_character(gem_name1, "guy2")
-        self.dm.transfer_object_to_character(gem_name2, "guy1")
-        self.dm.transfer_object_to_character(gem_name3, "scanner")
+        self.dm.transfer_object_to_character(gem_name2, "guy2")
         self.dm.transfer_object_to_character(object_name, "guy3")
 
-        self.assertEqual(self.dm.get_available_items_for_user_domain("master"), self.dm.get_items_for_sale())
-        self.assertEqual(self.dm.get_available_items_for_user_domain("guy2"), self.dm.get_available_items_for_user_domain("guy1"))
-        self.assertEqual(set(self.dm.get_available_items_for_user_domain("guy2").keys()), set([gem_name1, gem_name2]))
-        self.assertEqual(set(self.dm.get_available_items_for_user_domain("listener").keys()), set([gem_name3]))
-        self.assertEqual(set(self.dm.get_available_items_for_user_domain("guy1").keys()), set([object_name]))
-        self.assertEqual(set(self.dm.get_available_items_for_user_domain("hacker").keys()), set([]))
+        self.assertEqual(self.dm.get_available_items_for_user("master"), self.dm.get_items_for_sale())
+        self.assertEqual(set(self.dm.get_available_items_for_user("guy1").keys()), set([]))
+        self.assertNotEqual(self.dm.get_available_items_for_user("guy2"), self.dm.get_available_items_for_user("guy1")) # no sharing of objects, even shared allegiance
+        self.assertEqual(set(self.dm.get_available_items_for_user("guy2").keys()), set([gem_name1, gem_name2]))
+        self.assertEqual(set(self.dm.get_available_items_for_user("guy3").keys()), set([object_name]))
+
+
+
+    @for_core_module(PersonalFiles)
+    def test_personal_files(self):
+        self._reset_messages()
+
+        files1 = self.dm.get_personal_files("guy2", absolute_urls=True)
+        self.assertTrue(len(files1))
+        self.assertTrue(files1[0].startswith("http"))
+
+        files1bis = self.dm.get_personal_files("guy2")
+        self.assertEqual(len(files1), len(files1bis))
+        self.assertTrue(files1bis[0].startswith("/"))
+
+        files2 = self.dm.get_personal_files(None) # private game master files
+        self.assertTrue(files2)
+
+        c = Client() # file retrievals
+        response = c.get(files1[0])
+        self.assertEqual(response.status_code, 200)
+        response = c.get(files1bis[0])
+        self.assertEqual(response.status_code, 200)
+        response = c.get(files1bis[0] + ".dummy")
+        self.assertEqual(response.status_code, 404)
+
+        for username in self.dm.get_character_usernames():
+            self.dm.get_personal_files(username, absolute_urls=random.choice([True, False]))
+
+
+    @for_core_module(PersonalFiles)
+    def test_encrypted_folders(self):
+        self._reset_messages()
+
+        self.assertTrue(self.dm.encrypted_folder_exists("guy2_report"))
+        self.assertFalse(self.dm.encrypted_folder_exists("dummyarchive"))
+
+        self.assertRaises(dm_module.UsageError, self.dm.get_encrypted_files, "hacker", "dummyarchive", "bagheera")
+        self.assertRaises(dm_module.UsageError, self.dm.get_encrypted_files, "hacker", "guy2_report", "badpassword")
+
+        files = self.dm.get_encrypted_files("badusername", "guy2_report", "schamaalamoktuhg", absolute_urls=True) # no error raised for bad username !
+        self.assertTrue(files, files)
+
+        files1 = self.dm.get_encrypted_files("hacker", "guy2_report", "evans", absolute_urls=True)
+        self.assertTrue(files1, files1)
+        files2 = self.dm.get_encrypted_files("hacker", "guy2_report", "evans", absolute_urls=False)
+        self.assertEqual(len(files1), len(files2))
+
+        c = Client() # file retrievals
+        response = c.get(files1[0])
+        self.assertEqual(response.status_code, 200, (response.status_code, files1[0]))
+        response = c.get(files2[0])
+        self.assertEqual(response.status_code, 200)
+        response = c.get(files2[0] + ".dummy")
+        self.assertEqual(response.status_code, 404)
+
+
+    def test_message_automated_state_changes(self):
+        self._reset_messages()
+        
+        email = self.dm.get_character_email # function
+        
+        msg_id = self.dm.post_message(email("guy1"), email("guy2"), subject="ssd", body="qsdqsd")
+
+        msg = self.dm.get_sent_message_by_id(msg_id)
+        self.assertFalse(msg["has_replied"])
+        self.assertFalse(msg["has_read"])
+        
+        # no strict checks on sender/recipient of original message, when using reply_to feature
+        msg_id2 = self.dm.post_message(email("guy2"), email("guy1"), subject="ssd", body="qsdqsd", reply_to=msg_id)
+        msg_id3 = self.dm.post_message(email("guy3"), email("guy2"), subject="ssd", body="qsdqsd", reply_to=msg_id)
+
+        msg = self.dm.get_sent_message_by_id(msg_id2) # new message isn't impacted by reply_to
+        self.assertFalse(msg["has_replied"])
+        self.assertFalse(msg["has_read"])
+
+        msg = self.dm.get_sent_message_by_id(msg_id) # replied-to message impacted
+        self.assertEqual(len(msg["has_replied"]), 2)
+        self.assertTrue("guy2" in msg["has_replied"])
+        self.assertTrue("guy3" in msg["has_replied"])
+        self.assertEqual(len(msg["has_read"]), 2)
+        self.assertTrue("guy2" in msg["has_read"])
+        self.assertTrue("guy3" in msg["has_read"])
+
+        # -----
+
+        (tpl_id, tpl) = self.dm.get_messages_templates().items()[0]
+        self.assertEqual(tpl["is_used"], False)
+
+        msg_id4 = self.dm.post_message(email("guy3"), email("guy1"), subject="ssd", body="qsdqsd", use_template=tpl_id)
+
+        msg = self.dm.get_sent_message_by_id(msg_id4) # new message isn't impacted
+        self.assertFalse(msg["has_replied"])
+        self.assertFalse(msg["has_read"])
+
+        tpl = self.dm.get_message_template(tpl_id)
+        self.assertEqual(tpl["is_used"], True) # template properly marked as used
+
+   
+    @for_core_module(TextMessaging)
+    def test_email_recipients_parsing(self):
+        input1 = "guy1 , ; ; guy2@acharis.com , master, ; everyone ,master"
+        input2 = ["everyone", "guy1@pangea.com", "guy2@acharis.com", "master@administration.com"]
+
+        # unknown user login added
+        self.assertRaises(dm_module.UsageError, self.dm._normalize_recipient_emails, input1 + " ; dummy value")
+
+        recipients = self.dm._normalize_recipient_emails(input1)
+        self.assertEqual(len(recipients), len(input2))
+        self.assertEqual(set(recipients), set(input2))
+
+        recipients = self.dm._normalize_recipient_emails(input2)
+        self.assertEqual(len(recipients), len(input2))
+        self.assertEqual(set(recipients), set(input2))
+
+
+
+    @for_core_module(Chatroom)
+    def test_chatroom_operations(self):
+
+        self.assertEqual(self.dm.get_chatroom_messages(0), (0, None, []))
+
+        self._set_user(None)
+        self.assertRaises(dm_module.UsageError, self.dm.send_chatroom_message, " hello ")
+
+        self._set_user("guy1")
+        self.assertRaises(dm_module.UsageError, self.dm.send_chatroom_message, " ")
+
+        self.assertEqual(self.dm.get_chatroom_messages(0), (0, None, []))
+
+        self.dm.send_chatroom_message(" hello ! ")
+        self.dm.send_chatroom_message(" re ")
+
+        self._set_user("guy2")
+        self.dm.send_chatroom_message("back")
+
+        (slice_end, previous_msg_timestamp, msgs) = self.dm.get_chatroom_messages(0)
+        self.assertEqual(slice_end, 3)
+        self.assertEqual(previous_msg_timestamp, None)
+        self.assertEqual(len(msgs), 3)
+
+        self.assertEqual(sorted(msgs, key=lambda x: x["time"]), msgs)
+
+        data = [(msg["username"], msg["message"]) for msg in msgs]
+        self.assertEqual(data, [("guy1", "hello !"), ("guy1", "re"), ("guy2", "back")])
+
+        (slice_end, previous_msg_timestamp, nextmsgs) = self.dm.get_chatroom_messages(3)
+        self.assertEqual(slice_end, 3)
+        self.assertEqual(previous_msg_timestamp, msgs[-1]["time"])
+        self.assertEqual(len(nextmsgs), 0)
+
+        (slice_end, previous_msg_timestamp, renextmsgs) = self.dm.get_chatroom_messages(2)
+        self.assertEqual(slice_end, 3)
+        self.assertEqual(previous_msg_timestamp, msgs[-2]["time"])
+        self.assertEqual(len(renextmsgs), 1)
+        data = [(msg["username"], msg["message"]) for msg in renextmsgs]
+        self.assertEqual(data, [("guy2", "back")])
+
+
+
+    def test_external_contacts(self):
+
+        emails = self.dm.get_user_contacts(self.dm.get_global_parameter("master_login"))
+
+        # guy1 and guy2 have 3 external contacts altogether, + 2 judicators @ implied by original sent msgs
+        self.assertEqual(len(emails), len(self.dm.get_character_usernames()) + 5)  
+
+        emails = self.dm.get_user_contacts("guy2")
+        self.assertEqual(len(emails), len(self.dm.get_character_usernames()) + 2, emails) # himself & fellows, + 1 external contact + 1 implied by original msgs
+        self.assertTrue("guy3@pangea.com" in emails) # proper domain name...
+
+        emails = self.dm.get_user_contacts("guy3")
+        self.assertEqual(len(emails), len(self.dm.get_character_usernames()), emails)
+        emails = self.dm.get_external_emails("guy3")
+        self.assertEqual(len(emails), 0, emails)
+                
+
+    def test_text_messaging(self):
+        
+        self._reset_messages()
+        
+        email = self.dm.get_character_email # function
+        
+        MASTER = self.dm.get_global_parameter("master_login")
+        
+        self.assertEqual(email("guy3"), "guy3@pangea.com")
+        with pytest.raises(AssertionError):
+            email("master") # not OK with get_character_email!
+
+
+        record1 = {
+            "sender_email": "guy2@pangea.com",
+            "recipient_emails": ["guy3@pangea.com"],
+            "subject": "hello everybody 1",
+            "body": "Here is the body of this message lalalal...",
+            "date_or_delay_mn":-1
+        }
+
+        record2 = {
+            "sender_email": "guy4@pangea.com",
+            "recipient_emails": ["secret-services@masslavia.com"],
+            "subject": "hello everybody 2",
+            "body": "Here is the body of this message lililili...",
+            "attachment": "http://yowdlayhio",
+            "date_or_delay_mn": 0
+        }
+
+        record3 = {
+            "sender_email": "guy1@pangea.com",
+            "recipient_emails": ["guy3@pangea.com"],
+            "subject": "hello everybody 3",
+            "body": "Here is the body of this message lulululu...",
+            "date_or_delay_mn": None
+            # "origin": "dummy-msg-id"  # shouldn't raise error - the problem is just logged
+        }
+
+        record4 = {
+            "sender_email": "dummy-robot@masslavia.com",
+            "recipient_emails": ["guy2@pangea.com"],
+            "subject": "hello everybody 4",
+            "body": "Here is the body of this message lililili...",
+            }
+
+        self.dm.post_message("guy1@masslavia.com", "netsdfworkerds@masslavia.com", subject="ssd", body="qsdqsd") # this works too !
+        self.assertEqual(len(self.dm.get_game_master_messages()), 1)
+        self.dm.get_game_master_messages()[0]["has_read"] = utilities.PersistentList(
+            self.dm.get_character_usernames() + [self.dm.get_global_parameter("master_login")]) # we hack this message not to break following assertions
+
+        self.dm.post_message(**record1)
+        time.sleep(0.2)
+
+        self.dm.set_wiretapping_targets("guy1", ["guy2"])
+        self.dm.set_wiretapping_targets("guy2", ["guy4"])
+        
+        self.dm.post_message(**record2)
+        time.sleep(0.2)
+        self.dm.post_message(**record3)
+        time.sleep(0.2)
+        self.dm.post_message(**record4)
+        time.sleep(0.2)
+        self.dm.post_message(**record1) # this message will get back to the 2nd place of list !
+
+        self.assertEqual(self.dm.get_unread_messages_count("guy3"), 3)
+
+        self.assertEqual(self.dm.get_unread_messages_count(self.dm.get_global_parameter("master_login")), 1)
+
+        self.assertEqual(len(self.dm.get_all_sent_messages()), 6)
+
+        self.assertEqual(len(self.dm.get_game_master_messages()), 2) # secret services + wrong email address
+
+        expected_notifications = {'guy2': "new_messages_2", 'guy3': "new_messages_1"}
+        self.assertEqual(self.dm.get_pending_new_message_notifications(), expected_notifications)
+
+        self.assertEqual(self.dm.get_pending_new_message_notifications(), expected_notifications) # no disappearance
+
+        self.assertTrue(self.dm.has_new_message_notification("guy3"))
+        self.assertEqual(len(self.dm.get_received_messages("guy3@pangea.com", reset_notification=True)), 3)
+        self.assertFalse(self.dm.has_new_message_notification("guy3"))
+
+        # here we can't do check messages of secret-services@masslavia.com since it's not a normal character
+
+        self.assertTrue(self.dm.has_new_message_notification("guy2"))
+        self.assertEqual(len(self.dm.get_received_messages("guy2@pangea.com", reset_notification=False)), 1)
+        self.assertTrue(self.dm.has_new_message_notification("guy2"))
+        self.dm.set_new_message_notification(utilities.PersistentList(["guy2@pangea.com"]), new_status=False)
+        self.assertFalse(self.dm.has_new_message_notification("guy2"))
+
+        self.assertEqual(self.dm.get_pending_new_message_notifications(), {}) # all have been reset
+
+        self.assertEqual(len(self.dm.get_received_messages(self.dm.get_character_email("guy1"))), 0)
+
+        self.assertEqual(len(self.dm.get_sent_messages("guy2@pangea.com")), 2)
+        self.assertEqual(len(self.dm.get_sent_messages("guy1@pangea.com")), 1)
+        self.assertEqual(len(self.dm.get_sent_messages("guy3@pangea.com")), 0)
+
+        assert not self.dm.get_intercepted_messages("guy3")
+        
+        res = self.dm.get_intercepted_messages("guy1")
+        self.assertEqual(len(res), 2)
+        self.assertEqual(set([msg["subject"] for msg in res]), set(["hello everybody 1", "hello everybody 4"]))
+        assert all(["guy1" in msg["intercepted_by"] for msg in res])
+        
+        res = self.dm.get_intercepted_messages()
+        self.assertEqual(len(res), 3)
+        self.assertEqual(set([msg["subject"] for msg in res]), set(["hello everybody 1", "hello everybody 2", "hello everybody 4"]))
+        assert all([msg["intercepted_by"] for msg in res])     
+           
+        # NO - we dont notify interceptions - self.assertTrue(self.dm.get_global_parameter("message_intercepted_audio_id") in self.dm.get_all_next_audio_messages(), self.dm.get_all_next_audio_messages())
+
+        # msg has_read state changes
+        msg_id1 = self.dm.get_all_sent_messages()[0]["id"] # sent to guy3
+        msg_id2 = self.dm.get_all_sent_messages()[3]["id"] # sent to external contact
+
+        """ # NO PROBLEM with wrong msg owner
+        self.assertRaises(Exception, self.dm.set_message_read_state, MASTER, msg_id1, True)
+        self.assertRaises(Exception, self.dm.set_message_read_state, "guy2", msg_id1, True)
+        self.assertRaises(Exception, self.dm.set_message_read_state, "guy1", msg_id2, True)
+        """
+        
+        # wrong msg id
+        self.assertRaises(Exception, self.dm.set_message_read_state, "dummyid", False)
+   
+
+        #self.assertEqual(self.dm.get_all_sent_messages()[0]["no_reply"], False)
+        #self.assertEqual(self.dm.get_all_sent_messages()[4]["no_reply"], True)# msg from robot
+
+        self.assertEqual(self.dm.get_all_sent_messages()[0]["is_certified"], False)
+        self.assertFalse(self.dm.get_all_sent_messages()[0]["has_read"])
+        self.dm.set_message_read_state("guy3", msg_id1, True)
+        self.dm.set_message_read_state("guy2", msg_id1, True)
+
+        self.assertEqual(len(self.dm.get_all_sent_messages()[0]["has_read"]), 2)
+        self.assertTrue("guy2" in self.dm.get_all_sent_messages()[0]["has_read"])
+        self.assertTrue("guy3" in self.dm.get_all_sent_messages()[0]["has_read"])
+
+        self.assertEqual(self.dm.get_unread_messages_count("guy3"), 2)
+        self.dm.set_message_read_state("guy3", msg_id1, False)
+        self.assertEqual(self.dm.get_all_sent_messages()[0]["has_read"], ["guy2"])
+        self.assertEqual(self.dm.get_unread_messages_count("guy3"), 3)
+
+        self.assertFalse(self.dm.get_all_sent_messages()[3]["has_read"])
+        self.dm.set_message_read_state(MASTER, msg_id2, True)
+        self.assertTrue(MASTER in self.dm.get_all_sent_messages()[3]["has_read"])
+        self.assertEqual(self.dm.get_unread_messages_count(self.dm.get_global_parameter("master_login")), 0)
+        self.dm.set_message_read_state(MASTER, msg_id2, False)
+        self.assertFalse(self.dm.get_all_sent_messages()[3]["has_read"])
+        self.assertEqual(self.dm.get_unread_messages_count(self.dm.get_global_parameter("master_login")), 1)
+
+
+
+
+    def test_audio_messages_management(self):
+        self._reset_messages()
+        
+        email = self.dm.get_character_email # function
+        
+        self.assertRaises(dm_module.UsageError, self.dm.check_radio_frequency, "dummyfrequency")
+        self.assertEqual(self.dm.check_radio_frequency(self.dm.get_global_parameter("pangea_radio_frequency")), None) # no exception nor return value
+
+        self.dm.set_radio_state(is_on=True)
+        self.assertEqual(self.dm.get_global_parameter("radio_is_on"), True)
+        self.dm.set_radio_state(is_on=False)
+        self.assertEqual(self.dm.get_global_parameter("radio_is_on"), False)
+        self.dm.set_radio_state(is_on=True)
+        self.assertEqual(self.dm.get_global_parameter("radio_is_on"), True)
+
+        record1 = {
+            "sender_email": email("guy2"),
+            "recipient_emails": [email("guy3")],
+            "subject": "hello everybody 1",
+            "body": "Here is the body of this message lalalal...",
+            "date_or_delay_mn":-1
+        }
+
+        self.dm.post_message(**record1)
+
+        res = self.dm.get_pending_new_message_notifications()
+        self.assertEqual(len(res), 1)
+        (username, audio_id) = res.items()[0]
+        self.assertEqual(username, "guy3")
+
+        properties = self.dm.get_audio_message_properties(audio_id)
+        self.assertEqual(set(properties.keys()), set(["text", "file", "url"]))
+
+        #self.assertEqual(properties["new_messages_notification_for_user"], "guy3")
+        #self.assertEqual(self.dm.get_audio_message_properties("request_for_report_teldorium")["new_messages_notification_for_user"], None)
+
+        self.assertEqual(len(self.dm.get_all_next_audio_messages()), 0)
+
+        self.dm.add_radio_message(audio_id)
+        self.assertEqual(self.dm.get_next_audio_message(), audio_id)
+        self.assertEqual(self.dm.get_next_audio_message(), audio_id) # no disappearance
+
+        self.assertEqual(len(self.dm.get_all_next_audio_messages()), 1)
+
+        self.dm.reset_audio_messages()
+        self.assertEqual(self.dm.get_next_audio_message(), None)
+
+        self.assertEqual(len(self.dm.get_all_next_audio_messages()), 0)
+
+        audio_id_bis = self.dm.get_character_properties("guy2")["new_messages_notification"]
+        audio_id_ter = self.dm.get_character_properties("guy1")["new_messages_notification"]
+
+        self.assertRaises(dm_module.UsageError, self.dm.add_radio_message, "bad_audio_id")
+        self.dm.add_radio_message(audio_id)
+        self.dm.add_radio_message(audio_id) # double adding == NO OP
+        self.dm.add_radio_message(audio_id_bis)
+        self.dm.add_radio_message(audio_id_ter)
+
+        self.assertEqual(len(self.dm.get_all_next_audio_messages()), 3)
+
+        self.assertEqual(self.dm.get_next_audio_message(), audio_id)
+
+        self.dm.notify_audio_message_termination("bad_audio_id") # no error, we just ignore it
+
+        self.dm.notify_audio_message_termination(audio_id_ter)# removing trailing one works
+
+        self.dm.notify_audio_message_termination(audio_id)
+
+        self.assertEqual(self.dm.get_global_parameter("radio_is_on"), True)
+
+        self.assertEqual(self.dm.get_next_audio_message(), audio_id_bis)
+        self.dm.notify_audio_message_termination(audio_id_bis)
+
+        self.assertEqual(self.dm.get_global_parameter("radio_is_on"), False) # auto extinction of radio
+
+        self.assertEqual(self.dm.get_next_audio_message(), None)
+        self.assertEqual(len(self.dm.get_all_next_audio_messages()), 0)
+
+        
+    def test_delayed_message_processing(self):
+        self._reset_messages()
+
+        email = self.dm.get_character_email # function
+        
+        # delayed message sending
+
+        self.dm.post_message(email("guy3"), email("guy2"), "yowh1", "qhsdhqsdh", attachment=None, date_or_delay_mn=0.03)
+        self.assertEqual(len(self.dm.get_all_sent_messages()), 0)
+        queued_msgs = self.dm.get_all_queued_messages()
+        self.assertEqual(len(queued_msgs), 1)
+        #print datetime.utcnow(), " << ", queued_msgs[0]["sent_at"]
+        self.assertTrue(datetime.utcnow() < queued_msgs[0]["sent_at"] < datetime.utcnow() + timedelta(minutes=0.22))
+
+        self.dm.post_message(email("guy3"), email("guy2"), "yowh2", "qhsdhqsdh", attachment=None, date_or_delay_mn=(0.04, 0.05)) # 3s delay range
+        self.assertEqual(len(self.dm.get_all_sent_messages()), 0)
+        queued_msgs = self.dm.get_all_queued_messages()
+        self.assertEqual(len(queued_msgs), 2)
+        self.assertEqual(queued_msgs[1]["subject"], "yowh2", queued_msgs)
+        #print datetime.utcnow(), " >> ", queued_msgs[1]["sent_at"]
+        self.assertTrue(datetime.utcnow() < queued_msgs[1]["sent_at"] < datetime.utcnow() + timedelta(minutes=0.06))
+
+        # delayed message processing
+
+        self.dm.post_message(email("guy3"), email("guy2"), "yowh3", "qhsdhqsdh", attachment=None, date_or_delay_mn=0.01) # 0.6s
+        self.assertEqual(len(self.dm.get_all_queued_messages()), 3)
+        self.assertEqual(len(self.dm.get_all_sent_messages()), 0)
+        res = self.dm.process_periodic_tasks()
+        self.assertEqual(res["messages_sent"], 0)
+        self.assertEqual(res["actions_executed"], 0)
+        self.assertEqual(len(self.dm.get_all_sent_messages()), 0)
+
+        time.sleep(0.8) # one message OK
+
+        res = self.dm.process_periodic_tasks()
+        #print self.dm.get_all_sent_messages(), datetime.utcnow()
+        self.assertEqual(res["messages_sent"], 1)
+        self.assertEqual(res["actions_executed"], 0)
+        self.assertEqual(len(self.dm.get_all_sent_messages()), 1)
+        self.assertEqual(len(self.dm.get_all_queued_messages()), 2)
+
+        time.sleep(2.5) # last messages OK
+
+        res = self.dm.process_periodic_tasks()
+        self.assertEqual(res["messages_sent"], 2)
+        self.assertEqual(res["actions_executed"], 0)
+        self.assertEqual(len(self.dm.get_all_sent_messages()), 3)
+        self.assertEqual(len(self.dm.get_all_queued_messages()), 0)
+
+        # due to the strength of coherency checks, it's about impossible to enforce a sending here here...
+        self.assertEqual(self.dm.get_event_count("DELAYED_MESSAGE_ERROR"), 0)
+
+
+
+        # forced sending of queued messages
+        myid1 = self.dm.post_message(email("guy3"), email("guy2"), "yowh2", "qhsdhqsdh", attachment=None, date_or_delay_mn=(1, 2)) # 3s delay range
+        myid2 = self.dm.post_message(email("guy3"), email("guy2"), "yowh2", "qhsdhqsdh", attachment=None, date_or_delay_mn=(1, 2)) # 3s delay range
+        self.assertEqual(len(self.dm.get_all_queued_messages()), 2)
+
+        self.assertFalse(self.dm.force_message_sending("dummyid"))
+        self.assertTrue(self.dm.force_message_sending(myid1))
+        self.assertEqual(len(self.dm.get_all_queued_messages()), 1)
+        self.assertFalse(self.dm.force_message_sending(myid1)) # already sent now
+        self.assertEqual(self.dm.get_all_queued_messages()[0]["id"], myid2)
+        self.assertTrue(self.dm.get_sent_message_by_id(myid1))
+
+        
+     
+        
+    def test_delayed_action_processing(self):
+
+        def _dm_delayed_action(arg1):
+            self.dm.data["global_parameters"]["stuff"] = 23
+            self.dm.commit()
+        self.dm._dm_delayed_action = _dm_delayed_action # attribute of that precise instane, not class!
+        
+        self.dm.schedule_delayed_action(0.01, dummyfunc, 12, item=24)
+        self.dm.schedule_delayed_action((0.04, 0.05), dummyfunc) # will raise error
+        self.dm.schedule_delayed_action((0.035, 0.05), "_dm_delayed_action", "hello")
+ 
+        res = self.dm.process_periodic_tasks()
+        self.assertEqual(res["actions_executed"], 0)
+
+        time.sleep(0.7)
+
+        res = self.dm.process_periodic_tasks()
+        self.assertEqual(res["actions_executed"], 1)
+
+        self.assertEqual(self.dm.get_event_count("DELAYED_ACTION_ERROR"), 0)
+        assert self.dm.data["global_parameters"].get("stuff") is None
+        
+        time.sleep(2.5)
+
+        res = self.dm.process_periodic_tasks()
+        self.assertEqual(res["actions_executed"], 2)
+
+        self.assertEqual(len(self.dm.data["scheduled_actions"]), 0)
+
+        self.assertEqual(self.dm.get_event_count("DELAYED_ACTION_ERROR"), 1) # error raised but swallowed
+        assert self.dm.data["global_parameters"]["stuff"] == 23
+ 
+ 
+
+    @for_core_module(PlayerAuthentication)
+    def test_password_recovery(self):
+        self._reset_messages()
+
+        res = self.dm.get_secret_question("guy3")
+        self.assertTrue("pet" in res)
+
+        self.assertEqual(len(self.dm.get_all_queued_messages()), 0)
+        res = self.dm.process_secret_answer_attempt("guy3", "FluFFy", "guy3@pangea.com")
+        self.assertEqual(res, "awesome") # password
+
+        msgs = self.dm.get_all_queued_messages()
+        self.assertEqual(len(msgs), 1)
+        msg = msgs[0]
+        self.assertTrue("password" in msg["body"].lower())
+
+        self.assertRaises(dm_module.UsageError, self.dm.process_secret_answer_attempt, "badusername", "badanswer", "guy3@sciences.com")
+        self.assertRaises(dm_module.UsageError, self.dm.process_secret_answer_attempt, "guy3", "badanswer", "guy3@sciences.com")
+        self.assertRaises(dm_module.UsageError, self.dm.process_secret_answer_attempt, "guy3", "MiLoU", "bademail@sciences.com")
+        self.assertEqual(len(self.dm.get_all_queued_messages()), 1) # untouched
+
+
+    @for_core_module(GameEvents)
+    def test_event_logging(self):
+        self._reset_messages()
+        
+        self._set_user("guy1")
+        self.assertEqual(self.dm.get_game_events(), [])
+        self.dm.log_game_event("hello there 1")
+        self._set_user("master")
+        self.dm.log_game_event("hello there 2", url="/my/url/")
+        self.dm.commit()
+        events = self.dm.get_game_events()
+        self.assertEqual(len(events), 2)
+
+        self.assertEqual(events[0]["message"], "hello there 1")
+        self.assertEqual(events[0]["username"], "guy1")
+        self.assertEqual(events[0]["url"], None)
+        self.assertEqual(events[1]["message"], "hello there 2")
+        self.assertEqual(events[1]["username"], "master")
+        self.assertEqual(events[1]["url"], "/my/url/")
+
+        utcnow = datetime.utcnow()
+        for event in events:
+            self.assertTrue(utcnow - timedelta(seconds=2) < event["time"] <= utcnow)
+
+
+
+
+
+    @for_datamanager_base
+    def test_database_management(self):
+        self._reset_messages()
+
+        # test "reset databases" too, in the future
+        res = self.dm.dump_zope_database()
+        assert isinstance(res, basestring) and len(res) > 1000
+
+
+    def _master_auth(self):
+        master_login = self.dm.get_global_parameter("master_login")
+        login_page = reverse("rpgweb.views.login", kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID))
+        response = self.client.get(login_page) # to set preliminary cookies
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.post(login_page, data=dict(secret_username=master_login, secret_password=self.dm.get_global_parameter("master_password")))
+
+        self.assertEqual(response.status_code, 302)
+
+        if self.dm.is_game_started():
+            self.assertRedirects(response, ROOT_GAME_URL + "/")
+        else:
+            self.assertRedirects(response, ROOT_GAME_URL + "/opening/") # beautiful intro for days before the game starts
+        
+        assert self.client.session["rpgweb_session_ticket"] == (TEST_GAME_INSTANCE_ID, master_login)
+        self.assertTrue(self.client.cookies["sessionid"])
+
+
+    def _player_auth(self, username):
+        login_page = reverse("rpgweb.views.login", kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID))
+        response = self.client.get(login_page) # to set preliminary cookies
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.post(login_page, data=dict(secret_username=username, secret_password=self.dm.get_character_properties(username)["password"]))
+
+        self.assertEqual(response.status_code, 302)
+        if self.dm.is_game_started():
+            self.assertRedirects(response, ROOT_GAME_URL + "/")
+        else:
+            self.assertRedirects(response, ROOT_GAME_URL + "/opening/") # beautiful intro for days before the game starts
+            
+        assert self.client.session["rpgweb_session_ticket"] == (TEST_GAME_INSTANCE_ID, username)
+        self.assertTrue(self.client.cookies["sessionid"])
+
+
+    def _logout(self):
+        login_page = reverse("rpgweb.views.login", kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID))
+        logout_page = reverse("rpgweb.views.logout", kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID))
+        response = self.client.get(logout_page) # to set preliminary cookies
+
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, login_page)
+
+        assert not self.client.session.has_key("rpgweb_session_ticket")
+        self.assertEqual(self.client.session.keys(), ["testcookie"]) # we get it once more
+
+
+    def _simple_master_get_requests(self):
+        # FIXME - currently not testing abilities
+        self._reset_django_db()
+        
+        self.dm.data["global_parameters"]["online_presence_timeout_s"] = 1
+        self.dm.data["global_parameters"]["chatroom_presence_timeout_s"] = 1
+        self.dm.commit()
+        time.sleep(1.2) # online/chatting users list gets emptied
+
+        self._master_auth() # equivalent to self._set_user(self.dm.get_global_parameter("master_login"))
+        
+        from django.core.urlresolvers import RegexURLResolver
+        from rpgweb.urls import final_urlpatterns
+
+        skipped_patterns = """ability instructions
+                              DATABASE_OPERATIONS FAIL_TEST ajax item_3d_view chat_with_djinn static.serve encrypted_folder view_single_message logout login secret_question""".split()
+        views = [url._callback_str for url in final_urlpatterns 
+                                   if not isinstance(url, RegexURLResolver) and 
+                                      not [veto for veto in skipped_patterns if veto in url._callback_str]
+                                      and "__" not in url._callback_str] # skip disabled views
+        #print views
+        
+        for view in views:
+            url = reverse(view, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID))
+            #print(" ====> ", url)
+            response = self.client.get(url)
+            #print(response._headers) #repr(response.content))
+            self.assertEqual(response.status_code, 200, view + " | " + url + " | " + str(response.status_code))
+ 
+   
+        # these urls and their post data might easily change, beware !
+        special_urls = {ROOT_GAME_URL + "/item3dview/sacred_chest/": None,
+                        # FIXME NOT YET READYROOT_GAME_URL + "/djinn/": {"djinn": "Pay Rhuss"},
+                        config.MEDIA_URL + "Burned/default_styles.css": None,
+                        config.GAME_FILES_URL + "attachments/image1.png": None,
+                        config.GAME_FILES_URL + "encrypted/guy2_report/evans/orb.jpg": None,
+                        ROOT_GAME_URL + "/messages/view_single_message/instructions_bewitcher/": None,
+                        ROOT_GAME_URL + "/secret_question/": dict(secret_answer="Fluffy", target_email="guy3@pangea.com", secret_username="guy3"),
+                        ROOT_GAME_URL + "/webradio_applet/": dict(frequency=self.dm.get_global_parameter("pangea_radio_frequency"))
+        } 
+        for url, value in special_urls.items():
+            #print ">>>>>>", url
+
+            if value:
+                response = self.client.post(url, data=value)
+            else:
+                response = self.client.get(url)
+
+            # print "WE TRY TO LOAD ", url
+            self.assertNotContains(response, 'class="error_notifications"', msg_prefix=response.content)
+            self.assertEqual(response.status_code, 200, url + " | " + str(response.status_code))
+
+
+        # no directory index !
+        response = self.client.get("/media/")
+        self.assertEqual(response.status_code, 404)
+        response = self.client.get("/files/")
+        self.assertEqual(response.status_code, 404)
+
+        self.assertEqual(self.dm.get_online_users(), [])
+        self.assertEqual(self.dm.get_chatting_users(), [])
+
+        self._logout()
+
+
+    def test_master_game_started_page_displays(self):
+        self.dm.set_game_state(True)
+        self._simple_master_get_requests()
+
+    def test_master_game_paused_page_displays(self):
+        self.dm.set_game_state(False)
+        self._simple_master_get_requests()
+
+
+    def _test_player_get_requests(self):
+        
+        # FIXME - currently not testing abilities
+        
+        self._reset_django_db()
+        
+        self.dm.data["global_parameters"]["online_presence_timeout_s"] = 1
+        self.dm.data["global_parameters"]["chatroom_presence_timeout_s"] = 1
+        self.dm.commit()
+        time.sleep(1.2) # online/chatting users list gets emptied
+        
+        old_state = self.dm.is_game_started()
+        
+        # PLAYER SETUP
+        
+        self.dm.set_game_state(True)
+        username = "guy2"
+        user_money = self.dm.get_character_properties(username)["account"]
+        if user_money:
+            self.dm.transfer_money_between_characters(username, self.dm.get_global_parameter("bank_name"), user_money) # we empty money
+        self.dm.data["character_properties"][username]["permissions"] = PersistentList(["contact_djinns", "manage_agents", "manage_wiretaps"]) # we grant all necessary permissions
+        self.dm.commit()
+        self.dm.set_game_state(old_state)
+        self._player_auth(username)
+
+
+        # VIEWS SELECTION
+        from django.core.urlresolvers import RegexURLResolver
+        from rpgweb.urls import final_urlpatterns
+        # we test views for which there is a distinction between master and player
+        selected_patterns = """inbox outbox compose_message intercepted_messages view_sales items_slideshow personal_radio_messages_listing""".split() # TODO LATER network_management contact_djinns 
+        views = [url._callback_str for url in final_urlpatterns if not isinstance(url, RegexURLResolver) and [match for match in selected_patterns if match in url._callback_str]]
+        assert len(views) == len(selected_patterns)
+        
+        def test_views(views):
+            for view in views:
+                url = reverse(view, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID))
+                response = self.client.get(url)
+                #print response.content
+                self.assertEqual(response.status_code, 200, view + " | " + url + " | " + str(response.status_code))
+
+        test_views(views)
+
+        self.dm.set_game_state(True)
+        self.dm.transfer_money_between_characters(self.dm.get_global_parameter("bank_name"), username, 1000)
+        self.dm.set_game_state(old_state)
+
+        test_views(views)
+
+        self.dm.set_game_state(True)
+        gem_name = [key for key, value in self.dm.get_items_for_sale().items() if value["is_gem"] and value["num_items"] >= 6][0] # we only take numerous groups
+        self.dm.transfer_object_to_character(gem_name, username)
+        self.dm.set_game_state(old_state)
+
+        test_views(views)
+
+        self.assertEqual(self.dm.get_online_users(), [username])
+        self.assertEqual(self.dm.get_chatting_users(), [])
+
+        self._logout()
+   
+
+    def test_player_game_started_page_displays(self):
+        self.dm.set_game_state(True)
+        #print "STARTING"
+        #import timeit
+        #timeit.Timer(self._test_player_get_requests).timeit()
+        self._test_player_get_requests()
+        #print "OVER"
+
+    def test_player_game_paused_page_displays(self):
+        self.dm.set_game_state(False)
+        self._test_player_get_requests()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+class TestSpecialAbilities(BaseGameTestCase):
+
 
 
     @for_ability(RunicTranslationAbility)
     def test_runic_translation(self):
-        runic_translations = self.dm.abilities.runic_translations
+        runic_translation = self.dm.abilities.runic_translation
 
-        assert runic_translations.ability_data
+        assert runic_translation.ability_data
 
         self._reset_messages()
 
         message = """ hi |there,   | how  are \t you # today,\n| buddy, # are you  \t\n okay ? """
 
-        phrases = runic_translations._tokenize_rune_message(message)
+        phrases = runic_translation._tokenize_rune_message(message)
         self.assertEqual(phrases, ['hi', 'there,', 'how are you', 'today,', 'buddy,', 'are you okay ?'])
 
-        self.assertEqual(runic_translations._tokenize_rune_message(""), [])
+        self.assertEqual(runic_translation._tokenize_rune_message(""), [])
 
         """ Too wrong and complicated...
         phrases = self.dm._tokenize_rune_message(message, left_to_right=True, top_to_bottom=False)
@@ -580,23 +1398,23 @@ class TestGame(TestCase):
         self.assertEqual(phrases, ['are you okay ?', 'buddy,', 'today,', 'how are you', 'there,', 'hi'])
         """
 
-        translator = runic_translations._build_translation_dictionary("na | tsu | me",
+        translator = runic_translation._build_translation_dictionary("na | tsu | me",
                                                                       "yowh | man | cool")
         self.assertEqual(translator, dict(na="yowh", tsu="man", me="cool"))
 
-        self.assertRaises(Exception, runic_translations._build_translation_dictionary, "na | tsu | me | no",
+        self.assertRaises(Exception, runic_translation._build_translation_dictionary, "na | tsu | me | no",
                           "yowh | man | cool")
 
-        self.assertRaises(Exception, runic_translations._build_translation_dictionary, "me | tsu | me",
+        self.assertRaises(Exception, runic_translation._build_translation_dictionary, "me | tsu | me",
                           "yowh | man | cool")
 
-        assert runic_translations.ability_data
+        assert runic_translation.ability_data
 
         decoded_rune_string = "na  hu,  \t yo la\ttsu ri !\n go"
         translator = {"na hu": "welcome",
                       "yo la tsu": "people"}
         random_words = "hoy ma mi mo mu me".split()
-        translated_tokens = runic_translations._try_translating_runes(decoded_rune_string, translator=translator, random_words=random_words)
+        translated_tokens = runic_translation._try_translating_runes(decoded_rune_string, translator=translator, random_words=random_words)
 
         self.assertEqual(len(translated_tokens), 4, translated_tokens)
         self.assertEqual(translated_tokens[0:2], ["welcome", "people"])
@@ -604,15 +1422,16 @@ class TestGame(TestCase):
             self.assertTrue(translated_token in random_words)
 
         # temporary solution to deal with currently untranslated runes... #FIXME
-        available_translations = [(item_name, settings) for (item_name, settings) in runic_translations.get_ability_parameter("references").items() if settings["decoding"].strip()]
+        available_translations = [(item_name, settings) for (item_name, settings) in runic_translation.get_ability_parameter("references").items() 
+                                    if settings["decoding"].strip()]
         (rune_item, translation_settings) = available_translations[0]
 
         transcription_attempt = translation_settings["decoding"] # '|' and '#'symbols are automatically cleaned
-        expected_result = runic_translations._normalize_string(translation_settings["translation"].replace("#", " ").replace("|", " "))
-        translation_result = runic_translations._translate_rune_message(rune_item, transcription_attempt)
+        expected_result = runic_translation._normalize_string(translation_settings["translation"].replace("#", " ").replace("|", " "))
+        translation_result = runic_translation._translate_rune_message(rune_item, transcription_attempt)
         self.assertEqual(translation_result, expected_result)
 
-        runic_translations._process_translation_submission("guy1", rune_item, transcription_attempt)
+        runic_translation._process_translation_submission("guy1", rune_item, transcription_attempt)
 
         msgs = self.dm.get_all_queued_messages()
         self.assertEqual(len(msgs), 1)
@@ -626,6 +1445,27 @@ class TestGame(TestCase):
         self.assertEqual(msg["sender_email"], "guy1@pangea.com")
         self.assertTrue(transcription_attempt.strip() in msg["body"], (transcription_attempt, msg["body"]))
         self.assertTrue(self.dm.get_global_parameter("master_login") in msg["has_read"])
+
+
+    @for_ability(HouseLockingAbility)
+    def test_house_locking(self):
+
+        house_locking = self.dm.abilities.house_locking
+        expected_password = house_locking.get_ability_parameter("house_doors_password")
+
+        self.assertEqual(house_locking.are_house_doors_open(), True) # initial state
+
+        self.assertTrue(house_locking.lock_house_doors())
+        self.assertEqual(house_locking.are_house_doors_open(), False)
+
+        self.assertFalse(house_locking.lock_house_doors()) # already locked
+        self.assertEqual(house_locking.are_house_doors_open(), False)
+
+        self.assertFalse(house_locking.try_unlocking_house_doors(password="blablabla"))
+        self.assertEqual(house_locking.are_house_doors_open(), False)
+
+        self.assertTrue(house_locking.try_unlocking_house_doors(password=expected_password))
+        self.assertEqual(house_locking.are_house_doors_open(), True)
 
 
     def __test_telecom_investigations(self):
@@ -846,9 +1686,12 @@ class TestGame(TestCase):
         self.assertTrue("***" in msg["body"].lower())
 
 
-    def ___test_wiretapping_management(self):
+    def test_wiretapping_management(self):
+        
         self._reset_messages()
-
+        
+        self._set_user("guy1") # has all permissions
+        
         char_names = self.dm.get_character_usernames()
 
         wiretapping = self.dm.abilities.wiretapping
@@ -859,13 +1702,13 @@ class TestGame(TestCase):
         wiretapping.change_wiretapping_targets([char_names[0], char_names[0], char_names[1]])
 
         self.assertEqual(set(wiretapping.get_current_targets()), set([char_names[0], char_names[1]]))
-        self.assertEqual(wiretapping.get_listeners_for(char_names[1]), [self.TEST_LOGIN])
+        self.assertEqual(wiretapping.get_listeners_for(char_names[1]), ["guy1"])
 
         self.assertRaises(UsageError, wiretapping.change_wiretapping_targets, ["dummy_name"])
         self.assertRaises(UsageError, wiretapping.change_wiretapping_targets, [char_names[i] for i in range(wiretapping.get_ability_parameter("max_wiretapping_targets") + 1)])
 
         self.assertEqual(set(wiretapping.get_current_targets()), set([char_names[0], char_names[1]])) # didn't change
-        self.assertEqual(wiretapping.get_listeners_for(char_names[1]), [self.TEST_LOGIN])
+        self.assertEqual(wiretapping.get_listeners_for(char_names[1]), ["guy1"])
 
 
     def ____test_scanning_management(self):
@@ -933,526 +1776,6 @@ class TestGame(TestCase):
         self.assertFalse(self.dm.get_global_parameter("master_login") in msg["has_read"])
 
 
-    @for_core_module(PersonalFiles)
-    def test_personal_files(self):
-        self._reset_messages()
-
-        files1 = self.dm.get_personal_files("guy2", absolute_urls=True)
-        self.assertTrue(len(files1))
-        self.assertTrue(files1[0].startswith("http"))
-
-        files1bis = self.dm.get_personal_files("guy2")
-        self.assertEqual(len(files1), len(files1bis))
-        self.assertTrue(files1bis[0].startswith("/"))
-
-        files2 = self.dm.get_personal_files(None) # private game master files
-        self.assertTrue(files2)
-
-        c = Client() # file retrievals
-        response = c.get(files1[0])
-        self.assertEqual(response.status_code, 200)
-        response = c.get(files1bis[0])
-        self.assertEqual(response.status_code, 200)
-        response = c.get(files1bis[0] + ".dummy")
-        self.assertEqual(response.status_code, 404)
-
-        for username in self.dm.get_character_usernames():
-            self.dm.get_personal_files(username, absolute_urls=random.choice([True, False]))
-
-
-    @for_core_module(PersonalFiles)
-    def test_encrypted_folders(self):
-        self._reset_messages()
-
-        self.assertTrue(self.dm.encrypted_folder_exists("guy2_report"))
-        self.assertFalse(self.dm.encrypted_folder_exists("dummyarchive"))
-
-        self.assertRaises(dm_module.UsageError, self.dm.get_encrypted_files, "hacker", "dummyarchive", "bagheera")
-        self.assertRaises(dm_module.UsageError, self.dm.get_encrypted_files, "hacker", "guy2_report", "badpassword")
-
-        files = self.dm.get_encrypted_files("badusername", "guy2_report", "schamaalamoktuhg", absolute_urls=True) # no error raised for bad username !
-        self.assertTrue(files, files)
-
-        files1 = self.dm.get_encrypted_files("hacker", "guy2_report", "evans", absolute_urls=True)
-        self.assertTrue(files1, files1)
-        files2 = self.dm.get_encrypted_files("hacker", "guy2_report", "evans", absolute_urls=False)
-        self.assertEqual(len(files1), len(files2))
-
-        c = Client() # file retrievals
-        response = c.get(files1[0])
-        self.assertEqual(response.status_code, 200, (response.status_code, files1[0]))
-        response = c.get(files2[0])
-        self.assertEqual(response.status_code, 200)
-        response = c.get(files2[0] + ".dummy")
-        self.assertEqual(response.status_code, 404)
-
-
-    def __test_message_automated_state_changes(self):
-        self._reset_messages()
-
-        msg_id = self.dm.post_message("guy1@masslavia.com", "netsdfworkerds@masslavia.com", subject="ssd", body="qsdqsd")
-
-        msg = self.dm.get_sent_message_by_id(msg_id)
-        self.assertFalse(msg["has_replied"])
-        self.assertFalse(msg["has_read"])
-
-        msg_id2 = self.dm.post_message("guy1@masslavia.com", "netsdfworkerds@masslavia.com", subject="ssd", body="qsdqsd", reply_to=msg_id)
-        msg_id3 = self.dm.post_message("hacker@masslavia.com", "netsdfworkerds@masslavia.com", subject="ssd", body="qsdqsd", reply_to=msg_id)
-
-        msg = self.dm.get_sent_message_by_id(msg_id2) # new message isn't impacted
-        self.assertFalse(msg["has_replied"])
-        self.assertFalse(msg["has_read"])
-
-        msg = self.dm.get_sent_message_by_id(msg_id) # replied-to message impacted
-        self.assertEqual(len(msg["has_replied"]), 2)
-        self.assertTrue("guy1" in msg["has_replied"])
-        self.assertTrue("hacker" in msg["has_replied"])
-        self.assertEqual(len(msg["has_read"]), 2)
-        self.assertTrue("guy1" in msg["has_read"])
-        self.assertTrue("hacker" in msg["has_read"])
-
-        # -----
-
-        (tpl_id, tpl) = self.dm.get_messages_templates().items()[0]
-        self.assertEqual(tpl["is_used"], False)
-
-        msg_id3 = self.dm.post_message("guy1@masslavia.com", "netsdfworkerds@masslavia.com", subject="ssd", body="qsdqsd", use_template=tpl_id)
-
-        msg = self.dm.get_sent_message_by_id(msg_id3) # new message isn't impacted
-        self.assertFalse(msg["has_replied"])
-        self.assertFalse(msg["has_read"])
-
-        tpl = self.dm.get_message_template(tpl_id)
-        self.assertEqual(tpl["is_used"], True)
-
-
-    @for_core_module(TextMessaging)
-    def test_email_recipients_parsing(self):
-        input1 = "guy1 , ; ; guy2@acharis.com , master, ; everyone ,master"
-        input2 = ["everyone", "guy1@pangea.com", "guy2@acharis.com", "master@administration.com"]
-
-        # unknown user login added
-        self.assertRaises(dm_module.UsageError, self.dm._normalize_recipient_emails, input1 + " ; dummy value")
-
-        recipients = self.dm._normalize_recipient_emails(input1)
-        self.assertEqual(len(recipients), len(input2))
-        self.assertEqual(set(recipients), set(input2))
-
-        recipients = self.dm._normalize_recipient_emails(input2)
-        self.assertEqual(len(recipients), len(input2))
-        self.assertEqual(set(recipients), set(input2))
-
-
-
-    @for_core_module(Chatroom)
-    def test_chatroom_operations(self):
-
-        self.assertEqual(self.dm.get_chatroom_messages(0), (0, None, []))
-
-        self._set_user(None)
-        self.assertRaises(dm_module.UsageError, self.dm.send_chatroom_message, " hello ")
-
-        self._set_user("guy1")
-        self.assertRaises(dm_module.UsageError, self.dm.send_chatroom_message, " ")
-
-        self.assertEqual(self.dm.get_chatroom_messages(0), (0, None, []))
-
-        self.dm.send_chatroom_message(" hello ! ")
-        self.dm.send_chatroom_message(" re ")
-
-        self._set_user("guy2")
-        self.dm.send_chatroom_message("back")
-
-        (slice_end, previous_msg_timestamp, msgs) = self.dm.get_chatroom_messages(0)
-        self.assertEqual(slice_end, 3)
-        self.assertEqual(previous_msg_timestamp, None)
-        self.assertEqual(len(msgs), 3)
-
-        self.assertEqual(sorted(msgs, key=lambda x: x["time"]), msgs)
-
-        data = [(msg["username"], msg["message"]) for msg in msgs]
-        self.assertEqual(data, [("guy1", "hello !"), ("guy1", "re"), ("guy2", "back")])
-
-        (slice_end, previous_msg_timestamp, nextmsgs) = self.dm.get_chatroom_messages(3)
-        self.assertEqual(slice_end, 3)
-        self.assertEqual(previous_msg_timestamp, msgs[-1]["time"])
-        self.assertEqual(len(nextmsgs), 0)
-
-        (slice_end, previous_msg_timestamp, renextmsgs) = self.dm.get_chatroom_messages(2)
-        self.assertEqual(slice_end, 3)
-        self.assertEqual(previous_msg_timestamp, msgs[-2]["time"])
-        self.assertEqual(len(renextmsgs), 1)
-        data = [(msg["username"], msg["message"]) for msg in renextmsgs]
-        self.assertEqual(data, [("guy2", "back")])
-
-
-    def ___test_messaging(self):
-        MASTER = self.dm.get_global_parameter("master_login")
-
-        self._reset_messages()
-
-        self.assertEqual(self.dm.get_character_email("guy3"), "guy3@sciences.com")
-        self.assertEqual(self.dm.get_character_email("master"), "master@administration.com")
-
-        emails = self.dm.get_user_contacts(self.dm.get_global_parameter("master_login"))
-        self.assertEqual(len(emails), len(self.dm.get_character_usernames()) + 7) # 5 external contacts, plus master_email and baazel
-
-        emails = self.dm.get_user_contacts("guy2")
-        self.assertEqual(len(emails), 5, emails) # himself, 1 fellow and 2 external contacts, + public email of guy3
-        self.assertTrue("guy3@sciences.com" in emails) # proper domain name...
-        self.assertTrue(all(email.endswith("acharis.com") or email == "guy3@sciences.com" for email in emails)) # public and same-domain emails only
-
-        emails = self.dm.get_external_emails("guy1")
-        self.assertEqual(len(emails), 1, emails)
-        self.assertTrue(all(email.endswith("sciences.com") for email in emails))
-
-        emails = self.dm.get_external_emails("master")
-        self.assertEqual(len(emails), 7)
-
-        record1 = {
-            "sender_email": "guy2@acharis.com",
-            "recipient_emails": ["guy3@sciences.com"],
-            "subject": "hello everybody 1",
-            "body": "Here is the body of this message lalalal...",
-            "date_or_delay_mn":-1
-        }
-
-        record2 = {
-            "sender_email": "listener@teldorium.com",
-            "recipient_emails": ["secret-services@masslavia.com"],
-            "subject": "hello everybody 2",
-            "body": "Here is the body of this message lililili...",
-            "attachment": "http://yowdlayhio",
-            "date_or_delay_mn": 0
-        }
-
-        record3 = {
-            "sender_email": "scanner@teldorium.com",
-            "recipient_emails": ["guy3@sciences.com"],
-            "subject": "hello everybody 3",
-            "body": "Here is the body of this message lulululu...",
-            "date_or_delay_mn": None
-            # "origin": "dummy-msg-id"  # shouldn't raise error - the problem is just logged
-        }
-
-        record4 = {
-            "sender_email": "dummy-robot@masslavia.com",
-            "recipient_emails": ["guy2@acharis.com"],
-            "subject": "hello everybody 4",
-            "body": "Here is the body of this message lililili...",
-            }
-
-        self.dm.post_message("guy1@masslavia.com", "netsdfworkerds@masslavia.com", subject="ssd", body="qsdqsd") # this works too !
-        self.assertEqual(len(self.dm.get_game_master_messages()), 1)
-        self.dm.get_game_master_messages()[0]["has_read"] = utilities.PersistentList(
-            self.dm.get_character_usernames() + [self.dm.get_global_parameter("master_login")]) # we hack this message not to break following assertions
-
-        self.dm.post_message(**record1)
-        time.sleep(0.2)
-
-        self.dm.change_wiretapping_targets("listener", ["guy2"])
-
-        self.dm.post_message(**record2)
-        time.sleep(0.2)
-        self.dm.post_message(**record3)
-        time.sleep(0.2)
-        self.dm.post_message(**record4)
-        time.sleep(0.2)
-        self.dm.post_message(**record1) # this message will get back to the 2nd place of list !
-
-        self.assertEqual(self.dm.get_unread_messages_count("guy3"), 3)
-
-        self.assertEqual(self.dm.get_unread_messages_count(self.dm.get_global_parameter("master_login")), 1)
-
-        self.assertEqual(len(self.dm.get_all_sent_messages()), 6)
-
-        self.assertEqual(len(self.dm.get_game_master_messages()), 2) # secret services + wrong email address
-
-        expected_notifications = {'guy2': "new_messages_guy2", 'guy3': "new_messages_guy3"}
-        self.assertEqual(self.dm.get_pending_new_message_notifications(), expected_notifications)
-
-        self.assertEqual(self.dm.get_pending_new_message_notifications(), expected_notifications) # no disappearance
-
-        self.assertTrue(self.dm.has_new_message_notification("guy3"))
-        self.assertEqual(len(self.dm.get_received_messages("guy3@sciences.com", reset_notification=True)), 3)
-        self.assertFalse(self.dm.has_new_message_notification("guy3"))
-
-        # here we can't do check messages of secret-services@masslavia.com since it's not a normal character
-
-        self.assertTrue(self.dm.has_new_message_notification("guy2"))
-        self.assertEqual(len(self.dm.get_received_messages("guy2@acharis.com", reset_notification=False)), 1)
-        self.assertTrue(self.dm.has_new_message_notification("guy2"))
-        self.dm.set_new_message_notification(utilities.PersistentList(["guy2@acharis.com"]), new_status=False)
-        self.assertFalse(self.dm.has_new_message_notification("guy2"))
-
-        self.assertEqual(self.dm.get_pending_new_message_notifications(), {}) # all have been reset
-
-        self.assertEqual(len(self.dm.get_received_messages(self.dm.get_character_email("guy1"))), 0)
-
-        self.assertEqual(len(self.dm.get_sent_messages("guy2@acharis.com")), 2)
-        self.assertEqual(len(self.dm.get_sent_messages("scanner@teldorium.com")), 1)
-        self.assertEqual(len(self.dm.get_sent_messages("guy3@sciences.com")), 0)
-
-        res = self.dm.get_intercepted_messages()
-        self.assertEqual(len(res), 2)
-        self.assertEqual(set([msg["subject"] for msg in res]), set(["hello everybody 1", "hello everybody 4"]))
-        self.assertEqual(set([msg["intercepted"] for msg in res]), set([True]))
-        # NO - we dont notify interceptions - self.assertTrue(self.dm.get_global_parameter("message_intercepted_audio_id") in self.dm.get_all_next_audio_messages(), self.dm.get_all_next_audio_messages())
-
-        # msg has_read state changes
-        msg_id1 = self.dm.get_all_sent_messages()[0]["id"] # sent to guy3
-        msg_id2 = self.dm.get_all_sent_messages()[3]["id"] # sent to external contact
-
-        """ # NO PROBLEM with wrong msg owner
-        self.assertRaises(Exception, self.dm.set_message_read_state, MASTER, msg_id1, True)
-        self.assertRaises(Exception, self.dm.set_message_read_state, "guy2", msg_id1, True)
-        self.assertRaises(Exception, self.dm.set_message_read_state, "guy1", msg_id2, True)
-        # wrong msg id
-        self.assertRaises(Exception, self.dm.set_message_read_state, "dummyid", False)
-        """
-
-        #self.assertEqual(self.dm.get_all_sent_messages()[0]["no_reply"], False)
-        #self.assertEqual(self.dm.get_all_sent_messages()[4]["no_reply"], True)# msg from robot
-
-        self.assertEqual(self.dm.get_all_sent_messages()[0]["is_certified"], False)
-        self.assertFalse(self.dm.get_all_sent_messages()[0]["has_read"])
-        self.dm.set_message_read_state("guy3", msg_id1, True)
-        self.dm.set_message_read_state("guy2", msg_id1, True)
-
-        self.assertEqual(len(self.dm.get_all_sent_messages()[0]["has_read"]), 2)
-        self.assertTrue("guy2" in self.dm.get_all_sent_messages()[0]["has_read"])
-        self.assertTrue("guy3" in self.dm.get_all_sent_messages()[0]["has_read"])
-
-        self.assertEqual(self.dm.get_unread_messages_count("guy3"), 2)
-        self.dm.set_message_read_state("guy3", msg_id1, False)
-        self.assertEqual(self.dm.get_all_sent_messages()[0]["has_read"], ["guy2"])
-        self.assertEqual(self.dm.get_unread_messages_count("guy3"), 3)
-
-        self.assertFalse(self.dm.get_all_sent_messages()[3]["has_read"])
-        self.dm.set_message_read_state(MASTER, msg_id2, True)
-        self.assertTrue(MASTER in self.dm.get_all_sent_messages()[3]["has_read"])
-        self.assertEqual(self.dm.get_unread_messages_count(self.dm.get_global_parameter("master_login")), 0)
-        self.dm.set_message_read_state(MASTER, msg_id2, False)
-        self.assertFalse(self.dm.get_all_sent_messages()[3]["has_read"])
-        self.assertEqual(self.dm.get_unread_messages_count(self.dm.get_global_parameter("master_login")), 1)
-
-
-    def ____test_audio_messages_management(self):
-        self._reset_messages()
-
-        self.assertRaises(dm_module.UsageError, self.dm.check_radio_frequency, "dummyfrequency")
-        self.assertEqual(self.dm.check_radio_frequency(self.dm.get_global_parameter("pangea_radio_frequency")), None) # no exception nor return value
-
-        self.dm.set_radio_state(is_on=True)
-        self.assertEqual(self.dm.get_global_parameter("radio_is_on"), True)
-        self.dm.set_radio_state(is_on=False)
-        self.assertEqual(self.dm.get_global_parameter("radio_is_on"), False)
-        self.dm.set_radio_state(is_on=True)
-        self.assertEqual(self.dm.get_global_parameter("radio_is_on"), True)
-
-        record1 = {
-            "sender_email": "guy2@acharis.com",
-            "recipient_emails": ["guy3@sciences.com"],
-            "subject": "hello everybody 1",
-            "body": "Here is the body of this message lalalal...",
-            "date_or_delay_mn":-1
-        }
-
-        self.dm.post_message(**record1)
-
-        res = self.dm.get_pending_new_message_notifications()
-        self.assertEqual(len(res), 1)
-        (username, audio_id) = res.items()[0]
-        self.assertEqual(username, "guy3")
-
-        properties = self.dm.get_audio_message_properties(audio_id)
-        self.assertEqual(set(properties.keys()), set(["text", "file", "url"]))
-
-        #self.assertEqual(properties["new_messages_notification_for_user"], "guy3")
-        #self.assertEqual(self.dm.get_audio_message_properties("request_for_report_teldorium")["new_messages_notification_for_user"], None)
-
-        self.assertEqual(len(self.dm.get_all_next_audio_messages()), 0)
-
-        self.dm.add_radio_message(audio_id)
-        self.assertEqual(self.dm.get_next_audio_message(), audio_id)
-        self.assertEqual(self.dm.get_next_audio_message(), audio_id) # no disappearance
-
-        self.assertEqual(len(self.dm.get_all_next_audio_messages()), 1)
-
-        self.dm.reset_audio_messages()
-        self.assertEqual(self.dm.get_next_audio_message(), None)
-
-        self.assertEqual(len(self.dm.get_all_next_audio_messages()), 0)
-
-        audio_id_bis = self.dm.get_character_properties("guy2")["new_messages_notification"]
-        audio_id_ter = self.dm.get_character_properties("listener")["new_messages_notification"]
-
-        self.assertRaises(dm_module.UsageError, self.dm.add_radio_message, "bad_audio_id")
-        self.dm.add_radio_message(audio_id)
-        self.dm.add_radio_message(audio_id) # double adding == NO OP
-        self.dm.add_radio_message(audio_id_bis)
-        self.dm.add_radio_message(audio_id_ter)
-
-        self.assertEqual(len(self.dm.get_all_next_audio_messages()), 3)
-
-        self.assertEqual(self.dm.get_next_audio_message(), audio_id)
-
-        self.dm.notify_audio_message_termination("bad_audio_id") # no error, we just ignore it
-
-        self.dm.notify_audio_message_termination(audio_id_ter)# removing trailing one works
-
-        self.dm.notify_audio_message_termination(audio_id)
-
-        self.assertEqual(self.dm.get_global_parameter("radio_is_on"), True)
-
-        self.assertEqual(self.dm.get_next_audio_message(), audio_id_bis)
-        self.dm.notify_audio_message_termination(audio_id_bis)
-
-        self.assertEqual(self.dm.get_global_parameter("radio_is_on"), False) # auto extinction of radio
-
-        self.assertEqual(self.dm.get_next_audio_message(), None)
-        self.assertEqual(len(self.dm.get_all_next_audio_messages()), 0)
-
-
-    def __test_delayed_processing(self):
-        self._reset_messages()
-
-        # delayed message sending
-
-        self.dm.post_message("guy3@sciences.com", "guy2@acharis.com", "yowh1", "qhsdhqsdh", attachment=None, date_or_delay_mn=0.03)
-        self.assertEqual(len(self.dm.get_all_sent_messages()), 0)
-        queued_msgs = self.dm.get_all_queued_messages()
-        self.assertEqual(len(queued_msgs), 1)
-        #print datetime.utcnow(), " << ", queued_msgs[0]["sent_at"]
-        self.assertTrue(datetime.utcnow() < queued_msgs[0]["sent_at"] < datetime.utcnow() + timedelta(minutes=0.22))
-
-        self.dm.post_message("guy3@sciences.com", "guy2@acharis.com", "yowh2", "qhsdhqsdh", attachment=None, date_or_delay_mn=(0.04, 0.05)) # 3s delay range
-        self.assertEqual(len(self.dm.get_all_sent_messages()), 0)
-        queued_msgs = self.dm.get_all_queued_messages()
-        self.assertEqual(len(queued_msgs), 2)
-        self.assertEqual(queued_msgs[1]["subject"], "yowh2", queued_msgs)
-        #print datetime.utcnow(), " >> ", queued_msgs[1]["sent_at"]
-        self.assertTrue(datetime.utcnow() < queued_msgs[1]["sent_at"] < datetime.utcnow() + timedelta(minutes=0.06))
-
-        # delayed message processing
-
-        self.dm.post_message("guy3@sciences.com", "guy2@acharis.com", "yowh3", "qhsdhqsdh", attachment=None, date_or_delay_mn=0.01) # 0.6s
-        self.assertEqual(len(self.dm.get_all_queued_messages()), 3)
-        self.assertEqual(len(self.dm.get_all_sent_messages()), 0)
-        res = self.dm.process_periodic_tasks()
-        self.assertEqual(res["messages_sent"], 0)
-        self.assertEqual(res["actions_executed"], 0)
-        self.assertEqual(len(self.dm.get_all_sent_messages()), 0)
-
-        time.sleep(0.8) # one message OK
-
-        res = self.dm.process_periodic_tasks()
-        #print self.dm.get_all_sent_messages(), datetime.utcnow()
-        self.assertEqual(res["messages_sent"], 1)
-        self.assertEqual(res["actions_executed"], 0)
-        self.assertEqual(len(self.dm.get_all_sent_messages()), 1)
-        self.assertEqual(len(self.dm.get_all_queued_messages()), 2)
-
-        time.sleep(2.5) # last messages OK
-
-        res = self.dm.process_periodic_tasks()
-        self.assertEqual(res["messages_sent"], 2)
-        self.assertEqual(res["actions_executed"], 0)
-        self.assertEqual(len(self.dm.get_all_sent_messages()), 3)
-        self.assertEqual(len(self.dm.get_all_queued_messages()), 0)
-
-        # due to the strength of coherency checks, it's about impossible to enforce a sending here here...
-        self.assertEqual(self.dm.get_event_count("DELAYED_MESSAGE_ERROR"), 0)
-
-
-
-        # forced sending of queued messages
-        myid1 = self.dm.post_message("guy3@sciences.com", "guy2@acharis.com", "yowh2", "qhsdhqsdh", attachment=None, date_or_delay_mn=(1, 2)) # 3s delay range
-        myid2 = self.dm.post_message("guy3@sciences.com", "guy2@acharis.com", "yowh2", "qhsdhqsdh", attachment=None, date_or_delay_mn=(1, 2)) # 3s delay range
-        self.assertEqual(len(self.dm.get_all_queued_messages()), 2)
-
-        self.assertFalse(self.dm.force_message_sending("dummyid"))
-        self.assertTrue(self.dm.force_message_sending(myid1))
-        self.assertEqual(len(self.dm.get_all_queued_messages()), 1)
-        self.assertFalse(self.dm.force_message_sending(myid1)) # already sent now
-        self.assertEqual(self.dm.get_all_queued_messages()[0]["id"], myid2)
-        self.assertTrue(self.dm.get_sent_message_by_id(myid1))
-
-
-
-        # scheduled actions
-
-        self.dm.schedule_delayed_action(0.01, dummyfunc, 12, item=24)
-        self.dm.schedule_delayed_action((0.04, 0.05), dummyfunc) # will raise error
-        self.dm.schedule_delayed_action((0.035, 0.05), "_add_to_scanned_locations", ["Alifir"])
-
-        res = self.dm.process_periodic_tasks()
-        self.assertEqual(res["messages_sent"], 0)
-        self.assertEqual(res["actions_executed"], 0)
-
-        time.sleep(0.7)
-
-        res = self.dm.process_periodic_tasks()
-        self.assertEqual(res["messages_sent"], 0)
-        self.assertEqual(res["actions_executed"], 1)
-
-        self.assertEqual(self.dm.get_event_count("DELAYED_ACTION_ERROR"), 0)
-
-        time.sleep(2.5)
-
-        res = self.dm.process_periodic_tasks()
-        self.assertEqual(res["messages_sent"], 0)
-        self.assertEqual(res["actions_executed"], 2)
-
-        self.assertEqual(len(self.dm.data["scheduled_actions"]), 0)
-
-        self.assertEqual(self.dm.get_event_count("DELAYED_ACTION_ERROR"), 1) # error raised but swallowed
-        self.assertEqual(self.dm.get_global_parameter("scanned_locations"), ["Alifir"])
-
-
-    @for_core_module(PlayerAuthentication)
-    def test_password_recovery(self):
-        self._reset_messages()
-
-        res = self.dm.get_secret_question("guy3")
-        self.assertTrue("pet" in res)
-
-        self.assertEqual(len(self.dm.get_all_queued_messages()), 0)
-        res = self.dm.process_secret_answer_attempt("guy3", "FluFFy", "guy3@pangea.com")
-        self.assertEqual(res, "awesome") # password
-
-        msgs = self.dm.get_all_queued_messages()
-        self.assertEqual(len(msgs), 1)
-        msg = msgs[0]
-        self.assertTrue("password" in msg["body"].lower())
-
-        self.assertRaises(dm_module.UsageError, self.dm.process_secret_answer_attempt, "badusername", "badanswer", "guy3@sciences.com")
-        self.assertRaises(dm_module.UsageError, self.dm.process_secret_answer_attempt, "guy3", "badanswer", "guy3@sciences.com")
-        self.assertRaises(dm_module.UsageError, self.dm.process_secret_answer_attempt, "guy3", "MiLoU", "bademail@sciences.com")
-        self.assertEqual(len(self.dm.get_all_queued_messages()), 1) # untouched
-
-
-    @for_core_module(GameEvents)
-    def test_event_logging(self):
-        self._reset_messages()
-
-        self.assertEqual(self.dm.get_game_events(), [])
-        self.dm.log_game_event("hello there 1", is_master_action=True)
-        self.dm.log_game_event("hello there 2", url="/my/url/", is_master_action=False)
-        self.dm.commit()
-        events = self.dm.get_game_events()
-        self.assertEqual(len(events), 2)
-
-        self.assertEqual(events[0]["message"], "hello there 1")
-        self.assertEqual(events[0]["is_master_action"], True)
-        self.assertEqual(events[0]["url"], None)
-        self.assertEqual(events[1]["message"], "hello there 2")
-        self.assertEqual(events[1]["is_master_action"], False)
-        self.assertEqual(events[1]["url"], "/my/url/")
-
-        utcnow = datetime.utcnow()
-        for event in events:
-            self.assertTrue(utcnow - timedelta(seconds=2) < event["time"] <= utcnow)
 
 
     def ____test_bots(self):  # TODO PAKAL PUT BOTS BACK!!!
@@ -1497,261 +1820,21 @@ class TestGame(TestCase):
         self.assertTrue("future wife" in res, res)
 
 
-    @for_ability(HouseLockingAbility)
-    def test_house_locking(self):
 
-        house_locking = self.dm.abilities.house_locking
-        expected_password = house_locking.get_ability_parameter("house_doors_password")
 
-        self.assertEqual(house_locking.are_house_doors_open(), True) # initial state
 
-        self.assertTrue(house_locking.lock_house_doors())
-        self.assertEqual(house_locking.are_house_doors_open(), False)
 
-        self.assertFalse(house_locking.lock_house_doors()) # already locked
-        self.assertEqual(house_locking.are_house_doors_open(), False)
 
-        self.assertFalse(house_locking.try_unlocking_house_doors(password="blablabla"))
-        self.assertEqual(house_locking.are_house_doors_open(), False)
 
-        self.assertTrue(house_locking.try_unlocking_house_doors(password=expected_password))
-        self.assertEqual(house_locking.are_house_doors_open(), True)
 
 
 
-    def __test_enigma_coherency(self):
-        # no initial messages reset ! #
 
-        # Number of wiretapping targets allowed
-        A = self.dm.get_global_parameter("max_wiretapping_targets")
-        B = self.dm.get_sent_message_by_id("instructions_listener")["body"]
-        self.assertTrue(" %d " % A in B, repr(B))
 
-        # Number of teleporations authorized for teldorians
-        A = self.dm.get_global_parameter("max_teldorian_teleportations")
-        B = self.dm.get_sent_message_by_id("instructions_listener")["body"]
-        self.assertTrue(" %d " % A in B, repr(B))
 
-        # Password of automated doors
-        A = int(self.dm.get_global_parameter("house_doors_password"))
-        B = self.dm.data["manual_messages_templates"]["domotics_password_change"]["body"]
-        self.assertTrue("0x%X" % A in B, repr(B)) # in hexadecimal
 
-        # Number of telecom investigations authorized for guy2
-        A = self.dm.get_global_parameter("max_telecom_investigations")
-        B = [msg for msg in self.dm.data["messages_sent"] if msg["id"] == "telecom_investigations_guy2"][0]["body"]
-        self.assertTrue(" %d " % A in B, repr(B))
 
-        # Enigma of TinEye photo
-        self.assertTrue(os.path.isdir(os.path.join(config.GAME_FILES_ROOT, "encrypted", "guy2_report", "evans")))
 
-        # Official names of players, in their instructions
-        for (name, value) in self.dm.get_character_sets().items():
-            AAAA
-            if name != "guy3": # this one doesn't need to be told his name...
-                official_name = value["official_name"].lower()
-                instructions = self.dm.get_sent_message_by_id("instructions_" + name)["body"]. lower()
-                self.assertTrue(official_name in instructions, (official_name, repr(instructions)))
-
-        # teldorians
-        teldorian_properties = self.dm.get_domain_properties("teldorium.com") # must exist
-        instructions = teldorian_properties["instructions"].lower()
-        ### BUGGY teldorian_characters = [username for (username, properties) in self.dm.get_character_sets().items() if properties["domain"] == "teldorium.com"]
-        teldorian_official_names = [self.dm.get_character_properties(username)["official_name"] for username in teldorian_characters]
-        for official_name in teldorian_official_names:
-            self.assertTrue(official_name.lower() in instructions, (official_name.lower(), repr(instructions)))
- 
-
-    @for_datamanager_base
-    def test_database_management(self):
-        self._reset_messages()
-
-        # test "reset databases" too, in the future
-        res = self.dm.dump_zope_database()
-        assert isinstance(res, basestring) and len(res) > 1000
-
-
-    def _master_logging(self):
-        login_page = reverse("rpgweb.views.login", kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID))
-        response = self.client.get(login_page) # to set preliminary cookies
-        self.assertEqual(response.status_code, 200)
-
-        response = self.client.post(login_page, data=dict(secret_username=self.dm.get_global_parameter("master_login"), secret_password=self.dm.get_global_parameter("master_password")))
-
-        self.assertEqual(response.status_code, 302)
-
-        if self.dm.is_game_started():
-            self.assertRedirects(response, ROOT_GAME_URL + "/")
-        else:
-            self.assertRedirects(response, ROOT_GAME_URL + "/opening/") # beautiful intro for days before the game starts
-
-        self.assertTrue(self.client.cookies["sessionid"])
-
-
-    def _player_logging(self, username):
-        login_page = reverse("rpgweb.views.login", kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID))
-        response = self.client.get(login_page) # to set preliminary cookies
-        self.assertEqual(response.status_code, 200)
-
-        response = self.client.post(login_page, data=dict(secret_username=username, secret_password=self.dm.get_character_properties(username)["password"]))
-
-        self.assertEqual(response.status_code, 302)
-        if self.dm.is_game_started():
-            self.assertRedirects(response, ROOT_GAME_URL + "/")
-        else:
-            self.assertRedirects(response, ROOT_GAME_URL + "/opening/") # beautiful intro for days before the game starts
-
-        self.assertTrue(self.client.cookies["sessionid"])
-
-
-    def _unlog(self):
-        login_page = reverse("rpgweb.views.login", kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID))
-        logout_page = reverse("rpgweb.views.logout", kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID))
-        response = self.client.get(logout_page) # to set preliminary cookies
-
-        self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, login_page)
-
-        self.assertEqual(self.client.session.keys(), ["testcookie"]) # we get it once more
-
-
-    def _simple_master_get_requests(self):
-        self.dm.data["global_parameters"]["online_presence_timeout_s"] = 1
-        self.dm.data["global_parameters"]["chatroom_presence_timeout_s"] = 1
-        self.dm.commit()
-        time.sleep(1.2) # online/chatting users list gets emptied
-
-        self._master_logging()
-
-        from django.core.urlresolvers import RegexURLResolver
-        from urls import final_urlpatterns
-
-        skipped_patterns = "DATABASE_OPERATIONS FAIL_TEST ajax item_3d_view chat_with_djinn static.serve encrypted_folder view_single_message logout login secret_question".split()
-        views = [url._callback_str for url in final_urlpatterns if not isinstance(url, RegexURLResolver) and not [veto for veto in skipped_patterns if veto in url._callback_str]]
-        #print views
-
-        for view in views:
-            url = reverse(view, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID))
-            #print " ====> ", url
-            response = self.client.get(url)
-            #print response.content
-            self.assertEqual(response.status_code, 200, view + " | " + url + " | " + str(response.status_code))
-
-
-        # these urls and their post data might easily change, beware !
-        special_urls = {ROOT_GAME_URL + "/item3dview/sacred_book/": None,
-                        ROOT_GAME_URL + "/djinn/": {"djinn": "Pay Rhuss"},
-                        config.MEDIA_URL + "Burned/default_styles.css": None,
-                        config.GAME_FILES_URL + "attachments/antic_runes.gif": None,
-                        config.GAME_FILES_URL + "encrypted/guy2_report/evans/report.rtf": None,
-                        ROOT_GAME_URL + "/messages/view_single_message/instructions_listener/": None,
-                        ROOT_GAME_URL + "/secret_question/": dict(secret_answer="Milou", target_email="listener@teldorium.com", secret_username="guy3"),
-                        ROOT_GAME_URL + "/webradio_applet/": dict(frequency=self.dm.get_global_parameter("pangea_radio_frequency"))
-        }
-        for url, value in special_urls.items():
-            #print ">>>>>>", url
-
-            if value:
-                response = self.client.post(url, data=value)
-            else:
-                response = self.client.get(url)
-
-            # print "WE TRY TO LOAD ", url
-            self.assertNotContains(response, 'class="error_notifications"', msg_prefix=response.content)
-            self.assertEqual(response.status_code, 200, url + " | " + str(response.status_code))
-
-
-        # no directory index !
-        response = self.client.get("/media/")
-        self.assertEqual(response.status_code, 404)
-        response = self.client.get("/files/")
-        self.assertEqual(response.status_code, 404)
-
-        self.assertEqual(self.dm.get_online_users(), [])
-        self.assertEqual(self.dm.get_chatting_users(), [])
-
-        self._unlog()
-
-
-    def ___test_master_game_started_page_displays(self):
-        self.dm.set_game_state(True)
-        self._simple_master_get_requests()
-
-    def ___test_master_game_paused_page_displays(self):
-        self.dm.set_game_state(False)
-        self._simple_master_get_requests()
-
-
-    def _test_player_get_requests(self):
-        #def get_allowed_user(permission):
-        #    return [name for name, value in self.dm.get_character_sets().items() if permission in value["permissions"]][0]
-
-        self.dm.data["global_parameters"]["online_presence_timeout_s"] = 1
-        self.dm.data["global_parameters"]["chatroom_presence_timeout_s"] = 1
-        self.dm.commit()
-        time.sleep(1.2) # online/chatting users list gets emptied
-
-        # PLAYER SETUP
-        old_state = self.dm.is_game_started()
-        self.dm.set_game_state(True)
-        username = "guy2"
-        user_money = self.dm.get_character_properties(username)["account"]
-        if user_money:
-            self.dm.transfer_money_between_characters(username, self.dm.get_global_parameter("bank_name"), user_money) # we empty money
-        self.dm.data["character_properties"][username]["permissions"] = PersistentList(["contact_djinns", "manage_agents", "manage_wiretaps"]) # we grant all necessary permissions
-        self.dm.commit()
-        self.dm.set_game_state(old_state)
-        self._player_logging(username)
-
-
-        # VIEWS SELECTION
-        from django.core.urlresolvers import RegexURLResolver
-        from urls import final_urlpatterns
-        # we test views for which there is a distinction between master and player
-        selected_patterns = "inbox outbox compose_message intercepted_messages view_sales items_slideshow network_management personal_radio_messages_listing contact_djinns".split()
-        views = [url._callback_str for url in final_urlpatterns if not isinstance(url, RegexURLResolver) and [match for match in selected_patterns if match in url._callback_str]]
-
-        def test_views(views):
-            for view in views:
-                url = reverse(view, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID))
-                response = self.client.get(url)
-                #print response.content
-                self.assertEqual(response.status_code, 200, view + " | " + url + " | " + str(response.status_code))
-
-        test_views(views)
-
-        old_state = self.dm.is_game_started()
-        self.dm.set_game_state(True)
-        self.dm.transfer_money_between_characters(self.dm.get_global_parameter("bank_name"), username, 1000)
-        self.dm.set_game_state(old_state)
-
-        test_views(views)
-
-        old_state = self.dm.is_game_started()
-        self.dm.set_game_state(True)
-        gem_name = [key for key, value in self.dm.get_items_for_sale().items() if value["is_gem"] and value["num_items"] >= 6][0] # we only take numerous groups
-        self.dm.transfer_object_to_character(gem_name, username)
-        self.dm.set_game_state(old_state)
-
-        test_views(views)
-
-        self.assertEqual(self.dm.get_online_users(), [username])
-        self.assertEqual(self.dm.get_chatting_users(), [])
-
-        self._unlog()
-
-
-    def __test_player_game_started_page_displays(self):
-        self.dm.set_game_state(True)
-        #print "STARTING"
-        #import timeit
-        #timeit.Timer(self._test_player_get_requests).timeit()
-        self._test_player_get_requests()
-        #print "OVER"
-
-    def __test_player_game_paused_page_displays(self):
-        self.dm.set_game_state(False)
-        self._test_player_get_requests()
 
 
 '''
@@ -1799,3 +1882,61 @@ class TestGame(TestCase):
 
         # we won't test the MSG_TEMPLATE_FORMATTING_ERROR_2, as it'd complicate code uselessly
 """
+
+
+
+"""
+    TEST_DOMAIN = "dummy_domain"
+    def _inject_test_domain(self, name=TEST_DOMAIN, **overrides):
+        return # TODO FIXME
+        properties = dict(
+                        show_official_identities=False,
+                        victory="victory_masslavia",
+                        defeat="defeat_masslavia",
+                        prologue_music="prologue_masslavia.mp3",
+                        instructions="blablablabla",
+                        permissions=[]
+                        )
+        assert not (set(overrides.keys()) - set(properties.keys())) # don't inject unwanted params
+        properties.update(overrides)
+
+        properties = utilities.convert_object_tree(properties, utilities.python_to_zodb_types)
+        self.dm.data["domains"][name] = properties
+        self.dm.commit()
+
+
+    TEST_LOGIN = "guy1" # because special private folders etc must exist. 
+    def _inject_test_user(self, name=TEST_LOGIN, **overrides):
+        return # TODO FIXME
+        properties = dict(
+                        password=name.upper(),
+                        secret_question="What's the ultimate step of consciousness ?",
+                        secret_answer="unguessableanswer",
+
+                        domains=[self.TEST_DOMAIN],
+                        permissions=[],
+
+                        external_contacts=[],
+                        new_messages_notification="new_messages_guy1",
+
+                        account=1000,
+                        initial_cold_cash=100,
+                        gems=[],
+
+                        official_name="Strange Character",
+                        real_life_identity="John Doe",
+                        real_life_email="john@doe.com",
+                        description="Dummy test account",
+
+                        last_online_time=None,
+                        last_chatting_time=None
+                       )
+
+        assert not (set(overrides.keys()) - set(properties.keys())) # don't inject unwanted params
+        properties.update(overrides)
+
+        properties = utilities.convert_object_tree(properties, utilities.python_to_zodb_types)
+        self.dm.data["character_properties"][name] = properties
+        self.dm.commit()
+    """
+    

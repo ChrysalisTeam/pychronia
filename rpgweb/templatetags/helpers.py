@@ -75,7 +75,11 @@ def has_permission(user, permission):
     else:
         return False
 register.filter('has_permission', has_permission)
-    
+
+
+def game_color(username):
+    return "black"
+register.filter('game_color', game_color)
 
 
 

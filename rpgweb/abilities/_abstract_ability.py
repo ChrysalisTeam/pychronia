@@ -10,7 +10,7 @@ from django.template import RequestContext, loader
 
 from ..datamanager import *
 from rpgweb.datamanager.datamanager_tools import NormalUsageError, AbnormalUsageError, PermissionError
-
+from ..datamanager.datamanager_modules import PermissionsHandling
 
 
 
@@ -31,23 +31,23 @@ from rpgweb.datamanager.datamanager_tools import NormalUsageError, AbnormalUsage
 def transaction_watcher(func, self, *args, **kwargs): # TODO DUPLICATED !!
 
     # TO BE REMOVED !!!!!!!!!!!!!!
-    #self.datamanager._check_database_coherency() # WARNING - quite CPU intensive, to be removed later on ? TODO TODO REMOVE PAKAL !!!
+    #self._datamanager._check_database_coherency() # WARNING - quite CPU intensive, to be removed later on ? TODO TODO REMOVE PAKAL !!!
 
-    if self.datamanager.is_shutdown:
+    if self._datamanager.is_shutdown:
         raise AbnormalUsageError(_("ZODB connection has been definitely shutdown - please finish killing the server process!"))
-    if not self.datamanager.is_ini    tialized:
+    if not self._datamanager.is_ini    tialized:
         raise AbnormalUsageError(_("Game databases haven't yet been initialized !"))
-    if not self.datamanager.get_global_parameter("game_is_started"):
+    if not self._datamanager.get_global_parameter("game_is_started"):
         # some state-changing methods are allowed even before the game starts !
         if func.__name__ not in ["set_message_read_state", "set_new_message_notification", "force_message_sending", "set_online_status"]:
             raise UsageError(_("This feature is unavailable at the moment, since the game isn't started"))
 
     try:
         res = func(self, *args, **kwargs)
-        #self.datamanager._check_database_coherency() # WARNING - quite CPU intensive, to be removed later on ? TODO TODO REMOVE PAKAL !!!
-        self.datamanager.commit_all()
+        #self._datamanager._check_database_coherency() # WARNING - quite CPU intensive, to be removed later on ? TODO TODO REMOVE PAKAL !!!
+        self._datamanager.commit_all()
     except Exception:
-        self.datamanager.abort_all()
+        self._datamanager.abort_all()
         raise
     return res
 
@@ -96,7 +96,7 @@ class AbstractAbilityForm(forms.Form):
 
     def __init__(self, datamanager, *args, **kwargs):
         super(AbstractAbilityForm, self).__init__(*args, **kwargs)
-        self.datamanager = datamanager
+        self._datamanager = datamanager
         self.fields.insert(0, self.__class__._ability_field, forms.CharField(initial=self._get_dotted_class_name(),
                                                   widget=forms.HiddenInput))
         self.target_url = "" # by default we stay on the same page
@@ -151,6 +151,11 @@ class AbstractAbilityMetaclass(type):
 
             assert not GameDataManager.ABILITIES_REGISTRY.has_key(NewClass.NAME), NewClass.NAME
             GameDataManager.ABILITIES_REGISTRY[NewClass.NAME] = NewClass # we register the ability
+            
+            if NewClass.ACCESS == "player":
+                assert NewClass.NAME not in PermissionsHandling.PERMISSIONS_REGISTRY
+                PermissionsHandling.PERMISSIONS_REGISTRY.add(NewClass.NAME)
+            
 
 
 '''
@@ -190,6 +195,7 @@ class AbstractAbilityHandler(object):
         self.__datamanager = weakref.ref(datamanager)
         self._ability_data = weakref.ref(ability_data)
         self.logger = logging.getLogger("abilities")
+        self._perform_lazy_initializations()
 
 
     @property
@@ -198,31 +204,35 @@ class AbstractAbilityHandler(object):
 
     def __getattr__(self, name):
         assert not name.startswith("_") # if we arrive here, it's probably a typo in an attribute fetching
-        value = getattr(self._datamanager, name)
-        # NO assert callable(name) # only public methods of datamanager should be retrieved actually
+        
+        try:
+            value = getattr(self._datamanager, name)
+        except AttributeError:
+            raise AttributeError("Neither ability nor datamanager have attribute '%s'" % name)
         return value
 
-
-    @classmethod
-    def check_pemissions(cls, user):
+ 
+    def _check_permissions(self):
         """
         This method should be called at django view level only, not from another ability
         method (unittests don't have to care about permissions).
         """
-        if cls.ACCESS == "master":
+        user = self._datamanager.user
+        
+        if self.ACCESS == "master":
             if not user.is_master:
                 raise PermissionError(_("Ability reserved to administrators"))
-        elif cls.ACCESS == "player":
+        elif self.ACCESS == "player":
             if not user.is_character:
                 raise PermissionError(_("Ability reserved to standard users"))
-            if not user.has_permission(cls.NAME):
+            if not user.has_permission(self.NAME):
                 # todo - what permission tokens do we use actually for abilities ??
                 raise PermissionError(_("Ability reserved to privileged users"))
-        elif cls.ACCESS == "authenticated":
+        elif self.ACCESS == "authenticated":
             if not user.is_authenticated:
                 raise PermissionError(_("Ability reserved to registered users"))
         else:
-            assert cls.ACCESS == "anonymous"
+            assert self.ACCESS == "anonymous"
 
 
 
@@ -284,7 +294,7 @@ class AbstractAbilityHandler(object):
         else:
             pass
 
-        form = NewFormClass(self.datamanager, initial=initial_data)
+        form = NewFormClass(self._datamanager, initial=initial_data)
 
         return form
 
@@ -337,19 +347,19 @@ class AbstractAbilityHandler(object):
             data = request.POST
 
             if data.get("_action_", None): # manually built form
-                with action_failure_handler(request):
+                with action_failure_handler(request, success_message=None): # only for unhandled exceptions
                     self._try_processing_action(data)
 
             else: # it must be a call using django newforms
                 for (form_name, (FormClass, action_name)) in self.FORMS.items():
                     if FormClass.matches(data): # class method
-                        bound_form = FormClass(self.datamanager, data=data)
+                        bound_form = FormClass(self._datamanager, data=data)
                         form_successful = False
                         if bound_form.is_valid():
-                            with action_failure_handler(request):
+                            with action_failure_handler(request, success_message=None): # only for unhandled exceptions
                                 action = getattr(self, action_name)
 
-                                relevant_args = utilities.adapt_parameters_to_func(bound_form.get_normalized_values())
+                                relevant_args = utilities.adapt_parameters_to_func(bound_form.get_normalized_values(), action)
                                 success_message = action(**relevant_args)
 
                                 form_successful = True
@@ -418,7 +428,7 @@ class AbstractAbilityHandler(object):
     """
 
     @transaction_watcher
-    def perform_lazy_initializations(self):
+    def _perform_lazy_initializations(self):
 
         user = self._datamanager.user
 
@@ -449,9 +459,9 @@ class AbstractAbilityHandler(object):
         if strict:
             for name, value in self.ability_data["data"].items():
                 if self.LEVEL == "player":
-                    assert name in self.datamanager.get_character_names()
+                    assert name in self._datamanager.get_character_names()
                 elif self.LEVEL == "domain":
-                    assert name in self.datamanager.get_domain_names()
+                    assert name in self._datamanager.get_domain_names()
                 else:
                     assert name == "global"
                 assert isinstance(value, collections.Mapping)

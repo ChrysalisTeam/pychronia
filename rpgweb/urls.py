@@ -40,28 +40,37 @@ final_urlpatterns = patterns('rpgweb.views',
 
     (r'^view_sales/$', 'view_sales'),
     (r'^view_characters/$', 'view_characters'),
+    
+    
+    (r'^manage_characters/$', 'manage_characters'),
     (r'^webradio_management/$', 'manage_audio_messages'),
     (r'^game_events/$', 'game_events'),
     (r'^manage_databases/$', 'manage_databases'),
 
-    #(r'^wiretapping_management/$', 'wiretapping_management'),
-    #(r'^network_management/$', 'network_management'),
-    #(r'^translations_management/$', 'translations_management'),
-    (r'^scanning_management/$', 'scanning_management'),
 
-    (r'^oracle/$', 'contact_djinns'),
-    (r'^djinn/$', 'chat_with_djinn'),
-    (r'^ajax_consult_djinns/$', 'ajax_consult_djinns'),
+
 
     (r'^chatroom/$', 'chatroom'),
     (r'^ajax_chat/$', 'ajax_chat'),
 
 
-    (r'^mercenary_commandos/$', 'mercenary_commandos'),
-    (r'^teldorian_teleportations/$', 'teldorian_teleportations'),
-    (r'^acharith_attacks/$', 'acharith_attacks'),
-    (r'^telecom_investigation/$', 'telecom_investigation'),
+    #(r'^wiretapping_management/$', 'wiretapping_management'),
+    #(r'^network_management/$', 'network_management'),
+    #(r'^translations_management/$', 'translations_management'),
+    #(r'^scanning_management/$', 'scanning_management'),
+    
+    #(r'^mercenary_commandos/$', 'mercenary_commandos'),
+    #(r'^teldorian_teleportations/$', 'teldorian_teleportations'),
+    #(r'^acharith_attacks/$', 'acharith_attacks'),
+    #(r'^telecom_investigation/$', 'telecom_investigation'),
 
+#    (r'^oracle/$', 'contact_djinns'),
+#    (r'^djinn/$', 'chat_with_djinn'),
+#    (r'^ajax_consult_djinns/$', 'ajax_consult_djinns'),
+    
+#    (r'^ajax_domotics_security/$', 'ajax_domotics_security'), # for heavy client, if used
+#    (r'^domotics_security/$', 'domotics_security'),
+        
     (r'^login/$', 'login'),
     (r'^secret_question/$', 'secret_question'),
     (r'^logout/$', 'logout'),
@@ -83,8 +92,7 @@ final_urlpatterns = patterns('rpgweb.views',
     (r'^ajax_get_next_audio_message/$', 'ajax_get_next_audio_message'),
     (r'^ajax_notify_audio_success/$', 'ajax_notify_audio_message_finished'),
 
-    (r'^ajax_domotics_security/$', 'ajax_domotics_security'), # for heavy client, if used
-    (r'^domotics_security/$', 'domotics_security'),
+
 
 )
 

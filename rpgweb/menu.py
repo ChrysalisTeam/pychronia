@@ -82,17 +82,18 @@ def game_menu_generator(request):
 
     # note : \xa0 <-> &nbsp <-> alt+0160;
     ability_entries = [
+                       
+#                         #menu_entry(_(u"Wiretaps"), views.wiretapping_management),
+#                         #menu_entry(_(u"Agents Hiring"), views.network_management),
+#                         menu_entry(_(u"Oracles"), views.contact_djinns),
+#                         menu_entry(_(u"Mercenary Commandos"), views.mercenary_commandos),
+#                         menu_entry(_(u"Teleportations"), views.teldorian_teleportations),
+#                         menu_entry(_(u"Zealot Attacks"), views.acharith_attacks),
+#                         menu_entry(_(u"Telecom Investigations"), views.telecom_investigation),
+#                         #menu_entry(_(u"Translations"), views.translations_management),
+#                         menu_entry(_(u"World Scans"), views.scanning_management),
+#                         menu_entry(_(u"Doors Locking"), views.domotics_security) if (user.is_master or user.is_anonymous) else None, # TODO FIX THIS
 
-                         #menu_entry(_(u"Wiretaps"), views.wiretapping_management),
-                         #menu_entry(_(u"Agents Hiring"), views.network_management),
-                         menu_entry(_(u"Oracles"), views.contact_djinns),
-                         menu_entry(_(u"Mercenary Commandos"), views.mercenary_commandos),
-                         menu_entry(_(u"Teleportations"), views.teldorian_teleportations),
-                         menu_entry(_(u"Zealot Attacks"), views.acharith_attacks),
-                         menu_entry(_(u"Telecom Investigations"), views.telecom_investigation),
-                         #menu_entry(_(u"Translations"), views.translations_management),
-                         menu_entry(_(u"World Scans"), views.scanning_management),
-                         menu_entry(_(u"Doors Locking"), views.domotics_security) if (user.is_master or user.is_anonymous) else None, # TODO FIX THIS
 
                          menu_entry(_(u"Authentication"), views.login) if not user.is_authenticated else None,
                          menu_entry(_(u"Logout"), views.logout) if user.is_authenticated else None,

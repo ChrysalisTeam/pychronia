@@ -6,7 +6,9 @@ from rpgweb.common import *
 
 from .datamanager_user import GameUser
 from .datamanager_core import *
-from rpgweb.utilities import color
+
+
+PLACEHOLDER = object()
 
 
 MODULES_REGISTRY = []  # IMPORTANT
@@ -19,79 +21,113 @@ def register_module(Klass):
 
 
 
+@register_module
+class GameGlobalParameters(BaseDataManager):
+
+
+    @readonly_method
+    def check_database_coherency(self, **kwargs):
+        super(GameGlobalParameters, self)._check_database_coherency(**kwargs)
+        
+        game_data = self.data
+
+        utilities.check_is_bool(game_data["global_parameters"]["game_is_started"])
+
+        assert os.path.isfile(os.path.join(config.GAME_FILES_ROOT, "musics", game_data["global_parameters"]["opening_music"]))
+  
+
+
+    @readonly_method
+    def get_global_parameters(self):
+        return self.data["global_parameters"]
+
+    @readonly_method
+    def get_global_parameter(self, name):
+        return self.data["global_parameters"][name]
+
+    @readonly_method
+    def is_game_started(self):
+        return self.get_global_parameter("game_is_started")
+
+    @transaction_watcher(ensure_game_started=False)
+    def set_game_state(self, started):
+        self.data["global_parameters"]["game_is_started"] = started
+
+
 
 
 
 
 
 @register_module
-class TechnicalEvents(BaseDataManager):
-    """
-    This private registry keeps track of miscellaneous events sent throughout the datamanager system.
-    This feature should solely be used for debugging purpose, with function calls protected by
-    ``if __debug__:`` statements for optimization.
-    To prevent naming collisions, an error is raised if events with the same name
-    are sent from different locations.
-    """
+class GameEvents(BaseDataManager): # TODO REFINE
 
-    def __init__(self, **kwargs):
-        super(TechnicalEvents, self).__init__(**kwargs)
-        self._event_registry = {} # stores, for each event name, a (calling_frame, count) tuple
 
     def _load_initial_data(self, **kwargs):
-        super(TechnicalEvents, self)._load_initial_data(**kwargs)
+        super(GameEvents, self)._load_initial_data(**kwargs)
+
+        new_data = self.data
+        new_data.setdefault("events_log", PersistentList())
+        for evt in new_data["events_log"]:
+            if isinstance(evt["time"], (long, int)): # offset in minutes
+                evt["time"] = utilities.compute_remote_datetime(evt["time"])
+        new_data["events_log"].sort(key=lambda evt: evt["time"])
 
     def _check_database_coherency(self, **kwargs):
-        super(TechnicalEvents, self)._check_database_coherency(**kwargs)
+        super(GameEvents, self)._check_database_coherency(**kwargs)
 
-    @readonly_method
-    def notify_event(self, event_name):
-        """
-        Records the sending of event *event_name*.
-        """
-        calling_frame = traceback.extract_stack(limit=2)[0] # we capture the frame which called notify_event()
-        if not self._event_registry.has_key(event_name):
-            self._event_registry[event_name] = (calling_frame, 1)
-        else:
-            (old_calling_frame, cur_count) = self._event_registry[event_name]
-            if calling_frame != old_calling_frame:
-                raise RuntimeError("Duplicated event name %s found for locations '%s' and '%s'" % (
-                event_name, old_calling_frame, calling_frame))
-            self._event_registry[event_name] = (calling_frame, cur_count + 1)
-
-    @readonly_method
-    def get_event_count(self, event_name):
-        """
-        Returns the number of times the event *event_name* has been sent since the last
-        clearing of its statistics.
-        """
-        if not self._event_registry.has_key(event_name):
-            return 0
-        else:
-            return self._event_registry[event_name][1]
+        event_reference = {
+            "time": datetime,
+            "message": basestring,
+            "substitutions": (types.NoneType, PersistentDict),
+            "url": (types.NoneType, basestring),
+            "username": basestring
+        }
+        previous_time = None
+        for event in self.data["events_log"]:
+            assert event["message"]
+            if previous_time:
+                assert previous_time <= event["time"] # event lists are sorted by chronological order
+            previous_time = event["time"]
+            utilities.check_dictionary_with_template(event, event_reference)
+            username = event["username"]
+            assert username in self.get_character_names() or username == self.get_global_parameter("master_login") or username is None
 
     @transaction_watcher
-    def clear_event_stats(self, event_name):
-        """
-        Resets to 0 the counter of the event *event_name*.
-        """
-        del self._event_registry[event_name]
+    def log_game_event(self, message, substitutions=None, url=None, is_master_action=False):
+        assert message, "log message must not be empty"
 
-    @transaction_watcher
-    def clear_all_event_stats(self):
-        """
-        Resets entirely the event system, eg. at the beginning of a test sequence.
-        """
-        self._event_registry = {}
+        if substitutions:
+            assert isinstance(substitutions, PersistentDict), (message, substitutions)
+            if config.DEBUG:
+                message % substitutions # may raise formatting errors if corrupt...
+        else:
+            assert "%(" not in message, "Message %s needs substitution arguments" % message
+            pass
+
+        utcnow = datetime.utcnow()
+
+        record = PersistentDict({
+            "time": utcnow,
+            "message": message, # UNTRANSLATED message !
+            "substitutions": substitutions,
+            "url": url,
+            "username": self.user.username
+        })
+        self.data["events_log"].append(record)
+
+    @readonly_method
+    def get_game_events(self):
+        return self.data["events_log"]
 
 
-
-
+ 
 
 
 @register_module
 class CharacterHandling(BaseDataManager): # TODO REFINE
 
+    CHARACTER_REAL_LIFE_ATTRIBUTES = ["real_life_identity", "real_life_email"]
 
     def _load_initial_data(self, **kwargs):
         super(CharacterHandling, self)._load_initial_data(**kwargs)
@@ -116,7 +152,7 @@ class CharacterHandling(BaseDataManager): # TODO REFINE
             utilities.check_is_string(character["real_life_identity"])
             utilities.check_is_string(character["real_life_email"])
             utilities.check_is_slug(character["character_color"])
-            
+
             identities = [char["official_name"].replace(" ", "").lower() for char in
                           game_data["character_properties"].values()]
             utilities.check_no_duplicates(identities)
@@ -154,7 +190,7 @@ class CharacterHandling(BaseDataManager): # TODO REFINE
         try:
             return self.data["character_properties"][username]
         except KeyError:
-            raise UsageError("Unknown username %s" % username)
+            raise UsageError(_("Unknown username %s") % username)
 
     @readonly_method
     def __get_fellow_usernames(self, username):
@@ -170,15 +206,30 @@ class CharacterHandling(BaseDataManager): # TODO REFINE
         others = [name for name in self.get_character_usernames() if name != username]
         return others
 
-    @transaction_watcher
+    @readonly_method
     def build_select_choices_from_usernames(self, usernames):
         official_names = sorted([self.get_official_name_from_username(username) for username in usernames])
-        character_choices = zip(official_names, official_names)
+        character_choices = zip(usernames, official_names)
         return character_choices
 
-
-
-
+    @transaction_watcher
+    def update_real_life_data(self, username, real_life_identity=None, real_life_email=None):
+        
+        data = self.get_character_properties(username)
+        
+        action_done = False
+        
+        if real_life_identity and real_life_identity != data["real_life_identity"]:
+            data["real_life_identity"] = real_life_identity
+            action_done = True
+            
+        if real_life_email and real_life_email != data["real_life_email"]:
+            if not utilities.is_email(real_life_email):
+                raise NormalUsageError(_("Wrong email %s") % real_life_email)
+            data["real_life_email"] = real_life_email            
+            action_done = True
+        
+        return action_done
 
 
 
@@ -189,7 +240,6 @@ class DomainHandling(BaseDataManager): # TODO REFINE
 
     def _load_initial_data(self, **kwargs):
         super(DomainHandling, self)._load_initial_data(**kwargs)
-
 
     def _check_database_coherency(self, **kwargs):
         super(DomainHandling, self)._check_database_coherency(**kwargs)
@@ -214,17 +264,37 @@ class DomainHandling(BaseDataManager): # TODO REFINE
 
             utilities.check_is_bool(content["show_official_identities"])
 
-
     @readonly_method
     def get_domain_names(self):
-        return self.data["domains"].keys()
+        return sorted(self.data["domains"].keys())
 
     @readonly_method
     def get_domain_properties(self, domain_name):
-        if isinstance(domain_name, str):
-            return self.data["domains"][domain_name]
-        elif isinstance(domain_name, PersistentList):
-            return self.data["domains"][domain_name.data[0]]
+        return self.data["domains"][domain_name]
+
+    @transaction_watcher(ensure_game_started=False)
+    def update_allegiances(self, username, allegiances):
+        
+        assert len(set(allegiances)) == len(allegiances)
+        
+        available_domains = self.get_domain_names()
+        data = self.get_character_properties(username)
+        
+        for allegiance in allegiances:
+            if allegiance not in available_domains:
+                raise AbnormalUsageError(_("Wrong domain name %s") % allegiance)
+
+        added_domains = sorted(set(allegiances) - set(data["domains"]))
+        removed_domains = sorted(set(data["domains"]) - set(allegiances))
+        
+        data["domains"] = PersistentList(set(allegiances)) # we make them unique, just in case
+        
+        return (added_domains, removed_domains)
+   
+    @readonly_method
+    def build_domain_select_choices(self):
+        domain_choices = [(name, name.capitalize()) for name in self.get_domain_names()]
+        return domain_choices
 
 
 @register_module
@@ -242,13 +312,12 @@ class GameInstructions(BaseDataManager):
         utilities.check_is_string(game_data["global_parameters"]["global_introduction"])
         utilities.check_is_string(game_data["global_parameters"]["history_summary"])
 
-
         for (name, content) in game_data["domains"].items():
             assert isinstance(content["prologue_music"], basestring)
             assert os.path.isfile(os.path.join(config.GAME_FILES_ROOT, "musics", content["prologue_music"]))
             assert isinstance(content["instructions"], (types.NoneType, basestring)) # can be empty
 
-
+            
     @readonly_method
     def get_game_instructions(self, username):
         global_introduction = self.get_global_parameter("global_introduction")
@@ -271,10 +340,7 @@ class GameInstructions(BaseDataManager):
                               team_introduction=team_introduction)
 
 
-
-
-
-
+ 
 
 
 @register_module
@@ -311,73 +377,6 @@ class LocationsHandling(BaseDataManager):
 
 
 
-
-
-
-@register_module
-class GameEvents(BaseDataManager): # TODO REFINE
-
-
-    def _load_initial_data(self, **kwargs):
-        super(GameEvents, self)._load_initial_data(**kwargs)
-
-        new_data = self.data
-        new_data.setdefault("events_log", PersistentList())
-        for evt in new_data["events_log"]:
-            if isinstance(evt["time"], (long, int)): # offset in minutes
-                evt["time"] = utilities.compute_remote_datetime(evt["time"])
-        new_data["events_log"].sort(key=lambda evt: evt["time"])
-
-    def _check_database_coherency(self, **kwargs):
-        super(GameEvents, self)._check_database_coherency(**kwargs)
-
-        event_reference = {
-            "time": datetime,
-            "message": basestring,
-            "substitutions": (types.NoneType, PersistentDict),
-            "url": (types.NoneType, basestring),
-            "is_master_action": bool
-        }
-        previous_time = None
-        for event in self.data["events_log"]:
-            assert event["message"]
-            if previous_time:
-                assert previous_time <= event["time"] # event lists are sorted by chronological order
-            previous_time = event["time"]
-            utilities.check_dictionary_with_template(event, event_reference)
-
-
-    @transaction_watcher
-    def log_game_event(self, message, substitutions=None, url=None, is_master_action=False):
-        assert message, "log message must not be empty"
-
-        if substitutions:
-            assert isinstance(substitutions, PersistentDict), (message, substitutions)
-            if config.DEBUG:
-                message % substitutions # may raise formatting errors if corrupt...
-        else:
-            assert "%(" not in message, "Message %s needs substitution arguments" % message
-            pass
-
-        utcnow = datetime.utcnow()
-
-        record = PersistentDict({
-            "time": utcnow,
-            "message": message, # UNTRANSLATED message !
-            "substitutions": substitutions,
-            "url": url,
-            "is_master_action": is_master_action
-        })
-        self.data["events_log"].append(record)
-
-    @readonly_method
-    def get_game_events(self):
-        return self.data["events_log"]
-
-
-
-
-
 @register_module
 class PlayerAuthentication(BaseDataManager):
 
@@ -389,12 +388,13 @@ class PlayerAuthentication(BaseDataManager):
 
     def _load_initial_data(self, **kwargs):
         super(PlayerAuthentication, self)._load_initial_data(**kwargs)
-        for character in self.get_character_sets().values():
-            pass #TODO
+
 
     def _check_database_coherency(self, **kwargs):
         super(PlayerAuthentication, self)._check_database_coherency(**kwargs)
 
+        game_data = self.data 
+        
         utilities.check_is_slug(self.get_global_parameter("master_login"))
         utilities.check_is_slug(self.get_global_parameter("master_password"))
 
@@ -402,17 +402,26 @@ class PlayerAuthentication(BaseDataManager):
             utilities.check_is_slug(character["password"])
             utilities.check_is_string(character["secret_question"])
             assert not character["secret_answer"] or utilities.check_is_slug(character["secret_answer"])
+            
+        
+        # MASTER and ANONYMOUS cases
+
+        global_parameters = game_data["global_parameters"]
+
+        utilities.check_is_slug(global_parameters["anonymous_login"])
+        utilities.check_is_slug(global_parameters["master_login"])
+        utilities.check_is_slug(global_parameters["master_password"])
+        utilities.check_is_slug(global_parameters["master_email"])
+        utilities.check_is_slug(global_parameters["master_real_life_email"])
 
 
-    # TODO ADD CHECKS ON PERMISSIONS OF USERS - all lower case !!!!
 
 
-    @transaction_watcher(ensure_game_started=False)
-    def _notify_user_change(self, **kwargs):
-        """
-        To be extended by other core modules.
-        """
 
+    def _notify_user_change(self, username, **kwargs):
+        assert not hasattr(super(PlayerAuthentication, self), "_notify_user_change") # we're well top-level here
+        
+        
     @transaction_watcher(ensure_game_started=False)
     def _set_user(self, username):
 
@@ -421,7 +430,7 @@ class PlayerAuthentication(BaseDataManager):
         self._notify_user_change(username=username)
 
         return self.user
-
+ 
 
     @transaction_watcher(ensure_game_started=False)
     def logout_user(self):
@@ -450,9 +459,9 @@ class PlayerAuthentication(BaseDataManager):
         if username == self.get_global_parameter("master_login"): # do not use is_master here, just in case...
             wanted_pwd = self.get_global_parameter("master_password")
         else:
-            characters = self.get_character_properties(username)
-            wanted_pwd = characters["password"]
-            
+            data = self.get_character_properties(username)
+            wanted_pwd = data["password"]
+
         if password == wanted_pwd:
             self._set_user(username)
 
@@ -502,8 +511,7 @@ class PlayerAuthentication(BaseDataManager):
 
             self.log_game_event(_noop("Password of %(username)s has been recovered by %(target_email)s."),
                                  PersistentDict(username=username, target_email=target_email),
-                                 url=self.get_message_viewer_url(msg_id),
-                                 is_master_action=False) # we actually don't know...
+                                 url=self.get_message_viewer_url(msg_id))
 
             return password
 
@@ -514,13 +522,19 @@ class PlayerAuthentication(BaseDataManager):
 
     # Utility functions for tests on other usernames than current player's one #
 
-    def is_anonymous(self, username):
+    def is_anonymous(self, username=PLACEHOLDER):
+        if username is PLACEHOLDER:
+            username = self.user.username
         return (username == None)
 
-    def is_master(self, username):
+    def is_master(self, username=PLACEHOLDER):
+        if username is PLACEHOLDER:
+            username = self.user.username
         return (username == self.get_global_parameter("master_login"))
 
-    def is_character(self, username):
+    def is_character(self, username=PLACEHOLDER):
+        if username is PLACEHOLDER:
+            username = self.user.username
         return (username in self.get_character_usernames())
 
 
@@ -529,14 +543,19 @@ class PlayerAuthentication(BaseDataManager):
 @register_module
 class PermissionsHandling(BaseDataManager): # TODO REFINE
 
-    PERMISSIONS = Enum("""contact_djinns manage_agents 
+    PERMISSIONS_REGISTRY = Enum() 
+
+    """"
+    contact_djinns manage_agents 
                         manage_wiretaps manage_teleportations 
                         manage_scans manage_scans manage_translations 
-                        launch_telecom_investigations""") # TODO transfer these to abilities and modules
-
+                        launch_telecom_investigations
+                        """ # TODO transfer these to abilities and modules
+                          
     @classmethod
-    def register_permissions(names):
-        cls.PERMISSIONS.update(names)
+    def register_permissions(cls, names):
+        assert all((name.lower() == name and " " not in name) for name in names)
+        cls.PERMISSIONS_REGISTRY.update(names)
 
 
     def _load_initial_data(self, **kwargs):
@@ -545,30 +564,41 @@ class PermissionsHandling(BaseDataManager): # TODO REFINE
         game_data = self.data
 
         for (name, character) in game_data["character_properties"].items():
-            character.setdefault("permissions", [])
+            character.setdefault("permissions", PersistentList())
 
         for (name, domain) in game_data["domains"].items():
-            domain.setdefault("permissions", [])
-
+            domain.setdefault("permissions", PersistentList())
+ 
 
     def _check_database_coherency(self, **kwargs):
         super(PermissionsHandling, self)._check_database_coherency(**kwargs)
-
+        
+        for permission in self.PERMISSIONS_REGISTRY: # check all available permissions
+            utilities.check_is_slug(permission)
+            assert permission.lower() == permission
+            
         game_data = self.data
 
         for (name, character) in game_data["character_properties"].items():
             for permission in character["permissions"]:
-                assert permission in self.PERMISSIONS
+                assert permission in self.PERMISSIONS_REGISTRY
 
         for (name, domain) in game_data["domains"].items():
             for permission in domain["permissions"]:
-                assert permission in self.PERMISSIONS
+                assert permission in self.PERMISSIONS_REGISTRY
+
+
+    @transaction_watcher(ensure_game_started=False)
+    def update_permissions(self, username, permissions):
+        
+        assert self.is_character(username)
+        
+        data = self.get_character_properties(username)
+        data["permissions"] = permissions
 
 
     def has_permission(self, permission):
-        """
-        Checks if 
-        """
+
         if not self.user.is_character:
             return False # anonymous and master must be handled differently
 
@@ -583,6 +613,10 @@ class PermissionsHandling(BaseDataManager): # TODO REFINE
                 return True
 
         return False
+    
+
+    def build_permission_select_choices(self):
+        return [(perm, perm) for perm in sorted(self.PERMISSIONS_REGISTRY)]
 
 
 
@@ -604,9 +638,9 @@ class OnlinePresence(BaseDataManager):
 
         utilities.check_positive_int(self.get_global_parameter("online_presence_timeout_s"))
 
-    @transaction_watcher
-    def _notify_player_change(self, username, **kwargs):
-        super(OnlinePresence, self)._notify_player_change(username=username, **kwargs)
+
+    def _notify_user_change(self, username, **kwargs):
+        super(OnlinePresence, self)._notify_user_change(username=username, **kwargs)
 
         if username in self.data["character_properties"]: # TODO improve
             self.set_online_status(username)
@@ -635,7 +669,14 @@ class OnlinePresence(BaseDataManager):
 @register_module
 class TextMessaging(BaseDataManager): # TODO REFINE
 
-
+    def _recompute_all_external_contacts_via_msgs(self):
+        external_contacts_changed = False
+        for msg in self.data["messages_sent"]:
+            res = self._update_external_contacts(msg)
+            if res: 
+                external_contacts_changed = True
+        return external_contacts_changed
+    
     def _load_initial_data(self, **kwargs):
         super(TextMessaging, self)._load_initial_data(**kwargs)
 
@@ -648,6 +689,9 @@ class TextMessaging(BaseDataManager): # TODO REFINE
 
         new_data.setdefault("messages_sent", PersistentList())
         new_data.setdefault("messages_queued", PersistentList())
+        
+        for (name, data) in new_data["character_properties"].items():
+            data.setdefault("wiretapping_targets", PersistentList())
 
         for (index, msg) in enumerate(new_data["messages_sent"] + new_data["messages_queued"]):
             # we modify the dicts in place
@@ -664,7 +708,7 @@ class TextMessaging(BaseDataManager): # TODO REFINE
             if isinstance(msg["sent_at"], (long, int)): # offset in minutes
                 msg["sent_at"] = utilities.compute_remote_datetime(msg["sent_at"])
 
-            msg["intercepted"] = msg.get("intercepted", False)
+            msg["intercepted_by"] = msg.get("intercepted_by", PersistentList())
             msg["has_read"] = msg.get("has_read", PersistentList())
             msg["has_replied"] = msg.get("has_replied", PersistentList())
 
@@ -691,9 +735,8 @@ class TextMessaging(BaseDataManager): # TODO REFINE
         #complete_messages_templates(new_data["automated_messages_templates"], is_manual=False)
         complete_messages_templates(new_data["manual_messages_templates"], is_manual=True)
 
-
-        for msg in new_data["messages_sent"]:
-            self._update_external_contacts(msg) # important
+        # we compute automatic external_contacts for the first time
+        self._recompute_all_external_contacts_via_msgs()
 
 
     def _check_database_coherency(self, **kwargs):
@@ -701,6 +744,13 @@ class TextMessaging(BaseDataManager): # TODO REFINE
 
         game_data = self.data
 
+        utilities.check_is_slug(game_data["global_parameters"]["global_email"]) # shortcut tag to send email to everyone
+         
+        character_names = self.get_character_usernames()
+        for (name, data) in self.get_character_sets().items():
+            for char_name in data["wiretapping_targets"]:
+                assert char_name in character_names
+                
         message_reference = {# the ids of emails are simply their location in the global message list !
                              "sender_email": basestring,
                              "recipient_emails": PersistentList,
@@ -708,7 +758,7 @@ class TextMessaging(BaseDataManager): # TODO REFINE
                              "body": basestring,
                              "attachment": (types.NoneType, basestring), # None or string
                              "sent_at": datetime,
-                             "intercepted": bool,
+                             "intercepted_by": PersistentList,
                              "has_read": PersistentList,
                              "has_replied": PersistentList,
                              "is_certified": bool, # for messages sent via automated processes
@@ -729,10 +779,15 @@ class TextMessaging(BaseDataManager): # TODO REFINE
                 for recipient in msg["recipient_emails"]:
                     utilities.check_is_email(recipient)
 
-                all_chars = game_data["character_properties"].keys() + [game_data["global_parameters"]["master_login"]]
-                assert all((char in all_chars) for char in msg["has_read"]), msg["has_read"]
-                assert all((char in all_chars) for char in msg["has_replied"]), msg["has_replied"]
-
+                all_chars = game_data["character_properties"].keys()
+                for username in msg["intercepted_by"]:
+                    assert username in all_chars
+                utilities.check_no_duplciates(msg["intercepted_by"])
+                    
+                all_users = all_chars + [game_data["global_parameters"]["master_login"]]
+                assert all((char in all_users) for char in msg["has_read"]), msg["has_read"]
+                assert all((char in all_users) for char in msg["has_replied"]), msg["has_replied"]
+                
             all_ids = [msg["id"] for msg in msg_list]
             utilities.check_no_duplicates(all_ids)
 
@@ -747,27 +802,17 @@ class TextMessaging(BaseDataManager): # TODO REFINE
         #all_msg_files += [self.data["audio_messages"][properties["request_for_report"]]["file"] for properties in self.data["domains"].values()]
         assert len(set(all_msg_files)) == len(self.data["character_properties"]) # + len(self.data["domains"])# users must NOT share new-message audio notifications
 
+        # we recompute external_contacts, and check everything is coherent
+        assert not self._recompute_all_external_contacts_via_msgs()
+
         for character_set in self.data["character_properties"].values():
+            utilities.check_no_duplicates(character_set["external_contacts"])
             for external_contact in character_set["external_contacts"]:
                 utilities.check_is_email(external_contact)
-
-        # we recompute external_contacts, and check everything is coherent
-        characters_external_contacts = dict((username, set()) for username in self.data["character_properties"].keys())
-        for msg in game_data["messages_sent"]:
-            (concerned_characters, external_emails) = self._get_external_contacts_updates(msg)
-            for concerned_character in concerned_characters:
-                characters_external_contacts[concerned_character].update(external_emails)
-
-        # NO - TOO OVERKILL CHECK!! 
-        #for (username, external_contacts) in characters_external_contacts.items():
-            # we check that all addresses used in msg exchanges appear in right external_contacts
-        #    assert external_contacts <= set(self.data["character_properties"][username]["external_contacts"])
-
-
-    @transaction_watcher
-    def process_periodic_tasks(self, **kwargs):
-
-        report = super(TextMessaging, self).process_periodic_tasks(**kwargs)
+                
+                
+    def _process_periodic_tasks(self, report):
+        super(TextMessaging, self)._process_periodic_tasks(report)
 
         # WE SEND DELAYED MESSAGES #
 
@@ -791,7 +836,6 @@ class TextMessaging(BaseDataManager): # TODO REFINE
         else:
             report["messages_sent"] = 0
 
-        return report
 
 
     def _normalize_recipient_emails(self, recipient_emails):
@@ -818,6 +862,7 @@ class TextMessaging(BaseDataManager): # TODO REFINE
             elif chunk in data["character_properties"].keys():
                 values = [chunk + "@" + pangea_domain] # we allow short usernames
             else:
+                print(data["character_properties"].keys())
                 raise UsageError(_("Unknown user login '%s' in recipients list") % chunk) # surely an input error of user!
             normalized_emails.update(values)
 
@@ -892,7 +937,7 @@ class TextMessaging(BaseDataManager): # TODO REFINE
                               "body": body,
                               "attachment": attachment, # None or string
                               "sent_at": sent_at,
-                              "intercepted": False, # by default...
+                              "intercepted_by": PersistentList(), # by default...
                               "has_read": PersistentList(), # for dummy automated messages
                               "has_replied": PersistentList(),
                               "is_certified": is_certified,
@@ -957,11 +1002,10 @@ class TextMessaging(BaseDataManager): # TODO REFINE
             char_sets = self.get_character_sets()
             all_contacts = [contact for (name, character) in char_sets.items()
                                          for contact in character["external_contacts"]]
-            return all_contacts
+            return sorted(set(all_contacts))
         else:
-            # FIXME - add here all addresses of previous mail exchanges
             character = self.get_character_properties(username)
-            return [self.get_global_parameter("master_email")] + character["external_contacts"]
+            return character["external_contacts"]
 
 
     @readonly_method
@@ -1023,8 +1067,12 @@ class TextMessaging(BaseDataManager): # TODO REFINE
         return records # chronological order
 
     @readonly_method
-    def get_intercepted_messages(self): # for wiretapping
-        records = [record for record in self.data["messages_sent"] if record["intercepted"]]
+    def get_intercepted_messages(self, username=None): # for wiretapping
+        if username is not None and not self.is_master(username):
+            assert username in self.get_character_usernames()
+            records = [record for record in self.data["messages_sent"] if username in record["intercepted_by"]]
+        else:
+            records = [record for record in self.data["messages_sent"] if record["intercepted_by"]] # intercepted by anyone
         return records # chronological order
 
     @readonly_method
@@ -1117,11 +1165,33 @@ class TextMessaging(BaseDataManager): # TODO REFINE
                 self.data["character_properties"][username]["has_new_messages"] = new_status
                 # thus, "invented" emails are simply ignored in this process
 
+
+    @transaction_watcher
+    def set_wiretapping_targets(self, username, target_names):
+
+        target_names = sorted(list(set(target_names))) # renormalization, just in case
+
+        character_names = self.get_character_usernames()
+        for name in target_names:
+            if name not in character_names:
+                raise AbnormalUsageError(_("Unknown target username %(target)s") % SDICT(target=name)) # we can show it
+
+        data = self.get_character_properties(username)
+        data["wiretapping_targets"] = PersistentList(target_names)
+
+        self.log_game_event(_noop("Wiretapping targets set to (%(targets)s) for %(username)s."),
+                             PersistentDict(targets="[%s]"%(", ".join(target_names)), username=username),
+                             url=None)
+    
+    def get_wiretapping_targets(self, username):
+        return self.get_character_properties(username)["wiretapping_targets"]
+
+
     @readonly_method
     def _get_external_contacts_updates(self, msg):
         """
-        Updates the *external_contacts* fields of character accounts,
-        when they send/receive a message.
+        Retrieve info needed to update the *external_contacts* fields of character accounts,
+        when they send/receive this single message.
         """
         all_characters_emails = set(self.get_players_emails())
         msg_emails = set(msg["recipient_emails"] + [msg["sender_email"]])
@@ -1141,26 +1211,29 @@ class TextMessaging(BaseDataManager): # TODO REFINE
 
         for username in concerned_characters:
             props = self.get_character_properties(username)
-            new_external_contacts = set(props["external_contacts"]) | external_emails
-            assert set(props["external_contacts"]) <= new_external_contacts # that list can only grow
-            props["external_contacts"] = PersistentList(new_external_contacts)
-
+            old_external_contacts = set(props["external_contacts"])
+            new_external_contacts = old_external_contacts | external_emails
+            assert set(props["external_contacts"]) <= new_external_contacts # that list can only grow - of course
+            props["external_contacts"] = PersistentList(new_external_contacts) # no particular sorting here, but unicity is ensured
+            
+            new_contacts_added = (new_external_contacts != old_external_contacts)
+            return new_contacts_added
 
     @transaction_watcher
     def _immediately_send_message(self, msg):
 
-        # TODO CHANGE THIS !!! FIXME
-        #wiretapping_targets_emails = [self.get_character_email(target) 
-        #                              for target in self.get_wiretapping_targets()]
-        wiretapping_targets_emails = [] # WRONG
-
         # wiretapping
-        if (msg["sender_email"] in wiretapping_targets_emails or
-            any(True for recipient in msg["recipient_emails"] if recipient in wiretapping_targets_emails)):
-            msg["intercepted"] = True
+        for username in self.get_character_usernames():
+                
+            wiretapping_targets_emails = [self.get_character_email(target) 
+                                          for target in self.get_wiretapping_targets(username)]
+            
+            if (msg["sender_email"] in wiretapping_targets_emails or
+                any(True for recipient in msg["recipient_emails"] if recipient in wiretapping_targets_emails)):
+                msg["intercepted_by"].append(username)
 
-            # audio_notification = self.get_global_parameter("message_intercepted_audio_id")
-            # NO NOTIFICATION - self.add_radio_message(audio_notification)
+        # audio_notification = self.get_global_parameter("message_intercepted_audio_id")
+        # NO NOTIFICATION - self.add_radio_message(audio_notification)
 
         self._update_external_contacts(msg)
         self.set_new_message_notification(msg["recipient_emails"], new_status=True)
@@ -1400,12 +1473,6 @@ class Chatroom(BaseDataManager):
 
         record = PersistentDict(time=datetime.utcnow(), username=self.user.username, message=message)
         self.data["chatroom_messages"].append(record)
-        if self.user.username!="master" and not self.data["character_properties"][self.user.username].has_key("color"):
-            while(True):
-                new_color = color.genarate_color()
-                if not new_color in self.get_all_colors():
-                    self.data["character_properties"][self.user.username]["color"] = new_color
-                    break
             
     def get_all_colors(self):
         all_colors = []
@@ -1468,10 +1535,9 @@ class ActionScheduling(BaseDataManager):
                 assert hasattr(self, action["function"])
             utilities.check_dictionary_with_template(action, scheduled_action_reference)
 
-    @transaction_watcher
-    def process_periodic_tasks(self, **kwargs):
 
-        report = super(ActionScheduling, self).process_periodic_tasks(**kwargs)
+    def _process_periodic_tasks(self, report):
+        super(ActionScheduling, self)._process_periodic_tasks(report)
 
         last_index_processed = None
         utcnow = datetime.utcnow()
@@ -1499,7 +1565,6 @@ class ActionScheduling(BaseDataManager):
         else:
             report["actions_executed"] = 0
 
-        return report
 
 
 
@@ -1519,14 +1584,13 @@ class ActionScheduling(BaseDataManager):
         #print >>sys.stderr, "REGISTERING ONE SHOT  ", function
 
         if isinstance(function, basestring):
+            #print ("SEARCHING", function, "IN", sorted(dir(self)))
             if not hasattr(self, function) or not hasattr(getattr(self, function), '__call__'):
-                raise TypeError(_(
-                    "Only strings representing DataManager methods can be scheduled as delayed actions, not %(function)s") % SDICT(
-                    function=function))
+                raise TypeError(_("Only strings representing DataManager methods can be scheduled as delayed actions, not %(function)s") % SDICT(
+                                    function=function))
         elif not hasattr(function, '__call__'):
-            raise TypeError(
-                _("You can only register a callable object as a delayed action, not a %(function)r") % SDICT(
-                    function=function))
+            raise TypeError(_("You can only register a callable object as a delayed action, not a %(function)r") % SDICT(
+                              function=function))
 
         if isinstance(date_or_delay_mn, datetime):
             time = date_or_delay_mn
@@ -1597,7 +1661,7 @@ class PersonalFiles(BaseDataManager):
 
         self.log_game_event(_noop("Encrypted folder '%(folder)s/%(password)s' accessed by user '%(username)s'."),
                              PersistentDict(folder=folder, password=password, username=username),
-                             url=None, is_master_action=self.is_master(username))
+                             url=None)
 
         return decrypted_files
 
@@ -1762,7 +1826,7 @@ class MoneyItemsOwnership(BaseDataManager):
 
 
     @transaction_watcher
-    def transfer_money_between_characters(self, from_name, to_name, amount, is_master_action=False):
+    def transfer_money_between_characters(self, from_name, to_name, amount):
         amount = int(amount) # might raise error
         if amount <= 0:
             raise UsageError(_("Money amount must be positive"))
@@ -1790,8 +1854,7 @@ class MoneyItemsOwnership(BaseDataManager):
 
         self.log_game_event(_noop("Bank operation: %(amount)s kashes transferred from %(from_name)s to %(to_name)s."),
                              PersistentDict(amount=amount, from_name=from_name, to_name=to_name),
-                             url=None,
-                             is_master_action=is_master_action)
+                             url=None)
 
 
     @transaction_watcher
@@ -1843,23 +1906,23 @@ class MoneyItemsOwnership(BaseDataManager):
 
 
     @readonly_method
-    def get_available_items_for_user_domain(self, username):
+    def get_available_items_for_user(self, username):
         if username is None or self.is_master(username):
             available_items = self.get_items_for_sale()
         else:
-            all_domain_users = [username] # FIXME - which objects should we include?
+            all_sharing_users = [username] # FIXME - which objects should we include?
             # user_domain = self.get_character_properties(username)["domain"]
             # all_domain_users = [name for (name, value) in self.get_character_sets().items() if
             #                    value["domain"] == user_domain]
             available_items = PersistentDict([(name, value) for (name, value)
                                               in self.get_items_for_sale().items()
-                                              if value['owner'] in all_domain_users])
+                                              if value['owner'] in all_sharing_users])
         return available_items
 
 
 
     @transaction_watcher
-    def transfer_gems_between_characters(self, from_name, to_name, gems_choices, is_master_action=False):
+    def transfer_gems_between_characters(self, from_name, to_name, gems_choices):
         sender_char = self.data["character_properties"][from_name] # may raise key error
         recipient_char = self.data["character_properties"][to_name] # may raise key error
         gems_choices = PersistentList(gems_choices)
@@ -1880,8 +1943,7 @@ class MoneyItemsOwnership(BaseDataManager):
 
         self.log_game_event(_noop("Gems transferred from %(from_name)s to %(to_name)s : %(gems_choices)s."),
                              PersistentDict(from_name=from_name, to_name=to_name, gems_choices=gems_choices),
-                             url=None,
-                             is_master_action=is_master_action)
+                             url=None)
 
 
 
@@ -1890,7 +1952,6 @@ class MoneyItemsOwnership(BaseDataManager):
 
 @register_module
 class Items3dViewing(BaseDataManager):
-
 
 
     def _load_initial_data(self, **kwargs):
@@ -1969,10 +2030,11 @@ class SpecialAbilities(BaseDataManager):
             ability.check_data_sanity()
 
 
-    def _notify_player_change(self, **kwargs):
-        super(SpecialAbilities, self)._notify_player_change(**kwargs)
+    def _notify_user_change(self, username, **kwargs):
+        super(SpecialAbilities, self)._notify_user_change(username, **kwargs)
 
         self.abilities = SpecialAbilities.AbilityLazyLoader(self) # important - because of weak refs to old data!!
+
 
     @readonly_method
     def get_ability_data(self, ability_name):

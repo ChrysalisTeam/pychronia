@@ -50,23 +50,29 @@ class HouseLockingAbility(AbstractAbilityHandler):
         else:
             self.user.add_error(_("Doors are already locked."))
             return False
-
-
+    
+        assert False, "lock_house_doors"
+ 
+ 
     @transaction_watcher
     def try_unlocking_house_doors(self, password):
 
         expected_password = self.get_ability_parameter("house_doors_password")
-
-        if password.strip() == expected_password.strip():
-            self.settings["house_doors_are_open"] = True
-            self.user.add_message(_("House doors successfully unlocked."))
-            self.log_game_event(_noop("House doors have been successfully unlocked with password."))
-            return True
+        
+        if not self.are_house_doors_open():
+            if password.strip() == expected_password.strip():
+                self.settings["house_doors_are_open"] = True
+                self.user.add_message(_("House doors successfully unlocked."))
+                self.log_game_event(_noop("House doors have been successfully unlocked with password."))
+                return True
+            else:
+                self.user.add_error(_("Wrong password."))
+                return False
         else:
-            self.user.add_error(_("Wrong password."))
-            return False
-
-
+            self.user.add_error(_("Doors are already unlocked."))
+            return False            
+        
+        assert False, "try_unlocking_house_doors"
 
 
     @classmethod

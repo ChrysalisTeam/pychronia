@@ -32,12 +32,16 @@ def action_failure_handler(request, success_message=_lazy("Operation successful.
         # nothing in __enter__()
         yield None
     except UsageError, e:
+        print (">YYYY", repr(e))
         user.add_error(unicode(e))
         if isinstance(e, AbnormalUsageError):
             logging.critical(unicode(e), exc_info=True)
     except Exception, e:
+        print (">OOOOOOO", repr(e))
+        import traceback
+        traceback.print_exc()
         # we must locate this serious error, as often (eg. assertion errors) there is no specific message attached...
-        msg = _("Unexpected exception caught in action_failure_handler")
+        msg = _("Unexpected exception caught in action_failure_handler - %r") % e
         logging.critical(msg, exc_info=True)
         if config.DEBUG:
             user.add_error(msg)
@@ -48,14 +52,23 @@ def action_failure_handler(request, success_message=_lazy("Operation successful.
             user.add_message(success_message)
 
 
-
-
-def SDICT(**kwargs):
-    mydict = collections.defaultdict(lambda: "<UNKNOWN>") # for safe string substitutions
-    for (name, value) in kwargs.items():
-        mydict[name] = value # we mimic the normal dict constructor
-    return mydict
-
+class SDICT(dict):
+    def __getitem__(self, name):
+        try:
+            return dict.__getitem__(self, name)
+        except KeyError:
+            logging.critical("Wrong key %s looked up in dict %r", name, self)
+            return "<UNKNOWN>"
+        
+    ''' obsolete
+    def SDICT(**kwargs):
+        import collections
+        # TODO - log errors when wrong lookup happens!!!
+        mydict = collections.defaultdict(lambda: "<UNKNOWN>") # for safe string substitutions
+        for (name, value) in kwargs.items():
+            mydict[name] = value # we mimic the normal dict constructor
+        return mydict
+    '''
 
 @contextlib.contextmanager
 def exception_swallower():

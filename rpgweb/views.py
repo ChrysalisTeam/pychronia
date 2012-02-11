@@ -26,6 +26,7 @@ from .authentication import game_player_required, game_master_required, game_aut
         authenticate_with_credentials, logout_session
 import datamanager as dm_module
 from .datamanager import action_failure_handler, PermissionError
+from . import abilities # IMPORTANT to register all abilities/permissions
 from rpgweb.utilities import mediaplayers
 
 
@@ -33,7 +34,7 @@ from rpgweb.utilities import mediaplayers
 
 
 
-
+ 
 
 def ability(request, ability_name):
 
@@ -43,14 +44,16 @@ def ability(request, ability_name):
     # (to avoid meaningless lazy initialization of private ability data)
     ability_class = request.datamanager.ABILITIES_REGISTRY.get(ability_name, None)
     if not ability_class:
+        print(ability_name, "not in", request.datamanager.ABILITIES_REGISTRY)
         raise Http404
+    """
     try:
         ability_class.check_permissions(user)
     except PermissionError, e:
         user.add_error(unicode(e))
         # todo - put default page for abilities here
         raise Http404 ## temporary ##
-
+    """
     ability_handler = getattr(request.datamanager.abilities, ability_name) # instantiation here
 
     response = ability_handler.process_request(request)
@@ -420,10 +423,11 @@ def all_queued_messages(request, template_name='messaging/messages.html'):
                             context_instance=RequestContext(request))
 
 
-@game_player_required(permission="manage_wiretaps")
+@game_authenticated_required
 def intercepted_messages(request, template_name='messaging/messages.html'):
-
-    messages = request.datamanager.get_intercepted_messages() # TODO - make per-player !!!
+    
+    username = request.datamanager.user.username
+    messages = request.datamanager.get_intercepted_messages(username)
 
     messages = list(reversed(messages)) # most recent first
 
@@ -667,8 +671,7 @@ def view_characters(request, template_name='generic_operations/view_characters.h
                 with action_failure_handler(request, _("Money transfer successful.")):
                     request.datamanager.transfer_money_between_characters(sender,
                                                                   recipient,
-                                                                  money_form.cleaned_data['amount'],
-                                                                  is_master_action=user.is_master) # amount can only be positive here
+                                                                  money_form.cleaned_data['amount']) # amount can only be positive here
             else:
                 user.add_error(_("Money transfer failed - invalid parameters."))
 
@@ -687,8 +690,7 @@ def view_characters(request, template_name='generic_operations/view_characters.h
                     selected_gems = [int(gem) for gem in gems_form.cleaned_data['gems_choices']]
                     request.datamanager.transfer_gems_between_characters(sender,
                                                                   request.datamanager.get_username_from_official_name(gems_form.cleaned_data['recipient_name']),
-                                                                  selected_gems,
-                                                                  is_master_action=user.is_master)
+                                                                  selected_gems)
             else:
                 user.add_error(_("Gems transfer failed - invalid parameters."))
 
@@ -756,12 +758,12 @@ def items_slideshow(request, template_name='generic_operations/items_slideshow.h
 
     if user.is_authenticated:
         page_title = _("Team Items")
-        items = request.datamanager.get_available_items_for_user_domain(user.username)
+        items = request.datamanager.get_available_items_for_user(user.username)
         items_3D_settings = request.datamanager.get_items_3d_settings()
     else:
         page_title = _("Auction Items")
-        items = request.datamanager.get_available_items_for_user_domain(None) # all iteams
-        items_3D_settings = {} # IMPORTANT
+        items = request.datamanager.get_available_items_for_user(None) # all items
+        items_3D_settings = {} # IMPORTANT - no access to 3D views here
 
     sorted_items = [(key, items[key]) for key in sorted(items.keys())]
 
@@ -779,7 +781,7 @@ def item_3d_view(request, item, template_name='utilities/item_3d_viewer.html'):
 
     user = request.datamanager.user
 
-    available_items = request.datamanager.get_available_items_for_user_domain(user.username)
+    available_items = request.datamanager.get_available_items_for_user(user.username)
 
     if item not in available_items.keys():
         raise Http404
@@ -926,11 +928,11 @@ def wiretapping_management(request, template_name='specific_operations/wiretappi
 
 
 @game_player_required(permission="manage_scans")
-def scanning_management(request, template_name='specific_operations/scanning_management.html'):
+def __scanning_management(request, template_name='specific_operations/scanning_management.html'):
 
     user = request.datamanager.user
     form = None
-    available_items = request.datamanager.get_available_items_for_user_domain(user.username)
+    available_items = request.datamanager.get_available_items_for_user(user.username)
 
     # we process scanning management operations
     if request.method == "POST":
@@ -962,7 +964,7 @@ def scanning_management(request, template_name='specific_operations/scanning_man
 
 
 @game_player_required(permission="manage_teleportations")
-def teldorian_teleportations(request, template_name='specific_operations/armed_interventions.html'):
+def __teldorian_teleportations(request, template_name='specific_operations/armed_interventions.html'):
 
     user = request.datamanager.user
     form = None
@@ -1019,7 +1021,7 @@ def teldorian_teleportations(request, template_name='specific_operations/armed_i
 
 
 @game_player_required(permission="manage_agents")
-def mercenary_commandos(request, template_name='specific_operations/armed_interventions.html'):
+def __mercenary_commandos(request, template_name='specific_operations/armed_interventions.html'):
 
     user = request.datamanager.user
 
@@ -1067,7 +1069,7 @@ def mercenary_commandos(request, template_name='specific_operations/armed_interv
 
 
 @game_player_required(permission="launch_attacks")
-def acharith_attacks(request, template_name='specific_operations/armed_interventions.html'):
+def __acharith_attacks(request, template_name='specific_operations/armed_interventions.html'):
 
     user = request.datamanager.user
 
@@ -1110,7 +1112,7 @@ def acharith_attacks(request, template_name='specific_operations/armed_intervent
 
 
 @game_player_required(permission="launch_telecom_investigations")
-def telecom_investigation(request, template_name='specific_operations/telecom_investigation.html'):
+def __telecom_investigation(request, template_name='specific_operations/telecom_investigation.html'):
 
     user = request.datamanager.user
     form = None
@@ -1262,7 +1264,7 @@ def view_media(request, template_name='utilities/view_media.html'):
 @game_master_required
 def game_events(request, template_name='administration/game_events.html'):
 
-    events = request.datamanager.get_game_events() # keys : time, message, is_master_action
+    events = request.datamanager.get_game_events() # keys : time, message, username
 
     trans_events = []
     for event in events:
@@ -1301,12 +1303,14 @@ def personal_radio_messages_listing(request, template_name='generic_operations/p
         is_master = False
 
         character_properties = request.datamanager.get_character_properties(user.username)
-        domain_properties = request.datamanager.get_domain_properties(character_properties["domains"])
 
         new_messages_text = request.datamanager.get_audio_message_properties(character_properties["new_messages_notification"])["text"]
+        
+        # FIXME ALL BUGGY
+        #domain_properties = request.datamanager.get_domain_properties(character_properties["domain"])
         #request_for_report_text = request.datamanager.get_audio_message_properties(domain_properties["request_for_report"])["text"]
-        victory_text = request.datamanager.get_audio_message_properties(domain_properties["victory"])["text"]
-        defeat_text = request.datamanager.get_audio_message_properties(domain_properties["defeat"])["text"]
+        victory_text = "VICTORYYY" # request.datamanager.get_audio_message_properties(domain_properties["victory"])["text"]
+        defeat_text = "DEFEAAAT" ## request.datamanager.get_audio_message_properties(domain_properties["defeat"])["text"]
 
     return render_to_response(template_name,
                             {
@@ -1500,12 +1504,62 @@ def manage_databases(request, template_name='administration/database_management.
                             context_instance=RequestContext(request))
 
 
+@game_master_required
+def manage_characters(request, template_name='administration/character_management.html'):
 
-
-
-
-
-
+    domain_choices = request.datamanager.build_domain_select_choices()
+    permissions_choices = request.datamanager.build_permission_select_choices()
+    
+    form = None
+    if request.method == "POST":
+        form = forms.CharacterForm(data=request.POST,
+                                   allegiances_choices=domain_choices,
+                                   permissions_choices=permissions_choices,
+                                   prefix=None)
+        
+        if form.is_valid():
+            target_username = form.cleaned_data["target_username"]
+            allegiances = form.cleaned_data["allegiances"]
+            permissions = form.cleaned_data["permissions"]
+            real_life_identity = form.cleaned_data["real_life_identity"]
+            real_life_email = form.cleaned_data["real_life_email"]
+                         
+            with action_failure_handler(request, _("Character %s successfully updated.") % target_username):    
+                request.datamanager.update_allegiances(username=target_username,
+                                                       allegiances=allegiances)
+                request.datamanager.update_permissions(username=target_username,
+                                                       permissions=permissions)
+                request.datamanager.update_real_life_data(username=target_username, 
+                                                            real_life_identity=real_life_identity, 
+                                                            real_life_email=real_life_email)
+        else:
+            request.datamanager.user.add_error(_("Wrong data provided (see errors below)"))
+            
+    character_forms = []
+    
+    for (username, data) in sorted(request.datamanager.get_character_sets().items()):
+        #print ("AZZZZ", form["target_username"].value(), username)
+        if form and form["target_username"].value() == username:
+            print (" REUSING FOR", username)
+            f = form
+        else:
+            f = forms.CharacterForm(
+                                    allegiances_choices=domain_choices,
+                                    permissions_choices=permissions_choices,
+                                    prefix=None,
+                                    initial=dict(target_username=username,
+                                                 allegiances=data["domains"], 
+                                                 permissions=data["permissions"],
+                                                 real_life_identity=data["real_life_identity"], 
+                                                 real_life_email=data["real_life_email"])
+                                    )
+        character_forms.append(f)
+        
+    return render_to_response(template_name,
+                                dict(page_title=_("Manage characters"),
+                                     character_forms=character_forms),
+                                context_instance=RequestContext(request))
+    
 
 
 

@@ -93,8 +93,7 @@ def process_scanning_submission(self, username, item_name, description): # addit
 
         self.log_game_event(_noop("Automated scanning request sent by %(username)s for item '%(item_title)s'."),
                              PersistentDict(username=username, item_title=item_title),
-                             url=self.get_message_viewer_url(msg_id),
-                             is_master_action=(self.is_master(username)))
+                             url=self.get_message_viewer_url(msg_id)))
 
     else:
         subject = _("Scanning Request - CF description")
@@ -105,7 +104,6 @@ def process_scanning_submission(self, username, item_name, description): # addit
 
         self.log_game_event(_noop("Manual scanning request sent by %(username)s with description."),
                              PersistentDict(username=username),
-                             url=self.get_message_viewer_url(msg_id),
-                             is_master_action=(self.is_master(username)))
+                             url=self.get_message_viewer_url(msg_id)))
 
     return msg_id
