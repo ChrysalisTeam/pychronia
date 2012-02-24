@@ -189,7 +189,6 @@ def ajax_chat(request):
                                "color": color,
                                "message": msg_format % data})
             previous_msg_timestamp = msg["time"]
-            
         all_data = {"slice_index": new_slice_index,
                     "messages": text_lines
                 }
@@ -314,7 +313,6 @@ def inbox(request, template_name='messaging/messages.html'):
         messages = request.datamanager.get_received_messages(request.datamanager.get_character_email(user.username),
                                                              reset_notification=True)
         remove_to = True
-
 
     messages = list(reversed(messages)) # most recent first
 

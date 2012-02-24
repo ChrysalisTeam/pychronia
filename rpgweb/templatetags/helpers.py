@@ -83,7 +83,6 @@ def game_color(username):
 register.filter('game_color', game_color)
 
 
-
 """
 def preformat(value):
     "

@@ -242,7 +242,7 @@ character_properties:
         real_life_identity: "John Doe"
         real_life_email: shalk@gmail.com
         description : "XXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXX XXXXXXXX"
-        character_color : "#33FFFF"
+        character_color : "#339933"
         
     guy3:
         domains: []
@@ -272,7 +272,7 @@ character_properties:
         real_life_identity: "John Doe"
         real_life_email: belez2@gmail.com
         description : "XXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXX XXXXXXXX"
-        character_color : "#33FF33"
+        character_color : "#00CCFF"
 
 
 audio_messages:

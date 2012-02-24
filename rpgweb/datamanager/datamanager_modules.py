@@ -159,7 +159,10 @@ class CharacterHandling(BaseDataManager): # TODO REFINE
             
     @readonly_method
     def get_character_color(self, username):
-        return self.data["character_properties"][username]["character_color"]
+		if self.data["character_properties"][username].has_key("character_color"):
+			return self.data["character_properties"][username]["character_color"]
+		else:
+			return "black"
     
     @readonly_method
     def get_character_sets(self):
@@ -1486,13 +1489,7 @@ class Chatroom(BaseDataManager):
 
         record = PersistentDict(time=datetime.utcnow(), username=self.user.username, message=message)
         self.data["chatroom_messages"].append(record)
-            
-    def get_all_colors(self):
-        all_colors = []
-        for key, value in self.data["character_properties"].items():
-            if value.has_key("color"):
-                all_colors.append(value["color"])
-        return all_colors
+
         
     @readonly_method
     def get_chatroom_messages(self, from_slice_index): # from_slice_index might be negative
