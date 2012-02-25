@@ -1496,8 +1496,8 @@ def manage_databases(request, template_name='administration/database_management.
             with action_failure_handler(request, _("ZODB file packed.")):
                 request.datamanager.pack_database(days=1) # safety measure - take at least one day of gap !
 
-    formatted_data = request.datamanager.dump_zope_database(width=60, indent=4, default_flow_style=False, canonical=False, allow_unicode=True)
-
+    formatted_data = request.datamanager.dump_zope_database()
+  
     game_is_started = request.datamanager.is_game_started() # we refresh it
     return render_to_response(template_name,
                             {

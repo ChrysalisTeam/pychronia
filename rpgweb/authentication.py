@@ -69,7 +69,15 @@ def logout_session(request):
 def _redirection_to_login(request):
     return HttpResponseRedirect(reverse("rpgweb.views.login", kwargs=dict(game_instance_id=request.datamanager.game_instance_id)))
 
-
+'''
+@decorator
+def basic_access_required(func, request, *args, **kwargs):
+    """
+    Decorator to apply basic filtering to views, depending on the global availability of these views and their menus.
+    """
+    if not request.datamanager.user.is_master:
+        view_is_allowed = request.datamanager.view_is_allowed
+'''
 
 def game_player_required(object=None, permission=None):
     """
@@ -81,13 +89,13 @@ def game_player_required(object=None, permission=None):
 
     def decorate(func):
         @decorator
-        def wrapper(func, request, *args, **kwargs):
+        def player_auth_wrapper(func, request, *args, **kwargs):
             user = request.datamanager.user
             if not user.is_character or (permission and not user.has_permission(permission)):
                 user.add_error(_("Access reserved to privileged members."))
                 return _redirection_to_login(request)
             return func(request, *args, **kwargs)
-        wrapped = wrapper(func)
+        wrapped = player_auth_wrapper(func)
         wrapped.game_permission_required = permission
         return wrapped
     return decorate(object) if object else decorate
@@ -126,25 +134,6 @@ def game_authenticated_required(func):
     return wrapped
 
 
-
-
-def game_player_authentication(request):
-    """
-    Template context manager which adds "player" to the template context.
-    """
-
-    if hasattr(request, "datamanager"):
-
-        online_users = [request.datamanager.get_official_name_from_username(username)
-                        for username in request.datamanager.get_online_users()]
-
-        return {'game_instance_id': request.datamanager.game_instance_id,
-                'user': request.datamanager.user,
-                'game_is_started': request.datamanager.get_global_parameter("game_is_started"),
-                'online_users': online_users}
-    else:
-        return {} # not in valid game instance
-    
     
     
     
