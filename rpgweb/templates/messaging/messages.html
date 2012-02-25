@@ -121,9 +121,9 @@
                 </p>
                 
                 
-                <p style="color:{% usercolor message.sender_email %};">
-                    {{ message.body }}
-                </p>
+                <div style="color:{% usercolor message.sender_email %};">
+                    {{ message.body|restructuredtext }}
+                </div>
                 
                 {% if message.attachment %}
                     <br/>
