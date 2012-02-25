@@ -731,8 +731,8 @@ def view_characters(request, template_name='generic_operations/view_characters.h
     if user.is_master:
         show_official_identities = True
     else:
-        domain = request.datamanager.get_character_properties(user.username)["domains"]
-        show_official_identities = request.datamanager.get_domain_properties(domain)["show_official_identities"]
+		domain = request.datamanager.get_character_properties(user.username)["domains"][0]
+		show_official_identities = request.datamanager.get_domain_properties(domain)["show_official_identities"]
     return render_to_response(template_name,
                                 {
                                  'page_title': _("Account Management"),

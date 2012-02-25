@@ -24,8 +24,7 @@ def usercolor(context, username):
 	if "@" in username:
 		username = username.split("@")[0]
 	request = context.get('request')
-	color = request.datamanager.get_character_color(username)
-	return color
+	return request.datamanager.get_character_color(username)
 
 def threefirstletters(value):
     #custom template tag used like so:
