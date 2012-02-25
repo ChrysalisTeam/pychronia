@@ -159,10 +159,9 @@ class CharacterHandling(BaseDataManager): # TODO REFINE
             
     @readonly_method
     def get_character_color(self, username):
-		if self.data["character_properties"][username].has_key("character_color"):
+		if self.data["character_properties"].has_key(username) and self.data["character_properties"][username].has_key("character_color"):
 			return self.data["character_properties"][username]["character_color"]
-		else:
-			return "black"
+		return "black"
     
     @readonly_method
     def get_character_sets(self):

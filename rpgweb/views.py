@@ -315,7 +315,7 @@ def inbox(request, template_name='messaging/messages.html'):
         remove_to = True
 
     messages = list(reversed(messages)) # most recent first
-
+	
     return render_to_response(template_name,
                             {
                              'page_title': _("Messages Received"),

@@ -90,7 +90,7 @@
                 {% if not remove_from %}
                 <tr>
                 <td><strong>{% trans "From:" %}</strong></td>
-                <td>{{ message.sender_email }}</td>
+                <td style="color:{% usercolor message.sender_email %};">{{ message.sender_email }}</td>
                 </tr>  
                 {% endif %}
                 
@@ -108,7 +108,7 @@
                 </table>
                 
                 
-                <p>
+                <p style="color:{% usercolor message.sender_email %};">
                     <strong>
                         {% if user.is_master %}
                             <!-- only for game master -->
@@ -121,8 +121,8 @@
                 </p>
                 
                 
-                <p>
-                    {{ message.body|restructuredtext }}
+                <p style="color:{% usercolor message.sender_email %};">
+                    {{ message.body }}
                 </p>
                 
                 {% if message.attachment %}

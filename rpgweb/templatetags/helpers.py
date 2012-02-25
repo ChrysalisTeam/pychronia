@@ -18,7 +18,15 @@ def gameurl(parser, token):
     token.contents += " game_instance_id=game_instance_id" # we inject template var "game instance id"
     url_node = defaulttags.url(parser, token) 
     return url_node
-    
+
+@register.simple_tag(takes_context=True)
+def usercolor(context, username):
+	if "@" in username:
+		username = username.split("@")[0]
+	request = context.get('request')
+	color = request.datamanager.get_character_color(username)
+	print (">>>>>color>>>>>>", color, username)
+	return color
 
 def threefirstletters(value):
     #custom template tag used like so:
