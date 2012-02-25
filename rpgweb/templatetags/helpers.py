@@ -25,7 +25,6 @@ def usercolor(context, username):
 		username = username.split("@")[0]
 	request = context.get('request')
 	color = request.datamanager.get_character_color(username)
-	print (">>>>>color>>>>>>", color, username)
 	return color
 
 def threefirstletters(value):
