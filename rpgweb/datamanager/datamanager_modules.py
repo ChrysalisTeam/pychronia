@@ -146,6 +146,7 @@ class CharacterHandling(BaseDataManager): # TODO REFINE
 
             utilities.check_is_slug(name)
             assert name not in reserved_names
+            assert "@" not in name # let's not mess with email addresses...
 
             utilities.check_is_string(character["description"])
             utilities.check_is_string(character["official_name"])
@@ -158,10 +159,10 @@ class CharacterHandling(BaseDataManager): # TODO REFINE
             utilities.check_no_duplicates(identities)
             
     @readonly_method
-    def get_character_color(self, username):
-		if self.data["character_properties"].has_key(username) and self.data["character_properties"][username].has_key("character_color"):
-			return self.data["character_properties"][username]["character_color"]
-		return "black"
+    def get_character_color_or_none(self, username):
+        if username and self.data["character_properties"].has_key(username):
+            return self.data["character_properties"][username]["character_color"]
+        return None
     
     @readonly_method
     def get_character_sets(self):
@@ -590,7 +591,7 @@ class GameInstructions(BaseDataManager):
                               global_introduction=global_introduction,
                               team_introduction=team_introduction)
 
-
+ 
 
 
 

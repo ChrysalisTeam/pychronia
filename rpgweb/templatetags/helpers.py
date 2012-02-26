@@ -19,13 +19,18 @@ def gameurl(parser, token):
     url_node = defaulttags.url(parser, token) 
     return url_node
 
-@register.simple_tag(takes_context=True)
-def usercolor(context, username):
-	if "@" in username:
-		username = username.split("@")[0]
-	request = context.get('request')
-	return request.datamanager.get_character_color(username)
 
+@register.simple_tag(takes_context=True)
+def usercolor(context, username_or_email):
+    request = context.get('request')
+    if "@" in username_or_email:
+        username = request.datamanager.get_character_or_none_from_email(username_or_email)
+    else: 
+        username = username_or_email
+    color = request.datamanager.get_character_color_or_none(username)
+    return color or "black" # default color
+
+ 
 def threefirstletters(value):
     #custom template tag used like so:
     #{{dictionary|dict_get:var}}

@@ -7,6 +7,8 @@ Make access error msgs persist until login page, when redirecting !!
 
 Add next argument to login page !!!!
 
+ADD unittests for template helpers !!!
+
 BUG html injection dans chat.js ????
 
 Add colors specific to each chatter + "system" chatter

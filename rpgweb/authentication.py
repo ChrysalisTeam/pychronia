@@ -193,14 +193,11 @@ def register_view(view_callable=None,
     return factory
 
 
-
-
-
-'''
 def _redirection_to_login(request):
     return HttpResponseRedirect(reverse("rpgweb.views.login", kwargs=dict(game_instance_id=request.datamanager.game_instance_id)))
 
 
+'''
 @decorator
 def basic_access_required(func, request, *args, **kwargs):
     """
@@ -208,6 +205,7 @@ def basic_access_required(func, request, *args, **kwargs):
     """
     if not request.datamanager.user.is_master:
         view_is_allowed = request.datamanager.view_is_allowed
+'''
 
 
 def game_player_required(object=None, permission=None):
@@ -263,12 +261,4 @@ def game_authenticated_required(func):
     wrapped = wrapper(func)
     wrapped.game_authenticated_required = True
     return wrapped
-'''
-
-    
-    
-    
-    
-    
-    
     

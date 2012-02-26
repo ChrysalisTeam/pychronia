@@ -97,10 +97,10 @@ INSTALLED_APPS = [
 ]
 
 try:
-    import sentryt.client
+    import sentry.client
     INSTALLED_APPS.append('sentry.client')
 except ImportError:
-    pass # sentry is OPTIONAL
+    pass # sentry is optional
 
 
 ROOT_URLCONF = 'rpgweb.tests._test_urls'
