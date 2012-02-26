@@ -113,7 +113,12 @@ class GameView(object):
     
         else:
             access = access if access is not _undefined else UserAccess.master
-            permissions = permissions if permissions is not _undefined else []
+            if permissions is _undefined:
+                permissions = []
+            elif isinstance(permissions, basestring):
+                permissions = [permissions]
+            else:
+                pass # OK
             if always_available is _undefined:
                 if access == UserAccess.master:
                     always_available = True 
