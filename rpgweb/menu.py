@@ -142,7 +142,7 @@ def game_menu_generator(request):
     menu_entries += allowed_abilities #HERE TODO - use submenu instead
     '''
 
-    return {'menus': menus}
+    return menus
 
 
 

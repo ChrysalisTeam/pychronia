@@ -99,8 +99,8 @@ final_urlpatterns = patterns('rpgweb.views',
 
 # root urlpatterns of rpgweb application
 urlpatterns = patterns('',
-                       
                     (r'^(?P<game_instance_id>\w+)/', include(final_urlpatterns)),
+                    (r'^', include(final_urlpatterns), {"game_instance_id": "DEMO"}), # default game instance, just as a demo
 )
 
 
