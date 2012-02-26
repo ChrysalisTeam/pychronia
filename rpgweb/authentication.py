@@ -4,7 +4,8 @@ from __future__ import unicode_literals
 
 from rpgweb.common import *
 from rpgweb.datamanager import UsageError, GameDataManager
-from django.http import Http404, HttpResponseRedirect, HttpResponse
+from django.http import Http404, HttpResponseRedirect, HttpResponse,\
+    HttpResponseForbidden
 
 SESSION_TICKET_KEY = 'rpgweb_session_ticket'
 SESSION_TIMESTAMP_KEY = 'rpgweb_session_timestamp'
@@ -63,8 +64,11 @@ def logout_session(request):
 
 
 
-
-
+class AccessResult: # result of global computation
+    globally_forbidden = "globally_forbidden" # eg. view disabled by the master
+    authentication_required = "needs_authentication" # eg. wrong kind of user logged in
+    permission_required = "permission_required" # character permissions are lacking
+    available = "available" # visible and executable
 
 class UserAccess:
     anonymous = "anonymous"
@@ -139,6 +143,7 @@ class GameView(object):
         self._view_callable = view_callable
             
  
+ 
     def _redirect_to_login(self, request):
         # uses HTTP code for TEMPORARY redirection
         return HttpResponseRedirect(reverse("rpgweb.views.login", kwargs=dict(game_instance_id=request.datamanager.game_instance_id)))
@@ -146,38 +151,46 @@ class GameView(object):
     def _global_access_denied(self, request):
         return HttpResponseForbidden(_("Access denied")) # TODO FIXME - provide a proper template and message !!
     
-    def __call__(self, request, *args, **kwargs):
+    def check_access(self, request):
         
         user = request.datamanager.user
         
         if not self.always_available:
-            pass # TODO HERE CHECK THAT THE VIEW IS WELL ACTIVATED BY THE GAME MASTER
+            pass # TODO HERE CHECK THAT THE VIEW IS WELL ACTIVATED BY THE GAME MASTER, if not gamemaster logged
+            # TODO return AccessResult.globally_forbidden
         
-        if self.access == UserAccess.master:
-            if not user.is_master:
-                user.add_error(_("Access reserved to administrators.")) # TODO - must persist to login screen
-                return self._redirect_to_login(request)
-        elif self.access == UserAccess.authenticated:
-            if not user.is_authenticated:
-                user.add_error(_("Access forbidden to anonymous user.")) # TODO - must persist to login screen
-                return self._redirect_to_login(request)
-        elif self.access == UserAccess.character:
-            if not user.is_character:
-                user.add_error(_("Access reserved to registered users.")) # TODO - must persist to login screen
-                return self._redirect_to_login(request)
-        else:
-            assert self.access == UserAccess.anonymous
-        
+        if ((self.access == UserAccess.master and not user.is_master) or
+            (self.access == UserAccess.authenticated and not user.is_authenticated) or
+            (self.access == UserAccess.character and not user.is_character)):
+            return AccessResult.authentication_required
+
         if self.permissions:
             assert self.access in (UserAccess.character, UserAccess.authenticated)
             for permission in self.permissions:
                 if not user.has_permission(permission):
-                    user.add_error(_("Access reserved to privileged members."))
-                    return self._redirect_to_login(request)                    
+                    return AccessResult.permission_required 
         
-        return self._view_callable(request, *args, **kwargs)
+        return AccessResult.available
     
     
+    def __call__(self, request, *args, **kwargs):
+        
+        user = request.datamanager.user
+        access_result = self.check_access(request)
+        
+        if access_result == AccessResult.available:
+            return self._view_callable(request, *args, **kwargs)
+        elif access_result == AccessResult.permission_required:
+            user.add_error(_("Access reserved to privileged members.")) # TODO - must persist to login screen
+            return self._global_access_denied(request)
+        elif access_result == AccessResult.authentication_required:
+            user.add_error(_("Authentication required.")) # could also mean a gamemaster tries to access a character-only section
+            return self._redirect_to_login(request)
+        else:
+            assert access_result == AccessResult.globally_forbidden
+            user.add_error(_("Access forbidden."))  # TODO - must persist to login screen
+            return self._global_access_denied(request)
+        
         
 def register_view(view_callable=None, 
                   access=_undefined, 
