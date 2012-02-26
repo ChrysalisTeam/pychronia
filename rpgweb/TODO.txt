@@ -1,4 +1,11 @@
+@register_view(access=UserAccess.authenticated) # not always available, so beware!! TODO FIXME ensure it's not displayed if not available!
+def item_3d_view(request, item, template_name='utilities/item_3d_viewer.html'):
 
+ADD standard 404 and 500 templates, + custom 403 etc.
+
+Make access error msgs persist until login page, when redirecting !!
+
+Add next argument to login page !!!!
 
 Add colors specific to each chatter + "system" chatter
 Launch pychecker or pylint of each file of rpgweb package

@@ -15,7 +15,8 @@ from contextlib import contextmanager
 from django.conf import settings
 from django.core.mail import send_mail
 from django.core.urlresolvers import reverse
-from django.http import Http404, HttpResponseRedirect, HttpResponse
+from django.http import Http404, HttpResponseRedirect, HttpResponse,\
+    HttpResponseForbidden
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.utils.html import escape
@@ -23,7 +24,7 @@ from django.utils.translation import ugettext as _, ugettext_lazy as _lazy, unge
 
 from .common import *
 from . import forms
-from .authentication import game_player_required, game_master_required, game_authenticated_required, \
+from .authentication import UserAccess, register_view, \
         authenticate_with_credentials, logout_session
 import datamanager as dm_module
 from .datamanager import action_failure_handler, PermissionError
@@ -31,12 +32,9 @@ from . import abilities # IMPORTANT to register all abilities/permissions
 from rpgweb.utilities import mediaplayers
 
 
- 
-
-
 
  
-
+# TODO - transform this into instance which exposes real views as attributes, wrapped with register_view !!!!
 def ability(request, ability_name):
 
     user = request.datamanager.user
@@ -61,8 +59,8 @@ def ability(request, ability_name):
 
     return response
 
-
-@game_master_required
+ 
+@register_view(access=UserAccess.master)
 def ajax_force_email_sending(request):
     # to be used by AJAX
     msg_id = request.GET.get("id", None)
@@ -72,35 +70,8 @@ def ajax_force_email_sending(request):
 
     return HttpResponse("OK")
     # in case of error, a "500" code will be returned
+ 
 
-
-@game_authenticated_required
-def ajax_set_message_read_state(request):
-    
-    # to be used by AJAX
-    msg_id = request.GET.get("id", None)
-    is_read = request.GET.get("is_read", None) == "1"
-    
-    user = request.datamanager.user
-    request.datamanager.set_message_read_state(user.username, msg_id, is_read)
-
-    return HttpResponse("OK")
-    # in case of error, a "500" code will be returned
-
-
-@game_player_required(permission="contact_djinns")
-def ajax_consult_djinns(request):
-    user = request.datamanager.user
-    message = request.REQUEST.get("message", "")
-    bot_name = request.REQUEST.get("djinn", None)
-
-    if bot_name not in request.datamanager.get_bot_names():
-        raise Http404
-
-    res = request.datamanager.get_bot_response(user.username, bot_name, message)
-    return HttpResponse(escape(res))  # IMPORTANT - escape xml entities !!
-
-    # in case of error, a "500" code will be returned
 
 
 # we don't put any security there, at worst a pirate might play with this and prevent playing
@@ -156,7 +127,7 @@ def ajax_domotics_security(request):
 
 
 
-@game_authenticated_required
+@register_view(access=UserAccess.authenticated)
 def ajax_chat(request):
 
     if request.method == "POST":
@@ -208,10 +179,10 @@ def ajax_chat(request):
 
 
 
-@game_authenticated_required # game master can view too
+@register_view(access=UserAccess.authenticated) # game master can view too
 def chatroom(request, template_name='generic_operations/chatroom.html'):
 
-     # TODO - move "chatting users" to ajax part, because it must be updated !!
+    # TODO - move "chatting users" to ajax part, because it must be updated !!
     chatting_users = [request.datamanager.get_official_name_from_username(username)
                       for username in request.datamanager.get_chatting_users()]
 
@@ -224,7 +195,7 @@ def chatroom(request, template_name='generic_operations/chatroom.html'):
 
 
 
-# NO SECURITY
+@register_view(access=UserAccess.anonymous)
 def domotics_security(request, template_name='generic_operations/domotics_security.html'):
 
     user = request.datamanager.user
@@ -258,7 +229,7 @@ def domotics_security(request, template_name='generic_operations/domotics_securi
 
 
 
-@game_authenticated_required
+@register_view(access=UserAccess.authenticated)
 def compose_message(request, template_name='messaging/compose.html'):
 
     user = request.datamanager.user
@@ -307,7 +278,7 @@ def compose_message(request, template_name='messaging/compose.html'):
                             context_instance=RequestContext(request))
 
 
-@game_authenticated_required
+@register_view(access=UserAccess.authenticated)
 def inbox(request, template_name='messaging/messages.html'):
 
     user = request.datamanager.user
@@ -334,8 +305,23 @@ def inbox(request, template_name='messaging/messages.html'):
                             },
                             context_instance=RequestContext(request))
 
+@register_view(attach_to=inbox)
+def ajax_set_message_read_state(request):
+    
+    # to be used by AJAX
+    msg_id = request.GET.get("id", None)
+    is_read = request.GET.get("is_read", None) == "1"
+    
+    user = request.datamanager.user
+    request.datamanager.set_message_read_state(user.username, msg_id, is_read)
 
-@game_authenticated_required
+    return HttpResponse("OK")
+    # in case of error, a "500" code will be returned
+
+
+
+
+@register_view(access=UserAccess.authenticated)
 def outbox(request, template_name='messaging/messages.html'):
 
     user = request.datamanager.user
@@ -360,7 +346,7 @@ def outbox(request, template_name='messaging/messages.html'):
                             },
                             context_instance=RequestContext(request))
 
-@game_master_required
+@register_view(access=UserAccess.master)
 def view_single_message(request, msg_id, template_name='messaging/single_message.html'):
 
     user = request.datamanager.user
@@ -391,7 +377,7 @@ def view_single_message(request, msg_id, template_name='messaging/single_message
 
 
 
-@game_master_required
+@register_view(access=UserAccess.master)
 def all_sent_messages(request, template_name='messaging/messages.html'):
 
     messages = request.datamanager.get_all_sent_messages()
@@ -409,7 +395,7 @@ def all_sent_messages(request, template_name='messaging/messages.html'):
                             context_instance=RequestContext(request))
 
 
-@game_master_required
+@register_view(access=UserAccess.master)
 def all_queued_messages(request, template_name='messaging/messages.html'):
 
     messages = request.datamanager.get_all_queued_messages()
@@ -427,7 +413,7 @@ def all_queued_messages(request, template_name='messaging/messages.html'):
                             context_instance=RequestContext(request))
 
 
-@game_authenticated_required
+@register_view(access=UserAccess.authenticated)
 def intercepted_messages(request, template_name='messaging/messages.html'):
     
     username = request.datamanager.user.username
@@ -447,7 +433,7 @@ def intercepted_messages(request, template_name='messaging/messages.html'):
 
 
 
-@game_master_required
+@register_view(access=UserAccess.master)
 def messages_templates(request, template_name='messaging/templates.html'):
 
     messages = request.datamanager.get_messages_templates().items()
@@ -462,7 +448,7 @@ def messages_templates(request, template_name='messaging/templates.html'):
                             context_instance=RequestContext(request))
 
 
-# no access restriction
+@register_view(access=UserAccess.anonymous)
 def secret_question(request, template_name='registration/secret_question.html'):
 
     secret_question = None
@@ -511,7 +497,7 @@ def secret_question(request, template_name='registration/secret_question.html'):
                             context_instance=RequestContext(request))
 
 
-# no access restriction
+@register_view(access=UserAccess.anonymous, always_available=True)
 def login(request, template_name='registration/login.html'):
 
     form = None
@@ -556,7 +542,7 @@ def login(request, template_name='registration/login.html'):
                                 context_instance=RequestContext(request))
 
 
-@game_authenticated_required
+@register_view(access=UserAccess.authenticated, always_available=True)
 def logout(request, template_name='registration/logout.html'):
 
     logout_session(request)
@@ -567,7 +553,7 @@ def logout(request, template_name='registration/logout.html'):
 
 
 
-@game_authenticated_required
+@register_view(access=UserAccess.authenticated, always_available=True)
 def homepage(request, template_name='generic_operations/homepage.html'):
 
     return render_to_response(template_name,
@@ -578,8 +564,7 @@ def homepage(request, template_name='generic_operations/homepage.html'):
                                 context_instance=RequestContext(request))
 
 
-
-# no need for protection
+@register_view(access=UserAccess.anonymous, always_available=True)
 def opening(request, template_name='generic_operations/opening.html'):
 
     return render_to_response(template_name,
@@ -589,7 +574,8 @@ def opening(request, template_name='generic_operations/opening.html'):
                                 },
                                 context_instance=RequestContext(request))
 
-# no need for protection
+
+@register_view(access=UserAccess.anonymous, always_available=True)
 def logo_animation(request, template_name='utilities/item_3d_viewer.html'):
     """
     These settings are heavily dependant on values hard-coded on templates (dimensions, colors...),
@@ -624,7 +610,7 @@ def logo_animation(request, template_name='utilities/item_3d_viewer.html'):
                                 context_instance=RequestContext(request))
 
 
-@game_player_required
+@register_view(access=UserAccess.character, always_available=True)
 def instructions(request, template_name='generic_operations/instructions.html'):
 
     user = request.datamanager.user
@@ -638,7 +624,7 @@ def instructions(request, template_name='generic_operations/instructions.html'):
                                 context_instance=RequestContext(request))
 
 
-@game_authenticated_required
+@register_view(access=UserAccess.authenticated)
 def view_characters(request, template_name='generic_operations/view_characters.html'):
 
     user = request.datamanager.user
@@ -756,7 +742,7 @@ def view_characters(request, template_name='generic_operations/view_characters.h
 
 
 
-
+@register_view(access=UserAccess.anonymous) # not always available
 def items_slideshow(request, template_name='generic_operations/items_slideshow.html'):
 
     user = request.datamanager.user
@@ -781,7 +767,7 @@ def items_slideshow(request, template_name='generic_operations/items_slideshow.h
                                 context_instance=RequestContext(request))
 
 
-@game_authenticated_required
+@register_view(access=UserAccess.authenticated) # not always available, so beware!! TODO FIXME ensure it's not displayed if not available!
 def item_3d_view(request, item, template_name='utilities/item_3d_viewer.html'):
 
     user = request.datamanager.user
@@ -812,7 +798,7 @@ def item_3d_view(request, item, template_name='utilities/item_3d_viewer.html'):
 
 
 
-@game_authenticated_required
+@register_view(access=UserAccess.authenticated)
 def view_sales(request, template_name='generic_operations/view_sales.html'):
 
     user = request.datamanager.user
@@ -869,7 +855,7 @@ def view_sales(request, template_name='generic_operations/view_sales.html'):
 
 
 '''
-@game_player_required(permission="manage_translations")
+@register_view(access=UserAccess.character)(permission="manage_translations")
 def translations_management(request,  template_name='specific_operations/translations_management.html'):
 
     form = None
@@ -899,7 +885,7 @@ def translations_management(request,  template_name='specific_operations/transla
 
 
 
-@game_player_required(permission="manage_wiretaps")
+@register_view(access=UserAccess.character)(permission="manage_wiretaps")
 def wiretapping_management(request, template_name='specific_operations/wiretapping_management.html'):
 
 
@@ -929,10 +915,10 @@ def wiretapping_management(request, template_name='specific_operations/wiretappi
                                 },
                                 context_instance=RequestContext(request))
 
-'''
 
 
-@game_player_required(permission="manage_scans")
+
+@register_view()#access=UserAccess.character)(permission="manage_scans")
 def __scanning_management(request, template_name='specific_operations/scanning_management.html'):
 
     user = request.datamanager.user
@@ -968,7 +954,7 @@ def __scanning_management(request, template_name='specific_operations/scanning_m
 
 
 
-@game_player_required(permission="manage_teleportations")
+@register_view(access=UserAccess.character)#(permission="manage_teleportations")
 def __teldorian_teleportations(request, template_name='specific_operations/armed_interventions.html'):
 
     user = request.datamanager.user
@@ -1025,7 +1011,7 @@ def __teldorian_teleportations(request, template_name='specific_operations/armed
 
 
 
-@game_player_required(permission="manage_agents")
+@register_view(access=UserAccess.character)#(permission="manage_agents")
 def __mercenary_commandos(request, template_name='specific_operations/armed_interventions.html'):
 
     user = request.datamanager.user
@@ -1073,7 +1059,7 @@ def __mercenary_commandos(request, template_name='specific_operations/armed_inte
 
 
 
-@game_player_required(permission="launch_attacks")
+@register_view(access=UserAccess.character)#(permission="launch_attacks")
 def __acharith_attacks(request, template_name='specific_operations/armed_interventions.html'):
 
     user = request.datamanager.user
@@ -1116,7 +1102,7 @@ def __acharith_attacks(request, template_name='specific_operations/armed_interve
 
 
 
-@game_player_required(permission="launch_telecom_investigations")
+@register_view(access=UserAccess.character)#(permission="launch_telecom_investigations")
 def __telecom_investigation(request, template_name='specific_operations/telecom_investigation.html'):
 
     user = request.datamanager.user
@@ -1161,13 +1147,12 @@ def __telecom_investigation(request, template_name='specific_operations/telecom_
                                  'investigation_impossible_msg': inquiry_impossible_msg,
                                 },
                                 context_instance=RequestContext(request))
+''' 
 
 
 
-
-# no access restriction here
+@register_view(access=UserAccess.anonymous, always_available=True) # links in emails must NEVER be broken
 def encrypted_folder(request, folder, entry_template_name="generic_operations/encryption_password.html", display_template_name='personal_folder.html'):
-
 
     if not request.datamanager.encrypted_folder_exists(folder):
         raise Http404
@@ -1217,7 +1202,7 @@ def encrypted_folder(request, folder, entry_template_name="generic_operations/en
 
 
 
-@game_authenticated_required
+@register_view(access=UserAccess.authenticated, always_available=True)
 def personal_folder(request, template_name='generic_operations/personal_folder.html'):
 
     user = request.datamanager.user
@@ -1248,7 +1233,7 @@ def personal_folder(request, template_name='generic_operations/personal_folder.h
 
 
 # This page is meant for inclusion in pages offering all the required css/js files !
-@game_authenticated_required
+@register_view(access=UserAccess.authenticated, always_available=True)
 def view_media(request, template_name='utilities/view_media.html'):
 
     fileurl = request.REQUEST.get("url", None)
@@ -1266,7 +1251,7 @@ def view_media(request, template_name='utilities/view_media.html'):
                                 context_instance=RequestContext(request))
 
 
-@game_master_required
+@register_view(access=UserAccess.master)
 def game_events(request, template_name='administration/game_events.html'):
 
     events = request.datamanager.get_game_events() # keys : time, message, username
@@ -1291,9 +1276,9 @@ def game_events(request, template_name='administration/game_events.html'):
                             },
                             context_instance=RequestContext(request))
 
-
-@game_authenticated_required
-def personal_radio_messages_listing(request, template_name='generic_operations/personal_radio_messages.html'):
+'''
+@register_view(access=UserAccess.authenticated) # obsolete...
+def __personal_radio_messages_listing(request, template_name='generic_operations/personal_radio_messages.html'):
 
     user = request.datamanager.user
 
@@ -1327,8 +1312,10 @@ def personal_radio_messages_listing(request, template_name='generic_operations/p
                              'can_wiretap': user.has_permission("manage_wiretaps")
                             },
                             context_instance=RequestContext(request))
-
-# no permission required
+'''
+    
+    
+@register_view(access=UserAccess.anonymous)
 def listen_to_audio_messages(request, template_name='utilities/web_radio_applet.html'):
 
     access_authorized = False
@@ -1358,7 +1345,7 @@ def listen_to_audio_messages(request, template_name='utilities/web_radio_applet.
                             context_instance=RequestContext(request))
 
 
-@game_master_required
+@register_view(access=UserAccess.master)
 def manage_audio_messages(request, template_name='administration/webradio_management.html'):
 
     user = request.datamanager.user
@@ -1416,7 +1403,8 @@ def manage_audio_messages(request, template_name='administration/webradio_manage
 
 
 
-@game_player_required(permission="contact_djinns")
+# TODO - redo this as special ability
+@register_view# (access=UserAccess.character)#(permission="contact_djinns")
 def chat_with_djinn(request, template_name='specific_operations/chat_with_djinn.html'):
 
     bot_name = request.POST.get("djinn", None)
@@ -1446,9 +1434,23 @@ def chat_with_djinn(request, template_name='specific_operations/chat_with_djinn.
                             },
                             context_instance=RequestContext(request))
 
+ 
+@register_view(attach_to=chat_with_djinn) #access=UserAccess.character)(permission="contact_djinns")
+def ajax_consult_djinns(request):
+    user = request.datamanager.user
+    message = request.REQUEST.get("message", "")
+    bot_name = request.REQUEST.get("djinn", None)
 
+    if bot_name not in request.datamanager.get_bot_names():
+        raise Http404
 
-@game_player_required(permission="contact_djinns")
+    res = request.datamanager.get_bot_response(user.username, bot_name, message)
+    return HttpResponse(escape(res))  # IMPORTANT - escape xml entities !!
+
+    # in case of error, a "500" code will be returned
+
+# TODO - redo this as special ability
+@register_view#(access=UserAccess.character)#(permission="contact_djinns")
 def contact_djinns(request, template_name='specific_operations/contact_djinns.html'):
     
     user = request.datamanager.user
@@ -1483,7 +1485,7 @@ def contact_djinns(request, template_name='specific_operations/contact_djinns.ht
 
 
 
-@game_master_required
+@register_view(access=UserAccess.master)
 def manage_databases(request, template_name='administration/database_management.html'):
 
     if request.method == "POST":
@@ -1508,7 +1510,7 @@ def manage_databases(request, template_name='administration/database_management.
                             context_instance=RequestContext(request))
 
 
-@game_master_required
+@register_view(access=UserAccess.master)
 def manage_characters(request, template_name='administration/character_management.html'):
 
     domain_choices = request.datamanager.build_domain_select_choices()
@@ -1569,7 +1571,7 @@ def manage_characters(request, template_name='administration/character_managemen
 
 
 
-@game_authenticated_required
+@register_view(access=UserAccess.master)
 def CHARACTERS_IDENTITIES(request):
     
     user = request.datamanager.user
@@ -1597,7 +1599,7 @@ def CHARACTERS_IDENTITIES(request):
 
 
 
-@game_master_required
+@register_view(access=UserAccess.master)
 def DATABASE_OPERATIONS(request):
 
     if not config.DEBUG:
@@ -1619,6 +1621,7 @@ def DATABASE_OPERATIONS(request):
         return Http404(_("Error : %r") % e)
 
 
+@register_view(access=UserAccess.master)
 def FAIL_TEST(request):
 
     raise IOError("Dummy error to test email sending")
@@ -1628,11 +1631,11 @@ def FAIL_TEST(request):
         return HttpResponse(_("Mail sent"))
     except Exception, e:
         raise
-        return HttpResponse(repr(e))
+        #return HttpResponse(repr(e))
 
 
 
-@game_master_required
+@register_view(access=UserAccess.master)
 def MEDIA_TEST(request):
 
     return render_to_response("administration/media_test.html",

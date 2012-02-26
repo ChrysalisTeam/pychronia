@@ -349,7 +349,29 @@ def exception_swallower():
 
 
 
-
+def make_bi_usage_decorator(decorator):
+    """
+    Transforms a decorator taking default arguments, into a decorator that can both
+    be applied directly to a callable, or first parameterized with keyword arguments and then applied.
+    
+    i.e:
+    
+        @decorator(a=3, b=5)
+        def myfunc...
+        
+        OR
+        
+        @decorator # default arguments are applied
+        def myfunc...
+        
+    The trouble is that static code analysis loses track of decorator signature...
+    """
+    def bidecorator(object=None, **kwargs):
+        factory = lambda x: decorator(x, **kwargs)
+        if object: 
+            return factory(object)
+        return factory
+    return bidecorator
 
 
 class TechnicalEventsMixin(object):

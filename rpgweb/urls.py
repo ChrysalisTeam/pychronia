@@ -26,7 +26,7 @@ final_urlpatterns = patterns('rpgweb.views',
 
     (r'^instructions/$', 'instructions'),
 
-    (r'^radio_messages/$', 'personal_radio_messages_listing'),
+    #(r'^radio_messages/$', 'personal_radio_messages_listing'),
 
     (r'^view_media/$', 'view_media'),
     (r'^personal_folder/$', 'personal_folder'),
