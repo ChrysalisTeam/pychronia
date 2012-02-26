@@ -57,7 +57,7 @@ def game_menu_generator(request):
                            menu_entry(_(u"Team Items") if user.is_authenticated else _(u"Auction Items"), views.items_slideshow),
 
 
-                           menu_entry(_(u"Radio Messages"), views.personal_radio_messages_listing), # TODO INTEGRATE TO INFO PAGES ???
+                           #menu_entry(_(u"Radio Messages"), views.personal_radio_messages_listing), # TODO INTEGRATE TO INFO PAGES ???
                            ]
 
     communication_entries = [
@@ -142,7 +142,7 @@ def game_menu_generator(request):
     menu_entries += allowed_abilities #HERE TODO - use submenu instead
     '''
 
-    return {'menus': menus}
+    return menus
 
 
 

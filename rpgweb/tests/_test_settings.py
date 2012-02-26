@@ -58,8 +58,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 "django.core.context_processors.media",
 "django.core.context_processors.request",
 
-"rpgweb.authentication.game_player_authentication",
-"rpgweb.menu.game_menu_generator",
+"rpgweb.context_processors.rpgweb_template_context",
 
 )
 
