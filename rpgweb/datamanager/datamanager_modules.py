@@ -160,6 +160,10 @@ class CharacterHandling(BaseDataManager): # TODO REFINE
             
     @readonly_method
     def get_character_color_or_none(self, username):
+        """
+        Very tolerant function returns None if username is None or not a real character name.
+        """
+        assert username is None or (isinstance("username", basestring) and " " not in username)
         if username and self.data["character_properties"].has_key(username):
             return self.data["character_properties"][username]["character_color"]
         return None
