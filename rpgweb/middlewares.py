@@ -46,8 +46,10 @@ class ZodbTransactionMiddleware(object):
         # on exception : normal 500 handling takes place
 
         global _database_pool, ZODB_TEST_DB
-
+        
         assert hasattr(request, 'session'), "The game authentication middleware requires session middleware to be installed. Edit your MIDDLEWARE_CLASSES setting to insert 'django.contrib.sessions.middleware.SessionMiddleware'."
+
+        request.processed_view = view_func # useful in the game menu 
 
         if view_kwargs.has_key("game_instance_id"):
             # TOFIX select the proper subtree of ZODB
@@ -122,7 +124,7 @@ class PeriodicProcessingMiddleware(object):
     def process_view(self, request, view_func, view_args, view_kwargs):
 
         if not hasattr(request, "datamanager"):
-           return None # not a valid game instance
+            return None # not a valid game instance
 
         datamanager = request.datamanager
 

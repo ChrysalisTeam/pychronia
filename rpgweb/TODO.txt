@@ -11,6 +11,7 @@ ADD unittests for template helpers !!!
 
 BUG html injection dans chat.js ????
 
+
 Add colors specific to each chatter + "system" chatter
 Launch pychecker or pylint of each file of rpgweb package
 

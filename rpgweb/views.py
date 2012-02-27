@@ -124,6 +124,8 @@ def ajax_domotics_security(request):
     return HttpResponse(response) # "True" or "False"
 
 
+
+
 @register_view(access=UserAccess.authenticated)
 def ajax_chat(request):
 

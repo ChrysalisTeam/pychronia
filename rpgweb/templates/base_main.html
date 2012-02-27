@@ -67,22 +67,37 @@
     {% if not game_is_started %} <h2>{% trans "Server in maintenance mode - no form submission possible" %}</h2> {% endif %}
   </div>
   <div id="menu">
-    <ul id="menulist" class="dropmenu" style="z-index: 100">
-        {% for section_title, submenu in menus %} 
-        
+    <ul id="menulist" class="dropmenu" style="z-index: 100; display: none;">
+        {% for menu in menus %} 
+        	 {% comment %} here we only handle 2-levels menus, at the moment... {% endcomment %}
+        	 
              <li id="submenu" class="toplevel">
-                 <a href="#">{{ section_title }}</a>
-                 <ul>
+             
+                 {% if menu.is_active %}
+                 	<a href="{{ menu.url }}">{{ menu.title }}</a>
+                 {% else %}
+                 	{{ section_title }}
+                 {% endif %}
                  
-                	{% for item_name, item_url in submenu %} 
-                  		<li {% comment %}{% if user.is_master %} style="padding: 1px;" {% endif %}{% endcomment %}>
-                  		    <a {% comment %}{% if user.is_master %} style="font-size: 0.6em; line-height: 0.5em;" {% endif %}{% endcomment %}
-                  		        href="{{ item_url }}" accesskey="{{ forloop.counter }}">{{ item_name }}</a>
-                  		</li>
-                  	{% endfor %}
-                  	
-              	 </ul>
+                 {% if menu.sub_menus %}
+	                 <ul>
+	                	{% for sub_menu in menu.sub_menus %} 
+	                  		<li>
+	                  		     {% if sub_menu.is_active %}
+				                 	<a href="{{ sub_menu.url }}" accesskey="{{ forloop.counter }}">{{ sub_menu.title }}</a>
+				                 {% else %}
+				                 	{{ sub_menu.title }}
+				                 {% endif %}
+				                 
+	                  		    {% comment %}<a {% if user.is_master %} style="font-size: 0.6em; line-height: 0.5em;" {% endif %}
+	                  		        href="{{ item_url }}" >{{ item_name }}</a>{% endcomment %}
+	                  		</li>
+	                  	{% endfor %}
+	              	 </ul>
+	             {% endif %}
+	             
           	</li>
+          	
         {% endfor %}
     </ul>
   </div>
