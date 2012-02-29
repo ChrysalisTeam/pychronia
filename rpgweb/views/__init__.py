@@ -21,13 +21,13 @@ from django.template import RequestContext
 from django.utils.html import escape
 from django.utils.translation import ugettext as _, ugettext_lazy as _lazy, ungettext
 
-from .common import *
-from . import forms
-from .authentication import UserAccess, register_view, \
-        authenticate_with_credentials, logout_session
-import datamanager as dm_module
-from .datamanager import action_failure_handler, PermissionError
-from . import abilities # IMPORTANT to register all abilities/permissions
+from ..common import *
+from .. import forms
+from .game_ability import UserAccess, register_view
+from ..authentication import authenticate_with_credentials, logout_session
+import ..datamanager as dm_module
+from ..datamanager import action_failure_handler, PermissionError
+from .. import abilities # IMPORTANT to register all abilities/permissions
 from rpgweb.utilities import mediaplayers
 
 
@@ -289,7 +289,7 @@ def inbox(request, template_name='messaging/messages.html'):
         remove_to = True
 
     messages = list(reversed(messages)) # most recent first
-	
+    
     return render_to_response(template_name,
                             {
                              'page_title': _("Messages Received"),
@@ -720,8 +720,8 @@ def view_characters(request, template_name='generic_operations/view_characters.h
     if user.is_master:
         show_official_identities = True
     else:
-		domain = request.datamanager.get_character_properties(user.username)["domains"][0]
-		show_official_identities = request.datamanager.get_domain_properties(domain)["show_official_identities"]
+        domain = request.datamanager.get_character_properties(user.username)["domains"][0]
+        show_official_identities = request.datamanager.get_domain_properties(domain)["show_official_identities"]
     return render_to_response(template_name,
                                 {
                                  'page_title': _("Account Management"),
