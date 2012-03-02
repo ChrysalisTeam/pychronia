@@ -21,6 +21,7 @@ from persistent.dict import PersistentDict
 from persistent.list import PersistentList
 
 from django import forms
+from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.utils.html import escape
 from django.utils.translation import ungettext, ugettext as _, ugettext_lazy as _lazy, ugettext_noop as _noop
@@ -29,6 +30,7 @@ from . import utilities
 from .utilities import config
 from .utilities.counter import Counter
 
+_undefined = object()
 
 class Enum(set):
     """
@@ -49,8 +51,26 @@ class Enum(set):
         raise AttributeError(name)
 
  
+class AccessResult: # result of global computation
+    globally_forbidden = "globally_forbidden" # eg. view disabled by the master
+    authentication_required = "needs_authentication" # eg. wrong kind of user logged in
+    permission_required = "permission_required" # character permissions are lacking
+    available = "available" # visible and executable
+
+
+class UserAccess:
+    anonymous = "anonymous"
+    authenticated = "authenticated" # both players and masters
+    character = "character"
+    master = "master"
+    enum_values = (anonymous, authenticated, character, master)
+
+
+
+ 
+ 
 __all__ = [key for key in globals().copy() if not key.startswith("_")]
-__all__ += ["_", "_lazy", "_noop"] # we add translation shortcuts
+__all__ += ["_", "_lazy", "_noop", "_undefined"] # we add translation shortcuts and _undefined placeholder for default function args
 
 
 print("SETTING UP LOGGING")

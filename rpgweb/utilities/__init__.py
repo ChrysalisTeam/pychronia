@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 
 ### NO import from rpgweb.common, else circular import !! ###
 
-import sys, os, collections, logging, inspect, types, traceback
+import sys, os, collections, logging, inspect, types, traceback, re
 import yaml, random, contextlib
 from .counter import Counter
 from datetime import datetime, timedelta
@@ -426,4 +426,32 @@ class TechnicalEventsMixin(object):
         Resets entirely the event system, eg. at the beginning of a test sequence.
         """
         self._event_registry = {}
+
+
+
+
+
+
+
+
+def to_snake_case(text):
+    s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', text)
+    return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
+
+
+
+
+def to_pascal_case(text):
+    if "_" in text:
+        callback = lambda pat: pat.group(1).lower() + pat.group(2).upper()
+        text = re.sub("(\w)_(\w)", callback, text)
+        if text[0].islower():
+            text = text[0].upper() + text[1:]
+        return text
+    return text[0].upper() + text[1:]
+
+
+def to_camel_case(text):
+    text = to_pascal_case(text)
+    return text[0].lower() + text[1:]
 

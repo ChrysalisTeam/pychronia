@@ -23,9 +23,9 @@ from django.utils.translation import ugettext as _, ugettext_lazy as _lazy, unge
 
 from ..common import *
 from .. import forms
-from .game_ability import UserAccess, register_view
+from .game_view import UserAccess, register_view
 from ..authentication import authenticate_with_credentials, logout_session
-import ..datamanager as dm_module
+from .. import datamanager as dm_module
 from ..datamanager import action_failure_handler, PermissionError
 from .. import abilities # IMPORTANT to register all abilities/permissions
 from rpgweb.utilities import mediaplayers

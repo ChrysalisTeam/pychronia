@@ -86,76 +86,6 @@ def action_failure_handler(request, success_message=None):
 
 
 
-class AbstractAbilityForm(forms.Form):
-    """
-    Base class for ability forms,
-    adding some predefined fields.
-    """
-
-    _ability_field = "_ability_form"
-
-    def __init__(self, datamanager, *args, **kwargs):
-        super(AbstractAbilityForm, self).__init__(*args, **kwargs)
-        self._datamanager = datamanager
-        self.fields.insert(0, self.__class__._ability_field, forms.CharField(initial=self._get_dotted_class_name(),
-                                                  widget=forms.HiddenInput))
-        self.target_url = "" # by default we stay on the same page
-
-
-    @classmethod
-    def _get_dotted_class_name(cls):
-        return "%s.%s" % (cls.__module__, cls.__name__)
-
-    @classmethod
-    def matches(cls, post_data):
-        if post_data.get(cls._ability_field, None) == cls._get_dotted_class_name():
-            return True
-        return False
-
-    def get_normalized_values(self):
-        values = self.cleaned_data.copy()
-        del values[self._ability_field]
-        return values
-
-
-
-class AbstractAbilityMetaclass(type):
-    """
-    Metaclass automatically registering the new ability in a global registry.
-    """
-    def __init__(NewClass, name, bases, new_dict):
-
-        if NewClass.__name__ != "AbstractAbilityHandler":
-
-            if __debug__:
-
-                RESERVED_NAMES = AbstractAbilityHandler.__dict__.keys()
-
-                assert utilities.check_is_slug(NewClass.NAME)
-                assert utilities.check_is_lazy_object(NewClass.TITLE) # delayed translation
-                assert NewClass.ACCESS in ["master", "player", "authenticated", "anonymous"]
-                if NewClass.ACCESS != "player":
-                    assert not NewClass.REQUIREMENTS
-                assert loader.get_template(NewClass.TEMPLATE)
-
-                def _check_callback(name):
-                    assert getattr(NewClass, callback)
-                    assert callback not in RESERVED_NAMES
-                    assert not callback.startswith("_")
-
-                for (form_name, (FormClass, callback)) in NewClass.FORMS.items():
-                    assert issubclass(FormClass, AbstractAbilityForm)
-                    _check_callback(callback)
-                for (action_name, callback) in NewClass.ACTIONS.items():
-                    _check_callback(callback)
-
-            assert not GameDataManager.ABILITIES_REGISTRY.has_key(NewClass.NAME), NewClass.NAME
-            GameDataManager.ABILITIES_REGISTRY[NewClass.NAME] = NewClass # we register the ability
-            
-            if NewClass.ACCESS == "player":
-                assert NewClass.NAME not in PermissionsHandling.PERMISSIONS_REGISTRY
-                PermissionsHandling.PERMISSIONS_REGISTRY.add(NewClass.NAME)
-            
 
 
 '''
@@ -213,6 +143,7 @@ class AbstractAbilityHandler(object):
 
  
     def _check_permissions(self):
+        ###USELESS
         """
         This method should be called at django view level only, not from another ability
         method (unittests don't have to care about permissions).
@@ -268,39 +199,8 @@ class AbstractAbilityHandler(object):
         raise NotImplementedError
 
 
-    def _instantiate_form(self,
-                          new_form_name, # id of the form to be potentially instantiated
-                          hide_on_success=False, # should we return None if this form has just been submitted successfully?
-                          previous_form_name=None, previous_form_instance=None, previous_form_successful=None, # data about previously submitted form, if any
-                          initial_data=None
-                          ):
-
-        NewFormClass = self.FORMS[new_form_name][0]
-
-        if __debug__:
-            form_data = (previous_form_name, previous_form_instance, (previous_form_successful is not None))
-            assert all(form_data) or not any(form_data)
-
-        if new_form_name == previous_form_name:
-            # this particular form has just been submitted
-            if previous_form_successful:
-                if hide_on_success:
-                    return None
-                else:
-                    pass
-
-            else:
-                return previous_form_instance # atm we ALWAYS redisplay a failed form
-        else:
-            pass
-
-        form = NewFormClass(self._datamanager, initial=initial_data)
-
-        return form
 
 
-    def get_template_vars(self, previous_form_name=None, previous_form_instance=None, previous_form_successful=None):
-        raise RuntimeError("Unimplemented get_template_vars in %s" % self)
 
 
 
@@ -319,82 +219,6 @@ class AbstractAbilityHandler(object):
         raise NotImplementedError
 
 
-    def process_request(self, request):
-
-        self._check_permissions()
-
-        #if not self.datamanager.player.has_permission(self.NAME): #TODO
-        #    raise RuntimeError("Player has no permission to use ability")
-
-        if request.is_ajax() or request.GET.get(self._action_field, None):
-            return self._process_ajax_request(request.REQUEST) # TODO REMOVE EVENTUALLY
-        else:
-            return self._process_html_request(request)
-
-
-    def _process_ajax_request(self, data):
-        res = self._try_processing_action(data) # we let exceptions flow atm
-        return HttpResponse(res)
-
-
-    def _process_html_request(self, request):
-
-        user = self.user
-
-        previous_form_data = {}
-
-        if request.method == "POST":
-            data = request.POST
-
-            if data.get("_action_", None): # manually built form
-                with action_failure_handler(request, success_message=None): # only for unhandled exceptions
-                    self._try_processing_action(data)
-
-            else: # it must be a call using django newforms
-                for (form_name, (FormClass, action_name)) in self.FORMS.items():
-                    if FormClass.matches(data): # class method
-                        bound_form = FormClass(self._datamanager, data=data)
-                        form_successful = False
-                        if bound_form.is_valid():
-                            with action_failure_handler(request, success_message=None): # only for unhandled exceptions
-                                action = getattr(self, action_name)
-
-                                relevant_args = utilities.adapt_parameters_to_func(bound_form.get_normalized_values(), action)
-                                success_message = action(**relevant_args)
-
-                                form_successful = True
-                                if not isinstance(success_message, basestring):
-                                    logging.error("Action %s returned wrong success message: %r", action_name, success_message)
-                                    user.add_message(_("Operation successful")) # default msg
-                                else:
-                                    user.add_message(success_message)
-                        else:
-                            user.add_error(_("Submitted data is invalid"))
-                        previous_form_data = dict(previous_form_name=form_name,
-                                                  previous_form_instance=bound_form,
-                                                  previous_form_successful=form_successful)
-                        break # IMPORTANT
-                else:
-                    user.add_error(_("Submitted form data hasn't been recognized"))
-                    logging.error("Unexpected form data sent to %s - %r" % (self.NAME, request.POST))
-
-
-        template_vars = self.get_template_vars(**previous_form_data)
-
-        if not isinstance(template_vars, collections.Mapping):
-            raise RuntimeError("WRONG TEMPLATE VARS %r" % template_vars) #DEBUG TODO remove
-        #print ("Rendering with", template_vars, user.__dict__)
-        response = render_to_response(self.TEMPLATE,
-                                      template_vars,
-                                      context_instance=RequestContext(request))
-        return response
-
-
-    def _try_processing_action(self, data):
-        func = getattr(self, self.ACTIONS[data[self._action_field]])
-        relevant_args = utilities.adapt_parameters_to_func(data, func)
-        res = func(**relevant_args)
-        return res
 
 
 

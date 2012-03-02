@@ -37,7 +37,7 @@ class MenuEntry:
         if permission_checker:
             user_access = permission_checker(request)
         else:
-            user_access = view.check_access(request)
+            user_access = view.get_access_token(request)
         
         self.is_visible = self.sub_menus or (user_access in (AccessResult.available, AccessResult.permission_required))
         self.is_active = self.url and (user_access == AccessResult.available)
