@@ -845,7 +845,7 @@ class TextMessaging(BaseDataManager): # TODO REFINE
                     self._immediately_send_message(msg)
                 except:
                     if __debug__: self.notify_event("DELAYED_MESSAGE_ERROR")
-                    logging.critical("Delayed message couldn't be sent : %s" % msg, exc_info=True)
+                    self.logger.critical("Delayed message couldn't be sent : %s" % msg, exc_info=True)
                 last_index_processed = index # even if error, we remove the msg from list
             else:
                 break # since messages are queued in CHRONOLOGICAL order...
@@ -929,14 +929,14 @@ class TextMessaging(BaseDataManager): # TODO REFINE
                 self._set_message_reply_state(self.get_username_from_email(sender_email), msg, True)
                 self._set_message_read_state(self.get_username_from_email(sender_email), msg, True)
             except UsageError, e:
-                logging.error(e, exc_info=True)
+                self.logger.error(e, exc_info=True)
 
         if use_template:
             try:
                 msg = self.get_message_template(use_template)
                 msg["is_used"] = True
             except UsageError, e:
-                logging.error(e, exc_info=True)
+                self.logger.error(e, exc_info=True)
 
         new_id = self._get_new_msg_id(len(self.data["messages_sent"]) + len(self.data["messages_queued"]),
                                       subject + body) # unicity more than guaranteed
@@ -1270,7 +1270,7 @@ class TextMessaging(BaseDataManager): # TODO REFINE
             pass
 
         if __debug__: self.notify_event("MSG_TEMPLATE_FORMATTING_ERROR_1")
-        logging.error("Impossible to format %s of automated message %s, retrying with defaultdict", part_name, tpl_name,
+        self.logger.error("Impossible to format %s of automated message %s, retrying with defaultdict", part_name, tpl_name,
                       exc_info=True)
 
         try:
@@ -1278,7 +1278,7 @@ class TextMessaging(BaseDataManager): # TODO REFINE
             return template % new_values
         except:
             if __debug__: self.notify_event("MSG_TEMPLATE_FORMATTING_ERROR_2")
-            logging.critical("Definitely impossible to format %s of automated message %s, returning original value",
+            self.logger.critical("Definitely impossible to format %s of automated message %s, returning original value",
                              part_name, tpl_name, exc_info=True)
             return template
 
@@ -1568,7 +1568,7 @@ class ActionScheduling(BaseDataManager):
                     #print "executed ", function
                 except:
                     if __debug__: self.notify_event("DELAYED_ACTION_ERROR")
-                    logging.critical("Delayed action raised an error when executing : %s" % action, exc_info=True)
+                    self.logger.critical("Delayed action raised an error when executing : %s" % action, exc_info=True)
                 last_index_processed = index # even if error, we remove the msg from list
             else:
                 break # since actions are queued in CHRONOLOGICAL order...

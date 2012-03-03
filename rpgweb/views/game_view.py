@@ -8,7 +8,7 @@ from django.http import Http404, HttpResponseRedirect, HttpResponse,\
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 
-from ..datamanager import GameDataManager, action_failure_handler, PermissionError
+from ..datamanager import GameDataManager, action_failure_handler
 from rpgweb.common import *
 
 
@@ -173,16 +173,7 @@ class AbstractGameView(object):
 
     def __init__(self, *args, **kwargs):
         pass # we ignore any argument
-
- 
-    def _redirect_to_login(self, request):
-        # uses HTTP code for TEMPORARY redirection
-        return HttpResponseRedirect(reverse("rpgweb.views.login", kwargs=dict(game_instance_id=request.datamanager.game_instance_id)))
     
-    def _global_access_denied(self, request):
-        return HttpResponseForbidden(_("Access denied")) # TODO FIXME - provide a proper template and message !!
-    
-
     
     @classmethod
     def get_access_token(cls, request):
@@ -215,18 +206,15 @@ class AbstractGameView(object):
         access_result = self.get_access_token(request)
         
         if access_result == AccessResult.available:
-            return None
+            return
         elif access_result == AccessResult.permission_required:
-            user.add_error(_("Access reserved to privileged members.")) # TODO - must persist to login screen
-            return self._global_access_denied(request)
+            raise PermissionRequiredError(_("Access reserved to privileged members."))
         elif access_result == AccessResult.authentication_required:
-            user.add_error(_("Authentication required.")) # could also mean a gamemaster tries to access a character-only section
-            return self._redirect_to_login(request)
+            raise AuthenticationRequiredError(_("Authentication required.")) # could also mean a gamemaster tries to access a character-only section
         else:
             assert access_result == AccessResult.globally_forbidden
-            user.add_error(_("Access forbidden."))  # TODO - must persist to login screen
-            return self._global_access_denied(request)
-        
+            raise AccessDeniedError(_("Access forbidden."))
+        assert False
         
     
     @classmethod
@@ -364,14 +352,21 @@ class AbstractGameView(object):
     
     def __call__(self, request, *args, **kwargs):
         
-        res = self._check_access(request) # crucial
-        if res is not None:
-            # eror page has been processed
-            return res
+        try:
+            
+            self._check_access(request) # crucial
+            
+            return self._process_request(request, *args, **kwargs)
         
-        return self._process_request(request, *args, **kwargs)
-    
-    
+        except AuthenticationRequiredError, e:
+            # TODO - 
+            # uses HTTP code for TEMPORARY redirection
+            return HttpResponseRedirect(reverse("rpgweb.views.login", kwargs=dict(game_instance_id=request.datamanager.game_instance_id)))
+        except AccessDeniedError, e:
+            # even permission errors are treated like base class erors ATM
+            return HttpResponseForbidden(_("Access denied")) # TODO FIXME - provide a proper template and message !!
+        except:
+            raise # we let 500 handler take are of all other (very abnormal) exceptions
     
 
 

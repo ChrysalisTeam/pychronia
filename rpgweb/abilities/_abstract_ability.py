@@ -141,7 +141,7 @@ class AbstractAbilityHandler(object):
             raise AttributeError("Neither ability nor datamanager have attribute '%s'" % name)
         return value
 
- 
+    '''
     def _check_permissions(self):
         ###USELESS
         """
@@ -165,7 +165,7 @@ class AbstractAbilityHandler(object):
         else:
             assert self.ACCESS == "anonymous"
 
-
+            '''
 
 
 
@@ -379,7 +379,7 @@ class PayableAbilityHandler(object):
             raise RuntimeError("Wrong mutable asset id %s, we need Persistent types instead for ZODB" % asset_id)
 
         if not user.is_character:
-            raise PermissionError(_("Only regular users may purchase items and services")) # shouldn't happen
+            raise AbnormalUsageError(_("Only regular users may purchase items and services")) # shouldn't happen
 
         settings = self.settings
         private_data = self.private_data

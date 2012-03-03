@@ -46,6 +46,45 @@ allowed_zodb_types = (types.NoneType, int, long, float, basestring, tuple, datet
 
 
 
+
+class Enum(set):
+    """
+    Takes a string of values, or a list, and exposes the corresponding enumeration.
+    """
+    def __init__(self, iterable=[]):
+        set.__init__(self)
+        self.update(iterable)
+
+    def update(self, iterable):
+        if isinstance(iterable, basestring):
+            iterable = iterable.split()
+        set.update(self, iterable)
+
+    def __getattr__(self, name):
+        if name in self:
+            return name
+        raise AttributeError(name)
+
+
+class SDICT(dict):
+    def __getitem__(self, name):
+        try:
+            return dict.__getitem__(self, name)
+        except KeyError:
+            logging.critical("Wrong key %s looked up in dict %r", name, self)
+            return "<UNKNOWN>"
+        
+    ''' obsolete
+    def SDICT(**kwargs):
+        import collections
+        # TODO - log errors when wrong lookup happens!!!
+        mydict = collections.defaultdict(lambda: "<UNKNOWN>") # for safe string substitutions
+        for (name, value) in kwargs.items():
+            mydict[name] = value # we mimic the normal dict constructor
+        return mydict
+    '''
+       
+
 def monkey_patch_django_zodb_parser():
     import django_zodb.utils, django_zodb.config, django_zodb.tests.test_utils
     from django_zodb.utils import parse_uri as original_parse_uri

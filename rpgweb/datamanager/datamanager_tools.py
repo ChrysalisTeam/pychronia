@@ -9,105 +9,6 @@ from django.template import RequestContext
 
 
 
-class UsageError(Exception):
-    pass
-
-
-class NormalUsageError(UsageError):
-    pass
-
-class AbnormalUsageError(UsageError):
-    pass
-
-class PermissionError(UsageError):
-    pass
-
-
-
-@contextmanager
-def action_failure_handler(request, success_message=_lazy("Operation successful.")):
-    user = request.datamanager.user
-
-    try:
-        # nothing in __enter__()
-        yield None
-    except UsageError, e:
-        print (">YYYY", repr(e))
-        user.add_error(unicode(e))
-        if isinstance(e, AbnormalUsageError):
-            logging.critical(unicode(e), exc_info=True)
-    except Exception, e:
-        print (">OOOOOOO", repr(e))
-        import traceback
-        traceback.print_exc()
-        # we must locate this serious error, as often (eg. assertion errors) there is no specific message attached...
-        msg = _("Unexpected exception caught in action_failure_handler - %r") % e
-        logging.critical(msg, exc_info=True)
-        if config.DEBUG:
-            user.add_error(msg)
-        else:
-            user.add_error(_("An internal error occurred"))
-    else:
-        if success_message: # might be left empty sometimes, if another message is ready elsewhere
-            user.add_message(success_message)
-
-
-class SDICT(dict):
-    def __getitem__(self, name):
-        try:
-            return dict.__getitem__(self, name)
-        except KeyError:
-            logging.critical("Wrong key %s looked up in dict %r", name, self)
-            return "<UNKNOWN>"
-        
-    ''' obsolete
-    def SDICT(**kwargs):
-        import collections
-        # TODO - log errors when wrong lookup happens!!!
-        mydict = collections.defaultdict(lambda: "<UNKNOWN>") # for safe string substitutions
-        for (name, value) in kwargs.items():
-            mydict[name] = value # we mimic the normal dict constructor
-        return mydict
-    '''
-
-@contextlib.contextmanager
-def exception_swallower():
-    """
-    When called, this function returns a context manager which
-    catches and logs all exceptions raised inside its
-    block of code (useful for rarely crossed try...except clauses,
-    to swallow unexpected name or string formatting errors).
-    """
-
-    try:
-        yield
-    except Exception, e:
-        try:
-            logging.critical(_("Unexpected exception occurred in exception swallower context : %r !"), e, exc_info=True)
-        except Exception:
-            print >> sys.stderr, _("Exception Swallower logging is broken !!!")
-
-        if __debug__:
-            raise RuntimeError(_("Unexpected exception occurred in exception swallower context : %r !") % e)
-
-
-"""
-# HACK TO ALLOW THE PICKLING OF INSTANCE METHODS #
-# WOULD REQUIRE PICKLABILITY OF DATAMANAGER #
-import copy_reg
-import new
-def make_instancemethod(inst, methodname):
-    return getattr(inst, methodname)
-def pickle_instancemethod(method):
-    return make_instancemethod, (method.im_self, method.im_func.__name__)
-copy_reg.pickle(new.instancemethod, pickle_instancemethod,
-make_instancemethod)
-
-def mark_always_available(func):
-    func.always_available = True
-    return func
-
-"""
 
 def _ensure_data_ok(datamanager):
 
@@ -198,3 +99,24 @@ def transaction_watcher(object=None, ensure_data_ok=True, ensure_game_started=Tr
 
     return _transaction_watcher(object) if object is not None else _transaction_watcher
 
+
+
+
+
+"""
+# HACK TO ALLOW THE PICKLING OF INSTANCE METHODS #
+# WOULD REQUIRE PICKLABILITY OF DATAMANAGER #
+import copy_reg
+import new
+def make_instancemethod(inst, methodname):
+    return getattr(inst, methodname)
+def pickle_instancemethod(method):
+    return make_instancemethod, (method.im_self, method.im_func.__name__)
+copy_reg.pickle(new.instancemethod, pickle_instancemethod,
+make_instancemethod)
+
+def mark_always_available(func):
+    func.always_available = True
+    return func
+
+"""

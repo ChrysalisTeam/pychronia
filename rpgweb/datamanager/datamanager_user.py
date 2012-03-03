@@ -14,7 +14,7 @@ class GameUser(object):
         Builds a user object, storing notifications for the current HTTP request,
         and exposing shortcuts to useful data.
         
-        *previous_user* is used when logging/unlogging a user, to ensure no
+        *previous_user* is used when logging in/out a user, to ensure no
         notifications and other persistent data gets lost in the change.
         """
         master_login = datamanager.get_global_parameter("master_login")

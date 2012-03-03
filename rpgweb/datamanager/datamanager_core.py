@@ -89,7 +89,7 @@ class BaseDataManager(utilities.TechnicalEventsMixin, Persistent):
 
         self.connection = game_root._p_jar
 
-        self.logger = logging.getLogger() #FIXME
+        self.logger = logging.getLogger("rpgweb.%s" % game_instance_id) #FIXME
 
         self.db_state = self.DB_STATES.CONNECTED
 
@@ -99,7 +99,7 @@ class BaseDataManager(utilities.TechnicalEventsMixin, Persistent):
             else:
                 self.db_state = self.DB_STATES.INITIALIZED
         except:
-            logging.error(_("Runtime data couldn't be initialized - delete DB file and try again."), exc_info=True)
+            self.logger.error(_("Runtime data couldn't be initialized - delete DB file and try again."), exc_info=True)
             raise
 
     def is_initialized(self):
@@ -126,7 +126,7 @@ class BaseDataManager(utilities.TechnicalEventsMixin, Persistent):
                 self.db.close()
                 self.storage.close()
             except:
-                logging.error("Couldn't shutdown ZODB connection.", exc_info=True)
+                self.logger.error("Couldn't shutdown ZODB connection.", exc_info=True)
          """
 
 

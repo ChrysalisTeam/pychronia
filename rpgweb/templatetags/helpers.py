@@ -3,7 +3,7 @@ from datetime import datetime
 from django.template import defaulttags
 
 from rpgweb.utilities import mediaplayers
-
+from rpgweb.common import exception_swallower
 register = django.template.Library() # IMPORTANT, module-level object used by templates !
 
 from django.utils.safestring import SafeData, EscapeData, mark_safe, mark_for_escaping
@@ -22,38 +22,42 @@ def gameurl(parser, token):
 
 @register.simple_tag(takes_context=True)
 def usercolor(context, username_or_email):
-    request = context.get('request')
-    if "@" in username_or_email:
-        username = request.datamanager.get_character_or_none_from_email(username_or_email)
-    else: 
-        username = username_or_email
-    color = request.datamanager.get_character_color_or_none(username)
+    """
+    Determines if an HTML color is attached to the user/email, or returns None instead.
+    """
+    color = None
+    with exception_swallower():
+        request = context.get('request')
+        if "@" in username_or_email:
+            username = request.datamanager.get_character_or_none_from_email(username_or_email)
+        else: 
+            username = username_or_email
+        color = request.datamanager.get_character_color_or_none(username)
     return color or "black" # default color
 
- 
+''' ???
 def threefirstletters(value):
-    #custom template tag used like so:
-    #{{dictionary|dict_get:var}}
-    #where dictionary is a dictionary and var is a variable representing
-    #one of it's keys
-    try :
+    """
+    Returns the three first letters or less.
+    """
+    with exception_swallower():
         return value[0:3]
-    except:
-        logging.error("threefirstletters filter failed", exc_info=True)
-        return "" # value evaluating to false    
+    return "" # value evaluating to false    
 register.filter('threefirstletters',threefirstletters)
-
+'''
 
 # dynamic dictionary key in templates
 def dict_get(value, arg):
-    #custom template tag used like so:
-    #{{dictionary|dict_get:var}}
-    #where dictionary is a dictionary and var is a variable representing
-    #one of it's keys
-    try :
+    """
+    Custom template tag used like so:
+    {{dictionary|dict_get:var}}
+    where dictionary is a dictionary and var is a variable representing
+    one of it's keys
+    """
+    try:
         return value[arg]
     except:
-        #logging.error("dict_get filter failed", exc_info=True) - NO, templates can just be used to test for the existence of a key, this way !
+        # NO ERROR, templates can just be used to test for the existence of a key, this way !
         return "" # value evaluating to false    
 register.filter('dict_get',dict_get)
 
@@ -88,10 +92,6 @@ def has_permission(user, permission):
         return False
 register.filter('has_permission', has_permission)
 
-
-def game_color(username):
-    return "black"
-register.filter('game_color', game_color)
 
 
 """

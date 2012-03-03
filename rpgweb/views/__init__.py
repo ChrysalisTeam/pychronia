@@ -23,10 +23,9 @@ from django.utils.translation import ugettext as _, ugettext_lazy as _lazy, unge
 
 from ..common import *
 from .. import forms
-from .game_view import UserAccess, register_view
+from .game_view import register_view
 from ..authentication import authenticate_with_credentials, logout_session
 from .. import datamanager as dm_module
-from ..datamanager import action_failure_handler, PermissionError
 from .. import abilities # IMPORTANT to register all abilities/permissions
 from rpgweb.utilities import mediaplayers
 
@@ -47,7 +46,7 @@ def ability(request, ability_name):
     """
     try:
         ability_class.check_permissions(user)
-    except PermissionError, e:
+    except PermisSSSsionError, e:
         user.add_error(unicode(e))
         # todo - put default page for abilities here
         raise Http404 ## temporary ##
