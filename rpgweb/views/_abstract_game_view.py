@@ -6,46 +6,14 @@ from __future__ import unicode_literals
 from django.http import Http404, HttpResponseRedirect, HttpResponse,\
     HttpResponseForbidden
 from django.shortcuts import render_to_response
-from django.template import RequestContext
+from django.template import RequestContext, loader
 
-from ..datamanager import GameDataManager, action_failure_handler
+from ..datamanager import GameDataManager
+from ..forms import AbstractGameForm
 from rpgweb.common import *
 
 
 
-
-
-
-
-class AbstractGameForm(forms.Form):
-    """
-    Base class for forms, able to recognize their data, by adding some hidden fields.
-    """
-
-    _ability_field_name = "_ability_form"
-
-    def __init__(self, datamanager, *args, **kwargs):
-        super(AbstractGameForm, self).__init__(*args, **kwargs)
-        self._datamanager = datamanager
-        self.fields.insert(0, self.__class__._ability_field_name, forms.CharField(initial=self._get_dotted_class_name(),
-                                                                                  widget=forms.HiddenInput))
-        self.target_url = "" # by default we stay on the same page when submitting
-
-
-    @classmethod
-    def _get_dotted_class_name(cls):
-        return "%s.%s" % (cls.__module__, cls.__name__)
-
-    @classmethod
-    def matches(cls, post_data):
-        if post_data.get(cls._ability_field_name, None) == cls._get_dotted_class_name():
-            return True
-        return False
-
-    def get_normalized_values(self):
-        values = self.cleaned_data.copy()
-        del values[self._ability_field_name]
-        return values
 
 
 
@@ -81,49 +49,24 @@ class GameViewMetaclass(type):
                 else:
                     raise NotImplementedError("Missing UserAccess case in GameView setup")
                 
-            GameDataManager.register_game_view(NewClass)
-            
-    
-
-
-
-'''
-
-class __AbilityMetaclass(GameViewMetaclass):
-    """
-    Metaclass automatically registering the new ability (which is also a view) in a global registry.
-    """ 
-    def __init__(NewClass, name, bases, new_dict):
-        
-        super().__init__(NewClass, name, bases, new_dict)
-        
-        if not NewClass.__name__.startswith("abstract"):
-
-            if __debug__:
-                
-                RESERVED_NAMES = AbstractGameAbility.__dict__.keys()
-                
-                assert utilities.check_is_lazy_object(NewClass.TITLE) # delayed translation
-
-                assert loader.get_template(NewClass.TEMPLATE)
+                if NewClass.TEMPLATE is not None:
+                    assert loader.get_template(NewClass.TEMPLATE)
 
                 def _check_callback(name):
                     assert getattr(NewClass, callback)
                     assert callback not in RESERVED_NAMES
                     assert not callback.startswith("_")
 
-                for (form_name, (FormClass, callback)) in NewClass.FORMS.items():
-                    assert issubclass(FormClass, AbstractAbilityForm)
+                for (form_name, (FormClass, callback)) in NewClass.GAME_FORMS.items():
+                    assert issubclass(FormClass, AbstractGameForm)
                     _check_callback(callback)
                 for (action_name, callback) in NewClass.ACTIONS.items():
                     _check_callback(callback)
+                    
+            GameDataManager.register_game_view(NewClass)
             
-            GameDataManager.register_ability(NewClass)
-            
+    
 
-
-            
-'''
 
 
 class SubmittedGameForm:
@@ -153,7 +96,7 @@ class AbstractGameView(object):
     GAME_FORMS = {} # dict mapping form identifiers to tuples (AbstractGameForm subclass, processing method name)
     ACTIONS = {} # dict mapping action identifiers to processing method names (for ajax calls or custom forms)
     
-    TEMPLATE = "" # HTML template name, required when using default request handler
+    TEMPLATE = None # HTML template name, required when using default request handler
 
     ACCESS = None # UserAccess entry
     PERMISSIONS = [] # list of required permission names, only used for character access    
@@ -185,11 +128,12 @@ class AbstractGameView(object):
             return AccessResult.authentication_required
 
         if cls.PERMISSIONS:
-            assert cls.cls in (UserAccess.character, UserAccess.authenticated)
-            for permission in cls.PERMISSIONS:
-                if not user.has_permission(permission):
-                    return AccessResult.permission_required 
-        
+            assert cls.ACCESS in (UserAccess.character, UserAccess.authenticated)
+            if user.is_character: # game master does what he wants
+                for permission in cls.PERMISSIONS:
+                    if not user.has_permission(permission):
+                        return AccessResult.permission_required 
+            
         return AccessResult.available
     
     
@@ -215,10 +159,16 @@ class AbstractGameView(object):
                           datamanager,
                           new_form_name, # id of the form to be potentially instantiated
                           hide_on_success=False, # should we return None if this form has just been submitted successfully?
-                          previous_form_name=None, previous_form_instance=None, previous_form_successful=None, # data about previously submitted form, if any
-                          initial_data=None
-                          ):
+                          previous_form_data=None, # data about previously submitted form, if any
+                          initial_data=None):
         assert datamanager is None or datamanager # some forms don't neeed a valid datamanager
+        
+        if previous_form_data:
+            previous_form_name = previous_form_data.form_name
+            previous_form_instance = previous_form_data.form_instance
+            previous_form_successful = previous_form_data.form_successful
+        else:
+            previous_form_name = previous_form_instance = previous_form_successful = None
         
         NewFormClass = cls.FORMS[new_form_name][0]
 
@@ -308,7 +258,7 @@ class AbstractGameView(object):
         return res
 
 
-    def get_template_vars(self, previous_form_name=None, previous_form_instance=None, previous_form_successful=None):
+    def get_template_vars(self, previous_form_data=None):
         raise NotImplementedError("Unimplemented get_template_vars called in %s" % self)
     
     
@@ -352,10 +302,12 @@ class AbstractGameView(object):
             return self._process_request(request, *args, **kwargs)
         
         except AuthenticationRequiredError, e:
+            print("<<<", e)
             # TODO - 
             # uses HTTP code for TEMPORARY redirection
             return HttpResponseRedirect(reverse("rpgweb.views.login", kwargs=dict(game_instance_id=request.datamanager.game_instance_id)))
         except AccessDeniedError, e:
+            print("<<<", e)
             # even permission errors are treated like base class erors ATM
             return HttpResponseForbidden(_("Access denied")) # TODO FIXME - provide a proper template and message !!
         except:
@@ -421,10 +373,13 @@ class ClassInstantiationProxy(object):
         self._klass = klass
     def __getattr__(self, name):
         return getattr(self._klass, name) # useful for introspection of views                
-    def __call__(self, *args, **kwargs):
-        return self._klass(*args, **kwargs)(*args, **kwargs) # we execute new instance of underlying class
-
-
+    def __call__(self, request, *args, **kwargs):
+        return self._klass(request.datamanager, *args, **kwargs)(request, *args, **kwargs) # we execute new instance of underlying class
+    def __str__(self):
+        return "ClassInstantiationProxy around %s" % self._klass
+    __repr__ = __str__
+    
+    
 def register_view(view_object=None, 
                   access=_undefined,
                   permissions=_undefined, 

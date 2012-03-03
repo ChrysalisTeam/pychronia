@@ -3,22 +3,19 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from rpgweb.common import *
-
 from ._abstract_ability import *
-from ..datamanager import *
 
 
 
-
-class WiretappingTargetsForm(AbstractAbilityForm):
-    def __init__(self, datamanager, *args, **kwargs):
-        super(WiretappingTargetsForm, self).__init__(datamanager, *args, **kwargs)
+class WiretappingTargetsForm(AbstractGameForm):
+    def __init__(self, ability, *args, **kwargs):
+        super(WiretappingTargetsForm, self).__init__(ability, *args, **kwargs)
         # dynamic fields here ...
 
-        names = datamanager.get_character_usernames()
-        user_choices = datamanager.build_select_choices_from_usernames(names)
+        names = ability.get_character_usernames()
+        user_choices = ability.build_select_choices_from_usernames(names)
 
-        for i in range(datamanager.abilities.wiretapping.get_ability_parameter("max_wiretapping_targets")):
+        for i in range(ability.get_ability_parameter("max_wiretapping_targets")):
             self.fields["target_%d"%i] = forms.ChoiceField(label=_("Target %d")%i, required=False, choices=[("", "")]+user_choices)
 
     def get_normalized_values(self):
@@ -35,8 +32,8 @@ class WiretappingTargetsForm(AbstractAbilityForm):
 
 
 
-
-class WiretappingAbility(AbstractAbilityHandler):
+@register_view
+class WiretappingAbility(AbstractAbility):
 
     TITLE = _lazy("Wiretapping")
     
@@ -46,13 +43,13 @@ class WiretappingAbility(AbstractAbilityHandler):
 
     TEMPLATE = "abilities/wiretapping_management.html"
 
-    ACCESS = "player"
-    
-    REQUIREMENTS = ["messaging"]
+    ACCESS = UserAccess.authenticated
+    PERMISSIONS = ["messaging"]
+    ALWAYS_AVAILABLE = False 
 
 
     @readonly_method
-    def get_template_vars(self, **previous_form_data):
+    def get_template_vars(self, previous_form_data=None):
 
         current_targets = self.get_current_targets()
         initial_data = {}
@@ -62,10 +59,11 @@ class WiretappingAbility(AbstractAbilityHandler):
             else:
                 initial_data["target_%d"%i] = ""
 
-        targets_form = self._instantiate_form(new_form_name="targets_form", hide_on_success=False,
-                                                  initial_data=initial_data,
-                                                  **previous_form_data)
-
+        targets_form = self._instantiate_form(new_form_name="targets_form", 
+                                              hide_on_success=False,
+                                              initial_data=initial_data,
+                                              previous_form_data=previous_form_data)
+ 
         return {
                  'page_title': _("Wiretapping Management"),
                  'current_targets': current_targets,

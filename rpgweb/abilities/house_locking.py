@@ -3,16 +3,13 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from rpgweb.common import *
-
 from ._abstract_ability import *
-from ..datamanager import *
 
 
+@register_view
+class HouseLockingAbility(AbstractAbility):
 
-
-class HouseLockingAbility(AbstractAbilityHandler):
-
-    TITLE = _lazy("Manor Security")
+    #TITLE = _lazy("Manor Security")
     
     NAME = "house_locking"
 
@@ -23,12 +20,13 @@ class HouseLockingAbility(AbstractAbilityHandler):
 
     TEMPLATE = "abilities/house_locking.html"
 
-    ACCESS = "anonymous"
-    
-    REQUIREMENTS = []
+    ACCESS = UserAccess.anonymous
+    PERMISSIONS = [] 
+    ALWAYS_AVAILABLE = False 
 
 
-    def get_template_vars(self, **previous_form_data):
+
+    def get_template_vars(self, previous_form_data=None):
         are_doors_open = self.are_house_doors_open()
         return {
                 'page_title': _("Doors Security Management"),

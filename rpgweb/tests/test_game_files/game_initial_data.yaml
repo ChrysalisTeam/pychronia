@@ -42,7 +42,7 @@ global_parameters:
     global_email: everyone # shortcut to email every user at once
     pangea_network_domain: pangea.com
 
-    anonymous_login: anonymous
+    anonymous_login: !!null
     master_login: master
     master_password: ultimate
     master_email: master@administration.com

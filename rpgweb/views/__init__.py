@@ -23,7 +23,7 @@ from django.utils.translation import ugettext as _, ugettext_lazy as _lazy, unge
 
 from ..common import *
 from .. import forms
-from .game_view import register_view
+from ._abstract_game_view import register_view
 from ..authentication import authenticate_with_credentials, logout_session
 from .. import datamanager as dm_module
 from .. import abilities # IMPORTANT to register all abilities/permissions

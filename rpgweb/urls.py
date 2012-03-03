@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 from django.conf.urls.defaults import *
 
 
-final_urlpatterns = patterns('rpgweb.views',
+view_urlpatterns = patterns('rpgweb.views',
 
     # WARNING - DANGEROUS #
 
@@ -16,9 +16,6 @@ final_urlpatterns = patterns('rpgweb.views',
 
 
     (r'^$', 'homepage'),
-
-
-    (r'^ability/(?P<ability_name>\w+)/$', 'ability'),
 
 
     (r'^opening/$', 'opening'),
@@ -92,10 +89,19 @@ final_urlpatterns = patterns('rpgweb.views',
     (r'^ajax_get_next_audio_message/$', 'ajax_get_next_audio_message'),
     (r'^ajax_notify_audio_success/$', 'ajax_notify_audio_message_finished'),
 
+)
 
+
+ability_urlpatterns = patterns("rpgweb.abilities",
+
+    (r'^ability/house_locking/$', 'HouseLockingAbility'),
+    (r'^ability/runic_translation/$', 'RunicTranslationAbility'),
+    (r'^ability/wiretapping_management/$', 'WiretappingAbility'),
 
 )
 
+
+final_urlpatterns = view_urlpatterns + ability_urlpatterns
 
 # root urlpatterns of rpgweb application
 urlpatterns = patterns('',

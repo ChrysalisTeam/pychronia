@@ -3,19 +3,16 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from rpgweb.common import *
-
 from ._abstract_ability import *
-from ..datamanager import *
 
 
 
+class TranslationForm(AbstractGameForm):
+    def __init__(self, ability, *args, **kwargs):
+        super(TranslationForm, self).__init__(ability, *args, **kwargs)
 
-class TranslationForm(AbstractAbilityForm):
-    def __init__(self, datamanager, *args, **kwargs):
-        super(TranslationForm, self).__init__(datamanager, *args, **kwargs)
-
-        _translatable_items_ids = datamanager.abilities.runic_translation.get_translatable_items().keys()
-        _translatable_items_pretty_names = [datamanager.get_items_for_sale()[item_name]["title"] for item_name in _translatable_items_ids]
+        _translatable_items_ids = ability.get_translatable_items().keys()
+        _translatable_items_pretty_names = [ability.get_items_for_sale()[item_name]["title"] for item_name in _translatable_items_ids]
         _translatable_items_choices = zip(_translatable_items_ids, _translatable_items_pretty_names)
         _translatable_items_choices.sort(key=lambda double: double[1])
 
@@ -24,7 +21,8 @@ class TranslationForm(AbstractAbilityForm):
         self.fields["transcription"] = forms.CharField(label=_("Transcription"), widget=forms.Textarea(attrs={'rows': '5', 'cols':'30'}))
 
 
-class RunicTranslationAbility(AbstractAbilityHandler):
+@register_view
+class RunicTranslationAbility(AbstractAbility):
     
     TITLE = _lazy("Runic Translation")
     
@@ -34,15 +32,17 @@ class RunicTranslationAbility(AbstractAbilityHandler):
 
     TEMPLATE = "abilities/runic_translation.html"
 
-    ACCESS = "player"
-    
-    REQUIRES = ["messaging", "items"]
-
-    def get_template_vars(self, **previous_form_data):
+    ACCESS = UserAccess.authenticated
+    PERMISSIONS = ["messaging", "items"]
+    ALWAYS_AVAILABLE = False 
 
 
-        translation_form = self._instantiate_form(new_form_name="translation_form", hide_on_success=False,
-                                                  **previous_form_data)
+    def get_template_vars(self, previous_form_data=None):
+
+
+        translation_form = self._instantiate_form(new_form_name="translation_form", 
+                                                  hide_on_success=False,
+                                                  previous_form_data=previous_form_data)
         translation_delay = self.get_ability_parameter("translation_delays")
 
         return {

@@ -68,9 +68,11 @@ def for_core_module(klass):
     assert klass in MODULES_REGISTRY, klass
     return lambda func: func
 
-def for_ability(klass):
+def for_ability(view):
     # TODO - track proper testing of ability module
-    assert klass in SpecialAbilities.ABILITIES_REGISTRY.values(), klass
+    if hasattr(view, "_klass"):
+        view = view._klass
+    assert view in SpecialAbilities.ABILITIES_REGISTRY.values(), view
     return lambda func: func
 
 
@@ -1364,7 +1366,7 @@ class TestGame(BaseGameTestCase):
 
 
 
-'''
+
 class TestSpecialAbilities(BaseGameTestCase):
 
 
@@ -1816,7 +1818,6 @@ class TestSpecialAbilities(BaseGameTestCase):
         res = self.dm.get_bot_response(username, bot_name, "who is cynthia ?").lower()
         self.assertTrue("future wife" in res, res)
 
-'''
 
 
 

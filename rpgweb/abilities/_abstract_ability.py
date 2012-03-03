@@ -8,165 +8,68 @@ from django.http import HttpResponse
 from django.shortcuts import render_to_response
 from django.template import RequestContext, loader
 
-from ..datamanager import *
-from rpgweb.datamanager.datamanager_tools import NormalUsageError, AbnormalUsageError, PermissionError
-from ..datamanager.datamanager_modules import PermissionsHandling
-
-
-
-###### NOTE - To specify dynamic initial data, see the Form.initial parameter. TODO
-
-
-
-### Abstract types and miscellaneous utilities ###
+from ..datamanager import GameDataManager, readonly_method, transaction_watcher
+from ..forms import AbstractGameForm
+from ..views._abstract_game_view import GameViewMetaclass, AbstractGameView, register_view
 
 
 
 
-
-
-
-'''
-@decorator.decorator
-def transaction_watcher(func, self, *args, **kwargs): # TODO DUPLICATED !!
-
-    # TO BE REMOVED !!!!!!!!!!!!!!
-    #self._datamanager._check_database_coherency() # WARNING - quite CPU intensive, to be removed later on ? TODO TODO REMOVE PAKAL !!!
-
-    if self._datamanager.is_shutdown:
-        raise AbnormalUsageError(_("ZODB connection has been definitely shutdown - please finish killing the server process!"))
-    if not self._datamanager.is_ini    tialized:
-        raise AbnormalUsageError(_("Game databases haven't yet been initialized !"))
-    if not self._datamanager.get_global_parameter("game_is_started"):
-        # some state-changing methods are allowed even before the game starts !
-        if func.__name__ not in ["set_message_read_state", "set_new_message_notification", "force_message_sending", "set_online_status"]:
-            raise UsageError(_("This feature is unavailable at the moment, since the game isn't started"))
-
-    try:
-        res = func(self, *args, **kwargs)
-        #self._datamanager._check_database_coherency() # WARNING - quite CPU intensive, to be removed later on ? TODO TODO REMOVE PAKAL !!!
-        self._datamanager.commit_all()
-    except Exception:
-        self._datamanager.abort_all()
-        raise
-    return res
-
-
-
-@contextmanager
-def action_failure_handler(request, success_message=None):
+class AbilityMetaclass(GameViewMetaclass):
     """
-    Context manager handling success/error messages when a game action is performed,
-    depending on *success_message* (which could be None) and potential exceptions encountered.
-    """
-    
-    user = request.datamanager.user
-    
-    # nothing in __enter__()
-    try:
-        yield None
-    except UsageError, e:
-        if isinstance(e, AbnormalUsageError):
-            logging.critical(repr(e))
-        user.add_error(unicode(e))
-    except Exception, e:
-        # we must localize this serious error, since often (eg. assertion errors) there is no specific message attached...
-        msg = repr(e)+" - " + traceback.format_exc()
-        logging.critical(msg)
-        if config.DEBUG:
-            user.add_error(msg)
-        else:
-            user.add_error(_("An internal error occurred"))
-    else:
-        if success_message: # might be left empty sometimes, if a more precise message must be built during action
-            user.add_message(success_message)
+    Metaclass automatically registering the new ability (which is also a view) in a global registry.
+    """ 
+    def __init__(NewClass, name, bases, new_dict):
+        
+        super(AbilityMetaclass, NewClass).__init__(name, bases, new_dict)
+        
+        if not NewClass.__name__.startswith("abstract"):
 
-'''
+            if __debug__:
+                pass
+                #RESERVED_NAMES = AbstractAbility.__dict__.keys()
+                ##assert utilities.check_is_lazy_object(NewClass.TITLE) # NO - unused atm !! delayed translation
+
+            GameDataManager.register_ability(NewClass)
+            
 
 
 
 
 
+class AbstractAbility(AbstractGameView):
 
-'''
-@decorator.decorator
-def inject_ability_context(func, self, *args, **kwargs):
-    full_kwargs = inspect.getcallargs(func, self, *args, **kwargs)
-    if "settings" in full_kwargs and full_kwargs["settings"] is None:
-        full_kwargs["settings"] = self.ability_data["settings"]
-    if "private_data" in full_kwargs and full_kwargs["private_data"] is None:
-        private_key = self._get_private_key()
-        full_kwargs["private_data"] = self.ability_data[private_key]
-    return func(**full_kwargs)
-'''
-
-class AbstractAbilityHandler(object):
-
-    __metaclass__ = AbstractAbilityMetaclass
-
-    NAME = None # slug to be overridden, used as primary identifier
-    TITLE = None # menu title, use lazy gettext when setting
-
-    FORMS = {} # dict mapping form identifiers to tuples (form class, processing method name)
-    ACTIONS = {} # dict mapping action identifiers to processing method names
-
-    TEMPLATE = "" # HTML template name
-
-    ACCESS = None # "master", "player", "authenticated" (player or master) or "anonymous"
-    REQUIREMENTS = [] # list of required permission names, only for "player" access
+    __metaclass__ = AbilityMetaclass
 
 
-
-    _action_field = "_action_" # for ajax and no-form request
-
+    # NOT ATM - TITLE = None # menu title, use lazy gettext when setting
 
 
-    def __init__(self, datamanager, ability_data):
+    def __init__(self, datamanager):
         self.__datamanager = weakref.ref(datamanager)
-        self._ability_data = weakref.ref(ability_data)
-        self.logger = logging.getLogger("abilities")
-        self._perform_lazy_initializations()
-
+        self._ability_data = weakref.ref(datamanager.get_ability_data(self.NAME))
+        self.logger = datamanager.logger # local cache
+        self._perform_lazy_initializations() # so that tests work too, we need it immediately here
+    
+    
+    def _process_request(self, request, *args, **kwargs):
+        # do NOT call parent method (unimplemented)
+        # Access checks have already been done here, so we may initialize lazy data
+        return self._auto_process_request(request)
+    
 
     @property
     def _datamanager(self):
         return self.__datamanager() # could be None
 
+
     def __getattr__(self, name):
         assert not name.startswith("_") # if we arrive here, it's probably a typo in an attribute fetching
-        
         try:
             value = getattr(self._datamanager, name)
         except AttributeError:
-            raise AttributeError("Neither ability nor datamanager have attribute '%s'" % name)
+            raise AttributeError("Neither ability nor datamanager has attribute '%s'" % name)
         return value
-
-    '''
-    def _check_permissions(self):
-        ###USELESS
-        """
-        This method should be called at django view level only, not from another ability
-        method (unittests don't have to care about permissions).
-        """
-        user = self._datamanager.user
-        
-        if self.ACCESS == "master":
-            if not user.is_master:
-                raise PermissionError(_("Ability reserved to administrators"))
-        elif self.ACCESS == "player":
-            if not user.is_character:
-                raise PermissionError(_("Ability reserved to standard users"))
-            if not user.has_permission(self.NAME):
-                # todo - what permission tokens do we use actually for abilities ??
-                raise PermissionError(_("Ability reserved to privileged users"))
-        elif self.ACCESS == "authenticated":
-            if not user.is_authenticated:
-                raise PermissionError(_("Ability reserved to registered users"))
-        else:
-            assert self.ACCESS == "anonymous"
-
-            '''
-
 
 
     @property
@@ -181,9 +84,13 @@ class AbstractAbilityHandler(object):
 
     @property
     def private_data(self):
-        assert self._datamanager.user.is_character
         private_key = self._get_private_key()
         return self._ability_data()["data"][private_key]
+    
+    
+    def _get_private_key(self):
+        return self._datamanager.user.username # can be None, a character or a superuser login!
+
 
     @property
     def all_private_data(self):
@@ -194,37 +101,24 @@ class AbstractAbilityHandler(object):
         return self.settings[name]
 
 
-    def get_master_summary(self):
-        # should return a dict of variables to be displayed in the "master summary" template
-        raise NotImplementedError
-
-
-
-
-
-
-
+    '''
     @classmethod
     def get_menu_title(cls):
         return cls.TITLE
-
+    '''
+   
     @readonly_method
     def get_ability_summary(self):
+        # FIXME - how does it work actually ?
         return self._get_ability_summary()
+
 
     def _get_ability_summary(self):
         """
-        Summary for master
+        Summary for super user ?
         """
         raise NotImplementedError
 
-
-
-
-
-    def _get_private_key(self):
-        assert self._datamanager.user.is_character # game master has no private storage here atm
-        return self._datamanager.user.username
 
 
 
@@ -240,24 +134,9 @@ class AbstractAbilityHandler(object):
         pass # to be overridden
 
 
-
-    """
-    def _____get_action_contexts(self): #TODO REMOVE
-        private_key = self._get_private_key()
-        if private_key:
-            private_data = self.ability_data[private_key]
-        else:
-            private_data = None
-        return (self.ability_data["settings"], private_data)
-    """
-
-    @transaction_watcher
+    @transaction_watcher(ensure_game_started=False) # authorized anytime
     def _perform_lazy_initializations(self):
 
-        user = self._datamanager.user
-
-        if not user.is_character:
-            return # nothing to do
 
         private_key = self._get_private_key()
         if not self.ability_data.has_key(private_key):
@@ -270,7 +149,8 @@ class AbstractAbilityHandler(object):
         """
         Not called in the case of game-level abilities
         """
-        pass # to be overridden
+        raise NotImplementedError("_setup_private_ability_data") # to be overridden
+
 
     @readonly_method
     def check_data_sanity(self, strict=False):
@@ -281,30 +161,35 @@ class AbstractAbilityHandler(object):
         assert isinstance(self.ability_data["data"], collections.Mapping), self.ability_data["data"]
 
         if strict:
+            available_logins = self._datamanager.get_available_logins()
             for name, value in self.ability_data["data"].items():
-                if self.LEVEL == "player":
-                    assert name in self._datamanager.get_character_names()
-                elif self.LEVEL == "domain":
-                    assert name in self._datamanager.get_domain_names()
-                else:
-                    assert name == "global"
+                assert name in available_logins
                 assert isinstance(value, collections.Mapping)
 
         self._check_data_sanity(strict=strict)
 
 
     def _check_data_sanity(self, strict=False):
-        pass # to be overridden
+        raise NotImplementedError("_check_data_sanity") # to be overridden
+
+
+    # now a standard method, not classmethod
+    def _instantiate_form(self,
+                          new_form_name, 
+                          hide_on_success=False, 
+                          previous_form_data=None,
+                          initial_data=None):
+        return super(AbstractAbility, self)._instantiate_form(datamanager=self, # the ability behaves as an extended datamanager
+                                                              new_form_name=new_form_name, 
+                                                              hide_on_success=hide_on_success,
+                                                              previous_form_data=previous_form_data,
+                                                              initial_data=initial_data)
+                                    
 
 
 
 
-
-
-
-
-
-class PayableAbilityHandler(object):
+class __PayableAbilityHandler(object):
     """
     Mix-in class that manages items/services purchased by players, in an ability context.
     
@@ -431,6 +316,39 @@ class PayableAbilityHandler(object):
 
 
 '''
+    def _check_permissions(self):
+        ###USELESS
+        """
+        This method should be called at django view level only, not from another ability
+        method (unittests don't have to care about permissions).
+        """
+        user = self._datamanager.user
+        
+        if self.ACCESS == "master":
+            if not user.is_master:
+                raise PermissionError(_("Ability reserved to administrators"))
+        elif self.ACCESS == "player":
+            if not user.is_character:
+                raise PermissionError(_("Ability reserved to standard users"))
+            if not user.has_permission(self.NAME):
+                # todo - what permission tokens do we use actually for abilities ??
+                raise PermissionError(_("Ability reserved to privileged users"))
+        elif self.ACCESS == "authenticated":
+            if not user.is_authenticated:
+                raise PermissionError(_("Ability reserved to registered users"))
+        else:
+            assert self.ACCESS == "anonymous"
+
+
+    def _____get_action_contexts(self): #TODO REMOVE
+        private_key = self._get_private_key()
+        if private_key:
+            private_data = self.ability_data[private_key]
+        else:
+            private_data = None
+        return (self.ability_data["settings"], private_data)
+
+ 
     def __init__(self, ability_name, max_items, items_available=0):
         self.__ability_name = ability_name
         self.__record = PersistentDict(

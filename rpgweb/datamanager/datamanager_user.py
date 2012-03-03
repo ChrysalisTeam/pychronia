@@ -17,10 +17,8 @@ class GameUser(object):
         *previous_user* is used when logging in/out a user, to ensure no
         notifications and other persistent data gets lost in the change.
         """
-        master_login = datamanager.get_global_parameter("master_login")
-        anonymous_login = datamanager.get_global_parameter("anonymous_login")
-
-        if username is not None and username not in datamanager.get_character_usernames() + [master_login]:
+        
+        if username  not in datamanager.get_available_logins():
             raise UsageError(_("Username %s is unknown") % username)
 
         self.is_master = datamanager.is_master(username)

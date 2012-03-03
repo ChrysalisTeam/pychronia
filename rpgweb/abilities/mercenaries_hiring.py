@@ -67,14 +67,15 @@ class MercenariesHiringAbility(AbstractAbilityHandler):
 
 
 
-    def get_template_vars(self, **previous_form_data):
+    def get_template_vars(self, previous_form_data=None):
 
         employer_profile = request.datamanager.get_character_properties(user.username)
         gems = request.datamanager.get_character_properties(user.username)["gems"]
         total_gems_value = sum(gems)
 
-        hiring_form = self._instantiate_form(new_form_name="agents_form", hide_on_success=False,
-                                             **previous_form_data)
+        hiring_form = self._instantiate_form(new_form_name="agents_form", 
+                                             hide_on_success=False,
+                                             previous_form_data)
 
         return {
                  'page_title': _("Mercenaries Network Management"),

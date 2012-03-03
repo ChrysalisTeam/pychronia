@@ -327,6 +327,8 @@ class PlayerAuthentication(BaseDataManager):
 
         game_data = self.data 
         
+        assert self.get_global_parameter("anonymous_login") is None or \
+               utilities.check_is_slug(self.get_global_parameter("anonymous_login"))
         utilities.check_is_slug(self.get_global_parameter("master_login"))
         utilities.check_is_slug(self.get_global_parameter("master_password"))
 
@@ -347,8 +349,10 @@ class PlayerAuthentication(BaseDataManager):
         utilities.check_is_slug(global_parameters["master_real_life_email"])
 
 
-
-
+    @readonly_method
+    def get_available_logins(self):
+        return [self.get_global_parameter("anonymous_login")] + self.get_character_usernames() + [self.get_global_parameter("master_login")]
+        
 
     def _notify_user_change(self, username, **kwargs):
         assert not hasattr(super(PlayerAuthentication, self), "_notify_user_change") # we're well top-level here
@@ -2045,23 +2049,24 @@ class GameViews(BaseDataManager):
     def _sync_game_view_data(self):
         """
         If we add/remove views to rpgweb without resetting the DB, a normal desynchronization occurs.
-        So we must constantly ensure that this data stays in sync.
+        So we must constantly ensure that the data stays in sync.
         """
-        self.data["views"]["activated_views"] = sorted(set(self.data["views"]["activated_views"]) & set(self.ACTIVABLE_VIEWS_REGISTRY.keys()))
+        new_view_data = set(self.data["views"]["activated_views"]) & set(self.ACTIVABLE_VIEWS_REGISTRY.keys())
+        self.data["views"]["activated_views"] = PersistentList(sorted(new_view_data))
                     
                     
     def _load_initial_data(self, **kwargs):
         super(GameViews, self)._load_initial_data(**kwargs)
         new_data = self.data
-        new_data.setdefault("views", {})
-        new_data["views"].setdefault("activated_views", [])
+        new_data.setdefault("views", PersistentDict())
+        new_data["views"].setdefault("activated_views", PersistentList())
         self._sync_game_view_data()
 
 
     def _check_database_coherency(self, **kwargs):
         super(GameViews, self)._check_database_coherency(**kwargs)
 
-        self._sync_game_view_data()
+        self._sync_game_view_data() # important if some views 
         
         game_data = self.data
         for view_name in game_data["views"]["activated_views"]:
@@ -2107,17 +2112,30 @@ class SpecialAbilities(BaseDataManager):
     @classmethod
     def list_abilities(self):
         return self.ABILITIES_REGISTRY.values()  
-    
+
+
+    def _sync_ability_data(self):
+        """
+        If we add/remove abilities to rpgweb without resetting the DB, a normal desynchronization occurs.
+        So we must constantly ensure that this data stays in sync.
+        """
+        for (key, klass) in self.ABILITIES_REGISTRY.items():
+            if key not in self.data["abilities"]:
+                self.logger.warning("Lately setting up main settings for ability %s" % key)
+                ability_data = self.data["abilities"][key] = PersistentDict()
+                klass.setup_main_ability_data(ability_data) 
+        # if exceeding data exists (some abilities have disappeared), so be it
+ 
 
     def _load_initial_data(self, **kwargs):
         super(SpecialAbilities, self)._load_initial_data(**kwargs)
 
         new_data = self.data
-
+ 
         new_data.setdefault("abilities", {})
         for (key, klass) in self.ABILITIES_REGISTRY.items():
-            ability_data = new_data["abilities"].setdefault(key, {})
             self.logger.debug("Setting up main settings for ability %s" % key) #TODO
+            ability_data = new_data["abilities"].setdefault(key, {})
             klass.setup_main_ability_data(ability_data) # each ability fills its default values
 
 
@@ -2130,20 +2148,22 @@ class SpecialAbilities(BaseDataManager):
             ability = getattr(self.abilities, name) # lazy loading forced
             ability.check_data_sanity()
 
-
-    def _notify_user_change(self, username, **kwargs):
-        super(SpecialAbilities, self)._notify_user_change(username, **kwargs)
-
-        self.abilities = SpecialAbilities.AbilityLazyLoader(self) # important - because of weak refs to old data!!
-
-
     @readonly_method
     def get_ability_data(self, ability_name):
         return self.data["abilities"][ability_name]
 
 
-    class AbilityLazyLoader:
+    ''' # NOPE - abilities are like views, external to the datamanager
+    def _notify_user_change(self, username, **kwargs):
+        super(SpecialAbilities, self)._notify_user_change(username, **kwargs)
 
+        self.abilities = SpecialAbilities.AbilityLazyLoader(self) # important - because of weak refs to old data!!
+    '''
+
+    class AbilityLazyLoader:
+        """
+        Helper to easily load any ability through the datamanager.
+        """
         def __init__(self, datamanager):
             self.__datamanager = weakref.ref(datamanager)
 
@@ -2152,24 +2172,13 @@ class SpecialAbilities(BaseDataManager):
             return self.__datamanager() # could be None
 
         def __getattr__(self, ability_name):
-
-            registry = SpecialAbilities.ABILITIES_REGISTRY
-
             try:
-
-                ability_class = registry[ability_name]
-
-                # instantiation performs lazy init of private ability data too
-                ability = ability_class(self._datamanager, self._datamanager.get_ability_data(ability_name))
-
-                setattr(self, ability_name, ability) # ability now cached
-                return ability
-
+                ability_class = self._datamanager.ABILITIES_REGISTRY[ability_name]
+                return ability_class(self._datamanager)  # do NOT cache it !!!
             except Exception, e:
                 #print "error", e, traceback.print_exc() # TODO REMOVE
                 raise
-
-
+ 
 
 
 
