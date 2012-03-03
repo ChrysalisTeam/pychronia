@@ -487,7 +487,7 @@ class PermissionsHandling(BaseDataManager): # TODO REFINE
     @classmethod
     def register_permissions(cls, names):
         assert all((name.lower() == name and " " not in name) for name in names)
-        cls.PERMISSIONS_REGISTRY.update(names)
+        cls.PERMISSIONS_REGISTRY.update(names) # SET operation, not dict
 
 
     def _load_initial_data(self, **kwargs):
@@ -2006,9 +2006,83 @@ class Items3dViewing(BaseDataManager):
 
 
 
+@register_module
+class GameViews(BaseDataManager):
+    
+    GAME_VIEWS_REGISTRY = {} # all game views, including abilities, register themselves here thanks to their metaclass
+    ACTIVABLE_VIEWS_REGISTRY = {} # only views that need to be activated by game master
+    
+    
+    def __init__(self, **kwargs):
+        super(GameViews, self).__init__(**kwargs)
+    
+
+    @classmethod
+    def list_game_views(self):
+        return self.GAME_VIEWS_REGISTRY.values()  
+    
+    
+    @classmethod
+    def register_game_view(cls, view_class):
+        assert isinstance(view_class, type)
+        
+        assert view_class.NAME not in cls.GAME_VIEWS_REGISTRY
+        cls.GAME_VIEWS_REGISTRY[view_class.NAME] = view_class
+        
+        if not view_class.ALWAYS_AVAILABLE:
+            assert view_class.NAME not in cls.ACTIVABLE_VIEWS_REGISTRY
+            cls.ACTIVABLE_VIEWS_REGISTRY[view_class.NAME] = view_class
+        
+        if view_class.PERMISSIONS:
+            # auto registration of permission requirements brought by that view
+            cls.register_permissions(view_class.PERMISSIONS)
+        
+    @classmethod
+    def list_activable_views(self):
+        return self.ACTIVABLE_VIEWS_REGISTRY.values() 
+       
+       
+    def _sync_game_view_data(self):
+        """
+        If we add/remove views to rpgweb without resetting the DB, a normal desynchronization occurs.
+        So we must constantly ensure that this data stays in sync.
+        """
+        self.data["views"]["activated_views"] = sorted(set(self.data["views"]["activated_views"]) & set(self.ACTIVABLE_VIEWS_REGISTRY.keys()))
+                    
+                    
+    def _load_initial_data(self, **kwargs):
+        super(GameViews, self)._load_initial_data(**kwargs)
+        new_data = self.data
+        new_data.setdefault("views", {})
+        new_data["views"].setdefault("activated_views", [])
+        self._sync_game_view_data()
 
 
+    def _check_database_coherency(self, **kwargs):
+        super(GameViews, self)._check_database_coherency(**kwargs)
 
+        self._sync_game_view_data()
+        
+        game_data = self.data
+        for view_name in game_data["views"]["activated_views"]:
+            assert view_name in self.ACTIVABLE_VIEWS_REGISTRY.keys()
+
+
+    @readonly_method
+    def is_view_activated(self, view_class):
+        key = view_class.NAME
+        return (key in self.data["views"]["activated_views"])
+        
+        
+    @transaction_watcher(ensure_game_started=False)    
+    def set_active_views(self, view_names):
+        activable_views = self.ACTIVABLE_VIEWS_REGISTRY.keys()
+        if not all((view_name in activable_views for view_name in view_names)):
+            raise AbnormalUsageError(_("Unknown view name detected in the set of views to be activated"))
+        self.data["views"]["activated_views"] = sorted(view_names)             
+           
+    
+                                   
 
 
 @register_module
@@ -2016,11 +2090,24 @@ class SpecialAbilities(BaseDataManager):
 
     ABILITIES_REGISTRY = {}  # abilities automatically register themselves with this dict, thanks to their metaclass
 
+
     def __init__(self, **kwargs):
         super(SpecialAbilities, self).__init__(**kwargs)
-
         self.abilities = SpecialAbilities.AbilityLazyLoader(self)
+    
+    
+    @classmethod
+    def register_ability(cls, view_class):
+        assert isinstance(view_class, type)
+        
+        assert view_class.NAME not in cls.ABILITIES_REGISTRY
+        cls.ABILITIES_REGISTRY[view_class.NAME] = view_class
 
+
+    @classmethod
+    def list_abilities(self):
+        return self.ABILITIES_REGISTRY.values()  
+    
 
     def _load_initial_data(self, **kwargs):
         super(SpecialAbilities, self)._load_initial_data(**kwargs)

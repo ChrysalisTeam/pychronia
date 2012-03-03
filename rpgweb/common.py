@@ -54,6 +54,12 @@ class AccessResult: # result of global computation
     available = "available" # visible and executable
 
 
+class AvailablePermissions:
+    """
+    Centralized enum of permissions, to ensure no typo is made...
+    """
+    pass
+    
 
 
 

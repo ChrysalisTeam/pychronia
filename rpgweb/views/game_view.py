@@ -67,11 +67,8 @@ class GameViewMetaclass(type):
 
                 assert utilities.check_is_slug(NewClass.NAME)
 
-
                 assert NewClass.ACCESS in UserAccess.enum_values
                 assert isinstance(NewClass.PERMISSIONS,  (list, tuple))
-                for permission in NewClass.PERMISSIONS:
-                    assert permission in GameDataManager.PERMISSIONS_REGISTRY
                 assert NewClass.ALWAYS_AVAILABLE in (True, False)
                 
                 if NewClass.ACCESS == UserAccess.master:
@@ -84,9 +81,7 @@ class GameViewMetaclass(type):
                 else:
                     raise NotImplementedError("Missing UserAccess case in GameView setup")
                 
-            # TFIXME REACTIVATE LATER
-            #assert not GameDataManager.VIEWS_REGISTRY.has_key(NewClass.NAME), NewClass.NAME
-           # GameDataManager.VIEWS_REGISTRY[NewClass.NAME] = NewClass # we register the game view
+            GameDataManager.register_game_view(NewClass)
             
     
 
@@ -122,13 +117,11 @@ class __AbilityMetaclass(GameViewMetaclass):
                     _check_callback(callback)
                 for (action_name, callback) in NewClass.ACTIONS.items():
                     _check_callback(callback)
-
-            assert not GameDataManager.ABILITIES_REGISTRY.has_key(NewClass.NAME), NewClass.NAME
-            GameDataManager.ABILITIES_REGISTRY[NewClass.NAME] = NewClass # we register the ability
             
-            if NewClass.ACCESS in (UserAccess.character, UserAccess.authenticated):
-                assert NewClass.NAME not in GameDataManager.PERMISSIONS_REGISTRY
-                GameDataManager.PERMISSIONS_REGISTRY.add(NewClass.NAME)
+            GameDataManager.register_ability(NewClass)
+            
+
+
             
 '''
 
@@ -162,9 +155,9 @@ class AbstractGameView(object):
     
     TEMPLATE = "" # HTML template name, required when using default request handler
 
-    ACCESS = None # "master", "player", "authenticated" (player or master) or "anonymous"
-    PERMISSIONS = [] # list of required permission names, only for "player" access    
-    ALWAYS_AVAILABLE = None # True iff view can't be globally hidden by  game master
+    ACCESS = None # UserAccess entry
+    PERMISSIONS = [] # list of required permission names, only used for character access    
+    ALWAYS_AVAILABLE = None # True iff view can't be globally hidden by game master
 
     _action_field = "_action_" # for ajax and no-form request
 
@@ -419,14 +412,18 @@ def _normalize_view_access_parameters(access=_undefined,
                 always_available=always_available)
                 
 
-
+import django.views.generic  
 class ClassInstantiationProxy(object):
+    """
+    Stateless object which automatically instantiates the targeted game view type on access
+    """
     def __init__(self, klass):
         self._klass = klass
     def __getattr__(self, name):
         return getattr(self._klass, name) # useful for introspection of views                
     def __call__(self, *args, **kwargs):
         return self._klass(*args, **kwargs)(*args, **kwargs) # we execute new instance of underlying class
+
 
 def register_view(view_object=None, 
                   access=_undefined,
