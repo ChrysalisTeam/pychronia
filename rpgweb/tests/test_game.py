@@ -1373,7 +1373,7 @@ class TestSpecialAbilities(BaseGameTestCase):
 
     @for_ability(RunicTranslationAbility)
     def test_runic_translation(self):
-        runic_translation = self.dm.abilities.runic_translation
+        runic_translation = self.dm.instantiate_ability("runic_translation")
 
         assert runic_translation.ability_data
 
@@ -1449,7 +1449,7 @@ class TestSpecialAbilities(BaseGameTestCase):
     @for_ability(HouseLockingAbility)
     def test_house_locking(self):
 
-        house_locking = self.dm.abilities.house_locking
+        house_locking = self.dm.instantiate_ability("house_locking")
         expected_password = house_locking.get_ability_parameter("house_doors_password")
 
         self.assertEqual(house_locking.are_house_doors_open(), True) # initial state
@@ -1693,7 +1693,7 @@ class TestSpecialAbilities(BaseGameTestCase):
         
         char_names = self.dm.get_character_usernames()
 
-        wiretapping = self.dm.abilities.wiretapping
+        wiretapping = self.dm.instantiate_ability("wiretapping")
 
         wiretapping.change_wiretapping_targets(PersistentList())
         self.assertEqual(wiretapping.get_current_targets(), [])

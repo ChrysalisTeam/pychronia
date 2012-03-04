@@ -2022,8 +2022,8 @@ class GameViews(BaseDataManager):
     
 
     @classmethod
-    def list_game_views(self):
-        return self.GAME_VIEWS_REGISTRY.values()  
+    def get_game_views(self):
+        return self.GAME_VIEWS_REGISTRY.item()  
     
     
     @classmethod
@@ -2042,8 +2042,8 @@ class GameViews(BaseDataManager):
             cls.register_permissions(view_class.PERMISSIONS)
         
     @classmethod
-    def list_activable_views(self):
-        return self.ACTIVABLE_VIEWS_REGISTRY.values() 
+    def get_activable_views(self):
+        return self.ACTIVABLE_VIEWS_REGISTRY.items() 
        
        
     def _sync_game_view_data(self):
@@ -2087,7 +2087,15 @@ class GameViews(BaseDataManager):
         self.data["views"]["activated_views"] = sorted(view_names)             
            
     
-                                   
+    def instantiate_game_view(self, name_or_klass):
+        if isinstance(name_or_klass, basestring):
+            klass = self.GAME_VIEWS_REGISTRY[name_or_klass]
+        else:
+            assert isinstance(name_or_klass, type)
+            klass = name_or_klass
+        return klass(self) # datamanager arg might be ignored by base GameView, but not by its subclasses
+
+                                       
 
 
 @register_module
@@ -2098,7 +2106,7 @@ class SpecialAbilities(BaseDataManager):
 
     def __init__(self, **kwargs):
         super(SpecialAbilities, self).__init__(**kwargs)
-        self.abilities = SpecialAbilities.AbilityLazyLoader(self)
+        #self.abilities = SpecialAbilities.AbilityLazyLoader(self)
     
     
     @classmethod
@@ -2110,9 +2118,14 @@ class SpecialAbilities(BaseDataManager):
 
 
     @classmethod
-    def list_abilities(self):
-        return self.ABILITIES_REGISTRY.values()  
-
+    def get_abilities(self):
+        return self.ABILITIES_REGISTRY.items()  
+    
+    
+    def instantiate_ability(self, name_or_klass):
+        assert name_or_klass in self.ABILITIES_REGISTRY.keys() + self.ABILITIES_REGISTRY.values()
+        return self.instantiate_game_view(name_or_klass) 
+    
 
     def _sync_ability_data(self):
         """
@@ -2158,8 +2171,10 @@ class SpecialAbilities(BaseDataManager):
         super(SpecialAbilities, self)._notify_user_change(username, **kwargs)
 
         self.abilities = SpecialAbilities.AbilityLazyLoader(self) # important - because of weak refs to old data!!
-    '''
 
+    
+    @transaction_watcher
+    
     class AbilityLazyLoader:
         """
         Helper to easily load any ability through the datamanager.
@@ -2178,7 +2193,7 @@ class SpecialAbilities(BaseDataManager):
             except Exception, e:
                 #print "error", e, traceback.print_exc() # TODO REMOVE
                 raise
- 
+     '''
 
 
 

@@ -31,7 +31,7 @@ from rpgweb.utilities import mediaplayers
 
 
 
- 
+'''
 # TODO - transform this into instance which exposes real views as attributes, wrapped with register_view !!!!
 def ability(request, ability_name):
 
@@ -56,7 +56,7 @@ def ability(request, ability_name):
     response = ability_handler.process_request(request)
 
     return response
-
+'''
  
 @register_view(access=UserAccess.master)
 def ajax_force_email_sending(request):
