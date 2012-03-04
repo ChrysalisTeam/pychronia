@@ -23,7 +23,7 @@ class AbilityMetaclass(GameViewMetaclass):
         
         super(AbilityMetaclass, NewClass).__init__(name, bases, new_dict)
         
-        if not NewClass.__name__.startswith("abstract"):
+        if not NewClass.__name__.startswith("Abstract"):
 
             if __debug__:
                 pass

@@ -5,7 +5,6 @@ from __future__ import unicode_literals
 import os, sys, pytest, unittest
 
 
-
 ## TEST CONFIGURATION ##
 
 os.environ["DJANGO_SETTINGS_MODULE"] = "rpgweb.tests._test_settings"
@@ -27,7 +26,7 @@ from rpgweb.datamanager.datamanager_modules import *
 
 import rpgweb.middlewares
 import rpgweb.views
-
+from rpgweb.views._abstract_game_view import AbstractGameView
 # we want django-specific checker methods
 # do NOT use the django.test.TestCase version, with SQL session management
 #from django.utils.unittest.case import TestCase 
@@ -237,7 +236,8 @@ class BaseGameTestCase(TestCase):
             self.dm.reset_game_data()
 
             self.dm.check_database_coherency() # important
-
+            assert self.dm.get_event_count("BASE_CHECK_DB_COHERENCY_PUBLIC_CALLED") == 1 # no bypassing because of wrong override
+            
             self.dm.set_game_state(True)
 
             self.dm.clear_all_event_stats()
@@ -345,7 +345,7 @@ class TestGame(BaseGameTestCase):
                 castrated_dm._check_database_coherency()
             except:
                 pass
-            assert castrated_dm.get_event_count("BASE_CHECK_DB_COHERENCY_CALLED") == 1
+            assert castrated_dm.get_event_count("BASE_CHECK_DB_COHERENCY_PRIVATE_CALLED") == 1
 
             try:
                 report = PersistentList()
@@ -1114,6 +1114,40 @@ class TestGame(BaseGameTestCase):
         self.assertRaises(dm_module.UsageError, self.dm.process_secret_answer_attempt, "guy3", "badanswer", "guy3@sciences.com")
         self.assertRaises(dm_module.UsageError, self.dm.process_secret_answer_attempt, "guy3", "MiLoU", "bademail@sciences.com")
         self.assertEqual(len(self.dm.get_all_queued_messages()), 1) # untouched
+
+    @for_core_module(GameViews)
+    def test_game_view_registration(self):
+        
+        assert self.dm.get_event_count("SYNC_GAME_VIEW_DATA_CALLED") == 0 # event stats have been cleared above
+        
+        views_dict = self.dm.get_game_views()
+        activable_views_dict = self.dm.get_activable_views()
+        assert set(activable_views_dict.keys()) < set(self.dm.get_game_views().keys())
+        
+        random_view = activable_views_dict.keys()[0]
+        
+        # instantiation works for both names and classes
+        view = self.dm.instantiate_game_view(random_view)
+        assert isinstance(view, AbstractGameView)
+        view = self.dm.instantiate_game_view(activable_views_dict[random_view])
+        assert isinstance(view, AbstractGameView)        
+
+        with pytest.raises(AbnormalUsageError):
+            self.dm.set_activated_game_views(["aaa", random_view])
+               
+        assert not self.dm.is_game_view_activated(random_view)
+        self.dm.set_activated_game_views([random_view])
+        assert self.dm.is_game_view_activated(random_view)
+        
+        # test registry resync
+        del self.dm.ACTIVABLE_VIEWS_REGISTRY[random_view] # class-level registry
+        self.dm.sync_game_view_data()
+        assert not self.dm.is_game_view_activated(random_view) # cleanup occurred
+        assert self.dm.get_event_count("SYNC_GAME_VIEW_DATA_CALLED") == 1
+        
+        _dm2 = dm_module.GameDataManager(game_instance_id=TEST_GAME_INSTANCE_ID,
+                                  game_root=self.connection.root())
+        assert _dm2.get_event_count("SYNC_GAME_VIEW_DATA_CALLED") == 1 # sync well called at init!!
 
 
     @for_core_module(GameEvents)

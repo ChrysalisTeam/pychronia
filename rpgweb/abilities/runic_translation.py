@@ -33,7 +33,7 @@ class RunicTranslationAbility(AbstractAbility):
     TEMPLATE = "abilities/runic_translation.html"
 
     ACCESS = UserAccess.authenticated
-    PERMISSIONS = ["messaging", "items"]
+    PERMISSIONS = ["runic_translation", "messaging", "items"]
     ALWAYS_AVAILABLE = False 
 
 

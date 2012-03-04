@@ -266,7 +266,7 @@ character_properties:
         secret_question: "The name of my first pet ?"
         secret_answer: ""
         external_contacts: []
-        new_messages_notification: info_spots_1
+        new_messages_notification: victory_acharis
         initial_cold_cash: 1000 
         official_name: "Kha"
         real_life_identity: "John Doe"

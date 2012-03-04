@@ -7,7 +7,6 @@ from rpgweb.common import *
 from .datamanager_user import GameUser
 from .datamanager_core import *
 
-
 PLACEHOLDER = object()
 
 
@@ -24,18 +23,15 @@ def register_module(Klass):
 @register_module
 class GameGlobalParameters(BaseDataManager):
 
-
-    @readonly_method
-    def check_database_coherency(self, **kwargs):
+    def _check_database_coherency(self, **kwargs):
         super(GameGlobalParameters, self)._check_database_coherency(**kwargs)
-        
+
         game_data = self.data
 
         utilities.check_is_bool(game_data["global_parameters"]["game_is_started"])
 
         assert os.path.isfile(os.path.join(config.GAME_FILES_ROOT, "musics", game_data["global_parameters"]["opening_music"]))
   
-
 
     @readonly_method
     def get_global_parameters(self):
@@ -81,7 +77,7 @@ class GameEvents(BaseDataManager): # TODO REFINE
             "message": basestring,
             "substitutions": (types.NoneType, PersistentDict),
             "url": (types.NoneType, basestring),
-            "username": basestring
+            "username": (types.NoneType, basestring)
         }
         previous_time = None
         for event in self.data["events_log"]:
@@ -91,7 +87,7 @@ class GameEvents(BaseDataManager): # TODO REFINE
             previous_time = event["time"]
             utilities.check_dictionary_with_template(event, event_reference)
             username = event["username"]
-            assert username in self.get_character_names() or username == self.get_global_parameter("master_login") or username is None
+            assert username in self.get_character_usernames() or username == self.get_global_parameter("master_login") or username is None
 
     @transaction_watcher
     def log_game_event(self, message, substitutions=None, url=None, is_master_action=False):
@@ -341,8 +337,9 @@ class PlayerAuthentication(BaseDataManager):
         # MASTER and ANONYMOUS cases
 
         global_parameters = game_data["global_parameters"]
-
-        utilities.check_is_slug(global_parameters["anonymous_login"])
+        
+        if global_parameters["anonymous_login"] is not None:
+            utilities.check_is_slug(global_parameters["anonymous_login"])
         utilities.check_is_slug(global_parameters["master_login"])
         utilities.check_is_slug(global_parameters["master_password"])
         utilities.check_is_slug(global_parameters["master_email"])
@@ -514,7 +511,8 @@ class PermissionsHandling(BaseDataManager): # TODO REFINE
             assert permission.lower() == permission
             
         game_data = self.data
-
+        
+        ''' NIO - what if we deactivate a module !!!
         for (name, character) in game_data["character_properties"].items():
             for permission in character["permissions"]:
                 assert permission in self.PERMISSIONS_REGISTRY
@@ -522,7 +520,7 @@ class PermissionsHandling(BaseDataManager): # TODO REFINE
         for (name, domain) in game_data["domains"].items():
             for permission in domain["permissions"]:
                 assert permission in self.PERMISSIONS_REGISTRY
-
+        '''
 
     @transaction_watcher(ensure_game_started=False)
     def update_permissions(self, username, permissions):
@@ -806,7 +804,7 @@ class TextMessaging(BaseDataManager): # TODO REFINE
                 all_chars = game_data["character_properties"].keys()
                 for username in msg["intercepted_by"]:
                     assert username in all_chars
-                utilities.check_no_duplciates(msg["intercepted_by"])
+                utilities.check_no_duplicates(msg["intercepted_by"])
                     
                 all_users = all_chars + [game_data["global_parameters"]["master_login"]]
                 assert all((char in all_users) for char in msg["has_read"]), msg["has_read"]
@@ -821,8 +819,8 @@ class TextMessaging(BaseDataManager): # TODO REFINE
         check_message_list(game_data["messages_queued"])
 
         #TODO CHECK THAT !!
-        all_msg_files = [self.data["audio_messages"][properties["new_messages_notification"]]["file"] for properties in
-                         self.data["character_properties"].values()]
+        all_msg_files = [self.data["audio_messages"][properties["new_messages_notification"]]["file"] 
+                         for properties in self.data["character_properties"].values()]
         #all_msg_files += [self.data["audio_messages"][properties["request_for_report"]]["file"] for properties in self.data["domains"].values()]
         assert len(set(all_msg_files)) == len(self.data["character_properties"]) # + len(self.data["domains"])# users must NOT share new-message audio notifications
 
@@ -1064,7 +1062,6 @@ class TextMessaging(BaseDataManager): # TODO REFINE
         return self.data["manual_messages_templates"][tpl_id]
 
 
-
     @readonly_method
     def get_game_master_messages(self):
         # returns all emails sent to external contacts or robots
@@ -1228,7 +1225,8 @@ class TextMessaging(BaseDataManager): # TODO REFINE
 
         return (concerned_characters, external_emails)
 
-    @transaction_watcher
+
+    @transaction_watcher(ensure_game_started=False)
     def _update_external_contacts(self, msg):
 
         (concerned_characters, external_emails) = self._get_external_contacts_updates(msg)
@@ -1242,6 +1240,7 @@ class TextMessaging(BaseDataManager): # TODO REFINE
             
             new_contacts_added = (new_external_contacts != old_external_contacts)
             return new_contacts_added
+
 
     @transaction_watcher
     def _immediately_send_message(self, msg):
@@ -1772,7 +1771,7 @@ class MoneyItemsOwnership(BaseDataManager):
 
         # We initialize some runtime checking parameters #
         new_data["global_parameters"]["total_digital_money"] = total_digital_money # integer
-        new_data["global_parameters"]["total_gems"] = sorted(total_gems) # sorted list of integer values
+        new_data["global_parameters"]["total_gems"] = PersistentList(sorted(total_gems)) # sorted list of integer values
 
 
 
@@ -2003,7 +2002,6 @@ class Items3dViewing(BaseDataManager):
             utilities.check_dictionary_with_template(properties, item_viewer_reference)
 
 
-
     @readonly_method
     def get_items_3d_settings(self):
         return self.data["item_3d_settings"]
@@ -2019,18 +2017,24 @@ class GameViews(BaseDataManager):
     
     def __init__(self, **kwargs):
         super(GameViews, self).__init__(**kwargs)
-    
+        self.sync_game_view_data() # important if some views have disappeared since then
+
 
     @classmethod
     def get_game_views(self):
-        return self.GAME_VIEWS_REGISTRY.item()  
+        return self.GAME_VIEWS_REGISTRY.copy()
     
     
+    @classmethod
+    def get_activable_views(self):
+        return self.ACTIVABLE_VIEWS_REGISTRY.copy() 
+        
+         
     @classmethod
     def register_game_view(cls, view_class):
         assert isinstance(view_class, type)
         
-        assert view_class.NAME not in cls.GAME_VIEWS_REGISTRY
+        assert view_class.NAME and view_class.NAME not in cls.GAME_VIEWS_REGISTRY
         cls.GAME_VIEWS_REGISTRY[view_class.NAME] = view_class
         
         if not view_class.ALWAYS_AVAILABLE:
@@ -2041,46 +2045,42 @@ class GameViews(BaseDataManager):
             # auto registration of permission requirements brought by that view
             cls.register_permissions(view_class.PERMISSIONS)
         
-    @classmethod
-    def get_activable_views(self):
-        return self.ACTIVABLE_VIEWS_REGISTRY.items() 
-       
-       
-    def _sync_game_view_data(self):
+    
+    @transaction_watcher(ensure_game_started=False)
+    def sync_game_view_data(self):
         """
         If we add/remove views to rpgweb without resetting the DB, a normal desynchronization occurs.
         So we must constantly ensure that the data stays in sync.
         """
         new_view_data = set(self.data["views"]["activated_views"]) & set(self.ACTIVABLE_VIEWS_REGISTRY.keys())
         self.data["views"]["activated_views"] = PersistentList(sorted(new_view_data))
-                    
+        self.notify_event("SYNC_GAME_VIEW_DATA_CALLED")
+              
                     
     def _load_initial_data(self, **kwargs):
         super(GameViews, self)._load_initial_data(**kwargs)
         new_data = self.data
         new_data.setdefault("views", PersistentDict())
         new_data["views"].setdefault("activated_views", PersistentList())
-        self._sync_game_view_data()
+        # no need to sync - it will done later in __init__()
 
 
     def _check_database_coherency(self, **kwargs):
         super(GameViews, self)._check_database_coherency(**kwargs)
 
-        self._sync_game_view_data() # important if some views 
-        
         game_data = self.data
         for view_name in game_data["views"]["activated_views"]:
             assert view_name in self.ACTIVABLE_VIEWS_REGISTRY.keys()
 
 
     @readonly_method
-    def is_view_activated(self, view_class):
-        key = view_class.NAME
-        return (key in self.data["views"]["activated_views"])
+    def is_game_view_activated(self, view_name):
+        return (view_name in self.data["views"]["activated_views"])
         
         
     @transaction_watcher(ensure_game_started=False)    
-    def set_active_views(self, view_names):
+    def set_activated_game_views(self, view_names):
+        assert not isinstance(view_names, basestring)
         activable_views = self.ACTIVABLE_VIEWS_REGISTRY.keys()
         if not all((view_name in activable_views for view_name in view_names)):
             raise AbnormalUsageError(_("Unknown view name detected in the set of views to be activated"))
@@ -2100,34 +2100,35 @@ class GameViews(BaseDataManager):
 
 @register_module
 class SpecialAbilities(BaseDataManager):
-
+    # TODO TEST THAT MODULE TOO !!
     ABILITIES_REGISTRY = {}  # abilities automatically register themselves with this dict, thanks to their metaclass
 
 
     def __init__(self, **kwargs):
         super(SpecialAbilities, self).__init__(**kwargs)
         #self.abilities = SpecialAbilities.AbilityLazyLoader(self)
-    
+        self.sync_ability_data()
     
     @classmethod
     def register_ability(cls, view_class):
         assert isinstance(view_class, type)
-        
-        assert view_class.NAME not in cls.ABILITIES_REGISTRY
+        data = view_class, view_class.NAME
+        assert view_class.NAME and view_class.NAME not in cls.ABILITIES_REGISTRY, data
         cls.ABILITIES_REGISTRY[view_class.NAME] = view_class
 
 
     @classmethod
     def get_abilities(self):
-        return self.ABILITIES_REGISTRY.items()  
+        return self.ABILITIES_REGISTRY.copy()  
     
     
     def instantiate_ability(self, name_or_klass):
         assert name_or_klass in self.ABILITIES_REGISTRY.keys() + self.ABILITIES_REGISTRY.values()
         return self.instantiate_game_view(name_or_klass) 
     
-
-    def _sync_ability_data(self):
+    
+    @transaction_watcher(ensure_game_started=False)
+    def sync_ability_data(self):
         """
         If we add/remove abilities to rpgweb without resetting the DB, a normal desynchronization occurs.
         So we must constantly ensure that this data stays in sync.
@@ -2152,14 +2153,13 @@ class SpecialAbilities(BaseDataManager):
             klass.setup_main_ability_data(ability_data) # each ability fills its default values
 
 
-    def _check_database_coherency(self, **kwargs):
+    def _check_database_coherency(self, strict=False, **kwargs):
         super(SpecialAbilities, self)._check_database_coherency(**kwargs)
 
-        game_data = self.data
-
-        for (name, value) in game_data["abilities"].items():
-            ability = getattr(self.abilities, name) # lazy loading forced
-            ability.check_data_sanity()
+        for name in self.ABILITIES_REGISTRY.keys():
+            ability = self.instantiate_ability(name)
+            ability.check_data_sanity(strict=strict)
+            
 
     @readonly_method
     def get_ability_data(self, ability_name):

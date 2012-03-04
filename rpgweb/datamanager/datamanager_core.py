@@ -174,10 +174,13 @@ class BaseDataManager(utilities.TechnicalEventsMixin, Persistent):
         anyway.
         """
         self.notify_event("BASE_LOAD_INITIAL_DATA_CALLED")
+        
 
-    @readonly_method
+    @transaction_watcher(ensure_game_started=False) # that checking might lead to corrections
     def check_database_coherency(self, **kwargs):
-
+        
+        self.notify_event("BASE_CHECK_DB_COHERENCY_PUBLIC_CALLED")
+        
         game_data = self.data
 
         # Heavy Check !
@@ -185,6 +188,7 @@ class BaseDataManager(utilities.TechnicalEventsMixin, Persistent):
 
 
         self._check_database_coherency()
+        
         
         
         ''' # TO BE REDISPATCHED #
@@ -247,7 +251,7 @@ class BaseDataManager(utilities.TechnicalEventsMixin, Persistent):
 
 
     def _check_database_coherency(self, **kwargs):
-        self.notify_event("BASE_CHECK_DB_COHERENCY_CALLED")
+        self.notify_event("BASE_CHECK_DB_COHERENCY_PRIVATE_CALLED")
 
 
     @transaction_watcher

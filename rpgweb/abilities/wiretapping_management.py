@@ -44,7 +44,7 @@ class WiretappingAbility(AbstractAbility):
     TEMPLATE = "abilities/wiretapping_management.html"
 
     ACCESS = UserAccess.authenticated
-    PERMISSIONS = ["messaging"]
+    PERMISSIONS = ["wiretapping", "messaging"]
     ALWAYS_AVAILABLE = False 
 
 

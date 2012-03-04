@@ -400,12 +400,13 @@ def register_view(view_object=None,
                                                                        permissions=permissions,
                                                                        always_available=always_available,
                                                                        attach_to=attach_to)
-            KlassName = utilities.to_snake_case(real_view_object.__name__)
+            
             class_data = dict((key.upper(), value) for key, value in normalized_access_args.items())
-            class_data["NAME"] = KlassName
+            class_data["NAME"] = real_view_object.__name__
             class_data["_process_request"] = staticmethod(real_view_object) # we install the real request handler, not expecting a "self"
             
             # we build new GameView subclass on the fly
+            KlassName = utilities.to_snake_case(real_view_object.__name__)
             NewViewType = type(KlassName, (AbstractGameView,), class_data)
     
             
