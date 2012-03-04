@@ -547,7 +547,7 @@ def logout(request, template_name='registration/logout.html'):
 
 
 
-@register_view(access=UserAccess.authenticated, always_available=True)
+@register_view(access=UserAccess.anonymous, always_available=True)
 def homepage(request, template_name='generic_operations/homepage.html'):
 
     return render_to_response(template_name,

@@ -79,14 +79,14 @@
                  	{{ section_title }}
                  {% endif %}
                  
-                 {% if menu.sub_menus %}
+                 {% if menu.submenus %}
 	                 <ul>
-	                	{% for sub_menu in menu.sub_menus %} 
+	                	{% for submenu in menu.submenus %} 
 	                  		<li>
-	                  		     {% if sub_menu.is_active %}
-				                 	<a href="{{ sub_menu.url }}" accesskey="{{ forloop.counter }}">{{ sub_menu.title }}</a>
+	                  		     {% if submenu.is_active %}
+				                 	<a href="{{ submenu.url }}" accesskey="{{ forloop.counter }}">{{ submenu.title }}</a>
 				                 {% else %}
-				                 	{{ sub_menu.title }}
+				                 	{{ submenu.title }}
 				                 {% endif %}
 				                 
 	                  		    {% comment %}<a {% if user.is_master %} style="font-size: 0.6em; line-height: 0.5em;" {% endif %}

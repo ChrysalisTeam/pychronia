@@ -2,7 +2,7 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from . import menu 
+from . import menus as menus_module
 
 
 def rpgweb_template_context(request):
@@ -12,7 +12,7 @@ def rpgweb_template_context(request):
 
     if hasattr(request, "datamanager") and request.datamanager:
 
-        menus = menu.game_menu_generator(request)
+        menus = menus_module.generate_filtered_menu(request)
         online_users = [request.datamanager.get_official_name_from_username(username)
                         for username in request.datamanager.get_online_users()]
 
@@ -20,7 +20,7 @@ def rpgweb_template_context(request):
                 'user': request.datamanager.user,
                 'game_is_started': request.datamanager.get_global_parameter("game_is_started"),
                 'online_users': online_users,
-                'menus': menus}
+                'menus': menus.submenus if menus else []}
     else:
         return {} # not in valid game instance
     

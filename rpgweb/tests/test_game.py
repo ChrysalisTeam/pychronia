@@ -1371,7 +1371,7 @@ class TestSpecialAbilities(BaseGameTestCase):
 
 
 
-    @for_ability(RunicTranslationAbility)
+    @for_ability(runic_translation)
     def test_runic_translation(self):
         runic_translation = self.dm.instantiate_ability("runic_translation")
 
@@ -1446,7 +1446,7 @@ class TestSpecialAbilities(BaseGameTestCase):
         self.assertTrue(self.dm.get_global_parameter("master_login") in msg["has_read"])
 
 
-    @for_ability(HouseLockingAbility)
+    @for_ability(house_locking)
     def test_house_locking(self):
 
         house_locking = self.dm.instantiate_ability("house_locking")
@@ -1685,6 +1685,7 @@ class TestSpecialAbilities(BaseGameTestCase):
         self.assertTrue("***" in msg["body"].lower())
 
 
+    @for_ability(wiretapping_management)
     def test_wiretapping_management(self):
         
         self._reset_messages()

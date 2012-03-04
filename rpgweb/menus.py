@@ -4,12 +4,12 @@ from __future__ import unicode_literals
 
 from rpgweb.common import *
 
-from rpgweb import views
-
+from rpgweb import views, abilities
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from difflib import SequenceMatcher
 from rpgweb.authentication import AccessResult
+from msilib.schema import Property
 
 
 
@@ -17,10 +17,11 @@ from rpgweb.authentication import AccessResult
 
 class MenuEntry:
     
-    def __init__(self, request, title, view=None, sub_menus=None, permission_checker=None, view_kwargs=None):
+    def __init__(self, request, title, view=None, submenus=None, view_kwargs=None, forced_visibility=None):
         assert isinstance(title, unicode)
-        assert view or sub_menus
+        assert view or submenus
         assert view or not view_kwargs
+        assert forced_visibility is None or isinstance(forced_visibility, bool)
         
         self.title = title
         
@@ -31,42 +32,36 @@ class MenuEntry:
         else:
             self.url = None
                                    
-        self.sub_menus = tuple(sub_menu for sub_menu in sub_menus if sub_menu) if sub_menus else None # we can thus use ternary operator when building the tree
-
-        if permission_checker:
-            user_access = permission_checker(request)
+        self.submenus = tuple(submenu for submenu in submenus if submenu) if submenus else [] 
+        self.user_access = view.get_access_token(request)
+        self.forced_visibility = forced_visibility
+        self.is_active = self.url and (self.user_access == AccessResult.available) # doesn't rely on submenus state
+    
+    @property
+    def is_visible(self):
+        if self.forced_visibility is not None:
+            return self.forced_visibility
         else:
-            user_access = view.get_access_token(request)
-        
-        self.is_visible = self.sub_menus or (user_access in (AccessResult.available, AccessResult.permission_required))
-        self.is_active = self.url and (user_access == AccessResult.available)
-    
-
-
+            return bool(self.submenus or (self.user_access in (AccessResult.available, AccessResult.permission_required)))
         
 
+def generate_full_menu(request):  ## game_menu_generator
 
-def game_menu_generator(request):
-    """
-    Template context manager which returns template context variables to display customized menus.
-    """
     
-    if not hasattr(request, "datamanager"):
-        return {} # we're not in a valid mystery game instance
+    assert request.datamanager
+      
 
     datamanager = request.datamanager
     user = datamanager.user
     
         
-    def menu_entry_or_none(*args, **kwargs):
+    def menu_entry(*args, **kwargs):
         """
         Returns a visible *MenuEntry* instance or None,
         depending on the content of the request.
         """
         res = MenuEntry(request, *args, **kwargs)
-        if res.is_visible:
-            return res
-        return None
+        return res # no filtering here!
 
 
     ## Special additions to menu entries ##
@@ -88,84 +83,118 @@ def game_menu_generator(request):
         chatroom_suffix = u""
 
 
-        
-    potential_menus = [    
-        # encoding note : \xa0 <-> &nbsp <-> alt+0160;
-                       
-        menu_entry_or_none(_(u"Home"), views.homepage,
-                    (
-                       menu_entry_or_none(_(u"Home"), views.homepage),
-                       menu_entry_or_none(_(u"Opening"), views.opening), # -> link in homepage, rather 
-                       menu_entry_or_none(_(u"Instructions"), views.instructions) if not user.username or user.username.lower() != "loyd.georges" else None, # FIXME warning - hazardous if character changes of name...
-                       menu_entry_or_none(_(u"Characters"), views.view_characters),
-                       menu_entry_or_none(_(u"Personal Folder"), views.personal_folder),
-                       menu_entry_or_none(_(u"Auction"), views.view_sales),
-        
-                       menu_entry_or_none(_(u"Team Items") if user.is_authenticated else _(u"Auction Items"), views.items_slideshow),
-        
-                       #menu_entry_or_none(_(u"Radio Messages"), views.personal_radio_messages_listing), # TODO INTEGRATE TO INFO PAGES ???
-                   )),
-        
-        menu_entry_or_none(_(u"Communication"), views.homepage, # FIXME
-                   (
-                     menu_entry_or_none(_(u"Chatroom") + chatroom_suffix, views.chatroom),
-                     menu_entry_or_none(_(u"Radio Applet"), views.listen_to_audio_messages) if not user.is_character else None,
-                  )),
-        
-        menu_entry_or_none(_(u"Messaging"), views.homepage, # FIXME
-                  (
-                     menu_entry_or_none(_(u"Messages") + message_suffix, views.inbox),
-                     # ADD ALL OTHER MESSAGING ENTRIES
-                  )),
-        
-        menu_entry_or_none(_(u"Admin"), views.homepage, # FIXME
-                   (
-                     menu_entry_or_none(_(u"Game Events"), views.game_events),
-                     menu_entry_or_none(_(u"Manage Webradio"), views.manage_audio_messages),
-                     menu_entry_or_none(_(u"Databases"), views.manage_databases),
-                  )),
-
-                       
-        #                         #menu_entry_or_none(_(u"Wiretaps"), views.wiretapping_management),
-        #                         #menu_entry_or_none(_(u"Agents Hiring"), views.network_management),
-        #                         menu_entry_or_none(_(u"Oracles"), views.contact_djinns),
-        #                         menu_entry_or_none(_(u"Mercenary Commandos"), views.mercenary_commandos),
-        #                         menu_entry_or_none(_(u"Teleportations"), views.teldorian_teleportations),
-        #                         menu_entry_or_none(_(u"Zealot Attacks"), views.acharith_attacks),
-        #                         menu_entry_or_none(_(u"Telecom Investigations"), views.telecom_investigation),
-        #                         #menu_entry_or_none(_(u"Translations"), views.translations_management),
-        #                         menu_entry_or_none(_(u"World Scans"), views.scanning_management),
-        #                         menu_entry_or_none(_(u"Doors Locking"), views.domotics_security) if (user.is_master or user.is_anonymous) else None, # TODO FIX THIS
-
-
-       menu_entry_or_none(_(u"Login"), views.login) if not user.is_authenticated else None,
-       
-       menu_entry_or_none(_(u"Logout"), views.logout) if user.is_authenticated else None,
-    ]
-
-    final_menus = [menu for menu in potential_menus if menu] # top-level filtering
+    full_menu_tree = menu_entry(_(u"Home"), views.homepage, 
+        ( 
+            # encoding note : \xa0 <-> &nbsp <-> alt+0160;
+                           
+            menu_entry(_(u"Home"), views.homepage,
+                        (
+                           menu_entry(_(u"Home"), views.homepage),
+                           menu_entry(_(u"Opening"), views.opening), 
+                           menu_entry(_(u"Instructions"), views.instructions), 
+                           menu_entry(_(u"Characters"), views.view_characters),
+                           menu_entry(_(u"Personal Folder"), views.personal_folder),
+                           menu_entry(_(u"Auction"), views.view_sales),
+                           menu_entry(_(u"Team Items") if user.is_authenticated else _(u"Auction Items"), views.items_slideshow),
+            
+                           #menu_entry(_(u"Radio Messages"), views.personal_radio_messages_listing), # TODO INTEGRATE TO INFO PAGES ???
+                       )),
+            
+            menu_entry(_(u"Communication"), views.homepage, # FIXME
+                       (
+                         menu_entry(_(u"Chatroom") + chatroom_suffix, views.chatroom),
+                         menu_entry(_(u"Radio Applet"), views.listen_to_audio_messages, forced_visibility=(False if user.is_character else None))
+                      )),
+            
+            menu_entry(_(u"Messaging"), views.homepage, # FIXME
+                      (
+                         menu_entry(_(u"Messages") + message_suffix, views.inbox),
+                         # ADD ALL OTHER MESSAGING ENTRIES
+                      )),
+            
+            menu_entry(_(u"Admin"), views.homepage, # FIXME
+                       (
+                         menu_entry(_(u"Game Events"), views.game_events),
+                         menu_entry(_(u"Manage Webradio"), views.manage_audio_messages),
+                         menu_entry(_(u"Databases"), views.manage_databases),
+                      )),
     
+    
+            menu_entry(_(u"Abilities"), views.homepage, # FIXME
+                       (
+                      
+                        menu_entry(_(u"Wiretaps"), abilities.wiretapping_management),
+                        menu_entry(_(u"Doors Locking"), abilities.house_locking),
+                        menu_entry(_(u"Runic Translations"), abilities.runic_translation),
+    
+                        #menu_entry(_(u"Agents Hiring"), views.network_management),
+                        #menu_entry(_(u"Oracles"), views.contact_djinns),
+                        #menu_entry(_(u"Mercenary Commandos"), views.mercenary_commandos),
+                        #menu_entry(_(u"Teleportations"), views.teldorian_teleportations),
+                        #menu_entry(_(u"Zealot Attacks"), views.acharith_attacks),
+                        #menu_entry(_(u"Telecom Investigations"), views.telecom_investigation),
+                        #menu_entry(_(u"World Scans"), views.scanning_management),
+                      )),
+    
+    
+    
+           menu_entry(_(u"Login"), views.login, forced_visibility=(False if user.is_authenticated else None)),
+           menu_entry(_(u"Logout"), views.logout),
+        ))
+
+    return full_menu_tree
+
+
+def filter_menu_tree(menu):
+    """
+    Recursively removes all invisible ietsm from teh tree, including those that
+    """
+    recursed_submenus = [filter_menu_tree(submenu) for submenu in menu.submenus]
+    menu.submenus = [submenu for submenu in recursed_submenus if submenu] # remove new 'None' entries
+    if not menu.is_visible: # NOW only we can query the visibility state of this particular menu entry, since submenus have been updated
+        return None
+    return menu
+
+
+def generate_filtered_menu(request):
+    potential_menu_tree = generate_full_menu(request)
+    final_menu_tree = filter_menu_tree(potential_menu_tree)
     
     if __debug__:
         # we only let VISIBLE entries, both active and inactive !
-        for menu in final_menus:
-            #print("*", menu.title, menu.is_active)
+        assert final_menu_tree.is_visible
+        final_menu_entries = final_menu_tree.submenus
+        for menu in final_menu_entries:
+            print("*", menu.title, menu.is_active, menu.is_visible, menu.user_access)
             assert menu.is_visible
-            if menu.sub_menus:
-                for sub_menu in menu.sub_menus:
-                    #print(">>>",sub_menu.title, sub_menu.is_active)
-                    assert sub_menu.is_visible
+            if menu.submenus:
+                for submenu in menu.submenus:
+                    print(">>>",submenu.title, submenu.is_active, submenu.is_visible, submenu.user_access)
+                    assert submenu.is_visible
         
-    return final_menus
-    '''
+    return final_menu_tree # might be None, in incredible cases...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+'''
     potential_menus = [(_("Main"), information_entries),
                        (_("Communication"), communication_entries),
                        (_("Messaging"), messaging_entries),
                        (_("Administration"), administration_entries)]
 
-        '''
-    
-    '''
+
     menus = []
     for section_title, potential_menu in potential_menus:
         submenu = []
@@ -201,26 +230,6 @@ def game_menu_generator(request):
     allowed_abilities = [ (ability.TITLE, reverse(abilityview, kwargs=dict(ability_name=ability.NAME) ))  for ability in GameDataManager.ABILITIES_REGISTRY if permission_check(ability)]
     menu_entries += allowed_abilities #HERE TODO - use submenu instead
     '''
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

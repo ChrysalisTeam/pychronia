@@ -125,6 +125,7 @@ class AbstractGameView(object):
         if ((cls.ACCESS == UserAccess.master and not user.is_master) or
             (cls.ACCESS == UserAccess.authenticated and not user.is_authenticated) or
             (cls.ACCESS == UserAccess.character and not user.is_character)):
+            #print(">>>>>>>>>>", cls.ACCESS, "|", user.is_master, user.is_authenticated, user.is_character, user.username)
             return AccessResult.authentication_required
 
         if cls.PERMISSIONS:
