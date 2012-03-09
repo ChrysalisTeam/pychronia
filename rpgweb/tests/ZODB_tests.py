@@ -118,7 +118,7 @@ class TestZODB(TestCase):
         transaction.commit()
         transaction.abort()
 
-        # commit was well for the whole transaction, not s3
+        # commit was well for the whole transaction, not just s3
         self.assertEqual(root.ex, 9)
 
 

@@ -2100,7 +2100,7 @@ class GameViews(BaseDataManager):
 
 @register_module
 class SpecialAbilities(BaseDataManager):
-    # TODO TEST THAT MODULE TOO !!
+    # TODO TEST THAT MODULE TOO !! FIXME TODO TODO
     ABILITIES_REGISTRY = {}  # abilities automatically register themselves with this dict, thanks to their metaclass
 
 
@@ -2108,6 +2108,7 @@ class SpecialAbilities(BaseDataManager):
         super(SpecialAbilities, self).__init__(**kwargs)
         #self.abilities = SpecialAbilities.AbilityLazyLoader(self)
         self.sync_ability_data()
+    
     
     @classmethod
     def register_ability(cls, view_class):
