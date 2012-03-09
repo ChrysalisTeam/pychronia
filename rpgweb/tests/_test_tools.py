@@ -35,7 +35,7 @@ from django.test import TestCase
 
 from django.test.client import Client
 import django.utils.translation
-
+from rpgweb.views._abstract_game_view import register_view
 from rpgweb.abilities import *
 
 if not config.DB_RESET_ALLOWED:

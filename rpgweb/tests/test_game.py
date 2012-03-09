@@ -3,10 +3,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from ._test_tools import *
-
-
-
-
+from rpgweb.abilities._abstract_ability import AbstractAbility
 
 
 
@@ -91,7 +88,7 @@ class TestUtilities(TestCase):
 
 
 
-class TestGame(BaseGameTestCase):
+class TestDatamanager(BaseGameTestCase):
 
 
     @for_datamanager_base
@@ -899,7 +896,10 @@ class TestGame(BaseGameTestCase):
         assert self.dm.get_event_count("SYNC_GAME_VIEW_DATA_CALLED") == 0 # event stats have been cleared above
         
         views_dict = self.dm.get_game_views()
+        assert views_dict is not self.dm.GAME_VIEWS_REGISTRY # copy
+        
         activable_views_dict = self.dm.get_activable_views()
+        assert activable_views_dict is not self.dm.ACTIVABLE_VIEWS_REGISTRY # copy
         assert set(activable_views_dict.keys()) < set(self.dm.get_game_views().keys())
         
         random_view = activable_views_dict.keys()[0]
@@ -928,6 +928,56 @@ class TestGame(BaseGameTestCase):
         assert _dm2.get_event_count("SYNC_GAME_VIEW_DATA_CALLED") == 1 # sync well called at init!!
 
 
+    @for_core_module(SpecialAbilities)
+    def test_special_abilities_registry(self):
+        
+        abilities = self.dm.get_abilities()
+        assert abilities is not self.dm.ABILITIES_REGISTRY # copy
+        assert "runic_translation" in abilities
+        
+        
+        @register_view
+        class TesterAbility(AbstractAbility):
+
+            NAME = "dummy_ability"
+            FORMS = {}
+            ACTIONS = dict()
+            TEMPLATE = "base_main.html" # must exist
+            ACCESS = UserAccess.anonymous
+            PERMISSIONS = [] 
+            ALWAYS_AVAILABLE = False 
+        
+        
+            def get_template_vars(self, previous_form_data=None):
+                return {'page_title': "hello",}
+                
+            @classmethod
+            def _setup_ability_settings(cls, settings):
+                settings.setdefault("myvalue", "True")
+                self.dm.notify_event("LATE_ABILITY_SETUP_DONE") # BEWARE - event registry of OTHER DM instance!
+                
+            def _setup_private_ability_data(self, private_data):
+                pass
+        
+            def _check_data_sanity(self, strict=False):
+                settings = self.settings
+                assert settings["myvalue"] == "True"
+        
+
+        assert "dummy_ability" in self.dm.get_abilities() # auto-registration
+        self.dm.rollback()
+        with pytest.raises(KeyError):        
+            self.dm.get_ability_data("dummy_ability") # not yet setup in ZODB
+        
+        _dm = dm_module.GameDataManager(game_instance_id=TEST_GAME_INSTANCE_ID,
+                                        game_root=self.connection.root())
+        assert "dummy_ability" in _dm.get_abilities()
+        assert _dm.get_ability_data("dummy_ability") # ability now setup in ZODB
+        assert self.dm.get_event_count("LATE_ABILITY_SETUP_DONE") == 1 # parasite event - autosync well called at init!!
+        
+        del self.dm.ABILITIES_REGISTRY["dummy_ability"] # important cleanup!!!
+         
+        
     @for_core_module(GameEvents)
     def test_event_logging(self):
         self._reset_messages()
@@ -954,8 +1004,6 @@ class TestGame(BaseGameTestCase):
 
 
 
-
-
     @for_datamanager_base
     def test_database_management(self):
         self._reset_messages()
@@ -964,6 +1012,11 @@ class TestGame(BaseGameTestCase):
         res = self.dm.dump_zope_database()
         assert isinstance(res, basestring) and len(res) > 1000
 
+
+
+
+
+class TestHttpRequests(BaseGameTestCase):
 
     def _master_auth(self):
         master_login = self.dm.get_global_parameter("master_login")
@@ -1160,18 +1213,6 @@ class TestGame(BaseGameTestCase):
     def test_player_game_paused_page_displays(self):
         self.dm.set_game_state(False)
         self._test_player_get_requests()
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
