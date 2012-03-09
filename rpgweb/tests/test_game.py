@@ -4,6 +4,9 @@ from __future__ import unicode_literals
 
 from ._test_tools import *
 from rpgweb.abilities._abstract_ability import AbstractAbility
+from rpgweb.common import _undefined
+from rpgweb.views._abstract_game_view import ClassInstantiationProxy
+
 
 
 
@@ -1217,11 +1220,111 @@ class TestHttpRequests(BaseGameTestCase):
 
 
 
+class TestGameViewSystem(BaseGameTestCase):
+    
+    def test_access_parameters_normalization(self):
+        
+        from rpgweb.views._abstract_game_view import _normalize_view_access_parameters
+        from rpgweb.common import _undefined
+        
+        res = _normalize_view_access_parameters()
+        assert res == dict(access=UserAccess.master,
+                            permissions=[],
+                            always_available=True)
 
+        res = _normalize_view_access_parameters(UserAccess.anonymous, ["hi"], False)
+        assert res == dict(access=UserAccess.anonymous,
+                            permissions=["hi"], # would raise an issue later, in metaclass, because we're in anonymous access
+                            always_available=False)
 
+        res = _normalize_view_access_parameters(UserAccess.anonymous)
+        assert res == dict(access=UserAccess.anonymous,
+                            permissions=[],
+                            always_available=False) # even in anonymous access
 
+        res = _normalize_view_access_parameters(UserAccess.character)
+        assert res == dict(access=UserAccess.character,
+                            permissions=[],
+                            always_available=False)
+
+        res = _normalize_view_access_parameters(UserAccess.authenticated)
+        assert res == dict(access=UserAccess.authenticated,
+                            permissions=[],
+                            always_available=False)
+        
+        res = _normalize_view_access_parameters(UserAccess.master)
+        assert res == dict(access=UserAccess.master,
+                            permissions=[],
+                            always_available=True) # logical
+         
+         
+        class myview:
+            ACCESS = UserAccess.authenticated
+            PERMISSIONS = ["stuff"]
+            ALWAYS_AVAILABLE = False
+            
+        res = _normalize_view_access_parameters(attach_to=myview)
+        assert res == dict(access=UserAccess.authenticated,
+                            permissions=["stuff"],
+                            always_available=False)      
+       
+        with pytest.raises(AssertionError):
+            while True:
+                a, b, c = [random.choice([_undefined, False]) for i in range(3)]
+                if not all((a, b, c)):
+                    break # at leats one of them must NOT be _undefined
+            _normalize_view_access_parameters(a, b, c, attach_to=myview)    
+            
+     
+    def test_game_view_registration_decorator(self):
+        
+        # case of method registration #
+        
+        def my_little_view(request, *args, **kwargs):
+            pass
+        
+        # stupid cases get rejected in debug mode
+        with pytest.raises(AssertionError):
+            register_view(my_little_view, access=UserAccess.master, permissions=["sss"])
+        with pytest.raises(AssertionError):
+            register_view(my_little_view, access=UserAccess.master, always_available=False)            
+        with pytest.raises(AssertionError):
+            register_view(my_little_view, access=UserAccess.anonymous, permissions=["sss"])         
+            
+        proxy = register_view(my_little_view, access=UserAccess.master)     
+        
+        assert isinstance(proxy, ClassInstantiationProxy)
+        assert proxy._klass.__name__ == "MyLittleView" # pascal case
+        assert proxy._klass.NAME == "my_little_view" # snake case
+        assert proxy._klass.NAME in self.dm.GAME_VIEWS_REGISTRY
+        
+        with pytest.raises(AssertionError):
+            register_view(my_little_view, access=UserAccess.master)  # double registration impossible!
+                 
+        
+        # case of class registration #
+        class DummyView(object):
+            ACCESS = "sqdqsjkdqskj"
+        assert isinstance(DummyView, type)
+        
+        proxy = register_view(DummyView)     
+        assert isinstance(proxy, ClassInstantiationProxy) 
+        assert proxy.__dict__["_klass"] is DummyView # no changes to wrapped object!
+        register_view(DummyView) # double registration possible, since it's class creation which actually registers it, not that decorator      
+        
+        
+        class OtherDummyView(object):
+            ACCESS = "sdqsd"         
+        with pytest.raises(AssertionError): # when a klass is given, all other arguments become forbidden
+            while True:
+                a, b, c, d= [random.choice([_undefined, False]) for i in range(4)]
+                if not all((a, b, c)):
+                    break # at least one of them must NOT be _undefined
+            register_view(DummyView, a, b, c, d)         
+                 
+                 
+        
 class TestSpecialAbilities(BaseGameTestCase):
-
 
 
     @for_ability(runic_translation)

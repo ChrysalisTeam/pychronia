@@ -2,7 +2,7 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
-
+import inspect
 from django.http import Http404, HttpResponseRedirect, HttpResponse,\
     HttpResponseForbidden
 from django.shortcuts import render_to_response
@@ -355,7 +355,7 @@ def _normalize_view_access_parameters(access=_undefined,
         else:
             pass # OK
         if always_available is _undefined:
-            if access == UserAccess.master:
+            if access in UserAccess.master:
                 always_available = True 
             else:
                 always_available = False  # by default, non-master views must be deactivable
@@ -365,10 +365,10 @@ def _normalize_view_access_parameters(access=_undefined,
                 always_available=always_available)
                 
 
-import django.views.generic  
+ 
 class ClassInstantiationProxy(object):
     """
-    Stateless object which automatically instantiates the targeted game view type on access
+    Stateless object which automatically instantiates and triggers its wrapped GameView class on call.
     """
     def __init__(self, klass):
         self._klass = klass
@@ -389,12 +389,19 @@ def register_view(view_object=None,
     """
     Helper allowing with or without-arguments decorator usage for GameView.
     """
-    
+
     def _build_final_view_callable(real_view_object):
         
-        if not isinstance(real_view_object, type):
+        if isinstance(real_view_object, type):
+            assert real_view_object.ACCESS # must be a class!
             
-            assert isinstance(real_view_object, collections.Callable)
+            assert all((val == _undefined) for val in (access, permissions, always_available, attach_to)) # these params must already exist as class attrs
+            NewViewType = real_view_object
+            
+            
+        else:    
+            
+            assert inspect.isroutine(real_view_object) # not a class!
     
             normalized_access_args = _normalize_view_access_parameters(access=access,
                                                                        permissions=permissions,
@@ -406,17 +413,15 @@ def register_view(view_object=None,
             class_data["_process_request"] = staticmethod(real_view_object) # we install the real request handler, not expecting a "self"
             
             # we build new GameView subclass on the fly
-            KlassName = utilities.to_snake_case(real_view_object.__name__)
+            KlassName = utilities.to_pascal_case(real_view_object.__name__)
             NewViewType = type(KlassName, (AbstractGameView,), class_data)
-    
-            
-        else:
-            assert all(val == _undefined for val in (access, permissions, always_available, attach_to)) # these params must already exist as class attrs
-            NewViewType = real_view_object
+           
         
-        return ClassInstantiationProxy(NewViewType)
+        res =  ClassInstantiationProxy(NewViewType)
+        return res
     
     if view_object: 
         return _build_final_view_callable(view_object)
     return _build_final_view_callable # new decorator ready to be applied to a view function/type
+
 
