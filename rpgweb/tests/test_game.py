@@ -1256,7 +1256,12 @@ class TestGameViewSystem(BaseGameTestCase):
         assert res == dict(access=UserAccess.master,
                             permissions=[],
                             always_available=True) # logical
-         
+        
+        res = _normalize_view_access_parameters(UserAccess.character, permissions="sss")
+        assert res == dict(access=UserAccess.character,
+                            permissions=["sss"], # proper autofix of basestring to list of single item
+                            always_available=False)        
+    
          
         class myview:
             ACCESS = UserAccess.authenticated
@@ -1290,8 +1295,8 @@ class TestGameViewSystem(BaseGameTestCase):
             register_view(my_little_view, access=UserAccess.master, always_available=False)            
         with pytest.raises(AssertionError):
             register_view(my_little_view, access=UserAccess.anonymous, permissions=["sss"])         
-            
-        proxy = register_view(my_little_view, access=UserAccess.master)     
+   
+        proxy = register_view(my_little_view, access=UserAccess.master, )     
         
         assert isinstance(proxy, ClassInstantiationProxy)
         assert proxy._klass.__name__ == "MyLittleView" # pascal case
@@ -1321,8 +1326,65 @@ class TestGameViewSystem(BaseGameTestCase):
                 if not all((a, b, c)):
                     break # at least one of them must NOT be _undefined
             register_view(DummyView, a, b, c, d)         
-                 
-                 
+                
+                
+    def test_access_token_computation(self):
+        
+        # TODO - implement "always_available" feature when IMPLEMENTED !!!
+        
+        dummy_request = self.factory.get('/DEMO/whatever')
+        dummy_request.datamanager = self.dm
+        
+        def dummy_view_anonymous(request):
+            pass
+        view_anonymous = register_view(dummy_view_anonymous, access=UserAccess.anonymous)
+        
+        def dummy_view_character(request):
+            pass        
+        view_character = register_view(dummy_view_character, access=UserAccess.character)
+
+        def dummy_view_character_permission(request):
+            pass               
+        view_character_permission = register_view(dummy_view_character_permission, access=UserAccess.character, permissions=["runic_translation"])
+        
+        def dummy_view_authenticated(request):
+            pass            
+        view_authenticated = register_view(dummy_view_authenticated, access=UserAccess.authenticated)
+        
+        def dummy_view_master(request):
+            pass         
+        view_master = register_view(dummy_view_master, access=UserAccess.master)
+
+        self.dm._set_user(None)
+        assert view_anonymous.get_access_token(dummy_request) == AccessResult.available
+        assert view_character.get_access_token(dummy_request) == AccessResult.authentication_required
+        assert view_character_permission.get_access_token(dummy_request) == AccessResult.authentication_required
+        assert view_authenticated.get_access_token(dummy_request) == AccessResult.authentication_required
+        assert view_master.get_access_token(dummy_request) == AccessResult.authentication_required
+        
+        self.dm._set_user("guy1") # has runic_translation permission
+        assert view_anonymous.get_access_token(dummy_request) == AccessResult.available
+        assert view_character.get_access_token(dummy_request) == AccessResult.available
+        assert view_character_permission.get_access_token(dummy_request) == AccessResult.available
+        assert view_authenticated.get_access_token(dummy_request) == AccessResult.available
+        assert view_master.get_access_token(dummy_request) == AccessResult.authentication_required        
+        
+        self.dm._set_user("guy2") # has NO runic_translation permission
+        assert view_anonymous.get_access_token(dummy_request) == AccessResult.available
+        assert view_character.get_access_token(dummy_request) == AccessResult.available
+        assert view_character_permission.get_access_token(dummy_request) == AccessResult.permission_required # != authentication required 
+        assert view_authenticated.get_access_token(dummy_request) == AccessResult.available
+        assert view_master.get_access_token(dummy_request) == AccessResult.authentication_required        
+                
+        self.dm._set_user(self.dm.get_global_parameter("master_login"))
+        assert view_anonymous.get_access_token(dummy_request) == AccessResult.available
+        assert view_character.get_access_token(dummy_request) == AccessResult.authentication_required # master must downgrade to character!!
+        assert view_character_permission.get_access_token(dummy_request) == AccessResult.authentication_required # master must downgrade to character!!
+        assert view_authenticated.get_access_token(dummy_request) == AccessResult.available
+        assert view_master.get_access_token(dummy_request) == AccessResult.available                        
+                
+                
+                
         
 class TestSpecialAbilities(BaseGameTestCase):
 

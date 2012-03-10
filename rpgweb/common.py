@@ -49,7 +49,7 @@ class AccessResult: # result of global computation
     Result of a computation between a view's access permissions and a current user.
     """
     globally_forbidden = "globally_forbidden" # eg. view disabled by the master
-    authentication_required = "needs_authentication" # eg. wrong kind of user logged in
+    authentication_required = "authentication_required" # eg. wrong kind of user logged in
     permission_required = "permission_required" # character permissions are lacking
     available = "available" # visible and executable
 

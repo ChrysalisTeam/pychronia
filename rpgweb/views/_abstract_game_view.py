@@ -36,7 +36,7 @@ class GameViewMetaclass(type):
                 assert utilities.check_is_slug(NewClass.NAME)
 
                 assert NewClass.ACCESS in UserAccess.enum_values
-                assert isinstance(NewClass.PERMISSIONS,  (list, tuple))
+                assert isinstance(NewClass.PERMISSIONS,  (list, tuple)) # not a string!!
                 assert NewClass.ALWAYS_AVAILABLE in (True, False)
                 
                 if NewClass.ACCESS == UserAccess.master:

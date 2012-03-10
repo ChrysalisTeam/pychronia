@@ -32,8 +32,7 @@ from rpgweb.views._abstract_game_view import AbstractGameView
 #from django.utils.unittest.case import TestCase 
 #from django.test.testcases import TransactionTestCase as TestCase
 from django.test import TestCase
-
-from django.test.client import Client
+from django.test.client import Client, RequestFactory
 import django.utils.translation
 from rpgweb.views._abstract_game_view import register_view
 from rpgweb.abilities import *
@@ -178,7 +177,8 @@ class BaseGameTestCase(TestCase):
             logging.disable(logging.CRITICAL) # to be commented if more output is wanted !!!
 
             self.client = Client()
-
+            self.factory = RequestFactory()
+            
         except:
             self.tearDown(check=False) # cleanup of db and connection in any case
             raise
