@@ -28,6 +28,7 @@ from ..authentication import authenticate_with_credentials, logout_session
 from .. import datamanager as dm_module
 from .. import abilities # IMPORTANT to register all abilities/permissions
 from rpgweb.utilities import mediaplayers
+from rpgweb.datamanager import GameDataManager
 
 
 
@@ -844,7 +845,7 @@ def view_sales(request, template_name='generic_operations/view_sales.html'):
                                  'total_archaeological_objects_number': total_archaeological_objects_number
                                 },
                                 context_instance=RequestContext(request))
-
+assert view_sales._klass.NAME in GameDataManager.ACTIVABLE_VIEWS_REGISTRY.keys()
 
 
 '''

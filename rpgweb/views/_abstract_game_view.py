@@ -119,8 +119,9 @@ class AbstractGameView(object):
         user = request.datamanager.user
         
         if not cls.ALWAYS_AVAILABLE:
-            pass # TODO HERE CHECK THAT THE VIEW IS WELL ACTIVATED BY THE GAME MASTER, if not gamemaster logged
-            # TODO return AccessResult.globally_forbidden
+            if not request.datamanager.is_game_view_activated(cls.NAME):
+                print (">>>>>", cls.NAME, "-", request.datamanager.get_activated_game_views())
+                return AccessResult.globally_forbidden
         
         if ((cls.ACCESS == UserAccess.master and not user.is_master) or
             (cls.ACCESS == UserAccess.authenticated and not user.is_authenticated) or
@@ -303,12 +304,12 @@ class AbstractGameView(object):
             return self._process_request(request, *args, **kwargs)
         
         except AuthenticationRequiredError, e:
-            print("<<<", e)
+            #print("<<<", e)
             # TODO - 
             # uses HTTP code for TEMPORARY redirection
             return HttpResponseRedirect(reverse("rpgweb.views.login", kwargs=dict(game_instance_id=request.datamanager.game_instance_id)))
         except AccessDeniedError, e:
-            print("<<<", e)
+            #print("<<<", e)
             # even permission errors are treated like base class erors ATM
             return HttpResponseForbidden(_("Access denied")) # TODO FIXME - provide a proper template and message !!
         except:
@@ -358,7 +359,7 @@ def _normalize_view_access_parameters(access=_undefined,
             if access in UserAccess.master:
                 always_available = True 
             else:
-                always_available = False  # by default, non-master views must be deactivable
+                always_available = False  # by default, non-master views must be deactivable, even anonymous ones
     
     return dict(access=access,
                 permissions=permissions,

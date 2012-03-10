@@ -905,7 +905,7 @@ class TestDatamanager(BaseGameTestCase):
         assert activable_views_dict is not self.dm.ACTIVABLE_VIEWS_REGISTRY # copy
         assert set(activable_views_dict.keys()) < set(self.dm.get_game_views().keys())
         
-        random_view = activable_views_dict.keys()[0]
+        random_view, random_klass = activable_views_dict.items()[0]
         
         # instantiation works for both names and classes
         view = self.dm.instantiate_game_view(random_view)
@@ -915,7 +915,8 @@ class TestDatamanager(BaseGameTestCase):
 
         with pytest.raises(AbnormalUsageError):
             self.dm.set_activated_game_views(["aaa", random_view])
-               
+        
+        self.dm.set_activated_game_views([])      
         assert not self.dm.is_game_view_activated(random_view)
         self.dm.set_activated_game_views([random_view])
         assert self.dm.is_game_view_activated(random_view)
@@ -930,7 +931,9 @@ class TestDatamanager(BaseGameTestCase):
                                   game_root=self.connection.root())
         assert _dm2.get_event_count("SYNC_GAME_VIEW_DATA_CALLED") == 1 # sync well called at init!!
 
-
+        self.dm.ACTIVABLE_VIEWS_REGISTRY[random_view] = random_klass # test cleanup
+        
+        
     @for_core_module(SpecialAbilities)
     def test_special_abilities_registry(self):
         
@@ -1292,7 +1295,7 @@ class TestGameViewSystem(BaseGameTestCase):
         with pytest.raises(AssertionError):
             register_view(my_little_view, access=UserAccess.master, permissions=["sss"])
         with pytest.raises(AssertionError):
-            register_view(my_little_view, access=UserAccess.master, always_available=False)            
+            register_view(my_little_view, access=UserAccess.master, always_available=False) # master must always access his views!          
         with pytest.raises(AssertionError):
             register_view(my_little_view, access=UserAccess.anonymous, permissions=["sss"])         
    
@@ -1330,31 +1333,47 @@ class TestGameViewSystem(BaseGameTestCase):
                 
     def test_access_token_computation(self):
         
-        # TODO - implement "always_available" feature when IMPLEMENTED !!!
-        
         dummy_request = self.factory.get('/DEMO/whatever')
         dummy_request.datamanager = self.dm
         
         def dummy_view_anonymous(request):
             pass
-        view_anonymous = register_view(dummy_view_anonymous, access=UserAccess.anonymous)
+        view_anonymous = register_view(dummy_view_anonymous, access=UserAccess.anonymous, always_available=False)
         
         def dummy_view_character(request):
             pass        
-        view_character = register_view(dummy_view_character, access=UserAccess.character)
+        view_character = register_view(dummy_view_character, access=UserAccess.character, always_available=False)
 
         def dummy_view_character_permission(request):
             pass               
-        view_character_permission = register_view(dummy_view_character_permission, access=UserAccess.character, permissions=["runic_translation"])
+        view_character_permission = register_view(dummy_view_character_permission, access=UserAccess.character, permissions=["runic_translation"], always_available=False)
         
         def dummy_view_authenticated(request):
             pass            
-        view_authenticated = register_view(dummy_view_authenticated, access=UserAccess.authenticated)
+        view_authenticated = register_view(dummy_view_authenticated, access=UserAccess.authenticated, always_available=False)
         
         def dummy_view_master(request):
             pass         
-        view_master = register_view(dummy_view_master, access=UserAccess.master)
+        view_master = register_view(dummy_view_master, access=UserAccess.master, always_available=True) # always_available is enforced to True for master views, actually
 
+ 
+        # check global disabling of views by game master #
+        for username in (None, "guy1", "guy2", self.dm.get_global_parameter("master_login")):
+            self.dm._set_user(username)
+            
+            for my_view in (view_anonymous, view_character, view_character_permission, view_authenticated): # not view_master          
+                
+                my_view._klass.ALWAYS_AVAILABLE = False
+                assert my_view.get_access_token(dummy_request) == AccessResult.globally_forbidden
+                self.dm.set_activated_game_views([my_view._klass.NAME]) # exists in ACTIVABLE_VIEWS_REGISTRY because we registered view with always_available=True
+                assert my_view.get_access_token(dummy_request) != AccessResult.globally_forbidden
+                
+                my_view._klass.ALWAYS_AVAILABLE = True
+                assert my_view.get_access_token(dummy_request) != AccessResult.globally_forbidden
+                self.dm.set_activated_game_views([]) # RESET
+                assert my_view.get_access_token(dummy_request) != AccessResult.globally_forbidden
+                                
+    
         self.dm._set_user(None)
         assert view_anonymous.get_access_token(dummy_request) == AccessResult.available
         assert view_character.get_access_token(dummy_request) == AccessResult.authentication_required
@@ -1383,7 +1402,8 @@ class TestGameViewSystem(BaseGameTestCase):
         assert view_authenticated.get_access_token(dummy_request) == AccessResult.available
         assert view_master.get_access_token(dummy_request) == AccessResult.available                        
                 
-                
+        
+
                 
         
 class TestSpecialAbilities(BaseGameTestCase):

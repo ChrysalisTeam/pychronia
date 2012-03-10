@@ -165,11 +165,11 @@ def generate_filtered_menu(request):
         assert final_menu_tree.is_visible
         final_menu_entries = final_menu_tree.submenus
         for menu in final_menu_entries:
-            print("*", menu.title, menu.is_active, menu.is_visible, menu.user_access)
+            #print("*", menu.title, menu.is_active, menu.is_visible, menu.user_access)
             assert menu.is_visible
             if menu.submenus:
                 for submenu in menu.submenus:
-                    print(">>>",submenu.title, submenu.is_active, submenu.is_visible, submenu.user_access)
+                    #print(">>>",submenu.title, submenu.is_active, submenu.is_visible, submenu.user_access)
                     assert submenu.is_visible
         
     return final_menu_tree # might be None, in incredible cases...

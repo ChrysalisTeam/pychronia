@@ -161,9 +161,9 @@ class BaseGameTestCase(TestCase):
             assert self.dm.get_event_count("BASE_CHECK_DB_COHERENCY_PUBLIC_CALLED") == 1 # no bypassing because of wrong override
             
             self.dm.set_game_state(True)
-
+            self.dm.set_activated_game_views(self.dm.get_activable_views().keys()) # QUICK ACCESS FIXTURE
             self.dm.clear_all_event_stats()
-
+            
             #self.default_player = self.dm.get_character_usernames()[0]
             #self._set_user(self.TEST_LOGIN)
 

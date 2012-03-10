@@ -884,7 +884,7 @@ class TextMessaging(BaseDataManager): # TODO REFINE
             elif chunk in data["character_properties"].keys():
                 values = [chunk + "@" + pangea_domain] # we allow short usernames
             else:
-                print(data["character_properties"].keys())
+                #print("%%%", data["character_properties"].keys())
                 raise UsageError(_("Unknown user login '%s' in recipients list") % chunk) # surely an input error of user!
             normalized_emails.update(values)
 
@@ -1782,7 +1782,7 @@ class MoneyItemsOwnership(BaseDataManager):
 
         total_digital_money = game_data["global_parameters"]["bank_account"]
         total_gems = game_data["global_parameters"]["spent_gems"][:] # COPY!
-        print ("^^^^^^^^^^^^", "spent_gems", total_gems.count(500))
+        #print ("^^^^^^^^^^^^", "spent_gems", total_gems.count(500))
         assert game_data["scanning_sets"]
         for (name, scan_set) in game_data["scanning_sets"].items():
             utilities.check_is_slug(name)
@@ -1792,7 +1792,7 @@ class MoneyItemsOwnership(BaseDataManager):
         for (name, character) in game_data["character_properties"].items():
             total_digital_money += character["account"]
             total_gems += character["gems"]
-            print ("---------", name, total_gems.count(500))
+            #print ("---------", name, total_gems.count(500))
 
         assert game_data["items_for_sale"]
         for (name, properties) in game_data["items_for_sale"].items():
@@ -1814,7 +1814,7 @@ class MoneyItemsOwnership(BaseDataManager):
 
             if properties["is_gem"] and not properties["owner"]:
                 total_gems += [properties['unit_cost']] * properties["num_items"]
-                print (">>>>>>>>>>", name, total_gems.count(500))
+                # (">>>>>>>>>>", name, total_gems.count(500))
 
         old_total_gems = game_data["global_parameters"]["total_gems"]
         assert Counter(old_total_gems) == Counter(total_gems)
@@ -2069,6 +2069,7 @@ class GameViews(BaseDataManager):
         super(GameViews, self)._check_database_coherency(**kwargs)
 
         game_data = self.data
+        utilities.check_no_duplicates(game_data["views"]["activated_views"])
         for view_name in game_data["views"]["activated_views"]:
             assert view_name in self.ACTIVABLE_VIEWS_REGISTRY.keys()
 
@@ -2076,15 +2077,19 @@ class GameViews(BaseDataManager):
     @readonly_method
     def is_game_view_activated(self, view_name):
         return (view_name in self.data["views"]["activated_views"])
-        
+
+    @readonly_method
+    def get_activated_game_views(self):
+        return self.data["views"]["activated_views"]   
         
     @transaction_watcher(ensure_game_started=False)    
     def set_activated_game_views(self, view_names):
         assert not isinstance(view_names, basestring)
         activable_views = self.ACTIVABLE_VIEWS_REGISTRY.keys()
-        if not all((view_name in activable_views for view_name in view_names)):
-            raise AbnormalUsageError(_("Unknown view name detected in the set of views to be activated"))
-        self.data["views"]["activated_views"] = sorted(view_names)             
+        missed = [view_name for view_name in view_names if view_name not in activable_views]
+        if missed:
+            raise AbnormalUsageError(_("Unknown view names detected in the set of views to be activated: %r") % missed)
+        self.data["views"]["activated_views"] = PersistentList(sorted(view_names))           
            
     
     def instantiate_game_view(self, name_or_klass):
