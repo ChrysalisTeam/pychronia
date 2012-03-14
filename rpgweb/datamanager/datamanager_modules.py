@@ -2086,9 +2086,9 @@ class GameViews(BaseDataManager):
     def set_activated_game_views(self, view_names):
         assert not isinstance(view_names, basestring)
         activable_views = self.ACTIVABLE_VIEWS_REGISTRY.keys()
-        missed = [view_name for view_name in view_names if view_name not in activable_views]
-        if missed:
-            raise AbnormalUsageError(_("Unknown view names detected in the set of views to be activated: %r") % missed)
+        weird = [view_name for view_name in view_names if view_name not in activable_views]
+        if weird:
+            raise AbnormalUsageError(_("Unknown view names detected in the set of views to be activated: %r") % weird)
         self.data["views"]["activated_views"] = PersistentList(sorted(view_names))           
            
     

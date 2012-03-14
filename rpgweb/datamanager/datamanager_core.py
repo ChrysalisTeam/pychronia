@@ -163,6 +163,10 @@ class BaseDataManager(utilities.TechnicalEventsMixin, Persistent):
             self.data[key] = utilities.convert_object_tree(self.data[key], utilities.python_to_zodb_types)
             utilities.check_object_tree(self.data[key], allowed_types=utilities.allowed_zodb_types, path=["new_data"])
 
+        if config.GAME_INITIAL_FIXTURE_SCRIPT:
+            self.logger.info("Performing setup via GAME_INITIAL_FIXTURE_SCRIPT")
+            config.GAME_INITIAL_FIXTURE_SCRIPT(self)    
+        
         self.db_state = self.DB_STATES.INITIALIZED
 
 
@@ -274,6 +278,11 @@ class BaseDataManager(utilities.TechnicalEventsMixin, Persistent):
         dump_args.update(kwargs)
                                                                                                               
         data_dump = copy.deepcopy(dict(self.data)) # beware - memory-intensive call
+
+        # special, we remove info that is already well visible in messaging system
+        for key in list(data_dump.keys()): # in case it'd be a "dict-view"
+            if "message" in key:
+                del data_dump[key]
 
         data_dump = utilities.convert_object_tree(data_dump, utilities.zodb_to_python_types)
         
