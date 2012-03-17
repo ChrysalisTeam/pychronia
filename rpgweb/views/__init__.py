@@ -571,6 +571,12 @@ def opening(request, template_name='generic_operations/opening.html'):
 
 
 @register_view(access=UserAccess.anonymous, always_available=True)
+def view_encyclopedia(request, keyword=None, template_name='generic_operations/encyclopedia.html'):
+
+    return HttpResponse(str(keyword))
+
+
+@register_view(access=UserAccess.anonymous, always_available=True)
 def logo_animation(request, template_name='utilities/item_3d_viewer.html'):
     """
     These settings are heavily dependant on values hard-coded on templates (dimensions, colors...),

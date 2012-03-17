@@ -121,7 +121,7 @@ class WiretappingAbility(AbstractAbility):
         settings = self.settings
 
         _settings_reference = dict(
-                                    max_wiretapping_targets=utilities.check_positive_int
+                                    max_wiretapping_targets = utilities.check_is_positive_int
                                   )
         utilities.check_dictionary_with_template(settings, _settings_reference, strict=strict)
 

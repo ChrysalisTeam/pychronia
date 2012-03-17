@@ -250,13 +250,17 @@ def check_num_keys(value, num):
     assert len(value.keys()) == num, (value, num)
     return True
 
-def check_positive_int(value, non_zero=True):
+def check_is_positive_int(value, non_zero=True):
     assert isinstance(value, (int, long))
     assert value >= 0
     if non_zero:
         assert value != 0
     return True
 
+def check_is_restructuredtext(value):
+    from django.contrib.markup.templatetags.markup import restructuredtext
+    assert restructuredtext(value)
+    return True
 
 def is_email(email):
     return email_re.match(email)

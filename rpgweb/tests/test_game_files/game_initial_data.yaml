@@ -383,6 +383,22 @@ manual_messages_templates:
 
 
 
-
+encyclopedia:
+    lokon:    |
+        here a paragraph on these cool animals
+        with lots of descriptions etc etc.
+        
+        OK accents: £ ¤ é
+        
+        Here we might put images too.
+        
+    
+    gerbil:  |
+        Test to be translated here
+        ===============================
+        
+        Here tooo
+        
+    
 
 ...

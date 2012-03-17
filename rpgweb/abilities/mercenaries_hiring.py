@@ -195,8 +195,8 @@ class MercenariesHiringAbility(AbstractAbilityHandler):
         settings = self.settings
 
         _reference = dict(
-                            mercenary_cost_money = utilities.check_positive_int,
-                            mercenary_cost_gems = utilities.check_positive_int
+                            mercenary_cost_money = utilities.check_is_positive_int,
+                            mercenary_cost_gems = utilities.check_is_positive_int
                          )
         utilities.check_dictionary_with_template(settings, _reference, strict=strict)
 

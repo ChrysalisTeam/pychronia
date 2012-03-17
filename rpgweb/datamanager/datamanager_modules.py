@@ -658,7 +658,7 @@ class OnlinePresence(BaseDataManager):
             assert not character["last_online_time"] or (isinstance(character["last_online_time"], datetime)
                                                          and character["last_online_time"] <= datetime.utcnow())
 
-        utilities.check_positive_int(self.get_global_parameter("online_presence_timeout_s"))
+        utilities.check_is_positive_int(self.get_global_parameter("online_presence_timeout_s"))
 
 
     def _notify_user_change(self, username, **kwargs):
@@ -763,6 +763,8 @@ class TextMessaging(BaseDataManager): # TODO REFINE
 
     def _check_database_coherency(self, **kwargs):
         super(TextMessaging, self)._check_database_coherency(**kwargs)
+
+        # TODO - check all messages and templates with utilities.check_is_restructuredtext(value) ? What happens if invalid rst ?
 
         game_data = self.data
 
@@ -1440,8 +1442,8 @@ class Chatroom(BaseDataManager):
 
         game_data = self.data
 
-        utilities.check_positive_int(self.get_global_parameter("chatroom_presence_timeout_s"))
-        utilities.check_positive_int(self.get_global_parameter("chatroom_timestamp_display_threshold_s"))
+        utilities.check_is_positive_int(self.get_global_parameter("chatroom_presence_timeout_s"))
+        utilities.check_is_positive_int(self.get_global_parameter("chatroom_timestamp_display_threshold_s"))
 
         for (name, character) in game_data["character_properties"].items():
             assert character["last_chatting_time"] is None or (
@@ -1799,9 +1801,9 @@ class MoneyItemsOwnership(BaseDataManager):
 
             utilities.check_is_slug(name)
             assert isinstance(properties['is_gem'], bool)
-            assert utilities.check_positive_int(properties['num_items'])
-            assert utilities.check_positive_int(properties['total_price'])
-            assert utilities.check_positive_int(properties['unit_cost'])
+            assert utilities.check_is_positive_int(properties['num_items'])
+            assert utilities.check_is_positive_int(properties['total_price'])
+            assert utilities.check_is_positive_int(properties['unit_cost'])
 
             assert properties['locations'] in game_data["scanning_sets"].keys()
 
@@ -2005,6 +2007,59 @@ class Items3dViewing(BaseDataManager):
     @readonly_method
     def get_items_3d_settings(self):
         return self.data["item_3d_settings"]
+
+
+
+
+@register_module
+class Encyclopedia(BaseDataManager):
+
+
+    def _load_initial_data(self, **kwargs):
+        super(Encyclopedia, self)._load_initial_data(**kwargs)
+        
+        new_data = self.data
+
+        new_data["global_parameters"].setdefault("encyclopedia_index_visible", False)
+        
+        
+    def _check_database_coherency(self, **kwargs):
+        super(Encyclopedia, self)._check_database_coherency(**kwargs)
+
+        game_data = self.data
+        
+        utilities.check_is_bool(game_data["global_parameters"]["encyclopedia_index_visible"])
+        
+        for (key, value) in game_data["encyclopedia"].items():
+
+            assert key.lower() == key
+            utilities.check_is_slug(key)
+
+            utilities.check_is_restructuredtext(value)
+
+
+    @readonly_method
+    def is_encyclopedia_index_visible(self):
+        return self.get_global_parameter("encyclopedia_index_visible")
+    
+    
+    @transaction_watcher
+    def set_encyclopedia_index_visibility(self, value):
+        self.data["global_parameters"]["encyclopedia_index_visible"] = value
+        
+        
+    @readonly_method
+    def get_encyclopedia_entry(self, keyword):
+        """
+        Returns the rst entry, or None.
+        Fetching is case-insensitive.
+        """
+        return self.data["encyclopedia"].get(keyword.lower().strip())
+
+
+    @readonly_method
+    def get_encyclopedia_keywords(self):
+        return self.data["encyclopedia"].keys()
 
 
 

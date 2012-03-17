@@ -14,11 +14,25 @@ from rpgweb.views._abstract_game_view import ClassInstantiationProxy
 
 
 
+
 class TestUtilities(TestCase):
 
     def __call__(self, *args, **kwds):
         return unittest.TestCase.run(self, *args, **kwds) # we bypass test setups from django's TestCase, to use py.test instead
     
+    def test_restructuredtext_handling(self):
+        from docutils.utils import SystemMessage
+        from django.contrib.markup.templatetags.markup import restructuredtext
+
+        assert restructuredtext("""aaaa*aaa""") # star is ignored
+
+        # outputs stuffs, but doesn't break
+        restructuredtext("""aaaaaaa*zezez
+                              mytitle :aaa:`qqq`
+                            ===
+                        """) # too short underline
+
+
     def test_type_conversions(self):
 
         # test 1 #
@@ -416,6 +430,25 @@ class TestDatamanager(BaseGameTestCase):
         self.assertEqual(response.status_code, 404)
 
 
+    def test_encyclopedia(self):
+        
+        utilities.check_is_restructuredtext(self.dm.get_encyclopedia_entry(" LoKon ")) # tolerant fetching
+        
+        assert self.dm.get_encyclopedia_entry("qskiqsjdqsid") is None
+        
+        assert "lokon" in self.dm.get_encyclopedia_keywords()
+        for entry in self.dm.get_encyclopedia_keywords():
+            utilities.check_is_slug(entry)
+            assert entry.lower() == entry
+    
+        # index available or not ?
+        assert not self.dm.is_encyclopedia_index_visible()
+        not self.dm.set_encyclopedia_index_visibility(True)
+        assert self.dm.is_encyclopedia_index_visible()
+        not self.dm.set_encyclopedia_index_visibility(False)
+        assert not self.dm.is_encyclopedia_index_visible()
+        
+
     def test_message_automated_state_changes(self):
         self._reset_messages()
         
@@ -443,7 +476,7 @@ class TestDatamanager(BaseGameTestCase):
         self.assertTrue("guy2" in msg["has_read"])
         self.assertTrue("guy3" in msg["has_read"])
 
-        # -----
+        ######
 
         (tpl_id, tpl) = self.dm.get_messages_templates().items()[0]
         self.assertEqual(tpl["is_used"], False)
