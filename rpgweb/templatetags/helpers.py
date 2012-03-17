@@ -1,13 +1,21 @@
+# -*- coding: utf-8 -*-
+from __future__ import print_function
+from __future__ import unicode_literals
+
+import re
 import django.template, logging
 from datetime import datetime
 from django.template import defaulttags
 
 from rpgweb.utilities import mediaplayers
 from rpgweb.common import exception_swallower
+from django.core.urlresolvers import reverse
 register = django.template.Library() # IMPORTANT, module-level object used by templates !
 
 from django.utils.safestring import SafeData, EscapeData, mark_safe, mark_for_escaping
 from django.utils.html import escape
+from django.utils.http import urlencode
+from django.contrib.markup.templatetags.markup import restructuredtext
 
 
 @register.tag
@@ -18,6 +26,7 @@ def gameurl(parser, token):
     token.contents += " game_instance_id=game_instance_id" # we inject template var "game instance id"
     url_node = defaulttags.url(parser, token) 
     return url_node
+
 
 
 @register.simple_tag(takes_context=True)
@@ -35,6 +44,37 @@ def usercolor(context, username_or_email):
         color = request.datamanager.get_character_color_or_none(username)
     return color or "black" # default color
 
+
+
+def _generate_encyclopedia_links(html, datamanager):
+    
+    keywords = datamanager.get_encyclopedia_keywords()
+    #print(">>>>", repr(keywords))
+    base_url = reverse("rpgweb.views.view_encyclopedia", kwargs={"game_instance_id":datamanager.game_instance_id})
+    for keyword in keywords: 
+        source = ur'\b(%s)\b' % re.escape(escape(keyword))
+        dest = ur'<a href="%s?%s">\1</a>' % (base_url, urlencode([("keyword", keyword)]))
+        #print(source, dest)
+        html = re.sub(source,
+                       dest,
+                       html,
+                       flags=re.IGNORECASE|re.UNICODE)
+    return html         
+                 
+
+@register.simple_tag(takes_context=True)
+def rich_text(context, rst):
+    """
+    Converts a restructured
+    """
+    request = context.get('request')
+    html = restructuredtext(rst)
+    
+    with exception_swallower():
+        return _generate_encyclopedia_links(html, request.datamanager)
+    return html  # on error
+
+
 ''' ???
 def threefirstletters(value):
     """
@@ -46,7 +86,8 @@ def threefirstletters(value):
 register.filter('threefirstletters',threefirstletters)
 '''
 
-# dynamic dictionary key in templates
+
+
 def dict_get(value, arg):
     """
     Custom template tag used like so:

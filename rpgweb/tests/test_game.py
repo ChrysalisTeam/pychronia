@@ -6,6 +6,8 @@ from ._test_tools import *
 from rpgweb.abilities._abstract_ability import AbstractAbility
 from rpgweb.common import _undefined
 from rpgweb.views._abstract_game_view import ClassInstantiationProxy
+from rpgweb.templatetags.helpers import _generate_encyclopedia_links
+from rpgweb import views
 
 
 
@@ -32,7 +34,9 @@ class TestUtilities(TestCase):
                             ===
                         """) # too short underline
 
-
+        assert restructuredtext("""title\n=======\naaa""") == "<p>aaa</p>\n" # Beware - titles not handled, only fragments !!! 
+        
+        
     def test_type_conversions(self):
 
         # test 1 #
@@ -447,6 +451,16 @@ class TestDatamanager(BaseGameTestCase):
         assert self.dm.is_encyclopedia_index_visible()
         not self.dm.set_encyclopedia_index_visibility(False)
         assert not self.dm.is_encyclopedia_index_visible()
+        
+        
+        # generation of entry links 
+        res = _generate_encyclopedia_links (u"""wu\\gly&lt;_é gerbil \n lokongerbil dummy gerb\nil <a href="#">lokon\n</a> lokon""", self.dm)
+                                            
+        expected = """<a href="@@@?keyword=wu%5Cgly%3C_%C3%A9">wu\\gly&lt;_é</a> <a href="@@@?keyword=gerbil">gerbil</a> \n lokongerbil dummy gerb\nil <a href="#"><a href="@@@?keyword=lokon">lokon</a>\n</a> <a href="@@@?keyword=lokon">lokon</a>"""
+        expected = expected.replace("@@@", reverse(views.view_encyclopedia, kwargs=dict(game_instance_id=self.dm.game_instance_id)))
+        
+        #print(">>>", res)
+        assert res == expected
         
 
     def test_message_automated_state_changes(self):

@@ -564,16 +564,37 @@ def opening(request, template_name='generic_operations/opening.html'):
 
     return render_to_response(template_name,
                                 {
-                                 'page_title': "",
+                                 'page_title': None,
                                  #'opening_music': "/files/musics/"+request.datamanager.get_global_parameter("opening_music")
                                 },
                                 context_instance=RequestContext(request))
 
 
 @register_view(access=UserAccess.anonymous, always_available=True)
-def view_encyclopedia(request, keyword=None, template_name='generic_operations/encyclopedia.html'):
+def view_encyclopedia(request, template_name='generic_operations/encyclopedia.html'):
+    
+    keyword = request.GET.get("keyword")
+    
+    if keyword:
+        entry = request.datamanager.get_encyclopedia_entry(keyword)
+        if not entry:
+            request.datamanager.user.add_error(_("Sorry, no encyclopedia article has been found for keyword '%s'") % keyword)
+    else:
+        entry = None
+    
+    if request.datamanager.is_encyclopedia_index_visible():
+        keywords = request.datamanager.get_encyclopedia_keywords()
+    else:
+        keywords = None
+    
+    return render_to_response(template_name,
+                                {
+                                 'page_title': _("Pangea Encyclopedia"),
+                                 'keywords': keywords,
+                                 'entry': entry,
+                                },
+                                context_instance=RequestContext(request))
 
-    return HttpResponse(str(keyword))
 
 
 @register_view(access=UserAccess.anonymous, always_available=True)

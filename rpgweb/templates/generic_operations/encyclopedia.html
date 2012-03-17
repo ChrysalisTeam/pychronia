@@ -1,0 +1,64 @@
+
+{% extends "base_two_columns.html" %}
+
+{% load i18n helpers markup %}  
+
+
+
+{% block sidebar %}
+
+    
+    <div style="width:80%; border: solid 1px #DFBF99; padding:10px;">
+        <strong>{% trans "System Notification" %}</strong>
+        <p style="font-size:11px;">
+        
+        {% if not keywords %}
+	        {% blocktrans %}
+	            Due to a very unfortunate overclocking attempt on our data servers, 
+	            encyclopedia indexes have been partly lost. We apologize for the inconvenience
+	            and do our best to get them back from backups.
+	        {% endblocktrans %}
+	    {% else %}
+            {% blocktrans %}
+                We've managed to recover a tiny part of the encyclopedia index.
+                We'll continue investigation when we have the budget for it, in one year or so.
+            {% endblocktrans %}	    
+	    {% endif %}
+        </p>
+    </div>
+    
+    <br/>
+    
+    <form action="{% gameurl rpgweb.views.view_encyclopedia %}" method="get">
+        <input type="text" name="keyword" size="25" value="Enter single keyword here..." onclick="this.value='';"/>
+        <input type="submit" value="Fetch"/>
+    </form>
+
+    
+    <br/>
+    {% if keywords %}
+    <ul>
+        {% for keyword in keywords %}
+            <li><a href="{% gameurl rpgweb.views.view_encyclopedia %}?keyword={{ keyword|urlencode }}">{{ keyword|capfirst }}</a></li>
+        {% endfor %} 
+    </ul>
+    {% endif %}
+    
+{% endblock %}    
+
+
+
+{% block content %}  
+
+        <!-- HERE FORM -->
+        
+        {% if entry %}    
+        <div align="center">
+            {% rich_text entry %}
+        </div>
+        {% endif %}
+ 
+    <br/>
+{% endblock %}
+
+

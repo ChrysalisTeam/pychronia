@@ -38,7 +38,7 @@ view_urlpatterns = patterns('rpgweb.views',
     (r'^view_sales/$', 'view_sales'),
     (r'^view_characters/$', 'view_characters'),
     
-    (r'^encyclopedia/((?P<keyword>[^/]*)/)?$', 'view_encyclopedia'),
+    (r'^encyclopedia/$', 'view_encyclopedia'),
     
     (r'^manage_characters/$', 'manage_characters'),
     (r'^webradio_management/$', 'manage_audio_messages'),
