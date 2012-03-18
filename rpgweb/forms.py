@@ -261,6 +261,9 @@ class MessageComposeForm(forms.Form):
         if reply_to:
             try:
                 msg = datamanager.get_sent_message_by_id(reply_to)
+                recipient = msg["recipient_emails"]
+                if hasattr(recipient, "__iter__"):
+                    recipient = recipient[0]
             except UsageError:
                 user.add_error(_("Initial message not found"))
             else:
@@ -280,6 +283,7 @@ class MessageComposeForm(forms.Form):
         if recontact:
             try:
                 msg = datamanager.get_sent_message_by_id(recontact)
+                sender = msg["sender_email"]
             except UsageError:
                 user.add_error(_("Original message not found"))
             else:
