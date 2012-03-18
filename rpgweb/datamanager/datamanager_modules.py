@@ -2263,6 +2263,48 @@ class SpecialAbilities(BaseDataManager):
 
 
 
+@register_module
+class HelpPages(BaseDataManager):
+    """
+    Help pages names share their names with GameViews, 
+    and they are meant to be displayed as help popus in the 
+    template of each view.
+    """
+
+    def _load_initial_data(self, **kwargs):
+        super(HelpPages, self)._load_initial_data(**kwargs)
+
+
+    def _check_database_coherency(self, **kwargs):
+        super(HelpPages, self)._check_database_coherency(**kwargs)
+
+        game_data = self.data
+        
+        for (key, value) in game_data["help_pages"].items():
+
+            utilities.check_is_slug(key)
+            assert key.lower() == key # corresponding to a GameView.NAME
+
+            utilities.check_is_restructuredtext(value)
+
+        
+    @readonly_method
+    def get_help_page(self, name):
+        """
+        Returns the rst entry, or None.
+        Fetching is case-insensitive.
+        """
+        return self.data["help_pages"].get(name.lower().strip())
+
+
+    @readonly_method
+    def get_help_page_names(self):
+        """
+        Mainly for
+        """
+        return self.data["help_pages"].keys()
+
+
 
 
 

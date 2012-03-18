@@ -7,7 +7,12 @@
 <title>{% if page_title %}{{ page_title}}{% else %}Welcome to Pangea Network{% endif %}</title>
 <link href="{{ MEDIA_URL }}Burned/default_styles.css" rel="stylesheet" type="text/css" />
 
-<script src="{{ MEDIA_URL }}jquery-1.6.2.js" type="text/javascript"></script>
+<script src="{{ MEDIA_URL }}jquery-1.7.1.min.js" type="text/javascript"></script>
+
+<script src="{{ MEDIA_URL }}jquery.mousewheel-3.0.6.pack.js" type="text/javascript"></script>
+<script src="{{ MEDIA_URL }}jquery.fancybox.js" type="text/javascript"></script>
+<link href="{{ MEDIA_URL }}jquery.fancybox.css" rel="stylesheet" type="text/css" />
+
 <script src="{{ MEDIA_URL }}jquery-ui-1.8.16.custom.js" type="text/javascript"></script>
 <script src="{{ MEDIA_URL }}jquery.ba-outside-events.js" type="text/javascript"></script>
 
@@ -40,6 +45,31 @@
 
             }
         );
+        
+        
+        $('.fancybox').fancybox({
+            padding : 5,
+            
+            openEffect: 'fade', // 'elastic', 'fade' or 'none'
+            closeEffect: 'fade', // 'elastic', 'fade' or 'none'
+            
+	        helpers:  {
+		        overlay: {
+		            speedIn: 0,
+		            speedOut: 300,
+		            opacity: 0.6,
+		            css: {
+		                cursor: 'pointer'
+		            },
+		            closeClick: true
+		        },
+		        title: {
+		            type: 'inside' // 'float', 'inside', 'outside' or 'over'
+		        }
+	        }
+        
+        });
+        
     });
 </script>
 
@@ -107,6 +137,13 @@
       <div id="primaryContent">
       
 		{% if page_title %}<h2>{{ page_title }}</h2>{% endif %}
+
+        {% if help_keyword %}    
+        <a href="{% gameurl rpgweb.views.view_help_page keyword=help_keyword %}" class="fancybox fancybox.ajax" title="{{ page_title }}">
+            <img style="width 50px; height: 50px; float: right;" src="{{ MEDIA_URL }}images/question_mark.png"/>
+        </a>
+        {% endif %}
+    
 
         {% if user.errors %}
         <div class="error_notifications">

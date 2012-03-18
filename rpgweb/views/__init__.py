@@ -596,6 +596,26 @@ def view_encyclopedia(request, template_name='generic_operations/encyclopedia.ht
                                 context_instance=RequestContext(request))
 
 
+@register_view(access=UserAccess.anonymous, always_available=True)
+def view_help_page(request, keyword, template_name='generic_operations/help_page.html'):
+    
+    # FIXME TODO - check access rights to the concerned view !!!
+    
+    entry = None
+    if keyword:
+        entry = request.datamanager.get_help_page(keyword)
+
+    if not entry:
+        raise Http404 # no corresponding help page found
+    
+    return render_to_response(template_name,
+                                {
+                                 'page_title': _("Manual Page"),
+                                 'entry': entry,
+                                },
+                                context_instance=RequestContext(request))
+    
+
 
 @register_view(access=UserAccess.anonymous, always_available=True)
 def logo_animation(request, template_name='utilities/item_3d_viewer.html'):

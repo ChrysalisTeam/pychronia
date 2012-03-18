@@ -408,5 +408,32 @@ encyclopedia:
         
     "wu\\gly<_é":   |
         Just to ensure that this ugly slug gets well encoded in urls and regexes...
- 
+
+
+
+help_pages:
+    
+    homepage:      |
+        Well, I dunno what we could say about that page, akshully...
+        
+        Formatting works *well*, and even **quite well**.
+        
+        In that page you can:
+        
+        - admire the background
+        - admire the menus
+        - admire whatever you want
+        
+        Automatic encyclopedia links work too, for example if I write lokon...
+        
+    view_encyclopedia:      |
+        That encyclopedia is broken, that's a fact...
+    
+    runic_translation:      |
+        This manual page requires advanced permissions...
+    
+    unexisting_view_entry:      |
+        It doesn't raise errors, of course, but could be detected by game checking systems.
+    
+
 ...

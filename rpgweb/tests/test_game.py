@@ -433,7 +433,8 @@ class TestDatamanager(BaseGameTestCase):
         response = c.get(files2[0] + ".dummy")
         self.assertEqual(response.status_code, 404)
 
-
+    
+    @for_core_module(Encyclopedia)
     def test_encyclopedia(self):
         
         utilities.check_is_restructuredtext(self.dm.get_encyclopedia_entry(" LoKon ")) # tolerant fetching
@@ -1030,7 +1031,21 @@ class TestDatamanager(BaseGameTestCase):
         
         del self.dm.ABILITIES_REGISTRY["dummy_ability"] # important cleanup!!!
          
+
+
+    @for_core_module(HelpPages)
+    def test_help_pages(self):
         
+        utilities.check_is_restructuredtext(self.dm.get_help_page(" view_EncyClopedia ")) # tolerant fetching
+        
+        assert self.dm.get_help_page("qskiqsjdqsid") is None
+        
+        assert "homepage" in self.dm.get_help_page_names()
+        for entry in self.dm.get_help_page_names():
+            utilities.check_is_slug(entry)
+            assert entry.lower() == entry
+        
+            
     @for_core_module(GameEvents)
     def test_event_logging(self):
         self._reset_messages()
@@ -1133,15 +1148,15 @@ class TestHttpRequests(BaseGameTestCase):
         from django.core.urlresolvers import RegexURLResolver
         from rpgweb.urls import final_urlpatterns
 
-        skipped_patterns = """ability instructions
+        skipped_patterns = """ability instructions view_help_page
                               DATABASE_OPERATIONS FAIL_TEST ajax item_3d_view chat_with_djinn static.serve encrypted_folder view_single_message logout login secret_question""".split()
-        views = [url._callback_str for url in final_urlpatterns 
+        views_names = [url._callback_str for url in final_urlpatterns 
                                    if not isinstance(url, RegexURLResolver) and 
                                       not [veto for veto in skipped_patterns if veto in url._callback_str]
                                       and "__" not in url._callback_str] # skip disabled views
-        #print views
+        #print views_names
         
-        for view in views:
+        for view in views_names:
             url = reverse(view, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID))
             #print(" ====> ", url)
             response = self.client.get(url)
@@ -1157,8 +1172,10 @@ class TestHttpRequests(BaseGameTestCase):
                         config.GAME_FILES_URL + "encrypted/guy2_report/evans/orb.jpg": None,
                         ROOT_GAME_URL + "/messages/view_single_message/instructions_bewitcher/": None,
                         ROOT_GAME_URL + "/secret_question/": dict(secret_answer="Fluffy", target_email="guy3@pangea.com", secret_username="guy3"),
-                        ROOT_GAME_URL + "/webradio_applet/": dict(frequency=self.dm.get_global_parameter("pangea_radio_frequency"))
-        } 
+                        ROOT_GAME_URL + "/webradio_applet/": dict(frequency=self.dm.get_global_parameter("pangea_radio_frequency")),
+                        reverse(views.view_help_page, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID, keyword="homepage")): None,                     
+                        } 
+                                                                  
         for url, value in special_urls.items():
             #print ">>>>>>", url
 

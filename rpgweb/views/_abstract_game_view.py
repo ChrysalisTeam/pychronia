@@ -34,7 +34,8 @@ class GameViewMetaclass(type):
                 RESERVED_NAMES = AbstractGameView.__dict__.keys()
 
                 assert utilities.check_is_slug(NewClass.NAME)
-
+                #assert NewClass.NAME.lower() == NewClass.NAME - NOOO - some views are upper case atm...
+                
                 assert NewClass.ACCESS in UserAccess.enum_values
                 assert isinstance(NewClass.PERMISSIONS,  (list, tuple)) # not a string!!
                 assert NewClass.ALWAYS_AVAILABLE in (True, False)
@@ -415,7 +416,7 @@ def register_view(view_object=None,
             
             # we build new GameView subclass on the fly
             KlassName = utilities.to_pascal_case(real_view_object.__name__)
-            NewViewType = type(KlassName, (AbstractGameView,), class_data)
+            NewViewType = type(KlassName, (AbstractGameView,), class_data) # metaclass checks everything for us
            
         
         res =  ClassInstantiationProxy(NewViewType)
