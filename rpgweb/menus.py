@@ -9,7 +9,6 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 from difflib import SequenceMatcher
 from rpgweb.authentication import AccessResult
-from msilib.schema import Property
 
 
 
