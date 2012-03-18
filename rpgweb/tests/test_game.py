@@ -1110,7 +1110,9 @@ class TestHttpRequests(BaseGameTestCase):
         else:
             self.assertRedirects(response, ROOT_GAME_URL + "/opening/") # beautiful intro for days before the game starts
         
-        assert self.client.session["rpgweb_session_ticket"] == (TEST_GAME_INSTANCE_ID, master_login)
+        assert self.client.session["rpgweb_session_ticket"] == dict(game_instance_id=TEST_GAME_INSTANCE_ID, 
+                                                                    username=master_login,
+                                                                    impersonation=None)
         self.assertTrue(self.client.cookies["sessionid"])
 
 
@@ -1127,7 +1129,9 @@ class TestHttpRequests(BaseGameTestCase):
         else:
             self.assertRedirects(response, ROOT_GAME_URL + "/opening/") # beautiful intro for days before the game starts
             
-        assert self.client.session["rpgweb_session_ticket"] == (TEST_GAME_INSTANCE_ID, username)
+        assert self.client.session["rpgweb_session_ticket"] == dict(game_instance_id=TEST_GAME_INSTANCE_ID, 
+                                                                    username=username,
+                                                                    impersonation=None)
         self.assertTrue(self.client.cookies["sessionid"])
 
 
@@ -1322,6 +1326,14 @@ class TestHttpRequests(BaseGameTestCase):
                         
 class TestGameViewSystem(BaseGameTestCase):
     
+    
+    def test_mandatory_access_settings(self):
+        
+        # let's not block the home url...
+        assert views.homepage.ACCESS == UserAccess.anonymous
+        assert views.homepage.ALWAYS_AVAILABLE == True
+        
+    
     def test_access_parameters_normalization(self):
         
         from rpgweb.views._abstract_game_view import _normalize_view_access_parameters
@@ -1459,7 +1471,7 @@ class TestGameViewSystem(BaseGameTestCase):
  
         # check global disabling of views by game master #
         for username in (None, "guy1", "guy2", self.dm.get_global_parameter("master_login")):
-            self.dm._set_user(username)
+            self._set_user(username)
             
             for my_view in (view_anonymous, view_character, view_character_permission, view_authenticated): # not view_master          
                 
@@ -1474,28 +1486,28 @@ class TestGameViewSystem(BaseGameTestCase):
                 assert my_view.get_access_token(datamanager) != AccessResult.globally_forbidden
                                 
     
-        self.dm._set_user(None)
+        self._set_user(None)
         assert view_anonymous.get_access_token(datamanager) == AccessResult.available
         assert view_character.get_access_token(datamanager) == AccessResult.authentication_required
         assert view_character_permission.get_access_token(datamanager) == AccessResult.authentication_required
         assert view_authenticated.get_access_token(datamanager) == AccessResult.authentication_required
         assert view_master.get_access_token(datamanager) == AccessResult.authentication_required
         
-        self.dm._set_user("guy1") # has runic_translation permission
+        self._set_user("guy1") # has runic_translation permission
         assert view_anonymous.get_access_token(datamanager) == AccessResult.available
         assert view_character.get_access_token(datamanager) == AccessResult.available
         assert view_character_permission.get_access_token(datamanager) == AccessResult.available
         assert view_authenticated.get_access_token(datamanager) == AccessResult.available
         assert view_master.get_access_token(datamanager) == AccessResult.authentication_required        
         
-        self.dm._set_user("guy2") # has NO runic_translation permission
+        self._set_user("guy2") # has NO runic_translation permission
         assert view_anonymous.get_access_token(datamanager) == AccessResult.available
         assert view_character.get_access_token(datamanager) == AccessResult.available
         assert view_character_permission.get_access_token(datamanager) == AccessResult.permission_required # != authentication required 
         assert view_authenticated.get_access_token(datamanager) == AccessResult.available
         assert view_master.get_access_token(datamanager) == AccessResult.authentication_required        
                 
-        self.dm._set_user(self.dm.get_global_parameter("master_login"))
+        self._set_user(self.dm.get_global_parameter("master_login"))
         assert view_anonymous.get_access_token(datamanager) == AccessResult.available
         assert view_character.get_access_token(datamanager) == AccessResult.authentication_required # master must downgrade to character!!
         assert view_character_permission.get_access_token(datamanager) == AccessResult.authentication_required # master must downgrade to character!!

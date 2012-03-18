@@ -2,14 +2,14 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from .datamanager_tools import UsageError
-from ..common import *
+
+from rpgweb.common import *
 import weakref, functools
 
 
 class GameUser(object):
 
-    def __init__(self, datamanager, username=None, previous_user=None):
+    def __init__(self, datamanager, username=None, previous_user=None, has_write_access=None, is_impersonation=False):
         """
         Builds a user object, storing notifications for the current HTTP request,
         and exposing shortcuts to useful data.
@@ -17,10 +17,20 @@ class GameUser(object):
         *previous_user* is used when logging in/out a user, to ensure no
         notifications and other persistent data gets lost in the change.
         """
+        assert has_write_access in (True, False)
+        assert is_impersonation in (True, False)
         
-        if username  not in datamanager.get_available_logins():
-            raise UsageError(_("Username %s is unknown") % username)
+        assert has_write_access != is_impersonation # at the moment only...
+        
+        if username is None:
+            username = datamanager.get_global_parameter("anonymous_login") # better than None, to display in templates
+        
+        if username not in datamanager.get_available_logins():
+            raise AbnormalUsageError(_("Username %s is unknown") % username)
 
+        self.is_impersonation = is_impersonation
+        self.has_write_access = has_write_access # allows or not POST requests
+        
         self.is_master = datamanager.is_master(username)
         self.is_character = datamanager.is_character(username)
         self.is_anonymous = datamanager.is_anonymous(username)

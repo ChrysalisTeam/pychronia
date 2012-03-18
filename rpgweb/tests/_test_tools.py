@@ -211,11 +211,11 @@ class BaseGameTestCase(TestCase):
         '''
 
 
-    def _set_user(self, username):
+    def _set_user(self, username, has_write_access=True):
         """
-        *username* might be master or None, too. 
+        Here *username* might be "master" or None, too. 
         """
-        self.dm._set_user(username)
+        self.dm._set_user(username, has_write_access=has_write_access)
 
 
     def _reset_messages(self):
