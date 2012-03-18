@@ -304,17 +304,24 @@ class AbstractGameView(object):
             
             return self._process_request(request, *args, **kwargs)
         
-        except AuthenticationRequiredError, e:
-            #print("<<<", e)
-            # TODO - 
-            # uses HTTP code for TEMPORARY redirection
-            return HttpResponseRedirect(reverse("rpgweb.views.login", kwargs=dict(game_instance_id=request.datamanager.game_instance_id)))
-        except AccessDeniedError, e:
-            #print("<<<", e)
-            # even permission errors are treated like base class erors ATM
-            return HttpResponseForbidden(_("Access denied")) # TODO FIXME - provide a proper template and message !!
-        except:
-            raise # we let 500 handler take are of all other (very abnormal) exceptions
+        except Exception, e:
+            
+            if isinstance(e, AccessDeniedError):
+                
+                if request.datamanager.user.is_impersonation:
+                    # Will mainly happen when we switch between two impersonations with different access rights, on a restricted page
+                    request.datamanager.user.add_error(_("Currently impersonated user can't access view %s") % self.NAME)
+                    return HttpResponseRedirect(reverse("rpgweb.views.homepage"))
+                
+                if isinstance(e, AuthenticationRequiredError):
+                    # uses HTTP code for TEMPORARY redirection
+                    return HttpResponseRedirect(reverse("rpgweb.views.login", kwargs=dict(game_instance_id=request.datamanager.game_instance_id)))
+                else:
+                    # even permission errors are treated like base class AccessDeniedError ATM
+                    return HttpResponseForbidden(_("Access denied")) # TODO FIXME - provide a proper template and message !!
+            
+            else:             
+                raise # we let 500 handler take are of all other (very abnormal) exceptions (unhandled UsageError or others)
     
 
 
