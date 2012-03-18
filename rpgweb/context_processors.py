@@ -18,7 +18,7 @@ def rpgweb_template_context(request):
         
         view_name = request.processed_view.NAME # thanks to our middleware
         if view_name in request.datamanager.get_help_page_names():
-            help_keyword = view_name
+            help_keyword = view_name # we NECESSARILY have access permissions for this view, logically..
         else:
             help_keyword = None
 

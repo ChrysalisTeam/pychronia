@@ -2133,9 +2133,11 @@ class GameViews(BaseDataManager):
     def is_game_view_activated(self, view_name):
         return (view_name in self.data["views"]["activated_views"])
 
+
     @readonly_method
     def get_activated_game_views(self):
         return self.data["views"]["activated_views"]   
+        
         
     @transaction_watcher(ensure_game_started=False)    
     def set_activated_game_views(self, view_names):
@@ -2147,14 +2149,26 @@ class GameViews(BaseDataManager):
         self.data["views"]["activated_views"] = PersistentList(sorted(view_names))           
            
     
-    def instantiate_game_view(self, name_or_klass):
+    def _resolve_view_klass(self, name_or_klass):
         if isinstance(name_or_klass, basestring):
-            klass = self.GAME_VIEWS_REGISTRY[name_or_klass]
+            klass = self.GAME_VIEWS_REGISTRY.get(name_or_klass)
         else:
             assert isinstance(name_or_klass, type)
-            klass = name_or_klass
-        return klass(self) # datamanager arg might be ignored by base GameView, but not by its subclasses
-
+            klass = name_or_klass       
+        return klass
+    
+    
+    # no transaction checker here
+    def instantiate_game_view(self, name_or_klass):
+        klass = self._resolve_view_klass(name_or_klass)
+        return klass(self) # first arg (self) might be ignored by base GameView, but not by its subclasses
+    
+    
+    @readonly_method
+    def get_game_view_access_token(self, name_or_klass):
+        klass = self._resolve_view_klass(name_or_klass)
+        token = klass.get_access_token(self) # class method!!
+        return token
                                        
 
 
@@ -2183,6 +2197,7 @@ class SpecialAbilities(BaseDataManager):
         return self.ABILITIES_REGISTRY.copy()  
     
     
+    # no transaction checker here
     def instantiate_ability(self, name_or_klass):
         assert name_or_klass in self.ABILITIES_REGISTRY.keys() + self.ABILITIES_REGISTRY.values()
         return self.instantiate_game_view(name_or_klass) 

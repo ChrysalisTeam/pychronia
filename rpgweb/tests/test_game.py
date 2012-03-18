@@ -969,6 +969,15 @@ class TestDatamanager(BaseGameTestCase):
         self.dm.set_activated_game_views([random_view])
         assert self.dm.is_game_view_activated(random_view)
         
+        
+        # access-token retriever shortcut works OK
+        assert self.dm.user.is_anonymous
+        token = self.dm.get_game_view_access_token(views.homepage.NAME)
+        assert token == AccessResult.available
+        token = self.dm.get_game_view_access_token(views.view_sales._klass)
+        assert token == AccessResult.authentication_required        
+                
+        
         # test registry resync
         del self.dm.ACTIVABLE_VIEWS_REGISTRY[random_view] # class-level registry
         self.dm.sync_game_view_data()
@@ -1284,9 +1293,33 @@ class TestHttpRequests(BaseGameTestCase):
         self.dm.set_game_state(False)
         self._test_player_get_requests()
 
+    
+    def test_specific_help_pages_behaviour(self):
+        self.dm.set_game_state(True)
+        
+        # TODO FIXME - use Http403 exceptions instead, when new django version is out !!
+        
+        url = reverse(views.view_help_page, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID,
+                                                        keyword=""))
+        response = self.client.get(url)
+        assert response.status_code == 404
 
-
-
+        url = reverse(views.view_help_page, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID,
+                                                        keyword="homepage"))
+        response = self.client.get(url)
+        assert response.status_code == 200
+        
+        url = reverse(views.view_help_page, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID,
+                                                        keyword="runic_translation"))
+        response = self.client.get(url)
+        assert response.status_code == 404
+        
+        url = reverse(views.view_help_page, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID,
+                                                        keyword="logo_animation"))
+        response = self.client.get(url)
+        assert response.status_code == 404 # view always available, but no help text available for it
+        
+                        
 class TestGameViewSystem(BaseGameTestCase):
     
     def test_access_parameters_normalization(self):
@@ -1397,8 +1430,11 @@ class TestGameViewSystem(BaseGameTestCase):
                 
     def test_access_token_computation(self):
         
-        dummy_request = self.factory.get('/DEMO/whatever')
-        dummy_request.datamanager = self.dm
+        # Useless actually:
+        # datamanager = self.factory.get('/DEMO/whatever')
+        # datamanager.datamanager = self.dm
+        
+        datamanager = self.dm
         
         def dummy_view_anonymous(request):
             pass
@@ -1428,43 +1464,43 @@ class TestGameViewSystem(BaseGameTestCase):
             for my_view in (view_anonymous, view_character, view_character_permission, view_authenticated): # not view_master          
                 
                 my_view._klass.ALWAYS_AVAILABLE = False
-                assert my_view.get_access_token(dummy_request) == AccessResult.globally_forbidden
+                assert my_view.get_access_token(datamanager) == AccessResult.globally_forbidden
                 self.dm.set_activated_game_views([my_view._klass.NAME]) # exists in ACTIVABLE_VIEWS_REGISTRY because we registered view with always_available=True
-                assert my_view.get_access_token(dummy_request) != AccessResult.globally_forbidden
+                assert my_view.get_access_token(datamanager) != AccessResult.globally_forbidden
                 
                 my_view._klass.ALWAYS_AVAILABLE = True
-                assert my_view.get_access_token(dummy_request) != AccessResult.globally_forbidden
+                assert my_view.get_access_token(datamanager) != AccessResult.globally_forbidden
                 self.dm.set_activated_game_views([]) # RESET
-                assert my_view.get_access_token(dummy_request) != AccessResult.globally_forbidden
+                assert my_view.get_access_token(datamanager) != AccessResult.globally_forbidden
                                 
     
         self.dm._set_user(None)
-        assert view_anonymous.get_access_token(dummy_request) == AccessResult.available
-        assert view_character.get_access_token(dummy_request) == AccessResult.authentication_required
-        assert view_character_permission.get_access_token(dummy_request) == AccessResult.authentication_required
-        assert view_authenticated.get_access_token(dummy_request) == AccessResult.authentication_required
-        assert view_master.get_access_token(dummy_request) == AccessResult.authentication_required
+        assert view_anonymous.get_access_token(datamanager) == AccessResult.available
+        assert view_character.get_access_token(datamanager) == AccessResult.authentication_required
+        assert view_character_permission.get_access_token(datamanager) == AccessResult.authentication_required
+        assert view_authenticated.get_access_token(datamanager) == AccessResult.authentication_required
+        assert view_master.get_access_token(datamanager) == AccessResult.authentication_required
         
         self.dm._set_user("guy1") # has runic_translation permission
-        assert view_anonymous.get_access_token(dummy_request) == AccessResult.available
-        assert view_character.get_access_token(dummy_request) == AccessResult.available
-        assert view_character_permission.get_access_token(dummy_request) == AccessResult.available
-        assert view_authenticated.get_access_token(dummy_request) == AccessResult.available
-        assert view_master.get_access_token(dummy_request) == AccessResult.authentication_required        
+        assert view_anonymous.get_access_token(datamanager) == AccessResult.available
+        assert view_character.get_access_token(datamanager) == AccessResult.available
+        assert view_character_permission.get_access_token(datamanager) == AccessResult.available
+        assert view_authenticated.get_access_token(datamanager) == AccessResult.available
+        assert view_master.get_access_token(datamanager) == AccessResult.authentication_required        
         
         self.dm._set_user("guy2") # has NO runic_translation permission
-        assert view_anonymous.get_access_token(dummy_request) == AccessResult.available
-        assert view_character.get_access_token(dummy_request) == AccessResult.available
-        assert view_character_permission.get_access_token(dummy_request) == AccessResult.permission_required # != authentication required 
-        assert view_authenticated.get_access_token(dummy_request) == AccessResult.available
-        assert view_master.get_access_token(dummy_request) == AccessResult.authentication_required        
+        assert view_anonymous.get_access_token(datamanager) == AccessResult.available
+        assert view_character.get_access_token(datamanager) == AccessResult.available
+        assert view_character_permission.get_access_token(datamanager) == AccessResult.permission_required # != authentication required 
+        assert view_authenticated.get_access_token(datamanager) == AccessResult.available
+        assert view_master.get_access_token(datamanager) == AccessResult.authentication_required        
                 
         self.dm._set_user(self.dm.get_global_parameter("master_login"))
-        assert view_anonymous.get_access_token(dummy_request) == AccessResult.available
-        assert view_character.get_access_token(dummy_request) == AccessResult.authentication_required # master must downgrade to character!!
-        assert view_character_permission.get_access_token(dummy_request) == AccessResult.authentication_required # master must downgrade to character!!
-        assert view_authenticated.get_access_token(dummy_request) == AccessResult.available
-        assert view_master.get_access_token(dummy_request) == AccessResult.available                        
+        assert view_anonymous.get_access_token(datamanager) == AccessResult.available
+        assert view_character.get_access_token(datamanager) == AccessResult.authentication_required # master must downgrade to character!!
+        assert view_character_permission.get_access_token(datamanager) == AccessResult.authentication_required # master must downgrade to character!!
+        assert view_authenticated.get_access_token(datamanager) == AccessResult.available
+        assert view_master.get_access_token(datamanager) == AccessResult.available                        
                 
         
 

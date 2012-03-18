@@ -31,7 +31,6 @@ from rpgweb.utilities import mediaplayers
 from rpgweb.datamanager import GameDataManager
 
 
-
 '''
 # TODO - transform this into instance which exposes real views as attributes, wrapped with register_view !!!!
 def ability(request, ability_name):
@@ -601,17 +600,24 @@ def view_help_page(request, keyword, template_name='generic_operations/help_page
     
     # FIXME TODO - check access rights to the concerned view !!!
     
-    entry = None
+    datamanager = request.datamanager
+    allowed_entry = None
+    
     if keyword:
-        entry = request.datamanager.get_help_page(keyword)
+        if keyword in datamanager.get_game_views():
+            token = datamanager.get_game_view_access_token(keyword)                                     
+            if token == AccessResult.available:                                           
+                entry = datamanager.get_help_page(keyword)
+                if entry:
+                    allowed_entry = entry
 
-    if not entry:
-        raise Http404 # no corresponding help page found
+    if not allowed_entry:
+        raise Http404 # no corresponding help page found, or no access permissions
     
     return render_to_response(template_name,
                                 {
                                  'page_title': _("Manual Page"),
-                                 'entry': entry,
+                                 'entry': allowed_entry,
                                 },
                                 context_instance=RequestContext(request))
     

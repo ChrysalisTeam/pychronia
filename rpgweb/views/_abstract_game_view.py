@@ -113,15 +113,15 @@ class AbstractGameView(object):
     
     
     @classmethod
-    def get_access_token(cls, request):
+    def get_access_token(cls, datamanager):
         
         # TODO - check POST write permission too!!!
         
-        user = request.datamanager.user
+        user = datamanager.user
         
         if not cls.ALWAYS_AVAILABLE:
-            if not request.datamanager.is_game_view_activated(cls.NAME):
-                print (">>>>>", cls.NAME, "-", request.datamanager.get_activated_game_views())
+            if not datamanager.is_game_view_activated(cls.NAME):
+                print (">>>>>", cls.NAME, "-", datamanager.get_activated_game_views())
                 return AccessResult.globally_forbidden
         
         if ((cls.ACCESS == UserAccess.master and not user.is_master) or
@@ -143,7 +143,7 @@ class AbstractGameView(object):
     def _check_access(self, request):
        
         user = request.datamanager.user
-        access_result = self.get_access_token(request)
+        access_result = self.get_access_token(request.datamanager)
         
         if access_result == AccessResult.available:
             return

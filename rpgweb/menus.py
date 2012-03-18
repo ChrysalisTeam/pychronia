@@ -33,7 +33,7 @@ class MenuEntry:
             self.url = None
                                    
         self.submenus = tuple(submenu for submenu in submenus if submenu) if submenus else [] 
-        self.user_access = view.get_access_token(request)
+        self.user_access = view.get_access_token(request.datamanager)
         self.forced_visibility = forced_visibility
         self.is_active = self.url and (self.user_access == AccessResult.available) # doesn't rely on submenus state
     
