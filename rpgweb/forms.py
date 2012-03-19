@@ -257,7 +257,8 @@ class MessageComposeForm(forms.Form):
 
         user = request.datamanager.user
 
-        reply_to = request.GET.get("reply_to", "")
+        reply_to = request.session.pop("reply_to", "")
+        
         if reply_to:
             try:
                 msg = datamanager.get_sent_message_by_id(reply_to)
@@ -279,7 +280,7 @@ class MessageComposeForm(forms.Form):
                     subject = _("Re: ") + msg["subject"]
                     attachment = msg["attachment"]
 
-        recontact = request.GET.get("recontact", "")
+        recontact = request.session.pop("recontact", "")
         if recontact:
             try:
                 msg = datamanager.get_sent_message_by_id(recontact)

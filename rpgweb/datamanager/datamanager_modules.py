@@ -1089,8 +1089,8 @@ class TextMessaging(BaseDataManager): # TODO REFINE
         return messages
     
     @transaction_watcher(ensure_game_started=False)
-    def get_conversation_messages(self, email):
-        username = email.split("@")[0]
+    def get_user_related_messages(self, email):
+        username = self.get_username_from_email(email)
         emails = [record for record in self.data["messages_sent"] if email in record["recipient_emails"] or record["sender_email"] == email or username in record["intercepted_by"]]
         return emails
         
