@@ -903,7 +903,7 @@ class TextMessaging(BaseDataManager): # TODO REFINE
     @transaction_watcher
     def post_message(self, sender_email, recipient_emails, subject, body, attachment=None,
                      date_or_delay_mn=None, is_read=False, is_certified=False,
-                     reply_to=None, use_template=None):
+                     reply_to=None, recontact_to=None, use_template=None):
         sender_email = sender_email.strip()
         recipient_emails = self._normalize_recipient_emails(recipient_emails)
         subject = subject.strip()
@@ -926,18 +926,27 @@ class TextMessaging(BaseDataManager): # TODO REFINE
         if sender_email not in all_emails:
             no_reply = True # we consider it's a no-reply robot which has sent the mail
         """
-
+        group_id = None
         if reply_to:
             try:
                 msg = self.get_sent_message_by_id(reply_to)
+                group_id = msg["group_id"]
                 self._set_message_reply_state(self.get_username_from_email(sender_email), msg, True)
                 self._set_message_read_state(self.get_username_from_email(sender_email), msg, True)
             except UsageError, e:
                 self.logger.error(e, exc_info=True)
-
+                
+        if recontact_to:
+            try:
+                msg = self.get_sent_message_by_id(recontact_to)
+                group_id = msg["group_id"]
+            except UsageError, e:
+                self.logger.error(e, exc_info=True)
+                
         if use_template:
             try:
                 msg = self.get_message_template(use_template)
+                group_id = msg["group_id"]
                 msg["is_used"] = True
             except UsageError, e:
                 self.logger.error(e, exc_info=True)
@@ -953,7 +962,6 @@ class TextMessaging(BaseDataManager): # TODO REFINE
             sent_at = date_or_delay_mn
         else:
             sent_at = utilities.compute_remote_datetime(date_or_delay_mn) # date_or_delay_mn is None or number
-
         msg = PersistentDict({# the ids of emails are simply their location in the global message list !
                               "sender_email": sender_email,
                               "recipient_emails": recipient_emails,
@@ -966,6 +974,7 @@ class TextMessaging(BaseDataManager): # TODO REFINE
                               "has_replied": PersistentList(),
                               "is_certified": is_certified,
                               "id": new_id,
+                              "group_id": group_id if group_id else new_id,
                               })
         if is_read: # workaround : we add ALL players to the "has read" list !
             msg["has_read"] = PersistentList(
@@ -1078,8 +1087,13 @@ class TextMessaging(BaseDataManager): # TODO REFINE
                     break
 
         return messages
-
-
+    
+    @transaction_watcher(ensure_game_started=False)
+    def get_conversation_messages(self, email):
+        username = email.split("@")[0]
+        emails = [record for record in self.data["messages_sent"] if email in record["recipient_emails"] or record["sender_email"] == email or username in record["intercepted_by"]]
+        return emails
+        
     @transaction_watcher(ensure_game_started=False)
     def get_received_messages(self, recipient_email, reset_notification=True):
         records = [record for record in self.data["messages_sent"] if recipient_email in record["recipient_emails"]]

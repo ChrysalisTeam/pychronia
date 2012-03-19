@@ -29,6 +29,7 @@ from .. import datamanager as dm_module
 from .. import abilities # IMPORTANT to register all abilities/permissions
 from rpgweb.utilities import mediaplayers
 from rpgweb.datamanager import GameDataManager
+from django.shortcuts import render
 
 
 '''
@@ -229,7 +230,6 @@ def compose_message(request, template_name='messaging/compose.html'):
 
     user = request.datamanager.user
     form = None
-
     if request.method == "POST":
         form = forms.MessageComposeForm(request, data=request.POST)
         if form.is_valid():
@@ -251,11 +251,13 @@ def compose_message(request, template_name='messaging/compose.html'):
                 attachment = form.cleaned_data["attachment"]
 
                 reply_to = form.cleaned_data.get("reply_to", None)
+                recontact_to = form.cleaned_data.get("recontact_to", None)
+                
                 use_template = form.cleaned_data.get("use_template", None)
 
                 # sender_email and one of the recipient_emails can be the same email, we don't care !
                 request.datamanager.post_message(sender_email, recipient_emails, subject, body, attachment, date_or_delay_mn=delay_mn,
-                                           reply_to=reply_to, use_template=use_template)
+                                           reply_to=reply_to, recontact_to=recontact_to, use_template=use_template)
 
                 form = forms.MessageComposeForm(request) # new empty form
 
@@ -312,8 +314,26 @@ def ajax_set_message_read_state(request):
     return HttpResponse("OK")
     # in case of error, a "500" code will be returned
 
-
-
+@register_view(access=UserAccess.authenticated)
+def conversation(request):
+    
+    mode = "conversation"
+    user = request.datamanager.user
+    if user.is_master:
+        remove_to = False    
+        messages = request.datamanager.get_game_master_messages()
+    else:    
+        remove_to = True
+        messages = request.datamanager.get_conversation_messages(request.datamanager.get_character_email(user.username))
+    messages = list(reversed(messages))
+    
+    group_ids = map(lambda message: message.get("group_id", ""), messages)
+    group_ids = list(set(group_ids)) 
+    grouped_messages = []
+    
+    for group_id in group_ids:
+        grouped_messages.append([message for message in messages if message.get("group_id", "")==group_id])
+    return render(request, 'messaging/conversation.html', locals())
 
 @register_view(access=UserAccess.authenticated)
 def outbox(request, template_name='messaging/messages.html'):

@@ -1,0 +1,159 @@
+{% extends "messaging/base.html" %}
+
+{% load i18n helpers markup %}
+
+{% block headers %}  
+    {{ block.super }}
+    
+    <script type="text/javascript">
+    
+        function force_email_sending(msg_id) {
+ 
+            $.get("{% gameurl rpgweb.views.ajax_force_email_sending %}", 
+                    { id: escape(msg_id) },
+                    function(data){
+                        $("#"+msg_id).css("display", "none");
+                    });
+        }        
+       
+    
+        function set_message_read_state(msg_id, is_read) {
+
+            $.get("{% gameurl rpgweb.views.ajax_set_message_read_state %}", 
+                    { id: escape(msg_id), 
+                      is_read: (is_read ? "1" : "0") },
+                    function(data){
+             
+                        if (is_read) {
+                            $("#"+msg_id).removeClass("email_unread");
+                            $("#"+msg_id).addClass("email_read");
+                        }
+                        else {
+                            $("#"+msg_id).removeClass("email_read");   
+                            $("#"+msg_id).addClass("email_unread");  
+                        } 
+                  
+                    });
+       }
+
+	$.fn.togglepanels = function(){
+	  return this.each(function(){
+	    $(this).addClass("ui-accordion ui-accordion-icons ui-widget ui-helper-reset")
+	  .find("h3")
+	    .addClass("ui-accordion-header ui-helper-reset ui-state-default ui-corner-top ui-corner-bottom")
+	    .hover(function() { $(this).toggleClass("ui-state-hover"); })
+	    .prepend('<span class="ui-icon ui-icon-triangle-1-e"></span>')
+	    .click(function() {
+	      $(this)
+	        .toggleClass("ui-accordion-header-active ui-state-active ui-state-default ui-corner-bottom")
+	        .find("> .ui-icon").toggleClass("ui-icon-triangle-1-e ui-icon-triangle-1-s").end()
+	        .next().slideToggle();
+	      return false;
+	    })
+	    .next()
+	      .addClass("ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom")
+	      .hide();
+	  });
+	};
+	
+	$(document).ready(function() {
+	    $(".notaccordion").togglepanels();
+	  });
+    
+</script>
+
+{% endblock %}
+
+{% block content %}  
+	{% if not messages %}
+    	<div style="text-align:center;">
+        	<i>{% trans "No messages yet." %}</i>
+    	</div>
+	{% else %}
+		{% for message_list in grouped_messages %}
+			<div class="notaccordion">
+				{% for message in message_list %}
+					<h3><a href="#">{{ message.subject }}</a></h3>
+					<div id="{{ message.id }}" class="email 
+		            {% if mode == "inbox" or user.is_master %}
+		                {% if user.username in message.has_read %}email_read{% else %}email_unread{% endif %}
+		            {% endif %}">
+		                {% ifequal mode "inbox" %}
+		                <span class="message_operation">
+		                    <a class="mark_read_tag" onclick="set_message_read_state('{{ message.id|escapejs }}', true); return false;" href="#">
+		                        {% trans "Mark as read" %}
+		                    </a>   
+		                    <a class="mark_unread_tag" onclick="set_message_read_state('{{ message.id|escapejs }}', false); return false;" href="#">
+		                        {% trans "Mark as unread" %}
+		                    </a>                  
+		                </span>  
+		                {% endifequal %}
+
+		                {% ifequal mode "all_queued_messages" %}
+		                <span class="message_operation">
+		                    <a onclick="force_email_sending('{{ message.id|escapejs }}', true); return false;" href="#">
+		                        {% trans "Force sending" %}
+		                    </a> 
+		                </span>  
+		                {% endifequal %}
+
+
+		                <table style="margin:2px 24px; line-height:0.6em;">
+
+		                {% if not remove_from %}
+		                <tr>
+		                <td><strong>{% trans "From:" %}</strong></td>
+		                <td style="color:{% usercolor message.sender_email %};">{{ message.sender_email }}</td>
+		                </tr>  
+		                {% endif %}
+
+		                {% if not remove_to %}
+		                <tr>
+		                <td><strong>{% trans "To:" %}</strong></td>
+		                <td>{{ message.recipient_emails|join:"; " }}</td>
+		                </tr>               
+		                {% endif %}
+
+		                <tr>
+		                <td><strong>Date:</strong></td>
+		                <td>{{ message.sent_at|utctolocal|date:"d N Y - H:i:s" }}</td>  {%comment %} IF NEEDED {% load humanize %}{{ event.time|utctolocal|naturalday:"d/N/Y" }}{% endcomment %}
+		                </tr>  
+		                </table>
+		
+		                <p style="color:{% usercolor message.sender_email %};">
+		                    <strong>
+		                        {% if user.is_master %}
+		                            <!-- only for game master -->
+		                            {% if message.intercepted %}
+		                                {% trans "[intercepted]" %} 
+		                            {% endif %}
+		                        {% endif %}
+		                        {{ message.subject }}
+		                    </strong>
+		                </p>
+		                <div style="color:{% usercolor message.sender_email %};">
+		                    {{ message.body|restructuredtext }}
+		                </div>
+
+		                {% if message.attachment %}
+		                    <br/>
+		                    {{ message.attachment|mediaplayer:"false" }}
+		                {% endif %}
+		            </div>
+				{% endfor %}
+			</div>
+		{% endfor %}
+	{% endif %}
+
+{% endblock %}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	

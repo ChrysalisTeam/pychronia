@@ -316,7 +316,7 @@ class MessageComposeForm(forms.Form):
 
         self.fields.insert(0, "reply_to", forms.CharField(required=False, initial=reply_to, widget=forms.HiddenInput()))
         self.fields.insert(0, "use_template", forms.CharField(required=False, initial=use_template, widget=forms.HiddenInput()))
-
+        self.fields.insert(0, "recontact_to", forms.CharField(required=False, initial=recontact, widget=forms.HiddenInput()))
 
         if user.is_master:
             self.fields.insert(0, "sender", forms.EmailField(label=_("Sender"), initial=sender))
