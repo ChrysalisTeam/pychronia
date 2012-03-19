@@ -919,7 +919,11 @@ class TestDatamanager(BaseGameTestCase):
         assert self.dm.data["global_parameters"]["stuff"] == 23
  
  
-
+    @for_core_module(PlayerAuthentication)
+    def test_player_authentication(self):
+        assert False # TODO - both impersonation and normal log on must be tested
+    
+    
     @for_core_module(PlayerAuthentication)
     def test_password_recovery(self):
         self._reset_messages()
@@ -941,6 +945,8 @@ class TestDatamanager(BaseGameTestCase):
         self.assertRaises(dm_module.UsageError, self.dm.process_secret_answer_attempt, "guy3", "MiLoU", "bademail@sciences.com")
         self.assertEqual(len(self.dm.get_all_queued_messages()), 1) # untouched
 
+    
+    
     @for_core_module(GameViews)
     def test_game_view_registries(self):
         
@@ -1089,7 +1095,7 @@ class TestDatamanager(BaseGameTestCase):
         res = self.dm.dump_zope_database()
         assert isinstance(res, basestring) and len(res) > 1000
 
-
+    
 
 
 

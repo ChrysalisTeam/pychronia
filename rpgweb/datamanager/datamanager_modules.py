@@ -361,12 +361,13 @@ class PlayerAuthentication(BaseDataManager):
         
         
     @transaction_watcher(ensure_game_started=False)
-    def _set_user(self, username, has_write_access):
+    def _set_user(self, username, has_write_access, impersonation=None):
 
         self.user = GameUser(datamanager=self, 
                              username=username, 
                              previous_user=self.user,
-                             has_write_access=has_write_access) # might raise UsageError
+                             has_write_access=has_write_access,
+                             impersonation=impersonation,) # might raise UsageError
 
         self._notify_user_change(username=username)
 
@@ -379,13 +380,17 @@ class PlayerAuthentication(BaseDataManager):
 
 
     @readonly_method
-    def _can_impersonate(self, username, impersonation):
+    def can_impersonate(self, username, impersonation):
         """
         This method must play it safe, we're not sure username or impersonation is valid here!
         
         Returns True iff user *username* can temporarily take the identity of *impersonation*.
         """
         assert username and impersonation
+        
+        if username == impersonation: 
+            return True # it means "getting back to no-impersonation"
+        
         if self.is_master(username):
             if impersonation in self.get_available_logins():
                 return True # impersonation can be a character or anonymous,  both are OK
@@ -400,7 +405,10 @@ class PlayerAuthentication(BaseDataManager):
         
         Raises UsageError if problem.
         """
-        
+
+        if not hasattr(session_ticket, "get"):
+            raise AbnormalUsageError(_("Invalid session ticket: %s") % (session_ticket,)) # beware of dict!
+                
         game_instance_id = session_ticket.get("game_instance_id")
         if game_instance_id != self.game_instance_id:
             raise NormalUsageError(_("Session ticket doesn't belong to this instance"))
@@ -409,15 +417,25 @@ class PlayerAuthentication(BaseDataManager):
         
         impersonation = requested_impersonation or session_ticket.get("impersonation")
         
+        final_username = username # ALWAYS
+        final_has_write_access = True
+        final_impersonation = None
+        
         if impersonation:
-            if self._can_impersonate(username, impersonation):
-                self._set_user(impersonation, has_write_access=False, is_impersonation=True) # always readonly
-            else:
+            if username == impersonation:
+                session_ticket["impersonation"] = None # we stop current impersonation
+            elif not self.can_impersonate(username, impersonation):
                 session_ticket["impersonation"] = None # we reset it even if it was actually good, and just requested_impersonation bad  
-                self._set_user(username, has_write_access=True) 
-                self.user.add_error(_("Unauthorized user impersonation detected)"))
-        else:
-            self._set_user(username, has_write_access=True) 
+                self.user.add_error(_("Unauthorized user impersonation detected: %s") % impersonation)
+            else:
+                # OK go for impersonation
+                session_ticket["impersonation"] = impersonation # in case it was newly requested
+                final_has_write_access = False # always readonly
+                final_impersonation = impersonation
+              
+        self._set_user(username=final_username, 
+                       has_write_access=final_has_write_access, 
+                       impersonation=final_impersonation) 
             
         return session_ticket
     

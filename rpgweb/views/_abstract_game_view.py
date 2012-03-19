@@ -143,6 +143,13 @@ class AbstractGameView(object):
     def _check_access(self, request):
        
         user = request.datamanager.user
+        
+        if request.POST and not user.has_write_access:
+            request.POST.clear() # thanks to our middleware that made it mutable...
+            user.add_error(_("You are not allowed to submit changes to that page"))
+        
+        assert user.has_write_access or not request.POST
+
         access_result = self.get_access_token(request.datamanager)
         
         if access_result == AccessResult.available:

@@ -51,9 +51,8 @@ def try_authenticating_with_ticket(request):
     session_ticket = request.session.get(SESSION_TICKET_KEY)
     
     if session_ticket:
-        
-        requested_impersonation = request.POST.get(IMPERSONATION_POST_VARIABLE) # might be None
-        
+        requested_impersonation = request.POST.pop(IMPERSONATION_POST_VARIABLE, [None])[0] # Beware, pop() on QueryDict returns a LIST always
+            
         try:
             res = datamanager.authenticate_with_ticket(session_ticket, 
                                                        requested_impersonation=requested_impersonation)
@@ -62,7 +61,9 @@ def try_authenticating_with_ticket(request):
             pass # wrong game instance, surely... let it be.
         except UsageError:
             # a disappeared character ? wrong impersonation username ?
-            logging.critical("Wrong session ticket detected: %r" % session_ticket, exc_info=True)
+            logging.critical("Wrong session ticket detected: %r" % (session_ticket,), exc_info=True)
+            request.session[SESSION_TICKET_KEY] = None # important cleanup!
+            
         # anyway, we let the anonymous user be...
  
 

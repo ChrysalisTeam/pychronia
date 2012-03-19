@@ -106,6 +106,13 @@ class AuthenticationMiddleware(object):
 
         if not hasattr(request, "datamanager"):
             return None # not a valid game instance
+            
+        ## Screw the immutability of these QueryDicts, we need FREEDOM ##
+        request._post = request.POST.copy()
+        request._get = request.GET.copy()
+        if hasattr(request, "_request"):
+            del request._request # force regeneration of MergeDict
+        assert request._post._mutable and request._get._mutable
         
         datamanager = request.datamanager
 
