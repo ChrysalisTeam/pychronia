@@ -51,15 +51,19 @@ def try_authenticating_with_ticket(request):
     session_ticket = request.session.get(SESSION_TICKET_KEY)
     
     if session_ticket:
+
+        # beware, here we distinguish between empty string (stop impersonation) and None (do nothing)
         requested_impersonation = request.POST.pop(IMPERSONATION_POST_VARIABLE, [None])[0] # Beware, pop() on QueryDict returns a LIST always
-            
+        
         try:
             res = datamanager.authenticate_with_ticket(session_ticket, 
                                                        requested_impersonation=requested_impersonation)
             request.session[SESSION_TICKET_KEY] = res # this refreshes expiry time, and ensures we properly modify session
-        except NormalUsageError:
+        except NormalUsageError, e:
+            print(">>>", e)
             pass # wrong game instance, surely... let it be.
-        except UsageError:
+        except UsageError, e:
+            print(">>><<<<<<<<", e)
             # a disappeared character ? wrong impersonation username ?
             logging.critical("Wrong session ticket detected: %r" % (session_ticket,), exc_info=True)
             request.session[SESSION_TICKET_KEY] = None # important cleanup!

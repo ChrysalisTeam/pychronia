@@ -41,7 +41,7 @@ if not config.DB_RESET_ALLOWED:
     raise RuntimeError("Can't launch tests - we must be in a production environment !!")
 
 
-TEST_ZODB_FILE = config.ZODB_FILE+".test" # let's not conflict with handle already open in middlewares, on config.ZODB_FILE
+TEST_ZODB_FILE = config.ZODB_FILE+".test" # let's not conflict with the handle already open in middlewares, on config.ZODB_FILE
 
 
 
@@ -129,9 +129,11 @@ class AutoCheckingDM(object):
 
 class BaseGameTestCase(TestCase):
     
+    """
+    WARNING - when directly modifying "self.dm.data" content, 
+    don't forget to commit() after that !!
+    """
     
-    # WARNING - when directly modifying "self.dm.data" sub-objects, don't forget to commit() after !!
-
     def __call__(self, *args, **kwds):
         return unittest.TestCase.run(self, *args, **kwds) # we bypass test setups from django's TestCase, to use py.test instead
     

@@ -388,14 +388,22 @@ class PlayerAuthentication(BaseDataManager):
         """
         assert username and impersonation
         
-        if username == impersonation: 
-            return True # it means "getting back to no-impersonation"
+        if username == impersonation: # no sense
+            return False 
         
         if self.is_master(username):
             if impersonation in self.get_available_logins():
                 return True # impersonation can be a character or anonymous,  both are OK
         return False # a normal character has no reasons to become temporarily anonymous...
 
+    
+    @readonly_method
+    def get_impersonation_targets(self, username):
+        assert username
+        possible_impersonations = [target for target in self.get_available_logins()
+                                   if self.can_impersonate(username, target)]
+        return possible_impersonations
+                                       
 
     @transaction_watcher(ensure_game_started=False)
     def authenticate_with_ticket(self, session_ticket, requested_impersonation=None):

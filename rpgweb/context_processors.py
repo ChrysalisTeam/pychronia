@@ -25,11 +25,10 @@ def rpgweb_template_context(request):
         else:
             help_keyword = None
             
-        possible_impersonations = [_username for _username in datamanager.get_available_logins()
-                                   if datamanager.can_impersonate(datamanager.user.real_username, _username)
-                                   and _username != datamanager.user.real_username]
+        
+        possible_impersonations = datamanager.get_impersonation_targets(datamanager.user.real_username)
         if datamanager.user.is_impersonation:
-            possible_impersonations.append(datamanager.user.real_username) # way of stopping impersonation, actually
+            possible_impersonations.append("") # a way of stopping impersonation, actually
         
         return {'game_instance_id': datamanager.game_instance_id,
                 'user': datamanager.user,

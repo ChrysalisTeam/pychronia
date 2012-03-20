@@ -17,6 +17,7 @@ from rpgweb import views
 
 
 
+
 class TestUtilities(TestCase):
 
     def __call__(self, *args, **kwds):
@@ -921,7 +922,106 @@ class TestDatamanager(BaseGameTestCase):
  
     @for_core_module(PlayerAuthentication)
     def test_player_authentication(self):
-        assert False # TODO - both impersonation and normal log on must be tested
+        """
+        Here we use frontend methods from authentication.py to ensure we do the whole workflow.
+        """
+        self._reset_django_db()
+        
+        from rpgweb.authentication import (authenticate_with_credentials, try_authenticating_with_ticket, logout_session,
+                                           SESSION_TICKET_KEY, IMPERSONATION_POST_VARIABLE)
+        from django.contrib.sessions.middleware import SessionMiddleware
+        
+        home_url = reverse(views.homepage, kwargs={"game_instance_id": TEST_GAME_INSTANCE_ID})
+        
+        master_login = self.dm.get_global_parameter("master_login")
+        master_password = self.dm.get_global_parameter("master_password")
+        player_login = "guy1"
+        player_password = "elixir"
+        anonymous_login = self.dm.get_global_parameter("anonymous_login")
+        
+        # build complete request
+        request = self.factory.post(home_url)
+        request.datamanager = self.dm
+        SessionMiddleware().process_request(request) # populate session
+
+        # anonymous case
+        assert request.datamanager.user.username == anonymous_login
+        assert not self.dm.impersonation_targets(anonymous_login)
+        
+        
+        def _standard_authenticated_checks():
+            
+            original_ticket = request.session[SESSION_TICKET_KEY].copy()
+            original_username = request.datamanager.user.username
+            
+            assert request.datamanager == self.dm 
+            self._set_user(None)
+            assert request.datamanager.user.username == anonymous_login
+            
+            res = try_authenticating_with_ticket(request)
+            assert res is None
+            
+            assert request.session[SESSION_TICKET_KEY] == original_ticket
+            assert request.datamanager.user.username == original_username
+            
+            self._set_user(None) 
+            
+            # failure case: wrong instance id
+            request.session[SESSION_TICKET_KEY]["game_instance_id"] = "qsdjqsidub"
+            _temp = request.session[SESSION_TICKET_KEY].copy()
+            try_authenticating_with_ticket(request) # exception gets swallowed
+            assert request.session[SESSION_TICKET_KEY] == _temp
+            
+            self._set_user(None) 
+            
+            request.session[SESSION_TICKET_KEY] = original_ticket.copy()
+            request.session[SESSION_TICKET_KEY]["username"] = "qsdqsdqsd"
+            try_authenticating_with_ticket(request) # exception gets swallowed
+            assert request.session[SESSION_TICKET_KEY] == None # but ticket gets reset
+            
+            self._set_user(None) 
+            
+            request.session[SESSION_TICKET_KEY] = original_ticket.copy()
+            try_authenticating_with_ticket(request)
+            assert request.datamanager.user.username == original_username
+            
+            logout_session(request)
+            assert SESSION_TICKET_KEY not in request.session
+            assert request.datamanager.user.username == anonymous_login
+
+        
+        
+        # simple player case
+        
+        res = authenticate_with_credentials(request, player_login, player_password)
+        assert res is None # no result expected
+        ticket = request.session[SESSION_TICKET_KEY]
+        assert ticket == {'game_instance_id': u'TeStiNg', 'impersonation': None, 'username': player_login} 
+        
+        assert request.datamanager.user.username == player_login
+        assert not self.dm.impersonation_targets(player_login)
+        
+        _standard_authenticated_checks()
+         
+    
+    
+        # game master case
+        
+        res = authenticate_with_credentials(request, master_login, master_password)
+        assert res is None # no result expected
+        ticket = request.session[SESSION_TICKET_KEY]
+        assert ticket == {'game_instance_id': u'TeStiNg', 'impersonation': None, 'username': master_login}
+        
+        _standard_authenticated_checks()
+        
+        
+        
+        # HERE T
+        
+        
+        # TODO -  impersonation 
+    
+        
     
     
     @for_core_module(PlayerAuthentication)
@@ -1448,10 +1548,7 @@ class TestGameViewSystem(BaseGameTestCase):
                 
     def test_access_token_computation(self):
         
-        # Useless actually:
-        # datamanager = self.factory.get('/DEMO/whatever')
-        # datamanager.datamanager = self.dm
-        
+
         datamanager = self.dm
         
         def dummy_view_anonymous(request):
