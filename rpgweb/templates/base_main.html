@@ -85,13 +85,19 @@
     {% if possible_impersonations %}
     <div style="float:left;">
         <div style="color: #FFF; font-size: 10px;">Write: {{ user.has_write_access }} <br/> Impersonation: {{ user.is_impersonation}}</div>
-    
         {% for impersonation in possible_impersonations %}
         <form action="" method="POST">
             <input type="hidden" name="{{ impersonation_post_variable }}" value="{{ impersonation }}"/>
             <input type="submit" name="" value="{{ impersonation|capfirst }}">
         </form>
         {% endfor %}
+        
+        {% if user.is_impersonation %}
+        <form action="" method="POST">
+            <input type="hidden" name="{{ impersonation_post_variable }}" value=""/>
+            <input type="submit" name="" value="STOP">
+        </form>
+        {% endif %}
     </div>
     {% endif %}
     

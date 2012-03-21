@@ -24,11 +24,9 @@ def rpgweb_template_context(request):
             help_keyword = view_name # we NECESSARILY have access permissions for this view, logically..
         else:
             help_keyword = None
-            
+             
         
         possible_impersonations = datamanager.get_impersonation_targets(datamanager.user.real_username)
-        if datamanager.user.is_impersonation:
-            possible_impersonations.append("") # a way of stopping impersonation, actually
         
         return {'game_instance_id': datamanager.game_instance_id,
                 'user': datamanager.user,

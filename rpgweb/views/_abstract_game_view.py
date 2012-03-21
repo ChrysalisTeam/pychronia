@@ -315,6 +315,8 @@ class AbstractGameView(object):
             
             if isinstance(e, AccessDeniedError):
                 
+                # TODO - test all these pages, in particular impersonation case !!!
+                
                 if request.datamanager.user.is_impersonation:
                     # Will mainly happen when we switch between two impersonations with different access rights, on a restricted page
                     request.datamanager.user.add_error(_("Currently impersonated user can't access view %s") % self.NAME)

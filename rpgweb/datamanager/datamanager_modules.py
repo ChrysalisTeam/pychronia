@@ -423,14 +423,15 @@ class PlayerAuthentication(BaseDataManager):
         
         username = session_ticket.get("username")
         
-        impersonation = requested_impersonation or session_ticket.get("impersonation")
+        # Beware of the (requested_impersonation == "") special case
+        impersonation = requested_impersonation if requested_impersonation is not None else session_ticket.get("impersonation")
         
         final_username = username # ALWAYS
         final_has_write_access = True
         final_impersonation = None
-        
-        if impersonation:
-            if username == impersonation:
+
+        if impersonation is not None:
+            if impersonation == "":
                 session_ticket["impersonation"] = None # we stop current impersonation
             elif not self.can_impersonate(username, impersonation):
                 session_ticket["impersonation"] = None # we reset it even if it was actually good, and just requested_impersonation bad  

@@ -84,12 +84,24 @@ class GameUser(object):
     def has_permission(self, permission):
         return self._datamanager().has_permission(permission)
 
+
     def add_message(self, message):
+        #print(">>>>>>>>> registering message", message)
         self.messages.append(message)
 
     def add_error(self, error):
+        #print(">>>>>>>>> registering error", error)
         self.errors.append(error)
-
+    
+    def has_notifications(self):
+        #print(">>>>>>>>> notifications", self.messages, self.errors)
+        return bool(self.messages or self.errors)
+    
+    def discard_notifications(self):
+        self.errors = []
+        self.messages = []
+        
+        
     def _dm_call_forwarder(self, func_name, *args, **kwargs):
         """
         Forwards call to the select function of the attached datamanager, 
@@ -106,6 +118,8 @@ class GameUser(object):
         Will fail if target method doesn't expect a username argument, 
         or if current user isn't of a proper type.
         """
+        if not hasattr(self._datamanager(), func_name):
+            raise AttributeError(func_name)
         return functools.partial(self._dm_call_forwarder,
                                  func_name=func_name,
                                  username=self._effective_username)

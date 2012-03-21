@@ -84,7 +84,7 @@ ROOT_GAME_URL = "/%s" % TEST_GAME_INSTANCE_ID
 sys.setrecursionlimit(200) # to help detect recursion problems
 
 logging.basicConfig() ## FIXME
-logging.disable(60)
+logging.disable(0)
 logging.getLogger(0).setLevel(logging.DEBUG)
 
 
