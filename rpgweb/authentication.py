@@ -53,8 +53,13 @@ def try_authenticating_with_ticket(request):
     if session_ticket:
 
         # beware, here we distinguish between empty string (stop impersonation) and None (do nothing)
-        requested_impersonation = request.POST.pop(IMPERSONATION_POST_VARIABLE, [None])[0] # Beware, pop() on QueryDict returns a LIST always
-        
+        if IMPERSONATION_POST_VARIABLE in request.POST:
+            requested_impersonation = request.POST[IMPERSONATION_POST_VARIABLE] # Beware, pop() on QueryDict returns a LIST always
+            request.POST.clear() # thanks to our middleware that made it mutable...
+            request.method = "GET" # dirty, isn't it ?
+        else:
+            requested_impersonation = None # beware, != "" here
+            
         try:
             res = datamanager.authenticate_with_ticket(session_ticket, 
                                                        requested_impersonation=requested_impersonation)

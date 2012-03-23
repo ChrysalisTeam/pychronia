@@ -107,7 +107,8 @@ class TestUtilities(TestCase):
 
 
 
-
+# TODO - test that messages are well propagated through session
+# TODO - test interception of "POST" when impersonating user
 
 
 class TestDatamanager(BaseGameTestCase):
@@ -124,31 +125,33 @@ class TestDatamanager(BaseGameTestCase):
              
             CastratedDataManager = type(str('Dummy'+core_module.__name__), (core_module,), {})
             castrated_dm = CastratedDataManager.__new__(CastratedDataManager) # we bypass __init__() call there
-            
+            utilities.TechnicalEventsMixin.__init__(castrated_dm) # only that mixing gets initizalized
+                                                    
             try:
                 castrated_dm.__init__(game_instance_id=TEST_GAME_INSTANCE_ID,
-                                      game_root=self.connection.root())
-            except:
-                pass
+                                      game_root=self.connection.root(),
+                                      request=self.request)
+            except Exception, e:
+                print("AAA", e)
             assert castrated_dm.get_event_count("BASE_DATA_MANAGER_INIT_CALLED") == 1
 
             try:
                 castrated_dm._load_initial_data()
-            except:
-                pass
+            except Exception, e:
+                print("BBB", e)
             assert castrated_dm.get_event_count("BASE_LOAD_INITIAL_DATA_CALLED") == 1
                 
             try:
                 castrated_dm._check_database_coherency()
-            except:
-                pass
+            except Exception, e:
+                print("CCC", e)
             assert castrated_dm.get_event_count("BASE_CHECK_DB_COHERENCY_PRIVATE_CALLED") == 1
 
             try:
                 report = PersistentList()
                 castrated_dm._process_periodic_tasks(report)
-            except:
-                pass
+            except Exception, e:
+                print("DDD", e)
             assert castrated_dm.get_event_count("BASE_PROCESS_PERIODIC_TASK_CALLED") == 1
                                        
              
