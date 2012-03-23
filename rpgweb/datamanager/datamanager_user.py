@@ -5,18 +5,21 @@ from __future__ import unicode_literals
 
 from rpgweb.common import *
 import weakref, functools
+from django.contrib import messages
+import inspect
 
 
 class GameUser(object):
 
-    def __init__(self, datamanager, username=None, previous_user=None, 
+    def __init__(self, datamanager, username=None, ##previous_user=None, DEPRECATED
                  has_write_access=None, impersonation=None):
         """
         Builds a user object, storing notifications for the current HTTP request,
         and exposing shortcuts to useful data.
         
-        *previous_user* is used when logging in/out a user, to ensure no
-        notifications and other persistent data gets lost in the change.
+        .. 
+            *previous_user* is used when logging in/out a user, to ensure no
+            notifications and other persistent data gets lost in the change.
         
         Existence of provided logins is checked, not the permission to use them 
         (which must be done at upper levels).
@@ -56,8 +59,10 @@ class GameUser(object):
 
         # notifications only used for the current request/response, 
         # but persistent through user authentications
-        self.messages = previous_user.messages if previous_user else []
-        self.errors = previous_user.errors if previous_user else []
+        #self.messages = previous_user.messages if previous_user else []
+        #elf.errors = previous_user.errors if previous_user else []
+
+        
 
     @property
     def real_username(self):
@@ -85,21 +90,31 @@ class GameUser(object):
         return self._datamanager().has_permission(permission)
 
 
-    def add_message(self, message):
-        #print(">>>>>>>>> registering message", message)
-        self.messages.append(message)
+    ## Persistent user messages using django.contrib.messages ##
 
+    def add_message(self, message):
+        assert self.request
+        messages.success(self.request, message)
+        
     def add_error(self, error):
-        #print(">>>>>>>>> registering error", error)
-        self.errors.append(error)
+        assert self.request
+        messages.error(self.request, error)
+        
+    def get_notifications(self):
+        """
+        Messages will only be deleted after being iterated upon.
+        """
+        assert self.request
+        return messages.get_messages(self.request)
     
     def has_notifications(self):
-        #print(">>>>>>>>> notifications", self.messages, self.errors)
-        return bool(self.messages or self.errors)
+        assert self.request
+        return bool(len(messages.get_messages(self.request)))
     
     def discard_notifications(self):
-        self.errors = []
-        self.messages = []
+        assert self.request
+        from django.contrib.messages.storage import default_storage
+        self.request._messages = default_storage(self.request) # big hack
         
         
     def _dm_call_forwarder(self, func_name, *args, **kwargs):
@@ -110,7 +125,7 @@ class GameUser(object):
         target = getattr(self._datamanager(), func_name)
         return target(*args, **kwargs)
 
-    def __getattr__(self, func_name):
+    def __getattr__(self, name):
         """
         Helper to call methods of the datamanager, 
         forcing *username* to the currently selected username.
@@ -118,10 +133,12 @@ class GameUser(object):
         Will fail if target method doesn't expect a username argument, 
         or if current user isn't of a proper type.
         """
-        if not hasattr(self._datamanager(), func_name):
-            raise AttributeError(func_name)
-        return functools.partial(self._dm_call_forwarder,
-                                 func_name=func_name,
-                                 username=self._effective_username)
-
+        obj = getattr(self._datamanager(), name)
+        
+        if inspect.isroutine(obj):
+            return functools.partial(self._dm_call_forwarder,
+                                     func_name=name,
+                                     username=self._effective_username)
+        else:
+            return obj
 

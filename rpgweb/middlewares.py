@@ -66,7 +66,8 @@ class ZodbTransactionMiddleware(object):
             connection = DB.open()
 
             request.datamanager = dm_module.GameDataManager(game_instance_id=game_instance_id, 
-                                                            game_root=connection.root()) # TOFIX - discriminate with game_instance_id
+                                                            game_root=connection.root(), # TDO FIXME - discriminate table with game_instance_id
+                                                            request=request) 
 
             if not request.datamanager.is_initialized():
                 raise RuntimeError("ZodbTransactionMiddleware - Game data isn't in initialized state")

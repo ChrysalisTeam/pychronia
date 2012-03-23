@@ -365,7 +365,7 @@ class PlayerAuthentication(BaseDataManager):
 
         self.user = GameUser(datamanager=self, 
                              username=username, 
-                             previous_user=self.user,
+                            # DEPRECATED previous_user=self.user,
                              has_write_access=has_write_access,
                              impersonation=impersonation,) # might raise UsageError
 

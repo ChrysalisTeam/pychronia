@@ -166,33 +166,14 @@
         {% endif %}
     
 
-        {% if user.errors %}
-        <div class="error_notifications">
-	        <strong>{% trans "Error" %}{{ user.errors|length|pluralize }}</strong>
-			<ul>
-			    {% for error in user.errors %}
-			    <li>{{ error|linebreaksbr }}</li>
-			    {% endfor %}
-			</ul>
-        </div>
-  		{% endif %}
-
-        {% if user.messages %}
-        <div class="message_notifications">
-            <strong>
-                {% blocktrans count user.messages|length|pluralize as msg_count %}
-                    Message
-                {% plural %}
-                    Messages
-                {% endblocktrans %}
-            </strong>
-            <ul>
-                {% for message in user.messages %}
-                <li>{{ message }}</li>
-                {% endfor %}
-            </ul>
-        </div>
-        {% endif %}
+		{% if messages %}
+		<ul class="messages">
+		    {% for message in messages %}
+		    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message|linebreaksbr }}</li>
+		    {% endfor %}
+		</ul>
+		{% endif %}
+		
                
         {% block content %}  
       

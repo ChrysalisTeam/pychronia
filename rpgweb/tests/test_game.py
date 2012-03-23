@@ -944,7 +944,6 @@ class TestDatamanager(BaseGameTestCase):
         # build complete request
         request = self.factory.post(home_url)
         request.datamanager = self.dm
-        SessionMiddleware().process_request(request) # populate session
         
         # we let different states of the session ticket be there, at the beginning
         if random.choice((0, 1)):
@@ -1038,9 +1037,7 @@ class TestDatamanager(BaseGameTestCase):
         
         from rpgweb.authentication import (authenticate_with_credentials, try_authenticating_with_ticket, logout_session,
                                            SESSION_TICKET_KEY, IMPERSONATION_POST_VARIABLE)
-        from django.contrib.sessions.middleware import SessionMiddleware
-        
-        home_url = reverse(views.homepage, kwargs={"game_instance_id": TEST_GAME_INSTANCE_ID})
+
         
         master_login = self.dm.get_global_parameter("master_login")
         master_password = self.dm.get_global_parameter("master_password")
@@ -1051,10 +1048,6 @@ class TestDatamanager(BaseGameTestCase):
         
         
         # build complete request
-        request = self.factory.post(home_url)
-        request.datamanager = self.dm
-        SessionMiddleware().process_request(request) # populate session
-        
         
         # Impersonation control with can_impersonate()
         assert not self.dm.can_impersonate(master_login, master_login)
@@ -1075,6 +1068,7 @@ class TestDatamanager(BaseGameTestCase):
         
         self.dm.user.discard_notifications()
         
+        request = self.request
         authenticate_with_credentials(request, master_login, master_password)
         session_ticket = request.session[SESSION_TICKET_KEY]
         assert session_ticket == {'game_instance_id': u'TeStiNg', 'impersonation': None, 'username': master_login}
@@ -1226,7 +1220,8 @@ class TestDatamanager(BaseGameTestCase):
         assert self.dm.get_event_count("SYNC_GAME_VIEW_DATA_CALLED") == 1
         
         _dm2 = dm_module.GameDataManager(game_instance_id=TEST_GAME_INSTANCE_ID,
-                                  game_root=self.connection.root())
+                                  game_root=self.connection.root(),
+                                  request=self.request)
         assert _dm2.get_event_count("SYNC_GAME_VIEW_DATA_CALLED") == 1 # sync well called at init!!
 
         self.dm.ACTIVABLE_VIEWS_REGISTRY[random_view] = random_klass # test cleanup
@@ -1274,7 +1269,8 @@ class TestDatamanager(BaseGameTestCase):
             self.dm.get_ability_data("dummy_ability") # not yet setup in ZODB
         
         _dm = dm_module.GameDataManager(game_instance_id=TEST_GAME_INSTANCE_ID,
-                                        game_root=self.connection.root())
+                                        game_root=self.connection.root(),
+                                        request=self.request)
         assert "dummy_ability" in _dm.get_abilities()
         assert _dm.get_ability_data("dummy_ability") # ability now setup in ZODB
         assert self.dm.get_event_count("LATE_ABILITY_SETUP_DONE") == 1 # parasite event - autosync well called at init!!

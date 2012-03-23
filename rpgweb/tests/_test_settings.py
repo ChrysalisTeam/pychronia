@@ -57,6 +57,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 "django.core.context_processors.debug",
 "django.core.context_processors.media",
 "django.core.context_processors.request",
+"django.contrib.messages.context_processors.messages",
 
 "rpgweb.context_processors.rpgweb_template_context",
 
@@ -64,6 +65,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 
 MIDDLEWARE_CLASSES = (
 'django.contrib.sessions.middleware.SessionMiddleware',
+'django.contrib.messages.middleware.MessageMiddleware',
 #'localeurl.middleware.LocaleURLMiddleware',
 # 'django.middleware.locale.LocaleMiddleware', replaced by LocaleURLMiddleware
 'django.middleware.common.CommonMiddleware',
@@ -90,6 +92,7 @@ INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions', # only sessions are scalable for "sharding"
+    'django.contrib.messages',
     'django.contrib.sites',
     'django.contrib.humanize',
     'django.contrib.markup',
@@ -106,7 +109,9 @@ except ImportError:
 ROOT_URLCONF = 'rpgweb.tests._test_urls'
 
 
-
+from django.contrib.messages import constants as message_constants
+MESSAGE_LEVEL = message_constants.DEBUG
+# Set MESSAGE_TAGS to control corresponding CSS classes 
 
 _curdir = os.path.dirname(os.path.realpath(__file__))
 GAME_FILES_ROOT = os.path.join(_curdir, "test_game_files")

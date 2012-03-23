@@ -33,6 +33,7 @@ from rpgweb.views._abstract_game_view import AbstractGameView
 #from django.test.testcases import TransactionTestCase as TestCase
 from django.test import TestCase
 from django.test.client import Client, RequestFactory
+from django.core.handlers.base import BaseHandler  
 import django.utils.translation
 from rpgweb.views._abstract_game_view import register_view
 from rpgweb.abilities import *
@@ -80,6 +81,7 @@ def for_ability(view):
 
 TEST_GAME_INSTANCE_ID = "TeStiNg"
 ROOT_GAME_URL = "/%s" % TEST_GAME_INSTANCE_ID
+HOME_URL = reverse(rpgweb.views.homepage, kwargs={"game_instance_id": TEST_GAME_INSTANCE_ID})
 
 sys.setrecursionlimit(200) # to help detect recursion problems
 
@@ -89,6 +91,46 @@ logging.getLogger(0).setLevel(logging.DEBUG)
 
 
 
+
+
+  
+class RequestMock(RequestFactory):  
+    def request(self, **request):  
+        """Constructs a generic request object, INCLUDING middelware modifications.""" 
+        
+        from django.core import urlresolvers
+        
+        
+        request = RequestFactory.request(self, **request)  
+        handler = BaseHandler()  
+        
+        handler.load_middleware()  
+        
+        for middleware_method in handler._request_middleware:  
+            print("APPLYING REQUEST MIDDLEWARE ", middleware_method, file=sys.stderr)
+            if middleware_method(request):  
+                raise Exception("Couldn't create request mock object - "  
+                                "request middleware returned a response")  
+        
+        urlconf = settings.ROOT_URLCONF
+        urlresolvers.set_urlconf(urlconf)
+        resolver = urlresolvers.RegexURLResolver(r'^/', urlconf)
+        
+        
+        callback, callback_args, callback_kwargs = resolver.resolve(
+                            request.path_info)
+
+        # Apply view middleware
+        for middleware_method in handler._view_middleware:
+            print("APPLYING VIEW MIDDLEWARE ", middleware_method, file=sys.stderr)
+            response = middleware_method(request, callback, callback_args, callback_kwargs)
+            if response:
+                raise Exception("Couldn't create request mock object - "  
+                                "view middleware returned a response")                  
+            
+        return request  
+    
+    
 
 
 class AutoCheckingDM(object):
@@ -152,10 +194,27 @@ class BaseGameTestCase(TestCase):
         rpgweb.middlewares.ZODB_TEST_DB = self.db # to allow testing views via normal request dispatching
 
         self.connection = self.db.open()
-
-        try:
-            self.dm = dm_module.GameDataManager(game_instance_id=TEST_GAME_INSTANCE_ID,
-                                                game_root=self.connection.root())
+ 
+        try: 
+            
+            self.client = Client()
+            self.factory = RequestMock()
+            
+            self.request = self.factory.get(HOME_URL)
+            assert self.request.user
+            assert self.request.datamanager.user.request # double linking
+            assert self.request.session 
+            assert self.request._messages is not None
+            assert self.request.datamanager
+            
+            # we mimic messages middleware
+            from django.contrib.messages.storage import default_storage
+            self.request._messages = default_storage(self.request)
+            
+            self.dm = self.request.datamanager
+            """dm_module.GameDataManager(game_instance_id=TEST_GAME_INSTANCE_ID,
+                                                game_root=self.connection.root(),
+                                                request=self.request) # request is used"""
 
             self.dm.reset_game_data()
 
@@ -178,8 +237,6 @@ class BaseGameTestCase(TestCase):
 
             logging.disable(logging.CRITICAL) # to be commented if more output is wanted !!!
 
-            self.client = Client()
-            self.factory = RequestFactory()
             
         except:
             self.tearDown(check=False) # cleanup of db and connection in any case
