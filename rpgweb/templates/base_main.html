@@ -70,6 +70,35 @@
         
         });
         
+        $(function() {
+            $( "#sortable1, #sortable2" ).sortable({
+                connectWith: ".connectedSortable"
+            }).disableSelection();
+        });
+        
+        /*
+        $('.radiotrack').draggable( {
+        	containment: "#radiotracks",
+        	cursor: "move",
+        	revert: "invalid",
+          } );*/
+        
+        
+        /* ADD GLOBAL AJAX ERROR HANDLERS (all executed on error)
+        
+        $(document).ajaxError( handler(event, jqXHR, ajaxSettings, thrownError) )
+        
+        jQuery.ajax({
+			...,
+			complete: function(event, XHR, ajaxSettings, thrownError) {
+			if (XHR.status == 200) { // success
+			} elseif (XHR.status == 500) { // Internal Server Error
+			} elseif (XHR.status == 404) { // File Not found
+			}
+			});
+        
+        */
+        
     });
 </script>
 
