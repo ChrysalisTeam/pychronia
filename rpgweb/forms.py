@@ -221,11 +221,6 @@ class DjinnContactForm(forms.Form):
         self.fields["djinn"] = forms.ChoiceField(label=_("Djinn"), choices=available_djinns_choices)
 
 
-
-
-
-
-
 class MessageComposeForm(forms.Form):
     """
     A simple default form for private messages.
@@ -254,21 +249,20 @@ class MessageComposeForm(forms.Form):
         _delay_values_minutes_labels = [value+" minutes" for value in _delay_values_minutes]
         _delay_values_minutes_choices = zip(_delay_values_minutes, _delay_values_minutes_labels)
 
-
         user = request.datamanager.user
-
-        reply_to = request.session.pop("reply_to", "")
+        reply_to = None
+        recontact = None
+        message_id = request.GET.get("message_id", "")
+        if message_id:
+            msg = request.datamanager.get_sent_message_by_id(message_id)
+            recipient = msg["recipient_emails"]
+            if hasattr(recipient, "__iter__"):
+                recipient = recipient[0]
+            sender = msg["sender_email"]
         
-        if reply_to:
-            try:
-                msg = datamanager.get_sent_message_by_id(reply_to)
-                recipient = msg["recipient_emails"]
-                if hasattr(recipient, "__iter__"):
-                    recipient = recipient[0]
-            except UsageError:
-                user.add_error(_("Initial message not found"))
-            else:
-
+            if request.datamanager.get_username_from_email(recipient) == user.username:
+                # reply message
+                reply_to = message_id
                 if not user.is_master and recipient != datamanager.get_character_email(user.username): # TODO FIXME WEIRD
                     user.add_error(_("Access to initial message forbidden"))
                 else:
@@ -280,15 +274,9 @@ class MessageComposeForm(forms.Form):
                     subject = _("Re: ") + msg["subject"]
                     attachment = msg["attachment"]
 
-        recontact = request.session.pop("recontact", "")
-        if recontact:
-            try:
-                msg = datamanager.get_sent_message_by_id(recontact)
-                sender = msg["sender_email"]
-            except UsageError:
-                user.add_error(_("Original message not found"))
-            else:
-
+            if request.datamanager.get_username_from_email(sender) == user.username:
+                # recontact message
+                recontact = message_id
                 if not user.is_master and sender != datamanager.get_character_email(user.username): # TODO FIXME WEIRD
                     user.add_error(_("Access to original message forbidden"))
                 else:

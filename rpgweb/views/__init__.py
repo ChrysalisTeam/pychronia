@@ -262,17 +262,6 @@ def compose_message(request, template_name='messaging/compose.html'):
                 form = forms.MessageComposeForm(request) # new empty form
 
     else:
-        message_id = request.GET.get("message_id", "")
-        if message_id:
-            message = request.datamanager.get_sent_message_by_id(message_id)
-            recipient = message["recipient_emails"]
-            if hasattr(recipient, "__iter__"):
-                recipient = recipient[0]
-            sender = message["sender_email"]
-            if request.datamanager.get_username_from_email(recipient) == user.username:
-                request.session["reply_to"] = message_id
-            elif request.datamanager.get_username_from_email(sender) == user.username:
-                request.session["recontact"] = message_id
         form = forms.MessageComposeForm(request)
 
     return render_to_response(template_name,
