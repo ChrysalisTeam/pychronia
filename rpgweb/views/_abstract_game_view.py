@@ -6,7 +6,7 @@ import inspect
 import json
 
 from django.http import Http404, HttpResponseRedirect, HttpResponse,\
-    HttpResponseForbidden
+    HttpResponseForbidden, HttpResponseBadRequest
 from django.shortcuts import render_to_response
 from django.template import RequestContext, loader
 
@@ -25,10 +25,8 @@ def transform_usage_error(caller, request, self, *args, **kwargs):
     try:
         
         return caller(request, self, *args, **kwargs)
-    
-    except Exception, e:
-        
-        if isinstance(e, AccessDeniedError):
+
+    except AccessDeniedError, e:
             
             # TODO - test all these pages, in particular impersonation case !!!
             
@@ -43,9 +41,12 @@ def transform_usage_error(caller, request, self, *args, **kwargs):
             else:
                 # even permission errors are treated like base class AccessDeniedError ATM
                 return HttpResponseForbidden(_("Access denied")) # TODO FIXME - provide a proper template and message !!
-        
-        else:             
-            raise # we let 500 handler take are of all other (very abnormal) exceptions (unhandled UsageError or others)
+    
+    except GameError, e:
+        return HttpResponseBadRequest(repr(e)) 
+       
+    except Exception:         
+        raise # we let 500 handler take are of all other (very abnormal) exceptions (unhandled UsageError or others)
 
 
 
@@ -89,12 +90,16 @@ class GameViewMetaclass(type):
                     assert getattr(NewClass, callback)
                     assert callback not in RESERVED_NAMES
                     assert not callback.startswith("_")
-
+                    
+                for (action_name, callback) in NewClass.ACTIONS.items():
+                    _check_callback(callback)
+                    
                 for (form_name, (FormClass, callback)) in NewClass.GAME_FORMS.items():
                     assert issubclass(FormClass, AbstractGameForm)
                     _check_callback(callback)
-                for (action_name, callback) in NewClass.ACTIONS.items():
-                    _check_callback(callback)
+                
+                for form_name in NewClass.ADMIN_FORMS:
+                    assert form_name in NewClass.GAME_FORMS
                     
             GameDataManager.register_game_view(NewClass)
             
@@ -116,7 +121,7 @@ class SubmittedGameForm:
 
 class AbstractGameView(object):
     """
-    By default, concrete subclasses just need to implement the _process_request() method 
+    By default, concrete subclasses just need to implement the _process_standard_request() method 
     of that class, and they are then suitable to process multiple http requests related to multiple datamanagers,
     in a single thread (no concurrency).
     
@@ -125,17 +130,18 @@ class AbstractGameView(object):
     __metaclass__ = GameViewMetaclass
 
     NAME = None # slug to be overridden, used as primary identifier
-
-    GAME_FORMS = {} # dict mapping form identifiers to tuples (AbstractGameForm subclass, processing method name)
+    
     ACTIONS = {} # dict mapping action identifiers to processing method names (for ajax calls or custom forms)
+    GAME_FORMS = {} # dict mapping form identifiers to tuples (AbstractGameForm subclass, processing method name)
+    ADMIN_FORMS = [] # keys of GAME_FORMS that should be exposed as admin forms
     
     TEMPLATE = None # HTML template name, required when using default request handler
-    ADMIN_TEMPLATE = None # TODO - template to render a single admin form, with notifications
+    ADMIN_TEMPLATE = "utilities/admin_form_widget.html" # TODO - template to render a single admin form, with notifications
     
     
     ACCESS = None # UserAccess entry
     PERMISSIONS = [] # list of required permission names, only used for character access    
-    ALWAYS_AVAILABLE = None # True iff view can't be globally hidden by game master
+    ALWAYS_AVAILABLE = False # True iff view can't be globally hidden by game master
 
     _action_field = "_action_" # for ajax and no-form request
 
@@ -221,7 +227,7 @@ class AbstractGameView(object):
         else:
             previous_form_name = previous_form_instance = previous_form_successful = None
         
-        NewFormClass = cls.FORMS[new_form_name][0]
+        NewFormClass = cls.GAME_FORMS[new_form_name][0]
 
         if __debug__:
             form_data = (previous_form_name, previous_form_instance, (previous_form_successful is not None))
@@ -247,19 +253,28 @@ class AbstractGameView(object):
 
 
     def _try_processing_action(self, data):
-        func = getattr(self, self.ACTIONS[data[self._action_field]])
+        """
+        Raises AbnormalUsageError if action is not determined,
+        else returns its result (or raises an action exception).
+        """
+        action_name = data.get(self._action_field)
+        if not action_name or action_name not in self.ACTIONS:
+            raise AbnormalUsageError(_("Abnormal action name: %s") % action_name)
+        
+        func = getattr(self, self.ACTIONS[action_name])
         relevant_args = utilities.adapt_parameters_to_func(data, func)
         res = func(**relevant_args)
         return res
 
-    def _process_ajax_request(self, data):
+
+    def _process_ajax_request(self, request):
         # we let exceptions flow upto upper level handlers
-        res = self._try_processing_action(data) 
+        res = self._try_processing_action(request.POST) 
         response = json.dumps(res)
         return HttpResponse(response)
 
     
-    def _do_process_form_submission(self, request, data, form_name, FormClass, action_name):
+    def _do_process_game_form_submission(self, request, data, form_name, FormClass, action_name):
         
         user = request.datamanager.user
         res = dict(result = None,
@@ -267,7 +282,9 @@ class AbstractGameView(object):
         
         if request.method != "POST":
             return res
-               
+        
+        assert FormClass.matches(data)
+        
         form_successful = False        
         bound_form = FormClass(self._datamanager, data=data)
         
@@ -316,7 +333,7 @@ class AbstractGameView(object):
         else: # it must be a call using registered django newforms
             for (form_name, (FormClass, action_name)) in self.GAME_FORMS.items():
                 if FormClass.matches(data): # class method
-                    res = self._do_process_form_submission(request, data=data,
+                    res = self._do_process_game_form_submission(request, data=data,
                                                            form_name=form_name, FormClass=FormClass, action_name=action_name)
                     break # IMPORTANT
             else:
@@ -352,14 +369,14 @@ class AbstractGameView(object):
         #if not self.datamanager.player.has_permission(self.NAME): #TODO
         #    raise RuntimeError("Player has no permission to use ability")
 
-        if request.is_ajax():
-            return self._process_ajax_request(request.REQUEST)
+        if request.is_ajax() or request.GET.get("is_ajax"):
+            return self._process_ajax_request(request)
         else:
             return self._process_html_request(request)    
     
      
-    def _process_request(self, request, *args, **kwargs):
-        raise NotImplementedError("_process_request must be implemented by AbstractGameView subclass")
+    def _process_standard_request(self, request, *args, **kwargs):
+        raise NotImplementedError("_process_standard_request must be implemented by AbstractGameView subclass")
     
     
     @transform_usage_error
@@ -368,36 +385,41 @@ class AbstractGameView(object):
         self._check_writability(request) # crucial
         self._check_standard_access(request) # crucial
          
-        return self._process_request(request, *args, **kwargs)
+        return self._process_standard_request(request, *args, **kwargs)
      
  
     @transform_usage_error
     def process_admin_request(self, request, form_name):
 
+        assert form_name in self.ADMIN_FORMS # else big pb!
+        
         self._check_writability(request) # crucial
         self._check_admin_access(request) # crucial
-
+        
         data = request.POST
         (FormClass, action_name) = self.GAME_FORMS[form_name]
-        assert FormClass.matches(data)
 
-        res = self._do_process_form_submission(request, data=data,
-                                               form_name=form_name, FormClass=FormClass, action_name=action_name)
+        res = self._do_process_game_form_submission(request, data=data,
+                                                    form_name=form_name, FormClass=FormClass, action_name=action_name)
         
         success = res["result"] # can be None if nothing processed
         previous_form_data = res["form_data"]        
 
-        form = self._instantiate_form(request.datamanager,
-                                      new_form_name=form_name,
+  
+        form = self._instantiate_form(new_form_name=form_name,
                                       hide_on_success=False,
                                       previous_form_data=previous_form_data,
-                                      initial_data=None)
+                                      initial_data=None,
+                                      datamanager=request.datamanager,)
         
-        template_vars = dict(form=form)
+        template_vars = dict(target_form_id=request.datamanager.build_admin_widget_identifier(self.__class__, form_name),
+                             form=form)
         response = render_to_response(self.ADMIN_TEMPLATE,
                                       template_vars,
                                       context_instance=RequestContext(request))
         return response
+        
+        
         
 
 def _normalize_view_access_parameters(access=_undefined, 
@@ -491,7 +513,7 @@ def register_view(view_object=None,
             
             class_data = dict((key.upper(), value) for key, value in normalized_access_args.items())
             class_data["NAME"] = real_view_object.__name__
-            class_data["_process_request"] = staticmethod(real_view_object) # we install the real request handler, not expecting a "self"
+            class_data["_process_standard_request"] = staticmethod(real_view_object) # we install the real request handler, not expecting a "self"
             
             # we build new GameView subclass on the fly
             KlassName = utilities.to_pascal_case(real_view_object.__name__)

@@ -26,7 +26,6 @@ from .. import forms
 from ._abstract_game_view import register_view
 from ..authentication import authenticate_with_credentials, logout_session
 from .. import datamanager as dm_module
-from .. import abilities # IMPORTANT to register all abilities/permissions
 from rpgweb.utilities import mediaplayers
 from rpgweb.datamanager import GameDataManager
 

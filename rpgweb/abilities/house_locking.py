@@ -13,7 +13,7 @@ class HouseLockingAbility(AbstractAbility):
     
     NAME = "house_locking"
 
-    FORMS = {}
+    GAME_FORMS = {}
 
     ACTIONS = dict(lock="lock_house_doors",
                    unlock="try_unlocking_house_doors")

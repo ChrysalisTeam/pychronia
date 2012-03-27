@@ -1230,6 +1230,22 @@ class TestDatamanager(BaseGameTestCase):
         self.dm.ACTIVABLE_VIEWS_REGISTRY[random_view] = random_klass # test cleanup
         
         
+        # test admin form tokens
+        assert "runic_translation.translation_form" in self.dm.get_admin_widget_identifiers()
+        
+        assert self.dm.resolve_admin_widget_identifier("") is None
+        assert self.dm.resolve_admin_widget_identifier("qsdqsd") is None
+        assert self.dm.resolve_admin_widget_identifier("qsdqsd.translation_form") is None
+        assert self.dm.resolve_admin_widget_identifier("runic_translation.") is None
+        assert self.dm.resolve_admin_widget_identifier("runic_translation.qsdqsd") is None
+        
+        from rpgweb.abilities import runic_translation_view
+        components = self.dm.resolve_admin_widget_identifier("runic_translation.translation_form")
+        assert len(components) == 2
+        assert isinstance(components[0], runic_translation_view._klass)
+        assert components[1] == "translation_form"
+        
+        
     @for_core_module(SpecialAbilities)
     def test_special_abilities_registry(self):
         
@@ -1242,7 +1258,7 @@ class TestDatamanager(BaseGameTestCase):
         class TesterAbility(AbstractAbility):
 
             NAME = "dummy_ability"
-            FORMS = {}
+            GAME_FORMS = {}
             ACTIONS = dict()
             TEMPLATE = "base_main.html" # must exist
             ACCESS = UserAccess.anonymous
@@ -1758,7 +1774,7 @@ class TestGameViewSystem(BaseGameTestCase):
 class TestSpecialAbilities(BaseGameTestCase):
 
 
-    @for_ability(runic_translation)
+    @for_ability(runic_translation_view)
     def test_runic_translation(self):
         runic_translation = self.dm.instantiate_ability("runic_translation")
 
@@ -1833,7 +1849,7 @@ class TestSpecialAbilities(BaseGameTestCase):
         self.assertTrue(self.dm.get_global_parameter("master_login") in msg["has_read"])
 
 
-    @for_ability(house_locking)
+    @for_ability(house_locking_view)
     def test_house_locking(self):
 
         house_locking = self.dm.instantiate_ability("house_locking")
@@ -2072,7 +2088,7 @@ class TestSpecialAbilities(BaseGameTestCase):
         self.assertTrue("***" in msg["body"].lower())
 
 
-    @for_ability(wiretapping_management)
+    @for_ability(wiretapping_management_view)
     def test_wiretapping_management(self):
         
         self._reset_messages()

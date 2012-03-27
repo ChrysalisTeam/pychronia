@@ -112,6 +112,7 @@ def generate_full_menu(request):  ## game_menu_generator
             
             menu_entry(_(u"Admin"), views.homepage, # FIXME
                        (
+                        menu_entry(_(u"Dashboard"), abilities.admin_dashboard_view),
                          menu_entry(_(u"Game Events"), views.game_events),
                          menu_entry(_(u"Manage Webradio"), views.manage_audio_messages),
                          menu_entry(_(u"Databases"), views.manage_databases),
@@ -121,9 +122,9 @@ def generate_full_menu(request):  ## game_menu_generator
             menu_entry(_(u"Abilities"), views.homepage, # FIXME
                        (
                       
-                        menu_entry(_(u"Wiretaps"), abilities.wiretapping_management),
-                        menu_entry(_(u"Doors Locking"), abilities.house_locking),
-                        menu_entry(_(u"Runic Translations"), abilities.runic_translation),
+                        menu_entry(_(u"Wiretaps"), abilities.wiretapping_management_view),
+                        menu_entry(_(u"Doors Locking"), abilities.house_locking_view),
+                        menu_entry(_(u"Runic Translations"), abilities.runic_translation_view),
     
                         #menu_entry(_(u"Agents Hiring"), views.network_management),
                         #menu_entry(_(u"Oracles"), views.contact_djinns),

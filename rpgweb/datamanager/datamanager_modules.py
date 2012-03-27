@@ -2241,8 +2241,40 @@ class GameViews(BaseDataManager):
         klass = self._resolve_view_klass(name_or_klass)
         token = klass.get_access_token(self) # class method!!
         return token
+    
+    
+    
+    @readonly_method
+    def build_admin_widget_identifier(self, klass, form_name):
+        assert isinstance(klass, type)
+        assert isinstance(form_name, basestring)
+        return "%s.%s" % (klass.NAME, form_name)
                                        
-
+    @readonly_method
+    def get_admin_widget_identifiers(self):
+        """
+        Gets a list of qualified names, each one targetting a single
+        admin form widget.
+        """
+        ids = [self.build_admin_widget_identifier(klass, form_name) 
+               for klass in self.GAME_VIEWS_REGISTRY.values()
+               for form_name in klass.ADMIN_FORMS]
+        return ids
+    
+    @readonly_method
+    def resolve_admin_widget_identifier(self, identifier):
+        """
+        Returns the (game_view_class, form_name_string) tuple corresponding to that
+        admin widget token, or None. 
+        """
+        if identifier.count(".") == 1:
+            klass_name, form_name = identifier.split(".")
+            if klass_name in self.GAME_VIEWS_REGISTRY:
+                klass = self.GAME_VIEWS_REGISTRY[klass_name]
+                if form_name in klass.ADMIN_FORMS:
+                    return (self.instantiate_game_view(klass), form_name)
+        return None
+    
 
 @register_module
 class SpecialAbilities(BaseDataManager):
