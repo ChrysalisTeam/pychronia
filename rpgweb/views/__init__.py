@@ -311,7 +311,7 @@ def ajax_set_message_read_state(request):
     return HttpResponse("OK")
     # in case of error, a "500" code will be returned
 
-@register_view(access=UserAccess.authenticated)
+@register_view(access=UserAccess.authenticated, always_available=True)
 def conversation(request):
     
     mode = "conversation"

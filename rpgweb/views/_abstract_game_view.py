@@ -17,14 +17,14 @@ from rpgweb.common import *
 
     
 @decorator
-def transform_usage_error(caller, request, self, *args, **kwargs):
+def transform_usage_error(caller, self, request, *args, **kwargs):
     """
     Can be used for both html and ajax requests, so only 'error' HTTP codes should be returned
     if an exception is encountered.
     """
     try:
         
-        return caller(request, self, *args, **kwargs)
+        return caller(self, request, *args, **kwargs)
 
     except AccessDeniedError, e:
             
