@@ -28,8 +28,9 @@ class RunicTranslationAbility(AbstractAbility):
     
     NAME = "runic_translation"
 
-    FORMS = {"translation_form": (TranslationForm, "process_translation")}
-
+    GAME_FORMS = {"translation_form": (TranslationForm, "process_translation")}
+    ADMIN_FORMS = ["translation_form"]
+    
     TEMPLATE = "abilities/runic_translation.html"
 
     ACCESS = UserAccess.authenticated

@@ -68,7 +68,7 @@ class BaseDataManager(utilities.TechnicalEventsMixin, Persistent):
 
 
     # no transaction manager - special case
-    def __init__(self, game_instance_id, game_root=None, **kwargs):
+    def __init__(self, game_instance_id, game_root=None, request=None, **kwargs):
         '''
         self.storage = FileStorage.FileStorage(config.ZODB_FILE)
         self.db = DB(self.storage)
@@ -77,6 +77,9 @@ class BaseDataManager(utilities.TechnicalEventsMixin, Persistent):
         self.connection.root()
 
         '''
+        assert game_root is not None
+        assert request is not None
+        
         super(BaseDataManager, self).__init__(**kwargs)
         
         self.notify_event("BASE_DATA_MANAGER_INIT_CALLED")
@@ -86,6 +89,8 @@ class BaseDataManager(utilities.TechnicalEventsMixin, Persistent):
         self.game_instance_id = game_instance_id
 
         self.data = game_root
+        
+        self._request = weakref.ref(request) if request else None # if None, user messages won't work
 
         self.connection = game_root._p_jar
 
@@ -101,7 +106,11 @@ class BaseDataManager(utilities.TechnicalEventsMixin, Persistent):
         except:
             self.logger.error(_("Runtime data couldn't be initialized - delete DB file and try again."), exc_info=True)
             raise
-
+    
+    @property
+    def request(self):
+        return self._request() if self._request else None
+    
     def is_initialized(self):
         return (self.db_state == self.DB_STATES.INITIALIZED)
     

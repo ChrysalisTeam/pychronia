@@ -70,6 +70,35 @@
         
         });
         
+        $(function() {
+            $( "#sortable1, #sortable2" ).sortable({
+                connectWith: ".connectedSortable"
+            }).disableSelection();
+        });
+        
+        /*
+        $('.radiotrack').draggable( {
+        	containment: "#radiotracks",
+        	cursor: "move",
+        	revert: "invalid",
+          } );*/
+        
+        
+        /* ADD GLOBAL AJAX ERROR HANDLERS (all executed on error)
+        
+        $(document).ajaxError( handler(event, jqXHR, ajaxSettings, thrownError) )
+        
+        jQuery.ajax({
+			...,
+			complete: function(event, XHR, ajaxSettings, thrownError) {
+			if (XHR.status == 200) { // success
+			} elseif (XHR.status == 500) { // Internal Server Error
+			} elseif (XHR.status == 404) { // File Not found
+			}
+			});
+        
+        */
+        
     });
 </script>
 
@@ -81,8 +110,29 @@
 
 </head>
 <body>
+
+    {% if possible_impersonations %}
+    <div style="float:left;">
+        <div style="color: #FFF; font-size: 10px;">Write: {{ user.has_write_access }} <br/> Impersonation: {{ user.is_impersonation}}</div>
+        {% for impersonation in possible_impersonations %}
+        <form action="" method="POST">
+            <input type="hidden" name="{{ impersonation_post_variable }}" value="{{ impersonation }}"/>
+            <input type="submit" name="" value="{{ impersonation|capfirst }}">
+        </form>
+        {% endfor %}
+        
+        {% if user.is_impersonation %}
+        <form action="" method="POST">
+            <input type="hidden" name="{{ impersonation_post_variable }}" value=""/>
+            <input type="submit" name="" value="STOP">
+        </form>
+        {% endif %}
+    </div>
+    {% endif %}
+    
 <div id="outer">
   <div id="header">
+
     <h2>
 	    <a href="{% gameurl rpgweb.views.homepage %}">
 		    {% if user.is_authenticated %}
@@ -145,33 +195,14 @@
         {% endif %}
     
 
-        {% if user.errors %}
-        <div class="error_notifications">
-	        <strong>{% trans "Error" %}{{ user.errors|length|pluralize }}</strong>
-			<ul>
-			    {% for error in user.errors %}
-			    <li>{{ error|linebreaksbr }}</li>
-			    {% endfor %}
-			</ul>
-        </div>
-  		{% endif %}
-
-        {% if user.messages %}
-        <div class="message_notifications">
-            <strong>
-                {% blocktrans count user.messages|length|pluralize as msg_count %}
-                    Message
-                {% plural %}
-                    Messages
-                {% endblocktrans %}
-            </strong>
-            <ul>
-                {% for message in user.messages %}
-                <li>{{ message }}</li>
-                {% endfor %}
-            </ul>
-        </div>
-        {% endif %}
+		{% if messages %}
+		<ul class="messages">
+		    {% for message in messages %}
+		    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message|linebreaksbr }}</li>
+		    {% endfor %}
+		</ul>
+		{% endif %}
+		
                
         {% block content %}  
       

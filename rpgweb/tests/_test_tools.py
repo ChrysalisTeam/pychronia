@@ -33,6 +33,7 @@ from rpgweb.views._abstract_game_view import AbstractGameView
 #from django.test.testcases import TransactionTestCase as TestCase
 from django.test import TestCase
 from django.test.client import Client, RequestFactory
+from django.core.handlers.base import BaseHandler  
 import django.utils.translation
 from rpgweb.views._abstract_game_view import register_view
 from rpgweb.abilities import *
@@ -41,7 +42,7 @@ if not config.DB_RESET_ALLOWED:
     raise RuntimeError("Can't launch tests - we must be in a production environment !!")
 
 
-TEST_ZODB_FILE = config.ZODB_FILE+".test" # let's not conflict with handle already open in middlewares, on config.ZODB_FILE
+TEST_ZODB_FILE = config.ZODB_FILE+".test" # let's not conflict with the handle already open in middlewares, on config.ZODB_FILE
 
 
 
@@ -80,15 +81,56 @@ def for_ability(view):
 
 TEST_GAME_INSTANCE_ID = "TeStiNg"
 ROOT_GAME_URL = "/%s" % TEST_GAME_INSTANCE_ID
+HOME_URL = reverse(rpgweb.views.homepage, kwargs={"game_instance_id": TEST_GAME_INSTANCE_ID})
 
 sys.setrecursionlimit(200) # to help detect recursion problems
 
 logging.basicConfig() ## FIXME
-logging.disable(60)
+logging.disable(0)
 logging.getLogger(0).setLevel(logging.DEBUG)
 
 
 
+
+
+  
+class RequestMock(RequestFactory):  
+    def request(self, **request):  
+        """Constructs a generic request object, INCLUDING middelware modifications.""" 
+        
+        from django.core import urlresolvers
+        
+        
+        request = RequestFactory.request(self, **request)  
+        handler = BaseHandler()  
+        
+        handler.load_middleware()  
+        
+        for middleware_method in handler._request_middleware:  
+            print("APPLYING REQUEST MIDDLEWARE ", middleware_method, file=sys.stderr)
+            if middleware_method(request):  
+                raise Exception("Couldn't create request mock object - "  
+                                "request middleware returned a response")  
+        
+        urlconf = settings.ROOT_URLCONF
+        urlresolvers.set_urlconf(urlconf)
+        resolver = urlresolvers.RegexURLResolver(r'^/', urlconf)
+        
+        
+        callback, callback_args, callback_kwargs = resolver.resolve(
+                            request.path_info)
+
+        # Apply view middleware
+        for middleware_method in handler._view_middleware:
+            print("APPLYING VIEW MIDDLEWARE ", middleware_method, file=sys.stderr)
+            response = middleware_method(request, callback, callback_args, callback_kwargs)
+            if response:
+                raise Exception("Couldn't create request mock object - "  
+                                "view middleware returned a response")                  
+            
+        return request  
+    
+    
 
 
 class AutoCheckingDM(object):
@@ -129,9 +171,11 @@ class AutoCheckingDM(object):
 
 class BaseGameTestCase(TestCase):
     
+    """
+    WARNING - when directly modifying "self.dm.data" content, 
+    don't forget to commit() after that !!
+    """
     
-    # WARNING - when directly modifying "self.dm.data" sub-objects, don't forget to commit() after !!
-
     def __call__(self, *args, **kwds):
         return unittest.TestCase.run(self, *args, **kwds) # we bypass test setups from django's TestCase, to use py.test instead
     
@@ -150,10 +194,27 @@ class BaseGameTestCase(TestCase):
         rpgweb.middlewares.ZODB_TEST_DB = self.db # to allow testing views via normal request dispatching
 
         self.connection = self.db.open()
-
-        try:
-            self.dm = dm_module.GameDataManager(game_instance_id=TEST_GAME_INSTANCE_ID,
-                                                game_root=self.connection.root())
+ 
+        try: 
+            
+            self.client = Client()
+            self.factory = RequestMock()
+            
+            self.request = self.factory.get(HOME_URL)
+            assert self.request.user
+            assert self.request.datamanager.user.request # double linking
+            assert self.request.session 
+            assert self.request._messages is not None
+            assert self.request.datamanager
+            
+            # we mimic messages middleware
+            from django.contrib.messages.storage import default_storage
+            self.request._messages = default_storage(self.request)
+            
+            self.dm = self.request.datamanager
+            """dm_module.GameDataManager(game_instance_id=TEST_GAME_INSTANCE_ID,
+                                                game_root=self.connection.root(),
+                                                request=self.request) # request is used"""
 
             self.dm.reset_game_data()
 
@@ -176,8 +237,6 @@ class BaseGameTestCase(TestCase):
 
             logging.disable(logging.CRITICAL) # to be commented if more output is wanted !!!
 
-            self.client = Client()
-            self.factory = RequestFactory()
             
         except:
             self.tearDown(check=False) # cleanup of db and connection in any case
@@ -211,11 +270,11 @@ class BaseGameTestCase(TestCase):
         '''
 
 
-    def _set_user(self, username):
+    def _set_user(self, username, has_write_access=True):
         """
-        *username* might be master or None, too. 
+        Here *username* might be "master" or None, too. 
         """
-        self.dm._set_user(username)
+        self.dm._set_user(username, has_write_access=has_write_access)
 
 
     def _reset_messages(self):

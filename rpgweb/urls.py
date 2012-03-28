@@ -97,9 +97,11 @@ view_urlpatterns = patterns('rpgweb.views',
 
 ability_urlpatterns = patterns("rpgweb.abilities",
 
-    (r'^ability/house_locking/$', 'house_locking'),
-    (r'^ability/runic_translation/$', 'runic_translation'),
-    (r'^ability/wiretapping_management/$', 'wiretapping_management'),
+    (r'^ability/house_locking/$', 'house_locking_view'),
+    (r'^ability/runic_translation/$', 'runic_translation_view'),
+    (r'^ability/wiretapping_management/$', 'wiretapping_management_view'),
+    (r'^ability/admin_dashboard/$', 'admin_dashboard_view'),
+    
 
 )
 
