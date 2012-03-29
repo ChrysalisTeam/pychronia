@@ -22,7 +22,7 @@ class AbstractGameForm(forms.Form):
         *datamanager* may also be an ability, since it proxies datamanager methods too.
         """
         super(AbstractGameForm, self).__init__(*args, **kwargs)
-        self._datamanager = datamanager
+ 
         self.fields.insert(0, self.__class__._ability_field_name, forms.CharField(initial=self._get_dotted_class_name(),
                                                                                   widget=forms.HiddenInput))
         self.target_url = "" # by default we stay on the same page when submitting

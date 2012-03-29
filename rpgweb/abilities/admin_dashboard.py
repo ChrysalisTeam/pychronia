@@ -34,7 +34,7 @@ class AdminDashboardAbility(AbstractAbility):
         else:
             # special part: we execute a single admin widget handler, and return the HTML result.
             
-            components = self._datamanager.resolve_admin_widget_identifier(identifier=admin_widget_identifier)
+            components = self.datamanager.resolve_admin_widget_identifier(identifier=admin_widget_identifier)
             if not components:
                 raise Http404
             

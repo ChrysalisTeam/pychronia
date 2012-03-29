@@ -45,28 +45,24 @@ class AbstractAbility(AbstractGameView):
     # NOT ATM - TITLE = None # menu title, use lazy gettext when setting
 
 
-    def __init__(self, datamanager):
-        self.__datamanager = weakref.ref(datamanager)
-        self._ability_data = weakref.ref(datamanager.get_ability_data(self.NAME))
-        self.logger = datamanager.logger # local cache
+    def __init__(self, request, *args, **kwargs):
+        super(AbstractAbility, self,).__init__(request, *args, **kwargs)
+        self._ability_data = weakref.ref(self.datamanager.get_ability_data(self.NAME))
+        self.logger = self.datamanager.logger # local cache
+        # TODO FIXME - access checks required first !!!
         self._perform_lazy_initializations() # so that tests work too, we need it immediately here
     
     
     def _process_standard_request(self, request, *args, **kwargs):
         # do NOT call parent method (unimplemented)
         # Access checks have already been done here, so we may initialize lazy data
-        return self._auto_process_request(request)
+        return self._auto_process_request()
     
-
-    @property
-    def _datamanager(self):
-        return self.__datamanager() # could be None
-
-
+ 
     def __getattr__(self, name):
         assert not name.startswith("_") # if we arrive here, it's probably a typo in an attribute fetching
         try:
-            value = getattr(self._datamanager, name)
+            value = getattr(self.datamanager, name)
         except AttributeError:
             raise AttributeError("Neither ability nor datamanager has attribute '%s'" % name)
         return value
@@ -89,7 +85,7 @@ class AbstractAbility(AbstractGameView):
     
     
     def _get_private_key(self):
-        return self._datamanager.user.username # can be None, a character or a superuser login!
+        return self.datamanager.user.username # can be None, a character or a superuser login!
 
 
     @property
@@ -137,7 +133,6 @@ class AbstractAbility(AbstractGameView):
     @transaction_watcher(ensure_game_started=False) # authorized anytime
     def _perform_lazy_initializations(self):
 
-
         private_key = self._get_private_key()
         if not self.ability_data.has_key(private_key):
             self.logger.debug("Setting up private data %s", private_key)
@@ -161,7 +156,7 @@ class AbstractAbility(AbstractGameView):
         assert isinstance(self.ability_data["data"], collections.Mapping), self.ability_data["data"]
 
         if strict:
-            available_logins = self._datamanager.get_available_logins()
+            available_logins = self.datamanager.get_available_logins()
             for name, value in self.ability_data["data"].items():
                 assert name in available_logins
                 assert isinstance(value, collections.Mapping)
@@ -180,7 +175,7 @@ class AbstractAbility(AbstractGameView):
                           previous_form_data=None,
                           initial_data=None,
                           datamanager=None):
-        assert not datamanager or datamanager is self._datamanager
+        assert not datamanager or datamanager is self.datamanager
         return super(AbstractAbility, self)._instantiate_form(new_form_name=new_form_name, 
                                                               hide_on_success=hide_on_success,
                                                               previous_form_data=previous_form_data,
@@ -258,7 +253,7 @@ class __PayableAbilityHandler(object):
         (gems that the player must possess, of course).
         """
 
-        user = self._datamanager.user
+        user = self.datamanager.user
 
         assert user.is_character
 
@@ -324,7 +319,7 @@ class __PayableAbilityHandler(object):
         This method should be called at django view level only, not from another ability
         method (unittests don't have to care about permissions).
         """
-        user = self._datamanager.user
+        user = self.datamanager.user
         
         if self.ACCESS == "master":
             if not user.is_master:

@@ -96,7 +96,7 @@ logging.getLogger(0).setLevel(logging.DEBUG)
   
 class RequestMock(RequestFactory):  
     def request(self, **request):  
-        """Constructs a generic request object, INCLUDING middelware modifications.""" 
+        """Constructs a generic request object, INCLUDING middleware modifications.""" 
         
         from django.core import urlresolvers
         

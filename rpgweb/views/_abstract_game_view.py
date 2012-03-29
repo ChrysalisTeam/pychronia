@@ -17,27 +17,27 @@ from rpgweb.common import *
 
     
 @decorator
-def transform_usage_error(caller, request, self, *args, **kwargs):
+def transform_usage_error(caller, self, *args, **kwargs):
     """
     Can be used for both html and ajax requests, so only 'error' HTTP codes should be returned
     if an exception is encountered.
     """
     try:
         
-        return caller(request, self, *args, **kwargs)
+        return caller(self, *args, **kwargs)
 
     except AccessDeniedError, e:
             
             # TODO - test all these pages, in particular impersonation case !!!
             
-            if request.datamanager.user.is_impersonation:
+            if self.datamanager.user.is_impersonation:
                 # Will mainly happen when we switch between two impersonations with different access rights, on a restricted page
-                request.datamanager.user.add_error(_("Currently impersonated user can't access view %s") % self.NAME)
+                self.datamanager.user.add_error(_("Currently impersonated user can't access view %s") % self.NAME)
                 return HttpResponseRedirect(reverse("rpgweb.views.homepage"))
             
             if isinstance(e, AuthenticationRequiredError):
                 # uses HTTP code for TEMPORARY redirection
-                return HttpResponseRedirect(reverse("rpgweb.views.login", kwargs=dict(game_instance_id=request.datamanager.game_instance_id)))
+                return HttpResponseRedirect(reverse("rpgweb.views.login", kwargs=dict(game_instance_id=self.datamanager.game_instance_id)))
             else:
                 # even permission errors are treated like base class AccessDeniedError ATM
                 return HttpResponseForbidden(_("Access denied")) # TODO FIXME - provide a proper template and message !!
@@ -47,7 +47,7 @@ def transform_usage_error(caller, request, self, *args, **kwargs):
        
     except Exception:         
         raise # we let 500 handler take are of all other (very abnormal) exceptions (unhandled UsageError or others)
-
+ 
 
 
 
@@ -148,10 +148,14 @@ class AbstractGameView(object):
     logger = logging.getLogger("views")
 
 
-    def __init__(self, *args, **kwargs):
-        pass # we ignore any argument
-    
-    
+    def __init__(self, request, *args, **kwargs):
+        self.request = request
+        self.datamanager = request.datamanager
+        # do NOT store datamanager.user, as it might change during execution!!!
+        self.args = args
+        self.kwargs = kwargs
+        
+     
     @classmethod
     def get_access_token(cls, datamanager):
         
@@ -181,18 +185,18 @@ class AbstractGameView(object):
     
     
     
-    def _check_writability(self, request):
+    def _check_writability(self):
         
-        user = request.datamanager.user
-        if request.POST and not user.has_write_access:
-            request.POST.clear() # thanks to our middleware that made it mutable...
+        user = self.datamanager.user
+        if self.request.POST and not user.has_write_access:
+            self.request.POST.clear() # thanks to our middleware that made it mutable...
             user.add_error(_("You are not allowed to submit changes to that page"))    
-        assert user.has_write_access or not request.POST
+        assert user.has_write_access or not self.request.POST
         
     
-    def _check_standard_access(self, request):
+    def _check_standard_access(self):
 
-        access_result = self.get_access_token(request.datamanager)
+        access_result = self.get_access_token(self.datamanager)
         
         if access_result == AccessResult.available:
             return
@@ -206,8 +210,8 @@ class AbstractGameView(object):
         assert False
      
      
-    def _check_admin_access(self, request):
-        if not request.datamanager.user.is_master:
+    def _check_admin_access(self):
+        if not self.datamanager.user.is_master:
             raise AuthenticationRequiredError(_("Authentication required."))
         
     
@@ -239,7 +243,7 @@ class AbstractGameView(object):
                 if hide_on_success:
                     return None
                 else:
-                    pass
+                    pass 
 
             else:
                 return previous_form_instance # atm we ALWAYS redisplay a failed form
@@ -267,29 +271,29 @@ class AbstractGameView(object):
         return res
 
 
-    def _process_ajax_request(self, request):
+    def _process_ajax_request(self):
         # we let exceptions flow upto upper level handlers
-        res = self._try_processing_action(request.POST) 
+        res = self._try_processing_action(self.request.POST) 
         response = json.dumps(res)
         return HttpResponse(response)
 
     
-    def _do_process_game_form_submission(self, request, data, form_name, FormClass, action_name):
+    def _do_process_game_form_submission(self, data, form_name, FormClass, action_name):
         
-        user = request.datamanager.user
+        user = self.datamanager.user
         res = dict(result = None,
                    form_data = None)
         
-        if request.method != "POST":
+        if self.request.method != "POST":
             return res
         
         assert FormClass.matches(data)
         
         form_successful = False        
-        bound_form = FormClass(self._datamanager, data=data)
+        bound_form = FormClass(self.datamanager, data=data)
         
         if bound_form.is_valid():
-            with action_failure_handler(request, success_message=None): # only for unhandled exceptions
+            with action_failure_handler(self.request, success_message=None): # only for unhandled exceptions
                 action = getattr(self, action_name)
 
                 relevant_args = utilities.adapt_parameters_to_func(bound_form.get_normalized_values(), action)
@@ -310,7 +314,7 @@ class AbstractGameView(object):
         return res
     
     
-    def _process_post_data(self, request):
+    def _process_post_data(self):
         """
         Returns a dict with keys:
         
@@ -320,25 +324,25 @@ class AbstractGameView(object):
         res = dict(result = None,
                    form_data = None)
         
-        if request.method != "POST":
+        if self.request.method != "POST":
             return res
         
-        user = request.datamanager.user
-        data = request.POST
+        user = self.datamanager.user
+        data = self.request.POST
 
         if data.get(self._action_field): # manually built form
-            with action_failure_handler(request, success_message=None): # only for unhandled exceptions
+            with action_failure_handler(self.request, success_message=None): # only for unhandled exceptions
                 res["result"] = self._try_processing_action(data)
         
         else: # it must be a call using registered django newforms
             for (form_name, (FormClass, action_name)) in self.GAME_FORMS.items():
                 if FormClass.matches(data): # class method
-                    res = self._do_process_game_form_submission(request, data=data,
-                                                           form_name=form_name, FormClass=FormClass, action_name=action_name)
+                    res = self._do_process_game_form_submission(data=data,
+                                                                form_name=form_name, FormClass=FormClass, action_name=action_name)
                     break # IMPORTANT
             else:
                 user.add_error(_("Submitted form data hasn't been recognized"))
-                logging.error("Unexpected form data sent to %s - %r" % (self.NAME, request.POST))
+                logging.error("Unexpected form data sent to %s - %r" % (self.NAME, self.request.POST))
     
         return res
 
@@ -347,9 +351,9 @@ class AbstractGameView(object):
         raise NotImplementedError("Unimplemented get_template_vars called in %s" % self)
     
     
-    def _process_html_request(self, request):
+    def _process_html_request(self):
 
-        res = self._process_post_data(request)
+        res = self._process_post_data()
         
         success = res["result"] # can be None if nothing processed
         previous_form_data = res["form_data"]
@@ -360,19 +364,18 @@ class AbstractGameView(object):
 
         response = render_to_response(self.TEMPLATE,
                                       template_vars,
-                                      context_instance=RequestContext(request))
+                                      context_instance=RequestContext(self.request))
         return response
 
         
 
-    def _auto_process_request(self, request):
+    def _auto_process_request(self):
         #if not self.datamanager.player.has_permission(self.NAME): #TODO
         #    raise RuntimeError("Player has no permission to use ability")
-
-        if request.is_ajax() or request.GET.get("is_ajax"):
-            return self._process_ajax_request(request)
+        if self.request.is_ajax() or self.request.GET.get("is_ajax"):
+            return self._process_ajax_request()
         else:
-            return self._process_html_request(request)    
+            return self._process_html_request()    
     
      
     def _process_standard_request(self, request, *args, **kwargs):
@@ -380,17 +383,31 @@ class AbstractGameView(object):
     
     
     @transform_usage_error
-    def __call__(self, request, *args, **kwargs):
+    def __call__(self):
          
-        self._check_writability(request) # crucial
-        self._check_standard_access(request) # crucial
-         
-        return self._process_standard_request(request, *args, **kwargs)
+        self._check_writability() # crucial
+        self._check_standard_access() # crucial
+        
+        return self._process_standard_request(self.request, *self.args, **self.kwargs)
      
- 
+     
+     
+    """ 
+    def _compute_admin_template_variables(self, form_name, previous_form_data=None, ):
+  
+        form = self._instantiate_form(new_form_name=form_name,
+                                      hide_on_success=False,
+                                      previous_form_data=previous_form_data,
+                                      initial_data=None,
+                                      datamanager=request.datamanager,)
+        
+        template_vars = dict(target_form_id=request.datamanager.build_admin_widget_identifier(self.__class__, form_name),
+                             form=form)
+  
+     """
     @transform_usage_error
     def process_admin_request(self, request, form_name):
-
+        # FIXME
         assert form_name in self.ADMIN_FORMS # else big pb!
         
         self._check_writability(request) # crucial
@@ -403,17 +420,10 @@ class AbstractGameView(object):
                                                     form_name=form_name, FormClass=FormClass, action_name=action_name)
         
         success = res["result"] # can be None if nothing processed
-        previous_form_data = res["form_data"]        
-
-  
-        form = self._instantiate_form(new_form_name=form_name,
-                                      hide_on_success=False,
-                                      previous_form_data=previous_form_data,
-                                      initial_data=None,
-                                      datamanager=request.datamanager,)
+        previous_form_data = res["form_data"] 
+                 
+        template_vars = {} ### TODO FIXME self._compute_admin_template_variables(
         
-        template_vars = dict(target_form_id=request.datamanager.build_admin_widget_identifier(self.__class__, form_name),
-                             form=form)
         response = render_to_response(self.ADMIN_TEMPLATE,
                                       template_vars,
                                       context_instance=RequestContext(request))
@@ -467,7 +477,7 @@ def _normalize_view_access_parameters(access=_undefined,
                 permissions=permissions,
                 always_available=always_available)
                 
-
+ 
  
 class ClassInstantiationProxy(object):
     """
@@ -478,7 +488,7 @@ class ClassInstantiationProxy(object):
     def __getattr__(self, name):
         return getattr(self._klass, name) # useful for introspection of views                
     def __call__(self, request, *args, **kwargs):
-        return self._klass(request.datamanager, *args, **kwargs)(request, *args, **kwargs) # we execute new instance of underlying class
+        return self._klass(request, *args, **kwargs)() # we execute new instance of underlying class, without parameters
     def __str__(self):
         return "ClassInstantiationProxy around %s" % self._klass
     __repr__ = __str__

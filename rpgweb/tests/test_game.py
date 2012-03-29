@@ -1194,9 +1194,9 @@ class TestDatamanager(BaseGameTestCase):
         random_view, random_klass = activable_views_dict.items()[0]
         
         # instantiation works for both names and classes
-        view = self.dm.instantiate_game_view(random_view)
+        view = self.dm.instantiate_game_view(random_view, self.request)
         assert isinstance(view, AbstractGameView)
-        view = self.dm.instantiate_game_view(activable_views_dict[random_view])
+        view = self.dm.instantiate_game_view(activable_views_dict[random_view], self.request)
         assert isinstance(view, AbstractGameView)        
 
         with pytest.raises(AbnormalUsageError):
@@ -1233,14 +1233,14 @@ class TestDatamanager(BaseGameTestCase):
         # test admin form tokens
         assert "runic_translation.translation_form" in self.dm.get_admin_widget_identifiers()
         
-        assert self.dm.resolve_admin_widget_identifier("") is None
-        assert self.dm.resolve_admin_widget_identifier("qsdqsd") is None
-        assert self.dm.resolve_admin_widget_identifier("qsdqsd.translation_form") is None
-        assert self.dm.resolve_admin_widget_identifier("runic_translation.") is None
-        assert self.dm.resolve_admin_widget_identifier("runic_translation.qsdqsd") is None
+        assert self.dm.resolve_admin_widget_identifier("", self.request) is None
+        assert self.dm.resolve_admin_widget_identifier("qsdqsd", self.request) is None
+        assert self.dm.resolve_admin_widget_identifier("qsdqsd.translation_form", self.request) is None
+        assert self.dm.resolve_admin_widget_identifier("runic_translation.", self.request) is None
+        assert self.dm.resolve_admin_widget_identifier("runic_translation.qsdqsd", self.request) is None
         
         from rpgweb.abilities import runic_translation_view
-        components = self.dm.resolve_admin_widget_identifier("runic_translation.translation_form")
+        components = self.dm.resolve_admin_widget_identifier("runic_translation.translation_form", self.request)
         assert len(components) == 2
         assert isinstance(components[0], runic_translation_view._klass)
         assert components[1] == "translation_form"
@@ -1776,7 +1776,7 @@ class TestSpecialAbilities(BaseGameTestCase):
 
     @for_ability(runic_translation_view)
     def test_runic_translation(self):
-        runic_translation = self.dm.instantiate_ability("runic_translation")
+        runic_translation = self.dm.instantiate_ability("runic_translation", self.request)
 
         assert runic_translation.ability_data
 
@@ -1852,7 +1852,7 @@ class TestSpecialAbilities(BaseGameTestCase):
     @for_ability(house_locking_view)
     def test_house_locking(self):
 
-        house_locking = self.dm.instantiate_ability("house_locking")
+        house_locking = self.dm.instantiate_ability("house_locking", self.request)
         expected_password = house_locking.get_ability_parameter("house_doors_password")
 
         self.assertEqual(house_locking.are_house_doors_open(), True) # initial state
@@ -2097,7 +2097,7 @@ class TestSpecialAbilities(BaseGameTestCase):
         
         char_names = self.dm.get_character_usernames()
 
-        wiretapping = self.dm.instantiate_ability("wiretapping")
+        wiretapping = self.dm.instantiate_ability("wiretapping", self.request)
 
         wiretapping.change_wiretapping_targets(PersistentList())
         self.assertEqual(wiretapping.get_current_targets(), [])
