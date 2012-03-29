@@ -736,7 +736,10 @@ class TextMessaging(BaseDataManager): # TODO REFINE
 
             if not msg["id"]:
                 msg["id"] = self._get_new_msg_id(index, msg["subject"] + msg["body"])
-
+                
+            if not msg["gourp_id"]:
+                msg["gourp_id"] = msg["id"]
+                
         new_data["messages_sent"].sort(key=lambda msg: msg["sent_at"])
         new_data["messages_queued"].sort(key=lambda msg: msg["sent_at"])
 
@@ -1077,7 +1080,6 @@ class TextMessaging(BaseDataManager): # TODO REFINE
     def get_game_master_messages(self):
         # returns all emails sent to external contacts or robots
         all_messages = self.get_all_sent_messages()
-
         normal_emails = self.get_players_emails()
         messages = []
         for message in all_messages:
@@ -1085,7 +1087,6 @@ class TextMessaging(BaseDataManager): # TODO REFINE
                 if recipient not in normal_emails:
                     messages.append(message)
                     break
-
         return messages
     
     @transaction_watcher(ensure_game_started=False)

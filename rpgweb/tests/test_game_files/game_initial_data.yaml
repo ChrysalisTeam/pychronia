@@ -342,7 +342,6 @@ messages_sent:  #-> list of messages processed
       recipient_emails: guy1
       subject: "Ordres de Missions"
       attachment: "/files/attachments/image2.png"
-      group_id: instructions_bewitcher
       sent_at: -8000
       body: >
         Xanthares, votre maîtrise des drogues et envoûtements sera d’une aide inestimable pour cette mission.
@@ -355,7 +354,6 @@ messages_sent:  #-> list of messages processed
       recipient_emails: guy2
       subject: "Ordres de Missions"
       attachment: "/files/attachments/image1.png"
-      group_id: instructions_oracle
       sent_at: -8000
       body: >
         Salazur, l’intimité médiumnique que vous avez développée avec le monde invisible va nous être plus que vitale.
