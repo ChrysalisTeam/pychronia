@@ -23,14 +23,15 @@ class AdminDashboardAbility(AbstractAbility):
     
 
     
-    def _process_ajax_request(self, request):
+    def _process_ajax_request(self):
         """
         We override this to redirect some requests to GameView admin widgets.
         """
+        request = self.request
         admin_widget_identifier = request.GET.get("target_form_id")
         
         if not admin_widget_identifier:
-            return super(AdminDashboardAbility, self)._process_ajax_request(request)
+            return super(AdminDashboardAbility._klass, self)._process_ajax_request() # UGLY, FIXME
         else:
             # special part: we execute a single admin widget handler, and return the HTML result.
             
@@ -46,7 +47,7 @@ class AdminDashboardAbility(AbstractAbility):
     def get_template_vars(self, previous_form_data=None):
         
         
-        
+        #compute_admin_template_variables
         return {
                  'page_title': _("Admin Dashboard"),
                }

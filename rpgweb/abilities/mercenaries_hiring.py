@@ -75,7 +75,8 @@ class MercenariesHiringAbility(AbstractAbilityHandler):
 
         hiring_form = self._instantiate_form(new_form_name="agents_form", 
                                              hide_on_success=False,
-                                             previous_form_data)
+                                             previous_form_data,
+                                             form_initializer=self)
 
         return {
                  'page_title': _("Mercenaries Network Management"),

@@ -167,21 +167,21 @@ class AbstractAbility(AbstractGameView):
         raise NotImplementedError("_check_data_sanity") # to be overridden
 
 
-    # now a standard method, not classmethod, and without datamanager argument
+
     def _instantiate_form(self,
                           new_form_name, 
-                          hide_on_success=False, 
-                          previous_form_data=None,
+                          hide_on_success=False,
+                          previous_form_data=None, 
                           initial_data=None,
-                          datamanager=None):
-        assert not datamanager or datamanager is self.datamanager
+                          form_initializer=None):
+        form_initializer = form_initializer if form_initializer else self # the ability behaves as an extended datamanager
         return super(AbstractAbility, self)._instantiate_form(new_form_name=new_form_name, 
                                                               hide_on_success=hide_on_success,
                                                               previous_form_data=previous_form_data,
                                                               initial_data=initial_data,
-                                                              datamanager=self,) # the ability behaves as an extended datamanager
-                                    
-
+                                                              form_initializer=form_initializer) 
+                                
+    
 
 
 

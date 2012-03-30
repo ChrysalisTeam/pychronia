@@ -62,7 +62,8 @@ class WiretappingAbility(AbstractAbility):
         targets_form = self._instantiate_form(new_form_name="targets_form", 
                                               hide_on_success=False,
                                               initial_data=initial_data,
-                                              previous_form_data=previous_form_data)
+                                              previous_form_data=previous_form_data,
+                                              form_initializer=self)
  
         return {
                  'page_title': _("Wiretapping Management"),
