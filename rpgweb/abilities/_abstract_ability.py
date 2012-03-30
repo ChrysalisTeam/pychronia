@@ -49,13 +49,12 @@ class AbstractAbility(AbstractGameView):
         super(AbstractAbility, self,).__init__(request, *args, **kwargs)
         self._ability_data = weakref.ref(self.datamanager.get_ability_data(self.NAME))
         self.logger = self.datamanager.logger # local cache
-        # TODO FIXME - access checks required first !!!
-        self._perform_lazy_initializations() # so that tests work too, we need it immediately here
     
     
     def _process_standard_request(self, request, *args, **kwargs):
         # do NOT call parent method (unimplemented)
         # Access checks have already been done here, so we may initialize lazy data
+        self._perform_lazy_initializations() 
         return self._auto_process_request()
     
  

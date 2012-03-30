@@ -2231,10 +2231,9 @@ class GameViews(BaseDataManager):
     
     
     # no transaction checker here
-    def instantiate_game_view(self, name_or_klass, request, *args, **kwargs):
-        assert request.datamanager is self
+    def instantiate_game_view(self, name_or_klass):
         klass = self._resolve_view_klass(name_or_klass)
-        return klass(request, *args, **kwargs) # first arg (self) might be ignored by base GameView, but not by its subclasses
+        return klass(self) # first arg (self) is teh datamanager
         
         
     @readonly_method
@@ -2263,7 +2262,7 @@ class GameViews(BaseDataManager):
         return ids
     
     @readonly_method
-    def resolve_admin_widget_identifier(self, identifier, request, *args, **kwargs):
+    def resolve_admin_widget_identifier(self, identifier):
         """
         Returns the (game_view_instance, form_name_string) tuple corresponding to that
         admin widget token (and its instantiation pmarams), or None. 
@@ -2273,7 +2272,7 @@ class GameViews(BaseDataManager):
             if klass_name in self.GAME_VIEWS_REGISTRY:
                 klass = self.GAME_VIEWS_REGISTRY[klass_name]
                 if form_name in klass.ADMIN_FORMS:
-                    return (self.instantiate_game_view(klass, request, *args, **kwargs), form_name)
+                    return (self.instantiate_game_view(klass), form_name)
         return None
     
 
@@ -2303,10 +2302,9 @@ class SpecialAbilities(BaseDataManager):
     
     
     # no transaction checker here
-    def instantiate_ability(self, name_or_klass, request, *args, **kwargs):
-        assert request.datamanager is self
+    def instantiate_ability(self, name_or_klass):
         assert name_or_klass in self.ABILITIES_REGISTRY.keys() + self.ABILITIES_REGISTRY.values()
-        return self.instantiate_game_view(name_or_klass, request, *args, **kwargs) 
+        return self.instantiate_game_view(name_or_klass) 
     
     
     @transaction_watcher(ensure_game_started=False)
@@ -2341,7 +2339,7 @@ class SpecialAbilities(BaseDataManager):
         dummy_request = RequestMock().get("/")
         dummy_request.datamanager = self # coherency
         for name in self.ABILITIES_REGISTRY.keys():
-            ability = self.instantiate_ability(name, dummy_request)
+            ability = self.instantiate_ability(name)
             ability.check_data_sanity(strict=strict)
             
 

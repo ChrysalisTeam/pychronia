@@ -148,12 +148,10 @@ class AbstractGameView(object):
     logger = logging.getLogger("views")
 
 
-    def __init__(self, request, *args, **kwargs):
-        self.request = request
-        self.datamanager = request.datamanager
+    def __init__(self, datamanager, *args, **kwargs):
+        self.datamanager = datamanager
         # do NOT store datamanager.user, as it might change during execution!!!
-        self.args = args
-        self.kwargs = kwargs
+ 
         
      
     @classmethod
@@ -379,16 +377,30 @@ class AbstractGameView(object):
     
      
     def _process_standard_request(self, request, *args, **kwargs):
+        """
+        Meant to be overridden by a static view (dismissing self argument),
+        or a real method taking benefit from instance attribute.
+        
+        Must return a valid http response.
+        """
         raise NotImplementedError("_process_standard_request must be implemented by AbstractGameView subclass")
     
     
     @transform_usage_error
-    def __call__(self):
-         
+    def __call__(self, request, *args, **kwargs):
+        
+        # we finish initializing the game view instance, with request-specific parameters
+        assert request.datamanager == self.datamanager # let's be coherent
+        self.request = request
+        self.args = args
+        self.kwargs = kwargs
+        
         self._check_writability() # crucial
         self._check_standard_access() # crucial
         
-        return self._process_standard_request(self.request, *self.args, **self.kwargs)
+        return self._process_standard_request(request, *args, **kwargs)
+     
+        del self.request, self.arg, self.kwargs # cleanup
      
      
      
@@ -488,7 +500,7 @@ class ClassInstantiationProxy(object):
     def __getattr__(self, name):
         return getattr(self._klass, name) # useful for introspection of views                
     def __call__(self, request, *args, **kwargs):
-        return self._klass(request, *args, **kwargs)() # we execute new instance of underlying class, without parameters
+        return self._klass(request.datamanager)(request, *args, **kwargs) # we execute new instance of underlying class, without parameters
     def __str__(self):
         return "ClassInstantiationProxy around %s" % self._klass
     __repr__ = __str__
