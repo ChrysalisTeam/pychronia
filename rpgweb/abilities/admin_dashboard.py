@@ -91,6 +91,7 @@ class AdminDashboardAbility(AbstractAbility):
         
         settings = self.settings
         
+        utilities.check_is_list(settings["sorted_widget_ids"])
         utilities.check_no_duplicates(settings["sorted_widget_ids"]) 
 
         if strict:

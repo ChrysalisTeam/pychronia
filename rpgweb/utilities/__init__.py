@@ -222,7 +222,6 @@ def adapt_parameters_to_func(all_parameters, func):
 
 
 def check_no_duplicates(value):
-    check_is_list(value)
     assert len(set(value)) == len(value), value
 
 def check_is_range_or_num(value):
