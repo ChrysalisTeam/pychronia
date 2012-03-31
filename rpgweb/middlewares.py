@@ -107,7 +107,7 @@ class AuthenticationMiddleware(object):
 
         if not hasattr(request, "datamanager"):
             return None # not a valid game instance
-            
+        
         ## Screw the immutability of these QueryDicts, we need FREEDOM ##
         request._post = request.POST.copy()
         request._get = request.GET.copy()

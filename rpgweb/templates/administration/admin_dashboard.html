@@ -1,0 +1,79 @@
+{% extends "base_one_column.html" %}
+
+{% load i18n helpers %}  
+
+
+{% block headers %}  
+    {{ block.super }}
+<script language="javascript" type="text/javascript">
+      
+
+  
+
+       function save_widgets_order(){
+           $.post("",
+                   { _action_: "save_admin_widgets_order",
+                    ids_list: $('.admin_widgets').sortable('toArray')}, 
+                   function(answer) {  }
+                 );     	   
+       }
+    	   
+       
+
+       $(document).ready(function(){ 
+	       $( ".admin_widgets" ).sortable({
+	                //connectWith: ".connectedSortable"
+	                stop: function(event, ui) { save_widgets_order();}
+	                                                //alert($('.admin_widgets').sortable('serialize', { expression: /(.+)=(.+)/ }));
+	                		             });
+	       
+	       $('.admin_widget_form').each(
+	    		   function(index, Element){
+	    			   //alert(Element);
+	    			    $(Element).submit( function() {
+									    	    /*$.post($(Element).action, 
+									    			   $(Element).serialize()
+									    			   )*/
+									    			   //# here put callback
+									    			   
+									    		return false;	
+									    	   }  
+					    			   
+									    )
+					;} 
+	       );
+       })
+        
+  
+</script>
+
+    <style>
+    .admin_widgets { list-style-type: none;}
+    /*.admin_widgets li { margin: 0 3px 3px 3px; padding: 0.4em; padding-left: 1.5em; font-size: 1.4em; height: 18px; }
+    .admin_widgets li {position: absolute;}*/
+    </style>
+   
+{% endblock %}
+
+
+{% block content %}  
+
+
+
+
+
+<div align="center">
+    
+    <ul class="admin_widgets">
+	  
+	    {% for widget in widgets %}
+	        <li id="{{ widget.target_form_id }}">{% include "utilities/admin_form_widget.html" with target_form_id=widget.target_form_id form=widget.form only %}</li>
+	    {% endfor %}
+    
+    </ul>
+
+</div>
+
+{% endblock %}
+
+

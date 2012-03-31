@@ -20,6 +20,7 @@ from django.core.validators import email_re
 from django.conf import settings as django_settings
 from .. import default_settings as game_default_settings
   
+  
 class Conf(object):
     """
     Helper class which handles default game settings.
@@ -174,11 +175,22 @@ def substract_lists(available_gems, given_gems):
     return PersistentList(gems_remaining.elements())
 
 
+def sanitize_query_dict(query_dict):
+    """
+    We remove terminal '[]' in request data keys and replace enforce their value to be a list
+    to allow mapping of these to methods arguments (which can't contain '[]').
+    
+    *query_dict* must be mutable.
+    """
+    for key in query_dict:
+        if key.endswith("[]"): # standard js/php array notation
+            new_key = key[:-2]
+            query_dict[new_key] = query_dict.getlist(key)
+            del query_dict[key]
+    print ("NE QUERY DICT", query_dict)
+    return query_dict    
 
-
-## Tools for database sanity checks ##
-
-
+ 
 def adapt_parameters_to_func(all_parameters, func):
     """
     Strips unwanted parameters in a dict of parameters (eg. obtained via GET or POST),
@@ -186,22 +198,31 @@ def adapt_parameters_to_func(all_parameters, func):
 
     Returns a dict of relevant parameters, or raises common signature exceptions.
     """
+    
 
     (args, varargs, keywords, defaults) = inspect.getargspec(func)
-
+    print("########", func, all_parameters, args)
+    
     if keywords is not None:
         relevant_args = all_parameters # exceeding args will be handled properly
     else:
         relevant_args = dict((key, value) for (key, value) in all_parameters.items() if key in args)
 
     try:
+        #print("#<<<<<<<", func, relevant_args)
         inspect.getcallargs(func, **relevant_args)
     except (TypeError, ValueError), e:
         raise
 
     return relevant_args
 
+
+## Tools for database sanity checks ##
+
+
+
 def check_no_duplicates(value):
+    check_is_list(value)
     assert len(set(value)) == len(value), value
 
 def check_is_range_or_num(value):

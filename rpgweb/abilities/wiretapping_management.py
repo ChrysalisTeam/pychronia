@@ -40,7 +40,8 @@ class WiretappingAbility(AbstractAbility):
     NAME = "wiretapping"
 
     GAME_FORMS = {"targets_form": (WiretappingTargetsForm, "change_wiretapping_targets")}
-
+    ADMIN_FORMS = GAME_FORMS
+    
     TEMPLATE = "abilities/wiretapping_management.html"
 
     ACCESS = UserAccess.authenticated

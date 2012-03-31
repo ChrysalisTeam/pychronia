@@ -13,6 +13,7 @@ from django.template import RequestContext, loader
 from ..datamanager import GameDataManager
 from ..forms import AbstractGameForm
 from rpgweb.common import *
+from rpgweb.datamanager.datamanager_tools import transaction_watcher
 
 
     
@@ -88,7 +89,7 @@ class GameViewMetaclass(type):
 
                 def _check_callback(name):
                     assert getattr(NewClass, callback)
-                    assert callback not in RESERVED_NAMES
+                    assert callback not in RESERVED_NAMES, (callback, RESERVED_NAMES)
                     assert not callback.startswith("_")
                     
                 for (action_name, callback) in NewClass.ACTIONS.items():
@@ -259,19 +260,30 @@ class AbstractGameView(object):
 
         return form
 
-
+    def _try_coercing_arguments_to_func(self, data, func):
+        # TEST THIS STUFF!!
+        try: 
+            relevant_args = utilities.adapt_parameters_to_func(data, func)
+            return relevant_args
+        except (TypeError, ValueError), e:
+            raise UsageError(_("Wrong arguments when calling method %s") % func.__name__)
+    
 
     def _try_processing_action(self, data):
         """
         Raises AbnormalUsageError if action is not determined,
         else returns its result (or raises an action exception).
+        
         """
+        data = utilities.sanitize_query_dict(data)
+        
         action_name = data.get(self._ACTION_FIELD)
         if not action_name or action_name not in self.ACTIONS:
             raise AbnormalUsageError(_("Abnormal action name: %s") % action_name)
         
         func = getattr(self, self.ACTIONS[action_name])
-        relevant_args = utilities.adapt_parameters_to_func(data, func)
+        
+        relevant_args = self._try_coercing_arguments_to_func(data=data, func=func) # might raise UsageError
         res = func(**relevant_args)
         return res
 
