@@ -65,6 +65,7 @@
 {% endblock %}
 
 {% block content %}  
+    {{ block.super }}
 	{% if not messages %}
     	<div style="text-align:center;">
         	<i>{% trans "No messages yet." %}</i>
@@ -75,10 +76,8 @@
 				{% for message in message_list %}
 					<h3><a href="#">{{ message.subject }}</a></h3>
 					<div id="{{ message.id }}" class="email 
-		            {% if mode == "inbox" or user.is_master %}
-		                {% if user.username in message.has_read %}email_read{% else %}email_unread{% endif %}
-		            {% endif %}">
-		                {% ifequal mode "inbox" %}
+					{% if user.username in message.has_read %}email_read{% else %}email_unread{% endif %}">
+
 		                <span class="message_operation">
 		                    <a class="mark_read_tag" onclick="set_message_read_state('{{ message.id|escapejs }}', true); return false;" href="#">
 		                        {% trans "Mark as read" %}
@@ -87,7 +86,6 @@
 		                        {% trans "Mark as unread" %}
 		                    </a>                  
 		                </span>  
-		                {% endifequal %}
 
 		                {% ifequal mode "all_queued_messages" %}
 		                <span class="message_operation">
