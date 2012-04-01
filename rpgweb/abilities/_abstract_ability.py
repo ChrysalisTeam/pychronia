@@ -49,7 +49,10 @@ class AbstractAbility(AbstractGameView):
         super(AbstractAbility, self,).__init__(request, *args, **kwargs)
         self._ability_data = weakref.ref(self.datamanager.get_ability_data(self.NAME))
         self.logger = self.datamanager.logger # local cache
-    
+
+    @property
+    def datamanager(self):
+        return self # ability behaves as an extension of datamanager!!
     
     def _process_standard_request(self, request, *args, **kwargs):
         # do NOT call parent method (unimplemented)
@@ -61,7 +64,7 @@ class AbstractAbility(AbstractGameView):
     def __getattr__(self, name):
         assert not name.startswith("_") # if we arrive here, it's probably a typo in an attribute fetching
         try:
-            value = getattr(self.datamanager, name)
+            value = getattr(self._inner_datamanager, name)
         except AttributeError:
             raise AttributeError("Neither ability nor datamanager has attribute '%s'" % name)
         return value
@@ -84,7 +87,7 @@ class AbstractAbility(AbstractGameView):
     
     
     def _get_private_key(self):
-        return self.datamanager.user.username # can be None, a character or a superuser login!
+        return self._inner_datamanager.user.username # can be None, a character or a superuser login!
 
 
     @property
@@ -155,7 +158,7 @@ class AbstractAbility(AbstractGameView):
         assert isinstance(self.ability_data["data"], collections.Mapping), self.ability_data["data"]
 
         if strict:
-            available_logins = self.datamanager.get_available_logins()
+            available_logins = self._inner_datamanager.get_available_logins()
             for name, value in self.ability_data["data"].items():
                 assert name in available_logins
                 assert isinstance(value, collections.Mapping)
@@ -167,7 +170,7 @@ class AbstractAbility(AbstractGameView):
         raise NotImplementedError("_check_data_sanity") # to be overridden
 
 
-
+    '''
     def _instantiate_form(self,
                           new_form_name, 
                           hide_on_success=False,
@@ -180,7 +183,7 @@ class AbstractAbility(AbstractGameView):
                                                               previous_form_data=previous_form_data,
                                                               initial_data=initial_data,
                                                               form_initializer=form_initializer) 
-                                
+       '''                         
     
 
 

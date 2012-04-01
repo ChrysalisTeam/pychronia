@@ -42,8 +42,7 @@ class RunicTranslationAbility(AbstractAbility):
   
         translation_form = self._instantiate_form(new_form_name="translation_form", 
                                                   hide_on_success=False,
-                                                  previous_form_data=previous_form_data,
-                                                  form_initializer=self)
+                                                  previous_form_data=previous_form_data)
         translation_delay = self.get_ability_parameter("translation_delays")
 
         return {

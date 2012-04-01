@@ -27,21 +27,24 @@
 	                                                //alert($('.admin_widgets').sortable('serialize', { expression: /(.+)=(.+)/ }));
 	                		             });
 	       
-	       $('.admin_widget_form').each(
-	    		   function(index, Element){
-	    			   //alert(Element);
-	    			    $(Element).submit( function() {
-									    	    /*$.post($(Element).action, 
-									    			   $(Element).serialize()
-									    			   )*/
-									    			   //# here put callback
-									    			   
-									    		return false;	
-									    	   }  
-					    			   
-									    )
-					;} 
-	       );
+	       
+	      
+	    			   $("#test1").on("submit", "form",
+	    					   function(event) {
+	    				            console.log(event.target);
+		                           $.post($(this).attr('action'), 
+		                                  $(this).serialize(),
+		                                function(answer){
+		                        	       //alert($(this).text());
+		                        	       
+		                                   $(event.target).parent().replaceWith(answer);
+		                                });
+		
+		                           return false;   
+		                          }  
+	    			   );
+	    			   
+	    	
        })
         
   
@@ -64,7 +67,7 @@
 
 <div align="center">
     
-    <ul class="admin_widgets">
+    <ul id="test1" class="admin_widgets">
 	  
 	    {% for widget in widgets %}
 	        <li id="{{ widget.target_form_id }}">{% include "utilities/admin_form_widget.html" with target_form_id=widget.target_form_id form=widget.form only %}</li>

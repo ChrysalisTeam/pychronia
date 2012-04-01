@@ -153,12 +153,14 @@ class AbstractGameView(object):
     kwargs = None 
     ###############
     
-    
+
     def __init__(self, datamanager, *args, **kwargs):
-        self.datamanager = datamanager
+        self._inner_datamanager = datamanager
         # do NOT store datamanager.user, as it might change during execution!!!
         
-
+    @property
+    def datamanager(self):
+        return self._inner_datamanager
      
     @classmethod
     def get_access_token(cls, datamanager):
@@ -224,8 +226,7 @@ class AbstractGameView(object):
                           new_form_name, # id of the form to be potentially instantiated
                           hide_on_success=False, # should we return None if this form has just been submitted successfully?
                           previous_form_data=None, # data about previously submitted form, if any
-                          initial_data=None,
-                          form_initializer=None):
+                          initial_data=None):
         """
         *form_initializer* will be passed as 1st argument to the form. By defauyt, it's the datamanager.
         """
@@ -255,10 +256,10 @@ class AbstractGameView(object):
         else:
             pass
 
-        form_initializer = form_initializer if form_initializer else self.datamanager
+        form_initializer = self.datamanager # this property might be overridden by subclasses
         form = NewFormClass(form_initializer, initial=initial_data)
-
         return form
+
 
     def _try_coercing_arguments_to_func(self, data, func):
         # TEST THIS STUFF!!
@@ -404,7 +405,7 @@ class AbstractGameView(object):
     
     def _pre_request(self, request, *args, **kwargs):
         # we finish initializing the game view instance, with request-specific parameters
-        assert request.datamanager == self.datamanager # let's be coherent
+        assert request.datamanager == self._inner_datamanager # let's be coherent
         self.request = request
         self.args = args
         self.kwargs = kwargs

@@ -59,8 +59,8 @@ def transaction_watcher(object=None, ensure_data_ok=True, ensure_game_started=Tr
     @decorator
     def _transaction_watcher(func, self, *args, **kwargs): #@NoSelf
 
-        if hasattr(self, "datamanager"):
-            datamanager = self.datamanager # for ability methods
+        if hasattr(self, "_inner_datamanager"):
+            datamanager = self._inner_datamanager # for ability methods
         else:
             datamanager = self # for datamanager methods
 
