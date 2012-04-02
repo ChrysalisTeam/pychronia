@@ -809,7 +809,7 @@ class TextMessaging(BaseDataManager): # TODO REFINE
             if not msg["id"]:
                 msg["id"] = self._get_new_msg_id(index, msg["subject"] + msg["body"])
                 
-            if not msg["gourp_id"]:
+            if not msg.get("gourp_id", ""):
                 msg["gourp_id"] = msg["id"]
                 
         new_data["messages_sent"].sort(key=lambda msg: msg["sent_at"])
