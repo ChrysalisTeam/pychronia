@@ -17,6 +17,7 @@ from rpgweb import views
 
 
 
+
 class TestUtilities(TestCase):
 
     def __call__(self, *args, **kwds):
@@ -106,7 +107,8 @@ class TestUtilities(TestCase):
 
 
 
-
+# TODO - test that messages are well propagated through session
+# TODO - test interception of "POST" when impersonating user
 
 
 class TestDatamanager(BaseGameTestCase):
@@ -123,31 +125,33 @@ class TestDatamanager(BaseGameTestCase):
              
             CastratedDataManager = type(str('Dummy'+core_module.__name__), (core_module,), {})
             castrated_dm = CastratedDataManager.__new__(CastratedDataManager) # we bypass __init__() call there
-            
+            utilities.TechnicalEventsMixin.__init__(castrated_dm) # only that mixing gets initizalized
+                                                    
             try:
                 castrated_dm.__init__(game_instance_id=TEST_GAME_INSTANCE_ID,
-                                      game_root=self.connection.root())
-            except:
-                pass
+                                      game_root=self.connection.root(),
+                                      request=self.request)
+            except Exception, e:
+                print("AAA", e)
             assert castrated_dm.get_event_count("BASE_DATA_MANAGER_INIT_CALLED") == 1
 
             try:
                 castrated_dm._load_initial_data()
-            except:
-                pass
+            except Exception, e:
+                print("BBB", e)
             assert castrated_dm.get_event_count("BASE_LOAD_INITIAL_DATA_CALLED") == 1
                 
             try:
                 castrated_dm._check_database_coherency()
-            except:
-                pass
+            except Exception, e:
+                print("CCC", e)
             assert castrated_dm.get_event_count("BASE_CHECK_DB_COHERENCY_PRIVATE_CALLED") == 1
 
             try:
                 report = PersistentList()
                 castrated_dm._process_periodic_tasks(report)
-            except:
-                pass
+            except Exception, e:
+                print("DDD", e)
             assert castrated_dm.get_event_count("BASE_PROCESS_PERIODIC_TASK_CALLED") == 1
                                        
              
@@ -919,7 +923,239 @@ class TestDatamanager(BaseGameTestCase):
         assert self.dm.data["global_parameters"]["stuff"] == 23
  
  
+    @for_core_module(PlayerAuthentication)
+    def test_standard_player_authentication(self):
+        """
+        Here we use frontend methods from authentication.py instead of
+        directly datamanager methods.
+        """
+        self._reset_django_db()
+        
+        from rpgweb.authentication import (authenticate_with_credentials, try_authenticating_with_ticket, logout_session,
+                                           SESSION_TICKET_KEY)
+        from django.contrib.sessions.middleware import SessionMiddleware
+        
+        home_url = reverse(views.homepage, kwargs={"game_instance_id": TEST_GAME_INSTANCE_ID})
+        
+        master_login = self.dm.get_global_parameter("master_login")
+        master_password = self.dm.get_global_parameter("master_password")
+        player_login = "guy1"
+        player_password = "elixir"
+        anonymous_login = self.dm.get_global_parameter("anonymous_login")
+        
+ 
+        # build complete request
+        request = self.factory.post(home_url)
+        request.datamanager = self.dm
+        
+        # we let different states of the session ticket be there, at the beginning
+        if random.choice((0, 1)):
+            request.session[SESSION_TICKET_KEY] = random.choice((None, {}))
+        
+        # anonymous case
+        assert request.datamanager.user.username == anonymous_login
+        assert not self.dm.get_impersonation_targets(anonymous_login)
+        
+        
+        def _standard_authenticated_checks():
+            
+            original_ticket = request.session[SESSION_TICKET_KEY].copy()
+            original_username = request.datamanager.user.username
+            
+            assert request.datamanager == self.dm 
+            self._set_user(None)
+            assert request.datamanager.user.username == anonymous_login
+            
+            res = try_authenticating_with_ticket(request)
+            assert res is None
+            
+            assert request.session[SESSION_TICKET_KEY] == original_ticket
+            assert request.datamanager.user.username == original_username
+            
+            self._set_user(None) 
+            
+            # failure case: wrong ticket type
+            request.session[SESSION_TICKET_KEY] = ["dqsdqs"]
+            try_authenticating_with_ticket(request) # exception gets swallowed
+            assert request.session[SESSION_TICKET_KEY] is None
+             
+            self._set_user(None) 
+            
+            # failure case: wrong instance id
+            request.session[SESSION_TICKET_KEY] = original_ticket.copy()
+            request.session[SESSION_TICKET_KEY]["game_instance_id"] = "qsdjqsidub"
+            _temp = request.session[SESSION_TICKET_KEY].copy()
+            try_authenticating_with_ticket(request) # exception gets swallowed
+            assert request.session[SESSION_TICKET_KEY] == _temp
+            
+            self._set_user(None) 
+            
+            request.session[SESSION_TICKET_KEY] = original_ticket.copy()
+            request.session[SESSION_TICKET_KEY]["username"] = "qsdqsdqsd"
+            try_authenticating_with_ticket(request) # exception gets swallowed
+            assert request.session[SESSION_TICKET_KEY] == None # but ticket gets reset
+            
+            self._set_user(None) 
+            
+            request.session[SESSION_TICKET_KEY] = original_ticket.copy()
+            try_authenticating_with_ticket(request)
+            assert request.datamanager.user.username == original_username
+            
+            logout_session(request)
+            assert SESSION_TICKET_KEY not in request.session
+            assert request.datamanager.user.username == anonymous_login
 
+        
+        # simple player case
+        
+        res = authenticate_with_credentials(request, player_login, player_password)
+        assert res is None # no result expected
+        ticket = request.session[SESSION_TICKET_KEY]
+        assert ticket == {'game_instance_id': u'TeStiNg', 'impersonation': None, 'username': player_login} 
+        
+        assert request.datamanager.user.username == player_login
+        assert not self.dm.get_impersonation_targets(player_login)
+        
+        _standard_authenticated_checks()
+         
+         
+        # game master case
+        
+        res = authenticate_with_credentials(request, master_login, master_password)
+        assert res is None # no result expected
+        ticket = request.session[SESSION_TICKET_KEY]
+        assert ticket == {'game_instance_id': u'TeStiNg', 'impersonation': None, 'username': master_login}
+        
+        _standard_authenticated_checks()
+        
+        
+    
+    
+        
+        
+    @for_core_module(PlayerAuthentication)
+    def test_impersonation(self):
+        
+        self._reset_django_db()
+        
+        from rpgweb.authentication import (authenticate_with_credentials, try_authenticating_with_ticket, logout_session,
+                                           SESSION_TICKET_KEY, IMPERSONATION_POST_VARIABLE)
+
+        
+        master_login = self.dm.get_global_parameter("master_login")
+        master_password = self.dm.get_global_parameter("master_password")
+        player_login = "guy1"
+        player_password = "elixir"
+        player_login_bis = "guy2"
+        anonymous_login = self.dm.get_global_parameter("anonymous_login")
+        
+        
+        # build complete request
+        
+        # Impersonation control with can_impersonate()
+        assert not self.dm.can_impersonate(master_login, master_login)
+        assert self.dm.can_impersonate(master_login, player_login)
+        assert self.dm.can_impersonate(master_login, anonymous_login)
+        
+        assert not self.dm.can_impersonate(player_login, master_login)
+        assert not self.dm.can_impersonate(player_login, player_login)
+        assert not self.dm.can_impersonate(player_login, player_login_bis)        
+        assert not self.dm.can_impersonate(player_login, anonymous_login)  
+ 
+        assert not self.dm.can_impersonate(anonymous_login, master_login)
+        assert not self.dm.can_impersonate(anonymous_login, player_login)        
+        assert not self.dm.can_impersonate(anonymous_login, anonymous_login) 
+               
+        
+        # impersonation cases #
+        
+        self.dm.user.discard_notifications()
+        
+        request = self.request
+        authenticate_with_credentials(request, master_login, master_password)
+        session_ticket = request.session[SESSION_TICKET_KEY]
+        assert session_ticket == {'game_instance_id': u'TeStiNg', 'impersonation': None, 'username': master_login}
+        assert self.dm.user.username == master_login
+        assert self.dm.user.has_write_access
+        assert not self.dm.user.is_impersonation
+        assert self.dm.user.real_username == master_login
+        assert not self.dm.user.has_notifications()        
+        
+        
+        # Impersonate player
+        res = self.dm.authenticate_with_ticket(session_ticket, 
+                                               requested_impersonation=player_login)
+        assert res is session_ticket
+        assert session_ticket == {'game_instance_id': u'TeStiNg', 'impersonation': player_login, 'username': master_login}
+        assert self.dm.user.username == player_login
+        assert not self.dm.user.has_write_access
+        assert self.dm.user.is_impersonation
+        assert self.dm.user.real_username == master_login
+        assert not self.dm.user.has_notifications()
+        
+        # Impersonated player renewed just with ticket
+        self._set_user(None)
+        assert self.dm.user.username == anonymous_login
+        self.dm.authenticate_with_ticket(session_ticket, 
+                                         requested_impersonation=None)
+        assert session_ticket == {'game_instance_id': u'TeStiNg', 'impersonation': player_login, 'username': master_login}
+        assert self.dm.user.username == player_login
+        assert not self.dm.user.has_notifications() 
+        
+        # Impersonation stops because of unexisting username
+        self.dm.authenticate_with_ticket(session_ticket, 
+                                         requested_impersonation="dsfsdfkjsqodsd")
+        assert session_ticket == {'game_instance_id': u'TeStiNg', 'impersonation': None, 'username': master_login}
+        assert self.dm.user.username == master_login
+        assert self.dm.user.has_write_access
+        assert not self.dm.user.is_impersonation
+        assert self.dm.user.real_username == master_login
+        assert self.dm.user.has_notifications()        
+        self.dm.user.discard_notifications()
+                
+        # Impersonate anonymous
+        self.dm.authenticate_with_ticket(session_ticket, 
+                                         requested_impersonation=anonymous_login)
+        assert session_ticket == {'game_instance_id': u'TeStiNg', 'impersonation': anonymous_login, 'username': master_login}
+        assert self.dm.user.username == anonymous_login
+        assert not self.dm.user.has_write_access
+        assert self.dm.user.is_impersonation
+        assert self.dm.user.real_username == master_login
+        assert not self.dm.user.has_notifications()        
+        _copy = session_ticket.copy()
+        
+        # Impersonation stops completely because of unauthorized impersonation attempt
+        self.dm.authenticate_with_ticket(session_ticket, 
+                                         requested_impersonation=master_login)
+        assert session_ticket == {'game_instance_id': u'TeStiNg', 'impersonation': None, 'username': master_login}
+        assert self.dm.user.username == master_login
+        assert self.dm.user.has_write_access
+        assert not self.dm.user.is_impersonation
+        assert self.dm.user.real_username == master_login
+        assert self.dm.user.has_notifications()        
+        self.dm.user.discard_notifications()                
+        
+        # Back as anonymous
+        self.dm.authenticate_with_ticket(session_ticket, 
+                                         requested_impersonation=anonymous_login)                    
+        assert session_ticket == {'game_instance_id': u'TeStiNg', 'impersonation': anonymous_login, 'username': master_login}
+        assert self.dm.user.username == anonymous_login
+        assert not self.dm.user.has_write_access
+        assert self.dm.user.is_impersonation
+        assert self.dm.user.real_username == master_login
+        assert not self.dm.user.has_notifications()        
+   
+        # Standard stopping of impersonation 
+        self.dm.authenticate_with_ticket(session_ticket, 
+                                         requested_impersonation="")                    
+        assert session_ticket == {'game_instance_id': u'TeStiNg', 'impersonation': None, 'username': master_login}
+        assert self.dm.user.username == master_login
+        assert self.dm.user.has_write_access
+        assert not self.dm.user.is_impersonation
+        assert self.dm.user.real_username == master_login
+        assert not self.dm.user.has_notifications() # IMPORTANT - no error message    
+    
+    
     @for_core_module(PlayerAuthentication)
     def test_password_recovery(self):
         self._reset_messages()
@@ -941,6 +1177,8 @@ class TestDatamanager(BaseGameTestCase):
         self.assertRaises(dm_module.UsageError, self.dm.process_secret_answer_attempt, "guy3", "MiLoU", "bademail@sciences.com")
         self.assertEqual(len(self.dm.get_all_queued_messages()), 1) # untouched
 
+    
+    
     @for_core_module(GameViews)
     def test_game_view_registries(self):
         
@@ -985,10 +1223,27 @@ class TestDatamanager(BaseGameTestCase):
         assert self.dm.get_event_count("SYNC_GAME_VIEW_DATA_CALLED") == 1
         
         _dm2 = dm_module.GameDataManager(game_instance_id=TEST_GAME_INSTANCE_ID,
-                                  game_root=self.connection.root())
+                                  game_root=self.connection.root(),
+                                  request=self.request)
         assert _dm2.get_event_count("SYNC_GAME_VIEW_DATA_CALLED") == 1 # sync well called at init!!
 
         self.dm.ACTIVABLE_VIEWS_REGISTRY[random_view] = random_klass # test cleanup
+        
+        
+        # test admin form tokens
+        assert "runic_translation.translation_form" in self.dm.get_admin_widget_identifiers()
+        
+        assert self.dm.resolve_admin_widget_identifier("") is None
+        assert self.dm.resolve_admin_widget_identifier("qsdqsd") is None
+        assert self.dm.resolve_admin_widget_identifier("qsdqsd.translation_form") is None
+        assert self.dm.resolve_admin_widget_identifier("runic_translation.") is None
+        assert self.dm.resolve_admin_widget_identifier("runic_translation.qsdqsd") is None
+        
+        from rpgweb.abilities import runic_translation_view
+        components = self.dm.resolve_admin_widget_identifier("runic_translation.translation_form")
+        assert len(components) == 2
+        assert isinstance(components[0], runic_translation_view._klass)
+        assert components[1] == "translation_form"
         
         
     @for_core_module(SpecialAbilities)
@@ -1003,7 +1258,7 @@ class TestDatamanager(BaseGameTestCase):
         class TesterAbility(AbstractAbility):
 
             NAME = "dummy_ability"
-            FORMS = {}
+            GAME_FORMS = {}
             ACTIONS = dict()
             TEMPLATE = "base_main.html" # must exist
             ACCESS = UserAccess.anonymous
@@ -1033,7 +1288,8 @@ class TestDatamanager(BaseGameTestCase):
             self.dm.get_ability_data("dummy_ability") # not yet setup in ZODB
         
         _dm = dm_module.GameDataManager(game_instance_id=TEST_GAME_INSTANCE_ID,
-                                        game_root=self.connection.root())
+                                        game_root=self.connection.root(),
+                                        request=self.request)
         assert "dummy_ability" in _dm.get_abilities()
         assert _dm.get_ability_data("dummy_ability") # ability now setup in ZODB
         assert self.dm.get_event_count("LATE_ABILITY_SETUP_DONE") == 1 # parasite event - autosync well called at init!!
@@ -1089,7 +1345,7 @@ class TestDatamanager(BaseGameTestCase):
         res = self.dm.dump_zope_database()
         assert isinstance(res, basestring) and len(res) > 1000
 
-
+    
 
 
 
@@ -1110,7 +1366,9 @@ class TestHttpRequests(BaseGameTestCase):
         else:
             self.assertRedirects(response, ROOT_GAME_URL + "/opening/") # beautiful intro for days before the game starts
         
-        assert self.client.session["rpgweb_session_ticket"] == (TEST_GAME_INSTANCE_ID, master_login)
+        assert self.client.session["rpgweb_session_ticket"] == dict(game_instance_id=TEST_GAME_INSTANCE_ID, 
+                                                                    username=master_login,
+                                                                    impersonation=None)
         self.assertTrue(self.client.cookies["sessionid"])
 
 
@@ -1127,7 +1385,9 @@ class TestHttpRequests(BaseGameTestCase):
         else:
             self.assertRedirects(response, ROOT_GAME_URL + "/opening/") # beautiful intro for days before the game starts
             
-        assert self.client.session["rpgweb_session_ticket"] == (TEST_GAME_INSTANCE_ID, username)
+        assert self.client.session["rpgweb_session_ticket"] == dict(game_instance_id=TEST_GAME_INSTANCE_ID, 
+                                                                    username=username,
+                                                                    impersonation=None)
         self.assertTrue(self.client.cookies["sessionid"])
 
 
@@ -1322,6 +1582,14 @@ class TestHttpRequests(BaseGameTestCase):
                         
 class TestGameViewSystem(BaseGameTestCase):
     
+    
+    def test_mandatory_access_settings(self):
+        
+        # let's not block the home url...
+        assert views.homepage.ACCESS == UserAccess.anonymous
+        assert views.homepage.ALWAYS_AVAILABLE == True
+        
+    
     def test_access_parameters_normalization(self):
         
         from rpgweb.views._abstract_game_view import _normalize_view_access_parameters
@@ -1430,10 +1698,7 @@ class TestGameViewSystem(BaseGameTestCase):
                 
     def test_access_token_computation(self):
         
-        # Useless actually:
-        # datamanager = self.factory.get('/DEMO/whatever')
-        # datamanager.datamanager = self.dm
-        
+
         datamanager = self.dm
         
         def dummy_view_anonymous(request):
@@ -1459,7 +1724,7 @@ class TestGameViewSystem(BaseGameTestCase):
  
         # check global disabling of views by game master #
         for username in (None, "guy1", "guy2", self.dm.get_global_parameter("master_login")):
-            self.dm._set_user(username)
+            self._set_user(username)
             
             for my_view in (view_anonymous, view_character, view_character_permission, view_authenticated): # not view_master          
                 
@@ -1474,28 +1739,28 @@ class TestGameViewSystem(BaseGameTestCase):
                 assert my_view.get_access_token(datamanager) != AccessResult.globally_forbidden
                                 
     
-        self.dm._set_user(None)
+        self._set_user(None)
         assert view_anonymous.get_access_token(datamanager) == AccessResult.available
         assert view_character.get_access_token(datamanager) == AccessResult.authentication_required
         assert view_character_permission.get_access_token(datamanager) == AccessResult.authentication_required
         assert view_authenticated.get_access_token(datamanager) == AccessResult.authentication_required
         assert view_master.get_access_token(datamanager) == AccessResult.authentication_required
         
-        self.dm._set_user("guy1") # has runic_translation permission
+        self._set_user("guy1") # has runic_translation permission
         assert view_anonymous.get_access_token(datamanager) == AccessResult.available
         assert view_character.get_access_token(datamanager) == AccessResult.available
         assert view_character_permission.get_access_token(datamanager) == AccessResult.available
         assert view_authenticated.get_access_token(datamanager) == AccessResult.available
         assert view_master.get_access_token(datamanager) == AccessResult.authentication_required        
         
-        self.dm._set_user("guy2") # has NO runic_translation permission
+        self._set_user("guy2") # has NO runic_translation permission
         assert view_anonymous.get_access_token(datamanager) == AccessResult.available
         assert view_character.get_access_token(datamanager) == AccessResult.available
         assert view_character_permission.get_access_token(datamanager) == AccessResult.permission_required # != authentication required 
         assert view_authenticated.get_access_token(datamanager) == AccessResult.available
         assert view_master.get_access_token(datamanager) == AccessResult.authentication_required        
                 
-        self.dm._set_user(self.dm.get_global_parameter("master_login"))
+        self._set_user(self.dm.get_global_parameter("master_login"))
         assert view_anonymous.get_access_token(datamanager) == AccessResult.available
         assert view_character.get_access_token(datamanager) == AccessResult.authentication_required # master must downgrade to character!!
         assert view_character_permission.get_access_token(datamanager) == AccessResult.authentication_required # master must downgrade to character!!
@@ -1509,7 +1774,7 @@ class TestGameViewSystem(BaseGameTestCase):
 class TestSpecialAbilities(BaseGameTestCase):
 
 
-    @for_ability(runic_translation)
+    @for_ability(runic_translation_view)
     def test_runic_translation(self):
         runic_translation = self.dm.instantiate_ability("runic_translation")
 
@@ -1584,7 +1849,7 @@ class TestSpecialAbilities(BaseGameTestCase):
         self.assertTrue(self.dm.get_global_parameter("master_login") in msg["has_read"])
 
 
-    @for_ability(house_locking)
+    @for_ability(house_locking_view)
     def test_house_locking(self):
 
         house_locking = self.dm.instantiate_ability("house_locking")
@@ -1823,7 +2088,7 @@ class TestSpecialAbilities(BaseGameTestCase):
         self.assertTrue("***" in msg["body"].lower())
 
 
-    @for_ability(wiretapping_management)
+    @for_ability(wiretapping_management_view)
     def test_wiretapping_management(self):
         
         self._reset_messages()

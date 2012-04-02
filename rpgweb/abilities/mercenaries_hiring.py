@@ -59,7 +59,7 @@ class MercenariesHiringAbility(AbstractAbilityHandler):
 
     LEVEL = "player"
 
-    FORMS = {"agents_form": (AgentsHiringForm, "hire_remote_agent")}
+    GAME_FORMS = {"agents_form": (AgentsHiringForm, "hire_remote_agent")}
 
     TEMPLATE = "abilities/mercenaries_hiring.html"
 

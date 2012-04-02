@@ -7,8 +7,10 @@ import types, contextlib, collections, time, glob, copy, weakref, atexit
 from datetime import datetime, timedelta
 
 from contextlib import contextmanager, closing, nested
-from textwrap import dedent
 from decorator import decorator
+from functools import partial
+from textwrap import dedent
+
 
 from odict import odict as OrderedDict
 

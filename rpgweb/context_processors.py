@@ -3,6 +3,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from . import menus as menus_module
+from rpgweb.authentication import IMPERSONATION_POST_VARIABLE
 
 
 def rpgweb_template_context(request):
@@ -12,22 +13,30 @@ def rpgweb_template_context(request):
 
     if hasattr(request, "datamanager") and request.datamanager:
         
-        online_users = [request.datamanager.get_official_name_from_username(username)
-                        for username in request.datamanager.get_online_users()]
+        datamanager = request.datamanager
+        
+        online_users = [datamanager.get_official_name_from_username(username)
+                        for username in datamanager.get_online_users()]
         menus = menus_module.generate_filtered_menu(request)
         
         view_name = request.processed_view.NAME # thanks to our middleware
-        if view_name in request.datamanager.get_help_page_names():
+        if view_name in datamanager.get_help_page_names():
             help_keyword = view_name # we NECESSARILY have access permissions for this view, logically..
         else:
             help_keyword = None
-
-        return {'game_instance_id': request.datamanager.game_instance_id,
-                'user': request.datamanager.user,
-                'game_is_started': request.datamanager.get_global_parameter("game_is_started"),
+             
+        
+        possible_impersonations = datamanager.get_impersonation_targets(datamanager.user.real_username)
+        
+        return {'game_instance_id': datamanager.game_instance_id,
+                'user': datamanager.user,
+                'game_is_started': datamanager.get_global_parameter("game_is_started"),
                 'online_users': online_users,
                 'menus': menus.submenus if menus else [],
-                'help_keyword': help_keyword}
+                'help_keyword': help_keyword,
+                'possible_impersonations': possible_impersonations,
+                'impersonation_post_variable': IMPERSONATION_POST_VARIABLE}
+        
     else:
         return {} # not in valid game instance
     

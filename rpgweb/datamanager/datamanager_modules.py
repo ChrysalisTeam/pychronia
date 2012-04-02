@@ -87,7 +87,9 @@ class GameEvents(BaseDataManager): # TODO REFINE
             previous_time = event["time"]
             utilities.check_dictionary_with_template(event, event_reference)
             username = event["username"]
-            assert username in self.get_character_usernames() or username == self.get_global_parameter("master_login") or username is None
+            assert username in self.get_character_usernames() or \
+                    username == self.get_global_parameter("master_login") or \
+                    username == self.get_global_parameter("anonymous_login")
 
     @transaction_watcher
     def log_game_event(self, message, substitutions=None, url=None, is_master_action=False):
@@ -312,7 +314,8 @@ class PlayerAuthentication(BaseDataManager):
     def __init__(self, **kwargs):
         super(PlayerAuthentication, self).__init__(**kwargs)
         self.user = None
-        self._set_user(username=None) # TODO - improve by doing player authentication at init time !
+        self._set_user(username=None, has_write_access=True) # TODO - improve by doing player authentication at init time?
+
 
     def _load_initial_data(self, **kwargs):
         super(PlayerAuthentication, self)._load_initial_data(**kwargs)
@@ -337,9 +340,9 @@ class PlayerAuthentication(BaseDataManager):
         # MASTER and ANONYMOUS cases
 
         global_parameters = game_data["global_parameters"]
-        
-        if global_parameters["anonymous_login"] is not None:
-            utilities.check_is_slug(global_parameters["anonymous_login"])
+
+        utilities.check_is_slug(global_parameters["anonymous_login"])
+            
         utilities.check_is_slug(global_parameters["master_login"])
         utilities.check_is_slug(global_parameters["master_password"])
         utilities.check_is_slug(global_parameters["master_email"])
@@ -348,7 +351,9 @@ class PlayerAuthentication(BaseDataManager):
 
     @readonly_method
     def get_available_logins(self):
-        return [self.get_global_parameter("anonymous_login")] + self.get_character_usernames() + [self.get_global_parameter("master_login")]
+        return ([self.get_global_parameter("anonymous_login")] + 
+                self.get_character_usernames() + 
+                [self.get_global_parameter("master_login")])
         
 
     def _notify_user_change(self, username, **kwargs):
@@ -356,9 +361,13 @@ class PlayerAuthentication(BaseDataManager):
         
         
     @transaction_watcher(ensure_game_started=False)
-    def _set_user(self, username):
+    def _set_user(self, username, has_write_access, impersonation=None):
 
-        self.user = GameUser(datamanager=self, username=username, previous_user=self.user)
+        self.user = GameUser(datamanager=self, 
+                             username=username, 
+                            # DEPRECATED previous_user=self.user,
+                             has_write_access=has_write_access,
+                             impersonation=impersonation,) # might raise UsageError
 
         self._notify_user_change(username=username)
 
@@ -367,18 +376,78 @@ class PlayerAuthentication(BaseDataManager):
 
     @transaction_watcher(ensure_game_started=False)
     def logout_user(self):
-        self._set_user(username=None)
+        self._set_user(username=None, has_write_access=True)
 
+
+    @readonly_method
+    def can_impersonate(self, username, impersonation):
+        """
+        This method must play it safe, we're not sure username or impersonation is valid here!
+        
+        Returns True iff user *username* can temporarily take the identity of *impersonation*.
+        """
+        assert username and impersonation
+        
+        if username == impersonation: # no sense
+            return False 
+        
+        if self.is_master(username):
+            if impersonation in self.get_available_logins():
+                return True # impersonation can be a character or anonymous,  both are OK
+        return False # a normal character has no reasons to become temporarily anonymous...
+
+    
+    @readonly_method
+    def get_impersonation_targets(self, username):
+        assert username
+        possible_impersonations = [target for target in self.get_available_logins()
+                                   if self.can_impersonate(username, target)]
+        return possible_impersonations
+                                       
 
     @transaction_watcher(ensure_game_started=False)
-    def authenticate_with_ticket(self, session_ticket):
-        """Raises Exception if problem."""
-        (game_instance_id, username) = session_ticket
-        self._set_user(username)
-        #if not player.is_master:
-        #    self.set_online_status(username)
-        return None
+    def authenticate_with_ticket(self, session_ticket, requested_impersonation=None):
+        """
+        Allows a logged other to continue using his normal session,
+        or to impersonate a lower-rank user (but in readonly mode, then).
+        
+        Raises UsageError if problem.
+        """
 
+        if not hasattr(session_ticket, "get"):
+            raise AbnormalUsageError(_("Invalid session ticket: %s") % (session_ticket,)) # beware of dict!
+                
+        game_instance_id = session_ticket.get("game_instance_id")
+        if game_instance_id != self.game_instance_id:
+            raise NormalUsageError(_("Session ticket doesn't belong to this instance"))
+        
+        username = session_ticket.get("username")
+        
+        # Beware of the (requested_impersonation == "") special case
+        impersonation = requested_impersonation if requested_impersonation is not None else session_ticket.get("impersonation")
+        
+        final_username = username # ALWAYS
+        final_has_write_access = True
+        final_impersonation = None
+
+        if impersonation is not None:
+            if impersonation == "":
+                session_ticket["impersonation"] = None # we stop current impersonation
+            elif not self.can_impersonate(username, impersonation):
+                session_ticket["impersonation"] = None # we reset it even if it was actually good, and just requested_impersonation bad  
+                self.user.add_error(_("Unauthorized user impersonation detected: %s") % impersonation)
+            else:
+                # OK go for impersonation
+                session_ticket["impersonation"] = impersonation # in case it was newly requested
+                final_has_write_access = False # always readonly
+                final_impersonation = impersonation
+              
+        self._set_user(username=final_username, 
+                       has_write_access=final_has_write_access, 
+                       impersonation=final_impersonation) 
+            
+        return session_ticket
+    
 
     @transaction_watcher(ensure_game_started=False)
     def authenticate_with_credentials(self, username, password):
@@ -392,14 +461,14 @@ class PlayerAuthentication(BaseDataManager):
         if username == self.get_global_parameter("master_login"): # do not use is_master here, just in case...
             wanted_pwd = self.get_global_parameter("master_password")
         else:
-            data = self.get_character_properties(username)
+            data = self.get_character_properties(username)  # might raise UsageError
             wanted_pwd = data["password"]
 
         if password == wanted_pwd:
-            self._set_user(username)
-
-            session_ticket = (self.game_instance_id, username)
-
+            self._set_user(username, has_write_access=True) # when using credentials, it's always a real user
+            session_ticket = dict(game_instance_id=self.game_instance_id, 
+                                  username=username,
+                                  impersonation=None)
             return session_ticket
 
         else:
@@ -458,16 +527,19 @@ class PlayerAuthentication(BaseDataManager):
     def is_anonymous(self, username=PLACEHOLDER):
         if username is PLACEHOLDER:
             username = self.user.username
-        return (username == None)
+        assert username
+        return (username == self.get_global_parameter("anonymous_login"))
 
     def is_master(self, username=PLACEHOLDER):
         if username is PLACEHOLDER:
             username = self.user.username
+        assert username
         return (username == self.get_global_parameter("master_login"))
 
     def is_character(self, username=PLACEHOLDER):
         if username is PLACEHOLDER:
             username = self.user.username
+        assert username
         return (username in self.get_character_usernames())
 
 
@@ -2184,8 +2256,40 @@ class GameViews(BaseDataManager):
         klass = self._resolve_view_klass(name_or_klass)
         token = klass.get_access_token(self) # class method!!
         return token
+    
+    
+    
+    @readonly_method
+    def build_admin_widget_identifier(self, klass, form_name):
+        assert isinstance(klass, type)
+        assert isinstance(form_name, basestring)
+        return "%s.%s" % (klass.NAME, form_name)
                                        
-
+    @readonly_method
+    def get_admin_widget_identifiers(self):
+        """
+        Gets a list of qualified names, each one targetting a single
+        admin form widget.
+        """
+        ids = [self.build_admin_widget_identifier(klass, form_name) 
+               for klass in self.GAME_VIEWS_REGISTRY.values()
+               for form_name in klass.ADMIN_FORMS]
+        return ids
+    
+    @readonly_method
+    def resolve_admin_widget_identifier(self, identifier):
+        """
+        Returns the (game_view_class, form_name_string) tuple corresponding to that
+        admin widget token, or None. 
+        """
+        if identifier.count(".") == 1:
+            klass_name, form_name = identifier.split(".")
+            if klass_name in self.GAME_VIEWS_REGISTRY:
+                klass = self.GAME_VIEWS_REGISTRY[klass_name]
+                if form_name in klass.ADMIN_FORMS:
+                    return (self.instantiate_game_view(klass), form_name)
+        return None
+    
 
 @register_module
 class SpecialAbilities(BaseDataManager):
