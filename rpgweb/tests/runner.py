@@ -12,7 +12,7 @@ from django.core.management import execute_from_command_line
 if __name__ == "__main__":
     
     if any(help_key in sys.argv for help_key in ("help", "-h", "--help")):
-        print "Usage: python %s [reset|pack|runserver]" % sys.argv[0]
+        print "Usage: python %s [reset_zodb|reset_django|pack|runserver]" % sys.argv[0]
         print "- reset_zodb: reset ZODB databases (game data) to their initial state"
         print "- reset_django: reset django databases (authentication sessions) to their initial state"
         print "- pack: cleans and compresses ZODB file, in case it gets too heavy (test server must not be running)"
@@ -36,7 +36,7 @@ if __name__ == "__main__":
         print "Successfully packed ZODB items older than 1 day in %s" % utilities.config.ZODB_FILE
         
     else:
-        sys.argv[1:] = ("runserver 127.0.0.1:8000 --settings=%s" % settings_module).split()
+        sys.argv[1:] = ("runserver 127.0.0.1:8000 --settings=%s" % settings_module).split() # beware, with auto-reload this is applied twice...
         execute_from_command_line()
     
  
