@@ -10,12 +10,6 @@ import os, sys, pytest, unittest
 ## TEST CONFIGURATION ##
 
 os.environ["DJANGO_SETTINGS_MODULE"] = "rpgweb.tests._test_settings"
-from django.conf import settings
-settings._wrapped = None # forces lazy reloading, in case settings were already loaded
-
-#from django.test.utils import setup_test_environment, teardown_test_environment
-#setup_test_environment()
-########################
 
 
 from rpgweb.common import *

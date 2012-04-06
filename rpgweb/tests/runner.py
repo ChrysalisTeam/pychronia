@@ -3,16 +3,13 @@
 import sys, os
 
 os.environ["DJANGO_SETTINGS_MODULE"] = settings_module = "rpgweb.tests._persistent_settings" # with DB not in temp dir
-from django.conf import settings
-settings._wrapped = None # forces lazy reloading, in case settings were already loaded
-
 
 from django.core.management import execute_from_command_line
 
 if __name__ == "__main__":
     
     if any(help_key in sys.argv for help_key in ("help", "-h", "--help")):
-        print "Usage: python %s [reset_zodb|reset_django|pack|runserver]" % sys.argv[0]
+        print "Usage: python %s [reset_django|reset_zodb|pack|runserver]" % sys.argv[0]
         print "- reset_zodb: reset ZODB databases (game data) to their initial state"
         print "- reset_django: reset django databases (authentication sessions) to their initial state"
         print "- pack: cleans and compresses ZODB file, in case it gets too heavy (test server must not be running)"
