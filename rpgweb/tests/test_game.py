@@ -441,11 +441,10 @@ class TestDatamanager(BaseGameTestCase):
     @for_core_module(Encyclopedia)
     def test_encyclopedia(self):
         
-        utilities.check_is_restructuredtext(self.dm.get_encyclopedia_entry(" LoKon ")) # tolerant fetching
-        
+        utilities.check_is_restructuredtext(self.dm.get_encyclopedia_entry(" gerbil_species ")) # tolerant fetching
         assert self.dm.get_encyclopedia_entry("qskiqsjdqsid") is None
         
-        assert "lokon" in self.dm.get_encyclopedia_keywords()
+        assert ("lokons", "lokon") in self.dm.get_encyclopedia_keywords().items()
         for entry in self.dm.get_encyclopedia_keywords():
             utilities.check_is_slug(entry)
             assert entry.lower() == entry
@@ -457,14 +456,18 @@ class TestDatamanager(BaseGameTestCase):
         not self.dm.set_encyclopedia_index_visibility(False)
         assert not self.dm.is_encyclopedia_index_visible()
         
-        
         # generation of entry links 
-        res = _generate_encyclopedia_links (u"""wu\\gly&lt;_é gerbil \n lokongerbil dummy gerb\nil <a href="#">lokon\n</a> lokon""", self.dm)
-                                            
-        expected = """<a href="@@@?keyword=wu%5Cgly%3C_%C3%A9">wu\\gly&lt;_é</a> <a href="@@@?keyword=gerbil">gerbil</a> \n lokongerbil dummy gerb\nil <a href="#"><a href="@@@?keyword=lokon">lokon</a>\n</a> <a href="@@@?keyword=lokon">lokon</a>"""
+        res = _generate_encyclopedia_links("lokon lokons lokonsu", self.dm)
+        expected = """<a href="@@@?article_id=lokon">lokon</a> <a href="@@@?article_id=lokon">lokons</a> lokonsu"""
         expected = expected.replace("@@@", reverse(views.view_encyclopedia, kwargs=dict(game_instance_id=self.dm.game_instance_id)))
+        print("\n\n", res)
+        print("\n\n", expected)
         
-        #print(">>>", res)
+        assert res == expected
+        
+        res = _generate_encyclopedia_links(u"""wu\\gly&lt;_é gerbil \n lokongerbil dummy gerb\nil <a href="#">lokon\n</a> lokons""", self.dm)                         
+        expected = """<a href="@@@?article_id=wu%5Cgly%3C_%C3%A9">wu\\gly&lt;_é</a> <a href="@@@?article_id=gerbil_species">gerbil</a> \n lokongerbil dummy gerb\nil <a href="#"><a href="@@@?article_id=lokon">lokon</a>\n</a> <a href="@@@?article_id=lokon">lokons</a>"""
+        expected = expected.replace("@@@", reverse(views.view_encyclopedia, kwargs=dict(game_instance_id=self.dm.game_instance_id)))
         assert res == expected
         
 

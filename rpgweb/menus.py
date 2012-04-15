@@ -112,7 +112,9 @@ def generate_full_menu(request):  ## game_menu_generator
             
             menu_entry(_(u"Admin"), views.homepage, # FIXME
                        (
-                        menu_entry(_(u"Dashboard"), abilities.admin_dashboard_view),
+                         menu_entry(_(u"Dashboard"), abilities.admin_dashboard_view),
+                         menu_entry(_(u"Manage Characters"), views.manage_characters),
+                        
                          menu_entry(_(u"Game Events"), views.game_events),
                          menu_entry(_(u"Manage Webradio"), views.manage_audio_messages),
                          menu_entry(_(u"Databases"), views.manage_databases),
@@ -146,7 +148,7 @@ def generate_full_menu(request):  ## game_menu_generator
 
 def filter_menu_tree(menu):
     """
-    Recursively removes all invisible ietsm from teh tree, including those that
+    Recursively removes all invisible items from the tree, including those that TODO FIXME
     """
     recursed_submenus = [filter_menu_tree(submenu) for submenu in menu.submenus]
     menu.submenus = [submenu for submenu in recursed_submenus if submenu] # remove new 'None' entries

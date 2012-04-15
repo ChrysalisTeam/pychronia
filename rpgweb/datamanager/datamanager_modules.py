@@ -2094,6 +2094,9 @@ class Encyclopedia(BaseDataManager):
 
         new_data["global_parameters"].setdefault("encyclopedia_index_visible", False)
         
+        #for (key, value) in new_data["encyclopedia"].items():
+        #    value["keywords"] = list(set(value["keywords"] + [key]))
+            
         
     def _check_database_coherency(self, **kwargs):
         super(Encyclopedia, self)._check_database_coherency(**kwargs)
@@ -2102,13 +2105,21 @@ class Encyclopedia(BaseDataManager):
         
         utilities.check_is_bool(game_data["global_parameters"]["encyclopedia_index_visible"])
         
+        all_keywords = [] 
+         
         for (key, value) in game_data["encyclopedia"].items():
 
             assert key.lower() == key
             utilities.check_is_slug(key)
-
-            utilities.check_is_restructuredtext(value)
-
+            
+            for keyword in (value["keywords"]):            
+                utilities.check_is_slug(keyword)
+            all_keywords += value["keywords"]
+            
+            utilities.check_is_restructuredtext(value["content"])
+        
+        utilities.check_no_duplicates(all_keywords) # the same keyword mustn't target several articles
+        
 
     @readonly_method
     def is_encyclopedia_index_visible(self):
@@ -2121,18 +2132,29 @@ class Encyclopedia(BaseDataManager):
         
         
     @readonly_method
-    def get_encyclopedia_entry(self, keyword):
+    def get_encyclopedia_entry(self, article_id):
         """
         Returns the rst entry, or None.
         Fetching is case-insensitive.
         """
-        return self.data["encyclopedia"].get(keyword.lower().strip())
+        article =  self.data["encyclopedia"].get(article_id.lower().strip())
+        return article["content"] if article else None
 
 
     @readonly_method
-    def get_encyclopedia_keywords(self):
+    def get_encyclopedia_article_ids(self):
         return self.data["encyclopedia"].keys()
-
+    
+    
+    @readonly_method
+    def get_encyclopedia_keywords(self):
+        """
+        Returns a dict mapping keywords to article ids.
+        """
+        return dict((keyword, article_id) 
+                    for article_id, article in self.data["encyclopedia"].items()
+                    for keyword in article["keywords"])
+    
 
 
 @register_module

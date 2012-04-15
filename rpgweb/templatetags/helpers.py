@@ -47,13 +47,20 @@ def usercolor(context, username_or_email):
 
 
 def _generate_encyclopedia_links(html, datamanager):
-    
+    """
+    Beware - ATM, that system doesn't detected nested links, and will always
+    replace keywords by encyclopedia links.
+    """
     keywords = datamanager.get_encyclopedia_keywords()
     #print(">>>>", repr(keywords))
     base_url = reverse("rpgweb.views.view_encyclopedia", kwargs={"game_instance_id":datamanager.game_instance_id})
-    for keyword in keywords: 
-        source = ur'\b(%s)\b' % re.escape(escape(keyword))
-        dest = ur'<a href="%s?%s">\1</a>' % (base_url, urlencode([("keyword", keyword)]))
+    for keyword, article_id in keywords.items(): 
+        source= ur'(?<!=)\b(%s)\b' % re.escape(escape(keyword))
+        
+        #skipped_keywords_re = "(?P<preceding><a(?:(?!</a>))*)(?P<keyword>%s)" % keyword_re
+        #skipped_keywords_replacement_re = "(?P=preceding)______(?P=keyword)"
+        
+        dest = ur'<a href="%s?%s">\1</a>' % (base_url, urlencode([("article_id", article_id)]))
         #print(source, dest)
         html = re.sub(source,
                        dest,

@@ -571,24 +571,27 @@ def opening(request, template_name='generic_operations/opening.html'):
 @register_view(access=UserAccess.anonymous, always_available=True)
 def view_encyclopedia(request, template_name='generic_operations/encyclopedia.html'):
     
-    keyword = request.GET.get("keyword")
+    ### FIXME - we need realk search engine for encyclopedia
+    # ALSO FIXME, articles must create links for their own keywords!!!
     
-    if keyword:
-        entry = request.datamanager.get_encyclopedia_entry(keyword)
+    article_id = request.GET.get("article_id")
+    #keyword = request.GET.get("keyword")
+    entry = None
+    if article_id:
+        entry = request.datamanager.get_encyclopedia_entry(article_id)
+
         if not entry:
-            request.datamanager.user.add_error(_("Sorry, no encyclopedia article has been found for keyword '%s'") % keyword)
-    else:
-        entry = None
+            request.datamanager.user.add_error(_("Sorry, no encyclopedia article has been found for id '%s'") % article_id)
     
     if request.datamanager.is_encyclopedia_index_visible():
-        keywords = request.datamanager.get_encyclopedia_keywords()
+        article_ids = request.datamanager.get_encyclopedia_article_ids()
     else:
-        keywords = None
+        article_ids = None
     
     return render_to_response(template_name,
                                 {
                                  'page_title': _("Pangea Encyclopedia"),
-                                 'keywords': keywords,
+                                 'article_ids': article_ids,
                                  'entry': entry,
                                 },
                                 context_instance=RequestContext(request))

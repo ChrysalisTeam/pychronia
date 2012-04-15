@@ -36,10 +36,10 @@
 
     
     <br/>
-    {% if keywords %}
+    {% if article_ids %}
     <ul>
-        {% for keyword in keywords %}
-            <li><a href="{% gameurl rpgweb.views.view_encyclopedia %}?keyword={{ keyword|urlencode }}">{{ keyword|capfirst }}</a></li>
+        {% for article_id in article_ids %}
+            <li><a href="{% gameurl rpgweb.views.view_encyclopedia %}?article_id={{ article_id|urlencode }}">{{ article_id|capfirst }}</a></li>
         {% endfor %} 
     </ul>
     {% endif %}

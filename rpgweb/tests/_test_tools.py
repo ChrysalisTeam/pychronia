@@ -101,7 +101,7 @@ class RequestMock(RequestFactory):
         handler.load_middleware()  
         
         for middleware_method in handler._request_middleware:  
-            print("APPLYING REQUEST MIDDLEWARE ", middleware_method, file=sys.stderr)
+            #print("APPLYING REQUEST MIDDLEWARE ", middleware_method, file=sys.stderr)
             if middleware_method(request):  
                 raise Exception("Couldn't create request mock object - "  
                                 "request middleware returned a response")  
@@ -116,7 +116,7 @@ class RequestMock(RequestFactory):
 
         # Apply view middleware
         for middleware_method in handler._view_middleware:
-            print("APPLYING VIEW MIDDLEWARE ", middleware_method, file=sys.stderr)
+            #print("APPLYING VIEW MIDDLEWARE ", middleware_method, file=sys.stderr)
             response = middleware_method(request, callback, callback_args, callback_kwargs)
             if response:
                 raise Exception("Couldn't create request mock object - "  
