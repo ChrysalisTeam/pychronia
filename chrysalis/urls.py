@@ -11,16 +11,9 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
 
-
-    #(r'^media/(?P<path>.*)$', 'django.views.static.serve',
     #{'document_root': settings.MEDIA_ROOT, 'show_indexes': False}),
                              
-    (r'^admin/', include(admin.site.urls)),
-    (r'^i18n/', include('django.conf.urls.i18n')), # set language  # TO BE REMOVED
-
     (r'^mycms/', include('cms.urls')), # this MUST end with '/'
-
-
 
     # Uncomment the admin/doc line below and add 'django.contrib.admindocs' 
     # to INSTALLED_APPS to enable admin documentation:
@@ -28,7 +21,7 @@ urlpatterns = patterns('',
 
     #(r'^admin/filebrowser/', include('filebrowser.urls')), # TO BE PUT BEFORE "admin/" !!
     # Uncomment the next line to enable the admin:
-    #(r'^admin/', include(admin.site.urls)),
+    (r'^admin/', include(admin.site.urls)),
 
 )
 
