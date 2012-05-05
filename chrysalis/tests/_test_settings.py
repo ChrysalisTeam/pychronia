@@ -2,7 +2,7 @@
 import sys, os, tempfile, random
 ugettext = lambda s: s # dummy placeholder for makemessages
 
-TEST_DIR = os.path.dirname(os.path.normpath(__file__))
+TEST_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
 DEBUG = True
@@ -38,16 +38,35 @@ DATABASES = {
 
 
 
+TIME_ZONE = 'Europe/Paris'
+USE_L10N = True
+USE_I18N = True
+LANGUAGE_CODE = 'fr'
+LANGUAGES = (
+  ('fr', ugettext('French')),
+  ('en', ugettext('English')),
+)
 
 
 
 CMS_TEMPLATES = (
-        ('stasis_main.html', ugettext('index')),
-        ('templatemo_main.html', ugettext('emeraud')),
+ #        ('stasis_main.html', ugettext('index')),
+ #       ('templatemo_main.html', ugettext('emeraud')),
+ ('cms_index.html', ugettext('Home')),
 )
 CMS_TEMPLATE_INHERITANCE = True
 CMS_LANGUAGE_FALLBACK = True
 CMS_MULTILINGUAL_PATCH_REVERSE = False
+CMS_PLACEHOLDER_CONF = {} # unused atm
+CMS_PLUGIN_CONTEXT_PROCESSORS = []
+CMS_PLUGIN_PROCESSORS = []
+PLACEHOLDER_FRONTEND_EDITING = True
+CMS_HIDE_UNTRANSLATED = False
+CMS_LANGUAGE_CONF = {} # fallbacks ordering
+CMS_LANGUAGES = (
+    ('fr', ugettext('French')),
+    ('en', ugettext('English')),
+)
 
 
 LOCALE_INDEPENDENT_PATHS = ()
@@ -59,7 +78,8 @@ LOCALE_INDEPENDENT_PATHS = (
       '^/$',
       '^/files/',
       '^/admin/',
-      '^/rpgweb/',
+      '^/media/',
+      '^/static/',
       '^/i18n/', # TO BE REMOVED
       )
 
@@ -69,11 +89,16 @@ LOCALE_INDEPENDENT_PATHS = (
 
 
 GAME_ROOT = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
-MEDIA_ROOT = os.path.join(GAME_ROOT, 'static')
+MEDIA_ROOT = os.path.join(GAME_ROOT, 'media')
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
 MEDIA_URL = '/media/'
+
+# CONFLICT HERE ??
+STATIC_ROOT = os.path.join(GAME_ROOT, "static")
+STATIC_URL = "/static/"
+ADMIN_MEDIA_PREFIX = "/static/admin/"
 
 
 # List of callables that know how to import templates from various sources.
@@ -89,7 +114,9 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 "django.core.context_processors.media",
 "django.core.context_processors.request",
 "django.contrib.messages.context_processors.messages",
-
+"django.core.context_processors.static",
+"cms.context_processors.media",
+"sekizai.context_processors.sekizai",
 )
 
 MIDDLEWARE_CLASSES = (
@@ -99,10 +126,16 @@ MIDDLEWARE_CLASSES = (
 # 'django.middleware.locale.LocaleMiddleware', replaced by LocaleURLMiddleware
 'django.middleware.common.CommonMiddleware',
 'django.contrib.auth.middleware.AuthenticationMiddleware',
+
+##'cms.middleware.multilingual.MultilingualURLMiddleware',
+'cms.middleware.page.CurrentPageMiddleware',
+'cms.middleware.user.CurrentUserMiddleware',
+'cms.middleware.toolbar.ToolbarMiddleware',
+
 'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
 
-SITE_ID = 2
+### NOPE SITE_ID = 2
 
 TEMPLATE_DIRS = (
     os.path.join(GAME_ROOT, "templates")
@@ -125,6 +158,30 @@ INSTALLED_APPS = [
     'chrysalis',
     
     'cms',
+    'mptt', 
+    'menus', 
+    'south', 
+    'sekizai',
+    
+    'cms.plugins.file',
+    #'cms.plugins.flash',
+    #'cms.plugins.googlemap',
+    'cms.plugins.link',
+    'cms.plugins.picture',
+    'cms.plugins.snippet',
+    'cms.plugins.teaser',
+    'cms.plugins.text',
+    'cms.plugins.video',
+    'cmsplugin_rst',
+    
+    # OR BETTER:
+    #'filer'
+    #'cmsplugin_filer_file'
+    #'cmsplugin_filer_folder'
+    #'cmsplugin_filer_image'
+    #'cmsplugin_filer_teaser'
+    #'cmsplugin_filer_video'
+
 ]
 
 try:

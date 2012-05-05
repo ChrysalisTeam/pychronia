@@ -1,14 +1,17 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+{% load cms_tags menu_tags sekizai_tags %}
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Bienvenue sur la vitrine du Projet Chrysalis</title>
 <meta name="keywords" content="free css template, projection, company, web design, dark green, gradient" />
 <meta name="description" content="Projection Company - Free CSS Template, W3C standards-compliant HTML CSS layout" />
-<link href="templatemo_style.css" rel="stylesheet" type="text/css" />
-<link rel="shortcut icon" type="image/png" href="favicon.png" />
+<link href="{{ STATIC_URL }}Projection152/templatemo_style.css" rel="stylesheet" type="text/css" />
+<link rel="shortcut icon" type="image/png" href="{{ STATIC_URL }}favicon.png" />
+{% render_block "css" %}
 </head>
 <body>
+    {% cms_toolbar %}
 	<div class="templatemo_container">
     	<div id="templatemo_header">
         	<div id="templatemo_logo_area">
@@ -41,7 +44,7 @@
               
 			
                 
-				%(body)s
+				{% placeholder "content" %}
 				
                 <!--a href="http://www.templatemo.com/page/1" target="_parent"><img src="images/templatemo_img_3.png" alt="Free CSS Templates" border="0" /></a-->
            	  <!--p>This is a <a href="http://www.templatemo.com" target="_parent">free CSS template</a> provided by <a href="http://www.templatemo.com" target="_parent">TemplateMo.com</a> website. Feel free to download, edit and apply this layout for your personal or business websites. Thank you for visiting.</p>
@@ -68,5 +71,6 @@
     	1000 Thanks to <a href="http://www.templatemo.com/page/1" target="_parent">Free CSS Templates</a> for the Emerald Theme
     </div>
 <!--  Free CSS Templates by TemplateMo.com  -->
+{% render_block "js" %}
 </body>
 </html>
