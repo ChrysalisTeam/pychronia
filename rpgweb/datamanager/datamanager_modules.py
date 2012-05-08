@@ -808,9 +808,7 @@ class TextMessaging(BaseDataManager): # TODO REFINE
 
             if not msg["id"]:
                 msg["id"] = self._get_new_msg_id(index, msg["subject"] + msg["body"])
-                
-            if not msg.get("gourp_id", ""):
-                msg["gourp_id"] = msg["id"]
+
                 
         new_data["messages_sent"].sort(key=lambda msg: msg["sent_at"])
         new_data["messages_queued"].sort(key=lambda msg: msg["sent_at"])
@@ -887,6 +885,9 @@ class TextMessaging(BaseDataManager): # TODO REFINE
                 assert all((char in all_users) for char in msg["has_read"]), msg["has_read"]
                 assert all((char in all_users) for char in msg["has_replied"]), msg["has_replied"]
                 
+                if not msg.get("gourp_id", ""):
+                    msg["gourp_id"] = msg["id"]
+                    
             all_ids = [msg["id"] for msg in msg_list]
             utilities.check_no_duplicates(all_ids)
 

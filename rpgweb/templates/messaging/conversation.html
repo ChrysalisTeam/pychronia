@@ -36,25 +36,23 @@
                     });
        }
 
-	$.fn.togglepanels = function(){
-	  return this.each(function(){
-	    $(this).addClass("ui-accordion ui-accordion-icons ui-widget ui-helper-reset")
-	  .find("h3")
-	    .addClass("ui-accordion-header ui-helper-reset ui-state-default ui-corner-top ui-corner-bottom")
-	    .hover(function() { $(this).toggleClass("ui-state-hover"); })
-	    .prepend('<span class="ui-icon ui-icon-triangle-1-e"></span>')
-	    .click(function() {
-	      $(this)
-	        .toggleClass("ui-accordion-header-active ui-state-active ui-state-default ui-corner-bottom")
-	        .find("> .ui-icon").toggleClass("ui-icon-triangle-1-e ui-icon-triangle-1-s").end()
-	        .next().slideToggle();
-	      return false;
-	    })
-	    .next()
-	      .addClass("ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom")
-	      .hide();
-	  });
-	};
+	$.fn.togglepanels = function(){   
+            return this.each(function(){
+        	    $(this).addClass("ui-accordion ui-accordion-icons ui-widget ui-helper-reset")
+        	  .find(".otherTitle")
+        	    .addClass("ui-accordion-header ui-helper-reset ui-state-default ui-corner-top ui-corner-bottom")
+        	    .hover(function() { $(this).toggleClass("ui-state-hover"); })
+        	    .prepend('<span class="ui-icon ui-icon-triangle-1-e"></span>')
+        	    .click(function() {
+        	      $(this)
+        	        .toggleClass("ui-accordion-header-active ui-state-active ui-state-default ui-corner-bottom")
+        	        .find("> .ui-icon").toggleClass("ui-icon-triangle-1-e ui-icon-triangle-1-s").end()
+        	        .next().slideToggle();
+        	      return false;
+        	    });
+        	    $(this).find(".otherDiv").addClass("ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom").hide();
+        	  });
+        	};
 	
 	$(document).ready(function() {
 	    $(".notaccordion").togglepanels();
@@ -74,10 +72,9 @@
 		{% for message_list in grouped_messages %}
 			<div class="notaccordion">
 				{% for message in message_list %}
-					<h3><a href="#">{{ message.subject }}</a></h3>
+					<h3 class="{% if forloop.first %}firstTitle{% else %}otherTitle{% endif %}"><a href="#">{{ message.subject }}</a></h3>
 					<div id="{{ message.id }}" class="email 
-					{% if user.username in message.has_read %}email_read{% else %}email_unread{% endif %}">
-
+					{% if user.username in message.has_read %}email_read{% else %}email_unread{% endif %} {% if forloop.first %} firstDiv{% else %} otherDiv {% endif %}">
 		                <span class="message_operation">
 		                    <a class="mark_read_tag" onclick="set_message_read_state('{{ message.id|escapejs }}', true); return false;" href="#">
 		                        {% trans "Mark as read" %}

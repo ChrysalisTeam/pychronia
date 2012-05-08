@@ -535,12 +535,12 @@ span.message_operation {
 	z-index:999;
 }	
 
-
-
-
-
-
-
+.notaccordion {
+    border: 2px solid #996600;
+    border-radius: 2px;
+    background: #FFCC99;
+    padding: 1em 1em;
+}
     
 /* Nested TOC list 
 #submenu {
