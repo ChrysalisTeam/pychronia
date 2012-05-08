@@ -2,6 +2,9 @@
 import sys, os, tempfile, random
 ugettext = lambda s: s # dummy placeholder for makemessages
 
+import PIL.Image
+sys.modules['Image'] = PIL.Image # prevents AccessInit: hash collision: 3 for both 1 and 1
+
 TEST_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
@@ -98,7 +101,7 @@ MEDIA_URL = '/media/'
 # CONFLICT HERE ??
 STATIC_ROOT = os.path.join(GAME_ROOT, "static")
 STATIC_URL = "/static/"
-ADMIN_MEDIA_PREFIX = "/static/admin/"
+### ADMIN_MEDIA_PREFIX = "/static/admin/"
 
 
 # List of callables that know how to import templates from various sources.
@@ -163,26 +166,51 @@ INSTALLED_APPS = [
     'south', 
     'sekizai',
     
-    'cms.plugins.file',
+    
+    
+    'cmsplugin_rst',
+    'cmsplugin_simple_gallery',
+    
     #'cms.plugins.flash',
     #'cms.plugins.googlemap',
+
     'cms.plugins.link',
-    'cms.plugins.picture',
     'cms.plugins.snippet',
-    'cms.plugins.teaser',
     'cms.plugins.text',
-    'cms.plugins.video',
-    'cmsplugin_rst',
-    
+       
+     ###########    
+    #'cms.plugins.file',
+    #'cms.plugins.picture',
+    #'cms.plugins.teaser',    
+    #'cms.plugins.video',
     # OR BETTER:
-    #'filer'
-    #'cmsplugin_filer_file'
-    #'cmsplugin_filer_folder'
-    #'cmsplugin_filer_image'
-    #'cmsplugin_filer_teaser'
-    #'cmsplugin_filer_video'
+    'filer',
+    'easy_thumbnails',
+    'cmsplugin_filer_file',
+    'cmsplugin_filer_folder',
+    'cmsplugin_filer_image',
+    'cmsplugin_filer_teaser',
+    'cmsplugin_filer_video',
 
 ]
+
+
+THUMBNAIL_PROCESSORS = (
+    'easy_thumbnails.processors.colorspace',
+    'easy_thumbnails.processors.autocrop',
+    #'easy_thumbnails.processors.scale_and_crop',
+    'filer.thumbnail_processors.scale_and_crop_with_subject_location',
+    'easy_thumbnails.processors.filters',
+)
+
+
+
+CMS_SIMPLEGALLERY_THUMBNAIL_OPTIONS = {
+    'size': (240, 180),
+    'crop': True,
+    'quality': 80,
+}
+
 
 try:
     import sentry.client
@@ -197,7 +225,6 @@ ROOT_URLCONF = 'chrysalis.tests._test_urls'
 from django.contrib.messages import constants as message_constants
 MESSAGE_LEVEL = message_constants.DEBUG
 # Set MESSAGE_TAGS to control corresponding CSS classes 
-
 
 try:
     from local_settings import *

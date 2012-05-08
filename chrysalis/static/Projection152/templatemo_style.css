@@ -82,7 +82,7 @@ h3 {
 
 #templatemo_logo_area {
 	width: 100%;
-	margin: 30px 0 0 0;
+	margin: 0 0 0 0;
 }
 
 #templatemo_logo {
@@ -95,19 +95,21 @@ h3 {
 	color: #fff;
 	text-align: center;
     position: relative; 
-    top: -45px;
+    top: -15px;
 }
 
 #templatemo_logo_left {
 	float: left;
 	width: 35%;
 	background: url(images/templatemo_logo_left.png) right no-repeat;
+	margin: 30px 0;
 }
 
 #templatemo_logo_right {
 	float: right;
 	width: 35%;
 	background: url(images/templatemo_logo_right.png) left no-repeat;
+	margin: 30px 0;
 }
 
 /* menu */
@@ -123,7 +125,7 @@ h3 {
 	width: 450px;
 	height:48px;
 	padding:0;
-	margin: 0 0 20px 0;
+	margin: 0 0 15px 0;
 
 }
 
@@ -189,6 +191,7 @@ h3 {
 
 #templatemo_top_section_glow {
 	background: url(images/templaetmo_bottom_glow.png) left bottom no-repeat;
+	margin: 0 0 0 0;
 }
 
 .templatemo_middle_two_col {
