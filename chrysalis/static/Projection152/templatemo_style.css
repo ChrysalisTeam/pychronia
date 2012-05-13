@@ -10,6 +10,7 @@ CSS Credit: http://www.templatemo.com
     float: left;
 }
 
+
 html {
 	background: url(images/templatemo_bg.jpg) #001c18 repeat-x;
 }
@@ -40,7 +41,7 @@ li {
 p, ul {
 	font-family: Georgia;
 	font-size: 14px;
-	color: #fff;
+	color: #159A82; /* #26DCBA; */
 	text-align: justify;
 	margin: 0 0 10px 0;	
 }
