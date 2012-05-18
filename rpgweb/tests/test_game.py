@@ -2,12 +2,15 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
+from textwrap import dedent
 from ._test_tools import *
 from rpgweb.abilities._abstract_ability import AbstractAbility
 from rpgweb.common import _undefined
 from rpgweb.views._abstract_game_view import ClassInstantiationProxy
 from rpgweb.templatetags.helpers import _generate_encyclopedia_links
 from rpgweb import views
+import tempfile
+import shutil
 
 
 
@@ -104,6 +107,46 @@ class TestUtilities(TestCase):
             self.assertTrue(now - timedelta(seconds=1) < now2 < now + timedelta(seconds=1))
 
 
+    def test_yaml_fixture_loading(self):
+        
+        data = {"file1.yml": dedent("""
+                                    characters:
+                                        parent: "No data"
+                                     """),
+                "file2.yaml": dedent("""
+                                     wap: 32
+                                     """), 
+                "ignored.yl": "hello: 'hi'"}        
+        
+
+        def _load_data(mydict):
+            
+            my_dir = tempfile.mkdtemp() 
+            print(">> temp dir", my_dir)
+        
+            for filename, file_data in mydict.items():
+                with open(os.path.join(my_dir, filename), "w") as fd:
+                    fd.write(file_data)
+            
+            return my_dir      
+        
+        tmp_dir = _load_data(data)
+        
+        with pytest.raises(ValueError):
+            utilities.load_yaml_fixture("/badpath")
+            
+        res = utilities.load_yaml_fixture(tmp_dir)
+        assert res == {'characters': {'parent': 'No data'}, 'wap': 32}
+               
+        res = utilities.load_yaml_fixture(os.path.join(tmp_dir, "file1.yml"))
+        assert res == {'characters': {'parent': 'No data'}}
+        shutil.rmtree(tmp_dir)
+        
+        data.update({"file3.yml": "characters: 99"}) # collision
+        tmp_dir = _load_data(data)
+        with pytest.raises(ValueError):
+            utilities.load_yaml_fixture("/badpath")        
+        shutil.rmtree(tmp_dir)
 
 
 

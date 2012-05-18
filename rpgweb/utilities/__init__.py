@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 
 ### NO import from rpgweb.common, else circular import !! ###
 
-import sys, os, collections, logging, inspect, types, traceback, re
+import sys, os, collections, logging, inspect, types, traceback, re, glob
 import yaml, random, contextlib
 from .counter import Counter
 from datetime import datetime, timedelta
@@ -331,19 +331,44 @@ def check_dictionary_with_template(my_dict, template, strict=False):
         validate_value(my_dict[key], template[key])
 
 
-def load_yaml_fixture(yaml_file):
-
+def load_yaml_file(yaml_file):
     with open(yaml_file, "U") as f:
         raw_data = f.read()
 
     for (lineno, linestr) in enumerate(raw_data.split(b"\n"), start=1):
         if b"\t" in linestr:
-            raise ValueError(
-                "Forbidden tabulation found at line %d in yaml file %s : '%r'!" % (lineno, yaml_file, linestr))
+            raise ValueError("Forbidden tabulation found at line %d in yaml file %s : '%r'!" % (lineno, yaml_file, linestr))
+    
+    data = yaml.load(raw_data)
+    return data
 
-    new_data = yaml.load(raw_data)
+YAML_EXTENSIONS = ["*.yaml", "*.yml"]
+def load_yaml_fixture(yaml_fixture):
+    """
+    Can load a single yaml file, or a directory containing y[a]ml files.
+    Each file must only contain a single yaml document.
+    """
+    
+    if not os.path.exists(yaml_fixture):
+        raise ValueError(yaml_fixture)
+    if os.path.isfile(yaml_fixture):
+        data = load_yaml_file(yaml_fixture)
+    else:
+        assert os.path.isdir(yaml_fixture)
+        data = {}
+        yaml_files = [path for pattern in YAML_EXTENSIONS
+                      for path in glob.glob(os.path.join(yaml_fixture, pattern))]
+        del yaml_fixture # security
+        for yaml_file in yaml_files:
+            part = load_yaml_file(yaml_file)
+            if not isinstance(part, dict) or (set(part.keys()) & set(data.keys())):
+                raise ValueError("Improper or colliding content in %s" % yaml_file)
+            for key, value in part.items():
+                data.update(part)
+    return data
+    
 
-    return new_data
+    
 
 
 

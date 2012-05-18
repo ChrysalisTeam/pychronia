@@ -141,7 +141,7 @@ class BaseDataManager(utilities.TechnicalEventsMixin, Persistent):
 
 
     @transaction_watcher(ensure_data_ok=False)
-    def reset_game_data(self, yaml_file=config.GAME_INITIAL_DATA_PATH):
+    def reset_game_data(self, yaml_fixture=config.GAME_INITIAL_DATA_PATH):
         """
         This method might raise exceptions, and leave the datamanager uninitialized.
         """
@@ -158,7 +158,7 @@ class BaseDataManager(utilities.TechnicalEventsMixin, Persistent):
         self.db_state = self.DB_STATES.CONNECTED
 
 
-        new_data = utilities.load_yaml_fixture(yaml_file)
+        new_data = utilities.load_yaml_fixture(yaml_fixture)
         for key in new_data.keys():
             self.data[key] = new_data[key]
 
