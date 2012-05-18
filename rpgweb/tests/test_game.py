@@ -2,15 +2,20 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import random
 from textwrap import dedent
+import tempfile
+import shutil
+
 from ._test_tools import *
 from rpgweb.abilities._abstract_ability import AbstractAbility
-from rpgweb.common import _undefined
+from rpgweb.common import _undefined, config
 from rpgweb.views._abstract_game_view import ClassInstantiationProxy
 from rpgweb.templatetags.helpers import _generate_encyclopedia_links
 from rpgweb import views
-import tempfile
-import shutil
+from rpgweb.utilities import fileservers
+from django.test.client import RequestFactory
+
 
 
 
@@ -148,8 +153,40 @@ class TestUtilities(TestCase):
             utilities.load_yaml_fixture("/badpath")        
         shutil.rmtree(tmp_dir)
 
-
-
+    
+    def test_file_server_backends(self):
+        
+        path = os.path.join(config.GAME_FILES_ROOT, "README.txt")
+        request = RequestFactory().get("/path/to/file.zip")
+    
+        kwargs = dict(save_as=random.choice((None, "othername.zip")),
+                      size=random.choice((None, 1625726)),)                                         
+        
+        def _check_standard_headers(response):
+            if kwargs["save_as"]:
+                assert kwargs["save_as"] in response["Content-Disposition"]
+            if kwargs["size"]:
+                assert response["Content-Length"] == str(kwargs["size"])
+                                      
+        response = fileservers.serve_file(request, path, **kwargs)
+        assert response.content
+        _check_standard_headers(response)
+        
+        response = fileservers.serve_file(request, path, backend_name="nginx", **kwargs)
+        print (response._headers)
+        assert response['X-Accel-Redirect'] == path
+        assert not response.content        
+        _check_standard_headers(response)
+        
+        response = fileservers.serve_file(request, path, backend_name="xsendfile", **kwargs)
+        assert not response.content        
+        assert response['X-Sendfile'] == path
+        _check_standard_headers(response)
+        
+        
+        
+        
+        
 # TODO - test that messages are well propagated through session
 # TODO - test interception of "POST" when impersonating user
 
