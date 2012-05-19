@@ -165,7 +165,7 @@ class MercenariesHiringAbility(AbstractAbilityHandler):
 
         if spy_audio:
             body = default_message
-            attachment = config.GAME_FILES_URL + "spy_reports/spy_" + city_name.lower() + ".mp3"
+            attachment = game_file_url("spy_reports/spy_" + city_name.lower() + ".mp3")
         else:
             body = default_message + "\n\n-------\n\n" + spy_message
             attachment = None

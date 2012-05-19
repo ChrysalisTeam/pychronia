@@ -159,6 +159,8 @@ def exception_swallower():
             raise RuntimeError(_("Unexpected exception occurred in exception swallower context : %r !") % e)
 
 
+def game_file_url(rel_path):
+    return settings.GAME_FILES_URL + rel_path.lstrip("/")
  
 __all__ = [key for key in globals().copy() if not key.startswith("_")]
 __all__ += ["_", "_lazy", "_noop", "_undefined"] # we add translation shortcuts and _undefined placeholder for default function args

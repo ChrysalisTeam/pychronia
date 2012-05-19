@@ -462,6 +462,7 @@ def make_bi_usage_decorator(decorator):
     return bidecorator
 
 
+
 class TechnicalEventsMixin(object):
     """
     This private registry keeps track of miscellaneous events sent throughout the datamanager system.
@@ -520,14 +521,11 @@ class TechnicalEventsMixin(object):
 
 
 
-
+## conversions between variable naming conventions ##
 
 def to_snake_case(text):
     s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', text)
     return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
-
-
-
 
 def to_pascal_case(text):
     if "_" in text:
@@ -538,8 +536,9 @@ def to_pascal_case(text):
         return text
     return text[0].upper() + text[1:]
 
-
 def to_camel_case(text):
     text = to_pascal_case(text)
     return text[0].lower() + text[1:]
+
+
 

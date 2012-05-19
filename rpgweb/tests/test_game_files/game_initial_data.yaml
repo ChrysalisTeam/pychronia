@@ -170,21 +170,24 @@ items_for_sale:
 item_3d_settings:
 
     sacred_chest:
+        levels: 1
+        per_level: 8
+        index_steps: 1
+        index_offset: 1
+        start_level: 1
         steps: 1
         total: 8
         levels: 1
-        startlevel: 1
-        filedir: "/files/sales/chest/"
-        filename: "simpler_chest"
-        suffix: ".jpg"
-        imagewidth: 500
-        imageheight: 375
+        file_template: "sales/chest/simpler_chest%04d.jpg"
+        image_width: 500
+        image_height: 375
         mode: "camera"
         x_coefficient: 12
         y_coefficient: 160
-
-
- 
+        autoreverse: False
+        rotomatic: 150
+        music: null
+  
 
 domains:
 

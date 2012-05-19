@@ -28,6 +28,7 @@ from ..authentication import authenticate_with_credentials, logout_session
 from .. import datamanager as dm_module
 from rpgweb.utilities import mediaplayers
 from rpgweb.datamanager import GameDataManager
+from rpgweb.common import game_file_url
 
 
 '''
@@ -552,7 +553,7 @@ def homepage(request, template_name='generic_operations/homepage.html'):
     return render_to_response(template_name,
                                 {
                                  'page_title': _("Realm Entrance"),
-                                 'opening_music': config.GAME_FILES_URL + "musics/" + request.datamanager.get_global_parameter("opening_music")
+                                 'opening_music': game_file_url("musics/" + request.datamanager.get_global_parameter("opening_music"))
                                 },
                                 context_instance=RequestContext(request))
 
@@ -563,7 +564,6 @@ def opening(request, template_name='generic_operations/opening.html'):
     return render_to_response(template_name,
                                 {
                                  'page_title': None,
-                                 #'opening_music': "/files/musics/"+request.datamanager.get_global_parameter("opening_music")
                                 },
                                 context_instance=RequestContext(request))
 
@@ -625,37 +625,62 @@ def view_help_page(request, keyword, template_name='generic_operations/help_page
     
 
 
+def _build_display_data_from_viewer_settings(viewer_settings):
+    
+    image_urls = []
+    for level in range(viewer_settings["levels"]):
+        level_urls = []
+        for rel_index in range(viewer_settings["per_level"]*level, viewer_settings["per_level"]*(level + 1)):
+            abs_index = viewer_settings["index_offset"] + rel_index * viewer_settings["index_steps"]
+            rel_url = viewer_settings["file_template"] % abs_index
+            level_urls.append(game_file_url(rel_url))
+        if viewer_settings["autoreverse"]:
+            level_urls = level_urls + list(reversed(level_urls))
+        image_urls.append(level_urls)
+        
+    real_per_level = viewer_settings["per_level"] * (2 if viewer_settings["autoreverse"] else 1)
+    assert set([len(imgs) for imgs in image_urls]) == set([real_per_level]) # all levels have the same number of images
+    
+    display_data = dict(levels=viewer_settings["levels"],
+                            per_level=real_per_level,
+                            x_coefficient=viewer_settings["x_coefficient"],
+                            y_coefficient=viewer_settings["y_coefficient"],
+                            rotomatic=viewer_settings["rotomatic"], # ms between rotations
+                            image_width=viewer_settings["image_width"],
+                            image_height=viewer_settings["image_height"],
+                            start_level=viewer_settings["start_level"],
+                            mode=viewer_settings["mode"],
+                            image_urls=image_urls, # multi-level array
+                            music_url=game_file_url(viewer_settings["music"]) if viewer_settings["music"] else None,)
+    return display_data
+    
+
 @register_view(access=UserAccess.anonymous, always_available=True)
 def logo_animation(request, template_name='utilities/item_3d_viewer.html'):
     """
     These settings are heavily dependant on values hard-coded on templates (dimensions, colors...),
     so they needn't be exposed inside the YAML configuration file
     """
-    viewer_settings = dict(total=31, # real total : 157, but use steps
-                            steps=5,
-                            levels=1,
-                            startlevel=1,
-                            filedir=config.GAME_FILES_URL + "openinglogo/",
-                            filename="crystal",
-                            suffix=".jpg",
-                            imagewidth=528,
-                            imageheight=409,
+    viewer_settings = dict( levels=1,
+                            per_level=31, # real total of images : 157, but we use steps
+                            index_steps=5,
+                            index_offset=0,
+                            start_level=1,
+                            file_template="openinglogo/crystal%04d.jpg",
+                            image_width=528,
+                            image_height=409,
                             mode="object",
                             x_coefficient=12,
                             y_coefficient=160,
                             autoreverse=True,
                             rotomatic=150, # ms between rotations
-                            music=config.GAME_FILES_URL + "musics/" + request.datamanager.get_global_parameter("opening_music")
+                            music="musics/" + request.datamanager.get_global_parameter("opening_music")
                             )
 
-    image_urls = []
-    for i in range(1, viewer_settings["total"] + 1):
-        image_urls.append(viewer_settings["filedir"] + viewer_settings["filename"] + "%04d" % (i * viewer_settings["steps"]) + viewer_settings["suffix"])
 
     return render_to_response(template_name,
                                 {
-                                 'settings': viewer_settings,
-                                 'image_urls': image_urls
+                                 'settings': _build_display_data_from_viewer_settings(viewer_settings),
                                 },
                                 context_instance=RequestContext(request))
 
@@ -832,15 +857,9 @@ def item_3d_view(request, item, template_name='utilities/item_3d_viewer.html'):
 
     viewer_settings = viewers_settings[item]
 
-    image_urls = []
-    for i in range(1, viewer_settings["total"] + 1):
-        image_urls.append(viewer_settings["filedir"] + viewer_settings["filename"] + "%04d" % (i * viewer_settings["steps"]) + viewer_settings["suffix"])
-
-
     return render_to_response(template_name,
                                 {
-                                 'settings': viewer_settings,
-                                 'image_urls': image_urls
+                                 'settings': _build_display_data_from_viewer_settings(viewer_settings),
                                 },
                                 context_instance=RequestContext(request))
 
@@ -1691,10 +1710,10 @@ def MEDIA_TEST(request):
     return render_to_response("administration/media_test.html",
                                 {
                                  'page_title': _("Media Display Test"),
-                                 'audioplayer': mediaplayers.generate_audio_player([config.GAME_FILES_URL + "test_samples/music.mp3"]),
+                                 'audioplayer': mediaplayers.generate_audio_player([game_file_url("test_samples/music.mp3")]),
                                  'videoplayers': ["<p>%s</p>" % extension +
-                                                  mediaplayers.generate_media_player(config.GAME_FILES_URL + "test_samples/video." + extension,
-                                                                                     config.GAME_FILES_URL + 'test_samples/image.jpg')
+                                                  mediaplayers.generate_media_player(game_file_url("test_samples/video." + extension),
+                                                                                     game_file_url('test_samples/image.jpg'))
                                                   for extensions in mediaplayers._media_player_templates
                                                   for extension in extensions]
                                 },

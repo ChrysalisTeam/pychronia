@@ -6,6 +6,7 @@ from rpgweb.common import *
 
 from .datamanager_user import GameUser
 from .datamanager_core import *
+from types import NoneType
 
 PLACEHOLDER = object()
 
@@ -662,7 +663,7 @@ class GameInstructions(BaseDataManager):
         else:
             domain = self.get_domain_properties(self.get_character_properties(username)["domain"])
             team_introduction = domain["instructions"]
-            prologue_music = config.GAME_FILES_URL + "musics/" + domain["prologue_music"]
+            prologue_music = game_file_url("musics/" + domain["prologue_music"])
         '''
 
         return PersistentDict(prologue_music=prologue_music,
@@ -1374,7 +1375,7 @@ class RadioMessaging(BaseDataManager): # TODO REFINE
 
         new_data = self.data
         for (audio_id, audio_properties) in new_data["audio_messages"].items():
-            audio_properties["url"] = config.GAME_FILES_URL + "audio_messages/" + audio_properties["file"]
+            audio_properties["url"] = game_file_url("audio_messages/" + audio_properties["file"])
 
 
     def _check_database_coherency(self, **kwargs):
@@ -1713,7 +1714,7 @@ class PersonalFiles(BaseDataManager):
     def _check_database_coherency(self, **kwargs):
         super(PersonalFiles, self)._check_database_coherency(**kwargs)
 
-       # common and personal file folders
+        # common and personal file folders
         assert os.path.isdir(os.path.join(config.GAME_FILES_ROOT, "common_files"))
         for name in (self.data["character_properties"].keys() + [self.data["global_parameters"]["master_login"]]):
             assert os.path.isdir(os.path.join(config.GAME_FILES_ROOT, "personal_files", name)), name
@@ -1742,7 +1743,7 @@ class PersonalFiles(BaseDataManager):
 
         # there , we shouldn't have environment errors, theoretically
         decrypted_files = sorted(
-            [config.GAME_FILES_URL + "encrypted/" + folder + "/" + password + "/" + item for item in
+            [game_file_url("encrypted/" + folder + "/" + password + "/" + item) for item in
              os.listdir(decrypted_folder)
              if os.path.isfile(os.path.join(decrypted_folder, item))])
 
@@ -1782,13 +1783,13 @@ class PersonalFiles(BaseDataManager):
             """
 
         common_folder_path = os.path.join(config.GAME_FILES_ROOT, "common_files")
-        common_files = [(config.GAME_FILES_URL + "common_files/" + filename) for filename in
+        common_files = [game_file_url("common_files/" + filename) for filename in
                         os.listdir(common_folder_path)
                         if os.path.isfile(os.path.join(common_folder_path, filename))
                            and not filename.startswith(".") and not filename.startswith("~")] # hidden files removed
 
         personal_folder_path = os.path.join(config.GAME_FILES_ROOT, "personal_files", username)
-        personal_files = [(config.GAME_FILES_URL + "personal_files/" + username + "/" + filename) for filename in
+        personal_files = [game_file_url("personal_files/" + username + "/" + filename) for filename in
                           os.listdir(personal_folder_path)
                           if os.path.isfile(os.path.join(personal_folder_path, filename))
                              and not filename.startswith(".") and not filename.startswith("~")] # hidden files removed
@@ -2048,27 +2049,32 @@ class Items3dViewing(BaseDataManager):
     def _load_initial_data(self, **kwargs):
         super(Items3dViewing, self)._load_initial_data(**kwargs)
 
-
-
     def _check_database_coherency(self, **kwargs):
         super(Items3dViewing, self)._check_database_coherency(**kwargs)
 
         game_data = self.data
 
         item_viewer_reference = \
-            {
-            'steps': (int, long),
-            'total': (int, long),
-            'levels': (int, long),
-            'startlevel': (int, long),
-            'filedir': basestring,
-            'filename': basestring,
-            'suffix': basestring,
-            'imagewidth': (int, long),
-            'imageheight': (int, long),
+            {'levels': (int, long),
+             'per_level': (int, long),
+            
+             'index_steps': (int, long),
+             'index_offset': (int, long),
+              
+             'start_level': (int, long),
+             
+             'file_template': basestring,
+             
+            'image_width': (int, long),
+            'image_height': (int, long),
             'mode': basestring,
+            
             'x_coefficient': (int, long),
-            'y_coefficient': (int, long),
+            'y_coefficient': (int, long)   ,
+            'autoreverse': bool,   
+            'rotomatic': (int, long) ,
+            
+             'music': (NoneType, basestring),
             }
 
         for (name, properties) in game_data["item_3d_settings"].items():
