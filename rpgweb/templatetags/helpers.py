@@ -2,21 +2,25 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
-import re
-import django.template, logging
+import re, logging
 from datetime import datetime
-from django.template import defaulttags
 
 from rpgweb.utilities import mediaplayers
 from rpgweb.common import exception_swallower
-from django.core.urlresolvers import reverse
-register = django.template.Library() # IMPORTANT, module-level object used by templates !
 
+import django.template
+from django.core.urlresolvers import reverse
+from django.template import defaulttags
 from django.utils.safestring import SafeData, EscapeData, mark_safe, mark_for_escaping
 from django.utils.html import escape
 from django.utils.http import urlencode
 from django.contrib.markup.templatetags.markup import restructuredtext
+from django.core.serializers import serialize
+from django.db.models.query import QuerySet
+from django.utils import simplejson
 
+
+register = django.template.Library() # IMPORTANT, module-level object used by templates !
 
 @register.tag
 def gameurl(parser, token):
@@ -141,6 +145,11 @@ def has_permission(user, permission):
 register.filter('has_permission', has_permission)
 
 
+def jsonify(object):
+    if isinstance(object, QuerySet):
+        return serialize('json', object)
+    return mark_safe(simplejson.dumps(object))
+register.filter('jsonify', jsonify)
 
 """
 def preformat(value):

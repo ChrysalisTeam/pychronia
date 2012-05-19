@@ -170,14 +170,11 @@ items_for_sale:
 item_3d_settings:
 
     sacred_chest:
-        levels: 1
-        per_level: 8
+        levels: 2
+        per_level: 4
         index_steps: 1
         index_offset: 1
         start_level: 1
-        steps: 1
-        total: 8
-        levels: 1
         file_template: "sales/chest/simpler_chest%04d.jpg"
         image_width: 500
         image_height: 375
