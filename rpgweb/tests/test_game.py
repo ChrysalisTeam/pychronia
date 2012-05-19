@@ -185,8 +185,14 @@ class TestUtilities(TestCase):
         _check_standard_headers(response)
         
         
+    def test_url_hashing_func(self):
+
+        hash = hash_url_path("/whatever/shtiff/kk.mp3?sssj=33")
         
-        
+        assert len(hash) == 8
+        for c in hash:
+            assert c in "abcdefghijklmnopqrstuvwxyz01234567"
+            
         
 # TODO - test that messages are well propagated through session
 # TODO - test interception of "POST" when impersonating user
