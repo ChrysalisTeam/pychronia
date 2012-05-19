@@ -47,7 +47,8 @@
 
     <ul>
         {% for filename, fileurl in files %}
-            <li><a href="{{ fileurl }}" onclick="load_media_frame('{{ fileurl|escapejs }}'); return false;">{{ filename }}</a></li>
+            <li><a href="{{ fileurl }}" 
+            onclick="load_media_frame('{{ fileurl|escapejs }}'); return false;">{{ filename }}</a></li>
         {% endfor %}
     </ul>
 

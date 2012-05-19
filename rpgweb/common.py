@@ -167,7 +167,7 @@ def hash_url_path(url_path):
  
 def game_file_url(rel_path):
     url_hash = hash_url_path(rel_path) # unused atm
-    return settings.GAME_FILES_URL + rel_path.lstrip("/") # FIXME -> url_hash + "/"
+    return settings.GAME_FILES_URL + url_hash + "/" + rel_path.lstrip("/")
  
 __all__ = [key for key in globals().copy() if not key.startswith("_")]
 __all__ += ["_", "_lazy", "_noop", "_undefined"] # we add translation shortcuts and _undefined placeholder for default function args

@@ -6,7 +6,7 @@ import re, logging
 from datetime import datetime
 
 from rpgweb.utilities import mediaplayers
-from rpgweb.common import exception_swallower
+from rpgweb.common import exception_swallower, game_file_url as real_game_file_url
 
 import django.template
 from django.core.urlresolvers import reverse
@@ -31,7 +31,10 @@ def gameurl(parser, token):
     url_node = defaulttags.url(parser, token) 
     return url_node
 
-
+@register.simple_tag(takes_context=False)
+def game_file_url(a="", b="", c="", d="", e="", f=""): # simple tag doesn't accept *args or **kwargs...
+    full_url = real_game_file_url("".join((a, b, c, d, e, f)))
+    return full_url
 
 @register.simple_tag(takes_context=True)
 def usercolor(context, username_or_email):

@@ -3,7 +3,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from django.conf.urls.defaults import *
-
+from .utilities import config
 
 view_urlpatterns = patterns('rpgweb.views',
 
@@ -109,7 +109,12 @@ final_urlpatterns = view_urlpatterns + ability_urlpatterns
 
 # root urlpatterns of rpgweb application
 urlpatterns = patterns('',
+                       
+                    # serving of game files is currently independent of ZODB data
+                    (r'^%s(?P<hash>[^/]*)/?(?P<path>.*)$' % config.GAME_FILES_URL[1:], 'rpgweb.views.serve_game_file'), 
+                
                     (r'^(?P<game_instance_id>\w+)/', include(final_urlpatterns)),
+                    
                     (r'^', include(final_urlpatterns), {"game_instance_id": "DEMO"}), # default game instance, just as a demo
 )
 

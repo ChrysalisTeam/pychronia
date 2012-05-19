@@ -1553,7 +1553,14 @@ class TestHttpRequests(BaseGameTestCase):
         self.assertEqual(response.status_code, 404)
         response = self.client.get("/files/")
         self.assertEqual(response.status_code, 404)
-
+        
+        # no direct file access, we need the hash tag
+        response = self.client.get("/files/qsdqsdqs/README.txt")
+        self.assertEqual(response.status_code, 404)
+        response = self.client.get(game_file_url("README.txt"))
+        self.assertEqual(response.status_code, 200)
+        
+        # user presence is not disrupted by game master
         self.assertEqual(self.dm.get_online_users(), [])
         self.assertEqual(self.dm.get_chatting_users(), [])
 

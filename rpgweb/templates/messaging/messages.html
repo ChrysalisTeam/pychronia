@@ -127,7 +127,7 @@
                 
                 {% if message.attachment %}
                     <br/>
-                    {{ message.attachment|mediaplayer:"false" }}
+                    {% filter mediaplayer:"false" %}{% game_file_url message.attachment %}{% endfilter %}
                 {% endif %}
                 
                 <span class="message_operation">

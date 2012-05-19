@@ -51,7 +51,8 @@ archeological objects at auction.
 	    	
 	    	<td style="width:160px"> 
 	    	    <div>   <!-- style="table-layout:fixed; display:table; width:100%;"   mega hack to please IE8... -->
-	    		     <a href="/files/sales/{{ item_details.image }}"><img class="thumbnail" title="{{ item_details.title }}" src="/files/sales/{{ item_details.image }}"/></a>
+	    		     <a href="{% game_file_url "sales/" item_details.image %}"><img class="thumbnail" title="{{ item_details.title }}" 
+	    		        src="{% game_file_url "sales/" item_details.image %}"/></a>
 	    	    </div>
 	    	</td>
 	    

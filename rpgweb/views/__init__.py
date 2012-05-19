@@ -26,7 +26,7 @@ from .. import forms
 from ._abstract_game_view import register_view
 from ..authentication import authenticate_with_credentials, logout_session
 from .. import datamanager as dm_module
-from rpgweb.utilities import mediaplayers
+from rpgweb.utilities import mediaplayers, fileservers
 from rpgweb.datamanager import GameDataManager
 from rpgweb.common import game_file_url
 
@@ -57,6 +57,18 @@ def ability(request, ability_name):
 
     return response
 '''
+
+
+def serve_game_file(request, hash="", path="", **kwargs):
+    
+    real_hash = hash_url_path(path)
+    
+    if not hash or not real_hash or hash != real_hash:
+        raise Http404("File access denied")
+    
+    full_path = os.path.join(config.GAME_FILES_ROOT, path)
+    return fileservers.serve_file(request, path=full_path)
+  
  
 @register_view(access=UserAccess.master)
 def ajax_force_email_sending(request):

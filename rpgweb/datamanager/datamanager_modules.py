@@ -1777,7 +1777,7 @@ class PersonalFiles(BaseDataManager):
             personal_folders = sorted([dir for dir in os.listdir(root_folder)
                                           if os.path.isdir(os.path.join(root_folder, dir))])
             #print "personal_folders: ", personal_folders
-            personal_files = [("/filespersonal_files/"+folder+"/"+filename) for folder in personal_folders
+            personal_files = [("/files//personal_files/"+folder+"/"+filename) for folder in personal_folders
                                                             for filename in sorted(os.listdir(os.path.join(root_folder, folder)))  # None is a separator here
                                                             if filename and os.path.isfile(os.path.join(root_folder, folder, filename))]
             """
