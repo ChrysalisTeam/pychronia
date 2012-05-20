@@ -161,13 +161,18 @@ def exception_swallower():
 
 
 def hash_url_path(url_path):
-    hash = hashlib.sha1(config.SECRET_KEY + url_path).digest()
+    """
+    Only accepts relative url paths.
+    """
+    assert not url_path.startswith("/")
+    hash = hashlib.sha1(config.SECRET_KEY + url_path.lstrip("/")).digest() # in prod, we remove the possible "/" anyway
     url_hash = base64.b32encode(hash)[:8].lower()
     return url_hash
  
 def game_file_url(rel_path):
+    rel_path = rel_path.lstrip("/") # IMPORTANT
     url_hash = hash_url_path(rel_path) # unused atm
-    return settings.GAME_FILES_URL + url_hash + "/" + rel_path.lstrip("/")
+    return settings.GAME_FILES_URL + url_hash + "/" + rel_path
  
 __all__ = [key for key in globals().copy() if not key.startswith("_")]
 __all__ += ["_", "_lazy", "_noop", "_undefined"] # we add translation shortcuts and _undefined placeholder for default function args

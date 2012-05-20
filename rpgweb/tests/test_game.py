@@ -187,7 +187,7 @@ class TestUtilities(TestCase):
         
     def test_url_hashing_func(self):
 
-        hash = hash_url_path("/whatever/shtiff/kk.mp3?sssj=33")
+        hash = hash_url_path("whatever/shtiff/kk.mp3?sssj=33")
         
         assert len(hash) == 8
         for c in hash:
