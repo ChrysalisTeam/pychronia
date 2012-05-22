@@ -2124,8 +2124,12 @@ class Encyclopedia(BaseDataManager):
             
             utilities.check_is_restructuredtext(value["content"])
         
-        utilities.check_no_duplicates(all_keywords) # the same keyword mustn't target several articles
+        # the same keyword can be included in several article ids - no check_no_duplicates here!
         
+        for keyword in all_keywords:
+            assert len(keyword) >= 3 # let's avoid too easy matches
+            re.compile(keyword) # keyword must be a proper regular expression
+
 
     @readonly_method
     def is_encyclopedia_index_visible(self):
@@ -2136,7 +2140,7 @@ class Encyclopedia(BaseDataManager):
     def set_encyclopedia_index_visibility(self, value):
         self.data["global_parameters"]["encyclopedia_index_visible"] = value
         
-        
+
     @readonly_method
     def get_encyclopedia_entry(self, article_id):
         """
@@ -2147,19 +2151,43 @@ class Encyclopedia(BaseDataManager):
         return article["content"] if article else None
 
 
+    @readonly_method   
+    def get_encyclopedia_matches(self, search_string):
+        """
+        Returns the list of encyclopedia article whose keywords match *search_string*, 
+        sorted by most relevant first.
+        
+        Matching is very tolerant, as keywords needn't be separate words in the search string.
+        """
+        keywords_mapping = self.get_encyclopedia_keywords_mapping()
+        
+        matches = Counter()
+        
+        for keyword, article_ids in keywords_mapping.items():
+            if re.search(keyword, search_string, re.IGNORECASE|re.UNICODE):
+                matches.update(article_ids)
+                
+        sorted_couples = matches.most_common()
+        all_article_ids = [couple[0] for couple in sorted_couples] # we discard the exact count of each
+        return all_article_ids
+    
+        
     @readonly_method
     def get_encyclopedia_article_ids(self):
         return self.data["encyclopedia"].keys()
     
     
-    @readonly_method
-    def get_encyclopedia_keywords(self):
+    def get_encyclopedia_keywords_mapping(self):
         """
-        Returns a dict mapping keywords to article ids.
+        Returns a dict mapping keywords (which can be regular expressions) to lists 
+        of targeted article ids.
         """
-        return dict((keyword, article_id) 
-                    for article_id, article in self.data["encyclopedia"].items()
-                    for keyword in article["keywords"])
+        mapping = {}
+        for article_id, article in self.data["encyclopedia"].items():
+            for keyword in article["keywords"]:
+                mapping.setdefault(keyword, [])
+                mapping[keyword].append(article_id)
+        return mapping
     
 
 

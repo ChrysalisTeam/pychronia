@@ -39,6 +39,8 @@ view_urlpatterns = patterns('rpgweb.views',
     (r'^view_characters/$', 'view_characters'),
     
     (r'^encyclopedia/$', 'view_encyclopedia'),
+    (r'^encyclopedia/(?P<article_id>[^/]*)/$', 'view_encyclopedia'),
+    
     (r'^manual/(?P<keyword>[^/]*)/$', 'view_help_page'),
     
     (r'^manage_characters/$', 'manage_characters'),

@@ -586,8 +586,9 @@ def view_encyclopedia(request, template_name='generic_operations/encyclopedia.ht
     ### FIXME - we need realk search engine for encyclopedia
     # ALSO FIXME, articles must create links for their own keywords!!!
     
-    article_id = request.GET.get("article_id")
-    #keyword = request.GET.get("keyword")
+    article_id = request.GET.get("article_id") # must appear in browser history
+    search_string = request.REQUEST.get("search") # shouldn't appear in browser history, but needed for encyclopedia links
+    
     entry = None
     if article_id:
         entry = request.datamanager.get_encyclopedia_entry(article_id)

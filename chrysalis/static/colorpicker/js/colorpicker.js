@@ -370,6 +370,9 @@
 				setSelector(col, cal.get(0));
 				setHue(col, cal.get(0));
 				setNewColor(col, cal.get(0));
+				if (cal.data('colorpicker').livePreview === true) {
+					cal.data('colorpicker').onChange.apply(cal, [col, HSBToHex(col), HSBToRGB(col)]);
+				}
 			};
 		return {
 			init: function (opt) {

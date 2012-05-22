@@ -2,7 +2,7 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
-import sys, os, math, random, traceback, hashlib, logging, types, base64
+import sys, os, math, random, traceback, hashlib, logging, types, base64, re
 import types, contextlib, collections, time, glob, copy, weakref, atexit
 from datetime import datetime, timedelta
 

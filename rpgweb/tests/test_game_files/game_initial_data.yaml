@@ -385,7 +385,7 @@ manual_messages_templates:
 
 encyclopedia:
     lokon:    
-        keywords: ["lokon", "lokons"]
+        keywords: ["animals?", "lokons?"]
         content:   |
     
             Titles don't appear currently!!!!
@@ -403,15 +403,15 @@ encyclopedia:
         
     
     gerbil_species:
-        keywords: ["gerbil", "gerbils"]
+        keywords: ["animals?", "gerbils?", "rodents?", "i<à"]
         content:   |
             Test to be translated here
             ===============================
             
             Here tooo
         
-    "wu\\gly<_é":   
-        keywords: ["ugly", "wu\\gly<_é"]
+    "wu\\gly_é":   
+        keywords: ["ugly", "wu\\gly<_é", "éàk"]
         content:   |
             Just to ensure that this ugly slug gets well encoded in urls and regexes...
     

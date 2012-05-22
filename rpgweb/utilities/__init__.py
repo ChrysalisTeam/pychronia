@@ -342,6 +342,7 @@ def load_yaml_file(yaml_file):
     data = yaml.load(raw_data)
     return data
 
+
 YAML_EXTENSIONS = ["*.yaml", "*.yml"]
 def load_yaml_fixture(yaml_fixture):
     """

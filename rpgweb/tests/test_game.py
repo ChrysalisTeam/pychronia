@@ -13,7 +13,7 @@ from rpgweb.common import _undefined, config
 from rpgweb.views._abstract_game_view import ClassInstantiationProxy
 from rpgweb.templatetags.helpers import _generate_encyclopedia_links
 from rpgweb import views
-from rpgweb.utilities import fileservers
+from rpgweb.utilities import fileservers, autolinker
 from django.test.client import RequestFactory
 import pprint
 
@@ -46,7 +46,47 @@ class TestUtilities(TestCase):
 
         assert restructuredtext("""title\n=======\naaa""") == "<p>aaa</p>\n" # Beware - titles not handled, only fragments !!! 
         
+    
+    def test_html_autolinker(self):
         
+        regex = autolinker.join_regular_expressions_as_disjunction(("[123]", "(k*H?)"), as_words=False)
+        assert regex == r"(?:[123])|(?:(k*H?))"
+        assert re.compile(regex).match("2joll")
+
+        regex = autolinker.join_regular_expressions_as_disjunction(("[123]", "(k*H)"), as_words=True)
+        assert regex == r"(?:\b[123]\b)|(?:\b(k*H)\b)"
+        assert re.compile(regex).match("kkH")          
+          
+          
+        input0 = '''one<a>ones</a>'''
+        res = autolinker.generate_links(input0, "ones?", lambda x: dict(href="TARGET_"+x.group(0), title="mytitle"))
+        assert res == '''<a href="TARGET_one" title="mytitle">one</a><a>ones</a>'''
+        
+                  
+        input = dedent('''
+        <html>
+        <head><title>Page title one</title></head>
+        <body>
+        <div>Hi</div>
+        <p id="firstpara" class="one red" align="center">This is one paragraph <b>ones</b>.</a>
+        <a href="http://aaa">This is one paragraph <b>one</b>.</a>
+        </html>''') 
+        
+        res = autolinker.generate_links(input, "ones?", lambda x: dict(href="TARGET_"+x.group(0), title="mytitle"))
+
+        assert res == dedent('''
+        <html>
+        <head><title>Page title one</title></head>
+        <body>
+        <div>Hi</div>
+        <p align="center" class="one red" id="firstpara">This is <a href="TARGET_one" title="mytitle">one</a> paragraph <b><a href="TARGET_ones" title="mytitle">ones</a></b>.
+        <a href="http://aaa">This is one paragraph <b>one</b>.</a>
+        </p></body></html>''')
+
+
+
+                   
+          
     def test_type_conversions(self):
 
         # test 1 #
@@ -528,14 +568,24 @@ class TestDatamanager(BaseGameTestCase):
     @for_core_module(Encyclopedia)
     def test_encyclopedia(self):
         
-        utilities.check_is_restructuredtext(self.dm.get_encyclopedia_entry(" gerbil_species ")) # tolerant fetching
+        utilities.check_is_restructuredtext(self.dm.get_encyclopedia_entry(" gerbiL_speCies ")) # tolerant fetching
         assert self.dm.get_encyclopedia_entry("qskiqsjdqsid") is None
+        assert "gerbil_species" in self.dm.get_encyclopedia_article_ids()
         
-        assert ("lokons", "lokon") in self.dm.get_encyclopedia_keywords().items()
-        for entry in self.dm.get_encyclopedia_keywords():
+        assert ("animals?", ["lokon", "gerbil_species"]) in self.dm.get_encyclopedia_keywords_mapping().items()
+        for entry in self.dm.get_encyclopedia_keywords_mapping().keys():
             utilities.check_is_slug(entry)
             assert entry.lower() == entry
-    
+        
+        # best matches
+        assert self.dm.get_encyclopedia_matches("qssqs") == []
+        assert self.dm.get_encyclopedia_matches("hiqqsd bAdgerbilZ") == ["gerbil_species"] # we're VERY tolerant
+        assert self.dm.get_encyclopedia_matches("rodEnt") == ["gerbil_species"]
+        assert self.dm.get_encyclopedia_matches("hi gerbils animaL") == ["gerbil_species", "lokon"]
+        assert self.dm.get_encyclopedia_matches("animal loKon") == ["lokon", "gerbil_species"]
+        assert self.dm.get_encyclopedia_matches(u"animéàk") == [u"wu\\gly_é"]
+        
+        
         # index available or not ?
         assert not self.dm.is_encyclopedia_index_visible()
         not self.dm.set_encyclopedia_index_visibility(True)
@@ -545,17 +595,21 @@ class TestDatamanager(BaseGameTestCase):
         
         # generation of entry links 
         res = _generate_encyclopedia_links("lokon lokons lokonsu", self.dm)
-        expected = """<a href="@@@?article_id=lokon">lokon</a> <a href="@@@?article_id=lokon">lokons</a> lokonsu"""
-        expected = expected.replace("@@@", reverse(views.view_encyclopedia, kwargs=dict(game_instance_id=self.dm.game_instance_id)))
-        print("\n\n", res)
-        print("\n\n", expected)
-        
-        assert res == expected
-        
-        res = _generate_encyclopedia_links(u"""wu\\gly&lt;_é gerbil \n lokongerbil dummy gerb\nil <a href="#">lokon\n</a> lokons""", self.dm)                         
-        expected = """<a href="@@@?article_id=wu%5Cgly%3C_%C3%A9">wu\\gly&lt;_é</a> <a href="@@@?article_id=gerbil_species">gerbil</a> \n lokongerbil dummy gerb\nil <a href="#"><a href="@@@?article_id=lokon">lokon</a>\n</a> <a href="@@@?article_id=lokon">lokons</a>"""
+        expected = """<a href="@@@?search=lokon">lokon</a> <a href="@@@?search=lokons">lokons</a> lokonsu"""
         expected = expected.replace("@@@", reverse(views.view_encyclopedia, kwargs=dict(game_instance_id=self.dm.game_instance_id)))
         assert res == expected
+        
+        res = _generate_encyclopedia_links(u"""wu\\gly_é gerbil \n lokongerbil dummy gerb\nil <a href="#">lokon\n</a> lokons""", self.dm)                         
+        print (repr(res))
+        expected = u'wu\\gly_é <a href="@@@?search=gerbil">gerbil</a> \n lokongerbil dummy gerb\nil <a href="#">lokon\n</a> <a href="@@@?search=lokons">lokons</a>'
+        expected = expected.replace("@@@", reverse(views.view_encyclopedia, kwargs=dict(game_instance_id=self.dm.game_instance_id)))
+        assert res == expected
+        
+        res = _generate_encyclopedia_links(u"""i<à hi""", self.dm)                         
+        print (repr(res))
+        expected = u'<a href="/TeStiNg/encyclopedia/?search=i%3C%C3%A0">i&lt;\xe0</a> hi'
+        expected = expected.replace("@@@", reverse(views.view_encyclopedia, kwargs=dict(game_instance_id=self.dm.game_instance_id)))
+        assert res == expected        
         
 
     def test_message_automated_state_changes(self):

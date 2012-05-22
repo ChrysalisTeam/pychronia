@@ -5,8 +5,8 @@ from __future__ import unicode_literals
 import re, logging
 from datetime import datetime
 
-from rpgweb.utilities import mediaplayers
-from rpgweb.common import exception_swallower, game_file_url as real_game_file_url
+from rpgweb.utilities import mediaplayers, autolinker
+from rpgweb.common import exception_swallower, game_file_url as real_game_file_url, reverse
 
 import django.template
 from django.core.urlresolvers import reverse
@@ -18,6 +18,7 @@ from django.contrib.markup.templatetags.markup import restructuredtext
 from django.core.serializers import serialize
 from django.db.models.query import QuerySet
 from django.utils import simplejson
+import urllib
 
 
 register = django.template.Library() # IMPORTANT, module-level object used by templates !
@@ -53,27 +54,22 @@ def usercolor(context, username_or_email):
 
 
 
-def _generate_encyclopedia_links(html, datamanager):
-    """
-    Beware - ATM, that system doesn't detected nested links, and will always
-    replace keywords by encyclopedia links.
-    """
-    keywords = datamanager.get_encyclopedia_keywords()
-    #print(">>>>", repr(keywords))
-    base_url = reverse("rpgweb.views.view_encyclopedia", kwargs={"game_instance_id":datamanager.game_instance_id})
-    for keyword, article_id in keywords.items(): 
-        source= ur'(?<!=)\b(%s)\b' % re.escape(escape(keyword))
-        
-        #skipped_keywords_re = "(?P<preceding><a(?:(?!</a>))*)(?P<keyword>%s)" % keyword_re
-        #skipped_keywords_replacement_re = "(?P=preceding)______(?P=keyword)"
-        
-        dest = ur'<a href="%s?%s">\1</a>' % (base_url, urlencode([("article_id", article_id)]))
-        #print(source, dest)
-        html = re.sub(source,
-                       dest,
-                       html,
-                       flags=re.IGNORECASE|re.UNICODE)
-    return html         
+def _generate_encyclopedia_links(html_snippet, datamanager):
+
+    keywords_mapping= datamanager.get_encyclopedia_keywords_mapping()
+    
+    def link_attr_generator(match):
+        matched_str = match.group(0)
+        # detecting here WHICH keyword triggered the match would be possible, but expensive... let's postpone that
+        link = reverse("rpgweb.views.view_encyclopedia", 
+                        kwargs={"game_instance_id": datamanager.game_instance_id,})
+        link += "?search=%s" % urllib.quote_plus(matched_str.encode("utf8"), safe=b"") 
+        return dict(href=link) 
+
+    regex = autolinker.join_regular_expressions_as_disjunction(keywords_mapping.keys(), as_words=True)
+    
+    res_html = autolinker.generate_links(html_snippet, regex=regex, link_attr_generator=link_attr_generator)
+    return res_html         
                  
 
 @register.simple_tag(takes_context=True)
