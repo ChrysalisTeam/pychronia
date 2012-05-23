@@ -11,11 +11,10 @@
     <div style="width:80%; border: solid 1px #DFBF99; padding:10px;">
         <strong>{% trans "System Notification" %}</strong>
         <p style="font-size:11px;">
-        
-        {% if not keywords %}
+        {% if not article_ids %}
 	        {% blocktrans %}
 	            Due to a very unfortunate overclocking attempt on our data servers, 
-	            encyclopedia indexes have been partly lost. We apologize for the inconvenience
+	            encyclopedia indexes have been entirely. We apologize for the inconvenience
 	            and do our best to get them back from backups.
 	        {% endblocktrans %}
 	    {% else %}
@@ -29,8 +28,10 @@
     
     <br/>
     
-    <form action="{% gameurl rpgweb.views.view_encyclopedia %}" method="get">
-        <input type="text" name="keyword" size="25" value="Enter single keyword here..." onclick="this.value='';"/>
+    <form action="{% gameurl rpgweb.views.view_encyclopedia %}" method="get"
+          onsubmit="if ($('#search').data('activated') !== 'true' || $.trim($('#search').attr('value')) === '') {return false;}">
+        <input id="search" type="text" name="search" size="25" value="Enter phrase here..." 
+               onclick="if ($('#search').data('activated') !== 'true') {this.value=''; $('#search').data('activated', 'true');}"/>
         <input type="submit" value="Fetch"/>
     </form>
 
@@ -39,7 +40,7 @@
     {% if article_ids %}
     <ul>
         {% for article_id in article_ids %}
-            <li><a href="{% gameurl rpgweb.views.view_encyclopedia %}?article_id={{ article_id|urlencode }}">{{ article_id|capfirst }}</a></li>
+            <li><a href="{% gameurl rpgweb.views.view_encyclopedia article_id=article_id %}">{{ article_id|capfirst }}</a></li>
         {% endfor %} 
     </ul>
     {% endif %}
@@ -48,15 +49,30 @@
 
 
 
-{% block content %}  
-
-        <!-- HERE FORM -->
-        
+{% block content %} 
+ 
         {% if entry %}    
         <div align="center">
             {% rich_text entry %}
         </div>
         {% endif %}
+        
+        {% if search_results %}
+        <p>{% trans "Search results:" %}</p>
+        <ul>
+            {% for article_id in search_results %}
+                <li><a href="{% gameurl rpgweb.views.view_encyclopedia article_id=article_id %}">{{ article_id|capfirst }}</a></li>
+            {% endfor %} 
+        </ul>
+        {% endif %}
+        
+        {% if not entry and not search_results %}
+            {% blocktrans %}
+                welcome to the central encyclopedia blablabla...
+            {% endblocktrans %}         
+        {% endif %}
+       
+
  
     <br/>
 {% endblock %}

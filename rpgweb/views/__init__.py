@@ -581,31 +581,37 @@ def opening(request, template_name='generic_operations/opening.html'):
 
 
 @register_view(access=UserAccess.anonymous, always_available=True)
-def view_encyclopedia(request, template_name='generic_operations/encyclopedia.html'):
+def view_encyclopedia(request, article_id=None, template_name='generic_operations/encyclopedia.html'):
     
-    ### FIXME - we need realk search engine for encyclopedia
-    # ALSO FIXME, articles must create links for their own keywords!!!
+    dm =  request.datamanager
     
-    article_id = request.GET.get("article_id") # must appear in browser history
-    search_string = request.REQUEST.get("search") # shouldn't appear in browser history, but needed for encyclopedia links
+    article_ids = None # index of encyclopedia
+    entry = None # current article
+    search_results = None # list of matching article ids
     
-    entry = None
     if article_id:
-        entry = request.datamanager.get_encyclopedia_entry(article_id)
-
+        entry = dm.get_encyclopedia_entry(article_id)
         if not entry:
-            request.datamanager.user.add_error(_("Sorry, no encyclopedia article has been found for id '%s'") % article_id)
-    
+            dm.user.add_error(_("Sorry, no encyclopedia article has been found for id '%s'") % article_id)
+    else:
+        search_string = request.REQUEST.get("search") # needn't appear in browser history, but GET needed for encyclopedia links
+        if search_string:
+            search_results = dm.get_encyclopedia_matches(search_string)
+            if not search_results:
+                dm.user.add_error(_("Sorry, matching encyclopedia article has been found for keywords '%s'") % search_string)
+            elif len(search_results) == 1:
+                dm.user.add_message(_("Your search has led to a single article, below."))
+                return HttpResponseRedirect(redirect_to=reverse(view_encyclopedia, kwargs=dict(game_instance_id=request.datamanager.game_instance_id,
+                                                                                               article_id=search_results[0])))                                     
     if request.datamanager.is_encyclopedia_index_visible():
         article_ids = request.datamanager.get_encyclopedia_article_ids()
-    else:
-        article_ids = None
     
     return render_to_response(template_name,
                                 {
                                  'page_title': _("Pangea Encyclopedia"),
                                  'article_ids': article_ids,
                                  'entry': entry,
+                                 'search_results': search_results
                                 },
                                 context_instance=RequestContext(request))
 

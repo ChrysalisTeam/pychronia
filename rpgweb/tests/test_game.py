@@ -1729,7 +1729,29 @@ class TestHttpRequests(BaseGameTestCase):
                                                         keyword="logo_animation"))
         response = self.client.get(url)
         assert response.status_code == 404 # view always available, but no help text available for it
+    
+    
+    def test_encyclopedia_behaviour(self):
+
+        url_base = reverse(views.view_encyclopedia, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID))        
+        response = self.client.get(url_base)
+        assert response.status_code == 200
+               
+        url = reverse(views.view_encyclopedia, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID,
+                                                           article_id="lokon"))        
+        response = self.client.get(url)
+        assert response.status_code == 200
+        assert "animals" in response.content.decode("utf8")
         
+        response = self.client.get(url_base+"?search=animal")
+        assert response.status_code == 200
+        #print(repr(response.content))
+        assert "results" in response.content.decode("utf8") # several results displayed     
+                        
+        response = self.client.get(url_base+"?search=gerbil")
+        assert response.status_code == 302
+        assert reverse(views.view_encyclopedia, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID, article_id="gerbil_species")) in response['Location'] 
+                                 
                         
 class TestGameViewSystem(BaseGameTestCase):
     

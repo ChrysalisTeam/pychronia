@@ -41,20 +41,8 @@ def generate_links(html_snippet, regex, link_attr_generator):
         else:
             mini_soup = clean_parser(new_string)
             new_children = mini_soup.contents
-            print(">>>>>>-------", new_children)
             return new_children
-        """
-    -------------
-                        def unwrap(self):
-                    my_parent = self.parent
-                    my_index = self.parent.index(self)
-                    self.extract()
-                    for child in reversed(self.contents[:]):
-                        my_parent.insert(my_index, child)
-                    return self
-                replace_with_children = unwrap
-                replaceWithChildren = unwrap  # BS3
-                """
+
     def recurse_elements(element):
         children = tuple(element.contents) # we freeze current children, as they'll be modified here
         for child in children: # no enumerate() here, as the tree changes all the time
@@ -72,22 +60,17 @@ def generate_links(html_snippet, regex, link_attr_generator):
     return unicode(soup)
     
     
+if __name__ == "__main__": 
     
-#Create the soup
-input = '''<html>
-<head><title>Page title one</title></head>
-<body>
-<p id="firstpara" align="center">This is one paragraph <b>one</b>.</a>
-<a href="http://aaa">This is one paragraph <b>one</b>.</a>
-</html>'''
-
-input2 = """
-<div><p>one</p>
-</div>
-"""
-
-
-res = generate_links(input2, "one", lambda x: dict(href="TARGET", title="mytitle"))
-
-print(res)
+    #Create the soup
+    input = '''<html>
+    <head><title>Page title one</title></head>
+    <body>
+    <p id="firstpara" align="center">This is one paragraph <b>one</b>.</a>
+    <a href="http://aaa">This is one paragraph <b>one</b>.</a>
+    </html>'''
+    
+    res = generate_links(input, "one", lambda x: dict(href="TARGET", title="mytitle"))
+    
+    print(res)
  
