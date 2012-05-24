@@ -612,6 +612,27 @@ class TestDatamanager(BaseGameTestCase):
         assert res == expected        
         
 
+        # knowledge of article ids #
+        
+        for unauthorized in ("master", None):
+            self._set_user(unauthorized)
+            with pytest.raises(UsageError):
+                self.dm.get_character_known_article_ids()
+            with pytest.raises(UsageError):
+                self.dm.update_character_known_article_ids(["lokon"])
+            with pytest.raises(UsageError):
+                self.dm.reset_character_known_article_ids()
+        
+        self._set_user("guy1")
+        assert self.dm.get_character_known_article_ids() == []
+        self.dm.update_character_known_article_ids(["lokon"])
+        assert self.dm.get_character_known_article_ids() == ["lokon"]
+        self.dm.update_character_known_article_ids(["gerbil_species", "unexisting", "lokon", "gerbil_species"])
+        assert self.dm.get_character_known_article_ids() == ["lokon", "gerbil_species", "unexisting"]
+        self.dm.reset_character_known_article_ids()
+        assert self.dm.get_character_known_article_ids() == []
+        
+        
     def test_message_automated_state_changes(self):
         self._reset_messages()
         
@@ -1732,26 +1753,39 @@ class TestHttpRequests(BaseGameTestCase):
     
     
     def test_encyclopedia_behaviour(self):
-
-        url_base = reverse(views.view_encyclopedia, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID))        
-        response = self.client.get(url_base)
-        assert response.status_code == 200
-               
-        url = reverse(views.view_encyclopedia, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID,
-                                                           article_id="lokon"))        
-        response = self.client.get(url)
-        assert response.status_code == 200
-        assert "animals" in response.content.decode("utf8")
         
-        response = self.client.get(url_base+"?search=animal")
-        assert response.status_code == 200
-        #print(repr(response.content))
-        assert "results" in response.content.decode("utf8") # several results displayed     
+        url_base = reverse(views.view_encyclopedia, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID))        
+        
+        for login in ("master", "guy1", None):
+            
+            self._set_user(login)
+            
+            self.dm.set_game_state(False)
+            
+            response = self.client.get(url_base+"?search=animal")
+            assert response.status_code == 200
+            assert "under repair" in response.content.decode("utf8") # no search results
                         
-        response = self.client.get(url_base+"?search=gerbil")
-        assert response.status_code == 302
-        assert reverse(views.view_encyclopedia, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID, article_id="gerbil_species")) in response['Location'] 
-                                 
+            self.dm.set_game_state(True)
+            
+            response = self.client.get(url_base)
+            assert response.status_code == 200
+                   
+            url = reverse(views.view_encyclopedia, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID,
+                                                               article_id="lokon"))        
+            response = self.client.get(url)
+            assert response.status_code == 200
+            assert "animals" in response.content.decode("utf8")
+            
+            response = self.client.get(url_base+"?search=animal")
+            assert response.status_code == 200
+            #print(repr(response.content))
+            assert "results" in response.content.decode("utf8") # several results displayed     
+                            
+            response = self.client.get(url_base+"?search=gerbil")
+            assert response.status_code == 302
+            assert reverse(views.view_encyclopedia, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID, article_id="gerbil_species")) in response['Location'] 
+                                   
                         
 class TestGameViewSystem(BaseGameTestCase):
     

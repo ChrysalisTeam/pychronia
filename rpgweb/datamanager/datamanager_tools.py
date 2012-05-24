@@ -69,7 +69,7 @@ def transaction_watcher(object=None, ensure_data_ok=True, ensure_game_started=Tr
             _ensure_data_ok(datamanager)
 
             if ensure_game_started:
-                if not datamanager.get_global_parameter("game_is_started"):
+                if not datamanager.is_game_started():
                     # some state-changing methods are allowed even before the game starts !
                     #if func.__name__ not in ["set_message_read_state", "set_new_message_notification", "force_message_sending",
                     #                         "set_online_status"]:

@@ -2100,6 +2100,9 @@ class Encyclopedia(BaseDataManager):
 
         new_data["global_parameters"].setdefault("encyclopedia_index_visible", False)
         
+        for character in self.get_character_sets().values():
+            character.setdefault("known_article_ids", PersistentList())
+            
         #for (key, value) in new_data["encyclopedia"].items():
         #    value["keywords"] = list(set(value["keywords"] + [key]))
             
@@ -2130,7 +2133,11 @@ class Encyclopedia(BaseDataManager):
             assert len(keyword) >= 3 # let's avoid too easy matches
             re.compile(keyword) # keyword must be a proper regular expression
 
-
+        for character in self.get_character_sets().values():
+            utilities.check_no_duplicates(character["known_article_ids"])
+            assert set(character["known_article_ids"]) < set(self.get_encyclopedia_article_ids())
+            
+            
     @readonly_method
     def is_encyclopedia_index_visible(self):
         return self.get_global_parameter("encyclopedia_index_visible")
@@ -2189,7 +2196,25 @@ class Encyclopedia(BaseDataManager):
                 mapping[keyword].append(article_id)
         return mapping
     
+    
+    @readonly_method
+    def get_character_known_article_ids(self):
+        return self.get_character_properties(self.user.username)["known_article_ids"]
+    
+    
+    @transaction_watcher(ensure_game_started=False) # automatic action - not harmful
+    def update_character_known_article_ids(self, article_ids):
+        known_article_ids = self.get_character_properties(self.user.username)["known_article_ids"] 
+        for article_id in article_ids:
+            if article_id not in known_article_ids:
+                known_article_ids.append(article_id)
+        
 
+    @transaction_watcher(ensure_game_started=False) # admin action, actually
+    def reset_character_known_article_ids(self):
+        known_article_ids = self.get_character_properties(self.user.username)["known_article_ids"] 
+        del known_article_ids[:]
+                
 
 @register_module
 class GameViews(BaseDataManager):

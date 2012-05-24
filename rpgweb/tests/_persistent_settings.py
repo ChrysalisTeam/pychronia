@@ -24,5 +24,5 @@ def GAME_INITIAL_FIXTURE_SCRIPT(dm):
     # we give guy1 access to everything
     dm.update_permissions("guy1", list(dm.PERMISSIONS_REGISTRY))
 
-    # we can see all articles
-    dm.set_encyclopedia_index_visibility(True)
+    # we can't see all articles
+    dm.set_encyclopedia_index_visibility(False)

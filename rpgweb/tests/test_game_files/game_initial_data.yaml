@@ -108,7 +108,9 @@ global_parameters:
     history_summary: |
         Hello voici le résumé de l'histoire...
 
-
+    encyclopedia_index_visible: false
+    
+    
 locations:
 
     Baynon:
