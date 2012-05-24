@@ -125,6 +125,10 @@ ACTIVATE_AIML_BOTS = False
 
 DB_RESET_ALLOWED = True
 
+RESTRUCTUREDTEXT_FILTER_SETTINGS = {"initial_header_level": 2, 
+                                    "doctitle_xform": False, # important to have evenb lone titles stay in the html fragment
+                                    "sectsubtitle_xform": False}
+
 try:
   from local_settings import *
 except ImportError:

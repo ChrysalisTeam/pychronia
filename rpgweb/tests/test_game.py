@@ -38,15 +38,40 @@ class TestUtilities(TestCase):
 
         assert restructuredtext("""aaaa*aaa""") # star is ignored
 
-        # outputs stuffs, but doesn't break
+        # outputs stuffs on stderr, but doesn't break
         restructuredtext("""aaaaaaa*zezez
-                              mytitle :aaa:`qqq`
+                              mytitle :xyz:`qqq`
                             ===
                         """) # too short underline
 
-        assert restructuredtext("""title\n=======\naaa""") == "<p>aaa</p>\n" # Beware - titles not handled, only fragments !!! 
+        assert "title1" in restructuredtext("""title1\n=======\n\naaa""") # thx to our conf, title1 stays in html fragment
         
-    
+        html = restructuredtext(dedent("""
+                    title1
+                    -------
+                    
+                    aaa   
+                      
+                    title2
+                    -------
+                    
+                    bbbbb
+                    """))
+        assert "title1" in html and "title2" in html
+      
+        
+    def test_sphinx_publisher_settings(self) :   
+        from django.utils.encoding import smart_str, force_unicode
+        from docutils.core import publish_parts
+        docutils_settings = {"initial_header_level": 3, 
+                             "doctitle_xform": False, 
+                             "sectsubtitle_xform": False}
+        parts = publish_parts(source=smart_str("""title\n=======\n\naaa\n"""), # lone title would become document title by default - we prevent it
+                              writer_name="html4css1", settings_overrides=docutils_settings)
+        assert parts["fragment"] == '<div class="section" id="title">\n<h3>title</h3>\n<p>aaa</p>\n</div>\n'
+        #pprint.pprint(parts)
+        
+        
     def test_html_autolinker(self):
         
         regex = autolinker.join_regular_expressions_as_disjunction(("[123]", "(k*H?)"), as_words=False)
