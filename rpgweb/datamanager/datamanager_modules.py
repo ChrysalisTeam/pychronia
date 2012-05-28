@@ -634,12 +634,16 @@ class FriendshipHandling(BaseDataManager):
     def _load_initial_data(self, strict=False, **kwargs):
         super(FriendshipHandling, self)._load_initial_data(**kwargs)
         new_data = self.data
-        new_data.setdefault("friendships", PersistentDict()) # mapping (proposer, accepter) => dict(proposition_date, acceptance_date, etc.)
-
+        new_data.setdefault("friendships", PersistentDict()) # mapping (proposer, accepter) => dict(proposal_date, acceptance_date, etc.)
+        
+        
     def _check_database_coherency(self, strict=False, **kwargs):
         super(FriendshipHandling, self)._check_database_coherency(**kwargs)
 
         game_data = self.data
+        
+        delay = self.get_global_parameter("friendship_minimum_duration_h")
+        utilities.check_is_positive_int(delay, non_zero=True)
         
         character_names = self.get_character_usernames()
         friendships = game_data["friendships"]
@@ -650,19 +654,20 @@ class FriendshipHandling(BaseDataManager):
             assert user1 in character_names
             assert user2 in character_names
             template = {
-                         "proposition_date": datetime,
+                         "proposal_date": datetime,
                          "acceptance_date": datetime,
                         }
             utilities.check_dictionary_with_template(friendship_params, template, strict=strict)
  
     
     @readonly_method
-    def get_frienships(self):
+    def get_friendships(self):
         return self.data["friendships"]
     
  
     @readonly_method
     def get_friendship_params(self, user1, user2):
+        assert self.is_character(user1) and self.is_character(user2)
         friendships = self.data["friendships"]
         try:
             return (user1, user2), friendships[(user1, user2)]
@@ -691,35 +696,39 @@ class FriendshipHandling(BaseDataManager):
         friends = []
         for (user1, user2) in friendships.keys():
             if user1 == username:
-                friends.append(user1)
-            elif user2 == username:
                 friends.append(user2)
+            elif user2 == username:
+                friends.append(user1)
+                
+        assert username not in friends
         return friends
     
     
     @transaction_watcher
-    def seal_friendship(self, user1, user2, proposition_date):
-        assert self.is_character(user1) and self.is_character(user2)
-        if not self.are_friends(user1, user2):
+    def seal_friendship(self, user1, user2, proposal_date):
+        assert self.is_character(user1) and self.is_character(user2) and proposal_date
+        if user1 == user2:
+            raise AbnormalUsageError(_("User %s can't be friend with himself") % user1)
+        if self.are_friends(user1, user2):
             raise AbnormalUsageError(_("Already existing friendship: %s<->%s") % (user1, user2)) 
         friendships = self.data["friendships"]
         acceptance_date = datetime.utcnow()
-        friendships[(user1, user2)] = dict(proposition_date=proposition_date, acceptance_date=acceptance_date)
+        friendships[(user1, user2)] = PersistentDict(proposal_date=proposal_date, acceptance_date=acceptance_date)
  
     
     @transaction_watcher
     def terminate_friendship(self, user1, user2):
         friendship_key, friendship_data = self.get_friendship_params(user1, user2) # raises error if pb
         
-        min_delay = self.get_global_parameter("friendship_minimal_duration_h")
+        min_delay = self.get_global_parameter("friendship_minimum_duration_h")
         if friendship_data["acceptance_date"] > datetime.utcnow() - timedelta(hours=min_delay):
-            raise NormalUsageError(_("That friendship is still too young to be terminated"))
+            raise NormalUsageError(_("That friendship is too young to be terminated - please respect the %dh delay") % min_delay)
         
         del self.data["friendships"][friendship_key]
     
     
     @transaction_watcher
-    def reset_frienships(self): 
+    def reset_friendships(self): 
         self.data["friendships"].clear()
 
  

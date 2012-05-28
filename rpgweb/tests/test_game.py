@@ -9,7 +9,7 @@ import shutil
 
 from ._test_tools import *
 from rpgweb.abilities._abstract_ability import AbstractAbility
-from rpgweb.common import _undefined, config
+from rpgweb.common import _undefined, config, AbnormalUsageError
 from rpgweb.views._abstract_game_view import ClassInstantiationProxy
 from rpgweb.templatetags.helpers import _generate_encyclopedia_links
 from rpgweb import views
@@ -345,8 +345,71 @@ class TestDatamanager(BaseGameTestCase):
             
         with pytest.raises(UsageError):
             self.dm.update_real_life_data("unexistinguy", real_life_identity=["sciences"])
+
+
+    @for_core_module(FriendshipHandling)
+    def test_friendship_handling(self):           
+        
+        dm = self.dm
+        proposal_date = datetime.utcnow() - timedelta(hours=3)
+        
+        dm.reset_friendships()
+        assert not dm.get_friendships()
+    
+        with pytest.raises(UsageError):
+            dm.seal_friendship("guy1", "guy1", proposal_date=proposal_date) # auto-friendship impossible
             
+        dm.seal_friendship("guy2", "guy1", proposal_date=proposal_date)
+        
+        with pytest.raises(UsageError):
+            dm.seal_friendship("guy2", "guy1", proposal_date=proposal_date)
+        with pytest.raises(UsageError):    
+            dm.seal_friendship("guy1", "guy2", proposal_date=proposal_date)
+        
+        assert dm.get_friendships().keys() == [("guy2", "guy1")] # order stays the same
+        params = dm.get_friendships().values()[0]
+        assert params["proposal_date"] == proposal_date
+        assert datetime.utcnow() - timedelta(seconds=5) <= params["acceptance_date"] <= datetime.utcnow()  
+        
+        assert dm.get_friendship_params("guy2", "guy1") == dm.get_friendship_params("guy1", "guy2") == (("guy2", "guy1"), params) # order preserved
+        with pytest.raises(UsageError):
+            dm.get_friendship_params("guy1", "guy3")
+        with pytest.raises(UsageError):
+            dm.get_friendship_params("guy3", "guy1")            
+        with pytest.raises(UsageError):
+            dm.get_friendship_params("guy3", "guy4")              
             
+        assert dm.are_friends("guy2", "guy1") == dm.are_friends("guy1", "guy2") == True
+        assert dm.are_friends("guy2", "guy3") == dm.are_friends("guy3", "guy4") == False
+        
+        dm.seal_friendship("guy2", "guy3", proposal_date=proposal_date)
+        assert dm.get_friends("guy1") == dm.get_friends("guy3") == ["guy2"]
+        assert dm.get_friends("guy2") in (["guy1", "guy3"], ["guy3", "guy1"]) # order not enforced
+        assert dm.get_friends("guy4") == []
+        
+        with pytest.raises(AbnormalUsageError):
+            dm.terminate_friendship("guy3", "guy4") # unexisting friendship
+            
+        with pytest.raises(NormalUsageError):
+            dm.terminate_friendship("guy1", "guy2") # too young   
+                         
+        for params in dm.get_friendships().values():
+            params["acceptance_date"] -= timedelta(hours=30) # delay must be 24h in dev
+            dm.commit()         
+                  
+        dm.terminate_friendship("guy1", "guy2")  
+        assert not dm.are_friends("guy2", "guy1") 
+        with pytest.raises(UsageError):
+            dm.get_friendship_params("guy1", "guy2")
+        assert dm.are_friends("guy2", "guy3") # untouched   
+                                                    
+        dm.reset_friendships()
+        assert not dm.get_friendships()    
+        assert not dm.are_friends("guy2", "guy1")
+        assert not dm.are_friends("guy3", "guy2")
+        assert not dm.are_friends("guy3", "guy4")
+        
+        
     @for_core_module(OnlinePresence)
     def test_online_presence(self):
 
