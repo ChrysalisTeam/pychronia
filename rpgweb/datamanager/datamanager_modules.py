@@ -628,6 +628,102 @@ class PermissionsHandling(BaseDataManager): # TODO REFINE
 
 
 @register_module
+class FriendshipHandling(BaseDataManager):
+
+
+    def _load_initial_data(self, strict=False, **kwargs):
+        super(FriendshipHandling, self)._load_initial_data(**kwargs)
+        new_data = self.data
+        new_data.setdefault("friendships", PersistentDict()) # mapping (proposer, accepter) => dict(proposition_date, acceptance_date, etc.)
+
+    def _check_database_coherency(self, strict=False, **kwargs):
+        super(FriendshipHandling, self)._check_database_coherency(**kwargs)
+
+        game_data = self.data
+        
+        character_names = self.get_character_usernames()
+        friendships = game_data["friendships"]
+        
+        utilities.check_no_duplicates(friendships)
+        for (user1, user2), friendship_params in friendships.items():
+            assert (user2, user1) not in friendships # ensures both unicity and non-self-friendship
+            assert user1 in character_names
+            assert user2 in character_names
+            template = {
+                         "proposition_date": datetime,
+                         "acceptance_date": datetime,
+                        }
+            utilities.check_dictionary_with_template(friendship_params, template, strict=strict)
+ 
+    
+    @readonly_method
+    def get_frienships(self):
+        return self.data["friendships"]
+    
+ 
+    @readonly_method
+    def get_friendship_params(self, user1, user2):
+        friendships = self.data["friendships"]
+        try:
+            return (user1, user2), friendships[(user1, user2)]
+        except KeyError:
+            try:
+                return (user2, user1), friendships[(user2, user1)]
+            except KeyError:
+                raise AbnormalUsageError(_("Unexisting friendship: %s<->%s") % (user1, user2))
+            
+                
+    @readonly_method
+    def are_friends(self, user1, user2):
+        friendships = self.data["friendships"]
+        if (user1, user2) in friendships or (user2, user1) in friendships:
+            return True
+        return False
+    
+    
+    @readonly_method
+    def get_friends(self, username):
+        
+        assert self.is_character(username)
+        
+        friendships = self.data["friendships"]
+
+        friends = []
+        for (user1, user2) in friendships.keys():
+            if user1 == username:
+                friends.append(user1)
+            elif user2 == username:
+                friends.append(user2)
+        return friends
+    
+    
+    @transaction_watcher
+    def seal_friendship(self, user1, user2, proposition_date):
+        assert self.is_character(user1) and self.is_character(user2)
+        if not self.are_friends(user1, user2):
+            raise AbnormalUsageError(_("Already existing friendship: %s<->%s") % (user1, user2)) 
+        friendships = self.data["friendships"]
+        acceptance_date = datetime.utcnow()
+        friendships[(user1, user2)] = dict(proposition_date=proposition_date, acceptance_date=acceptance_date)
+ 
+    
+    @transaction_watcher
+    def terminate_friendship(self, user1, user2):
+        friendship_key, friendship_data = self.get_friendship_params(user1, user2) # raises error if pb
+        
+        min_delay = self.get_global_parameter("friendship_minimal_duration_h")
+        if friendship_data["acceptance_date"] > datetime.utcnow() - timedelta(hours=min_delay):
+            raise NormalUsageError(_("That friendship is still too young to be terminated"))
+        
+        del self.data["friendships"][friendship_key]
+    
+    
+    @transaction_watcher
+    def reset_frienships(self): 
+        self.data["friendships"].clear()
+
+ 
+@register_module
 class GameInstructions(BaseDataManager):
 
 

@@ -324,8 +324,7 @@ def check_dictionary_with_template(my_dict, template, strict=False):
     if strict:
         assert_sets_equal(my_dict.keys(), template.keys())
     else:
-        for key in template.keys():
-            assert key in my_dict.keys(), key
+        assert set(template.keys()) <= set(my_dict.keys())
 
     for key in template.keys():
         validate_value(my_dict[key], template[key])
