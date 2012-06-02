@@ -2635,6 +2635,8 @@ class NightmareCaptchas(BaseDataManager):
 
         game_data = self.data
         
+        assert game_data["nightmare_captchas"] # else random choice would nastily fail
+        
         for (key, value) in game_data["nightmare_captchas"].items():
 
             utilities.check_is_slug(key)
@@ -2658,16 +2660,21 @@ class NightmareCaptchas(BaseDataManager):
             
     def _get_captcha_data(self, captcha_id):
         """
-        Returns a captcha as a dict, having an extra "id" key identifying 
-        the selected captcha entry.
+        Returns a captcha as a dict, id, text and image keys (one of the 2 latter could be None).
         """
-        value = self.data["nightmare_captchas"][captcha_id]
-        
-        res = value.copy()
-        res["id"] = key
-        return res
+        # beware - using copy() on a dict marks it as modified in ZODB...
+        value = self.data["nightmare_captchas"][captcha_id] 
+        return dict(id=captcha_id,
+                    text=value["text"],
+                    image=value["image"])
 
 
+
+    @readonly_method
+    def get_available_captchas(self):
+        return self.data["nightmare_captchas"].keys()
+    
+    
     @readonly_method
     def get_selected_captcha(self, captcha_id):
         return self._get_captcha_data(captcha_id)

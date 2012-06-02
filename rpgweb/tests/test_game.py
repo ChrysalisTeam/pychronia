@@ -1600,8 +1600,36 @@ class TestDatamanager(BaseGameTestCase):
 
     
 
-
-
+    @for_core_module(NightmareCaptchas)
+    def test_nightmare_captchas(self):
+        
+        captcha_ids = self.dm.get_available_captchas()
+        assert captcha_ids
+        
+        captcha1 = self.dm.get_selected_captcha(captcha_ids[0])
+        captcha2 = self.dm.get_selected_captcha(captcha_ids[-1])
+        assert captcha1 != captcha2
+        
+        random_captchas = [self.dm.get_random_captcha() for i in range(30)]
+        assert set(v["id"] for v in random_captchas) == set(captcha_ids) # unless very bad luck...
+        
+        with pytest.raises(AbnormalUsageError):
+            self.dm.check_captcha_answer_attempt(captcha_id="unexisting_id", attempt="whatever")
+            
+        for captcha in (random_captchas + [captcha1, captcha2]):
+            assert set(captcha.keys()) == set("id text image".split()) # no spoiler of answer elements here
+            assert self.dm.get_selected_captcha(captcha["id"]) == captcha
+            with pytest.raises(NormalUsageError):
+                self.dm.check_captcha_answer_attempt(captcha["id"], "")
+            with pytest.raises(NormalUsageError):
+                self.dm.check_captcha_answer_attempt(captcha["id"], "random stuff ")
+            
+            _full_captch_data = self.dm.data["nightmare_captchas"][captcha["id"]]
+            answer = "  " + _full_captch_data["answer"].upper() + " " # case and spaces are not important
+            res = self.dm.check_captcha_answer_attempt(captcha["id"], answer)
+            assert res == _full_captch_data["explanation"] # sucess
+            
+            
 class TestHttpRequests(BaseGameTestCase):
 
     def _master_auth(self):

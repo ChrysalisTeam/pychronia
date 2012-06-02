@@ -149,6 +149,11 @@ class AutoCheckingDM(object):
                 assert not real_dm.connection._registered_objects, real_dm.connection._registered_objects # BEFORE
                 try:
                     res = attr(*args, **kwargs)
+                except GameError:
+                    raise
+                except Exception, e:
+                    print("Abnormal exception seen:", e)
+                    raise
                 finally:
                     assert not real_dm.connection._registered_objects, real_dm.connection._registered_objects # AFTER
                 return res

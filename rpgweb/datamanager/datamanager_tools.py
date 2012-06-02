@@ -42,7 +42,7 @@ def readonly_method(func, self, *args, **kwargs):
             for tag, i1, i2, j1, j2 in s.get_opcodes():
               msg += ("%7s a[%d:%d] (%s) b[%d:%d] (%s)\n" % (tag, i1, i2, before[i1:i2], j1, j2, after[j1:j2]))
             """
-            raise RuntimeError("ZODB was changed by readonly method %s" % func.__name__)
+            raise RuntimeError("ZODB was changed by readonly method %s: %s != %s" % (func.__name__, original_str, final_str))
 
 
 def transaction_watcher(object=None, ensure_data_ok=True, ensure_game_started=True):
