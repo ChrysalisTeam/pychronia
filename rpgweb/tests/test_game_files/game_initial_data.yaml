@@ -448,4 +448,25 @@ help_pages:
         It doesn't raise errors, of course, but could be detected by game checking systems.
     
 
+nightmare_captchas:
+  
+  enigma1:
+    text: null
+    image: "maths.png"
+    answer: "35"
+    explanation: "Because it's **so**!"
+    
+  enigma2:
+    text: "What is the *greatest* even number ?"
+    image: null
+    answer: "None" 
+ 
+  enigma3:
+    text: "Decipher this!"
+    image: "unreadable.jpg"
+    answer: "muwuwvuv" 
+  
+    
+
+
 ...

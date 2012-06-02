@@ -2614,7 +2614,89 @@ class HelpPages(BaseDataManager):
 
 
 
+ 
 
 
+@register_module
+class NightmareCaptchas(BaseDataManager):
+
+
+    def _load_initial_data(self, **kwargs):
+        super(NightmareCaptchas, self)._load_initial_data(**kwargs)
+        game_data = self.data
+        for (key, value) in game_data["nightmare_captchas"].items():
+            value.setdefault("text", None)
+            value.setdefault("image", None)
+            value.setdefault("explanation", None)
+            
+            
+    def _check_database_coherency(self, strict=False, **kwargs):
+        super(NightmareCaptchas, self)._check_database_coherency(**kwargs)
+
+        game_data = self.data
+        
+        for (key, value) in game_data["nightmare_captchas"].items():
+
+            utilities.check_is_slug(key)
+            assert key.lower() == key # let's make its simple
+            
+            if strict:
+                assert len(value.keys()) == 4
+            
+            assert not value.get("id") # to ensure no pollution exists by utility methods
+            assert value["text"] or value["image"]
+            if value["text"]:
+                utilities.check_is_restructuredtext(value["text"])
+            if value["image"]:
+                utilities.check_is_game_file("captchas", value["image"])
+            if value["explanation"]:
+                utilities.check_is_restructuredtext(value["explanation"])
+                
+            utilities.check_is_slug(value["answer"])
+            assert "\n" not in value["answer"]
+        
+            
+    def _get_captcha_data(self, captcha_id):
+        """
+        Returns a captcha as a dict, having an extra "id" key identifying 
+        the selected captcha entry.
+        """
+        value = self.data["nightmare_captchas"][captcha_id]
+        
+        res = value.copy()
+        res["id"] = key
+        return res
+
+
+    @readonly_method
+    def get_selected_captcha(self, captcha_id):
+        return self._get_captcha_data(captcha_id)
+      
+      
+    @readonly_method
+    def get_random_captcha(self):
+        captchas = self.data["nightmare_captchas"]
+        captcha_id = random.choice(captchas.keys())
+        return self._get_captcha_data(captcha_id)
+    
+    
+    @readonly_method
+    def check_captcha_answer_attempt(self, captcha_id, attempt):
+        """
+        On success, returns the enigma explanation (which could be None).
+        """
+        assert isinstance(attempt, basestring)
+        captchas = self.data["nightmare_captchas"]
+        if captcha_id not in captchas:
+            raise AbnormalUsageError(_("Unknown captcha id %s") % captcha_id)
+        value = self.data["nightmare_captchas"][captcha_id]
+        
+        normalized_attempt = attempt.strip().lower()
+        normalized_answer = value["answer"].lower() # necessarily slug, but not always lowercase
+
+        if normalized_attempt != normalized_answer:
+            raise NormalUsageError(_("Incorrect captcha answer '%s'") % attempt)
+        
+        return value["explanation"]
 
 

@@ -223,7 +223,8 @@ def adapt_parameters_to_func(all_parameters, func):
 
 def check_no_duplicates(value):
     assert len(set(value)) == len(value), value
-
+    return True
+    
 def check_is_range_or_num(value):
     if isinstance(value, (int, long, float)):
         pass # nothing to check
@@ -249,9 +250,12 @@ def check_is_int(value):
 
 def check_is_email(email):
     assert email_re.match(email)
+    return True
 
 def check_is_slug(value):
-    assert isinstance(value, basestring) and value and " " not in value, repr(value)
+    assert isinstance(value, basestring), repr(value)
+    assert " " not in value, repr(value)
+    assert "\n" not in value, repr(value)
     return True
 
 def check_is_bool(value):
@@ -282,6 +286,10 @@ def check_is_restructuredtext(value):
     assert restructuredtext(value)
     return True
 
+def check_is_game_file(*paths_elements):
+    assert os.path.isfile(os.path.join(config.GAME_FILES_ROOT, *paths_elements))
+    return True
+
 def is_email(email):
     return email_re.match(email)
 
@@ -301,8 +309,6 @@ def assert_sets_equal(set1, set2):
 
     assert set1 == set2 # else major coding error
     return True
-
-
 
 
 def validate_value(value, validator):
