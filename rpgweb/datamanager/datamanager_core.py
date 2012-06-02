@@ -123,7 +123,7 @@ class BaseDataManager(utilities.TechnicalEventsMixin, Persistent):
 
         if self.db_state != self.DB_STATES.SHUTDOWN:
 
-            assert not self.connection._registered_objects # else problem, pending changes!
+            assert not self.connection._registered_objects # else problem, pending changes created by views!
             self.connection.close()
             self.connection = None
 

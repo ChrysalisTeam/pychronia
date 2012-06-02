@@ -353,7 +353,7 @@ class TestDatamanager(BaseGameTestCase):
         dm = self.dm
         proposal_date = datetime.utcnow() - timedelta(hours=3)
         
-        dm.reset_friendships()
+        dm.reset_friendship_data()
         assert not dm.get_friendships()
     
         with pytest.raises(UsageError):
@@ -403,7 +403,7 @@ class TestDatamanager(BaseGameTestCase):
             dm.get_friendship_params("guy1", "guy2")
         assert dm.are_friends("guy2", "guy3") # untouched   
                                                     
-        dm.reset_friendships()
+        dm.reset_friendship_data()
         assert not dm.get_friendships()    
         assert not dm.are_friends("guy2", "guy1")
         assert not dm.are_friends("guy3", "guy2")
@@ -1628,6 +1628,7 @@ class TestDatamanager(BaseGameTestCase):
             answer = "  " + _full_captch_data["answer"].upper() + " " # case and spaces are not important
             res = self.dm.check_captcha_answer_attempt(captcha["id"], answer)
             assert res == _full_captch_data["explanation"] # sucess
+            
             
             
 class TestHttpRequests(BaseGameTestCase):

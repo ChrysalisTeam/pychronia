@@ -634,8 +634,9 @@ class FriendshipHandling(BaseDataManager):
     def _load_initial_data(self, strict=False, **kwargs):
         super(FriendshipHandling, self)._load_initial_data(**kwargs)
         new_data = self.data
-        new_data.setdefault("friendships", PersistentDict()) # mapping (proposer, accepter) => dict(proposal_date, acceptance_date, etc.)
-        
+        new_data.setdefault("friendships", PersistentDict())
+        new_data["friendships"].setdefault("proposed", PersistentDict()) # mapping (proposer, recipient) => dict(proposal_date)
+        new_data["friendships"].setdefault("sealed", PersistentDict()) # mapping (proposer, accepter) => dict(proposal_date, acceptance_date)
         
     def _check_database_coherency(self, strict=False, **kwargs):
         super(FriendshipHandling, self)._check_database_coherency(**kwargs)
@@ -648,40 +649,103 @@ class FriendshipHandling(BaseDataManager):
         character_names = self.get_character_usernames()
         friendships = game_data["friendships"]
         
-        utilities.check_no_duplicates(friendships)
-        for (user1, user2), friendship_params in friendships.items():
-            assert (user2, user1) not in friendships # ensures both unicity and non-self-friendship
-            assert user1 in character_names
-            assert user2 in character_names
+        if strict:
+            assert len(friendships) == 2
+            
+        proposed_friendships = friendships["proposed"]
+        utilities.check_no_duplicates(proposed_friendships)
+        for (username1, username2), friendship_params in proposed_friendships.items():
+            assert (username2, username1) not in proposed_friendships # ensures non-reciprocity of friendship offering (else it'd be sealed), and non-self-friendship
+            assert username1 in character_names
+            assert username2 in character_names
+            template = {
+                         "proposal_date": datetime,
+                        }
+            utilities.check_dictionary_with_template(friendship_params, template, strict=strict)
+         
+        sealed_friendships = friendships["sealed"]
+        utilities.check_no_duplicates(sealed_friendships)
+        for (username1, username2), friendship_params in sealed_friendships.items():
+            assert (username2, username1) not in sealed_friendships # ensures both unicity and non-self-friendship
+            assert username1 in character_names
+            assert username2 in character_names
             template = {
                          "proposal_date": datetime,
                          "acceptance_date": datetime,
                         }
             utilities.check_dictionary_with_template(friendship_params, template, strict=strict)
  
-    
-    @readonly_method
-    def get_friendships(self):
-        return self.data["friendships"]
+ 
     
  
     @readonly_method
-    def get_friendship_params(self, user1, user2):
-        assert self.is_character(user1) and self.is_character(user2)
-        friendships = self.data["friendships"]
+    def get_friendship_proposals(self):
+        return self.data["friendships"]["proposed"]
+    
+    
+    @transaction_watcher
+    def propose_friendship(self, proposer, recipient):
+        assert self.is_character(proposer) and self.is_character(recipient)
+        if proposer == recipient:
+            raise AbnormalUsageError(_("User %s can't be friend with himself") % proposer)
+        if self.are_friends(proposer, recipient):
+            raise AbnormalUsageError(_("Already existing friendship between %s and %s") % (proposer, recipient)) 
+        
+        friendship_proposals = self.data["friendships"]["proposed"]
+        friendships= self.data["friendships"]["sealed"]
+        if (proposer, recipient) in friendship_proposals:
+            raise AbnormalUsageError(_("%s has already requested the frienship of %s") % (proposer, recipient))
+        
+        current_date = datetime.utcnow()
+        if (recipient, proposer) in friendship_proposals:
+            # we seal the deal, with "recipient" as the initial proposer!
+            existing_data = friendship_proposals[(recipient, proposer)]
+            del friendship_proposals[(recipient, proposer)] # important
+            friendships[(recipient, proposer)] = PersistentDict(proposal_date=existing_data["proposal_date"], 
+                                                                acceptance_date=current_date) 
+        else:
+            friendship_proposals[(proposer, recipient)] = PersistentDict(proposal_date=current_date)
+     
+    
+    @readonly_method
+    def get_friendship_requests(self, username):
+        """
+        Returns a dict with entries "proposed_to" and "requested_by" (lists of character names).
+        These entries are of course exclusive (if a frienship was wanted by both sides, it'd be already sealed).
+        """
+        result = dict(proposed_to=[],
+                   requested_by=[])
+        assert self.is_character(username)
+        for proposer, recipient in self.data["friendships"]["proposed"].keys:
+            if proposer == username:
+                result["proposed_to"].append(recipient) 
+            elif recipient == username:
+                result["requested_by"].append(proposer) 
+        return result
+    
+    
+    @readonly_method
+    def get_friendships(self):
+        return self.data["friendships"]["sealed"]
+    
+    
+    @readonly_method
+    def get_friendship_params(self, username1, username2):
+        assert self.is_character(username1) and self.is_character(username2)
+        friendships = self.data["friendships"]["sealed"]
         try:
-            return (user1, user2), friendships[(user1, user2)]
+            return (username1, username2), friendships[(username1, username2)]
         except KeyError:
             try:
-                return (user2, user1), friendships[(user2, user1)]
+                return (username2, username1), friendships[(username2, username1)]
             except KeyError:
-                raise AbnormalUsageError(_("Unexisting friendship: %s<->%s") % (user1, user2))
+                raise AbnormalUsageError(_("Unexisting friendship: %s<->%s") % (username1, username2))
             
                 
     @readonly_method
-    def are_friends(self, user1, user2):
-        friendships = self.data["friendships"]
-        if (user1, user2) in friendships or (user2, user1) in friendships:
+    def are_friends(self, username1, username2):
+        friendships = self.data["friendships"]["sealed"]
+        if (username1, username2) in friendships or (username2, username1) in friendships:
             return True
         return False
     
@@ -694,43 +758,33 @@ class FriendshipHandling(BaseDataManager):
         friendships = self.data["friendships"]
 
         friends = []
-        for (user1, user2) in friendships.keys():
-            if user1 == username:
-                friends.append(user2)
-            elif user2 == username:
-                friends.append(user1)
+        for (username1, username2) in friendships.keys():
+            if username1 == username:
+                friends.append(username2)
+            elif username2 == username:
+                friends.append(username1)
                 
         assert username not in friends
         return friends
     
     
     @transaction_watcher
-    def seal_friendship(self, user1, user2, proposal_date):
-        assert self.is_character(user1) and self.is_character(user2) and proposal_date
-        if user1 == user2:
-            raise AbnormalUsageError(_("User %s can't be friend with himself") % user1)
-        if self.are_friends(user1, user2):
-            raise AbnormalUsageError(_("Already existing friendship: %s<->%s") % (user1, user2)) 
-        friendships = self.data["friendships"]
-        acceptance_date = datetime.utcnow()
-        friendships[(user1, user2)] = PersistentDict(proposal_date=proposal_date, acceptance_date=acceptance_date)
- 
-    
-    @transaction_watcher
-    def terminate_friendship(self, user1, user2):
-        friendship_key, friendship_data = self.get_friendship_params(user1, user2) # raises error if pb
+    def terminate_friendship(self, username1, username2):
+        friendship_key, friendship_data = self.get_friendship_params(username1, username2) # raises error if pb
         
         min_delay = self.get_global_parameter("friendship_minimum_duration_h")
         if friendship_data["acceptance_date"] > datetime.utcnow() - timedelta(hours=min_delay):
             raise NormalUsageError(_("That friendship is too young to be terminated - please respect the %dh delay") % min_delay)
         
-        del self.data["friendships"][friendship_key]
+        del self.data["friendships"]["sealed"][friendship_key]
     
     
     @transaction_watcher
-    def reset_friendships(self): 
-        self.data["friendships"].clear()
+    def reset_friendship_data(self): 
+        self.data["friendships"]["proposed"].clear()
+        self.data["friendships"]["sealed"].clear()
 
+ 
  
 @register_module
 class GameInstructions(BaseDataManager):
