@@ -354,57 +354,89 @@ class TestDatamanager(BaseGameTestCase):
         proposal_date = datetime.utcnow() - timedelta(hours=3)
         
         dm.reset_friendship_data()
-        assert not dm.get_friendships()
-    
-        with pytest.raises(UsageError):
-            dm.seal_friendship("guy1", "guy1", proposal_date=proposal_date) # auto-friendship impossible
+        
+        assert not dm.data["friendships"]["proposed"]
+        assert not dm.data["friendships"]["sealed"]
+        
+        with pytest.raises(AbnormalUsageError):
+            dm.propose_friendship("guy1", "guy1") # auto-friendship impossible
             
-        dm.seal_friendship("guy2", "guy1", proposal_date=proposal_date)
-        
-        with pytest.raises(UsageError):
-            dm.seal_friendship("guy2", "guy1", proposal_date=proposal_date)
-        with pytest.raises(UsageError):    
-            dm.seal_friendship("guy1", "guy2", proposal_date=proposal_date)
-        
-        assert dm.get_friendships().keys() == [("guy2", "guy1")] # order stays the same
-        params = dm.get_friendships().values()[0]
-        assert params["proposal_date"] == proposal_date
+        dm.propose_friendship("guy2", "guy1")
+        assert not dm.are_friends("guy1", "guy2")
+        assert not dm.are_friends("guy2", "guy1")
+        assert not dm.are_friends("guy1", "guy3")
+
+        with pytest.raises(AbnormalUsageError):
+            dm.propose_friendship("guy2", "guy1") # friendship already requested
+            
+        assert dm.data["friendships"]["proposed"]
+        assert not dm.data["friendships"]["sealed"]
+              
+        with pytest.raises(AbnormalUsageError):
+            dm.propose_friendship("guy2", "guy1") # duplicate proposal
+            
+        assert dm.get_friendship_requests("guy3") == dict(proposed_to=[],
+                                                          requested_by=[])    
+        assert dm.get_friendship_requests("guy1") == dict(proposed_to=[],
+                                                          requested_by=["guy2"])
+        assert dm.get_friendship_requests("guy2") == dict(proposed_to=["guy1"],
+                                                          requested_by=[])
+        time.sleep(0.5)
+        dm.propose_friendship("guy1", "guy2") # we seal friendship, here       
+
+        with pytest.raises(AbnormalUsageError):
+            dm.propose_friendship("guy2", "guy1") # already friends
+        with pytest.raises(AbnormalUsageError):
+            dm.propose_friendship("guy1", "guy2") # already friends
+                   
+        assert not dm.data["friendships"]["proposed"]
+        assert dm.data["friendships"]["sealed"].keys() == [("guy2", "guy1")] # order is "first proposer first"
+
+        key, params = dm.get_friendship_params("guy1", "guy2")
+        key_bis, params_bis = dm.get_friendship_params("guy2", "guy1")
+        assert key == key_bis == ("guy2", "guy1") # order OK
+        assert params == params_bis
+        assert datetime.utcnow() - timedelta(seconds=5) <= params["proposal_date"] <= datetime.utcnow()  
         assert datetime.utcnow() - timedelta(seconds=5) <= params["acceptance_date"] <= datetime.utcnow()  
+        assert params["proposal_date"] < params["acceptance_date"]
         
-        assert dm.get_friendship_params("guy2", "guy1") == dm.get_friendship_params("guy1", "guy2") == (("guy2", "guy1"), params) # order preserved
-        with pytest.raises(UsageError):
+        with pytest.raises(AbnormalUsageError):
             dm.get_friendship_params("guy1", "guy3")
-        with pytest.raises(UsageError):
+        with pytest.raises(AbnormalUsageError):
             dm.get_friendship_params("guy3", "guy1")            
-        with pytest.raises(UsageError):
+        with pytest.raises(AbnormalUsageError):
             dm.get_friendship_params("guy3", "guy4")              
             
         assert dm.are_friends("guy2", "guy1") == dm.are_friends("guy1", "guy2") == True
         assert dm.are_friends("guy2", "guy3") == dm.are_friends("guy3", "guy4") == False
         
-        dm.seal_friendship("guy2", "guy3", proposal_date=proposal_date)
+        dm.propose_friendship("guy2", "guy3") # proposed
+        dm.propose_friendship("guy3", "guy2") # accepted
         assert dm.get_friends("guy1") == dm.get_friends("guy3") == ["guy2"]
         assert dm.get_friends("guy2") in (["guy1", "guy3"], ["guy3", "guy1"]) # order not enforced
         assert dm.get_friends("guy4") == []
         
         with pytest.raises(AbnormalUsageError):
             dm.terminate_friendship("guy3", "guy4") # unexisting friendship
-            
         with pytest.raises(NormalUsageError):
             dm.terminate_friendship("guy1", "guy2") # too young   
                          
-        for params in dm.get_friendships().values():
+        for params in dm.data["friendships"]["sealed"].values():
             params["acceptance_date"] -= timedelta(hours=30) # delay must be 24h in dev
             dm.commit()         
                   
-        dm.terminate_friendship("guy1", "guy2")  
+        dm.terminate_friendship("guy1", "guy2") # success 
         assert not dm.are_friends("guy2", "guy1") 
         with pytest.raises(UsageError):
             dm.get_friendship_params("guy1", "guy2")
         assert dm.are_friends("guy2", "guy3") # untouched   
                                                     
         dm.reset_friendship_data()
-        assert not dm.get_friendships()    
+        assert not dm.data["friendships"]["proposed"]  
+        assert not dm.data["friendships"]["sealed"]  
+        assert not dm.get_friends("guy1")
+        assert not dm.get_friends("guy2")
+        assert not dm.get_friends("guy3")
         assert not dm.are_friends("guy2", "guy1")
         assert not dm.are_friends("guy3", "guy2")
         assert not dm.are_friends("guy3", "guy4")

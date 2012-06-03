@@ -677,14 +677,17 @@ class FriendshipHandling(BaseDataManager):
  
  
     
- 
+    """    
     @readonly_method
     def get_friendship_proposals(self):
         return self.data["friendships"]["proposed"]
-    
+    """
     
     @transaction_watcher
     def propose_friendship(self, proposer, recipient):
+        """
+        Can also act as "seal friendship", if a reciprocal request existed.
+        """
         assert self.is_character(proposer) and self.is_character(recipient)
         if proposer == recipient:
             raise AbnormalUsageError(_("User %s can't be friend with himself") % proposer)
@@ -694,7 +697,7 @@ class FriendshipHandling(BaseDataManager):
         friendship_proposals = self.data["friendships"]["proposed"]
         friendships= self.data["friendships"]["sealed"]
         if (proposer, recipient) in friendship_proposals:
-            raise AbnormalUsageError(_("%s has already requested the frienship of %s") % (proposer, recipient))
+            raise AbnormalUsageError(_("%s has already requested the friendship of %s") % (proposer, recipient))
         
         current_date = datetime.utcnow()
         if (recipient, proposer) in friendship_proposals:
@@ -705,7 +708,7 @@ class FriendshipHandling(BaseDataManager):
                                                                 acceptance_date=current_date) 
         else:
             friendship_proposals[(proposer, recipient)] = PersistentDict(proposal_date=current_date)
-     
+        # TODO - add game logging for both events
     
     @readonly_method
     def get_friendship_requests(self, username):
@@ -713,21 +716,21 @@ class FriendshipHandling(BaseDataManager):
         Returns a dict with entries "proposed_to" and "requested_by" (lists of character names).
         These entries are of course exclusive (if a frienship was wanted by both sides, it'd be already sealed).
         """
-        result = dict(proposed_to=[],
-                   requested_by=[])
         assert self.is_character(username)
-        for proposer, recipient in self.data["friendships"]["proposed"].keys:
+        result = dict(proposed_to=[],
+                      requested_by=[])
+        for proposer, recipient in self.data["friendships"]["proposed"].keys():
             if proposer == username:
                 result["proposed_to"].append(recipient) 
             elif recipient == username:
                 result["requested_by"].append(proposer) 
         return result
     
-    
+    """
     @readonly_method
     def get_friendships(self):
         return self.data["friendships"]["sealed"]
-    
+    """
     
     @readonly_method
     def get_friendship_params(self, username1, username2):
@@ -755,7 +758,7 @@ class FriendshipHandling(BaseDataManager):
         
         assert self.is_character(username)
         
-        friendships = self.data["friendships"]
+        friendships = self.data["friendships"]["sealed"]
 
         friends = []
         for (username1, username2) in friendships.keys():
@@ -1437,6 +1440,7 @@ class TextMessaging(BaseDataManager): # TODO REFINE
         self.log_game_event(_noop("Wiretapping targets set to (%(targets)s) for %(username)s."),
                              PersistentDict(targets="[%s]"%(", ".join(target_names)), username=username),
                              url=None)
+    
     
     def get_wiretapping_targets(self, username):
         return self.get_character_properties(username)["wiretapping_targets"]
