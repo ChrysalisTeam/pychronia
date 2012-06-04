@@ -28,7 +28,8 @@ from ..authentication import authenticate_with_credentials, logout_session
 from .. import datamanager as dm_module
 from rpgweb.utilities import mediaplayers, fileservers
 from rpgweb.datamanager import GameDataManager
-from rpgweb.common import game_file_url
+from rpgweb.common import game_file_url, UsageError
+from decorator import decorator
 
 
 '''
@@ -57,6 +58,22 @@ def ability(request, ability_name):
 
     return response
 '''
+
+
+def is_nightmare_captcha_successful(request):
+    captcha_id = request.POST.get("captcha_id") # CLEAR TEXT ATM
+    if captcha_id:
+        attempt = request.POST.get("captcha_answer")
+        if attempt:
+            try:
+                explanation = request.datamanager.check_captcha_answer_attempt(captcha_id=captcha_id, attempt=attempt)
+                del explanation # how can we display it, actually ?
+                request.user.add_message(_("Captcha check successful"))
+                return True
+            except UsageError:
+                pass
+    return False
+    
 
 
 def serve_game_file(request, hash="", path="", **kwargs):
