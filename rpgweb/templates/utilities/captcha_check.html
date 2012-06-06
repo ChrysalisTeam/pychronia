@@ -1,0 +1,46 @@
+{% extends "base_one_column.html" %}
+
+{% load i18n helpers %}  
+
+
+{% block content %}  
+
+
+<p>
+{% blocktrans %}
+    Sorry, we need to check your that you're neither a robot, nor a zombie.
+{% endblocktrans %}
+
+
+<form method="post">  {% comment %} form to same url exactly, params included {% endcomment %}
+<table style="margin:auto;width:400px;">
+
+    {% if captcha.text %}
+    <tr>
+	    <td>
+	        {% rich_text captcha.text %}
+	    </td>
+    </tr>
+    {% endif %}
+    {% if captcha.image %}
+    <tr>
+	    <td>
+	        <img src="{% game_file_url "captchas/" captcha.image %}"/>
+	    </td>
+    </tr>
+    {% endif %}
+    <tr>
+	    <td>
+	        <input type="hidden" name="captcha_id" value="{{ captcha.id }}"/>
+	        <input type="text" name="captcha_answer"/>
+	    </td>    
+    </tr>
+    <tr>
+        <td>
+            <input type="submit" name="submit_attempt"/>
+        </td>    
+    </tr>
+</table>
+</form>
+
+{% endblock %}

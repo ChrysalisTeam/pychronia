@@ -9,6 +9,8 @@ view_urlpatterns = patterns('rpgweb.views',
 
     # WARNING - DANGEROUS #
 
+    (r'^TEST_CAPTCHA/$', 'gameview_mixins.TestCaptcha'),
+
     (r'^CHARACTERS_IDENTITIES/$', 'CHARACTERS_IDENTITIES'),
     (r'^DATABASE_OPERATIONS/$', 'DATABASE_OPERATIONS'),
     (r'^FAIL_TEST/$', 'FAIL_TEST'),

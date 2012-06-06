@@ -396,12 +396,10 @@ class AbstractGameView(object):
      
     def _process_standard_request(self, request, *args, **kwargs):
         """
-        Meant to be overridden by a static view (dismissing self argument),
-        or a real method taking benefit from instance attribute.
-        
         Must return a valid http response.
         """
-        raise NotImplementedError("_process_standard_request must be implemented by AbstractGameView subclass")
+        return self._auto_process_request()
+    
     
     def _pre_request(self, request, *args, **kwargs):
         # we finish initializing the game view instance, with request-specific parameters

@@ -50,15 +50,16 @@ class AbstractAbility(AbstractGameView):
         self._ability_data = weakref.ref(self.datamanager.get_ability_data(self.NAME))
         self.logger = self.datamanager.logger # local cache
 
+
     @property
     def datamanager(self):
         return self # ability behaves as an extension of datamanager!!
     
+    
     def _process_standard_request(self, request, *args, **kwargs):
-        # do NOT call parent method (unimplemented)
         # Access checks have already been done here, so we may initialize lazy data
         self._perform_lazy_initializations() 
-        return self._auto_process_request()
+        return super(AbstractAbility, self)._process_standard_request(request, *args, **kwargs)
     
  
     def __getattr__(self, name):

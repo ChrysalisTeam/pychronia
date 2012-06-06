@@ -44,7 +44,7 @@ class GameUser(object):
         self._real_username = username
         self.is_impersonation = bool(impersonation)
         
-        self.has_write_access = has_write_access # allows or not POST requests
+        self.has_write_access = has_write_access # allows, or not, POST requests
         
         _effective_username = impersonation if impersonation else username
         self._effective_username = _effective_username
