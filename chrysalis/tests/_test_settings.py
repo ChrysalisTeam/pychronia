@@ -101,7 +101,7 @@ MEDIA_URL = '/media/'
 # CONFLICT HERE ??
 STATIC_ROOT = os.path.join(GAME_ROOT, "static")
 STATIC_URL = "/static/"
-### ADMIN_MEDIA_PREFIX = "/static/admin/"
+ADMIN_MEDIA_PREFIX = "/static/admin/" # deprecated but needed by django-cms
 
 
 # List of callables that know how to import templates from various sources.
@@ -150,9 +150,11 @@ TEMPLATE_DIRS = (
 
 INSTALLED_APPS = [
     'debug_toolbar',
-    'django.contrib.admin',
     'django.contrib.auth',
+    'django.contrib.admin',
+    
     'django.contrib.contenttypes',
+    #####'django.contrib.comments',
     'django.contrib.sessions', # only sessions are scalable for "sharding"
     'django.contrib.messages',
     'django.contrib.sites',
@@ -166,7 +168,7 @@ INSTALLED_APPS = [
     'south', 
     'sekizai',
     
-    
+     
     
     'cmsplugin_rst',
     'cmsplugin_simple_gallery',
@@ -191,9 +193,12 @@ INSTALLED_APPS = [
     'cmsplugin_filer_image',
     'cmsplugin_filer_teaser',
     'cmsplugin_filer_video',
-
+    
+   # 'tagging',
+#    'zinnia',
+#    'cmsplugin_zinnia',
+    
 ]
-
 
 THUMBNAIL_PROCESSORS = (
     'easy_thumbnails.processors.colorspace',
@@ -203,13 +208,22 @@ THUMBNAIL_PROCESSORS = (
     'easy_thumbnails.processors.filters',
 )
 
-
-
 CMS_SIMPLEGALLERY_THUMBNAIL_OPTIONS = {
     'size': (240, 180),
     'crop': True,
     'quality': 80,
 }
+
+"""
+#ZINNIA_ENTRY_BASE_MODEL = 'cmsplugin_zinnia.placeholder.EntryPlaceholder'
+CMSPLUGIN_ZINNIA_HIDE_ENTRY_MENU = False
+CMSPLUGIN_ZINNIA_TEMPLATES = []
+CMSPLUGIN_ZINNIA_APP_MENUS = ('cmsplugin_zinnia.menu.EntryMenu',
+                             'cmsplugin_zinnia.menu.CategoryMenu',
+                             'cmsplugin_zinnia.menu.TagMenu',
+                             'cmsplugin_zinnia.menu.AuthorMenu')
+
+"""
 
 
 try:

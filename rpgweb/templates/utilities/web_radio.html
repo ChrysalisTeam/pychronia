@@ -1,0 +1,27 @@
+
+{% extends "base_one_column.html" %}
+
+{% load i18n helpers %}  
+    
+
+
+{% block content %}  
+    
+    <div align="center">
+     <br/><br/>
+     
+     <object type="application/x-shockwave-flash" data="{{ MEDIA_URL }}multi_mp3_player/player_mp3_multi.swf" width="{{ player_width }}" height="{{ player_height }}">
+     <param name="movie" value="{{ MEDIA_URL }}webradio/player_mp3_multi.swf" />
+     <param name="bgcolor" value="#ffffff" />
+     <param name="FlashVars" value="width={{ player_width }}&amp;height={{ player_height }}&amp;configxml={{ player_conf_url|urlencode }}" />
+    
+     <!--param name="configxml" value="{% gameurl rpgweb.views.get_radio_xml_conf %}" /-->
+     </object>
+    </div>
+
+{% endblock %}        
+
+        
+        
+       
+  

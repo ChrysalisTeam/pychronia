@@ -1431,8 +1431,25 @@ def __personal_radio_messages_listing(request, template_name='generic_operations
                             context_instance=RequestContext(request))
 '''
     
+
+@register_view(access=UserAccess.anonymous, always_available=True)
+def listen_to_webradio(request, template_name='utilities/web_radio.html'):
+    return render(request,
+                  template_name,
+                    {
+                     "player_conf_url": reverse(get_radio_xml_conf, kwargs=dict(game_instance_id=request.datamanager.game_instance_id)),
+                     "player_width": 300,
+                     "player_height": 200,
+                    }) 
+     
+@register_view(access=UserAccess.anonymous, always_available=True)
+def get_radio_xml_conf(request, template_name='utilities/web_radio_conf.xml'):
+    return render(request,
+                  template_name,
+                    {
+                    })
     
-@register_view(access=UserAccess.anonymous)
+@register_view(access=UserAccess.anonymous, always_available=True)
 def listen_to_audio_messages(request, template_name='utilities/web_radio_applet.html'):
 
     access_authorized = False

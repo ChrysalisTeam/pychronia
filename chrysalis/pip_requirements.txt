@@ -1,4 +1,6 @@
 
+docutils
+sphinx
 
 Django>=1.3
 django-cms>=2.2
@@ -7,6 +9,8 @@ django-debug-toolbar>=0.8.5
 cmsplugin-filer>=0.8.0
 django-inline-ordering>=0.1.3
 
+cmsplugin_zinnia
+django-blog-zinnia
 # other plugins, not well maintained, are included in repository
 
 

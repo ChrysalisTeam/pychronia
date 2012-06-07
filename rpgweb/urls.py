@@ -35,6 +35,9 @@ view_urlpatterns = patterns('rpgweb.views',
     (r'^slideshow/$', 'items_slideshow'),            # Beware: slideshow URLs must not contain underscores,
     (r'^item3dview/(?P<item>.*)/$', 'item_3d_view'), # else 3D images are flashing !
 
+
+    (r'^webradio/$', 'listen_to_webradio'),
+    (r'^webradio_conf/$', 'get_radio_xml_conf'),
     (r'^webradio_applet/$', 'listen_to_audio_messages'),
 
     (r'^view_sales/$', 'view_sales'),

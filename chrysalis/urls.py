@@ -18,8 +18,11 @@ urlpatterns = patterns('',
     #(r'^admin/filebrowser/', include('filebrowser.urls')), # TO BE PUT BEFORE "admin/" !!
     # Uncomment the next line to enable the admin:
     (r'^admin/', include(admin.site.urls)),
-    
+   # url(r'^weblog/', include('zinnia.urls')),
+ #   url(r'^comments/', include('django.contrib.comments.urls')),
     (r'^', include('cms.urls')), # this MUST end with '/' or be empty
 )
 
+from pprint import pprint
+pprint(urlpatterns)
 
