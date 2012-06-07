@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 from rpgweb.common import *
 
 from django.http import HttpResponse
-from django.shortcuts import render_to_response
+from django.shortcuts import render
 from django.template import RequestContext, loader
 
 from ..datamanager import GameDataManager, readonly_method, transaction_watcher

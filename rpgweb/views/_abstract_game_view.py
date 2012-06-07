@@ -7,7 +7,7 @@ import json
 
 from django.http import Http404, HttpResponseRedirect, HttpResponse,\
     HttpResponseForbidden, HttpResponseBadRequest
-from django.shortcuts import render_to_response
+from django.shortcuts import render
 from django.template import RequestContext, loader
 
 from ..datamanager import GameDataManager
@@ -378,9 +378,9 @@ class AbstractGameView(object):
 
         assert isinstance(template_vars, collections.Mapping), template_vars
 
-        response = render_to_response(self.TEMPLATE,
-                                      template_vars,
-                                      context_instance=RequestContext(self.request))
+        response = render(self.request,
+                          self.TEMPLATE,
+                          template_vars)
         return response
 
         
@@ -470,9 +470,9 @@ class AbstractGameView(object):
                      
             template_vars = self.compute_admin_template_variables(form_name=form_name, previous_form_data=previous_form_data)
             
-            response = render_to_response(self.ADMIN_TEMPLATE,
-                                          template_vars,
-                                          context_instance=RequestContext(request))
+            response = render(request,
+                              self.ADMIN_TEMPLATE,
+                              template_vars)
             return response
         finally:
             self._post_request()

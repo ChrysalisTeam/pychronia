@@ -7,7 +7,7 @@ import json
 
 from django.http import Http404, HttpResponseRedirect, HttpResponse,\
     HttpResponseForbidden, HttpResponseBadRequest
-from django.shortcuts import render_to_response, render
+from django.shortcuts import render
 from django.template import RequestContext, loader
 
 from ..datamanager import GameDataManager
