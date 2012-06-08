@@ -1535,11 +1535,9 @@ class RadioMessaging(BaseDataManager): # TODO REFINE
 
     def _load_initial_data(self, **kwargs):
         super(RadioMessaging, self)._load_initial_data(**kwargs)
-
+  
         new_data = self.data
-        for (audio_id, audio_properties) in new_data["audio_messages"].items():
-            audio_properties["url"] = game_file_url("audio_messages/" + audio_properties["file"])
-
+        # do nothing
 
     def _check_database_coherency(self, **kwargs):
         super(RadioMessaging, self)._check_database_coherency(**kwargs)
@@ -1559,10 +1557,11 @@ class RadioMessaging(BaseDataManager): # TODO REFINE
         assert game_data["audio_messages"]["intro_audio_messages"]
         for (name, properties) in game_data["audio_messages"].items():
             utilities.check_is_slug(name)
+            utilities.check_is_string(properties["title"])
             assert properties["text"] and isinstance(properties["text"], basestring)
             assert properties["file"] and isinstance(properties["file"], basestring)
-            assert properties["url"] and isinstance(properties["url"], basestring)
-
+            
+            # TODO - ensure no "|" in file name!!
             assert os.path.isfile(os.path.join(config.GAME_FILES_ROOT,
                                   "audio_messages", properties["file"])), properties["file"]
 
@@ -1612,8 +1611,13 @@ class RadioMessaging(BaseDataManager): # TODO REFINE
 
     @readonly_method
     def get_audio_message_properties(self, audio_id):
+        """
+        Returns a copy of audio properties, including url of sound file.
+        """
         audio_properties = self.data["audio_messages"][audio_id]
-        return audio_properties
+        return dict(url=game_file_url("audio_messages/" + audio_properties["file"]),
+                    **audio_properties)
+
 
 
     @transaction_watcher
@@ -1622,7 +1626,7 @@ class RadioMessaging(BaseDataManager): # TODO REFINE
 
         res = False
 
-        if audio_id in queue: # in case several radio run simultaneously or if a reset occurred inbetween...
+        if audio_id in queue: # we check, in case several radio run simultaneously or if a reset occurred inbetween...
             queue.remove(audio_id)
             res = True
 

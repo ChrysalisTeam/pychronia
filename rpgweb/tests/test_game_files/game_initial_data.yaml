@@ -282,25 +282,32 @@ character_properties:
 audio_messages:
 
     intro_audio_messages:
+        title: "Annonce 1"
         text: "Veuillez écouter maintenant quelques messages personnels."
         file: "intro_messages.mp3"
 
     new_messages_1:
+        title: "Tante Amélie"
         text: "Tante Amélie fait du vélo en short."
         file: "amelie.mp3"
 
     new_messages_2:
+        title: "Tante Atalie"
         text: "Tante Atalie fait du vélo en short."
         file: "atalie.mp3"
         
     victory_acharis:
+        title: "Cat Sound"
         text: "Sound of a cat"
         file: andromaque.mp3
+        
     defeat_acharis:
+        title: "Cicada Sound"
         text: "Sound of a cicada"
         file: "other.mp3"
-
+ 
     info_spots_1:
+        title: "News internationales"
         text: "ambassadors eviction + nalavut council begins + alcohol exhibition"
         file: "berce.mp3"
 

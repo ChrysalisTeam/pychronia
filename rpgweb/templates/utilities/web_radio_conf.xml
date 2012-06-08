@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config>
-    <param name="mp3" value="test.mp3|test.mp3|test.mp3|test.mp3|test.mp3|test.mp3|test.mp3" />
-    <param name="title" value="un titre plutôt long pour montrer le défilement qui marche assez bien ^^" />
+    <param name="mp3" value="{{ audio_urls }}" />
+    <param name="title" value="{{ audio_titles }}" />
     
     <!--param name="height" value="400" />
     <param name="width" value="600" /-->

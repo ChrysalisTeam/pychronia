@@ -1444,10 +1444,16 @@ def listen_to_webradio(request, template_name='utilities/web_radio.html'):
      
 @register_view(access=UserAccess.anonymous, always_available=True)
 def get_radio_xml_conf(request, template_name='utilities/web_radio_conf.xml'):
+    dm = request.datamanager
+    current_playlist = dm.get_all_next_audio_messages()
+    current_audio_messages = [dm.get_audio_message_properties(audio_id) for audio_id in current_playlist]
+    
+    audio_urls = "|".join([msg["url"] for msg in current_audio_messages]) # we expect no "|" inside a single url
+    audio_titles = "|".join([msg["title"].replace("|", "") for msg in current_audio_messages]) # here we can cleanup
     return render(request,
                   template_name,
-                    {
-                    })
+                  dict(audio_urls=audio_urls,
+                       audio_titles=audio_titles))
     
 @register_view(access=UserAccess.anonymous, always_available=True)
 def listen_to_audio_messages(request, template_name='utilities/web_radio_applet.html'):
