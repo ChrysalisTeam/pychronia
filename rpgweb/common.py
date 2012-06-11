@@ -35,6 +35,7 @@ from .utilities.counter import Counter
 
 _undefined = object()
 
+logger = logging.getLogger()
 
 class UserAccess:
     """

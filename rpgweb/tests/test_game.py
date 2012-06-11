@@ -267,6 +267,23 @@ class TestDatamanager(BaseGameTestCase):
 
 
     @for_datamanager_base
+    def test_requestless_datamanager(self):
+        
+        assert self.dm.request
+        self.dm._request = None
+        assert self.dm.request is None # property
+        
+        # user notifications get swallowed
+        user = self.dm.user
+        user.add_message("sqdqsd")
+        user.add_error("fsdfsdf")
+        assert user.get_notifications() == []
+        assert not user.has_notifications()
+        user.discard_notifications()
+
+        
+
+    @for_datamanager_base
     def test_modular_architecture(self):
         
         assert len(MODULES_REGISTRY) > 4
@@ -1058,7 +1075,7 @@ class TestDatamanager(BaseGameTestCase):
         self.assertEqual(username, "guy3")
 
         properties = self.dm.get_audio_message_properties(audio_id)
-        self.assertEqual(set(properties.keys()), set(["text", "file", "url"]))
+        self.assertEqual(set(properties.keys()), set(["text", "file", "url", "title"]))
 
         #self.assertEqual(properties["new_messages_notification_for_user"], "guy3")
         #self.assertEqual(self.dm.get_audio_message_properties("request_for_report_teldorium")["new_messages_notification_for_user"], None)

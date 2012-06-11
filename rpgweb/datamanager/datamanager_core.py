@@ -31,7 +31,7 @@ logging.getLogger("txn").setLevel(logging.WARNING) # ZODB transactions
 
 
 
-class BaseDataManager(utilities.TechnicalEventsMixin, Persistent):
+class BaseDataManager(utilities.TechnicalEventsMixin):
 
     class DB_STATES:
         CONNECTED = "CONNECTED" # initial state
@@ -46,6 +46,7 @@ class BaseDataManager(utilities.TechnicalEventsMixin, Persistent):
         if not self._in_transaction:
             assert not self.connection._registered_objects, repr(self.connection._registered_objects) # BEFORE TRANSACTION
             self._in_transaction = True
+            #transaction.begin() # not really needed
             return None # value indicating top level
         else:
             return transaction.savepoint()
@@ -78,7 +79,6 @@ class BaseDataManager(utilities.TechnicalEventsMixin, Persistent):
 
         '''
         assert game_root is not None
-        assert request is not None
         
         super(BaseDataManager, self).__init__(**kwargs)
         
@@ -99,12 +99,12 @@ class BaseDataManager(utilities.TechnicalEventsMixin, Persistent):
         self.db_state = self.DB_STATES.CONNECTED
 
         try:
-            if not self.data: # DB file must have been erased
+            if not self.data: # new game instance
                 self.reset_game_data()
             else:
                 self.db_state = self.DB_STATES.INITIALIZED
         except:
-            self.logger.error(_("Runtime data couldn't be initialized - delete DB file and try again."), exc_info=True)
+            ##self.logger.error(_("Runtime data couldn't be initialized - delete DB file and try again."), exc_info=True)
             raise
     
     @property
@@ -126,7 +126,7 @@ class BaseDataManager(utilities.TechnicalEventsMixin, Persistent):
             assert not self.connection._registered_objects # else problem, pending changes created by views!
             self.connection.close()
             self.connection = None
-
+            self.db_state = self.DB_STATES.SHUTDOWN
 
         # TOFIX - remove all that !!
         """
@@ -177,7 +177,8 @@ class BaseDataManager(utilities.TechnicalEventsMixin, Persistent):
             config.GAME_INITIAL_FIXTURE_SCRIPT(self)    
         
         self.db_state = self.DB_STATES.INITIALIZED
-
+        
+        self.check_database_coherency()
 
 
     def _load_initial_data(self, **kwargs):

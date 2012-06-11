@@ -77,7 +77,7 @@ TEST_GAME_INSTANCE_ID = "TeStiNg"
 ROOT_GAME_URL = "/%s" % TEST_GAME_INSTANCE_ID
 HOME_URL = reverse(rpgweb.views.homepage, kwargs={"game_instance_id": TEST_GAME_INSTANCE_ID})
 
-sys.setrecursionlimit(200) # to help detect recursion problems
+sys.setrecursionlimit(800) # to help detect recursion problems
 
 logging.basicConfig() ## FIXME
 logging.disable(0)
@@ -201,7 +201,7 @@ class BaseGameTestCase(TestCase):
             
             self.request = self.factory.get(HOME_URL)
             assert self.request.user
-            assert self.request.datamanager.user.request # double linking
+            assert self.request.datamanager.user.datamanager.request # double linking
             assert self.request.session 
             assert self.request._messages is not None
             assert self.request.datamanager
@@ -214,9 +214,10 @@ class BaseGameTestCase(TestCase):
             """dm_module.GameDataManager(game_instance_id=TEST_GAME_INSTANCE_ID,
                                                 game_root=self.connection.root(),
                                                 request=self.request) # request is used"""
-
+                                                
             self.dm.reset_game_data()
-
+            
+            self.dm.clear_all_event_stats()
             self.dm.check_database_coherency() # important
             assert self.dm.get_event_count("BASE_CHECK_DB_COHERENCY_PUBLIC_CALLED") == 1 # no bypassing because of wrong override
             
@@ -251,12 +252,14 @@ class BaseGameTestCase(TestCase):
 
         try: # FIXEME REMOVE
             self.connection.close()
-        except:
+        except Exception, e:
+            print("####", e)
             pass
-
+     
         try: # FIXEME REMOVE
             self.db.close()
-        except:
+        except Exception, e:
+            print("#######", e)
             pass
 
         rpgweb.middlewares.ZODB_TEST_DB = None

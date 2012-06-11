@@ -2583,9 +2583,6 @@ class SpecialAbilities(BaseDataManager):
 
     def _check_database_coherency(self, strict=False, **kwargs):
         super(SpecialAbilities, self)._check_database_coherency(**kwargs)
-        from rpgweb.tests._test_tools import RequestMock
-        dummy_request = RequestMock().get("/")
-        dummy_request.datamanager = self # coherency
         for name in self.ABILITIES_REGISTRY.keys():
             ability = self.instantiate_ability(name)
             ability.check_data_sanity(strict=strict)

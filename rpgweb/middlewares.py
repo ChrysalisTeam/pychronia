@@ -18,23 +18,12 @@ import rpgweb.datamanager as dm_module
 
 
 
-
-
+ZODB_TEST_DB = None # may be overwritten during tests, to override normal database
 
 # TOFIX - use real database pool, later on
 _database_pool = utilities.open_zodb_file(config.ZODB_FILE)
 
-def _shutdown():
-    global _database_pool
-    try:
-        _database_pool.close()
-        time.sleep(0.5) # to help daemon threads stop cleanly, just in case
-    except:
-        pass # maybe database was already automatically closed
-atexit.register(_shutdown) # it should work !
 
-
-ZODB_TEST_DB = None # may be overwritten during tests, to override normal database
 
 class ZodbTransactionMiddleware(object):
 
@@ -66,7 +55,7 @@ class ZodbTransactionMiddleware(object):
             connection = DB.open()
 
             request.datamanager = dm_module.GameDataManager(game_instance_id=game_instance_id, 
-                                                            game_root=connection.root(), # TDO FIXME - discriminate table with game_instance_id
+                                                            game_root=connection.root(), # TODO FIXME - discriminate table with game_instance_id
                                                             request=request) 
 
             if not request.datamanager.is_initialized():

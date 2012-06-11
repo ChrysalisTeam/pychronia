@@ -45,10 +45,30 @@ def readonly_method(func, self, *args, **kwargs):
             raise RuntimeError("ZODB was changed by readonly method %s: %s != %s" % (func.__name__, original_str, final_str))
 
 
+@decorator
+def zodb_transaction(func, *args, **kwargs):
+    """
+    Simply wraps a callable with a transaction rollback/commit logic.
+    
+    Subtransactions are not supported with this decorator.
+    """
+    transaction.begin() # not really needed
+    try:
+        res = func(self, *args, **kwargs)   
+        return res
+    except:
+        transaction.abort()
+        raise
+    finally: 
+        transaction.commit()   
+        
+
 def transaction_watcher(object=None, ensure_data_ok=True, ensure_game_started=True):
     """
-    Context manager that can be directly used on a function, or customized with 
-    keyword arguments and then only applied to a function.
+    Decorator for use on datamanager and ability methods.
+    
+    It that can be directly applied to a method, or customized with 
+    keyword arguments and then only applied to a method.
     
     *ensure_data_ok* false implies *ensure_game_started* false too.
     """
@@ -78,6 +98,7 @@ def transaction_watcher(object=None, ensure_data_ok=True, ensure_game_started=Tr
 
         was_in_transaction = datamanager._in_transaction
         savepoint = datamanager.begin()
+        assert datamanager._in_transaction
         assert not was_in_transaction or savepoint, repr(savepoint)
 
         try:
@@ -90,8 +111,10 @@ def transaction_watcher(object=None, ensure_data_ok=True, ensure_game_started=Tr
             if not savepoint:
                 assert not datamanager.connection._registered_objects, datamanager.connection._registered_objects # on real commit
             return res
-        except Exception:
-            #print("ROLLING BACK", func.__name__, savepoint)
+        
+        except Exception, e:
+            print("ROLLING BACK", func.__name__, savepoint, e)
+            logger.warn("ROLLING BACK", exc_info=True)
             datamanager.rollback(savepoint)
             if not savepoint:
                 assert not datamanager.connection._registered_objects, datamanager.connection._registered_objects # on real rollback

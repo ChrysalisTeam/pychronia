@@ -63,7 +63,10 @@ class GameUser(object):
         #elf.errors = previous_user.errors if previous_user else []
 
         
-
+    @property
+    def datamanager(self):
+        return self._datamanager()
+    
     @property
     def real_username(self):
         return self._real_username
@@ -91,32 +94,42 @@ class GameUser(object):
 
 
     ## Persistent user messages using django.contrib.messages ##
-
+    
+    def _check_request_available(self):
+        if not self.datamanager.request:
+            logger.critical("Unexisting request object looked up by GameUser", exc_info=True)
+            return False
+        return True
+    
     def add_message(self, message):
-        assert self.request
-        messages.success(self.request, message)
+        if self._check_request_available():
+            messages.success(self.datamanager.request, message)
         
     def add_error(self, error):
-        assert self.request
-        messages.error(self.request, error)
+        if self._check_request_available():
+            messages.error(self.datamanager.request, error)
         
     def get_notifications(self):
         """
         Messages will only be deleted after being iterated upon.
         """
-        assert self.request
-        return messages.get_messages(self.request)
-    
+        if self._check_request_available():
+            return messages.get_messages(self.datamanager.request)
+        else:
+            return []
+        
     def has_notifications(self):
-        assert self.request
-        return bool(len(messages.get_messages(self.request)))
+        if self._check_request_available():
+            return bool(len(messages.get_messages(self.datamanager.request)))
+        return False
     
     def discard_notifications(self):
-        assert self.request
         from django.contrib.messages.storage import default_storage
-        self.request._messages = default_storage(self.request) # big hack
+        if self._check_request_available():
+            self.datamanager.request._messages = default_storage(self.datamanager.request) # big hack
         
         
+    ''' USELESS
     def _dm_call_forwarder(self, func_name, *args, **kwargs):
         """
         Forwards call to the select function of the attached datamanager, 
@@ -141,4 +154,4 @@ class GameUser(object):
                                      username=self._effective_username)
         else:
             return obj
-
+    '''

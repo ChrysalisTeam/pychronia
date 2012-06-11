@@ -9,16 +9,5 @@ from . import datamanager_modules
 
 from .datamanager_tools import *
 from .datamanager_core import *  # only for temporary compatibility
-
-
-AllBases = tuple(reversed(datamanager_modules.MODULES_REGISTRY)) # latest classes must be first in hierarchy
-
-
-GameDataManager = type(str('GameDataManager'), AllBases, {})
-
-
-#print(GameDataManager.__mro__)
-
-assert GameDataManager.__mro__[-4:] == (BaseDataManager, utilities.TechnicalEventsMixin, datamanager_core.Persistent, object) # IMPORTANT - all modules must be BEFORE BaseDataManager
-
+from .datamanager_administrator import GameDataManager
 
