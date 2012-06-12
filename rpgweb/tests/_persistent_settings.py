@@ -3,15 +3,13 @@
 from ._test_settings import *
 
 
-
+# we override transient test DBs with persistent ones
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(TEST_DIR, "django.db")
     }
 }
-
-
 ZODB_FILE = os.path.join(TEST_DIR, "gamedata.fs")
 
 

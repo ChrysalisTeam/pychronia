@@ -312,8 +312,8 @@ class DomainHandling(BaseDataManager): # TODO REFINE
 class PlayerAuthentication(BaseDataManager):
 
 
-    def __init__(self, **kwargs):
-        super(PlayerAuthentication, self).__init__(**kwargs)
+    def _init_from_db(self, **kwargs):
+        super(PlayerAuthentication, self)._init_from_db(**kwargs)
         self.user = None
         self._set_user(username=None, has_write_access=True) # TODO - improve by doing player authentication at init time?
 
@@ -2390,8 +2390,8 @@ class GameViews(BaseDataManager):
     ACTIVABLE_VIEWS_REGISTRY = {} # only views that need to be activated by game master
     
     
-    def __init__(self, **kwargs):
-        super(GameViews, self).__init__(**kwargs)
+    def _init_from_db(self, **kwargs):
+        super(GameViews, self)._init_from_db(**kwargs)
         self.sync_game_view_data() # important if some views have disappeared since then
 
 
@@ -2437,7 +2437,7 @@ class GameViews(BaseDataManager):
         new_data = self.data
         new_data.setdefault("views", PersistentDict())
         new_data["views"].setdefault("activated_views", PersistentList())
-        # no need to sync - it will done later in __init__()
+        # no need to sync - it will done later in _init_from_db()
 
 
     def _check_database_coherency(self, **kwargs):
@@ -2530,8 +2530,8 @@ class SpecialAbilities(BaseDataManager):
     ABILITIES_REGISTRY = {}  # abilities automatically register themselves with this dict, thanks to their metaclass
 
 
-    def __init__(self, **kwargs):
-        super(SpecialAbilities, self).__init__(**kwargs)
+    def _init_from_db(self, **kwargs):
+        super(SpecialAbilities, self)._init_from_db(**kwargs)
         #self.abilities = SpecialAbilities.AbilityLazyLoader(self)
         self.sync_ability_data()
     

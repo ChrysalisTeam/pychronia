@@ -1747,10 +1747,6 @@ def DATABASE_OPERATIONS(request):
 
     try:
 
-        # NONE ACTIVATED AT THE MOMENT
-        #if request.GET.get("shutdown"):
-        #    request.datamanager.shutdown()
-        #    return HttpResponse("OK - ZODB connection shutdown")
         if request.GET.get("reset_game_data"):
             request.datamanager.reset_game_data()
             return HttpResponse("OK - Game data reset")

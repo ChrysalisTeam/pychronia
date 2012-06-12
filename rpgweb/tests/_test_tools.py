@@ -3,7 +3,6 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 
-
 import os, sys, pytest, unittest
 
 
@@ -13,7 +12,8 @@ os.environ["DJANGO_SETTINGS_MODULE"] = "rpgweb.tests._test_settings"
 
 
 from rpgweb.common import *
-
+from rpgweb.datamanager.datamanager_administrator import create_game_instance,\
+    retrieve_game_instance, game_instance_exists, reset_zodb_structure
 import rpgweb.datamanager as dm_module
 from rpgweb.datamanager import *
 from rpgweb.datamanager.datamanager_modules import *
@@ -34,10 +34,6 @@ from rpgweb.abilities import *
 
 if not config.DB_RESET_ALLOWED:
     raise RuntimeError("Can't launch tests - we must be in a production environment !!")
-
-
-TEST_ZODB_FILE = config.ZODB_FILE+".test" # let's not conflict with the handle already open in middlewares, on config.ZODB_FILE
-
 
 
 
@@ -79,12 +75,9 @@ HOME_URL = reverse(rpgweb.views.homepage, kwargs={"game_instance_id": TEST_GAME_
 
 sys.setrecursionlimit(800) # to help detect recursion problems
 
-logging.basicConfig() ## FIXME
-logging.disable(0)
-logging.getLogger(0).setLevel(logging.DEBUG)
-
-
-
+logging.basicConfig()
+logging.getLogger().setLevel(logging.DEBUG)
+logging.disable(logging.CRITICAL) # to be commented if more output is wanted !!!
 
 
   
@@ -135,6 +128,7 @@ class AutoCheckingDM(object):
     """
 
     def __init__(self, dm):
+        assert dm.connection # really initialized DM
         object.__setattr__(self, "_real_dm", dm) # bypass overriding of __setattr__ below
 
     def __getattribute__(self, name):
@@ -155,7 +149,8 @@ class AutoCheckingDM(object):
                     print("Abnormal exception seen:", e)
                     raise
                 finally:
-                    assert not real_dm.connection._registered_objects, real_dm.connection._registered_objects # AFTER
+                    if real_dm.connection: # i.e not for close() method
+                        assert not real_dm.connection._registered_objects, real_dm.connection._registered_objects # AFTER
                 return res
 
             return _checked_method
@@ -164,7 +159,13 @@ class AutoCheckingDM(object):
         return object.__getattribute__(self, "_real_dm").__setattr__(name, value)
             
 
-
+@contextlib.contextmanager
+def temp_datamanager(game_instance_id, request=None):
+    assert game_instance_exists(game_instance_id)
+    dm = retrieve_game_instance(game_instance_id, request=request)
+    yield dm
+    dm.close()
+    
 
 
 
@@ -186,14 +187,9 @@ class BaseGameTestCase(TestCase):
         
         django.utils.translation.activate("en") # to test for error messages, just in case...
 
-        logging.basicConfig() # in case ZODB or others have things to say...
-    
-        self.db = utilities.open_zodb_file(TEST_ZODB_FILE)
-
-        rpgweb.middlewares.ZODB_TEST_DB = self.db # to allow testing views via normal request dispatching
-
-        self.connection = self.db.open()
- 
+        reset_zodb_structure()
+        create_game_instance(game_instance_id=TEST_GAME_INSTANCE_ID, master_email="dummy@dummy.fr", master_login="master", master_password="ultimate")
+        
         try: 
             
             self.client = Client()
@@ -211,11 +207,8 @@ class BaseGameTestCase(TestCase):
             self.request._messages = default_storage(self.request)
             
             self.dm = self.request.datamanager
-            """dm_module.GameDataManager(game_instance_id=TEST_GAME_INSTANCE_ID,
-                                                game_root=self.connection.root(),
-                                                request=self.request) # request is used"""
-                                                
-            self.dm.reset_game_data()
+            assert self.dm.is_initialized
+            assert self.dm.connection
             
             self.dm.clear_all_event_stats()
             self.dm.check_database_coherency() # important
@@ -231,45 +224,22 @@ class BaseGameTestCase(TestCase):
             self.initial_msg_sent_length = len(self.dm.get_all_sent_messages())
             self.initial_msg_queue_length = len(self.dm.get_all_queued_messages())
 
-
             # comment this to have eclipse's autocompletion to work for datamanager anyway
             self.dm = AutoCheckingDM(self.dm) # protection against uncommitted, pending changes
-
-            logging.disable(logging.CRITICAL) # to be commented if more output is wanted !!!
-
             
-        except:
-            self.tearDown(check=False) # cleanup of db and connection in any case
+        except Exception, e:
+            print(">>>>>>>>>", e)
+            self.tearDown(check=False) # cleanup of connection
             raise
 
 
     def tearDown(self, check=True):
-
-        if hasattr(self, "dm") and check:
-            self.dm.check_database_coherency()
-
-        self.dm = None
-
-        try: # FIXEME REMOVE
-            self.connection.close()
-        except Exception, e:
-            print("####", e)
-            pass
-     
-        try: # FIXEME REMOVE
-            self.db.close()
-        except Exception, e:
-            print("#######", e)
-            pass
-
-        rpgweb.middlewares.ZODB_TEST_DB = None
-
-        ''' useless since we use a specific test DB
-        # we empty the DB, so that at next restart the server resets its DBs automatically !
-        for key in self.dm.data.keys():
-            del self.dm.data[key]
-        self.dm.commit()
-        '''
+        if hasattr(self, "dm"):
+            if check:
+                self.dm.check_database_coherency()
+            self.dm.close()
+            self.dm = None
+        
 
 
     def _set_user(self, username, has_write_access=True):

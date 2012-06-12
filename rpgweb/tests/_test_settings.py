@@ -35,10 +35,8 @@ DATABASES = {
         'NAME': os.path.join(TEMP_DIR, "django.db.%s" % UNICITY_STRING)
     }
 }
-
-
-
 ZODB_FILE = os.path.join(TEMP_DIR,'gamedata.fs.%s' % UNICITY_STRING)
+
 
 GAME_ROOT = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 MEDIA_ROOT = os.path.join(GAME_ROOT, 'static')

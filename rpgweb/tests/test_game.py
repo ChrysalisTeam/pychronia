@@ -16,6 +16,9 @@ from rpgweb import views
 from rpgweb.utilities import fileservers, autolinker
 from django.test.client import RequestFactory
 import pprint
+from rpgweb.datamanager.datamanager_administrator import retrieve_game_instance,\
+    _get_zodb_connection
+from rpgweb.tests._test_tools import temp_datamanager
 
 
 
@@ -275,7 +278,7 @@ class TestDatamanager(BaseGameTestCase):
         
         # user notifications get swallowed
         user = self.dm.user
-        user.add_message("sqdqsd")
+        user.add_message("sqdqsd sss")
         user.add_error("fsdfsdf")
         assert user.get_notifications() == []
         assert not user.has_notifications()
@@ -297,22 +300,28 @@ class TestDatamanager(BaseGameTestCase):
             utilities.TechnicalEventsMixin.__init__(castrated_dm) # only that mixing gets initizalized
                                                     
             try:
-                castrated_dm.__init__(game_instance_id=TEST_GAME_INSTANCE_ID,
-                                      game_root=self.connection.root(),
+                root = _get_zodb_connection().root()
+                my_id = str(random.randint(1, 10000))
+                root[my_id] = PersistentDict()
+                castrated_dm.__init__(game_instance_id=my_id,
+                                      game_root=root[my_id],
                                       request=self.request)
             except Exception, e:
+                transaction.abort()
                 print("AAA", e)
             assert castrated_dm.get_event_count("BASE_DATA_MANAGER_INIT_CALLED") == 1
 
             try:
                 castrated_dm._load_initial_data()
             except Exception, e:
+                transaction.abort()
                 print("BBB", e)
             assert castrated_dm.get_event_count("BASE_LOAD_INITIAL_DATA_CALLED") == 1
                 
             try:
                 castrated_dm._check_database_coherency()
             except Exception, e:
+                transaction.abort()
                 print("CCC", e)
             assert castrated_dm.get_event_count("BASE_CHECK_DB_COHERENCY_PRIVATE_CALLED") == 1
 
@@ -320,6 +329,7 @@ class TestDatamanager(BaseGameTestCase):
                 report = PersistentList()
                 castrated_dm._process_periodic_tasks(report)
             except Exception, e:
+                transaction.abort()
                 print("DDD", e)
             assert castrated_dm.get_event_count("BASE_PROCESS_PERIODIC_TASK_CALLED") == 1
                                        
@@ -1524,10 +1534,8 @@ class TestDatamanager(BaseGameTestCase):
         assert not self.dm.is_game_view_activated(random_view) # cleanup occurred
         assert self.dm.get_event_count("SYNC_GAME_VIEW_DATA_CALLED") == 1
         
-        _dm2 = dm_module.GameDataManager(game_instance_id=TEST_GAME_INSTANCE_ID,
-                                  game_root=self.connection.root(),
-                                  request=self.request)
-        assert _dm2.get_event_count("SYNC_GAME_VIEW_DATA_CALLED") == 1 # sync well called at init!!
+        with temp_datamanager(TEST_GAME_INSTANCE_ID, self.request) as _dm2:
+            assert _dm2.get_event_count("SYNC_GAME_VIEW_DATA_CALLED") == 1 # sync well called at init!!
 
         self.dm.ACTIVABLE_VIEWS_REGISTRY[random_view] = random_klass # test cleanup
         
@@ -1589,15 +1597,12 @@ class TestDatamanager(BaseGameTestCase):
         with pytest.raises(KeyError):        
             self.dm.get_ability_data("dummy_ability") # not yet setup in ZODB
         
-        _dm = dm_module.GameDataManager(game_instance_id=TEST_GAME_INSTANCE_ID,
-                                        game_root=self.connection.root(),
-                                        request=self.request)
-        assert "dummy_ability" in _dm.get_abilities()
-        assert _dm.get_ability_data("dummy_ability") # ability now setup in ZODB
-        assert self.dm.get_event_count("LATE_ABILITY_SETUP_DONE") == 1 # parasite event - autosync well called at init!!
-        
-        del self.dm.ABILITIES_REGISTRY["dummy_ability"] # important cleanup!!!
-         
+        with temp_datamanager(TEST_GAME_INSTANCE_ID, self.request) as _dm:
+            assert "dummy_ability" in _dm.get_abilities()
+            assert _dm.get_ability_data("dummy_ability") # ability now setup in ZODB
+            assert self.dm.get_event_count("LATE_ABILITY_SETUP_DONE") == 1 # parasite event - autosync well called at init!!
+            del self.dm.ABILITIES_REGISTRY["dummy_ability"] # important cleanup!!!
+             
 
 
     @for_core_module(HelpPages)

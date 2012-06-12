@@ -9,14 +9,11 @@ from django.template import RequestContext
 
 
 
-
+"""
 def _ensure_data_ok(datamanager):
-
-    # TO BE REMOVED !!!!!!!!!!!!!!
-    #self._check_database_coherency() # WARNING - quite CPU intensive, to be removed later on ? TODO TODO REMOVE PAKAL !!!
-    if datamanager.db_state not in (datamanager.DB_STATES.LOADED, datamanager.DB_STATES.INITIALIZED):
+    if not datamanager.is_initialized:
         raise AbnormalUsageError(_("Game databases haven't yet been initialized !"))
-
+"""
 
 @decorator
 def readonly_method(func, self, *args, **kwargs):
@@ -24,9 +21,9 @@ def readonly_method(func, self, *args, **kwargs):
     This method can only ensure that no uncommitted changes are made by the function,
     committed changes might not be seen.
     """
-
-    _ensure_data_ok(self)
-
+    if not self.connection:
+        return func(self, *args, **kwargs)
+    
     original = self.connection._registered_objects[:]
 
     try:
@@ -54,7 +51,7 @@ def zodb_transaction(func, *args, **kwargs):
     """
     transaction.begin() # not really needed
     try:
-        res = func(self, *args, **kwargs)   
+        res = func(*args, **kwargs)   
         return res
     except:
         transaction.abort()
@@ -85,8 +82,10 @@ def transaction_watcher(object=None, ensure_data_ok=True, ensure_game_started=Tr
             datamanager = self # for datamanager methods
 
 
+        if not datamanager.connection: # special bypass
+            return func(self, *args, **kwargs)
+    
         if ensure_data_ok:
-            _ensure_data_ok(datamanager)
 
             if ensure_game_started:
                 if not datamanager.is_game_started():

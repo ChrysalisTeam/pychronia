@@ -2,7 +2,7 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from BTrees import OOBTree
+from BTrees.OOBTree import OOBTree
 
 from rpgweb.common import *
 from rpgweb.datamanager import datamanager_modules
@@ -16,41 +16,48 @@ assert GameDataManager.__mro__[-3:] == (BaseDataManager, utilities.TechnicalEven
 
 
 
+ZODB_INSTANCE = None
 GAME_INSTANCES_MOUNT_POINT = "game_instances"
 
-ZODB_TEST_DB = None # may be overwritten during tests, to override normal database
-'''
-# TOFIX - use real database pool, later on
-#_database_pool = utilities.open_zodb_file(config.ZODB_FILE)
-
-@atexit.register # it should work !
-def _shutdown_db_pool():
-    global _database_pool
-    try:
-        _database_pool.close()
-        time.sleep(0.5) # to help daemon threads stop cleanly, just in case
-    except:
-        pass # maybe database was already automatically closed
+def _ensure_zodb_open():
+    global ZODB_INSTANCE
+    if not ZODB_INSTANCE:
+        local_copy = utilities.open_zodb_file(config.ZODB_FILE)
+        ZODB_INSTANCE = local_copy
+        @atexit.register # it should work !
+        def _shutdown_db_pool():
+            try:
+                local_copy.close() # do NOT target global var ZODB_INSTANCE
+                time.sleep(0.5) # to help daemon threads stop cleanly, just in case
+            except Exception, e:
+                print("Problem when closing ZODB instance: %e" % e, file=sys.stderr) # logging might already have disappeared
 
 
 def _get_zodb_connection():
-    if ZODB_TEST_DB: # we're well in test environment
-        DB = ZODB_TEST_DB
-    else:
-        DB = _database_pool
-        
-    connection = DB.open() # thread-local connection, by default
+    _ensure_zodb_open()
+    connection = ZODB_INSTANCE.open() # thread-local connection, by default
     return connection
-'''
+
 
 @zodb_transaction
 def check_zodb_structure():
+    """
+    Return True iff DB was already OK.
+    """
     root = _get_zodb_connection().root()
     if not root.has_key(GAME_INSTANCES_MOUNT_POINT):
-        logger.warning("Uninitialized ZODB found - initializing...")
+        logger.warning("Uninitialized ZODB root found - initializing...")
         root[GAME_INSTANCES_MOUNT_POINT] = OOBTree()
-# TODO PUT LATER check_zodb_structure(_database_pool) # initializing default ZODDB
+        return False
+    return True
 
+if __debug__ and config.DEBUG:
+    @zodb_transaction
+    def reset_zodb_structure():
+        root = _get_zodb_connection().root()
+        root.clear()
+        root[GAME_INSTANCES_MOUNT_POINT] = OOBTree()
+        
 
 @zodb_transaction
 def create_game_instance(game_instance_id, master_email, master_login, master_password):
@@ -67,15 +74,23 @@ def create_game_instance(game_instance_id, master_email, master_login, master_pa
         game_root = PersistentDict()
         dm = GameDataManager(game_instance_id=game_instance_id, 
                              game_root=game_root, 
-                             request=None) # no user messages
-        dm.update_game_master_info(master_email=master_email,
-                                   master_login=master_login,
-                                   master_password=master_password)
-        assert dm.is_initialized()
+                             request=None) # no user messages possible here
+        assert not dm.is_initialized
+        dm.reset_game_data() # TODO here provide all necessary info
+        #dm.update_game_master_info(master_email=master_email,
+        #                           master_login=master_login,
+        #                           master_password=master_password)
+        assert dm.is_initialized
         game_instances[game_instance_id] = game_root # NOW only we link data to ZODB
     except Exception, e:
         logger.critical("Impossible to initialize game instance %r..." % game_instance_id, exc_info=True)
         raise
+
+
+def game_instance_exists(game_instance_id):
+    connection = _get_zodb_connection()
+    res = connection.root()[GAME_INSTANCES_MOUNT_POINT].has_key(game_instance_id)
+    return res
 
 
 @zodb_transaction
