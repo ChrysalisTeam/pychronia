@@ -17,8 +17,9 @@ from rpgweb.utilities import fileservers, autolinker
 from django.test.client import RequestFactory
 import pprint
 from rpgweb.datamanager.datamanager_administrator import retrieve_game_instance,\
-    _get_zodb_connection
+    _get_zodb_connection, GameDataManager
 from rpgweb.tests._test_tools import temp_datamanager
+import inspect
 
 
 
@@ -268,7 +269,32 @@ class TestUtilities(TestCase):
 
 class TestDatamanager(BaseGameTestCase):
 
+    
+    def test_public_method_wrapping(self):
+        
+        for attr in dir(GameDataManager):
+            if attr.startswith("_") or attr in "begin rollback commit close".split():
+                continue
+            
+            # we remove class/static methods, and some utilities that don't need decorators.
+            if attr in ("""
+                        notify_event get_event_count clear_event_stats clear_all_event_stats
+                        
+                        register_permissions register_ability register_game_view get_abilities 
+                        get_activable_views get_game_views instantiate_ability instantiate_game_view
+                        """.split()):
+                continue
+            
+            obj = getattr(GameDataManager, attr)
+            if not inspect.isroutine(obj):
+                continue
 
+            if not getattr(obj, "_is_under_transaction_watcher", None) \
+                and not getattr(obj, "_is_under_readonly_method", None):
+                raise AssertionError("Undecorated public DM method: %s" % obj)
+                
+    
+    
     @for_datamanager_base
     def test_requestless_datamanager(self):
         
@@ -284,7 +310,6 @@ class TestDatamanager(BaseGameTestCase):
         assert not user.has_notifications()
         user.discard_notifications()
 
-        
 
     @for_datamanager_base
     def test_modular_architecture(self):
@@ -308,21 +333,24 @@ class TestDatamanager(BaseGameTestCase):
                                       request=self.request)
             except Exception, e:
                 transaction.abort()
-                print("AAA", e)
             assert castrated_dm.get_event_count("BASE_DATA_MANAGER_INIT_CALLED") == 1
 
+            try:
+                castrated_dm._init_from_db()
+            except Exception, e:
+                transaction.abort()
+            assert castrated_dm.get_event_count("BASE_DATA_MANAGER_INIT_FROM_DB_CALLED") == 1
+            
             try:
                 castrated_dm._load_initial_data()
             except Exception, e:
                 transaction.abort()
-                print("BBB", e)
-            assert castrated_dm.get_event_count("BASE_LOAD_INITIAL_DATA_CALLED") == 1
-                
+            assert castrated_dm.get_event_count("BASE_LOAD_INITIAL_DATA_CALLED") == 1             
+                 
             try:
                 castrated_dm._check_database_coherency()
             except Exception, e:
                 transaction.abort()
-                print("CCC", e)
             assert castrated_dm.get_event_count("BASE_CHECK_DB_COHERENCY_PRIVATE_CALLED") == 1
 
             try:
@@ -330,11 +358,9 @@ class TestDatamanager(BaseGameTestCase):
                 castrated_dm._process_periodic_tasks(report)
             except Exception, e:
                 transaction.abort()
-                print("DDD", e)
             assert castrated_dm.get_event_count("BASE_PROCESS_PERIODIC_TASK_CALLED") == 1
                                        
-             
-            
+
             
     @for_core_module(CharacterHandling)
     def test_character_handling(self):

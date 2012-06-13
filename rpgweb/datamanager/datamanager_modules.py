@@ -525,18 +525,21 @@ class PlayerAuthentication(BaseDataManager):
 
     # Utility functions for tests on other usernames than current player's one #
 
+    @readonly_method
     def is_anonymous(self, username=PLACEHOLDER):
         if username is PLACEHOLDER:
             username = self.user.username
         assert username
         return (username == self.get_global_parameter("anonymous_login"))
 
+    @readonly_method
     def is_master(self, username=PLACEHOLDER):
         if username is PLACEHOLDER:
             username = self.user.username
         assert username
         return (username == self.get_global_parameter("master_login"))
 
+    @readonly_method
     def is_character(self, username=PLACEHOLDER):
         if username is PLACEHOLDER:
             username = self.user.username
@@ -604,6 +607,7 @@ class PermissionsHandling(BaseDataManager): # TODO REFINE
         data["permissions"] = permissions
 
 
+    @readonly_method
     def has_permission(self, permission):
 
         if not self.user.is_character:
@@ -621,7 +625,8 @@ class PermissionsHandling(BaseDataManager): # TODO REFINE
 
         return False
     
-
+    
+    @readonly_method
     def build_permission_select_choices(self):
         return [(perm, perm) for perm in sorted(self.PERMISSIONS_REGISTRY)]
 
@@ -1442,6 +1447,7 @@ class TextMessaging(BaseDataManager): # TODO REFINE
                              url=None)
     
     
+    @readonly_method
     def get_wiretapping_targets(self, username):
         return self.get_character_properties(username)["wiretapping_targets"]
 
@@ -2351,6 +2357,7 @@ class Encyclopedia(BaseDataManager):
         return self.data["encyclopedia"].keys()
     
     
+    @readonly_method
     def get_encyclopedia_keywords_mapping(self):
         """
         Returns a dict mapping keywords (which can be regular expressions) to lists 
@@ -2547,7 +2554,7 @@ class SpecialAbilities(BaseDataManager):
     @classmethod
     def get_abilities(self):
         return self.ABILITIES_REGISTRY.copy()  
-    
+
     
     # no transaction checker here
     def instantiate_ability(self, name_or_klass):

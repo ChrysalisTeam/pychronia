@@ -15,31 +15,102 @@ def _ensure_data_ok(datamanager):
         raise AbnormalUsageError(_("Game databases haven't yet been initialized !"))
 """
 
-@decorator
-def readonly_method(func, self, *args, **kwargs):
-    """
-    This method can only ensure that no uncommitted changes are made by the function,
-    committed changes might not be seen.
-    """
-    if not self.connection:
-        return func(self, *args, **kwargs)
+def readonly_method(obj):
+    @decorator
+    def _readonly_method(func, self, *args, **kwargs):
+        """
+        This method can only ensure that no uncommitted changes are made by the function,
+        committed changes might not be seen.
+        """
+        if not self.connection:
+            return func(self, *args, **kwargs)
+        
+        original = self.connection._registered_objects[:]
     
-    original = self.connection._registered_objects[:]
+        try:
+            return func(self, *args, **kwargs)
+        finally:
+            final = self.connection._registered_objects[:]
+            if original != final:
+                original_str = repr(original)
+                final_str = repr(final)
+                """ # NOPE - only works for hashable elements!
+                s = SequenceMatcher(a=original, b=final)
+                msg = ""
+                for tag, i1, i2, j1, j2 in s.get_opcodes():
+                  msg += ("%7s a[%d:%d] (%s) b[%d:%d] (%s)\n" % (tag, i1, i2, before[i1:i2], j1, j2, after[j1:j2]))
+                """
+                raise RuntimeError("ZODB was changed by readonly method %s: %s != %s" % (func.__name__, original_str, final_str))
+    new_func = _readonly_method(obj)
+    new_func._is_under_readonly_method = True
+    return new_func
 
-    try:
-        return func(self, *args, **kwargs)
-    finally:
-        final = self.connection._registered_objects[:]
-        if original != final:
-            original_str = repr(original)
-            final_str = repr(final)
-            """ # NOPE - only works for hashable elements!
-            s = SequenceMatcher(a=original, b=final)
-            msg = ""
-            for tag, i1, i2, j1, j2 in s.get_opcodes():
-              msg += ("%7s a[%d:%d] (%s) b[%d:%d] (%s)\n" % (tag, i1, i2, before[i1:i2], j1, j2, after[j1:j2]))
-            """
-            raise RuntimeError("ZODB was changed by readonly method %s: %s != %s" % (func.__name__, original_str, final_str))
+
+def transaction_watcher(object=None, ensure_data_ok=True, ensure_game_started=True):
+    """
+    Decorator for use on datamanager and ability methods.
+    
+    It that can be directly applied to a method, or customized with 
+    keyword arguments and then only applied to a method.
+    
+    *ensure_data_ok* false implies *ensure_game_started* false too.
+    """
+
+    if not ensure_data_ok:
+        ensure_game_started = False
+    
+    def _decorate_and_sign(obj):
+        @decorator
+        def _transaction_watcher(func, self, *args, **kwargs): #@NoSelf
+    
+            if hasattr(self, "_inner_datamanager"):
+                datamanager = self._inner_datamanager # for ability methods
+            else:
+                datamanager = self # for datamanager methods
+    
+    
+            if not datamanager.connection: # special bypass
+                return func(self, *args, **kwargs)
+        
+            if ensure_data_ok:
+    
+                if ensure_game_started:
+                    if not datamanager.is_game_started():
+                        # some state-changing methods are allowed even before the game starts !
+                        #if func.__name__ not in ["set_message_read_state", "set_new_message_notification", "force_message_sending",
+                        #                         "set_online_status"]:
+                        if not getattr(func, "always_available", None):
+                            raise UsageError(_("This feature is unavailable at the moment"))
+    
+            was_in_transaction = datamanager._in_transaction
+            savepoint = datamanager.begin()
+            assert datamanager._in_transaction
+            assert not was_in_transaction or savepoint, repr(savepoint)
+    
+            try:
+    
+                res = func(self, *args, **kwargs)
+                #datamanager._check_database_coherency() # WARNING - quite CPU intensive, 
+                #to be removed later on ? TODO TODO REMOVE PAKAL !!!
+                #print("COMMITTING", func.__name__, savepoint)
+                datamanager.commit(savepoint)
+                if not savepoint:
+                    assert not datamanager.connection._registered_objects, datamanager.connection._registered_objects # on real commit
+                return res
+            
+            except Exception, e:
+                print("ROLLING BACK", func.__name__, savepoint, e)
+                logger.warn("ROLLING BACK", exc_info=True)
+                datamanager.rollback(savepoint)
+                if not savepoint:
+                    assert not datamanager.connection._registered_objects, datamanager.connection._registered_objects # on real rollback
+                raise
+        new_func = _transaction_watcher(obj)
+        new_func._is_under_transaction_watcher = True
+        return new_func
+    
+    return _decorate_and_sign(object) if object is not None else _decorate_and_sign
+
 
 
 @decorator
@@ -59,70 +130,6 @@ def zodb_transaction(func, *args, **kwargs):
     finally: 
         transaction.commit()   
         
-
-def transaction_watcher(object=None, ensure_data_ok=True, ensure_game_started=True):
-    """
-    Decorator for use on datamanager and ability methods.
-    
-    It that can be directly applied to a method, or customized with 
-    keyword arguments and then only applied to a method.
-    
-    *ensure_data_ok* false implies *ensure_game_started* false too.
-    """
-
-    if not ensure_data_ok:
-        ensure_game_started = False
-
-    @decorator
-    def _transaction_watcher(func, self, *args, **kwargs): #@NoSelf
-
-        if hasattr(self, "_inner_datamanager"):
-            datamanager = self._inner_datamanager # for ability methods
-        else:
-            datamanager = self # for datamanager methods
-
-
-        if not datamanager.connection: # special bypass
-            return func(self, *args, **kwargs)
-    
-        if ensure_data_ok:
-
-            if ensure_game_started:
-                if not datamanager.is_game_started():
-                    # some state-changing methods are allowed even before the game starts !
-                    #if func.__name__ not in ["set_message_read_state", "set_new_message_notification", "force_message_sending",
-                    #                         "set_online_status"]:
-                    if not getattr(func, "always_available", None):
-                        raise UsageError(_("This feature is unavailable at the moment"))
-
-        was_in_transaction = datamanager._in_transaction
-        savepoint = datamanager.begin()
-        assert datamanager._in_transaction
-        assert not was_in_transaction or savepoint, repr(savepoint)
-
-        try:
-
-            res = func(self, *args, **kwargs)
-            #datamanager._check_database_coherency() # WARNING - quite CPU intensive, 
-            #to be removed later on ? TODO TODO REMOVE PAKAL !!!
-            #print("COMMITTING", func.__name__, savepoint)
-            datamanager.commit(savepoint)
-            if not savepoint:
-                assert not datamanager.connection._registered_objects, datamanager.connection._registered_objects # on real commit
-            return res
-        
-        except Exception, e:
-            print("ROLLING BACK", func.__name__, savepoint, e)
-            logger.warn("ROLLING BACK", exc_info=True)
-            datamanager.rollback(savepoint)
-            if not savepoint:
-                assert not datamanager.connection._registered_objects, datamanager.connection._registered_objects # on real rollback
-            raise
-
-    return _transaction_watcher(object) if object is not None else _transaction_watcher
-
-
-
 
 
 """
