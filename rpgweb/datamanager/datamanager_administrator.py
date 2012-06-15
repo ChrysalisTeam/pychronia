@@ -59,6 +59,8 @@ if __debug__ and config.DEBUG:
         root[GAME_INSTANCES_MOUNT_POINT] = OOBTree()
         
 
+
+
 @zodb_transaction
 def create_game_instance(game_instance_id, master_email, master_login, master_password):
     """

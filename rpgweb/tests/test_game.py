@@ -17,7 +17,8 @@ from rpgweb.utilities import fileservers, autolinker
 from django.test.client import RequestFactory
 import pprint
 from rpgweb.datamanager.datamanager_administrator import retrieve_game_instance,\
-    _get_zodb_connection, GameDataManager
+    _get_zodb_connection, GameDataManager, get_all_instances_metadata,\
+    delete_game_instance, check_zodb_structure
 from rpgweb.tests._test_tools import temp_datamanager
 import inspect
 
@@ -263,12 +264,37 @@ class TestUtilities(TestCase):
             assert c in "abcdefghijklmnopqrstuvwxyz01234567"
             
         
+        
+        
+        
+class TestMetaAdministration(unittest.TestCase): # no setup required
+    
+    def test_game_instance_management_api(self):
+        
+        check_zodb_structure()
+        
+        game_instance_id = "mystuff"
+        assert not game_instance_exists(game_instance_id)
+        create_game_instance(game_instance_id, "aaa@sc.com", "master", "pwd")
+        assert game_instance_exists(game_instance_id)
+        
+        dm = retrieve_game_instance(game_instance_id)
+        assert dm.is_initialized
+        assert dm.data
+        
+        delete_game_instance(game_instance_id)
+        assert not game_instance_exists(game_instance_id)
+        with pytest.raises(ValueError):
+            retrieve_game_instance(game_instance_id)
+        
+        
+        
+        
 # TODO - test that messages are well propagated through session
 # TODO - test interception of "POST" when impersonating user
 
-
+ 
 class TestDatamanager(BaseGameTestCase):
-
     
     def test_public_method_wrapping(self):
         
