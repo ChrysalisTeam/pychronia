@@ -19,6 +19,15 @@ def register_action_middleware(klass):
     ACTION_MIDDLEWARES.append(klass)
 
 
+def with_action_middlewares(action_name):
+    @decorator
+    def _execute_with_middlewares(method, self, *args, **params):
+        if args:
+            raise RuntimeError("No positional arguments allowed in ability action callable: %r" % repr(args))
+        return self.process_action_through_middlewares(action_name, method, params)
+    return _execute_with_middlewares
+
+
 
 class AbstractActionMiddleware(object):
     

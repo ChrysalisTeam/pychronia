@@ -215,7 +215,7 @@ def sanitize_query_dict(query_dict):
             new_key = key[:-2]
             query_dict[new_key] = query_dict.getlist(key)
             del query_dict[key]
-    print ("NE QUERY DICT", query_dict)
+    #print ("NE QUERY DICT", query_dict)
     return query_dict    
 
  
