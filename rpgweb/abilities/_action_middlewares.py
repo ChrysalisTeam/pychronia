@@ -222,8 +222,8 @@ class CostlyActionMiddleware(AbstractActionMiddleware):
 @register_action_middleware
 class CountLimitedActionMiddleware(AbstractActionMiddleware):
     """
-    Mix-in class that limits the use of an action, on a global or 
-    per-player basis.
+    Mix-in class that limits the count of uses of an action,
+    on a global or per-player basis.
 
     settings::
     
@@ -250,6 +250,7 @@ class CountLimitedActionMiddleware(AbstractActionMiddleware):
             if not data:
                 data.setdefault("private_usage_count", 0)
                 
+                
     def _get_global_usage_count(self, action_name):
         data_dicts = self.get_all_private_middleware_data(self, 
                                                           middleware_class=CountLimitedActionMiddleware, 
@@ -275,7 +276,6 @@ class CountLimitedActionMiddleware(AbstractActionMiddleware):
                 assert data["private_usage_count"] <= settings["max_per_player"]
     
     
-    
     def process_action_through_middlewares(self, action_name, method, params):     
         
         middleware_settings = self.get_middleware_settings(action_name, CostlyActionMiddleware)
@@ -299,8 +299,28 @@ class CountLimitedActionMiddleware(AbstractActionMiddleware):
         
     
         
+        
+@register_action_middleware
+class TimeLimitedActionMiddleware(AbstractActionMiddleware):
+    """
+    Mix-in class that limits the use of an action per period of time.
+
+    settings::
+    
+        delay_between_uses: 3 (None if no limit is set)
+        
+    private_data::
+        
+        last_use_time: datetime()
+        
+    """
+    COMPATIBLE_ACCESSES = (UserAccess.character,)
     
         
+    # FIXME TODO IMPLEMENT THIS
+        
+    
+    
     
     
     

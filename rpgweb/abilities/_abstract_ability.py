@@ -83,6 +83,10 @@ class AbstractAbility(AbstractGameView):
 
     @property
     def private_data(self):
+        """
+        Also works for anonymous access (anonymous users share their data,
+        whereas authenticated ones have their one data slot).
+        """
         private_key = self._get_private_key()
         return self._ability_data()["data"][private_key]
     
