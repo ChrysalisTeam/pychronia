@@ -11,11 +11,11 @@ from django.template import RequestContext, loader
 from ..datamanager import GameDataManager, readonly_method, transaction_watcher
 from ..forms import AbstractGameForm
 from ..views._abstract_game_view import GameViewMetaclass, AbstractGameView, register_view
+from ._action_middlewares import ACTION_MIDDLEWARES
 
 
 
-
-class AbilityMetaclass(GameViewMetaclass):
+class AbilityMetaclass(GameViewMetaclass, type):
     """
     Metaclass automatically registering the new ability (which is also a view) in a global registry.
     """ 
@@ -34,16 +34,28 @@ class AbilityMetaclass(GameViewMetaclass):
             
 
 
+        
+# just because we can't dynamically assign a tuple of bases, in a normal "class" definition
+AbstractAbilityBases = (AbstractGameView,) + tuple(reversed(ACTION_MIDDLEWARES))
+AbstractAbilityBasesAdapter = AbilityMetaclass(str('AbstractAbilityBasesAdapter'), AbstractAbilityBases, {})
 
 
 
-class AbstractAbility(AbstractGameView):
+"""
+print (">>>>>>>>>", AbstractAbilityBases)
 
-    __metaclass__ = AbilityMetaclass
+for _base in AbstractAbilityBases:
+    print (_base, type(_base))
+    assert issubclass(AbilityMetaclass, type(_base))
+"""
 
 
+class AbstractAbility(AbstractAbilityBasesAdapter):
+
+    ### Uses AbstractAbilityBases metaclass ###
+    ### Inherites from both action middlewares and AbstractGameView ###
+    
     # NOT ATM - TITLE = None # menu title, use lazy gettext when setting
-
 
     def __init__(self, request, *args, **kwargs):
         super(AbstractAbility, self,).__init__(request, *args, **kwargs)

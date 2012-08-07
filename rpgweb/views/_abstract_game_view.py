@@ -477,11 +477,7 @@ class AbstractGameView(object):
         finally:
             self._post_request()
         
-    
-        
 
-        
-        
         
 
 def _normalize_view_access_parameters(access=_undefined, 

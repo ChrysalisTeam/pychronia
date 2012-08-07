@@ -11,7 +11,7 @@ ACTION_MIDDLEWARES = []
 def register_action_middleware(klass):
     
     # class format checking is done here, since no metaclass is used
-    assert set(klass.COMPATIBLE_ACCESSES) <= UserAccess.enum_values
+    assert set(klass.COMPATIBLE_ACCESSES) <= set(UserAccess.enum_values)
     
     assert klass not in ACTION_MIDDLEWARES
     for _klass in ACTION_MIDDLEWARES:
@@ -19,7 +19,12 @@ def register_action_middleware(klass):
     ACTION_MIDDLEWARES.append(klass)
 
 
+
 def with_action_middlewares(action_name):
+    """
+    Apply this decorator to actions, so that they get processed
+    through middlewares.
+    """
     @decorator
     def _execute_with_middlewares(method, self, *args, **params):
         if args:
@@ -228,7 +233,7 @@ class CostlyActionMiddleware(AbstractActionMiddleware):
     
 
         
-@register_action_middleware
+#@register_action_middleware
 class CountLimitedActionMiddleware(AbstractActionMiddleware):
     """
     Mix-in class that limits the count of uses of an action,
@@ -309,7 +314,7 @@ class CountLimitedActionMiddleware(AbstractActionMiddleware):
     
         
         
-@register_action_middleware
+#@register_action_middleware
 class TimeLimitedActionMiddleware(AbstractActionMiddleware):
     """
     Mix-in class that limits the use of an action per period of time.

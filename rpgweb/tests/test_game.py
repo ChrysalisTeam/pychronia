@@ -8,6 +8,8 @@ import tempfile
 import shutil
 
 from ._test_tools import *
+from ._dummy_abilities import *
+
 from rpgweb.abilities._abstract_ability import AbstractAbility
 from rpgweb.common import _undefined, config, AbnormalUsageError
 from rpgweb.views._abstract_game_view import ClassInstantiationProxy
@@ -21,7 +23,6 @@ from rpgweb.datamanager.datamanager_administrator import retrieve_game_instance,
     delete_game_instance, check_zodb_structure
 from rpgweb.tests._test_tools import temp_datamanager
 import inspect
-
 
 
 
@@ -1614,12 +1615,11 @@ class TestDatamanager(BaseGameTestCase):
         abilities = self.dm.get_abilities()
         assert abilities is not self.dm.ABILITIES_REGISTRY # copy
         assert "runic_translation" in abilities
-        
-        
-        @register_view
-        class TesterAbility(AbstractAbility):
 
-            NAME = "dummy_ability"
+        @register_view
+        class PrivateTestAbility(AbstractAbility):
+        
+            NAME = "_private_dummy_ability"
             GAME_FORMS = {}
             ACTIONS = dict()
             TEMPLATE = "base_main.html" # must exist
@@ -1634,7 +1634,7 @@ class TestDatamanager(BaseGameTestCase):
             @classmethod
             def _setup_ability_settings(cls, settings):
                 settings.setdefault("myvalue", "True")
-                self.dm.notify_event("LATE_ABILITY_SETUP_DONE") # BEWARE - event registry of OTHER DM instance!
+                cls._LATE_ABILITY_SETUP_DONE = 65 
                 
             def _setup_private_ability_data(self, private_data):
                 pass
@@ -1642,18 +1642,19 @@ class TestDatamanager(BaseGameTestCase):
             def _check_data_sanity(self, strict=False):
                 settings = self.settings
                 assert settings["myvalue"] == "True"
-        
-
-        assert "dummy_ability" in self.dm.get_abilities() # auto-registration
+                
+      
+        assert "_private_dummy_ability" in self.dm.get_abilities() # auto-registration of dummy test ability
         self.dm.rollback()
         with pytest.raises(KeyError):        
-            self.dm.get_ability_data("dummy_ability") # not yet setup in ZODB
+            self.dm.get_ability_data("_private_dummy_ability") # not yet setup in ZODB
         
+        assert not hasattr(PrivateTestAbility, "_LATE_ABILITY_SETUP_DONE")
         with temp_datamanager(TEST_GAME_INSTANCE_ID, self.request) as _dm:
-            assert "dummy_ability" in _dm.get_abilities()
-            assert _dm.get_ability_data("dummy_ability") # ability now setup in ZODB
-            assert self.dm.get_event_count("LATE_ABILITY_SETUP_DONE") == 1 # parasite event - autosync well called at init!!
-            del self.dm.ABILITIES_REGISTRY["dummy_ability"] # important cleanup!!!
+            assert "_private_dummy_ability" in _dm.get_abilities()
+            assert _dm.get_ability_data("_private_dummy_ability") # ability now setup in ZODB
+            assert PrivateTestAbility._LATE_ABILITY_SETUP_DONE == 65 # autosync well called at init!!
+            del self.dm.ABILITIES_REGISTRY["_private_dummy_ability"] # important cleanup!!!
              
 
 
@@ -2198,8 +2199,18 @@ class TestGameViewSystem(BaseGameTestCase):
         assert view_master.get_access_token(datamanager) == AccessResult.available                        
                 
         
-
-                
+"""
+class TestActionMiddlewares(BaseGameTestCase):
+    
+    
+    def test_costly_action_middleware(self):
+        
+        
+        
+        
+        middleware_wrapped
+    """
+    
         
 class TestSpecialAbilities(BaseGameTestCase):
 
