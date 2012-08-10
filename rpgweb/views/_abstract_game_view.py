@@ -411,6 +411,7 @@ class AbstractGameView(object):
     def _post_request(self):
         del self.request, self.args, self.kwargs # cleanup
         
+        
     @transform_usage_error
     def __call__(self, request, *args, **kwargs):
         

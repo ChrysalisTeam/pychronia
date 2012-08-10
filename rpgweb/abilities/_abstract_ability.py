@@ -142,7 +142,9 @@ class AbstractAbility(AbstractAbilityBasesAdapter):
         # no transaction handling here - it's all up to the caller of that classmethod
         settings = ability_data.setdefault("settings", PersistentDict())
         ability_data.setdefault("data", PersistentDict())
-        cls._setup_ability_settings(settings=settings)
+        cls._setup_ability_settings(settings=settings) # FIRST
+        cls._setup_action_middleware_settings(settings=settings) # SECOND
+        
 
     @classmethod
     def _setup_ability_settings(cls, settings):
@@ -156,8 +158,10 @@ class AbstractAbility(AbstractAbilityBasesAdapter):
         if not self.ability_data.has_key(private_key):
             self.logger.debug("Setting up private data %s", private_key)
             private_data = self.ability_data["data"].setdefault(private_key, PersistentDict())
-            self._setup_private_ability_data(private_data=private_data)
-
+            self._setup_private_ability_data(private_data=private_data) # FIRST
+            self._setup_private_action_middleware_data(private_data=private_data) # SECOND
+            
+            
 
     def _setup_private_ability_data(self, private_data):
         """
@@ -179,7 +183,8 @@ class AbstractAbility(AbstractAbilityBasesAdapter):
             for name, value in self.ability_data["data"].items():
                 assert name in available_logins
                 assert isinstance(value, collections.Mapping)
-
+        
+        self._check_action_middleware_data_sanity(strict=strict)
         self._check_data_sanity(strict=strict)
 
 

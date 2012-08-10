@@ -8,6 +8,7 @@ from rpgweb.abilities._abstract_ability import AbstractAbility
 from rpgweb.views._abstract_game_view import register_view
 from rpgweb.abilities._action_middlewares import with_action_middlewares
 from rpgweb.forms import AbstractGameForm
+from rpgweb.datamanager.datamanager_tools import transaction_watcher
 
 
 
@@ -51,12 +52,12 @@ class DummyTestAbility(AbstractAbility):
     # test utilities
     
     def reset_test_settings(self, action_name, middleware_class, new_settings):
-        middleware_settings = self.get_middleware_settings(self, action_name, middleware_class)
+        middleware_settings = self.get_middleware_settings(action_name, middleware_class)
         middleware_settings.clear()
         middleware_settings.update(new_settings)
     
     def reset_test_data(self, action_name, middleware_class, new_data):
-        middleware_settings = self.get_private_middleware_data(self, action_name, middleware_class, create_if_unexisting=True)
+        middleware_settings = self.get_private_middleware_data(action_name, middleware_class, create_if_unexisting=True)
         middleware_settings.clear()
         middleware_settings.update(new_data)
     
@@ -67,11 +68,13 @@ class DummyTestAbility(AbstractAbility):
         return 23
     
     @with_action_middlewares("middleware_wrapped")
+    @transaction_watcher
     def middleware_wrapped_callable1(self, use_gems):
         self.notify_event("INSIDE_MIDDLEWARE_WRAPPED1")
         return 18277
     
     @with_action_middlewares("middleware_wrapped")
+    @transaction_watcher
     def middleware_wrapped_callable2(self, my_arg):
         self.notify_event("INSIDE_MIDDLEWARE_WRAPPED2")       
         return True

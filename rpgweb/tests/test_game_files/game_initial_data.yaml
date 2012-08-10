@@ -232,7 +232,7 @@ character_properties:
         description : "XXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXX XXXXXXXX"
         character_color : "#0033CC"
         permissions: ["runic_translation", "wiretapping"]
-       
+        
     guy2:
         domains: ["acharis"]
         password: awesome
@@ -262,7 +262,9 @@ character_properties:
         real_life_email: belez@gmail.com
         description : "XXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXX XXXXXXXX"
         character_color : "#CC3399"
-
+        gems: []
+        
+        
     guy4:
         domains: []
         password: wads
@@ -277,7 +279,7 @@ character_properties:
         real_life_email: belez2@gmail.com
         description : "XXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXX XXXXXXXX"
         character_color : "#00CCFF"
-
+    
 
 audio_messages:
 

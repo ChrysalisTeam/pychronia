@@ -11,6 +11,7 @@ from ._test_tools import *
 from ._dummy_abilities import *
 
 from rpgweb.abilities._abstract_ability import AbstractAbility
+from rpgweb.abilities._action_middlewares import CostlyActionMiddleware
 from rpgweb.common import _undefined, config, AbnormalUsageError
 from rpgweb.views._abstract_game_view import ClassInstantiationProxy
 from rpgweb.templatetags.helpers import _generate_encyclopedia_links
@@ -23,6 +24,7 @@ from rpgweb.datamanager.datamanager_administrator import retrieve_game_instance,
     delete_game_instance, check_zodb_structure
 from rpgweb.tests._test_tools import temp_datamanager
 import inspect
+
 
 
 
@@ -2198,19 +2200,51 @@ class TestGameViewSystem(BaseGameTestCase):
         assert view_authenticated.get_access_token(datamanager) == AccessResult.available
         assert view_master.get_access_token(datamanager) == AccessResult.available                        
                 
-        
-"""
+     
+
 class TestActionMiddlewares(BaseGameTestCase):
     
     
     def test_costly_action_middleware(self):
         
+        self._set_user("guy3")
+        
+        ability = self.dm.instantiate_ability("dummy_ability")
+        assert isinstance(ability, DummyTestAbility._klass) # fixme later
+        assert CostlyActionMiddleware
+ 
+        def reset_guy3_data(money, gems):
+            props = self.dm.get_character_properties0("guy3")
+            props["account"] = money
+            props["gems"] = gems
+            self.dm.commit()
+            del props
+            
+        # misconfiguration
+        ability.reset_test_settings("middleware_wrapped", CostlyActionMiddleware, dict(money_price=None, gems_price=None))
+        with utilities.raises_with_content(AbnormalUsageError, "misconfiguration"):
+            ability.middleware_wrapped_callable1(use_gems=[100])
         
         
         
-        middleware_wrapped
-    """
+        for gems_price in random.choice((None, 15, 100)): # WHATEVER gems prices
+            
+            reset_guy3_data (2000, [1, 2, 3, 4, 5, 100, 100, 100, 100])   
+            
+            ability.reset_test_settings("middleware_wrapped", CostlyActionMiddleware, dict(money_price=15, gems_price=gems_price))
+            ability.reset_test_data("middleware_wrapped", CostlyActionMiddleware, dict())
+
+            #ability.middleware_wrapped_callable1(
+
+        props = self.dm.get_character_properties0("guy3")
+        assert props["account"] == 2000 
+        utilities.assert_sets_equal(props["gems"], [1, 2, 3, 4, 5, 100, 100, 100, 100])
     
+        
+        
+        
+        
+        
         
 class TestSpecialAbilities(BaseGameTestCase):
 

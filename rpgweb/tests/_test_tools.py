@@ -119,6 +119,14 @@ class RequestMock(RequestFactory):
     
     
 
+@contextlib.contextmanager
+def raises_with_content(klass, string):
+    with pytest.raises(klass) as exc:
+        yield exc
+    assert string.lower() in str(exc.value).lower()
+                       
+
+
 
 class AutoCheckingDM(object):
     """
