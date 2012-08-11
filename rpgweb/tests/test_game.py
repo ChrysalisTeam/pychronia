@@ -2457,8 +2457,8 @@ class TestActionMiddlewares(BaseGameTestCase):
         ability.reset_test_settings("middleware_wrapped", CountLimitedActionMiddleware, 
                                     dict(max_per_character=random.choice((None, 0)), max_per_game=random.choice((None, 0)))) 
         
-        for user in ("guy2", "guy3", "guy4"):
-            self._set_user("guy2") # important
+        for username in ("guy2", "guy3", "guy4"):
+            self._set_user(username) # important
             for i in range(10):
                 assert ability.middleware_wrapped_callable1(None)
                 assert ability.middleware_wrapped_callable2(None)
