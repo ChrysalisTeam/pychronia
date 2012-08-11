@@ -5,7 +5,11 @@ from __future__ import unicode_literals
 from django.conf.urls.defaults import *
 from .utilities import config
 
-view_urlpatterns = patterns('rpgweb.views',
+from .django_overrides import gameview_patterns
+
+
+
+view_urlpatterns = gameview_patterns('rpgweb.views',
 
     # WARNING - DANGEROUS #
 
@@ -101,14 +105,13 @@ view_urlpatterns = patterns('rpgweb.views',
 )
 
 
-ability_urlpatterns = patterns("rpgweb.abilities",
+ability_urlpatterns = gameview_patterns("rpgweb.abilities",
 
     (r'^ability/house_locking/$', 'house_locking_view'),
     (r'^ability/runic_translation/$', 'runic_translation_view'),
     (r'^ability/wiretapping_management/$', 'wiretapping_management_view'),
     (r'^ability/admin_dashboard/$', 'admin_dashboard_view'),
     
-
 )
 
 
@@ -118,7 +121,7 @@ final_urlpatterns = view_urlpatterns + ability_urlpatterns
 urlpatterns = patterns('',
                        
                     # serving of game files is currently independent of ZODB data
-                    (r'^%s(?P<hash>[^/]*)/?(?P<path>.*)$' % config.GAME_FILES_URL[1:], 'rpgweb.views.serve_game_file'), 
+                    (r'^%s(?P<hash>[^/]*)/?(?P<path>.*)$' % config.GAME_FILES_URL[1:], 'rpgweb.views.serve_game_file'), # NOT a gameview
                 
                     (r'^(?P<game_instance_id>\w+)/', include(final_urlpatterns)),
                     

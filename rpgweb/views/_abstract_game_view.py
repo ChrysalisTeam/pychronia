@@ -426,7 +426,13 @@ class AbstractGameView(object):
             self._post_request()
         
      
-     
+    @classmethod
+    def as_view(cls, request, *args, **kwargs):
+        """
+        To be used in django urls conf ; similar to standard class-based views of django.
+        """
+        return cls(request.datamanager)(request, *args, **kwargs)
+
      
     ### Administration API ###
      
@@ -529,21 +535,7 @@ def _normalize_view_access_parameters(access=_undefined,
                 always_available=always_available)
                 
  
- 
-class ClassInstantiationProxy(object):
-    """
-    Stateless object which automatically instantiates and triggers its wrapped GameView class on call.
-    """
-    def __init__(self, klass):
-        self._klass = klass
-    def __getattr__(self, name):
-        return getattr(self._klass, name) # useful for introspection of views                
-    def __call__(self, request, *args, **kwargs):
-        return self._klass(request.datamanager)(request, *args, **kwargs) # we execute new instance of underlying class, without parameters
-    def __str__(self):
-        return "ClassInstantiationProxy around %s" % self._klass
-    __repr__ = __str__
-    
+
     
 def register_view(view_object=None, 
                   access=_undefined,
@@ -552,6 +544,8 @@ def register_view(view_object=None,
                   attach_to=_undefined):
     """
     Helper allowing with or without-arguments decorator usage for GameView.
+    
+    Returns a CLASS, not a regular django view.
     """
 
     def _build_final_view_callable(real_view_object):
@@ -581,8 +575,7 @@ def register_view(view_object=None,
             NewViewType = type(KlassName, (AbstractGameView,), class_data) # metaclass checks everything for us
            
         
-        res =  ClassInstantiationProxy(NewViewType)
-        return res
+        return NewViewType
     
     if view_object: 
         return _build_final_view_callable(view_object)

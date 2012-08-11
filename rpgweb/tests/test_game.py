@@ -13,8 +13,7 @@ from ._dummy_abilities import *
 from rpgweb.abilities._abstract_ability import AbstractAbility
 from rpgweb.abilities._action_middlewares import CostlyActionMiddleware,\
     CountLimitedActionMiddleware
-from rpgweb.common import _undefined, config, AbnormalUsageError
-from rpgweb.views._abstract_game_view import ClassInstantiationProxy
+from rpgweb.common import _undefined, config, AbnormalUsageError, reverse
 from rpgweb.templatetags.helpers import _generate_encyclopedia_links
 from rpgweb import views
 from rpgweb.utilities import fileservers, autolinker
@@ -1582,7 +1581,7 @@ class TestDatamanager(BaseGameTestCase):
         assert self.dm.user.is_anonymous
         token = self.dm.get_game_view_access_token(views.homepage.NAME)
         assert token == AccessResult.available
-        token = self.dm.get_game_view_access_token(views.view_sales._klass)
+        token = self.dm.get_game_view_access_token(views.view_sales)
         assert token == AccessResult.authentication_required        
                 
         
@@ -1610,7 +1609,7 @@ class TestDatamanager(BaseGameTestCase):
         from rpgweb.abilities import runic_translation_view
         components = self.dm.resolve_admin_widget_identifier("runic_translation.translation_form")
         assert len(components) == 2
-        assert isinstance(components[0], runic_translation_view._klass)
+        assert isinstance(components[0], runic_translation_view)
         assert components[1] == "translation_form"
         
         
@@ -2100,12 +2099,12 @@ class TestGameViewSystem(BaseGameTestCase):
         with pytest.raises(AssertionError):
             register_view(my_little_view, access=UserAccess.anonymous, permissions=["sss"])         
    
-        proxy = register_view(my_little_view, access=UserAccess.master, )     
+        klass = register_view(my_little_view, access=UserAccess.master, )     
         
-        assert isinstance(proxy, ClassInstantiationProxy)
-        assert proxy._klass.__name__ == "MyLittleView" # pascal case
-        assert proxy._klass.NAME == "my_little_view" # snake case
-        assert proxy._klass.NAME in self.dm.GAME_VIEWS_REGISTRY
+        assert issubclass(klass, AbstractGameView)
+        assert klass.__name__ == "MyLittleView" # pascal case
+        assert klass.NAME == "my_little_view" # snake case
+        assert klass.NAME in self.dm.GAME_VIEWS_REGISTRY
         
         with pytest.raises(AssertionError):
             register_view(my_little_view, access=UserAccess.master)  # double registration impossible!
@@ -2116,9 +2115,8 @@ class TestGameViewSystem(BaseGameTestCase):
             ACCESS = "sqdqsjkdqskj"
         assert isinstance(DummyView, type)
         
-        proxy = register_view(DummyView)     
-        assert isinstance(proxy, ClassInstantiationProxy) 
-        assert proxy.__dict__["_klass"] is DummyView # no changes to wrapped object!
+        klass = register_view(DummyView)     
+        assert issubclass(klass, AbstractGameView) 
         register_view(DummyView) # double registration possible, since it's class creation which actually registers it, not that decorator      
         
         
@@ -2129,8 +2127,9 @@ class TestGameViewSystem(BaseGameTestCase):
                 a, b, c, d= [random.choice([_undefined, False]) for i in range(4)]
                 if not all((a, b, c)):
                     break # at least one of them must NOT be _undefined
-            register_view(DummyView, a, b, c, d)         
+            register_view(OtherDummyView, a, b, c, d)         
                 
+
                 
     def test_access_token_computation(self):
         
@@ -2164,12 +2163,12 @@ class TestGameViewSystem(BaseGameTestCase):
             
             for my_view in (view_anonymous, view_character, view_character_permission, view_authenticated): # not view_master          
                 
-                my_view._klass.ALWAYS_AVAILABLE = False
+                my_view.ALWAYS_AVAILABLE = False
                 assert my_view.get_access_token(datamanager) == AccessResult.globally_forbidden
-                self.dm.set_activated_game_views([my_view._klass.NAME]) # exists in ACTIVABLE_VIEWS_REGISTRY because we registered view with always_available=True
+                self.dm.set_activated_game_views([my_view.NAME]) # exists in ACTIVABLE_VIEWS_REGISTRY because we registered view with always_available=True
                 assert my_view.get_access_token(datamanager) != AccessResult.globally_forbidden
                 
-                my_view._klass.ALWAYS_AVAILABLE = True
+                my_view.ALWAYS_AVAILABLE = True
                 assert my_view.get_access_token(datamanager) != AccessResult.globally_forbidden
                 self.dm.set_activated_game_views([]) # RESET
                 assert my_view.get_access_token(datamanager) != AccessResult.globally_forbidden
@@ -2225,7 +2224,7 @@ class TestActionMiddlewares(BaseGameTestCase):
         ability = self.dm.instantiate_ability("dummy_ability")
         ability._perform_lazy_initializations() # normally done while treating HTTP request...
         
-        assert isinstance(ability, DummyTestAbility._klass) # fixme later
+        assert isinstance(ability, DummyTestAbility)
         assert CostlyActionMiddleware
         self.dm.commit()
                   

@@ -19,7 +19,7 @@ def rpgweb_template_context(request):
                         for username in datamanager.get_online_users()]
         menus = menus_module.generate_filtered_menu(request)
         
-        view_name = request.processed_view.NAME # thanks to our middleware
+        view_name = request.processed_view.im_self.NAME # thanks to our middleware
         if view_name in datamanager.get_help_page_names():
             help_keyword = view_name # we NECESSARILY have access permissions for this view, logically..
         else:

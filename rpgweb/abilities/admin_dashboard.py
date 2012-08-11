@@ -35,7 +35,7 @@ class AdminDashboardAbility(AbstractAbility):
         admin_widget_identifier = request.GET.get("target_form_id")
         
         if not admin_widget_identifier:
-            return super(AdminDashboardAbility._klass, self)._process_ajax_request() # UGLY, FIXME
+            return super(AdminDashboardAbility, self)._process_ajax_request() # UGLY, FIXME
         else:
             # special part: we execute a single admin widget handler, and return the HTML result.
             

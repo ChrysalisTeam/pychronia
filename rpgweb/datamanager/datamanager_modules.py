@@ -1279,8 +1279,8 @@ class TextMessaging(BaseDataManager): # TODO REFINE
 
     @readonly_method
     def get_message_viewer_url(self, msg_id):
-        return reverse('rpgweb.views.view_single_message',
-                       kwargs=dict(msg_id=msg_id, game_instance_id=self.game_instance_id))
+        return gameview_reverse('rpgweb.views.view_single_message',
+                                kwargs=dict(msg_id=msg_id, game_instance_id=self.game_instance_id))
 
     @readonly_method
     def get_all_queued_messages(self):

@@ -13,7 +13,6 @@ import copy
 from contextlib import contextmanager
 from django.conf import settings
 from django.core.mail import send_mail
-from django.core.urlresolvers import reverse
 from django.http import Http404, HttpResponseRedirect, HttpResponse,\
     HttpResponseForbidden
 from django.shortcuts import render
@@ -967,7 +966,7 @@ def view_sales(request, template_name='generic_operations/view_sales.html'):
                      'total_gems_number': total_gems_number,
                      'total_archaeological_objects_number': total_archaeological_objects_number
                     })
-assert view_sales._klass.NAME in GameDataManager.ACTIVABLE_VIEWS_REGISTRY.keys()
+assert view_sales.NAME in GameDataManager.ACTIVABLE_VIEWS_REGISTRY.keys()
 
 
 '''
