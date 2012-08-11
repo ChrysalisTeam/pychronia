@@ -2212,9 +2212,14 @@ class TestActionMiddlewares(BaseGameTestCase):
         # setup
         bank_name = self.dm.get_global_parameter("bank_name")
         self.dm.transfer_money_between_characters(bank_name, "guy4", amount=1000)
+        self.dm.transfer_object_to_character("several_misc_gems", "guy4") # 5 * 200 kashes
         self.dm.transfer_object_to_character("several_misc_gems2", "guy4") # 8 * 125 kashes
-        
-        self._set_user("guy4")
+
+        props = self.dm.get_character_properties("guy4")
+        assert props["account"] == 1000
+        utilities.assert_sets_equal(props["gems"], [125]*8 + [200]*5)
+            
+        self._set_user("guy4") # important
         
         ability = self.dm.instantiate_ability("dummy_ability")
         ability._perform_lazy_initializations() # normally done while treating HTTP request...
@@ -2238,20 +2243,73 @@ class TestActionMiddlewares(BaseGameTestCase):
         
         for gems_price in (None, 15, 100): # WHATEVER gems prices
             
-            assert self.dm._in_transaction == False
-            
             ability.reset_test_settings("middleware_wrapped", CostlyActionMiddleware, dict(money_price=15, gems_price=gems_price))
-            ability.reset_test_data("middleware_wrapped", CostlyActionMiddleware, dict())
+            ability.reset_test_data("middleware_wrapped", CostlyActionMiddleware, dict()) # useless actually for that middleware
             
+            # payments OK
             ability.middleware_wrapped_callable1(use_gems=random.choice((None, []))) # triggers payment by money
-
+            ability.middleware_wrapped_callable2(34) # idem, points to the same conf
+            
+            # not taken into account - no middlewares here
+            ability.non_middleware_action_callable(use_gems=[125]) 
+            
+            # too expensive
+            ability.reset_test_settings("middleware_wrapped", CostlyActionMiddleware, dict(money_price=999, gems_price=gems_price))
+            with raises_with_content(NormalUsageError, "in money"):
+                ability.middleware_wrapped_callable1(use_gems=random.choice((None, []))) 
+            with raises_with_content(NormalUsageError, "in money"):
+                ability.middleware_wrapped_callable2("helly")  
+            
+            # not taken into account - no middlewares here          
+            ability.non_middleware_action_callable(use_gems=[125]) 
+            
+        ability.reset_test_settings("middleware_wrapped", CostlyActionMiddleware, dict(money_price=53, gems_price=None))   
+        ability.middleware_wrapped_callable1(use_gems=[125, 125]) # triggers payment by money ANYWAY! 
+            
+        # we check data coherency
         props = self.dm.get_character_properties("guy4")
-        assert props["account"] == 1000 - 3*15 
-        utilities.assert_sets_equal(props["gems"], [125]*8)
+        new_money_value = 1000 - 2*3*15 - 53  # 2 callables * 3 use_gems values * money price, and special 53 kashes payment
+        assert props["account"] == new_money_value
+        utilities.assert_sets_equal(props["gems"], [125]*8 + [200]*5)  # unchanged
     
+    
+ 
+        # payment with gems
         
+        for money_price in (None, 0, 15): # WHATEVER money prices
+            
+            ability.reset_test_settings("middleware_wrapped", CostlyActionMiddleware, dict(money_price=money_price, gems_price=150))
+            ability.reset_test_data("middleware_wrapped", CostlyActionMiddleware, dict()) # useless actually for that middleware
+            
+            # payments OK
+            ability.middleware_wrapped_callable1(use_gems=[125, 200]) # triggers payment by gems
+
+            # not taken into account - no middlewares here
+            ability.non_middleware_action_callable(use_gems=[125, 128, 129]) 
+            
+            # too expensive for current gems given
+            with raises_with_content(NormalUsageError, "kashes of gems"):
+                ability.middleware_wrapped_callable1(use_gems=[125]) 
+                
+            # some wrong gems in input (even if a sufficient number  of them is OK)
+            with raises_with_content(AbnormalUsageError, "don't possess"):
+                ability.middleware_wrapped_callable1(use_gems=[125, 125, 167])  
+            
+            if not money_price: 
+                # no fallback to money, when no gems at all in input
+                with raises_with_content(NormalUsageError, "kashes of gems"):
+                    ability.middleware_wrapped_callable1(use_gems=random.choice((None, [])))
+                with raises_with_content(NormalUsageError, "kashes of gems"):
+                    ability.middleware_wrapped_callable2([125, 125]) # wrong param name   
         
-        
+        ability.middleware_wrapped_callable1(use_gems=[200]) # OK
+        ability.middleware_wrapped_callable1(use_gems=[125, 125, 125]) # OK, paying waaayy too much is OK at the moment
+            
+        # we check data coherency
+        props = self.dm.get_character_properties("guy4")
+        assert props["account"] == new_money_value # unchanged
+        utilities.assert_sets_equal(props["gems"], [125]*2 + [200]) # 3 payments with 2 gems, + 2 separate payùents
+                
         
         
         

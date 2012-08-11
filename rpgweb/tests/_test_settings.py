@@ -1,5 +1,12 @@
 
-import sys, os, tempfile, random
+import sys, os, tempfile, random, logging
+
+
+print("SETTING UP TEST LOGGING")
+logging.basicConfig()
+logging.disable(0)
+
+
 
 
 TEST_DIR = os.path.dirname(os.path.normpath(__file__))

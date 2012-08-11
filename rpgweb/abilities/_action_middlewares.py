@@ -234,9 +234,9 @@ class CostlyActionMiddleware(AbstractActionMiddleware):
     def _pay_with_gems(self, character_properties, middleware_settings, gems_list):
         
         gems_price = middleware_settings["gems_price"]
-        assert gems_price and gems_list
+        assert gems_price
         
-        if sum(gems_list) < gems_price:
+        if not gems_list or (sum(gems_list) < gems_price): # gems_list could be empty!!
             raise NormalUsageError(_("You need at least %(price)s kashes of gems to buy this asset") % SDICT(gems_price=gems_price))
 
         # we don't care if the player has given too many gems
@@ -246,14 +246,14 @@ class CostlyActionMiddleware(AbstractActionMiddleware):
             raise AbnormalUsageError(_("You don't possess the gems required")) # shouldn't happen since we use a form
         else:
             character_properties["gems"] = PersistentList(remaining_gems)
-            self.data["global_parameters"]["total_gems"] += gems_list
+            self.data["global_parameters"]["spent_gems"] += gems_list
     
     
     def _pay_with_money(self, character_properties, middleware_settings):
-
         money_price = middleware_settings["money_price"]
         assert money_price
-
+        #print("PAYING WITH", money_price)
+        
         if character_properties["account"] < money_price:
             raise NormalUsageError(_("You need at least %(price)s kashes in money to buy this asset") % SDICT(price=money_price))
 

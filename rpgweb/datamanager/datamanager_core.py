@@ -85,7 +85,7 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
         self.game_instance_id = game_instance_id
 
         self.logger = logging.getLogger("rpgweb.%s" % game_instance_id) #FIXME
-       
+
         self._request = weakref.ref(request) if request else None # if None, user messages won't work
 
         self.data = game_root # can be empty, here

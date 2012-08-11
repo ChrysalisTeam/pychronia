@@ -71,7 +71,7 @@ class DummyTestAbility(AbstractAbility):
     
         
     @transaction_watcher
-    def non_middleware_action_callable(self):
+    def non_middleware_action_callable(self, use_gems):
         self.notify_event("INSIDE_NON_MIDDLEWARE_ACTION_CALLABLE")
         return 23
     

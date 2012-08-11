@@ -180,8 +180,4 @@ __all__ = [key for key in globals().copy() if not key.startswith("_")]
 __all__ += ["_", "_lazy", "_noop", "_undefined"] # we add translation shortcuts and _undefined placeholder for default function args
 
 
-print("SETTING UP LOGGING")
-logging.basicConfig() ## FIXME
-logging.disable(0)
-
 

@@ -99,8 +99,7 @@ def transaction_watcher(object=None, ensure_data_ok=True, ensure_game_started=Tr
                 return res
             
             except Exception, e:
-                print("ROLLING BACK", func.__name__, savepoint, e)
-                logger.warn("ROLLING BACK", exc_info=True)
+                #logger.warning("ROLLING BACK", exc_info=True)
                 datamanager.rollback(savepoint)
                 if not savepoint:
                     datamanager.check_no_pending_transaction() # on real rollback
