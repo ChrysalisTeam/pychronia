@@ -30,10 +30,13 @@ class DummyTestAbility(AbstractAbility):
     GAME_FORMS = {"middleware_wrapped_callable1": (DummyForm, "non_middleware_action_callable")} # neither does this one
     
     TEMPLATE = "base_main.html" # must exist
-    ACCESS = UserAccess.anonymous
+    ACCESS = UserAccess.character
     PERMISSIONS = [] 
     ALWAYS_AVAILABLE = False 
 
+    #def __init__(self, *args, **kwargs):
+    #    super(DummyTestAbility, self).__init__(*args, **kwargs)
+        
 
     def get_template_vars(self, previous_form_data=None):
         return {'page_title': "hello",}
@@ -51,30 +54,35 @@ class DummyTestAbility(AbstractAbility):
     
     # test utilities
     
+    @transaction_watcher
     def reset_test_settings(self, action_name, middleware_class, new_settings):
-        middleware_settings = self.get_middleware_settings(action_name, middleware_class)
+        # we activate the middleware if not yet there
+        self.settings["middlewares"].setdefault(action_name, PersistentDict())
+        middleware_settings = self.settings["middlewares"][action_name].setdefault(middleware_class.__name__, PersistentDict())
+        assert middleware_settings is self.get_middleware_settings(action_name, middleware_class)
         middleware_settings.clear()
         middleware_settings.update(new_settings)
     
+    @transaction_watcher
     def reset_test_data(self, action_name, middleware_class, new_data):
         middleware_settings = self.get_private_middleware_data(action_name, middleware_class, create_if_unexisting=True)
         middleware_settings.clear()
         middleware_settings.update(new_data)
     
         
-    
+    @transaction_watcher
     def non_middleware_action_callable(self):
         self.notify_event("INSIDE_NON_MIDDLEWARE_ACTION_CALLABLE")
         return 23
     
+    @transaction_watcher # must be on the OUTSIDE
     @with_action_middlewares("middleware_wrapped")
-    @transaction_watcher
     def middleware_wrapped_callable1(self, use_gems):
         self.notify_event("INSIDE_MIDDLEWARE_WRAPPED1")
         return 18277
     
+    @transaction_watcher # must be on the OUTSIDE
     @with_action_middlewares("middleware_wrapped")
-    @transaction_watcher
     def middleware_wrapped_callable2(self, my_arg):
         self.notify_event("INSIDE_MIDDLEWARE_WRAPPED2")       
         return True

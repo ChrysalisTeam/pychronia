@@ -2,6 +2,7 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import inspect
 from rpgweb.common import *
 
 
@@ -25,13 +26,21 @@ def with_action_middlewares(action_name):
     """
     Apply this decorator to actions, so that they get processed
     through middlewares.
+    
+    Wrapped mehods must not use *args and **kwargs notations!
     """
     @decorator
-    def _execute_with_middlewares(method, self, *args, **params):
-        if args:
-            raise RuntimeError("No positional arguments allowed in ability action callable: %r" % repr(args))
+    def _execute_with_middlewares(method, self, *args, **kwargs):
+        # session management must be on TOP of stack
+        assert not getattr(method, "_is_under_transaction_watcher", None) or getattr(method, "_is_under_readonly_method", None)
+        
+        (_args, varargs, varkw, _defaults) = inspect.getargspec(method)
+        assert varargs is None and varkw is None
+        params = inspect.getcallargs(method, self, *args, **kwargs)
+        
         self._lazy_setup_private_action_middleware_data(action_name=action_name)
         return self.process_action_through_middlewares(action_name, method, params)
+    
     return _execute_with_middlewares
 
 
@@ -61,12 +70,12 @@ class AbstractActionMiddleware(object):
         # we check that no unknown middleware is in settings or private data (could be a typo), 
         # and that activated middlewares are well compatible with current ability
         
-        middleware_settings = self.settings["middlewares"]
+        middleware_settings = self.settings["middlewares"].values()
         if "middlewares" in self.all_private_data: 
             middleware_private_data_packs = self.all_private_data["middlewares"].values()
         else: # not yet lazy-initialized
             middleware_private_data_packs = []
-        all_middleware_data_packs = [middleware_settings] + middleware_private_data_packs
+        all_middleware_data_packs = middleware_settings + middleware_private_data_packs
         
         known_middleware_names_set = set([klass.__name__ for klass in ACTION_MIDDLEWARES])
         compatible_middleware_names_set = set([klass.__name__ for klass in ACTION_MIDDLEWARES if self.ACCESS in klass.COMPATIBLE_ACCESSES])
@@ -75,7 +84,7 @@ class AbstractActionMiddleware(object):
             pack_keys = set(pack.keys())
             if strict:
                 assert pack_keys <= known_middleware_names_set, known_middleware_names_set - pack_keys # unknown middleware (typo ?)
-            assert pack_keys <= compatible_middleware_names_set, compatible_middleware_names_set - pack_keys # middleware can't be used with that kind of ability ACCESS
+            assert pack_keys <= compatible_middleware_names_set, (pack_keys, compatible_middleware_names_set, self.ACCESS) # middleware can't be used with that kind of ability ACCESS
 
 
 
@@ -121,8 +130,8 @@ class AbstractActionMiddleware(object):
         assert self.is_action_middleware_activated(action_name, middleware_class)
         middleware_data = self.private_data["middlewares"]
         if create_if_unexisting:
-            middleware_data.setdefault(PersistentDict())
-            middleware_data[action_name].setdefault(action_name, PersistentDict()) 
+            middleware_data.setdefault(action_name, PersistentDict())
+            middleware_data[action_name].setdefault(middleware_class.__name__, PersistentDict()) 
         return middleware_data[action_name][middleware_class.__name__]
     
         
@@ -179,7 +188,7 @@ class CostlyActionMiddleware(AbstractActionMiddleware):
     def _lazy_setup_private_action_middleware_data(self, action_name):
         super(CostlyActionMiddleware, self)._lazy_setup_private_action_middleware_data(action_name)
         if self.is_action_middleware_activated(action_name, CostlyActionMiddleware):
-            data = self.get_private_middleware_data(self, action_name, CostlyActionMiddleware, create_if_unexisting=True)
+            data = self.get_private_middleware_data(action_name, CostlyActionMiddleware, create_if_unexisting=True)
             if not data:
                 pass # nothing to store for that middleware, actually
                 
@@ -192,7 +201,7 @@ class CostlyActionMiddleware(AbstractActionMiddleware):
             
             for setting in "money_price gems_price".split():
                 if settings[setting] is not None: # None means "impossible to buy this way"
-                    utilities.check_positive_int(settings[setting], non_zero=True)
+                    utilities.check_is_positive_int(settings[setting], non_zero=True)
             assert settings["money_price"] or settings["gems_price"] # at least one means must be offered
                 
                 
@@ -236,8 +245,9 @@ class CostlyActionMiddleware(AbstractActionMiddleware):
         if remaining_gems is None:
             raise AbnormalUsageError(_("You don't possess the gems required")) # shouldn't happen since we use a form
         else:
-            character_properties["gems"] = remaining_gems
-
+            character_properties["gems"] = PersistentList(remaining_gems)
+            self.data["global_parameters"]["total_gems"] += gems_list
+    
     
     def _pay_with_money(self, character_properties, middleware_settings):
 
@@ -248,7 +258,6 @@ class CostlyActionMiddleware(AbstractActionMiddleware):
             raise NormalUsageError(_("You need at least %(price)s kashes in money to buy this asset") % SDICT(price=money_price))
 
         character_properties["account"] -= money_price
-
         self.data["global_parameters"]["bank_account"] += money_price
     
 

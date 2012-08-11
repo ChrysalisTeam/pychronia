@@ -2136,7 +2136,7 @@ class MoneyItemsOwnership(BaseDataManager):
 
         character["items"].append(item_name)
         if obj["is_gem"]: # pack of gems
-            character["gems"] += [obj["unit_cost"]] * obj["num_items"] #we add each gem separately
+            character["gems"] += [obj["unit_cost"]] * obj["num_items"] # we add each gem separately
         obj["owner"] = char_name
 
         # todo - logging here ??
@@ -2488,7 +2488,7 @@ class GameViews(BaseDataManager):
     # no transaction checker here
     def instantiate_game_view(self, name_or_klass):
         klass = self._resolve_view_klass(name_or_klass)
-        return klass(self) # first arg (self) is teh datamanager
+        return klass(self) # first arg (self) is the datamanager
         
         
     @readonly_method

@@ -301,8 +301,10 @@ class TestDatamanager(BaseGameTestCase):
     
     def test_public_method_wrapping(self):
         
+        # TODO FIXME - extend this check to methods of all ABILITIES !!!
+        
         for attr in dir(GameDataManager):
-            if attr.startswith("_") or attr in "begin rollback commit close".split():
+            if attr.startswith("_") or attr in "begin rollback commit close check_no_pending_transaction".split():
                 continue
             
             # we remove class/static methods, and some utilities that don't need decorators.
@@ -2207,38 +2209,45 @@ class TestActionMiddlewares(BaseGameTestCase):
     
     def test_costly_action_middleware(self):
         
-        self._set_user("guy3")
+        # setup
+        bank_name = self.dm.get_global_parameter("bank_name")
+        self.dm.transfer_money_between_characters(bank_name, "guy4", amount=1000)
+        self.dm.transfer_object_to_character("several_misc_gems2", "guy4") # 8 * 125 kashes
+        
+        self._set_user("guy4")
         
         ability = self.dm.instantiate_ability("dummy_ability")
+        ability._perform_lazy_initializations() # normally done while treating HTTP request...
+        
         assert isinstance(ability, DummyTestAbility._klass) # fixme later
         assert CostlyActionMiddleware
- 
-        def reset_guy3_data(money, gems):
-            props = self.dm.get_character_properties0("guy3")
-            props["account"] = money
-            props["gems"] = gems
-            self.dm.commit()
-            del props
-            
-        # misconfiguration
+        self.dm.commit()
+                  
+                  
+        # misconfiguration case #
+        
         ability.reset_test_settings("middleware_wrapped", CostlyActionMiddleware, dict(money_price=None, gems_price=None))
-        with utilities.raises_with_content(AbnormalUsageError, "misconfiguration"):
+                
+        with raises_with_content(AbnormalUsageError, "misconfiguration"):
             ability.middleware_wrapped_callable1(use_gems=[100])
         
+        self.dm.check_no_pending_transaction()
         
         
-        for gems_price in random.choice((None, 15, 100)): # WHATEVER gems prices
+        # payment with money #
+        
+        for gems_price in (None, 15, 100): # WHATEVER gems prices
             
-            reset_guy3_data (2000, [1, 2, 3, 4, 5, 100, 100, 100, 100])   
+            assert self.dm._in_transaction == False
             
             ability.reset_test_settings("middleware_wrapped", CostlyActionMiddleware, dict(money_price=15, gems_price=gems_price))
             ability.reset_test_data("middleware_wrapped", CostlyActionMiddleware, dict())
+            
+            ability.middleware_wrapped_callable1(use_gems=random.choice((None, []))) # triggers payment by money
 
-            #ability.middleware_wrapped_callable1(
-
-        props = self.dm.get_character_properties0("guy3")
-        assert props["account"] == 2000 
-        utilities.assert_sets_equal(props["gems"], [1, 2, 3, 4, 5, 100, 100, 100, 100])
+        props = self.dm.get_character_properties("guy4")
+        assert props["account"] == 1000 - 3*15 
+        utilities.assert_sets_equal(props["gems"], [125]*8)
     
         
         
@@ -2247,6 +2256,17 @@ class TestActionMiddlewares(BaseGameTestCase):
         
         
 class TestSpecialAbilities(BaseGameTestCase):
+
+    def test_generic_ability_features(self):
+        
+        assert AbstractAbility.__call__ == AbstractGameView.__call__ # must not be overlaoded, since it's decorated to catch exceptions
+        
+        # ability is half-view half-datamanager, so beware baout sessions...
+        assert AbstractAbility._process_standard_request._is_under_transaction_watcher
+        assert AbstractAbility._perform_lazy_initializations._is_under_transaction_watcher
+        assert AbstractAbility.process_admin_request._is_under_transaction_watcher
+
+
 
     def test_3D_items_display(self):
         

@@ -13,7 +13,8 @@ from django.template import RequestContext, loader
 from ..datamanager import GameDataManager
 from ..forms import AbstractGameForm
 from rpgweb.common import *
-from rpgweb.datamanager.datamanager_tools import transaction_watcher
+from rpgweb.datamanager.datamanager_tools import transaction_watcher,\
+    readonly_method
 
 
     
@@ -393,7 +394,7 @@ class AbstractGameView(object):
         else:
             return self._process_html_request()    
     
-     
+    
     def _process_standard_request(self, request, *args, **kwargs):
         """
         Must return a valid http response.
@@ -430,7 +431,7 @@ class AbstractGameView(object):
     ### Administration API ###
      
     
-
+    @readonly_method
     def compute_admin_template_variables(self, form_name, previous_form_data=None):
         """
         Can be used both in and out of request processing.
@@ -447,6 +448,7 @@ class AbstractGameView(object):
      
      
     @transform_usage_error
+    @transaction_watcher(ensure_data_ok=True, ensure_game_started=False)
     def process_admin_request(self, request, form_name):
 
         assert form_name in self.ADMIN_FORMS # else big pb!

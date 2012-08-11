@@ -3,7 +3,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 
-import os, sys, pytest, unittest
+import os, sys, pytest, unittest, traceback
 
 
 ## TEST CONFIGURATION ##
@@ -154,7 +154,8 @@ class AutoCheckingDM(object):
                 except GameError:
                     raise
                 except Exception, e:
-                    print("Abnormal exception seen:", e)
+                    print("Abnormal exception seen:", repr(e), file=sys.stderr)
+                    traceback.print_exc()
                     raise
                 finally:
                     if real_dm.connection: # i.e not for close() method

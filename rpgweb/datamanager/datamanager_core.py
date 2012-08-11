@@ -37,7 +37,7 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
     def begin(self):
 
         if not self._in_transaction:
-            assert not self.connection or not self.connection._registered_objects, repr(self.connection._registered_objects) # BEFORE TRANSACTION
+            self.check_no_pending_transaction()
             self._in_transaction = True
             #transaction.begin() # not really needed
             return None # value indicating top level
@@ -50,7 +50,7 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
         else:
             self._in_transaction = False
             transaction.commit() # top level
-            assert not self.connection or not self.connection._registered_objects, repr(self.connection._registered_objects) # AFTER REAL COMMIT
+            self.check_no_pending_transaction() # AFTER REAL COMMIT
 
     def rollback(self, savepoint=None):
         if savepoint:
@@ -58,8 +58,11 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
         else:
             self._in_transaction = False
             transaction.abort() # top level
-            assert not self.connection or not self.connection._registered_objects, repr(self.connection._registered_objects) # AFTER REAL ROLLBACK
-
+            self.check_no_pending_transaction() # AFTER REAL ROLLBACK
+    
+    def check_no_pending_transaction(self):
+        assert not self._in_transaction, self._in_transaction
+        assert not self.connection._registered_objects, repr(self.connection._registered_objects) 
 
     # no transaction manager - special case
     def __init__(self, game_instance_id, game_root=None, request=None, **kwargs):

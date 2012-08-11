@@ -249,6 +249,7 @@ character_properties:
         character_color : "#339933"
         
     guy3:
+        ## THIS ONE MUST HAVE NO MONEY AND GEMS
         domains: []
         password: awesome
         account: 2000

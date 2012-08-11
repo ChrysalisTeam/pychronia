@@ -19,7 +19,7 @@ def readonly_method(obj):
     @decorator
     def _readonly_method(func, self, *args, **kwargs):
         """
-        This method can only ensure that no uncommitted changes are made by the function,
+        This method can only ensure that no uncommitted changes are made by the function and its callees,
         committed changes might not be seen.
         """
         if not self.connection:
@@ -55,7 +55,7 @@ def transaction_watcher(object=None, ensure_data_ok=True, ensure_game_started=Tr
     
     *ensure_data_ok* false implies *ensure_game_started* false too.
     """
-
+    
     if not ensure_data_ok:
         ensure_game_started = False
     
@@ -68,7 +68,7 @@ def transaction_watcher(object=None, ensure_data_ok=True, ensure_game_started=Tr
             else:
                 datamanager = self # for datamanager methods
     
-    
+
             if not datamanager.connection: # special bypass
                 return func(self, *args, **kwargs)
         
@@ -95,7 +95,7 @@ def transaction_watcher(object=None, ensure_data_ok=True, ensure_game_started=Tr
                 #print("COMMITTING", func.__name__, savepoint)
                 datamanager.commit(savepoint)
                 if not savepoint:
-                    assert not datamanager.connection._registered_objects, datamanager.connection._registered_objects # on real commit
+                    datamanager.check_no_pending_transaction() # on real commit
                 return res
             
             except Exception, e:
@@ -103,7 +103,7 @@ def transaction_watcher(object=None, ensure_data_ok=True, ensure_game_started=Tr
                 logger.warn("ROLLING BACK", exc_info=True)
                 datamanager.rollback(savepoint)
                 if not savepoint:
-                    assert not datamanager.connection._registered_objects, datamanager.connection._registered_objects # on real rollback
+                    datamanager.check_no_pending_transaction() # on real rollback
                 raise
         new_func = _transaction_watcher(obj)
         new_func._is_under_transaction_watcher = True

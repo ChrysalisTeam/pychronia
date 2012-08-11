@@ -36,7 +36,7 @@ class AbilityMetaclass(GameViewMetaclass, type):
 
         
 # just because we can't dynamically assign a tuple of bases, in a normal "class" definition
-AbstractAbilityBases = (AbstractGameView,) + tuple(reversed(ACTION_MIDDLEWARES))
+AbstractAbilityBases =  tuple(reversed(ACTION_MIDDLEWARES)) + (AbstractGameView,)
 AbstractAbilityBasesAdapter = AbilityMetaclass(str('AbstractAbilityBasesAdapter'), AbstractAbilityBases, {})
 
 
@@ -67,7 +67,8 @@ class AbstractAbility(AbstractAbilityBasesAdapter):
     def datamanager(self):
         return self # ability behaves as an extension of datamanager!!
     
-    
+
+    @transaction_watcher(ensure_data_ok=True, ensure_game_started=False) # needed, because in ability, we're partly INSIDE the datamanager
     def _process_standard_request(self, request, *args, **kwargs):
         # Access checks have already been done here, so we may initialize lazy data
         self._perform_lazy_initializations() 
@@ -153,7 +154,6 @@ class AbstractAbility(AbstractAbilityBasesAdapter):
 
     @transaction_watcher(ensure_game_started=False) # authorized anytime
     def _perform_lazy_initializations(self):
-
         private_key = self._get_private_key()
         if not self.ability_data.has_key(private_key):
             self.logger.debug("Setting up private data %s", private_key)
@@ -190,6 +190,7 @@ class AbstractAbility(AbstractAbilityBasesAdapter):
 
     def _check_data_sanity(self, strict=False):
         raise NotImplementedError("_check_data_sanity") # to be overridden
+
 
 
     '''
