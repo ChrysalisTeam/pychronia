@@ -84,7 +84,7 @@ class AbstractActionMiddleware(object):
             pack_keys = set(pack.keys())
             if strict:
                 assert pack_keys <= known_middleware_names_set, known_middleware_names_set - pack_keys # unknown middleware (typo ?)
-            assert pack_keys <= compatible_middleware_names_set, (pack_keys, compatible_middleware_names_set, self.ACCESS) # middleware can't be used with that kind of ability ACCESS
+            assert pack_keys <= compatible_middleware_names_set, (pack_keys, compatible_middleware_names_set, self.ACCESS, known_middleware_names_set) # middleware can't be used with that kind of ability ACCESS
 
 
 
@@ -116,13 +116,13 @@ class AbstractActionMiddleware(object):
         """
         assert middleware_class
         data_dicts = []
-        for id, private_data in self.all_private_data["data"].items():
+        for user_id, private_data in self.all_private_data.items():
             for action_name, tree in private_data.get("middlewares", {}).items():
                 if filter_by_action_name is not None and filter_by_action_name != action_name:
                     continue
                 if middleware_class.__name__ in tree:
                     data_dicts.append(tree[middleware_class.__name__])
-            return data_dicts
+        return data_dicts
         
           
     def get_private_middleware_data(self, action_name, middleware_class, create_if_unexisting=False):
@@ -207,26 +207,28 @@ class CostlyActionMiddleware(AbstractActionMiddleware):
                 
     def process_action_through_middlewares(self, action_name, method, params):     
         
-        middleware_settings = self.get_middleware_settings(action_name, CostlyActionMiddleware)
-
-        if not middleware_settings["gems_price"] and not middleware_settings["money_price"]:
-            raise AbnormalUsageError(_("Sorry, due to a server misconfiguration, the payment of that asset couldn't be performed"))
+        if self.is_action_middleware_activated(action_name, CostlyActionMiddleware):
+            
+            middleware_settings = self.get_middleware_settings(action_name, CostlyActionMiddleware)
     
-        use_gems = params.get("use_gems", ())
+            if not middleware_settings["gems_price"] and not middleware_settings["money_price"]:
+                raise AbnormalUsageError(_("Sorry, due to a server misconfiguration, the payment of that asset couldn't be performed"))
         
-        # non-fatal coherency checks
-        if middleware_settings["gems_price"] and "use_gems" not in params:
-            self.logger.critical("Action %s was configured to be payable by gems, but no input field is available for this", action_name)
-        if not middleware_settings["gems_price"] and use_gems:
-            self.logger.critical("Action %s was configured to be NOT payable by gems, but gems were sent via input field", action_name)
-            use_gems = ()
-        
-        character_properties = self.get_character_properties(self.user.username)
-        
-        if use_gems or not middleware_settings["money_price"]:
-            self._pay_with_gems(character_properties, middleware_settings, use_gems)
-        else:
-            self._pay_with_money(character_properties, middleware_settings)
+            use_gems = params.get("use_gems", ())
+            
+            # non-fatal coherency checks
+            if middleware_settings["gems_price"] and "use_gems" not in params:
+                self.logger.critical("Action %s was configured to be payable by gems, but no input field is available for this", action_name)
+            if not middleware_settings["gems_price"] and use_gems:
+                self.logger.critical("Action %s was configured to be NOT payable by gems, but gems were sent via input field", action_name)
+                use_gems = ()
+            
+            character_properties = self.get_character_properties(self.user.username)
+            
+            if use_gems or not middleware_settings["money_price"]:
+                self._pay_with_gems(character_properties, middleware_settings, use_gems)
+            else:
+                self._pay_with_money(character_properties, middleware_settings)
         
         return super(CostlyActionMiddleware, self).process_action_through_middlewares(action_name, method, params)
     
@@ -262,7 +264,7 @@ class CostlyActionMiddleware(AbstractActionMiddleware):
     
 
         
-#@register_action_middleware
+@register_action_middleware
 class CountLimitedActionMiddleware(AbstractActionMiddleware):
     """
     Mix-in class that limits the count of uses of an action,
@@ -278,6 +280,7 @@ class CountLimitedActionMiddleware(AbstractActionMiddleware):
         private_usage_count: 3
         
     """
+    
     COMPATIBLE_ACCESSES = (UserAccess.character,)
     
     
@@ -289,7 +292,7 @@ class CountLimitedActionMiddleware(AbstractActionMiddleware):
             ##settings = self.get_middleware_settings(action_name, CountLimitedActionMiddleware)
             ##settings.setdefault("global_usage_count", 0)
             
-            data = self.get_private_middleware_data(self, action_name, CountLimitedActionMiddleware, create_if_unexisting=True)
+            data = self.get_private_middleware_data(action_name, CountLimitedActionMiddleware, create_if_unexisting=True)
             if not data:
                 data.setdefault("private_usage_count", 0)
                 
@@ -301,39 +304,39 @@ class CountLimitedActionMiddleware(AbstractActionMiddleware):
         for action_name, settings in self.get_all_middleware_settings(CountLimitedActionMiddleware).items():
             
             if settings["max_per_character"] is not None:
-                utilities.check_is_int(settings["max_per_character"], non_zero=True)
+                utilities.check_is_positive_int(settings["max_per_character"], non_zero=True)
+                for data in self.get_all_private_middleware_data(CountLimitedActionMiddleware, filter_by_action_name=action_name):
+                    assert data["private_usage_count"] <= settings["max_per_character"]
+                
             if settings["max_per_game"] is not None:
-                utilities.check_is_int(settings["max_per_game"], non_zero=True)    
-    
-            assert self._get_global_usage_count(action_name) <= ["max_per_game"]
-          
-            for data in self.get_all_private_middleware_data(CountLimitedActionMiddleware, filter_by_action_name=action_name):
-                assert data["private_usage_count"] <= settings["max_per_character"]
-            
+                utilities.check_is_positive_int(settings["max_per_game"], non_zero=True)    
+                assert self._get_global_usage_count(action_name) <= settings["max_per_game"]
+     
                 
     def _get_global_usage_count(self, action_name):
-        data_dicts = self.get_all_private_middleware_data(self, 
-                                                          middleware_class=CountLimitedActionMiddleware, 
-                                                          filter_by_action_name=action_name)                   
+        data_dicts = self.get_all_private_middleware_data(middleware_class=CountLimitedActionMiddleware, 
+                                                          filter_by_action_name=action_name) 
         global_usage_count = sum(data["private_usage_count"] for data in data_dicts)
         return global_usage_count
     
 
     def process_action_through_middlewares(self, action_name, method, params):     
         
-        middleware_settings = self.get_middleware_settings(action_name, CostlyActionMiddleware)
-        private_data = self.get_private_middleware_data(action_name, CountLimitedActionMiddleware)
-        
-        if middleware_settings["max_per_character"]:
-            if private_data["private_usage_count"]  >= middleware_settings["max_per_character"]:
-                raise NormalUsageError(_("You have exceeded your quota (%(max_per_player)s uses) for that asset") % SDICT(max_per_player=middleware_settings["max_per_player"]))
-        
-        if middleware_settings["max_per_game"]:
-            if self._get_global_usage_count(action_name) >= middleware_settings["max_per_game"]:
-                raise NormalUsageError(_("You have exceeded the global quota (%(max_per_game)s uses) for that asset") % SDICT(max_per_game=middleware_settings["max_per_game"]))
-        
-        private_data["private_usage_count"] += 1 # important
-              
+        if self.is_action_middleware_activated(action_name, CountLimitedActionMiddleware):
+            
+            middleware_settings = self.get_middleware_settings(action_name, CountLimitedActionMiddleware)
+            private_data = self.get_private_middleware_data(action_name, CountLimitedActionMiddleware)
+    
+            if middleware_settings["max_per_game"]: # 0 <-> None 
+                if self._get_global_usage_count(action_name) >= middleware_settings["max_per_game"]:
+                    raise NormalUsageError(_("You have exceeded the global quota (%(max_per_game)s uses) for that asset") % SDICT(max_per_game=middleware_settings["max_per_game"]))
+                
+            if middleware_settings["max_per_character"]: # 0 <-> None 
+                if private_data["private_usage_count"] >= middleware_settings["max_per_character"]:
+                    raise NormalUsageError(_("You have exceeded your quota (%(max_per_character)s uses) for that asset") % SDICT(max_per_character=middleware_settings["max_per_character"]))
+            
+            private_data["private_usage_count"] += 1 # important
+                  
         return super(CountLimitedActionMiddleware, self).process_action_through_middlewares(action_name, method, params)
             
         
@@ -343,7 +346,7 @@ class CountLimitedActionMiddleware(AbstractActionMiddleware):
     
         
         
-#@register_action_middleware
+@register_action_middleware
 class TimeLimitedActionMiddleware(AbstractActionMiddleware):
     """
     Mix-in class that limits the use of an action per period of time.
@@ -357,7 +360,7 @@ class TimeLimitedActionMiddleware(AbstractActionMiddleware):
         last_use_time: datetime()
         
     """
-    COMPATIBLE_ACCESSES = (UserAccess.character,)
+    COMPATIBLE_ACCESSES = (UserAccess.anonymous,)
     
         
     # FIXME TODO IMPLEMENT THIS

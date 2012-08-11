@@ -2354,31 +2354,118 @@ class TestActionMiddlewares(BaseGameTestCase):
         assert self.dm.get_event_count("INSIDE_NON_MIDDLEWARE_ACTION_CALLABLE") == 2           
         
             
+
     
-    
-    
-    
-    def ___test_count_limited_action_middleware(self):
+    def test_count_limited_action_middleware(self):
          
 
         ability = self.dm.instantiate_ability("dummy_ability")
-               
+
+                    
+        # BOTH quotas
         
         ability.reset_test_settings("middleware_wrapped", CountLimitedActionMiddleware, dict(max_per_character=3, max_per_game=4))
-      
+
         self._set_user("guy4") # important
         ability._perform_lazy_initializations() # normally done while treating HTTP request... 
-             
-        ability.middleware_wrapped_callable1(2524)
+        ability.reset_test_data("middleware_wrapped", CountLimitedActionMiddleware, dict()) # will be filled lazily, on call        
+      
+                 
+        assert 18277 == ability.middleware_wrapped_callable1(2524) # 1 use for guy4
+        assert True == ability.middleware_wrapped_callable2(2234) # 2 uses for guy4
+        assert 23 == ability.non_middleware_action_callable(use_gems=[125]) # no use
+        assert 18277 == ability.middleware_wrapped_callable1(132322) # 3 uses for guy4
+        
+        with raises_with_content(NormalUsageError, "exceeded your quota"):
+            ability.middleware_wrapped_callable1(2524)
+ 
+ 
+        self._set_user("guy3") # important
+        ability._perform_lazy_initializations() # normally done while treating HTTP request... 
+        ability.reset_test_data("middleware_wrapped", CountLimitedActionMiddleware, dict()) # will be filled lazily, on call        
+
+        assert ability.middleware_wrapped_callable2(None) # 1 use for guy3
+        assert ability.non_middleware_action_callable(use_gems=True) # no use
+        with raises_with_content(NormalUsageError, "exceeded the global quota"):
+            ability.middleware_wrapped_callable2(11)        
+                
+                
+        self._set_user("guy4") # important
+        with raises_with_content(NormalUsageError, "exceeded the global quota"): # this msg now takes precedence over "private quota" one
+            ability.middleware_wrapped_callable1(222)                
+                
+        assert self.dm.get_event_count("INSIDE_MIDDLEWARE_WRAPPED1") == 2 
+        assert self.dm.get_event_count("INSIDE_MIDDLEWARE_WRAPPED2") == 2
+        assert self.dm.get_event_count("INSIDE_NON_MIDDLEWARE_ACTION_CALLABLE") == 2   
+        
+        self.dm.clear_all_event_stats()
         
         
-        ability.reset_test_data("middleware_wrapped", CountLimitedActionMiddleware, dict(private_usage_count=0)) # useless actually for that middleware        
+        
+        # only per-character quota       
+        
+        ability.reset_test_settings("middleware_wrapped", CountLimitedActionMiddleware, dict(max_per_character=3, max_per_game=None))
+        
+        self._set_user("guy3") # important
+        assert ability.middleware_wrapped_callable2(None) # 2 uses for guy3
+        assert ability.middleware_wrapped_callable2(None) # 3 uses for guy3
+        with raises_with_content(NormalUsageError, "exceeded your quota"):
+            ability.middleware_wrapped_callable2(1111122)           
+        
+        self._set_user("guy4") # important
+        with raises_with_content(NormalUsageError, "exceeded your quota"): # back to private quota message
+            ability.middleware_wrapped_callable2(False)          
+        assert ability.non_middleware_action_callable(None)
+        
+        assert self.dm.get_event_count("INSIDE_MIDDLEWARE_WRAPPED1") == 0
+        assert self.dm.get_event_count("INSIDE_MIDDLEWARE_WRAPPED2") == 2
+        assert self.dm.get_event_count("INSIDE_NON_MIDDLEWARE_ACTION_CALLABLE") == 1     
+        self.dm.clear_all_event_stats()
         
         
         
+        # only global quota  
+        
+        ability.reset_test_settings("middleware_wrapped", CountLimitedActionMiddleware, dict(max_per_character=None, max_per_game=12)) # 6 more than current total
+        
+        assert ability.middleware_wrapped_callable1(None) # guy4 still
+        
+        self._set_user("guy2") # important
+        ability._perform_lazy_initializations() 
+        
+        for i in range(5):
+            assert ability.middleware_wrapped_callable1(None)
+        with raises_with_content(NormalUsageError, "exceeded the global quota"):
+            ability.middleware_wrapped_callable1(False)             
+        assert ability.non_middleware_action_callable(None)
+            
+        assert self.dm.get_event_count("INSIDE_MIDDLEWARE_WRAPPED1") == 6
+        assert self.dm.get_event_count("INSIDE_MIDDLEWARE_WRAPPED2") == 0
+        assert self.dm.get_event_count("INSIDE_NON_MIDDLEWARE_ACTION_CALLABLE") == 1     
+        self.dm.clear_all_event_stats()
         
         
+                
+        # no quota (or misconfiguration):
         
+        ability.reset_test_settings("middleware_wrapped", CountLimitedActionMiddleware, 
+                                    dict(max_per_character=random.choice((None, 0)), max_per_game=random.choice((None, 0)))) 
+        
+        for user in ("guy2", "guy3", "guy4"):
+            self._set_user("guy2") # important
+            for i in range(10):
+                assert ability.middleware_wrapped_callable1(None)
+                assert ability.middleware_wrapped_callable2(None)
+                assert ability.non_middleware_action_callable(None)
+                
+        assert self.dm.get_event_count("INSIDE_MIDDLEWARE_WRAPPED1") == 30
+        assert self.dm.get_event_count("INSIDE_MIDDLEWARE_WRAPPED2") == 30
+        assert self.dm.get_event_count("INSIDE_NON_MIDDLEWARE_ACTION_CALLABLE") == 30            
+    
+        ability.reset_test_settings("middleware_wrapped", CountLimitedActionMiddleware, 
+                                    dict(max_per_character=None, max_per_game=None)) # to please the automatic checking of DB
+                                    
+                                         
         
 class TestSpecialAbilities(BaseGameTestCase):
 
