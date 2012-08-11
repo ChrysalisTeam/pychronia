@@ -961,8 +961,7 @@ class TextMessaging(BaseDataManager): # TODO REFINE
             msg["recipient_emails"] = self._normalize_recipient_emails(msg["recipient_emails"])
 
             if "@" not in msg["sender_email"]:
-                msg["sender_email"] = (msg["sender_email"] + "@" + pangea_network)
-                                       # we allow short username as sender/recipient
+                msg["sender_email"] = (msg["sender_email"] + "@" + pangea_network) # we allow short username as sender/recipient
 
             msg["attachment"] = msg.get("attachment", None)
             msg["is_certified"] = msg.get("is_certified", False)
@@ -1218,6 +1217,7 @@ class TextMessaging(BaseDataManager): # TODO REFINE
             self._immediately_send_message(msg)
 
         return new_id
+    
 
     @staticmethod
     def _get_new_msg_id(index, content):
@@ -1774,8 +1774,8 @@ class ActionScheduling(BaseDataManager):
         new_data.setdefault("scheduled_actions", PersistentList())
 
         for evt in new_data["scheduled_actions"]:
-            if isinstance(msg["execute_at"], (long, int)): # offset in minutes
-                msg["execute_at"] = utilities.compute_remote_datetime(msg["execute_at"])
+            if isinstance(evt["execute_at"], (long, int)): # offset in minutes
+                evt["execute_at"] = utilities.compute_remote_datetime(evt["execute_at"])
         new_data["scheduled_actions"].sort(key=lambda evt: evt["execute_at"])
 
 
@@ -1851,11 +1851,11 @@ class ActionScheduling(BaseDataManager):
         if isinstance(function, basestring):
             #print ("SEARCHING", function, "IN", sorted(dir(self)))
             if not hasattr(self, function) or not hasattr(getattr(self, function), '__call__'):
-                raise TypeError(_("Only strings representing DataManager methods can be scheduled as delayed actions, not %(function)s") % SDICT(
-                                    function=function))
+                raise TypeError(_("Only strings representing DataManager methods can be scheduled as delayed actions, not %(function)s") % 
+                                SDICT(function=function))
         elif not hasattr(function, '__call__'):
-            raise TypeError(_("You can only register a callable object as a delayed action, not a %(function)r") % SDICT(
-                              function=function))
+            raise TypeError(_("You can only register a callable object as a delayed action, not a %(function)r") % 
+                            SDICT(function=function))
 
         if isinstance(date_or_delay_mn, datetime):
             time = date_or_delay_mn
