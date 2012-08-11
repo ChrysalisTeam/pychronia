@@ -238,8 +238,14 @@ class CostlyActionMiddleware(AbstractActionMiddleware):
         gems_price = middleware_settings["gems_price"]
         assert gems_price
         
-        if not gems_list or (sum(gems_list) < gems_price): # gems_list could be empty!!
+        provided_gems_value = sum(gems_list) if gems_list else None # gems_list could be empty!!
+        if not provided_gems_value or (provided_gems_value < gems_price): 
             raise NormalUsageError(_("You need at least %(price)s kashes of gems to buy this asset") % SDICT(gems_price=gems_price))
+        
+        min_gem_value = min(gems_list) # necessarily non-empty here
+        if (provided_gems_value - gems_price) >= min_gem_value:
+            raise NormalUsageError(_("You provided too many gems for the value of that asset, please top off") % SDICT(gems_price=gems_price))
+        
 
         # we don't care if the player has given too many gems
         remaining_gems = utilities.substract_lists(character_properties["gems"], gems_list)

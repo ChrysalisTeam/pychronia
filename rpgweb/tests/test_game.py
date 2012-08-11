@@ -2296,7 +2296,7 @@ class TestActionMiddlewares(BaseGameTestCase):
             ability.reset_test_data("middleware_wrapped", CostlyActionMiddleware, dict()) # useless actually for that middleware
             
             # payments OK
-            assert ability.middleware_wrapped_callable1(use_gems=[125, 200]) # triggers payment by gems
+            assert ability.middleware_wrapped_callable1(use_gems=[200]) # triggers payment by gems
 
             # not taken into account - no middlewares here
             assert ability.non_middleware_action_callable(use_gems=[125, 128, 129]) 
@@ -2304,10 +2304,16 @@ class TestActionMiddlewares(BaseGameTestCase):
             # too expensive for current gems given
             with raises_with_content(NormalUsageError, "kashes of gems"):
                 ability.middleware_wrapped_callable1(use_gems=[125]) 
-                
+            
+            with raises_with_content(NormalUsageError, "top off"): # we're nice with people who give too much...
+                ability.middleware_wrapped_callable1(use_gems=[125, 200])
+
+            with raises_with_content(NormalUsageError, "top off"): # that check is done before "whether or not they really own the games"
+                ability.middleware_wrapped_callable1(use_gems=[128, 178])
+                            
             # some wrong gems in input (even if a sufficient number  of them is OK)
             with raises_with_content(AbnormalUsageError, "don't possess"):
-                ability.middleware_wrapped_callable1(use_gems=[125, 125, 167])  
+                ability.middleware_wrapped_callable1(use_gems=[111, 125])  
             
             if not money_price: 
                 # no fallback to money, when no gems at all in input
@@ -2317,12 +2323,12 @@ class TestActionMiddlewares(BaseGameTestCase):
                     ability.middleware_wrapped_callable2([125, 125]) # wrong param name   
         
         assert ability.middleware_wrapped_callable1(use_gems=[200]) # OK
-        assert ability.middleware_wrapped_callable1(use_gems=[125, 125, 125]) # OK, paying waaayy too much is OK at the moment
+        assert ability.middleware_wrapped_callable1(use_gems=[125, 125]) # OK as long as not too many gems for the asset value
             
         # we check data coherency
         props = self.dm.get_character_properties("guy4")
         assert props["account"] == new_money_value # unchanged
-        utilities.assert_sets_equal(props["gems"], [125]*2 + [200]) # 3 payments with 2 gems, + 2 separate payùents
+        utilities.assert_sets_equal(props["gems"], [125]*6 + [200]) # 3 payments with 2 gems, + 2 separate payments
         
         assert self.dm.get_event_count("INSIDE_MIDDLEWARE_WRAPPED1") == 5 # 3 + 2 extra calls
         assert self.dm.get_event_count("INSIDE_MIDDLEWARE_WRAPPED2") == 0
@@ -2338,7 +2344,7 @@ class TestActionMiddlewares(BaseGameTestCase):
         ability.reset_test_settings("middleware_wrapped", CostlyActionMiddleware, dict(money_price=11, gems_price=33))
         ability.reset_test_data("middleware_wrapped", CostlyActionMiddleware, dict()) # useless actually for that middleware        
         
-        ability.middleware_wrapped_callable1(use_gems=[200]) # by gems  
+        ability.middleware_wrapped_callable1(use_gems=[200]) # by gems, works even if smaller gems of user would fit better (no paternalism)
         ability.middleware_wrapped_callable1(use_gems=None) # by money
         ability.middleware_wrapped_callable2("hi") # by money
         assert ability.non_middleware_action_callable(use_gems=[125]) 
