@@ -270,7 +270,7 @@ class CountLimitedActionMiddleware(AbstractActionMiddleware):
 
     settings::
     
-        max_per_player: 3 (None if no limit is set)
+        max_per_character: 3 (None if no limit is set)
         max_per_game: 6 (None if no limit is set)
         
     private_data::
@@ -300,15 +300,15 @@ class CountLimitedActionMiddleware(AbstractActionMiddleware):
         settings = self.settings
         for action_name, settings in self.get_all_middleware_settings(CountLimitedActionMiddleware).items():
             
-            if settings["max_per_player"] is not None:
-                utilities.check_is_int(settings["max_per_player"], non_zero=True)
+            if settings["max_per_character"] is not None:
+                utilities.check_is_int(settings["max_per_character"], non_zero=True)
             if settings["max_per_game"] is not None:
                 utilities.check_is_int(settings["max_per_game"], non_zero=True)    
     
             assert self._get_global_usage_count(action_name) <= ["max_per_game"]
           
             for data in self.get_all_private_middleware_data(CountLimitedActionMiddleware, filter_by_action_name=action_name):
-                assert data["private_usage_count"] <= settings["max_per_player"]
+                assert data["private_usage_count"] <= settings["max_per_character"]
             
                 
     def _get_global_usage_count(self, action_name):
@@ -324,8 +324,8 @@ class CountLimitedActionMiddleware(AbstractActionMiddleware):
         middleware_settings = self.get_middleware_settings(action_name, CostlyActionMiddleware)
         private_data = self.get_private_middleware_data(action_name, CountLimitedActionMiddleware)
         
-        if middleware_settings["max_per_player"]:
-            if private_data["private_usage_count"]  >= middleware_settings["max_per_player"]:
+        if middleware_settings["max_per_character"]:
+            if private_data["private_usage_count"]  >= middleware_settings["max_per_character"]:
                 raise NormalUsageError(_("You have exceeded your quota (%(max_per_player)s uses) for that asset") % SDICT(max_per_player=middleware_settings["max_per_player"]))
         
         if middleware_settings["max_per_game"]:
