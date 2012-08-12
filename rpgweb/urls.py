@@ -123,7 +123,7 @@ urlpatterns = patterns('',
                 
                     (r'^(?P<game_instance_id>\w+)/', include(final_urlpatterns)),
                     
-                    (r'^', include(final_urlpatterns), {"game_instance_id": "DEMO"}), # default game instance, just as a demo
+                    #(r'^', include(final_urlpatterns), {"game_instance_id": "DEMO"}), # default game instance, just as a demo
 )
 
 

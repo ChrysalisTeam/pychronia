@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import sys, os
-
 os.environ["DJANGO_SETTINGS_MODULE"] = settings_module = "rpgweb.tests._persistent_settings" # with DB not in temp dir
 
 from django.core.management import execute_from_command_line
@@ -22,6 +21,10 @@ if __name__ == "__main__":
     elif "reset_zodb" in arguments:
         if os.path.exists(settings.ZODB_FILE):
             os.remove(settings.ZODB_FILE)
+        from rpgweb.datamanager.datamanager_administrator import reset_zodb_structure, create_game_instance
+        reset_zodb_structure()
+        create_game_instance(game_instance_id="DEMO", master_email="dummy@dummy.fr", master_login="master", master_password="ultimate")
+                    
 
     elif "reset_django" in arguments:
         sys.argv[1:] = ("syncdb --noinput --settings=%s" % settings_module).split()

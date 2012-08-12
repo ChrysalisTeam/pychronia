@@ -15,6 +15,9 @@ ZODB_FILE = os.path.join(TEST_DIR, "gamedata.fs")
 
 
 def GAME_INITIAL_FIXTURE_SCRIPT(dm):
+    """
+    Called just before conversion of initial data tree, and coherency check.
+    """
     
     # we activate ALL views
     dm.set_activated_game_views(dm.ACTIVABLE_VIEWS_REGISTRY.keys())
