@@ -10,7 +10,7 @@ from __future__ import unicode_literals
 
         subject = _("<Acharith Attack on %(city_name)s>") % SDICT(city_name=city_name.capitalize())
 
-        local_finish_time = utilities.utc_to_local(utilities.compute_remote_datetime(self.get_global_parameter("acharith_attack_delays")))
+        local_finish_time = utilities.utc_to_local(self.compute_remote_datetime(self.get_global_parameter("acharith_attack_delays")))
         local_finish_time_str = local_finish_time.strftime("%H:%M:%S")
 
         body = (_("*** termination planned at %(time)s ***") % SDICT(time=local_finish_time_str) + "\n\n" + message)
@@ -42,7 +42,7 @@ from __future__ import unicode_literals
         subject = _("<Teldorian Teleportation on %(scan_state)s location %(city_name)s>") % SDICT(
             scan_state=(_("scanned") if is_scanned else _("unscanned")), city_name=city_name.capitalize())
 
-        local_finish_time = utilities.utc_to_local(utilities.compute_remote_datetime(self.get_global_parameter("teldorian_teleportation_delays")))
+        local_finish_time = utilities.utc_to_local(self.compute_remote_datetime(self.get_global_parameter("teldorian_teleportation_delays")))
         local_finish_time_str = local_finish_time.strftime("%H:%M:%S")
 
         body = _("*** termination planned at %(time)s ***") % SDICT(time=local_finish_time_str) + "\n\n" + message
@@ -70,7 +70,7 @@ from __future__ import unicode_literals
 
         subject = _("<Mercenary Intervention on %(city_name)s>") % SDICT(city_name=city_name.capitalize())
 
-        local_finish_time = utilities.utc_to_local(utilities.compute_remote_datetime(self.get_global_parameter("mercenary_intervention_delays")))
+        local_finish_time = utilities.utc_to_local(self.compute_remote_datetime(self.get_global_parameter("mercenary_intervention_delays")))
         local_finish_time_str = local_finish_time.strftime("%H:%M:%S")
 
         body = _("*** termination planned at %(time)s ***") % SDICT(time=local_finish_time_str) + "\n\n" + message

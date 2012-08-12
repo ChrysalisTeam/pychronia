@@ -98,7 +98,7 @@ global_parameters:
     # global parameters added at runtime: scanned_locations, total_gems_spent, total_digital_money_spent, total_gems_number,
     # total_digital_money, teldorian_teleportations_done and telecom_investigations_done
 
-
+    game_theoretical_length_days: 45.3
 
     global_introduction: |
         Le *Dr Loyd Georges* est aux anges. Ce retraité sabarithe blablablah
@@ -315,7 +315,13 @@ audio_messages:
         file: "berce.mp3"
 
   
-events_log: [] #-> list of event dicts
+events_log:  #-> list of event dicts
+    -  "time": -3 # mns
+       "message": "All is allright, game started"
+       "substitutions": {}
+       "url": null
+       "username": "master"
+
 
 scheduled_actions: [] #-> list of scheduled action dicts
 

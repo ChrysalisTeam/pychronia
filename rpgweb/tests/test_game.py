@@ -167,24 +167,6 @@ class TestUtilities(TestCase):
 
 
 
-    def test_datetime_manipulations(self):
-
-        self.assertRaises(Exception, utilities.compute_remote_datetime, (3, 2))
-
-        for value in [0.025, (0.02, 0.03)]: # beware of the rounding to integer seconds...
-
-            dt = utilities.compute_remote_datetime(value)
-
-            self.assertEqual(utilities.is_past_datetime(dt), False)
-            time.sleep(2)
-            self.assertEqual(utilities.is_past_datetime(dt), True)
-
-            utc = datetime.utcnow()
-            now = datetime.now()
-            now2 = utilities.utc_to_local(utc)
-
-            self.assertTrue(now - timedelta(seconds=1) < now2 < now + timedelta(seconds=1))
-
 
     def test_yaml_fixture_loading(self):
         
@@ -391,6 +373,33 @@ class TestDatamanager(BaseGameTestCase):
                 transaction.abort()
             assert castrated_dm.get_event_count("BASE_PROCESS_PERIODIC_TASK_CALLED") == 1
                                        
+
+
+    @for_core_module(FlexibleTime)
+    def test_flexible_time_module(self):
+        
+        game_length = 45.3 # test fixture
+        assert self.dm.get_global_parameter("game_theoretical_length_days") == game_length
+        
+        self.assertRaises(Exception, self.dm.compute_remote_datetime, (3, 2))
+
+        for value in [0.025/game_length, (0.02/game_length, 0.03/game_length)]: # beware of the rounding to integer seconds...
+            
+            now =  datetime.utcnow()
+            dt = self.dm.compute_remote_datetime(value)
+            assert now + timedelta(seconds=1) <= dt <= now + timedelta(seconds=2), (now, dt)
+            
+            self.assertEqual(utilities.is_past_datetime(dt), False)
+            time.sleep(0.5)
+            self.assertEqual(utilities.is_past_datetime(dt), False)
+            time.sleep(2)
+            self.assertEqual(utilities.is_past_datetime(dt), True)
+
+            utc = datetime.utcnow()
+            now = datetime.now()
+            now2 = utilities.utc_to_local(utc)
+            self.assertTrue(now - timedelta(seconds=1) < now2 < now + timedelta(seconds=1))
+
 
             
     @for_core_module(CharacterHandling)
@@ -1191,20 +1200,27 @@ class TestDatamanager(BaseGameTestCase):
 
         
     def test_delayed_message_processing(self):
+        
+        WANTED_FACTOR = 2 # we only double durations below
+        params = self.dm.get_global_parameters()
+        assert params["game_theoretical_length_days"]
+        params["game_theoretical_length_days"] = WANTED_FACTOR 
+        
+        
         self._reset_messages()
 
         email = self.dm.get_character_email # function
         
         # delayed message sending
 
-        self.dm.post_message(email("guy3"), email("guy2"), "yowh1", "qhsdhqsdh", attachment=None, date_or_delay_mn=0.03)
+        self.dm.post_message(email("guy3"), email("guy2"), "yowh1", "qhsdhqsdh", attachment=None, date_or_delay_mn=0.03/WANTED_FACTOR)
         self.assertEqual(len(self.dm.get_all_sent_messages()), 0)
         queued_msgs = self.dm.get_all_queued_messages()
         self.assertEqual(len(queued_msgs), 1)
         #print datetime.utcnow(), " << ", queued_msgs[0]["sent_at"]
         self.assertTrue(datetime.utcnow() < queued_msgs[0]["sent_at"] < datetime.utcnow() + timedelta(minutes=0.22))
 
-        self.dm.post_message(email("guy3"), email("guy2"), "yowh2", "qhsdhqsdh", attachment=None, date_or_delay_mn=(0.04, 0.05)) # 3s delay range
+        self.dm.post_message(email("guy3"), email("guy2"), "yowh2", "qhsdhqsdh", attachment=None, date_or_delay_mn=(0.04/WANTED_FACTOR, 0.05/WANTED_FACTOR)) # 3s delay range
         self.assertEqual(len(self.dm.get_all_sent_messages()), 0)
         queued_msgs = self.dm.get_all_queued_messages()
         self.assertEqual(len(queued_msgs), 2)
@@ -1214,7 +1230,7 @@ class TestDatamanager(BaseGameTestCase):
 
         # delayed message processing
 
-        self.dm.post_message(email("guy3"), email("guy2"), "yowh3", "qhsdhqsdh", attachment=None, date_or_delay_mn=0.01) # 0.6s
+        self.dm.post_message(email("guy3"), email("guy2"), "yowh3", "qhsdhqsdh", attachment=None, date_or_delay_mn=0.01/WANTED_FACTOR) # 0.6s
         self.assertEqual(len(self.dm.get_all_queued_messages()), 3)
         self.assertEqual(len(self.dm.get_all_sent_messages()), 0)
         res = self.dm.process_periodic_tasks()
@@ -1243,10 +1259,9 @@ class TestDatamanager(BaseGameTestCase):
         self.assertEqual(self.dm.get_event_count("DELAYED_MESSAGE_ERROR"), 0)
 
 
-
         # forced sending of queued messages
-        myid1 = self.dm.post_message(email("guy3"), email("guy2"), "yowh2", "qhsdhqsdh", attachment=None, date_or_delay_mn=(1, 2)) # 3s delay range
-        myid2 = self.dm.post_message(email("guy3"), email("guy2"), "yowh2", "qhsdhqsdh", attachment=None, date_or_delay_mn=(1, 2)) # 3s delay range
+        myid1 = self.dm.post_message(email("guy3"), email("guy2"), "yowh2", "qhsdhqsdh", attachment=None, date_or_delay_mn=(1.0/WANTED_FACTOR, 2.0/WANTED_FACTOR)) # 3s delay range
+        myid2 = self.dm.post_message(email("guy3"), email("guy2"), "yowh2", "qhsdhqsdh", attachment=None, date_or_delay_mn=(1.0/WANTED_FACTOR, 2.0/WANTED_FACTOR)) # 3s delay range
         self.assertEqual(len(self.dm.get_all_queued_messages()), 2)
 
         self.assertFalse(self.dm.force_message_sending("dummyid"))
@@ -1260,15 +1275,21 @@ class TestDatamanager(BaseGameTestCase):
      
         
     def test_delayed_action_processing(self):
-
+        
+        WANTED_FACTOR = 2 # we only double durations below
+        params = self.dm.get_global_parameters()
+        assert params["game_theoretical_length_days"]
+        params["game_theoretical_length_days"] = WANTED_FACTOR 
+        
+        
         def _dm_delayed_action(arg1):
             self.dm.data["global_parameters"]["stuff"] = 23
             self.dm.commit()
-        self.dm._dm_delayed_action = _dm_delayed_action # attribute of that precise instane, not class!
+        self.dm._dm_delayed_action = _dm_delayed_action # now an attribute of that speific instance, not class!
         
-        self.dm.schedule_delayed_action(0.01, dummyfunc, 12, item=24)
-        self.dm.schedule_delayed_action((0.04, 0.05), dummyfunc) # will raise error
-        self.dm.schedule_delayed_action((0.035, 0.05), "_dm_delayed_action", "hello")
+        self.dm.schedule_delayed_action(0.01/WANTED_FACTOR, dummyfunc, 12, item=24)
+        self.dm.schedule_delayed_action((0.04/WANTED_FACTOR, 0.05/WANTED_FACTOR), dummyfunc) # will raise error
+        self.dm.schedule_delayed_action((0.035/WANTED_FACTOR, 0.05/WANTED_FACTOR), "_dm_delayed_action", "hello")
  
         res = self.dm.process_periodic_tasks()
         self.assertEqual(res["actions_executed"], 0)
@@ -1680,14 +1701,16 @@ class TestDatamanager(BaseGameTestCase):
         self._reset_messages()
         
         self._set_user("guy1")
-        self.assertEqual(self.dm.get_game_events(), [])
+        events = self.dm.get_game_events()
+        self.assertEqual(len(events), 1) # fixture
+
         self.dm.log_game_event("hello there 1")
         self._set_user("master")
         self.dm.log_game_event("hello there 2", url="/my/url/")
         self.dm.commit()
-        events = self.dm.get_game_events()
+        
+        events = self.dm.get_game_events()[1:] # skip fixture
         self.assertEqual(len(events), 2)
-
         self.assertEqual(events[0]["message"], "hello there 1")
         self.assertEqual(events[0]["username"], "guy1")
         self.assertEqual(events[0]["url"], None)

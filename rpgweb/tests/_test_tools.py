@@ -153,7 +153,7 @@ class AutoCheckingDM(object):
                 except GameError:
                     raise
                 except Exception, e:
-                    print("Abnormal exception seen:", repr(e), file=sys.stderr)
+                    print("Abnormal exception seen in AutoCheckingDM:", repr(e), file=sys.stderr)
                     traceback.print_exc()
                     raise
                 finally:

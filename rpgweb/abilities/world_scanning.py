@@ -84,7 +84,7 @@ def process_scanning_submission(self, username, item_name, description): # addit
 
         attachment = None
 
-        common_date = utilities.compute_remote_datetime(scanning_delay)
+        common_date = self.compute_remote_datetime(scanning_delay)
 
         self.schedule_delayed_action(common_date, "_add_to_scanned_locations", locations) # pickling instance method
 

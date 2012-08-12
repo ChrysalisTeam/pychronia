@@ -272,6 +272,10 @@ def check_is_string(value):
     assert isinstance(value, basestring) and value, value
     return True
 
+def check_is_float(value):
+    assert isinstance(value, (int, long, float)), value # integers are considered as floats too!!
+    return True
+
 def check_is_int(value):
     assert isinstance(value, (int, long)), value
     return True
@@ -302,8 +306,15 @@ def check_num_keys(value, num):
     assert len(value.keys()) == num, (value, num)
     return True
 
+def check_is_positive_float(value, non_zero=True):
+    check_is_float(value)
+    assert value >= 0
+    if non_zero:
+        assert value != 0
+    return True
+
 def check_is_positive_int(value, non_zero=True):
-    assert isinstance(value, (int, long))
+    check_is_int(value)
     assert value >= 0
     if non_zero:
         assert value != 0
@@ -414,33 +425,6 @@ def load_yaml_fixture(yaml_fixture):
 def utc_to_local(utc_time):
     timedelta = datetime.now() - datetime.utcnow()
     return utc_time + timedelta
-
-
-
-def compute_remote_datetime(delay_mn):
-    # delay can be a number or a range (of type int or float)
-    # we always work in UTC
-
-    new_time = datetime.utcnow()
-
-    if delay_mn:
-        if not isinstance(delay_mn, (int, long, float)):
-            delay_s_min = int(60 * delay_mn[0])
-            delay_s_max = int(60 * delay_mn[1])
-            assert delay_s_min <= delay_s_max, "delay min must be < delay max"
-
-            delay_s = random.randint(delay_s_min, delay_s_max) # time range in seconds
-
-
-        else:
-            delay_s = 60 * delay_mn  # no need to coerce to integer
-
-        #print "DELAY ADDED : %s s" % delay_s
-
-        new_time += timedelta(seconds=delay_s)
-
-    return new_time
-
 
 def is_past_datetime(dt):
     # WARNING - to compute delays, we always work in UTC TIME
