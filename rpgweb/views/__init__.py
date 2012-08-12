@@ -966,7 +966,7 @@ def view_sales(request, template_name='generic_operations/view_sales.html'):
                      'total_gems_number': total_gems_number,
                      'total_archaeological_objects_number': total_archaeological_objects_number
                     })
-assert view_sales.NAME in GameDataManager.ACTIVABLE_VIEWS_REGISTRY.keys()
+assert view_sales.im_self.NAME in GameDataManager.ACTIVABLE_VIEWS_REGISTRY.keys()
 
 
 '''

@@ -6,7 +6,7 @@ import re, logging
 from datetime import datetime
 
 from rpgweb.utilities import mediaplayers, autolinker
-from rpgweb.common import exception_swallower, game_file_url as real_game_file_url, gameview_reverse
+from rpgweb.common import exception_swallower, game_file_url as real_game_file_url, reverse
 
 import django.template
 from django.template import defaulttags
@@ -60,8 +60,8 @@ def _generate_encyclopedia_links(html_snippet, datamanager):
     def link_attr_generator(match):
         matched_str = match.group(0)
         # detecting here WHICH keyword triggered the match would be possible, but expensive... let's postpone that
-        link = gameview_reverse("rpgweb.views.view_encyclopedia", 
-                                kwargs={"game_instance_id": datamanager.game_instance_id,})
+        link = reverse("rpgweb.views.view_encyclopedia", 
+                       kwargs={"game_instance_id": datamanager.game_instance_id,})
         link += "?search=%s" % urllib.quote_plus(matched_str.encode("utf8"), safe=b"") 
         return dict(href=link) 
 

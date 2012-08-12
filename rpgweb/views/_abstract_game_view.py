@@ -545,17 +545,23 @@ def register_view(view_object=None,
     """
     Helper allowing with or without-arguments decorator usage for GameView.
     
-    Returns a CLASS, not a regular django view.
+    Returns a CLASS or a METHOD, depending on the type of the wrapped object.
     """
+    
+    
+    if attach_to is not _undefined and not isinstance(attach_to, type):
+        # we get back from method to AbstractGameView class
+        attach_to = attach_to.im_self
+        assert issubclass(attach_to, AbstractGameView)
+
 
     def _build_final_view_callable(real_view_object):
         
         if isinstance(real_view_object, type):
+            
             assert real_view_object.ACCESS # must be a class!
-            
             assert all((val == _undefined) for val in (access, permissions, always_available, attach_to)) # these params must already exist as class attrs
-            NewViewType = real_view_object
-            
+            view_callable = real_view_object
             
         else:    
             
@@ -573,12 +579,13 @@ def register_view(view_object=None,
             # we build new GameView subclass on the fly
             KlassName = utilities.to_pascal_case(real_view_object.__name__)
             NewViewType = type(KlassName, (AbstractGameView,), class_data) # metaclass checks everything for us
-           
+            view_callable = NewViewType.as_view
         
-        return NewViewType
+        return view_callable # a class or method, depending on *real_view_object*
     
     if view_object: 
         return _build_final_view_callable(view_object)
-    return _build_final_view_callable # new decorator ready to be applied to a view function/type
-
+    else:
+        return _build_final_view_callable # new decorator ready to be applied to a view function/type
+    assert False
 

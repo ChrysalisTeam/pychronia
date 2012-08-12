@@ -5,15 +5,13 @@ from __future__ import unicode_literals
 from django.conf.urls.defaults import *
 from .utilities import config
 
-from .django_overrides import gameview_patterns
 
 
-
-view_urlpatterns = gameview_patterns('rpgweb.views',
+view_urlpatterns = patterns('rpgweb.views',
 
     # WARNING - DANGEROUS #
 
-    (r'^TEST_CAPTCHA/$', 'gameview_mixins.TestCaptcha'),
+    (r'^TEST_CAPTCHA/$', 'gameview_mixins.test_captcha'),
 
     (r'^CHARACTERS_IDENTITIES/$', 'CHARACTERS_IDENTITIES'),
     (r'^DATABASE_OPERATIONS/$', 'DATABASE_OPERATIONS'),
@@ -105,7 +103,7 @@ view_urlpatterns = gameview_patterns('rpgweb.views',
 )
 
 
-ability_urlpatterns = gameview_patterns("rpgweb.abilities",
+ability_urlpatterns = patterns("rpgweb.abilities",
 
     (r'^ability/house_locking/$', 'house_locking_view'),
     (r'^ability/runic_translation/$', 'runic_translation_view'),

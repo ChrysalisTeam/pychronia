@@ -70,3 +70,4 @@ class TestCaptcha(AbstractCaptchaProtectedView):
     def get_template_vars(self, previous_form_data=None):
         return {"media_player": "IT WORKS"}
 
+test_captcha = TestCaptcha.as_view # fixme

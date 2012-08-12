@@ -62,6 +62,7 @@ def for_core_module(klass):
 
 def for_ability(view):
     # TODO - track proper testing of ability module
+    view = getattr(view, "im_self", view)
     assert view in SpecialAbilities.ABILITIES_REGISTRY.values(), view
     return lambda func: func
 
@@ -69,7 +70,7 @@ def for_ability(view):
 
 TEST_GAME_INSTANCE_ID = "TeStiNg"
 ROOT_GAME_URL = "/%s" % TEST_GAME_INSTANCE_ID
-HOME_URL = gameview_reverse(rpgweb.views.homepage, kwargs={"game_instance_id": TEST_GAME_INSTANCE_ID})
+HOME_URL = reverse(rpgweb.views.homepage, kwargs={"game_instance_id": TEST_GAME_INSTANCE_ID})
 
 sys.setrecursionlimit(800) # to help detect recursion problems
 

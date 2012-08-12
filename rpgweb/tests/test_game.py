@@ -1579,7 +1579,7 @@ class TestDatamanager(BaseGameTestCase):
         
         # access-token retriever shortcut works OK
         assert self.dm.user.is_anonymous
-        token = self.dm.get_game_view_access_token(views.homepage.NAME)
+        token = self.dm.get_game_view_access_token(views.homepage.im_self.NAME)
         assert token == AccessResult.available
         token = self.dm.get_game_view_access_token(views.view_sales)
         assert token == AccessResult.authentication_required        
@@ -1609,7 +1609,7 @@ class TestDatamanager(BaseGameTestCase):
         from rpgweb.abilities import runic_translation_view
         components = self.dm.resolve_admin_widget_identifier("runic_translation.translation_form")
         assert len(components) == 2
-        assert isinstance(components[0], runic_translation_view)
+        assert isinstance(components[0], runic_translation_view.im_self)
         assert components[1] == "translation_form"
         
         
