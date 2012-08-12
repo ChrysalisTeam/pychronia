@@ -2263,14 +2263,18 @@ class TestActionMiddlewares(BaseGameTestCase):
         
         ability.reset_test_settings("middleware_wrapped", CostlyActionMiddleware, dict(money_price=None, gems_price=None))
                 
-        with raises_with_content(AbnormalUsageError, "misconfiguration"):
-            ability.middleware_wrapped_callable1(use_gems=[100])
-        
+        for value in (None, [], [125], [200, 125]):
+            assert ability.middleware_wrapped_callable1(use_gems=value) # no limit is set at all
+            assert ability.middleware_wrapped_callable2(value)
+            assert ability.non_middleware_action_callable(use_gems=[125]) 
+            
         self.dm.check_no_pending_transaction()
         
-        assert self.dm.get_event_count("INSIDE_MIDDLEWARE_WRAPPED1") == 0
-        assert self.dm.get_event_count("INSIDE_MIDDLEWARE_WRAPPED2") ==0
-        assert self.dm.get_event_count("INSIDE_NON_MIDDLEWARE_ACTION_CALLABLE") == 0
+        assert self.dm.get_event_count("INSIDE_MIDDLEWARE_WRAPPED1") == 4
+        assert self.dm.get_event_count("INSIDE_MIDDLEWARE_WRAPPED2") == 4
+        assert self.dm.get_event_count("INSIDE_NON_MIDDLEWARE_ACTION_CALLABLE") == 4
+        
+        self.dm.clear_all_event_stats()
         
         
         
@@ -2497,7 +2501,7 @@ class TestActionMiddlewares(BaseGameTestCase):
         assert self.dm.get_event_count("INSIDE_NON_MIDDLEWARE_ACTION_CALLABLE") == 30            
     
         ability.reset_test_settings("middleware_wrapped", CountLimitedActionMiddleware, 
-                                    dict(max_per_character=None, max_per_game=None)) # to please the automatic checking of DB
+                                    dict(max_per_character=30, max_per_game=80)) # to please the automatic checking of DB
                                     
                                          
         

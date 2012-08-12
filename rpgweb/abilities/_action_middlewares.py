@@ -212,24 +212,24 @@ class CostlyActionMiddleware(AbstractActionMiddleware):
             middleware_settings = self.get_middleware_settings(action_name, CostlyActionMiddleware)
     
             if not middleware_settings["gems_price"] and not middleware_settings["money_price"]:
-                raise AbnormalUsageError(_("Sorry, due to a server misconfiguration, the payment of that asset couldn't be performed"))
-        
-            use_gems = params.get("use_gems", ())
-            
-            # non-fatal coherency checks
-            if middleware_settings["gems_price"] and "use_gems" not in params:
-                self.logger.critical("Action %s was configured to be payable by gems, but no input field is available for this", action_name)
-            if not middleware_settings["gems_price"] and use_gems:
-                self.logger.critical("Action %s was configured to be NOT payable by gems, but gems were sent via input field", action_name)
-                use_gems = ()
-            
-            character_properties = self.get_character_properties(self.user.username)
-            
-            if use_gems or not middleware_settings["money_price"]:
-                self._pay_with_gems(character_properties, middleware_settings, use_gems)
+                pass # too bad misconfiguration, we let full action to that ability...
             else:
-                self._pay_with_money(character_properties, middleware_settings)
-        
+                use_gems = params.get("use_gems", ())
+                
+                # non-fatal coherency checks
+                if middleware_settings["gems_price"] and "use_gems" not in params:
+                    self.logger.critical("Action %s was configured to be payable by gems, but no input field is available for this", action_name)
+                if not middleware_settings["gems_price"] and use_gems:
+                    self.logger.critical("Action %s was configured to be NOT payable by gems, but gems were sent via input field", action_name)
+                    use_gems = ()
+                
+                character_properties = self.get_character_properties(self.user.username)
+                
+                if use_gems or not middleware_settings["money_price"]:
+                    self._pay_with_gems(character_properties, middleware_settings, use_gems)
+                else:
+                    self._pay_with_money(character_properties, middleware_settings)
+            
         return super(CostlyActionMiddleware, self).process_action_through_middlewares(action_name, method, params)
     
     
@@ -293,11 +293,7 @@ class CountLimitedActionMiddleware(AbstractActionMiddleware):
     def _lazy_setup_private_action_middleware_data(self, action_name):
         super(CountLimitedActionMiddleware, self)._lazy_setup_private_action_middleware_data(action_name)
         if self.is_action_middleware_activated(action_name, CountLimitedActionMiddleware):
-            
-            ### we lazy-init dynamic settings too, actually
-            ##settings = self.get_middleware_settings(action_name, CountLimitedActionMiddleware)
-            ##settings.setdefault("global_usage_count", 0)
-            
+
             data = self.get_private_middleware_data(action_name, CountLimitedActionMiddleware, create_if_unexisting=True)
             if not data:
                 data.setdefault("private_usage_count", 0)
@@ -308,6 +304,8 @@ class CountLimitedActionMiddleware(AbstractActionMiddleware):
 
         settings = self.settings
         for action_name, settings in self.get_all_middleware_settings(CountLimitedActionMiddleware).items():
+            
+            assert settings["max_per_character"] is not None or settings["max_per_game"] is not None # else misconfiguration
             
             if settings["max_per_character"] is not None:
                 utilities.check_is_positive_int(settings["max_per_character"], non_zero=True)
@@ -359,23 +357,79 @@ class TimeLimitedActionMiddleware(AbstractActionMiddleware):
 
     settings::
     
-        delay_between_uses: 3 (None if no limit is set)
+        waiting_period_mn: 3 (None if no limit is set)
+        max_uses_per_period: 2
         
     private_data::
         
-        last_use_time: datetime()
+        last_use_times: array of datetimes
         
     """
-    COMPATIBLE_ACCESSES = (UserAccess.anonymous,)
+    COMPATIBLE_ACCESSES = (UserAccess.character,)
     
+    
+    def _lazy_setup_private_action_middleware_data(self, action_name):
+        super(TimeLimitedActionMiddleware, self)._lazy_setup_private_action_middleware_data(action_name)
+        if self.is_action_middleware_activated(action_name, TimeLimitedActionMiddleware):
+  
+            data = self.get_private_middleware_data(action_name, TimeLimitedActionMiddleware, create_if_unexisting=True)
+            if not data:
+                data.setdefault("last_use_times", PersistentList())       
+
         
-    # FIXME TODO IMPLEMENT THIS
+    def _check_action_middleware_data_sanity(self, strict=False):
+        super(TimeLimitedActionMiddleware, self)._check_action_middleware_data_sanity(strict=strict)
+
+        settings = self.settings
+        now = datetime.utcnow()
         
+        for action_name, settings in self.get_all_middleware_settings(TimeLimitedActionMiddleware).items():
+            
+            utilities.check_is_positive_int(settings["waiting_period_mn"], non_zero=True)
+            utilities.check_is_positive_int(settings["max_uses_per_period"], non_zero=True)
+            
+            for data in self.get_all_private_middleware_data(TimeLimitedActionMiddleware, filter_by_action_name=action_name):
+                last_uses = data["last_use_times"]
+                utilities.check_is_list(last_uses)
+                assert len(last_uses) <= settings["max_uses_per_period"] # must be ensured even if setting changes!
+                for item in last_uses:
+                    assert isinstance(item, datetime)
+                    assert item <= now
     
     
+    def _purge_old_use_times(self, middleware_settings, private_data):
+        """
+        Returns True iff some datetime entries were removed.
+        """
+        threshold = self.compute_remote_datetime(delay_mn=-middleware_settings["waiting_period_mn"]) # in the past
+        purged_old_use_times = [dt for dt in private_data["last_use_times"] if dt > threshold]
+        res = bool(len(purged_old_use_times) < len(private_data["last_use_times"]))
+        private_data["last_use_times"] = PersistentList(purged_old_use_times)
+        return res
     
     
+    def process_action_through_middlewares(self, action_name, method, params):     
+        
+        if self.is_action_middleware_activated(action_name, TimeLimitedActionMiddleware):
+            
+            middleware_settings = self.get_middleware_settings(action_name, TimeLimitedActionMiddleware)
+            private_data = self.get_private_middleware_data(action_name, TimeLimitedActionMiddleware)
     
+            if middleware_settings["waiting_period_mn"] and middleware_settings["max_uses_per_period"]: # in case of misconfiguration
+                
+                self._purge_old_use_times(middleware_settings=middleware_settings, private_data=private_data)
+                
+                if len(private_data["last_use_times"]) >= middleware_settings["max_uses_per_period"]:
+                    raise NormalUsageError(_("You must respect a waiting period to use that asset."))
+                    
+            else:
+                private_data["private_usage_count"].append(datetime.utcnow())
+                  
+        return super(TimeLimitedActionMiddleware, self).process_action_through_middlewares(action_name, method, params)
+            
+        
+        
+            
     
     
 ''' TO BE USED                

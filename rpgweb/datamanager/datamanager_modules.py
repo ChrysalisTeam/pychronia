@@ -79,24 +79,22 @@ class FlexibleTime(BaseDataManager): # TODO REFINE
     
         if delay_mn:
             
-            factor = self.get_global_parameter("game_theoretical_length_days") # important - we scale relatively to the duration of the game
-            
+            factor = 60 * self.get_global_parameter("game_theoretical_length_days") # important - we scale relatively to the duration of the game
             
             if not isinstance(delay_mn, (int, long, float)):
                 assert len(delay_mn) == 2
                 
-                delay_s_min = int(60 * delay_mn[0] * factor)
-                delay_s_max = int(60 * delay_mn[1] * factor)
+                delay_s_min = int(delay_mn[0] * factor)
+                delay_s_max = int(delay_mn[1] * factor)
                 assert delay_s_min <= delay_s_max, "delay min must be < delay max - %s vs %s" % (delay_s_min, delay_s_max)
     
                 delay_s = random.randint(delay_s_min, delay_s_max) # time range in seconds
     
     
             else:
-                delay_s = 60 * delay_mn * factor  # no need to coerce to integer here
+                delay_s = delay_mn * factor  # no need to coerce to integer here
     
             #print "DELAY ADDED : %s s" % delay_s
-            
             new_time += timedelta(seconds=delay_s) # delay_s can be a float
     
         return new_time
