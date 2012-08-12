@@ -1579,7 +1579,7 @@ class TestDatamanager(BaseGameTestCase):
         
         # access-token retriever shortcut works OK
         assert self.dm.user.is_anonymous
-        token = self.dm.get_game_view_access_token(views.homepage.im_self.NAME)
+        token = self.dm.get_game_view_access_token(views.homepage.NAME)
         assert token == AccessResult.available
         token = self.dm.get_game_view_access_token(views.view_sales)
         assert token == AccessResult.authentication_required        
@@ -1609,7 +1609,7 @@ class TestDatamanager(BaseGameTestCase):
         from rpgweb.abilities import runic_translation_view
         components = self.dm.resolve_admin_widget_identifier("runic_translation.translation_form")
         assert len(components) == 2
-        assert isinstance(components[0], runic_translation_view.im_self)
+        assert isinstance(components[0], runic_translation_view.klass)
         assert components[1] == "translation_form"
         
         
@@ -2111,17 +2111,23 @@ class TestGameViewSystem(BaseGameTestCase):
                  
         
         # case of class registration #
-        class DummyView(object):
+        class DummyViewNonGameView(object):
             ACCESS = "sqdqsjkdqskj"
-        assert isinstance(DummyView, type)
+        with pytest.raises(AssertionError):
+            register_view(DummyViewNonGameView) # must be a subclass of AbstractGameView
         
+        
+        class DummyView(AbstractGameView):
+            NAME = "sdfsdf"
+            ACCESS = UserAccess.anonymous
         klass = register_view(DummyView)     
-        assert issubclass(klass, AbstractGameView) 
+        assert isinstance(klass, type) 
         register_view(DummyView) # double registration possible, since it's class creation which actually registers it, not that decorator      
         
         
-        class OtherDummyView(object):
-            ACCESS = "sdqsd"         
+        class OtherDummyView(AbstractGameView):
+            NAME = "sdfsdzadsfsdff"
+            ACCESS = UserAccess.anonymous        
         with pytest.raises(AssertionError): # when a klass is given, all other arguments become forbidden
             while True:
                 a, b, c, d= [random.choice([_undefined, False]) for i in range(4)]
@@ -2163,12 +2169,12 @@ class TestGameViewSystem(BaseGameTestCase):
             
             for my_view in (view_anonymous, view_character, view_character_permission, view_authenticated): # not view_master          
                 
-                my_view.ALWAYS_AVAILABLE = False
+                my_view.klass.ALWAYS_AVAILABLE = False
                 assert my_view.get_access_token(datamanager) == AccessResult.globally_forbidden
                 self.dm.set_activated_game_views([my_view.NAME]) # exists in ACTIVABLE_VIEWS_REGISTRY because we registered view with always_available=True
                 assert my_view.get_access_token(datamanager) != AccessResult.globally_forbidden
                 
-                my_view.ALWAYS_AVAILABLE = True
+                my_view.klass.ALWAYS_AVAILABLE = True
                 assert my_view.get_access_token(datamanager) != AccessResult.globally_forbidden
                 self.dm.set_activated_game_views([]) # RESET
                 assert my_view.get_access_token(datamanager) != AccessResult.globally_forbidden

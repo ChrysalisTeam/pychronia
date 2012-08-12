@@ -139,7 +139,7 @@ import new
 def make_instancemethod(inst, methodname):
     return getattr(inst, methodname)
 def pickle_instancemethod(method):
-    return make_instancemethod, (method.im_self, method.im_func.__name__)
+    return make_instancemethod, (method.klass, method.im_func.__name__)
 copy_reg.pickle(new.instancemethod, pickle_instancemethod,
 make_instancemethod)
 

@@ -54,6 +54,24 @@ def transform_usage_error(caller, self, *args, **kwargs):
 
 
 
+ 
+class ClassInstantiationProxy(object):
+    """
+    Stateless object which automatically instantiates and triggers its wrapped GameView class on call.
+    Also forwards attribute retrievals.
+    """
+    def __init__(self, klass):
+        self.klass = klass # important attribute
+    def __getattr__(self, name):
+        return getattr(self.klass, name) # useful for introspection of views                
+    def __call__(self, request, *args, **kwargs):
+        return self.klass(request.datamanager)(request, *args, **kwargs) # we execute new instance of underlying class, without parameters
+    def __str__(self):
+        return "ClassInstantiationProxy around %s" % self.klass
+    __repr__ = __str__
+
+
+
 class GameViewMetaclass(type):
     """
     Metaclass automatically checking and registering the view in a global registry.
@@ -103,6 +121,15 @@ class GameViewMetaclass(type):
                     
             GameDataManager.register_game_view(NewClass)
             
+            
+            
+    @property
+    def as_view(cls):
+        """
+        To be used in django urls conf ; similar to standard class-based views of django,
+        except that a separate instance is created for each request!
+        """
+        return ClassInstantiationProxy(cls)
     
 
 
@@ -426,12 +453,6 @@ class AbstractGameView(object):
             self._post_request()
         
      
-    @classmethod
-    def as_view(cls, request, *args, **kwargs):
-        """
-        To be used in django urls conf ; similar to standard class-based views of django.
-        """
-        return cls(request.datamanager)(request, *args, **kwargs)
 
      
     ### Administration API ###
@@ -548,29 +569,32 @@ def register_view(view_object=None,
     Returns a CLASS or a METHOD, depending on the type of the wrapped object.
     """
     
-    
-    if attach_to is not _undefined and not isinstance(attach_to, type):
-        # we get back from method to AbstractGameView class
-        attach_to = attach_to.im_self
-        assert issubclass(attach_to, AbstractGameView)
-
 
     def _build_final_view_callable(real_view_object):
         
+        local_attach_to = attach_to
+        
         if isinstance(real_view_object, type):
             
-            assert real_view_object.ACCESS # must be a class!
-            assert all((val == _undefined) for val in (access, permissions, always_available, attach_to)) # these params must already exist as class attrs
+            assert issubclass(real_view_object, AbstractGameView)
+            assert real_view_object.ACCESS 
+            assert all((val == _undefined) for val in (access, permissions, always_available, local_attach_to)) # these params must already exist as class attrs
             view_callable = real_view_object
             
         else:    
             
             assert inspect.isroutine(real_view_object) # not a class!
-    
+            
+            if local_attach_to is not _undefined and not isinstance(local_attach_to, GameViewMetaclass):
+                # we get back from proxy to AbstractGameView class
+                local_attach_to = local_attach_to.klass
+                assert issubclass(local_attach_to, AbstractGameView)
+
+
             normalized_access_args = _normalize_view_access_parameters(access=access,
                                                                        permissions=permissions,
                                                                        always_available=always_available,
-                                                                       attach_to=attach_to)
+                                                                       attach_to=local_attach_to)
             
             class_data = dict((key.upper(), value) for key, value in normalized_access_args.items())
             class_data["NAME"] = real_view_object.__name__

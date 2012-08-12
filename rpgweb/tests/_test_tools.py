@@ -62,7 +62,7 @@ def for_core_module(klass):
 
 def for_ability(view):
     # TODO - track proper testing of ability module
-    view = getattr(view, "im_self", view)
+    view = getattr(view, "klass", view)
     assert view in SpecialAbilities.ABILITIES_REGISTRY.values(), view
     return lambda func: func
 

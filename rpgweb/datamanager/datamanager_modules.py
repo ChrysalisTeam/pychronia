@@ -2479,8 +2479,8 @@ class GameViews(BaseDataManager):
     def _resolve_view_klass(self, name_or_klass):
         if isinstance(name_or_klass, basestring):
             klass = self.GAME_VIEWS_REGISTRY.get(name_or_klass)
-        elif hasattr(name_or_klass, "im_self"):
-            klass = name_or_klass.im_self # classmethod
+        elif hasattr(name_or_klass, "klass"):
+            klass = name_or_klass.klass # proxy
         else:
             assert isinstance(name_or_klass, type)
             klass = name_or_klass       
