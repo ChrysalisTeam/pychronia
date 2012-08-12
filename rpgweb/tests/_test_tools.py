@@ -244,7 +244,7 @@ class BaseGameTestCase(TestCase):
     def tearDown(self, check=True):
         if hasattr(self, "dm"):
             if check:
-                self.dm.check_database_coherency()
+                pass### self.dm.check_database_coherency()
             self.dm.close()
             self.dm = None
         

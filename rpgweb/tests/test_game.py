@@ -12,7 +12,7 @@ from ._dummy_abilities import *
 
 from rpgweb.abilities._abstract_ability import AbstractAbility
 from rpgweb.abilities._action_middlewares import CostlyActionMiddleware,\
-    CountLimitedActionMiddleware
+    CountLimitedActionMiddleware, TimeLimitedActionMiddleware
 from rpgweb.common import _undefined, config, AbnormalUsageError, reverse
 from rpgweb.templatetags.helpers import _generate_encyclopedia_links
 from rpgweb import views
@@ -2499,11 +2499,128 @@ class TestActionMiddlewares(BaseGameTestCase):
         assert self.dm.get_event_count("INSIDE_MIDDLEWARE_WRAPPED1") == 30
         assert self.dm.get_event_count("INSIDE_MIDDLEWARE_WRAPPED2") == 30
         assert self.dm.get_event_count("INSIDE_NON_MIDDLEWARE_ACTION_CALLABLE") == 30            
-    
+        
+        self.dm.clear_all_event_stats()
+        
+        assert ability._get_global_usage_count("middleware_wrapped") == 72 # usage counts are yet updated
+        assert ability._get_global_usage_count("middleware_wrapped_other_action") == 0 # important - no collision between action names
+        
         ability.reset_test_settings("middleware_wrapped", CountLimitedActionMiddleware, 
-                                    dict(max_per_character=30, max_per_game=80)) # to please the automatic checking of DB
+                                    dict(max_per_character=30, max_per_game=73)) 
                                     
-                                         
+        self._set_user("guy2") 
+        assert ability.middleware_wrapped_callable1(None)
+        with raises_with_content(NormalUsageError, "exceeded the global quota"):
+            ability.middleware_wrapped_callable1(False)  # quota of 75 reached
+        assert ability.non_middleware_action_callable(None)          
+         
+        assert self.dm.get_event_count("INSIDE_MIDDLEWARE_WRAPPED1") == 1
+        assert self.dm.get_event_count("INSIDE_MIDDLEWARE_WRAPPED2") == 0
+        assert self.dm.get_event_count("INSIDE_NON_MIDDLEWARE_ACTION_CALLABLE") == 1      
+    
+    
+    
+    def test_time_limited_action_middleware(self):
+        
+        WANTED_FACTOR = 2 # we only double durations below
+        params = self.dm.get_global_parameters()
+        assert params["game_theoretical_length_days"]
+        params["game_theoretical_length_days"] = WANTED_FACTOR 
+        
+    
+        ability = self.dm.instantiate_ability("dummy_ability")
+        self._set_user("guy4") # important
+        ability._perform_lazy_initializations() # normally done while treating HTTP request...        
+        
+        
+        # misconfiguration case #
+        
+        waiting_period_mn = random.choice((0, None, 3))
+        max_uses_per_period = random.choice((0, None, 3)) if not waiting_period_mn else None
+                                       
+        ability.reset_test_settings("middleware_wrapped", TimeLimitedActionMiddleware, 
+                                    dict(waiting_period_mn=waiting_period_mn, max_uses_per_period=max_uses_per_period))
+        ability.reset_test_data("middleware_wrapped", TimeLimitedActionMiddleware, dict()) # will be filled lazily, on call        
+              
+        for i in range(23):
+            assert ability.middleware_wrapped_callable1(None)
+            assert ability.middleware_wrapped_callable2(None)
+            assert ability.non_middleware_action_callable(None)
+            
+        assert self.dm.get_event_count("INSIDE_MIDDLEWARE_WRAPPED1") == 23
+        assert self.dm.get_event_count("INSIDE_MIDDLEWARE_WRAPPED2") == 23
+        assert self.dm.get_event_count("INSIDE_NON_MIDDLEWARE_ACTION_CALLABLE") == 23
+        self.dm.clear_all_event_stats()
+        
+        private_data = ability.get_private_middleware_data(action_name="middleware_wrapped", 
+                                                           middleware_class=TimeLimitedActionMiddleware)
+        assert len(private_data["last_use_times"]) == 2 * 23
+        
+        
+        
+        # normal case #
+    
+        ability.reset_test_settings("middleware_wrapped", TimeLimitedActionMiddleware, 
+                                    dict(waiting_period_mn=0.02/WANTED_FACTOR, max_uses_per_period=3)) # 1.2s of waiting time
+    
+        for username in ("guy2", "guy3"):
+            self._set_user(username) # important
+            ability._perform_lazy_initializations() # normally done while treating HTTP request...        
+            ability.reset_test_data("middleware_wrapped", TimeLimitedActionMiddleware, dict()) # will be filled lazily, on call     
+               
+            assert ability.middleware_wrapped_callable1(None)
+            assert ability.middleware_wrapped_callable1(12)
+            assert ability.middleware_wrapped_callable2(32)
+            
+            assert not ability._purge_old_use_times(middleware_settings=ability.get_middleware_settings("middleware_wrapped", TimeLimitedActionMiddleware),
+                                                    private_data=ability.get_private_middleware_data("middleware_wrapped", TimeLimitedActionMiddleware))
+            self.dm.commit() # data was touched, even if unmodified
+                            
+            with raises_with_content(NormalUsageError, "waiting period"):
+                ability.middleware_wrapped_callable1(False)  # quota of 3 per period reached
+            assert ability.non_middleware_action_callable(None)    
+            
+            time.sleep(0.2)
+                                                                         
+        
+        assert self.dm.get_event_count("INSIDE_MIDDLEWARE_WRAPPED1") == 4
+        assert self.dm.get_event_count("INSIDE_MIDDLEWARE_WRAPPED2") == 2
+        assert self.dm.get_event_count("INSIDE_NON_MIDDLEWARE_ACTION_CALLABLE") == 2
+        self.dm.clear_all_event_stats()
+        
+        
+        time.sleep(1.3)
+    
+        self._set_user("guy2") # important
+                     
+                                   
+        for i in range(7):
+            assert ability.middleware_wrapped_callable1(None)
+            time.sleep(0.41) # just enough to be under 4 accesses / 1.2s
+        
+        assert ability.middleware_wrapped_callable2(None)  
+        with raises_with_content(NormalUsageError, "waiting period"):
+            ability.middleware_wrapped_callable1(False)  # quota of 3 per period reached if we hit immediateley     
+        
+        time.sleep(0.5)
+        
+        assert ability._purge_old_use_times(middleware_settings=ability.get_middleware_settings("middleware_wrapped", TimeLimitedActionMiddleware),
+                                            private_data=ability.get_private_middleware_data("middleware_wrapped", TimeLimitedActionMiddleware))
+        self.dm.commit() # data was touched, even if unmodified
+      
+        assert ability.middleware_wrapped_callable1(False)
+        with raises_with_content(NormalUsageError, "waiting period"):
+            ability.middleware_wrapped_callable2(False) 
+        assert ability.non_middleware_action_callable(None)           
+ 
+ 
+        assert self.dm.get_event_count("INSIDE_MIDDLEWARE_WRAPPED1") == 8
+        assert self.dm.get_event_count("INSIDE_MIDDLEWARE_WRAPPED2") == 1
+        assert self.dm.get_event_count("INSIDE_NON_MIDDLEWARE_ACTION_CALLABLE") == 1
+        self.dm.clear_all_event_stats()               
+        
+        
+        
         
 class TestSpecialAbilities(BaseGameTestCase):
 

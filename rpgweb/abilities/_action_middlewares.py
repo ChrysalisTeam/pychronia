@@ -385,8 +385,8 @@ class TimeLimitedActionMiddleware(AbstractActionMiddleware):
         
         for action_name, settings in self.get_all_middleware_settings(TimeLimitedActionMiddleware).items():
             
-            utilities.check_is_positive_int(settings["waiting_period_mn"], non_zero=True)
-            utilities.check_is_positive_int(settings["max_uses_per_period"], non_zero=True)
+            utilities.check_is_positive_float(settings["waiting_period_mn"], non_zero=True)
+            utilities.check_is_positive_float(settings["max_uses_per_period"], non_zero=True)
             
             for data in self.get_all_private_middleware_data(TimeLimitedActionMiddleware, filter_by_action_name=action_name):
                 last_uses = data["last_use_times"]
@@ -419,11 +419,12 @@ class TimeLimitedActionMiddleware(AbstractActionMiddleware):
                 
                 self._purge_old_use_times(middleware_settings=middleware_settings, private_data=private_data)
                 
-                if len(private_data["last_use_times"]) >= middleware_settings["max_uses_per_period"]:
+                last_use_times = private_data["last_use_times"]
+                now = datetime.utcnow() # to debug
+                if len(last_use_times) >= middleware_settings["max_uses_per_period"]:
                     raise NormalUsageError(_("You must respect a waiting period to use that asset."))
                     
-            else:
-                private_data["private_usage_count"].append(datetime.utcnow())
+            private_data["last_use_times"].append(datetime.utcnow()) # updated in any case
                   
         return super(TimeLimitedActionMiddleware, self).process_action_through_middlewares(action_name, method, params)
             

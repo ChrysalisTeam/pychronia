@@ -87,6 +87,10 @@ class DummyTestAbility(AbstractAbility):
         self.notify_event("INSIDE_MIDDLEWARE_WRAPPED2")       
         return True
         
-    
+    @transaction_watcher # must be on the OUTSIDE
+    @with_action_middlewares("middleware_wrapped_other_action")
+    def middleware_wrapped_other_action(self, my_arg):
+        self.notify_event("INSIDE_MIDDLEWARE_WRAPPED2")       
+        return True    
         
         
