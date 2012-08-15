@@ -20,7 +20,8 @@ def GAME_INITIAL_FIXTURE_SCRIPT(dm):
     """
     
     # we activate ALL views
-    dm.set_activated_game_views(dm.ACTIVABLE_VIEWS_REGISTRY.keys())
+    activable_views = dm.ACTIVABLE_VIEWS_REGISTRY.keys()
+    dm.set_activated_game_views(activable_views)
 
     # we give guy1 access to everything
     dm.update_permissions("guy1", list(dm.PERMISSIONS_REGISTRY))

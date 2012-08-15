@@ -127,16 +127,6 @@ function InitChatWindow(ChatMessagesUrl, CanChat, ProcessResponseCallback){
                                     callServer(); } 
               });
         
-    
-            /** unsafe
-    		$.post(url,
-    				{
-    				    message: msg
-               		},
-               		function(){
-             						     $("#msg").val(""); // clean out contents of input field.
-           							 }
-           	);*/
            	
     		return false;
     	});

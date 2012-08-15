@@ -29,20 +29,20 @@
 	       
 	       
 	      
-	    			   $("#test1").on("submit", "form",
-	    					   function(event) {
-	    				            console.log(event.target);
-		                           $.post($(this).attr('action'), 
-		                                  $(this).serialize(),
-		                                function(answer){
-		                        	       //alert($(this).text());
-		                        	       
-		                                   $(event.target).parent().replaceWith(answer);
-		                                });
-		
-		                           return false;   
-		                          }  
-	    			   );
+			   $("#test1").on("submit", "form",
+					   function(event) {
+				            console.log(event.target);
+				            $.post($(this).attr('action'), 
+                               $(this).serialize(),
+	                             function(answer){
+	                     	       //alert($(this).text());
+	                     	       
+	                                $(event.target).parent().replaceWith(answer);
+	                             });
+
+                        return false;   
+                       }  
+			   );
 	    			   
 	    	
        })
