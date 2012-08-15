@@ -381,8 +381,11 @@ class PlayerAuthentication(BaseDataManager):
 
         for character in self.get_character_sets().values():
             utilities.check_is_slug(character["password"])
-            utilities.check_is_string(character["secret_question"])
-            assert not character["secret_answer"] or utilities.check_is_slug(character["secret_answer"])
+            if character["secret_question"] is None:
+                assert not character["secret_answer"]
+            else:
+                utilities.check_is_string(character["secret_question"])
+                utilities.check_is_slug(character["secret_answer"])
             
         
         # MASTER and ANONYMOUS cases
@@ -520,7 +523,7 @@ class PlayerAuthentication(BaseDataManager):
             return session_ticket
 
         else:
-            raise UsageError(_("Wrong password"))
+            raise NormalUsageError(_("Wrong password"))
 
         assert False
 
@@ -529,6 +532,19 @@ class PlayerAuthentication(BaseDataManager):
     def get_secret_question(self, username):
         return self.get_character_properties(username)["secret_question"]
 
+
+    @transaction_watcher # requires game started mode
+    def process_password_change_attempt(self, username, old_password, new_password):
+        user_properties = self.get_character_properties(username)
+        
+        if " " in new_password or "\n" in new_password or len(new_password) > 60:
+            raise AbnormalUsageError(_("Invalid new password submitted"))
+        
+        if old_password != user_properties["password"]:
+            raise NormalUsageError(_("Wrong current password submitted"))
+        
+        user_properties["password"] = new_password
+        
 
     @transaction_watcher # requires game started mode
     def process_secret_answer_attempt(self, username, secret_answer_attempt, target_email):
@@ -1812,6 +1828,7 @@ class Chatroom(BaseDataManager):
         
 @register_module
 class ActionScheduling(BaseDataManager):
+    # USELESS ATM ?? FIXME ??
 
     def _load_initial_data(self, **kwargs):
         super(ActionScheduling, self)._load_initial_data(**kwargs)

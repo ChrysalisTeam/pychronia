@@ -1547,9 +1547,11 @@ class TestDatamanager(BaseGameTestCase):
     
     
     @for_core_module(PlayerAuthentication)
-    def test_password_recovery(self):
+    def test_password_operations(self):
         self._reset_messages()
-
+        
+        # "secret question" system
+        
         res = self.dm.get_secret_question("guy3")
         self.assertTrue("pet" in res)
 
@@ -1566,7 +1568,25 @@ class TestDatamanager(BaseGameTestCase):
         self.assertRaises(dm_module.UsageError, self.dm.process_secret_answer_attempt, "guy3", "badanswer", "guy3@sciences.com")
         self.assertRaises(dm_module.UsageError, self.dm.process_secret_answer_attempt, "guy3", "MiLoU", "bademail@sciences.com")
         self.assertEqual(len(self.dm.get_all_queued_messages()), 1) # untouched
-
+        
+        
+        # password change
+        
+        with pytest.raises(NormalUsageError):
+            self.dm.process_password_change_attempt("guy1", "badpwd", "newpwd")
+        with pytest.raises(AbnormalUsageError):
+            self.dm.process_password_change_attempt("guy1", "badpwd", "new pwd") # wrong new pwd
+        with pytest.raises(AbnormalUsageError):
+            self.dm.process_password_change_attempt("guy1", "elixir", "newpwd\n") # wrong new pwd
+            
+        self.dm.process_password_change_attempt("guy1", "elixir", "newpwd")
+        with pytest.raises(NormalUsageError):
+            self.dm.process_password_change_attempt("guy1", "elixir", "newpwd")                                                               
+        
+        with pytest.raises(NormalUsageError):
+            self.dm.authenticate_with_credentials("guy1", "elixir")
+        self.dm.authenticate_with_credentials("guy1", "newpwd")            
+            
     
     
     @for_core_module(GameViews)
