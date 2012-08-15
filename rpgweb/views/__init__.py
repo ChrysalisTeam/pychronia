@@ -30,6 +30,7 @@ from rpgweb.datamanager import GameDataManager
 from rpgweb.common import game_file_url, UsageError
 from decorator import decorator
 
+from .gameviews import character_profile # IMPORTANT
 
 '''
 # TODO - transform this into instance which exposes real views as attributes, wrapped with register_view !!!!

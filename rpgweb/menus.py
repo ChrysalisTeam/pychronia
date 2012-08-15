@@ -141,7 +141,8 @@ def generate_full_menu(request):  ## game_menu_generator
     
     
     
-           menu_entry(_(u"Login"), views.login, forced_visibility=(False if user.is_authenticated else None)),
+           menu_entry(_(u"Login"), views.login, forced_visibility=(False if user.is_authenticated else True)),
+           menu_entry(_(u"Profile"), views.character_profile, forced_visibility=(True if user.is_character else False)),
            menu_entry(_(u"Logout"), views.logout),
         ))
 

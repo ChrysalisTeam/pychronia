@@ -1578,7 +1578,12 @@ class TestDatamanager(BaseGameTestCase):
             self.dm.process_password_change_attempt("guy1", "badpwd", "new pwd") # wrong new pwd
         with pytest.raises(AbnormalUsageError):
             self.dm.process_password_change_attempt("guy1", "elixir", "newpwd\n") # wrong new pwd
+        with pytest.raises(AbnormalUsageError):
+            self.dm.process_password_change_attempt("guy1", "elixir", "") # wrong new pwd
+        with pytest.raises(AbnormalUsageError):
+            self.dm.process_password_change_attempt("guy1", "elixir", None) # wrong new pwd
             
+                        
         self.dm.process_password_change_attempt("guy1", "elixir", "newpwd")
         with pytest.raises(NormalUsageError):
             self.dm.process_password_change_attempt("guy1", "elixir", "newpwd")                                                               
@@ -1853,7 +1858,7 @@ class TestHttpRequests(BaseGameTestCase):
         from django.core.urlresolvers import RegexURLResolver
         from rpgweb.urls import final_urlpatterns
 
-        skipped_patterns = """ability instructions view_help_page
+        skipped_patterns = """ability instructions view_help_page profile
                               DATABASE_OPERATIONS FAIL_TEST ajax item_3d_view chat_with_djinn static.serve encrypted_folder view_single_message logout login secret_question""".split()
         views_names = [url._callback_str for url in final_urlpatterns 
                                    if not isinstance(url, RegexURLResolver) and 
@@ -1952,7 +1957,7 @@ class TestHttpRequests(BaseGameTestCase):
         from django.core.urlresolvers import RegexURLResolver
         from rpgweb.urls import final_urlpatterns
         # we test views for which there is a distinction between master and player
-        selected_patterns = """inbox outbox compose_message intercepted_messages view_sales items_slideshow""".split() # TODO LATER network_management contact_djinns 
+        selected_patterns = """inbox outbox compose_message intercepted_messages view_sales items_slideshow character_profile""".split() # TODO LATER network_management contact_djinns 
         views = [url._callback_str for url in final_urlpatterns if not isinstance(url, RegexURLResolver) and [match for match in selected_patterns if match in url._callback_str]]
         assert len(views) == len(selected_patterns)
         

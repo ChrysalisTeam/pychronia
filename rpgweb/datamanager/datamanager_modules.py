@@ -537,7 +537,7 @@ class PlayerAuthentication(BaseDataManager):
     def process_password_change_attempt(self, username, old_password, new_password):
         user_properties = self.get_character_properties(username)
         
-        if " " in new_password or "\n" in new_password or len(new_password) > 60:
+        if not new_password or " " in new_password or "\n" in new_password or len(new_password) > 60:
             raise AbnormalUsageError(_("Invalid new password submitted"))
         
         if old_password != user_properties["password"]:

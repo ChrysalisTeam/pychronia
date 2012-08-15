@@ -81,8 +81,9 @@ view_urlpatterns = patterns('rpgweb.views',
         
     (r'^login/$', 'login'),
     (r'^secret_question/$', 'secret_question'),
+    (r'^profile/$', 'character_profile'),
     (r'^logout/$', 'logout'),
-
+    
 
     (r'^messages/compose/$', 'compose_message'),
     (r'^messages/inbox/$', 'inbox'),
