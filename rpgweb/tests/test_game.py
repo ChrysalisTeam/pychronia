@@ -2,12 +2,29 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import random
+from textwrap import dedent
+import tempfile
+import shutil
+
 from ._test_tools import *
+from ._dummy_abilities import *
+
 from rpgweb.abilities._abstract_ability import AbstractAbility
-from rpgweb.common import _undefined
-from rpgweb.views._abstract_game_view import ClassInstantiationProxy
+from rpgweb.abilities._action_middlewares import CostlyActionMiddleware,\
+    CountLimitedActionMiddleware, TimeLimitedActionMiddleware
+from rpgweb.common import _undefined, config, AbnormalUsageError, reverse
 from rpgweb.templatetags.helpers import _generate_encyclopedia_links
 from rpgweb import views
+from rpgweb.utilities import fileservers, autolinker
+from django.test.client import RequestFactory
+import pprint
+from rpgweb.datamanager.datamanager_administrator import retrieve_game_instance,\
+    _get_zodb_connection, GameDataManager, get_all_instances_metadata,\
+    delete_game_instance, check_zodb_structure
+from rpgweb.tests._test_tools import temp_datamanager
+import inspect
+
 
 
 
@@ -29,15 +46,80 @@ class TestUtilities(TestCase):
 
         assert restructuredtext("""aaaa*aaa""") # star is ignored
 
-        # outputs stuffs, but doesn't break
+        # outputs stuffs on stderr, but doesn't break
         restructuredtext("""aaaaaaa*zezez
-                              mytitle :aaa:`qqq`
+                              mytitle :xyz:`qqq`
                             ===
                         """) # too short underline
 
-        assert restructuredtext("""title\n=======\naaa""") == "<p>aaa</p>\n" # Beware - titles not handled, only fragments !!! 
+        assert "title1" in restructuredtext("""title1\n=======\n\naaa""") # thx to our conf, title1 stays in html fragment
+        
+        html = restructuredtext(dedent("""
+                    title1
+                    -------
+                    
+                    aaa   
+                      
+                    title2
+                    -------
+                    
+                    bbbbb
+                    """))
+        assert "title1" in html and "title2" in html
+      
+        
+    def test_sphinx_publisher_settings(self) :   
+        from django.utils.encoding import smart_str, force_unicode
+        from docutils.core import publish_parts
+        docutils_settings = {"initial_header_level": 3, 
+                             "doctitle_xform": False, 
+                             "sectsubtitle_xform": False}
+        parts = publish_parts(source=smart_str("""title\n=======\n\naaa\n"""), # lone title would become document title by default - we prevent it
+                              writer_name="html4css1", settings_overrides=docutils_settings)
+        assert parts["fragment"] == '<div class="section" id="title">\n<h3>title</h3>\n<p>aaa</p>\n</div>\n'
+        #pprint.pprint(parts)
         
         
+    def test_html_autolinker(self):
+        
+        regex = autolinker.join_regular_expressions_as_disjunction(("[123]", "(k*H?)"), as_words=False)
+        assert regex == r"(?:[123])|(?:(k*H?))"
+        assert re.compile(regex).match("2joll")
+
+        regex = autolinker.join_regular_expressions_as_disjunction(("[123]", "(k*H)"), as_words=True)
+        assert regex == r"(?:\b[123]\b)|(?:\b(k*H)\b)"
+        assert re.compile(regex).match("kkH")          
+          
+          
+        input0 = '''one<a>ones</a>'''
+        res = autolinker.generate_links(input0, "ones?", lambda x: dict(href="TARGET_"+x.group(0), title="mytitle"))
+        assert res == '''<a href="TARGET_one" title="mytitle">one</a><a>ones</a>'''
+        
+                  
+        input = dedent('''
+        <html>
+        <head><title>Page title one</title></head>
+        <body>
+        <div>Hi</div>
+        <p id="firstpara" class="one red" align="center">This is one paragraph <b>ones</b>.</a>
+        <a href="http://aaa">This is one paragraph <b>one</b>.</a>
+        </html>''') 
+        
+        res = autolinker.generate_links(input, "ones?", lambda x: dict(href="TARGET_"+x.group(0), title="mytitle"))
+
+        assert res == dedent('''
+        <html>
+        <head><title>Page title one</title></head>
+        <body>
+        <div>Hi</div>
+        <p align="center" class="one red" id="firstpara">This is <a href="TARGET_one" title="mytitle">one</a> paragraph <b><a href="TARGET_ones" title="mytitle">ones</a></b>.
+        <a href="http://aaa">This is one paragraph <b>one</b>.</a>
+        </p></body></html>''')
+
+
+
+                   
+          
     def test_type_conversions(self):
 
         # test 1 #
@@ -85,33 +167,161 @@ class TestUtilities(TestCase):
 
 
 
-    def test_datetime_manipulations(self):
 
-        self.assertRaises(Exception, utilities.compute_remote_datetime, (3, 2))
+    def test_yaml_fixture_loading(self):
+        
+        data = {"file1.yml": dedent("""
+                                    characters:
+                                        parent: "No data"
+                                     """),
+                "file2.yaml": dedent("""
+                                     wap: 32
+                                     """), 
+                "ignored.yl": "hello: 'hi'"}        
+        
 
-        for value in [0.025, (0.02, 0.03)]: # beware of the rounding to integer seconds...
+        def _load_data(mydict):
+            
+            my_dir = tempfile.mkdtemp() 
+            print(">> temp dir", my_dir)
+        
+            for filename, file_data in mydict.items():
+                with open(os.path.join(my_dir, filename), "w") as fd:
+                    fd.write(file_data)
+            
+            return my_dir      
+        
+        tmp_dir = _load_data(data)
+        
+        with pytest.raises(ValueError):
+            utilities.load_yaml_fixture("/badpath")
+            
+        res = utilities.load_yaml_fixture(tmp_dir)
+        assert res == {'characters': {'parent': 'No data'}, 'wap': 32}
+               
+        res = utilities.load_yaml_fixture(os.path.join(tmp_dir, "file1.yml"))
+        assert res == {'characters': {'parent': 'No data'}}
+        shutil.rmtree(tmp_dir)
+        
+        data.update({"file3.yml": "characters: 99"}) # collision
+        tmp_dir = _load_data(data)
+        with pytest.raises(ValueError):
+            utilities.load_yaml_fixture("/badpath")        
+        shutil.rmtree(tmp_dir)
 
-            dt = utilities.compute_remote_datetime(value)
+    
+    def test_file_server_backends(self):
+        
+        path = os.path.join(config.GAME_FILES_ROOT, "README.txt")
+        request = RequestFactory().get("/path/to/file.zip")
+    
+        kwargs = dict(save_as=random.choice((None, "othername.zip")),
+                      size=random.choice((None, 1625726)),)                                         
+        
+        def _check_standard_headers(response):
+            if kwargs["save_as"]:
+                assert kwargs["save_as"] in response["Content-Disposition"]
+            if kwargs["size"]:
+                assert response["Content-Length"] == str(kwargs["size"])
+                                      
+        response = fileservers.serve_file(request, path, **kwargs)
+        assert response.content
+        _check_standard_headers(response)
+        
+        response = fileservers.serve_file(request, path, backend_name="nginx", **kwargs)
+        print (response._headers)
+        assert response['X-Accel-Redirect'] == path
+        assert not response.content        
+        _check_standard_headers(response)
+        
+        response = fileservers.serve_file(request, path, backend_name="xsendfile", **kwargs)
+        assert not response.content        
+        assert response['X-Sendfile'] == path
+        _check_standard_headers(response)
+        
+        
+    def test_url_hashing_func(self):
 
-            self.assertEqual(utilities.is_past_datetime(dt), False)
-            time.sleep(2)
-            self.assertEqual(utilities.is_past_datetime(dt), True)
-
-            utc = datetime.utcnow()
-            now = datetime.now()
-            now2 = utilities.utc_to_local(utc)
-
-            self.assertTrue(now - timedelta(seconds=1) < now2 < now + timedelta(seconds=1))
-
-
-
-
-
+        hash = hash_url_path("whatever/shtiff/kk.mp3?sssj=33")
+        
+        assert len(hash) == 8
+        for c in hash:
+            assert c in "abcdefghijklmnopqrstuvwxyz01234567"
+            
+        
+        
+        
+        
+class TestMetaAdministration(unittest.TestCase): # no setup required
+    
+    def test_game_instance_management_api(self):
+        
+        check_zodb_structure()
+        
+        game_instance_id = "mystuff"
+        assert not game_instance_exists(game_instance_id)
+        create_game_instance(game_instance_id, "aaa@sc.com", "master", "pwd")
+        assert game_instance_exists(game_instance_id)
+        
+        dm = retrieve_game_instance(game_instance_id)
+        assert dm.is_initialized
+        assert dm.data
+        
+        delete_game_instance(game_instance_id)
+        assert not game_instance_exists(game_instance_id)
+        with pytest.raises(ValueError):
+            retrieve_game_instance(game_instance_id)
+        
+        
+        
+        
 # TODO - test that messages are well propagated through session
 # TODO - test interception of "POST" when impersonating user
 
-
+ 
 class TestDatamanager(BaseGameTestCase):
+    
+    def test_public_method_wrapping(self):
+        
+        # TODO FIXME - extend this check to methods of all ABILITIES !!!
+        
+        for attr in dir(GameDataManager):
+            if attr.startswith("_") or attr in "begin rollback commit close check_no_pending_transaction".split():
+                continue
+            
+            # we remove class/static methods, and some utilities that don't need decorators.
+            if attr in ("""
+                        notify_event get_event_count clear_event_stats clear_all_event_stats
+                        
+                        register_permissions register_ability register_game_view get_abilities 
+                        get_activable_views get_game_views instantiate_ability instantiate_game_view
+                        """.split()):
+                continue
+            
+            obj = getattr(GameDataManager, attr)
+            if not inspect.isroutine(obj):
+                continue
+
+            if not getattr(obj, "_is_under_transaction_watcher", None) \
+                and not getattr(obj, "_is_under_readonly_method", None):
+                raise AssertionError("Undecorated public DM method: %s" % obj)
+                
+    
+    
+    @for_datamanager_base
+    def test_requestless_datamanager(self):
+        
+        assert self.dm.request
+        self.dm._request = None
+        assert self.dm.request is None # property
+        
+        # user notifications get swallowed
+        user = self.dm.user
+        user.add_message("sqdqsd sss")
+        user.add_error("fsdfsdf")
+        assert user.get_notifications() == []
+        assert not user.has_notifications()
+        user.discard_notifications()
 
 
     @for_datamanager_base
@@ -128,34 +338,69 @@ class TestDatamanager(BaseGameTestCase):
             utilities.TechnicalEventsMixin.__init__(castrated_dm) # only that mixing gets initizalized
                                                     
             try:
-                castrated_dm.__init__(game_instance_id=TEST_GAME_INSTANCE_ID,
-                                      game_root=self.connection.root(),
+                root = _get_zodb_connection().root()
+                my_id = str(random.randint(1, 10000))
+                root[my_id] = PersistentDict()
+                castrated_dm.__init__(game_instance_id=my_id,
+                                      game_root=root[my_id],
                                       request=self.request)
             except Exception, e:
-                print("AAA", e)
+                transaction.abort()
             assert castrated_dm.get_event_count("BASE_DATA_MANAGER_INIT_CALLED") == 1
 
             try:
+                castrated_dm._init_from_db()
+            except Exception, e:
+                transaction.abort()
+            assert castrated_dm.get_event_count("BASE_DATA_MANAGER_INIT_FROM_DB_CALLED") == 1
+            
+            try:
                 castrated_dm._load_initial_data()
             except Exception, e:
-                print("BBB", e)
-            assert castrated_dm.get_event_count("BASE_LOAD_INITIAL_DATA_CALLED") == 1
-                
+                transaction.abort()
+            assert castrated_dm.get_event_count("BASE_LOAD_INITIAL_DATA_CALLED") == 1             
+                 
             try:
                 castrated_dm._check_database_coherency()
             except Exception, e:
-                print("CCC", e)
+                transaction.abort()
             assert castrated_dm.get_event_count("BASE_CHECK_DB_COHERENCY_PRIVATE_CALLED") == 1
 
             try:
                 report = PersistentList()
                 castrated_dm._process_periodic_tasks(report)
             except Exception, e:
-                print("DDD", e)
+                transaction.abort()
             assert castrated_dm.get_event_count("BASE_PROCESS_PERIODIC_TASK_CALLED") == 1
                                        
-             
+
+
+    @for_core_module(FlexibleTime)
+    def test_flexible_time_module(self):
+        
+        game_length = 45.3 # test fixture
+        assert self.dm.get_global_parameter("game_theoretical_length_days") == game_length
+        
+        self.assertRaises(Exception, self.dm.compute_remote_datetime, (3, 2))
+
+        for value in [0.025/game_length, (0.02/game_length, 0.03/game_length)]: # beware of the rounding to integer seconds...
             
+            now =  datetime.utcnow()
+            dt = self.dm.compute_remote_datetime(value)
+            assert now + timedelta(seconds=1) <= dt <= now + timedelta(seconds=2), (now, dt)
+            
+            self.assertEqual(utilities.is_past_datetime(dt), False)
+            time.sleep(0.5)
+            self.assertEqual(utilities.is_past_datetime(dt), False)
+            time.sleep(2)
+            self.assertEqual(utilities.is_past_datetime(dt), True)
+
+            utc = datetime.utcnow()
+            now = datetime.now()
+            now2 = utilities.utc_to_local(utc)
+            self.assertTrue(now - timedelta(seconds=1) < now2 < now + timedelta(seconds=1))
+
+
             
     @for_core_module(CharacterHandling)
     def test_character_handling(self):
@@ -193,8 +438,103 @@ class TestDatamanager(BaseGameTestCase):
             
         with pytest.raises(UsageError):
             self.dm.update_real_life_data("unexistinguy", real_life_identity=["sciences"])
+
+
+    @for_core_module(FriendshipHandling)
+    def test_friendship_handling(self):           
+        
+        dm = self.dm
+        proposal_date = datetime.utcnow() - timedelta(hours=3)
+        
+        dm.reset_friendship_data()
+        
+        assert not dm.data["friendships"]["proposed"]
+        assert not dm.data["friendships"]["sealed"]
+        
+        with pytest.raises(AbnormalUsageError):
+            dm.propose_friendship("guy1", "guy1") # auto-friendship impossible
             
+        dm.propose_friendship("guy2", "guy1")
+        assert not dm.are_friends("guy1", "guy2")
+        assert not dm.are_friends("guy2", "guy1")
+        assert not dm.are_friends("guy1", "guy3")
+
+        with pytest.raises(AbnormalUsageError):
+            dm.propose_friendship("guy2", "guy1") # friendship already requested
             
+        assert dm.data["friendships"]["proposed"]
+        assert not dm.data["friendships"]["sealed"]
+              
+        with pytest.raises(AbnormalUsageError):
+            dm.propose_friendship("guy2", "guy1") # duplicate proposal
+            
+        assert dm.get_friendship_requests("guy3") == dict(proposed_to=[],
+                                                          requested_by=[])    
+        assert dm.get_friendship_requests("guy1") == dict(proposed_to=[],
+                                                          requested_by=["guy2"])
+        assert dm.get_friendship_requests("guy2") == dict(proposed_to=["guy1"],
+                                                          requested_by=[])
+        time.sleep(0.5)
+        dm.propose_friendship("guy1", "guy2") # we seal friendship, here       
+
+        with pytest.raises(AbnormalUsageError):
+            dm.propose_friendship("guy2", "guy1") # already friends
+        with pytest.raises(AbnormalUsageError):
+            dm.propose_friendship("guy1", "guy2") # already friends
+                   
+        assert not dm.data["friendships"]["proposed"]
+        assert dm.data["friendships"]["sealed"].keys() == [("guy2", "guy1")] # order is "first proposer first"
+
+        key, params = dm.get_friendship_params("guy1", "guy2")
+        key_bis, params_bis = dm.get_friendship_params("guy2", "guy1")
+        assert key == key_bis == ("guy2", "guy1") # order OK
+        assert params == params_bis
+        assert datetime.utcnow() - timedelta(seconds=5) <= params["proposal_date"] <= datetime.utcnow()  
+        assert datetime.utcnow() - timedelta(seconds=5) <= params["acceptance_date"] <= datetime.utcnow()  
+        assert params["proposal_date"] < params["acceptance_date"]
+        
+        with pytest.raises(AbnormalUsageError):
+            dm.get_friendship_params("guy1", "guy3")
+        with pytest.raises(AbnormalUsageError):
+            dm.get_friendship_params("guy3", "guy1")            
+        with pytest.raises(AbnormalUsageError):
+            dm.get_friendship_params("guy3", "guy4")              
+            
+        assert dm.are_friends("guy2", "guy1") == dm.are_friends("guy1", "guy2") == True
+        assert dm.are_friends("guy2", "guy3") == dm.are_friends("guy3", "guy4") == False
+        
+        dm.propose_friendship("guy2", "guy3") # proposed
+        dm.propose_friendship("guy3", "guy2") # accepted
+        assert dm.get_friends("guy1") == dm.get_friends("guy3") == ["guy2"]
+        assert dm.get_friends("guy2") in (["guy1", "guy3"], ["guy3", "guy1"]) # order not enforced
+        assert dm.get_friends("guy4") == []
+        
+        with pytest.raises(AbnormalUsageError):
+            dm.terminate_friendship("guy3", "guy4") # unexisting friendship
+        with pytest.raises(NormalUsageError):
+            dm.terminate_friendship("guy1", "guy2") # too young   
+                         
+        for params in dm.data["friendships"]["sealed"].values():
+            params["acceptance_date"] -= timedelta(hours=30) # delay must be 24h in dev
+            dm.commit()         
+                  
+        dm.terminate_friendship("guy1", "guy2") # success 
+        assert not dm.are_friends("guy2", "guy1") 
+        with pytest.raises(UsageError):
+            dm.get_friendship_params("guy1", "guy2")
+        assert dm.are_friends("guy2", "guy3") # untouched   
+                                                    
+        dm.reset_friendship_data()
+        assert not dm.data["friendships"]["proposed"]  
+        assert not dm.data["friendships"]["sealed"]  
+        assert not dm.get_friends("guy1")
+        assert not dm.get_friends("guy2")
+        assert not dm.get_friends("guy3")
+        assert not dm.are_friends("guy2", "guy1")
+        assert not dm.are_friends("guy3", "guy2")
+        assert not dm.are_friends("guy3", "guy4")
+        
+        
     @for_core_module(OnlinePresence)
     def test_online_presence(self):
 
@@ -441,15 +781,24 @@ class TestDatamanager(BaseGameTestCase):
     @for_core_module(Encyclopedia)
     def test_encyclopedia(self):
         
-        utilities.check_is_restructuredtext(self.dm.get_encyclopedia_entry(" LoKon ")) # tolerant fetching
-        
+        utilities.check_is_restructuredtext(self.dm.get_encyclopedia_entry(" gerbiL_speCies ")) # tolerant fetching
         assert self.dm.get_encyclopedia_entry("qskiqsjdqsid") is None
+        assert "gerbil_species" in self.dm.get_encyclopedia_article_ids()
         
-        assert "lokon" in self.dm.get_encyclopedia_keywords()
-        for entry in self.dm.get_encyclopedia_keywords():
+        assert ("animals?", ["lokon", "gerbil_species"]) in self.dm.get_encyclopedia_keywords_mapping().items()
+        for entry in self.dm.get_encyclopedia_keywords_mapping().keys():
             utilities.check_is_slug(entry)
             assert entry.lower() == entry
-    
+        
+        # best matches
+        assert self.dm.get_encyclopedia_matches("qssqs") == []
+        assert self.dm.get_encyclopedia_matches("hiqqsd bAdgerbilZ") == ["gerbil_species"] # we're VERY tolerant
+        assert self.dm.get_encyclopedia_matches("rodEnt") == ["gerbil_species"]
+        assert self.dm.get_encyclopedia_matches("hi gerbils animaL") == ["gerbil_species", "lokon"]
+        assert self.dm.get_encyclopedia_matches("animal loKon") == ["lokon", "gerbil_species"]
+        assert self.dm.get_encyclopedia_matches(u"animéàk") == [u"wu\\gly_é"]
+        
+        
         # index available or not ?
         assert not self.dm.is_encyclopedia_index_visible()
         not self.dm.set_encyclopedia_index_visibility(True)
@@ -457,17 +806,46 @@ class TestDatamanager(BaseGameTestCase):
         not self.dm.set_encyclopedia_index_visibility(False)
         assert not self.dm.is_encyclopedia_index_visible()
         
-        
         # generation of entry links 
-        res = _generate_encyclopedia_links (u"""wu\\gly&lt;_é gerbil \n lokongerbil dummy gerb\nil <a href="#">lokon\n</a> lokon""", self.dm)
-                                            
-        expected = """<a href="@@@?keyword=wu%5Cgly%3C_%C3%A9">wu\\gly&lt;_é</a> <a href="@@@?keyword=gerbil">gerbil</a> \n lokongerbil dummy gerb\nil <a href="#"><a href="@@@?keyword=lokon">lokon</a>\n</a> <a href="@@@?keyword=lokon">lokon</a>"""
+        res = _generate_encyclopedia_links("lokon lokons lokonsu", self.dm)
+        expected = """<a href="@@@?search=lokon">lokon</a> <a href="@@@?search=lokons">lokons</a> lokonsu"""
         expected = expected.replace("@@@", reverse(views.view_encyclopedia, kwargs=dict(game_instance_id=self.dm.game_instance_id)))
-        
-        #print(">>>", res)
         assert res == expected
         
+        res = _generate_encyclopedia_links(u"""wu\\gly_é gerbil \n lokongerbil dummy gerb\nil <a href="#">lokon\n</a> lokons""", self.dm)                         
+        print (repr(res))
+        expected = u'wu\\gly_é <a href="@@@?search=gerbil">gerbil</a> \n lokongerbil dummy gerb\nil <a href="#">lokon\n</a> <a href="@@@?search=lokons">lokons</a>'
+        expected = expected.replace("@@@", reverse(views.view_encyclopedia, kwargs=dict(game_instance_id=self.dm.game_instance_id)))
+        assert res == expected
+        
+        res = _generate_encyclopedia_links(u"""i<à hi""", self.dm)                         
+        print (repr(res))
+        expected = u'<a href="/TeStiNg/encyclopedia/?search=i%3C%C3%A0">i&lt;\xe0</a> hi'
+        expected = expected.replace("@@@", reverse(views.view_encyclopedia, kwargs=dict(game_instance_id=self.dm.game_instance_id)))
+        assert res == expected        
+        
 
+        # knowledge of article ids #
+        
+        for unauthorized in ("master", None):
+            self._set_user(unauthorized)
+            with pytest.raises(UsageError):
+                self.dm.get_character_known_article_ids()
+            with pytest.raises(UsageError):
+                self.dm.update_character_known_article_ids(["lokon"])
+            with pytest.raises(UsageError):
+                self.dm.reset_character_known_article_ids()
+        
+        self._set_user("guy1")
+        assert self.dm.get_character_known_article_ids() == []
+        self.dm.update_character_known_article_ids(["lokon"])
+        assert self.dm.get_character_known_article_ids() == ["lokon"]
+        self.dm.update_character_known_article_ids(["gerbil_species", "unexisting", "lokon", "gerbil_species"])
+        assert self.dm.get_character_known_article_ids() == ["lokon", "gerbil_species", "unexisting"]
+        self.dm.reset_character_known_article_ids()
+        assert self.dm.get_character_known_article_ids() == []
+        
+        
     def test_message_automated_state_changes(self):
         self._reset_messages()
         
@@ -773,7 +1151,7 @@ class TestDatamanager(BaseGameTestCase):
         self.assertEqual(username, "guy3")
 
         properties = self.dm.get_audio_message_properties(audio_id)
-        self.assertEqual(set(properties.keys()), set(["text", "file", "url"]))
+        self.assertEqual(set(properties.keys()), set(["text", "file", "url", "title"]))
 
         #self.assertEqual(properties["new_messages_notification_for_user"], "guy3")
         #self.assertEqual(self.dm.get_audio_message_properties("request_for_report_teldorium")["new_messages_notification_for_user"], None)
@@ -822,20 +1200,27 @@ class TestDatamanager(BaseGameTestCase):
 
         
     def test_delayed_message_processing(self):
+        
+        WANTED_FACTOR = 2 # we only double durations below
+        params = self.dm.get_global_parameters()
+        assert params["game_theoretical_length_days"]
+        params["game_theoretical_length_days"] = WANTED_FACTOR 
+        
+        
         self._reset_messages()
 
         email = self.dm.get_character_email # function
         
         # delayed message sending
 
-        self.dm.post_message(email("guy3"), email("guy2"), "yowh1", "qhsdhqsdh", attachment=None, date_or_delay_mn=0.03)
+        self.dm.post_message(email("guy3"), email("guy2"), "yowh1", "qhsdhqsdh", attachment=None, date_or_delay_mn=0.03/WANTED_FACTOR)
         self.assertEqual(len(self.dm.get_all_sent_messages()), 0)
         queued_msgs = self.dm.get_all_queued_messages()
         self.assertEqual(len(queued_msgs), 1)
         #print datetime.utcnow(), " << ", queued_msgs[0]["sent_at"]
         self.assertTrue(datetime.utcnow() < queued_msgs[0]["sent_at"] < datetime.utcnow() + timedelta(minutes=0.22))
 
-        self.dm.post_message(email("guy3"), email("guy2"), "yowh2", "qhsdhqsdh", attachment=None, date_or_delay_mn=(0.04, 0.05)) # 3s delay range
+        self.dm.post_message(email("guy3"), email("guy2"), "yowh2", "qhsdhqsdh", attachment=None, date_or_delay_mn=(0.04/WANTED_FACTOR, 0.05/WANTED_FACTOR)) # 3s delay range
         self.assertEqual(len(self.dm.get_all_sent_messages()), 0)
         queued_msgs = self.dm.get_all_queued_messages()
         self.assertEqual(len(queued_msgs), 2)
@@ -845,7 +1230,7 @@ class TestDatamanager(BaseGameTestCase):
 
         # delayed message processing
 
-        self.dm.post_message(email("guy3"), email("guy2"), "yowh3", "qhsdhqsdh", attachment=None, date_or_delay_mn=0.01) # 0.6s
+        self.dm.post_message(email("guy3"), email("guy2"), "yowh3", "qhsdhqsdh", attachment=None, date_or_delay_mn=0.01/WANTED_FACTOR) # 0.6s
         self.assertEqual(len(self.dm.get_all_queued_messages()), 3)
         self.assertEqual(len(self.dm.get_all_sent_messages()), 0)
         res = self.dm.process_periodic_tasks()
@@ -874,10 +1259,9 @@ class TestDatamanager(BaseGameTestCase):
         self.assertEqual(self.dm.get_event_count("DELAYED_MESSAGE_ERROR"), 0)
 
 
-
         # forced sending of queued messages
-        myid1 = self.dm.post_message(email("guy3"), email("guy2"), "yowh2", "qhsdhqsdh", attachment=None, date_or_delay_mn=(1, 2)) # 3s delay range
-        myid2 = self.dm.post_message(email("guy3"), email("guy2"), "yowh2", "qhsdhqsdh", attachment=None, date_or_delay_mn=(1, 2)) # 3s delay range
+        myid1 = self.dm.post_message(email("guy3"), email("guy2"), "yowh2", "qhsdhqsdh", attachment=None, date_or_delay_mn=(1.0/WANTED_FACTOR, 2.0/WANTED_FACTOR)) # 3s delay range
+        myid2 = self.dm.post_message(email("guy3"), email("guy2"), "yowh2", "qhsdhqsdh", attachment=None, date_or_delay_mn=(1.0/WANTED_FACTOR, 2.0/WANTED_FACTOR)) # 3s delay range
         self.assertEqual(len(self.dm.get_all_queued_messages()), 2)
 
         self.assertFalse(self.dm.force_message_sending("dummyid"))
@@ -891,15 +1275,21 @@ class TestDatamanager(BaseGameTestCase):
      
         
     def test_delayed_action_processing(self):
-
+        
+        WANTED_FACTOR = 2 # we only double durations below
+        params = self.dm.get_global_parameters()
+        assert params["game_theoretical_length_days"]
+        params["game_theoretical_length_days"] = WANTED_FACTOR 
+        
+        
         def _dm_delayed_action(arg1):
             self.dm.data["global_parameters"]["stuff"] = 23
             self.dm.commit()
-        self.dm._dm_delayed_action = _dm_delayed_action # attribute of that precise instane, not class!
+        self.dm._dm_delayed_action = _dm_delayed_action # now an attribute of that speific instance, not class!
         
-        self.dm.schedule_delayed_action(0.01, dummyfunc, 12, item=24)
-        self.dm.schedule_delayed_action((0.04, 0.05), dummyfunc) # will raise error
-        self.dm.schedule_delayed_action((0.035, 0.05), "_dm_delayed_action", "hello")
+        self.dm.schedule_delayed_action(0.01/WANTED_FACTOR, dummyfunc, 12, item=24)
+        self.dm.schedule_delayed_action((0.04/WANTED_FACTOR, 0.05/WANTED_FACTOR), dummyfunc) # will raise error
+        self.dm.schedule_delayed_action((0.035/WANTED_FACTOR, 0.05/WANTED_FACTOR), "_dm_delayed_action", "hello")
  
         res = self.dm.process_periodic_tasks()
         self.assertEqual(res["actions_executed"], 0)
@@ -1157,9 +1547,11 @@ class TestDatamanager(BaseGameTestCase):
     
     
     @for_core_module(PlayerAuthentication)
-    def test_password_recovery(self):
+    def test_password_operations(self):
         self._reset_messages()
-
+        
+        # "secret question" system
+        
         res = self.dm.get_secret_question("guy3")
         self.assertTrue("pet" in res)
 
@@ -1176,7 +1568,30 @@ class TestDatamanager(BaseGameTestCase):
         self.assertRaises(dm_module.UsageError, self.dm.process_secret_answer_attempt, "guy3", "badanswer", "guy3@sciences.com")
         self.assertRaises(dm_module.UsageError, self.dm.process_secret_answer_attempt, "guy3", "MiLoU", "bademail@sciences.com")
         self.assertEqual(len(self.dm.get_all_queued_messages()), 1) # untouched
-
+        
+        
+        # password change
+        
+        with pytest.raises(NormalUsageError):
+            self.dm.process_password_change_attempt("guy1", "badpwd", "newpwd")
+        with pytest.raises(AbnormalUsageError):
+            self.dm.process_password_change_attempt("guy1", "badpwd", "new pwd") # wrong new pwd
+        with pytest.raises(AbnormalUsageError):
+            self.dm.process_password_change_attempt("guy1", "elixir", "newpwd\n") # wrong new pwd
+        with pytest.raises(AbnormalUsageError):
+            self.dm.process_password_change_attempt("guy1", "elixir", "") # wrong new pwd
+        with pytest.raises(AbnormalUsageError):
+            self.dm.process_password_change_attempt("guy1", "elixir", None) # wrong new pwd
+            
+                        
+        self.dm.process_password_change_attempt("guy1", "elixir", "newpwd")
+        with pytest.raises(NormalUsageError):
+            self.dm.process_password_change_attempt("guy1", "elixir", "newpwd")                                                               
+        
+        with pytest.raises(NormalUsageError):
+            self.dm.authenticate_with_credentials("guy1", "elixir")
+        self.dm.authenticate_with_credentials("guy1", "newpwd")            
+            
     
     
     @for_core_module(GameViews)
@@ -1212,7 +1627,7 @@ class TestDatamanager(BaseGameTestCase):
         assert self.dm.user.is_anonymous
         token = self.dm.get_game_view_access_token(views.homepage.NAME)
         assert token == AccessResult.available
-        token = self.dm.get_game_view_access_token(views.view_sales._klass)
+        token = self.dm.get_game_view_access_token(views.view_sales)
         assert token == AccessResult.authentication_required        
                 
         
@@ -1222,10 +1637,8 @@ class TestDatamanager(BaseGameTestCase):
         assert not self.dm.is_game_view_activated(random_view) # cleanup occurred
         assert self.dm.get_event_count("SYNC_GAME_VIEW_DATA_CALLED") == 1
         
-        _dm2 = dm_module.GameDataManager(game_instance_id=TEST_GAME_INSTANCE_ID,
-                                  game_root=self.connection.root(),
-                                  request=self.request)
-        assert _dm2.get_event_count("SYNC_GAME_VIEW_DATA_CALLED") == 1 # sync well called at init!!
+        with temp_datamanager(TEST_GAME_INSTANCE_ID, self.request) as _dm2:
+            assert _dm2.get_event_count("SYNC_GAME_VIEW_DATA_CALLED") == 1 # sync well called at init!!
 
         self.dm.ACTIVABLE_VIEWS_REGISTRY[random_view] = random_klass # test cleanup
         
@@ -1242,7 +1655,7 @@ class TestDatamanager(BaseGameTestCase):
         from rpgweb.abilities import runic_translation_view
         components = self.dm.resolve_admin_widget_identifier("runic_translation.translation_form")
         assert len(components) == 2
-        assert isinstance(components[0], runic_translation_view._klass)
+        assert isinstance(components[0], runic_translation_view.klass)
         assert components[1] == "translation_form"
         
         
@@ -1252,12 +1665,11 @@ class TestDatamanager(BaseGameTestCase):
         abilities = self.dm.get_abilities()
         assert abilities is not self.dm.ABILITIES_REGISTRY # copy
         assert "runic_translation" in abilities
-        
-        
-        @register_view
-        class TesterAbility(AbstractAbility):
 
-            NAME = "dummy_ability"
+        @register_view
+        class PrivateTestAbility(AbstractAbility):
+        
+            NAME = "_private_dummy_ability"
             GAME_FORMS = {}
             ACTIONS = dict()
             TEMPLATE = "base_main.html" # must exist
@@ -1272,7 +1684,7 @@ class TestDatamanager(BaseGameTestCase):
             @classmethod
             def _setup_ability_settings(cls, settings):
                 settings.setdefault("myvalue", "True")
-                self.dm.notify_event("LATE_ABILITY_SETUP_DONE") # BEWARE - event registry of OTHER DM instance!
+                cls._LATE_ABILITY_SETUP_DONE = 65 
                 
             def _setup_private_ability_data(self, private_data):
                 pass
@@ -1280,22 +1692,20 @@ class TestDatamanager(BaseGameTestCase):
             def _check_data_sanity(self, strict=False):
                 settings = self.settings
                 assert settings["myvalue"] == "True"
-        
-
-        assert "dummy_ability" in self.dm.get_abilities() # auto-registration
+                
+      
+        assert "_private_dummy_ability" in self.dm.get_abilities() # auto-registration of dummy test ability
         self.dm.rollback()
         with pytest.raises(KeyError):        
-            self.dm.get_ability_data("dummy_ability") # not yet setup in ZODB
+            self.dm.get_ability_data("_private_dummy_ability") # not yet setup in ZODB
         
-        _dm = dm_module.GameDataManager(game_instance_id=TEST_GAME_INSTANCE_ID,
-                                        game_root=self.connection.root(),
-                                        request=self.request)
-        assert "dummy_ability" in _dm.get_abilities()
-        assert _dm.get_ability_data("dummy_ability") # ability now setup in ZODB
-        assert self.dm.get_event_count("LATE_ABILITY_SETUP_DONE") == 1 # parasite event - autosync well called at init!!
-        
-        del self.dm.ABILITIES_REGISTRY["dummy_ability"] # important cleanup!!!
-         
+        assert not hasattr(PrivateTestAbility, "_LATE_ABILITY_SETUP_DONE")
+        with temp_datamanager(TEST_GAME_INSTANCE_ID, self.request) as _dm:
+            assert "_private_dummy_ability" in _dm.get_abilities()
+            assert _dm.get_ability_data("_private_dummy_ability") # ability now setup in ZODB
+            assert PrivateTestAbility._LATE_ABILITY_SETUP_DONE == 65 # autosync well called at init!!
+            del self.dm.ABILITIES_REGISTRY["_private_dummy_ability"] # important cleanup!!!
+             
 
 
     @for_core_module(HelpPages)
@@ -1316,14 +1726,16 @@ class TestDatamanager(BaseGameTestCase):
         self._reset_messages()
         
         self._set_user("guy1")
-        self.assertEqual(self.dm.get_game_events(), [])
+        events = self.dm.get_game_events()
+        self.assertEqual(len(events), 1) # fixture
+
         self.dm.log_game_event("hello there 1")
         self._set_user("master")
         self.dm.log_game_event("hello there 2", url="/my/url/")
         self.dm.commit()
-        events = self.dm.get_game_events()
+        
+        events = self.dm.get_game_events()[1:] # skip fixture
         self.assertEqual(len(events), 2)
-
         self.assertEqual(events[0]["message"], "hello there 1")
         self.assertEqual(events[0]["username"], "guy1")
         self.assertEqual(events[0]["url"], None)
@@ -1347,8 +1759,37 @@ class TestDatamanager(BaseGameTestCase):
 
     
 
-
-
+    @for_core_module(NightmareCaptchas)
+    def test_nightmare_captchas(self):
+        
+        captcha_ids = self.dm.get_available_captchas()
+        assert captcha_ids
+        
+        captcha1 = self.dm.get_selected_captcha(captcha_ids[0])
+        captcha2 = self.dm.get_selected_captcha(captcha_ids[-1])
+        assert captcha1 != captcha2
+        
+        random_captchas = [self.dm.get_random_captcha() for i in range(30)]
+        assert set(v["id"] for v in random_captchas) == set(captcha_ids) # unless very bad luck...
+        
+        with pytest.raises(AbnormalUsageError):
+            self.dm.check_captcha_answer_attempt(captcha_id="unexisting_id", attempt="whatever")
+            
+        for captcha in (random_captchas + [captcha1, captcha2]):
+            assert set(captcha.keys()) == set("id text image".split()) # no spoiler of answer elements here
+            assert self.dm.get_selected_captcha(captcha["id"]) == captcha
+            with pytest.raises(NormalUsageError):
+                self.dm.check_captcha_answer_attempt(captcha["id"], "")
+            with pytest.raises(NormalUsageError):
+                self.dm.check_captcha_answer_attempt(captcha["id"], "random stuff ")
+            
+            _full_captch_data = self.dm.data["nightmare_captchas"][captcha["id"]]
+            answer = "  " + _full_captch_data["answer"].upper() + " " # case and spaces are not important
+            res = self.dm.check_captcha_answer_attempt(captcha["id"], answer)
+            assert res == _full_captch_data["explanation"] # sucess
+            
+            
+            
 class TestHttpRequests(BaseGameTestCase):
 
     def _master_auth(self):
@@ -1417,7 +1858,7 @@ class TestHttpRequests(BaseGameTestCase):
         from django.core.urlresolvers import RegexURLResolver
         from rpgweb.urls import final_urlpatterns
 
-        skipped_patterns = """ability instructions view_help_page
+        skipped_patterns = """ability instructions view_help_page profile
                               DATABASE_OPERATIONS FAIL_TEST ajax item_3d_view chat_with_djinn static.serve encrypted_folder view_single_message logout login secret_question""".split()
         views_names = [url._callback_str for url in final_urlpatterns 
                                    if not isinstance(url, RegexURLResolver) and 
@@ -1437,8 +1878,8 @@ class TestHttpRequests(BaseGameTestCase):
         special_urls = {ROOT_GAME_URL + "/item3dview/sacred_chest/": None,
                         # FIXME NOT YET READYROOT_GAME_URL + "/djinn/": {"djinn": "Pay Rhuss"},
                         config.MEDIA_URL + "Burned/default_styles.css": None,
-                        config.GAME_FILES_URL + "attachments/image1.png": None,
-                        config.GAME_FILES_URL + "encrypted/guy2_report/evans/orb.jpg": None,
+                        game_file_url("attachments/image1.png"): None,
+                        game_file_url("encrypted/guy2_report/evans/orb.jpg"): None,
                         ROOT_GAME_URL + "/messages/view_single_message/instructions_bewitcher/": None,
                         ROOT_GAME_URL + "/secret_question/": dict(secret_answer="Fluffy", target_email="guy3@pangea.com", secret_username="guy3"),
                         ROOT_GAME_URL + "/webradio_applet/": dict(frequency=self.dm.get_global_parameter("pangea_radio_frequency")),
@@ -1463,7 +1904,14 @@ class TestHttpRequests(BaseGameTestCase):
         self.assertEqual(response.status_code, 404)
         response = self.client.get("/files/")
         self.assertEqual(response.status_code, 404)
-
+        
+        # no direct file access, we need the hash tag
+        response = self.client.get("/files/qsdqsdqs/README.txt")
+        self.assertEqual(response.status_code, 404)
+        response = self.client.get(game_file_url("README.txt"))
+        self.assertEqual(response.status_code, 200)
+        
+        # user presence is not disrupted by game master
         self.assertEqual(self.dm.get_online_users(), [])
         self.assertEqual(self.dm.get_chatting_users(), [])
 
@@ -1509,7 +1957,7 @@ class TestHttpRequests(BaseGameTestCase):
         from django.core.urlresolvers import RegexURLResolver
         from rpgweb.urls import final_urlpatterns
         # we test views for which there is a distinction between master and player
-        selected_patterns = """inbox outbox compose_message intercepted_messages view_sales items_slideshow""".split() # TODO LATER network_management contact_djinns 
+        selected_patterns = """inbox outbox compose_message intercepted_messages view_sales items_slideshow character_profile""".split() # TODO LATER network_management contact_djinns 
         views = [url._callback_str for url in final_urlpatterns if not isinstance(url, RegexURLResolver) and [match for match in selected_patterns if match in url._callback_str]]
         assert len(views) == len(selected_patterns)
         
@@ -1578,7 +2026,42 @@ class TestHttpRequests(BaseGameTestCase):
                                                         keyword="logo_animation"))
         response = self.client.get(url)
         assert response.status_code == 404 # view always available, but no help text available for it
+    
+    
+    def test_encyclopedia_behaviour(self):
         
+        url_base = reverse(views.view_encyclopedia, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID))        
+        
+        for login in ("master", "guy1", None):
+            
+            self._set_user(login)
+            
+            self.dm.set_game_state(False)
+            
+            response = self.client.get(url_base+"?search=animal")
+            assert response.status_code == 200
+            assert "under repair" in response.content.decode("utf8") # no search results
+                        
+            self.dm.set_game_state(True)
+            
+            response = self.client.get(url_base)
+            assert response.status_code == 200
+                   
+            url = reverse(views.view_encyclopedia, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID,
+                                                               article_id="lokon"))        
+            response = self.client.get(url)
+            assert response.status_code == 200
+            assert "animals" in response.content.decode("utf8")
+            
+            response = self.client.get(url_base+"?search=animal")
+            assert response.status_code == 200
+            #print(repr(response.content))
+            assert "results" in response.content.decode("utf8") # several results displayed     
+                            
+            response = self.client.get(url_base+"?search=gerbil")
+            assert response.status_code == 302
+            assert reverse(views.view_encyclopedia, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID, article_id="gerbil_species")) in response['Location'] 
+                                   
                         
 class TestGameViewSystem(BaseGameTestCase):
     
@@ -1664,37 +2147,43 @@ class TestGameViewSystem(BaseGameTestCase):
         with pytest.raises(AssertionError):
             register_view(my_little_view, access=UserAccess.anonymous, permissions=["sss"])         
    
-        proxy = register_view(my_little_view, access=UserAccess.master, )     
+        klass = register_view(my_little_view, access=UserAccess.master, )     
         
-        assert isinstance(proxy, ClassInstantiationProxy)
-        assert proxy._klass.__name__ == "MyLittleView" # pascal case
-        assert proxy._klass.NAME == "my_little_view" # snake case
-        assert proxy._klass.NAME in self.dm.GAME_VIEWS_REGISTRY
+        assert issubclass(klass, AbstractGameView)
+        assert klass.__name__ == "MyLittleView" # pascal case
+        assert klass.NAME == "my_little_view" # snake case
+        assert klass.NAME in self.dm.GAME_VIEWS_REGISTRY
         
         with pytest.raises(AssertionError):
             register_view(my_little_view, access=UserAccess.master)  # double registration impossible!
                  
         
         # case of class registration #
-        class DummyView(object):
+        class DummyViewNonGameView(object):
             ACCESS = "sqdqsjkdqskj"
-        assert isinstance(DummyView, type)
+        with pytest.raises(AssertionError):
+            register_view(DummyViewNonGameView) # must be a subclass of AbstractGameView
         
-        proxy = register_view(DummyView)     
-        assert isinstance(proxy, ClassInstantiationProxy) 
-        assert proxy.__dict__["_klass"] is DummyView # no changes to wrapped object!
+        
+        class DummyView(AbstractGameView):
+            NAME = "sdfsdf"
+            ACCESS = UserAccess.anonymous
+        klass = register_view(DummyView)     
+        assert isinstance(klass, type) 
         register_view(DummyView) # double registration possible, since it's class creation which actually registers it, not that decorator      
         
         
-        class OtherDummyView(object):
-            ACCESS = "sdqsd"         
+        class OtherDummyView(AbstractGameView):
+            NAME = "sdfsdzadsfsdff"
+            ACCESS = UserAccess.anonymous        
         with pytest.raises(AssertionError): # when a klass is given, all other arguments become forbidden
             while True:
                 a, b, c, d= [random.choice([_undefined, False]) for i in range(4)]
                 if not all((a, b, c)):
                     break # at least one of them must NOT be _undefined
-            register_view(DummyView, a, b, c, d)         
+            register_view(OtherDummyView, a, b, c, d)         
                 
+
                 
     def test_access_token_computation(self):
         
@@ -1728,12 +2217,12 @@ class TestGameViewSystem(BaseGameTestCase):
             
             for my_view in (view_anonymous, view_character, view_character_permission, view_authenticated): # not view_master          
                 
-                my_view._klass.ALWAYS_AVAILABLE = False
+                my_view.klass.ALWAYS_AVAILABLE = False
                 assert my_view.get_access_token(datamanager) == AccessResult.globally_forbidden
-                self.dm.set_activated_game_views([my_view._klass.NAME]) # exists in ACTIVABLE_VIEWS_REGISTRY because we registered view with always_available=True
+                self.dm.set_activated_game_views([my_view.NAME]) # exists in ACTIVABLE_VIEWS_REGISTRY because we registered view with always_available=True
                 assert my_view.get_access_token(datamanager) != AccessResult.globally_forbidden
                 
-                my_view._klass.ALWAYS_AVAILABLE = True
+                my_view.klass.ALWAYS_AVAILABLE = True
                 assert my_view.get_access_token(datamanager) != AccessResult.globally_forbidden
                 self.dm.set_activated_game_views([]) # RESET
                 assert my_view.get_access_token(datamanager) != AccessResult.globally_forbidden
@@ -1767,11 +2256,467 @@ class TestGameViewSystem(BaseGameTestCase):
         assert view_authenticated.get_access_token(datamanager) == AccessResult.available
         assert view_master.get_access_token(datamanager) == AccessResult.available                        
                 
-        
+     
 
+class TestActionMiddlewares(BaseGameTestCase):
+    
+    
+    def test_costly_action_middleware(self):
+        
+        # setup
+        bank_name = self.dm.get_global_parameter("bank_name")
+        self.dm.transfer_money_between_characters(bank_name, "guy4", amount=1000)
+        self.dm.transfer_object_to_character("several_misc_gems", "guy4") # 5 * 200 kashes
+        self.dm.transfer_object_to_character("several_misc_gems2", "guy4") # 8 * 125 kashes
+
+        props = self.dm.get_character_properties("guy4")
+        assert props["account"] == 1000
+        utilities.assert_sets_equal(props["gems"], [125]*8 + [200]*5)
+            
+        self._set_user("guy4") # important
+        
+        ability = self.dm.instantiate_ability("dummy_ability")
+        ability._perform_lazy_initializations() # normally done while treating HTTP request...
+        
+        assert isinstance(ability, DummyTestAbility)
+        assert CostlyActionMiddleware
+        self.dm.commit()
+                  
+                  
+                  
+        # misconfiguration case #
+        
+        ability.reset_test_settings("middleware_wrapped", CostlyActionMiddleware, dict(money_price=None, gems_price=None))
                 
+        for value in (None, [], [125], [200, 125]):
+            assert ability.middleware_wrapped_callable1(use_gems=value) # no limit is set at all
+            assert ability.middleware_wrapped_callable2(value)
+            assert ability.non_middleware_action_callable(use_gems=[125]) 
+            
+        self.dm.check_no_pending_transaction()
+        
+        assert self.dm.get_event_count("INSIDE_MIDDLEWARE_WRAPPED1") == 4
+        assert self.dm.get_event_count("INSIDE_MIDDLEWARE_WRAPPED2") == 4
+        assert self.dm.get_event_count("INSIDE_NON_MIDDLEWARE_ACTION_CALLABLE") == 4
+        
+        self.dm.clear_all_event_stats()
+        
+        
+        
+        # payment with money #
+        
+        for gems_price in (None, 15, 100): # WHATEVER gems prices
+            
+            ability.reset_test_settings("middleware_wrapped", CostlyActionMiddleware, dict(money_price=15, gems_price=gems_price))
+            ability.reset_test_data("middleware_wrapped", CostlyActionMiddleware, dict()) # useless actually for that middleware
+            
+            # payments OK
+            assert 18277 == ability.middleware_wrapped_callable1(use_gems=random.choice((None, []))) # triggers payment by money
+            assert True == ability.middleware_wrapped_callable2(34) # idem, points to the same conf
+            
+            # not taken into account - no middlewares here
+            assert 23 == ability.non_middleware_action_callable(use_gems=[125]) 
+            
+            # too expensive
+            ability.reset_test_settings("middleware_wrapped", CostlyActionMiddleware, dict(money_price=999, gems_price=gems_price))
+            with raises_with_content(NormalUsageError, "in money"):
+                ability.middleware_wrapped_callable1(use_gems=random.choice((None, []))) 
+            with raises_with_content(NormalUsageError, "in money"):
+                ability.middleware_wrapped_callable2("helly")  
+            
+            # not taken into account - no middlewares here          
+            assert 23 == ability.non_middleware_action_callable(use_gems=[125]) 
+            
+        ability.reset_test_settings("middleware_wrapped", CostlyActionMiddleware, dict(money_price=53, gems_price=None))   
+        assert 18277 == ability.middleware_wrapped_callable1(use_gems=[125, 125]) # triggers payment by money ANYWAY! 
+            
+        # we check data coherency
+        props = self.dm.get_character_properties("guy4")
+        new_money_value = 1000 - 2*3*15 - 53  # 2 callables * 3 use_gems values * money price, and special 53 kashes payment
+        assert props["account"] == new_money_value
+        utilities.assert_sets_equal(props["gems"], [125]*8 + [200]*5)  # unchanged
+    
+        assert self.dm.get_event_count("INSIDE_MIDDLEWARE_WRAPPED1") == 4 # 3 + 1 extra call
+        assert self.dm.get_event_count("INSIDE_MIDDLEWARE_WRAPPED2") == 3
+        assert self.dm.get_event_count("INSIDE_NON_MIDDLEWARE_ACTION_CALLABLE") == 6
+        
+        self.dm.clear_all_event_stats()
+        
+        
+        
+        
+        # payment with gems #
+        
+        for money_price in (None, 0, 15): # WHATEVER money prices
+            
+            ability.reset_test_settings("middleware_wrapped", CostlyActionMiddleware, dict(money_price=money_price, gems_price=150))
+            ability.reset_test_data("middleware_wrapped", CostlyActionMiddleware, dict()) # useless actually for that middleware
+            
+            # payments OK
+            assert ability.middleware_wrapped_callable1(use_gems=[200]) # triggers payment by gems
+
+            # not taken into account - no middlewares here
+            assert ability.non_middleware_action_callable(use_gems=[125, 128, 129]) 
+            
+            # too expensive for current gems given
+            with raises_with_content(NormalUsageError, "kashes of gems"):
+                ability.middleware_wrapped_callable1(use_gems=[125]) 
+            
+            with raises_with_content(NormalUsageError, "top off"): # we're nice with people who give too much...
+                ability.middleware_wrapped_callable1(use_gems=[125, 200])
+
+            with raises_with_content(NormalUsageError, "top off"): # that check is done before "whether or not they really own the games"
+                ability.middleware_wrapped_callable1(use_gems=[128, 178])
+                            
+            # some wrong gems in input (even if a sufficient number  of them is OK)
+            with raises_with_content(AbnormalUsageError, "don't possess"):
+                ability.middleware_wrapped_callable1(use_gems=[111, 125])  
+            
+            if not money_price: 
+                # no fallback to money, when no gems at all in input
+                with raises_with_content(NormalUsageError, "kashes of gems"):
+                    ability.middleware_wrapped_callable1(use_gems=random.choice((None, [])))
+                with raises_with_content(NormalUsageError, "kashes of gems"):
+                    ability.middleware_wrapped_callable2([125, 125]) # wrong param name   
+        
+        assert ability.middleware_wrapped_callable1(use_gems=[200]) # OK
+        assert ability.middleware_wrapped_callable1(use_gems=[125, 125]) # OK as long as not too many gems for the asset value
+            
+        # we check data coherency
+        props = self.dm.get_character_properties("guy4")
+        assert props["account"] == new_money_value # unchanged
+        utilities.assert_sets_equal(props["gems"], [125]*6 + [200]) # 3 payments with 2 gems, + 2 separate payments
+        
+        assert self.dm.get_event_count("INSIDE_MIDDLEWARE_WRAPPED1") == 5 # 3 + 2 extra calls
+        assert self.dm.get_event_count("INSIDE_MIDDLEWARE_WRAPPED2") == 0
+        assert self.dm.get_event_count("INSIDE_NON_MIDDLEWARE_ACTION_CALLABLE") == 3            
+        
+        self.dm.clear_all_event_stats()
+        
+        
+        
+        
+        # payment with both is possible #
+        
+        ability.reset_test_settings("middleware_wrapped", CostlyActionMiddleware, dict(money_price=11, gems_price=33))
+        ability.reset_test_data("middleware_wrapped", CostlyActionMiddleware, dict()) # useless actually for that middleware        
+        
+        ability.middleware_wrapped_callable1(use_gems=[200]) # by gems, works even if smaller gems of user would fit better (no paternalism)
+        ability.middleware_wrapped_callable1(use_gems=None) # by money
+        ability.middleware_wrapped_callable2("hi") # by money
+        assert ability.non_middleware_action_callable(use_gems=[125]) 
+        assert ability.non_middleware_action_callable(use_gems=[]) 
+        
+        # we check data coherency
+        props = self.dm.get_character_properties("guy4")
+        assert props["account"] == new_money_value - 11 * 2
+        utilities.assert_sets_equal(props["gems"], [125]*2) # "200 kashes" gem is out
+        
+        assert self.dm.get_event_count("INSIDE_MIDDLEWARE_WRAPPED1") == 2
+        assert self.dm.get_event_count("INSIDE_MIDDLEWARE_WRAPPED2") == 1
+        assert self.dm.get_event_count("INSIDE_NON_MIDDLEWARE_ACTION_CALLABLE") == 2           
+        
+            
+
+    
+    def test_count_limited_action_middleware(self):
+         
+
+        ability = self.dm.instantiate_ability("dummy_ability")
+
+                    
+        # BOTH quotas
+        
+        ability.reset_test_settings("middleware_wrapped", CountLimitedActionMiddleware, dict(max_per_character=3, max_per_game=4))
+
+        self._set_user("guy4") # important
+        ability._perform_lazy_initializations() # normally done while treating HTTP request... 
+        ability.reset_test_data("middleware_wrapped", CountLimitedActionMiddleware, dict()) # will be filled lazily, on call        
+      
+                 
+        assert 18277 == ability.middleware_wrapped_callable1(2524) # 1 use for guy4
+        assert True == ability.middleware_wrapped_callable2(2234) # 2 uses for guy4
+        assert 23 == ability.non_middleware_action_callable(use_gems=[125]) # no use
+        assert 18277 == ability.middleware_wrapped_callable1(132322) # 3 uses for guy4
+        
+        with raises_with_content(NormalUsageError, "exceeded your quota"):
+            ability.middleware_wrapped_callable1(2524)
+ 
+ 
+        self._set_user("guy3") # important
+        ability._perform_lazy_initializations() # normally done while treating HTTP request... 
+        ability.reset_test_data("middleware_wrapped", CountLimitedActionMiddleware, dict()) # will be filled lazily, on call        
+
+        assert ability.middleware_wrapped_callable2(None) # 1 use for guy3
+        assert ability.non_middleware_action_callable(use_gems=True) # no use
+        with raises_with_content(NormalUsageError, "exceeded the global quota"):
+            ability.middleware_wrapped_callable2(11)        
+                
+                
+        self._set_user("guy4") # important
+        with raises_with_content(NormalUsageError, "exceeded the global quota"): # this msg now takes precedence over "private quota" one
+            ability.middleware_wrapped_callable1(222)                
+                
+        assert self.dm.get_event_count("INSIDE_MIDDLEWARE_WRAPPED1") == 2 
+        assert self.dm.get_event_count("INSIDE_MIDDLEWARE_WRAPPED2") == 2
+        assert self.dm.get_event_count("INSIDE_NON_MIDDLEWARE_ACTION_CALLABLE") == 2   
+        
+        self.dm.clear_all_event_stats()
+        
+        
+        
+        # only per-character quota       
+        
+        ability.reset_test_settings("middleware_wrapped", CountLimitedActionMiddleware, dict(max_per_character=3, max_per_game=None))
+        
+        self._set_user("guy3") # important
+        assert ability.middleware_wrapped_callable2(None) # 2 uses for guy3
+        assert ability.middleware_wrapped_callable2(None) # 3 uses for guy3
+        with raises_with_content(NormalUsageError, "exceeded your quota"):
+            ability.middleware_wrapped_callable2(1111122)           
+        
+        self._set_user("guy4") # important
+        with raises_with_content(NormalUsageError, "exceeded your quota"): # back to private quota message
+            ability.middleware_wrapped_callable2(False)          
+        assert ability.non_middleware_action_callable(None)
+        
+        assert self.dm.get_event_count("INSIDE_MIDDLEWARE_WRAPPED1") == 0
+        assert self.dm.get_event_count("INSIDE_MIDDLEWARE_WRAPPED2") == 2
+        assert self.dm.get_event_count("INSIDE_NON_MIDDLEWARE_ACTION_CALLABLE") == 1     
+        self.dm.clear_all_event_stats()
+        
+        
+        
+        # only global quota  
+        
+        ability.reset_test_settings("middleware_wrapped", CountLimitedActionMiddleware, dict(max_per_character=None, max_per_game=12)) # 6 more than current total
+        
+        assert ability.middleware_wrapped_callable1(None) # guy4 still
+        
+        self._set_user("guy2") # important
+        ability._perform_lazy_initializations() 
+        
+        for i in range(5):
+            assert ability.middleware_wrapped_callable1(None)
+        with raises_with_content(NormalUsageError, "exceeded the global quota"):
+            ability.middleware_wrapped_callable1(False)             
+        assert ability.non_middleware_action_callable(None)
+            
+        assert self.dm.get_event_count("INSIDE_MIDDLEWARE_WRAPPED1") == 6
+        assert self.dm.get_event_count("INSIDE_MIDDLEWARE_WRAPPED2") == 0
+        assert self.dm.get_event_count("INSIDE_NON_MIDDLEWARE_ACTION_CALLABLE") == 1     
+        self.dm.clear_all_event_stats()
+        
+        
+                
+        # no quota (or misconfiguration):
+        
+        ability.reset_test_settings("middleware_wrapped", CountLimitedActionMiddleware, 
+                                    dict(max_per_character=random.choice((None, 0)), max_per_game=random.choice((None, 0)))) 
+        
+        for username in ("guy2", "guy3", "guy4"):
+            self._set_user(username) # important
+            for i in range(10):
+                assert ability.middleware_wrapped_callable1(None)
+                assert ability.middleware_wrapped_callable2(None)
+                assert ability.non_middleware_action_callable(None)
+                
+        assert self.dm.get_event_count("INSIDE_MIDDLEWARE_WRAPPED1") == 30
+        assert self.dm.get_event_count("INSIDE_MIDDLEWARE_WRAPPED2") == 30
+        assert self.dm.get_event_count("INSIDE_NON_MIDDLEWARE_ACTION_CALLABLE") == 30            
+        
+        self.dm.clear_all_event_stats()
+        
+        assert ability._get_global_usage_count("middleware_wrapped") == 72 # usage counts are yet updated
+        assert ability._get_global_usage_count("middleware_wrapped_other_action") == 0 # important - no collision between action names
+        
+        ability.reset_test_settings("middleware_wrapped", CountLimitedActionMiddleware, 
+                                    dict(max_per_character=30, max_per_game=73)) 
+                                    
+        self._set_user("guy2") 
+        assert ability.middleware_wrapped_callable1(None)
+        with raises_with_content(NormalUsageError, "exceeded the global quota"):
+            ability.middleware_wrapped_callable1(False)  # quota of 75 reached
+        assert ability.non_middleware_action_callable(None)          
+         
+        assert self.dm.get_event_count("INSIDE_MIDDLEWARE_WRAPPED1") == 1
+        assert self.dm.get_event_count("INSIDE_MIDDLEWARE_WRAPPED2") == 0
+        assert self.dm.get_event_count("INSIDE_NON_MIDDLEWARE_ACTION_CALLABLE") == 1      
+    
+    
+    
+    def test_time_limited_action_middleware(self):
+        
+        WANTED_FACTOR = 2 # we only double durations below
+        params = self.dm.get_global_parameters()
+        assert params["game_theoretical_length_days"]
+        params["game_theoretical_length_days"] = WANTED_FACTOR 
+        
+    
+        ability = self.dm.instantiate_ability("dummy_ability")
+        self._set_user("guy4") # important
+        ability._perform_lazy_initializations() # normally done while treating HTTP request...        
+        
+        
+        # misconfiguration case #
+        
+        waiting_period_mn = random.choice((0, None, 3))
+        max_uses_per_period = random.choice((0, None, 3)) if not waiting_period_mn else None
+                                       
+        ability.reset_test_settings("middleware_wrapped", TimeLimitedActionMiddleware, 
+                                    dict(waiting_period_mn=waiting_period_mn, max_uses_per_period=max_uses_per_period))
+        ability.reset_test_data("middleware_wrapped", TimeLimitedActionMiddleware, dict()) # will be filled lazily, on call        
+              
+        for i in range(23):
+            assert ability.middleware_wrapped_callable1(None)
+            assert ability.middleware_wrapped_callable2(None)
+            assert ability.non_middleware_action_callable(None)
+            
+        assert self.dm.get_event_count("INSIDE_MIDDLEWARE_WRAPPED1") == 23
+        assert self.dm.get_event_count("INSIDE_MIDDLEWARE_WRAPPED2") == 23
+        assert self.dm.get_event_count("INSIDE_NON_MIDDLEWARE_ACTION_CALLABLE") == 23
+        self.dm.clear_all_event_stats()
+        
+        private_data = ability.get_private_middleware_data(action_name="middleware_wrapped", 
+                                                           middleware_class=TimeLimitedActionMiddleware)
+        assert len(private_data["last_use_times"]) == 2 * 23
+        
+        
+        
+        # normal case #
+    
+        ability.reset_test_settings("middleware_wrapped", TimeLimitedActionMiddleware, 
+                                    dict(waiting_period_mn=0.02/WANTED_FACTOR, max_uses_per_period=3)) # 1.2s of waiting time
+    
+        for username in ("guy2", "guy3"):
+            self._set_user(username) # important
+            ability._perform_lazy_initializations() # normally done while treating HTTP request...        
+            ability.reset_test_data("middleware_wrapped", TimeLimitedActionMiddleware, dict()) # will be filled lazily, on call     
+               
+            assert ability.middleware_wrapped_callable1(None)
+            assert ability.middleware_wrapped_callable1(12)
+            assert ability.middleware_wrapped_callable2(32)
+            
+            assert not ability._purge_old_use_times(middleware_settings=ability.get_middleware_settings("middleware_wrapped", TimeLimitedActionMiddleware),
+                                                    private_data=ability.get_private_middleware_data("middleware_wrapped", TimeLimitedActionMiddleware))
+            self.dm.commit() # data was touched, even if unmodified
+                            
+            with raises_with_content(NormalUsageError, "waiting period"):
+                ability.middleware_wrapped_callable1(False)  # quota of 3 per period reached
+            assert ability.non_middleware_action_callable(None)    
+            
+            time.sleep(0.2)
+                                                                         
+        
+        assert self.dm.get_event_count("INSIDE_MIDDLEWARE_WRAPPED1") == 4
+        assert self.dm.get_event_count("INSIDE_MIDDLEWARE_WRAPPED2") == 2
+        assert self.dm.get_event_count("INSIDE_NON_MIDDLEWARE_ACTION_CALLABLE") == 2
+        self.dm.clear_all_event_stats()
+        
+        
+        time.sleep(1.3)
+    
+        self._set_user("guy2") # important
+                     
+                                   
+        for i in range(7):
+            assert ability.middleware_wrapped_callable1(None)
+            time.sleep(0.41) # just enough to be under 4 accesses / 1.2s
+        
+        assert ability.middleware_wrapped_callable2(None)  
+        with raises_with_content(NormalUsageError, "waiting period"):
+            ability.middleware_wrapped_callable1(False)  # quota of 3 per period reached if we hit immediateley     
+        
+        time.sleep(0.5)
+        
+        assert ability._purge_old_use_times(middleware_settings=ability.get_middleware_settings("middleware_wrapped", TimeLimitedActionMiddleware),
+                                            private_data=ability.get_private_middleware_data("middleware_wrapped", TimeLimitedActionMiddleware))
+        self.dm.commit() # data was touched, even if unmodified
+      
+        assert ability.middleware_wrapped_callable1(False)
+        with raises_with_content(NormalUsageError, "waiting period"):
+            ability.middleware_wrapped_callable2(False) 
+        assert ability.non_middleware_action_callable(None)           
+ 
+ 
+        assert self.dm.get_event_count("INSIDE_MIDDLEWARE_WRAPPED1") == 8
+        assert self.dm.get_event_count("INSIDE_MIDDLEWARE_WRAPPED2") == 1
+        assert self.dm.get_event_count("INSIDE_NON_MIDDLEWARE_ACTION_CALLABLE") == 1
+        self.dm.clear_all_event_stats()               
+        
+        
+        
         
 class TestSpecialAbilities(BaseGameTestCase):
+
+    def test_generic_ability_features(self):
+        
+        assert AbstractAbility.__call__ == AbstractGameView.__call__ # must not be overlaoded, since it's decorated to catch exceptions
+        
+        # ability is half-view half-datamanager, so beware baout sessions...
+        assert AbstractAbility._process_standard_request._is_under_transaction_watcher
+        assert AbstractAbility._perform_lazy_initializations._is_under_transaction_watcher
+        assert AbstractAbility.process_admin_request._is_under_transaction_watcher
+
+
+
+    def test_3D_items_display(self):
+        
+        for autoreverse in (True, False):
+                
+            viewer_settings = dict( levels=2,
+                                    per_level=5, 
+                                    index_steps=5,
+                                    index_offset=3,
+                                    start_level=1,
+                                    file_template="openinglogo/crystal%04d.jpg",
+                                    image_width=528,
+                                    image_height=409,
+                                    mode="object",
+                                    x_coefficient=12,
+                                    y_coefficient=160,
+                                    autoreverse=autoreverse,
+                                    rotomatic=150, 
+                                    music="musics/mymusic.mp3")
+            display_data = views._build_display_data_from_viewer_settings(viewer_settings)
+    
+    
+            assert "musics/mymusic.mp3" in display_data["music_url"] # authenticated url
+            del display_data["music_url"] 
+            
+            rel_expected_image_urls = [["openinglogo/crystal0003.jpg",
+                                       "openinglogo/crystal0008.jpg",
+                                       "openinglogo/crystal0013.jpg",
+                                       "openinglogo/crystal0018.jpg",
+                                       "openinglogo/crystal0023.jpg"],
+                                      ["openinglogo/crystal0028.jpg",
+                                       "openinglogo/crystal0033.jpg",
+                                       "openinglogo/crystal0038.jpg",
+                                       "openinglogo/crystal0043.jpg",
+                                       "openinglogo/crystal0048.jpg"],]
+            expected_image_urls = [[game_file_url(rel_path) for rel_path in level] for level in rel_expected_image_urls]  
+            
+            if autoreverse:
+                for id, value in enumerate(expected_image_urls):
+                    expected_image_urls[id] = value + list(reversed(value))
+            
+            
+            #pprint.pprint(display_data["image_urls"])
+            #pprint.pprint(expected_image_urls)    
+                        
+            assert display_data["image_urls"] == expected_image_urls
+            
+            del display_data["image_urls"] 
+            
+            assert display_data == dict(levels=2,
+                                        per_level=5 if not autoreverse else 10,
+                                        x_coefficient=12,
+                                        y_coefficient=160,
+                                        rotomatic=150,
+                                        image_width=528,
+                                        image_height=409,
+                                        start_level=1,
+                                        mode="object")
 
 
     @for_ability(runic_translation_view)
@@ -2098,7 +3043,9 @@ class TestSpecialAbilities(BaseGameTestCase):
         char_names = self.dm.get_character_usernames()
 
         wiretapping = self.dm.instantiate_ability("wiretapping")
-
+        
+        wiretapping._perform_lazy_initializations() # normally done during request processing
+        
         wiretapping.change_wiretapping_targets(PersistentList())
         self.assertEqual(wiretapping.get_current_targets(), [])
 

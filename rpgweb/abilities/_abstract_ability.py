@@ -5,17 +5,17 @@ from __future__ import unicode_literals
 from rpgweb.common import *
 
 from django.http import HttpResponse
-from django.shortcuts import render_to_response
+from django.shortcuts import render
 from django.template import RequestContext, loader
 
 from ..datamanager import GameDataManager, readonly_method, transaction_watcher
 from ..forms import AbstractGameForm
 from ..views._abstract_game_view import GameViewMetaclass, AbstractGameView, register_view
+from ._action_middlewares import ACTION_MIDDLEWARES
 
 
 
-
-class AbilityMetaclass(GameViewMetaclass):
+class AbilityMetaclass(GameViewMetaclass, type):
     """
     Metaclass automatically registering the new ability (which is also a view) in a global registry.
     """ 
@@ -34,39 +34,51 @@ class AbilityMetaclass(GameViewMetaclass):
             
 
 
+        
+# just because we can't dynamically assign a tuple of bases, in a normal "class" definition
+AbstractAbilityBases =  tuple(reversed(ACTION_MIDDLEWARES)) + (AbstractGameView,)
+AbstractAbilityBasesAdapter = AbilityMetaclass(str('AbstractAbilityBasesAdapter'), AbstractAbilityBases, {})
 
 
 
-class AbstractAbility(AbstractGameView):
+"""
+print (">>>>>>>>>", AbstractAbilityBases)
 
-    __metaclass__ = AbilityMetaclass
+for _base in AbstractAbilityBases:
+    print (_base, type(_base))
+    assert issubclass(AbilityMetaclass, type(_base))
+"""
 
 
+class AbstractAbility(AbstractAbilityBasesAdapter):
+
+    ### Uses AbstractAbilityBases metaclass ###
+    ### Inherites from both action middlewares and AbstractGameView ###
+    
     # NOT ATM - TITLE = None # menu title, use lazy gettext when setting
 
+    def __init__(self, request, *args, **kwargs):
+        super(AbstractAbility, self,).__init__(request, *args, **kwargs)
+        self._ability_data = weakref.ref(self.datamanager.get_ability_data(self.NAME))
+        self.logger = self.datamanager.logger # local cache
 
-    def __init__(self, datamanager):
-        self.__datamanager = weakref.ref(datamanager)
-        self._ability_data = weakref.ref(datamanager.get_ability_data(self.NAME))
-        self.logger = datamanager.logger # local cache
-        self._perform_lazy_initializations() # so that tests work too, we need it immediately here
-    
-    
-    def _process_standard_request(self, request, *args, **kwargs):
-        # do NOT call parent method (unimplemented)
-        # Access checks have already been done here, so we may initialize lazy data
-        return self._auto_process_request(request)
-    
 
     @property
-    def _datamanager(self):
-        return self.__datamanager() # could be None
+    def datamanager(self):
+        return self # ability behaves as an extension of datamanager!!
+    
 
-
+    @transaction_watcher(ensure_data_ok=True, ensure_game_started=False) # needed, because in ability, we're partly INSIDE the datamanager
+    def _process_standard_request(self, request, *args, **kwargs):
+        # Access checks have already been done here, so we may initialize lazy data
+        self._perform_lazy_initializations() 
+        return super(AbstractAbility, self)._process_standard_request(request, *args, **kwargs)
+    
+ 
     def __getattr__(self, name):
         assert not name.startswith("_") # if we arrive here, it's probably a typo in an attribute fetching
         try:
-            value = getattr(self._datamanager, name)
+            value = getattr(self._inner_datamanager, name)
         except AttributeError:
             raise AttributeError("Neither ability nor datamanager has attribute '%s'" % name)
         return value
@@ -84,12 +96,16 @@ class AbstractAbility(AbstractGameView):
 
     @property
     def private_data(self):
+        """
+        Also works for anonymous access (anonymous users share their data,
+        whereas authenticated ones have their one data slot).
+        """
         private_key = self._get_private_key()
         return self._ability_data()["data"][private_key]
     
     
     def _get_private_key(self):
-        return self._datamanager.user.username # can be None, a character or a superuser login!
+        return self._inner_datamanager.user.username # can be "anonymous", a character or a superuser login!
 
 
     @property
@@ -127,7 +143,9 @@ class AbstractAbility(AbstractGameView):
         # no transaction handling here - it's all up to the caller of that classmethod
         settings = ability_data.setdefault("settings", PersistentDict())
         ability_data.setdefault("data", PersistentDict())
-        cls._setup_ability_settings(settings=settings)
+        cls._setup_ability_settings(settings=settings) # FIRST
+        cls._setup_action_middleware_settings(settings=settings) # SECOND
+        
 
     @classmethod
     def _setup_ability_settings(cls, settings):
@@ -136,14 +154,14 @@ class AbstractAbility(AbstractGameView):
 
     @transaction_watcher(ensure_game_started=False) # authorized anytime
     def _perform_lazy_initializations(self):
-
-
         private_key = self._get_private_key()
         if not self.ability_data.has_key(private_key):
             self.logger.debug("Setting up private data %s", private_key)
             private_data = self.ability_data["data"].setdefault(private_key, PersistentDict())
-            self._setup_private_ability_data(private_data=private_data)
-
+            self._setup_private_ability_data(private_data=private_data) # FIRST
+            self._setup_private_action_middleware_data(private_data=private_data) # SECOND
+            
+            
 
     def _setup_private_ability_data(self, private_data):
         """
@@ -161,11 +179,12 @@ class AbstractAbility(AbstractGameView):
         assert isinstance(self.ability_data["data"], collections.Mapping), self.ability_data["data"]
 
         if strict:
-            available_logins = self._datamanager.get_available_logins()
+            available_logins = self._inner_datamanager.get_available_logins()
             for name, value in self.ability_data["data"].items():
                 assert name in available_logins
                 assert isinstance(value, collections.Mapping)
-
+        
+        self._check_action_middleware_data_sanity(strict=strict)
         self._check_data_sanity(strict=strict)
 
 
@@ -173,145 +192,23 @@ class AbstractAbility(AbstractGameView):
         raise NotImplementedError("_check_data_sanity") # to be overridden
 
 
-    # now a standard method, not classmethod, and without datamanager argument
+
+    '''
     def _instantiate_form(self,
                           new_form_name, 
-                          hide_on_success=False, 
-                          previous_form_data=None,
+                          hide_on_success=False,
+                          previous_form_data=None, 
                           initial_data=None,
-                          datamanager=None):
-        assert not datamanager or datamanager is self._datamanager
+                          form_initializer=None):
+        form_initializer = form_initializer if form_initializer else self # the ability behaves as an extended datamanager
         return super(AbstractAbility, self)._instantiate_form(new_form_name=new_form_name, 
                                                               hide_on_success=hide_on_success,
                                                               previous_form_data=previous_form_data,
                                                               initial_data=initial_data,
-                                                              datamanager=self,) # the ability behaves as an extended datamanager
-                                    
-
-
-
-
-class __PayableAbilityHandler(object):
-    """
-    Mix-in class that manages items/services purchased by players, in an ability context.
+                                                              form_initializer=form_initializer) 
+       '''                         
     
-    """
 
-
-    @classmethod
-    def _setup_ability_settings(cls, settings):
-        super(PayableAbilityHandler, None)._setup_ability_settings(settings)
-        settings.setdefault("assets_max_per_game", None) # limit for the total number of such items bought by players, false value if unlimited
-        settings.setdefault("assets_max_per_player", None) # limit for the number of such items bought by a particular player, false value if unlimited
-        settings.setdefault("assets_money_price", None) # integer, false value if not possible to buy with money
-        settings.setdefault("assets_gems_price", None) # integer, false value if not possible to buy with gems
-        settings.setdefault("assets_allow_duplicates", True) # boolean indicating if the same key may appear several times in *assets_items_bought*
-
-
-    def _setup_private_ability_data(self, private_data):
-        super(PayableAbilityHandler, None)._setup_private_ability_data(private_data)
-        private_data.setdefault("assets_items_bought", PersistentList()) # list of picklable keys identifying items bought by player
-
-
-    def _check_data_sanity(self, strict=False):
-        super(PayableAbilityHandler, None)._check_data_sanity(strict=strict)
-
-        settings = self.settings
-
-        for setting in "assets_max_per_game assets_max_per_player assets_money_price assets_max_per_player".split():
-            if settings[setting]:
-                utilities.check_positive_int(settings[setting])
-        utilities.check_is_bool(settings["assets_allow_duplicates"])
-
-        total_items = 0
-        for private_data in self.all_private_data.values():
-            player_items = private_data["assets_items_bought"]
-            assert len(player_items) <= settings["assets_max_per_player"]
-            if settings["assets_allow_duplicates"]:
-                assert len(set(player_items)) == len(player_items)
-            total_items += len(player_items)
-        assert total_items <= settings["assets_max_per_game"]
-
-
-
-    def _assets_bought_are_strictly_under_limits(self):
-
-        settings = self.settings
-
-        if settings["assets_max_per_player"]:
-            private_data = self.private_data
-            if private_data["assets_items_bought"] >= settings["assets_max_per_player"]:
-                return False
-
-        if settings["assets_max_per_game"]:
-            total_items = sum(len(private_data["assets_items_bought"]) for private_data in self.all_private_data.values())
-            if total_items >= settings["assets_max_per_game"]:
-                return False
-
-        return True
-
-
-    @transaction_watcher
-    def purchase_single_asset(self, asset_id, pay_with_gems=None):
-        """
-        *buy_with_gems* is None (if we buy with money), or list of gem values to use
-        (gems that the player must possess, of course).
-        """
-
-        user = self._datamanager.user
-
-        assert user.is_character
-
-        if isinstance(asset_id, (list, dict, set)) and not isinstance(asset_id, Persistent):
-            raise RuntimeError("Wrong mutable asset id %s, we need Persistent types instead for ZODB" % asset_id)
-
-        if not user.is_character:
-            raise AbnormalUsageError(_("Only regular users may purchase items and services")) # shouldn't happen
-
-        settings = self.settings
-        private_data = self.private_data
-
-        if not self._assets_bought_are_strictly_under_limits():
-            raise AbnormalUsageError(_("No more assets available for purchase"))
-
-        if settings["assets_allow_duplicates"] and asset_id in private_data["assets_items_bought"]:
-            raise AbnormalUsageError(_("You have already purchased that asset"))
-
-
-        player_properties = self.get_character_properties(user.username)
-
-        if pay_with_gems:
-
-            gems_price = settings["assets_gems_price"]
-
-            if not gems_price:
-                raise AbnormalUsageError(_("That asset must be bought with money, not gems"))
-
-            if sum(pay_with_gems) < gems_price:
-                raise NormalUsageError(_("You need at least %(price)s kashes in gems to buy that asset") % SDICT(gems_price=gems_price))
-
-            # we don't care if the player has given too many gems
-            remaining_gems = utilities.substract_lists(character_properties["gems"], pay_with_gems)
-
-            if remaining_gems is None:
-                raise AbnormalUsageError(_("You don't possess the gems required"))
-            else:
-                character_properties["gems"] = remaining_gems
-
-
-        else: # paying with bank money
-
-            money_price = settings["assets_money_price"]
-
-            if not money_price:
-                raise AbnormalUsageError(_("That asset must be bought with gems, not money"))
-
-            if character_properties["account"] < money_price:
-                raise NormalUsageError(_("You need at least %(price)s kashes in money to hire these agents") % SDICT(price=money_price))
-
-            character_properties["account"] -= money_price
-
-            self.data["global_parameters"]["bank_account"] += money_price
 
 
 
@@ -324,7 +221,7 @@ class __PayableAbilityHandler(object):
         This method should be called at django view level only, not from another ability
         method (unittests don't have to care about permissions).
         """
-        user = self._datamanager.user
+        user = self.datamanager.user
         
         if self.ACCESS == "master":
             if not user.is_master:

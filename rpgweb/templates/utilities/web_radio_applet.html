@@ -114,14 +114,14 @@
              <br/><br/>
              <object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,0,0" 
                      width="170" height="40" id="niftyPlayer1" align="">
-             <param name="movie" value="/media/webradio/niftyplayer.swf?file=/files/tests/betty.mp3&as=0" />
+             <param name="movie" value="/media/webradio/niftyplayer.swf?file={% game_file_url "tests/betty.mp3&as=0" %}" />
              <param name="quality" value="high" />
              <param name="scale" value="showall" />
              <param name="bgcolor" value="#FFFFFF" />
              <embed src="/media/webradio/niftyplayer.swf?file=&as=0" scale="showall" quality="high" bgcolor="#FFFFFF"
                     width="170" height="40" name="niftyPlayer1" align="" 
                     type="application/x-shockwave-flash" swLiveConnect="true" pluginspage="http://www.macromedia.com/go/getflashplayer">
-                    <!-- test : /files/tests/betty.mp3 -->
+                    <!-- test : /files/<hash>/tests/betty.mp3 -->
              </embed>
              </object>
          

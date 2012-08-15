@@ -98,7 +98,7 @@ global_parameters:
     # global parameters added at runtime: scanned_locations, total_gems_spent, total_digital_money_spent, total_gems_number,
     # total_digital_money, teldorian_teleportations_done and telecom_investigations_done
 
-
+    game_theoretical_length_days: 45.3
 
     global_introduction: |
         Le *Dr Loyd Georges* est aux anges. Ce retraité sabarithe blablablah
@@ -108,7 +108,11 @@ global_parameters:
     history_summary: |
         Hello voici le résumé de l'histoire...
 
-
+    encyclopedia_index_visible: false
+    
+    friendship_minimum_duration_h: 24
+     
+     
 locations:
 
     Baynon:
@@ -170,21 +174,21 @@ items_for_sale:
 item_3d_settings:
 
     sacred_chest:
-        steps: 1
-        total: 8
-        levels: 1
-        startlevel: 1
-        filedir: "/files/sales/chest/"
-        filename: "simpler_chest"
-        suffix: ".jpg"
-        imagewidth: 500
-        imageheight: 375
+        levels: 2
+        per_level: 4
+        index_steps: 1
+        index_offset: 1
+        start_level: 1
+        file_template: "sales/chest/simpler_chest%04d.jpg"
+        image_width: 500
+        image_height: 375
         mode: "camera"
         x_coefficient: 12
         y_coefficient: 160
-
-
- 
+        autoreverse: False
+        rotomatic: 150
+        music: null
+  
 
 domains:
 
@@ -217,8 +221,8 @@ character_properties:
         domains: ["acharis"]
         password: elixir
         account: 1000
-        secret_question: "What's the ultimate step of consciousness ?"
-        secret_answer: "" # let empty to prevent any password recovery
+        secret_question: null
+        secret_answer: null
         external_contacts: ["belasquez@acharis.com", "baazel@acharis.com"]
         new_messages_notification: info_spots_1
         initial_cold_cash: 1000
@@ -228,13 +232,13 @@ character_properties:
         description : "XXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXX XXXXXXXX"
         character_color : "#0033CC"
         permissions: ["runic_translation", "wiretapping"]
-       
+        
     guy2:
         domains: ["acharis"]
         password: awesome
         account: 1000
-        secret_question: "The name of my first pet ?"
-        secret_answer: "baggy"
+        secret_question: null
+        secret_answer: null
         external_contacts: ["academy@sciences.com"]
         new_messages_notification: new_messages_2
         initial_cold_cash: 1000 
@@ -245,6 +249,7 @@ character_properties:
         character_color : "#339933"
         
     guy3:
+        ## THIS ONE MUST HAVE NO MONEY AND GEMS
         domains: []
         password: awesome
         account: 2000
@@ -258,13 +263,15 @@ character_properties:
         real_life_email: belez@gmail.com
         description : "XXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXX XXXXXXXX"
         character_color : "#CC3399"
-
+        gems: []
+        
+        
     guy4:
         domains: []
-        password: aasss
+        password: wads
         account: 0
-        secret_question: "The name of my first pet ?"
-        secret_answer: ""
+        secret_question: null
+        secret_answer: null
         external_contacts: []
         new_messages_notification: victory_acharis
         initial_cold_cash: 1000 
@@ -273,35 +280,48 @@ character_properties:
         real_life_email: belez2@gmail.com
         description : "XXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXX XXXXXXXX"
         character_color : "#00CCFF"
-
+    
 
 audio_messages:
 
     intro_audio_messages:
+        title: "Annonce 1"
         text: "Veuillez écouter maintenant quelques messages personnels."
         file: "intro_messages.mp3"
 
     new_messages_1:
+        title: "Tante Amélie"
         text: "Tante Amélie fait du vélo en short."
         file: "amelie.mp3"
 
     new_messages_2:
+        title: "Tante Atalie"
         text: "Tante Atalie fait du vélo en short."
         file: "atalie.mp3"
         
     victory_acharis:
+        title: "Cat Sound"
         text: "Sound of a cat"
         file: andromaque.mp3
+        
     defeat_acharis:
+        title: "Cicada Sound"
         text: "Sound of a cicada"
         file: "other.mp3"
-
+ 
     info_spots_1:
+        title: "News internationales"
         text: "ambassadors eviction + nalavut council begins + alcohol exhibition"
         file: "berce.mp3"
 
   
-events_log: [] #-> list of event dicts
+events_log:  #-> list of event dicts
+    -  "time": -3 # mns
+       "message": "All is allright, game started"
+       "substitutions": {}
+       "url": null
+       "username": "master"
+
 
 scheduled_actions: [] #-> list of scheduled action dicts
 
@@ -341,7 +361,7 @@ messages_sent:  #-> list of messages processed
       sender_email: judicators1@acharis.com
       recipient_emails: guy1
       subject: "Ordres de Missions"
-      attachment: "/files/attachments/image2.png"
+      attachment: "attachments/image2.png"
       sent_at: -8000
       body: >
         Xanthares, votre maîtrise des drogues et envoûtements sera d’une aide inestimable pour cette mission.
@@ -353,7 +373,7 @@ messages_sent:  #-> list of messages processed
       sender_email: judicators2@acharis.com
       recipient_emails: guy2
       subject: "Ordres de Missions"
-      attachment: "/files/attachments/image1.png"
+      attachment: "attachments/image1.png"
       sent_at: -8000
       body: >
         Salazur, l’intimité médiumnique que vous avez développée avec le monde invisible va nous être plus que vitale.
@@ -367,6 +387,7 @@ messages_queued: [] #-> list of messages delayed for sending
 manual_messages_templates:
 
     mind_opening_instructions_oracle:
+        group_id: "22"
         sender_email: djinn-master@djinn-city.com
         recipient_emails: guy2
         subject: Reminder - mind opening operations
@@ -384,30 +405,38 @@ manual_messages_templates:
 
 
 encyclopedia:
-    lokon:    |
+    lokon:    
+        keywords: ["animals?", "lokons?"]
+        content:   |
     
-        Titles don't appear currently!!!!
-        =======================================
-        
-        Here a paragraph on these cool animals
-        with lots of descriptions etc etc.
-        
-        Unicode characters are well handled: £ ¤ é à ù % µ
-        
-        Here we might put images too.
-        
-        Links towards other encyclopedia are now autogenerated, for example
-        here I talk about my childhood gerbil.
+            Titles don't appear currently!!!!
+            =======================================
+            
+            Here a paragraph on these cool animals
+            with lots of descriptions etc etc.
+            
+            Unicode characters are well handled: £ ¤ é à ù % µ
+            
+            Here we might put images too.
+            
+            Links towards other encyclopedia are now autogenerated, for example
+            here I talk about my childhood gerbil.
         
     
-    gerbil:  |
-        Test to be translated here
-        ===============================
+    gerbil_species:
+        keywords: ["animals?", "gerbils?", "rodents?", "i<à"]
+        content:   |
+            Test to be translated here
+            ===============================
+            
+            Here tooo
         
-        Here tooo
-        
-    "wu\\gly<_é":   |
-        Just to ensure that this ugly slug gets well encoded in urls and regexes...
+    "wu\\gly_é":   
+        keywords: ["ugly", "wu\\gly<_é", "éàk"]
+        content:   |
+            Just to ensure that this ugly slug gets well encoded in urls and regexes...
+    
+
 
 
 
@@ -435,5 +464,26 @@ help_pages:
     unexisting_view_entry:      |
         It doesn't raise errors, of course, but could be detected by game checking systems.
     
+
+nightmare_captchas:
+  
+  enigma1:
+    text: null
+    image: "maths.png"
+    answer: "35"
+    explanation: "Because it's **so**!"
+    
+  enigma2:
+    text: "What is the *greatest* even number ?"
+    image: null
+    answer: "None" 
+ 
+  enigma3:
+    text: "Decipher this!"
+    image: "unreadable.jpg"
+    answer: "muwuwvuv" 
+  
+    
+
 
 ...

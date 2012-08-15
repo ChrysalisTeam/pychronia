@@ -1,5 +1,12 @@
 
-import sys, os, tempfile, random
+import sys, os, tempfile, random, logging
+
+
+print("SETTING UP TEST LOGGING")
+logging.basicConfig()
+logging.disable(0)
+
+
 
 
 TEST_DIR = os.path.dirname(os.path.normpath(__file__))
@@ -28,14 +35,15 @@ SECRET_KEY = '=%f!!2^yh5gkp8725w2kz^$vbjy'
 TEMP_DIR = tempfile.mkdtemp()
 UNICITY_STRING = str(random.randint(100000, 1000000000))
 
-DATABASE_ENGINE = 'django.db.backends.sqlite3'   #        # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-DATABASE_NAME = os.path.join(TEMP_DIR, "django.db.%s" % UNICITY_STRING) #os.path.join(os.path.dirname(__file__), 'pims_temp_db')  # Or path to database file if using sqlite3.
-DATABASE_USER = ''             # Not used with sqlite3.
-DATABASE_PASSWORD = ''         # Not used with sqlite3.
-DATABASE_HOST = ''             # Set to empty string for localhost. Not used with sqlite3.
-DATABASE_PORT = ''             # Set to empty string for default. Not used with sqlite3.
 
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(TEMP_DIR, "django.db.%s" % UNICITY_STRING)
+    }
+}
 ZODB_FILE = os.path.join(TEMP_DIR,'gamedata.fs.%s' % UNICITY_STRING)
+
 
 GAME_ROOT = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 MEDIA_ROOT = os.path.join(GAME_ROOT, 'static')
@@ -47,12 +55,12 @@ MEDIA_URL = '/media/'
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
-    'django.template.loaders.filesystem.load_template_source',
-    'django.template.loaders.app_directories.load_template_source',
+    'django.template.loaders.filesystem.Loader',
+    'django.template.loaders.app_directories.Loader',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
-"django.core.context_processors.auth",
+"django.contrib.auth.context_processors.auth",
 "django.core.context_processors.i18n",
 "django.core.context_processors.debug",
 "django.core.context_processors.media",
@@ -121,6 +129,10 @@ GAME_INITIAL_DATA_PATH = os.path.join(GAME_FILES_ROOT, "game_initial_data.yaml")
 ACTIVATE_AIML_BOTS = False
 
 DB_RESET_ALLOWED = True
+
+RESTRUCTUREDTEXT_FILTER_SETTINGS = {"initial_header_level": 2, 
+                                    "doctitle_xform": False, # important to have evenb lone titles stay in the html fragment
+                                    "sectsubtitle_xform": False}
 
 try:
   from local_settings import *

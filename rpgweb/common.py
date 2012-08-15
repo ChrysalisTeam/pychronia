@@ -2,7 +2,7 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
-import sys, os, math, random, traceback, hashlib, logging, types
+import sys, os, math, random, traceback, hashlib, logging, types, base64, re
 import types, contextlib, collections, time, glob, copy, weakref, atexit
 from datetime import datetime, timedelta
 
@@ -24,16 +24,19 @@ from persistent.list import PersistentList
 
 from django import forms
 from django.conf import settings
-from django.core.urlresolvers import reverse
 from django.utils.html import escape
 from django.utils.translation import ungettext, ugettext as _, ugettext_lazy as _lazy, ugettext_noop as _noop
+from django.shortcuts import render
+from django.core.urlresolvers import reverse
 
 from . import utilities
 from .utilities import config, SDICT, Enum
 from .utilities.counter import Counter
 
+
 _undefined = object()
 
+logger = logging.getLogger()
 
 class UserAccess:
     """
@@ -117,14 +120,14 @@ def action_failure_handler(request, success_message=_lazy("Operation successful.
         # nothing in __enter__()
         yield None
     except UsageError, e:
-        print (">YYYY", repr(e))
+        #print (">YYYY", repr(e))
         user.add_error(unicode(e))
         if isinstance(e, AbnormalUsageError):
             logging.critical(unicode(e), exc_info=True)
     except Exception, e:
-        print (">OOOOOOO", repr(e))
-        import traceback
-        traceback.print_exc()
+        #print (">OOOOOOO", repr(e))
+        #import traceback
+        #traceback.print_exc()
         # we must locate this serious error, as often (eg. assertion errors) there is no specific message attached...
         msg = _("Unexpected exception caught in action_failure_handler - %r") % e
         logging.critical(msg, exc_info=True)
@@ -159,13 +162,23 @@ def exception_swallower():
             raise RuntimeError(_("Unexpected exception occurred in exception swallower context : %r !") % e)
 
 
+
+def hash_url_path(url_path):
+    """
+    Only accepts relative url paths.
+    """
+    assert not url_path.startswith("/")
+    hash = hashlib.sha1(config.SECRET_KEY + url_path.lstrip("/")).digest() # in prod, we remove the possible "/" anyway
+    url_hash = base64.b32encode(hash)[:8].lower()
+    return url_hash
+ 
+def game_file_url(rel_path):
+    rel_path = rel_path.lstrip("/") # IMPORTANT
+    url_hash = hash_url_path(rel_path) # unused atm
+    return settings.GAME_FILES_URL + url_hash + "/" + rel_path
  
 __all__ = [key for key in globals().copy() if not key.startswith("_")]
 __all__ += ["_", "_lazy", "_noop", "_undefined"] # we add translation shortcuts and _undefined placeholder for default function args
 
-
-print("SETTING UP LOGGING")
-logging.basicConfig() ## FIXME
-logging.disable(0)
 
 

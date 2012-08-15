@@ -54,10 +54,10 @@
             
             {% if message.attachment %}
                 </br>
-                {{ message.attachment|mediaplayer:"false"|safe }}
+                {% filter mediaplayer:"false" %}{% game_file_url message.attachment %}{% endfilter %}
             {% endif %}
             
-        </div>
+        </div> 
 
     {% endif %}
     

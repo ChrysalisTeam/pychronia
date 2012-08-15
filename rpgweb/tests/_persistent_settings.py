@@ -3,16 +3,25 @@
 from ._test_settings import *
 
 
-DATABASE_NAME = os.path.join(TEST_DIR, "django.db")
-
+# we override transient test DBs with persistent ones
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(TEST_DIR, "django.db")
+    }
+}
 ZODB_FILE = os.path.join(TEST_DIR, "gamedata.fs")
 
 
 
 def GAME_INITIAL_FIXTURE_SCRIPT(dm):
+    """
+    Called just before conversion of initial data tree, and coherency check.
+    """
     
     # we activate ALL views
-    dm.set_activated_game_views(dm.ACTIVABLE_VIEWS_REGISTRY.keys())
+    activable_views = dm.ACTIVABLE_VIEWS_REGISTRY.keys()
+    dm.set_activated_game_views(activable_views)
 
     # we give guy1 access to everything
     dm.update_permissions("guy1", list(dm.PERMISSIONS_REGISTRY))
@@ -36,7 +45,6 @@ def GAME_INITIAL_FIXTURE_SCRIPT(dm):
     msg_id5 = dm.post_message(email_master, email_guy1, subject="RE:%s"%msg4["subject"], body="answer something", reply_to=msg_id4)
     msg5 = dm.get_sent_message_by_id(msg_id5)
     msg_id6 = dm.post_message(email_guy1, email_master, subject="Bis:%s"%msg5["subject"], body="ask for something", recontact_to=msg_id5)
-    
     
     
     

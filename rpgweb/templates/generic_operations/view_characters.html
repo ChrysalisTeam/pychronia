@@ -63,7 +63,7 @@
 		    	
 		    	<td class="bigtext">
 		    		{% for item_name in char_details.items %} 
-		    			<img class="minithumbnail" title="{{ item_name }}" src="/files/sales/{{ item_name }}.jpg"/><br/>
+		    			<img class="minithumbnail" title="{{ item_name }}" src="{% game_file_url "sales/" item_name ".jpg" %}"/><br/>
 		    		{% empty %}
 		    			{% trans "None" %}
 		    		{% endfor %}

@@ -14,27 +14,11 @@ import django.core.mail as mail
 from .datamanager.datamanager_tools import UsageError
 from . import authentication
 import rpgweb.datamanager as dm_module
+from rpgweb.datamanager.datamanager_administrator import retrieve_game_instance
 
 
 
 
-
-
-
-# TOFIX - use real database pool, later on
-_database_pool = utilities.open_zodb_file(config.ZODB_FILE)
-
-def _shutdown():
-    global _database_pool
-    try:
-        _database_pool.close()
-        time.sleep(0.5) # to help daemon threads stop cleanly, just in case
-    except:
-        pass # maybe database was already automatically closed
-atexit.register(_shutdown) # it should work !
-
-
-ZODB_TEST_DB = None # may be overwritten during tests, to override normal database
 
 class ZodbTransactionMiddleware(object):
 
@@ -45,8 +29,6 @@ class ZodbTransactionMiddleware(object):
     def process_view(self, request, view_func, view_args, view_kwargs):
         # on exception : normal 500 handling takes place
 
-        global _database_pool, ZODB_TEST_DB
-        
         assert hasattr(request, 'session'), "The game authentication middleware requires session middleware to be installed. Edit your MIDDLEWARE_CLASSES setting to insert 'django.contrib.sessions.middleware.SessionMiddleware'."
 
         request.processed_view = view_func # useful for computation of game menus 
@@ -58,18 +40,9 @@ class ZodbTransactionMiddleware(object):
             game_instance_id = view_kwargs["game_instance_id"]
             del view_kwargs["game_instance_id"]
 
-            if ZODB_TEST_DB: # we're well in test environment
-                DB = ZODB_TEST_DB
-            else:
-                DB = _database_pool
-
-            connection = DB.open()
-
-            request.datamanager = dm_module.GameDataManager(game_instance_id=game_instance_id, 
-                                                            game_root=connection.root(), # TDO FIXME - discriminate table with game_instance_id
-                                                            request=request) 
-
-            if not request.datamanager.is_initialized():
+            request.datamanager = retrieve_game_instance(game_instance_id=game_instance_id, request=request)
+            
+            if not request.datamanager.is_initialized:
                 raise RuntimeError("ZodbTransactionMiddleware - Game data isn't in initialized state")
 
             return None
@@ -91,10 +64,10 @@ class ZodbTransactionMiddleware(object):
 
         try:
             if hasattr(request, "datamanager"):
-                request.datamanager.shutdown()
+                request.datamanager.close()
         except Exception, e:
             # exception should NEVER flow out of response processing middlewares
-            logging.critical("Exception occurred in ZODB middelware process_response - %r" % e, exc_info=True)
+            logging.critical("Exception occurred in ZODB middleware process_response - %r" % e, exc_info=True)
 
         return response
 
@@ -107,7 +80,7 @@ class AuthenticationMiddleware(object):
 
         if not hasattr(request, "datamanager"):
             return None # not a valid game instance
-            
+        
         ## Screw the immutability of these QueryDicts, we need FREEDOM ##
         request._post = request.POST.copy()
         request._get = request.GET.copy()

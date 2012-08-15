@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 
 from rpgweb.common import *
 
-from django.shortcuts import render_to_response
+from django.shortcuts import render
 from django.template import RequestContext
 from difflib import SequenceMatcher
 
@@ -31,21 +31,15 @@ logging.getLogger("txn").setLevel(logging.WARNING) # ZODB transactions
 
 
 
-class BaseDataManager(utilities.TechnicalEventsMixin, Persistent):
-
-    class DB_STATES:
-        CONNECTED = "CONNECTED" # initial state
-        LOADED = "LOADED" # fixture loaded, but not completed
-        INITIALIZED = "INITIALIZED" # fully sane game data
-        SHUTDOWN = "SHUTDOWN" # connection to DB has been closed
-
+class BaseDataManager(utilities.TechnicalEventsMixin):
 
 
     def begin(self):
 
         if not self._in_transaction:
-            assert not self.connection._registered_objects, repr(self.connection._registered_objects) # BEFORE TRANSACTION
+            self.check_no_pending_transaction()
             self._in_transaction = True
+            #transaction.begin() # not really needed
             return None # value indicating top level
         else:
             return transaction.savepoint()
@@ -56,7 +50,7 @@ class BaseDataManager(utilities.TechnicalEventsMixin, Persistent):
         else:
             self._in_transaction = False
             transaction.commit() # top level
-            assert not self.connection._registered_objects, repr(self.connection._registered_objects) # AFTER REAL COMMIT
+            self.check_no_pending_transaction() # AFTER REAL COMMIT
 
     def rollback(self, savepoint=None):
         if savepoint:
@@ -64,8 +58,11 @@ class BaseDataManager(utilities.TechnicalEventsMixin, Persistent):
         else:
             self._in_transaction = False
             transaction.abort() # top level
-            assert not self.connection._registered_objects, repr(self.connection._registered_objects) # AFTER REAL ROLLBACK
-
+            self.check_no_pending_transaction() # AFTER REAL ROLLBACK
+    
+    def check_no_pending_transaction(self):
+        assert not self._in_transaction, self._in_transaction
+        assert not self.connection._registered_objects, repr(self.connection._registered_objects) 
 
     # no transaction manager - special case
     def __init__(self, game_instance_id, game_root=None, request=None, **kwargs):
@@ -78,7 +75,6 @@ class BaseDataManager(utilities.TechnicalEventsMixin, Persistent):
 
         '''
         assert game_root is not None
-        assert request is not None
         
         super(BaseDataManager, self).__init__(**kwargs)
         
@@ -88,60 +84,44 @@ class BaseDataManager(utilities.TechnicalEventsMixin, Persistent):
 
         self.game_instance_id = game_instance_id
 
-        self.data = game_root
-        
-        self._request = weakref.ref(request) if request else None # if None, user messages won't work
-
-        self.connection = game_root._p_jar
-
         self.logger = logging.getLogger("rpgweb.%s" % game_instance_id) #FIXME
 
-        self.db_state = self.DB_STATES.CONNECTED
+        self._request = weakref.ref(request) if request else None # if None, user messages won't work
 
-        try:
-            if not self.data: # DB file must have been erased
-                self.reset_game_data()
-            else:
-                self.db_state = self.DB_STATES.INITIALIZED
-        except:
-            self.logger.error(_("Runtime data couldn't be initialized - delete DB file and try again."), exc_info=True)
-            raise
+        self.data = game_root # can be empty, here
+        self.connection = game_root._p_jar # can be empty, for transient persistent objects
+
+        self.is_initialized = bool(self.data) # empty or not
+        
+        if self.is_initialized:
+            self._init_from_db()
+            
+    
+    def _init_from_db(self):
+        self.notify_event("BASE_DATA_MANAGER_INIT_FROM_DB_CALLED")
     
     @property
     def request(self):
         return self._request() if self._request else None
     
-    def is_initialized(self):
-        return (self.db_state == self.DB_STATES.INITIALIZED)
     
     # NO transaction_watcher here!        
-    def shutdown(self):
+    def close(self):
         """
         Should be called before terminating the server, to prevent any DB trouble.
         """
-        # TOFIX
 
-        if self.db_state != self.DB_STATES.SHUTDOWN:
+        if self.data is not None:
 
-            assert not self.connection._registered_objects # else problem, pending changes!
+            assert not self.connection or not self.connection._registered_objects # else problem, pending changes created by views!
             self.connection.close()
             self.connection = None
-
-
-        # TOFIX - remove all that !!
-        """
-            try:
-                #self.connection.close()  # doesn't work, shutdown is called too late...
-                self.db.close()
-                self.storage.close()
-            except:
-                self.logger.error("Couldn't shutdown ZODB connection.", exc_info=True)
-         """
+            self.data = None
 
 
 
     @transaction_watcher(ensure_data_ok=False)
-    def reset_game_data(self, yaml_file=config.GAME_INITIAL_DATA_PATH):
+    def reset_game_data(self, yaml_fixture=config.GAME_INITIAL_DATA_PATH):
         """
         This method might raise exceptions, and leave the datamanager uninitialized.
         """
@@ -155,28 +135,26 @@ class BaseDataManager(utilities.TechnicalEventsMixin, Persistent):
         # not rebind the attribute "data", else we lose ZODB support
         self.data.clear()
 
-        self.db_state = self.DB_STATES.CONNECTED
-
-
-        new_data = utilities.load_yaml_fixture(yaml_file)
+        new_data = utilities.load_yaml_fixture(yaml_fixture)
         for key in new_data.keys():
             self.data[key] = new_data[key]
 
-        self.db_state = self.DB_STATES.LOADED # necessary here to allow the use of readonly methods in _load_initial_data()
-
         self._load_initial_data() # traversal of each core module
-
-        # we normalize and check the object tree
-        # normal python types are transformed to ZODB-persistent types
-        for key in self.data.keys():
-            self.data[key] = utilities.convert_object_tree(self.data[key], utilities.python_to_zodb_types)
-            utilities.check_object_tree(self.data[key], allowed_types=utilities.allowed_zodb_types, path=["new_data"])
 
         if config.GAME_INITIAL_FIXTURE_SCRIPT:
             self.logger.info("Performing setup via GAME_INITIAL_FIXTURE_SCRIPT")
             config.GAME_INITIAL_FIXTURE_SCRIPT(self)    
+            
+        # NOW only we normalize and check the object tree
+        # normal python types are transformed to ZODB-persistent types
+        for key in self.data.keys():
+            self.data[key] = utilities.convert_object_tree(self.data[key], utilities.python_to_zodb_types)
+            utilities.check_object_tree(self.data[key], allowed_types=utilities.allowed_zodb_types, path=["new_data"])
         
-        self.db_state = self.DB_STATES.INITIALIZED
+        self.is_initialized = True
+        self._init_from_db()
+        
+        self.check_database_coherency()
 
 
 
@@ -377,7 +355,7 @@ try:
     import signal
     curr_sigint_handler = signal.getsignal(signal.SIGINT)
     def sigint_handler(*args, **kswargs):
-        mydatamanager.shutdown()
+        mydatamanager.close()
         curr_sigint_handler(*args, **kswargs)
     signal.signal(signal.SIGINT, sigint_handler)
     signal.signal(signal.SIGTERM, sigint_handler)

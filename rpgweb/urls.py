@@ -3,11 +3,15 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from django.conf.urls.defaults import *
+from .utilities import config
+
 
 
 view_urlpatterns = patterns('rpgweb.views',
 
     # WARNING - DANGEROUS #
+
+    (r'^TEST_CAPTCHA/$', 'gameview_mixins.test_captcha'),
 
     (r'^CHARACTERS_IDENTITIES/$', 'CHARACTERS_IDENTITIES'),
     (r'^DATABASE_OPERATIONS/$', 'DATABASE_OPERATIONS'),
@@ -33,12 +37,17 @@ view_urlpatterns = patterns('rpgweb.views',
     (r'^slideshow/$', 'items_slideshow'),            # Beware: slideshow URLs must not contain underscores,
     (r'^item3dview/(?P<item>.*)/$', 'item_3d_view'), # else 3D images are flashing !
 
+
+    (r'^webradio/$', 'listen_to_webradio'),
+    (r'^webradio_conf/$', 'get_radio_xml_conf'),
     (r'^webradio_applet/$', 'listen_to_audio_messages'),
 
     (r'^view_sales/$', 'view_sales'),
     (r'^view_characters/$', 'view_characters'),
     
     (r'^encyclopedia/$', 'view_encyclopedia'),
+    (r'^encyclopedia/(?P<article_id>[^/]*)/$', 'view_encyclopedia'),
+    
     (r'^manual/(?P<keyword>[^/]*)/$', 'view_help_page'),
     
     (r'^manage_characters/$', 'manage_characters'),
@@ -72,8 +81,9 @@ view_urlpatterns = patterns('rpgweb.views',
         
     (r'^login/$', 'login'),
     (r'^secret_question/$', 'secret_question'),
+    (r'^profile/$', 'character_profile'),
     (r'^logout/$', 'logout'),
-
+    
 
     (r'^messages/compose/$', 'compose_message'),
     (r'^messages/inbox/$', 'inbox'),
@@ -102,7 +112,6 @@ ability_urlpatterns = patterns("rpgweb.abilities",
     (r'^ability/wiretapping_management/$', 'wiretapping_management_view'),
     (r'^ability/admin_dashboard/$', 'admin_dashboard_view'),
     
-
 )
 
 
@@ -110,8 +119,13 @@ final_urlpatterns = view_urlpatterns + ability_urlpatterns
 
 # root urlpatterns of rpgweb application
 urlpatterns = patterns('',
+                       
+                    # serving of game files is currently independent of ZODB data
+                    (r'^%s(?P<hash>[^/]*)/?(?P<path>.*)$' % config.GAME_FILES_URL[1:], 'rpgweb.views.serve_game_file'), # NOT a gameview
+                
                     (r'^(?P<game_instance_id>\w+)/', include(final_urlpatterns)),
-                    (r'^', include(final_urlpatterns), {"game_instance_id": "DEMO"}), # default game instance, just as a demo
+                    
+                    #(r'^', include(final_urlpatterns), {"game_instance_id": "DEMO"}), # default game instance, just as a demo
 )
 
 

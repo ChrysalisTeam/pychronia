@@ -165,7 +165,7 @@ class MercenariesHiringAbility(AbstractAbilityHandler):
 
         if spy_audio:
             body = default_message
-            attachment = config.GAME_FILES_URL + "spy_reports/spy_" + city_name.lower() + ".mp3"
+            attachment = game_file_url("spy_reports/spy_" + city_name.lower() + ".mp3")
         else:
             body = default_message + "\n\n-------\n\n" + spy_message
             attachment = None
@@ -248,14 +248,14 @@ def network_management(request, template_name='specific_operations/network_manag
         gems_choices = zip(gems, [_("Gem of %d Kashes")%gem for gem in gems])
         total_gems_value = sum(gems)
 
-    return render_to_response(template_name,
-                            {
-                             'page_title': _("Agent Network Management"),
-                             'global_parameters': request.datamanager.get_global_parameters(), # TODO REMOVE
-                             'places_with_spies': places_with_spies,
-                             'places_with_mercenaries': places_with_mercenaries,
-                             'employer_profile': employer_profile,
-                             'total_gems_value': total_gems_value,
-                             'hiring_form': forms.AgentHiringForm(request.datamanager, gems_choices)
-                            },
-                            context_instance=RequestContext(request))
+    return render(request,
+                  template_name,
+                    {
+                     'page_title': _("Agent Network Management"),
+                     'global_parameters': request.datamanager.get_global_parameters(), # TODO REMOVE
+                     'places_with_spies': places_with_spies,
+                     'places_with_mercenaries': places_with_mercenaries,
+                     'employer_profile': employer_profile,
+                     'total_gems_value': total_gems_value,
+                     'hiring_form': forms.AgentHiringForm(request.datamanager, gems_choices)
+                    })

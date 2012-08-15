@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 from rpgweb.common import *
 
 from rpgweb import views, abilities
-from django.shortcuts import render_to_response
+from django.shortcuts import render
 from django.template import RequestContext
 from difflib import SequenceMatcher
 from rpgweb.authentication import AccessResult
@@ -100,9 +100,11 @@ def generate_full_menu(request):  ## game_menu_generator
             menu_entry(_(u"Communication"), views.homepage, # FIXME
                        (
                          menu_entry(_(u"Chatroom") + chatroom_suffix, views.chatroom),
-                         menu_entry(_(u"Radio Applet"), views.listen_to_audio_messages, forced_visibility=(False if user.is_character else None))
+                         menu_entry(_(u"Radio Applet"), views.listen_to_audio_messages, forced_visibility=(False if user.is_character else None)),
+                         menu_entry(_(u"Radio Player"), views.listen_to_webradio)
+                      
                       )),
-            
+             
             menu_entry(_(u"Messaging"), views.homepage, # FIXME
                       (
                          menu_entry(_(u"Messages") + message_suffix, views.inbox),
@@ -111,7 +113,9 @@ def generate_full_menu(request):  ## game_menu_generator
             
             menu_entry(_(u"Admin"), views.homepage, # FIXME
                        (
-                        menu_entry(_(u"Dashboard"), abilities.admin_dashboard_view),
+                         menu_entry(_(u"Dashboard"), abilities.admin_dashboard_view),
+                         menu_entry(_(u"Manage Characters"), views.manage_characters),
+                        
                          menu_entry(_(u"Game Events"), views.game_events),
                          menu_entry(_(u"Manage Webradio"), views.manage_audio_messages),
                          menu_entry(_(u"Databases"), views.manage_databases),
@@ -136,7 +140,8 @@ def generate_full_menu(request):  ## game_menu_generator
     
     
     
-           menu_entry(_(u"Login"), views.login, forced_visibility=(False if user.is_authenticated else None)),
+           menu_entry(_(u"Login"), views.login, forced_visibility=(False if user.is_authenticated else True)),
+           menu_entry(_(u"Profile"), views.character_profile, forced_visibility=(True if user.is_character else False)),
            menu_entry(_(u"Logout"), views.logout),
         ))
 
@@ -145,7 +150,7 @@ def generate_full_menu(request):  ## game_menu_generator
 
 def filter_menu_tree(menu):
     """
-    Recursively removes all invisible ietsm from teh tree, including those that
+    Recursively removes all invisible items from the tree, including those that TODO FIXME
     """
     recursed_submenus = [filter_menu_tree(submenu) for submenu in menu.submenus]
     menu.submenus = [submenu for submenu in recursed_submenus if submenu] # remove new 'None' entries

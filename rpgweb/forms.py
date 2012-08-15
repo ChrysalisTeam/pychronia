@@ -22,7 +22,7 @@ class AbstractGameForm(forms.Form):
         *datamanager* may also be an ability, since it proxies datamanager methods too.
         """
         super(AbstractGameForm, self).__init__(*args, **kwargs)
-        self._datamanager = datamanager
+ 
         self.fields.insert(0, self.__class__._ability_field_name, forms.CharField(initial=self._get_dotted_class_name(),
                                                                                   widget=forms.HiddenInput))
         self.target_url = "" # by default we stay on the same page when submitting
@@ -91,13 +91,14 @@ class CharacterForm(forms.Form):
         self.fields['allegiances'].choices = allegiances_choices
         self.fields['permissions'].choices = permissions_choices
  
+ 
 class SimplePasswordForm(forms.Form):
-    simple_password = forms.CharField(label=_lazy("Password"), widget=forms.PasswordInput)
+    simple_password = forms.CharField(label=_lazy("Password"), required=True, widget=forms.PasswordInput)
 
 
 class AuthenticationForm(forms.Form):
-    secret_username = forms.CharField(label=_lazy("Username"), max_length=30, widget=forms.TextInput(attrs={'autocomplete':'off'}))
-    secret_password = forms.CharField(label=_lazy("Password"), max_length=30, required=False, widget=forms.PasswordInput(attrs={'autocomplete':'off'})) # not required for "password forgotten" action
+    secret_username = forms.CharField(label=_lazy("Username"), required=True, max_length=30, widget=forms.TextInput(attrs={'autocomplete':'off'}))
+    secret_password = forms.CharField(label=_lazy("Password"), required=False, max_length=30, widget=forms.PasswordInput(attrs={'autocomplete':'off'})) # not required for "password forgotten" action
 
 
 class SecretQuestionForm(forms.Form):

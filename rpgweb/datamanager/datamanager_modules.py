@@ -6,6 +6,7 @@ from rpgweb.common import *
 
 from .datamanager_user import GameUser
 from .datamanager_core import *
+from types import NoneType
 
 PLACEHOLDER = object()
 
@@ -51,7 +52,52 @@ class GameGlobalParameters(BaseDataManager):
 
 
 
+@register_module
+class FlexibleTime(BaseDataManager): # TODO REFINE
+    """
+    All delays set in the game, in minutes, should be scaled
+    as if the whole game lasted only 24 full hours, then these settings scale that duration up or down.
+     
+    To be used for scheduled actions, delayed email sendings etc.
+    """
 
+    def _load_initial_data(self, **kwargs):
+        super(FlexibleTime, self)._load_initial_data(**kwargs)
+        
+        
+    def _check_database_coherency(self, **kwargs):
+        super(FlexibleTime, self)._check_database_coherency(**kwargs)
+        utilities.check_is_positive_float(self.get_global_parameter("game_theoretical_length_days"), non_zero=True) 
+
+
+    @readonly_method
+    def compute_remote_datetime(self, delay_mn):
+        # delay can be a number or a range (of type int or float)
+        # we always work in UTC
+    
+        new_time = datetime.utcnow()        
+    
+        if delay_mn:
+            
+            factor = 60 * self.get_global_parameter("game_theoretical_length_days") # important - we scale relatively to the duration of the game
+            
+            if not isinstance(delay_mn, (int, long, float)):
+                assert len(delay_mn) == 2
+                
+                delay_s_min = int(delay_mn[0] * factor)
+                delay_s_max = int(delay_mn[1] * factor)
+                assert delay_s_min <= delay_s_max, "delay min must be < delay max - %s vs %s" % (delay_s_min, delay_s_max)
+    
+                delay_s = random.randint(delay_s_min, delay_s_max) # time range in seconds
+    
+    
+            else:
+                delay_s = delay_mn * factor  # no need to coerce to integer here
+    
+            #print "DELAY ADDED : %s s" % delay_s
+            new_time += timedelta(seconds=delay_s) # delay_s can be a float
+    
+        return new_time
 
 
 
@@ -65,9 +111,11 @@ class GameEvents(BaseDataManager): # TODO REFINE
         new_data = self.data
         new_data.setdefault("events_log", PersistentList())
         for evt in new_data["events_log"]:
-            if isinstance(evt["time"], (long, int)): # offset in minutes
-                evt["time"] = utilities.compute_remote_datetime(evt["time"])
+            if isinstance(evt["time"], (long, int, float)): # NEGATIVE offset in minutes
+                assert evt["time"] <= 0
+                evt["time"] = self.compute_remote_datetime(delay_mn=evt["time"])
         new_data["events_log"].sort(key=lambda evt: evt["time"])
+
 
     def _check_database_coherency(self, **kwargs):
         super(GameEvents, self)._check_database_coherency(**kwargs)
@@ -311,8 +359,8 @@ class DomainHandling(BaseDataManager): # TODO REFINE
 class PlayerAuthentication(BaseDataManager):
 
 
-    def __init__(self, **kwargs):
-        super(PlayerAuthentication, self).__init__(**kwargs)
+    def _init_from_db(self, **kwargs):
+        super(PlayerAuthentication, self)._init_from_db(**kwargs)
         self.user = None
         self._set_user(username=None, has_write_access=True) # TODO - improve by doing player authentication at init time?
 
@@ -333,8 +381,11 @@ class PlayerAuthentication(BaseDataManager):
 
         for character in self.get_character_sets().values():
             utilities.check_is_slug(character["password"])
-            utilities.check_is_string(character["secret_question"])
-            assert not character["secret_answer"] or utilities.check_is_slug(character["secret_answer"])
+            if character["secret_question"] is None:
+                assert not character["secret_answer"]
+            else:
+                utilities.check_is_string(character["secret_question"])
+                utilities.check_is_slug(character["secret_answer"])
             
         
         # MASTER and ANONYMOUS cases
@@ -472,7 +523,7 @@ class PlayerAuthentication(BaseDataManager):
             return session_ticket
 
         else:
-            raise UsageError(_("Wrong password"))
+            raise NormalUsageError(_("Wrong password"))
 
         assert False
 
@@ -481,6 +532,19 @@ class PlayerAuthentication(BaseDataManager):
     def get_secret_question(self, username):
         return self.get_character_properties(username)["secret_question"]
 
+
+    @transaction_watcher # requires game started mode
+    def process_password_change_attempt(self, username, old_password, new_password):
+        user_properties = self.get_character_properties(username)
+        
+        if not new_password or " " in new_password or "\n" in new_password or len(new_password) > 60:
+            raise AbnormalUsageError(_("Invalid new password submitted"))
+        
+        if old_password != user_properties["password"]:
+            raise NormalUsageError(_("Wrong current password submitted"))
+        
+        user_properties["password"] = new_password
+        
 
     @transaction_watcher # requires game started mode
     def process_secret_answer_attempt(self, username, secret_answer_attempt, target_email):
@@ -524,18 +588,21 @@ class PlayerAuthentication(BaseDataManager):
 
     # Utility functions for tests on other usernames than current player's one #
 
+    @readonly_method
     def is_anonymous(self, username=PLACEHOLDER):
         if username is PLACEHOLDER:
             username = self.user.username
         assert username
         return (username == self.get_global_parameter("anonymous_login"))
 
+    @readonly_method
     def is_master(self, username=PLACEHOLDER):
         if username is PLACEHOLDER:
             username = self.user.username
         assert username
         return (username == self.get_global_parameter("master_login"))
 
+    @readonly_method
     def is_character(self, username=PLACEHOLDER):
         if username is PLACEHOLDER:
             username = self.user.username
@@ -603,6 +670,7 @@ class PermissionsHandling(BaseDataManager): # TODO REFINE
         data["permissions"] = permissions
 
 
+    @readonly_method
     def has_permission(self, permission):
 
         if not self.user.is_character:
@@ -620,12 +688,175 @@ class PermissionsHandling(BaseDataManager): # TODO REFINE
 
         return False
     
-
+    
+    @readonly_method
     def build_permission_select_choices(self):
         return [(perm, perm) for perm in sorted(self.PERMISSIONS_REGISTRY)]
 
 
 
+@register_module
+class FriendshipHandling(BaseDataManager):
+
+
+    def _load_initial_data(self, strict=False, **kwargs):
+        super(FriendshipHandling, self)._load_initial_data(**kwargs)
+        new_data = self.data
+        new_data.setdefault("friendships", PersistentDict())
+        new_data["friendships"].setdefault("proposed", PersistentDict()) # mapping (proposer, recipient) => dict(proposal_date)
+        new_data["friendships"].setdefault("sealed", PersistentDict()) # mapping (proposer, accepter) => dict(proposal_date, acceptance_date)
+        
+    def _check_database_coherency(self, strict=False, **kwargs):
+        super(FriendshipHandling, self)._check_database_coherency(**kwargs)
+
+        game_data = self.data
+        
+        delay = self.get_global_parameter("friendship_minimum_duration_h")
+        utilities.check_is_positive_int(delay, non_zero=True)
+        
+        character_names = self.get_character_usernames()
+        friendships = game_data["friendships"]
+        
+        if strict:
+            assert len(friendships) == 2
+            
+        proposed_friendships = friendships["proposed"]
+        utilities.check_no_duplicates(proposed_friendships)
+        for (username1, username2), friendship_params in proposed_friendships.items():
+            assert (username2, username1) not in proposed_friendships # ensures non-reciprocity of friendship offering (else it'd be sealed), and non-self-friendship
+            assert username1 in character_names
+            assert username2 in character_names
+            template = {
+                         "proposal_date": datetime,
+                        }
+            utilities.check_dictionary_with_template(friendship_params, template, strict=strict)
+         
+        sealed_friendships = friendships["sealed"]
+        utilities.check_no_duplicates(sealed_friendships)
+        for (username1, username2), friendship_params in sealed_friendships.items():
+            assert (username2, username1) not in sealed_friendships # ensures both unicity and non-self-friendship
+            assert username1 in character_names
+            assert username2 in character_names
+            template = {
+                         "proposal_date": datetime,
+                         "acceptance_date": datetime,
+                        }
+            utilities.check_dictionary_with_template(friendship_params, template, strict=strict)
+ 
+ 
+    
+    """    
+    @readonly_method
+    def get_friendship_proposals(self):
+        return self.data["friendships"]["proposed"]
+    """
+    
+    @transaction_watcher
+    def propose_friendship(self, proposer, recipient):
+        """
+        Can also act as "seal friendship", if a reciprocal request existed.
+        """
+        assert self.is_character(proposer) and self.is_character(recipient)
+        if proposer == recipient:
+            raise AbnormalUsageError(_("User %s can't be friend with himself") % proposer)
+        if self.are_friends(proposer, recipient):
+            raise AbnormalUsageError(_("Already existing friendship between %s and %s") % (proposer, recipient)) 
+        
+        friendship_proposals = self.data["friendships"]["proposed"]
+        friendships= self.data["friendships"]["sealed"]
+        if (proposer, recipient) in friendship_proposals:
+            raise AbnormalUsageError(_("%s has already requested the friendship of %s") % (proposer, recipient))
+        
+        current_date = datetime.utcnow()
+        if (recipient, proposer) in friendship_proposals:
+            # we seal the deal, with "recipient" as the initial proposer!
+            existing_data = friendship_proposals[(recipient, proposer)]
+            del friendship_proposals[(recipient, proposer)] # important
+            friendships[(recipient, proposer)] = PersistentDict(proposal_date=existing_data["proposal_date"], 
+                                                                acceptance_date=current_date) 
+        else:
+            friendship_proposals[(proposer, recipient)] = PersistentDict(proposal_date=current_date)
+        # TODO - add game logging for both events
+    
+    @readonly_method
+    def get_friendship_requests(self, username):
+        """
+        Returns a dict with entries "proposed_to" and "requested_by" (lists of character names).
+        These entries are of course exclusive (if a frienship was wanted by both sides, it'd be already sealed).
+        """
+        assert self.is_character(username)
+        result = dict(proposed_to=[],
+                      requested_by=[])
+        for proposer, recipient in self.data["friendships"]["proposed"].keys():
+            if proposer == username:
+                result["proposed_to"].append(recipient) 
+            elif recipient == username:
+                result["requested_by"].append(proposer) 
+        return result
+    
+    """
+    @readonly_method
+    def get_friendships(self):
+        return self.data["friendships"]["sealed"]
+    """
+    
+    @readonly_method
+    def get_friendship_params(self, username1, username2):
+        assert self.is_character(username1) and self.is_character(username2)
+        friendships = self.data["friendships"]["sealed"]
+        try:
+            return (username1, username2), friendships[(username1, username2)]
+        except KeyError:
+            try:
+                return (username2, username1), friendships[(username2, username1)]
+            except KeyError:
+                raise AbnormalUsageError(_("Unexisting friendship: %s<->%s") % (username1, username2))
+            
+                
+    @readonly_method
+    def are_friends(self, username1, username2):
+        friendships = self.data["friendships"]["sealed"]
+        if (username1, username2) in friendships or (username2, username1) in friendships:
+            return True
+        return False
+    
+    
+    @readonly_method
+    def get_friends(self, username):
+        
+        assert self.is_character(username)
+        
+        friendships = self.data["friendships"]["sealed"]
+
+        friends = []
+        for (username1, username2) in friendships.keys():
+            if username1 == username:
+                friends.append(username2)
+            elif username2 == username:
+                friends.append(username1)
+                
+        assert username not in friends
+        return friends
+    
+    
+    @transaction_watcher
+    def terminate_friendship(self, username1, username2):
+        friendship_key, friendship_data = self.get_friendship_params(username1, username2) # raises error if pb
+        
+        min_delay = self.get_global_parameter("friendship_minimum_duration_h")
+        if friendship_data["acceptance_date"] > datetime.utcnow() - timedelta(hours=min_delay):
+            raise NormalUsageError(_("That friendship is too young to be terminated - please respect the %dh delay") % min_delay)
+        
+        del self.data["friendships"]["sealed"][friendship_key]
+    
+    
+    @transaction_watcher
+    def reset_friendship_data(self): 
+        self.data["friendships"]["proposed"].clear()
+        self.data["friendships"]["sealed"].clear()
+
+ 
+ 
 @register_module
 class GameInstructions(BaseDataManager):
 
@@ -662,7 +893,7 @@ class GameInstructions(BaseDataManager):
         else:
             domain = self.get_domain_properties(self.get_character_properties(username)["domain"])
             team_introduction = domain["instructions"]
-            prologue_music = config.GAME_FILES_URL + "musics/" + domain["prologue_music"]
+            prologue_music = game_file_url("musics/" + domain["prologue_music"])
         '''
 
         return PersistentDict(prologue_music=prologue_music,
@@ -793,14 +1024,13 @@ class TextMessaging(BaseDataManager): # TODO REFINE
             msg["recipient_emails"] = self._normalize_recipient_emails(msg["recipient_emails"])
 
             if "@" not in msg["sender_email"]:
-                msg["sender_email"] = (msg["sender_email"] + "@" + pangea_network)
-                                       # we allow short username as sender/recipient
+                msg["sender_email"] = (msg["sender_email"] + "@" + pangea_network) # we allow short username as sender/recipient
 
             msg["attachment"] = msg.get("attachment", None)
             msg["is_certified"] = msg.get("is_certified", False)
 
             if isinstance(msg["sent_at"], (long, int)): # offset in minutes
-                msg["sent_at"] = utilities.compute_remote_datetime(msg["sent_at"])
+                msg["sent_at"] = self.compute_remote_datetime(msg["sent_at"])
 
             msg["intercepted_by"] = msg.get("intercepted_by", PersistentList())
             msg["has_read"] = msg.get("has_read", PersistentList())
@@ -885,8 +1115,8 @@ class TextMessaging(BaseDataManager): # TODO REFINE
                 assert all((char in all_users) for char in msg["has_read"]), msg["has_read"]
                 assert all((char in all_users) for char in msg["has_replied"]), msg["has_replied"]
                 
-                if not msg.get("gourp_id", ""):
-                    msg["gourp_id"] = msg["id"]
+                if not msg.get("group_id"):
+                    msg["group_id"] = msg["id"]
                     
             all_ids = [msg["id"] for msg in msg_list]
             utilities.check_no_duplicates(all_ids)
@@ -1037,7 +1267,8 @@ class TextMessaging(BaseDataManager): # TODO REFINE
         if isinstance(date_or_delay_mn, datetime):
             sent_at = date_or_delay_mn
         else:
-            sent_at = utilities.compute_remote_datetime(date_or_delay_mn) # date_or_delay_mn is None or number
+            sent_at = self.compute_remote_datetime(date_or_delay_mn) # date_or_delay_mn is None or number
+
         msg = PersistentDict({# the ids of emails are simply their location in the global message list !
                               "sender_email": sender_email,
                               "recipient_emails": recipient_emails,
@@ -1063,6 +1294,7 @@ class TextMessaging(BaseDataManager): # TODO REFINE
             self._immediately_send_message(msg)
 
         return new_id
+    
 
     @staticmethod
     def _get_new_msg_id(index, content):
@@ -1125,7 +1357,7 @@ class TextMessaging(BaseDataManager): # TODO REFINE
     @readonly_method
     def get_message_viewer_url(self, msg_id):
         return reverse('rpgweb.views.view_single_message',
-                       kwargs=dict(msg_id=msg_id, game_instance_id=self.game_instance_id))
+                        kwargs=dict(msg_id=msg_id, game_instance_id=self.game_instance_id))
 
     @readonly_method
     def get_all_queued_messages(self):
@@ -1294,6 +1526,8 @@ class TextMessaging(BaseDataManager): # TODO REFINE
                              PersistentDict(targets="[%s]"%(", ".join(target_names)), username=username),
                              url=None)
     
+    
+    @readonly_method
     def get_wiretapping_targets(self, username):
         return self.get_character_properties(username)["wiretapping_targets"]
 
@@ -1387,11 +1621,9 @@ class RadioMessaging(BaseDataManager): # TODO REFINE
 
     def _load_initial_data(self, **kwargs):
         super(RadioMessaging, self)._load_initial_data(**kwargs)
-
+  
         new_data = self.data
-        for (audio_id, audio_properties) in new_data["audio_messages"].items():
-            audio_properties["url"] = config.GAME_FILES_URL + "audio_messages/" + audio_properties["file"]
-
+        # do nothing
 
     def _check_database_coherency(self, **kwargs):
         super(RadioMessaging, self)._check_database_coherency(**kwargs)
@@ -1411,10 +1643,11 @@ class RadioMessaging(BaseDataManager): # TODO REFINE
         assert game_data["audio_messages"]["intro_audio_messages"]
         for (name, properties) in game_data["audio_messages"].items():
             utilities.check_is_slug(name)
+            utilities.check_is_string(properties["title"])
             assert properties["text"] and isinstance(properties["text"], basestring)
             assert properties["file"] and isinstance(properties["file"], basestring)
-            assert properties["url"] and isinstance(properties["url"], basestring)
-
+            
+            # TODO - ensure no "|" in file name!!
             assert os.path.isfile(os.path.join(config.GAME_FILES_ROOT,
                                   "audio_messages", properties["file"])), properties["file"]
 
@@ -1464,8 +1697,13 @@ class RadioMessaging(BaseDataManager): # TODO REFINE
 
     @readonly_method
     def get_audio_message_properties(self, audio_id):
+        """
+        Returns a copy of audio properties, including url of sound file.
+        """
         audio_properties = self.data["audio_messages"][audio_id]
-        return audio_properties
+        return dict(url=game_file_url("audio_messages/" + audio_properties["file"]),
+                    **audio_properties)
+
 
 
     @transaction_watcher
@@ -1474,7 +1712,7 @@ class RadioMessaging(BaseDataManager): # TODO REFINE
 
         res = False
 
-        if audio_id in queue: # in case several radio run simultaneously or if a reset occurred inbetween...
+        if audio_id in queue: # we check, in case several radio run simultaneously or if a reset occurred inbetween...
             queue.remove(audio_id)
             res = True
 
@@ -1607,6 +1845,7 @@ class Chatroom(BaseDataManager):
         
 @register_module
 class ActionScheduling(BaseDataManager):
+    # USELESS ATM ?? FIXME ??
 
     def _load_initial_data(self, **kwargs):
         super(ActionScheduling, self)._load_initial_data(**kwargs)
@@ -1616,8 +1855,8 @@ class ActionScheduling(BaseDataManager):
         new_data.setdefault("scheduled_actions", PersistentList())
 
         for evt in new_data["scheduled_actions"]:
-            if isinstance(msg["execute_at"], (long, int)): # offset in minutes
-                msg["execute_at"] = utilities.compute_remote_datetime(msg["execute_at"])
+            if isinstance(evt["execute_at"], (long, int)): # offset in minutes
+                evt["execute_at"] = self.compute_remote_datetime(evt["execute_at"])
         new_data["scheduled_actions"].sort(key=lambda evt: evt["execute_at"])
 
 
@@ -1693,16 +1932,16 @@ class ActionScheduling(BaseDataManager):
         if isinstance(function, basestring):
             #print ("SEARCHING", function, "IN", sorted(dir(self)))
             if not hasattr(self, function) or not hasattr(getattr(self, function), '__call__'):
-                raise TypeError(_("Only strings representing DataManager methods can be scheduled as delayed actions, not %(function)s") % SDICT(
-                                    function=function))
+                raise TypeError(_("Only strings representing DataManager methods can be scheduled as delayed actions, not %(function)s") % 
+                                SDICT(function=function))
         elif not hasattr(function, '__call__'):
-            raise TypeError(_("You can only register a callable object as a delayed action, not a %(function)r") % SDICT(
-                              function=function))
+            raise TypeError(_("You can only register a callable object as a delayed action, not a %(function)r") % 
+                            SDICT(function=function))
 
         if isinstance(date_or_delay_mn, datetime):
             time = date_or_delay_mn
         else:
-            time = utilities.compute_remote_datetime(date_or_delay_mn)
+            time = self.compute_remote_datetime(date_or_delay_mn)
 
         record = PersistentDict({
             "execute_at": time,
@@ -1729,7 +1968,7 @@ class PersonalFiles(BaseDataManager):
     def _check_database_coherency(self, **kwargs):
         super(PersonalFiles, self)._check_database_coherency(**kwargs)
 
-       # common and personal file folders
+        # common and personal file folders
         assert os.path.isdir(os.path.join(config.GAME_FILES_ROOT, "common_files"))
         for name in (self.data["character_properties"].keys() + [self.data["global_parameters"]["master_login"]]):
             assert os.path.isdir(os.path.join(config.GAME_FILES_ROOT, "personal_files", name)), name
@@ -1758,7 +1997,7 @@ class PersonalFiles(BaseDataManager):
 
         # there , we shouldn't have environment errors, theoretically
         decrypted_files = sorted(
-            [config.GAME_FILES_URL + "encrypted/" + folder + "/" + password + "/" + item for item in
+            [game_file_url("encrypted/" + folder + "/" + password + "/" + item) for item in
              os.listdir(decrypted_folder)
              if os.path.isfile(os.path.join(decrypted_folder, item))])
 
@@ -1792,19 +2031,19 @@ class PersonalFiles(BaseDataManager):
             personal_folders = sorted([dir for dir in os.listdir(root_folder)
                                           if os.path.isdir(os.path.join(root_folder, dir))])
             #print "personal_folders: ", personal_folders
-            personal_files = [("/filespersonal_files/"+folder+"/"+filename) for folder in personal_folders
+            personal_files = [("/files//personal_files/"+folder+"/"+filename) for folder in personal_folders
                                                             for filename in sorted(os.listdir(os.path.join(root_folder, folder)))  # None is a separator here
                                                             if filename and os.path.isfile(os.path.join(root_folder, folder, filename))]
             """
 
         common_folder_path = os.path.join(config.GAME_FILES_ROOT, "common_files")
-        common_files = [(config.GAME_FILES_URL + "common_files/" + filename) for filename in
+        common_files = [game_file_url("common_files/" + filename) for filename in
                         os.listdir(common_folder_path)
                         if os.path.isfile(os.path.join(common_folder_path, filename))
                            and not filename.startswith(".") and not filename.startswith("~")] # hidden files removed
 
         personal_folder_path = os.path.join(config.GAME_FILES_ROOT, "personal_files", username)
-        personal_files = [(config.GAME_FILES_URL + "personal_files/" + username + "/" + filename) for filename in
+        personal_files = [game_file_url("personal_files/" + username + "/" + filename) for filename in
                           os.listdir(personal_folder_path)
                           if os.path.isfile(os.path.join(personal_folder_path, filename))
                              and not filename.startswith(".") and not filename.startswith("~")] # hidden files removed
@@ -1978,7 +2217,7 @@ class MoneyItemsOwnership(BaseDataManager):
 
         character["items"].append(item_name)
         if obj["is_gem"]: # pack of gems
-            character["gems"] += [obj["unit_cost"]] * obj["num_items"] #we add each gem separately
+            character["gems"] += [obj["unit_cost"]] * obj["num_items"] # we add each gem separately
         obj["owner"] = char_name
 
         # todo - logging here ??
@@ -2064,27 +2303,32 @@ class Items3dViewing(BaseDataManager):
     def _load_initial_data(self, **kwargs):
         super(Items3dViewing, self)._load_initial_data(**kwargs)
 
-
-
     def _check_database_coherency(self, **kwargs):
         super(Items3dViewing, self)._check_database_coherency(**kwargs)
 
         game_data = self.data
 
         item_viewer_reference = \
-            {
-            'steps': (int, long),
-            'total': (int, long),
-            'levels': (int, long),
-            'startlevel': (int, long),
-            'filedir': basestring,
-            'filename': basestring,
-            'suffix': basestring,
-            'imagewidth': (int, long),
-            'imageheight': (int, long),
+            {'levels': (int, long),
+             'per_level': (int, long),
+            
+             'index_steps': (int, long),
+             'index_offset': (int, long),
+              
+             'start_level': (int, long),
+             
+             'file_template': basestring,
+             
+            'image_width': (int, long),
+            'image_height': (int, long),
             'mode': basestring,
+            
             'x_coefficient': (int, long),
-            'y_coefficient': (int, long),
+            'y_coefficient': (int, long)   ,
+            'autoreverse': bool,   
+            'rotomatic': (int, long) ,
+            
+             'music': (NoneType, basestring),
             }
 
         for (name, properties) in game_data["item_3d_settings"].items():
@@ -2110,6 +2354,12 @@ class Encyclopedia(BaseDataManager):
 
         new_data["global_parameters"].setdefault("encyclopedia_index_visible", False)
         
+        for character in self.get_character_sets().values():
+            character.setdefault("known_article_ids", PersistentList())
+            
+        #for (key, value) in new_data["encyclopedia"].items():
+        #    value["keywords"] = list(set(value["keywords"] + [key]))
+            
         
     def _check_database_coherency(self, **kwargs):
         super(Encyclopedia, self)._check_database_coherency(**kwargs)
@@ -2118,14 +2368,30 @@ class Encyclopedia(BaseDataManager):
         
         utilities.check_is_bool(game_data["global_parameters"]["encyclopedia_index_visible"])
         
+        all_keywords = [] 
+         
         for (key, value) in game_data["encyclopedia"].items():
 
             assert key.lower() == key
             utilities.check_is_slug(key)
+            
+            for keyword in (value["keywords"]):            
+                utilities.check_is_slug(keyword)
+            all_keywords += value["keywords"]
+            
+            utilities.check_is_restructuredtext(value["content"])
+        
+        # the same keyword can be included in several article ids - no check_no_duplicates here!
+        
+        for keyword in all_keywords:
+            assert len(keyword) >= 3 # let's avoid too easy matches
+            re.compile(keyword) # keyword must be a proper regular expression
 
-            utilities.check_is_restructuredtext(value)
-
-
+        for character in self.get_character_sets().values():
+            utilities.check_no_duplicates(character["known_article_ids"])
+            assert set(character["known_article_ids"]) < set(self.get_encyclopedia_article_ids())
+            
+            
     @readonly_method
     def is_encyclopedia_index_visible(self):
         return self.get_global_parameter("encyclopedia_index_visible")
@@ -2135,21 +2401,75 @@ class Encyclopedia(BaseDataManager):
     def set_encyclopedia_index_visibility(self, value):
         self.data["global_parameters"]["encyclopedia_index_visible"] = value
         
-        
+
     @readonly_method
-    def get_encyclopedia_entry(self, keyword):
+    def get_encyclopedia_entry(self, article_id):
         """
         Returns the rst entry, or None.
         Fetching is case-insensitive.
         """
-        return self.data["encyclopedia"].get(keyword.lower().strip())
+        article =  self.data["encyclopedia"].get(article_id.lower().strip())
+        return article["content"] if article else None
 
 
+    @readonly_method   
+    def get_encyclopedia_matches(self, search_string):
+        """
+        Returns the list of encyclopedia article whose keywords match *search_string*, 
+        sorted by most relevant first.
+        
+        Matching is very tolerant, as keywords needn't be separate words in the search string.
+        """
+        keywords_mapping = self.get_encyclopedia_keywords_mapping()
+        
+        matches = Counter()
+        
+        for keyword, article_ids in keywords_mapping.items():
+            if re.search(keyword, search_string, re.IGNORECASE|re.UNICODE):
+                matches.update(article_ids)
+                
+        sorted_couples = matches.most_common()
+        all_article_ids = [couple[0] for couple in sorted_couples] # we discard the exact count of each
+        return all_article_ids
+    
+        
     @readonly_method
-    def get_encyclopedia_keywords(self):
+    def get_encyclopedia_article_ids(self):
         return self.data["encyclopedia"].keys()
+    
+    
+    @readonly_method
+    def get_encyclopedia_keywords_mapping(self):
+        """
+        Returns a dict mapping keywords (which can be regular expressions) to lists 
+        of targeted article ids.
+        """
+        mapping = {}
+        for article_id, article in self.data["encyclopedia"].items():
+            for keyword in article["keywords"]:
+                mapping.setdefault(keyword, [])
+                mapping[keyword].append(article_id)
+        return mapping
+    
+    
+    @readonly_method
+    def get_character_known_article_ids(self):
+        return self.get_character_properties(self.user.username)["known_article_ids"]
+    
+    
+    @transaction_watcher(ensure_game_started=False) # automatic action - not harmful
+    def update_character_known_article_ids(self, article_ids):
+        known_article_ids = self.get_character_properties(self.user.username)["known_article_ids"] 
+        for article_id in article_ids:
+            if article_id not in known_article_ids:
+                known_article_ids.append(article_id)
+        
 
-
+    @transaction_watcher(ensure_game_started=False) # admin action, actually
+    def reset_character_known_article_ids(self):
+        known_article_ids = self.get_character_properties(self.user.username)["known_article_ids"] 
+        del known_article_ids[:]
+                
 
 @register_module
 class GameViews(BaseDataManager):
@@ -2158,8 +2478,8 @@ class GameViews(BaseDataManager):
     ACTIVABLE_VIEWS_REGISTRY = {} # only views that need to be activated by game master
     
     
-    def __init__(self, **kwargs):
-        super(GameViews, self).__init__(**kwargs)
+    def _init_from_db(self, **kwargs):
+        super(GameViews, self)._init_from_db(**kwargs)
         self.sync_game_view_data() # important if some views have disappeared since then
 
 
@@ -2205,7 +2525,7 @@ class GameViews(BaseDataManager):
         new_data = self.data
         new_data.setdefault("views", PersistentDict())
         new_data["views"].setdefault("activated_views", PersistentList())
-        # no need to sync - it will done later in __init__()
+        # no need to sync - it will done later in _init_from_db()
 
 
     def _check_database_coherency(self, **kwargs):
@@ -2240,6 +2560,8 @@ class GameViews(BaseDataManager):
     def _resolve_view_klass(self, name_or_klass):
         if isinstance(name_or_klass, basestring):
             klass = self.GAME_VIEWS_REGISTRY.get(name_or_klass)
+        elif hasattr(name_or_klass, "klass"):
+            klass = name_or_klass.klass # proxy
         else:
             assert isinstance(name_or_klass, type)
             klass = name_or_klass       
@@ -2249,9 +2571,9 @@ class GameViews(BaseDataManager):
     # no transaction checker here
     def instantiate_game_view(self, name_or_klass):
         klass = self._resolve_view_klass(name_or_klass)
-        return klass(self) # first arg (self) might be ignored by base GameView, but not by its subclasses
-    
-    
+        return klass(self) # first arg (self) is the datamanager
+        
+        
     @readonly_method
     def get_game_view_access_token(self, name_or_klass):
         klass = self._resolve_view_klass(name_or_klass)
@@ -2280,8 +2602,8 @@ class GameViews(BaseDataManager):
     @readonly_method
     def resolve_admin_widget_identifier(self, identifier):
         """
-        Returns the (game_view_class, form_name_string) tuple corresponding to that
-        admin widget token, or None. 
+        Returns the (game_view_instance, form_name_string) tuple corresponding to that
+        admin widget token (and its instantiation pmarams), or None. 
         """
         if identifier.count(".") == 1:
             klass_name, form_name = identifier.split(".")
@@ -2298,8 +2620,8 @@ class SpecialAbilities(BaseDataManager):
     ABILITIES_REGISTRY = {}  # abilities automatically register themselves with this dict, thanks to their metaclass
 
 
-    def __init__(self, **kwargs):
-        super(SpecialAbilities, self).__init__(**kwargs)
+    def _init_from_db(self, **kwargs):
+        super(SpecialAbilities, self)._init_from_db(**kwargs)
         #self.abilities = SpecialAbilities.AbilityLazyLoader(self)
         self.sync_ability_data()
     
@@ -2315,7 +2637,7 @@ class SpecialAbilities(BaseDataManager):
     @classmethod
     def get_abilities(self):
         return self.ABILITIES_REGISTRY.copy()  
-    
+
     
     # no transaction checker here
     def instantiate_ability(self, name_or_klass):
@@ -2351,7 +2673,6 @@ class SpecialAbilities(BaseDataManager):
 
     def _check_database_coherency(self, strict=False, **kwargs):
         super(SpecialAbilities, self)._check_database_coherency(**kwargs)
-
         for name in self.ABILITIES_REGISTRY.keys():
             ability = self.instantiate_ability(name)
             ability.check_data_sanity(strict=strict)
@@ -2442,7 +2763,96 @@ class HelpPages(BaseDataManager):
 
 
 
+ 
 
 
+@register_module
+class NightmareCaptchas(BaseDataManager):
+
+
+    def _load_initial_data(self, **kwargs):
+        super(NightmareCaptchas, self)._load_initial_data(**kwargs)
+        game_data = self.data
+        for (key, value) in game_data["nightmare_captchas"].items():
+            value.setdefault("text", None)
+            value.setdefault("image", None)
+            value.setdefault("explanation", None)
+            
+            
+    def _check_database_coherency(self, strict=False, **kwargs):
+        super(NightmareCaptchas, self)._check_database_coherency(**kwargs)
+
+        game_data = self.data
+        
+        assert game_data["nightmare_captchas"] # else random choice would nastily fail
+        
+        for (key, value) in game_data["nightmare_captchas"].items():
+
+            utilities.check_is_slug(key)
+            assert key.lower() == key # let's make its simple
+            
+            if strict:
+                assert len(value.keys()) == 4
+            
+            assert not value.get("id") # to ensure no pollution exists by utility methods
+            assert value["text"] or value["image"]
+            if value["text"]:
+                utilities.check_is_restructuredtext(value["text"])
+            if value["image"]:
+                utilities.check_is_game_file("captchas", value["image"])
+            if value["explanation"]:
+                utilities.check_is_restructuredtext(value["explanation"])
+                
+            utilities.check_is_slug(value["answer"])
+            assert "\n" not in value["answer"]
+        
+            
+    def _get_captcha_data(self, captcha_id):
+        """
+        Returns a captcha as a dict, id, text and image keys (one of the 2 latter could be None).
+        """
+        # beware - using copy() on a dict marks it as modified in ZODB...
+        value = self.data["nightmare_captchas"][captcha_id] 
+        return dict(id=captcha_id,
+                    text=value["text"],
+                    image=value["image"])
+
+
+
+    @readonly_method
+    def get_available_captchas(self):
+        return self.data["nightmare_captchas"].keys()
+    
+    
+    @readonly_method
+    def get_selected_captcha(self, captcha_id):
+        return self._get_captcha_data(captcha_id)
+      
+      
+    @readonly_method
+    def get_random_captcha(self):
+        captchas = self.data["nightmare_captchas"]
+        captcha_id = random.choice(captchas.keys())
+        return self._get_captcha_data(captcha_id)
+    
+    
+    @readonly_method
+    def check_captcha_answer_attempt(self, captcha_id, attempt):
+        """
+        On success, returns the enigma explanation (which could be None).
+        """
+        assert isinstance(attempt, basestring)
+        captchas = self.data["nightmare_captchas"]
+        if captcha_id not in captchas:
+            raise AbnormalUsageError(_("Unknown captcha id %s") % captcha_id)
+        value = self.data["nightmare_captchas"][captcha_id]
+        
+        normalized_attempt = attempt.strip().lower()
+        normalized_answer = value["answer"].lower() # necessarily slug, but not always lowercase
+
+        if normalized_attempt != normalized_answer:
+            raise NormalUsageError(_("Incorrect captcha answer '%s'") % attempt)
+        
+        return value["explanation"]
 
 

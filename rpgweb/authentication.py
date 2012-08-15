@@ -84,7 +84,7 @@ def logout_session(request):
 
 '''
 def _redirection_to_login(request):
-    return HttpResponseRedirect(reverse("rpgweb.views.login", kwargs=dict(game_instance_id=request.datamanager.game_instance_id)))
+    return HttpResponseRedirect(reversssse("rpgweb.views.login", kwargs=dict(game_instance_id=request.datamanager.game_instance_id)))
 
 
 @decorator

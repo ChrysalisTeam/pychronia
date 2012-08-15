@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+    <param name="mp3" value="{{ audio_urls }}" />
+    <param name="title" value="{{ audio_titles }}" />
+    
+    <!--param name="height" value="400" />
+    <param name="width" value="600" /-->
+    <param name="volume" value="4" /> <!-- 0 to 200 -->
+    <param name="autoplay" value="1" />
+    <param name="loop" value="1" />
+    <param name="shuffle" value="0" /> <!-- 0, 1 or 2 -->
+    
+    <!-- skin: url of jpeg file to load (not progressive) -->
+    <param name="loadingcolor" value="cccc99" />
+    <param name="bgcolor" value="cccc99" />
+    <param name="bgcolor1" value="e79a2d" />
+    <param name="bgcolor2" value="d38c29" />
+    <param name="buttoncolor" value="dddddd" />
+    <param name="buttonovercolor" value="f9bf37" />
+    <param name="slidercolor1" value="dddddd" />
+    <param name="slidercolor2" value="cccccc" />
+    <param name="sliderovercolor" value="f9bf37" />
+    <param name="textcolor" value="dddddd" />
+    <param name="playlistcolor" value="999999" /> 
+    <param name="playlistalpha" value="50" /> <!-- 0 to 100 -->
+    <param name="currentmp3color" value="f9bf37" />
+    <param name="scrollbarcolor" value="cccccc" />
+    <param name="scrollbarovercolor" value="f9bf37" />
+    
+    <param name="showvolume" value="1" />
+    <param name="showinfo" value="1" />
+    <param name="showlist" value="1" />
+    
+    <!--
+        buttonwidth     The buttons width. By default set to 26.
+        sliderwidth     The slider width. By default set to 20.
+        sliderheight    The slider height. By default set to 10.
+        volumewidth     The width of the VOLUME button. By default set to 30.
+        volumeheight    The height of the VOLUME button. By default set to 6
+        showslider  0 to hide the player bar.
+        showloading     Loading bar display mode : autohide, always or never.
+        playlistrss     The RSS url with mp3 enclosures.
+        showplaylistnumbers     0 to hide numbers in the playlist.
+    -->
+</config>

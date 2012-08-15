@@ -2,21 +2,25 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
-import re
-import django.template, logging
+import re, logging
 from datetime import datetime
+
+from rpgweb.utilities import mediaplayers, autolinker
+from rpgweb.common import exception_swallower, game_file_url as real_game_file_url, reverse
+
+import django.template
 from django.template import defaulttags
-
-from rpgweb.utilities import mediaplayers
-from rpgweb.common import exception_swallower
-from django.core.urlresolvers import reverse
-register = django.template.Library() # IMPORTANT, module-level object used by templates !
-
 from django.utils.safestring import SafeData, EscapeData, mark_safe, mark_for_escaping
 from django.utils.html import escape
 from django.utils.http import urlencode
 from django.contrib.markup.templatetags.markup import restructuredtext
+from django.core.serializers import serialize
+from django.db.models.query import QuerySet
+from django.utils import simplejson
+import urllib
 
+
+register = django.template.Library() # IMPORTANT, module-level object used by templates !
 
 @register.tag
 def gameurl(parser, token):
@@ -27,7 +31,10 @@ def gameurl(parser, token):
     url_node = defaulttags.url(parser, token) 
     return url_node
 
-
+@register.simple_tag(takes_context=False)
+def game_file_url(a="", b="", c="", d="", e="", f=""): # simple tag doesn't accept *args or **kwargs...
+    full_url = real_game_file_url("".join((a, b, c, d, e, f)))
+    return full_url
 
 @register.simple_tag(takes_context=True)
 def usercolor(context, username_or_email):
@@ -46,20 +53,22 @@ def usercolor(context, username_or_email):
 
 
 
-def _generate_encyclopedia_links(html, datamanager):
+def _generate_encyclopedia_links(html_snippet, datamanager):
+
+    keywords_mapping= datamanager.get_encyclopedia_keywords_mapping()
     
-    keywords = datamanager.get_encyclopedia_keywords()
-    #print(">>>>", repr(keywords))
-    base_url = reverse("rpgweb.views.view_encyclopedia", kwargs={"game_instance_id":datamanager.game_instance_id})
-    for keyword in keywords: 
-        source = ur'\b(%s)\b' % re.escape(escape(keyword))
-        dest = ur'<a href="%s?%s">\1</a>' % (base_url, urlencode([("keyword", keyword)]))
-        #print(source, dest)
-        html = re.sub(source,
-                       dest,
-                       html,
-                       flags=re.IGNORECASE|re.UNICODE)
-    return html         
+    def link_attr_generator(match):
+        matched_str = match.group(0)
+        # detecting here WHICH keyword triggered the match would be possible, but expensive... let's postpone that
+        link = reverse("rpgweb.views.view_encyclopedia", 
+                       kwargs={"game_instance_id": datamanager.game_instance_id,})
+        link += "?search=%s" % urllib.quote_plus(matched_str.encode("utf8"), safe=b"") 
+        return dict(href=link) 
+
+    regex = autolinker.join_regular_expressions_as_disjunction(keywords_mapping.keys(), as_words=True)
+    
+    res_html = autolinker.generate_links(html_snippet, regex=regex, link_attr_generator=link_attr_generator)
+    return res_html         
                  
 
 @register.simple_tag(takes_context=True)
@@ -134,6 +143,11 @@ def has_permission(user, permission):
 register.filter('has_permission', has_permission)
 
 
+def jsonify(object):
+    if isinstance(object, QuerySet):
+        return serialize('json', object)
+    return mark_safe(simplejson.dumps(object))
+register.filter('jsonify', jsonify)
 
 """
 def preformat(value):

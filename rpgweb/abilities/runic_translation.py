@@ -24,12 +24,11 @@ class TranslationForm(AbstractGameForm):
 @register_view
 class RunicTranslationAbility(AbstractAbility):
     
-    TITLE = _lazy("Runic Translation")
     
     NAME = "runic_translation"
 
     GAME_FORMS = {"translation_form": (TranslationForm, "process_translation")}
-    ADMIN_FORMS = ["translation_form"]
+    ADMIN_FORMS = GAME_FORMS.copy()
     
     TEMPLATE = "abilities/runic_translation.html"
 
@@ -40,7 +39,7 @@ class RunicTranslationAbility(AbstractAbility):
 
     def get_template_vars(self, previous_form_data=None):
 
-
+  
         translation_form = self._instantiate_form(new_form_name="translation_form", 
                                                   hide_on_success=False,
                                                   previous_form_data=previous_form_data)

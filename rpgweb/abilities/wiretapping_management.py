@@ -40,7 +40,8 @@ class WiretappingAbility(AbstractAbility):
     NAME = "wiretapping"
 
     GAME_FORMS = {"targets_form": (WiretappingTargetsForm, "change_wiretapping_targets")}
-
+    ADMIN_FORMS = GAME_FORMS
+    
     TEMPLATE = "abilities/wiretapping_management.html"
 
     ACCESS = UserAccess.authenticated
@@ -62,7 +63,7 @@ class WiretappingAbility(AbstractAbility):
         targets_form = self._instantiate_form(new_form_name="targets_form", 
                                               hide_on_success=False,
                                               initial_data=initial_data,
-                                              previous_form_data=previous_form_data)
+                                              previous_form_data=previous_form_data,)
  
         return {
                  'page_title': _("Wiretapping Management"),
@@ -77,7 +78,7 @@ class WiretappingAbility(AbstractAbility):
         ####### DUPLICATED OF MODULE'S
         target_names = sorted(list(set(target_names))) # renormalization, just in case
 
-        character_names = self._datamanager.get_character_usernames()
+        character_names = self.datamanager.get_character_usernames()
         for name in target_names:
             if name not in character_names:
                 print("tRAGTES", target_names, name)
@@ -88,8 +89,8 @@ class WiretappingAbility(AbstractAbility):
 
         self.private_data["wiretapping_targets"] = PersistentList(target_names)
 
-        self._datamanager.log_game_event(_noop("Wiretapping targets set to (%(targets)s) by %(username)s."),
-                             PersistentDict(targets=", ".join(target_names), username=self._datamanager.user.username),
+        self.datamanager.log_game_event(_noop("Wiretapping targets set to (%(targets)s) by %(username)s."),
+                             PersistentDict(targets=", ".join(target_names), username=self.datamanager.user.username),
                              url=None)
 
         return _("Wiretapping successfully set up.")
@@ -129,6 +130,6 @@ class WiretappingAbility(AbstractAbility):
 
             assert len(data["wiretapping_targets"]) <= settings["max_wiretapping_targets"]
 
-            character_names = self._datamanager.get_character_usernames()
+            character_names = self.datamanager.get_character_usernames()
             for char_name in data["wiretapping_targets"]:
                 assert char_name in character_names

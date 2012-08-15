@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 
 ### NO import from rpgweb.common, else circular import !! ###
 
-import sys, os, collections, logging, inspect, types, traceback, re
+import sys, os, collections, logging, inspect, types, traceback, re, glob
 import yaml, random, contextlib
 from .counter import Counter
 from datetime import datetime, timedelta
@@ -19,6 +19,7 @@ from django_zodb import database
 from django.core.validators import email_re
 from django.conf import settings as django_settings
 from .. import default_settings as game_default_settings
+  
   
 class Conf(object):
     """
@@ -164,6 +165,9 @@ def check_object_tree(tree, allowed_types, path):
 
 
 def substract_lists(available_gems, given_gems):
+    """
+    Returns None if operation is impossible.
+    """
     available_gems = Counter(available_gems)
     given_gems = Counter(given_gems)
 
@@ -174,11 +178,47 @@ def substract_lists(available_gems, given_gems):
     return PersistentList(gems_remaining.elements())
 
 
+def string_similarity(first, second):
+    """Find the Levenshtein distance between two strings.
+    Returns a positive integer, with 0 <-> identity."""
+    if len(first) > len(second):
+        first, second = second, first
+    if len(second) == 0:
+        return len(first)
+    first_length = len(first) + 1
+    second_length = len(second) + 1
+    distance_matrix = [[0] * second_length for _ in range(first_length)]
+    for i in range(first_length):
+        distance_matrix[i][0] = i
+    for j in range(second_length):
+        distance_matrix[0][j]=j
+    for i in xrange(1, first_length):
+        for j in range(1, second_length):
+            deletion = distance_matrix[i-1][j] + 1
+            insertion = distance_matrix[i][j-1] + 1
+            substitution = distance_matrix[i-1][j-1]
+            if first[i-1] != second[j-1]:
+                substitution += 1
+            distance_matrix[i][j] = min(insertion, deletion, substitution)
+    return distance_matrix[first_length-1][second_length-1]
 
 
-## Tools for database sanity checks ##
+def sanitize_query_dict(query_dict):
+    """
+    We remove terminal '[]' in request data keys and replace enforce their value to be a list
+    to allow mapping of these to methods arguments (which can't contain '[]').
+    
+    *query_dict* must be mutable.
+    """
+    for key in query_dict:
+        if key.endswith("[]"): # standard js/php array notation
+            new_key = key[:-2]
+            query_dict[new_key] = query_dict.getlist(key)
+            del query_dict[key]
+    #print ("NE QUERY DICT", query_dict)
+    return query_dict    
 
-
+ 
 def adapt_parameters_to_func(all_parameters, func):
     """
     Strips unwanted parameters in a dict of parameters (eg. obtained via GET or POST),
@@ -186,24 +226,33 @@ def adapt_parameters_to_func(all_parameters, func):
 
     Returns a dict of relevant parameters, or raises common signature exceptions.
     """
+    
 
     (args, varargs, keywords, defaults) = inspect.getargspec(func)
-
+    print("########", func, all_parameters, args)
+    
     if keywords is not None:
         relevant_args = all_parameters # exceeding args will be handled properly
     else:
         relevant_args = dict((key, value) for (key, value) in all_parameters.items() if key in args)
 
     try:
+        #print("#<<<<<<<", func, relevant_args)
         inspect.getcallargs(func, **relevant_args)
     except (TypeError, ValueError), e:
         raise
 
     return relevant_args
 
+
+## Tools for database sanity checks ##
+
+
+
 def check_no_duplicates(value):
     assert len(set(value)) == len(value), value
-
+    return True
+    
 def check_is_range_or_num(value):
     if isinstance(value, (int, long, float)):
         pass # nothing to check
@@ -223,15 +272,22 @@ def check_is_string(value):
     assert isinstance(value, basestring) and value, value
     return True
 
+def check_is_float(value):
+    assert isinstance(value, (int, long, float)), value # integers are considered as floats too!!
+    return True
+
 def check_is_int(value):
     assert isinstance(value, (int, long)), value
     return True
 
 def check_is_email(email):
     assert email_re.match(email)
+    return True
 
 def check_is_slug(value):
-    assert isinstance(value, basestring) and value and " " not in value, repr(value)
+    assert isinstance(value, basestring), repr(value)
+    assert " " not in value, repr(value)
+    assert "\n" not in value, repr(value)
     return True
 
 def check_is_bool(value):
@@ -250,8 +306,15 @@ def check_num_keys(value, num):
     assert len(value.keys()) == num, (value, num)
     return True
 
+def check_is_positive_float(value, non_zero=True):
+    check_is_float(value)
+    assert value >= 0
+    if non_zero:
+        assert value != 0
+    return True
+
 def check_is_positive_int(value, non_zero=True):
-    assert isinstance(value, (int, long))
+    check_is_int(value)
     assert value >= 0
     if non_zero:
         assert value != 0
@@ -260,6 +323,10 @@ def check_is_positive_int(value, non_zero=True):
 def check_is_restructuredtext(value):
     from django.contrib.markup.templatetags.markup import restructuredtext
     assert restructuredtext(value)
+    return True
+
+def check_is_game_file(*paths_elements):
+    assert os.path.isfile(os.path.join(config.GAME_FILES_ROOT, *paths_elements))
     return True
 
 def is_email(email):
@@ -283,8 +350,6 @@ def assert_sets_equal(set1, set2):
     return True
 
 
-
-
 def validate_value(value, validator):
 
     if issubclass(type(validator), types.TypeType) or isinstance(validator, (list, tuple)): # should be a list of types
@@ -304,26 +369,52 @@ def check_dictionary_with_template(my_dict, template, strict=False):
     if strict:
         assert_sets_equal(my_dict.keys(), template.keys())
     else:
-        for key in template.keys():
-            assert key in my_dict.keys(), key
+        assert set(template.keys()) <= set(my_dict.keys())
 
     for key in template.keys():
         validate_value(my_dict[key], template[key])
 
 
-def load_yaml_fixture(yaml_file):
-
+def load_yaml_file(yaml_file):
     with open(yaml_file, "U") as f:
         raw_data = f.read()
 
     for (lineno, linestr) in enumerate(raw_data.split(b"\n"), start=1):
         if b"\t" in linestr:
-            raise ValueError(
-                "Forbidden tabulation found at line %d in yaml file %s : '%r'!" % (lineno, yaml_file, linestr))
+            raise ValueError("Forbidden tabulation found at line %d in yaml file %s : '%r'!" % (lineno, yaml_file, linestr))
+    
+    data = yaml.load(raw_data)
+    return data
 
-    new_data = yaml.load(raw_data)
 
-    return new_data
+YAML_EXTENSIONS = ["*.yaml", "*.yml"]
+def load_yaml_fixture(yaml_fixture):
+    """
+    Can load a single yaml file, or a directory containing y[a]ml files.
+    Each file must only contain a single yaml document.
+    """
+    
+    if not os.path.exists(yaml_fixture):
+        raise ValueError(yaml_fixture)
+    if os.path.isfile(yaml_fixture):
+        data = load_yaml_file(yaml_fixture)
+    else:
+        assert os.path.isdir(yaml_fixture)
+        data = {}
+        yaml_files = [path for pattern in YAML_EXTENSIONS
+                      for path in glob.glob(os.path.join(yaml_fixture, pattern))]
+        del yaml_fixture # security
+        for yaml_file in yaml_files:
+            part = load_yaml_file(yaml_file)
+            if not isinstance(part, dict) or (set(part.keys()) & set(data.keys())):
+                raise ValueError("Improper or colliding content in %s" % yaml_file)
+            for key, value in part.items():
+                data.update(part)
+    return data
+    
+
+
+    
 
 
 
@@ -334,33 +425,6 @@ def load_yaml_fixture(yaml_file):
 def utc_to_local(utc_time):
     timedelta = datetime.now() - datetime.utcnow()
     return utc_time + timedelta
-
-
-
-def compute_remote_datetime(delay_mn):
-    # delay can be a number or a range (of type int or float)
-    # we always work in UTC
-
-    new_time = datetime.utcnow()
-
-    if delay_mn:
-        if not isinstance(delay_mn, (int, long, float)):
-            delay_s_min = int(60 * delay_mn[0])
-            delay_s_max = int(60 * delay_mn[1])
-            assert delay_s_min <= delay_s_max, "delay min must be < delay max"
-
-            delay_s = random.randint(delay_s_min, delay_s_max) # time range in seconds
-
-
-        else:
-            delay_s = 60 * delay_mn  # no need to coerce to integer
-
-        #print "DELAY ADDED : %s s" % delay_s
-
-        new_time += timedelta(seconds=delay_s)
-
-    return new_time
-
 
 def is_past_datetime(dt):
     # WARNING - to compute delays, we always work in UTC TIME
@@ -415,6 +479,7 @@ def make_bi_usage_decorator(decorator):
             return factory(object)
         return factory
     return bidecorator
+
 
 
 class TechnicalEventsMixin(object):
@@ -475,14 +540,11 @@ class TechnicalEventsMixin(object):
 
 
 
-
+## conversions between variable naming conventions ##
 
 def to_snake_case(text):
     s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', text)
     return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
-
-
-
 
 def to_pascal_case(text):
     if "_" in text:
@@ -493,8 +555,9 @@ def to_pascal_case(text):
         return text
     return text[0].upper() + text[1:]
 
-
 def to_camel_case(text):
     text = to_pascal_case(text)
     return text[0].lower() + text[1:]
+
+
 

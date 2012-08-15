@@ -7,37 +7,39 @@ import json
 
 from django.http import Http404, HttpResponseRedirect, HttpResponse,\
     HttpResponseForbidden, HttpResponseBadRequest
-from django.shortcuts import render_to_response
+from django.shortcuts import render
 from django.template import RequestContext, loader
 
 from ..datamanager import GameDataManager
 from ..forms import AbstractGameForm
 from rpgweb.common import *
+from rpgweb.datamanager.datamanager_tools import transaction_watcher,\
+    readonly_method
 
 
     
 @decorator
-def transform_usage_error(caller, self, request, *args, **kwargs):
+def transform_usage_error(caller, self, *args, **kwargs):
     """
     Can be used for both html and ajax requests, so only 'error' HTTP codes should be returned
     if an exception is encountered.
     """
     try:
         
-        return caller(self, request, *args, **kwargs)
+        return caller(self, *args, **kwargs)
 
     except AccessDeniedError, e:
             
             # TODO - test all these pages, in particular impersonation case !!!
             
-            if request.datamanager.user.is_impersonation:
+            if self.datamanager.user.is_impersonation:
                 # Will mainly happen when we switch between two impersonations with different access rights, on a restricted page
-                request.datamanager.user.add_error(_("Currently impersonated user can't access view %s") % self.NAME)
+                self.datamanager.user.add_error(_("Currently impersonated user can't access view %s") % self.NAME)
                 return HttpResponseRedirect(reverse("rpgweb.views.homepage"))
             
             if isinstance(e, AuthenticationRequiredError):
                 # uses HTTP code for TEMPORARY redirection
-                return HttpResponseRedirect(reverse("rpgweb.views.login", kwargs=dict(game_instance_id=request.datamanager.game_instance_id)))
+                return HttpResponseRedirect(reverse("rpgweb.views.login", kwargs=dict(game_instance_id=self.datamanager.game_instance_id)))
             else:
                 # even permission errors are treated like base class AccessDeniedError ATM
                 return HttpResponseForbidden(_("Access denied")) # TODO FIXME - provide a proper template and message !!
@@ -47,8 +49,26 @@ def transform_usage_error(caller, self, request, *args, **kwargs):
        
     except Exception:         
         raise # we let 500 handler take are of all other (very abnormal) exceptions (unhandled UsageError or others)
+ 
 
 
+
+
+ 
+class ClassInstantiationProxy(object):
+    """
+    Stateless object which automatically instantiates and triggers its wrapped GameView class on call.
+    Also forwards attribute retrievals.
+    """
+    def __init__(self, klass):
+        self.klass = klass # important attribute
+    def __getattr__(self, name):
+        return getattr(self.klass, name) # useful for introspection of views                
+    def __call__(self, request, *args, **kwargs):
+        return self.klass(request.datamanager)(request, *args, **kwargs) # we execute new instance of underlying class, without parameters
+    def __str__(self):
+        return "ClassInstantiationProxy around %s" % self.klass
+    __repr__ = __str__
 
 
 
@@ -88,21 +108,28 @@ class GameViewMetaclass(type):
 
                 def _check_callback(name):
                     assert getattr(NewClass, callback)
-                    assert callback not in RESERVED_NAMES
+                    assert callback not in RESERVED_NAMES, (callback, RESERVED_NAMES)
                     assert not callback.startswith("_")
                     
                 for (action_name, callback) in NewClass.ACTIONS.items():
                     _check_callback(callback)
-                    
-                for (form_name, (FormClass, callback)) in NewClass.GAME_FORMS.items():
-                    assert issubclass(FormClass, AbstractGameForm)
-                    _check_callback(callback)
                 
-                for form_name in NewClass.ADMIN_FORMS:
-                    assert form_name in NewClass.GAME_FORMS
+                for form_setup in (NewClass.GAME_FORMS, NewClass.ADMIN_FORMS):
+                    for (form_name, (FormClass, callback)) in NewClass.GAME_FORMS.items():
+                        assert issubclass(FormClass, AbstractGameForm)
+                        _check_callback(callback)
                     
             GameDataManager.register_game_view(NewClass)
             
+            
+            
+    @property
+    def as_view(cls):
+        """
+        To be used in django urls conf ; similar to standard class-based views of django,
+        except that a separate instance is created for each request!
+        """
+        return ClassInstantiationProxy(cls)
     
 
 
@@ -133,7 +160,7 @@ class AbstractGameView(object):
     
     ACTIONS = {} # dict mapping action identifiers to processing method names (for ajax calls or custom forms)
     GAME_FORMS = {} # dict mapping form identifiers to tuples (AbstractGameForm subclass, processing method name)
-    ADMIN_FORMS = [] # keys of GAME_FORMS that should be exposed as admin forms
+    ADMIN_FORMS = {} # same as GAME_FORMS but for forms that should be exposed as admin forms
     
     TEMPLATE = None # HTML template name, required when using default request handler
     ADMIN_TEMPLATE = "utilities/admin_form_widget.html" # TODO - template to render a single admin form, with notifications
@@ -143,15 +170,26 @@ class AbstractGameView(object):
     PERMISSIONS = [] # list of required permission names, only used for character access    
     ALWAYS_AVAILABLE = False # True iff view can't be globally hidden by game master
 
-    _action_field = "_action_" # for ajax and no-form request
+    _ACTION_FIELD = "_action_" # for ajax and no-form request
 
     logger = logging.getLogger("views")
 
 
-    def __init__(self, *args, **kwargs):
-        pass # we ignore any argument
+    ## request and view params, set ONLY during a request processing ##
+    request = None
+    args = None
+    kwargs = None 
+    ###############
     
-    
+
+    def __init__(self, datamanager, *args, **kwargs):
+        self._inner_datamanager = datamanager
+        # do NOT store datamanager.user, as it might change during execution!!!
+        
+    @property
+    def datamanager(self):
+        return self._inner_datamanager
+     
     @classmethod
     def get_access_token(cls, datamanager):
         
@@ -181,18 +219,18 @@ class AbstractGameView(object):
     
     
     
-    def _check_writability(self, request):
+    def _check_writability(self):
         
-        user = request.datamanager.user
-        if request.POST and not user.has_write_access:
-            request.POST.clear() # thanks to our middleware that made it mutable...
+        user = self.datamanager.user
+        if self.request.POST and not user.has_write_access:
+            self.request.POST.clear() # thanks to our middleware that made it mutable...
             user.add_error(_("You are not allowed to submit changes to that page"))    
-        assert user.has_write_access or not request.POST
+        assert user.has_write_access or not self.request.POST
         
     
-    def _check_standard_access(self, request):
+    def _check_standard_access(self):
 
-        access_result = self.get_access_token(request.datamanager)
+        access_result = self.get_access_token(self.datamanager)
         
         if access_result == AccessResult.available:
             return
@@ -206,20 +244,20 @@ class AbstractGameView(object):
         assert False
      
      
-    def _check_admin_access(self, request):
-        if not request.datamanager.user.is_master:
+    def _check_admin_access(self):
+        if not self.datamanager.user.is_master:
             raise AuthenticationRequiredError(_("Authentication required."))
         
     
-    @classmethod
-    def _instantiate_form(cls,
-                          datamanager,
+
+    def _instantiate_form(self,
                           new_form_name, # id of the form to be potentially instantiated
                           hide_on_success=False, # should we return None if this form has just been submitted successfully?
                           previous_form_data=None, # data about previously submitted form, if any
                           initial_data=None):
-        assert datamanager is None or datamanager # some forms don't neeed a valid datamanager
-        
+        """
+        *form_initializer* will be passed as 1st argument to the form. By defauyt, it's the datamanager.
+        """
         if previous_form_data:
             previous_form_name = previous_form_data.form_name
             previous_form_instance = previous_form_data.form_instance
@@ -227,7 +265,7 @@ class AbstractGameView(object):
         else:
             previous_form_name = previous_form_instance = previous_form_successful = None
         
-        NewFormClass = cls.GAME_FORMS[new_form_name][0]
+        NewFormClass = self.GAME_FORMS[new_form_name][0]
 
         if __debug__:
             form_data = (previous_form_name, previous_form_instance, (previous_form_successful is not None))
@@ -239,57 +277,67 @@ class AbstractGameView(object):
                 if hide_on_success:
                     return None
                 else:
-                    pass
+                    pass 
 
             else:
                 return previous_form_instance # atm we ALWAYS redisplay a failed form
         else:
             pass
 
-        form = NewFormClass(datamanager, initial=initial_data)
-
+        form_initializer = self.datamanager # this property might be overridden by subclasses
+        form = NewFormClass(form_initializer, initial=initial_data)
         return form
 
 
+    def _try_coercing_arguments_to_func(self, data, func):
+        # TEST THIS STUFF!!
+        try: 
+            relevant_args = utilities.adapt_parameters_to_func(data, func)
+            return relevant_args
+        except (TypeError, ValueError), e:
+            raise UsageError(_("Wrong arguments when calling method %s") % func.__name__)
+    
 
     def _try_processing_action(self, data):
         """
         Raises AbnormalUsageError if action is not determined,
         else returns its result (or raises an action exception).
+        
         """
-        action_name = data.get(self._action_field)
+        data = utilities.sanitize_query_dict(data)
+        
+        action_name = data.get(self._ACTION_FIELD)
         if not action_name or action_name not in self.ACTIONS:
             raise AbnormalUsageError(_("Abnormal action name: %s") % action_name)
         
         func = getattr(self, self.ACTIONS[action_name])
-        relevant_args = utilities.adapt_parameters_to_func(data, func)
+        
+        relevant_args = self._try_coercing_arguments_to_func(data=data, func=func) # might raise UsageError
         res = func(**relevant_args)
         return res
 
 
-    def _process_ajax_request(self, request):
+    def _process_ajax_request(self):
         # we let exceptions flow upto upper level handlers
-        res = self._try_processing_action(request.POST) 
+        res = self._try_processing_action(self.request.POST) 
         response = json.dumps(res)
         return HttpResponse(response)
 
     
-    def _do_process_game_form_submission(self, request, data, form_name, FormClass, action_name):
+    def _do_process_form_submission(self, data, form_name, FormClass, action_name):
         
-        user = request.datamanager.user
+        user = self.datamanager.user
         res = dict(result = None,
                    form_data = None)
         
-        if request.method != "POST":
-            return res
-        
+        assert self.request.method == "POST"
         assert FormClass.matches(data)
         
         form_successful = False        
-        bound_form = FormClass(self._datamanager, data=data)
+        bound_form = FormClass(self.datamanager, data=data)
         
         if bound_form.is_valid():
-            with action_failure_handler(request, success_message=None): # only for unhandled exceptions
+            with action_failure_handler(self.request, success_message=None): # only for unhandled exceptions
                 action = getattr(self, action_name)
 
                 relevant_args = utilities.adapt_parameters_to_func(bound_form.get_normalized_values(), action)
@@ -310,7 +358,7 @@ class AbstractGameView(object):
         return res
     
     
-    def _process_post_data(self, request):
+    def _process_post_data(self):
         """
         Returns a dict with keys:
         
@@ -320,25 +368,25 @@ class AbstractGameView(object):
         res = dict(result = None,
                    form_data = None)
         
-        if request.method != "POST":
+        if self.request.method != "POST":
             return res
         
-        user = request.datamanager.user
-        data = request.POST
+        user = self.datamanager.user
+        data = self.request.POST
 
-        if data.get(self._action_field): # manually built form
-            with action_failure_handler(request, success_message=None): # only for unhandled exceptions
+        if data.get(self._ACTION_FIELD): # manually built form
+            with action_failure_handler(self.request, success_message=None): # only for unhandled exceptions
                 res["result"] = self._try_processing_action(data)
         
         else: # it must be a call using registered django newforms
             for (form_name, (FormClass, action_name)) in self.GAME_FORMS.items():
                 if FormClass.matches(data): # class method
-                    res = self._do_process_game_form_submission(request, data=data,
-                                                           form_name=form_name, FormClass=FormClass, action_name=action_name)
+                    res = self._do_process_form_submission(data=data,
+                                                                form_name=form_name, FormClass=FormClass, action_name=action_name)
                     break # IMPORTANT
             else:
                 user.add_error(_("Submitted form data hasn't been recognized"))
-                logging.error("Unexpected form data sent to %s - %r" % (self.NAME, request.POST))
+                logging.error("Unexpected form data sent to %s - %r" % (self.NAME, self.request.POST))
     
         return res
 
@@ -347,79 +395,119 @@ class AbstractGameView(object):
         raise NotImplementedError("Unimplemented get_template_vars called in %s" % self)
     
     
-    def _process_html_request(self, request):
+    def _process_html_request(self):
 
-        res = self._process_post_data(request)
+        res = self._process_post_data()
         
-        success = res["result"] # can be None if nothing processed
+        success = res["result"] # can be None also if nothing processed
         previous_form_data = res["form_data"]
         
         template_vars = self.get_template_vars(previous_form_data)
 
         assert isinstance(template_vars, collections.Mapping), template_vars
 
-        response = render_to_response(self.TEMPLATE,
-                                      template_vars,
-                                      context_instance=RequestContext(request))
+        response = render(self.request,
+                          self.TEMPLATE,
+                          template_vars)
         return response
 
         
 
-    def _auto_process_request(self, request):
+    def _auto_process_request(self):
         #if not self.datamanager.player.has_permission(self.NAME): #TODO
         #    raise RuntimeError("Player has no permission to use ability")
-
-        if request.is_ajax() or request.GET.get("is_ajax"):
-            return self._process_ajax_request(request)
+        if self.request.is_ajax() or self.request.GET.get("is_ajax"):
+            return self._process_ajax_request()
         else:
-            return self._process_html_request(request)    
+            return self._process_html_request()    
     
-     
+    
     def _process_standard_request(self, request, *args, **kwargs):
-        raise NotImplementedError("_process_standard_request must be implemented by AbstractGameView subclass")
+        """
+        Must return a valid http response.
+        """
+        return self._auto_process_request()
     
     
+    def _pre_request(self, request, *args, **kwargs):
+        # we finish initializing the game view instance, with request-specific parameters
+        assert request.datamanager == self._inner_datamanager # let's be coherent
+        self.request = request
+        self.args = args
+        self.kwargs = kwargs
+    
+    def _post_request(self):
+        del self.request, self.args, self.kwargs # cleanup
+        
+        
     @transform_usage_error
     def __call__(self, request, *args, **kwargs):
-         
-        self._check_writability(request) # crucial
-        self._check_standard_access(request) # crucial
-         
-        return self._process_standard_request(request, *args, **kwargs)
+        
+        self._pre_request(request, *args, **kwargs) 
+        try:
+            self._check_writability() # crucial
+            self._check_standard_access() # crucial
+            
+            return self._process_standard_request(request, *args, **kwargs)
+        finally:
+            self._post_request()
+        
      
- 
+
+     
+    ### Administration API ###
+     
+    
+    @readonly_method
+    def compute_admin_template_variables(self, form_name, previous_form_data=None):
+        """
+        Can be used both in and out of request processing.
+        """
+        form = self._instantiate_form(new_form_name=form_name,
+                                      hide_on_success=False,
+                                      previous_form_data=previous_form_data,
+                                      initial_data=None,)
+        
+        template_vars = dict(target_form_id=self.datamanager.build_admin_widget_identifier(self.__class__, form_name),
+                             form=form)
+        return template_vars
+     
+     
+     
     @transform_usage_error
+    @transaction_watcher(ensure_data_ok=True, ensure_game_started=False)
     def process_admin_request(self, request, form_name):
 
         assert form_name in self.ADMIN_FORMS # else big pb!
         
-        self._check_writability(request) # crucial
-        self._check_admin_access(request) # crucial
+        self._pre_request(request) 
+        try:
+            self._check_writability() # crucial
+            self._check_admin_access() # crucial
+            
+            data = request.POST
+            (FormClass, action_name) = self.ADMIN_FORMS[form_name]
+            
+            if request.method == "POST":
+                res = self._do_process_form_submission(data=data,
+                                                      form_name=form_name, FormClass=FormClass, action_name=action_name)
+            else:
+                res = dict(result = None,
+                           form_data = None)   
+                
+            success = res["result"] # can be None also if nothing processed
+            previous_form_data = res["form_data"] 
+                     
+            template_vars = self.compute_admin_template_variables(form_name=form_name, previous_form_data=previous_form_data)
+            
+            response = render(request,
+                              self.ADMIN_TEMPLATE,
+                              template_vars)
+            return response
+        finally:
+            self._post_request()
         
-        data = request.POST
-        (FormClass, action_name) = self.GAME_FORMS[form_name]
 
-        res = self._do_process_game_form_submission(request, data=data,
-                                                    form_name=form_name, FormClass=FormClass, action_name=action_name)
-        
-        success = res["result"] # can be None if nothing processed
-        previous_form_data = res["form_data"]        
-
-  
-        form = self._instantiate_form(new_form_name=form_name,
-                                      hide_on_success=False,
-                                      previous_form_data=previous_form_data,
-                                      initial_data=None,
-                                      datamanager=request.datamanager,)
-        
-        template_vars = dict(target_form_id=request.datamanager.build_admin_widget_identifier(self.__class__, form_name),
-                             form=form)
-        response = render_to_response(self.ADMIN_TEMPLATE,
-                                      template_vars,
-                                      context_instance=RequestContext(request))
-        return response
-        
-        
         
 
 def _normalize_view_access_parameters(access=_undefined, 
@@ -467,22 +555,8 @@ def _normalize_view_access_parameters(access=_undefined,
                 permissions=permissions,
                 always_available=always_available)
                 
-
  
-class ClassInstantiationProxy(object):
-    """
-    Stateless object which automatically instantiates and triggers its wrapped GameView class on call.
-    """
-    def __init__(self, klass):
-        self._klass = klass
-    def __getattr__(self, name):
-        return getattr(self._klass, name) # useful for introspection of views                
-    def __call__(self, request, *args, **kwargs):
-        return self._klass(request.datamanager, *args, **kwargs)(request, *args, **kwargs) # we execute new instance of underlying class
-    def __str__(self):
-        return "ClassInstantiationProxy around %s" % self._klass
-    __repr__ = __str__
-    
+
     
 def register_view(view_object=None, 
                   access=_undefined,
@@ -491,25 +565,36 @@ def register_view(view_object=None,
                   attach_to=_undefined):
     """
     Helper allowing with or without-arguments decorator usage for GameView.
+    
+    Returns a CLASS or a METHOD, depending on the type of the wrapped object.
     """
+    
 
     def _build_final_view_callable(real_view_object):
         
+        local_attach_to = attach_to
+        
         if isinstance(real_view_object, type):
-            assert real_view_object.ACCESS # must be a class!
             
-            assert all((val == _undefined) for val in (access, permissions, always_available, attach_to)) # these params must already exist as class attrs
-            NewViewType = real_view_object
-            
+            assert issubclass(real_view_object, AbstractGameView)
+            assert real_view_object.ACCESS 
+            assert all((val == _undefined) for val in (access, permissions, always_available, local_attach_to)) # these params must already exist as class attrs
+            view_callable = real_view_object
             
         else:    
             
             assert inspect.isroutine(real_view_object) # not a class!
-    
+            
+            if local_attach_to is not _undefined and not isinstance(local_attach_to, GameViewMetaclass):
+                # we get back from proxy to AbstractGameView class
+                local_attach_to = local_attach_to.klass
+                assert issubclass(local_attach_to, AbstractGameView)
+
+
             normalized_access_args = _normalize_view_access_parameters(access=access,
                                                                        permissions=permissions,
                                                                        always_available=always_available,
-                                                                       attach_to=attach_to)
+                                                                       attach_to=local_attach_to)
             
             class_data = dict((key.upper(), value) for key, value in normalized_access_args.items())
             class_data["NAME"] = real_view_object.__name__
@@ -518,13 +603,13 @@ def register_view(view_object=None,
             # we build new GameView subclass on the fly
             KlassName = utilities.to_pascal_case(real_view_object.__name__)
             NewViewType = type(KlassName, (AbstractGameView,), class_data) # metaclass checks everything for us
-           
+            view_callable = NewViewType.as_view
         
-        res =  ClassInstantiationProxy(NewViewType)
-        return res
+        return view_callable # a class or method, depending on *real_view_object*
     
     if view_object: 
         return _build_final_view_callable(view_object)
-    return _build_final_view_callable # new decorator ready to be applied to a view function/type
-
+    else:
+        return _build_final_view_callable # new decorator ready to be applied to a view function/type
+    assert False
 

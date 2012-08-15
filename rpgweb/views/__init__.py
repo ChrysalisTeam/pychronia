@@ -13,10 +13,9 @@ import copy
 from contextlib import contextmanager
 from django.conf import settings
 from django.core.mail import send_mail
-from django.core.urlresolvers import reverse
 from django.http import Http404, HttpResponseRedirect, HttpResponse,\
     HttpResponseForbidden
-from django.shortcuts import render_to_response
+from django.shortcuts import render
 from django.template import RequestContext
 from django.utils.html import escape
 from django.utils.translation import ugettext as _, ugettext_lazy as _lazy, ungettext
@@ -26,10 +25,14 @@ from .. import forms
 from ._abstract_game_view import register_view
 from ..authentication import authenticate_with_credentials, logout_session
 from .. import datamanager as dm_module
-from rpgweb.utilities import mediaplayers
+from rpgweb.utilities import mediaplayers, fileservers
 from rpgweb.datamanager import GameDataManager
 from django.shortcuts import render
+from rpgweb.common import game_file_url, UsageError
+from decorator import decorator
 
+
+from .gameviews import character_profile # IMPORTANT
 
 '''
 # TODO - transform this into instance which exposes real views as attributes, wrapped with register_view !!!!
@@ -57,6 +60,34 @@ def ability(request, ability_name):
 
     return response
 '''
+
+
+def is_nightmare_captcha_successful(request):
+    captcha_id = request.POST.get("captcha_id") # CLEAR TEXT ATM
+    if captcha_id:
+        attempt = request.POST.get("captcha_answer")
+        if attempt:
+            try:
+                explanation = request.datamanager.check_captcha_answer_attempt(captcha_id=captcha_id, attempt=attempt)
+                del explanation # how can we display it, actually ?
+                request.user.add_message(_("Captcha check successful"))
+                return True
+            except UsageError:
+                pass
+    return False
+    
+
+
+def serve_game_file(request, hash="", path="", **kwargs):
+    
+    real_hash = hash_url_path(path)
+    
+    if not hash or not real_hash or hash != real_hash:
+        raise Http404("File access denied")
+    
+    full_path = os.path.join(config.GAME_FILES_ROOT, path)
+    return fileservers.serve_file(request, path=full_path)
+  
  
 @register_view(access=UserAccess.master)
 def ajax_force_email_sending(request):
@@ -181,12 +212,12 @@ def chatroom(request, template_name='generic_operations/chatroom.html'):
     # TODO - move "chatting users" to ajax part, because it must be updated !!
     chatting_users = [request.datamanager.get_official_name_from_username(username)
                       for username in request.datamanager.get_chatting_users()]
-    return render_to_response(template_name,
-                            {
-                             'page_title': _("Common Chatroom"),
-                             'chatting_users': chatting_users
-                            },
-                            context_instance=RequestContext(request))
+    return render(request,
+                  template_name,
+                    {
+                     'page_title': _("Common Chatroom"),
+                     'chatting_users': chatting_users
+                    })
 
 
 
@@ -215,12 +246,12 @@ def domotics_security(request, template_name='generic_operations/domotics_securi
 
     are_doors_open = request.datamanager.are_house_doors_open()
 
-    return render_to_response(template_name,
-                            {
-                             'page_title': _("Doors Security Management"),
-                             'are_doors_open': are_doors_open
-                            },
-                            context_instance=RequestContext(request))
+    return render(request,
+                  template_name,
+                    {
+                     'page_title': _("Doors Security Management"),
+                     'are_doors_open': are_doors_open
+                    })
 
 
 
@@ -263,13 +294,14 @@ def compose_message(request, template_name='messaging/compose.html'):
     else:
         form = forms.MessageComposeForm(request)
 
-    return render_to_response(template_name,
-                            {
-                             'page_title': _("Compose Message"),
-                             'message_form': form,
-                             'mode': "compose"
-                            },
-                            context_instance=RequestContext(request))
+    return render(request,
+                  template_name,
+                    {
+                     'page_title': _("Compose Message"),
+                     'message_form': form,
+                     'mode': "compose"
+                    })
+
 
 
 @register_view(access=UserAccess.authenticated)
@@ -288,15 +320,15 @@ def inbox(request, template_name='messaging/messages.html'):
 
     messages = list(reversed(messages)) # most recent first
     
-    return render_to_response(template_name,
-                            {
-                             'page_title': _("Messages Received"),
-                             'messages': messages,
-                             'remove_from': False,
-                             'remove_to': remove_to,
-                             'mode': "inbox"
-                            },
-                            context_instance=RequestContext(request))
+    return render(request,
+                  template_name,
+                    {
+                     'page_title': _("Messages Received"),
+                     'messages': messages,
+                     'remove_from': False,
+                     'remove_to': remove_to,
+                     'mode': "inbox"
+                    })
 
 @register_view(attach_to=inbox)
 def ajax_set_message_read_state(request):
@@ -348,15 +380,15 @@ def outbox(request, template_name='messaging/messages.html'):
 
     messages = list(reversed(messages)) # most recent first
 
-    return render_to_response(template_name,
-                            {
-                             'page_title': _("Messages Sent"),
-                             'messages': messages,
-                             'remove_from': remove_from,
-                             'remove_to': False,
-                             'mode': "outbox"
-                            },
-                            context_instance=RequestContext(request))
+    return render(request,
+                  template_name,
+                    {
+                     'page_title': _("Messages Sent"),
+                     'messages': messages,
+                     'remove_from': remove_from,
+                     'remove_to': False,
+                     'mode': "outbox"
+                    })
 
 @register_view(access=UserAccess.master)
 def view_single_message(request, msg_id, template_name='messaging/single_message.html'):
@@ -379,13 +411,13 @@ def view_single_message(request, msg_id, template_name='messaging/single_message
         else:
             user.add_error(_("The requested message doesn't exist."))
 
-    return render_to_response(template_name,
-                            {
-                             'page_title': _("Single Message"),
-                             'is_queued': is_queued,
-                             'message': message
-                            },
-                            context_instance=RequestContext(request))
+    return render(request,
+                  template_name,
+                    {
+                     'page_title': _("Single Message"),
+                     'is_queued': is_queued,
+                     'message': message
+                    })
 
 
 
@@ -396,15 +428,15 @@ def all_sent_messages(request, template_name='messaging/messages.html'):
 
     messages = list(reversed(messages)) # most recent first
 
-    return render_to_response(template_name,
-                            {
-                             'page_title': _("All Transferred Messages"),
-                             'messages': messages,
-                             'remove_from': False,
-                             'remove_to': False,
-                             'mode': "all_sent_messages"
-                            },
-                            context_instance=RequestContext(request))
+    return render(request,
+                  template_name,
+                    {
+                     'page_title': _("All Transferred Messages"),
+                     'messages': messages,
+                     'remove_from': False,
+                     'remove_to': False,
+                     'mode': "all_sent_messages"
+                    })
 
 
 @register_view(access=UserAccess.master)
@@ -414,15 +446,15 @@ def all_queued_messages(request, template_name='messaging/messages.html'):
 
     messages = list(reversed(messages)) # most recent first
 
-    return render_to_response(template_name,
-                            {
-                             'page_title': _("All Queued Messages"),
-                             'messages': messages,
-                             'remove_from': False,
-                             'remove_to': False,
-                             'mode': "all_queued_messages"
-                            },
-                            context_instance=RequestContext(request))
+    return render(request,
+                  template_name,
+                    {
+                     'page_title': _("All Queued Messages"),
+                     'messages': messages,
+                     'remove_from': False,
+                     'remove_to': False,
+                     'mode': "all_queued_messages"
+                    })
 
 
 @register_view(access=UserAccess.authenticated)
@@ -433,15 +465,15 @@ def intercepted_messages(request, template_name='messaging/messages.html'):
 
     messages = list(reversed(messages)) # most recent first
 
-    return render_to_response(template_name,
-                            {
-                             'page_title': _("Intercepted Messages"),
-                             'messages': messages,
-                             'remove_from': False,
-                             'remove_to': False,
-                             'mode': "intercepted_messages"
-                            },
-                            context_instance=RequestContext(request))
+    return render(request,
+                  template_name,
+                    {
+                     'page_title': _("Intercepted Messages"),
+                     'messages': messages,
+                     'remove_from': False,
+                     'remove_to': False,
+                     'mode': "intercepted_messages"
+                    })
 
 
 
@@ -451,13 +483,13 @@ def messages_templates(request, template_name='messaging/templates.html'):
     messages = request.datamanager.get_messages_templates().items()
     messages.sort(key=lambda msg: msg[0]) # we sort by template name
 
-    return render_to_response(template_name,
-                            {
-                             'page_title': _("Message Templates"),
-                             'messages': messages,
-                             'mode': "messages_templates",
-                            },
-                            context_instance=RequestContext(request))
+    return render(request,
+                  template_name,
+                    {
+                     'page_title': _("Message Templates"),
+                     'messages': messages,
+                     'mode': "messages_templates",
+                    })
 
 
 @register_view(access=UserAccess.anonymous)
@@ -500,13 +532,13 @@ def secret_question(request, template_name='registration/secret_question.html'):
 
     assert (not form and not secret_question) or (form and secret_question)
 
-    return render_to_response(template_name,
-                            {
-                             'page_title': _("Password Recovery"),
-                             'secret_question': secret_question,
-                             'secret_question_form': form,
-                            },
-                            context_instance=RequestContext(request))
+    return render(request,
+                  template_name,
+                    {
+                     'page_title': _("Password Recovery"),
+                     'secret_question': secret_question,
+                     'secret_question_form': form,
+                    })
 
 
 @register_view(access=UserAccess.anonymous, always_available=True)
@@ -546,12 +578,12 @@ def login(request, template_name='registration/login.html'):
         request.session.set_test_cookie()
         form = forms.AuthenticationForm()
 
-    return render_to_response(template_name,
-                                {
-                                 'page_title': _("User Authentication"),
-                                 'login_form': form
-                                },
-                                context_instance=RequestContext(request))
+    return render(request,
+                  template_name,
+                    {
+                     'page_title': _("User Authentication"),
+                     'login_form': form
+                    })
 
 
 @register_view(access=UserAccess.authenticated, always_available=True)
@@ -568,49 +600,70 @@ def logout(request, template_name='registration/logout.html'):
 @register_view(access=UserAccess.anonymous, always_available=True)
 def homepage(request, template_name='generic_operations/homepage.html'):
 
-    return render_to_response(template_name,
-                                {
-                                 'page_title': _("Realm Entrance"),
-                                 'opening_music': config.GAME_FILES_URL + "musics/" + request.datamanager.get_global_parameter("opening_music")
-                                },
-                                context_instance=RequestContext(request))
+    return render(request,
+                  template_name,
+                    {
+                     'page_title': _("Realm Entrance"),
+                     'opening_music': game_file_url("musics/" + request.datamanager.get_global_parameter("opening_music"))
+                    })
 
 
 @register_view(access=UserAccess.anonymous, always_available=True)
 def opening(request, template_name='generic_operations/opening.html'):
 
-    return render_to_response(template_name,
-                                {
-                                 'page_title': None,
-                                 #'opening_music': "/files/musics/"+request.datamanager.get_global_parameter("opening_music")
-                                },
-                                context_instance=RequestContext(request))
+    return render(request,
+                  template_name,
+                    {
+                     'page_title': None,
+                    })
 
 
 @register_view(access=UserAccess.anonymous, always_available=True)
-def view_encyclopedia(request, template_name='generic_operations/encyclopedia.html'):
+def view_encyclopedia(request, article_id=None, template_name='generic_operations/encyclopedia.html'):
     
-    keyword = request.GET.get("keyword")
+    dm =  request.datamanager
     
-    if keyword:
-        entry = request.datamanager.get_encyclopedia_entry(keyword)
+    article_ids = None # index of encyclopedia
+    entry = None # current article
+    search_results = None # list of matching article ids
+    
+    if article_id:
+        entry = dm.get_encyclopedia_entry(article_id)
         if not entry:
-            request.datamanager.user.add_error(_("Sorry, no encyclopedia article has been found for keyword '%s'") % keyword)
+            dm.user.add_error(_("Sorry, no encyclopedia article has been found for id '%s'") % article_id)
     else:
-        entry = None
+        search_string = request.REQUEST.get("search") # needn't appear in browser history, but GET needed for encyclopedia links
+        if search_string:
+            if not dm.is_game_started():
+                dm.user.add_error(_("Sorry, the search engine of the encyclopedia is currently under repair"))
+            else:
+                search_results = dm.get_encyclopedia_matches(search_string)
+                if not search_results:
+                    dm.user.add_error(_("Sorry, no matching encyclopedia article has been found for '%s'") % search_string)
+                else:
+                    if dm.is_character(): # not for master or anonymous!!
+                        dm.update_character_known_article_ids(search_results)
+                    if len(search_results) == 1:
+                        dm.user.add_message(_("Your search has led to a single article, below."))
+                        return HttpResponseRedirect(redirect_to=reverse(view_encyclopedia, kwargs=dict(game_instance_id=request.datamanager.game_instance_id,
+                                                                                                  article_id=search_results[0])))                                     
     
-    if request.datamanager.is_encyclopedia_index_visible():
-        keywords = request.datamanager.get_encyclopedia_keywords()
+    # NOW only retrieve article ids, since known article ids have been updated if necessary
+    if request.datamanager.is_encyclopedia_index_visible() or dm.is_master():
+        article_ids = request.datamanager.get_encyclopedia_article_ids()
+    elif dm.is_character():
+        article_ids = dm.get_character_known_article_ids()
     else:
-        keywords = None
-    
-    return render_to_response(template_name,
-                                {
-                                 'page_title': _("Pangea Encyclopedia"),
-                                 'keywords': keywords,
-                                 'entry': entry,
-                                },
-                                context_instance=RequestContext(request))
+        assert dm.is_anonymous() # we leave article_ids to None
+             
+    return render(request,
+                  template_name,
+                    {
+                     'page_title': _("Pangea Encyclopedia"),
+                     'article_ids': article_ids,
+                     'entry': entry,
+                     'search_results': search_results
+                    })
 
 
 @register_view(access=UserAccess.anonymous, always_available=True)
@@ -632,14 +685,44 @@ def view_help_page(request, keyword, template_name='generic_operations/help_page
     if not allowed_entry:
         raise Http404 # no corresponding help page found, or no access permissions
     
-    return render_to_response(template_name,
-                                {
-                                 'page_title': _("Manual Page"),
-                                 'entry': allowed_entry,
-                                },
-                                context_instance=RequestContext(request))
+    return render(request,
+                  template_name,
+                    {
+                     'page_title': _("Manual Page"),
+                     'entry': allowed_entry,
+                    })
     
 
+
+def _build_display_data_from_viewer_settings(viewer_settings):
+    
+    image_urls = []
+    for level in range(viewer_settings["levels"]):
+        level_urls = []
+        for rel_index in range(viewer_settings["per_level"]*level, viewer_settings["per_level"]*(level + 1)):
+            abs_index = viewer_settings["index_offset"] + rel_index * viewer_settings["index_steps"]
+            rel_url = viewer_settings["file_template"] % abs_index
+            level_urls.append(game_file_url(rel_url))
+        if viewer_settings["autoreverse"]:
+            level_urls = level_urls + list(reversed(level_urls))
+        image_urls.append(level_urls)
+        
+    real_per_level = viewer_settings["per_level"] * (2 if viewer_settings["autoreverse"] else 1)
+    assert set([len(imgs) for imgs in image_urls]) == set([real_per_level]) # all levels have the same number of images
+    
+    display_data = dict(levels=viewer_settings["levels"],
+                            per_level=real_per_level,
+                            x_coefficient=viewer_settings["x_coefficient"],
+                            y_coefficient=viewer_settings["y_coefficient"],
+                            rotomatic=viewer_settings["rotomatic"], # ms between rotations
+                            image_width=viewer_settings["image_width"],
+                            image_height=viewer_settings["image_height"],
+                            start_level=viewer_settings["start_level"],
+                            mode=viewer_settings["mode"],
+                            image_urls=image_urls, # multi-level array
+                            music_url=game_file_url(viewer_settings["music"]) if viewer_settings["music"] else None,)
+    return display_data
+    
 
 @register_view(access=UserAccess.anonymous, always_available=True)
 def logo_animation(request, template_name='utilities/item_3d_viewer.html'):
@@ -647,33 +730,28 @@ def logo_animation(request, template_name='utilities/item_3d_viewer.html'):
     These settings are heavily dependant on values hard-coded on templates (dimensions, colors...),
     so they needn't be exposed inside the YAML configuration file
     """
-    viewer_settings = dict(total=31, # real total : 157, but use steps
-                            steps=5,
-                            levels=1,
-                            startlevel=1,
-                            filedir=config.GAME_FILES_URL + "openinglogo/",
-                            filename="crystal",
-                            suffix=".jpg",
-                            imagewidth=528,
-                            imageheight=409,
+    viewer_settings = dict( levels=1,
+                            per_level=31, # real total of images : 157, but we use steps
+                            index_steps=5,
+                            index_offset=0,
+                            start_level=1,
+                            file_template="openinglogo/crystal%04d.jpg",
+                            image_width=528,
+                            image_height=409,
                             mode="object",
                             x_coefficient=12,
                             y_coefficient=160,
                             autoreverse=True,
                             rotomatic=150, # ms between rotations
-                            music=config.GAME_FILES_URL + "musics/" + request.datamanager.get_global_parameter("opening_music")
+                            music="musics/" + request.datamanager.get_global_parameter("opening_music")
                             )
 
-    image_urls = []
-    for i in range(1, viewer_settings["total"] + 1):
-        image_urls.append(viewer_settings["filedir"] + viewer_settings["filename"] + "%04d" % (i * viewer_settings["steps"]) + viewer_settings["suffix"])
 
-    return render_to_response(template_name,
-                                {
-                                 'settings': viewer_settings,
-                                 'image_urls': image_urls
-                                },
-                                context_instance=RequestContext(request))
+    return render(request,
+                  template_name,
+                    {
+                     'settings': _build_display_data_from_viewer_settings(viewer_settings),
+                    })
 
 
 @register_view(access=UserAccess.character, always_available=True)
@@ -682,12 +760,12 @@ def instructions(request, template_name='generic_operations/instructions.html'):
     user = request.datamanager.user
     intro_data = request.datamanager.get_game_instructions(user.username)
 
-    return render_to_response(template_name,
-                                {
-                                 'page_title': _("Instructions"),
-                                 'intro_data': intro_data,
-                                },
-                                context_instance=RequestContext(request))
+    return render(request,
+                  template_name,
+                    {
+                     'page_title': _("Instructions"),
+                     'intro_data': intro_data,
+                    })
 
 
 @register_view(access=UserAccess.authenticated)
@@ -793,17 +871,17 @@ def view_characters(request, template_name='generic_operations/view_characters.h
     else:
         domain = request.datamanager.get_character_properties(user.username)["domains"][0]
         show_official_identities = request.datamanager.get_domain_properties(domain)["show_official_identities"]
-    return render_to_response(template_name,
-                                {
-                                 'page_title': _("Account Management"),
-                                 'pangea_domain':request.datamanager.get_global_parameter("pangea_network_domain"),
-                                 'money_form': new_money_form,
-                                 'gems_form': new_gems_form,
-                                 'char_sets': char_sets,
-                                 'bank_data': (request.datamanager.get_global_parameter("bank_name"), request.datamanager.get_global_parameter("bank_account")),
-                                 'show_official_identities': show_official_identities,
-                                },
-                                context_instance=RequestContext(request))
+    return render(request,
+                  template_name,
+                    {
+                     'page_title': _("Account Management"),
+                     'pangea_domain':request.datamanager.get_global_parameter("pangea_network_domain"),
+                     'money_form': new_money_form,
+                     'gems_form': new_gems_form,
+                     'char_sets': char_sets,
+                     'bank_data': (request.datamanager.get_global_parameter("bank_name"), request.datamanager.get_global_parameter("bank_account")),
+                     'show_official_identities': show_official_identities,
+                    })
 
 
 
@@ -823,13 +901,13 @@ def items_slideshow(request, template_name='generic_operations/items_slideshow.h
 
     sorted_items = [(key, items[key]) for key in sorted(items.keys())]
 
-    return render_to_response(template_name,
-                                {
-                                 'page_title': page_title,
-                                 'items': sorted_items,
-                                 'items_3D_settings': items_3D_settings
-                                },
-                                context_instance=RequestContext(request))
+    return render(request,
+                  template_name,
+                    {
+                     'page_title': page_title,
+                     'items': sorted_items,
+                     'items_3D_settings': items_3D_settings
+                    })
 
 
 @register_view(access=UserAccess.authenticated) # not always available, so beware!! TODO FIXME ensure it's not displayed if not available!
@@ -848,17 +926,11 @@ def item_3d_view(request, item, template_name='utilities/item_3d_viewer.html'):
 
     viewer_settings = viewers_settings[item]
 
-    image_urls = []
-    for i in range(1, viewer_settings["total"] + 1):
-        image_urls.append(viewer_settings["filedir"] + viewer_settings["filename"] + "%04d" % (i * viewer_settings["steps"]) + viewer_settings["suffix"])
-
-
-    return render_to_response(template_name,
-                                {
-                                 'settings': viewer_settings,
-                                 'image_urls': image_urls
-                                },
-                                context_instance=RequestContext(request))
+    return render(request,
+                  template_name,
+                    {
+                     'settings': _build_display_data_from_viewer_settings(viewer_settings),
+                    })
 
 
 
@@ -904,19 +976,19 @@ def view_sales(request, template_name='generic_operations/view_sales.html'):
     total_gems_number = sum(item["num_items"] for item in items_for_sales.values() if item["is_gem"])
     total_archaeological_objects_number = sum(item["num_items"] for item in items_for_sales.values() if not item["is_gem"])
 
-    return render_to_response(template_name,
-                                {
-                                 'page_title': _("Auction"),
-                                 'items_for_sale': sorted_items_for_sale,
-                                 'character_names': request.datamanager.get_character_official_names(),
-                                 'total_items_price': total_items_price,
-                                 'total_cold_cash_available': total_cold_cash_available,
-                                 'total_bank_account_available': total_bank_account_available,
-                                 'total_gems_number': total_gems_number,
-                                 'total_archaeological_objects_number': total_archaeological_objects_number
-                                },
-                                context_instance=RequestContext(request))
-assert view_sales._klass.NAME in GameDataManager.ACTIVABLE_VIEWS_REGISTRY.keys()
+    return render(request,
+                  template_name,
+                    {
+                     'page_title': _("Auction"),
+                     'items_for_sale': sorted_items_for_sale,
+                     'character_names': request.datamanager.get_character_official_names(),
+                     'total_items_price': total_items_price,
+                     'total_cold_cash_available': total_cold_cash_available,
+                     'total_bank_account_available': total_bank_account_available,
+                     'total_gems_number': total_gems_number,
+                     'total_archaeological_objects_number': total_archaeological_objects_number
+                    })
+assert view_sales.NAME in GameDataManager.ACTIVABLE_VIEWS_REGISTRY.keys()
 
 
 '''
@@ -1240,13 +1312,13 @@ def encrypted_folder(request, folder, entry_template_name="generic_operations/en
 
 
     if form:
-        return render_to_response(entry_template_name,
-                            {
-                                "page_title": _("Encrypted archive '%s'") % folder,
-                                "password_form": form,
-                                "folder": folder
-                            },
-                            context_instance=RequestContext(request))
+        return render(request,
+                      entry_template_name,
+                        {
+                            "page_title": _("Encrypted archive '%s'") % folder,
+                            "password_form": form,
+                            "folder": folder
+                        })
 
 
     else: # necessarily, we've managed to decrypt the folder
@@ -1257,13 +1329,13 @@ def encrypted_folder(request, folder, entry_template_name="generic_operations/en
             user.add_message = _("No files were found in the folder.")
 
 
-        return render_to_response(display_template_name,
-                                {
-                                    "page_title": _("Decrypted archive '%s'") % folder,
-                                    "files": files_to_display,
-                                    "display_maintenance_notice": False, # upload disabled notification
-                                },
-                                context_instance=RequestContext(request))
+        return render(request,
+                      display_template_name,
+                        {
+                            "page_title": _("Decrypted archive '%s'") % folder,
+                            "files": files_to_display,
+                            "display_maintenance_notice": False, # upload disabled notification
+                        })
 
 
 
@@ -1287,13 +1359,13 @@ def personal_folder(request, template_name='generic_operations/personal_folder.h
     if not files_to_display:
         user.add_message = _("You currently don't have any files in your personal folder.")
 
-    return render_to_response(template_name,
-                            {
-                                "page_title": _("Personal Folder"),
-                                "files": files_to_display,
-                                "display_maintenance_notice": True, # upload disabled notification
-                            },
-                            context_instance=RequestContext(request))
+    return render(request,
+                  template_name,
+                    {
+                        "page_title": _("Personal Folder"),
+                        "files": files_to_display,
+                        "display_maintenance_notice": True, # upload disabled notification
+                    })
 
 
 
@@ -1309,11 +1381,11 @@ def view_media(request, template_name='utilities/view_media.html'):
     else:
         media_player = "<p>" + _("You must provide a valid media url.") + "</p>"
 
-    return render_to_response(template_name,
-                                {
-                                 'media_player': media_player
-                                },
-                                context_instance=RequestContext(request))
+    return render(request,
+                  template_name,
+                    {
+                     'media_player': media_player
+                    })
 
 
 @register_view(access=UserAccess.master)
@@ -1334,12 +1406,12 @@ def game_events(request, template_name='administration/game_events.html'):
 
     trans_events = list(reversed(trans_events)) # most recent first
 
-    return render_to_response(template_name,
-                            {
-                             'page_title': _("Game events"),
-                             'events': trans_events
-                            },
-                            context_instance=RequestContext(request))
+    return render(request,
+                  template_name,
+                    {
+                     'page_title': _("Game events"),
+                     'events': trans_events
+                    })
 
 '''
 @register_view(access=UserAccess.authenticated) # obsolete...
@@ -1380,8 +1452,37 @@ def __personal_radio_messages_listing(request, template_name='generic_operations
                             context_instance=RequestContext(request))
 '''
     
+
+@register_view(access=UserAccess.anonymous, always_available=True)
+def listen_to_webradio(request, template_name='utilities/web_radio.html'):
+    return render(request,
+                  template_name,
+                    {
+                     "player_conf_url": reverse(get_radio_xml_conf, kwargs=dict(game_instance_id=request.datamanager.game_instance_id)),
+                     "player_width": 300,
+                     "player_height": 200,
+                    }) 
+     
+@register_view(access=UserAccess.anonymous, always_available=True)
+def get_radio_xml_conf(request, template_name='utilities/web_radio_conf.xml'):
+    dm = request.datamanager
+    current_playlist = dm.get_all_next_audio_messages()
+    current_audio_messages = [dm.get_audio_message_properties(audio_id) for audio_id in current_playlist]
     
-@register_view(access=UserAccess.anonymous)
+    if not current_audio_messages:
+        # we had better not let the player empty, it's not tweaked for that case
+        current_audio_messages = [dict(url="http://", title=_("[No radio spot currently available]"))]
+    
+    audio_urls = "|".join([msg["url"] for msg in current_audio_messages]) # we expect no "|" inside a single url
+    audio_titles = "|".join([msg["title"].replace("|", "") for msg in current_audio_messages]) # here we can cleanup
+    
+    return render(request,
+                  template_name,
+                  dict(audio_urls=audio_urls,
+                       audio_titles=audio_titles))
+    
+    
+@register_view(access=UserAccess.anonymous, always_available=True)
 def listen_to_audio_messages(request, template_name='utilities/web_radio_applet.html'):
 
     access_authorized = False
@@ -1402,13 +1503,13 @@ def listen_to_audio_messages(request, template_name='utilities/web_radio_applet.
 
     assert (form and not access_authorized) or (not form and access_authorized)
 
-    return render_to_response(template_name,
-                            {
-                             'page_title': _("Radio Station"),
-                             'access_authorized': access_authorized,
-                             'form': form
-                            },
-                            context_instance=RequestContext(request))
+    return render(request,
+                  template_name,
+                    {
+                     'page_title': _("Radio Station"),
+                     'access_authorized': access_authorized,
+                     'form': form
+                    })
 
 
 @register_view(access=UserAccess.master)
@@ -1457,15 +1558,15 @@ def manage_audio_messages(request, template_name='administration/webradio_manage
     special_audio_messages.sort(key=lambda x: x[0])
 
 
-    return render_to_response(template_name,
-                            {
-                             'page_title': _("Web Radio Management"),
-                             'radio_is_on': radio_is_on,
-                             'pending_audio_messages': pending_audio_messages,
-                             'players_with_new_messages': players_with_new_messages,
-                             'special_audio_messages': special_audio_messages
-                            },
-                            context_instance=RequestContext(request))
+    return render(request,
+                  template_name,
+                    {
+                     'page_title': _("Web Radio Management"),
+                     'radio_is_on': radio_is_on,
+                     'pending_audio_messages': pending_audio_messages,
+                     'players_with_new_messages': players_with_new_messages,
+                     'special_audio_messages': special_audio_messages
+                    })
 
 
 
@@ -1492,13 +1593,13 @@ def chat_with_djinn(request, template_name='specific_operations/chat_with_djinn.
         if i < len(history[1]):
             sentences.append(history[1][i]) # output
 
-    return render_to_response(template_name,
-                            {
-                             'page_title': _("Djinn Communication"),
-                             'bot_name': bot_name,
-                             'history': sentences
-                            },
-                            context_instance=RequestContext(request))
+    return render(request,
+                  template_name,
+                    {
+                     'page_title': _("Djinn Communication"),
+                     'bot_name': bot_name,
+                     'history': sentences
+                    })
 
  
 @register_view(attach_to=chat_with_djinn) #access=UserAccess.character)(permission="contact_djinns")
@@ -1539,15 +1640,15 @@ def contact_djinns(request, template_name='specific_operations/contact_djinns.ht
     all_bots = bots_properties.items()
     all_bots.sort(key=lambda t: t[1]["gems_required"])
 
-    return render_to_response(template_name,
-                            {
-                             'page_title': _("Shrine of Oracles"),
-                             'djinn_form': djinn_form,
-                             'all_bots': all_bots,
-                             'team_gems': team_gems,
-                             'bots_max_answers': request.datamanager.get_global_parameter("bots_max_answers")
-                            },
-                            context_instance=RequestContext(request))
+    return render(request,
+                  template_name,
+                    {
+                     'page_title': _("Shrine of Oracles"),
+                     'djinn_form': djinn_form,
+                     'all_bots': all_bots,
+                     'team_gems': team_gems,
+                     'bots_max_answers': request.datamanager.get_global_parameter("bots_max_answers")
+                    })
 
 
 
@@ -1567,13 +1668,13 @@ def manage_databases(request, template_name='administration/database_management.
     formatted_data = request.datamanager.dump_zope_database()
   
     game_is_started = request.datamanager.is_game_started() # we refresh it
-    return render_to_response(template_name,
-                            {
-                             'page_title': _("Database Content"),
-                             'formatted_data': formatted_data,
-                             'game_is_started': game_is_started
-                            },
-                            context_instance=RequestContext(request))
+    return render(request,
+                  template_name,
+                    {
+                     'page_title': _("Database Content"),
+                     'formatted_data': formatted_data,
+                     'game_is_started': game_is_started
+                    })
 
 
 @register_view(access=UserAccess.master)
@@ -1627,11 +1728,11 @@ def manage_characters(request, template_name='administration/character_managemen
                                     )
         character_forms.append(f)
         
-    return render_to_response(template_name,
-                                dict(page_title=_("Manage characters"),
-                                     character_forms=character_forms),
-                                context_instance=RequestContext(request))
-    
+    return render(request,
+                  template_name,
+                    dict(page_title=_("Manage characters"),
+                         character_forms=character_forms))
+
 
 
 
@@ -1673,10 +1774,6 @@ def DATABASE_OPERATIONS(request):
 
     try:
 
-        # NONE ACTIVATED AT THE MOMENT
-        #if request.GET.get("shutdown"):
-        #    request.datamanager.shutdown()
-        #    return HttpResponse("OK - ZODB connection shutdown")
         if request.GET.get("reset_game_data"):
             request.datamanager.reset_game_data()
             return HttpResponse("OK - Game data reset")
@@ -1704,16 +1801,16 @@ def FAIL_TEST(request):
 @register_view(access=UserAccess.master)
 def MEDIA_TEST(request):
 
-    return render_to_response("administration/media_test.html",
-                                {
-                                 'page_title': _("Media Display Test"),
-                                 'audioplayer': mediaplayers.generate_audio_player([config.GAME_FILES_URL + "test_samples/music.mp3"]),
-                                 'videoplayers': ["<p>%s</p>" % extension +
-                                                  mediaplayers.generate_media_player(config.GAME_FILES_URL + "test_samples/video." + extension,
-                                                                                     config.GAME_FILES_URL + 'test_samples/image.jpg')
-                                                  for extensions in mediaplayers._media_player_templates
-                                                  for extension in extensions]
-                                },
-                                context_instance=RequestContext(request))
+    return render(request,
+                  "administration/media_test.html",
+                    {
+                     'page_title': _("Media Display Test"),
+                     'audioplayer': mediaplayers.generate_audio_player([game_file_url("test_samples/music.mp3")]),
+                     'videoplayers': ["<p>%s</p>" % extension +
+                                      mediaplayers.generate_media_player(game_file_url("test_samples/video." + extension),
+                                                                         game_file_url('test_samples/image.jpg'))
+                                      for extensions in mediaplayers._media_player_templates
+                                      for extension in extensions]
+                    })
 
  

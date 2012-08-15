@@ -1,0 +1,135 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+{% load cms_tags menu_tags sekizai_tags %}
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Bienvenue sur la vitrine du Projet Chrysalis</title>
+<meta name="keywords" content="free css template, projection, company, web design, dark green, gradient" />
+<meta name="description" content="Projection Company - Free CSS Template, W3C standards-compliant HTML CSS layout" />
+<link href="{{ STATIC_URL }}Projection152/templatemo_style.css" rel="stylesheet" type="text/css" />
+<link rel="shortcut icon" type="image/png" href="{{ STATIC_URL }}favicon.png" />
+
+{% render_block "css" %}
+<link href="{{ STATIC_URL }}jquery.fancybox.css" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" media="screen" type="text/css" href="{{ STATIC_URL }}/colorpicker/css/colorpicker.css" />
+<link rel="stylesheet" media="screen" type="text/css" href="{{ STATIC_URL }}/colorpicker/css/layout.css" />
+
+{% render_block "js" %}
+<script src="{{ STATIC_URL }}jquery-1.7.1.min.js" type="text/javascript"></script>
+<script src="{{ STATIC_URL }}jquery.fancybox.js" type="text/javascript"></script>
+<script src="{{ STATIC_URL }}jquery.globalstylesheet.js" type="text/javascript"></script>
+<script src="{{ STATIC_URL }}/colorpicker/js/colorpicker.js" type="text/javascript"></script>
+<script src="{{ STATIC_URL }}/jquery.cookie.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+function isHexaColor(sNum){
+    return (typeof sNum === "string") && sNum.length === 6 
+           && ! isNaN( parseInt(sNum, 16) );
+}
+
+var initial_color = $.cookie("textcolor");
+if (!isHexaColor(initial_color)){
+    initial_color = "159A82"; // mid-green 
+}
+$("p, li").globalcss("color", '#' + initial_color); // immediate!!
+
+$(document).ready(function() {
+	    
+	                          var update_color = function(hsb, hex, rgb) {
+                                  $('#colorSelector div').css('backgroundColor', '#' + hex);
+                                  $("p, li").globalcss("color", '#' + hex);
+                                  $.cookie("textcolor", hex, { path: '/' }); // full-domain, expires at browser closing path: '/' 
+                                  //console.log(hex);
+                                  //console.log(document.cookie);
+                              }
+	                          
+                              update_color(null, initial_color, null);
+                              
+                              $('#colorSelector').ColorPicker({
+                            	  
+                            	    color: initial_color,
+                            	    livePreview: true,
+                            	    flat: false,
+                            	    
+                            	    onShow: function (colpkr) {
+                            	        $(colpkr).fadeIn(500);
+                            	        return false;
+                            	    },
+                            	    onHide: function (colpkr) {
+                            	        $(colpkr).fadeOut(500);
+                            	        return false;
+                            	    },
+                            	    onChange: update_color,
+                            	});
+                              
+                              });
+</script>
+
+
+</head>
+<body>
+    {% cms_toolbar %}
+	<div class="templatemo_container">
+    	<div id="templatemo_header">
+        	<div id="templatemo_logo_area">
+            	<div id="templatemo_logo_left">
+                &nbsp;
+                </div>
+                <div id="templatemo_logo">
+                    <img src="{{ STATIC_URL }}Projection152/images/logo-chrysalis-big.png"/>
+                	<!--Projet Chrysalis-->
+                </div>
+                <div id="templatemo_logo_right">
+                &nbsp;
+                </div>
+			</div>
+        
+        </div>
+        <div id="templatemo_top_section">
+       	  <div id="templaetmo_top_section_top">
+          	<div id="templatemo_top_section_glow">
+          	    <div id="colorSelector" style="float: right; margin-right: 170px;">
+                    <div style="background-color: #000"></div>
+                </div>
+                
+            	<div id="templatemo_menu">
+                    <div id="templatemo_menu_left">&nbsp;</div>
+                    
+                    <ul>
+                    {% show_menu 0 100 100 100 %}
+                    </ul> 
+		        </div>      
+               
+
+				{% placeholder "content" %}
+				
+                <!--a href="http://www.templatemo.com/page/1" target="_parent"><img src="images/templatemo_img_3.png" alt="Free CSS Templates" border="0" /></a-->
+           	  <!--p>This is a <a href="http://www.templatemo.com" target="_parent">free CSS template</a> provided by <a href="http://www.templatemo.com" target="_parent">TemplateMo.com</a> website. Feel free to download, edit and apply this layout for your personal or business websites. Thank you for visiting.</p>
+                {CONTENT}
+            	<p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Curabitur velit tellus, placerat et, dapibus varius, aliquet quis, purus. Nulla tellus risus, tincidunt vitae, sagittis vel, interdum at, erat.</p>
+            	<p>Duis vitae velit. Ut ultricies. Fusce sollicitudin nisl a lectus. Pellentesque odio. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Sed leo. Duis suscipit lorem in risus.</p-->
+           	  <div class="cleaner"></div>
+    		</div><!-- end of glow -->
+          </div>
+           
+           
+          <div id="templaetmo_top_section_bottom"></div>
+
+        </div>
+				
+    
+        
+     
+        
+        <div class="cleaner"></div>
+
+	</div><!-- End Of Container -->
+    
+    
+    <div id="templatemo_footer">
+    	1000 Thanks to <a href="http://www.templatemo.com/page/1" target="_parent">Free CSS Templates</a> for the Emerald Theme
+    </div>
+<!--  Free CSS Templates by TemplateMo.com  -->
+
+</body>
+</html>
