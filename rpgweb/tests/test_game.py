@@ -24,6 +24,7 @@ from rpgweb.datamanager.datamanager_administrator import retrieve_game_instance,
     delete_game_instance, check_zodb_structure
 from rpgweb.tests._test_tools import temp_datamanager
 import inspect
+from django.forms.fields import Field
 
 
 
@@ -2066,6 +2067,46 @@ class TestHttpRequests(BaseGameTestCase):
 class TestGameViewSystem(BaseGameTestCase):
     
     
+    def test_form_to_action_argspec_compatibility(self):
+        """
+        Forms attached to actions must define AT LEAST the fields mandatory in the action callback.
+        """
+        
+        COMPUTED_VALUES = ["target_names"] # values that are injected in get_normalized_values(), and so invisible until actual processing
+        
+        check_done = 0
+        for game_view_class in self.dm.GAME_VIEWS_REGISTRY.values():
+            
+            game_view = self.dm.instantiate_game_view(game_view_class) # must work for abilities too!
+            
+            for form_name, (form_class, callback_name) in game_view.GAME_FORMS.items() + game_view.ADMIN_FORMS.items():
+                
+                form_inst = game_view._instantiate_form(form_name)
+                
+                callback = getattr(game_view, callback_name)
+                (args, varargs, varkw, defaults) = inspect.getargspec(callback) # will fail if keyword-only arguments are used, in the future
+                if args[0] == "self":
+                    args = args[1:] # PB if instance is not called "self"...
+                if varkw:
+                    args = args[:-1]
+                if varargs:
+                    args = args[:-1]
+                if defaults:
+                    args = args[:-len(defaults)] # WRONG if defaults == ()
+                
+                for arg_name in args: # remaining ones are mandatory
+                    if arg_name in COMPUTED_VALUES:
+                        continue
+                    fields = form_inst.fields
+                    print(fields)
+                    assert arg_name in fields # might have been created dynamically at instantiation
+                 
+                check_done += 1
+        
+        assert check_done > 3 # increase that in the future, for safety
+        
+                
+                    
     def test_mandatory_access_settings(self):
         
         # let's not block the home url...
