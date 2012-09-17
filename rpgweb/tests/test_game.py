@@ -1705,8 +1705,9 @@ class TestDatamanager(BaseGameTestCase):
             assert "_private_dummy_ability" in _dm.get_abilities()
             assert _dm.get_ability_data("_private_dummy_ability") # ability now setup in ZODB
             assert PrivateTestAbility._LATE_ABILITY_SETUP_DONE == 65 # autosync well called at init!!
-            del self.dm.ABILITIES_REGISTRY["_private_dummy_ability"] # important cleanup!!!
-             
+        
+        del GameDataManager.ABILITIES_REGISTRY["_private_dummy_ability"] # important cleanup!!!
+        del GameDataManager.GAME_VIEWS_REGISTRY["_private_dummy_ability"] # important cleanup!!!     
 
 
     @for_core_module(HelpPages)
