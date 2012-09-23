@@ -74,6 +74,7 @@ HOME_URL = reverse(rpgweb.views.homepage, kwargs={"game_instance_id": TEST_GAME_
 
 sys.setrecursionlimit(800) # to help detect recursion problems
 
+
 logging.basicConfig()
 logging.getLogger().setLevel(logging.DEBUG)
 logging.disable(logging.CRITICAL) # to be commented if more output is wanted !!!

@@ -105,6 +105,7 @@ class MercenariesHiringAbility(AbstractAbility):
                              PersistentDict(employer_name=employer_name, location=location),
                              url=None)
 
+        return _("Mercenaries have been successfully hired")
 
 
 

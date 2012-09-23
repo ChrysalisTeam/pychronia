@@ -25,7 +25,7 @@ if __name__ == "__main__":
     elif "reset_zodb" in arguments:
         if os.path.exists(settings.ZODB_FILE):
             os.remove(settings.ZODB_FILE)
-        import rpgweb.views # initialize everything
+        import rpgweb.models # initializes everything
         from rpgweb.datamanager.datamanager_administrator import reset_zodb_structure, create_game_instance
         reset_zodb_structure()
         create_game_instance(game_instance_id="DEMO", master_email="dummy@dummy.fr", master_login="master", master_password="ultimate")

@@ -2674,9 +2674,9 @@ class SpecialAbilities(BaseDataManager):
         super(SpecialAbilities, self)._load_initial_data(**kwargs)
 
         new_data = self.data
- 
         new_data.setdefault("abilities", {})
         for (key, klass) in self.ABILITIES_REGISTRY.items():
+            print("loading", klass)
             self.logger.debug("Setting up main settings for ability %s" % key) #TODO
             ability_data = new_data["abilities"].setdefault(key, {})
             klass.setup_main_ability_data(ability_data) # each ability fills its default values
