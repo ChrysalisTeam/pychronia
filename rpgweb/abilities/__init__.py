@@ -14,3 +14,6 @@ wiretapping_management_view = WiretappingAbility.as_view
 
 from .admin_dashboard import AdminDashboardAbility
 admin_dashboard_view = AdminDashboardAbility.as_view
+
+from .mercenaries_hiring import MercenariesHiringAbility
+mercenaries_hiring_view = MercenariesHiringAbility.as_view

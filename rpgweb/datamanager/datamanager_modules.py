@@ -7,6 +7,7 @@ from rpgweb.common import *
 from .datamanager_user import GameUser
 from .datamanager_core import *
 from types import NoneType
+from persistent.list import PersistentList
 
 PLACEHOLDER = object()
 
@@ -1400,15 +1401,20 @@ class TextMessaging(BaseDataManager): # TODO REFINE
         emails = [record for record in self.data["messages_sent"] if email in record["recipient_emails"] or record["sender_email"] == email or username in record["intercepted_by"]]
         return emails
         
-    @transaction_watcher(ensure_game_started=False)
-    def get_received_messages(self, recipient_email, reset_notification=True):
+    @readonly_method
+    def get_received_messages(self, recipient_email):
         records = [record for record in self.data["messages_sent"] if recipient_email in record["recipient_emails"]]
-
-        if reset_notification:
-            self.set_new_message_notification(PersistentList([recipient_email]), False)
-
         return records # chronological order
-
+    
+    @transaction_watcher(ensure_game_started=False)
+    def pop_received_messages(self, recipient_email):
+        """
+        Also resets the 'new message' notification.
+        """
+        records = self.get_received_messages(recipient_email)
+        self.set_new_message_notification([recipient_email], False)
+        return records
+        
     @readonly_method
     def get_intercepted_messages(self, username=None): # for wiretapping
         if username is not None and not self.is_master(username):
@@ -1429,14 +1435,17 @@ class TextMessaging(BaseDataManager): # TODO REFINE
     @readonly_method
     def get_unread_messages_count(self, username):
         # user_email == None -> unread messages of external contacts (i.e game master)
+        print ("1", self.connection._registered_objects)
         if self.is_master(username):
             unread_msgs = [message for message in self.get_game_master_messages()
                            if username not in message["has_read"]]
+            print( "2", self.connection._registered_objects)
         else:
             user_email = self.get_character_email(username)
-            unread_msgs = [message for message in self.get_received_messages(user_email, reset_notification=False)
+            unread_msgs = [message for message in self.get_received_messages(user_email)
                            if username not in message["has_read"]]
-
+            print ("2bis", self.connection._registered_objects)
+        print ("3", self.connection._registered_objects)
         return len(unread_msgs)
 
     @transaction_watcher(ensure_game_started=False)
@@ -1501,7 +1510,7 @@ class TextMessaging(BaseDataManager): # TODO REFINE
 
     @transaction_watcher(ensure_game_started=False)
     def set_new_message_notification(self, recipient_emails, new_status):
-        assert isinstance(recipient_emails, PersistentList), (recipient_emails, type(recipient_emails))
+        assert isinstance(recipient_emails, (list, PersistentList, tuple)), (recipient_emails, type(recipient_emails))
         for username in self.get_character_usernames():
             email = self.get_character_email(username)
             if email in recipient_emails:
@@ -2513,7 +2522,7 @@ class GameViews(BaseDataManager):
     def sync_game_view_data(self):
         """
         If we add/remove views to rpgweb without resetting the DB, a normal desynchronization occurs.
-        So we must constantly ensure that the data stays in sync.
+        So we should ensure that the data stays in sync.
         """
         new_view_data = set(self.data["views"]["activated_views"]) & set(self.ACTIVABLE_VIEWS_REGISTRY.keys())
         self.data["views"]["activated_views"] = PersistentList(sorted(new_view_data))
@@ -2623,7 +2632,7 @@ class SpecialAbilities(BaseDataManager):
     def _init_from_db(self, **kwargs):
         super(SpecialAbilities, self)._init_from_db(**kwargs)
         #self.abilities = SpecialAbilities.AbilityLazyLoader(self)
-        self.sync_ability_data()
+        #self.sync_ability_data()
     
     
     @classmethod
@@ -2644,10 +2653,11 @@ class SpecialAbilities(BaseDataManager):
         assert name_or_klass in self.ABILITIES_REGISTRY.keys() + self.ABILITIES_REGISTRY.values()
         return self.instantiate_game_view(name_or_klass) 
     
-    
+    '''
     @transaction_watcher(ensure_game_started=False)
     def sync_ability_data(self):
         """
+        NO - abilities cant be hot plugged!!
         If we add/remove abilities to rpgweb without resetting the DB, a normal desynchronization occurs.
         So we must constantly ensure that this data stays in sync.
         """
@@ -2656,8 +2666,9 @@ class SpecialAbilities(BaseDataManager):
                 self.logger.warning("Lately setting up main settings for ability %s" % key)
                 ability_data = self.data["abilities"][key] = PersistentDict()
                 klass.setup_main_ability_data(ability_data) 
+            assert self.data["abilities"][key]["data"]
         # if exceeding data exists (some abilities have disappeared), so be it
- 
+     '''
 
     def _load_initial_data(self, **kwargs):
         super(SpecialAbilities, self)._load_initial_data(**kwargs)
@@ -2669,7 +2680,8 @@ class SpecialAbilities(BaseDataManager):
             self.logger.debug("Setting up main settings for ability %s" % key) #TODO
             ability_data = new_data["abilities"].setdefault(key, {})
             klass.setup_main_ability_data(ability_data) # each ability fills its default values
-
+            assert "settings" in new_data["abilities"][key] and "data" in new_data["abilities"][key] 
+            
 
     def _check_database_coherency(self, strict=False, **kwargs):
         super(SpecialAbilities, self)._check_database_coherency(**kwargs)

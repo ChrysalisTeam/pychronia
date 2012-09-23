@@ -45,6 +45,8 @@ def transform_usage_error(caller, self, *args, **kwargs):
                 return HttpResponseForbidden(_("Access denied")) # TODO FIXME - provide a proper template and message !!
     
     except GameError, e:
+        print("|||||||||||||||||||", repr(e))
+        traceback.print_exc()
         return HttpResponseBadRequest(repr(e)) 
        
     except Exception:         
@@ -229,20 +231,22 @@ class AbstractGameView(object):
         
     
     def _check_standard_access(self):
-
-        access_result = self.get_access_token(self.datamanager)
-        
-        if access_result == AccessResult.available:
-            return
-        elif access_result == AccessResult.permission_required:
-            raise PermissionRequiredError(_("Access reserved to privileged members."))
-        elif access_result == AccessResult.authentication_required:
-            raise AuthenticationRequiredError(_("Authentication required.")) # could also mean a gamemaster tries to access a character-only section
-        else:
-            assert access_result == AccessResult.globally_forbidden
-            raise AccessDeniedError(_("Access forbidden."))
-        assert False
-     
+        try:
+            access_result = self.get_access_token(self.datamanager)
+            
+            if access_result == AccessResult.available:
+                return
+            elif access_result == AccessResult.permission_required:
+                raise PermissionRequiredError(_("Access reserved to privileged members."))
+            elif access_result == AccessResult.authentication_required:
+                raise AuthenticationRequiredError(_("Authentication required.")) # could also mean a gamemaster tries to access a character-only section
+            else:
+                assert access_result == AccessResult.globally_forbidden
+                raise AccessDeniedError(_("Access globally forbidden."))
+            assert False
+        except Exception, e:
+            self.logger.error("check_standard_access failed: %r",e)
+            raise
      
     def _check_admin_access(self):
         if not self.datamanager.user.is_master:
@@ -256,7 +260,7 @@ class AbstractGameView(object):
                           previous_form_data=None, # data about previously submitted form, if any
                           initial_data=None):
         """
-        *form_initializer* will be passed as 1st argument to the form. By defauyt, it's the datamanager.
+        *form_initializer* will be passed as 1st argument to the form. By default, it's the datamanager.
         """
         if previous_form_data:
             previous_form_name = previous_form_data.form_name

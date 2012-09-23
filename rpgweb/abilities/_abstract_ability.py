@@ -65,7 +65,7 @@ class AbstractAbility(AbstractAbilityBasesAdapter):
 
     @property
     def datamanager(self):
-        return self # ability behaves as an extension of datamanager!!
+        return self # TRICK - abilities behaves as extensions of the datamanager!!
     
 
     @transaction_watcher(ensure_data_ok=True, ensure_game_started=False) # needed, because in ability, we're partly INSIDE the datamanager
@@ -155,8 +155,9 @@ class AbstractAbility(AbstractAbilityBasesAdapter):
     @transaction_watcher(ensure_game_started=False) # authorized anytime
     def _perform_lazy_initializations(self):
         private_key = self._get_private_key()
-        if not self.ability_data.has_key(private_key):
-            self.logger.debug("Setting up private data %s", private_key)
+        print ("@@@@@@@@@@", self.ability_data)
+        if not self.ability_data["data"].has_key(private_key):
+            self.logger.warning("Setting up private data %s", private_key)
             private_data = self.ability_data["data"].setdefault(private_key, PersistentDict())
             self._setup_private_ability_data(private_data=private_data) # FIRST
             self._setup_private_action_middleware_data(private_data=private_data) # SECOND

@@ -63,7 +63,6 @@ view_urlpatterns = patterns('rpgweb.views',
 
 
     #(r'^wiretapping_management/$', 'wiretapping_management'),
-    #(r'^network_management/$', 'network_management'),
     #(r'^translations_management/$', 'translations_management'),
     #(r'^scanning_management/$', 'scanning_management'),
     
@@ -111,7 +110,7 @@ ability_urlpatterns = patterns("rpgweb.abilities",
     (r'^ability/runic_translation/$', 'runic_translation_view'),
     (r'^ability/wiretapping_management/$', 'wiretapping_management_view'),
     (r'^ability/admin_dashboard/$', 'admin_dashboard_view'),
-    
+    (r'^ability/network_management/$', 'mercenaries_hiring_view'),    
 )
 
 

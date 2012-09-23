@@ -314,8 +314,7 @@ def inbox(request, template_name='messaging/messages.html'):
         remove_to = False
 
     else:
-        messages = request.datamanager.get_received_messages(request.datamanager.get_character_email(user.username),
-                                                             reset_notification=True)
+        messages = request.datamanager.pop_received_messages(request.datamanager.get_character_email(user.username))
         remove_to = True
 
     messages = list(reversed(messages)) # most recent first
