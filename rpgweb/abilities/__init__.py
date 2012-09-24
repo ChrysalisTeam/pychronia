@@ -17,3 +17,6 @@ admin_dashboard_view = AdminDashboardAbility.as_view
 
 from .mercenaries_hiring import MercenariesHiringAbility
 mercenaries_hiring_view = MercenariesHiringAbility.as_view
+
+from .matter_analysis import MatterAnalysisAbility
+matter_analysis_view = MatterAnalysisAbility.as_view

@@ -46,5 +46,6 @@ def GAME_INITIAL_FIXTURE_SCRIPT(dm):
     msg5 = dm.get_sent_message_by_id(msg_id5)
     msg_id6 = dm.post_message(email_guy1, email_master, subject="Bis:%s"%msg5["subject"], body="ask for something", recontact_to=msg_id5)
     
+    dm.transfer_object_to_character("statue", "guy1")
     
     

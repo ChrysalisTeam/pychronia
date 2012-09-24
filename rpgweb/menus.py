@@ -128,7 +128,9 @@ def generate_full_menu(request):  ## game_menu_generator
                         menu_entry(_(u"Wiretaps"), abilities.wiretapping_management_view),
                         menu_entry(_(u"Doors Locking"), abilities.house_locking_view),
                         menu_entry(_(u"Runic Translations"), abilities.runic_translation_view),
-    
+                        menu_entry(_(u"Network Management"), abilities.mercenaries_hiring_view),
+                        menu_entry(_(u"Matter Analysis"), abilities.matter_analysis_view),
+                        
                         #menu_entry(_(u"Agents Hiring"), views.network_management),
                         #menu_entry(_(u"Oracles"), views.contact_djinns),
                         #menu_entry(_(u"Mercenary Commandos"), views.mercenary_commandos),

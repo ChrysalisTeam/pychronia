@@ -7,104 +7,70 @@ from rpgweb.common import *
 from ._abstract_ability import *
 
 
-class GemPayementFormMixin(AbstractGameForm):
-    
-    def __init__(self, datamanager, *args, **kwargs):    
-        super(GemPayementFormMixin, self).__init__(datamanager, *args, **kwargs)
-        
-        _gems = datamanager.get_character_properties(datamanager.user.username)["gems"]
-        _gems_choices = zip(_gems, [_("Gem of %d Kashes")%gem for gem in _gems])
 
-        if _gems_choices:
-            self.fields["pay_with_money"] = forms.BooleanField(label=_("Pay with money"), initial=False)
-            self.fields["gems_list"] = forms.MultipleChoiceField(required=False, label=_("Or pay with gems (press Ctrl key to select/deselect)"), choices=_gems_choices)
-        else:
-            self.fields["pay_with_money"] = forms.BooleanField(initial=True, widget=forms.HiddenInput)
-            self.fields["gems_list"] = forms.MultipleChoiceField(required=False, widget=forms.HiddenInput)
-
-
-class AgentsHiringForm(GemPayementFormMixin):
+class PersonalItemForm(AbstractGameForm):
 
     def __init__(self, datamanager, *args, **kwargs):
-        super(AgentsHiringForm, self).__init__(datamanager, *args, **kwargs)
+        super(PersonalItemForm, self).__init__(datamanager, *args, **kwargs)
 
-        _locations = sorted(datamanager.get_locations().keys())
-        _location_choices = zip(_locations, _locations)
+        _objects = datamanager.get_available_items_for_user(datamanager.user.username)
+        _objects_choices = [("", _("Choose..."))] + [(item_name, _objects[item_name]["title"]) for item_name in sorted(_objects.keys())]
 
-        self.fields["location"] = forms.ChoiceField(label=_lazy(u"Location"), choices=_location_choices)
+        self.fields["item_name"] = forms.ChoiceField(label=_lazy(u"Item"), choices=_objects_choices)
 
-        assert self.fields.keyOrder
-        self.fields.keyOrder = ['_ability_form', 'location', 'pay_with_money', 'gems_list']
-
-
-    def get_normalized_values(self):
-
-        parameters = super(AgentsHiringForm, self).get_normalized_values()
-
-        parameters["pay_with_gems"] = [int(gem) for gem in parameters["gems_list"] if gem.is_digit()]
-
-        return parameters
+        assert self.fields.keyOrder # if reordering needed
 
 
 
+class MatterAnalysisAbility(AbstractAbility):
 
-class MercenariesHiringAbility(AbstractAbility):
+    NAME = "matter_analysis"
 
-    NAME = "mercenaries_hiring"
-
-    GAME_FORMS = {"hiring_form": (AgentsHiringForm, "hire_remote_agent")}
+    GAME_FORMS = {"item_form": (PersonalItemForm, "analyse_item")}
     ADMIN_FORMS = {}
-    TEMPLATE = "abilities/mercenaries_hiring.html"
+    TEMPLATE = "abilities/matter_analysis.html"
 
     ACCESS = UserAccess.character
-    PERMISSIONS = []  #["mercenaries_hiring"]
+    PERMISSIONS = []
     ALWAYS_AVAILABLE = True 
 
 
     def get_template_vars(self, previous_form_data=None):
-
-        user_profile = self.get_character_properties(self.user.username)
-        gems = user_profile["gems"]
-        total_gems_value = sum(gems)
-
-        # for now we don't exclude locations of already hired mercenaries
-        hiring_form = self._instantiate_form(new_form_name="hiring_form", 
-                                             hide_on_success=False,
+        
+        # for now we don't exclude objects already analysed, players just have to take care !
+        item_form = self._instantiate_form(new_form_name="item_form", 
+                                             hide_on_success=True,
                                              previous_form_data=previous_form_data)
-        
-        mercenaries_locations = self.private_data["mercenaries_locations"]
-        
-        print (">>>>>>>>>>>>>>>>", self.settings)
+         
         return {
-                 'page_title': _("Mercenaries Network Management"),
-                 'settings': self.settings,
-                 'mercenaries_locations': mercenaries_locations,
-                 'user_profile': user_profile,
-                 'total_gems_value': total_gems_value,
-                 'hiring_form': hiring_form
+                 'page_title': _("Deep Matter Analysis"),
+                 'item_form': item_form
                }
 
-
+ 
 
     @transaction_watcher
-    def hire_remote_agent(self, location, pay_with_gems=(),):
-
-        employer_name = self.datamanager.user.username
+    def analyse_item(self, item_name):
         
-        private_data = self.private_data
+        available_items = self.datamanager.get_available_items_for_user(self.user.username)
+        if item_name not in available_items:
+            raise AbnormalUsageError(_("You don't possess the item '%s'") % item_name)
 
-        if location in private_data["mercenaries_locations"]:
-            raise UsageError(_("You already control mercenaries in this location"))
+        item_title = available_items[item_name]["title"]
 
-        private_data["mercenaries_locations"].append(location)
+        sender_email = self.settings["sender_email"]
+        recipient_emails = self.get_character_email(self.user.username)
+        subject = _("Deep Matter Analysis Report - %(item_title)s>") % SDICT(item_title=item_title)
+        body = self.settings["reports"][item_name]
 
-        ### self._process_spy_activation(location) # USELESS ?
+        self.post_message(sender_email, recipient_emails, subject, body=body, attachment=None,
+                          date_or_delay_mn=self.settings["processing_delay"])
 
-        self.log_game_event(_noop("Mercenary hired by %(employer_name)s in %(location)s"),
-                             PersistentDict(employer_name=employer_name, location=location),
+        self.log_game_event(_noop("Item '%(item_title)s' sent for deep matter analysis."),
+                             PersistentDict(item_title=item_title),
                              url=None)
 
-        return _("Mercenaries have been successfully hired")
+        return _("Item '%s' successfully submitted, you'll receive the result by email") % item_title
 
 
 
@@ -113,32 +79,25 @@ class MercenariesHiringAbility(AbstractAbility):
         pass # nothing to do
 
     def _setup_private_ability_data(self, private_data):
-
-        private_data.setdefault("mercenaries_locations", PersistentList())
+        pass # nothing to do
 
 
     def _check_data_sanity(self, strict=False):
 
         settings = self.settings
-
+        
+        def reports_checker(reports):
+            assert set(reports.keys()) == set(self.get_items_for_sale().keys())
+            for body in reports.values():
+                utilities.check_is_restructuredtext(body)
+            return True
+            
         _reference = dict(
-                            mercenary_cost_money = utilities.check_is_positive_int,
-                            mercenary_cost_gems = utilities.check_is_positive_int
+                            sender_email = utilities.check_is_email,
+                            processing_delay = utilities.check_is_range_or_num,
+                            reports = reports_checker,
                          )
         utilities.check_dictionary_with_template(settings, _reference, strict=strict)
-
-
-        for data in self.all_private_data.values():
-
-            if strict:
-                utilities.check_num_keys(data, 1)
-
-            utilities.check_no_duplicates(data["mercenaries_locations"])
-
-            all_locations = self.datamanager.get_locations().keys()
-            assert set(data["mercenaries_locations"]) <= all_locations, data["mercenaries_locations"]
-
-
 
 
 

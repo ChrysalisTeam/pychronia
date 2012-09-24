@@ -38,6 +38,19 @@ abilities:
             mercenary_cost_gems: 200
 
 
+    matter_analysis:
+        settings:
+            sender_email: "physicslab@alifir-academy.com"
+            processing_delay: [2, 3]
+            
+            reports:
+                statue: "this is an analysis of the statue"
+                sacred_chest: "sam, here stuffs about *sacred* chest"
+                several_misc_gems: "analysis of several_misc_gems"
+                several_misc_gems2: "analysis of several_misc_gems2"       
+                
+ 
+
 global_parameters:
 
     game_is_started: True # used to forbid access to some features before the party itself
