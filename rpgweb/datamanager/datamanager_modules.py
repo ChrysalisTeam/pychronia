@@ -986,38 +986,18 @@ class OnlinePresence(BaseDataManager):
 
 
 
-
-
-
-
-
-
 @register_module
-class TextMessaging(BaseDataManager): # TODO REFINE
+class TextMessagingCore(BaseDataManager):
 
-    def _recompute_all_external_contacts_via_msgs(self):
-        external_contacts_changed = False
-        for msg in self.data["messages_sent"]:
-            res = self._update_external_contacts(msg)
-            if res: 
-                external_contacts_changed = True
-        return external_contacts_changed
-    
     def _load_initial_data(self, **kwargs):
-        super(TextMessaging, self)._load_initial_data(**kwargs)
-
+        super(TextMessagingCore, self)._load_initial_data(**kwargs)
+        
         new_data = self.data
-
-        pangea_network = new_data["global_parameters"]["pangea_network_domain"]
-
-        for (name, character) in new_data["character_properties"].items():
-            character.setdefault("has_new_messages", False)
-
+        
         new_data.setdefault("messages_sent", PersistentList())
         new_data.setdefault("messages_queued", PersistentList())
         
-        for (name, data) in new_data["character_properties"].items():
-            data.setdefault("wiretapping_targets", PersistentList())
+        pangea_network = new_data["global_parameters"]["pangea_network_domain"]
 
         for (index, msg) in enumerate(new_data["messages_sent"] + new_data["messages_queued"]):
             # we modify the dicts in place
@@ -1026,24 +1006,22 @@ class TextMessaging(BaseDataManager): # TODO REFINE
 
             if "@" not in msg["sender_email"]:
                 msg["sender_email"] = (msg["sender_email"] + "@" + pangea_network) # we allow short username as sender/recipient
-
+            
             msg["attachment"] = msg.get("attachment", None)
             msg["is_certified"] = msg.get("is_certified", False)
-
+            
             if isinstance(msg["sent_at"], (long, int)): # offset in minutes
-                msg["sent_at"] = self.compute_remote_datetime(msg["sent_at"])
-
-            msg["intercepted_by"] = msg.get("intercepted_by", PersistentList())
-            msg["has_read"] = msg.get("has_read", PersistentList())
-            msg["has_replied"] = msg.get("has_replied", PersistentList())
-
+                msg["sent_at"] = self.compute_remote_datetime(msg["sent_at"])    
+                                    
             if not msg["id"]:
                 msg["id"] = self._get_new_msg_id(index, msg["subject"] + msg["body"])
-
                 
+            if not msg.get("group_id"):
+                msg["group_id"] = msg["id"]
+                                    
         new_data["messages_sent"].sort(key=lambda msg: msg["sent_at"])
         new_data["messages_queued"].sort(key=lambda msg: msg["sent_at"])
-
+        
 
         def complete_messages_templates(msg_list, is_manual):
             for msg in msg_list.values():
@@ -1060,39 +1038,25 @@ class TextMessaging(BaseDataManager): # TODO REFINE
 
         #complete_messages_templates(new_data["automated_messages_templates"], is_manual=False)
         complete_messages_templates(new_data["manual_messages_templates"], is_manual=True)
-
-        # we compute automatic external_contacts for the first time
-        self._recompute_all_external_contacts_via_msgs()
-
+        
 
     def _check_database_coherency(self, **kwargs):
-        super(TextMessaging, self)._check_database_coherency(**kwargs)
-
-        # TODO - check all messages and templates with utilities.check_is_restructuredtext(value) ? What happens if invalid rst ?
-
-        game_data = self.data
-
-        utilities.check_is_slug(game_data["global_parameters"]["global_email"]) # shortcut tag to send email to everyone
-         
-        character_names = self.get_character_usernames()
-        for (name, data) in self.get_character_sets().items():
-            for char_name in data["wiretapping_targets"]:
-                assert char_name in character_names
-                
-        message_reference = {# the ids of emails are simply their location in the global message list !
+        super(TextMessagingCore, self)._check_database_coherency(**kwargs)
+        
+        game_data = self.data       
+        
+        message_reference = {
                              "sender_email": basestring,
                              "recipient_emails": PersistentList,
                              "subject": basestring,
                              "body": basestring,
                              "attachment": (types.NoneType, basestring), # None or string
                              "sent_at": datetime,
-                             "intercepted_by": PersistentList,
-                             "has_read": PersistentList,
-                             "has_replied": PersistentList,
                              "is_certified": bool, # for messages sent via automated processes
-                             "id": basestring
+                             "id": basestring,
+                             "group_id": basestring,
                              }
-
+    
         def check_message_list(msg_list):
             previous_sent_at = None
             for msg in msg_list:
@@ -1101,49 +1065,24 @@ class TextMessaging(BaseDataManager): # TODO REFINE
                 if previous_sent_at:
                     assert previous_sent_at <= msg["sent_at"] # message lists are sorted by chronological order
                 previous_sent_at = msg["sent_at"]
-                utilities.check_dictionary_with_template(msg, message_reference)
+                utilities.check_dictionary_with_template(msg, message_reference, strict=False)
 
                 utilities.check_is_email(msg["sender_email"])
                 for recipient in msg["recipient_emails"]:
                     utilities.check_is_email(recipient)
-
-                all_chars = game_data["character_properties"].keys()
-                for username in msg["intercepted_by"]:
-                    assert username in all_chars
-                utilities.check_no_duplicates(msg["intercepted_by"])
-                    
-                all_users = all_chars + [game_data["global_parameters"]["master_login"]]
-                assert all((char in all_users) for char in msg["has_read"]), msg["has_read"]
-                assert all((char in all_users) for char in msg["has_replied"]), msg["has_replied"]
-                
-                if not msg.get("group_id"):
-                    msg["group_id"] = msg["id"]
-                    
+        
             all_ids = [msg["id"] for msg in msg_list]
-            utilities.check_no_duplicates(all_ids)
-
+            utilities.check_no_duplicates(all_ids)        
+        
         # WARNING - we must separate the two lists, because little incoherencies can appear at their junction due to the workflow
         # (the first queued messages might actually be younger than the last ones of the sent messages list)
         check_message_list(game_data["messages_sent"])
         check_message_list(game_data["messages_queued"])
-
-        #TODO CHECK THAT !!
-        all_msg_files = [self.data["audio_messages"][properties["new_messages_notification"]]["file"] 
-                         for properties in self.data["character_properties"].values()]
-        #all_msg_files += [self.data["audio_messages"][properties["request_for_report"]]["file"] for properties in self.data["domains"].values()]
-        assert len(set(all_msg_files)) == len(self.data["character_properties"]) # + len(self.data["domains"])# users must NOT share new-message audio notifications
-
-        # we recompute external_contacts, and check everything is coherent
-        assert not self._recompute_all_external_contacts_via_msgs()
-
-        for character_set in self.data["character_properties"].values():
-            utilities.check_no_duplicates(character_set["external_contacts"])
-            for external_contact in character_set["external_contacts"]:
-                utilities.check_is_email(external_contact)
-                
-                
+         
+        
+        
     def _process_periodic_tasks(self, report):
-        super(TextMessaging, self)._process_periodic_tasks(report)
+        super(TextMessagingCore, self)._process_periodic_tasks(report)
 
         # WE SEND DELAYED MESSAGES #
 
@@ -1167,50 +1106,27 @@ class TextMessaging(BaseDataManager): # TODO REFINE
         else:
             report["messages_sent"] = 0
 
-
-
-    def _normalize_recipient_emails(self, recipient_emails):
-        # accepts any form of argument as "recipients_lists", and converts short names to full emails
-
-        data = self.data
-
-        pangea_domain = data["global_parameters"]["pangea_network_domain"]
-
-        if isinstance(recipient_emails, basestring):
-            recipient_emails = recipient_emails.replace(",", ";")
-            recipient_emails = recipient_emails.split(";")
-
-        recipient_emails = [stripped for stripped in (email.strip() for email in recipient_emails) if stripped]
-
-        normalized_emails = set() # unicity !
-        for (index, chunk) in enumerate(recipient_emails):
-            if "@" in chunk:
-                values = [chunk]
-            elif chunk == data["global_parameters"]["global_email"]:
-                values = [chunk]
-            elif chunk == data["global_parameters"]["master_login"]:
-                values = [data["global_parameters"]["master_email"]]
-            elif chunk in data["character_properties"].keys():
-                values = [chunk + "@" + pangea_domain] # we allow short usernames
-            else:
-                #print("%%%", data["character_properties"].keys())
-                raise UsageError(_("Unknown user login '%s' in recipients list") % chunk) # surely an input error of user!
-            normalized_emails.update(values)
-
-        recipient_emails = PersistentList(normalized_emails) # important !
-        return recipient_emails
-
-    @staticmethod
-    def _sort_and_join_contact_parts(contact_parts):
-        contact_parts = list(set(contact_parts)) # we remove duplicates...
-        contact_parts.sort(key=lambda parts: parts[1] + parts[0])
-        contacts = ["@".join(parts) for parts in contact_parts]
-        return contacts
-
+            
     @transaction_watcher
-    def post_message(self, sender_email, recipient_emails, subject, body, attachment=None,
-                     date_or_delay_mn=None, is_read=False, is_certified=False,
-                     reply_to=None, recontact_to=None, use_template=None):
+    def post_message(self, *args, **kwargs):
+        msg = self._build_new_message(*args, **kwargs)
+        
+        sent_at = msg["sent_at"]
+        
+        if sent_at > datetime.utcnow():
+            self.data["messages_queued"].append(msg)
+            self.data["messages_queued"].sort(key=lambda msg: msg["sent_at"]) # python sorting is stable !
+        else:
+            self._immediately_send_message(msg)
+
+        return msg["id"]
+
+        
+    def _build_new_message(self, sender_email, recipient_emails, subject, body, attachment=None,
+                           date_or_delay_mn=None, is_read=False, is_certified=False,
+                           reply_to=None, recontact_to=None, use_template=None):
+        # TOP LEVEL - no parent calling
+        
         sender_email = sender_email.strip()
         recipient_emails = self._normalize_recipient_emails(recipient_emails)
         subject = subject.strip()
@@ -1243,7 +1159,7 @@ class TextMessaging(BaseDataManager): # TODO REFINE
             except UsageError, e:
                 self.logger.error(e, exc_info=True)
                 
-        if recontact_to:
+        if recontact_to: # MERGE WITH REPLY_TO
             try:
                 msg = self.get_sent_message_by_id(recontact_to)
                 group_id = msg["group_id"]
@@ -1277,25 +1193,12 @@ class TextMessaging(BaseDataManager): # TODO REFINE
                               "body": body,
                               "attachment": attachment, # None or string
                               "sent_at": sent_at,
-                              "intercepted_by": PersistentList(), # by default...
-                              "has_read": PersistentList(), # for dummy automated messages
-                              "has_replied": PersistentList(),
                               "is_certified": is_certified,
                               "id": new_id,
                               "group_id": group_id if group_id else new_id,
                               })
-        if is_read: # workaround : we add ALL players to the "has read" list !
-            msg["has_read"] = PersistentList(
-                self.get_character_usernames() + [self.get_global_parameter("master_login")])
+        return msg
 
-        if sent_at > datetime.utcnow():
-            self.data["messages_queued"].append(msg)
-            self.data["messages_queued"].sort(key=lambda msg: msg["sent_at"]) # python sorting is stable !
-        else:
-            self._immediately_send_message(msg)
-
-        return new_id
-    
 
     @staticmethod
     def _get_new_msg_id(index, content):
@@ -1303,6 +1206,259 @@ class TextMessaging(BaseDataManager): # TODO REFINE
         md5.update(content.encode('ascii', 'ignore'))
         my_hash = md5.hexdigest()[0:4]
         return unicode(index) + "_" + my_hash
+
+    @readonly_method
+    def get_message_viewer_url(self, msg_id): # where shall this actually be ?
+        return reverse('rpgweb.views.view_single_message',
+                        kwargs=dict(msg_id=msg_id, game_instance_id=self.game_instance_id))
+        
+ 
+    @readonly_method
+    def get_all_queued_messages(self):
+        return self.data["messages_queued"]
+
+    @readonly_method
+    def get_all_sent_messages(self):
+        return self.data["messages_sent"]
+
+    @readonly_method
+    def get_sent_messages(self, sender_email):
+        records = [record for record in self.data["messages_sent"] if record["sender_email"] == sender_email]
+        return records # chronological order
+
+    @readonly_method
+    def get_messages_templates(self):
+        return self.data["manual_messages_templates"]
+
+    @readonly_method
+    def get_message_template(self, tpl_id):
+        return self.data["manual_messages_templates"][tpl_id]       
+        
+    @readonly_method
+    def get_received_messages(self, recipient_email):
+        records = [record for record in self.data["messages_sent"] if recipient_email in record["recipient_emails"]]
+        return records # chronological order
+    
+    @readonly_method
+    def get_sent_message_by_id(self, msg_id):
+        msgs = [message for message in self.data["messages_sent"] if message["id"] == msg_id]
+        assert len(msgs) <= 1, "len(msgs) must be < 1"
+        if not msgs:
+            raise UsageError(_("Unknown message id"))
+        return msgs[0]
+
+    @transaction_watcher(ensure_game_started=False)
+    def force_message_sending(self, msg_id):
+        # immediately sends a queued message
+
+        items = [item for item in enumerate(self.get_all_queued_messages()) if item[1]["id"] == msg_id]
+        assert len(items) <= 1
+
+        if not items:
+            return False
+
+        (index, msg) = items[0]
+
+        del self.data["messages_queued"][index] # we remove the msg from queued list
+
+        msg["sent_at"] = datetime.utcnow() # we force the timestamp to NOW
+        self._immediately_send_message(msg)
+
+        return True
+
+    @transaction_watcher
+    def _immediately_send_message(self, msg):
+
+        # wiretapping - FIXME MOVE TO OWN MODULE
+        for username in self.get_character_usernames():
+                
+            wiretapping_targets_emails = [self.get_character_email(target) 
+                                          for target in self.get_wiretapping_targets(username)]
+            
+            if (msg["sender_email"] in wiretapping_targets_emails or
+                any(True for recipient in msg["recipient_emails"] if recipient in wiretapping_targets_emails)):
+                msg["intercepted_by"].append(username)
+
+        # audio_notification = self.get_global_parameter("message_intercepted_audio_id")
+        # NO NOTIFICATION - self.add_radio_message(audio_notification)
+
+        self._update_external_contacts(msg)
+        self.set_new_message_notification(msg["recipient_emails"], new_status=True)
+
+        self.data["messages_sent"].append(msg)
+        self.data["messages_sent"].sort(key=lambda msg: msg["sent_at"]) # python sorting is stable !
+
+        
+    @transaction_watcher
+    def _try_filling_message_template(self, template, values, part_name, tpl_name):
+        
+        try:
+            return template % values
+        except:
+            pass
+
+        if __debug__: self.notify_event("MSG_TEMPLATE_FORMATTING_ERROR_1")
+        self.logger.error("Impossible to format %s of automated message %s, retrying with defaultdict", part_name, tpl_name,
+                      exc_info=True)
+
+        try:
+            new_values = collections.defaultdict(lambda: "<unknown>", values)
+            return template % new_values
+        except:
+            if __debug__: self.notify_event("MSG_TEMPLATE_FORMATTING_ERROR_2")
+            self.logger.critical("Definitely impossible to format %s of automated message %s, returning original value",
+                             part_name, tpl_name, exc_info=True)
+            return template
+  
+  
+                        
+@register_module
+class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
+
+    def _recompute_all_external_contacts_via_msgs(self):
+        external_contacts_changed = False
+        for msg in self.data["messages_sent"]:
+            res = self._update_external_contacts(msg)
+            if res: 
+                external_contacts_changed = True
+        return external_contacts_changed
+    
+    def _load_initial_data(self, **kwargs):
+        super(TextMessagingForCharacters, self)._load_initial_data(**kwargs)
+
+        new_data = self.data
+
+        pangea_network = new_data["global_parameters"]["pangea_network_domain"]
+
+        for (name, character) in new_data["character_properties"].items():
+            character.setdefault("has_new_messages", False)
+
+        for (name, data) in new_data["character_properties"].items():
+            data.setdefault("wiretapping_targets", PersistentList())
+
+        for (index, msg) in enumerate(new_data["messages_sent"] + new_data["messages_queued"]):
+            # we modify the dicts in place
+
+            msg["intercepted_by"] = msg.get("intercepted_by", PersistentList())
+            msg["has_read"] = msg.get("has_read", PersistentList())
+            msg["has_replied"] = msg.get("has_replied", PersistentList())
+            
+
+        # we compute automatic external_contacts for the first time
+        self._recompute_all_external_contacts_via_msgs()
+
+
+    def _check_database_coherency(self, **kwargs):
+        super(TextMessagingForCharacters, self)._check_database_coherency(**kwargs)
+
+        # TODO - check all messages and templates with utilities.check_is_restructuredtext(value) ? What happens if invalid rst ?
+
+        game_data = self.data
+
+        utilities.check_is_slug(game_data["global_parameters"]["global_email"]) # shortcut tag to send email to everyone
+         
+        character_names = self.get_character_usernames()
+        for (name, data) in self.get_character_sets().items():
+            for char_name in data["wiretapping_targets"]:
+                assert char_name in character_names
+                
+        message_reference = {
+                             "intercepted_by": PersistentList,
+                             "has_read": PersistentList,
+                             "has_replied": PersistentList,
+                             "is_certified": bool, # for messages sent via automated processes
+                             }
+
+        def check_message_list(msg_list):
+            previous_sent_at = None
+            for msg in msg_list:
+
+                all_chars = game_data["character_properties"].keys()
+                for username in msg["intercepted_by"]:
+                    assert username in all_chars
+                utilities.check_no_duplicates(msg["intercepted_by"])
+                    
+                all_users = all_chars + [game_data["global_parameters"]["master_login"]]
+                assert all((char in all_users) for char in msg["has_read"]), msg["has_read"]
+                assert all((char in all_users) for char in msg["has_replied"]), msg["has_replied"]
+                
+
+
+        # WARNING - we must separate the two lists, because little incoherencies can appear at their junction due to the workflow
+        # (the first queued messages might actually be younger than the last ones of the sent messages list)
+        check_message_list(game_data["messages_sent"])
+        check_message_list(game_data["messages_queued"])
+
+        #TODO CHECK THAT !! New message notification system ###
+        all_msg_files = [self.data["audio_messages"][properties["new_messages_notification"]]["file"] 
+                         for properties in self.data["character_properties"].values()]
+        #all_msg_files += [self.data["audio_messages"][properties["request_for_report"]]["file"] for properties in self.data["domains"].values()]
+        assert len(set(all_msg_files)) == len(self.data["character_properties"]) # + len(self.data["domains"])# users must NOT share new-message audio notifications
+
+        # we recompute external_contacts, and check everything is coherent
+        assert not self._recompute_all_external_contacts_via_msgs()
+
+        for character_set in self.data["character_properties"].values():
+            utilities.check_no_duplicates(character_set["external_contacts"])
+            for external_contact in character_set["external_contacts"]:
+                utilities.check_is_email(external_contact)
+                
+                
+    def _normalize_recipient_emails(self, recipient_emails): # FIXME CUT THIS IN HIERARCHY
+        # accepts any form of argument as "recipients_lists", and converts short names to full emails
+
+        data = self.data
+
+        pangea_domain = data["global_parameters"]["pangea_network_domain"]
+
+        if isinstance(recipient_emails, basestring):
+            recipient_emails = recipient_emails.replace(",", ";")
+            recipient_emails = recipient_emails.split(";")
+
+        recipient_emails = [stripped for stripped in (email.strip() for email in recipient_emails) if stripped]
+
+        normalized_emails = set() # unicity !
+        for (index, chunk) in enumerate(recipient_emails):
+            if "@" in chunk:
+                values = [chunk]
+            elif chunk == data["global_parameters"]["global_email"]:
+                values = [chunk]
+            elif chunk == data["global_parameters"]["master_login"]:
+                values = [data["global_parameters"]["master_email"]]
+            elif chunk in data["character_properties"].keys():
+                values = [chunk + "@" + pangea_domain] # we allow short usernames
+            else:
+                #print("%%%", data["character_properties"].keys())
+                raise UsageError(_("Unknown user login '%s' in recipients list") % chunk) # surely an input error of user!
+            normalized_emails.update(values)
+
+        recipient_emails = PersistentList(normalized_emails) # important !
+        return recipient_emails
+
+
+    @staticmethod
+    def _sort_and_join_contact_parts(contact_parts):
+        contact_parts = list(set(contact_parts)) # we remove duplicates...
+        contact_parts.sort(key=lambda parts: parts[1] + parts[0])
+        contacts = ["@".join(parts) for parts in contact_parts]
+        return contacts
+
+
+    def _build_new_message(self, *args, **kwargs):
+        msg = super(TextMessagingForCharacters, self)._build_new_message(*args, **kwargs)
+        
+        is_read = kwargs.get("is_read", False)
+        
+        msg.update({"intercepted_by": PersistentList(), # by default...
+                    "has_read": PersistentList(), # for dummy automated messages
+                    "has_replied": PersistentList(),})
+        
+        if is_read: # workaround : we add ALL players to the "has read" list !
+            msg["has_read"] = PersistentList(
+                self.get_character_usernames() + [self.get_global_parameter("master_login")])
+            
+        return msg
+    
 
     @readonly_method
     def get_character_email(self, username):
@@ -1333,7 +1489,7 @@ class TextMessaging(BaseDataManager): # TODO REFINE
             return self.get_global_parameter("master_login")
 
     @readonly_method
-    def get_players_emails(self):
+    def get_characters_emails(self):
         pangea_network_domain = self.get_global_parameter("pangea_network_domain")
         return [username + "@" + pangea_network_domain for username in self.get_character_usernames()]
 
@@ -1353,40 +1509,14 @@ class TextMessaging(BaseDataManager): # TODO REFINE
     @readonly_method
     def get_user_contacts(self, username):
         # should NOT be called for anonymous users
-        return self.get_players_emails() + self.get_external_emails(username)
-
-    @readonly_method
-    def get_message_viewer_url(self, msg_id):
-        return reverse('rpgweb.views.view_single_message',
-                        kwargs=dict(msg_id=msg_id, game_instance_id=self.game_instance_id))
-
-    @readonly_method
-    def get_all_queued_messages(self):
-        return self.data["messages_queued"]
-
-    @readonly_method
-    def get_all_sent_messages(self):
-        return self.data["messages_sent"]
-
-    @readonly_method
-    def get_sent_messages(self, sender_email):
-        records = [record for record in self.data["messages_sent"] if record["sender_email"] == sender_email]
-        return records # chronological order
-
-    @readonly_method
-    def get_messages_templates(self):
-        return self.data["manual_messages_templates"]
-
-    @readonly_method
-    def get_message_template(self, tpl_id):
-        return self.data["manual_messages_templates"][tpl_id]
+        return self.get_characters_emails() + self.get_external_emails(username)
 
 
     @readonly_method
     def get_game_master_messages(self):
         # returns all emails sent to external contacts or robots
         all_messages = self.get_all_sent_messages()
-        normal_emails = self.get_players_emails()
+        normal_emails = self.get_characters_emails()
         messages = []
         for message in all_messages:
             for recipient in message["recipient_emails"]:
@@ -1401,11 +1531,7 @@ class TextMessaging(BaseDataManager): # TODO REFINE
         emails = [record for record in self.data["messages_sent"] if email in record["recipient_emails"] or record["sender_email"] == email or username in record["intercepted_by"]]
         return emails
         
-    @readonly_method
-    def get_received_messages(self, recipient_email):
-        records = [record for record in self.data["messages_sent"] if recipient_email in record["recipient_emails"]]
-        return records # chronological order
-    
+
     @transaction_watcher(ensure_game_started=False)
     def pop_received_messages(self, recipient_email):
         """
@@ -1424,13 +1550,6 @@ class TextMessaging(BaseDataManager): # TODO REFINE
             records = [record for record in self.data["messages_sent"] if record["intercepted_by"]] # intercepted by anyone
         return records # chronological order
 
-    @readonly_method
-    def get_sent_message_by_id(self, msg_id):
-        msgs = [message for message in self.data["messages_sent"] if message["id"] == msg_id]
-        assert len(msgs) <= 1, "len(msgs) must be < 1"
-        if not msgs:
-            raise UsageError(_("Unknown message id"))
-        return msgs[0]
 
     @readonly_method
     def get_unread_messages_count(self, username):
@@ -1447,25 +1566,6 @@ class TextMessaging(BaseDataManager): # TODO REFINE
             print ("2bis", self.connection._registered_objects)
         print ("3", self.connection._registered_objects)
         return len(unread_msgs)
-
-    @transaction_watcher(ensure_game_started=False)
-    def force_message_sending(self, msg_id):
-        # immediately sends a queued message
-
-        items = [item for item in enumerate(self.get_all_queued_messages()) if item[1]["id"] == msg_id]
-        assert len(items) <= 1
-
-        if not items:
-            return False
-
-        (index, msg) = items[0]
-
-        del self.data["messages_queued"][index] # we remove the msg from queued list
-
-        msg["sent_at"] = datetime.utcnow() # we force the timestamp to NOW
-        self._immediately_send_message(msg)
-
-        return True
 
 
     @transaction_watcher(ensure_game_started=False)
@@ -1547,7 +1647,7 @@ class TextMessaging(BaseDataManager): # TODO REFINE
         Retrieve info needed to update the *external_contacts* fields of character accounts,
         when they send/receive this single message.
         """
-        all_characters_emails = set(self.get_players_emails())
+        all_characters_emails = set(self.get_characters_emails())
         msg_emails = set(msg["recipient_emails"] + [msg["sender_email"]])
 
         external_emails = msg_emails - all_characters_emails
@@ -1575,48 +1675,8 @@ class TextMessaging(BaseDataManager): # TODO REFINE
             return new_contacts_added
 
 
-    @transaction_watcher
-    def _immediately_send_message(self, msg):
-
-        # wiretapping
-        for username in self.get_character_usernames():
-                
-            wiretapping_targets_emails = [self.get_character_email(target) 
-                                          for target in self.get_wiretapping_targets(username)]
-            
-            if (msg["sender_email"] in wiretapping_targets_emails or
-                any(True for recipient in msg["recipient_emails"] if recipient in wiretapping_targets_emails)):
-                msg["intercepted_by"].append(username)
-
-        # audio_notification = self.get_global_parameter("message_intercepted_audio_id")
-        # NO NOTIFICATION - self.add_radio_message(audio_notification)
-
-        self._update_external_contacts(msg)
-        self.set_new_message_notification(msg["recipient_emails"], new_status=True)
-
-        self.data["messages_sent"].append(msg)
-        self.data["messages_sent"].sort(key=lambda msg: msg["sent_at"]) # python sorting is stable !
 
 
-    @transaction_watcher
-    def _try_filling_message_template(self, template, values, part_name, tpl_name):
-        try:
-            return template % values
-        except:
-            pass
-
-        if __debug__: self.notify_event("MSG_TEMPLATE_FORMATTING_ERROR_1")
-        self.logger.error("Impossible to format %s of automated message %s, retrying with defaultdict", part_name, tpl_name,
-                      exc_info=True)
-
-        try:
-            new_values = collections.defaultdict(lambda: "<unknown>", values)
-            return template % new_values
-        except:
-            if __debug__: self.notify_event("MSG_TEMPLATE_FORMATTING_ERROR_2")
-            self.logger.critical("Definitely impossible to format %s of automated message %s, returning original value",
-                             part_name, tpl_name, exc_info=True)
-            return template
 
 
 

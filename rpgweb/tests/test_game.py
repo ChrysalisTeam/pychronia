@@ -890,7 +890,7 @@ class TestDatamanager(BaseGameTestCase):
         self.assertEqual(tpl["is_used"], True) # template properly marked as used
 
    
-    @for_core_module(TextMessaging)
+    @for_core_module(TextMessagingForCharacters)
     def test_email_recipients_parsing(self):
         input1 = "guy1 , ; ; guy2@acharis.com , master, ; everyone ,master"
         input2 = ["everyone", "guy1@pangea.com", "guy2@acharis.com", "master@administration.com"]
