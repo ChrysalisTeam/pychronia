@@ -280,14 +280,13 @@ def compose_message(request, template_name='messaging/compose.html'):
                 body = form.cleaned_data["body"]
                 attachment = form.cleaned_data["attachment"]
 
-                reply_to = form.cleaned_data.get("reply_to", None)
-                recontact_to = form.cleaned_data.get("recontact_to", None)
+                parent_id = form.cleaned_data.get("parent_id", None)
                 
                 use_template = form.cleaned_data.get("use_template", None)
 
                 # sender_email and one of the recipient_emails can be the same email, we don't care !
                 request.datamanager.post_message(sender_email, recipient_emails, subject, body, attachment, date_or_delay_mn=delay_mn,
-                                           reply_to=reply_to, recontact_to=recontact_to, use_template=use_template)
+                                                 parent_id=parent_id, use_template=use_template)
 
                 form = forms.MessageComposeForm(request) # new empty form
 

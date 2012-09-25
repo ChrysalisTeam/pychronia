@@ -36,16 +36,18 @@ def GAME_INITIAL_FIXTURE_SCRIPT(dm):
     
     msg_id1 = dm.post_message(email_guy1, email_guy2, subject="message1", body="hello")
     msg1 = dm.get_sent_message_by_id(msg_id1)
-    msg_id2 = dm.post_message(email_guy2, email_guy1, subject="RE:%s"%msg1["subject"], body="hello world", reply_to=msg_id1)
+    msg_id2 = dm.post_message(email_guy2, email_guy1, subject="RE:%s"%msg1["subject"], body="hello world", parent_id=msg_id1)
     msg2 = dm.get_sent_message_by_id(msg_id2)
-    msg_id3 = dm.post_message(email_guy1, email_guy2, subject="Bis:%s"%msg2["subject"], body="hello hello", recontact_to=msg_id2)
+    msg_id3 = dm.post_message(email_guy1, email_guy2, subject="Bis:%s"%msg2["subject"], body="hello hello", parent_id=msg_id2)
     
     msg_id4 = dm.post_message(email_guy1, email_master, subject="Ask master", body="for something")
     msg4 = dm.get_sent_message_by_id(msg_id4)
-    msg_id5 = dm.post_message(email_master, email_guy1, subject="RE:%s"%msg4["subject"], body="answer something", reply_to=msg_id4)
+    msg_id5 = dm.post_message(email_master, email_guy1, subject="RE:%s"%msg4["subject"], body="answer something", parent_id=msg_id4)
     msg5 = dm.get_sent_message_by_id(msg_id5)
-    msg_id6 = dm.post_message(email_guy1, email_master, subject="Bis:%s"%msg5["subject"], body="ask for something", recontact_to=msg_id5)
+    msg_id6 = dm.post_message(email_guy1, email_master, subject="Bis:%s"%msg5["subject"], body="ask for something", parent_id=msg_id5)
     
     dm.transfer_object_to_character("statue", "guy1")
+    
+    
     
     

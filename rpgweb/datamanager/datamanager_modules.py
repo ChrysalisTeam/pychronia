@@ -1124,7 +1124,7 @@ class TextMessagingCore(BaseDataManager):
         
     def _build_new_message(self, sender_email, recipient_emails, subject, body, attachment=None,
                            date_or_delay_mn=None, is_read=False, is_certified=False,
-                           reply_to=None, recontact_to=None, use_template=None):
+                           parent_id=None, use_template=None):
         # TOP LEVEL - no parent calling
         
         sender_email = sender_email.strip()
@@ -1150,19 +1150,12 @@ class TextMessagingCore(BaseDataManager):
             no_reply = True # we consider it's a no-reply robot which has sent the mail
         """
         group_id = None
-        if reply_to:
+        if parent_id:
             try:
-                msg = self.get_sent_message_by_id(reply_to)
+                msg = self.get_sent_message_by_id(parent_id)
                 group_id = msg["group_id"]
-                self._set_message_reply_state(self.get_username_from_email(sender_email), msg, True)
+                self._set_message_reply_state(self.get_username_from_email(sender_email), msg, True) # FIXME
                 self._set_message_read_state(self.get_username_from_email(sender_email), msg, True)
-            except UsageError, e:
-                self.logger.error(e, exc_info=True)
-                
-        if recontact_to: # MERGE WITH REPLY_TO
-            try:
-                msg = self.get_sent_message_by_id(recontact_to)
-                group_id = msg["group_id"]
             except UsageError, e:
                 self.logger.error(e, exc_info=True)
                 
@@ -1290,7 +1283,7 @@ class TextMessagingCore(BaseDataManager):
 
         
     @transaction_watcher
-    def _try_filling_message_template(self, template, values, part_name, tpl_name):
+    def __TODO_REVIVE_try_filling_message_template(self, template, values, part_name, tpl_name):
         
         try:
             return template % values

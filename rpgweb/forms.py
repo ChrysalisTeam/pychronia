@@ -251,19 +251,19 @@ class MessageComposeForm(forms.Form):
         _delay_values_minutes_choices = zip(_delay_values_minutes, _delay_values_minutes_labels)
 
         user = request.datamanager.user
-        reply_to = None
+        parent_id = None
         recontact = None
         message_id = request.GET.get("message_id", "")
         if message_id:
             msg = request.datamanager.get_sent_message_by_id(message_id)
             recipient = msg["recipient_emails"]
             if hasattr(recipient, "__iter__"):
-                recipient = recipient[0]
+                recipient = recipient[0] # FIXME, WELL BUGGY
             sender = msg["sender_email"]
         
             if request.datamanager.get_username_from_email(recipient) == user.username:
                 # reply message
-                reply_to = message_id
+                parent_id = message_id
                 if not user.is_master and recipient != datamanager.get_character_email(user.username): # TODO FIXME WEIRD
                     user.add_error(_("Access to initial message forbidden"))
                 else:
@@ -277,7 +277,7 @@ class MessageComposeForm(forms.Form):
 
             if request.datamanager.get_username_from_email(sender) == user.username:
                 # recontact message
-                recontact = message_id
+                parent_id = message_id
                 if not user.is_master and sender != datamanager.get_character_email(user.username): # TODO FIXME WEIRD
                     user.add_error(_("Access to original message forbidden"))
                 else:
@@ -304,9 +304,8 @@ class MessageComposeForm(forms.Form):
                     attachment = tpl["attachment"]
 
 
-        self.fields.insert(0, "reply_to", forms.CharField(required=False, initial=reply_to, widget=forms.HiddenInput()))
+        self.fields.insert(0, "parent_id", forms.CharField(required=False, initial=parent_id, widget=forms.HiddenInput()))
         self.fields.insert(0, "use_template", forms.CharField(required=False, initial=use_template, widget=forms.HiddenInput()))
-        self.fields.insert(0, "recontact_to", forms.CharField(required=False, initial=recontact, widget=forms.HiddenInput()))
 
         if user.is_master:
             self.fields.insert(0, "sender", forms.EmailField(label=_("Sender"), initial=sender))

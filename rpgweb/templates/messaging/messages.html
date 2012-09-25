@@ -132,13 +132,13 @@
                 
                 <span class="message_operation">
                     {% ifequal mode "inbox" %}
-                        <a href="{% gameurl rpgweb.views.compose_message %}?reply_to={{ message.id|urlencode }}">
+                        <a href="{% gameurl rpgweb.views.compose_message %}?parent_id={{ message.id|urlencode }}">
                             {% trans "Reply to message" %} {% if user.username in message.has_replied %}({% trans "already done" %}){% endif %}
                         </a>
                     {% endifequal %}
                     
                     {% ifequal mode "outbox" %}
-                        <a href="{% gameurl rpgweb.views.compose_message %}?recontact={{ message.id|urlencode }}">
+                        <a href="{% gameurl rpgweb.views.compose_message %}?parent_id={{ message.id|urlencode }}">
                             {% trans "Recontact recipient" %}
                         </a>                
                     {% endifequal %}

@@ -859,11 +859,11 @@ class TestDatamanager(BaseGameTestCase):
         self.assertFalse(msg["has_replied"])
         self.assertFalse(msg["has_read"])
         
-        # no strict checks on sender/recipient of original message, when using reply_to feature
-        msg_id2 = self.dm.post_message(email("guy2"), email("guy1"), subject="ssd", body="qsdqsd", reply_to=msg_id)
-        msg_id3 = self.dm.post_message(email("guy3"), email("guy2"), subject="ssd", body="qsdqsd", reply_to=msg_id)
+        # no strict checks on sender/recipient of original message, when using parent_id feature
+        msg_id2 = self.dm.post_message(email("guy2"), email("guy1"), subject="ssd", body="qsdqsd", parent_id=msg_id)
+        msg_id3 = self.dm.post_message(email("guy3"), email("guy2"), subject="ssd", body="qsdqsd", parent_id=msg_id)
 
-        msg = self.dm.get_sent_message_by_id(msg_id2) # new message isn't impacted by reply_to
+        msg = self.dm.get_sent_message_by_id(msg_id2) # new message isn't impacted by parent_id
         self.assertFalse(msg["has_replied"])
         self.assertFalse(msg["has_read"])
 
