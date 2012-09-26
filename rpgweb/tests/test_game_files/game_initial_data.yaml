@@ -371,54 +371,56 @@ AI_bots:
 wiretapping_targets: [] #-> list of characters whose messages will be intercepted
 
 
-messages_sent:  #-> list of messages processed
-
-    - id: instructions_bewitcher
-      sender_email: judicators1@acharis.com
-      recipient_emails: guy1
-      subject: "Ordres de Missions"
-      attachment: "attachments/image2.png"
-      sent_at: -8000
-      body: >
-        Xanthares, votre maîtrise des drogues et envoûtements sera d’une aide inestimable pour cette mission.
-        Vous vous présenterez chez Loyd Georges en tant que Simon Bladstaffulovza, négociant en matières premières
-        pour les bijouteries béelmoniennes (inventez le reste du personnage de façon aussi crédible que possible).
-
-
-    - id: instructions_oracle
-      sender_email: judicators2@acharis.com
-      recipient_emails: guy2
-      subject: "Ordres de Missions"
-      attachment: "attachments/image1.png"
-      sent_at: -8000
-      body: >
-        Salazur, l’intimité médiumnique que vous avez développée avec le monde invisible va nous être plus que vitale.
-
-
-
-messages_queued: [] #-> list of messages delayed for sending
-
-
-
-manual_messages_templates:
-
-    mind_opening_instructions_oracle:
-        group_id: "22"
-        sender_email: djinn-master@djinn-city.com
-        recipient_emails: guy2
-        subject: Reminder - mind opening operations
-        body: >
-            Good Evening
-
-    mind_opening_operation_sciences:
-        sender_email: djinn-master@djinn-city.com
-        recipient_emails: ""
-        subject: Mind Opening Report
-        body: >
-            This is a dedicated member of the academy of sciences,
-            the goal of which has always been to seek always further the secrets of light and matter.
-
-
+messaging:
+      
+    messages_sent:  #-> list of messages processed
+    
+        - id: instructions_bewitcher
+          sender_email: judicators1@acharis.com
+          recipient_emails: guy1
+          subject: "Ordres de Missions"
+          attachment: "attachments/image2.png"
+          sent_at: -8000
+          body: >
+            Xanthares, votre maîtrise des drogues et envoûtements sera d’une aide inestimable pour cette mission.
+            Vous vous présenterez chez Loyd Georges en tant que Simon Bladstaffulovza, négociant en matières premières
+            pour les bijouteries béelmoniennes (inventez le reste du personnage de façon aussi crédible que possible).
+    
+    
+        - id: instructions_oracle
+          sender_email: judicators2@acharis.com
+          recipient_emails: guy2
+          subject: "Ordres de Missions"
+          attachment: "attachments/image1.png"
+          sent_at: -8000
+          body: >
+            Salazur, l’intimité médiumnique que vous avez développée avec le monde invisible va nous être plus que vitale.
+    
+    
+    
+    messages_queued: [] #-> list of messages delayed for sending
+    
+    
+    
+    manual_messages_templates:
+    
+        mind_opening_instructions_oracle:
+            group_id: "22"
+            sender_email: djinn-master@djinn-city.com
+            recipient_emails: guy2
+            subject: Reminder - mind opening operations
+            body: >
+                Good Evening
+    
+        mind_opening_operation_sciences:
+            sender_email: djinn-master@djinn-city.com
+            recipient_emails: ""
+            subject: Mind Opening Report
+            body: >
+                This is a dedicated member of the academy of sciences,
+                the goal of which has always been to seek always further the secrets of light and matter.
+    
+  
 
 encyclopedia:
     lokon:    

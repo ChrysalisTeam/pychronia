@@ -135,9 +135,8 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
         # not rebind the attribute "data", else we lose ZODB support
         self.data.clear()
 
-        new_data = utilities.load_yaml_fixture(yaml_fixture)
-        for key in new_data.keys():
-            self.data[key] = new_data[key]
+        initial_data = utilities.load_yaml_fixture(yaml_fixture)
+        self.data.update(initial_data)
 
         self._load_initial_data() # traversal of each core module
 

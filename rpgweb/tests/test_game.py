@@ -1247,6 +1247,7 @@ class TestDatamanager(BaseGameTestCase):
         self.assertEqual(res["messages_sent"], 1)
         self.assertEqual(res["actions_executed"], 0)
         self.assertEqual(len(self.dm.get_all_sent_messages()), 1)
+        #print(">>>>>>>>>>>>>>>>>>>>>>##", self.dm.get_all_queued_messages())
         self.assertEqual(len(self.dm.get_all_queued_messages()), 2)
 
         time.sleep(2.5) # last messages OK
