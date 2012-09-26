@@ -6,7 +6,7 @@ from __future__ import unicode_literals
 
 ## INIT
 
-for props in new_data["AI_bots"]["bot_properties"].values():
+for props in game_data["AI_bots"]["bot_properties"].values():
     props["bot_sessions"]["_inputStack"] = [] # always empty between bot requests !
     props["bot_sessions"]["_inputHistory"] = props["bot_sessions"].get("_inputHistory", [])
     props["bot_sessions"]["_outputHistory"] = props["bot_sessions"].get("_outputHistory", [])

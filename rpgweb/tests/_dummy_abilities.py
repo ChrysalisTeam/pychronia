@@ -65,10 +65,10 @@ class DummyTestAbility(AbstractAbility):
         middleware_settings.update(new_settings)
     
     @transaction_watcher
-    def reset_test_data(self, action_name, middleware_class, new_data):
+    def reset_test_data(self, action_name, middleware_class, game_data):
         middleware_settings = self.get_private_middleware_data(action_name, middleware_class, create_if_unexisting=True)
         middleware_settings.clear()
-        middleware_settings.update(new_data)
+        middleware_settings.update(game_data)
     
         
     @transaction_watcher

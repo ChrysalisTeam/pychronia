@@ -7,9 +7,9 @@ from rpgweb.common import *
 
 ##INIT
 
-for (name, scan_set) in new_data["scanning_sets"].items():
+for (name, scan_set) in game_data["scanning_sets"].items():
     if scan_set == "__everywhere__":
-        new_data["scanning_sets"][name] = new_data["locations"].keys()
+        game_data["scanning_sets"][name] = game_data["locations"].keys()
 
 
             elif name == "scanned_locations": # not used at the moment, but well...

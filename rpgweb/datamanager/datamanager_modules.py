@@ -109,13 +109,13 @@ class GameEvents(BaseDataManager): # TODO REFINE
     def _load_initial_data(self, **kwargs):
         super(GameEvents, self)._load_initial_data(**kwargs)
 
-        new_data = self.data
-        new_data.setdefault("events_log", PersistentList())
-        for evt in new_data["events_log"]:
+        game_data = self.data
+        game_data.setdefault("events_log", PersistentList())
+        for evt in game_data["events_log"]:
             if isinstance(evt["time"], (long, int, float)): # NEGATIVE offset in minutes
                 assert evt["time"] <= 0
                 evt["time"] = self.compute_remote_datetime(delay_mn=evt["time"])
-        new_data["events_log"].sort(key=lambda evt: evt["time"])
+        game_data["events_log"].sort(key=lambda evt: evt["time"])
 
 
     def _check_database_coherency(self, **kwargs):
@@ -702,10 +702,10 @@ class FriendshipHandling(BaseDataManager):
 
     def _load_initial_data(self, strict=False, **kwargs):
         super(FriendshipHandling, self)._load_initial_data(**kwargs)
-        new_data = self.data
-        new_data.setdefault("friendships", PersistentDict())
-        new_data["friendships"].setdefault("proposed", PersistentDict()) # mapping (proposer, recipient) => dict(proposal_date)
-        new_data["friendships"].setdefault("sealed", PersistentDict()) # mapping (proposer, accepter) => dict(proposal_date, acceptance_date)
+        game_data = self.data
+        game_data.setdefault("friendships", PersistentDict())
+        game_data["friendships"].setdefault("proposed", PersistentDict()) # mapping (proposer, recipient) => dict(proposal_date)
+        game_data["friendships"].setdefault("sealed", PersistentDict()) # mapping (proposer, accepter) => dict(proposal_date, acceptance_date)
         
     def _check_database_coherency(self, strict=False, **kwargs):
         super(FriendshipHandling, self)._check_database_coherency(**kwargs)
@@ -914,8 +914,8 @@ class LocationsHandling(BaseDataManager):
     def _load_initial_data(self, **kwargs):
         super(LocationsHandling, self)._load_initial_data(**kwargs)
 
-        new_data = self.data
-        for (name, properties) in new_data["locations"].items():
+        game_data = self.data
+        for (name, properties) in game_data["locations"].items():
             properties.setdefault("spy_message", None)
             properties.setdefault("spy_audio", False)
 
@@ -992,15 +992,15 @@ class TextMessagingCore(BaseDataManager):
     def _load_initial_data(self, **kwargs):
         super(TextMessagingCore, self)._load_initial_data(**kwargs)
         
-        new_data = self.data
+        game_data = self.data
         
-        messaging = new_data.setdefault("messaging", PersistentList())
+        messaging = game_data.setdefault("messaging", PersistentList())
         
         messaging.setdefault("messages_sent", PersistentList())
         messaging.setdefault("messages_queued", PersistentList())
         messaging.setdefault("manual_messages_templates", PersistentDict())
         
-        pangea_network = new_data["global_parameters"]["pangea_network_domain"]
+        pangea_network = game_data["global_parameters"]["pangea_network_domain"]
 
         for (index, msg) in enumerate(messaging["messages_sent"] + messaging["messages_queued"]):
             # we modify the dicts in place
@@ -1039,7 +1039,7 @@ class TextMessagingCore(BaseDataManager):
                 msg["attachment"] = msg.get("attachment", None)
                 msg["is_used"] = msg.get("is_used", False)
 
-        #complete_messages_templates(new_data["automated_messages_templates"], is_manual=False)
+        #complete_messages_templates(game_data["automated_messages_templates"], is_manual=False)
         complete_messages_templates(messaging["manual_messages_templates"], is_manual=True)
         
 
@@ -1317,12 +1317,12 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
     def _load_initial_data(self, **kwargs):
         super(TextMessagingForCharacters, self)._load_initial_data(**kwargs)
 
-        new_data = self.data
-        messaging = new_data["messaging"]
+        game_data = self.data
+        messaging = game_data["messaging"]
         
-        pangea_network = new_data["global_parameters"]["pangea_network_domain"]
+        pangea_network = game_data["global_parameters"]["pangea_network_domain"]
 
-        for (name, character) in new_data["character_properties"].items():
+        for (name, character) in game_data["character_properties"].items():
             character.setdefault("has_new_messages", False)
 
 
@@ -1641,10 +1641,10 @@ class TextMessagingInterception(BaseDataManager):
     def _load_initial_data(self, **kwargs):
         super(TextMessagingInterception, self)._load_initial_data(**kwargs)
 
-        new_data = self.data
-        messaging = new_data["messaging"]
+        game_data = self.data
+        messaging = game_data["messaging"]
         
-        for (name, data) in new_data["character_properties"].items():
+        for (name, data) in game_data["character_properties"].items():
             data.setdefault("wiretapping_targets", PersistentList())
             
         for (index, msg) in enumerate(messaging["messages_sent"] + messaging["messages_queued"]):
@@ -1717,7 +1717,7 @@ class RadioMessaging(BaseDataManager): # TODO REFINE
     def _load_initial_data(self, **kwargs):
         super(RadioMessaging, self)._load_initial_data(**kwargs)
   
-        new_data = self.data
+        game_data = self.data
         # do nothing
 
     def _check_database_coherency(self, **kwargs):
@@ -1847,16 +1847,16 @@ class Chatroom(BaseDataManager):
     def _load_initial_data(self, **kwargs):
         super(Chatroom, self)._load_initial_data(**kwargs)
 
-        new_data = self.data
+        game_data = self.data
 
-        for (name, character) in new_data["character_properties"].items():
+        for (name, character) in game_data["character_properties"].items():
             character["last_chatting_time"] = character.get("last_chatting_time", None)
 
-        new_data.setdefault("chatroom_messages", PersistentList())
+        game_data.setdefault("chatroom_messages", PersistentList())
 
-        new_data["global_parameters"].setdefault("chatroom_presence_timeout_s", 20)
-        new_data["global_parameters"].setdefault("chatroom_timestamp_display_threshold_s", 120)
-        new_data.setdefault("user_color", PersistentDict())
+        game_data["global_parameters"].setdefault("chatroom_presence_timeout_s", 20)
+        game_data["global_parameters"].setdefault("chatroom_timestamp_display_threshold_s", 120)
+        game_data.setdefault("user_color", PersistentDict())
     
     def _check_database_coherency(self, **kwargs):
         super(Chatroom, self)._check_database_coherency(**kwargs)
@@ -1945,14 +1945,14 @@ class ActionScheduling(BaseDataManager):
     def _load_initial_data(self, **kwargs):
         super(ActionScheduling, self)._load_initial_data(**kwargs)
 
-        new_data = self.data
+        game_data = self.data
 
-        new_data.setdefault("scheduled_actions", PersistentList())
+        game_data.setdefault("scheduled_actions", PersistentList())
 
-        for evt in new_data["scheduled_actions"]:
+        for evt in game_data["scheduled_actions"]:
             if isinstance(evt["execute_at"], (long, int)): # offset in minutes
                 evt["execute_at"] = self.compute_remote_datetime(evt["execute_at"])
-        new_data["scheduled_actions"].sort(key=lambda evt: evt["execute_at"])
+        game_data["scheduled_actions"].sort(key=lambda evt: evt["execute_at"])
 
 
 
@@ -2165,16 +2165,16 @@ class MoneyItemsOwnership(BaseDataManager):
     def _load_initial_data(self, **kwargs):
         super(MoneyItemsOwnership, self)._load_initial_data(**kwargs)
 
-        new_data = self.data
+        game_data = self.data
 
-        new_data["global_parameters"].setdefault("bank_name", "bank")
-        new_data["global_parameters"].setdefault("bank_account", 0) # can be negative
-        new_data["global_parameters"].setdefault("spent_gems", []) # gems used in abilities
+        game_data["global_parameters"].setdefault("bank_name", "bank")
+        game_data["global_parameters"].setdefault("bank_account", 0) # can be negative
+        game_data["global_parameters"].setdefault("spent_gems", []) # gems used in abilities
 
-        total_digital_money = new_data["global_parameters"]["bank_account"]
-        total_gems = new_data["global_parameters"]["spent_gems"][:] # COPY
+        total_digital_money = game_data["global_parameters"]["bank_account"]
+        total_gems = game_data["global_parameters"]["spent_gems"][:] # COPY
 
-        for (name, character) in new_data["character_properties"].items():
+        for (name, character) in game_data["character_properties"].items():
             character["items"] = character.get("items", [])
             character["account"] = character.get("account", 0)
             character["gems"] = character.get("gems", [])
@@ -2182,20 +2182,20 @@ class MoneyItemsOwnership(BaseDataManager):
             total_gems += character["gems"]
             total_digital_money += character["account"]
 
-        for (name, properties) in new_data["items_for_sale"].items():
+        for (name, properties) in game_data["items_for_sale"].items():
             properties['unit_cost'] = int(math.ceil(float(properties['total_price']) / properties['num_items']))
             properties['owner'] = properties.get('owner', None)
 
             if properties["is_gem"] and not properties['owner']: # we dont recount gems appearing in character["gems"]
                 total_gems += [properties['unit_cost']] * properties["num_items"]
 
-        for (name, scan_set) in new_data["scanning_sets"].items():
+        for (name, scan_set) in game_data["scanning_sets"].items():
             if scan_set == "__everywhere__":
-                new_data["scanning_sets"][name] = new_data["locations"].keys()
+                game_data["scanning_sets"][name] = game_data["locations"].keys()
 
         # We initialize some runtime checking parameters #
-        new_data["global_parameters"]["total_digital_money"] = total_digital_money # integer
-        new_data["global_parameters"]["total_gems"] = PersistentList(sorted(total_gems)) # sorted list of integer values
+        game_data["global_parameters"]["total_digital_money"] = total_digital_money # integer
+        game_data["global_parameters"]["total_gems"] = PersistentList(sorted(total_gems)) # sorted list of integer values
 
 
 
@@ -2445,14 +2445,14 @@ class Encyclopedia(BaseDataManager):
     def _load_initial_data(self, **kwargs):
         super(Encyclopedia, self)._load_initial_data(**kwargs)
         
-        new_data = self.data
+        game_data = self.data
 
-        new_data["global_parameters"].setdefault("encyclopedia_index_visible", False)
+        game_data["global_parameters"].setdefault("encyclopedia_index_visible", False)
         
         for character in self.get_character_sets().values():
             character.setdefault("known_article_ids", PersistentList())
             
-        #for (key, value) in new_data["encyclopedia"].items():
+        #for (key, value) in game_data["encyclopedia"].items():
         #    value["keywords"] = list(set(value["keywords"] + [key]))
             
         
@@ -2617,9 +2617,9 @@ class GameViews(BaseDataManager):
                     
     def _load_initial_data(self, **kwargs):
         super(GameViews, self)._load_initial_data(**kwargs)
-        new_data = self.data
-        new_data.setdefault("views", PersistentDict())
-        new_data["views"].setdefault("activated_views", PersistentList())
+        game_data = self.data
+        game_data.setdefault("views", PersistentDict())
+        game_data["views"].setdefault("activated_views", PersistentList())
         # no need to sync - it will done later in _init_from_db()
 
 
@@ -2759,14 +2759,14 @@ class SpecialAbilities(BaseDataManager):
     def _load_initial_data(self, **kwargs):
         super(SpecialAbilities, self)._load_initial_data(**kwargs)
 
-        new_data = self.data
-        new_data.setdefault("abilities", {})
+        game_data = self.data
+        game_data.setdefault("abilities", {})
         for (key, klass) in self.ABILITIES_REGISTRY.items():
             print("loading", klass)
             self.logger.debug("Setting up main settings for ability %s" % key) #TODO
-            ability_data = new_data["abilities"].setdefault(key, {})
+            ability_data = game_data["abilities"].setdefault(key, {})
             klass.setup_main_ability_data(ability_data) # each ability fills its default values
-            assert "settings" in new_data["abilities"][key] and "data" in new_data["abilities"][key] 
+            assert "settings" in game_data["abilities"][key] and "data" in game_data["abilities"][key] 
             
 
     def _check_database_coherency(self, strict=False, **kwargs):

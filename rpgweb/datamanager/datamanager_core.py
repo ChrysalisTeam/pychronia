@@ -148,7 +148,7 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
         # normal python types are transformed to ZODB-persistent types
         for key in self.data.keys():
             self.data[key] = utilities.convert_object_tree(self.data[key], utilities.python_to_zodb_types)
-            utilities.check_object_tree(self.data[key], allowed_types=utilities.allowed_zodb_types, path=["new_data"])
+            utilities.check_object_tree(self.data[key], allowed_types=utilities.allowed_zodb_types, path=["game_data"])
         
         self.is_initialized = True
         self._init_from_db()
@@ -316,19 +316,19 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
         # We initialize runtime parameters #
 
 
-        new_data["global_parameters"]["total_gems_number"] = total_gems_number
-        new_data["global_parameters"]["total_digital_money"] = total_digital_money
-        new_data["global_parameters"]["teldorian_teleportations_done"] = 0
-        new_data["global_parameters"]["telecom_investigations_done"] = 0
-        new_data["global_parameters"]["scanned_locations"] = []
+        game_data["global_parameters"]["total_gems_number"] = total_gems_number
+        game_data["global_parameters"]["total_digital_money"] = total_digital_money
+        game_data["global_parameters"]["teldorian_teleportations_done"] = 0
+        game_data["global_parameters"]["telecom_investigations_done"] = 0
+        game_data["global_parameters"]["scanned_locations"] = []
    
 
-        ##new_data["wiretapping_targets"] = new_data.get("wiretapping_targets", [])
+        ##game_data["wiretapping_targets"] = game_data.get("wiretapping_targets", [])
 
 
         # IMPORTANT - NOW we can convert basic types !
 
-        return new_data
+        return game_data
 
 
 '''
