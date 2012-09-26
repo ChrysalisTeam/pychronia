@@ -989,6 +989,12 @@ class OnlinePresence(BaseDataManager):
 @register_module
 class TextMessagingCore(BaseDataManager):
 
+
+    @property
+    def messaging_data(self):
+        return self.data["messaging"]
+    
+    
     def _load_initial_data(self, **kwargs):
         super(TextMessagingCore, self)._load_initial_data(**kwargs)
         
@@ -1045,9 +1051,8 @@ class TextMessagingCore(BaseDataManager):
 
     def _check_database_coherency(self, **kwargs):
         super(TextMessagingCore, self)._check_database_coherency(**kwargs)
-        
-        game_data = self.data       
-        messaging = game_data["messaging"]
+              
+        messaging = self.messaging_data
         
         message_reference = {
                              "sender_email": basestring,
@@ -1095,7 +1100,7 @@ class TextMessagingCore(BaseDataManager):
         last_index_processed = None
         utcnow = datetime.utcnow()
 
-        for (index, msg) in enumerate(self.data["messaging"]["messages_queued"]):
+        for (index, msg) in enumerate(self.messaging_data["messages_queued"]):
             if msg["sent_at"] <= utcnow:
                 try:
                     self._immediately_send_message(msg)
@@ -1107,7 +1112,7 @@ class TextMessagingCore(BaseDataManager):
                 break # since messages are queued in CHRONOLOGICAL order...
 
         if last_index_processed is not None:
-            self.data["messaging"]["messages_queued"] = self.data["messaging"]["messages_queued"][last_index_processed + 1:]
+            self.messaging_data["messages_queued"] = self.messaging_data["messages_queued"][last_index_processed + 1:]
             report["messages_sent"] = last_index_processed + 1
         else:
             report["messages_sent"] = 0
@@ -1120,8 +1125,8 @@ class TextMessagingCore(BaseDataManager):
         sent_at = msg["sent_at"]
         
         if sent_at > datetime.utcnow():
-            self.data["messaging"]["messages_queued"].append(msg)
-            self.data["messaging"]["messages_queued"].sort(key=lambda msg: msg["sent_at"]) # python sorting is stable !
+            self.messaging_data["messages_queued"].append(msg)
+            self.messaging_data["messages_queued"].sort(key=lambda msg: msg["sent_at"]) # python sorting is stable !
         else:
             self._immediately_send_message(msg)
 
@@ -1173,7 +1178,7 @@ class TextMessagingCore(BaseDataManager):
             except UsageError, e:
                 self.logger.error(e, exc_info=True)
 
-        new_id = self._get_new_msg_id(len(self.data["messaging"]["messages_sent"]) + len(self.data["messaging"]["messages_queued"]),
+        new_id = self._get_new_msg_id(len(self.messaging_data["messages_sent"]) + len(self.messaging_data["messages_queued"]),
                                       subject + body) # unicity more than guaranteed
 
         # NO - let them relative if needed...
@@ -1214,33 +1219,33 @@ class TextMessagingCore(BaseDataManager):
  
     @readonly_method
     def get_all_queued_messages(self):
-        return self.data["messaging"]["messages_queued"]
+        return self.messaging_data["messages_queued"]
 
     @readonly_method
     def get_all_sent_messages(self):
-        return self.data["messaging"]["messages_sent"]
+        return self.messaging_data["messages_sent"]
 
     @readonly_method
     def get_sent_messages(self, sender_email):
-        records = [record for record in self.data["messaging"]["messages_sent"] if record["sender_email"] == sender_email]
+        records = [record for record in self.messaging_data["messages_sent"] if record["sender_email"] == sender_email]
         return records # chronological order
 
     @readonly_method
     def get_messages_templates(self):
-        return self.data["messaging"]["manual_messages_templates"]
+        return self.messaging_data["manual_messages_templates"]
 
     @readonly_method
     def get_message_template(self, tpl_id):
-        return self.data["messaging"]["manual_messages_templates"][tpl_id]       
+        return self.messaging_data["manual_messages_templates"][tpl_id]       
         
     @readonly_method
     def get_received_messages(self, recipient_email):
-        records = [record for record in self.data["messaging"]["messages_sent"] if recipient_email in record["recipient_emails"]]
+        records = [record for record in self.messaging_data["messages_sent"] if recipient_email in record["recipient_emails"]]
         return records # chronological order
     
     @readonly_method
     def get_sent_message_by_id(self, msg_id):
-        msgs = [message for message in self.data["messaging"]["messages_sent"] if message["id"] == msg_id]
+        msgs = [message for message in self.messaging_data["messages_sent"] if message["id"] == msg_id]
         assert len(msgs) <= 1, "len(msgs) must be < 1"
         if not msgs:
             raise UsageError(_("Unknown message id"))
@@ -1258,7 +1263,7 @@ class TextMessagingCore(BaseDataManager):
 
         (index, msg) = items[0]
 
-        del self.data["messaging"]["messages_queued"][index] # we remove the msg from queued list
+        del self.messaging_data["messages_queued"][index] # we remove the msg from queued list
 
         msg["sent_at"] = datetime.utcnow() # we force the timestamp to NOW
         self._immediately_send_message(msg)
@@ -1284,8 +1289,8 @@ class TextMessagingCore(BaseDataManager):
         self._update_external_contacts(msg)
         self.set_new_message_notification(msg["recipient_emails"], new_status=True)
 
-        self.data["messaging"]["messages_sent"].append(msg)
-        self.data["messaging"]["messages_sent"].sort(key=lambda msg: msg["sent_at"]) # python sorting is stable !
+        self.messaging_data["messages_sent"].append(msg)
+        self.messaging_data["messages_sent"].sort(key=lambda msg: msg["sent_at"]) # python sorting is stable !
 
         
     @transaction_watcher
@@ -1318,7 +1323,7 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
         super(TextMessagingForCharacters, self)._load_initial_data(**kwargs)
 
         game_data = self.data
-        messaging = game_data["messaging"]
+        messaging = self.messaging_data
         
         pangea_network = game_data["global_parameters"]["pangea_network_domain"]
 
@@ -1343,7 +1348,7 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
         # TODO - check all messages and templates with utilities.check_is_restructuredtext(value) ? What happens if invalid rst ?
 
         game_data = self.data
-        messaging = game_data["messaging"]
+        messaging = self.messaging_data
         
         utilities.check_is_slug(game_data["global_parameters"]["global_email"]) # shortcut tag to send email to everyone
          
@@ -1388,7 +1393,7 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
 
     def _recompute_all_external_contacts_via_msgs(self):
         external_contacts_changed = False
-        for msg in self.data["messaging"]["messages_sent"]:
+        for msg in self.messaging_data["messages_sent"]:
             res = self._update_external_contacts(msg)
             if res: 
                 external_contacts_changed = True
@@ -1519,7 +1524,7 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
     @transaction_watcher(ensure_game_started=False)
     def get_user_related_messages(self, email):
         username = self.get_username_from_email(email)
-        emails = [record for record in self.data["messaging"]["messages_sent"] if email in record["recipient_emails"] or record["sender_email"] == email or username in record["intercepted_by"]]
+        emails = [record for record in self.messaging_data["messages_sent"] if email in record["recipient_emails"] or record["sender_email"] == email or username in record["intercepted_by"]]
         return emails
         
 
@@ -1642,7 +1647,7 @@ class TextMessagingInterception(BaseDataManager):
         super(TextMessagingInterception, self)._load_initial_data(**kwargs)
 
         game_data = self.data
-        messaging = game_data["messaging"]
+        messaging = self.messaging_data
         
         for (name, data) in game_data["character_properties"].items():
             data.setdefault("wiretapping_targets", PersistentList())
@@ -1656,7 +1661,7 @@ class TextMessagingInterception(BaseDataManager):
         super(TextMessagingInterception, self)._check_database_coherency(**kwargs)  
         
         game_data = self.data
-        messaging = game_data["messaging"]
+        messaging = self.messaging_data
         
         character_names = self.get_character_usernames()
         for (name, data) in self.get_character_sets().items():
@@ -1678,9 +1683,9 @@ class TextMessagingInterception(BaseDataManager):
     def get_intercepted_messages(self, username=None): # for wiretapping
         if username is not None and not self.is_master(username):
             assert username in self.get_character_usernames()
-            records = [record for record in self.data["messaging"]["messages_sent"] if username in record["intercepted_by"]]
+            records = [record for record in self.messaging_data["messages_sent"] if username in record["intercepted_by"]]
         else:
-            records = [record for record in self.data["messaging"]["messages_sent"] if record["intercepted_by"]] # intercepted by anyone
+            records = [record for record in self.messaging_data["messages_sent"] if record["intercepted_by"]] # intercepted by anyone
         return records # chronological order
         
     @transaction_watcher
