@@ -2187,7 +2187,7 @@ class MoneyItemsOwnership(BaseDataManager):
             total_gems += character["gems"]
             total_digital_money += character["account"]
 
-        for (name, properties) in game_data["items_for_sale"].items():
+        for (name, properties) in game_data["game_items"].items():
             properties['unit_cost'] = int(math.ceil(float(properties['total_price']) / properties['num_items']))
             properties['owner'] = properties.get('owner', None)
 
@@ -2223,8 +2223,8 @@ class MoneyItemsOwnership(BaseDataManager):
             total_gems += character["gems"]
             #print ("---------", name, total_gems.count(500))
 
-        assert game_data["items_for_sale"]
-        for (name, properties) in game_data["items_for_sale"].items():
+        assert game_data["game_items"]
+        for (name, properties) in game_data["game_items"].items():
 
             utilities.check_is_slug(name)
             assert isinstance(properties['is_gem'], bool)
@@ -2256,11 +2256,11 @@ class MoneyItemsOwnership(BaseDataManager):
 
     @readonly_method
     def get_items_for_sale(self):
-        return self.data["items_for_sale"]
+        return self.data["game_items"]
 
     @readonly_method
     def get_item_properties(self, item_name):
-        return self.data["items_for_sale"][item_name]
+        return self.data["game_items"][item_name]
 
     @readonly_method
     def get_team_gems_count(self, domain):
@@ -2345,7 +2345,7 @@ class MoneyItemsOwnership(BaseDataManager):
 
         del character["items"][character["items"].index(item_name)]
 
-        self.data["items_for_sale"][item_name]["owner"] = None # we reset the owner tag of the object
+        self.data["game_items"][item_name]["owner"] = None # we reset the owner tag of the object
 
         # todo - logging here ??
 
@@ -2432,7 +2432,7 @@ class Items3dViewing(BaseDataManager):
             }
 
         for (name, properties) in game_data["item_3d_settings"].items():
-            assert name in game_data["items_for_sale"].keys(), name
+            assert name in game_data["game_items"].keys(), name
             utilities.check_dictionary_with_template(properties, item_viewer_reference)
 
 

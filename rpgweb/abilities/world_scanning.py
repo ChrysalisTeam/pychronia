@@ -18,7 +18,7 @@ for (name, scan_set) in game_data["scanning_sets"].items():
 """ # at the moment we don't care about the number of scans performed
 assert len(game_data["scanned_items"]) <= game_data["global_parameters"]["max_world_scans"]
 for item_name in game_data["scanned_items"]:
-    assert item_name in game_data["items_for_sale"].keys(), item_name
+    assert item_name in game_data["game_items"].keys(), item_name
 """
 
 @readonly_method

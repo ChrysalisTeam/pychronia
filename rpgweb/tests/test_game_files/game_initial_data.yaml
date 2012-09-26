@@ -144,7 +144,7 @@ scanning_sets:
 
 
 
-items_for_sale:
+game_items:
 
     statue:
         auction: "2-B"
@@ -367,8 +367,6 @@ AI_bots:
         - "I'm fed up, please stop boring me."
         - "I think we've talked enough for today."
 
-
-wiretapping_targets: [] #-> list of characters whose messages will be intercepted
 
 
 messaging:
