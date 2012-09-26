@@ -1062,9 +1062,11 @@ class TextMessagingCore(BaseDataManager):
             for msg in msg_list:
 
                 assert msg["subject"] # body can be empty, after all...
+                
                 if previous_sent_at:
                     assert previous_sent_at <= msg["sent_at"] # message lists are sorted by chronological order
                 previous_sent_at = msg["sent_at"]
+                
                 utilities.check_dictionary_with_template(msg, message_reference, strict=False)
 
                 utilities.check_is_email(msg["sender_email"])
@@ -1307,14 +1309,6 @@ class TextMessagingCore(BaseDataManager):
                         
 @register_module
 class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
-
-    def _recompute_all_external_contacts_via_msgs(self):
-        external_contacts_changed = False
-        for msg in self.data["messages_sent"]:
-            res = self._update_external_contacts(msg)
-            if res: 
-                external_contacts_changed = True
-        return external_contacts_changed
     
     def _load_initial_data(self, **kwargs):
         super(TextMessagingForCharacters, self)._load_initial_data(**kwargs)
@@ -1326,13 +1320,10 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
         for (name, character) in new_data["character_properties"].items():
             character.setdefault("has_new_messages", False)
 
-        for (name, data) in new_data["character_properties"].items():
-            data.setdefault("wiretapping_targets", PersistentList())
 
         for (index, msg) in enumerate(new_data["messages_sent"] + new_data["messages_queued"]):
             # we modify the dicts in place
 
-            msg["intercepted_by"] = msg.get("intercepted_by", PersistentList())
             msg["has_read"] = msg.get("has_read", PersistentList())
             msg["has_replied"] = msg.get("has_replied", PersistentList())
             
@@ -1350,13 +1341,8 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
 
         utilities.check_is_slug(game_data["global_parameters"]["global_email"]) # shortcut tag to send email to everyone
          
-        character_names = self.get_character_usernames()
-        for (name, data) in self.get_character_sets().items():
-            for char_name in data["wiretapping_targets"]:
-                assert char_name in character_names
-                
+
         message_reference = {
-                             "intercepted_by": PersistentList,
                              "has_read": PersistentList,
                              "has_replied": PersistentList,
                              "is_certified": bool, # for messages sent via automated processes
@@ -1365,17 +1351,14 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
         def check_message_list(msg_list):
             previous_sent_at = None
             for msg in msg_list:
-
+                
+                utilities.check_dictionary_with_template(msg, message_reference, strict=False)
+                
                 all_chars = game_data["character_properties"].keys()
-                for username in msg["intercepted_by"]:
-                    assert username in all_chars
-                utilities.check_no_duplicates(msg["intercepted_by"])
-                    
                 all_users = all_chars + [game_data["global_parameters"]["master_login"]]
                 assert all((char in all_users) for char in msg["has_read"]), msg["has_read"]
                 assert all((char in all_users) for char in msg["has_replied"]), msg["has_replied"]
                 
-
 
         # WARNING - we must separate the two lists, because little incoherencies can appear at their junction due to the workflow
         # (the first queued messages might actually be younger than the last ones of the sent messages list)
@@ -1396,7 +1379,16 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
             for external_contact in character_set["external_contacts"]:
                 utilities.check_is_email(external_contact)
                 
-                
+
+    def _recompute_all_external_contacts_via_msgs(self):
+        external_contacts_changed = False
+        for msg in self.data["messages_sent"]:
+            res = self._update_external_contacts(msg)
+            if res: 
+                external_contacts_changed = True
+        return external_contacts_changed
+    
+                    
     def _normalize_recipient_emails(self, recipient_emails): # FIXME CUT THIS IN HIERARCHY
         # accepts any form of argument as "recipients_lists", and converts short names to full emails
 
@@ -1534,15 +1526,6 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
         self.set_new_message_notification([recipient_email], False)
         return records
         
-    @readonly_method
-    def get_intercepted_messages(self, username=None): # for wiretapping
-        if username is not None and not self.is_master(username):
-            assert username in self.get_character_usernames()
-            records = [record for record in self.data["messages_sent"] if username in record["intercepted_by"]]
-        else:
-            records = [record for record in self.data["messages_sent"] if record["intercepted_by"]] # intercepted by anyone
-        return records # chronological order
-
 
     @readonly_method
     def get_unread_messages_count(self, username):
@@ -1611,29 +1594,6 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
                 # thus, "invented" emails are simply ignored in this process
 
 
-    @transaction_watcher
-    def set_wiretapping_targets(self, username, target_names):
-
-        target_names = sorted(list(set(target_names))) # renormalization, just in case
-
-        character_names = self.get_character_usernames()
-        for name in target_names:
-            if name not in character_names:
-                raise AbnormalUsageError(_("Unknown target username %(target)s") % SDICT(target=name)) # we can show it
-
-        data = self.get_character_properties(username)
-        data["wiretapping_targets"] = PersistentList(target_names)
-
-        self.log_game_event(_noop("Wiretapping targets set to (%(targets)s) for %(username)s."),
-                             PersistentDict(targets="[%s]"%(", ".join(target_names)), username=username),
-                             url=None)
-    
-    
-    @readonly_method
-    def get_wiretapping_targets(self, username):
-        return self.get_character_properties(username)["wiretapping_targets"]
-
-
     @readonly_method
     def _get_external_contacts_updates(self, msg):
         """
@@ -1669,7 +1629,72 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
 
 
 
+@register_module
+class TextMessagingInterception(BaseDataManager):
 
+    def _load_initial_data(self, **kwargs):
+        super(TextMessagingInterception, self)._load_initial_data(**kwargs)
+
+        new_data = self.data
+        
+        for (name, data) in new_data["character_properties"].items():
+            data.setdefault("wiretapping_targets", PersistentList())
+            
+        for (index, msg) in enumerate(new_data["messages_sent"] + new_data["messages_queued"]):
+            # we modify the dicts in place       
+            msg["intercepted_by"] = msg.get("intercepted_by", PersistentList())    
+        
+        
+    def _check_database_coherency(self, **kwargs):
+        super(TextMessagingInterception, self)._check_database_coherency(**kwargs)  
+        
+        game_data = self.data
+        
+        character_names = self.get_character_usernames()
+        for (name, data) in self.get_character_sets().items():
+            for char_name in data["wiretapping_targets"]:
+                assert char_name in character_names
+                
+        for (index, msg) in enumerate(game_data["messages_sent"] + game_data["messages_queued"]):   
+
+            assert isinstance(msg["intercepted_by"], PersistentList)
+            
+            all_chars = game_data["character_properties"].keys()
+
+            utilities.check_no_duplicates(msg["intercepted_by"])           
+            for username in msg["intercepted_by"]:
+                assert username in all_chars
+        
+        
+    @readonly_method
+    def get_intercepted_messages(self, username=None): # for wiretapping
+        if username is not None and not self.is_master(username):
+            assert username in self.get_character_usernames()
+            records = [record for record in self.data["messages_sent"] if username in record["intercepted_by"]]
+        else:
+            records = [record for record in self.data["messages_sent"] if record["intercepted_by"]] # intercepted by anyone
+        return records # chronological order
+        
+    @transaction_watcher
+    def set_wiretapping_targets(self, username, target_names):
+
+        target_names = sorted(list(set(target_names))) # renormalization, just in case
+
+        character_names = self.get_character_usernames()
+        for name in target_names:
+            if name not in character_names:
+                raise AbnormalUsageError(_("Unknown target username %(target)s") % SDICT(target=name)) # we can show it
+
+        data = self.get_character_properties(username)
+        data["wiretapping_targets"] = PersistentList(target_names)
+
+        self.log_game_event(_noop("Wiretapping targets set to (%(targets)s) for %(username)s."),
+                             PersistentDict(targets="[%s]"%(", ".join(target_names)), username=username),
+                             url=None)
+    
+    @readonly_method
+    def get_wiretapping_targets(self, username):
+        return self.get_character_properties(username)["wiretapping_targets"]
 
 
 
