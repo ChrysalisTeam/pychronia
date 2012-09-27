@@ -370,6 +370,14 @@ AI_bots:
 
 
 messaging:
+     
+    globally_registered_contacts:
+        
+        judicators@acharis.com: 
+            avatar: "here.jpg"
+            description: "the terrible judicators"
+        
+        ALL_CONTACTS: null
       
     messages_sent:  #-> list of messages processed
     

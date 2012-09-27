@@ -1002,6 +1002,7 @@ class TextMessagingCore(BaseDataManager):
         
         messaging = game_data.setdefault("messaging", PersistentList())
         
+        messaging.setdefault("globally_registered_contacts", PersistentDict()) # identifier -> None or dict(description, avatar)
         messaging.setdefault("messages_sent", PersistentList())
         messaging.setdefault("messages_queued", PersistentList())
         messaging.setdefault("manual_messages_templates", PersistentDict())
@@ -1049,10 +1050,22 @@ class TextMessagingCore(BaseDataManager):
         complete_messages_templates(messaging["manual_messages_templates"], is_manual=True)
         
 
-    def _check_database_coherency(self, **kwargs):
-        super(TextMessagingCore, self)._check_database_coherency(**kwargs)
+    def _check_database_coherency(self, strict=False, **kwargs):
+        super(TextMessagingCore, self)._check_database_coherency(strict=strict, **kwargs)
               
         messaging = self.messaging_data
+        
+        
+        for identifier, details in messaging["globally_registered_contacts"].items():
+            utilities.check_is_string(identifier) # not necessarily an email
+            if details is None:
+                pass # anonymous contact, is OK
+            else:
+                if strict:
+                    assert len(details) == 2
+                utilities.check_is_string(details["description"], multiline=False)
+                utilities.check_is_slug(details["avatar"]) # FIXME improve that           
+        
         
         message_reference = {
                              "sender_email": basestring,
@@ -1136,7 +1149,7 @@ class TextMessagingCore(BaseDataManager):
     def _build_new_message(self, sender_email, recipient_emails, subject, body, attachment=None,
                            date_or_delay_mn=None, is_read=False, is_certified=False,
                            parent_id=None, use_template=None):
-        # TOP LEVEL - no parent calling
+        # TOP LEVEL HERE - no parent call
         
         sender_email = sender_email.strip()
         recipient_emails = self._normalize_recipient_emails(recipient_emails)
@@ -1202,7 +1215,59 @@ class TextMessagingCore(BaseDataManager):
                               "group_id": group_id if group_id else new_id,
                               })
         return msg
+    
+    
+    def __check_contact_is_in_registry(self, registry, identifier):
+        if identifier not in registry:
+            raise AbnormalUsageError(_("Unknown contact %r") % identifier)       
 
+    @transaction_watcher(ensure_game_started=False)
+    def add_globally_registered_contact(self, identifier):
+        utilities.check_is_slug(identifier)
+        registry = self.messaging_data["globally_registered_contacts"]
+        registry.setdefault(identifier, None) # anonymous contact
+    
+    @transaction_watcher(ensure_game_started=False)
+    def remove_globally_registered_contact(self, identifier):
+        registry = self.messaging_data["globally_registered_contacts"]
+        self.__check_contact_is_in_registry(registry, identifier)
+        del registry[identifier]
+        
+    @readonly_method
+    def get_globally_registered_contacts(self):
+        return self.messaging_data["globally_registered_contacts"]
+
+    @readonly_method
+    def get_globally_registered_contact_info(self, identifier):
+        registry = self.messaging_data["globally_registered_contacts"]
+        self.__check_contact_is_in_registry(registry, identifier)
+        return registry[identifier]
+     
+    @readonly_method
+    def is_globally_registered_contact(self, identifier):
+        return (identifier in self.messaging_data["globally_registered_contacts"])
+    
+    
+    def _normalize_recipient_identifier(self, identifier):
+        """
+        Overridable method to transform an identifier into one or more valid mailing lists or emails.
+        
+        Returns a list of identifiers.
+        """
+        return [identifier]
+    
+    def _check_recipient_identifier(self, identifier):
+        """
+        Overridable method that raises a proper exception if the recipient identifier is unexisting or forbidden.
+        Returns nothing.
+        """
+        raise NormalUsageError(_("Unknown recipient %r") % identifier)
+    
+    def _process_sender_identifier(self, identifier):
+        """
+        If an unknown identifier appears, we assume it's a configuration bug, 
+        and we add it to the registry of valid emails.
+        """
 
     @staticmethod
     def _get_new_msg_id(index, content):

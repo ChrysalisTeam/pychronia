@@ -968,6 +968,49 @@ class TestDatamanager(BaseGameTestCase):
         self.assertEqual(len(emails), 0, emails)
                 
 
+    @for_core_module(TextMessagingCore)
+    def test_globally_registered_contacts(self):
+        
+        contact1 = "ALL_EMAILS"
+        contact2 = "phoenix@stash.com"
+        contact_bad = "qsd qsdqsd"
+        
+        res = self.dm.get_globally_registered_contact_info("ALL_CONTACTS") # test fixture
+        self.dm.add_globally_registered_contact("ALL_CONTACTS") # no error
+        assert self.dm.get_globally_registered_contact_info("ALL_CONTACTS") == res # untouched if existing
+        
+        with pytest.raises(AssertionError):
+            self.dm.add_globally_registered_contact(contact_bad)
+        assert not self.dm.is_globally_registered_contact(contact_bad)
+        
+        for contact in (contact1, contact2):
+            
+            assert contact not in self.dm.get_globally_registered_contacts()
+            with pytest.raises(AbnormalUsageError):
+                self.dm.get_globally_registered_contact_info(contact)   
+            with pytest.raises(AbnormalUsageError):
+                self.dm.remove_globally_registered_contact(contact)   
+                                     
+            assert not self.dm.is_globally_registered_contact(contact)
+            self.dm.add_globally_registered_contact(contact)
+            assert self.dm.is_globally_registered_contact(contact)
+            self.dm.add_globally_registered_contact(contact)
+            assert self.dm.is_globally_registered_contact(contact)
+            
+            assert self.dm.get_globally_registered_contact_info(contact) is None
+            assert contact in self.dm.get_globally_registered_contacts()
+            
+            self.dm.remove_globally_registered_contact(contact)
+            with pytest.raises(AbnormalUsageError):
+                self.dm.get_globally_registered_contact_info(contact)  
+            with pytest.raises(AbnormalUsageError):
+                self.dm.remove_globally_registered_contact(contact)          
+            assert not self.dm.is_globally_registered_contact(contact)
+            assert contact not in self.dm.get_globally_registered_contacts()
+    
+    
+    
+    
     def test_text_messaging(self):
         
         self._reset_messages()

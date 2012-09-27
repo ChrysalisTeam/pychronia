@@ -268,8 +268,10 @@ def check_is_lazy_object(value):
     assert value.__class__.__name__ == "__proxy__", type(value)
     return True
 
-def check_is_string(value):
+def check_is_string(value, multiline=True):
     assert isinstance(value, basestring) and value, value
+    if not multiline: 
+        assert "\n" not in value
     return True
 
 def check_is_float(value):
