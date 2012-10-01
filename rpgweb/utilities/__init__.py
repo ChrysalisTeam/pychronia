@@ -46,6 +46,10 @@ zodb_to_python_types = dict((value, key) for (key, value) in python_to_zodb_type
 allowed_zodb_types = (types.NoneType, int, long, float, basestring, tuple, datetime, collections.Callable, PersistentDict, PersistentList)
 
 
+def usage_assert(value, comment=None):
+    from rpgweb.common import UsageError
+    if not value:
+        raise UsageError("Check failed: %s (comment: %s)" % (value, comment))
 
 
 class Enum(set):
@@ -144,7 +148,6 @@ def check_object_tree(tree, allowed_types, path):
 
     if not isinstance(tree, allowed_types):
         raise RuntimeError("Bad object type detected : %s - %s via path %s" % (type(tree), tree, path))
-
 
     if isinstance(tree, (int, long, basestring)):
         return
@@ -250,85 +253,93 @@ def adapt_parameters_to_func(all_parameters, func):
 
 
 def check_no_duplicates(value):
-    assert len(set(value)) == len(value), value
+    usage_assert(len(set(value)) == len(value), value)
     return True
     
 def check_is_range_or_num(value):
     if isinstance(value, (int, long, float)):
         pass # nothing to check
     else:
-        assert isinstance(value, (tuple, PersistentList)), value
-        assert len(value) == 2, value
-        assert isinstance(value[0], (int, long, float)), value
-        assert isinstance(value[1], (int, long, float)), value
-        assert value[0] <= value[1], value
+        usage_assert(isinstance(value, (tuple, PersistentList)), value)
+        usage_assert(len(value) == 2, value)
+        usage_assert(isinstance(value[0], (int, long, float)), value)
+        usage_assert(isinstance(value[1], (int, long, float)), value)
+        usage_assert(value[0] <= value[1], value)
     return True
 
 def check_is_lazy_object(value):
-    assert value.__class__.__name__ == "__proxy__", type(value)
+    usage_assert(value.__class__.__name__ == "__proxy__", type(value))
     return True
 
 def check_is_string(value, multiline=True):
-    assert isinstance(value, basestring) and value, value
+    usage_assert(isinstance(value, basestring) and value, value)
     if not multiline: 
-        assert "\n" not in value
+        usage_assert("\n" not in value)
     return True
 
 def check_is_float(value):
-    assert isinstance(value, (int, long, float)), value # integers are considered as floats too!!
+    usage_assert(isinstance(value, (int, long, float)), value) # integers are considered as floats too!!
     return True
 
 def check_is_int(value):
-    assert isinstance(value, (int, long)), value
+    usage_assert(isinstance(value, (int, long)), value)
     return True
 
 def check_is_email(email):
-    assert email_re.match(email)
+    usage_assert(email_re.match(email))
     return True
 
 def check_is_slug(value):
-    assert isinstance(value, basestring), repr(value)
-    assert " " not in value, repr(value)
-    assert "\n" not in value, repr(value)
+    usage_assert(isinstance(value, basestring), repr(value))
+    usage_assert(" " not in value, repr(value))
+    usage_assert("\n" not in value, repr(value))
     return True
 
 def check_is_bool(value):
-    assert isinstance(value, bool), value
+    usage_assert(isinstance(value, bool), value)
     return True
 
 def check_is_list(value):
-    assert isinstance(value, collections.Sequence), value
+    usage_assert(isinstance(value, collections.Sequence), value)
     return True
 
 def check_is_dict(value):
-    assert isinstance(value, collections.Mapping), value
+    usage_assert(isinstance(value, collections.Mapping), value)
     return True
 
+def check_has_keys(value, keys, strict=False):
+    actual_keys = value.keys()
+    if strict:
+        usage_assert(len(actual_keys) == len(keys))
+    for key in keys:
+        usage_assert(key in actual_keys)
+    
+    
 def check_num_keys(value, num):
-    assert len(value.keys()) == num, (value, num)
+    usage_assert(len(value.keys()) == num, (value, num))
     return True
 
 def check_is_positive_float(value, non_zero=True):
     check_is_float(value)
-    assert value >= 0
+    usage_assert(value >= 0)
     if non_zero:
-        assert value != 0
+        usage_assert(value != 0)
     return True
 
 def check_is_positive_int(value, non_zero=True):
     check_is_int(value)
-    assert value >= 0
+    usage_assert(value >= 0)
     if non_zero:
-        assert value != 0
+        usage_assert(value != 0)
     return True
 
 def check_is_restructuredtext(value):
     from django.contrib.markup.templatetags.markup import restructuredtext
-    assert restructuredtext(value)
+    usage_assert(restructuredtext(value))
     return True
 
 def check_is_game_file(*paths_elements):
-    assert os.path.isfile(os.path.join(config.GAME_FILES_ROOT, *paths_elements))
+    usage_assert(os.path.isfile(os.path.join(config.GAME_FILES_ROOT, *paths_elements)))
     return True
 
 def is_email(email):
@@ -348,18 +359,18 @@ def assert_sets_equal(set1, set2):
     if exceeding_keys2:
         raise ValueError("Exceeding keys in second set: %r" % repr(exceeding_keys2))
 
-    assert set1 == set2 # else major coding error
+    usage_assert(set1 == set2) # else major coding error
     return True
 
 
 def validate_value(value, validator):
 
     if issubclass(type(validator), types.TypeType) or isinstance(validator, (list, tuple)): # should be a list of types
-        assert isinstance(value, validator)
+        usage_assert(isinstance(value, validator))
 
     elif isinstance(validator, collections.Callable):
         res = validator(value)
-        assert res, (repr(res), repr(validator))
+        usage_assert(res, (repr(res), repr(validator)))
 
     else:
         raise RuntimeError("Invalid configuration validator %r for value %r" % (validator, value))
@@ -371,7 +382,7 @@ def check_dictionary_with_template(my_dict, template, strict=False):
     if strict:
         assert_sets_equal(my_dict.keys(), template.keys())
     else:
-        assert set(template.keys()) <= set(my_dict.keys())
+        usage_assert(set(template.keys()) <= set(my_dict.keys()))
 
     for key in template.keys():
         validate_value(my_dict[key], template[key])

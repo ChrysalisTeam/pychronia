@@ -22,15 +22,22 @@ def readonly_method(obj):
         This method can only ensure that no uncommitted changes are made by the function and its callees,
         committed changes might not be seen.
         """
-        if not self.connection:
+        
+        if hasattr(self, "_inner_datamanager"):
+            connection = self._inner_datamanager.connection # for methods of ability or other kind of proxy 
+        else:
+            connection = self.connection # for datamanager methods
+
+
+        if not connection:
             return func(self, *args, **kwargs)
         
-        original = self.connection._registered_objects[:]
+        original = connection._registered_objects[:]
     
         try:
             return func(self, *args, **kwargs)
         finally:
-            final = self.connection._registered_objects[:]
+            final = connection._registered_objects[:]
             if original != final:
                 original_str = repr(original)
                 final_str = repr(final)
@@ -153,12 +160,12 @@ class DataTableManager(dict):
             self._check_item_validity(key, value)
     
     
-    def _preprocess_new_items(self, key, value):
+    def _preprocess_new_item(self, key, value):
         """
         Method that completes and normalizes a new item (for example with enforced default values).
         Must return the (possibly modified) (key, value) pair.
         """
-        raise NotImplementedError("_preprocess_new_items")    
+        raise NotImplementedError("_preprocess_new_item")    
         
     def _check_item_validity(self, key, value, strict=False):
         """
@@ -228,7 +235,7 @@ class DataTableManager(dict):
     def insert_item(self, key, value):
         table = self._table
         self._check_item_is_not_in_table(table, key)
-        key, value = self._preprocess_new_items(key, value)
+        key, value = self._preprocess_new_item(key, value)
         self._check_item_validity(key, value)
         table[key] = value
         
@@ -236,9 +243,9 @@ class DataTableManager(dict):
     def update_item(self, key, value):
         table = self._table
         self._check_item_is_in_table(table, key)
-        if not self._item_can_be_edited(key, table["key"]):
+        if not self._item_can_be_edited(key, table[key]):
             raise AbnormalUsageError(_("Can't modify %s item with key %s") % (self.TRANSLATABLE_ITEM_NAME, key)) 
-        key, value = self._preprocess_new_items(key, value)
+        key, value = self._preprocess_new_item(key, value)
         self._check_item_validity(key, value)
         table[key] = value
         
@@ -246,9 +253,9 @@ class DataTableManager(dict):
     def delete_item(self, key):
         table = self._table
         self._check_item_is_in_table(table, key)
-        if not self._item_can_be_edited(key, table["key"]):
+        if not self._item_can_be_edited(key, table[key]):
             raise AbnormalUsageError(_("Can't delete %s item with key %s") % (self.TRANSLATABLE_ITEM_NAME, key)) 
-        del table["key"]
+        del table[key]
 
 
 

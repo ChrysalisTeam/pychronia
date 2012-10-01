@@ -1235,17 +1235,20 @@ class TextMessagingCore(BaseDataManager):
                 details.setdefault("description", None)
                 details.setdefault("avatar", None)
                   
-                       
+        def _preprocess_new_item(self, key, value): 
+            assert "immutable" not in value
+            value["immutable"] = False
+            return (key, value)
+            # other params are supposed to exist in "value"
+                  
         def _check_item_validity(self, key, value, strict=False):          
-            utilities.check_is_string(key) # not necessarily an email
-            if strict:
-                assert len(value) == 3        
+            utilities.check_is_slug(key) # not necessarily an email   
             utilities.check_is_bool(value["immutable"],)
+            utilities.check_has_keys(value, ["avatar", "description"], strict=strict)
             if value["description"]: # optional
                 utilities.check_is_string(value["description"], multiline=False)
             if value["avatar"]: # optional
-                utilities.check_is_slug(value["avatar"]) # FIXME improve that                        
-                            
+                utilities.check_is_slug(value["avatar"]) # FIXME improve that                             
                 
         def _sorting_key(self, item_pair):
             return item_pair[0] # we sort by email, simply...
@@ -1257,11 +1260,11 @@ class TextMessagingCore(BaseDataManager):
             return (True if not value.get("immutable") else False)
     
     global_contacts = LazyInstantiationDescriptor(GloballyRegisteredContactsManager)
-    
+    '''
     def __check_contact_is_in_registry(self, registry, identifier):
         if identifier not in registry:
             raise AbnormalUsageError(_("Unknown contact %r") % identifier)       
-
+    
     @transaction_watcher(ensure_game_started=False)
     def add_globally_registered_contact(self, identifier):
         utilities.check_is_slug(identifier)
@@ -1287,7 +1290,7 @@ class TextMessagingCore(BaseDataManager):
     @readonly_method
     def is_globally_registered_contact(self, identifier):
         return (identifier in self.messaging_data["globally_registered_contacts"])
-    
+    '''
     
     def _normalize_recipient_identifier(self, identifier):
         """

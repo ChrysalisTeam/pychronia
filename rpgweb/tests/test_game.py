@@ -13,7 +13,8 @@ from ._dummy_abilities import *
 from rpgweb.abilities._abstract_ability import AbstractAbility
 from rpgweb.abilities._action_middlewares import CostlyActionMiddleware,\
     CountLimitedActionMiddleware, TimeLimitedActionMiddleware
-from rpgweb.common import _undefined, config, AbnormalUsageError, reverse
+from rpgweb.common import _undefined, config, AbnormalUsageError, reverse,\
+    UsageError
 from rpgweb.templatetags.helpers import _generate_encyclopedia_links
 from rpgweb import views
 from rpgweb.utilities import fileservers, autolinker
@@ -971,6 +972,91 @@ class TestDatamanager(BaseGameTestCase):
     @for_core_module(TextMessagingCore)
     def test_globally_registered_contacts(self):
         
+        contact1 = "SOME_EMAILS"
+        contact2 = "phoenix@stash.com"
+        contact_bad = "qsd qsdqsd"
+        good_content = dict(avatar="qsdqsd", description="here a description")
+        
+        container = self.dm.global_contacts
+        
+        # preexisting, immutable entry
+        fixture_key = "ALL_CONTACTS" # test fixture
+        assert container.contains_item(fixture_key)
+        assert fixture_key in container.list_items()
+        assert fixture_key in [i[0] for i in container.list_items(as_sorted_list=True)]
+        
+        res = container.get_item(fixture_key) 
+        assert res["immutable"]
+        with pytest.raises(UsageError):
+            container.insert_item(fixture_key, good_content.copy()) # already existing
+        with pytest.raises(UsageError):
+            container.update_item(fixture_key, good_content.copy()) # immutable          
+        with pytest.raises(UsageError):
+            container.delete_item(fixture_key) # immutable             
+        assert container.contains_item(fixture_key)
+        
+        
+        with pytest.raises(UsageError):
+            container.insert_item(contact_bad, good_content.copy()) # bad key   
+                 
+                 
+        # dealing with new entry (mutable)
+        for contact in (contact1, contact2):
+            
+            # not yet present
+            assert not container.contains_item(contact)
+            assert contact not in container.list_items() 
+            
+            with pytest.raises(UsageError):
+                container.get_item(contact) 
+            with pytest.raises(UsageError):
+                container.update_item(contact, good_content.copy())
+            with pytest.raises(UsageError):
+                container.delete_item(contact)
+                
+                        
+            with pytest.raises(UsageError):
+                container.insert_item(contact, {"avatar": 11}) # bad content
+            with pytest.raises(UsageError):
+                container.insert_item(contact, {"description": False}) # bad content
+                
+                
+            container.insert_item(contact, good_content.copy()) 
+            with pytest.raises(UsageError):
+                container.insert_item(contact, good_content.copy())
+                
+            assert container.contains_item(contact)    
+            res = container.get_item(contact).copy()
+            assert res["immutable"] == False
+            del res["immutable"]
+            assert res == good_content
+            
+            with pytest.raises(UsageError):
+                container.update_item(contact, {"avatar": 11}) # bad content       
+            container.update_item(contact, {"avatar": None, "description": None})
+            
+            res = container.get_item(contact).copy()
+            assert res["immutable"] == False
+            del res["immutable"]  
+            assert res == {"avatar": None, "description": None}
+            
+            assert container.contains_item(contact)   
+            
+            container.delete_item(contact)          
+            with pytest.raises(UsageError):
+                container.delete_item(contact)
+            with pytest.raises(UsageError):
+                container.update_item(contact, good_content.copy())
+            assert not container.contains_item(contact)       
+ 
+            assert contact not in container.list_items()       
+            with pytest.raises(UsageError):
+                container.get_item(contact) 
+                   
+    '''        
+    @for_core_module(TextMessagingCore)
+    def __test_globally_registered_contacts_old(self):
+        
         contact1 = "ALL_EMAILS"
         contact2 = "phoenix@stash.com"
         contact_bad = "qsd qsdqsd"
@@ -1007,7 +1093,7 @@ class TestDatamanager(BaseGameTestCase):
                 self.dm.remove_globally_registered_contact(contact)          
             assert not self.dm.is_globally_registered_contact(contact)
             assert contact not in self.dm.get_globally_registered_contacts()
-    
+    '''
     
     
     
