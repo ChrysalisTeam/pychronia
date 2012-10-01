@@ -1,3 +1,13 @@
+
+
+ITEMS NEEDING TO BE EDITABLE
+- radios spots
+- globally registered contacts
+- encyclopedia articles
+- items, gems & artefacts ?
+- nightmare captcha
+
+
 @register_view(access=UserAccess.authenticated) # not always available, so beware!! TODO FIXME ensure it's not displayed if not available!
 def item_3d_view(request, item, template_name='utilities/item_3d_viewer.html'):
 

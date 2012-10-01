@@ -164,7 +164,7 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
         anyway.
         """
         self.notify_event("BASE_LOAD_INITIAL_DATA_CALLED")
-        
+
 
     @transaction_watcher(ensure_game_started=False) # that checking might lead to corrections
     def check_database_coherency(self, **kwargs):

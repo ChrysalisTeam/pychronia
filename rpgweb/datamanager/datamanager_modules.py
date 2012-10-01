@@ -8,6 +8,7 @@ from .datamanager_user import GameUser
 from .datamanager_core import *
 from types import NoneType
 from persistent.list import PersistentList
+from rpgweb.datamanager.datamanager_tools import DataTableManager
 
 PLACEHOLDER = object()
 
@@ -1003,11 +1004,23 @@ class TextMessagingCore(BaseDataManager):
         messaging = game_data.setdefault("messaging", PersistentList())
         
         messaging.setdefault("globally_registered_contacts", PersistentDict()) # identifier -> None or dict(description, avatar)
+        self.global_contacts._load_initial_data(**kwargs)
+        
         messaging.setdefault("messages_sent", PersistentList())
         messaging.setdefault("messages_queued", PersistentList())
         messaging.setdefault("manual_messages_templates", PersistentDict())
         
         pangea_network = game_data["global_parameters"]["pangea_network_domain"]
+
+        '''
+        for identifier, details in messaging["globally_registered_contacts"].items():
+            if details is None:
+                details = PersistentDict()
+                messaging["globally_registered_contacts"][identifier] = details
+            details["immutable"] = True
+            details.setdefault("description", None)
+            details.setdefault("avatar", None)
+        '''
 
         for (index, msg) in enumerate(messaging["messages_sent"] + messaging["messages_queued"]):
             # we modify the dicts in place
@@ -1053,20 +1066,9 @@ class TextMessagingCore(BaseDataManager):
     def _check_database_coherency(self, strict=False, **kwargs):
         super(TextMessagingCore, self)._check_database_coherency(strict=strict, **kwargs)
               
+        self.global_contacts._check_database_coherency(strict=strict, **kwargs)
+
         messaging = self.messaging_data
-        
-        
-        for identifier, details in messaging["globally_registered_contacts"].items():
-            utilities.check_is_string(identifier) # not necessarily an email
-            if details is None:
-                pass # anonymous contact, is OK
-            else:
-                if strict:
-                    assert len(details) == 2
-                utilities.check_is_string(details["description"], multiline=False)
-                utilities.check_is_slug(details["avatar"]) # FIXME improve that           
-        
-        
         message_reference = {
                              "sender_email": basestring,
                              "recipient_emails": PersistentList,
@@ -1216,6 +1218,45 @@ class TextMessagingCore(BaseDataManager):
                               })
         return msg
     
+    
+    
+    class GloballyRegisteredContactsManager(DataTableManager):
+        
+        TRANSLATABLE_ITEM_NAME = _lazy("contact")
+        
+        def _load_initial_data(self, **kwargs):            
+            messaging = self._inner_datamanager.messaging_data
+            
+            for identifier, details in messaging["globally_registered_contacts"].items():
+                if details is None:
+                    details = PersistentDict()
+                    messaging["globally_registered_contacts"][identifier] = details
+                details["immutable"] = True
+                details.setdefault("description", None)
+                details.setdefault("avatar", None)
+                  
+                       
+        def _check_item_validity(self, key, value, strict=False):          
+            utilities.check_is_string(key) # not necessarily an email
+            if strict:
+                assert len(value) == 3        
+            utilities.check_is_bool(value["immutable"],)
+            if value["description"]: # optional
+                utilities.check_is_string(value["description"], multiline=False)
+            if value["avatar"]: # optional
+                utilities.check_is_slug(value["avatar"]) # FIXME improve that                        
+                            
+                
+        def _sorting_key(self, item_pair):
+            return item_pair[0] # we sort by email, simply...
+        
+        def _get_table_container(self, root):
+            return self._inner_datamanager.messaging_data["globally_registered_contacts"]
+    
+        def _item_can_be_edited(self, key, value):
+            return (True if not value.get("immutable") else False)
+    
+    global_contacts = LazyInstantiationDescriptor(GloballyRegisteredContactsManager)
     
     def __check_contact_is_in_registry(self, registry, identifier):
         if identifier not in registry:

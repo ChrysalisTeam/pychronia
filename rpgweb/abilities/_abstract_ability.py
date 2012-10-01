@@ -155,7 +155,7 @@ class AbstractAbility(AbstractAbilityBasesAdapter):
     @transaction_watcher(ensure_game_started=False) # authorized anytime
     def _perform_lazy_initializations(self):
         private_key = self._get_private_key()
-        print ("@@@@@@@@@@", self.ability_data)
+        #print ("@@@@@@@@@@", self.ability_data)
         if not self.ability_data["data"].has_key(private_key):
             self.logger.warning("Setting up private data %s", private_key)
             private_data = self.ability_data["data"].setdefault(private_key, PersistentDict())
