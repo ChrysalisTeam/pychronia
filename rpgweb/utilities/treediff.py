@@ -84,7 +84,7 @@ def _apply_operation(op, leaf, key, value):
     elif op == "delete":
         if isinstance(leaf, LOOKUP_TYPES):
             if isinstance(leaf, list):
-                list.pop() # by construction, it'll work!!
+                leaf.pop() # by construction, it'll work!!
             else:
                 del leaf[key]
         else:
@@ -113,11 +113,20 @@ def apply_tree_diff(root, opcodes):
 
 if __name__ == "__main__":
 
+    # TESTS FOR TREEDIFF #
+
+    # root difference
+    opcodes = generate_tree_diff(2, True)
+    assert apply_tree_diff(2, opcodes) == True
+
+
+
     class TestClass(object):
         def __init__(self, **kwargs):
             self.__dict__.update(kwargs)
         def __eq__(self, other):
             return self.__class__ == other.__class__ and self.__dict__ == other.__dict__
+
 
     a = dict(cat=True,
              dog=[22, 33],
@@ -144,14 +153,34 @@ if __name__ == "__main__":
         ('add', ['added'], 122.11),
         ]
 
+    new_b = apply_tree_diff(a, opcodes)
+    assert new_b == b
+
+
+
+    a = [{1: 76,
+          (1, 2): False,
+          "key": set(["yesh", "huu"])},
+          None,
+          TestClass(kkk=1.23, ml=1233L),
+          222,
+          [111, 981], ]
+
+    b = [dict(A23=322,
+              key={233: 23.12}),
+         None,
+         [1, 2]]
+
+    opcodes = generate_tree_diff(a, b)
+    #for code in opcodes: print code
+    assert len(opcodes) > 3 < 10
 
     new_b = apply_tree_diff(a, opcodes)
-    assert a == b
+    assert new_b == b
+
+    print ">> EVERYTHING OK <<"
 
 
-    # root difference
-    opcodes = generate_tree_diff(2, True)
-    assert apply_tree_diff(2, opcodes) == True
 
 
 
