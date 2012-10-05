@@ -28,7 +28,7 @@ def gameurl(parser, token):
     Only works if a "game_instance_id" template variable is available (use request processors for that).
     """
     token.contents += " game_instance_id=game_instance_id" # we inject template var "game instance id"
-    url_node = defaulttags.url(parser, token) 
+    url_node = defaulttags.url(parser, token)
     return url_node
 
 @register.simple_tag(takes_context=False)
@@ -46,7 +46,7 @@ def usercolor(context, username_or_email):
         request = context.get('request')
         if "@" in username_or_email:
             username = request.datamanager.get_character_or_none_from_email(username_or_email)
-        else: 
+        else:
             username = username_or_email
         color = request.datamanager.get_character_color_or_none(username)
     return color or "black" # default color
@@ -55,21 +55,21 @@ def usercolor(context, username_or_email):
 
 def _generate_encyclopedia_links(html_snippet, datamanager):
 
-    keywords_mapping= datamanager.get_encyclopedia_keywords_mapping()
-    
+    keywords_mapping = datamanager.get_encyclopedia_keywords_mapping()
+
     def link_attr_generator(match):
         matched_str = match.group(0)
         # detecting here WHICH keyword triggered the match would be possible, but expensive... let's postpone that
-        link = reverse("rpgweb.views.view_encyclopedia", 
-                       kwargs={"game_instance_id": datamanager.game_instance_id,})
-        link += "?search=%s" % urllib.quote_plus(matched_str.encode("utf8"), safe=b"") 
-        return dict(href=link) 
+        link = reverse("rpgweb.views.view_encyclopedia",
+                       kwargs={"game_instance_id": datamanager.game_instance_id, })
+        link += "?search=%s" % urllib.quote_plus(matched_str.encode("utf8"), safe=b"")
+        return dict(href=link)
 
     regex = autolinker.join_regular_expressions_as_disjunction(keywords_mapping.keys(), as_words=True)
-    
+
     res_html = autolinker.generate_links(html_snippet, regex=regex, link_attr_generator=link_attr_generator)
-    return res_html         
-                 
+    return res_html
+
 
 @register.simple_tag(takes_context=True)
 def rich_text(context, rst):
@@ -78,7 +78,7 @@ def rich_text(context, rst):
     """
     request = context.get('request')
     html = restructuredtext(rst)
-    
+
     with exception_swallower():
         return _generate_encyclopedia_links(html, request.datamanager)
     return html  # on error
@@ -109,13 +109,13 @@ def dict_get(value, arg):
     except:
         # NO ERROR, templates can just be used to test for the existence of a key, this way !
         return "" # value evaluating to false    
-register.filter('dict_get',dict_get)
+register.filter('dict_get', dict_get)
 
 
 def utctolocal(value, arg=None):
     # poor man's timezone system, base on current time offset
     # all we want is to avoid dealing with the nightmare of TZ and DST...
-    try:    
+    try:
         timedelta = datetime.now() - datetime.utcnow()
         return value + timedelta
     except:
@@ -130,7 +130,7 @@ def mediaplayer(fileurl, autostart):
         return mark_safe(res)
     except:
         logging.error("mediaplayer filter failed", exc_info=True)
-        return mark_safe("<a href="+fileurl+">"+fileurl+"</a>")
+        return mark_safe("<a href=" + fileurl + ">" + fileurl + "</a>")
 mediaplayer.is_safe = True
 register.filter('mediaplayer', mediaplayer)
 

@@ -10,7 +10,7 @@ from ._abstract_ability import *
 class HouseLockingAbility(AbstractAbility):
 
     #TITLE = _lazy("Manor Security")
-    
+
     NAME = "house_locking"
 
     GAME_FORMS = {}
@@ -21,8 +21,8 @@ class HouseLockingAbility(AbstractAbility):
     TEMPLATE = "abilities/house_locking.html"
 
     ACCESS = UserAccess.anonymous
-    PERMISSIONS = [] 
-    ALWAYS_AVAILABLE = False 
+    PERMISSIONS = []
+    ALWAYS_AVAILABLE = False
 
 
 
@@ -48,15 +48,15 @@ class HouseLockingAbility(AbstractAbility):
         else:
             self.user.add_error(_("Doors are already locked."))
             return False
-    
+
         assert False, "lock_house_doors"
- 
- 
+
+
     @transaction_watcher
     def try_unlocking_house_doors(self, password):
 
         expected_password = self.get_ability_parameter("house_doors_password")
-        
+
         if not self.are_house_doors_open():
             if password.strip() == expected_password.strip():
                 self.settings["house_doors_are_open"] = True
@@ -68,8 +68,8 @@ class HouseLockingAbility(AbstractAbility):
                 return False
         else:
             self.user.add_error(_("Doors are already unlocked."))
-            return False            
-        
+            return False
+
         assert False, "try_unlocking_house_doors"
 
 

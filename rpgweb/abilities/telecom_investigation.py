@@ -66,7 +66,7 @@ def _get_corrupted_introduction(self, target_username, key_phrase):
             result += "\n\n------------\n\n"
         instruction = instructions[0]
         result += "**" + _("Message") + "**" + "\n\n" + _("From: ") + instruction["sender_email"] + "\n\n" + _(
-            "To: ") + str(instruction["recipient_emails"]) +\
+            "To: ") + str(instruction["recipient_emails"]) + \
                   "\n\n" + _("Subject: ") + instruction["subject"] + "\n\n"
         result += "\n" + self._corrupt_text_parts(instruction["body"], chunk_lengths, key_phrase)
     else:
@@ -93,7 +93,7 @@ def launch_telecom_investigation(self, username, target_username):
 
     # request email to allow interception
 
-    subject = _("Investigation Request for character %(target_official_name)s") %\
+    subject = _("Investigation Request for character %(target_official_name)s") % \
               SDICT(target_official_name=target_official_name)
     body = _("Please let me know anything you may discover about this individual.")
     self.post_message(local_email, remote_email, subject, body, date_or_delay_mn=0, is_read=True)
@@ -101,7 +101,7 @@ def launch_telecom_investigation(self, username, target_username):
 
     # answer email
 
-    subject = _('<Inquiry Results for %(target_official_name)s>') %\
+    subject = _('<Inquiry Results for %(target_official_name)s>') % \
               SDICT(target_official_name=target_official_name)
 
     body = self._get_corrupted_introduction(target_username, target_official_name)

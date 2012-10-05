@@ -13,7 +13,7 @@ import copy
 from contextlib import contextmanager
 from django.conf import settings
 from django.core.mail import send_mail
-from django.http import Http404, HttpResponseRedirect, HttpResponse,\
+from django.http import Http404, HttpResponseRedirect, HttpResponse, \
     HttpResponseForbidden
 from django.shortcuts import render
 from django.template import RequestContext
@@ -75,20 +75,20 @@ def is_nightmare_captcha_successful(request):
             except UsageError:
                 pass
     return False
-    
+
 
 
 def serve_game_file(request, hash="", path="", **kwargs):
-    
+
     real_hash = hash_url_path(path)
-    
+
     if not hash or not real_hash or hash != real_hash:
         raise Http404("File access denied")
-    
+
     full_path = os.path.join(config.GAME_FILES_ROOT, path)
     return fileservers.serve_file(request, path=full_path)
-  
- 
+
+
 @register_view(access=UserAccess.master)
 def ajax_force_email_sending(request):
     # to be used by AJAX
@@ -99,7 +99,7 @@ def ajax_force_email_sending(request):
 
     return HttpResponse("OK")
     # in case of error, a "500" code will be returned
- 
+
 
 
 
@@ -186,10 +186,10 @@ def ajax_chat(request):
                 color = request.datamanager.get_character_color_or_none(msg["username"])
             else: # system message
                 official_name = _("system")
-                color = "#ea3f32" 
+                color = "#ea3f32"
             data = dict(official_name=official_name,
                         message=msg["message"])
-            text_lines.append({"username": msg["username"], 
+            text_lines.append({"username": msg["username"],
                                "color": color,
                                "message": msg_format % data})
             previous_msg_timestamp = msg["time"]
@@ -257,7 +257,7 @@ def domotics_security(request, template_name='generic_operations/domotics_securi
 
 @register_view(access=UserAccess.authenticated)
 def compose_message(request, template_name='messaging/compose.html'):
-    
+
     user = request.datamanager.user
     form = None
     if request.method == "POST":
@@ -281,7 +281,7 @@ def compose_message(request, template_name='messaging/compose.html'):
                 attachment = form.cleaned_data["attachment"]
 
                 parent_id = form.cleaned_data.get("parent_id", None)
-                
+
                 use_template = form.cleaned_data.get("use_template", None)
 
                 # sender_email and one of the recipient_emails can be the same email, we don't care !
@@ -317,7 +317,7 @@ def inbox(request, template_name='messaging/messages.html'):
         remove_to = True
 
     messages = list(reversed(messages)) # most recent first
-    
+
     return render(request,
                   template_name,
                     {
@@ -330,11 +330,11 @@ def inbox(request, template_name='messaging/messages.html'):
 
 @register_view(attach_to=inbox)
 def ajax_set_message_read_state(request):
-    
+
     # to be used by AJAX
     msg_id = request.GET.get("id", None)
     is_read = request.GET.get("is_read", None) == "1"
-    
+
     user = request.datamanager.user
     request.datamanager.set_message_read_state(user.username, msg_id, is_read)
 
@@ -343,22 +343,22 @@ def ajax_set_message_read_state(request):
 
 @register_view(access=UserAccess.authenticated, always_available=True)
 def conversation(request):
-    
+
     mode = "conversation"
     user = request.datamanager.user
     if user.is_master:
-        remove_to = False    
+        remove_to = False
         messages = request.datamanager.get_game_master_messages()
-    else:    
+    else:
         remove_to = True
         messages = request.datamanager.get_user_related_messages(request.datamanager.get_character_email(user.username))
-    
+
     group_ids = map(lambda message: message.get("group_id", ""), messages)
-    group_ids = list(set(group_ids)) 
+    group_ids = list(set(group_ids))
     grouped_messages = []
-    
+
     for group_id in group_ids:
-        unordered_messages = [message for message in messages if message.get("group_id", "")==group_id]
+        unordered_messages = [message for message in messages if message.get("group_id", "") == group_id]
         ordered_messsages = list(reversed(unordered_messages))
         grouped_messages.append(ordered_messsages)
     return render(request, 'messaging/conversation.html', locals())
@@ -457,7 +457,7 @@ def all_queued_messages(request, template_name='messaging/messages.html'):
 
 @register_view(access=UserAccess.authenticated)
 def intercepted_messages(request, template_name='messaging/messages.html'):
-    
+
     username = request.datamanager.user.username
     messages = request.datamanager.get_intercepted_messages(username)
 
@@ -588,7 +588,7 @@ def login(request, template_name='registration/login.html'):
 def logout(request, template_name='registration/logout.html'):
 
     logout_session(request)
-    
+
     user = request.datamanager.user # take user only NOW, after logout
     user.add_message(_("You've been successfully logged out."))  # will not be seen with redirection
     return HttpResponseRedirect(reverse(login, kwargs=dict(game_instance_id=request.datamanager.game_instance_id)))
@@ -618,13 +618,13 @@ def opening(request, template_name='generic_operations/opening.html'):
 
 @register_view(access=UserAccess.anonymous, always_available=True)
 def view_encyclopedia(request, article_id=None, template_name='generic_operations/encyclopedia.html'):
-    
-    dm =  request.datamanager
-    
+
+    dm = request.datamanager
+
     article_ids = None # index of encyclopedia
     entry = None # current article
     search_results = None # list of matching article ids
-    
+
     if article_id:
         entry = dm.get_encyclopedia_entry(article_id)
         if not entry:
@@ -644,8 +644,8 @@ def view_encyclopedia(request, article_id=None, template_name='generic_operation
                     if len(search_results) == 1:
                         dm.user.add_message(_("Your search has led to a single article, below."))
                         return HttpResponseRedirect(redirect_to=reverse(view_encyclopedia, kwargs=dict(game_instance_id=request.datamanager.game_instance_id,
-                                                                                                  article_id=search_results[0])))                                     
-    
+                                                                                                  article_id=search_results[0])))
+
     # NOW only retrieve article ids, since known article ids have been updated if necessary
     if request.datamanager.is_encyclopedia_index_visible() or dm.is_master():
         article_ids = request.datamanager.get_encyclopedia_article_ids()
@@ -653,7 +653,7 @@ def view_encyclopedia(request, article_id=None, template_name='generic_operation
         article_ids = dm.get_character_known_article_ids()
     else:
         assert dm.is_anonymous() # we leave article_ids to None
-             
+
     return render(request,
                   template_name,
                     {
@@ -666,48 +666,48 @@ def view_encyclopedia(request, article_id=None, template_name='generic_operation
 
 @register_view(access=UserAccess.anonymous, always_available=True)
 def view_help_page(request, keyword, template_name='generic_operations/help_page.html'):
-    
+
     # FIXME TODO - check access rights to the concerned view !!!
-    
+
     datamanager = request.datamanager
     allowed_entry = None
-    
+
     if keyword:
         if keyword in datamanager.get_game_views():
-            token = datamanager.get_game_view_access_token(keyword)                                     
-            if token == AccessResult.available:                                           
+            token = datamanager.get_game_view_access_token(keyword)
+            if token == AccessResult.available:
                 entry = datamanager.get_help_page(keyword)
                 if entry:
                     allowed_entry = entry
 
     if not allowed_entry:
         raise Http404 # no corresponding help page found, or no access permissions
-    
+
     return render(request,
                   template_name,
                     {
                      'page_title': _("Manual Page"),
                      'entry': allowed_entry,
                     })
-    
+
 
 
 def _build_display_data_from_viewer_settings(viewer_settings):
-    
+
     image_urls = []
     for level in range(viewer_settings["levels"]):
         level_urls = []
-        for rel_index in range(viewer_settings["per_level"]*level, viewer_settings["per_level"]*(level + 1)):
+        for rel_index in range(viewer_settings["per_level"] * level, viewer_settings["per_level"] * (level + 1)):
             abs_index = viewer_settings["index_offset"] + rel_index * viewer_settings["index_steps"]
             rel_url = viewer_settings["file_template"] % abs_index
             level_urls.append(game_file_url(rel_url))
         if viewer_settings["autoreverse"]:
             level_urls = level_urls + list(reversed(level_urls))
         image_urls.append(level_urls)
-        
+
     real_per_level = viewer_settings["per_level"] * (2 if viewer_settings["autoreverse"] else 1)
     assert set([len(imgs) for imgs in image_urls]) == set([real_per_level]) # all levels have the same number of images
-    
+
     display_data = dict(levels=viewer_settings["levels"],
                             per_level=real_per_level,
                             x_coefficient=viewer_settings["x_coefficient"],
@@ -720,7 +720,7 @@ def _build_display_data_from_viewer_settings(viewer_settings):
                             image_urls=image_urls, # multi-level array
                             music_url=game_file_url(viewer_settings["music"]) if viewer_settings["music"] else None,)
     return display_data
-    
+
 
 @register_view(access=UserAccess.anonymous, always_available=True)
 def logo_animation(request, template_name='utilities/item_3d_viewer.html'):
@@ -728,7 +728,7 @@ def logo_animation(request, template_name='utilities/item_3d_viewer.html'):
     These settings are heavily dependant on values hard-coded on templates (dimensions, colors...),
     so they needn't be exposed inside the YAML configuration file
     """
-    viewer_settings = dict( levels=1,
+    viewer_settings = dict(levels=1,
                             per_level=31, # real total of images : 157, but we use steps
                             index_steps=5,
                             index_offset=0,
@@ -1282,7 +1282,7 @@ def __telecom_investigation(request, template_name='specific_operations/telecom_
                                  'investigation_impossible_msg': inquiry_impossible_msg,
                                 },
                                 context_instance=RequestContext(request))
-''' 
+'''
 
 
 
@@ -1449,7 +1449,7 @@ def __personal_radio_messages_listing(request, template_name='generic_operations
                             },
                             context_instance=RequestContext(request))
 '''
-    
+
 
 @register_view(access=UserAccess.anonymous, always_available=True)
 def listen_to_webradio(request, template_name='utilities/web_radio.html'):
@@ -1459,27 +1459,27 @@ def listen_to_webradio(request, template_name='utilities/web_radio.html'):
                      "player_conf_url": reverse(get_radio_xml_conf, kwargs=dict(game_instance_id=request.datamanager.game_instance_id)),
                      "player_width": 300,
                      "player_height": 200,
-                    }) 
-     
+                    })
+
 @register_view(access=UserAccess.anonymous, always_available=True)
 def get_radio_xml_conf(request, template_name='utilities/web_radio_conf.xml'):
     dm = request.datamanager
     current_playlist = dm.get_all_next_audio_messages()
     current_audio_messages = [dm.get_audio_message_properties(audio_id) for audio_id in current_playlist]
-    
+
     if not current_audio_messages:
         # we had better not let the player empty, it's not tweaked for that case
         current_audio_messages = [dict(url="http://", title=_("[No radio spot currently available]"))]
-    
+
     audio_urls = "|".join([msg["url"] for msg in current_audio_messages]) # we expect no "|" inside a single url
     audio_titles = "|".join([msg["title"].replace("|", "") for msg in current_audio_messages]) # here we can cleanup
-    
+
     return render(request,
                   template_name,
                   dict(audio_urls=audio_urls,
                        audio_titles=audio_titles))
-    
-    
+
+
 @register_view(access=UserAccess.anonymous, always_available=True)
 def listen_to_audio_messages(request, template_name='utilities/web_radio_applet.html'):
 
@@ -1514,7 +1514,7 @@ def listen_to_audio_messages(request, template_name='utilities/web_radio_applet.
 def manage_audio_messages(request, template_name='administration/webradio_management.html'):
 
     user = request.datamanager.user
-    
+
     if request.method == "POST":
         # manual form management, as there are hell a lot...
         if request.POST.has_key("turn_radio_off"):
@@ -1599,7 +1599,7 @@ def chat_with_djinn(request, template_name='specific_operations/chat_with_djinn.
                      'history': sentences
                     })
 
- 
+
 @register_view(attach_to=chat_with_djinn) #access=UserAccess.character)(permission="contact_djinns")
 def ajax_consult_djinns(request):
     user = request.datamanager.user
@@ -1617,9 +1617,9 @@ def ajax_consult_djinns(request):
 # TODO - redo this as special ability
 @register_view#(access=UserAccess.character)#(permission="contact_djinns")
 def contact_djinns(request, template_name='specific_operations/contact_djinns.html'):
-    
+
     user = request.datamanager.user
-    
+
     bots_properties = request.datamanager.get_bots_properties()
 
     if user.is_master: # FIXME
@@ -1664,7 +1664,7 @@ def manage_databases(request, template_name='administration/database_management.
                 request.datamanager.pack_database(days=1) # safety measure - take at least one day of gap !
 
     formatted_data = request.datamanager.dump_zope_database()
-  
+
     game_is_started = request.datamanager.is_game_started() # we refresh it
     return render(request,
                   template_name,
@@ -1680,34 +1680,34 @@ def manage_characters(request, template_name='administration/character_managemen
 
     domain_choices = request.datamanager.build_domain_select_choices()
     permissions_choices = request.datamanager.build_permission_select_choices()
-    
+
     form = None
     if request.method == "POST":
         form = forms.CharacterForm(data=request.POST,
                                    allegiances_choices=domain_choices,
                                    permissions_choices=permissions_choices,
                                    prefix=None)
-        
+
         if form.is_valid():
             target_username = form.cleaned_data["target_username"]
             allegiances = form.cleaned_data["allegiances"]
             permissions = form.cleaned_data["permissions"]
             real_life_identity = form.cleaned_data["real_life_identity"]
             real_life_email = form.cleaned_data["real_life_email"]
-                         
-            with action_failure_handler(request, _("Character %s successfully updated.") % target_username):    
+
+            with action_failure_handler(request, _("Character %s successfully updated.") % target_username):
                 request.datamanager.update_allegiances(username=target_username,
                                                        allegiances=allegiances)
                 request.datamanager.update_permissions(username=target_username,
                                                        permissions=permissions)
-                request.datamanager.update_real_life_data(username=target_username, 
-                                                            real_life_identity=real_life_identity, 
+                request.datamanager.update_real_life_data(username=target_username,
+                                                            real_life_identity=real_life_identity,
                                                             real_life_email=real_life_email)
         else:
             request.datamanager.user.add_error(_("Wrong data provided (see errors below)"))
-            
+
     character_forms = []
-    
+
     for (username, data) in sorted(request.datamanager.get_character_sets().items()):
         #print ("AZZZZ", form["target_username"].value(), username)
         if form and form["target_username"].value() == username:
@@ -1719,13 +1719,13 @@ def manage_characters(request, template_name='administration/character_managemen
                                     permissions_choices=permissions_choices,
                                     prefix=None,
                                     initial=dict(target_username=username,
-                                                 allegiances=data["domains"], 
+                                                 allegiances=data["domains"],
                                                  permissions=data["permissions"],
-                                                 real_life_identity=data["real_life_identity"], 
+                                                 real_life_identity=data["real_life_identity"],
                                                  real_life_email=data["real_life_email"])
                                     )
         character_forms.append(f)
-        
+
     return render(request,
                   template_name,
                     dict(page_title=_("Manage characters"),
@@ -1738,9 +1738,9 @@ def manage_characters(request, template_name='administration/character_managemen
 
 @register_view(access=UserAccess.master)
 def CHARACTERS_IDENTITIES(request):
-    
+
     user = request.datamanager.user
-    
+
     char_sets = request.datamanager.get_character_sets().items()
 
     # real_life_email: flaviensoual@hotmail.com
@@ -1811,4 +1811,4 @@ def MEDIA_TEST(request):
                                       for extension in extensions]
                     })
 
- 
+

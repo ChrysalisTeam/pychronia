@@ -18,7 +18,7 @@ pool = multiprocessing.pool.ThreadPool(3)
 
 
 def transfer_list_value(db, origin, target):
-    
+
     conn = db.open()
     root = conn.root
 
@@ -31,19 +31,19 @@ def transfer_list_value(db, origin, target):
 
 
 def delete_container(db, name):
-    
+
     conn = db.open()
     root = conn.root
 
     delattr(root, name)
-    
+
     transaction.commit()
     assert not hasattr(root, name)
-    conn.close()    
-    
+    conn.close()
 
 
-    
+
+
 
 class TestZODB(TestCase):
 
@@ -55,7 +55,7 @@ class TestZODB(TestCase):
     def tearDown(self):
         self.conn.close()
         self.db.close()
-        
+
     def test_savepoints(self):
         """
         Here we ensure that ZODB transactions
@@ -77,22 +77,22 @@ class TestZODB(TestCase):
         root.ex = 4
 
         self.assertEqual(root.ex, 4)
-        
+
         s2.rollback()
 
         root.ex = 5
-        
+
         s2.rollback() # again
-        
+
         self.assertEqual(root.ex, 3)
 
         s1.rollback()
 
         # invalidated by s1, so corrupts connection, but raises no errors here !!!!!
         # s2.rollback()
-        
+
         transaction.commit()
-        
+
         self.assertFalse(hasattr(root, "ex"))
 
         root.ex = 6
@@ -100,7 +100,7 @@ class TestZODB(TestCase):
         transaction.commit()
 
         self.assertEqual(root.ex, 6)
-        
+
         self.assertRaises(Exception, s1.rollback) # invalidated by commit
 
         root.ex = 7
@@ -110,7 +110,7 @@ class TestZODB(TestCase):
         self.assertEqual(root.ex, 6)
 
         root.ex = 8
-        
+
         s3 = conn.savepoint()
 
         root.ex = 9
@@ -122,7 +122,7 @@ class TestZODB(TestCase):
         self.assertEqual(root.ex, 9)
 
 
-               
+
 
     def test_conflict_errors(self):
         """
@@ -135,11 +135,11 @@ class TestZODB(TestCase):
         which can still be disconnected from the root by a transaction, while its content
         is updated by another transaction.
         """
-        
+
         conn = self.conn
 
         root = conn.root
-        
+
         root.stuff = PersistentList([9])
         root.origin = PersistentList([3])
         root.target = PersistentList([8])
@@ -148,34 +148,34 @@ class TestZODB(TestCase):
 
 
         # basic conflict on root #
-        
+
         pool.apply(delete_container, args=(self.db, "dummy1"))
-        
+
         root.dummy2 = 5
-        
+
         self.assertRaises(Exception, transaction.commit) # conflict !!
         self.assertRaises(Exception, transaction.commit) # still !!
-        
+
         transaction.abort()
-        
+
         self.assertFalse(hasattr(root, "dummy2")) # rolled back
-        
-        
-        
+
+
+
         # no conflict when a branch gets detached while leaf is updated#
-        
+
         container = root.stuff
-        
+
         pool.apply(delete_container, args=(self.db, "stuff"))
-        
+
         container[0] = 88
-        
+
         transaction.commit()
-        
+
         self.assertFalse(hasattr(root, "stuff")) # update lost  
-        
-        
-        
+
+
+
         # without readCurrent() - lost update #
 
         root.origin = PersistentList([13])
@@ -188,18 +188,18 @@ class TestZODB(TestCase):
         transaction.commit()
 
         self.assertEqual(root.target, PersistentList([13])) # we lost [3]
-                
+
 
 
         # with readCurrent() and container update - ReadConflictError raised! #
-        
-        
+
+
         root.origin = PersistentList([17])
         transaction.commit()
-    
+
         res = conn.readCurrent(root.target) # container object selected !!
         assert res is None # no return value expected
-        
+
         value = root.target
 
         pool.apply(transfer_list_value, args=(self.db, "origin", "target"))
@@ -207,31 +207,31 @@ class TestZODB(TestCase):
         root.othertarget = value
 
         self.assertRaises(Exception, transaction.commit)
-        
+
         self.assertEqual(root.target, PersistentList([17])) # auto refreshing occurred
         self.assertFalse(hasattr(root, "othertarget")) # auto refreshing occurred
-        
+
         self.assertRaises(Exception, transaction.commit) # but transaction still broken
-        
+
         transaction.abort()
         transaction.commit() # now all is ok once again
-        
-        
-        
+
+
+
         # with readCurrent() and container deletion - somehow lost update! #
-        
+
         value = root.origin[0]
 
         res = conn.readCurrent(root.origin) # container object selected !!
         assert res is None # no return value expected
-        
+
         pool.apply(delete_container, args=(self.db, "origin"))
-        
+
         root.target[0] = value # we use a value whose origin has now been deleted in other thread
-        
+
         transaction.commit() # here it's OK, the deleted object still remains in the DB history even if unreachable
-        
- 
+
+
 if __name__ == '__main__':
     try:
         unittest.main()

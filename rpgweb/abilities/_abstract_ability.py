@@ -18,11 +18,11 @@ from ._action_middlewares import ACTION_MIDDLEWARES
 class AbilityMetaclass(GameViewMetaclass, type):
     """
     Metaclass automatically registering the new ability (which is also a view) in a global registry.
-    """ 
+    """
     def __init__(NewClass, name, bases, new_dict):
-        
+
         super(AbilityMetaclass, NewClass).__init__(name, bases, new_dict)
-        
+
         if not NewClass.__name__.startswith("Abstract"):
 
             if __debug__:
@@ -31,12 +31,12 @@ class AbilityMetaclass(GameViewMetaclass, type):
                 ##assert utilities.check_is_lazy_object(NewClass.TITLE) # NO - unused atm !! delayed translation
 
             GameDataManager.register_ability(NewClass)
-            
 
 
-        
+
+
 # just because we can't dynamically assign a tuple of bases, in a normal "class" definition
-AbstractAbilityBases =  tuple(reversed(ACTION_MIDDLEWARES)) + (AbstractGameView,)
+AbstractAbilityBases = tuple(reversed(ACTION_MIDDLEWARES)) + (AbstractGameView,)
 AbstractAbilityBasesAdapter = AbilityMetaclass(str('AbstractAbilityBasesAdapter'), AbstractAbilityBases, {})
 
 
@@ -54,7 +54,7 @@ class AbstractAbility(AbstractAbilityBasesAdapter):
 
     ### Uses AbstractAbilityBases metaclass ###
     ### Inherites from both action middlewares and AbstractGameView ###
-    
+
     # NOT ATM - TITLE = None # menu title, use lazy gettext when setting
 
     def __init__(self, request, *args, **kwargs):
@@ -66,15 +66,15 @@ class AbstractAbility(AbstractAbilityBasesAdapter):
     @property
     def datamanager(self):
         return self # TRICK - abilities behaves as extensions of the datamanager!!
-    
+
 
     @transaction_watcher(ensure_data_ok=True, ensure_game_started=False) # needed, because in ability, we're partly INSIDE the datamanager
     def _process_standard_request(self, request, *args, **kwargs):
         # Access checks have already been done here, so we may initialize lazy data
-        self._perform_lazy_initializations() 
+        self._perform_lazy_initializations()
         return super(AbstractAbility, self)._process_standard_request(request, *args, **kwargs)
-    
- 
+
+
     def __getattr__(self, name):
         assert not name.startswith("_") # if we arrive here, it's probably a typo in an attribute fetching
         try:
@@ -102,8 +102,8 @@ class AbstractAbility(AbstractAbilityBasesAdapter):
         """
         private_key = self._get_private_key()
         return self._ability_data()["data"][private_key]
-    
-    
+
+
     def _get_private_key(self):
         return self._inner_datamanager.user.username # can be "anonymous", a character or a superuser login!
 
@@ -122,7 +122,7 @@ class AbstractAbility(AbstractAbilityBasesAdapter):
     def get_menu_title(cls):
         return cls.TITLE
     '''
-   
+
     @readonly_method
     def get_ability_summary(self):
         # FIXME - how does it work actually ?
@@ -145,7 +145,7 @@ class AbstractAbility(AbstractAbilityBasesAdapter):
         ability_data.setdefault("data", PersistentDict())
         cls._setup_ability_settings(settings=settings) # FIRST
         cls._setup_action_middleware_settings(settings=settings) # SECOND
-        
+
 
     @classmethod
     def _setup_ability_settings(cls, settings):
@@ -161,8 +161,8 @@ class AbstractAbility(AbstractAbilityBasesAdapter):
             private_data = self.ability_data["data"].setdefault(private_key, PersistentDict())
             self._setup_private_ability_data(private_data=private_data) # FIRST
             self._setup_private_action_middleware_data(private_data=private_data) # SECOND
-            
-            
+
+
 
     def _setup_private_ability_data(self, private_data):
         """
@@ -184,7 +184,7 @@ class AbstractAbility(AbstractAbilityBasesAdapter):
             for name, value in self.ability_data["data"].items():
                 assert name in available_logins
                 assert isinstance(value, collections.Mapping)
-        
+
         self._check_action_middleware_data_sanity(strict=strict)
         self._check_data_sanity(strict=strict)
 
@@ -207,8 +207,8 @@ class AbstractAbility(AbstractAbilityBasesAdapter):
                                                               previous_form_data=previous_form_data,
                                                               initial_data=initial_data,
                                                               form_initializer=form_initializer) 
-       '''                         
-    
+       '''
+
 
 
 

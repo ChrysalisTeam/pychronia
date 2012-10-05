@@ -57,7 +57,7 @@ if __debug__ and config.DEBUG:
         root = _get_zodb_connection().root()
         root.clear()
         root[GAME_INSTANCES_MOUNT_POINT] = OOBTree()
-        
+
 
 
 
@@ -68,14 +68,14 @@ def create_game_instance(game_instance_id, master_email, master_login, master_pa
     """
     connection = _get_zodb_connection()
     game_instances = connection.root()[GAME_INSTANCES_MOUNT_POINT]
-    
+
     if game_instances.get(game_instance_id): # must be resent and non-empty
         raise ValueError(_("Already existing instance"))
-    
+
     try:
         game_root = PersistentDict()
-        dm = GameDataManager(game_instance_id=game_instance_id, 
-                             game_root=game_root, 
+        dm = GameDataManager(game_instance_id=game_instance_id,
+                             game_root=game_root,
                              request=None) # no user messages possible here
         assert not dm.is_initialized
         dm.reset_game_data() # TODO here provide all necessary info
@@ -103,31 +103,31 @@ def delete_game_instance(game_instance_id):
     connection = _get_zodb_connection()
     instances = connection.root()[GAME_INSTANCES_MOUNT_POINT]
     if game_instance_id not in instances:
-        raise ValueError(_("Unexisting instance %r") % game_instance_id)   
+        raise ValueError(_("Unexisting instance %r") % game_instance_id)
     del instances[game_instance_id]
-    
-    
+
+
 def retrieve_game_instance(game_instance_id, request=None):
     connection = _get_zodb_connection()
-    game_root = connection.root()[GAME_INSTANCES_MOUNT_POINT].get(game_instance_id)   
-    
+    game_root = connection.root()[GAME_INSTANCES_MOUNT_POINT].get(game_instance_id)
+
     if not game_root:
         raise ValueError(_("Unexisting instance %r") % game_instance_id)
-    
-    dm = GameDataManager(game_instance_id=game_instance_id, 
-                         game_root=game_root, 
-                         request=request)     
+
+    dm = GameDataManager(game_instance_id=game_instance_id,
+                         game_root=game_root,
+                         request=request)
     return dm
 
-    
+
 def get_all_instances_metadata():
     """
     Returns a list of copies of metadata dicts.
     """
     connection = _get_zodb_connection()
-    instances = connection.root()[GAME_INSTANCES_MOUNT_POINT].itervalues()    
+    instances = connection.root()[GAME_INSTANCES_MOUNT_POINT].itervalues()
     res = [inst["metadata"].copy() for inst in instances] # metadata contains game instance id
     return res
 
 
-         
+

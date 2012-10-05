@@ -12,45 +12,45 @@ from rpgweb.authentication import AccessResult
 
 
 class MenuEntry:
-    
+
     def __init__(self, request, title, view=None, submenus=None, view_kwargs=None, forced_visibility=None):
         assert isinstance(title, unicode)
         assert view or submenus
         assert view or not view_kwargs
         assert forced_visibility is None or isinstance(forced_visibility, bool)
-        
+
         self.title = title
-        
+
         if view:
             view_kwargs = view_kwargs if view_kwargs else {}
             view_kwargs.update(dict(game_instance_id=request.datamanager.game_instance_id))
             self.url = reverse(view, kwargs=view_kwargs)
         else:
             self.url = None
-                                   
-        self.submenus = tuple(submenu for submenu in submenus if submenu) if submenus else [] 
+
+        self.submenus = tuple(submenu for submenu in submenus if submenu) if submenus else []
         self.user_access = view.get_access_token(request.datamanager)
         self.forced_visibility = forced_visibility
         self.is_active = self.url and (self.user_access == AccessResult.available) # doesn't rely on submenus state
-    
+
     @property
     def is_visible(self):
         if self.forced_visibility is not None:
             return self.forced_visibility
         else:
             return bool(self.submenus or (self.user_access in (AccessResult.available, AccessResult.permission_required)))
-        
+
 
 def generate_full_menu(request):  ## game_menu_generator
 
-    
+
     assert request.datamanager
-      
+
 
     datamanager = request.datamanager
     user = datamanager.user
-    
-        
+
+
     def menu_entry(*args, **kwargs):
         """
         Returns a visible *MenuEntry* instance or None,
@@ -61,10 +61,10 @@ def generate_full_menu(request):  ## game_menu_generator
 
 
     ## Special additions to menu entries ##
-    
+
     processed_view = request.processed_view # thanks to our middleware
-    
-    if user.is_authenticated and processed_view != views.inbox: 
+
+    if user.is_authenticated and processed_view != views.inbox:
         # in inbox, we can set/unset the read state of messages, so the "unread count" must not be considered
         unread_msgs_count = datamanager.get_unread_messages_count(user.username)
         message_suffix = u"(%d)" % unread_msgs_count
@@ -79,58 +79,58 @@ def generate_full_menu(request):  ## game_menu_generator
         chatroom_suffix = u""
 
 
-    full_menu_tree = menu_entry(_(u"Home"), views.homepage, 
-        ( 
+    full_menu_tree = menu_entry(_(u"Home"), views.homepage,
+        (
             # encoding note : \xa0 <-> &nbsp <-> alt+0160;
-                           
+
             menu_entry(_(u"Home"), views.homepage,
                         (
                            menu_entry(_(u"Home"), views.homepage),
-                           menu_entry(_(u"Opening"), views.opening), 
-                           menu_entry(_(u"Instructions"), views.instructions), 
+                           menu_entry(_(u"Opening"), views.opening),
+                           menu_entry(_(u"Instructions"), views.instructions),
                            menu_entry(_(u"Characters"), views.view_characters),
                            menu_entry(_(u"Personal Folder"), views.personal_folder),
                            menu_entry(_(u"Auction"), views.view_sales),
                            menu_entry(_(u"Encyclopedia"), views.view_encyclopedia),
                            menu_entry(_(u"Team Items") if user.is_authenticated else _(u"Auction Items"), views.items_slideshow),
-            
+
                            #menu_entry(_(u"Radio Messages"), views.personal_radio_messages_listing), # TODO INTEGRATE TO INFO PAGES ???
                        )),
-            
+
             menu_entry(_(u"Communication"), views.homepage, # FIXME
                        (
                          menu_entry(_(u"Chatroom") + chatroom_suffix, views.chatroom),
                          menu_entry(_(u"Radio Applet"), views.listen_to_audio_messages, forced_visibility=(False if user.is_character else None)),
                          menu_entry(_(u"Radio Player"), views.listen_to_webradio)
-                      
+
                       )),
-             
+
             menu_entry(_(u"Messaging"), views.homepage, # FIXME
                       (
                          menu_entry(_(u"Messages") + message_suffix, views.inbox),
                          # ADD ALL OTHER MESSAGING ENTRIES
                       )),
-            
+
             menu_entry(_(u"Admin"), views.homepage, # FIXME
                        (
                          menu_entry(_(u"Dashboard"), abilities.admin_dashboard_view),
                          menu_entry(_(u"Manage Characters"), views.manage_characters),
-                        
+
                          menu_entry(_(u"Game Events"), views.game_events),
                          menu_entry(_(u"Manage Webradio"), views.manage_audio_messages),
                          menu_entry(_(u"Databases"), views.manage_databases),
                       )),
-    
-    
+
+
             menu_entry(_(u"Abilities"), views.homepage, # FIXME
                        (
-                      
+
                         menu_entry(_(u"Wiretaps"), abilities.wiretapping_management_view),
                         menu_entry(_(u"Doors Locking"), abilities.house_locking_view),
                         menu_entry(_(u"Runic Translations"), abilities.runic_translation_view),
                         menu_entry(_(u"Network Management"), abilities.mercenaries_hiring_view),
                         menu_entry(_(u"Matter Analysis"), abilities.matter_analysis_view),
-                        
+
                         #menu_entry(_(u"Agents Hiring"), views.network_management),
                         #menu_entry(_(u"Oracles"), views.contact_djinns),
                         #menu_entry(_(u"Mercenary Commandos"), views.mercenary_commandos),
@@ -139,9 +139,9 @@ def generate_full_menu(request):  ## game_menu_generator
                         #menu_entry(_(u"Telecom Investigations"), views.telecom_investigation),
                         #menu_entry(_(u"World Scans"), views.scanning_management),
                       )),
-    
-    
-    
+
+
+
            menu_entry(_(u"Login"), views.login, forced_visibility=(False if user.is_authenticated else True)),
            menu_entry(_(u"Profile"), views.character_profile, forced_visibility=(True if user.is_character else False)),
            menu_entry(_(u"Logout"), views.logout),
@@ -164,7 +164,7 @@ def filter_menu_tree(menu):
 def generate_filtered_menu(request):
     potential_menu_tree = generate_full_menu(request)
     final_menu_tree = filter_menu_tree(potential_menu_tree)
-    
+
     if __debug__:
         # we only let VISIBLE entries, both active and inactive !
         assert final_menu_tree.is_visible
@@ -176,7 +176,7 @@ def generate_filtered_menu(request):
                 for submenu in menu.submenus:
                     #print(">>>",submenu.title, submenu.is_active, submenu.is_visible, submenu.user_access)
                     assert submenu.is_visible
-        
+
     return final_menu_tree # might be None, in incredible cases...
 
 

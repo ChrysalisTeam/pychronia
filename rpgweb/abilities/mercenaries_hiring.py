@@ -8,12 +8,12 @@ from ._abstract_ability import *
 
 
 class GemPayementFormMixin(AbstractGameForm):
-    
-    def __init__(self, datamanager, *args, **kwargs):    
+
+    def __init__(self, datamanager, *args, **kwargs):
         super(GemPayementFormMixin, self).__init__(datamanager, *args, **kwargs)
-        
+
         _gems = datamanager.get_character_properties(datamanager.user.username)["gems"]
-        _gems_choices = zip(_gems, [_("Gem of %d Kashes")%gem for gem in _gems])
+        _gems_choices = zip(_gems, [_("Gem of %d Kashes") % gem for gem in _gems])
 
         if _gems_choices:
             self.fields["pay_with_money"] = forms.BooleanField(label=_("Pay with money"), initial=False)
@@ -58,7 +58,7 @@ class MercenariesHiringAbility(AbstractAbility):
 
     ACCESS = UserAccess.character
     PERMISSIONS = []  #["mercenaries_hiring"]
-    ALWAYS_AVAILABLE = True 
+    ALWAYS_AVAILABLE = True
 
 
     def get_template_vars(self, previous_form_data=None):
@@ -68,12 +68,12 @@ class MercenariesHiringAbility(AbstractAbility):
         total_gems_value = sum(gems)
 
         # for now we don't exclude locations of already hired mercenaries
-        hiring_form = self._instantiate_form(new_form_name="hiring_form", 
+        hiring_form = self._instantiate_form(new_form_name="hiring_form",
                                              hide_on_success=False,
                                              previous_form_data=previous_form_data)
-        
+
         mercenaries_locations = self.private_data["mercenaries_locations"]
-        
+
         print (">>>>>>>>>>>>>>>>", self.settings)
         return {
                  'page_title': _("Mercenaries Network Management"),
@@ -90,7 +90,7 @@ class MercenariesHiringAbility(AbstractAbility):
     def hire_remote_agent(self, location, pay_with_gems=(),):
 
         employer_name = self.datamanager.user.username
-        
+
         private_data = self.private_data
 
         if location in private_data["mercenaries_locations"]:
@@ -122,8 +122,8 @@ class MercenariesHiringAbility(AbstractAbility):
         settings = self.settings
 
         _reference = dict(
-                            mercenary_cost_money = utilities.check_is_positive_int,
-                            mercenary_cost_gems = utilities.check_is_positive_int
+                            mercenary_cost_money=utilities.check_is_positive_int,
+                            mercenary_cost_gems=utilities.check_is_positive_int
                          )
         utilities.check_dictionary_with_template(settings, _reference, strict=strict)
 

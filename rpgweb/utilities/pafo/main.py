@@ -28,7 +28,7 @@ import and use function "printObject"
 
 from string import *
 import re
-def isNotStandardAttr(name, attrs = dir(3) + [ '__main__', '__module__' ] ):
+def isNotStandardAttr(name, attrs=dir(3) + [ '__main__', '__module__' ]):
     return not name in attrs
 def isAtom(obj):
     """ simple object's predicate,
@@ -39,7 +39,7 @@ def isAtom(obj):
     if tobj is list or tobj is dict or tobj is tuple: return False
     for attr in dir(obj):
         if isNotStandardAttr(attr):
-            if not callable( getattr(obj, attr) ):
+            if not callable(getattr(obj, attr)):
                 return False
     return True
 
@@ -50,34 +50,34 @@ def isComplexClass(obj):
 """ Complex objects are printed in a column, but
 simple objects are printed in a line until it overflow. 
 """
-def foldLongString(string, curTab , minTab, width, minForceBreakable ):
+def foldLongString(string, curTab , minTab, width, minForceBreakable):
     """ curTab is a place where current line ends.
     minTab is a minimal indent at begin of line
     minForceBreakable is a minimal substring's length which can be cut from string
     """
-    if curTab < minTab: raise ValueError ( "current tab (%d) is less than mininum tab (%d)" % (curTab, minTab) )
-    if curTab > width: raise ValueError ("current tab (%d) is more than width (%d)" % (curTab, width) )
-    if minTab > width: raise ValueError ("minimum tab (%d) is more than width (%d)" % (minTab, width) )
-    
-    def next(s): return "\n" + " "*minTab + foldLongString( s, minTab, minTab, width, minForceBreakable )
+    if curTab < minTab: raise ValueError ("current tab (%d) is less than mininum tab (%d)" % (curTab, minTab))
+    if curTab > width: raise ValueError ("current tab (%d) is more than width (%d)" % (curTab, width))
+    if minTab > width: raise ValueError ("minimum tab (%d) is more than width (%d)" % (minTab, width))
+
+    def next(s): return "\n" + " "*minTab + foldLongString(s, minTab, minTab, width, minForceBreakable)
     wMt = width - curTab
     if len(string) >= wMt:
         # there is search of comfortable position for string division (where is a space)
         head = string[:wMt]
-        spacePos = rfind ( head, " " )
+        spacePos = rfind (head, " ")
         if spacePos < wMt / 2: # a space is to far
             if wMt < minForceBreakable and minForceBreakable < width - minTab:
                 # cutted piece is too short then entire word is moved
-                return next(string) 
+                return next(string)
             else:
-                rest = string[wMt:]            
-                return head + next( rest )
+                rest = string[wMt:]
+                return head + next(rest)
         else:
-            return string[:spacePos] + next( string[spacePos+1:] )
+            return string[:spacePos] + next(string[spacePos + 1:])
     else:
-        return string 
-        
-def printObject(obj, curTab = 0, minTab = 0, width = 80, step = 2, minForceBreakable = 4):
+        return string
+
+def printObject(obj, curTab=0, minTab=0, width=80, step=2, minForceBreakable=4):
     """
     printObject is package's main function. It prints object's data
     fields to stdout. If object's field is a complex object then the library
@@ -98,20 +98,20 @@ def printObject(obj, curTab = 0, minTab = 0, width = 80, step = 2, minForceBreak
     piece is moved to next line; If first piece is too short then the
     word isn't divided and it is moved to next line entirely.
     """
-    if curTab < minTab: raise ValueError ( "current tab (%d) is less than mininum tab (%d)" % (curTab, minTab) )
-    if curTab > width: raise ValueError ("current tab (%d) is more than width (%d)" % (curTab, width) )
-    if minTab > width: raise ValueError ("minimum tab (%d) is more than width (%d)" % (minTab, width) )
+    if curTab < minTab: raise ValueError ("current tab (%d) is less than mininum tab (%d)" % (curTab, minTab))
+    if curTab > width: raise ValueError ("current tab (%d) is more than width (%d)" % (curTab, width))
+    if minTab > width: raise ValueError ("minimum tab (%d) is more than width (%d)" % (minTab, width))
     if step < 0: raise ValueError ("step (%d) must be equal or more than 0" % step)
     if width < 3: raise ValueError ("width (%d) must be more than 2" % width)
     res = traceObject(obj, curTab, minTab , width , step , minForceBreakable, False)
     print re.sub("\n *$", "", res)
-    
-def traceObject(obj, curTab = 0, minTab = 0, width = 80, step = 2, minForceBreakable = 4, enclosedIntoClass = False):
-    if curTab < minTab: raise ValueError ( "current tab (%d) is less than mininum tab (%d)" % (curTab, minTab) )
-    if curTab > width: raise ValueError ("current tab (%d) is more than width (%d)" % (curTab, width) )
-    if minTab > width: raise ValueError ("minimum tab (%d) is more than width (%d)" % (minTab, width) )
+
+def traceObject(obj, curTab=0, minTab=0, width=80, step=2, minForceBreakable=4, enclosedIntoClass=False):
+    if curTab < minTab: raise ValueError ("current tab (%d) is less than mininum tab (%d)" % (curTab, minTab))
+    if curTab > width: raise ValueError ("current tab (%d) is more than width (%d)" % (curTab, width))
+    if minTab > width: raise ValueError ("minimum tab (%d) is more than width (%d)" % (minTab, width))
     if isAtom(obj):
-        return foldLongString ( str(obj) + " :: " + type(obj).__name__ , curTab, minTab, width, minForceBreakable )
+        return foldLongString (str(obj) + " :: " + type(obj).__name__ , curTab, minTab, width, minForceBreakable)
     # a list
     tobj = type(obj)
     if tobj is list:
@@ -129,12 +129,12 @@ def foldTwoStrings(string1, string2, curTab, minTab, width):
         curTab is position of last letter of last line in string1
     """
     posLastEnter = rfind(string2 , "\n")
-    # позиция в строке
-    if posLastEnter >= 0: #   объект не уместился на той же строке
+    # позици�? в �?троке
+    if posLastEnter >= 0: #   объект не уме�?тил�?�? на той же �?троке
         curTab = len(string2) - rfind(string2, "\n") - 1
     else:
         curTab = curTab + len(string2)
-    return ( string1 + string2, curTab )
+    return (string1 + string2, curTab)
 
 def appendFoldIfLong(string1, string2, curTab, minTab, width):
     """it adds short string (string2) to buffer (string1) controlling its length"""
@@ -146,8 +146,8 @@ def appendFoldIfLong(string1, string2, curTab, minTab, width):
         string1 += string2
     return (string1, curTab)
 
-def printListOrTuple(lst, curTab , minTab, width, step, minForceBreakable, openBrace = "[ ", closeBrace = " ]"):
-    openSeq = openBrace 
+def printListOrTuple(lst, curTab , minTab, width, step, minForceBreakable, openBrace="[ ", closeBrace=" ]"):
+    openSeq = openBrace
     res = openSeq
     curTab += len(openSeq)
     if width < curTab:
@@ -155,19 +155,19 @@ def printListOrTuple(lst, curTab , minTab, width, step, minForceBreakable, openB
         res = "\n" + res
     newMinTab = minTab + step
     for elem in lst:
-        if isComplexClass( elem ):
-            curTab = newMinTab 
+        if isComplexClass(elem):
+            curTab = newMinTab
             res += "\n" + " "*newMinTab
         strElem = traceObject(elem, curTab, newMinTab, width, step, minForceBreakable)
-        res, curTab = foldTwoStrings( res, strElem, curTab, newMinTab, width)
+        res, curTab = foldTwoStrings(res, strElem, curTab, newMinTab, width)
         # add comma
-        res, curTab = appendFoldIfLong ( res, ", ", curTab, newMinTab, width )
+        res, curTab = appendFoldIfLong (res, ", ", curTab, newMinTab, width)
     if len(res) > 2:
         # test for division is redundant 
-        res =  res[:-2] + closeBrace[:2]
+        res = res[:-2] + closeBrace[:2]
         closeBrace = closeBrace[2:]
         if closeBrace:
-            res, curTab = appendFoldIfLong(res , closeBrace, curTab, newMinTab, width )
+            res, curTab = appendFoldIfLong(res , closeBrace, curTab, newMinTab, width)
             return res
         return res
     else:
@@ -186,20 +186,20 @@ def printDict(dct, curTab , minTab, width, step, minForceBreakable):
     dctKeys = dct.keys()
     dctKeys.sort()
     for key in dctKeys:
-        if isComplexClass( key ):
-            curTab = newMinTab 
-            res += "\n" + " "*newMinTab        
+        if isComplexClass(key):
+            curTab = newMinTab
+            res += "\n" + " "*newMinTab
         strKey = traceObject(key, curTab, newMinTab, width, step, minForceBreakable)
-        res, curTab = foldTwoStrings ( res, strKey, curTab, newMinTab, width )
+        res, curTab = foldTwoStrings (res, strKey, curTab, newMinTab, width)
         # add colons
-        res, curTab = appendFoldIfLong ( res, " : ", curTab, newMinTab, width )
-        if isComplexClass( dct[key] ):
-            curTab = newMinTab 
-            res += "\n" + " "*newMinTab                
+        res, curTab = appendFoldIfLong (res, " : ", curTab, newMinTab, width)
+        if isComplexClass(dct[key]):
+            curTab = newMinTab
+            res += "\n" + " "*newMinTab
         strVal = traceObject(dct[key], curTab, newMinTab, width, step, minForceBreakable)
-        res, curTab = foldTwoStrings ( res, strVal, curTab, newMinTab, width )
+        res, curTab = foldTwoStrings (res, strVal, curTab, newMinTab, width)
         # add comma
-        res, curTab = appendFoldIfLong ( res, ", ", curTab, newMinTab, width )                
+        res, curTab = appendFoldIfLong (res, ", ", curTab, newMinTab, width)
     if len(res) > 2:
         return res[:-2 ] + " }"
     else:
@@ -207,20 +207,20 @@ def printDict(dct, curTab , minTab, width, step, minForceBreakable):
 
 
 def printCompound(obj, curTab , minTab, width, step, minForceBreakable, enclosedIntoClass):
-    """ print a compound objeсt --- some class with data fields"""
+    """ print a compound obje�?t --- some class with data fields"""
     newMinTab = minTab + step
-    theMinTab = "\n" +  newMinTab * " "                
-    res, curTab = appendFoldIfLong ("", "class " + obj.__class__.__name__ + ":", curTab, minTab, width )
+    theMinTab = "\n" + newMinTab * " "
+    res, curTab = appendFoldIfLong ("", "class " + obj.__class__.__name__ + ":", curTab, minTab, width)
     for attr in dir(obj):
         if isNotStandardAttr(attr):
             theAttr = getattr(obj, attr)
             if not callable(theAttr):
-                res += theMinTab 
-                curTab = newMinTab 
+                res += theMinTab
+                curTab = newMinTab
                 res += attr + " = "
-                curTab += len(attr + " = ")                
+                curTab += len(attr + " = ")
                 strAttr = traceObject(theAttr, curTab, curTab, width, step, minForceBreakable, True)
                 res, curTab = foldTwoStrings(res, strAttr, curTab, newMinTab, width)
     if not enclosedIntoClass: res += "\n" + " " * minTab
-    return res 
-    
+    return res
+

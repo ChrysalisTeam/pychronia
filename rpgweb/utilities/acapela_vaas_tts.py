@@ -6,189 +6,189 @@ import requests, urlparse
 
 
 class AcapelaClient(object):
-    
-    
+
+
     def __init__(self, url, login, password, application, environment):
 
         assert environment.upper() == environment and " " not in environment
-        
+
         self._url = url
-        
+
         self.connection_fields = dict(prot_vers="2",
                                       cl_env=environment,
                                       cl_vers="1-0",
                                       cl_login=login,
-                                      cl_app=application, 
+                                      cl_app=application,
                                       cl_pwd=password,)
-                                      
-                                      
+
+
     def _process_api_call(self, **kwargs):
         """
         Returns a dict of sample information, or binary data, depending on response_type argument.
         
         Raises EnvironmentError if problems.
         """
-        
+
         final_params = self.connection_fields.copy()
-        
+
         for key, value in kwargs.items():
             if value is not None:
                 final_params[self.ARGUMENT_MAPPER[key]] = value
         del kwargs, key, value
-        
+
         print("INPUT", final_params)
-        
+
         res = requests.post(self._url, data=final_params)
         res.raise_for_status()
-        
-        
+
+
         if final_params.get("response_type") not in (None, "INFO"):
             return res.content # binary audio data
         else:
-      
+
             raw = res.text
-            
+
             print("RAW", raw) # ex: raw = "w=&snd_time=1892.75&get_count=0&snd_id=221335548_cba848475cb40&asw_pos_init_offset=0&asw_pos_text_offset=0&snd_url=http://vaas.acapela-group.com/MESSAGES/009086065076095086065065083/EVAL_4775608/sounds/221335548_cba848475cb40.mp3&snd_size=13279&res=OK&create_echo="
 
             values = dict(urlparse.parse_qsl(raw, keep_blank_values=True, strict_parsing=__debug__))
-            
+
             if values["res"] != "OK":
                 klass = EnvironmentError # at the moment, no need to distinguish errors...
                 msg = "VAAS %s: %s" % (values["err_code"], values["err_msg"])
                 raise klass(msg)
-        
+
             res = dict(sound_id=values["snd_id"],
                         sound_url=values["snd_url"],
                         sound_size=values["snd_size"], # in bytes
-                        
+
                         alt_sound_url=values.get("alt_snd_url"),
                         alt_sound_size=values.get("alt_snd_size"),
-                        
+
                         sound_time=values["snd_time"], # in milliseconds
                         get_count=int(values["get_count"]), # how many [GET] requests where done for that sample
                         warning=values["w"],
                         # ignore asw_pos_init_offset and asw_pos_text_offset and create_echo ATM
                         )
             print("RESPONSE", res)
-            return res  
-         
-        
-    def create_sample(self,             
+            return res
+
+
+    def create_sample(self,
                         voice,
                         text,
-                        
+
                         comment=None, # the information to store concerning this operation (author, reason, ...) you can get it back 
                         response_type=None, # INFO(default, urlencoded params)/SOUND/STREAM
-                        
+
                         sound_id=None, # you can enforce the id to use/replace for a new message (do not use the dot character (\'.\') inside and make sure it is unique!).
                         volume=None, # min = 50, default = 32768, max = 65535 
                         speed=None, # min = 60, default = 180, max = 360 
                         shaping=None, # min = 50, default = 100, max = 150 
-                        
+
                         # for each equalizer value, min = -100, default = 0, max = 100 - for frequences 275Hz, 2.2kHz, 5kHz and 8.3kHz, respectively
-                        equalizer1=None, 
-                        equalizer2=None, 
-                        equalizer3=None, 
-                        equalizer4=None, 
-                        
+                        equalizer1=None,
+                        equalizer2=None,
+                        equalizer3=None,
+                        equalizer4=None,
+
                         format=None, # MP3/WAV/RAW - MP3 is assumed if ommited.
                         extension=None, # e.g.: ".mp3", ".wav", ...
                         mp3_compression=None, # Specify to select a custom compression format Variable Bit Rate (5 = max quality, 9 = min) or Constant Bit Rate (8 to 48 kbps) => VBR_X or CBR_X
-                        
+
                         alt_format=None, # You can associate two different types such as MP3 and WAV or RAW (but not WAV and RAW, use two requests for this).
                         alt_extension=None, # e.g.: ".mp3", ".wav", ...
                         alt_mp3_compression=None, # idem mp3_compression
-                        
+
                         # Set these to "ON" to receive word/bookmark/mouth positions file URL.
-                        words=None, 
+                        words=None,
                         bookmarks=None,
                         mouth=None,
-                        
+
                         request_start_time=None, # the start time (timestamp integer) of the request will be used to calculate the deadline for request treatment
                         timeout_value=None, # The time allocated to request treatment in seconds
-                        
+
                         # when choosing SOUND or STREAM response type
                         retrieve_alternate_sound=None, # Set to "yes" if you wish to receive the alternative file as response.
                         errors_in_id3_tags=None, # Set to "yes" if you wish to receive errors this way whenever possible instead of returning an internal server error (500)
-                        
+
                         # when choosing INFO response type 
                         request_echo=None, # ON to receive some of the message creation request fields in the response
                         redirection_url=None, # the url that the TTS server should POST-query with INFO params, to get a processed HTML result for the TTS request
                         ):
-    
+
         params = locals().copy()
         del params["self"]
-        return self._process_api_call(request_type="NEW", **params)   
-    
-        
+        return self._process_api_call(request_type="NEW", **params)
+
+
     def retrieve_sample(self,
                         sound_id,
                         message_location=None, # Specify to precise the location of the message targetted by this command - "CT_BUG_NOTIF" on a mispronunced message, "CONTENT_NOTIF" on a message notified for an inappropriate/illegal content or "MISC_BUG_NOTIF" on a message notified for another type of issue.
-                        
+
                         response_type=None,
-                        
-                        request_start_time=None, 
-                        timeout_value=None, 
+
+                        request_start_time=None,
+                        timeout_value=None,
 
                         retrieve_alternate_sound=None,
-                        errors_in_id3_tags=None, 
-                        
+                        errors_in_id3_tags=None,
+
                         request_echo=None,
                         redirection_url=None,
                         ):
-        
+
         params = locals().copy()
         del params["self"]
-        return self._process_api_call(request_type="GET", **params)                          
+        return self._process_api_call(request_type="GET", **params)
 
 
 
     ARGUMENT_MAPPER = dict(
                            request_type="req_type",
-                           
+
                             voice="req_voice",
                             text="req_text",
-                            
+
                             comment="req_comment",
                             response_type="req_asw_type",
-                            
+
                             sound_id="req_snd_id",
                             message_location="req_loc",
-                            
+
                             volume="req_vol",
                             speed="req_spd",
                             shaping="req_vct",
-                            
+
                             equalizer1="req_eq1",
                             equalizer2="req_eq2",
                             equalizer3="req_eq3",
                             equalizer4="req_eq4",
-                            
+
                             format="req_snd_type",
                             extension="req_snd_ext",
                             mp3_compression="req_snd_kbps",
-                            
+
                             alt_format="req_alt_snd_type",
                             alt_extension="req_alt_snd_ext",
-                            alt_mp3_compression="req_alt_snd_kbps",                           
-                            
+                            alt_mp3_compression="req_alt_snd_kbps",
+
                             words="req_wp",
                             bookmarks="req_bp",
                             mouth="req_mp",
-                            
+
                             request_start_time="req_start_time",
                             timeout_value="req_timeout",
-                            
+
                             retrieve_alternate_sound="req_asw_as_alt_snd",
                             errors_in_id3_tags="req_err_as_id3",
-                            
+
                             request_echo="req_echo",
                             redirection_url="req_asw_redirect_url",
                             )
-        
-                           
-                           
-                 
+
+
+
+
 
 
 VOICES_CONFS = (
@@ -465,11 +465,11 @@ AVAILABLE_VOICE_IDS = [voice[5] for voice in VOICES_CONFS]
 
 
 if __name__ == "__main__":
-    
-    client = AcapelaClient(url="http://vaas.acapela-group.com/Services/Synthesizer", 
-                           login="EVAL_VAAS", 
-                           application="EVAL_4775608", 
-                           password="", 
+
+    client = AcapelaClient(url="http://vaas.acapela-group.com/Services/Synthesizer",
+                           login="EVAL_VAAS",
+                           application="EVAL_4775608",
+                           password="",
                            environment="PYTHON_2.7_WINDOWS_VISTA")
 
     client.create_sample(voice="ipek8k", text="1 2 3 4 5", response_type="SOUND")

@@ -41,7 +41,7 @@ class ZodbTransactionMiddleware(object):
             del view_kwargs["game_instance_id"]
 
             request.datamanager = retrieve_game_instance(game_instance_id=game_instance_id, request=request)
-            
+
             if not request.datamanager.is_initialized:
                 raise RuntimeError("ZodbTransactionMiddleware - Game data isn't in initialized state")
 
@@ -54,7 +54,7 @@ class ZodbTransactionMiddleware(object):
 
         if not isinstance(exception, Http404):
             logging.critical("Exception occurred in view - %r" % exception, exc_info=True)
-    
+
         # we let the exception propagate anyway
         pass
 
@@ -80,21 +80,21 @@ class AuthenticationMiddleware(object):
 
         if not hasattr(request, "datamanager"):
             return None # not a valid game instance
-        
+
         ## Screw the immutability of these QueryDicts, we need FREEDOM ##
         request._post = request.POST.copy()
         request._get = request.GET.copy()
         if hasattr(request, "_request"):
             del request._request # force regeneration of MergeDict
         assert request._post._mutable and request._get._mutable
-        
+
         datamanager = request.datamanager
 
         if not hasattr(request, 'session'):
             raise RuntimeError("The game authentication middleware requires session middleware to be installed. Edit your MIDDLEWARE_CLASSES setting to insert 'django.contrib.sessions.middleware.SessionMiddleware'.")
-        
+
         authentication.try_authenticating_with_ticket(request)
-        
+
         return None
 
 
@@ -115,7 +115,7 @@ class PeriodicProcessingMiddleware(object):
                 datamanager.process_periodic_tasks() # eg. to send pending emails
         except Exception, e:
             try:
-                msg = "PeriodicProcessingMiddleware error : %r"%e
+                msg = "PeriodicProcessingMiddleware error : %r" % e
                 logging.error(msg, exc_info=True)
                 mail.mail_admins("Error", msg, config.SERVER_EMAIL)
             except:

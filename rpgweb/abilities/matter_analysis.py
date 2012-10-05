@@ -32,26 +32,26 @@ class MatterAnalysisAbility(AbstractAbility):
 
     ACCESS = UserAccess.character
     PERMISSIONS = []
-    ALWAYS_AVAILABLE = True 
+    ALWAYS_AVAILABLE = True
 
 
     def get_template_vars(self, previous_form_data=None):
-        
+
         # for now we don't exclude objects already analysed, players just have to take care !
-        item_form = self._instantiate_form(new_form_name="item_form", 
+        item_form = self._instantiate_form(new_form_name="item_form",
                                              hide_on_success=True,
                                              previous_form_data=previous_form_data)
-         
+
         return {
                  'page_title': _("Deep Matter Analysis"),
                  'item_form': item_form
                }
 
- 
+
 
     @transaction_watcher
     def analyse_item(self, item_name):
-        
+
         available_items = self.datamanager.get_available_items_for_user(self.user.username)
         if item_name not in available_items:
             raise AbnormalUsageError(_("You don't possess the item '%s'") % item_name)
@@ -85,17 +85,17 @@ class MatterAnalysisAbility(AbstractAbility):
     def _check_data_sanity(self, strict=False):
 
         settings = self.settings
-        
+
         def reports_checker(reports):
             assert set(reports.keys()) == set(self.get_items_for_sale().keys())
             for body in reports.values():
                 utilities.check_is_restructuredtext(body)
             return True
-            
+
         _reference = dict(
-                            sender_email = utilities.check_is_email,
-                            processing_delay = utilities.check_is_range_or_num,
-                            reports = reports_checker,
+                            sender_email=utilities.check_is_email,
+                            processing_delay=utilities.check_is_range_or_num,
+                            reports=reports_checker,
                          )
         utilities.check_dictionary_with_template(settings, _reference, strict=strict)
 

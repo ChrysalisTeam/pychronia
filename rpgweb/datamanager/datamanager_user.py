@@ -25,31 +25,31 @@ class GameUser(object):
         (which must be done at upper levels).
         """
         assert has_write_access in (True, False)
-        
+
         assert has_write_access == (impersonation is None) # at the moment only...
-        
+
         if username is None:
             username = datamanager.get_global_parameter("anonymous_login") # better than None, to display in templates
-        
+
         available_logins = datamanager.get_available_logins()
-        
+
         if username not in available_logins:
             raise AbnormalUsageError(_("Username %s is unknown") % username)
         if impersonation and impersonation not in datamanager.get_available_logins():
             raise AbnormalUsageError(_("Impersonation %s is unknown") % username)
-        
+
         if impersonation:
             assert datamanager.can_impersonate(username, impersonation)
 
         self._real_username = username
         self.is_impersonation = bool(impersonation)
-        
+
         self.has_write_access = has_write_access # allows, or not, POST requests
-        
+
         _effective_username = impersonation if impersonation else username
         self._effective_username = _effective_username
         del username, impersonation # security
-        
+
         self.is_master = datamanager.is_master(_effective_username)
         self.is_character = datamanager.is_character(_effective_username)
         self.is_anonymous = datamanager.is_anonymous(_effective_username)
@@ -62,15 +62,15 @@ class GameUser(object):
         #self.messages = previous_user.messages if previous_user else []
         #elf.errors = previous_user.errors if previous_user else []
 
-        
+
     @property
     def datamanager(self):
         return self._datamanager()
-    
+
     @property
     def real_username(self):
         return self._real_username
-    
+
     @property
     def username(self):
         """
@@ -94,21 +94,21 @@ class GameUser(object):
 
 
     ## Persistent user messages using django.contrib.messages ##
-    
+
     def _check_request_available(self):
         if not self.datamanager.request:
             logger.critical("Unexisting request object looked up by GameUser", exc_info=True)
             return False
         return True
-    
+
     def add_message(self, message):
         if self._check_request_available():
             messages.success(self.datamanager.request, message)
-        
+
     def add_error(self, error):
         if self._check_request_available():
             messages.error(self.datamanager.request, error)
-        
+
     def get_notifications(self):
         """
         Messages will only be deleted after being iterated upon.
@@ -117,18 +117,18 @@ class GameUser(object):
             return messages.get_messages(self.datamanager.request)
         else:
             return []
-        
+
     def has_notifications(self):
         if self._check_request_available():
             return bool(len(messages.get_messages(self.datamanager.request)))
         return False
-    
+
     def discard_notifications(self):
         from django.contrib.messages.storage import default_storage
         if self._check_request_available():
             self.datamanager.request._messages = default_storage(self.datamanager.request) # big hack
-        
-        
+
+
     ''' USELESS
     def _dm_call_forwarder(self, func_name, *args, **kwargs):
         """

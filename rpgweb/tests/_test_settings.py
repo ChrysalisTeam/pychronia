@@ -24,7 +24,7 @@ EMAIL_HOST_USER = ""
 EMAIL_HOST_PASSWORD = ""
 EMAIL_PORT = 25
 EMAIL_SUBJECT_PREFIX = ""
-EMAIL_USE_TLS = False 
+EMAIL_USE_TLS = False
 
 SITE_DOMAIN = "http://127.0.0.1" # NO trailing slash !
 
@@ -42,7 +42,7 @@ DATABASES = {
         'NAME': os.path.join(TEMP_DIR, "django.db.%s" % UNICITY_STRING)
     }
 }
-ZODB_FILE = os.path.join(TEMP_DIR,'gamedata.fs.%s' % UNICITY_STRING)
+ZODB_FILE = os.path.join(TEMP_DIR, 'gamedata.fs.%s' % UNICITY_STRING)
 
 
 GAME_ROOT = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
@@ -130,7 +130,7 @@ ACTIVATE_AIML_BOTS = False
 
 DB_RESET_ALLOWED = True
 
-RESTRUCTUREDTEXT_FILTER_SETTINGS = {"initial_header_level": 2, 
+RESTRUCTUREDTEXT_FILTER_SETTINGS = {"initial_header_level": 2,
                                     "doctitle_xform": False, # important to have evenb lone titles stay in the html fragment
                                     "sectsubtitle_xform": False}
 

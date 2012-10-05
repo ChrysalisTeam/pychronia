@@ -23,24 +23,24 @@ class TranslationForm(AbstractGameForm):
 
 @register_view
 class RunicTranslationAbility(AbstractAbility):
-    
-    
+
+
     NAME = "runic_translation"
 
     GAME_FORMS = {"translation_form": (TranslationForm, "process_translation")}
     ADMIN_FORMS = GAME_FORMS.copy()
-    
+
     TEMPLATE = "abilities/runic_translation.html"
 
     ACCESS = UserAccess.authenticated
     PERMISSIONS = ["runic_translation", "messaging", "items"]
-    ALWAYS_AVAILABLE = False 
+    ALWAYS_AVAILABLE = False
 
 
     def get_template_vars(self, previous_form_data=None):
 
-  
-        translation_form = self._instantiate_form(new_form_name="translation_form", 
+
+        translation_form = self._instantiate_form(new_form_name="translation_form",
                                                   hide_on_success=False,
                                                   previous_form_data=previous_form_data)
         translation_delay = self.get_ability_parameter("translation_delays")
@@ -74,7 +74,7 @@ class RunicTranslationAbility(AbstractAbility):
 
         #if not top_to_bottom:
         #    clauses.reverse()
-    
+
         clauses = [clause.split("|") for clause in clauses] # list of lists
 
         #if not left_to_right:
@@ -100,9 +100,9 @@ class RunicTranslationAbility(AbstractAbility):
     @classmethod
     def _try_translating_runes(cls, decoded_rune_string, translator, random_words):
         # returns an array of guessed word groups
-        
+
         assert len(random_words) >= 5, random_words
-        
+
         # we remove characters that could interfere with the parsing
         punctuation_chars = list(".,?!;:|#")
         for punctuation_char in punctuation_chars:
@@ -133,7 +133,7 @@ class RunicTranslationAbility(AbstractAbility):
         parser = pyparsing.ZeroOrMore(all_tokens)
 
         parsed_decoded_rune = parser.parseString(decoded_rune_string)
-       
+
         translated_tokens = []
         for token in parsed_decoded_rune:
             if translator.has_key(token):
@@ -150,7 +150,7 @@ class RunicTranslationAbility(AbstractAbility):
             translator = {} # we let random words translation deal with that
         else:
             translation_settings = self.get_ability_parameter("references")[item_name]
-            translator = self._build_translation_dictionary(translation_settings["decoding"], 
+            translator = self._build_translation_dictionary(translation_settings["decoding"],
                                                             translation_settings["translation"])
 
         random_words = self.get_ability_parameter("random_translation_words").split()

@@ -9,7 +9,7 @@ house_locking_view = HouseLockingAbility.as_view
 from .runic_translation import RunicTranslationAbility
 runic_translation_view = RunicTranslationAbility.as_view
 
-from .wiretapping_management import WiretappingAbility 
+from .wiretapping_management import WiretappingAbility
 wiretapping_management_view = WiretappingAbility.as_view
 
 from .admin_dashboard import AdminDashboardAbility

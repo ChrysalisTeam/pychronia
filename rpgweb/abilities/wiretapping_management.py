@@ -16,7 +16,7 @@ class WiretappingTargetsForm(AbstractGameForm):
         user_choices = ability.build_select_choices_from_usernames(names)
 
         for i in range(ability.get_ability_parameter("max_wiretapping_targets")):
-            self.fields["target_%d"%i] = forms.ChoiceField(label=_("Target %d")%i, required=False, choices=[("", "")]+user_choices)
+            self.fields["target_%d" % i] = forms.ChoiceField(label=_("Target %d") % i, required=False, choices=[("", "")] + user_choices)
 
     def get_normalized_values(self):
         parameters = super(WiretappingTargetsForm, self).get_normalized_values()
@@ -36,17 +36,17 @@ class WiretappingTargetsForm(AbstractGameForm):
 class WiretappingAbility(AbstractAbility):
 
     TITLE = _lazy("Wiretapping")
-    
+
     NAME = "wiretapping"
 
     GAME_FORMS = {"targets_form": (WiretappingTargetsForm, "change_wiretapping_targets")}
     ADMIN_FORMS = GAME_FORMS
-    
+
     TEMPLATE = "abilities/wiretapping_management.html"
 
     ACCESS = UserAccess.authenticated
     PERMISSIONS = ["wiretapping", "messaging"]
-    ALWAYS_AVAILABLE = False 
+    ALWAYS_AVAILABLE = False
 
 
     @readonly_method
@@ -56,15 +56,15 @@ class WiretappingAbility(AbstractAbility):
         initial_data = {}
         for i in range(self.get_ability_parameter("max_wiretapping_targets")):
             if i < len(current_targets):
-                initial_data["target_%d"%i] = current_targets[i]
+                initial_data["target_%d" % i] = current_targets[i]
             else:
-                initial_data["target_%d"%i] = ""
+                initial_data["target_%d" % i] = ""
 
-        targets_form = self._instantiate_form(new_form_name="targets_form", 
+        targets_form = self._instantiate_form(new_form_name="targets_form",
                                               hide_on_success=False,
                                               initial_data=initial_data,
                                               previous_form_data=previous_form_data,)
- 
+
         return {
                  'page_title': _("Wiretapping Management"),
                  'current_targets': current_targets,
@@ -74,7 +74,7 @@ class WiretappingAbility(AbstractAbility):
 
     @transaction_watcher
     def change_wiretapping_targets(self, target_names):
-        
+
         ####### DUPLICATED OF MODULE'S
         target_names = sorted(list(set(target_names))) # renormalization, just in case
 
@@ -122,7 +122,7 @@ class WiretappingAbility(AbstractAbility):
         settings = self.settings
 
         _settings_reference = dict(
-                                    max_wiretapping_targets = utilities.check_is_positive_int
+                                    max_wiretapping_targets=utilities.check_is_positive_int
                                   )
         utilities.check_dictionary_with_template(settings, _settings_reference, strict=strict)
 

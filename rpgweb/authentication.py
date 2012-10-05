@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 
 from rpgweb.common import *
 from rpgweb.datamanager import UsageError, GameDataManager
-from django.http import Http404, HttpResponseRedirect, HttpResponse,\
+from django.http import Http404, HttpResponseRedirect, HttpResponse, \
     HttpResponseForbidden
 
 SESSION_TICKET_KEY = 'rpgweb_session_ticket'
@@ -39,8 +39,8 @@ def authenticate_with_credentials(request, username, password):
     datamanager = request.datamanager
     session_ticket = datamanager.authenticate_with_credentials(username, password)
     clear_session(request)
-    
-    request.session[SESSION_TICKET_KEY] = session_ticket 
+
+    request.session[SESSION_TICKET_KEY] = session_ticket
 
 
 def try_authenticating_with_ticket(request):
@@ -49,7 +49,7 @@ def try_authenticating_with_ticket(request):
     """
     datamanager = request.datamanager
     session_ticket = request.session.get(SESSION_TICKET_KEY)
-    
+
     if session_ticket:
 
         # beware, here we distinguish between empty string (stop impersonation) and None (do nothing)
@@ -59,9 +59,9 @@ def try_authenticating_with_ticket(request):
             request.method = "GET" # dirty, isn't it ?
         else:
             requested_impersonation = None # beware, != "" here
-            
+
         try:
-            res = datamanager.authenticate_with_ticket(session_ticket, 
+            res = datamanager.authenticate_with_ticket(session_ticket,
                                                        requested_impersonation=requested_impersonation)
             request.session[SESSION_TICKET_KEY] = res # this refreshes expiry time, and ensures we properly modify session
         except NormalUsageError, e:
@@ -70,9 +70,9 @@ def try_authenticating_with_ticket(request):
             # a disappeared character ? wrong impersonation username ?
             logging.critical("Wrong session ticket detected: %r" % (session_ticket,), exc_info=True)
             request.session[SESSION_TICKET_KEY] = None # important cleanup!
-            
+
         # anyway, we let the anonymous user be...
- 
+
 
 def logout_session(request):
     request.datamanager.logout_user()
@@ -151,10 +151,10 @@ def game_authenticated_required(func):
     return wrapped
 '''
 
-    
-    
-    
-    
-    
-    
-    
+
+
+
+
+
+
+

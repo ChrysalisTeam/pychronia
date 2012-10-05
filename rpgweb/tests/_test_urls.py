@@ -7,7 +7,7 @@ from django.conf.urls.defaults import * # default HTTP404 etc.
 from ..utilities import config
 from ..urls import urlpatterns as game_urls
 
-test_urls = patterns('',           
+test_urls = patterns('',
     (r'^%s(?P<path>.*)$' % config.MEDIA_URL[1:], 'django.views.static.serve',
      {'document_root': config.MEDIA_ROOT, 'show_indexes': False}),
     (r'^i18n/', include('django.conf.urls.i18n')), # set language

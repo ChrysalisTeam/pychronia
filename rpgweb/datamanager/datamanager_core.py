@@ -59,10 +59,10 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
             self._in_transaction = False
             transaction.abort() # top level
             self.check_no_pending_transaction() # AFTER REAL ROLLBACK
-    
+
     def check_no_pending_transaction(self):
         assert not self._in_transaction, self._in_transaction
-        assert not self.connection._registered_objects, repr(self.connection._registered_objects) 
+        assert not self.connection._registered_objects, repr(self.connection._registered_objects)
 
     # no transaction manager - special case
     def __init__(self, game_instance_id, game_root=None, request=None, **kwargs):
@@ -75,11 +75,11 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
 
         '''
         assert game_root is not None
-        
+
         super(BaseDataManager, self).__init__(**kwargs)
-        
+
         self.notify_event("BASE_DATA_MANAGER_INIT_CALLED")
-        
+
         self._in_transaction = False
 
         self.game_instance_id = game_instance_id
@@ -92,19 +92,19 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
         self.connection = game_root._p_jar # can be empty, for transient persistent objects
 
         self.is_initialized = bool(self.data) # empty or not
-        
+
         if self.is_initialized:
             self._init_from_db()
-            
-    
+
+
     def _init_from_db(self):
         self.notify_event("BASE_DATA_MANAGER_INIT_FROM_DB_CALLED")
-    
+
     @property
     def request(self):
         return self._request() if self._request else None
-    
-    
+
+
     # NO transaction_watcher here!        
     def close(self):
         """
@@ -142,17 +142,17 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
 
         if config.GAME_INITIAL_FIXTURE_SCRIPT:
             self.logger.info("Performing setup via GAME_INITIAL_FIXTURE_SCRIPT")
-            config.GAME_INITIAL_FIXTURE_SCRIPT(self)    
-            
+            config.GAME_INITIAL_FIXTURE_SCRIPT(self)
+
         # NOW only we normalize and check the object tree
         # normal python types are transformed to ZODB-persistent types
         for key in self.data.keys():
             self.data[key] = utilities.convert_object_tree(self.data[key], utilities.python_to_zodb_types)
             utilities.check_object_tree(self.data[key], allowed_types=utilities.allowed_zodb_types, path=["game_data"])
-        
+
         self.is_initialized = True
         self._init_from_db()
-        
+
         self.check_database_coherency()
 
 
@@ -168,9 +168,9 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
 
     @transaction_watcher(ensure_game_started=False) # that checking might lead to corrections
     def check_database_coherency(self, **kwargs):
-        
+
         self.notify_event("BASE_CHECK_DB_COHERENCY_PUBLIC_CALLED")
-        
+
         game_data = self.data
 
         # Heavy Check !
@@ -178,9 +178,9 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
 
 
         self._check_database_coherency()
-        
-        
-        
+
+
+
         ''' # TO BE REDISPATCHED #
 
         _expected_game_params = set("""
@@ -258,11 +258,11 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
 
     @readonly_method
     def dump_zope_database(self, **kwargs):
-        
+
         dump_args = dict(width=60, indent=4, # NO default_style nor canonical, else stuffs break
                             default_flow_style=False, allow_unicode=True)
         dump_args.update(kwargs)
-                                                                                                              
+
         data_dump = copy.deepcopy(dict(self.data)) # beware - memory-intensive call
 
         # special, we remove info that is already well visible in messaging system
@@ -271,21 +271,21 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
                 del data_dump[key]
 
         data_dump = utilities.convert_object_tree(data_dump, utilities.zodb_to_python_types)
-        
+
         def coerce_to_ascii_if_possible(dumper, value):
             try:
                 return dumper.represent_scalar(u'tag:yaml.org,2002:str', value.encode("ascii"))
             except UnicodeError:
                 return dumper.represent_unicode(value)
-            
+
         yaml.add_representer(unicode, lambda dumper, value: dumper.represent_scalar(u'tag:yaml.org,2002:str', value))
-         
+
         # FIXME yaml.add_representer(unicode, lambda dumper, value: dumper.represent_scalar(u'tag:yaml.org,2002:str', value))
         string = yaml.dump(data_dump, **dump_args) # TODO fix safe_dump() to accept unicode in input!!
- 
+
         return string
 
- 
+
 
 
 

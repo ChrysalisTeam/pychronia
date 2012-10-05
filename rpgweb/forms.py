@@ -22,7 +22,7 @@ class AbstractGameForm(forms.Form):
         *datamanager* may also be an ability, since it proxies datamanager methods too.
         """
         super(AbstractGameForm, self).__init__(*args, **kwargs)
- 
+
         self.fields.insert(0, self.__class__._ability_field_name, forms.CharField(initial=self._get_dotted_class_name(),
                                                                                   widget=forms.HiddenInput))
         self.target_url = "" # by default we stay on the same page when submitting
@@ -81,17 +81,17 @@ class CharacterForm(forms.Form):
 
     real_life_identity = forms.CharField(label=_lazy("Real identity"), required=False, max_length=100)
     real_life_email = forms.EmailField(label=_lazy("Real email"), required=False)
-    
+
     allegiances = forms.MultipleChoiceField(label=_lazy("Allegiances"), required=False, widget=forms.SelectMultiple(attrs={"class": "multichecklist"}))
     permissions = forms.MultipleChoiceField(label=_lazy("Permissions"), required=False, widget=forms.SelectMultiple(attrs={"class": "multichecklist"}))
 
-    
+
     def __init__(self, allegiances_choices, permissions_choices, *args, **kwargs):
         super(CharacterForm, self).__init__(*args, **kwargs)
         self.fields['allegiances'].choices = allegiances_choices
         self.fields['permissions'].choices = permissions_choices
- 
- 
+
+
 class SimplePasswordForm(forms.Form):
     simple_password = forms.CharField(label=_lazy("Password"), required=True, widget=forms.PasswordInput)
 
@@ -121,12 +121,12 @@ class MoneyTransferForm(forms.Form):
         super(MoneyTransferForm, self).__init__(*args, **kwargs)
         # dynamic fields here ...
         if user.is_master:
-            _money_all_character_choices = [(datamanager.get_global_parameter("bank_name"), '<'+_("Bank")+'>')] + \
+            _money_all_character_choices = [(datamanager.get_global_parameter("bank_name"), '<' + _("Bank") + '>')] + \
                                             datamanager.build_select_choices_from_usernames(datamanager.get_character_usernames())
 
             self.fields.insert(0, "sender_name", forms.ChoiceField(label=_("Sender"), choices=_money_all_character_choices))
             self.fields.insert(1, "recipient_name", forms.ChoiceField(label=_("Recipient"),
-                               initial=_money_all_character_choices[min(1, len(_money_all_character_choices)-1)][0], choices=_money_all_character_choices))
+                               initial=_money_all_character_choices[min(1, len(_money_all_character_choices) - 1)][0], choices=_money_all_character_choices))
         else:
             others = datamanager.get_other_usernames(user.username)
             others_choices = datamanager.build_select_choices_from_usernames(others)
@@ -146,7 +146,7 @@ class GemsTransferForm(forms.Form):
         if user.is_master:
             _character_choices = datamanager.build_select_choices_from_usernames(datamanager.get_character_usernames())
             self.fields.insert(0, "sender_name", forms.ChoiceField(label=_("Sender"), choices=_character_choices))
-            self.fields.insert(1, "recipient_name", forms.ChoiceField(label=_("Recipient"), initial=_character_choices[min(1, len(_character_choices)-1)][0], choices=_character_choices))
+            self.fields.insert(1, "recipient_name", forms.ChoiceField(label=_("Recipient"), initial=_character_choices[min(1, len(_character_choices) - 1)][0], choices=_character_choices))
         else:
             others = datamanager.get_other_usernames(user.username)
             others_choices = datamanager.build_select_choices_from_usernames(others)
@@ -247,7 +247,7 @@ class MessageComposeForm(forms.Form):
         _all_email_contacts = datamanager.get_user_contacts(datamanager.get_global_parameter("master_login"))
         #_all_email_choices = zip(_all_email_contacts, _all_email_contacts)
         _delay_values_minutes = [unicode(value) for value in [0, 2, 5, 10, 15, 30, 45, 60]]
-        _delay_values_minutes_labels = [value+" minutes" for value in _delay_values_minutes]
+        _delay_values_minutes_labels = [value + " minutes" for value in _delay_values_minutes]
         _delay_values_minutes_choices = zip(_delay_values_minutes, _delay_values_minutes_labels)
 
         user = request.datamanager.user
@@ -260,7 +260,7 @@ class MessageComposeForm(forms.Form):
             if hasattr(recipient, "__iter__"):
                 recipient = recipient[0] # FIXME, WELL BUGGY
             sender = msg["sender_email"]
-        
+
             if request.datamanager.get_username_from_email(recipient) == user.username:
                 # reply message
                 parent_id = message_id

@@ -34,7 +34,7 @@ view_urlpatterns = patterns('rpgweb.views',
     (r'^encrypted_folders/(?P<folder>[^/]*)/$', 'encrypted_folder'),
 
 
-    (r'^slideshow/$', 'items_slideshow'),            # Beware: slideshow URLs must not contain underscores,
+    (r'^slideshow/$', 'items_slideshow'), # Beware: slideshow URLs must not contain underscores,
     (r'^item3dview/(?P<item>.*)/$', 'item_3d_view'), # else 3D images are flashing !
 
 
@@ -44,12 +44,12 @@ view_urlpatterns = patterns('rpgweb.views',
 
     (r'^view_sales/$', 'view_sales'),
     (r'^view_characters/$', 'view_characters'),
-    
+
     (r'^encyclopedia/$', 'view_encyclopedia'),
     (r'^encyclopedia/(?P<article_id>[^/]*)/$', 'view_encyclopedia'),
-    
+
     (r'^manual/(?P<keyword>[^/]*)/$', 'view_help_page'),
-    
+
     (r'^manage_characters/$', 'manage_characters'),
     (r'^webradio_management/$', 'manage_audio_messages'),
     (r'^game_events/$', 'game_events'),
@@ -65,7 +65,7 @@ view_urlpatterns = patterns('rpgweb.views',
     #(r'^wiretapping_management/$', 'wiretapping_management'),
     #(r'^translations_management/$', 'translations_management'),
     #(r'^scanning_management/$', 'scanning_management'),
-    
+
     #(r'^mercenary_commandos/$', 'mercenary_commandos'),
     #(r'^teldorian_teleportations/$', 'teldorian_teleportations'),
     #(r'^acharith_attacks/$', 'acharith_attacks'),
@@ -74,15 +74,15 @@ view_urlpatterns = patterns('rpgweb.views',
 #    (r'^oracle/$', 'contact_djinns'),
 #    (r'^djinn/$', 'chat_with_djinn'),
 #    (r'^ajax_consult_djinns/$', 'ajax_consult_djinns'),
-    
+
 #    (r'^ajax_domotics_security/$', 'ajax_domotics_security'), # for heavy client, if used
 #    (r'^domotics_security/$', 'domotics_security'),
-        
+
     (r'^login/$', 'login'),
     (r'^secret_question/$', 'secret_question'),
     (r'^profile/$', 'character_profile'),
     (r'^logout/$', 'logout'),
-    
+
 
     (r'^messages/compose/$', 'compose_message'),
     (r'^messages/inbox/$', 'inbox'),
@@ -110,9 +110,9 @@ ability_urlpatterns = patterns("rpgweb.abilities",
     (r'^ability/runic_translation/$', 'runic_translation_view'),
     (r'^ability/wiretapping_management/$', 'wiretapping_management_view'),
     (r'^ability/admin_dashboard/$', 'admin_dashboard_view'),
-    (r'^ability/network_management/$', 'mercenaries_hiring_view'),    
-    (r'^ability/matter_analysis/$', 'matter_analysis_view'), 
-    
+    (r'^ability/network_management/$', 'mercenaries_hiring_view'),
+    (r'^ability/matter_analysis/$', 'matter_analysis_view'),
+
 )
 
 
@@ -120,12 +120,12 @@ final_urlpatterns = view_urlpatterns + ability_urlpatterns
 
 # root urlpatterns of rpgweb application
 urlpatterns = patterns('',
-                       
+
                     # serving of game files is currently independent of ZODB data
                     (r'^%s(?P<hash>[^/]*)/?(?P<path>.*)$' % config.GAME_FILES_URL[1:], 'rpgweb.views.serve_game_file'), # NOT a gameview
-                
+
                     (r'^(?P<game_instance_id>\w+)/', include(final_urlpatterns)),
-                    
+
                     #(r'^', include(final_urlpatterns), {"game_instance_id": "DEMO"}), # default game instance, just as a demo
 )
 
