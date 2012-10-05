@@ -20,7 +20,7 @@ EMAIL_HOST_USER = ""
 EMAIL_HOST_PASSWORD = ""
 EMAIL_PORT = 25
 EMAIL_SUBJECT_PREFIX = ""
-EMAIL_USE_TLS = False 
+EMAIL_USE_TLS = False
 
 SITE_DOMAIN = "http://127.0.0.1" # NO trailing slash !
 
@@ -152,7 +152,7 @@ INSTALLED_APPS = [
     'debug_toolbar',
     'django.contrib.auth',
     'django.contrib.admin',
-    
+
     'django.contrib.contenttypes',
     #####'django.contrib.comments',
     'django.contrib.sessions', # only sessions are scalable for "sharding"
@@ -161,25 +161,25 @@ INSTALLED_APPS = [
     'django.contrib.humanize',
     'django.contrib.markup',
     'chrysalis',
-    
+
     'cms',
-    'mptt', 
-    'menus', 
-    'south', 
+    'mptt',
+    'menus',
+    'south',
     'sekizai',
-    
-     
-    
+
+
+
     'cmsplugin_rst',
     'cmsplugin_simple_gallery',
-    
+
     #'cms.plugins.flash',
     #'cms.plugins.googlemap',
 
     'cms.plugins.link',
     'cms.plugins.snippet',
     'cms.plugins.text',
-       
+
      ###########    
     #'cms.plugins.file',
     #'cms.plugins.picture',
@@ -193,11 +193,11 @@ INSTALLED_APPS = [
     'cmsplugin_filer_image',
     'cmsplugin_filer_teaser',
     'cmsplugin_filer_video',
-    
+
    # 'tagging',
 #    'zinnia',
 #    'cmsplugin_zinnia',
-    
+
 ]
 
 THUMBNAIL_PROCESSORS = (

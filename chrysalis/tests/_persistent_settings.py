@@ -18,7 +18,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'chrysalis',
         'HOST': 'localhost',
-        'USER': 'root', 
+        'USER': 'root',
         'PASSWORD': '',
     }
 }

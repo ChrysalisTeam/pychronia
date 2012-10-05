@@ -8,8 +8,8 @@ admin.autodiscover()
 urlpatterns = patterns('',
 
     #{'document_root': settings.MEDIA_ROOT, 'show_indexes': False}),
-                             
-    
+
+
 
     # Uncomment the admin/doc line below and add 'django.contrib.admindocs' 
     # to INSTALLED_APPS to enable admin documentation:

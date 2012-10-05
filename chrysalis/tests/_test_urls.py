@@ -15,6 +15,6 @@ test_urls = patterns('',
         {'document_root': settings.MEDIA_ROOT, 'show_indexes': True}),
     url(r'', include('django.contrib.staticfiles.urls')),
 )
- 
+
 
 urlpatterns = test_urls + site_urls # all test urls
