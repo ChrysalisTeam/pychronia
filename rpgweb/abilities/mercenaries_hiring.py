@@ -5,15 +5,22 @@ from __future__ import unicode_literals
 from rpgweb.common import *
 
 from ._abstract_ability import *
+import json
 
 
 class GemPayementFormMixin(AbstractGameForm):
+
+    def _encode_gems(self, gems):
+        return [json.dumps(gem) for gem in gems]
+
+    def _decode_gems(self, gems):
+        return [json.loads(gem) for gem in gems]
 
     def __init__(self, datamanager, *args, **kwargs):
         super(GemPayementFormMixin, self).__init__(datamanager, *args, **kwargs)
 
         _gems = datamanager.get_character_properties(datamanager.user.username)["gems"]
-        _gems_choices = zip(_gems, [_("Gem of %d Kashes") % gem for gem in _gems])
+        _gems_choices = zip(self._encode_gems(_gems), [_("Gem of %d Kashes (%s)") % gem for gem in _gems]) # gem is (value, origin) here
 
         if _gems_choices:
             self.fields["pay_with_money"] = forms.BooleanField(label=_("Pay with money"), initial=False)
@@ -21,6 +28,19 @@ class GemPayementFormMixin(AbstractGameForm):
         else:
             self.fields["pay_with_money"] = forms.BooleanField(initial=True, widget=forms.HiddenInput)
             self.fields["gems_list"] = forms.MultipleChoiceField(required=False, widget=forms.HiddenInput)
+
+
+    def get_normalized_values(self):
+
+        parameters = super(GemPayementFormMixin, self).get_normalized_values()
+
+        try:
+            parameters["pay_with_gems"] = self._decode_gems(parameters["gems_list"])
+        except (TypeError, ValueError), e:
+            logger.critical("Wrong data submitted - %r", parameters["gems_list"], exc_info=True) # FIXME LOGGER MISSING
+            raise AbnormalUsageError("Wrong data submitted")
+        return parameters
+
 
 
 class AgentsHiringForm(GemPayementFormMixin):
@@ -37,13 +57,7 @@ class AgentsHiringForm(GemPayementFormMixin):
         self.fields.keyOrder = ['_ability_form', 'location', 'pay_with_money', 'gems_list']
 
 
-    def get_normalized_values(self):
 
-        parameters = super(AgentsHiringForm, self).get_normalized_values()
-
-        parameters["pay_with_gems"] = [int(gem) for gem in parameters["gems_list"] if gem.is_digit()]
-
-        return parameters
 
 
 

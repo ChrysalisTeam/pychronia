@@ -19,15 +19,15 @@ from django.shortcuts import render
 from django.template import RequestContext
 from django.utils.html import escape
 from django.utils.translation import ugettext as _, ugettext_lazy as _lazy, ungettext
-
-from .. import forms
+from rpgweb.common import *
+from .. import forms # AFTER common, to replace django.forms
 from ._abstract_game_view import register_view
 from ..authentication import authenticate_with_credentials, logout_session
 from .. import datamanager as dm_module
 from rpgweb.utilities import mediaplayers, fileservers
 from rpgweb.datamanager import GameDataManager
 from django.shortcuts import render
-from rpgweb.common import *
+
 from decorator import decorator
 
 
@@ -572,6 +572,7 @@ def login(request, template_name='registration/login.html'):
                             return HttpResponseRedirect(reverse(opening, kwargs=dict(game_instance_id=request.datamanager.game_instance_id)))
 
     else:
+        g = forms
         request.session.set_test_cookie()
         form = forms.AuthenticationForm()
 
@@ -777,8 +778,9 @@ def view_characters(request, template_name='generic_operations/view_characters.h
             for character, properties in request.datamanager.get_character_sets().items():
                 available_gems += properties["gems"]
         else:
+            # FIXME, bugged
             available_gems = request.datamanager.get_character_properties(user.username)["gems"]
-        gems_choices = zip(available_gems, [_("Gem of %d Kashes") % available_gem for available_gem in available_gems])
+        gems_choices = zip([i[0] for i in available_gems], [_("Gem of %s Kashes") % str(available_gem) for available_gem in available_gems])
         return gems_choices
 
 
@@ -1623,7 +1625,7 @@ def contact_djinns(request, template_name='specific_operations/contact_djinns.ht
 
     if user.is_master: # FIXME
         available_bots = bots_properties.keys()
-        team_gems = None
+        #team_gems = None
     else:
         domain = request.datamanager.get_character_properties(user.username)["domain"]
         available_bots = [bot_name for bot_name in bots_properties.keys() if request.datamanager.is_bot_accessible(bot_name, domain)]

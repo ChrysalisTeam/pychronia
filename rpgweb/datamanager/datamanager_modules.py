@@ -2303,6 +2303,7 @@ class MoneyItemsOwnership(BaseDataManager):
         for (name, properties) in game_data["game_items"].items():
             properties['unit_cost'] = self._compute_gems_unit_cost(total_cost=properties['total_price'], num_gems=properties['num_items'])
             properties['owner'] = properties.get('owner', None)
+            properties["auction"] = properties.get('auction', None)
 
             if properties["is_gem"] and not properties['owner']: # we dont recount gems appearing in character["gems"]
                 total_gems += [properties['unit_cost']] * properties["num_items"]
@@ -2383,7 +2384,7 @@ class MoneyItemsOwnership(BaseDataManager):
 
     @readonly_method
     def get_auction_items(self):
-        return {key: value for (key, value) in self.data["game_items"] if value["is_auction"]}
+        return {key: value for (key, value) in self.data["game_items"].items() if value["auction"]}
 
     @readonly_method
     def get_item_properties(self, item_name):
