@@ -56,7 +56,7 @@ for props in game_data["AI_bots"]["bot_properties"].values():
         return self.data["AI_bots"]["bot_properties"].keys()
 
     def is_bot_accessible(self, bot_name, domain):
-        gems_owned = self.get_team_gems_count(domain)
+        WRONG - gems_owned = self.get_team_gems_count(domain)
         gems_required = self.get_bots_properties()[bot_name]["gems_required"]
 
         return (gems_owned >= gems_required)

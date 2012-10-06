@@ -164,7 +164,7 @@ class TranslationForm(forms.Form):
         super(TranslationForm, self).__init__(*args, **kwargs)
 
         _translatable_items_ids = datamanager.get_translatable_items().keys()
-        _translatable_items_pretty_names = [datamanager.get_items_for_sale()[item_name]["title"] for item_name in _translatable_items_ids]
+        _translatable_items_pretty_names = [datamanager.get_all_items()[item_name]["title"] for item_name in _translatable_items_ids]
         _translatable_items_choices = zip(_translatable_items_ids, _translatable_items_pretty_names)
         _translatable_items_choices.sort(key=lambda double: double[1])
 

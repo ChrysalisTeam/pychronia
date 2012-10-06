@@ -157,7 +157,7 @@ game_items:
         image: statue.jpg
         
     sacred_chest:
-        auction: "3-D"
+        auction: None
         is_gem: False
         num_items: 1
         total_price: 1000
@@ -248,7 +248,7 @@ character_properties:
         description : "XXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXX XXXXXXXX"
         character_color : "#0033CC"
         permissions: ["runic_translation", "wiretapping"]
-        
+        gems: [[12, null], [200, "several_misc_gems"]]
     guy2:
         domains: ["acharis"]
         password: awesome
@@ -296,7 +296,8 @@ character_properties:
         real_life_email: belez2@gmail.com
         description : "XXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXX XXXXXXXX"
         character_color : "#00CCFF"
-    
+        gems: []
+        
 
 audio_messages:
 

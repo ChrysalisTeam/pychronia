@@ -14,13 +14,13 @@ import transaction
 from persistent import Persistent
 from persistent.dict import PersistentDict
 from persistent.list import PersistentList
- 
+
 from django_zodb import database
 from django.core.validators import email_re
 from django.conf import settings as django_settings
 from .. import default_settings as game_default_settings
-  
-  
+
+
 class Conf(object):
     """
     Helper class which handles default game settings.
@@ -37,7 +37,7 @@ config = Conf()
 del Conf
 
 ## Python <-> ZODB types conversion and checking ##
- 
+
 python_to_zodb_types = {list: PersistentList,
                         dict: PersistentDict}
 
@@ -78,7 +78,7 @@ class SDICT(dict):
         except KeyError:
             logging.critical("Wrong key %s looked up in dict %r", name, self)
             return "<UNKNOWN>"
-        
+
     ''' obsolete
     def SDICT(**kwargs):
         import collections
@@ -88,18 +88,18 @@ class SDICT(dict):
             mydict[name] = value # we mimic the normal dict constructor
         return mydict
     '''
-       
+
 
 def monkey_patch_django_zodb_parser():
     import django_zodb.utils, django_zodb.config, django_zodb.tests.test_utils
     from django_zodb.utils import parse_uri as original_parse_uri
-    
+
     def fixed_parse_uri(uri):
         # HACK to make it work for windows file paths !!
         if uri.startswith("file://"):
             return dict(scheme="file", path=uri[len("file://"):])
         return original_parse_uri(uri)
-    
+
     # injection of fixed uri parser
     django_zodb.utils.parse_uri = fixed_parse_uri
     django_zodb.config.parse_uri = fixed_parse_uri
@@ -113,7 +113,7 @@ def open_zodb_file(zodb_file):
     db = database.get_database_from_uris([URI])
     return db
 
- 
+
 def convert_object_tree(tree, type_mapping):
     """
     Recursively transform a tree of objects (lists, dicts, instances...)
@@ -194,16 +194,16 @@ def string_similarity(first, second):
     for i in range(first_length):
         distance_matrix[i][0] = i
     for j in range(second_length):
-        distance_matrix[0][j]=j
+        distance_matrix[0][j] = j
     for i in xrange(1, first_length):
         for j in range(1, second_length):
-            deletion = distance_matrix[i-1][j] + 1
-            insertion = distance_matrix[i][j-1] + 1
-            substitution = distance_matrix[i-1][j-1]
-            if first[i-1] != second[j-1]:
+            deletion = distance_matrix[i - 1][j] + 1
+            insertion = distance_matrix[i][j - 1] + 1
+            substitution = distance_matrix[i - 1][j - 1]
+            if first[i - 1] != second[j - 1]:
                 substitution += 1
             distance_matrix[i][j] = min(insertion, deletion, substitution)
-    return distance_matrix[first_length-1][second_length-1]
+    return distance_matrix[first_length - 1][second_length - 1]
 
 
 def sanitize_query_dict(query_dict):
@@ -219,9 +219,9 @@ def sanitize_query_dict(query_dict):
             query_dict[new_key] = query_dict.getlist(key)
             del query_dict[key]
     #print ("NE QUERY DICT", query_dict)
-    return query_dict    
+    return query_dict
 
- 
+
 def adapt_parameters_to_func(all_parameters, func):
     """
     Strips unwanted parameters in a dict of parameters (eg. obtained via GET or POST),
@@ -229,11 +229,11 @@ def adapt_parameters_to_func(all_parameters, func):
 
     Returns a dict of relevant parameters, or raises common signature exceptions.
     """
-    
+
 
     (args, varargs, keywords, defaults) = inspect.getargspec(func)
     print("########", func, all_parameters, args)
-    
+
     if keywords is not None:
         relevant_args = all_parameters # exceeding args will be handled properly
     else:
@@ -255,7 +255,7 @@ def adapt_parameters_to_func(all_parameters, func):
 def check_no_duplicates(value):
     usage_assert(len(set(value)) == len(value), value)
     return True
-    
+
 def check_is_range_or_num(value):
     if isinstance(value, (int, long, float)):
         pass # nothing to check
@@ -273,7 +273,7 @@ def check_is_lazy_object(value):
 
 def check_is_string(value, multiline=True):
     usage_assert(isinstance(value, basestring) and value, value)
-    if not multiline: 
+    if not multiline:
         usage_assert("\n" not in value)
     return True
 
@@ -313,8 +313,8 @@ def check_has_keys(value, keys, strict=False):
         usage_assert(len(actual_keys) == len(keys))
     for key in keys:
         usage_assert(key in actual_keys)
-    
-    
+
+
 def check_num_keys(value, num):
     usage_assert(len(value.keys()) == num, (value, num))
     return True
@@ -345,22 +345,33 @@ def check_is_game_file(*paths_elements):
 def is_email(email):
     return email_re.match(email)
 
-def assert_sets_equal(set1, set2):
 
-    # in case they are lists
-    set1 = set(set1)
-    set2 = set(set2)
+def _make_elements_hashable(sequence):
+    # mass conversion here, eg. for gems that are sequences of unhashable lists
+    return [tuple(i) if isinstance(i, (list, PersistentList)) else i for i in sequence]
 
-    exceeding_keys1 = set1 - set2
+def _compare_container(a, b):
+    exceeding_keys1 = a - b
     if exceeding_keys1:
-        raise ValueError("Exceeding keys in first set: %r" % repr(exceeding_keys1))
+        raise ValueError("Exceeding keys in first container: %r" % repr(exceeding_keys1))
 
-    exceeding_keys2 = set2 - set1
+    exceeding_keys2 = b - a
     if exceeding_keys2:
-        raise ValueError("Exceeding keys in second set: %r" % repr(exceeding_keys2))
+        raise ValueError("Exceeding keys in second container: %r" % repr(exceeding_keys2))
 
-    usage_assert(set1 == set2) # else major coding error
+    usage_assert(a == b) # else major coding error
     return True
+
+
+def assert_counters_equal(list1, list2):
+    c1 = Counter(_make_elements_hashable(list1))
+    c2 = Counter(_make_elements_hashable(list2))
+    return _compare_container(c1, c2)
+
+def assert_sets_equal(set1, set2):
+    set1 = set(_make_elements_hashable(set1))
+    set2 = set(_make_elements_hashable(set2))
+    return _compare_container(set1, set2)
 
 
 def validate_value(value, validator):
@@ -395,7 +406,7 @@ def load_yaml_file(yaml_file):
     for (lineno, linestr) in enumerate(raw_data.split(b"\n"), start=1):
         if b"\t" in linestr:
             raise ValueError("Forbidden tabulation found at line %d in yaml file %s : '%r'!" % (lineno, yaml_file, linestr))
-    
+
     data = yaml.load(raw_data)
     return data
 
@@ -406,7 +417,7 @@ def load_yaml_fixture(yaml_fixture):
     Can load a single yaml file, or a directory containing y[a]ml files.
     Each file must only contain a single yaml document.
     """
-    
+
     if not os.path.exists(yaml_fixture):
         raise ValueError(yaml_fixture)
     if os.path.isfile(yaml_fixture):
@@ -424,10 +435,10 @@ def load_yaml_fixture(yaml_fixture):
             for key, value in part.items():
                 data.update(part)
     return data
-    
 
 
-    
+
+
 
 
 
@@ -488,7 +499,7 @@ def make_bi_usage_decorator(decorator):
     """
     def bidecorator(object=None, **kwargs):
         factory = lambda x: decorator(x, **kwargs)
-        if object: 
+        if object:
             return factory(object)
         return factory
     return bidecorator

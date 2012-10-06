@@ -12,7 +12,7 @@ class TranslationForm(AbstractGameForm):
         super(TranslationForm, self).__init__(ability, *args, **kwargs)
 
         _translatable_items_ids = ability.get_translatable_items().keys()
-        _translatable_items_pretty_names = [ability.get_items_for_sale()[item_name]["title"] for item_name in _translatable_items_ids]
+        _translatable_items_pretty_names = [ability.get_all_items()[item_name]["title"] for item_name in _translatable_items_ids]
         _translatable_items_choices = zip(_translatable_items_ids, _translatable_items_pretty_names)
         _translatable_items_choices.sort(key=lambda double: double[1])
 
@@ -236,7 +236,7 @@ class RunicTranslationAbility(AbstractAbility):
         for (name, properties) in references.items():
             if strict:
                 utilities.check_num_keys(properties, 2)
-            assert name in self.get_items_for_sale().keys(), name
+            assert name in self.get_all_items().keys(), name
             utilities.check_is_string(properties["decoding"])
             utilities.check_is_string(properties["translation"])
             assert self._build_translation_dictionary(properties["decoding"], properties["translation"]) # we ensure tokens are well matching

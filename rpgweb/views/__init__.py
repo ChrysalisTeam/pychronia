@@ -20,7 +20,6 @@ from django.template import RequestContext
 from django.utils.html import escape
 from django.utils.translation import ugettext as _, ugettext_lazy as _lazy, ungettext
 
-from ..common import *
 from .. import forms
 from ._abstract_game_view import register_view
 from ..authentication import authenticate_with_credentials, logout_session
@@ -28,7 +27,7 @@ from .. import datamanager as dm_module
 from rpgweb.utilities import mediaplayers, fileservers
 from rpgweb.datamanager import GameDataManager
 from django.shortcuts import render
-from rpgweb.common import game_file_url, UsageError
+from rpgweb.common import *
 from decorator import decorator
 
 
@@ -950,7 +949,7 @@ def view_sales(request, template_name='generic_operations/view_sales.html'):
 
 
     # IMPORTANT - we copy, so that we can modify the object without changing DBs !
-    items_for_sales = copy.deepcopy(request.datamanager.get_items_for_sale())
+    items_for_sales = copy.deepcopy(request.datamanager.get_auction_items())
 
     # we inject the official name of object owner
     for item in items_for_sales.values():
@@ -1628,7 +1627,7 @@ def contact_djinns(request, template_name='specific_operations/contact_djinns.ht
     else:
         domain = request.datamanager.get_character_properties(user.username)["domain"]
         available_bots = [bot_name for bot_name in bots_properties.keys() if request.datamanager.is_bot_accessible(bot_name, domain)]
-        team_gems = request.datamanager.get_team_gems_count(domain)
+        #team_gems = request.datamanager.get_team_gems_count(domain)
 
     if available_bots:
         djinn_form = forms.DjinnContactForm(available_bots)
@@ -1644,7 +1643,7 @@ def contact_djinns(request, template_name='specific_operations/contact_djinns.ht
                      'page_title': _("Shrine of Oracles"),
                      'djinn_form': djinn_form,
                      'all_bots': all_bots,
-                     'team_gems': team_gems,
+                     #'team_gems': team_gems,
                      'bots_max_answers': request.datamanager.get_global_parameter("bots_max_answers")
                     })
 

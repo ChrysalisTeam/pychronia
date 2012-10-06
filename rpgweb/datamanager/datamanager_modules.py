@@ -2274,7 +2274,10 @@ class PersonalFiles(BaseDataManager):
 @register_module
 class MoneyItemsOwnership(BaseDataManager):
 
+    # FIXME - fix forms containing gems, now (value, origin) tuples
 
+    def _compute_gems_unit_cost(self, total_cost, num_gems):
+        return int(math.ceil(float(total_cost / num_gems)))
 
     def _load_initial_data(self, **kwargs):
         super(MoneyItemsOwnership, self)._load_initial_data(**kwargs)
@@ -2293,11 +2296,11 @@ class MoneyItemsOwnership(BaseDataManager):
             character["account"] = character.get("account", 0)
             character["gems"] = character.get("gems", [])
 
-            total_gems += character["gems"]
+            total_gems += [i[0] for i in character["gems"]]
             total_digital_money += character["account"]
 
         for (name, properties) in game_data["game_items"].items():
-            properties['unit_cost'] = int(math.ceil(float(properties['total_price']) / properties['num_items']))
+            properties['unit_cost'] = self._compute_gems_unit_cost(total_cost=properties['total_price'], num_gems=properties['num_items'])
             properties['owner'] = properties.get('owner', None)
 
             if properties["is_gem"] and not properties['owner']: # we dont recount gems appearing in character["gems"]
@@ -2328,8 +2331,17 @@ class MoneyItemsOwnership(BaseDataManager):
                 assert city in game_data["locations"].keys(), "Wrong city : %s" % city
 
         for (name, character) in game_data["character_properties"].items():
+            utilities.check_is_positive_int(character["account"], non_zero=False)
             total_digital_money += character["account"]
-            total_gems += character["gems"]
+
+            for gem in character["gems"]:
+                assert isinstance(gem, PersistentList) # NOT tuples, because yaml doesn't like them
+                (gem_value, gem_origin) = gem
+                utilities.check_is_positive_int(gem_value)
+                if gem_origin is not None:
+                    assert gem_origin in game_data["game_items"]
+                    assert game_data["game_items"][gem_origin]["is_gem"]
+                total_gems.append(gem_value)
             #print ("---------", name, total_gems.count(500))
 
         assert game_data["game_items"]
@@ -2340,7 +2352,7 @@ class MoneyItemsOwnership(BaseDataManager):
             assert utilities.check_is_positive_int(properties['num_items'])
             assert utilities.check_is_positive_int(properties['total_price'])
             assert utilities.check_is_positive_int(properties['unit_cost'])
-
+            assert properties['unit_cost'] == self._compute_gems_unit_cost(total_cost=properties['total_price'], num_gems=properties['num_items'])
             assert properties['locations'] in game_data["scanning_sets"].keys()
 
             assert properties['owner'] is None or properties['owner'] in game_data["character_properties"].keys()
@@ -2348,7 +2360,9 @@ class MoneyItemsOwnership(BaseDataManager):
             assert isinstance(properties['title'], basestring) and properties['title']
             assert isinstance(properties['comments'], basestring) and properties['comments']
             assert isinstance(properties['image'], basestring) and properties['image']
-            assert isinstance(properties['auction'], basestring) and properties['auction']
+
+            # item might be out of auction
+            assert properties['auction'] is None or isinstance(properties['auction'], basestring) and properties['auction']
 
             if properties["is_gem"] and not properties["owner"]:
                 total_gems += [properties['unit_cost']] * properties["num_items"]
@@ -2362,15 +2376,19 @@ class MoneyItemsOwnership(BaseDataManager):
         assert old_total_digital_money == total_digital_money, "%s != %s" % (old_total_digital_money, total_digital_money)
 
 
+    @readonly_method
+    def get_all_items(self):
+        return self.data["game_items"]
 
     @readonly_method
-    def get_items_for_sale(self):
-        return self.data["game_items"]
+    def get_auction_items(self):
+        return {key: value for (key, value) in self.data["game_items"] if value["is_auction"]}
 
     @readonly_method
     def get_item_properties(self, item_name):
         return self.data["game_items"][item_name]
 
+    """ DEPRECATED
     @readonly_method
     def get_team_gems_count(self, domain):
         total_gems = 0
@@ -2378,7 +2396,7 @@ class MoneyItemsOwnership(BaseDataManager):
             if props["domain"] == domain:
                 total_gems += len(props["gems"])
         return total_gems
-
+    """
 
     @transaction_watcher
     def transfer_money_between_characters(self, from_name, to_name, amount):
@@ -2412,26 +2430,65 @@ class MoneyItemsOwnership(BaseDataManager):
                              url=None)
 
 
+    def _get_item_separate_gems(self, item_name):
+        item = self.get_item_properties(item_name)
+        assert item["is_gem"]
+        return [(item["unit_cost"], item_name)] * item["num_items"]
+
+
+    def _free_item_from_character(self, item_name, item):
+        assert self.get_item_properties(item_name) == item
+        assert item["owner"]
+
+        char_name = item["owner"]
+        character = self.data["character_properties"][char_name] # might raise error
+        if item["is_gem"]:
+            # check that all single gems of the pack are still owned
+            gems = self._get_item_separate_gems(item_name)
+            remaining_gems = utilities.substract_lists(character["gems"], gems)
+            if remaining_gems is None:
+                raise UsageError(_("Impossible to free item, some gems from this package have already been used"))
+            character["gems"] = remaining_gems
+        item["owner"] = None
+
+    def _assign_free_item_to_character(self, item_name, item, char_name):
+        assert self.get_item_properties(item_name) == item
+        assert item["owner"] is None
+        character = self.data["character_properties"][char_name] # might raise error
+        if item["is_gem"]:
+            gems = self._get_item_separate_gems(item_name)
+            character["gems"] += gems # we add each gem separately, along with its reference
+        item["owner"] = char_name
+
+
+
     @transaction_watcher
     def transfer_object_to_character(self, item_name, char_name):
-        # only admin may do that
+        """
+        Item might be free or not, and char_name may be a character 
+        or None (i.e no more owner for the item).
+        
+        """
 
-        obj = self.get_item_properties(item_name)
+        item = self.get_item_properties(item_name)
+        from_name = item["owner"] if item["owner"] else _("no one") # must be done IMMEDIATELY
+        to_name = char_name if char_name else _("no one") # must be done IMMEDIATELY
 
-        if obj["owner"]:
-            raise UsageError(_("%(item_name)s has already been sold to %(char_name)s !") % SDICT(item_name=item_name,
-                                                                                                 char_name=char_name))
+        if item["owner"] == char_name:
+            raise NormalUsageError(_("Impossible to have same origin and destination for item transfer"))
 
-        character = self.data["character_properties"][char_name] # might raise error
+        if item["owner"]:
+            self._free_item(item_name, item)
 
-        character["items"].append(item_name)
-        if obj["is_gem"]: # pack of gems
-            character["gems"] += [obj["unit_cost"]] * obj["num_items"] # we add each gem separately
-        obj["owner"] = char_name
+        if char_name:
+            self._assign_free_item_to_character(item_name=item_name, item=item, char_name=char_name)
 
-        # todo - logging here ??
+        self.log_game_event(_noop("Item %(item_name)s transferred from %(from_name)s to %(char_name)s."),
+                             PersistentDict(item_name=item_name, from_name=from_name, char_name=char_name),
+                             url=None)
 
 
+    ''' DEPRECATED
     @transaction_watcher
     def undo_object_transfer(self, item_name, char_name):
         obj = self.get_item_properties(item_name)
@@ -2457,20 +2514,20 @@ class MoneyItemsOwnership(BaseDataManager):
         self.data["game_items"][item_name]["owner"] = None # we reset the owner tag of the object
 
         # todo - logging here ??
-
+        '''
 
 
     @readonly_method
     def get_available_items_for_user(self, username):
         if username is None or self.is_master(username):
-            available_items = self.get_items_for_sale()
+            available_items = self.get_all_items()
         else:
             all_sharing_users = [username] # FIXME - which objects should we include?
             # user_domain = self.get_character_properties(username)["domain"]
             # all_domain_users = [name for (name, value) in self.get_character_sets().items() if
             #                    value["domain"] == user_domain]
             available_items = PersistentDict([(name, value) for (name, value)
-                                              in self.get_items_for_sale().items()
+                                              in self.get_all_items().items()
                                               if value['owner'] in all_sharing_users])
         return available_items
 
@@ -2492,9 +2549,9 @@ class MoneyItemsOwnership(BaseDataManager):
 
         if remaining_gems is None:
             raise UsageError(_("You don't possess the gems required"))
-        else:
-            sender_char["gems"] = remaining_gems
-            recipient_char["gems"] += gems_choices
+
+        sender_char["gems"] = remaining_gems
+        recipient_char["gems"] += gems_choices
 
         self.log_game_event(_noop("Gems transferred from %(from_name)s to %(to_name)s : %(gems_choices)s."),
                              PersistentDict(from_name=from_name, to_name=to_name, gems_choices=gems_choices),

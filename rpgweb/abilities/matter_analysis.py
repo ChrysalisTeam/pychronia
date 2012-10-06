@@ -87,7 +87,7 @@ class MatterAnalysisAbility(AbstractAbility):
         settings = self.settings
 
         def reports_checker(reports):
-            assert set(reports.keys()) == set(self.get_items_for_sale().keys())
+            assert set(reports.keys()) == set(self.get_all_items().keys())
             for body in reports.values():
                 utilities.check_is_restructuredtext(body)
             return True
