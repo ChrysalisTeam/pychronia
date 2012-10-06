@@ -2295,6 +2295,7 @@ class MoneyItemsOwnership(BaseDataManager):
             character["items"] = character.get("items", [])
             character["account"] = character.get("account", 0)
             character["gems"] = character.get("gems", [])
+            character["gems"] = [tuple(i) for i in character["gems"]]
 
             total_gems += [i[0] for i in character["gems"]]
             total_digital_money += character["account"]
@@ -2335,7 +2336,7 @@ class MoneyItemsOwnership(BaseDataManager):
             total_digital_money += character["account"]
 
             for gem in character["gems"]:
-                assert isinstance(gem, PersistentList) # NOT tuples, because yaml doesn't like them
+                assert isinstance(gem, tuple) # must be hashable!!
                 (gem_value, gem_origin) = gem
                 utilities.check_is_positive_int(gem_value)
                 if gem_origin is not None:
@@ -2433,7 +2434,7 @@ class MoneyItemsOwnership(BaseDataManager):
     def _get_item_separate_gems(self, item_name):
         item = self.get_item_properties(item_name)
         assert item["is_gem"]
-        return [(item["unit_cost"], item_name)] * item["num_items"]
+        return [(item["unit_cost"], item_name)] * item["num_items"] # tuples!
 
 
     def _free_item_from_character(self, item_name, item):
