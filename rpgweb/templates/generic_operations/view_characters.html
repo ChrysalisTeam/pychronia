@@ -62,7 +62,7 @@
 		    	</td>
 		    	
 		    	<td class="bigtext">
-		    		{% for item_name in char_details.items %} 
+		    		{% for item_name in char_details.user_items %} # FIXME FIXME
 		    			<img class="minithumbnail" title="{{ item_name }}" src="{% game_file_url "sales/" item_name ".jpg" %}"/><br/>
 		    		{% empty %}
 		    			{% trans "None" %}

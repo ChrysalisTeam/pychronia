@@ -780,7 +780,7 @@ def view_characters(request, template_name='generic_operations/view_characters.h
         else:
             # FIXME, bugged
             available_gems = request.datamanager.get_character_properties(user.username)["gems"]
-        gems_choices = zip([i[0] for i in available_gems], [_("Gem of %s Kashes") % str(available_gem) for available_gem in available_gems])
+        gems_choices = zip([str(i[0]) for i in available_gems], [_("Gem of %s Kashes") % str(available_gem) for available_gem in available_gems])
         return gems_choices
 
 

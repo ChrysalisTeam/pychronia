@@ -626,12 +626,13 @@ class TestDatamanager(BaseGameTestCase):
         object_name = object_names[0]
         bank_name = self.dm.get_global_parameter("bank_name")
 
-        self.assertRaises(Exception, self.dm.transfer_money_between_characters, bank_name, "guy1", 10000000)
-        self.assertRaises(Exception, self.dm.transfer_money_between_characters, "guy3", "guy1", -100)
-        self.assertRaises(Exception, self.dm.transfer_money_between_characters, "guy3", "guy1", lg_old["account"] + 1)
-        self.assertRaises(Exception, self.dm.transfer_money_between_characters, "guy3", "guy3", 1)
-        self.assertRaises(Exception, self.dm.transfer_object_to_character, "dummy_name", "guy3")
-        self.assertRaises(Exception, self.dm.transfer_object_to_character, object_name, "dummy_name")
+        self.assertRaises(UsageError, self.dm.transfer_money_between_characters, bank_name, "guy1", 10000000)
+        self.assertRaises(UsageError, self.dm.transfer_money_between_characters, "guy3", "guy1", -100)
+        self.assertRaises(UsageError, self.dm.transfer_money_between_characters, "guy3", "guy1", 0)
+        self.assertRaises(UsageError, self.dm.transfer_money_between_characters, "guy3", "guy1", lg_old["account"] + 1) # too much
+        self.assertRaises(UsageError, self.dm.transfer_money_between_characters, "guy3", "guy3", 1) # same ids
+        self.assertRaises(UsageError, self.dm.transfer_object_to_character, "dummy_name", "guy3") # shall NOT happen
+        self.assertRaises(UsageError, self.dm.transfer_object_to_character, object_name, "dummy_name")
 
 
         # data mustn't have changed when raising exceptions
@@ -651,18 +652,19 @@ class TestDatamanager(BaseGameTestCase):
         self.dm.transfer_money_between_characters("bank", "guy3", 100)
         self.assertEqual(self.dm.get_global_parameter("bank_account"), bank_old)
 
-        # we test gems transfers
+        # we fully test gems transfers
         gems_given = self.dm.get_character_properties("guy3")["gems"][0:3]
         self.dm.transfer_gems_between_characters("guy3", "guy1", gems_given)
         self.dm.transfer_gems_between_characters("guy1", "guy3", gems_given)
-        self.assertRaises(Exception, self.dm.transfer_gems_between_characters, "guy3", "guy1", gems_given + [27, 32])
-        self.assertRaises(Exception, self.dm.transfer_gems_between_characters, "guy3", "guy1", [])
+        self.assertRaises(UsageError, self.dm.transfer_gems_between_characters, "guy3", "guy3", gems_given) # same ids
+        self.assertRaises(UsageError, self.dm.transfer_gems_between_characters, "guy3", "guy1", gems_given + [27, 32]) # not possessed
+        self.assertRaises(UsageError, self.dm.transfer_gems_between_characters, "guy3", "guy1", []) # at least 1 gem needed
 
         items_new = copy.deepcopy(self.dm.get_all_items())
         lg_new = self.dm.get_character_properties("guy3")
         nw_new = self.dm.get_character_properties("guy1")
-        self.assertEqual(lg_new["items"], [gem_name1, object_name])
-        self.assertEqual(lg_new["gems"], [items_new[gem_name1]["unit_cost"]] * items_new[gem_name1]["num_items"])
+        assert set(self.dm.get_available_items_for_user("guy3").keys()) == set([gem_name1, object_name])
+        self.assertEqual(lg_new["gems"], [(items_new[gem_name1]["unit_cost"], gem_name1)] * items_new[gem_name1]["num_items"])
         self.assertEqual(items_new[gem_name1]["owner"], "guy3")
         self.assertEqual(items_new[object_name]["owner"], "guy3")
         self.assertEqual(lg_new["account"], lg_old["account"] - 100)
@@ -671,8 +673,7 @@ class TestDatamanager(BaseGameTestCase):
 
         # we test possible and impossible undo operations
 
-        self.assertRaises(Exception, self.dm.undo_object_transfer, gem_name1, "network") # bad owner
-        self.assertRaises(Exception, self.dm.undo_object_transfer, gem_name2, "guy3") # unsold item
+        self.assertRaises(Exception, self.dm.transfer_object_to_character, gem_name2, None) # already free item
 
         # check no changes occured
         self.assertEqual(self.dm.get_character_properties("guy3"), self.dm.get_character_properties("guy3"))
@@ -680,8 +681,9 @@ class TestDatamanager(BaseGameTestCase):
         self.assertEqual(self.dm.get_all_items(), items_new)
 
         # undoing item sales
-        self.dm.undo_object_transfer(gem_name1, "guy3")
-        self.dm.undo_object_transfer(object_name, "guy3")
+        self.assertRaises(Exception, self.dm.transfer_object_to_character, gem_name1, "guy3")  # same current owner and target
+        self.dm.transfer_object_to_character(gem_name1, None)
+        self.dm.transfer_object_to_character(object_name, None)
         self.dm.transfer_money_between_characters("guy1", "guy3", 100)
 
         # we're back to initial state
@@ -693,10 +695,10 @@ class TestDatamanager(BaseGameTestCase):
         self.dm.transfer_object_to_character(gem_name1, "guy3")
         gem = self.dm.get_character_properties("guy3")["gems"].pop()
         self.dm.commit()
-        self.assertRaises(Exception, self.dm.undo_object_transfer, gem_name1, "guy3") # one gem is lacking, so...
+        self.assertRaises(UsageError, self.dm.transfer_object_to_character, gem_name1, random.choice(("guy1", None))) # one gem is lacking, so...
         self.dm.get_character_properties("guy3")["gems"].append(gem)
         self.dm.commit()
-        self.dm.undo_object_transfer(gem_name1, "guy3")
+        self.dm.transfer_object_to_character(gem_name1, random.choice(("guy1", None)))
 
         self.assertEqual(self.dm.get_character_properties("guy3"), lg_old)
         self.assertEqual(self.dm.get_character_properties("guy1"), nw_old)

@@ -243,7 +243,9 @@ class CharacterHandling(BaseDataManager): # TODO REFINE
     def get_character_properties(self, username):
         # for normal characters only
         try:
-            return self.data["character_properties"][username]
+            res = self.data["character_properties"][username] #.copy()
+            #res["items"] = [] # FIXME !!!!
+            return res
         except KeyError:
             raise UsageError(_("Unknown username %s") % username)
 
@@ -2292,7 +2294,6 @@ class MoneyItemsOwnership(BaseDataManager):
         total_gems = game_data["global_parameters"]["spent_gems"][:] # COPY
 
         for (name, character) in game_data["character_properties"].items():
-            character["items"] = character.get("items", [])
             character["account"] = character.get("account", 0)
             character["gems"] = character.get("gems", [])
             character["gems"] = [tuple(i) for i in character["gems"]]
@@ -2388,8 +2389,10 @@ class MoneyItemsOwnership(BaseDataManager):
 
     @readonly_method
     def get_item_properties(self, item_name):
-        return self.data["game_items"][item_name]
-
+        try:
+            return self.data["game_items"][item_name]
+        except KeyError:
+            raise UsageError(_("Unknown item %s") % item_name)
     """ DEPRECATED
     @readonly_method
     def get_team_gems_count(self, domain):
@@ -2416,7 +2419,7 @@ class MoneyItemsOwnership(BaseDataManager):
                 raise UsageError(_("Bank doesn't have enough money available"))
             self.data["global_parameters"]["bank_account"] -= amount
         else:
-            from_char = self.data["character_properties"][from_name] # may raise key error
+            from_char = self.get_character_properties(from_name)
             if from_char["account"] < amount:
                 raise UsageError(_("Sender doesn't have enough money"))
             from_char["account"] -= amount
@@ -2424,7 +2427,7 @@ class MoneyItemsOwnership(BaseDataManager):
         if to_name == bank_name: # special case
             self.data["global_parameters"]["bank_account"] += amount
         else:
-            to_char = self.data["character_properties"][to_name] # may raise key error
+            to_char = self.get_character_properties(to_name)
             to_char["account"] += amount
 
         self.log_game_event(_noop("Bank operation: %(amount)s kashes transferred from %(from_name)s to %(to_name)s."),
@@ -2443,7 +2446,7 @@ class MoneyItemsOwnership(BaseDataManager):
         assert item["owner"]
 
         char_name = item["owner"]
-        character = self.data["character_properties"][char_name] # might raise error
+        character = self.get_character_properties(char_name)
         if item["is_gem"]:
             # check that all single gems of the pack are still owned
             gems = self._get_item_separate_gems(item_name)
@@ -2456,7 +2459,7 @@ class MoneyItemsOwnership(BaseDataManager):
     def _assign_free_item_to_character(self, item_name, item, char_name):
         assert self.get_item_properties(item_name) == item
         assert item["owner"] is None
-        character = self.data["character_properties"][char_name] # might raise error
+        character = self.get_character_properties(char_name)
         if item["is_gem"]:
             gems = self._get_item_separate_gems(item_name)
             character["gems"] += gems # we add each gem separately, along with its reference
@@ -2480,7 +2483,7 @@ class MoneyItemsOwnership(BaseDataManager):
             raise NormalUsageError(_("Impossible to have same origin and destination for item transfer"))
 
         if item["owner"]:
-            self._free_item(item_name, item)
+            self._free_item_from_character(item_name, item)
 
         if char_name:
             self._assign_free_item_to_character(item_name=item_name, item=item, char_name=char_name)
