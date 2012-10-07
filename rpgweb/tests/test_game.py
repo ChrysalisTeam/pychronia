@@ -698,7 +698,7 @@ class TestDatamanager(BaseGameTestCase):
         self.assertRaises(UsageError, self.dm.transfer_object_to_character, gem_name1, random.choice(("guy1", None))) # one gem is lacking, so...
         self.dm.get_character_properties("guy3")["gems"].append(gem)
         self.dm.commit()
-        self.dm.transfer_object_to_character(gem_name1, random.choice(("guy1", None)))
+        self.dm.transfer_object_to_character(gem_name1, None)
 
         self.assertEqual(self.dm.get_character_properties("guy3"), lg_old)
         self.assertEqual(self.dm.get_character_properties("guy1"), nw_old)
