@@ -673,7 +673,7 @@ class TestDatamanager(BaseGameTestCase):
 
         # we test possible and impossible undo operations
 
-        self.assertRaises(Exception, self.dm.transfer_object_to_character, gem_name2, None) # already free item
+        self.assertRaises(Exception, self.dm.transfer_object_to_character, gem_name2, None) # same ids - already free item
 
         # check no changes occured
         self.assertEqual(self.dm.get_character_properties("guy3"), self.dm.get_character_properties("guy3"))
@@ -681,9 +681,12 @@ class TestDatamanager(BaseGameTestCase):
         self.assertEqual(self.dm.get_all_items(), items_new)
 
         # undoing item sales
-        self.assertRaises(Exception, self.dm.transfer_object_to_character, gem_name1, "guy3")  # same current owner and target
+        self.assertRaises(Exception, self.dm.transfer_object_to_character, gem_name1, "guy3")  # same ids - same current owner and target
         self.dm.transfer_object_to_character(gem_name1, None)
         self.dm.transfer_object_to_character(object_name, None)
+        items_new = copy.deepcopy(self.dm.get_all_items())
+        self.assertEqual(items_new[gem_name1]["owner"], None)
+        self.assertEqual(items_new[object_name]["owner"], None)
         self.dm.transfer_money_between_characters("guy1", "guy3", 100)
 
         # we're back to initial state
@@ -695,7 +698,10 @@ class TestDatamanager(BaseGameTestCase):
         self.dm.transfer_object_to_character(gem_name1, "guy3")
         gem = self.dm.get_character_properties("guy3")["gems"].pop()
         self.dm.commit()
-        self.assertRaises(UsageError, self.dm.transfer_object_to_character, gem_name1, random.choice(("guy1", None))) # one gem is lacking, so...
+        with pytest.raises(UsageError) as exc_info:
+            self.dm.transfer_object_to_character(gem_name1, random.choice(("guy1", None))) # one gem is lacking, so...
+        assert "already been used" in str(exc_info.value)
+
         self.dm.get_character_properties("guy3")["gems"].append(gem)
         self.dm.commit()
         self.dm.transfer_object_to_character(gem_name1, None)
