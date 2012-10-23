@@ -1,6 +1,11 @@
 /* Allow customisation */
 
-
+body {
+    color: #333;
+}
+.slide {
+    color: #555;
+}
 
 ul {
     line-height: 130%;
