@@ -19,7 +19,7 @@ Le Jeu de Rôle High-Tech dont Vous êtes le Maître
 Ma Vie à Moi
 =================
 
-- Pascal Chambon
+- Pascal Chambon, IDF
 - Consultant informatique freelance (Prolifik SARL)
 - Python-Evangelist, Bash/C++/Java/PHP/MySQL...
 - Nourri au Web (Lolcats, Pérusse, *Memes* divers...)
@@ -54,7 +54,7 @@ Le premier **I3RPG** au monde ?
 
 
    
-Mécaniques de jeu
+Mécaniques de Jeu
 ====================
 
 - Scénario avec de nombreuses quêtes et interactions:: 
@@ -141,7 +141,7 @@ Fonctionnalités Web (ter)
 - ...
 
   
-Points forts
+Points Forts
 ==============
 
 - 100% gratuit & code open-source
@@ -151,9 +151,9 @@ Points forts
    :height: 410
    :align: right
    
+- technos python/django/zodb/jquery...
 - cinématiques (réelles + 3D)
 - artworks 2D, 3D, vidéo, et musicaux
-- technos python/django/zodb/jquery...
 - intelligences artificielles
 - synthèse vocale/musicale
 - images interactives
@@ -256,11 +256,12 @@ Le Futur (bis)
 Questions ?
 ===============
 
-.. image:: static\sphere.jpg
-   :width: 700
-   :height: 400
-   :align: center
 
+
+.. raw:: html
+
+    <iframe width="100%" height="80%" src="file:///P:/Websites/rpgweb/doc/silk/Silk.htm"></iframe> 
+    
 ..
    
         **1000 mercis pour votre attention !**
