@@ -1,0 +1,199 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<!-- Mirrored from chrysalis.prolifik.net/recrutement/ by HTTrack Website Copier/3.x [XR&CO'2010], Mon, 22 Oct 2012 20:40:09 GMT -->
+<!-- Added by HTTrack --><meta http-equiv="content-type" content="text/html;charset=utf-8" /><!-- /Added by HTTrack -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Bienvenue sur la vitrine du Projet Chrysalis</title>
+<meta name="keywords" content="free css template, projection, company, web design, dark green, gradient" />
+<meta name="description" content="Projection Company - Free CSS Template, W3C standards-compliant HTML CSS layout" />
+<link href="../static/Projection152/templatemo_style.css" rel="stylesheet" type="text/css" />
+<link rel="shortcut icon" type="image/png" href="../static/favicon.png" />
+
+
+
+<link href="../static/jquery.fancybox.css" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" media="screen" type="text/css" href="../static/colorpicker/css/colorpicker.css" />
+<link rel="stylesheet" media="screen" type="text/css" href="../static/colorpicker/css/layout.css" />
+
+
+
+<script src="../static/jquery-1.7.1.min.js" type="text/javascript"></script>
+<script src="../static/jquery.fancybox.js" type="text/javascript"></script>
+<script src="../static/jquery.globalstylesheet.js" type="text/javascript"></script>
+<script src="../static/colorpicker/js/colorpicker.js" type="text/javascript"></script>
+<script src="../static/jquery.cookie.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+function isHexaColor(sNum){
+    return (typeof sNum === "string") && sNum.length === 6 
+           && ! isNaN( parseInt(sNum, 16) );
+}
+
+var initial_color = $.cookie("textcolor");
+if (!isHexaColor(initial_color)){
+    initial_color = "dcedea"; // mid-green 
+}
+$("p, li").globalcss("color", '#' + initial_color); // immediate!!
+
+$(document).ready(function() {
+	    
+	                          var update_color = function(hsb, hex, rgb) {
+                                  $('#colorSelector div').css('backgroundColor', '#' + hex);
+                                  $("p, li").globalcss("color", '#' + hex);
+                                  $.cookie("textcolor", hex, { path: '/' }); // full-domain, expires at browser closing path: '/' 
+                                  //console.log(hex);
+                                  //console.log(document.cookie);
+                              }
+	                          
+                              update_color(null, initial_color, null);
+                              
+                              $('#colorSelector').ColorPicker({
+                            	  
+                            	    color: initial_color,
+                            	    livePreview: true,
+                            	    flat: false,
+                            	    
+                            	    onShow: function (colpkr) {
+                            	        $(colpkr).fadeIn(500);
+                            	        return false;
+                            	    },
+                            	    onHide: function (colpkr) {
+                            	        $(colpkr).fadeOut(500);
+                            	        return false;
+                            	    },
+                            	    onChange: update_color,
+                            	});
+                              
+                              });
+</script>
+
+
+</head>
+<body>
+    
+	<div class="templatemo_container">
+    	<div id="templatemo_header">
+        	<div id="templatemo_logo_area">
+            	<div id="templatemo_logo_left">
+                &nbsp;
+                </div>
+                <div id="templatemo_logo">
+                    <img src="../static/Projection152/images/logo-chrysalis-big.png"/>
+                	<!--Projet Chrysalis-->
+                </div>
+                <div id="templatemo_logo_right">
+                &nbsp;
+                </div>
+			</div>
+        
+        </div>
+        <div id="templatemo_top_section">
+       	  <div id="templaetmo_top_section_top">
+          	<div id="templatemo_top_section_glow">
+          	    <div id="colorSelector" style="float: right; margin-right: 170px;">
+                    <div style="background-color: #000"></div>
+                </div>
+                
+            	<div id="templatemo_menu">
+                    <div id="templatemo_menu_left">&nbsp;</div>
+                    
+                    <ul>
+                    
+
+<li class="sibling">
+	<a href="../index.html">Présentation</a>
+	
+</li>
+
+<li class="sibling">
+	<a href="../historique/index.html">Historique</a>
+	
+</li>
+
+<li class="selected">
+	<a href="index.html">Recrutement</a>
+	
+</li>
+
+<li class="sibling">
+	<a href="../contacts/index.html">Contacts</a>
+	
+</li>
+
+
+                    </ul> 
+		        </div>      
+               
+
+				<br/><p>Chrysalis est maintenant fort d'une équipe d'une dizaine de personnes, assez bien réparties au niveau des compétences. Mais nous sommes toujours à la recherche d'artistes séduits par le concept de ce jeu hybride, et prêts à aider cet univers à s'incarner à travers des oeuvres textuelles, graphiques, cinématiques ou sonores, qui soient originales dans les deux sens du terme. Voici un aperçu des profils créatifs recherchés.</p>
+<div class="section" id="profils-recherches">
+<h1>Profils recherchés</h1>
+<p><strong>Nous recherchons très prioritairement un intégrateur html/css(compétences javascript/jquery bienvenues), afin de transformer en page web le rutilant design Photoshop qui a été créé pour Chrysalis, et d'y ajouter les nombreux effets (gradients, ombres, formulaires personnalisés...) qui le rendront inoubliables.</strong> Cela soulagerait grandement nos troupes déjà engagées sur le scénario et la programmation côté serveur. Donc si des templates comme ceux de <a class="reference external" href="http://gamesitetemplates.com/photoshop-templates/fantasy/medieval/cat_5.html">gamesitetemplates</a> vous font rêver, n'hésitez pas à nous contacter.</p>
+<ul class="simple">
+<li><strong>écriture</strong>: il reste pas mal de contenu à écrire pour les détails des quêtes, des personnages et des lieux qui seront spécifiques à ce jeu, et ces oeuvres littéraires monopolisent des forces qui gagneraient à se concentrer sur le développement web. Donc si vous avez bonne plume, et si possible une certaine expérience du roleplay, vous êtes plus que bienvenu. La géopolitique de l'univers <em>Hystérésis</em>, dans lequel s'inscrit cette aventure est globalement cadrée, mais il reste énormément de liberté aux auteurs pour définir tout le reste.</li>
+<li><strong>graphismes fixes</strong>: l'environnement et le character design de Chrysalis sont globalement mi-manga mi-réaliste, à la Final Fantasy 8 ou 10. Cependant il existe une grande liberté dans les styles d'arts possibles pour les graphismes de ce projet (logos, icônes, artworks, blasons...), de la gravure antique au dessin 3D (un fan de Blender dans le coin ?), en passant par les stéréogrammes et autres étrangetés visuels. Que vous travailliez sur papier, sur tablette graphique, ou dans un logiciel de modélisation, nul doute que l'un des nombreux besoins de Chrysalis excitera votre verve créative.</li>
+<li><strong>graphismes animés</strong>: nous envisageons des tutoriels animés, des reportages fictifs, et autres clips vidéos, pour aider le joueur à découvrir ludiquement l'univers, et mieux marquer les moments forts de l'intrigue. Si l'un ou l'autre veut venir en renfort de notre Padawan d'After Effects pour ce faire, il sera chaleureusement accueilli.</li>
+<li><strong>musique et son</strong>: Nous sommes constamment en recherche de thèmes forts pour porter l'ambiance de Chrysalis. De l'épique, de l'émotionnel, du chevaleresque, du mystique... en vrac: Two Steps From Hell, Immediate Music, Nobuo Uematsu, Motoi Sakuraba, Warcraft II, et plus généralement les OSTs de jeux vidéo. Mais il nous faut aussi de l'ingénierie sonore, entre autres pour assister les cinéastes évoqués ci-dessus dans leurs oeuvres.</li>
+<li><strong>programmation web</strong>: il existe au total deux sites à réaliser, le site fictif servant à héberger les parties, et le portail principal, qui permet aux maîtres du jeu de créer leur propre instance du jeu et de recevoir de l'aide. Donc si un codeur veut profiter des joies de la métaprogrammation python (il faut au moins de bonnes connaissances dans un langage orienté objet style C++, Java ou PHP5), ou des applications django avancées, il trouvera largement son bonheur.</li>
+</ul>
+<p><strong>ATTENTION</strong> - Outre un minimum syndical de compétences dans le domaine créatif choisi (pas le peine de venir si vous ne savez dessiner que des Rage Comics), la seule chose que l'on exige d'un collaborateur de ce projet, c'est qu'il soit <strong>FIABLE</strong>. Il peut ne faire que très peu de choses (un logo, un spot radio de 10s...), mais à partir du moment où il a commencé une oeuvre, il doit la mener à bien, ou avertir tout de suite d'un blocage rencontré (manque de temps, de moyens, de motivation...). Il existe peu de choses pires, pour le moral des troupes, que les quidams qui s'assignent une tâche (et empêchent donc d'autres de la prendre), postent quelques screenshots hyper-excitants de leur travail en cours, puis ne se donnent jamais la peine de finir ou d'envoyer leur création. En résumé: bâtir la moitié de la pyramide à main nue: SUPER, n'y apporter qu'une petite pierre, SYMPA, se contenter d'y lâcher une poignée de sable après 6 mois d'attente: NIET.</p>
+</div>
+<div class="section" id="pourquoi-rejoindre-le-projet-chrysalis">
+<h1>Pourquoi rejoindre le projet Chrysalis ?</h1>
+<p>Outre toutes les raisons communes aux projets artistiques amateurs (apprendre, s'amuser, créer ensemble...), il existe quelques aspects particulièrement propices à ce projet.</p>
+<ul class="simple">
+<li>C'est un concept plutôt novateur : nous n'avons pour notre part jamais croisé de jeu de ce type, qui soit librement instancié et joué par des groupes d'amis, et qui ne tombe ni dans la catégorie du MMORPG à la <em>World of Warcraft</em>, ni dans celle du Roleplay &quot;sur table&quot;.</li>
+<li>Le temps joue en sa faveur. Contrairement à un MMORPG (dont le contenu doit perpétuellement être renouvelé), ou à un jeu vidéo 3D (qui peut très vite devenir techniquement obsolète), Chrysalis se densifiera au gré des apports créatifs de chacun, et il ne sera pas bien difficile de mettre à niveau sa base de code, ou de rajouter un peu d'insolite si le &quot;high-tech underground&quot; qu'il expose se démocratise.</li>
+<li>C'est un projet &quot;itératif&quot;, aux objectifs raisonnables, et déjà bien avancé. Notons que, dans le monde du projet communautaire, il est beaucoup plus confortable de prendre le train en cours de route qu'à sa gare de de départ - c'est paradoxal mais c'est ainsi.</li>
+<li>Il est prévu dès l'origine pour être internationalisable. Une fois traduit en anglais ou en chinois, inutile de préciser que son public s'élargira diantrement.</li>
+</ul>
+<p>Enfin, même si la contribution à Chrysalis est bénévole, ce projet présente une véritable opportunité de professionnalisation. Chrysalis n'est en effet qu'une déclinaison d'un univers d'heroic-fantasy, <em>Hysteresis</em>, qui mûrit depuis 8 ans déjà, et qui a de grandes ambitions pour la suite : une véritable murder party, des webcomics (style manga-enfantin, comme Itadaki Street, ou ranma1/2 quand ils font leurs gamins), une série de romans (150 pages écrites, c'est pas le Pérou mais c'est un début)... et si le succès est au rendez-vous, des anime, jeux vidéo 3D et long métrages, à la façon de Starwars, Harry Potter ou Twil... non oubliez ce dernier.</p>
+<p>La conséquence de tout cela, c'est que c'est le moment ou jamais de s'associer à une oeuvre qui pourrait avoir son aura de popularité. D'être à Hysteresis ce que Nobuo Uematsu et Tetsuya Nomura furent à SquareSoft, pour pouvoir, par la suite, faire ce dont tout créatif rêve: vivre pleinement de son art.</p>
+</div>
+<div class="section" id="infrastructure-de-projet">
+<h1>Infrastructure de projet</h1>
+<p>Chrysalis n'a pour l'instant qu'un site &quot;vitrine&quot; minimaliste, mais il possède les outils nécessaires à un bon déroulement du projet:</p>
+<ul class="simple">
+<li>une mailing-list Mailman (usage interne aux contributeurs)</li>
+<li>un <a class="reference external" href="http://redmine.prolifik.net/">extranet Redmine</a>, pour la gestion des tâches et la base documentaire</li>
+<li>des dépôts de fichiers, pour le suivi et le partage des créations logicielles/artistiques (public: <a class="reference external" href="https://gitorious.org/hysteresis/rpgweb">code open-source du site fictif</a>)</li>
+</ul>
+<br/></div>
+
+				
+                <!--a href="http://www.templatemo.com/page/1" target="_parent"><img src="images/templatemo_img_3.png" alt="Free CSS Templates" border="0" /></a-->
+           	  <!--p>This is a <a href="http://www.templatemo.com" target="_parent">free CSS template</a> provided by <a href="http://www.templatemo.com" target="_parent">TemplateMo.com</a> website. Feel free to download, edit and apply this layout for your personal or business websites. Thank you for visiting.</p>
+                {CONTENT}
+            	<p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Curabitur velit tellus, placerat et, dapibus varius, aliquet quis, purus. Nulla tellus risus, tincidunt vitae, sagittis vel, interdum at, erat.</p>
+            	<p>Duis vitae velit. Ut ultricies. Fusce sollicitudin nisl a lectus. Pellentesque odio. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Sed leo. Duis suscipit lorem in risus.</p-->
+           	  <div class="cleaner"></div>
+    		</div><!-- end of glow -->
+          </div>
+           
+           
+          <div id="templaetmo_top_section_bottom"></div>
+
+        </div>
+				
+    
+        
+     
+        
+        <div class="cleaner"></div>
+
+	</div><!-- End Of Container -->
+    
+    
+    <div id="templatemo_footer">
+    	1000 Thanks to <a href="http://www.templatemo.com/page/1" target="_parent">Free CSS Templates</a> for the Emerald Theme
+    </div>
+<!--  Free CSS Templates by TemplateMo.com  -->
+
+</body>
+
+<!-- Mirrored from chrysalis.prolifik.net/recrutement/ by HTTrack Website Copier/3.x [XR&CO'2010], Mon, 22 Oct 2012 20:40:09 GMT -->
+<!-- Added by HTTrack --><meta http-equiv="content-type" content="text/html;charset=utf-8" /><!-- /Added by HTTrack -->
+</html>

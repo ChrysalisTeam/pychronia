@@ -70,12 +70,12 @@ Mécaniques de Jeu
 - Et surtout **un portail web dédié à chaque partie !**
 
 
-Webdesign - Burned 
+Vieille Démo
 ====================
 
 .. raw:: html
 
-    <iframe width="100%" height="80%" src="file:///P:/Websites/rpgweb/doc/hatching/index.html"></iframe> 
+    <iframe width="100%" height="80%" src="_static/hatching/index.html"></iframe> 
 
 
 
@@ -173,7 +173,7 @@ Metal Radiance
 Chrysalis:Mindstorm
 ========================
 
-**Un huis-clos entre enquête et guerre psychologique, face à un inspecteur de police implacable qui va pousser les joueurs jusque dans leurs derniers retranchements.**
+**Un huis-clos entre enquête et guerre psychologique, face à un redoutable inspecteur de police qui va pousser les joueurs jusque dans leurs derniers retranchements.**
 
 .. image:: static\billet.jpg
    :width: 300
@@ -208,7 +208,7 @@ chrysalis.prolifik.net
 
 .. raw:: html
 
-    <iframe width="100%" height="80%" src="file:///P:/Websites/rpgweb/doc/vitrine/index.html"></iframe> 
+    <iframe width="100%" height="80%" src="_static/vitrine/index.html"></iframe> 
 
 
 Le Futur 
@@ -221,7 +221,7 @@ Le Futur
    
 **Chrysalis version 1.0**
   
-- Finalisation du site web pour début 2013
+- Finalisation du portail fictif pour début 2013
 
 - 3 mois de mise en orbite:
 
@@ -243,14 +243,14 @@ Le Futur (bis)
    
 **Vers la version 2.0**
    
-- internationalisation !!!
+- **internationalisation**
 - davantage d'artworks
 - énigmes Point&Click ?
 - jeux 3D (ex. "Dead Cyborg") ?
 - PNJs robotiques (NAO) ?
 - toutes idées bienvenues...
 
-    **Expansion de l'univers: romans, webcomics, films 3D, jeux vidéo...**
+    **Expansion de l'univers: romans, webcomics, films 3D, jeux vidéo, grandeur-nature géant dans un vaisseau intergalactique...**
 
 
 Questions ?
@@ -260,7 +260,7 @@ Questions ?
 
 .. raw:: html
 
-    <iframe width="100%" height="80%" src="file:///P:/Websites/rpgweb/doc/silk/Silk.htm"></iframe> 
+    <iframe width="100%" height="450px" src="_static/silk/Silk.htm" scrolling="no"></iframe> 
     
 ..
    
