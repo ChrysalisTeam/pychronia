@@ -2,7 +2,9 @@
 
 body {
     color: #333;
+    pointer-events: none; /* chrome workaround */
 }
+
 .slide {
     color: #555;
 }
@@ -10,3 +12,5 @@ body {
 ul {
     line-height: 130%;
 }
+
+#vieille-demo, #chrysalis-prolifik-net, #questions { pointer-events: auto; }

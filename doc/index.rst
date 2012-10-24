@@ -1,17 +1,17 @@
 ﻿.. impress::
    :func: chrysalis_impress.spiralz
-
+ 
 ========================
 Chrysalis
 ========================
-
+ 
 .. step::
    :class: center
-   :data-x: -900
-   :data-y: -250
-   :data-scale: 5
-   :data-rotate-y: 33
-   :data-rotate-z: 33
+   :data-x: 0
+   :data-y: 0
+   :data-scale: 1
+   :data-rotate-y: 0
+   :data-rotate-z: 0
 
 Le Jeu de Rôle High-Tech dont Vous êtes le Maître
 
