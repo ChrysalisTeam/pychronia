@@ -1,4 +1,4 @@
-﻿.. impress::
+﻿ù************************************************. impress::
    :func: chrysalis_impress.spiralz
  
 ========================
@@ -19,8 +19,9 @@ Le Jeu de Rôle High-Tech dont Vous êtes le Maître
 Ma Vie à Moi
 =================
 
-- Pascal Chambon, IDF
-- Consultant informatique freelance (Prolifik SARL)
+- Pascal Chambon, Ile-de-France
+- Formation Ingénieur Télécom-Paristech
+- Consultant Informatique Freelance (Prolifik SARL)
 - Python-Evangelist, Bash/C++/Java/PHP/MySQL...
 - Nourri au Web (Lolcats, Pérusse, *Memes* divers...)
 - Fan de *Computer Graphics* & *Epic Music*
@@ -51,6 +52,20 @@ Le premier **I3RPG** au monde ?
 - **I**\ nternet-powered
 - **I**\ nstantiable
 - **R**\ ole\ **P**\ lay **G**\ ame
+
+Univers
+==========
+??? A VERIFIER
+**Euchronie**
+    Bifucration entre notre univers et celui d'Hystérésis vers 1900, suite à un impact de comète qui a créé plusieurs millénaires de bouleversements tectoniques et climatiques. Maîtrise graduelle d'une nouvelle technologie: la "magie".
+
+- Cotoiements de civilisations régressées et de pôles de haute technologie    
+- Références visuelles: Final Fantasy 7, 8 & 10, Valkyrie Profile, Warcraft III
+- Références sonores: Motoi Sakuraba & Hans Zimmer
+    
+    
+    
+    
 
 
    
@@ -180,11 +195,9 @@ Chrysalis:Mindstorm
    :height: 150
    :align: center
    
-Peut se jouer :
-
+Extension facultative jouable:
 - dans le prolongement de *Chrysalis:Auction*
-- en standalone
-- pas du tout
+- seule, avec un été initial arbitraire
 
 
 
@@ -211,8 +224,8 @@ chrysalis.prolifik.net
     <iframe width="100%" height="80%" src="_static/vitrine/index.html"></iframe> 
 
 
-Le Futur 
-===========
+Le Futur Proche
+=====================
 
 .. image:: static\statue.png
    :width: 300
@@ -233,8 +246,8 @@ Le Futur
 - *Alea Jacta Est...*
 
   
-Le Futur (bis)
-===============
+Le Futur Lointain
+====================
 
 .. image:: static\diamonds.png
    :width: 280
@@ -255,8 +268,6 @@ Le Futur (bis)
 
 Questions ?
 ===============
-
-
 
 .. raw:: html
 
