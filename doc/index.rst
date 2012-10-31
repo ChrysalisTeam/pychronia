@@ -1,10 +1,10 @@
-﻿ù************************************************. impress::
+﻿.. impress::
    :func: chrysalis_impress.spiralz
  
 ========================
 Chrysalis
 ========================
- 
+
 .. step::
    :class: center
    :data-x: 0
@@ -13,21 +13,31 @@ Chrysalis
    :data-rotate-y: 0
    :data-rotate-z: 0
 
-Le Jeu de Rôle High-Tech dont Vous êtes le Maître
+**Le Jeu de Rôle High-Tech dont Vous êtes le Maître**
+
+.. raw:: html
+
+    <br/>
+
+*Nécessite un navigateur Firefox ou Chrome récent...*
+    
+*Touche espace ou flèches pour faire défiler...*
 
 
-Ma Vie à Moi
-=================
 
-- Pascal Chambon, Ile-de-France
-- Formation Ingénieur Télécom-Paristech
-- Consultant Informatique Freelance (Prolifik SARL)
-- Python-Evangelist, Bash/C++/Java/PHP/MySQL...
-- Nourri au Web (Lolcats, Pérusse, *Memes* divers...)
-- Fan de *Computer Graphics* & *Epic Music*
-- Mais surtout...
+.. 
+    Ma Vie à Moi
+    =================
 
-    Scénariste et développeur sur **Chrysalis**
+    - Pascal Chambon, Ile-de-France
+    - Formation Ingénieur Télécom-Paristech
+    - Consultant Informatique Freelance (Prolifik SARL)
+    - Python-Evangelist, Bash/C++/Java/PHP/MySQL...
+    - Nourri au Web (Lolcats, Pérusse, *Memes* divers...)
+    - Fan de *Computer Graphics* & *Epic Music*
+    - Mais surtout...
+
+        Scénariste et développeur sur **Chrysalis**
 
 
 Chrysalis
@@ -53,17 +63,16 @@ Le premier **I3RPG** au monde ?
 - **I**\ nstantiable
 - **R**\ ole\ **P**\ lay **G**\ ame
 
-Univers
-==========
-??? A VERIFIER
-**Euchronie**
-    Bifucration entre notre univers et celui d'Hystérésis vers 1900, suite à un impact de comète qui a créé plusieurs millénaires de bouleversements tectoniques et climatiques. Maîtrise graduelle d'une nouvelle technologie: la "magie".
 
-- Cotoiements de civilisations régressées et de pôles de haute technologie    
-- Références visuelles: Final Fantasy 7, 8 & 10, Valkyrie Profile, Warcraft III
+Univers du Jeu
+==================
+
+**Uchronie**
+    Bifucration entre notre univers et celui d'Hystérésis vers 1900, suite à un impact de comète qui a créé plusieurs millénaires de bouleversements tectoniques et climatiques. Balbutiements d'une nouvelle technologie: la "magie".
+
+- Cotoiements de civilisations ayant régressé et de pôles de haute technologie    
+- Références visuelles: Final Fantasy 7, 8 & 10, Valkyrie Profile, Warcraft III, League of Legends
 - Références sonores: Motoi Sakuraba & Hans Zimmer
-    
-    
     
     
 
@@ -74,7 +83,7 @@ Mécaniques de Jeu
 
 - Scénario avec de nombreuses quêtes et interactions:: 
     
-    Négociation, alliance, chantage, trahison, usurpation d'identité, investigations scientifiques, recherches historiques, énigmes diverses, piratages, cambriolages, attaques...
+    Enchères, négociation, alliance, chantage, trahison, usurpation d'identité, investigations scientifiques, recherches historiques, énigmes diverses, piratages, cambriolages, attaques...
 
 - Rencontres en chair et en os (enchères, réunions diplomatiques, *Mindstorm*)
 
@@ -190,14 +199,23 @@ Chrysalis:Mindstorm
 
 **Un huis-clos entre enquête et guerre psychologique, face à un redoutable inspecteur de police qui va pousser les joueurs jusque dans leurs derniers retranchements.**
 
+.. raw:: html
+
+    <br/>
+    
 .. image:: static\billet.jpg
    :width: 300
    :height: 150
    :align: center
-   
+
+.. raw:: html
+
+    <br/>
+    
 Extension facultative jouable:
+
 - dans le prolongement de *Chrysalis:Auction*
-- seule, avec un été initial arbitraire
+- seule, avec un état initial arbitraire
 
 
 
@@ -251,7 +269,7 @@ Le Futur Lointain
 
 .. image:: static\diamonds.png
    :width: 280
-   :height: 350
+   :height: 330
    :align: right
    
 **Vers la version 2.0**
@@ -260,18 +278,25 @@ Le Futur Lointain
 - davantage d'artworks
 - énigmes Point&Click ?
 - jeux 3D (ex. "Dead Cyborg") ?
-- PNJs robotiques (NAO) ?
+- PNJs robotiques (*NAO*) ?
 - toutes idées bienvenues...
 
-    **Expansion de l'univers: romans, webcomics, films 3D, jeux vidéo, grandeur-nature géant dans un vaisseau intergalactique...**
+    **Expansion de l'univers: romans, webcomics, films 3D, jeux vidéo, jeu grandeur-nature géant dans un vaisseau stratosphérique...**
 
 
 Questions ?
 ===============
 
-.. raw:: html
+.. image:: static\sphere.jpg
+   :width: 100%
+   :height: 450
+   :align: center
+   
+   
+.. 
+    .. raw:: html
 
-    <iframe width="100%" height="450px" src="_static/silk/Silk.htm" scrolling="no"></iframe> 
+        <iframe width="100%" height="450px" src="_static/silk/Silk.htm" scrolling="no"></iframe> 
     
 ..
    
