@@ -19,10 +19,7 @@ Chrysalis
 
     <br/>
 
-*Nécessite un navigateur Firefox ou Chrome récent...*
-    
-*Touche espace ou flèches pour faire défiler...*
-
+:superscript:`Cliquez sur ce texte, puis utilisez la touche espace ou les touches fléchées de votre clavier pour faire défiler les pages. En cas de problème de mise en page, vérifiez que vous utilisez un navigateur Firefox ou Chrome assez récent.`
 
 
 .. 
@@ -68,11 +65,11 @@ Univers du Jeu
 ==================
 
 **Uchronie**
-    Bifucration entre notre univers et celui d'Hystérésis vers 1900, suite à un impact de comète qui a créé plusieurs millénaires de bouleversements tectoniques et climatiques. Balbutiements d'une nouvelle technologie: la "magie".
+    Bifurcation entre notre univers et celui d'Hystérésis vers 1900, suite à un impact de comète qui a créé plusieurs millénaires de bouleversements tectoniques et climatiques. Balbutiements d'une nouvelle technologie: la "magie".
 
-- Cotoiements de civilisations ayant régressé et de pôles de haute technologie    
+- Côtoiements de civilisations ayant régressé, et de pôles de haute technologie    
 - Références visuelles: Final Fantasy 7, 8 & 10, Valkyrie Profile, Warcraft III, League of Legends
-- Références sonores: Motoi Sakuraba & Hans Zimmer
+- Références sonores: Motoi Sakuraba, Yuki Kajiura, Hans Zimmer
     
     
 
@@ -137,7 +134,7 @@ Fonctionnalités Web (bis)
    :height: 360
    :align: right
    
-- mise sur écoute & cyberdéfense
+- mise sur écoute & cyber-défense
 - mercenaires & Indics
 - piratage, phishing
 - localisation IP
