@@ -2,11 +2,16 @@
 import sys, os, tempfile, random
 ugettext = lambda s: s # dummy placeholder for makemessages
 
-import PIL.Image
-sys.modules['Image'] = PIL.Image # prevents AccessInit: hash collision: 3 for both 1 and 1
-
+try:
+    import PIL.Image
+    sys.modules['Image'] = PIL.Image # prevents AccessInit: hash collision: 3 for both 1 and 1
+except ImportError:
+    pass
+    
 TEST_DIR = os.path.dirname(os.path.abspath(__file__))
 
+SESSION_COOKIE_DOMAIN = ".prolifik.net"
+SESSION_COOKIE_NAME = 'sessionid' # DO NOT CHANGE - needed for phpbb integration
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -123,6 +128,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 )
 
 MIDDLEWARE_CLASSES = (
+'sessionprofile.middleware.SessionProfileMiddleware',
 'django.contrib.sessions.middleware.SessionMiddleware',
 'django.contrib.messages.middleware.MessageMiddleware',
 #'localeurl.middleware.LocaleURLMiddleware',
@@ -149,6 +155,9 @@ TEMPLATE_DIRS = (
 
 
 INSTALLED_APPS = [
+
+    'sessionprofile', # keeps track of sessions/users in DB table, for PHPBB integration
+
     'debug_toolbar',
     'django.contrib.auth',
     'django.contrib.admin',
