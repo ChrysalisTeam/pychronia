@@ -69,7 +69,7 @@ Univers du Jeu
 
 - Côtoiements de civilisations ayant régressé, et de pôles de haute technologie    
 - Références visuelles: Final Fantasy 7, 8 & 10, Valkyrie Profile, Warcraft III, League of Legends
-- Références sonores: Motoi Sakuraba, Yuki Kajiura, Hans Zimmer
+- Références sonores: Nobuo Uematsu, Yuki Kajiura, Hans Zimmer
     
     
 
