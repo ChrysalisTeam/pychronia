@@ -1,11 +1,12 @@
 ﻿.. impress::
    :func: chrysalis_impress.spiralz
- 
+    
 ========================
 Chrysalis
 ========================
 
 .. step::
+   :hide-title: true
    :class: center
    :data-x: 0
    :data-y: 0
@@ -13,13 +14,19 @@ Chrysalis
    :data-rotate-y: 0
    :data-rotate-z: 0
 
+   
+.. image:: static\TitreSlide_shiny.png
+   :width: 735
+   :height: 313
+   :align: center
+   
 **Le Jeu de Rôle High-Tech dont Vous êtes le Maître**
 
 .. raw:: html
 
     <br/>
 
-:superscript:`Cliquez sur ce texte, puis utilisez la touche espace ou les touches fléchées de votre clavier pour faire défiler les pages. En cas de problème de mise en page, vérifiez que vous utilisez un navigateur Firefox ou Chrome assez récent.`
+:subscript:`Cliquez sur ce texte, puis utilisez la touche espace ou les touches fléchées de votre clavier pour faire défiler les pages. En cas de problème de mise en page, vérifiez que vous utilisez un navigateur Firefox ou Chrome assez récent.`
 
 
 .. 
@@ -78,7 +85,7 @@ Univers du Jeu
 Mécaniques de Jeu
 ====================
 
-- Scénario avec de nombreuses quêtes et interactions:: 
+- Scénario avec de nombreuses quêtes et interactions::
     
     Enchères, négociation, alliance, chantage, trahison, usurpation d'identité, investigations scientifiques, recherches historiques, énigmes diverses, piratages, cambriolages, attaques...
 
@@ -96,7 +103,7 @@ Vieille Démo
 
 .. raw:: html
 
-    <iframe width="100%" height="80%" src="_static/hatching/index.html"></iframe> 
+    <iframe width="100%" height="75%" src="_static/hatching/index.html"></iframe> 
 
 
 
@@ -134,7 +141,8 @@ Fonctionnalités Web (bis)
    :height: 360
    :align: right
    
-- mise sur écoute & cyber-défense
+- mise sur écoute 
+- cyber-défense
 - mercenaires & Indics
 - piratage, phishing
 - localisation IP
@@ -158,7 +166,7 @@ Fonctionnalités Web (ter)
 - simulation des PNJs
 - gestion des pages du site
 - édition de la base de données
-- impersonation
+- *impersonation*
 - ...
 
   
@@ -209,7 +217,7 @@ Chrysalis:Mindstorm
 
     <br/>
     
-Extension facultative jouable:
+Extension facultative, jouable au choix:
 
 - dans le prolongement de *Chrysalis:Auction*
 - seule, avec un état initial arbitraire
@@ -218,6 +226,10 @@ Extension facultative jouable:
 
 La Communauté
 ================
+
+.. raw:: html
+
+    <br/>
 
 - une dizaine de contributeurs majeurs
 - de nombreux micro-contributeurs
@@ -236,7 +248,7 @@ chrysalis.prolifik.net
 
 .. raw:: html
 
-    <iframe width="100%" height="80%" src="_static/vitrine/index.html"></iframe> 
+    <iframe width="100%" height="75%" src="_static/vitrine/index.html"></iframe> 
 
 
 Le Futur Proche
@@ -244,7 +256,7 @@ Le Futur Proche
 
 .. image:: static\statue.png
    :width: 300
-   :height: 500
+   :height: 480
    :align: right
    
 **Chrysalis version 1.0**
@@ -274,11 +286,11 @@ Le Futur Lointain
 - **internationalisation**
 - davantage d'artworks
 - énigmes Point&Click ?
-- jeux 3D (ex. "Dead Cyborg") ?
+- jeux 3D ("Dead Cyborg") ?
 - PNJs robotiques (*NAO*) ?
 - toutes idées bienvenues...
 
-    **Expansion de l'univers: romans, webcomics, films 3D, jeux vidéo, jeu grandeur-nature géant dans un vaisseau stratosphérique...**
+    Expansion de l'univers: romans, webcomics, films 3D, jeux vidéo, jeu grandeur-nature géant dans un vaisseau stratosphérique...
 
 
 Questions ?
@@ -286,7 +298,7 @@ Questions ?
 
 .. image:: static\sphere.jpg
    :width: 100%
-   :height: 450
+   :height: 430
    :align: center
    
    
