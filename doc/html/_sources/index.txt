@@ -203,10 +203,6 @@ Chrysalis:Mindstorm
 ========================
 
 **Un huis-clos entre enquête et guerre psychologique, face à un redoutable inspecteur de police qui va pousser les joueurs jusque dans leurs derniers retranchements.**
-
-.. raw:: html
-
-    <br/>
     
 .. image:: static\billet.jpg
    :width: 300
@@ -287,10 +283,12 @@ Le Futur Lointain
 - davantage d'artworks
 - énigmes Point&Click ?
 - jeux 3D ("Dead Cyborg") ?
-- PNJs robotiques (*NAO*) ?
+- PNJs robotiques (NAO...) ?
 - toutes idées bienvenues...
 
-    Expansion de l'univers: romans, webcomics, films 3D, jeux vidéo, jeu grandeur-nature géant dans un vaisseau stratosphérique...
+..
+
+    Expansion de l'univers: romans, webcomics, films 3D, jeux vidéo, jeux grandeur-nature géants...
 
 
 Questions ?
@@ -309,7 +307,7 @@ Questions ?
     
 ..
    
-        **1000 mercis pour votre attention !**
+    1000 mercis pour votre attention !
 
 
 

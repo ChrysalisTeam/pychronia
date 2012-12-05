@@ -19,11 +19,16 @@ body {
 
 .step#chrysalis {
     color: #fef5bb;
+    font-size: 34px;
+    margin-bottom: 120px;
 }
 
 .step#chrysalis sub {
     font-style: italic;
+    font-size: 26px;
+    line-height: 30%;
 }
+
 
 .slide {
     position: relative;
@@ -33,6 +38,9 @@ body {
     width: 947px;
     height: 720px;
     padding: 5px 60px 5px;
+    font-size: 34px;
+    
+    margin-bottom: 60px;
     
     background: #fef5bb; /* Old browsers */
     background: -moz-linear-gradient(top, #fef5bb 0%, #c59f38 100%); /* FF3.6+ */
@@ -50,7 +58,7 @@ body {
    content: url(design/haut2.png);
    display: block;
    position:relative;
-   left: -54px;
+   left: -56px;
 
 }
 
@@ -68,8 +76,9 @@ body {
     font-family: ParmaPetit, serif;
     font-size: 60px !important; 
     margin-top: -27px;
-    margin-bottom: 20px;
+    margin-bottom: 30px;
     color: #484639;
+    text-align:center
 }
 
 .slide h2 {
