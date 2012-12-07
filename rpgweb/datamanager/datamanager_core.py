@@ -140,10 +140,6 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
 
         self._load_initial_data() # traversal of each core module
 
-        if config.GAME_INITIAL_FIXTURE_SCRIPT:
-            self.logger.info("Performing setup via GAME_INITIAL_FIXTURE_SCRIPT")
-            config.GAME_INITIAL_FIXTURE_SCRIPT(self)
-
         # NOW only we normalize and check the object tree
         # normal python types are transformed to ZODB-persistent types
         for key in self.data.keys():
@@ -152,6 +148,10 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
 
         self.is_initialized = True
         self._init_from_db()
+
+        if config.GAME_INITIAL_FIXTURE_SCRIPT:
+            self.logger.info("Performing setup via GAME_INITIAL_FIXTURE_SCRIPT")
+            config.GAME_INITIAL_FIXTURE_SCRIPT(self)
 
         self.check_database_coherency()
 

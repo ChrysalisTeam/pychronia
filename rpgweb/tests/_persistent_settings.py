@@ -1,6 +1,7 @@
 
 
 from ._test_settings import *
+from persistent.list import PersistentList
 
 
 # we override transient test DBs with persistent ones
@@ -24,7 +25,7 @@ def GAME_INITIAL_FIXTURE_SCRIPT(dm):
     dm.set_activated_game_views(activable_views)
 
     # we give guy1 access to everything
-    dm.update_permissions("guy1", list(dm.PERMISSIONS_REGISTRY))
+    dm.update_permissions("guy1", PersistentList(dm.PERMISSIONS_REGISTRY))
 
     # we can see all articles
     dm.set_encyclopedia_index_visibility(True)

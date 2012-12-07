@@ -451,6 +451,9 @@ class TestDatamanager(BaseGameTestCase):
 
         dm.reset_friendship_data()
 
+        assert self.dm.get_other_characters_friendship_statuses("guy1") == {u'guy2': None, 'guy3': None, 'guy4': None}
+        assert self.dm.get_other_characters_friendship_statuses("guy2") == {u'guy1': None, 'guy3': None, 'guy4': None}
+
         assert not dm.data["friendships"]["proposed"]
         assert not dm.data["friendships"]["sealed"]
 
@@ -461,6 +464,9 @@ class TestDatamanager(BaseGameTestCase):
         assert not dm.are_friends("guy1", "guy2")
         assert not dm.are_friends("guy2", "guy1")
         assert not dm.are_friends("guy1", "guy3")
+
+        assert self.dm.get_other_characters_friendship_statuses("guy1") == {u'guy2': 'requested_by', 'guy3': None, 'guy4': None}
+        assert self.dm.get_other_characters_friendship_statuses("guy2") == {u'guy1': 'proposed_to', 'guy3': None, 'guy4': None}
 
         with pytest.raises(AbnormalUsageError):
             dm.propose_friendship("guy2", "guy1") # friendship already requested
@@ -479,6 +485,9 @@ class TestDatamanager(BaseGameTestCase):
                                                           requested_by=[])
         time.sleep(0.5)
         dm.propose_friendship("guy1", "guy2") # we seal friendship, here       
+
+        assert self.dm.get_other_characters_friendship_statuses("guy1") == {u'guy2': 'friends', 'guy3': None, 'guy4': None}
+        assert self.dm.get_other_characters_friendship_statuses("guy2") == {u'guy1': 'friends', 'guy3': None, 'guy4': None}
 
         with pytest.raises(AbnormalUsageError):
             dm.propose_friendship("guy2", "guy1") # already friends
@@ -512,6 +521,9 @@ class TestDatamanager(BaseGameTestCase):
         assert dm.get_friends("guy2") in (["guy1", "guy3"], ["guy3", "guy1"]) # order not enforced
         assert dm.get_friends("guy4") == []
 
+        assert self.dm.get_other_characters_friendship_statuses("guy1") == {u'guy2': 'friends', 'guy3': None, 'guy4': None}
+        assert self.dm.get_other_characters_friendship_statuses("guy2") == {u'guy1': 'friends', 'guy3': 'friends', 'guy4': None}
+
         with pytest.raises(AbnormalUsageError):
             dm.terminate_friendship("guy3", "guy4") # unexisting friendship
         with pytest.raises(NormalUsageError):
@@ -526,6 +538,11 @@ class TestDatamanager(BaseGameTestCase):
         with pytest.raises(UsageError):
             dm.get_friendship_params("guy1", "guy2")
         assert dm.are_friends("guy2", "guy3") # untouched   
+
+        assert self.dm.get_other_characters_friendship_statuses("guy1") == {u'guy2': None, 'guy3': None, 'guy4': None}
+        assert self.dm.get_other_characters_friendship_statuses("guy2") == {u'guy1': None, 'guy3': 'friends', 'guy4': None}
+        assert self.dm.get_other_characters_friendship_statuses("guy3") == {u'guy1': None, 'guy2': 'friends', 'guy4': None}
+        assert self.dm.get_other_characters_friendship_statuses("guy4") == {u'guy1': None, 'guy2': None, 'guy3': None}
 
         dm.reset_friendship_data()
         assert not dm.data["friendships"]["proposed"]

@@ -209,7 +209,7 @@ class CharacterHandling(BaseDataManager): # TODO REFINE
     @readonly_method
     def get_character_color_or_none(self, username):
         """
-        Very tolerant function returns None if username is None or not a real character name.
+        Very tolerant function, returns None if username is None or not a real character name.
         """
         assert username is None or (isinstance("username", basestring) and " " not in username)
         if username and self.data["character_properties"].has_key(username):
@@ -782,6 +782,7 @@ class FriendshipHandling(BaseDataManager):
             friendship_proposals[(proposer, recipient)] = PersistentDict(proposal_date=current_date)
         # TODO - add game logging for both events
 
+
     @readonly_method
     def get_friendship_requests(self, username):
         """
@@ -796,13 +797,9 @@ class FriendshipHandling(BaseDataManager):
                 result["proposed_to"].append(recipient)
             elif recipient == username:
                 result["requested_by"].append(proposer)
+        assert username not in result["proposed_to"] + ["requested_by"]
         return result
 
-    """
-    @readonly_method
-    def get_friendships(self):
-        return self.data["friendships"]["sealed"]
-    """
 
     @readonly_method
     def get_friendship_params(self, username1, username2):
@@ -841,6 +838,30 @@ class FriendshipHandling(BaseDataManager):
 
         assert username not in friends
         return friends
+
+
+    @readonly_method
+    def get_other_characters_friendship_statuses(self, username):
+
+        friends = self.get_friends(username)
+        friendship_requests = self.get_friendship_requests(username)
+
+        relation_groups = dict(proposed_to=friendship_requests["proposed_to"],
+                               requested_by=friendship_requests["requested_by"],
+                               friends=friends)
+
+        if __debug__:
+            print (">>>", relation_groups.values())
+            _users = sum(relation_groups.values(), [])
+            assert len(set(_users)) == len(_users), relation_groups # no duplicates!
+
+        character_statuses = {username: relation_type for (relation_type, usernames) in relation_groups.items()
+                                              for username in usernames}
+
+        for other_username in self.get_other_usernames(username):
+            character_statuses.setdefault(other_username, None) # other characters that are related at all to current user get "None"
+
+        return character_statuses
 
 
     @transaction_watcher
