@@ -1,0 +1,20 @@
+
+{% extends "base_one_column.html" %}
+
+{% load i18n helpers %}
+
+
+{% block headers %}
+    {{ block.super }}
+{% endblock %}
+
+
+{% block content %}
+
+
+{% for other_username, relation_type in friendship_statuses %}
+    {{ other_username }} - {{ relation_type }} <br/>
+{% endfor %}
+
+
+{% endblock %}

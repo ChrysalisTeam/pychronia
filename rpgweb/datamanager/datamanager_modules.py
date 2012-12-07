@@ -826,7 +826,6 @@ class FriendshipHandling(BaseDataManager):
     def get_friends(self, username):
 
         assert self.is_character(username)
-
         friendships = self.data["friendships"]["sealed"]
 
         friends = []
@@ -842,13 +841,29 @@ class FriendshipHandling(BaseDataManager):
 
     @readonly_method
     def get_other_characters_friendship_statuses(self, username):
+        """
+        Returns a dict of target_username=>status entries for that username, 
+        where status is one of: (proposed_to, requested_by, recent_friend, old_friend).
+        """
 
         friends = self.get_friends(username)
+
+        recent_friend = []
+        old_friend = []
+        for friend in friends:
+            __, friendship_data = self.get_friendship_params(username, friend)
+            if self.is_friendship_too_young_to_be_terminated(friendship_data):
+                recent_friend.append(friend)
+            else:
+                old_friend.append(friend)
+
+
         friendship_requests = self.get_friendship_requests(username)
 
         relation_groups = dict(proposed_to=friendship_requests["proposed_to"],
                                requested_by=friendship_requests["requested_by"],
-                               friends=friends)
+                               recent_friend=recent_friend,
+                               old_friend=old_friend)
 
         if __debug__:
             print (">>>", relation_groups.values())
@@ -856,7 +871,7 @@ class FriendshipHandling(BaseDataManager):
             assert len(set(_users)) == len(_users), relation_groups # no duplicates!
 
         character_statuses = {username: relation_type for (relation_type, usernames) in relation_groups.items()
-                                              for username in usernames}
+                                                      for username in usernames}
 
         for other_username in self.get_other_usernames(username):
             character_statuses.setdefault(other_username, None) # other characters that are related at all to current user get "None"
@@ -864,13 +879,18 @@ class FriendshipHandling(BaseDataManager):
         return character_statuses
 
 
+    @readonly_method
+    def is_friendship_too_young_to_be_terminated(self, friendship_data):
+        min_delay = self.get_global_parameter("friendship_minimum_duration_h")
+        return (friendship_data["acceptance_date"] > datetime.utcnow() - timedelta(hours=min_delay))
+
+
     @transaction_watcher
     def terminate_friendship(self, username1, username2):
         friendship_key, friendship_data = self.get_friendship_params(username1, username2) # raises error if pb
 
-        min_delay = self.get_global_parameter("friendship_minimum_duration_h")
-        if friendship_data["acceptance_date"] > datetime.utcnow() - timedelta(hours=min_delay):
-            raise NormalUsageError(_("That friendship is too young to be terminated - please respect the %dh delay") % min_delay)
+        if self.is_friendship_too_young_to_be_terminated(friendship_data):
+            raise NormalUsageError(_("That friendship is too young to be terminated - please respect the waiting period"))
 
         del self.data["friendships"]["sealed"][friendship_key]
 

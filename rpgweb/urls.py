@@ -112,6 +112,7 @@ ability_urlpatterns = patterns("rpgweb.abilities",
     (r'^ability/admin_dashboard/$', 'admin_dashboard_view'),
     (r'^ability/network_management/$', 'mercenaries_hiring_view'),
     (r'^ability/matter_analysis/$', 'matter_analysis_view'),
+    (r'^ability/friendship_management/$', 'friendship_management_view'),
 
 )
 

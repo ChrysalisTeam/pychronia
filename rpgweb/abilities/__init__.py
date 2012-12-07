@@ -20,3 +20,6 @@ mercenaries_hiring_view = MercenariesHiringAbility.as_view
 
 from .matter_analysis import MatterAnalysisAbility
 matter_analysis_view = MatterAnalysisAbility.as_view
+
+from .friendship_management import FriendshipManagementAbility
+friendship_management_view = FriendshipManagementAbility.as_view

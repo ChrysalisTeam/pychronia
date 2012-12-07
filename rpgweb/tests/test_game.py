@@ -486,8 +486,8 @@ class TestDatamanager(BaseGameTestCase):
         time.sleep(0.5)
         dm.propose_friendship("guy1", "guy2") # we seal friendship, here       
 
-        assert self.dm.get_other_characters_friendship_statuses("guy1") == {u'guy2': 'friends', 'guy3': None, 'guy4': None}
-        assert self.dm.get_other_characters_friendship_statuses("guy2") == {u'guy1': 'friends', 'guy3': None, 'guy4': None}
+        assert self.dm.get_other_characters_friendship_statuses("guy1") == {u'guy2': 'recent_friend', 'guy3': None, 'guy4': None}
+        assert self.dm.get_other_characters_friendship_statuses("guy2") == {u'guy1': 'recent_friend', 'guy3': None, 'guy4': None}
 
         with pytest.raises(AbnormalUsageError):
             dm.propose_friendship("guy2", "guy1") # already friends
@@ -521,17 +521,21 @@ class TestDatamanager(BaseGameTestCase):
         assert dm.get_friends("guy2") in (["guy1", "guy3"], ["guy3", "guy1"]) # order not enforced
         assert dm.get_friends("guy4") == []
 
-        assert self.dm.get_other_characters_friendship_statuses("guy1") == {u'guy2': 'friends', 'guy3': None, 'guy4': None}
-        assert self.dm.get_other_characters_friendship_statuses("guy2") == {u'guy1': 'friends', 'guy3': 'friends', 'guy4': None}
+        assert self.dm.get_other_characters_friendship_statuses("guy1") == {u'guy2': 'recent_friend', 'guy3': None, 'guy4': None}
+        assert self.dm.get_other_characters_friendship_statuses("guy2") == {u'guy1': 'recent_friend', 'guy3': 'recent_friend', 'guy4': None}
 
         with pytest.raises(AbnormalUsageError):
             dm.terminate_friendship("guy3", "guy4") # unexisting friendship
         with pytest.raises(NormalUsageError):
-            dm.terminate_friendship("guy1", "guy2") # too young   
+            dm.terminate_friendship("guy1", "guy2") # too young friendship 
 
-        for params in dm.data["friendships"]["sealed"].values():
-            params["acceptance_date"] -= timedelta(hours=30) # delay must be 24h in dev
-            dm.commit()
+        for pair, params in dm.data["friendships"]["sealed"].items():
+            if "guy1" in pair:
+                params["acceptance_date"] -= timedelta(hours=30) # delay should be 24h in dev
+                dm.commit()
+
+        assert self.dm.get_other_characters_friendship_statuses("guy1") == {u'guy2': 'old_friend', 'guy3': None, 'guy4': None}
+        assert self.dm.get_other_characters_friendship_statuses("guy2") == {u'guy1': 'old_friend', 'guy3': 'recent_friend', 'guy4': None}
 
         dm.terminate_friendship("guy1", "guy2") # success 
         assert not dm.are_friends("guy2", "guy1")
@@ -540,8 +544,8 @@ class TestDatamanager(BaseGameTestCase):
         assert dm.are_friends("guy2", "guy3") # untouched   
 
         assert self.dm.get_other_characters_friendship_statuses("guy1") == {u'guy2': None, 'guy3': None, 'guy4': None}
-        assert self.dm.get_other_characters_friendship_statuses("guy2") == {u'guy1': None, 'guy3': 'friends', 'guy4': None}
-        assert self.dm.get_other_characters_friendship_statuses("guy3") == {u'guy1': None, 'guy2': 'friends', 'guy4': None}
+        assert self.dm.get_other_characters_friendship_statuses("guy2") == {u'guy1': None, 'guy3': 'recent_friend', 'guy4': None}
+        assert self.dm.get_other_characters_friendship_statuses("guy3") == {u'guy1': None, 'guy2': 'recent_friend', 'guy4': None}
         assert self.dm.get_other_characters_friendship_statuses("guy4") == {u'guy1': None, 'guy2': None, 'guy3': None}
 
         dm.reset_friendship_data()
