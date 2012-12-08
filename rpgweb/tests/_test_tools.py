@@ -12,7 +12,7 @@ os.environ["DJANGO_SETTINGS_MODULE"] = "rpgweb.tests._test_settings"
 
 
 from rpgweb.common import *
-from rpgweb.datamanager.datamanager_administrator import create_game_instance,\
+from rpgweb.datamanager.datamanager_administrator import create_game_instance, \
     retrieve_game_instance, game_instance_exists, reset_zodb_structure
 import rpgweb.datamanager as dm_module
 from rpgweb.datamanager import *
@@ -27,7 +27,7 @@ from rpgweb.views._abstract_game_view import AbstractGameView
 #from django.test.testcases import TransactionTestCase as TestCase
 from django.test import TestCase
 from django.test.client import Client, RequestFactory
-from django.core.handlers.base import BaseHandler  
+from django.core.handlers.base import BaseHandler
 import django.utils.translation
 from rpgweb.views._abstract_game_view import register_view
 from rpgweb.abilities import *
@@ -60,8 +60,14 @@ def for_core_module(klass):
     assert klass in MODULES_REGISTRY, klass
     return lambda func: func
 
-def for_ability(view):
+def for_gameview(view):
     # TODO - track proper testing of ability module
+    view = getattr(view, "klass", view)
+    assert view in GameViews.GAME_VIEWS_REGISTRY.values(), view
+    return lambda func: func
+
+def for_ability(view):
+    # TODO - track proper testing of gameview module
     view = getattr(view, "klass", view)
     assert view in SpecialAbilities.ABILITIES_REGISTRY.values(), view
     return lambda func: func
@@ -80,30 +86,30 @@ logging.getLogger().setLevel(logging.DEBUG)
 logging.disable(logging.CRITICAL) # to be commented if more output is wanted !!!
 
 
-  
-class RequestMock(RequestFactory):  
-    def request(self, **request):  
-        """Constructs a generic request object, INCLUDING middleware modifications.""" 
-        
+
+class RequestMock(RequestFactory):
+    def request(self, **request):
+        """Constructs a generic request object, INCLUDING middleware modifications."""
+
         from django.core import urlresolvers
-        
-        
-        request = RequestFactory.request(self, **request)  
-        handler = BaseHandler()  
-        
-        handler.load_middleware()  
-        
-        for middleware_method in handler._request_middleware:  
+
+
+        request = RequestFactory.request(self, **request)
+        handler = BaseHandler()
+
+        handler.load_middleware()
+
+        for middleware_method in handler._request_middleware:
             #print("APPLYING REQUEST MIDDLEWARE ", middleware_method, file=sys.stderr)
-            if middleware_method(request):  
-                raise Exception("Couldn't create request mock object - "  
-                                "request middleware returned a response")  
-        
+            if middleware_method(request):
+                raise Exception("Couldn't create request mock object - "
+                                "request middleware returned a response")
+
         urlconf = settings.ROOT_URLCONF
         urlresolvers.set_urlconf(urlconf)
         resolver = urlresolvers.RegexURLResolver(r'^/', urlconf)
-        
-        
+
+
         callback, callback_args, callback_kwargs = resolver.resolve(
                             request.path_info)
 
@@ -112,19 +118,19 @@ class RequestMock(RequestFactory):
             #print("APPLYING VIEW MIDDLEWARE ", middleware_method, file=sys.stderr)
             response = middleware_method(request, callback, callback_args, callback_kwargs)
             if response:
-                raise Exception("Couldn't create request mock object - "  
-                                "view middleware returned a response")                  
-            
-        return request  
-    
-    
+                raise Exception("Couldn't create request mock object - "
+                                "view middleware returned a response")
+
+        return request
+
+
 
 @contextlib.contextmanager
 def raises_with_content(klass, string):
     with pytest.raises(klass) as exc:
         yield exc
     assert string.lower() in str(exc.value).lower()
-                       
+
 
 
 
@@ -166,7 +172,7 @@ class AutoCheckingDM(object):
 
     def __setattr__(self, name, value):
         return object.__getattribute__(self, "_real_dm").__setattr__(name, value)
-            
+
 
 @contextlib.contextmanager
 def temp_datamanager(game_instance_id, request=None):
@@ -174,59 +180,59 @@ def temp_datamanager(game_instance_id, request=None):
     dm = retrieve_game_instance(game_instance_id, request=request)
     yield dm
     dm.close()
-    
+
 
 
 
 class BaseGameTestCase(TestCase):
-    
+
     """
     WARNING - when directly modifying "self.dm.data" content, 
     don't forget to commit() after that !!
     """
-    
+
     def __call__(self, *args, **kwds):
         return unittest.TestCase.run(self, *args, **kwds) # we bypass test setups from django's TestCase, to use py.test instead
-    
-    
-    
+
+
+
     def setUp(self):
-        
+
         assert settings.DEBUG == True
-        
+
         django.utils.translation.activate("en") # to test for error messages, just in case...
 
         reset_zodb_structure()
         create_game_instance(game_instance_id=TEST_GAME_INSTANCE_ID, master_email="dummy@dummy.fr", master_login="master", master_password="ultimate")
-        
-        try: 
-            
+
+        try:
+
             self.client = Client()
             self.factory = RequestMock()
-            
+
             self.request = self.factory.get(HOME_URL)
             assert self.request.user
             assert self.request.datamanager.user.datamanager.request # double linking
-            assert self.request.session 
+            assert self.request.session
             assert self.request._messages is not None
             assert self.request.datamanager
-            
+
             # we mimic messages middleware
             from django.contrib.messages.storage import default_storage
             self.request._messages = default_storage(self.request)
-            
+
             self.dm = self.request.datamanager
             assert self.dm.is_initialized
             assert self.dm.connection
-            
+
             self.dm.clear_all_event_stats()
             self.dm.check_database_coherency() # important
             assert self.dm.get_event_count("BASE_CHECK_DB_COHERENCY_PUBLIC_CALLED") == 1 # no bypassing because of wrong override
-            
+
             self.dm.set_game_state(True)
             self.dm.set_activated_game_views(self.dm.get_activable_views().keys()) # QUICK ACCESS FIXTURE
             self.dm.clear_all_event_stats()
-            
+
             #self.default_player = self.dm.get_character_usernames()[0]
             #self._set_user(self.TEST_LOGIN)
 
@@ -235,7 +241,7 @@ class BaseGameTestCase(TestCase):
 
             # comment this to have eclipse's autocompletion to work for datamanager anyway
             self.dm = AutoCheckingDM(self.dm) # protection against uncommitted, pending changes
-            
+
         except Exception, e:
             print(">>>>>>>>>", e)
             self.tearDown(check=False) # cleanup of connection
@@ -248,7 +254,7 @@ class BaseGameTestCase(TestCase):
                 pass### self.dm.check_database_coherency()
             self.dm.close()
             self.dm = None
-        
+
 
 
     def _set_user(self, username, has_write_access=True):

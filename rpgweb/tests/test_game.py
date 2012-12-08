@@ -27,6 +27,7 @@ from rpgweb.tests._test_tools import temp_datamanager
 import inspect
 from django.forms.fields import Field
 from django.core.urlresolvers import resolve
+from rpgweb.views.gameviews import friendship_management
 
 
 
@@ -447,7 +448,6 @@ class TestDatamanager(BaseGameTestCase):
     def test_friendship_handling(self):
 
         dm = self.dm
-        proposal_date = datetime.utcnow() - timedelta(hours=3)
 
         dm.reset_friendship_data()
 
@@ -460,7 +460,7 @@ class TestDatamanager(BaseGameTestCase):
         with pytest.raises(AbnormalUsageError):
             dm.propose_friendship("guy1", "guy1") # auto-friendship impossible
 
-        dm.propose_friendship("guy2", "guy1")
+        assert not dm.propose_friendship("guy2", "guy1")
         assert not dm.are_friends("guy1", "guy2")
         assert not dm.are_friends("guy2", "guy1")
         assert not dm.are_friends("guy1", "guy3")
@@ -484,7 +484,7 @@ class TestDatamanager(BaseGameTestCase):
         assert dm.get_friendship_requests("guy2") == dict(proposed_to=["guy1"],
                                                           requested_by=[])
         time.sleep(0.5)
-        dm.propose_friendship("guy1", "guy2") # we seal friendship, here       
+        assert dm.propose_friendship("guy1", "guy2") # we seal friendship, here       
 
         assert self.dm.get_other_characters_friendship_statuses("guy1") == {u'guy2': 'recent_friend', 'guy3': None, 'guy4': None}
         assert self.dm.get_other_characters_friendship_statuses("guy2") == {u'guy1': 'recent_friend', 'guy3': None, 'guy4': None}
@@ -515,8 +515,8 @@ class TestDatamanager(BaseGameTestCase):
         assert dm.are_friends("guy2", "guy1") == dm.are_friends("guy1", "guy2") == True
         assert dm.are_friends("guy2", "guy3") == dm.are_friends("guy3", "guy4") == False
 
-        dm.propose_friendship("guy2", "guy3") # proposed
-        dm.propose_friendship("guy3", "guy2") # accepted
+        assert not dm.propose_friendship("guy2", "guy3") # proposed
+        assert dm.propose_friendship("guy3", "guy2") # accepted
         assert dm.get_friends("guy1") == dm.get_friends("guy3") == ["guy2"]
         assert dm.get_friends("guy2") in (["guy1", "guy3"], ["guy3", "guy1"]) # order not enforced
         assert dm.get_friends("guy4") == []
@@ -526,7 +526,7 @@ class TestDatamanager(BaseGameTestCase):
 
         with pytest.raises(AbnormalUsageError):
             dm.terminate_friendship("guy3", "guy4") # unexisting friendship
-        with pytest.raises(NormalUsageError):
+        with pytest.raises(AbnormalUsageError):
             dm.terminate_friendship("guy1", "guy2") # too young friendship 
 
         for pair, params in dm.data["friendships"]["sealed"].items():
@@ -3385,18 +3385,39 @@ class TestSpecialAbilities(BaseGameTestCase):
 
 
 
+class TestGameViews(BaseGameTestCase):
 
+    @for_gameview(friendship_management)
+    def test_friendship_management(self):
 
+        view = self.dm.instantiate_game_view("friendship_management")
 
+        self._set_user("guy1")
+        assert "friendship proposal" in view.do_propose_friendship("guy2")
+        assert "friendship proposal" in view.do_propose_friendship("guy3")
+        with pytest.raises(AbnormalUsageError):
+            view.do_propose_friendship("guy2") # duplicate proposal
 
+        self._set_user("guy2")
+        assert "now friend with" in view.do_propose_friendship("guy1")
+        with pytest.raises(AbnormalUsageError):
+            view.do_propose_friendship("guy1") # already friends
+        with pytest.raises(AbnormalUsageError):
+            view.do_accept_friendship("guy1") # already friends
 
+        self._set_user("guy3")
+        assert "now friend" in view.do_accept_friendship("guy1")
+        assert "friendship proposal" in view.do_accept_friendship("guy4")
 
+        with pytest.raises(AbnormalUsageError): # too young friendship
+            view.do_cancel_friendship("guy1")
 
+        for pair, params in self.dm.data["friendships"]["sealed"].items():
+            params["acceptance_date"] -= timedelta(hours=30) # delay should be 24h in dev
+            self.dm.commit()
 
-
-
-
-
+        assert "properly canceled" in view.do_cancel_friendship("guy1")
+        assert "concurrently canceled" in view.do_cancel_friendship("guy4")
 
 
 '''

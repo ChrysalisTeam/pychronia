@@ -759,6 +759,7 @@ class FriendshipHandling(BaseDataManager):
     def propose_friendship(self, proposer, recipient):
         """
         Can also act as "seal friendship", if a reciprocal request existed.
+        Returns True iif that's the case, i.e both characters are friend at the end of the action.
         """
         assert self.is_character(proposer) and self.is_character(recipient)
         if proposer == recipient:
@@ -778,9 +779,13 @@ class FriendshipHandling(BaseDataManager):
             del friendship_proposals[(recipient, proposer)] # important
             friendships[(recipient, proposer)] = PersistentDict(proposal_date=existing_data["proposal_date"],
                                                                 acceptance_date=current_date)
+            res = True
         else:
             friendship_proposals[(proposer, recipient)] = PersistentDict(proposal_date=current_date)
+            res = False
+
         # TODO - add game logging for both events
+        return res
 
 
     @readonly_method
@@ -890,7 +895,7 @@ class FriendshipHandling(BaseDataManager):
         friendship_key, friendship_data = self.get_friendship_params(username1, username2) # raises error if pb
 
         if self.is_friendship_too_young_to_be_terminated(friendship_data):
-            raise NormalUsageError(_("That friendship is too young to be terminated - please respect the waiting period"))
+            raise AbnormalUsageError(_("That friendship is too young to be terminated - please respect the waiting period"))
 
         del self.data["friendships"]["sealed"][friendship_key]
 
