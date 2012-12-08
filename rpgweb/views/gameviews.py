@@ -68,3 +68,44 @@ character_profile = CharacterProfile.as_view
 
 
 
+
+
+
+@register_view
+class FriendshipManagementAbility(AbstractGameView):
+
+
+    NAME = "friendship_management"
+
+    GAME_FORMS = {}
+    ADMIN_FORMS = {}
+
+    TEMPLATE = "generic_operations/friendship_management.html"
+
+    ACCESS = UserAccess.character
+    PERMISSIONS = []
+    ALWAYS_AVAILABLE = True
+
+
+    def get_template_vars(self, previous_form_data=None):
+
+        username = self.datamanager.user.username
+        friendship_statuses = self.datamanager.get_other_characters_friendship_statuses(username)
+        friendship_statuses = sorted(friendship_statuses.items()) # list of pairs (other_username, relation_type) 
+
+        return {
+                 'page_title': _("Friendship Management"),
+                 "friendship_statuses": friendship_statuses,
+               }
+
+friendship_management = FriendshipManagementAbility.as_view
+
+
+
+
+
+
+
+
+
+

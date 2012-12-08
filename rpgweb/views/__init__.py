@@ -31,7 +31,7 @@ from django.shortcuts import render
 from decorator import decorator
 
 
-from .gameviews import character_profile # IMPORTANT
+from .gameviews import character_profile, friendship_management # IMPORTANT
 
 '''
 # TODO - transform this into instance which exposes real views as attributes, wrapped with register_view !!!!
