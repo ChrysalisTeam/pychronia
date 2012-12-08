@@ -102,8 +102,6 @@ class FriendshipManagementAbility(AbstractGameView):
                  "friendship_statuses": friendship_statuses,
                }
 
-
-
     def do_propose_friendship(self, other_username):
         res = self.datamanager.propose_friendship(proposer=self.datamanager.user.username,
                                                   recipient=other_username)
@@ -122,15 +120,25 @@ class FriendshipManagementAbility(AbstractGameView):
             return _("Your friendship proposal to user %s has been recorded, as he has cancelled his own friendship proposal.") % other_username  # should be fairly rare
 
 
+    def do_cancel_proposal(self, other_username):
+
+        res = self.datamanager.terminate_friendship(username=self.datamanager.user.username, # might raise exception if (rare) concurrent cancelation occurred
+                                                    rejected_user=other_username)
+        if res:
+            return _("Your friendship with %s has been properly canceled, as he had accepted it concurrently.") % other_username
+        else:
+
+            return _("Your friendship proposal to user %s has been properly canceled.") % other_username
+
+
     def do_cancel_friendship(self, other_username):
 
-        if not self.datamanager.are_friends(username1=self.datamanager.user.username,
-                                            username2=other_username):
-            return _("You're not friend anymore with user %s, as he's concurrently canceled his firendship with you") % other_username
-
-        self.datamanager.terminate_friendship(username1=self.datamanager.user.username,
-                                              username2=other_username)
-        return _("Your friendship with %s has been properly canceled.") % other_username
+        res = self.datamanager.terminate_friendship(username=self.datamanager.user.username, # might raise exception if (rare) concurrent cancelation occurred
+                                                    rejected_user=other_username)
+        if res:
+            return _("Your friendship with %s has been properly canceled.") % other_username
+        else:
+            return _("Your friendship proposal to user %s has been properly canceled.") % other_username  # weirdest case...
 
 
 friendship_management = FriendshipManagementAbility.as_view

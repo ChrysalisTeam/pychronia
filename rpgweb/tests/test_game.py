@@ -516,6 +516,11 @@ class TestDatamanager(BaseGameTestCase):
         assert dm.are_friends("guy2", "guy3") == dm.are_friends("guy3", "guy4") == False
 
         assert not dm.propose_friendship("guy2", "guy3") # proposed
+        with pytest.raises(AbnormalUsageError):
+            dm.terminate_friendship("guy3", "guy2") # wrong direction 
+        assert not dm.terminate_friendship("guy2", "guy3") # abort proposal, actually
+
+        assert not dm.propose_friendship("guy2", "guy3") # proposed
         assert dm.propose_friendship("guy3", "guy2") # accepted
         assert dm.get_friends("guy1") == dm.get_friends("guy3") == ["guy2"]
         assert dm.get_friends("guy2") in (["guy1", "guy3"], ["guy3", "guy1"]) # order not enforced
@@ -537,7 +542,7 @@ class TestDatamanager(BaseGameTestCase):
         assert self.dm.get_other_characters_friendship_statuses("guy1") == {u'guy2': 'old_friend', 'guy3': None, 'guy4': None}
         assert self.dm.get_other_characters_friendship_statuses("guy2") == {u'guy1': 'old_friend', 'guy3': 'recent_friend', 'guy4': None}
 
-        dm.terminate_friendship("guy1", "guy2") # success 
+        assert dm.terminate_friendship("guy1", "guy2") # success 
         assert not dm.are_friends("guy2", "guy1")
         with pytest.raises(UsageError):
             dm.get_friendship_params("guy1", "guy2")
@@ -3393,7 +3398,18 @@ class TestGameViews(BaseGameTestCase):
         view = self.dm.instantiate_game_view("friendship_management")
 
         self._set_user("guy1")
+
+        with pytest.raises(AbnormalUsageError):
+            assert "Unexisting friendship" in view.do_cancel_friendship("guy2")
+
         assert "friendship proposal" in view.do_propose_friendship("guy2")
+        assert "friendship proposal" in view.do_cancel_friendship("guy2") # cancel proposal only
+        assert "friendship proposal" in view.do_propose_friendship("guy2")
+        assert "friendship proposal" in view.do_cancel_proposal("guy2")
+        assert "friendship proposal" in view.do_propose_friendship("guy2")
+
+        assert "friendship proposal" in view.do_propose_friendship("guy4")
+
         assert "friendship proposal" in view.do_propose_friendship("guy3")
         with pytest.raises(AbnormalUsageError):
             view.do_propose_friendship("guy2") # duplicate proposal
@@ -3408,17 +3424,25 @@ class TestGameViews(BaseGameTestCase):
         self._set_user("guy3")
         assert "now friend" in view.do_accept_friendship("guy1")
         assert "friendship proposal" in view.do_accept_friendship("guy4")
-
         with pytest.raises(AbnormalUsageError): # too young friendship
             view.do_cancel_friendship("guy1")
+
+        self._set_user("guy4")
+        assert "now friend" in view.do_accept_friendship("guy1")
 
         for pair, params in self.dm.data["friendships"]["sealed"].items():
             params["acceptance_date"] -= timedelta(hours=30) # delay should be 24h in dev
             self.dm.commit()
 
-        assert "properly canceled" in view.do_cancel_friendship("guy1")
-        assert "concurrently canceled" in view.do_cancel_friendship("guy4")
+        self._set_user("guy3")
+        assert "friendship with" in view.do_cancel_friendship("guy1")
 
+        if random.choice((True, False)):
+            self._set_user("guy1") # whatever side of the friendship acts...
+            assert "friendship with" in view.do_cancel_proposal("guy4")
+        else:
+            self._set_user("guy4")
+            assert "friendship with" in view.do_cancel_proposal("guy1")
 
 '''
       # Mega patching, to test that all what has to persist has been committed

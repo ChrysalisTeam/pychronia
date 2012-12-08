@@ -739,6 +739,8 @@ class FriendshipHandling(BaseDataManager):
         utilities.check_no_duplicates(sealed_friendships)
         for (username1, username2), friendship_params in sealed_friendships.items():
             assert (username2, username1) not in sealed_friendships # ensures both unicity and non-self-friendship
+            assert (username1, username2) not in proposed_friendships
+            assert (username2, username1) not in proposed_friendships
             assert username1 in character_names
             assert username2 in character_names
             template = {
@@ -891,13 +893,21 @@ class FriendshipHandling(BaseDataManager):
 
 
     @transaction_watcher
-    def terminate_friendship(self, username1, username2):
-        friendship_key, friendship_data = self.get_friendship_params(username1, username2) # raises error if pb
+    def terminate_friendship(self, username, rejected_user):
+        """
+        Can also act as "abort friendship proposal" if people weren't friends - returns True iff a real friendship was broken.
+        """
+        friendship_proposals = self.data["friendships"]["proposed"]
 
-        if self.is_friendship_too_young_to_be_terminated(friendship_data):
-            raise AbnormalUsageError(_("That friendship is too young to be terminated - please respect the waiting period"))
-
-        del self.data["friendships"]["sealed"][friendship_key]
+        if (username, rejected_user) in friendship_proposals:
+            del friendship_proposals[(username, rejected_user)]
+            return False
+        else:
+            friendship_key, friendship_data = self.get_friendship_params(username, rejected_user) # raises error if not friends
+            if self.is_friendship_too_young_to_be_terminated(friendship_data):
+                raise AbnormalUsageError(_("That friendship is too young to be terminated - please respect the waiting period"))
+            del self.data["friendships"]["sealed"][friendship_key]
+            return True
 
 
     @transaction_watcher
