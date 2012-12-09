@@ -140,11 +140,13 @@ def generate_full_menu(request):  ## game_menu_generator
                         #menu_entry(_(u"World Scans"), views.scanning_management),
                       )),
 
-
+            menu_entry(_(u"Profile"), views.homepage, # FIXME
+                       (
+                        menu_entry(_(u"Profile"), views.character_profile, forced_visibility=(True if user.is_character else False)),
+                        menu_entry(_(u"Friendships"), views.friendship_management, forced_visibility=(True if user.is_character else False)),
+                        )),
 
            menu_entry(_(u"Login"), views.login, forced_visibility=(False if user.is_authenticated else True)),
-           menu_entry(_(u"Profile"), views.character_profile, forced_visibility=(True if user.is_character else False)),
-           menu_entry(_(u"Friendships"), views.friendship_management, forced_visibility=(True if user.is_character else False)),
            menu_entry(_(u"Logout"), views.logout),
         ))
 
