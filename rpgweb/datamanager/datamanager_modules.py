@@ -3037,6 +3037,7 @@ class HelpPages(BaseDataManager):
 @register_module
 class Encyclopedia(BaseDataManager):
 
+    ENCYCLOPEDIA_CATEGORY = "encyclopedia"
 
     def _load_initial_data(self, **kwargs):
         super(Encyclopedia, self)._load_initial_data(**kwargs)
@@ -3048,9 +3049,6 @@ class Encyclopedia(BaseDataManager):
         for character in self.get_character_sets().values():
             character.setdefault("known_article_ids", PersistentList())
 
-        #for (key, value) in game_data["encyclopedia"].items():
-        #    value["keywords"] = list(set(value["keywords"] + [key]))
-
 
     def _check_database_coherency(self, **kwargs):
         super(Encyclopedia, self)._check_database_coherency(**kwargs)
@@ -3061,17 +3059,12 @@ class Encyclopedia(BaseDataManager):
 
         all_keywords = []
 
-        for (key, value) in game_data["encyclopedia"].items():
-
-            assert key.lower() == key
+        for (key, value) in self._get_encyclopedia_dict().items():
+            assert key.lower() == key # of course, since these are static pages...
             utilities.check_is_slug(key)
 
-
             all_keywords += value["keywords"]
-
-            utilities.check_is_restructuredtext(value["content"])
-
-        # the same keyword can be included in several article ids - no check_no_duplicates here!
+            # the same keyword can be included in several article ids - no check_no_duplicates() here!
 
         for keyword in all_keywords:
             assert len(keyword) >= 3 # let's avoid too easy matches
@@ -3079,7 +3072,7 @@ class Encyclopedia(BaseDataManager):
 
         for character in self.get_character_sets().values():
             utilities.check_no_duplicates(character["known_article_ids"])
-            assert set(character["known_article_ids"]) < set(self.get_encyclopedia_article_ids())
+            assert set(character["known_article_ids"]) <= set(self.get_encyclopedia_article_ids())
 
 
     @readonly_method
@@ -3098,7 +3091,8 @@ class Encyclopedia(BaseDataManager):
         Returns the rst entry, or None.
         Fetching is case-insensitive.
         """
-        article = self.data["encyclopedia"].get(article_id.lower().strip())
+        key = article_id.lower().strip()
+        article = self._get_encyclopedia_dict().get(key)
         return article["content"] if article else None
 
 
@@ -3123,9 +3117,12 @@ class Encyclopedia(BaseDataManager):
         return all_article_ids
 
 
+    def _get_encyclopedia_dict(self):
+        return {key: value for (key, value) in self.static_pages.get_all_data().items() if self.ENCYCLOPEDIA_CATEGORY in value["categories"]}
+
     @readonly_method
     def get_encyclopedia_article_ids(self):
-        return self.data["encyclopedia"].keys()
+        return self._get_encyclopedia_dict().keys()
 
 
     @readonly_method
@@ -3135,7 +3132,7 @@ class Encyclopedia(BaseDataManager):
         of targeted article ids.
         """
         mapping = {}
-        for article_id, article in self.data["encyclopedia"].items():
+        for article_id, article in self._get_encyclopedia_dict().items():
             for keyword in article["keywords"]:
                 mapping.setdefault(keyword, [])
                 mapping[keyword].append(article_id)
