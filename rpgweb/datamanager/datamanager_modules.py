@@ -6,6 +6,7 @@ from rpgweb.common import *
 
 from .datamanager_user import GameUser
 from .datamanager_core import *
+from .datamanager_core import _, _lazy, _noop # just to shut up the static checker...
 from types import NoneType
 from persistent.list import PersistentList
 from rpgweb.datamanager.datamanager_tools import DataTableManager
@@ -1283,13 +1284,11 @@ class TextMessagingCore(BaseDataManager):
         TRANSLATABLE_ITEM_NAME = _lazy("contact")
 
         def _load_initial_data(self, **kwargs):
-            messaging = self._inner_datamanager.messaging_data
-
-            for identifier, details in messaging["globally_registered_contacts"].items():
+            for identifier, details in self._table.items():
                 if details is None:
                     details = PersistentDict()
-                    messaging["globally_registered_contacts"][identifier] = details
-                details["immutable"] = True
+                    self._table[identifier] = details
+                details.setdefault("immutable", True)
                 details.setdefault("description", None)
                 details.setdefault("avatar", None)
 
@@ -1312,7 +1311,7 @@ class TextMessagingCore(BaseDataManager):
             return item_pair[0] # we sort by email, simply...
 
         def _get_table_container(self, root):
-            return self._inner_datamanager.messaging_data["globally_registered_contacts"]
+            return root["messaging"]["globally_registered_contacts"]
 
         def _item_can_be_edited(self, key, value):
             return (True if not value.get("immutable") else False)
@@ -2670,133 +2669,6 @@ class Items3dViewing(BaseDataManager):
 
 
 
-@register_module
-class Encyclopedia(BaseDataManager):
-
-
-    def _load_initial_data(self, **kwargs):
-        super(Encyclopedia, self)._load_initial_data(**kwargs)
-
-        game_data = self.data
-
-        game_data["global_parameters"].setdefault("encyclopedia_index_visible", False)
-
-        for character in self.get_character_sets().values():
-            character.setdefault("known_article_ids", PersistentList())
-
-        #for (key, value) in game_data["encyclopedia"].items():
-        #    value["keywords"] = list(set(value["keywords"] + [key]))
-
-
-    def _check_database_coherency(self, **kwargs):
-        super(Encyclopedia, self)._check_database_coherency(**kwargs)
-
-        game_data = self.data
-
-        utilities.check_is_bool(game_data["global_parameters"]["encyclopedia_index_visible"])
-
-        all_keywords = []
-
-        for (key, value) in game_data["encyclopedia"].items():
-
-            assert key.lower() == key
-            utilities.check_is_slug(key)
-
-            for keyword in (value["keywords"]):
-                utilities.check_is_slug(keyword)
-            all_keywords += value["keywords"]
-
-            utilities.check_is_restructuredtext(value["content"])
-
-        # the same keyword can be included in several article ids - no check_no_duplicates here!
-
-        for keyword in all_keywords:
-            assert len(keyword) >= 3 # let's avoid too easy matches
-            re.compile(keyword) # keyword must be a proper regular expression
-
-        for character in self.get_character_sets().values():
-            utilities.check_no_duplicates(character["known_article_ids"])
-            assert set(character["known_article_ids"]) < set(self.get_encyclopedia_article_ids())
-
-
-    @readonly_method
-    def is_encyclopedia_index_visible(self):
-        return self.get_global_parameter("encyclopedia_index_visible")
-
-
-    @transaction_watcher
-    def set_encyclopedia_index_visibility(self, value):
-        self.data["global_parameters"]["encyclopedia_index_visible"] = value
-
-
-    @readonly_method
-    def get_encyclopedia_entry(self, article_id):
-        """
-        Returns the rst entry, or None.
-        Fetching is case-insensitive.
-        """
-        article = self.data["encyclopedia"].get(article_id.lower().strip())
-        return article["content"] if article else None
-
-
-    @readonly_method
-    def get_encyclopedia_matches(self, search_string):
-        """
-        Returns the list of encyclopedia article whose keywords match *search_string*, 
-        sorted by most relevant first.
-        
-        Matching is very tolerant, as keywords needn't be separate words in the search string.
-        """
-        keywords_mapping = self.get_encyclopedia_keywords_mapping()
-
-        matches = Counter()
-
-        for keyword, article_ids in keywords_mapping.items():
-            if re.search(keyword, search_string, re.IGNORECASE | re.UNICODE):
-                matches.update(article_ids)
-
-        sorted_couples = matches.most_common()
-        all_article_ids = [couple[0] for couple in sorted_couples] # we discard the exact count of each
-        return all_article_ids
-
-
-    @readonly_method
-    def get_encyclopedia_article_ids(self):
-        return self.data["encyclopedia"].keys()
-
-
-    @readonly_method
-    def get_encyclopedia_keywords_mapping(self):
-        """
-        Returns a dict mapping keywords (which can be regular expressions) to lists 
-        of targeted article ids.
-        """
-        mapping = {}
-        for article_id, article in self.data["encyclopedia"].items():
-            for keyword in article["keywords"]:
-                mapping.setdefault(keyword, [])
-                mapping[keyword].append(article_id)
-        return mapping
-
-
-    @readonly_method
-    def get_character_known_article_ids(self):
-        return self.get_character_properties(self.user.username)["known_article_ids"]
-
-
-    @transaction_watcher(ensure_game_started=False) # automatic action - not harmful
-    def update_character_known_article_ids(self, article_ids):
-        known_article_ids = self.get_character_properties(self.user.username)["known_article_ids"]
-        for article_id in article_ids:
-            if article_id not in known_article_ids:
-                known_article_ids.append(article_id)
-
-
-    @transaction_watcher(ensure_game_started=False) # admin action, actually
-    def reset_character_known_article_ids(self):
-        known_article_ids = self.get_character_properties(self.user.username)["known_article_ids"]
-        del known_article_ids[:]
-
 
 @register_module
 class GameViews(BaseDataManager):
@@ -3050,29 +2922,88 @@ class SpecialAbilities(BaseDataManager):
 
 
 @register_module
-class HelpPages(BaseDataManager):
+class StaticPages(BaseDataManager):
     """
-    Help pages names share their names with GameViews, 
-    and they are meant to be displayed as help popus in the 
-    template of each view.
+    Static pages for all purposes, depending on taxonomy: encyclopedia articles, 
+    help pages, fictional adverts...
     """
 
     def _load_initial_data(self, **kwargs):
-        super(HelpPages, self)._load_initial_data(**kwargs)
-
+        super(StaticPages, self)._load_initial_data(**kwargs)
+        self.static_pages._load_initial_data(**kwargs)
 
     def _check_database_coherency(self, **kwargs):
-        super(HelpPages, self)._check_database_coherency(**kwargs)
+        super(StaticPages, self)._check_database_coherency(**kwargs)
+        self.static_pages._check_database_coherency(**kwargs)
 
-        game_data = self.data
 
-        for (key, value) in game_data["help_pages"].items():
+    class StaticPagesManager(DataTableManager):
 
+        TRANSLATABLE_ITEM_NAME = _lazy("static pages")
+
+        def _load_initial_data(self, **kwargs):
+
+            for identifier, details in self._table.items():
+                details.setdefault("immutable", False) # we assume ANY static page is optional for the game, and can be edited/deleted
+
+                details.setdefault("categories", []) # distinguishes possibles uses of static pages
+                details["categories"] = [details["categories"]] if isinstance(details["categories"], basestring) else details["categories"]
+
+                details.setdefault("keywords", []) # useful for encyclopedia articles mainly
+                details["keywords"] = [details["keywords"]] if isinstance(details["keywords"], basestring) else details["keywords"]
+
+                details.setdefault("description", "") # for gamemaster only
+                details["description"] = details["description"].strip()
+
+        def _preprocess_new_item(self, key, value):
+            assert "immutable" not in value
+            value["immutable"] = False
+            return (key, value)
+            # other params are supposed to exist in "value"
+
+        def _check_item_validity(self, key, value, strict=False):
             utilities.check_is_slug(key)
-            assert key.lower() == key # corresponding to a GameView.NAME
+            assert key.lower() == key # handy
 
-            utilities.check_is_restructuredtext(value)
+            utilities.check_has_keys(value, ["immutable", "categories", "content", "description", "keywords"], strict=strict)
 
+            utilities.check_is_bool(value["immutable"],)
+            utilities.check_is_restructuredtext(value["content"])
+
+            utilities.check_is_list(value["categories"])
+            for category in (value["categories"]):
+                utilities.check_is_slug(category)
+
+            utilities.check_is_list(value["keywords"])
+            for keyword in (value["keywords"]):
+                utilities.check_is_slug(keyword)
+
+            if value["description"]: # optional
+                utilities.check_is_string(value["description"], multiline=False)
+
+        def _sorting_key(self, item_pair):
+            return item_pair[0] # we sort by key, simply...
+
+        def _get_table_container(self, root):
+            return root["static_pages"]
+
+        def _item_can_be_edited(self, key, value):
+            return not value["immutable"]
+
+    static_pages = LazyInstantiationDescriptor(StaticPagesManager)
+
+
+
+
+@register_module
+class HelpPages(BaseDataManager):
+    """
+    Help pages are static pagest that share their names with GameViews, 
+    and they are meant to be displayed as help popups in the 
+    template of each view.
+    """
+
+    HELP_CATEGORY = "help_pages"
 
     @readonly_method
     def get_help_page(self, name):
@@ -3080,18 +3011,154 @@ class HelpPages(BaseDataManager):
         Returns the rst entry, or None.
         Fetching is case-insensitive.
         """
-        return self.data["help_pages"].get(name.lower().strip())
+        key = name.lower().strip()
+        if not self.static_pages.contains_item(name):
+            return None
+        value = self.static_pages.get_item(key)
+        if self.HELP_CATEGORY in value["categories"]:
+            return value
+        else:
+            return None
+        assert False
 
 
     @readonly_method
     def get_help_page_names(self):
         """
-        Mainly for
+        Mainly for tests.
         """
-        return self.data["help_pages"].keys()
+        return [key for (key, value) in self.static_pages.get_all_data().items() if self.HELP_CATEGORY in value["categories"]]
 
 
 
+
+
+
+@register_module
+class Encyclopedia(BaseDataManager):
+
+
+    def _load_initial_data(self, **kwargs):
+        super(Encyclopedia, self)._load_initial_data(**kwargs)
+
+        game_data = self.data
+
+        game_data["global_parameters"].setdefault("encyclopedia_index_visible", False)
+
+        for character in self.get_character_sets().values():
+            character.setdefault("known_article_ids", PersistentList())
+
+        #for (key, value) in game_data["encyclopedia"].items():
+        #    value["keywords"] = list(set(value["keywords"] + [key]))
+
+
+    def _check_database_coherency(self, **kwargs):
+        super(Encyclopedia, self)._check_database_coherency(**kwargs)
+
+        game_data = self.data
+
+        utilities.check_is_bool(game_data["global_parameters"]["encyclopedia_index_visible"])
+
+        all_keywords = []
+
+        for (key, value) in game_data["encyclopedia"].items():
+
+            assert key.lower() == key
+            utilities.check_is_slug(key)
+
+
+            all_keywords += value["keywords"]
+
+            utilities.check_is_restructuredtext(value["content"])
+
+        # the same keyword can be included in several article ids - no check_no_duplicates here!
+
+        for keyword in all_keywords:
+            assert len(keyword) >= 3 # let's avoid too easy matches
+            re.compile(keyword) # keyword must be a proper regular expression
+
+        for character in self.get_character_sets().values():
+            utilities.check_no_duplicates(character["known_article_ids"])
+            assert set(character["known_article_ids"]) < set(self.get_encyclopedia_article_ids())
+
+
+    @readonly_method
+    def is_encyclopedia_index_visible(self):
+        return self.get_global_parameter("encyclopedia_index_visible")
+
+
+    @transaction_watcher
+    def set_encyclopedia_index_visibility(self, value):
+        self.data["global_parameters"]["encyclopedia_index_visible"] = value
+
+
+    @readonly_method
+    def get_encyclopedia_entry(self, article_id):
+        """
+        Returns the rst entry, or None.
+        Fetching is case-insensitive.
+        """
+        article = self.data["encyclopedia"].get(article_id.lower().strip())
+        return article["content"] if article else None
+
+
+    @readonly_method
+    def get_encyclopedia_matches(self, search_string):
+        """
+        Returns the list of encyclopedia article whose keywords match *search_string*, 
+        sorted by most relevant first.
+        
+        Matching is very tolerant, as keywords needn't be separate words in the search string.
+        """
+        keywords_mapping = self.get_encyclopedia_keywords_mapping()
+
+        matches = Counter()
+
+        for keyword, article_ids in keywords_mapping.items():
+            if re.search(keyword, search_string, re.IGNORECASE | re.UNICODE):
+                matches.update(article_ids)
+
+        sorted_couples = matches.most_common()
+        all_article_ids = [couple[0] for couple in sorted_couples] # we discard the exact count of each
+        return all_article_ids
+
+
+    @readonly_method
+    def get_encyclopedia_article_ids(self):
+        return self.data["encyclopedia"].keys()
+
+
+    @readonly_method
+    def get_encyclopedia_keywords_mapping(self):
+        """
+        Returns a dict mapping keywords (which can be regular expressions) to lists 
+        of targeted article ids.
+        """
+        mapping = {}
+        for article_id, article in self.data["encyclopedia"].items():
+            for keyword in article["keywords"]:
+                mapping.setdefault(keyword, [])
+                mapping[keyword].append(article_id)
+        return mapping
+
+
+    @readonly_method
+    def get_character_known_article_ids(self):
+        return self.get_character_properties(self.user.username)["known_article_ids"]
+
+
+    @transaction_watcher(ensure_game_started=False) # automatic action - not harmful
+    def update_character_known_article_ids(self, article_ids):
+        known_article_ids = self.get_character_properties(self.user.username)["known_article_ids"]
+        for article_id in article_ids:
+            if article_id not in known_article_ids:
+                known_article_ids.append(article_id)
+
+
+    @transaction_watcher(ensure_game_started=False) # admin action, actually
+    def reset_character_known_article_ids(self):
+        known_article_ids = self.get_character_properties(self.user.username)["known_article_ids"]
+        del known_article_ids[:]
 
 
 

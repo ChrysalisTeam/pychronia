@@ -1016,8 +1016,10 @@ class TestDatamanager(BaseGameTestCase):
         # preexisting, immutable entry
         fixture_key = "ALL_CONTACTS" # test fixture
         assert container.contains_item(fixture_key)
-        assert fixture_key in container.list_items()
-        assert fixture_key in [i[0] for i in container.list_items(as_sorted_list=True)]
+        assert fixture_key in container.list_keys()
+        assert fixture_key in container.get_all_data()
+        assert container.list_keys() == sorted(container.get_all_data().keys())
+        assert fixture_key in [i[0] for i in container.get_all_data(as_sorted_list=True)]
 
         res = container.get_item(fixture_key)
         assert res["immutable"]
@@ -1039,7 +1041,8 @@ class TestDatamanager(BaseGameTestCase):
 
             # not yet present
             assert not container.contains_item(contact)
-            assert contact not in container.list_items()
+            assert contact not in container.get_all_data()
+            assert contact not in container.list_keys()
 
             with pytest.raises(UsageError):
                 container.get_item(contact)
@@ -1083,7 +1086,7 @@ class TestDatamanager(BaseGameTestCase):
                 container.update_item(contact, good_content.copy())
             assert not container.contains_item(contact)
 
-            assert contact not in container.list_items()
+            assert contact not in container.get_all_data()
             with pytest.raises(UsageError):
                 container.get_item(contact)
 

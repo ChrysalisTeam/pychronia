@@ -126,7 +126,7 @@ global_parameters:
 
     encyclopedia_index_visible: false
     
-    friendship_minimum_duration_h: 24
+    friendship_minimum_duration_h: 1
      
      
 locations:
@@ -465,29 +465,46 @@ encyclopedia:
 
 
 
-help_pages:
+static_pages:
     
-    homepage:      |
-        Well, I dunno what we could say about that page, akshully...
+    uncategorized_stuff:
+        content: "whatever"
         
-        Formatting works *well*, and even **quite well**.
         
-        In that page you can:
-        
-        - admire the background
-        - admire the menus
-        - admire whatever you want
-        
-        Automatic encyclopedia links work too, for example if I write lokon...
-        
-    view_encyclopedia:      |
-        That encyclopedia is broken, that's a fact...
+    # HELP PAGES #
     
-    runic_translation:      |
-        This manual page requires advanced permissions...
+    homepage:
+        categories: "help_pages" # works
+        content: |
+          Well, I dunno what we could say about that page, akshully...
+          
+          Formatting works *well*, and even **quite well**.
+          
+          In that page you can:
+          
+          - admire the background
+          - admire the menus
+          - admire whatever you want
+          
+          Automatic encyclopedia links work too, for example if I write lokon...
+        
+    view_encyclopedia:
+        categories: ["help_pages"]
+        content: |
+          That encyclopedia is broken, that's a fact...
     
-    unexisting_view_entry:      |
-        It doesn't raise errors, of course, but could be detected by game checking systems.
+    runic_translation:
+        categories: ["help_pages"]
+        content:  |
+          This manual page requires advanced permissions...
+    
+    unexisting_view_entry:
+        categories: ["help_pages"]
+        content:       |
+          It doesn't raise errors, of course, but could be detected by game checking systems.
+    
+    
+    
     
 
 nightmare_captchas:

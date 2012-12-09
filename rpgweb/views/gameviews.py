@@ -78,9 +78,10 @@ class FriendshipManagementAbility(AbstractGameView):
     NAME = "friendship_management"
 
     GAME_FORMS = {}
-    ACTIONS = {"propose_friendship": "do_propose_friendship",
-               "accept_friendship": "do_accept_friendship",
-               "cancel_friendship": "do_cancel_friendship"}
+    ACTIONS = {"do_propose_friendship": "do_propose_friendship",
+               "do_accept_friendship": "do_accept_friendship",
+               "do_cancel_proposal" : "do_cancel_proposal",
+               "do_cancel_friendship": "do_cancel_friendship"}
 
     ADMIN_FORMS = {}
 
@@ -91,15 +92,32 @@ class FriendshipManagementAbility(AbstractGameView):
     ALWAYS_AVAILABLE = True
 
 
+    def _relation_type_to_action(self, relation_type):
+        if relation_type == "proposed_to":
+            return ("do_cancel_proposal", _("Cancel proposal"))
+        elif relation_type == "requested_by":
+            return ("do_accept_friendship", _("Accept friendship"))
+        elif relation_type == "recent_friend":
+            return None
+        elif relation_type == "old_friend":
+            return ("do_cancel_friendship", _("Abort friendship"))
+        else:
+            assert relation_type is None, repr(relation_type)
+            return ("do_propose_friendship", _("Propose friendship"))
+
+
     def get_template_vars(self, previous_form_data=None):
 
         username = self.datamanager.user.username
         friendship_statuses = self.datamanager.get_other_characters_friendship_statuses(username)
-        friendship_statuses = sorted(friendship_statuses.items()) # list of pairs (other_username, relation_type) 
+
+
+        friendship_actions = sorted([(other_username, self._relation_type_to_action(relation_type))
+                                     for (other_username, relation_type) in friendship_statuses.items()]) # list of pairs (other_username, relation_type) 
 
         return {
                  'page_title': _("Friendship Management"),
-                 "friendship_statuses": friendship_statuses,
+                 "friendship_actions": friendship_actions,
                }
 
     def do_propose_friendship(self, other_username):

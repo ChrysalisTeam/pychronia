@@ -212,7 +212,11 @@ class DataTableManager(dict):
             raise AbnormalUsageError(_("Items of type %s with key %s already exists") % (cls.TRANSLATABLE_ITEM_NAME, key))
 
     @readonly_method
-    def list_items(self, as_sorted_list=False):
+    def list_keys(self):
+        return sorted(self._table.keys())
+
+    @readonly_method
+    def get_all_data(self, as_sorted_list=False):
         if not as_sorted_list:
             return copy.copy(self._table) # shallow copy of dict
         else:

@@ -12,8 +12,22 @@
 {% block content %}
 
 
-{% for other_username, relation_type in friendship_statuses %}
-    {{ other_username }} - {{ relation_type }} <br/>
+{% for other_username, action_params in friendship_actions %}
+    {{ other_username }}
+ 
+    {% if action_params %}
+    <form action="#" method="post">
+        <input type="hidden" name="_action_" value="{{ action_params.0 }}" />
+        <input type="hidden" name="other_username" value="{{ other_username }}" />
+        <input type="submit" name="submit" value="{{ action_params.1 }}" />
+    </form>
+    {% endif %}
+
+    {{ relation_type }} 
+    
+
+
+    <br/>
 {% endfor %}
 
 
