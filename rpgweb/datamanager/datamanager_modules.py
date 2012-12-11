@@ -207,6 +207,15 @@ class CharacterHandling(BaseDataManager): # TODO REFINE
                           game_data["character_properties"].values()]
             utilities.check_no_duplicates(identities)
 
+
+    def _username_fallback(self, username):
+        """
+        Important - completer method for first arguments that are by default meant to be
+        the "current user".
+        """
+        return username or self.user.username
+
+
     @readonly_method
     def get_character_color_or_none(self, username):
         """
@@ -1872,12 +1881,18 @@ class TextMessagingInterception(BaseDataManager):
                              url=None)
 
     @readonly_method
-    def get_wiretapping_targets(self, username):
+    def get_wiretapping_targets(self, username=None):
+        username = self._username_fallback(username)
         return self.get_character_properties(username)["wiretapping_targets"]
 
 
-
-
+    @readonly_method
+    def get_listeners_for(self, target):
+        listeners = []
+        for player, data in self.get_character_sets().items():
+            if target in data["wiretapping_targets"]:
+                listeners.append(player)
+        return sorted(listeners)
 
 
 

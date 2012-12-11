@@ -1031,7 +1031,7 @@ def wiretapping_management(request, template_name='specific_operations/wiretappi
         if form.is_valid():
             with action_failure_handler(request, _("Wiretap operation successful.")):
                 targets = [request.datamanager.get_username_from_official_name(form.cleaned_data[name]) for name in form.fields if (name.startswith("target") and form.cleaned_data[name] != "__none__")]
-                request.datamanager.change_wiretapping_targets(user.username, targets)
+                request.datamanager.change_current_user_wiretapping_targets(user.username, targets)
         else:
             user.add_error(_("Wiretap operation failed - invalid parameters."))
     # we rebuild the formulary anyway !

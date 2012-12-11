@@ -2032,7 +2032,7 @@ class TestHttpRequests(BaseGameTestCase):
         skipped_patterns = """ability instructions view_help_page profile
                               DATABASE_OPERATIONS FAIL_TEST ajax item_3d_view chat_with_djinn static.serve encrypted_folder 
                               view_single_message logout login secret_question
-                              friendship_management
+                              friendship_management wiretapping_management
                               mercenaries_hiring_view matter_analysis_view""".split() # FIXME REMOVE THIS
 
 
@@ -2256,6 +2256,9 @@ class TestGameViewSystem(BaseGameTestCase):
         for game_view_class in self.dm.GAME_VIEWS_REGISTRY.values():
 
             game_view = self.dm.instantiate_game_view(game_view_class) # must work for abilities too!
+            if hasattr(game_view, "_perform_lazy_initializations"):
+                game_view._perform_lazy_initializations()
+
 
             for form_name, (form_class, callback_name) in game_view.GAME_FORMS.items() + game_view.ADMIN_FORMS.items():
 
@@ -3264,21 +3267,25 @@ class TestSpecialAbilities(BaseGameTestCase):
         char_names = self.dm.get_character_usernames()
 
         wiretapping = self.dm.instantiate_ability("wiretapping")
-
         wiretapping._perform_lazy_initializations() # normally done during request processing
 
-        wiretapping.change_wiretapping_targets(PersistentList())
-        self.assertEqual(wiretapping.get_current_targets(), [])
+        assert wiretapping.get_wiretapping_slots_count() == 0
+        for i in range(3):
+            wiretapping.purchase_wiretapping_slot()
+        assert wiretapping.get_wiretapping_slots_count() == 3
 
-        wiretapping.change_wiretapping_targets([char_names[0], char_names[0], char_names[1]])
+        wiretapping.change_current_user_wiretapping_targets(PersistentList())
+        self.assertEqual(wiretapping.get_wiretapping_targets(), [])
 
-        self.assertEqual(set(wiretapping.get_current_targets()), set([char_names[0], char_names[1]]))
+        wiretapping.change_current_user_wiretapping_targets([char_names[0], char_names[0], char_names[1]])
+
+        self.assertEqual(set(wiretapping.get_wiretapping_targets()), set([char_names[0], char_names[1]]))
         self.assertEqual(wiretapping.get_listeners_for(char_names[1]), ["guy1"])
 
-        self.assertRaises(UsageError, wiretapping.change_wiretapping_targets, ["dummy_name"])
-        self.assertRaises(UsageError, wiretapping.change_wiretapping_targets, [char_names[i] for i in range(wiretapping.get_ability_parameter("max_wiretapping_targets") + 1)])
+        self.assertRaises(UsageError, wiretapping.change_current_user_wiretapping_targets, ["dummy_name"])
+        self.assertRaises(UsageError, wiretapping.change_current_user_wiretapping_targets, [char_names[i] for i in range(wiretapping.get_wiretapping_slots_count() + 1)])
 
-        self.assertEqual(set(wiretapping.get_current_targets()), set([char_names[0], char_names[1]])) # didn't change
+        self.assertEqual(set(wiretapping.get_wiretapping_targets()), set([char_names[0], char_names[1]])) # didn't change
         self.assertEqual(wiretapping.get_listeners_for(char_names[1]), ["guy1"])
 
 
