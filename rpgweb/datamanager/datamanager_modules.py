@@ -1269,7 +1269,7 @@ class TextMessagingCore(BaseDataManager):
         #    attachment = config.SITE_DOMAIN + attachment
 
         if isinstance(date_or_delay_mn, datetime):
-            sent_at = date_or_delay_mn
+            sent_at = date_or_delay_mn # shall already have been computed with "flexible time" !
         else:
             sent_at = self.compute_remote_datetime(date_or_delay_mn) # date_or_delay_mn is None or number
 
@@ -2379,9 +2379,6 @@ class MoneyItemsOwnership(BaseDataManager):
             if properties["is_gem"] and not properties['owner']: # we dont recount gems appearing in character["gems"]
                 total_gems += [properties['unit_cost']] * properties["num_items"]
 
-        for (name, scan_set) in game_data["scanning_sets"].items():
-            if scan_set == "__everywhere__":
-                game_data["scanning_sets"][name] = game_data["locations"].keys()
 
         # We initialize some runtime checking parameters #
         game_data["global_parameters"]["total_digital_money"] = total_digital_money # integer
@@ -2397,11 +2394,7 @@ class MoneyItemsOwnership(BaseDataManager):
         total_digital_money = game_data["global_parameters"]["bank_account"]
         total_gems = game_data["global_parameters"]["spent_gems"][:] # COPY!
         #print ("^^^^^^^^^^^^", "spent_gems", total_gems.count(500))
-        assert game_data["scanning_sets"]
-        for (name, scan_set) in game_data["scanning_sets"].items():
-            utilities.check_is_slug(name)
-            for city in scan_set:
-                assert city in game_data["locations"].keys(), "Wrong city : %s" % city
+
 
         for (name, character) in game_data["character_properties"].items():
             utilities.check_is_positive_int(character["account"], non_zero=False)
@@ -2426,7 +2419,6 @@ class MoneyItemsOwnership(BaseDataManager):
             assert utilities.check_is_positive_int(properties['total_price'])
             assert utilities.check_is_positive_int(properties['unit_cost'])
             assert properties['unit_cost'] == self._compute_gems_unit_cost(total_cost=properties['total_price'], num_gems=properties['num_items'])
-            assert properties['locations'] in game_data["scanning_sets"].keys()
 
             assert properties['owner'] is None or properties['owner'] in game_data["character_properties"].keys()
 
@@ -2454,6 +2446,14 @@ class MoneyItemsOwnership(BaseDataManager):
         return self.data["game_items"]
 
     @readonly_method
+    def get_gem_items(self):
+        return {key: value for (key, value) in self.data["game_items"].items() if value["is_gem"]}
+
+    @readonly_method
+    def get_non_gem_items(self):
+        return {key: value for (key, value) in self.data["game_items"].items() if not value["is_gem"]}
+
+    @readonly_method
     def get_auction_items(self):
         return {key: value for (key, value) in self.data["game_items"].items() if value["auction"]}
 
@@ -2463,6 +2463,7 @@ class MoneyItemsOwnership(BaseDataManager):
             return self.data["game_items"][item_name]
         except KeyError:
             raise UsageError(_("Unknown item %s") % item_name)
+
     """ DEPRECATED
     @readonly_method
     def get_team_gems_count(self, domain):

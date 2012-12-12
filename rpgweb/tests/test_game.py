@@ -741,6 +741,18 @@ class TestDatamanager(BaseGameTestCase):
     def test_available_items_listing(self):
         self._reset_messages()
 
+        #print (">>>", self.dm.__class__.__mro__)
+        all_items = self.dm.get_all_items()
+        gems = self.dm.get_gem_items()
+        artefacts = self.dm.get_non_gem_items()
+
+        assert set(all_items.keys()) == set(gems.keys()) | set(artefacts.keys())
+        assert not (set(gems.keys()) & set(artefacts.keys()))
+
+        auctions = self.dm.get_auction_items()
+        for it in auctions.values():
+            assert it["auction"]
+
         items_old = copy.deepcopy(self.dm.get_all_items())
         gem_names = [key for key, value in items_old.items() if value["is_gem"] and value["num_items"] >= 3] # we only take numerous groups
         object_names = [key for key, value in items_old.items() if not value["is_gem"]]

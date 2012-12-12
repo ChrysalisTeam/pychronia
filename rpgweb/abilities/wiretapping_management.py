@@ -4,7 +4,6 @@ from __future__ import unicode_literals
 
 from rpgweb.common import *
 from ._abstract_ability import *
-import functools
 
 
 
@@ -130,7 +129,7 @@ class WiretappingAbility(AbstractAbility):
         settings = self.settings
 
         _settings_reference = dict(
-                                    max_wiretapping_targets=functools.partial(utilities.check_is_positive_int, non_zero=False)
+                                    max_wiretapping_targets=partial(utilities.check_is_positive_int, non_zero=False)
                                   )
         utilities.check_dictionary_with_template(settings, _settings_reference, strict=strict)
 
