@@ -16,7 +16,7 @@ abilities:
 
     runic_translation:
         settings:
-            translation_delays: [4, 6] # minutes
+            result_delay: [4, 6] # minutes
             random_translation_words: >
                  monkey apocalypse blood sun spear shelter wrath goat son uncle priest drugs moon fire water salt
                  volcano law sacrifice bird squid camel
@@ -48,8 +48,21 @@ abilities:
                 sacred_chest: "sam, here stuffs about *sacred* chest"
                 several_misc_gems: "analysis of several_misc_gems"
                 several_misc_gems2: "analysis of several_misc_gems2"       
+    
+    world_scan:
+        settings:
+            
+            result_delay: [4, 10]  
+     
+            scanning_sets:
+                unique_artefacts_locations: []
+                varied_artefacts_locations: ["Alifir", "Baynon"]
+          
+            item_locations:
+                statue: "unique_artefacts_locations"
+                sacred_chest: "varied_artefacts_locations"
+                baditem: "unique_artefacts_locations"
                 
- 
 
 global_parameters:
 
@@ -86,7 +99,7 @@ global_parameters:
 
     password_recovery_delays: [7, 10]
 
-    scanning_delays: [4, 10]
+    
 
     pangea_radio_frequency: "100.0" # string
 
@@ -136,11 +149,6 @@ locations:
     Alifir:
         spy_message: "People here are very healthy, but quite ignorant. They don't know anything about thye Great Atomic Chaos that took place in Midolia."
  
- 
-scanning_sets:
-
-    banal_gems_locations: __everywhere__
-    varied_gems_locations: [Alifir]
 
 
 

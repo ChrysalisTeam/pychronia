@@ -3301,55 +3301,62 @@ class TestSpecialAbilities(BaseGameTestCase):
         self.assertEqual(wiretapping.get_listeners_for(char_names[1]), ["guy1"])
 
 
-    def ____test_scanning_management(self):
+    def test_world_scan(self):
         self._reset_messages()
 
-        self.dm.data["global_parameters"]["scanning_delays"] = 0.03
+        assert self.dm.data["abilities"] ["world_scan"]["settings"]["result_delay"]
+        self.dm.data["abilities"] ["world_scan"]["settings"]["result_delay"] = 0.03 / 45 # flexible time!
         self.dm.commit()
 
-        res = self.dm._compute_scanning_result("sacred_chest")
-        self.assertEqual(res, "Alifir Endara Denkos Mastden Aklarvik Kosalam Nelm".split())
+        scanner = self.dm.instantiate_ability("world_scan")
+        scanner._perform_lazy_initializations() # normally done during request processing
+        self._set_user("guy1")
 
-        self.assertEqual(self.dm.get_global_parameter("scanned_locations"), [])
+        res = scanner._compute_scanning_result("sacred_chest")
+        self.assertEqual(res, ["Alifir", "Baynon"])
+
+        ###self.assertEqual(self.dm.get_global_parameter("scanned_locations"), [])
 
         self.assertEqual(len(self.dm.get_all_sent_messages()), 0)
         self.assertEqual(len(self.dm.get_all_queued_messages()), 0)
 
-        self.assertRaises(dm_module.UsageError, self.dm.process_scanning_submission, "scanner", "", None)
-
         # AUTOMATED SCAN #
-        self.dm.process_scanning_submission("scanner", "sacred_chest", "dummydescription1")
+        scanner.process_world_scan_submission("sacred_chest")
         #print datetime.utcnow(), "----", self.dm.data["scheduled_actions"]
 
 
         msgs = self.dm.get_all_queued_messages()
         self.assertEqual(len(msgs), 1)
         msg = msgs[0]
-        self.assertEqual(msg["recipient_emails"], ["scanner@teldorium.com"])
+        #print(">>>>>>", msg)
+        self.assertEqual(msg["recipient_emails"], ["guy1@pangea.com"])
         self.assertTrue("scanning" in msg["body"].lower())
+        #print(msg["body"])
+        self.assertTrue("Alifir" in msg["body"])
 
         msgs = self.dm.get_all_sent_messages()
         self.assertEqual(len(msgs), 1)
         msg = msgs[0]
-        self.assertEqual(msg["sender_email"], "scanner@teldorium.com")
+        self.assertEqual(msg["sender_email"], "guy1@pangea.com")
         self.assertTrue("scan" in msg["body"])
-        self.assertTrue("dummydescription1" in msg["body"])
         self.assertTrue(self.dm.get_global_parameter("master_login") in msg["has_read"])
 
-        self.dm.process_periodic_tasks()
-        self.assertEqual(self.dm.get_global_parameter("scanned_locations"), []) # still delayed action
+        res = self.dm.process_periodic_tasks()
+
+        assert res == {"messages_sent": 0, "actions_executed": 0}
 
         time.sleep(3)
 
-        self.assertEqual(self.dm.process_periodic_tasks(), {"messages_sent": 1, "actions_executed": 1})
+        self.assertEqual(self.dm.process_periodic_tasks(), {"messages_sent": 1, "actions_executed": 0})
 
         self.assertEqual(self.dm.get_event_count("DELAYED_ACTION_ERROR"), 0)
         self.assertEqual(self.dm.get_event_count("DELAYED_MESSAGE_ERROR"), 0)
 
-        scanned_locations = self.dm.get_global_parameter("scanned_locations")
-        self.assertTrue("Alifir" in scanned_locations, scanned_locations)
+        ###scanned_locations = self.dm.get_global_parameter("scanned_locations")
+        ###self.assertTrue("Alifir" in scanned_locations, scanned_locations)
 
 
+        ''' DISABLED FOR NOW
         # MANUAL SCAN #
 
         self.dm.process_scanning_submission("scanner", "", "dummydescription2")
@@ -3365,7 +3372,7 @@ class TestSpecialAbilities(BaseGameTestCase):
         self.assertTrue("dummydescription2" in msg["body"])
         self.assertFalse(self.dm.get_global_parameter("master_login") in msg["has_read"])
 
-
+        '''
 
 
     def ____test_bots(self):  # TODO PAKAL PUT BOTS BACK!!!

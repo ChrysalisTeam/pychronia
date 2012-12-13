@@ -80,6 +80,8 @@ class FlexibleTime(BaseDataManager): # TODO REFINE
 
         new_time = datetime.utcnow()
 
+        #print (">>>>>>>>>>>>>>>>>> DATETIME", new_time, "WITH DELAYS", delay_mn)
+
         if delay_mn:
 
             factor = 60 * self.get_global_parameter("game_theoretical_length_days") # important - we scale relatively to the duration of the game
@@ -2178,7 +2180,7 @@ class ActionScheduling(BaseDataManager):
                     args = action["args"]
                     kwargs = action["kwargs"]
                     function(*args, **kwargs)
-                    #print "executed ", function
+                    #print (">>>> executed ", function)
                 except:
                     if __debug__: self.notify_event("DELAYED_ACTION_ERROR")
                     self.logger.critical("Delayed action raised an error when executing : %s" % action, exc_info=True)

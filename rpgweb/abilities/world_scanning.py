@@ -10,6 +10,21 @@ from rpgweb import utilities
 # TODO - change "scanning" to "scan" everywhere!!!
 
 
+
+class ArtefactForm(AbstractGameForm):
+    def __init__(self, ability, *args, **kwargs):
+        super(ArtefactForm, self).__init__(ability, *args, **kwargs)
+
+        _user_items = ability.get_available_items_for_user(ability.user.username)
+        _user_artefacts = {key: value for (key, value) in _user_items.items() if not value["is_gem"]}
+        _user_artefacts_choices = [(key, value["title"]) for (key, value) in _user_artefacts.items()]
+        _user_artefacts_choices.sort(key=lambda pair: pair[1])
+
+        _user_artefacts_choices = [("", _("Select your artefact..."))] + _user_artefacts_choices # ALWAYS non-empty choice field
+        self.fields["item_name"] = forms.ChoiceField(label=_("Object"), choices=_user_artefacts_choices, required=True)
+
+
+
 @register_view
 class WorldScanAbility(AbstractAbility):
 
@@ -17,7 +32,7 @@ class WorldScanAbility(AbstractAbility):
 
     NAME = "world_scan"
 
-    #GAME_FORMS = {"artefact_form": (WiretappingTargetsForm, "change_current_user_wiretapping_targets")}
+    GAME_FORMS = {"artefact_form": (ArtefactForm, "process_world_scan_submission")}
     ADMIN_FORMS = {}
     ACTION_FORMS = {}
 
@@ -31,14 +46,13 @@ class WorldScanAbility(AbstractAbility):
 
     def get_template_vars(self, previous_form_data=None):
 
-        """
-        translation_form = self._instantiate_form(new_form_name="translation_form",
-                                                  hide_on_success=False,
+        artefact_form = self._instantiate_form(new_form_name="artefact_form",
+                                                  hide_on_success=True,
                                                   previous_form_data=previous_form_data)
-        """
+
         return {
                  'page_title': _("World Scan"),
-
+                 'artefact_form': artefact_form
                }
 
 
@@ -46,10 +60,12 @@ class WorldScanAbility(AbstractAbility):
 
     @classmethod
     def _setup_ability_settings(cls, settings):
+        pass
+        '''
         for (name, scan_set) in settings["scanning_sets"].items():
             if scan_set == "__everywhere__":
                 settings["scanning_sets"][name] = self.get_locations().keys()
-
+        '''
 
     def _setup_private_ability_data(self, private_data):
         pass # at the moment we don't care about the history of scans performed
@@ -59,8 +75,10 @@ class WorldScanAbility(AbstractAbility):
 
         settings = self.settings
 
-        all_artefact_items = self.get_all_items().keys()
+        all_artefact_items = self.get_non_gem_items().keys()
         all_locations = self.get_locations().keys()
+
+        assert utilities.check_is_range_or_num(settings["result_delay"])
 
         for (name, scan_set) in settings["scanning_sets"].items():
             utilities.check_is_slug(name)
@@ -68,15 +86,14 @@ class WorldScanAbility(AbstractAbility):
             for location in scan_set:
                 assert location in all_locations
 
-        for (name, scan_set) in settings["item_locations"].items():
-            assert
-            utilities.check_no_duplicates(scan_set)
-            for location in scan_set:
-                assert location in all_locations
-
+        assert  set(all_artefact_items) < set(settings["item_locations"].keys()) # more might be defined in this ability
+        for (item_name, scan_set_name) in settings["item_locations"].items():
+            utilities.check_is_slug(item_name) # in case it's NOT a valid item name, in unstrict mode...
+            assert scan_set_name in settings["scanning_sets"].keys()
 
         if strict:
-            utilities.check_num_keys(settings, 1)
+            assert set(settings["item_locations"].keys()) == set(all_locations)
+            utilities.check_num_keys(settings, 3)
 
             assert not any(self.all_private_data)
 
@@ -84,9 +101,9 @@ class WorldScanAbility(AbstractAbility):
 
     @readonly_method
     def _compute_scanning_result(self, item_name):
-        # Potential evolution - In the future, it might be possible to remove some locations depending on hints provided !
-        item_properties = self.get_item_properties(item_name)
-        scanning_set_name = item_properties["locations"]
+        assert not self.get_item_properties(item_name)["is_gem"], item_name
+        # Potential evolution - in the future, it might be possible to remove some locations depending on hints provided !
+        scanning_set_name = self.settings["item_locations"][item_name]
         locations = self.settings["scanning_sets"][scanning_set_name]
         return locations # list of city names
 
@@ -100,10 +117,12 @@ class WorldScanAbility(AbstractAbility):
 
 
     @transaction_watcher
-    def process_scanning_submission(self, username, item_name):
+    def process_world_scan_submission(self, item_name):
 
-        # here input checking has already been done by form system
+        # here input checking has already been done by form system (item_name is required=True) #
+        assert item_name, item_name
 
+        username = self.datamanager.user.username
         remote_email = "scanner-robot@hightech.com"  # dummy domain too
         local_email = self.get_character_email(username)
 
@@ -117,14 +136,13 @@ class WorldScanAbility(AbstractAbility):
 
         # answer email
 
-        scanning_delay = self.get_global_parameter("scanning_delays")
-
-        item_title = self.get_item_properties(item_name)["title"]
+        scanning_delay = self.settings["result_delay"]
 
         locations = self._compute_scanning_result(item_name)
 
-        locations_found = ", ".join(locations) #, additional_hints))
+        locations_found = ", ".join(locations) if locations else _("None")
 
+        item_title = self.get_item_properties(item_name)["title"]
         subject = "<World Scan Result - %(item)s>" % SDICT(item=item_title)
 
         body = dedent("""
@@ -147,7 +165,7 @@ class WorldScanAbility(AbstractAbility):
 
         return msg_id
 
-        """ Canceled for now - manual resposne by gamemaster, following a description of the object...
+        """ Canceled for now - manual response by gamemaster, from a description of the object...
         else:
             subject = _("Scanning Request - CF description")
             body = _("Please scan the world according to this description.")

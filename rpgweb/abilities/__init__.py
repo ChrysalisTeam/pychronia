@@ -21,3 +21,5 @@ mercenaries_hiring_view = MercenariesHiringAbility.as_view
 from .matter_analysis import MatterAnalysisAbility
 matter_analysis_view = MatterAnalysisAbility.as_view
 
+from .world_scanning import WorldScanAbility
+worl_scan_view = WorldScanAbility.as_view
