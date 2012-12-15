@@ -25,7 +25,7 @@ class AbstractGameForm(forms.Form):
 
         self.fields.insert(0, self.__class__._ability_field_name, forms.CharField(initial=self._get_dotted_class_name(),
                                                                                   widget=forms.HiddenInput))
-        self.target_url = "" # by default we stay on the same page when submitting
+        self.target_url = ""  # by default we stay on the same page when submitting
 
 
     @classmethod
@@ -98,7 +98,7 @@ class SimplePasswordForm(forms.Form):
 
 class AuthenticationForm(forms.Form):
     secret_username = forms.CharField(label=_lazy("Username"), required=True, max_length=30, widget=forms.TextInput(attrs={'autocomplete':'off'}))
-    secret_password = forms.CharField(label=_lazy("Password"), required=False, max_length=30, widget=forms.PasswordInput(attrs={'autocomplete':'off'})) # not required for "password forgotten" action
+    secret_password = forms.CharField(label=_lazy("Password"), required=False, max_length=30, widget=forms.PasswordInput(attrs={'autocomplete':'off'}))  # not required for "password forgotten" action
 
 
 class SecretQuestionForm(forms.Form):
@@ -227,7 +227,7 @@ class MessageComposeForm(forms.Form):
     A simple default form for private messages.
     """
 
-    #origin = forms.CharField(required=False, widget=forms.HiddenInput) # the id of the message to which we replay, if any
+    # origin = forms.CharField(required=False, widget=forms.HiddenInput) # the id of the message to which we replay, if any
     subject = forms.CharField(label=_lazy("Subject"), widget=forms.TextInput(attrs={'size':'35'}))
     body = forms.CharField(label=_lazy("Body"),
         widget=forms.Textarea(attrs={'rows': '8', 'cols':'35'}))
@@ -245,7 +245,7 @@ class MessageComposeForm(forms.Form):
 
         datamanager = request.datamanager
         _all_email_contacts = datamanager.get_user_contacts(datamanager.get_global_parameter("master_login"))
-        #_all_email_choices = zip(_all_email_contacts, _all_email_contacts)
+        # _all_email_choices = zip(_all_email_contacts, _all_email_contacts)
         _delay_values_minutes = [unicode(value) for value in [0, 2, 5, 10, 15, 30, 45, 60]]
         _delay_values_minutes_labels = [value + " minutes" for value in _delay_values_minutes]
         _delay_values_minutes_choices = zip(_delay_values_minutes, _delay_values_minutes_labels)
@@ -258,17 +258,17 @@ class MessageComposeForm(forms.Form):
             msg = request.datamanager.get_sent_message_by_id(message_id)
             recipient = msg["recipient_emails"]
             if hasattr(recipient, "__iter__"):
-                recipient = recipient[0] # FIXME, WELL BUGGY
+                recipient = recipient[0]  # FIXME, WELL BUGGY
             sender = msg["sender_email"]
 
             if request.datamanager.get_username_from_email(recipient) == user.username:
                 # reply message
                 parent_id = message_id
-                if not user.is_master and recipient != datamanager.get_character_email(user.username): # TODO FIXME WEIRD
+                if not user.is_master and recipient != datamanager.get_character_email(user.username):  # TODO FIXME WEIRD
                     user.add_error(_("Access to initial message forbidden"))
                 else:
 
-                    if user.is_master: # else, the sender is imposed anyway...
+                    if user.is_master:  # else, the sender is imposed anyway...
                         sender = msg["recipient_emails"][0]
 
                     recipient = msg["sender_email"]
@@ -278,7 +278,7 @@ class MessageComposeForm(forms.Form):
             if request.datamanager.get_username_from_email(sender) == user.username:
                 # recontact message
                 parent_id = message_id
-                if not user.is_master and sender != datamanager.get_character_email(user.username): # TODO FIXME WEIRD
+                if not user.is_master and sender != datamanager.get_character_email(user.username):  # TODO FIXME WEIRD
                     user.add_error(_("Access to original message forbidden"))
                 else:
                     sender = msg["sender_email"]
@@ -320,7 +320,7 @@ class MessageComposeForm(forms.Form):
         else:
             self.fields.insert(0, "recipients", forms.CharField(label=_(u"Recipient"), initial=recipient))
 
-            available_recipients = datamanager.get_user_contacts(user.username) # should not be "anonymous", as it's used only in member areas !
+            available_recipients = datamanager.get_user_contacts(user.username)  # should not be "anonymous", as it's used only in member areas !
 
             files_username = user.username
 
@@ -343,4 +343,17 @@ class MessageComposeForm(forms.Form):
 
 
 
+
+
+class ArtefactForm(AbstractGameForm):
+    def __init__(self, ability, *args, **kwargs):
+        super(ArtefactForm, self).__init__(ability, *args, **kwargs)
+
+        _user_items = ability.get_available_items_for_user(ability.user.username)
+        _user_artefacts = {key: value for (key, value) in _user_items.items() if not value["is_gem"]}
+        _user_artefacts_choices = [(key, value["title"]) for (key, value) in _user_artefacts.items()]
+        _user_artefacts_choices.sort(key=lambda pair: pair[1])
+
+        _user_artefacts_choices = [("", _("Select your artefact..."))] + _user_artefacts_choices  # ALWAYS non-empty choice field
+        self.fields["item_name"] = forms.ChoiceField(label=_("Object"), choices=_user_artefacts_choices, required=True)
 

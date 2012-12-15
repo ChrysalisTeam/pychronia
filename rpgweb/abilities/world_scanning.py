@@ -6,22 +6,10 @@ from rpgweb.common import *
 from ._abstract_ability import *
 import functools
 from rpgweb import utilities
+from rpgweb.forms import ArtefactForm
 
 # TODO - change "scanning" to "scan" everywhere!!!
 
-
-
-class ArtefactForm(AbstractGameForm):
-    def __init__(self, ability, *args, **kwargs):
-        super(ArtefactForm, self).__init__(ability, *args, **kwargs)
-
-        _user_items = ability.get_available_items_for_user(ability.user.username)
-        _user_artefacts = {key: value for (key, value) in _user_items.items() if not value["is_gem"]}
-        _user_artefacts_choices = [(key, value["title"]) for (key, value) in _user_artefacts.items()]
-        _user_artefacts_choices.sort(key=lambda pair: pair[1])
-
-        _user_artefacts_choices = [("", _("Select your artefact..."))] + _user_artefacts_choices # ALWAYS non-empty choice field
-        self.fields["item_name"] = forms.ChoiceField(label=_("Object"), choices=_user_artefacts_choices, required=True)
 
 
 
@@ -68,7 +56,7 @@ class WorldScanAbility(AbstractAbility):
         '''
 
     def _setup_private_ability_data(self, private_data):
-        pass # at the moment we don't care about the history of scans performed
+        pass  # at the moment we don't care about the history of scans performed
 
 
     def _check_data_sanity(self, strict=False):
@@ -86,9 +74,9 @@ class WorldScanAbility(AbstractAbility):
             for location in scan_set:
                 assert location in all_locations
 
-        assert  set(all_artefact_items) < set(settings["item_locations"].keys()) # more might be defined in this ability
+        assert  set(all_artefact_items) < set(settings["item_locations"].keys())  # more might be defined in this ability
         for (item_name, scan_set_name) in settings["item_locations"].items():
-            utilities.check_is_slug(item_name) # in case it's NOT a valid item name, in unstrict mode...
+            utilities.check_is_slug(item_name)  # in case it's NOT a valid item name, in unstrict mode...
             assert scan_set_name in settings["scanning_sets"].keys()
 
         if strict:
@@ -105,7 +93,7 @@ class WorldScanAbility(AbstractAbility):
         # Potential evolution - in the future, it might be possible to remove some locations depending on hints provided !
         scanning_set_name = self.settings["item_locations"][item_name]
         locations = self.settings["scanning_sets"][scanning_set_name]
-        return locations # list of city names
+        return locations  # list of city names
 
     '''
     # WARNING - do not put inside a transaction manager, else too many levels of transaction when processing scheduled tasks...
@@ -122,6 +110,8 @@ class WorldScanAbility(AbstractAbility):
         # here input checking has already been done by form system (item_name is required=True) #
         assert item_name, item_name
 
+        item_title = self.get_item_properties(item_name)["title"]
+
         username = self.datamanager.user.username
         remote_email = "scanner-robot@hightech.com"  # dummy domain too
         local_email = self.get_character_email(username)
@@ -129,7 +119,7 @@ class WorldScanAbility(AbstractAbility):
 
         # dummy request email, to allow wiretapping
 
-        subject = "Scanning Request - item \"%s\"" % item_name
+        subject = "Scanning Request - \"%s\"" % item_title
         body = _("Please scan the world according to the features of this object.")
         self.post_message(local_email, remote_email, subject, body, date_or_delay_mn=0, is_read=True)
 
@@ -154,7 +144,7 @@ class WorldScanAbility(AbstractAbility):
 
         attachment = None
 
-        ## USELESS self.schedule_delayed_action(scanning_delay, "_add_to_scanned_locations", locations) # pickling instance method
+        # # USELESS self.schedule_delayed_action(scanning_delay, "_add_to_scanned_locations", locations) # pickling instance method
 
         msg_id = self.post_message(remote_email, local_email, subject, body, attachment=attachment,
                                    date_or_delay_mn=scanning_delay)

@@ -184,7 +184,7 @@ class RunicTranslationAbility(AbstractAbility):
 
         # answer email
 
-        translation_delay = self.get_ability_parameter("translation_delays")
+        translation_delay = self.get_ability_parameter("result_delay")
 
         item_title = self.get_item_properties(item_name)["title"]
         translation = self._translate_rune_message(item_name, rune_transcription)

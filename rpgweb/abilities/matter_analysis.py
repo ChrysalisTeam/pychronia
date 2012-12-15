@@ -5,9 +5,10 @@ from __future__ import unicode_literals
 from rpgweb.common import *
 
 from ._abstract_ability import *
+from rpgweb.forms import ArtefactForm
 
 
-
+'''
 class PersonalItemForm(AbstractGameForm):
 
     def __init__(self, datamanager, *args, **kwargs):
@@ -19,14 +20,14 @@ class PersonalItemForm(AbstractGameForm):
         self.fields["item_name"] = forms.ChoiceField(label=_lazy(u"Item"), choices=_objects_choices)
 
         assert self.fields.keyOrder # if reordering needed
-
+'''
 
 
 class MatterAnalysisAbility(AbstractAbility):
 
     NAME = "matter_analysis"
 
-    GAME_FORMS = {"item_form": (PersonalItemForm, "analyse_item")}
+    GAME_FORMS = {"artefact_form": (ArtefactForm, "process_artefact_analysis")}
     ADMIN_FORMS = {}
     TEMPLATE = "abilities/matter_analysis.html"
 
@@ -49,22 +50,39 @@ class MatterAnalysisAbility(AbstractAbility):
 
 
 
+    @readonly_method
+    def _compute_analysis_result(self, item_name):
+        assert not self.get_item_properties(item_name)["is_gem"], item_name
+        report = self.settings["reports"][item_name]
+        return report
+
+
     @transaction_watcher
-    def analyse_item(self, item_name):
+    def process_artefact_analysis(self, item_name):
 
-        available_items = self.datamanager.get_available_items_for_user(self.user.username)
-        if item_name not in available_items:
-            raise AbnormalUsageError(_("You don't possess the item '%s'") % item_name)
+        assert item_name in self.datamanager.get_available_items_for_user(self.user.username), item_name
 
-        item_title = available_items[item_name]["title"]
+        item_title = self.get_item_properties(item_name)["title"]
 
-        sender_email = self.settings["sender_email"]
-        recipient_emails = self.get_character_email(self.user.username)
+        username = self.datamanager.user.username
+        remote_email = self.settings["sender_email"]
+        local_email = self.get_character_email(username)
+
+
+        # dummy request email, to allow wiretapping
+
+        subject = "Deep Analysis Request - item \"%s\"" % item_title
+        body = _("Please analyse the physical and biological properties of this item.")
+        self.post_message(local_email, remote_email, subject, body, date_or_delay_mn=0, is_read=True)
+
+
+        # answer from laboratory
+
         subject = _("Deep Matter Analysis Report - %(item_title)s>") % SDICT(item_title=item_title)
-        body = self.settings["reports"][item_name]
+        body = self._compute_analysis_result(item_name)
 
-        self.post_message(sender_email, recipient_emails, subject, body=body, attachment=None,
-                          date_or_delay_mn=self.settings["processing_delay"])
+        self.post_message(remote_email, local_email, subject, body=body, attachment=None,
+                          date_or_delay_mn=self.settings["result_delay"])
 
         self.log_game_event(_noop("Item '%(item_title)s' sent for deep matter analysis."),
                              PersistentDict(item_title=item_title),
@@ -76,10 +94,10 @@ class MatterAnalysisAbility(AbstractAbility):
 
     @classmethod
     def _setup_ability_settings(cls, settings):
-        pass # nothing to do
+        pass  # nothing to do
 
     def _setup_private_ability_data(self, private_data):
-        pass # nothing to do
+        pass  # nothing to do
 
 
     def _check_data_sanity(self, strict=False):
@@ -87,14 +105,14 @@ class MatterAnalysisAbility(AbstractAbility):
         settings = self.settings
 
         def reports_checker(reports):
-            assert set(reports.keys()) == set(self.get_all_items().keys())
+            assert set(reports.keys()) == set(self.get_non_gem_items().keys())
             for body in reports.values():
                 utilities.check_is_restructuredtext(body)
             return True
 
         _reference = dict(
                             sender_email=utilities.check_is_email,
-                            processing_delay=utilities.check_is_range_or_num,
+                            result_delay=utilities.check_is_range_or_num,
                             reports=reports_checker,
                          )
         utilities.check_dictionary_with_template(settings, _reference, strict=strict)
