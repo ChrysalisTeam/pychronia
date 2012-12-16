@@ -1371,7 +1371,7 @@ class TextMessagingCore(BaseDataManager):
         return (identifier in self.messaging_data["globally_registered_contacts"])
     '''
 
-    def _check_contact_allowed(self, contact_id, access_token=None):
+    def _check_contact_is_allowed(self, contact_id, access_token=None):
         assert contact_id
         if not self.global_contacts.contains_item(contact_id):
             raise UsageError(_("Mailbox %s doesn't exist"))
@@ -1422,6 +1422,8 @@ class TextMessagingCore(BaseDataManager):
         """
         return self.get_characters_emails()
 
+
+
     def ___normalize_recipient_identifier(self, identifier):
         """
         Overridable method to transform an identifier (email or mailing list) into one or more valid emails.
@@ -1438,15 +1440,13 @@ class TextMessagingCore(BaseDataManager):
         if not self.global_contacts.contains_item(identifier):
             raise NormalUsageError(_("Unknown recipient %r") % identifier)
 
-
-
     @readonly_method
     def ___get_available_contacts(self, username):
         return  {key: value for (key, value) in self.global_contacts}
 
 
 
-    def _process_sender_identifier(self, identifier):
+    def __process_sender_identifier(self, identifier):
         """
         If an unknown identifier appears, we assume it's a configuration bug, 
         and we add it to the registry of valid emails.
@@ -1642,15 +1642,6 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
                 utilities.check_is_email(external_contact)
 
 
-    def _recompute_all_external_contacts_via_msgs(self):
-        external_contacts_changed = False
-        for msg in self.messaging_data["messages_sent"]:
-            res = self._update_external_contacts(msg)
-            if res:
-                external_contacts_changed = True
-        return external_contacts_changed
-
-
     def _normalize_recipient_emails(self, recipient_emails): # FIXME CUT THIS IN HIERARCHY
         # accepts any form of argument as "recipients_lists", and converts short names to full emails
 
@@ -1712,6 +1703,13 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
         assert self.is_character(username)
         return username + "@" + self.get_global_parameter("pangea_network_domain")
 
+
+    @readonly_method
+    def get_characters_emails(self):
+        pangea_network_domain = self.get_global_parameter("pangea_network_domain")
+        return [username + "@" + pangea_network_domain for username in self.get_character_usernames()]
+
+
     @readonly_method
     def get_character_or_none_from_email(self, email):
         """
@@ -1722,6 +1720,7 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
             return username
         else:
             return None
+
 
     @readonly_method
     def get_username_from_email(self, email):
@@ -1735,10 +1734,6 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
         else:
             return self.get_global_parameter("master_login")
 
-    @readonly_method
-    def get_characters_emails(self):
-        pangea_network_domain = self.get_global_parameter("pangea_network_domain")
-        return [username + "@" + pangea_network_domain for username in self.get_character_usernames()]
 
     @readonly_method
     def get_external_emails(self, username):
@@ -1888,6 +1883,15 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
 
             new_contacts_added = (new_external_contacts != old_external_contacts)
             return new_contacts_added
+
+
+    def _recompute_all_external_contacts_via_msgs(self):
+        external_contacts_changed = False
+        for msg in self.messaging_data["messages_sent"]:
+            res = self._update_external_contacts(msg)
+            if res:
+                external_contacts_changed = True
+        return external_contacts_changed
 
 
 
