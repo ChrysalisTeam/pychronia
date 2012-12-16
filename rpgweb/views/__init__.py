@@ -20,7 +20,7 @@ from django.template import RequestContext
 from django.utils.html import escape
 from django.utils.translation import ugettext as _, ugettext_lazy as _lazy, ungettext
 from rpgweb.common import *
-from .. import forms # AFTER common, to replace django.forms
+from .. import forms  # AFTER common, to replace django.forms
 from ._abstract_game_view import register_view
 from ..authentication import authenticate_with_credentials, logout_session
 from .. import datamanager as dm_module
@@ -31,7 +31,7 @@ from django.shortcuts import render
 from decorator import decorator
 
 
-from .gameviews import character_profile, friendship_management # IMPORTANT
+from .gameviews import character_profile, friendship_management  # IMPORTANT
 
 '''
 # TODO - transform this into instance which exposes real views as attributes, wrapped with register_view !!!!
@@ -62,13 +62,13 @@ def ability(request, ability_name):
 
 
 def is_nightmare_captcha_successful(request):
-    captcha_id = request.POST.get("captcha_id") # CLEAR TEXT ATM
+    captcha_id = request.POST.get("captcha_id")  # CLEAR TEXT ATM
     if captcha_id:
         attempt = request.POST.get("captcha_answer")
         if attempt:
             try:
                 explanation = request.datamanager.check_captcha_answer_attempt(captcha_id=captcha_id, attempt=attempt)
-                del explanation # how can we display it, actually ?
+                del explanation  # how can we display it, actually ?
                 request.user.add_message(_("Captcha check successful"))
                 return True
             except UsageError:
@@ -150,7 +150,7 @@ def ajax_domotics_security(request):
             request.datamanager.try_unlocking_house_doors(password)
 
     response = unicode(request.datamanager.are_house_doors_open())
-    return HttpResponse(response) # "True" or "False"
+    return HttpResponse(response)  # "True" or "False"
 
 
 
@@ -162,13 +162,13 @@ def ajax_chat(request):
         # User has sent new data.
         msg_text = request.POST.get('message', "")
         msg_text = msg_text.strip()
-        if msg_text: # Just ignore empty strings.
-            request.datamanager.send_chatroom_message(msg_text) # will fail if user is master
+        if msg_text:  # Just ignore empty strings.
+            request.datamanager.send_chatroom_message(msg_text)  # will fail if user is master
 
         return HttpResponse("OK")
 
     else:
-        slice_index = int(request.GET['slice_index']) # may raise exceptions
+        slice_index = int(request.GET['slice_index'])  # may raise exceptions
 
         (new_slice_index, previous_msg_timestamp, new_messages) = request.datamanager.get_chatroom_messages(slice_index)
         msg_format = "<b>%(official_name)s</b> - %(message)s"
@@ -183,7 +183,7 @@ def ajax_chat(request):
             if msg["username"] in request.datamanager.get_character_usernames():
                 official_name = request.datamanager.get_official_name_from_username(msg["username"])
                 color = request.datamanager.get_character_color_or_none(msg["username"])
-            else: # system message
+            else:  # system message
                 official_name = _("system")
                 color = "#ea3f32"
             data = dict(official_name=official_name,
@@ -205,7 +205,7 @@ def ajax_chat(request):
 
 
 
-@register_view(access=UserAccess.authenticated) # game master can view too
+@register_view(access=UserAccess.authenticated)  # game master can view too
 def chatroom(request, template_name='generic_operations/chatroom.html'):
 
     # TODO - move "chatting users" to ajax part, because it must be updated !!
@@ -287,7 +287,7 @@ def compose_message(request, template_name='messaging/compose.html'):
                 request.datamanager.post_message(sender_email, recipient_emails, subject, body, attachment, date_or_delay_mn=delay_mn,
                                                  parent_id=parent_id, use_template=use_template)
 
-                form = forms.MessageComposeForm(request) # new empty form
+                form = forms.MessageComposeForm(request)  # new empty form
 
     else:
         form = forms.MessageComposeForm(request)
@@ -315,7 +315,7 @@ def inbox(request, template_name='messaging/messages.html'):
         messages = request.datamanager.pop_received_messages(request.datamanager.get_character_email(user.username))
         remove_to = True
 
-    messages = list(reversed(messages)) # most recent first
+    messages = list(reversed(messages))  # most recent first
 
     return render(request,
                   template_name,
@@ -368,14 +368,14 @@ def outbox(request, template_name='messaging/messages.html'):
     user = request.datamanager.user
     if user.is_master:
         all_messages = request.datamanager.get_all_sent_messages()
-        external_contacts = request.datamanager.get_external_emails(user.username) # we list only messages sent by external contacts, not robots
+        external_contacts = request.datamanager.get_external_emails(user.username)  # we list only messages sent by external contacts, not robots
         messages = [message for message in all_messages if message["sender_email"] in external_contacts]
         remove_from = False
     else:
         messages = request.datamanager.get_sent_messages(request.datamanager.get_character_email(user.username))
         remove_from = True
 
-    messages = list(reversed(messages)) # most recent first
+    messages = list(reversed(messages))  # most recent first
 
     return render(request,
                   template_name,
@@ -423,7 +423,7 @@ def all_sent_messages(request, template_name='messaging/messages.html'):
 
     messages = request.datamanager.get_all_sent_messages()
 
-    messages = list(reversed(messages)) # most recent first
+    messages = list(reversed(messages))  # most recent first
 
     return render(request,
                   template_name,
@@ -441,7 +441,7 @@ def all_queued_messages(request, template_name='messaging/messages.html'):
 
     messages = request.datamanager.get_all_queued_messages()
 
-    messages = list(reversed(messages)) # most recent first
+    messages = list(reversed(messages))  # most recent first
 
     return render(request,
                   template_name,
@@ -460,7 +460,7 @@ def intercepted_messages(request, template_name='messaging/messages.html'):
     username = request.datamanager.user.username
     messages = request.datamanager.get_intercepted_messages(username)
 
-    messages = list(reversed(messages)) # most recent first
+    messages = list(reversed(messages))  # most recent first
 
     return render(request,
                   template_name,
@@ -478,7 +478,7 @@ def intercepted_messages(request, template_name='messaging/messages.html'):
 def messages_templates(request, template_name='messaging/templates.html'):
 
     messages = request.datamanager.get_messages_templates().items()
-    messages.sort(key=lambda msg: msg[0]) # we sort by template name
+    messages.sort(key=lambda msg: msg[0])  # we sort by template name
 
     return render(request,
                   template_name,
@@ -513,7 +513,7 @@ def secret_question(request, template_name='registration/secret_question.html'):
 
         with action_failure_handler(request, _("Your password has been successfully emailed to your backup address.")):
             try:
-                request.datamanager.process_secret_answer_attempt(username, secret_answer_attempt, target_email) # raises error on bad answer/email
+                request.datamanager.process_secret_answer_attempt(username, secret_answer_attempt, target_email)  # raises error on bad answer/email
                 # success
                 form = None
                 secret_question = None
@@ -563,12 +563,12 @@ def login(request, template_name='registration/login.html'):
                     else:
                         return secret_question(request)
 
-                else: # normal authentication
-                    with action_failure_handler(request, _("You've been successfully logged in.")): # message won't be seen because of redirect...
+                else:  # normal authentication
+                    with action_failure_handler(request, _("You've been successfully logged in.")):  # message won't be seen because of redirect...
                         authenticate_with_credentials(request, username, password)
                         if request.datamanager.is_game_started():
                             return HttpResponseRedirect(reverse(homepage, kwargs=dict(game_instance_id=request.datamanager.game_instance_id)))
-                        else: # little advertisement...
+                        else:  # little advertisement...
                             return HttpResponseRedirect(reverse(opening, kwargs=dict(game_instance_id=request.datamanager.game_instance_id)))
 
     else:
@@ -589,7 +589,7 @@ def logout(request, template_name='registration/logout.html'):
 
     logout_session(request)
 
-    user = request.datamanager.user # take user only NOW, after logout
+    user = request.datamanager.user  # take user only NOW, after logout
     user.add_message(_("You've been successfully logged out."))  # will not be seen with redirection
     return HttpResponseRedirect(reverse(login, kwargs=dict(game_instance_id=request.datamanager.game_instance_id)))
 
@@ -621,16 +621,16 @@ def view_encyclopedia(request, article_id=None, template_name='generic_operation
 
     dm = request.datamanager
 
-    article_ids = None # index of encyclopedia
-    entry = None # current article
-    search_results = None # list of matching article ids
+    article_ids = None  # index of encyclopedia
+    entry = None  # current article
+    search_results = None  # list of matching article ids
 
     if article_id:
         entry = dm.get_encyclopedia_entry(article_id)
         if not entry:
             dm.user.add_error(_("Sorry, no encyclopedia article has been found for id '%s'") % article_id)
     else:
-        search_string = request.REQUEST.get("search") # needn't appear in browser history, but GET needed for encyclopedia links
+        search_string = request.REQUEST.get("search")  # needn't appear in browser history, but GET needed for encyclopedia links
         if search_string:
             if not dm.is_game_started():
                 dm.user.add_error(_("Sorry, the search engine of the encyclopedia is currently under repair"))
@@ -639,7 +639,7 @@ def view_encyclopedia(request, article_id=None, template_name='generic_operation
                 if not search_results:
                     dm.user.add_error(_("Sorry, no matching encyclopedia article has been found for '%s'") % search_string)
                 else:
-                    if dm.is_character(): # not for master or anonymous!!
+                    if dm.is_character():  # not for master or anonymous!!
                         dm.update_character_known_article_ids(search_results)
                     if len(search_results) == 1:
                         dm.user.add_message(_("Your search has led to a single article, below."))
@@ -652,7 +652,7 @@ def view_encyclopedia(request, article_id=None, template_name='generic_operation
     elif dm.is_character():
         article_ids = dm.get_character_known_article_ids()
     else:
-        assert dm.is_anonymous() # we leave article_ids to None
+        assert dm.is_anonymous()  # we leave article_ids to None
 
     return render(request,
                   template_name,
@@ -681,7 +681,7 @@ def view_help_page(request, keyword, template_name='generic_operations/help_page
                     allowed_entry = entry
 
     if not allowed_entry:
-        raise Http404 # no corresponding help page found, or no access permissions
+        raise Http404  # no corresponding help page found, or no access permissions
 
     return render(request,
                   template_name,
@@ -706,18 +706,18 @@ def _build_display_data_from_viewer_settings(viewer_settings):
         image_urls.append(level_urls)
 
     real_per_level = viewer_settings["per_level"] * (2 if viewer_settings["autoreverse"] else 1)
-    assert set([len(imgs) for imgs in image_urls]) == set([real_per_level]) # all levels have the same number of images
+    assert set([len(imgs) for imgs in image_urls]) == set([real_per_level])  # all levels have the same number of images
 
     display_data = dict(levels=viewer_settings["levels"],
                             per_level=real_per_level,
                             x_coefficient=viewer_settings["x_coefficient"],
                             y_coefficient=viewer_settings["y_coefficient"],
-                            rotomatic=viewer_settings["rotomatic"], # ms between rotations
+                            rotomatic=viewer_settings["rotomatic"],  # ms between rotations
                             image_width=viewer_settings["image_width"],
                             image_height=viewer_settings["image_height"],
                             start_level=viewer_settings["start_level"],
                             mode=viewer_settings["mode"],
-                            image_urls=image_urls, # multi-level array
+                            image_urls=image_urls,  # multi-level array
                             music_url=game_file_url(viewer_settings["music"]) if viewer_settings["music"] else None,)
     return display_data
 
@@ -729,7 +729,7 @@ def logo_animation(request, template_name='utilities/item_3d_viewer.html'):
     so they needn't be exposed inside the YAML configuration file
     """
     viewer_settings = dict(levels=1,
-                            per_level=31, # real total of images : 157, but we use steps
+                            per_level=31,  # real total of images : 157, but we use steps
                             index_steps=5,
                             index_offset=0,
                             start_level=1,
@@ -740,7 +740,7 @@ def logo_animation(request, template_name='utilities/item_3d_viewer.html'):
                             x_coefficient=12,
                             y_coefficient=160,
                             autoreverse=True,
-                            rotomatic=150, # ms between rotations
+                            rotomatic=150,  # ms between rotations
                             music="musics/" + request.datamanager.get_global_parameter("opening_music")
                             )
 
@@ -804,7 +804,7 @@ def view_characters(request, template_name='generic_operations/view_characters.h
                 with action_failure_handler(request, _("Money transfer successful.")):
                     request.datamanager.transfer_money_between_characters(sender,
                                                                   recipient,
-                                                                  money_form.cleaned_data['amount']) # amount can only be positive here
+                                                                  money_form.cleaned_data['amount'])  # amount can only be positive here
             else:
                 user.add_error(_("Money transfer failed - invalid parameters."))
 
@@ -849,9 +849,9 @@ def view_characters(request, template_name='generic_operations/view_characters.h
 
     characters = request.datamanager.get_character_sets().items()
 
-    sorted_characters = sorted(characters, key=lambda (key, value): key) # sort by character name
+    sorted_characters = sorted(characters, key=lambda (key, value): key)  # sort by character name
 
-    char_sets = [sorted_characters] # only one list for now...
+    char_sets = [sorted_characters]  # only one list for now...
     '''
     temp_set = []
     old_domain = None
@@ -884,7 +884,7 @@ def view_characters(request, template_name='generic_operations/view_characters.h
 
 
 
-@register_view(access=UserAccess.anonymous) # not always available
+@register_view(access=UserAccess.anonymous)  # not always available
 def items_slideshow(request, template_name='generic_operations/items_slideshow.html'):
 
     user = request.datamanager.user
@@ -895,8 +895,8 @@ def items_slideshow(request, template_name='generic_operations/items_slideshow.h
         items_3D_settings = request.datamanager.get_items_3d_settings()
     else:
         page_title = _("Auction Items")
-        items = request.datamanager.get_available_items_for_user(None) # all items
-        items_3D_settings = {} # IMPORTANT - no access to 3D views here
+        items = request.datamanager.get_available_items_for_user(None)  # all items
+        items_3D_settings = {}  # IMPORTANT - no access to 3D views here
 
     sorted_items = [(key, items[key]) for key in sorted(items.keys())]
 
@@ -909,7 +909,7 @@ def items_slideshow(request, template_name='generic_operations/items_slideshow.h
                     })
 
 
-@register_view(access=UserAccess.authenticated) # not always available, so beware!! TODO FIXME ensure it's not displayed if not available!
+@register_view(access=UserAccess.authenticated)  # not always available, so beware!! TODO FIXME ensure it's not displayed if not available!
 def item_3d_view(request, item, template_name='utilities/item_3d_viewer.html'):
 
     user = request.datamanager.user
@@ -1287,7 +1287,7 @@ def __telecom_investigation(request, template_name='specific_operations/telecom_
 
 
 
-@register_view(access=UserAccess.anonymous, always_available=True) # links in emails must NEVER be broken
+@register_view(access=UserAccess.anonymous, always_available=True)  # links in emails must NEVER be broken
 def encrypted_folder(request, folder, entry_template_name="generic_operations/encryption_password.html", display_template_name='personal_folder.html'):
 
     if not request.datamanager.encrypted_folder_exists(folder):
@@ -1300,11 +1300,11 @@ def encrypted_folder(request, folder, entry_template_name="generic_operations/en
     if request.method == "POST":
         form = forms.SimplePasswordForm(request.POST)
         if form.is_valid():
-            password = form.cleaned_data["simple_password"].lower() # normalized !
+            password = form.cleaned_data["simple_password"].lower()  # normalized !
 
             with action_failure_handler(request, _("Folder decryption successful.")):
                 files = request.datamanager.get_encrypted_files(user.username, folder, password, absolute_urls=False)
-                form = None # triggers the display of files
+                form = None  # triggers the display of files
 
     else:
         form = forms.SimplePasswordForm()
@@ -1320,7 +1320,7 @@ def encrypted_folder(request, folder, entry_template_name="generic_operations/en
                         })
 
 
-    else: # necessarily, we've managed to decrypt the folder
+    else:  # necessarily, we've managed to decrypt the folder
 
         files_to_display = zip([os.path.basename(myfile) for myfile in files], files)
 
@@ -1333,7 +1333,7 @@ def encrypted_folder(request, folder, entry_template_name="generic_operations/en
                         {
                             "page_title": _("Decrypted archive '%s'") % folder,
                             "files": files_to_display,
-                            "display_maintenance_notice": False, # upload disabled notification
+                            "display_maintenance_notice": False,  # upload disabled notification
                         })
 
 
@@ -1346,7 +1346,7 @@ def personal_folder(request, template_name='generic_operations/personal_folder.h
     try:
 
         personal_files = request.datamanager.get_personal_files(user.username if not user.is_master else None,
-                                                                absolute_urls=False) # to allow easier stealing of files from Loyd's session
+                                                                absolute_urls=False)  # to allow easier stealing of files from Loyd's session
 
     except EnvironmentError, e:
         personal_files = []
@@ -1363,7 +1363,7 @@ def personal_folder(request, template_name='generic_operations/personal_folder.h
                     {
                         "page_title": _("Personal Folder"),
                         "files": files_to_display,
-                        "display_maintenance_notice": True, # upload disabled notification
+                        "display_maintenance_notice": True,  # upload disabled notification
                     })
 
 
@@ -1390,7 +1390,7 @@ def view_media(request, template_name='utilities/view_media.html'):
 @register_view(access=UserAccess.master)
 def game_events(request, template_name='administration/game_events.html'):
 
-    events = request.datamanager.get_game_events() # keys : time, message, username
+    events = request.datamanager.get_game_events()  # keys : time, message, username
 
     trans_events = []
     for event in events:
@@ -1403,7 +1403,7 @@ def game_events(request, template_name='administration/game_events.html'):
         del trans_event["substitutions"]
         trans_events.append(trans_event)
 
-    trans_events = list(reversed(trans_events)) # most recent first
+    trans_events = list(reversed(trans_events))  # most recent first
 
     return render(request,
                   template_name,
@@ -1472,8 +1472,8 @@ def get_radio_xml_conf(request, template_name='utilities/web_radio_conf.xml'):
         # we had better not let the player empty, it's not tweaked for that case
         current_audio_messages = [dict(url="http://", title=_("[No radio spot currently available]"))]
 
-    audio_urls = "|".join([msg["url"] for msg in current_audio_messages]) # we expect no "|" inside a single url
-    audio_titles = "|".join([msg["title"].replace("|", "") for msg in current_audio_messages]) # here we can cleanup
+    audio_urls = "|".join([msg["url"] for msg in current_audio_messages])  # we expect no "|" inside a single url
+    audio_titles = "|".join([msg["title"].replace("|", "") for msg in current_audio_messages])  # here we can cleanup
 
     return render(request,
                   template_name,
@@ -1534,7 +1534,7 @@ def manage_audio_messages(request, template_name='administration/webradio_manage
                     request.datamanager.add_radio_message(audio_id)
         elif request.POST.has_key("add_audio_message"):
             with action_failure_handler(request, _("Player notifications have been enqueued.")):
-                audio_id = request.POST["audio_message_added"] # might raise KeyError
+                audio_id = request.POST["audio_message_added"]  # might raise KeyError
                 request.datamanager.add_radio_message(audio_id)
         else:
             user.add_error(_("Unrecognized management request."))
@@ -1570,7 +1570,7 @@ def manage_audio_messages(request, template_name='administration/webradio_manage
 
 
 # TODO - redo this as special ability
-@register_view# (access=UserAccess.character)#(permission="contact_djinns")
+@register_view  # (access=UserAccess.character)#(permission="contact_djinns")
 def chat_with_djinn(request, template_name='specific_operations/chat_with_djinn.html'):
 
     bot_name = request.POST.get("djinn", None)
@@ -1588,9 +1588,9 @@ def chat_with_djinn(request, template_name='specific_operations/chat_with_djinn.
     sentences = []
     for i in range(max(len(history[0]), len(history[1]))):
         if i < len(history[0]):
-            sentences.append(history[0][i]) # input
+            sentences.append(history[0][i])  # input
         if i < len(history[1]):
-            sentences.append(history[1][i]) # output
+            sentences.append(history[1][i])  # output
 
     return render(request,
                   template_name,
@@ -1601,7 +1601,7 @@ def chat_with_djinn(request, template_name='specific_operations/chat_with_djinn.
                     })
 
 
-@register_view(attach_to=chat_with_djinn) #access=UserAccess.character)(permission="contact_djinns")
+@register_view(attach_to=chat_with_djinn)  # access=UserAccess.character)(permission="contact_djinns")
 def ajax_consult_djinns(request):
     user = request.datamanager.user
     message = request.REQUEST.get("message", "")
@@ -1616,20 +1616,20 @@ def ajax_consult_djinns(request):
     # in case of error, a "500" code will be returned
 
 # TODO - redo this as special ability
-@register_view#(access=UserAccess.character)#(permission="contact_djinns")
+@register_view  # (access=UserAccess.character)#(permission="contact_djinns")
 def contact_djinns(request, template_name='specific_operations/contact_djinns.html'):
 
     user = request.datamanager.user
 
     bots_properties = request.datamanager.get_bots_properties()
 
-    if user.is_master: # FIXME
+    if user.is_master:  # FIXME
         available_bots = bots_properties.keys()
-        #team_gems = None
+        # team_gems = None
     else:
         domain = request.datamanager.get_character_properties(user.username)["domain"]
         available_bots = [bot_name for bot_name in bots_properties.keys() if request.datamanager.is_bot_accessible(bot_name, domain)]
-        #team_gems = request.datamanager.get_team_gems_count(domain)
+        # team_gems = request.datamanager.get_team_gems_count(domain)
 
     if available_bots:
         djinn_form = forms.DjinnContactForm(available_bots)
@@ -1645,7 +1645,7 @@ def contact_djinns(request, template_name='specific_operations/contact_djinns.ht
                      'page_title': _("Shrine of Oracles"),
                      'djinn_form': djinn_form,
                      'all_bots': all_bots,
-                     #'team_gems': team_gems,
+                     # 'team_gems': team_gems,
                      'bots_max_answers': request.datamanager.get_global_parameter("bots_max_answers")
                     })
 
@@ -1662,11 +1662,11 @@ def manage_databases(request, template_name='administration/database_management.
 
         if request.POST.has_key("pack_database"):
             with action_failure_handler(request, _("ZODB file packed.")):
-                request.datamanager.pack_database(days=1) # safety measure - take at least one day of gap !
+                request.datamanager.pack_database(days=1)  # safety measure - take at least one day of gap !
 
     formatted_data = request.datamanager.dump_zope_database()
 
-    game_is_started = request.datamanager.is_game_started() # we refresh it
+    game_is_started = request.datamanager.is_game_started()  # we refresh it
     return render(request,
                   template_name,
                     {
@@ -1684,7 +1684,7 @@ def manage_characters(request, template_name='administration/character_managemen
 
     form = None
     if request.method == "POST":
-        form = forms.CharacterForm(data=request.POST,
+        form = forms.CharacterProfileForm(data=request.POST,
                                    allegiances_choices=domain_choices,
                                    permissions_choices=permissions_choices,
                                    prefix=None)
@@ -1710,12 +1710,12 @@ def manage_characters(request, template_name='administration/character_managemen
     character_forms = []
 
     for (username, data) in sorted(request.datamanager.get_character_sets().items()):
-        #print ("AZZZZ", form["target_username"].value(), username)
+        # print ("AZZZZ", form["target_username"].value(), username)
         if form and form["target_username"].value() == username:
             print (" REUSING FOR", username)
             f = form
         else:
-            f = forms.CharacterForm(
+            f = forms.CharacterProfileForm(
                                     allegiances_choices=domain_choices,
                                     permissions_choices=permissions_choices,
                                     prefix=None,
@@ -1746,7 +1746,7 @@ def CHARACTERS_IDENTITIES(request):
 
     # real_life_email: flaviensoual@hotmail.com
 
-    if user.is_master: # FIXME
+    if user.is_master:  # FIXME
         headers = "Username;Nickname;Official Identity;IRL Identity"
         lines = [";".join([K, V["official_name"], V["real_life_identity"]]) for (K, V) in char_sets]
     else:
@@ -1755,7 +1755,7 @@ def CHARACTERS_IDENTITIES(request):
 
     body = "\n".join([headers] + lines).encode("latin-1")
 
-    #body = chr(0xEF) + chr(0xBB) + chr(0xBF) + body # utf8 bom ?
+    # body = chr(0xEF) + chr(0xBB) + chr(0xBF) + body # utf8 bom ?
 
     response = HttpResponse(body, content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename=characters.csv'
@@ -1793,7 +1793,7 @@ def FAIL_TEST(request):
         return HttpResponse(_("Mail sent"))
     except Exception, e:
         raise
-        #return HttpResponse(repr(e))
+        # return HttpResponse(repr(e))
 
 
 

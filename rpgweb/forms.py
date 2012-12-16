@@ -76,7 +76,7 @@ class DropdownMultiSelect(forms.SelectMultiple):
         return data_set != initial_set
     """
 
-class CharacterForm(forms.Form):
+class CharacterProfileForm(forms.Form):
     target_username = forms.CharField(widget=forms.HiddenInput())
 
     real_life_identity = forms.CharField(label=_lazy("Real identity"), required=False, max_length=100)
@@ -87,7 +87,7 @@ class CharacterForm(forms.Form):
 
 
     def __init__(self, allegiances_choices, permissions_choices, *args, **kwargs):
-        super(CharacterForm, self).__init__(*args, **kwargs)
+        super(CharacterProfileForm, self).__init__(*args, **kwargs)
         self.fields['allegiances'].choices = allegiances_choices
         self.fields['permissions'].choices = permissions_choices
 

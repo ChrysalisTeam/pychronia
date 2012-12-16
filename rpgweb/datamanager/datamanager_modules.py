@@ -14,7 +14,7 @@ from rpgweb.datamanager.datamanager_tools import DataTableManager
 PLACEHOLDER = object()
 
 
-MODULES_REGISTRY = []  # IMPORTANT
+MODULES_REGISTRY = [] # IMPORTANT
 
 
 
@@ -80,7 +80,7 @@ class FlexibleTime(BaseDataManager): # TODO REFINE
 
         new_time = datetime.utcnow()
 
-        #print (">>>>>>>>>>>>>>>>>> DATETIME", new_time, "WITH DELAYS", delay_mn)
+        # print (">>>>>>>>>>>>>>>>>> DATETIME", new_time, "WITH DELAYS", delay_mn)
 
         if delay_mn:
 
@@ -97,9 +97,9 @@ class FlexibleTime(BaseDataManager): # TODO REFINE
 
 
             else:
-                delay_s = delay_mn * factor  # no need to coerce to integer here
+                delay_s = delay_mn * factor # no need to coerce to integer here
 
-            #print "DELAY ADDED : %s s" % delay_s
+            # print "DELAY ADDED : %s s" % delay_s
             new_time += timedelta(seconds=delay_s) # delay_s can be a float
 
         return new_time
@@ -255,7 +255,7 @@ class CharacterHandling(BaseDataManager): # TODO REFINE
     def get_character_properties(self, username):
         # for normal characters only
         try:
-            res = self.data["character_properties"][username] #.copy()
+            res = self.data["character_properties"][username] # .copy()
             #res["items"] = [] # FIXME !!!!
             return res
         except KeyError:
@@ -501,7 +501,7 @@ class PlayerAuthentication(BaseDataManager):
             if impersonation == "":
                 session_ticket["impersonation"] = None # we stop current impersonation
             elif not self.can_impersonate(username, impersonation):
-                session_ticket["impersonation"] = None # we reset it even if it was actually good, and just requested_impersonation bad  
+                session_ticket["impersonation"] = None # we reset it even if it was actually good, and just requested_impersonation bad
                 self.user.add_error(_("Unauthorized user impersonation detected: %s") % impersonation)
             else:
                 # OK go for impersonation
@@ -528,7 +528,7 @@ class PlayerAuthentication(BaseDataManager):
         if username == self.get_global_parameter("master_login"): # do not use is_master here, just in case...
             wanted_pwd = self.get_global_parameter("master_password")
         else:
-            data = self.get_character_properties(username)  # might raise UsageError
+            data = self.get_character_properties(username) # might raise UsageError
             wanted_pwd = data["password"]
 
         if password == wanted_pwd:
@@ -1129,7 +1129,7 @@ class TextMessagingCore(BaseDataManager):
                 msg["attachment"] = msg.get("attachment", None)
                 msg["is_used"] = msg.get("is_used", False)
 
-        #complete_messages_templates(game_data["automated_messages_templates"], is_manual=False)
+        # complete_messages_templates(game_data["automated_messages_templates"], is_manual=False)
         complete_messages_templates(messaging["manual_messages_templates"], is_manual=True)
 
 
@@ -1267,7 +1267,7 @@ class TextMessagingCore(BaseDataManager):
                                       subject + body) # unicity more than guaranteed
 
         # NO - let them relative if needed...
-        #if attachment and attachment.startswith("/"):
+        # if attachment and attachment.startswith("/"):
         #    attachment = config.SITE_DOMAIN + attachment
 
         if isinstance(date_or_delay_mn, datetime):
@@ -1275,7 +1275,7 @@ class TextMessagingCore(BaseDataManager):
         else:
             sent_at = self.compute_remote_datetime(date_or_delay_mn) # date_or_delay_mn is None or number
 
-        msg = PersistentDict({# the ids of emails are simply their location in the global message list !
+        msg = PersistentDict({ # the ids of emails are simply their location in the global message list !
                               "sender_email": sender_email,
                               "recipient_emails": recipient_emails,
                               "subject": subject,
@@ -1290,6 +1290,8 @@ class TextMessagingCore(BaseDataManager):
 
 
 
+    # Handling of contacts #
+
     class GloballyRegisteredContactsManager(DataTableManager):
 
         TRANSLATABLE_ITEM_NAME = _lazy("contact")
@@ -1300,23 +1302,31 @@ class TextMessagingCore(BaseDataManager):
                     details = PersistentDict()
                     self._table[identifier] = details
                 details.setdefault("immutable", True)
-                details.setdefault("description", None)
                 details.setdefault("avatar", None)
+                details.setdefault("description", None)
+                details.setdefault("access_tokens", None) # PUBLIC contact
 
         def _preprocess_new_item(self, key, value):
+            if key in self._inner_datamanager._list_reserved_contact_ids():
+                raise NormalUsageError(_("Contact id %s is reserved") % key)
             assert "immutable" not in value
-            value["immutable"] = False
+            value["immutable"] = False # always, else new entry can't even be deleted later on
+            value.setdefault("access_tokens", None)
             return (key, value)
             # other params are supposed to exist in "value"
 
         def _check_item_validity(self, key, value, strict=False):
-            utilities.check_is_slug(key) # not necessarily an email   
+            utilities.check_is_slug(key) # not necessarily an email
+            utilities.check_has_keys(value, ["immutable", "avatar", "description", "access_tokens"], strict=strict)
             utilities.check_is_bool(value["immutable"],)
-            utilities.check_has_keys(value, ["avatar", "description"], strict=strict)
+            if value["access_tokens"] is not None: # None means "public"
+                all_usernames = self.get_character_usernames()
+                for username in value["access_tokens"]:
+                    assert username in all_usernames # this check could be removed in the future, if other kinds of tokens are used!!
             if value["description"]: # optional
                 utilities.check_is_string(value["description"], multiline=False)
             if value["avatar"]: # optional
-                utilities.check_is_slug(value["avatar"]) # FIXME improve that                             
+                utilities.check_is_slug(value["avatar"]) # FIXME improve that
 
         def _sorting_key(self, item_pair):
             return item_pair[0] # we sort by email, simply...
@@ -1328,6 +1338,7 @@ class TextMessagingCore(BaseDataManager):
             return (True if not value.get("immutable") else False)
 
     global_contacts = LazyInstantiationDescriptor(GloballyRegisteredContactsManager)
+
     '''
     def __check_contact_is_in_registry(self, registry, identifier):
         if identifier not in registry:
@@ -1360,26 +1371,89 @@ class TextMessagingCore(BaseDataManager):
         return (identifier in self.messaging_data["globally_registered_contacts"])
     '''
 
-    def _normalize_recipient_identifier(self, identifier):
+    def _check_contact_allowed(self, contact_id, access_token=None):
+        assert contact_id
+        if not self.global_contacts.contains_item(contact_id):
+            raise UsageError(_("Mailbox %s doesn't exist"))
+        data = self.global_contacts.get_item(contact_id)
+        if data["access_token"] is not None: # not a public address
+            if not access_token or access_token not in data["access_token"] :
+                raise UsageError(_("Mailbox %s has rejected your email"))
+
+    @transaction_watcher
+    def grant_private_contact_access_to_character(self, username, contact_id, avatar=None, description=None):
         """
-        Overridable method to transform an identifier into one or more valid mailing lists or emails.
+        """
+        assert username in self.get_character_usernames()
+        if not self.global_contacts.contains_item(contact_id):
+            self.global_contacts.insert_item(contact_id, dict(avatar=avatar, description=description, access_token=PersistentList([username])))
+        else:
+            data = self.global_contacts.get_item(contact_id)
+            data["avatar"] = avatar or data["avatar"] # we let current as fallback
+            data["description"] = description or data["description"] # we let current as fallback
+            if data["access_token"] is None:
+                pass # let PUBLIC access remain as is
+            elif username not in data["access_token"]:
+                data["access_token"].append(username) # will fail if it was a public contact, i.e "None"
+            else:
+                pass # swallow "access already granted" error
+
+    @transaction_watcher
+    def revoke_private_contact_access_from_character(self, username, contact_id):
+        if self.global_contacts.contains_item(contact_id):
+            data = self.global_contacts.get_item(contact_id)
+            if data["access_token"] is None:
+                pass # let PUBLIC access remain as is
+            elif username in data["access_token"]:
+                data["access_token"].remove(username)
+                assert username not in data["access_token"] # only 1 occurrence existed
+                if not data["access_token"]:
+                    # no one has access to that contact anymore, do some cleanup!
+                    self.global_contacts.delete_item(contact_id)
+            else:
+                pass # swallow "access already removed" error
+        else:
+            pass # swallow "no such contact" error
+
+
+    def _list_reserved_contact_ids(self):
+        """
+        May be overridden.
+        """
+        return self.get_characters_emails()
+
+    def ___normalize_recipient_identifier(self, identifier):
+        """
+        Overridable method to transform an identifier (email or mailing list) into one or more valid emails.
         
-        Returns a list of identifiers.
+        Returns a list of emails.
         """
         return [identifier]
 
-    def _check_recipient_identifier(self, identifier):
+    def ____generate_contacts_list(self, username):
         """
         Overridable method that raises a proper exception if the recipient identifier is unexisting or forbidden.
         Returns nothing.
         """
-        raise NormalUsageError(_("Unknown recipient %r") % identifier)
+        if not self.global_contacts.contains_item(identifier):
+            raise NormalUsageError(_("Unknown recipient %r") % identifier)
+
+
+
+    @readonly_method
+    def ___get_available_contacts(self, username):
+        return  {key: value for (key, value) in self.global_contacts}
+
+
 
     def _process_sender_identifier(self, identifier):
         """
         If an unknown identifier appears, we assume it's a configuration bug, 
         and we add it to the registry of valid emails.
         """
+
+
+    # manipulation of message lists #
 
     @staticmethod
     def _get_new_msg_id(index, content):
@@ -1556,7 +1630,7 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
         #TODO CHECK THAT !! New message notification system ###
         all_msg_files = [self.data["audio_messages"][properties["new_messages_notification"]]["file"]
                          for properties in self.data["character_properties"].values()]
-        #all_msg_files += [self.data["audio_messages"][properties["request_for_report"]]["file"] for properties in self.data["domains"].values()]
+        # all_msg_files += [self.data["audio_messages"][properties["request_for_report"]]["file"] for properties in self.data["domains"].values()]
         assert len(set(all_msg_files)) == len(self.data["character_properties"]) # + len(self.data["domains"])# users must NOT share new-message audio notifications
 
         # we recompute external_contacts, and check everything is coherent
@@ -1601,7 +1675,7 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
             elif chunk in data["character_properties"].keys():
                 values = [chunk + "@" + pangea_domain] # we allow short usernames
             else:
-                #print("%%%", data["character_properties"].keys())
+                # print("%%%", data["character_properties"].keys())
                 raise UsageError(_("Unknown user login '%s' in recipients list") % chunk) # surely an input error of user!
             normalized_emails.update(values)
 
@@ -1830,7 +1904,7 @@ class TextMessagingInterception(BaseDataManager):
             data.setdefault("wiretapping_targets", PersistentList())
 
         for (index, msg) in enumerate(messaging["messages_sent"] + messaging["messages_queued"]):
-            # we modify the dicts in place       
+            # we modify the dicts in place
             msg["intercepted_by"] = msg.get("intercepted_by", PersistentList())
 
 
@@ -2180,7 +2254,7 @@ class ActionScheduling(BaseDataManager):
                     args = action["args"]
                     kwargs = action["kwargs"]
                     function(*args, **kwargs)
-                    #print (">>>> executed ", function)
+                    # print (">>>> executed ", function)
                 except:
                     if __debug__: self.notify_event("DELAYED_ACTION_ERROR")
                     self.logger.critical("Delayed action raised an error when executing : %s" % action, exc_info=True)
@@ -2210,10 +2284,10 @@ class ActionScheduling(BaseDataManager):
         args = tuple(args) # already the case, normally...
         kwargs = PersistentDict(kwargs)
 
-        #print >>sys.stderr, "REGISTERING ONE SHOT  ", function
+        # print >>sys.stderr, "REGISTERING ONE SHOT  ", function
 
         if isinstance(function, basestring):
-            #print ("SEARCHING", function, "IN", sorted(dir(self)))
+            # print ("SEARCHING", function, "IN", sorted(dir(self)))
             if not hasattr(self, function) or not hasattr(getattr(self, function), '__call__'):
                 raise TypeError(_("Only strings representing DataManager methods can be scheduled as delayed actions, not %(function)s") %
                                 SDICT(function=function))
@@ -2334,7 +2408,7 @@ class PersonalFiles(BaseDataManager):
         all_files = sorted(common_files + personal_files)
 
         if absolute_urls:
-            domain = config.SITE_DOMAIN  #"http://%s" % Site.objects.get_current().domain
+            domain = config.SITE_DOMAIN # "http://%s" % Site.objects.get_current().domain
             all_files = [domain + user_file for user_file in all_files]
 
         return all_files
@@ -2395,7 +2469,7 @@ class MoneyItemsOwnership(BaseDataManager):
 
         total_digital_money = game_data["global_parameters"]["bank_account"]
         total_gems = game_data["global_parameters"]["spent_gems"][:] # COPY!
-        #print ("^^^^^^^^^^^^", "spent_gems", total_gems.count(500))
+        # print ("^^^^^^^^^^^^", "spent_gems", total_gems.count(500))
 
 
         for (name, character) in game_data["character_properties"].items():
@@ -2410,7 +2484,7 @@ class MoneyItemsOwnership(BaseDataManager):
                     assert gem_origin in game_data["game_items"]
                     assert game_data["game_items"][gem_origin]["is_gem"]
                 total_gems.append(gem_value)
-            #print ("---------", name, total_gems.count(500))
+            # print ("---------", name, total_gems.count(500))
 
         assert game_data["game_items"]
         for (name, properties) in game_data["game_items"].items():
@@ -2834,13 +2908,13 @@ class GameViews(BaseDataManager):
 @register_module
 class SpecialAbilities(BaseDataManager):
     # TODO TEST THAT MODULE TOO !! FIXME TODO TODO
-    ABILITIES_REGISTRY = {}  # abilities automatically register themselves with this dict, thanks to their metaclass
+    ABILITIES_REGISTRY = {} # abilities automatically register themselves with this dict, thanks to their metaclass
 
 
     def _init_from_db(self, **kwargs):
         super(SpecialAbilities, self)._init_from_db(**kwargs)
-        #self.abilities = SpecialAbilities.AbilityLazyLoader(self)
-        #self.sync_ability_data()
+        # self.abilities = SpecialAbilities.AbilityLazyLoader(self)
+        # self.sync_ability_data()
 
 
     @classmethod
@@ -2885,7 +2959,7 @@ class SpecialAbilities(BaseDataManager):
         game_data.setdefault("abilities", {})
         for (key, klass) in self.ABILITIES_REGISTRY.items():
             print("loading", klass)
-            self.logger.debug("Setting up main settings for ability %s" % key) #TODO
+            self.logger.debug("Setting up main settings for ability %s" % key) # TODO
             ability_data = game_data["abilities"].setdefault(key, {})
             klass.setup_main_ability_data(ability_data) # each ability fills its default values
             assert "settings" in game_data["abilities"][key] and "data" in game_data["abilities"][key]

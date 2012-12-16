@@ -42,21 +42,21 @@ from rpgweb.views.gameviews import friendship_management
 class TestUtilities(TestCase):
 
     def __call__(self, *args, **kwds):
-        return unittest.TestCase.run(self, *args, **kwds)  # we bypass test setups from django's TestCase, to use py.test instead
+        return unittest.TestCase.run(self, *args, **kwds) # we bypass test setups from django's TestCase, to use py.test instead
 
     def test_restructuredtext_handling(self):
         from docutils.utils import SystemMessage
         from django.contrib.markup.templatetags.markup import restructuredtext
 
-        assert restructuredtext("""aaaa*aaa""")  # star is ignored
+        assert restructuredtext("""aaaa*aaa""") # star is ignored
 
         # outputs stuffs on stderr, but doesn't break
         restructuredtext("""aaaaaaa*zezez
                               mytitle :xyz:`qqq`
                             ===
-                        """)  # too short underline
+                        """) # too short underline
 
-        assert "title1" in restructuredtext("""title1\n=======\n\naaa""")  # thx to our conf, title1 stays in html fragment
+        assert "title1" in restructuredtext("""title1\n=======\n\naaa""") # thx to our conf, title1 stays in html fragment
 
         html = restructuredtext(dedent("""
                     title1
@@ -78,7 +78,7 @@ class TestUtilities(TestCase):
         docutils_settings = {"initial_header_level": 3,
                              "doctitle_xform": False,
                              "sectsubtitle_xform": False}
-        parts = publish_parts(source=smart_str("""title\n=======\n\naaa\n"""),  # lone title would become document title by default - we prevent it
+        parts = publish_parts(source=smart_str("""title\n=======\n\naaa\n"""), # lone title would become document title by default - we prevent it
                               writer_name="html4css1", settings_overrides=docutils_settings)
         assert parts["fragment"] == '<div class="section" id="title">\n<h3>title</h3>\n<p>aaa</p>\n</div>\n'
         # pprint.pprint(parts)
@@ -142,7 +142,7 @@ class TestUtilities(TestCase):
 
         self.assertTrue(isinstance(newdata["abc"], utilities.PersistentList))
         self.assertTrue(isinstance(newdata["efg"], dummy))
-        self.assertEqual(newdata["hij"], (1.0, 2))  # immutable sequences not touched !
+        self.assertEqual(newdata["hij"], (1.0, 2)) # immutable sequences not touched !
 
         self.assertEqual(len(newdata["efg"].__dict__), 2)
         self.assertTrue(isinstance(newdata["efg"].attr1, utilities.PersistentList))
@@ -207,7 +207,7 @@ class TestUtilities(TestCase):
         assert res == {'characters': {'parent': 'No data'}}
         shutil.rmtree(tmp_dir)
 
-        data.update({"file3.yml": "characters: 99"})  # collision
+        data.update({"file3.yml": "characters: 99"}) # collision
         tmp_dir = _load_data(data)
         with pytest.raises(ValueError):
             utilities.load_yaml_fixture("/badpath")
@@ -256,7 +256,7 @@ class TestUtilities(TestCase):
 
 
 
-class TestMetaAdministration(unittest.TestCase):  # no setup required
+class TestMetaAdministration(unittest.TestCase): # no setup required
 
     def test_game_instance_management_api(self):
 
@@ -317,7 +317,7 @@ class TestDatamanager(BaseGameTestCase):
 
         assert self.dm.request
         self.dm._request = None
-        assert self.dm.request is None  # property
+        assert self.dm.request is None # property
 
         # user notifications get swallowed
         user = self.dm.user
@@ -338,8 +338,8 @@ class TestDatamanager(BaseGameTestCase):
             # we ensure every module calls super() properly
 
             CastratedDataManager = type(str('Dummy' + core_module.__name__), (core_module,), {})
-            castrated_dm = CastratedDataManager.__new__(CastratedDataManager)  # we bypass __init__() call there
-            utilities.TechnicalEventsMixin.__init__(castrated_dm)  # only that mixing gets initizalized
+            castrated_dm = CastratedDataManager.__new__(CastratedDataManager) # we bypass __init__() call there
+            utilities.TechnicalEventsMixin.__init__(castrated_dm) # only that mixing gets initizalized
 
             try:
                 root = _get_zodb_connection().root()
@@ -382,12 +382,12 @@ class TestDatamanager(BaseGameTestCase):
     @for_core_module(FlexibleTime)
     def test_flexible_time_module(self):
 
-        game_length = 45.3  # test fixture
+        game_length = 45.3 # test fixture
         assert self.dm.get_global_parameter("game_theoretical_length_days") == game_length
 
         self.assertRaises(Exception, self.dm.compute_remote_datetime, (3, 2))
 
-        for value in [0.025 / game_length, (0.02 / game_length, 0.03 / game_length)]:  # beware of the rounding to integer seconds...
+        for value in [0.025 / game_length, (0.02 / game_length, 0.03 / game_length)]: # beware of the rounding to integer seconds...
 
             now = datetime.utcnow()
             dt = self.dm.compute_remote_datetime(value)
@@ -434,8 +434,8 @@ class TestDatamanager(BaseGameTestCase):
 
         assert self.dm.update_allegiances("guy1", ["sciences"]) == (["sciences"], [])
         assert self.dm.update_allegiances("guy1", []) == ([], ["sciences"])
-        assert self.dm.update_allegiances("guy1", ["sciences", "acharis"]) == (["acharis", "sciences"], [])  # sorted
-        assert self.dm.update_allegiances("guy1", ["sciences", "acharis"]) == ([], [])  # no changes
+        assert self.dm.update_allegiances("guy1", ["sciences", "acharis"]) == (["acharis", "sciences"], []) # sorted
+        assert self.dm.update_allegiances("guy1", ["sciences", "acharis"]) == ([], []) # no changes
 
         with pytest.raises(UsageError):
             self.dm.update_allegiances("guy1", ["dummydomain"])
@@ -458,7 +458,7 @@ class TestDatamanager(BaseGameTestCase):
         assert not dm.data["friendships"]["sealed"]
 
         with pytest.raises(AbnormalUsageError):
-            dm.propose_friendship("guy1", "guy1")  # auto-friendship impossible
+            dm.propose_friendship("guy1", "guy1") # auto-friendship impossible
 
         assert not dm.propose_friendship("guy2", "guy1")
         assert not dm.are_friends("guy1", "guy2")
@@ -469,13 +469,13 @@ class TestDatamanager(BaseGameTestCase):
         assert self.dm.get_other_characters_friendship_statuses("guy2") == {u'guy1': 'proposed_to', 'guy3': None, 'guy4': None}
 
         with pytest.raises(AbnormalUsageError):
-            dm.propose_friendship("guy2", "guy1")  # friendship already requested
+            dm.propose_friendship("guy2", "guy1") # friendship already requested
 
         assert dm.data["friendships"]["proposed"]
         assert not dm.data["friendships"]["sealed"]
 
         with pytest.raises(AbnormalUsageError):
-            dm.propose_friendship("guy2", "guy1")  # duplicate proposal
+            dm.propose_friendship("guy2", "guy1") # duplicate proposal
 
         assert dm.get_friendship_requests("guy3") == dict(proposed_to=[],
                                                           requested_by=[])
@@ -484,22 +484,22 @@ class TestDatamanager(BaseGameTestCase):
         assert dm.get_friendship_requests("guy2") == dict(proposed_to=["guy1"],
                                                           requested_by=[])
         time.sleep(0.5)
-        assert dm.propose_friendship("guy1", "guy2")  # we seal friendship, here
+        assert dm.propose_friendship("guy1", "guy2") # we seal friendship, here
 
         assert self.dm.get_other_characters_friendship_statuses("guy1") == {u'guy2': 'recent_friend', 'guy3': None, 'guy4': None}
         assert self.dm.get_other_characters_friendship_statuses("guy2") == {u'guy1': 'recent_friend', 'guy3': None, 'guy4': None}
 
         with pytest.raises(AbnormalUsageError):
-            dm.propose_friendship("guy2", "guy1")  # already friends
+            dm.propose_friendship("guy2", "guy1") # already friends
         with pytest.raises(AbnormalUsageError):
-            dm.propose_friendship("guy1", "guy2")  # already friends
+            dm.propose_friendship("guy1", "guy2") # already friends
 
         assert not dm.data["friendships"]["proposed"]
-        assert dm.data["friendships"]["sealed"].keys() == [("guy2", "guy1")]  # order is "first proposer first"
+        assert dm.data["friendships"]["sealed"].keys() == [("guy2", "guy1")] # order is "first proposer first"
 
         key, params = dm.get_friendship_params("guy1", "guy2")
         key_bis, params_bis = dm.get_friendship_params("guy2", "guy1")
-        assert key == key_bis == ("guy2", "guy1")  # order OK
+        assert key == key_bis == ("guy2", "guy1") # order OK
         assert params == params_bis
         assert datetime.utcnow() - timedelta(seconds=5) <= params["proposal_date"] <= datetime.utcnow()
         assert datetime.utcnow() - timedelta(seconds=5) <= params["acceptance_date"] <= datetime.utcnow()
@@ -515,38 +515,38 @@ class TestDatamanager(BaseGameTestCase):
         assert dm.are_friends("guy2", "guy1") == dm.are_friends("guy1", "guy2") == True
         assert dm.are_friends("guy2", "guy3") == dm.are_friends("guy3", "guy4") == False
 
-        assert not dm.propose_friendship("guy2", "guy3")  # proposed
+        assert not dm.propose_friendship("guy2", "guy3") # proposed
         with pytest.raises(AbnormalUsageError):
-            dm.terminate_friendship("guy3", "guy2")  # wrong direction
-        assert not dm.terminate_friendship("guy2", "guy3")  # abort proposal, actually
+            dm.terminate_friendship("guy3", "guy2") # wrong direction
+        assert not dm.terminate_friendship("guy2", "guy3") # abort proposal, actually
 
-        assert not dm.propose_friendship("guy2", "guy3")  # proposed
-        assert dm.propose_friendship("guy3", "guy2")  # accepted
+        assert not dm.propose_friendship("guy2", "guy3") # proposed
+        assert dm.propose_friendship("guy3", "guy2") # accepted
         assert dm.get_friends("guy1") == dm.get_friends("guy3") == ["guy2"]
-        assert dm.get_friends("guy2") in (["guy1", "guy3"], ["guy3", "guy1"])  # order not enforced
+        assert dm.get_friends("guy2") in (["guy1", "guy3"], ["guy3", "guy1"]) # order not enforced
         assert dm.get_friends("guy4") == []
 
         assert self.dm.get_other_characters_friendship_statuses("guy1") == {u'guy2': 'recent_friend', 'guy3': None, 'guy4': None}
         assert self.dm.get_other_characters_friendship_statuses("guy2") == {u'guy1': 'recent_friend', 'guy3': 'recent_friend', 'guy4': None}
 
         with pytest.raises(AbnormalUsageError):
-            dm.terminate_friendship("guy3", "guy4")  # unexisting friendship
+            dm.terminate_friendship("guy3", "guy4") # unexisting friendship
         with pytest.raises(AbnormalUsageError):
-            dm.terminate_friendship("guy1", "guy2")  # too young friendship
+            dm.terminate_friendship("guy1", "guy2") # too young friendship
 
         for pair, params in dm.data["friendships"]["sealed"].items():
             if "guy1" in pair:
-                params["acceptance_date"] -= timedelta(hours=30)  # delay should be 24h in dev
+                params["acceptance_date"] -= timedelta(hours=30) # delay should be 24h in dev
                 dm.commit()
 
         assert self.dm.get_other_characters_friendship_statuses("guy1") == {u'guy2': 'old_friend', 'guy3': None, 'guy4': None}
         assert self.dm.get_other_characters_friendship_statuses("guy2") == {u'guy1': 'old_friend', 'guy3': 'recent_friend', 'guy4': None}
 
-        assert dm.terminate_friendship("guy1", "guy2")  # success
+        assert dm.terminate_friendship("guy1", "guy2") # success
         assert not dm.are_friends("guy2", "guy1")
         with pytest.raises(UsageError):
             dm.get_friendship_params("guy1", "guy2")
-        assert dm.are_friends("guy2", "guy3")  # untouched
+        assert dm.are_friends("guy2", "guy3") # untouched
 
         assert self.dm.get_other_characters_friendship_statuses("guy1") == {u'guy2': None, 'guy3': None, 'guy4': None}
         assert self.dm.get_other_characters_friendship_statuses("guy2") == {u'guy1': None, 'guy3': 'recent_friend', 'guy4': None}
@@ -644,20 +644,20 @@ class TestDatamanager(BaseGameTestCase):
         items_old = copy.deepcopy(self.dm.get_all_items())
         bank_old = self.dm.get_global_parameter("bank_account")
 
-        gem_names = [key for key, value in items_old.items() if value["is_gem"] and value["num_items"] >= 3]  # we only take numerous groups
+        gem_names = [key for key, value in items_old.items() if value["is_gem"] and value["num_items"] >= 3] # we only take numerous groups
         object_names = [key for key, value in items_old.items() if not value["is_gem"]]
 
         gem_name1 = gem_names[0]
-        gem_name2 = gem_names[1]  # wont be sold
+        gem_name2 = gem_names[1] # wont be sold
         object_name = object_names[0]
         bank_name = self.dm.get_global_parameter("bank_name")
 
         self.assertRaises(UsageError, self.dm.transfer_money_between_characters, bank_name, "guy1", 10000000)
         self.assertRaises(UsageError, self.dm.transfer_money_between_characters, "guy3", "guy1", -100)
         self.assertRaises(UsageError, self.dm.transfer_money_between_characters, "guy3", "guy1", 0)
-        self.assertRaises(UsageError, self.dm.transfer_money_between_characters, "guy3", "guy1", lg_old["account"] + 1)  # too much
-        self.assertRaises(UsageError, self.dm.transfer_money_between_characters, "guy3", "guy3", 1)  # same ids
-        self.assertRaises(UsageError, self.dm.transfer_object_to_character, "dummy_name", "guy3")  # shall NOT happen
+        self.assertRaises(UsageError, self.dm.transfer_money_between_characters, "guy3", "guy1", lg_old["account"] + 1) # too much
+        self.assertRaises(UsageError, self.dm.transfer_money_between_characters, "guy3", "guy3", 1) # same ids
+        self.assertRaises(UsageError, self.dm.transfer_object_to_character, "dummy_name", "guy3") # shall NOT happen
         self.assertRaises(UsageError, self.dm.transfer_object_to_character, object_name, "dummy_name")
 
 
@@ -674,7 +674,7 @@ class TestDatamanager(BaseGameTestCase):
 
         self.dm.transfer_money_between_characters("guy3", "bank", 100)
         self.assertEqual(self.dm.get_global_parameter("bank_account"), bank_old + 100)
-        self.assertEqual(self.dm.get_character_properties("guy3")["account"], lg_old["account"] - 200)  # 100 to guy1 + 100 to bank
+        self.assertEqual(self.dm.get_character_properties("guy3")["account"], lg_old["account"] - 200) # 100 to guy1 + 100 to bank
         self.dm.transfer_money_between_characters("bank", "guy3", 100)
         self.assertEqual(self.dm.get_global_parameter("bank_account"), bank_old)
 
@@ -682,9 +682,9 @@ class TestDatamanager(BaseGameTestCase):
         gems_given = self.dm.get_character_properties("guy3")["gems"][0:3]
         self.dm.transfer_gems_between_characters("guy3", "guy1", gems_given)
         self.dm.transfer_gems_between_characters("guy1", "guy3", gems_given)
-        self.assertRaises(UsageError, self.dm.transfer_gems_between_characters, "guy3", "guy3", gems_given)  # same ids
-        self.assertRaises(UsageError, self.dm.transfer_gems_between_characters, "guy3", "guy1", gems_given + [27, 32])  # not possessed
-        self.assertRaises(UsageError, self.dm.transfer_gems_between_characters, "guy3", "guy1", [])  # at least 1 gem needed
+        self.assertRaises(UsageError, self.dm.transfer_gems_between_characters, "guy3", "guy3", gems_given) # same ids
+        self.assertRaises(UsageError, self.dm.transfer_gems_between_characters, "guy3", "guy1", gems_given + [27, 32]) # not possessed
+        self.assertRaises(UsageError, self.dm.transfer_gems_between_characters, "guy3", "guy1", []) # at least 1 gem needed
 
         items_new = copy.deepcopy(self.dm.get_all_items())
         lg_new = self.dm.get_character_properties("guy3")
@@ -699,7 +699,7 @@ class TestDatamanager(BaseGameTestCase):
 
         # we test possible and impossible undo operations
 
-        self.assertRaises(Exception, self.dm.transfer_object_to_character, gem_name2, None)  # same ids - already free item
+        self.assertRaises(Exception, self.dm.transfer_object_to_character, gem_name2, None) # same ids - already free item
 
         # check no changes occured
         self.assertEqual(self.dm.get_character_properties("guy3"), self.dm.get_character_properties("guy3"))
@@ -707,7 +707,7 @@ class TestDatamanager(BaseGameTestCase):
         self.assertEqual(self.dm.get_all_items(), items_new)
 
         # undoing item sales
-        self.assertRaises(Exception, self.dm.transfer_object_to_character, gem_name1, "guy3")  # same ids - same current owner and target
+        self.assertRaises(Exception, self.dm.transfer_object_to_character, gem_name1, "guy3") # same ids - same current owner and target
         self.dm.transfer_object_to_character(gem_name1, None)
         self.dm.transfer_object_to_character(object_name, None)
         items_new = copy.deepcopy(self.dm.get_all_items())
@@ -725,7 +725,7 @@ class TestDatamanager(BaseGameTestCase):
         gem = self.dm.get_character_properties("guy3")["gems"].pop()
         self.dm.commit()
         with pytest.raises(UsageError) as exc_info:
-            self.dm.transfer_object_to_character(gem_name1, random.choice(("guy1", None)))  # one gem is lacking, so...
+            self.dm.transfer_object_to_character(gem_name1, random.choice(("guy1", None))) # one gem is lacking, so...
         assert "already been used" in str(exc_info.value)
 
         self.dm.get_character_properties("guy3")["gems"].append(gem)
@@ -754,7 +754,7 @@ class TestDatamanager(BaseGameTestCase):
             assert it["auction"]
 
         items_old = copy.deepcopy(self.dm.get_all_items())
-        gem_names = [key for key, value in items_old.items() if value["is_gem"] and value["num_items"] >= 3]  # we only take numerous groups
+        gem_names = [key for key, value in items_old.items() if value["is_gem"] and value["num_items"] >= 3] # we only take numerous groups
         object_names = [key for key, value in items_old.items() if not value["is_gem"]]
 
         gem_name1 = gem_names[0]
@@ -767,7 +767,7 @@ class TestDatamanager(BaseGameTestCase):
 
         self.assertEqual(self.dm.get_available_items_for_user("master"), self.dm.get_all_items())
         self.assertEqual(set(self.dm.get_available_items_for_user("guy1").keys()), set([]))
-        self.assertNotEqual(self.dm.get_available_items_for_user("guy2"), self.dm.get_available_items_for_user("guy1"))  # no sharing of objects, even shared allegiance
+        self.assertNotEqual(self.dm.get_available_items_for_user("guy2"), self.dm.get_available_items_for_user("guy1")) # no sharing of objects, even shared allegiance
         self.assertEqual(set(self.dm.get_available_items_for_user("guy2").keys()), set([gem_name1, gem_name2]))
         self.assertEqual(set(self.dm.get_available_items_for_user("guy3").keys()), set([object_name]))
 
@@ -785,10 +785,10 @@ class TestDatamanager(BaseGameTestCase):
         self.assertEqual(len(files1), len(files1bis))
         self.assertTrue(files1bis[0].startswith("/"))
 
-        files2 = self.dm.get_personal_files(None)  # private game master files
+        files2 = self.dm.get_personal_files(None) # private game master files
         self.assertTrue(files2)
 
-        c = Client()  # file retrievals
+        c = Client() # file retrievals
         response = c.get(files1[0])
         self.assertEqual(response.status_code, 200)
         response = c.get(files1bis[0])
@@ -810,7 +810,7 @@ class TestDatamanager(BaseGameTestCase):
         self.assertRaises(dm_module.UsageError, self.dm.get_encrypted_files, "hacker", "dummyarchive", "bagheera")
         self.assertRaises(dm_module.UsageError, self.dm.get_encrypted_files, "hacker", "guy2_report", "badpassword")
 
-        files = self.dm.get_encrypted_files("badusername", "guy2_report", "schamaalamoktuhg", absolute_urls=True)  # no error raised for bad username !
+        files = self.dm.get_encrypted_files("badusername", "guy2_report", "schamaalamoktuhg", absolute_urls=True) # no error raised for bad username !
         self.assertTrue(files, files)
 
         files1 = self.dm.get_encrypted_files("hacker", "guy2_report", "evans", absolute_urls=True)
@@ -818,7 +818,7 @@ class TestDatamanager(BaseGameTestCase):
         files2 = self.dm.get_encrypted_files("hacker", "guy2_report", "evans", absolute_urls=False)
         self.assertEqual(len(files1), len(files2))
 
-        c = Client()  # file retrievals
+        c = Client() # file retrievals
         response = c.get(files1[0])
         self.assertEqual(response.status_code, 200, (response.status_code, files1[0]))
         response = c.get(files2[0])
@@ -830,7 +830,7 @@ class TestDatamanager(BaseGameTestCase):
     @for_core_module(Encyclopedia)
     def test_encyclopedia(self):
 
-        utilities.check_is_restructuredtext(self.dm.get_encyclopedia_entry(" gerbiL_speCies "))  # tolerant fetching
+        utilities.check_is_restructuredtext(self.dm.get_encyclopedia_entry(" gerbiL_speCies ")) # tolerant fetching
         assert self.dm.get_encyclopedia_entry("qskiqsjdqsid") is None
         assert "gerbil_species" in self.dm.get_encyclopedia_article_ids()
 
@@ -841,7 +841,7 @@ class TestDatamanager(BaseGameTestCase):
 
         # best matches
         assert self.dm.get_encyclopedia_matches("qssqs") == []
-        assert self.dm.get_encyclopedia_matches("hiqqsd bAdgerbilZ") == ["gerbil_species"]  # we're VERY tolerant
+        assert self.dm.get_encyclopedia_matches("hiqqsd bAdgerbilZ") == ["gerbil_species"] # we're VERY tolerant
         assert self.dm.get_encyclopedia_matches("rodEnt") == ["gerbil_species"]
         assert self.dm.get_encyclopedia_matches("hi gerbils animaL") == ["gerbil_species", "lokon"]
         assert self.dm.get_encyclopedia_matches("animal loKon") == ["lokon", "gerbil_species"]
@@ -898,7 +898,7 @@ class TestDatamanager(BaseGameTestCase):
     def test_message_automated_state_changes(self):
         self._reset_messages()
 
-        email = self.dm.get_character_email  # function
+        email = self.dm.get_character_email # function
 
         msg_id = self.dm.post_message(email("guy1"), email("guy2"), subject="ssd", body="qsdqsd")
 
@@ -910,11 +910,11 @@ class TestDatamanager(BaseGameTestCase):
         msg_id2 = self.dm.post_message(email("guy2"), email("guy1"), subject="ssd", body="qsdqsd", parent_id=msg_id)
         msg_id3 = self.dm.post_message(email("guy3"), email("guy2"), subject="ssd", body="qsdqsd", parent_id=msg_id)
 
-        msg = self.dm.get_sent_message_by_id(msg_id2)  # new message isn't impacted by parent_id
+        msg = self.dm.get_sent_message_by_id(msg_id2) # new message isn't impacted by parent_id
         self.assertFalse(msg["has_replied"])
         self.assertFalse(msg["has_read"])
 
-        msg = self.dm.get_sent_message_by_id(msg_id)  # replied-to message impacted
+        msg = self.dm.get_sent_message_by_id(msg_id) # replied-to message impacted
         self.assertEqual(len(msg["has_replied"]), 2)
         self.assertTrue("guy2" in msg["has_replied"])
         self.assertTrue("guy3" in msg["has_replied"])
@@ -929,12 +929,12 @@ class TestDatamanager(BaseGameTestCase):
 
         msg_id4 = self.dm.post_message(email("guy3"), email("guy1"), subject="ssd", body="qsdqsd", use_template=tpl_id)
 
-        msg = self.dm.get_sent_message_by_id(msg_id4)  # new message isn't impacted
+        msg = self.dm.get_sent_message_by_id(msg_id4) # new message isn't impacted
         self.assertFalse(msg["has_replied"])
         self.assertFalse(msg["has_read"])
 
         tpl = self.dm.get_message_template(tpl_id)
-        self.assertEqual(tpl["is_used"], True)  # template properly marked as used
+        self.assertEqual(tpl["is_used"], True) # template properly marked as used
 
 
     @for_core_module(TextMessagingForCharacters)
@@ -1006,8 +1006,8 @@ class TestDatamanager(BaseGameTestCase):
         self.assertEqual(len(emails), len(self.dm.get_character_usernames()) + 5)
 
         emails = self.dm.get_user_contacts("guy2")
-        self.assertEqual(len(emails), len(self.dm.get_character_usernames()) + 2, emails)  # himself & fellows, + 1 external contact + 1 implied by original msgs
-        self.assertTrue("guy3@pangea.com" in emails)  # proper domain name...
+        self.assertEqual(len(emails), len(self.dm.get_character_usernames()) + 2, emails) # himself & fellows, + 1 external contact + 1 implied by original msgs
+        self.assertTrue("guy3@pangea.com" in emails) # proper domain name...
 
         emails = self.dm.get_user_contacts("guy3")
         self.assertEqual(len(emails), len(self.dm.get_character_usernames()), emails)
@@ -1021,12 +1021,12 @@ class TestDatamanager(BaseGameTestCase):
         contact1 = "SOME_EMAILS"
         contact2 = "phoenix@stash.com"
         contact_bad = "qsd qsdqsd"
-        good_content = dict(avatar="qsdqsd", description="here a description")
+        good_content = dict(avatar="qsdqsd", description="here a description", access_tokens=None)
 
         container = self.dm.global_contacts
 
         # preexisting, immutable entry
-        fixture_key = "ALL_CONTACTS"  # test fixture
+        fixture_key = "ALL_CONTACTS" # test fixture
         assert container.contains_item(fixture_key)
         assert fixture_key in container.list_keys()
         assert fixture_key in container.get_all_data()
@@ -1036,16 +1036,16 @@ class TestDatamanager(BaseGameTestCase):
         res = container.get_item(fixture_key)
         assert res["immutable"]
         with pytest.raises(UsageError):
-            container.insert_item(fixture_key, good_content.copy())  # already existing
+            container.insert_item(fixture_key, good_content.copy()) # already existing
         with pytest.raises(UsageError):
-            container.update_item(fixture_key, good_content.copy())  # immutable
+            container.update_item(fixture_key, good_content.copy()) # immutable
         with pytest.raises(UsageError):
-            container.delete_item(fixture_key)  # immutable
+            container.delete_item(fixture_key) # immutable
         assert container.contains_item(fixture_key)
 
 
         with pytest.raises(UsageError):
-            container.insert_item(contact_bad, good_content.copy())  # bad key
+            container.insert_item(contact_bad, good_content.copy()) # bad key
 
 
         # dealing with new entry (mutable)
@@ -1065,9 +1065,9 @@ class TestDatamanager(BaseGameTestCase):
 
 
             with pytest.raises(UsageError):
-                container.insert_item(contact, {"avatar": 11})  # bad content
+                container.insert_item(contact, {"avatar": 11}) # bad content
             with pytest.raises(UsageError):
-                container.insert_item(contact, {"description": False})  # bad content
+                container.insert_item(contact, {"description": False}) # bad content
 
 
             container.insert_item(contact, good_content.copy())
@@ -1081,13 +1081,13 @@ class TestDatamanager(BaseGameTestCase):
             assert res == good_content
 
             with pytest.raises(UsageError):
-                container.update_item(contact, {"avatar": 11})  # bad content
+                container.update_item(contact, {"avatar": 11}) # bad content
             container.update_item(contact, {"avatar": None, "description": None})
 
             res = container.get_item(contact).copy()
             assert res["immutable"] == False
             del res["immutable"]
-            assert res == {"avatar": None, "description": None}
+            assert res == {"avatar": None, "description": None, "access_tokens": None}
 
             assert container.contains_item(contact)
 
@@ -1150,13 +1150,13 @@ class TestDatamanager(BaseGameTestCase):
 
         self._reset_messages()
 
-        email = self.dm.get_character_email  # function
+        email = self.dm.get_character_email # function
 
         MASTER = self.dm.get_global_parameter("master_login")
 
         self.assertEqual(email("guy3"), "guy3@pangea.com")
         with pytest.raises(AssertionError):
-            email("master")  # not OK with get_character_email!
+            email("master") # not OK with get_character_email!
 
 
         record1 = {
@@ -1192,10 +1192,10 @@ class TestDatamanager(BaseGameTestCase):
             "body": "Here is the body of this message lililili...",
             }
 
-        self.dm.post_message("guy1@masslavia.com", "netsdfworkerds@masslavia.com", subject="ssd", body="qsdqsd")  # this works too !
+        self.dm.post_message("guy1@masslavia.com", "netsdfworkerds@masslavia.com", subject="ssd", body="qsdqsd") # this works too !
         self.assertEqual(len(self.dm.get_game_master_messages()), 1)
         self.dm.get_game_master_messages()[0]["has_read"] = utilities.PersistentList(
-            self.dm.get_character_usernames() + [self.dm.get_global_parameter("master_login")])  # we hack this message not to break following assertions
+            self.dm.get_character_usernames() + [self.dm.get_global_parameter("master_login")]) # we hack this message not to break following assertions
 
         self.dm.post_message(**record1)
         time.sleep(0.2)
@@ -1209,7 +1209,7 @@ class TestDatamanager(BaseGameTestCase):
         time.sleep(0.2)
         self.dm.post_message(**record4)
         time.sleep(0.2)
-        self.dm.post_message(**record1)  # this message will get back to the 2nd place of list !
+        self.dm.post_message(**record1) # this message will get back to the 2nd place of list !
 
         self.assertEqual(self.dm.get_unread_messages_count("guy3"), 3)
 
@@ -1217,12 +1217,12 @@ class TestDatamanager(BaseGameTestCase):
 
         self.assertEqual(len(self.dm.get_all_sent_messages()), 6)
 
-        self.assertEqual(len(self.dm.get_game_master_messages()), 2)  # secret services + wrong email address
+        self.assertEqual(len(self.dm.get_game_master_messages()), 2) # secret services + wrong email address
 
         expected_notifications = {'guy2': "new_messages_2", 'guy3': "new_messages_1"}
         self.assertEqual(self.dm.get_pending_new_message_notifications(), expected_notifications)
 
-        self.assertEqual(self.dm.get_pending_new_message_notifications(), expected_notifications)  # no disappearance
+        self.assertEqual(self.dm.get_pending_new_message_notifications(), expected_notifications) # no disappearance
 
         self.assertTrue(self.dm.has_new_message_notification("guy3"))
         self.assertEqual(len(self.dm.pop_received_messages("guy3@pangea.com")), 3)
@@ -1236,7 +1236,7 @@ class TestDatamanager(BaseGameTestCase):
         self.dm.set_new_message_notification(utilities.PersistentList(["guy2@pangea.com"]), new_status=False)
         self.assertFalse(self.dm.has_new_message_notification("guy2"))
 
-        self.assertEqual(self.dm.get_pending_new_message_notifications(), {})  # all have been reset
+        self.assertEqual(self.dm.get_pending_new_message_notifications(), {}) # all have been reset
 
         self.assertEqual(len(self.dm.get_received_messages(self.dm.get_character_email("guy1"))), 0)
 
@@ -1259,8 +1259,8 @@ class TestDatamanager(BaseGameTestCase):
         # NO - we dont notify interceptions - self.assertTrue(self.dm.get_global_parameter("message_intercepted_audio_id") in self.dm.get_all_next_audio_messages(), self.dm.get_all_next_audio_messages())
 
         # msg has_read state changes
-        msg_id1 = self.dm.get_all_sent_messages()[0]["id"]  # sent to guy3
-        msg_id2 = self.dm.get_all_sent_messages()[3]["id"]  # sent to external contact
+        msg_id1 = self.dm.get_all_sent_messages()[0]["id"] # sent to guy3
+        msg_id2 = self.dm.get_all_sent_messages()[3]["id"] # sent to external contact
 
         """ # NO PROBLEM with wrong msg owner
         self.assertRaises(Exception, self.dm.set_message_read_state, MASTER, msg_id1, True)
@@ -1303,10 +1303,10 @@ class TestDatamanager(BaseGameTestCase):
     def test_audio_messages_management(self):
         self._reset_messages()
 
-        email = self.dm.get_character_email  # function
+        email = self.dm.get_character_email # function
 
         self.assertRaises(dm_module.UsageError, self.dm.check_radio_frequency, "dummyfrequency")
-        self.assertEqual(self.dm.check_radio_frequency(self.dm.get_global_parameter("pangea_radio_frequency")), None)  # no exception nor return value
+        self.assertEqual(self.dm.check_radio_frequency(self.dm.get_global_parameter("pangea_radio_frequency")), None) # no exception nor return value
 
         self.dm.set_radio_state(is_on=True)
         self.assertEqual(self.dm.get_global_parameter("radio_is_on"), True)
@@ -1340,7 +1340,7 @@ class TestDatamanager(BaseGameTestCase):
 
         self.dm.add_radio_message(audio_id)
         self.assertEqual(self.dm.get_next_audio_message(), audio_id)
-        self.assertEqual(self.dm.get_next_audio_message(), audio_id)  # no disappearance
+        self.assertEqual(self.dm.get_next_audio_message(), audio_id) # no disappearance
 
         self.assertEqual(len(self.dm.get_all_next_audio_messages()), 1)
 
@@ -1354,7 +1354,7 @@ class TestDatamanager(BaseGameTestCase):
 
         self.assertRaises(dm_module.UsageError, self.dm.add_radio_message, "bad_audio_id")
         self.dm.add_radio_message(audio_id)
-        self.dm.add_radio_message(audio_id)  # double adding == NO OP
+        self.dm.add_radio_message(audio_id) # double adding == NO OP
         self.dm.add_radio_message(audio_id_bis)
         self.dm.add_radio_message(audio_id_ter)
 
@@ -1362,9 +1362,9 @@ class TestDatamanager(BaseGameTestCase):
 
         self.assertEqual(self.dm.get_next_audio_message(), audio_id)
 
-        self.dm.notify_audio_message_termination("bad_audio_id")  # no error, we just ignore it
+        self.dm.notify_audio_message_termination("bad_audio_id") # no error, we just ignore it
 
-        self.dm.notify_audio_message_termination(audio_id_ter)  # removing trailing one works
+        self.dm.notify_audio_message_termination(audio_id_ter) # removing trailing one works
 
         self.dm.notify_audio_message_termination(audio_id)
 
@@ -1373,7 +1373,7 @@ class TestDatamanager(BaseGameTestCase):
         self.assertEqual(self.dm.get_next_audio_message(), audio_id_bis)
         self.dm.notify_audio_message_termination(audio_id_bis)
 
-        self.assertEqual(self.dm.get_global_parameter("radio_is_on"), False)  # auto extinction of radio
+        self.assertEqual(self.dm.get_global_parameter("radio_is_on"), False) # auto extinction of radio
 
         self.assertEqual(self.dm.get_next_audio_message(), None)
         self.assertEqual(len(self.dm.get_all_next_audio_messages()), 0)
@@ -1381,7 +1381,7 @@ class TestDatamanager(BaseGameTestCase):
 
     def test_delayed_message_processing(self):
 
-        WANTED_FACTOR = 2  # we only double durations below
+        WANTED_FACTOR = 2 # we only double durations below
         params = self.dm.get_global_parameters()
         assert params["game_theoretical_length_days"]
         params["game_theoretical_length_days"] = WANTED_FACTOR
@@ -1389,7 +1389,7 @@ class TestDatamanager(BaseGameTestCase):
 
         self._reset_messages()
 
-        email = self.dm.get_character_email  # function
+        email = self.dm.get_character_email # function
 
         # delayed message sending
 
@@ -1400,7 +1400,7 @@ class TestDatamanager(BaseGameTestCase):
         # print datetime.utcnow(), " << ", queued_msgs[0]["sent_at"]
         self.assertTrue(datetime.utcnow() < queued_msgs[0]["sent_at"] < datetime.utcnow() + timedelta(minutes=0.22))
 
-        self.dm.post_message(email("guy3"), email("guy2"), "yowh2", "qhsdhqsdh", attachment=None, date_or_delay_mn=(0.04 / WANTED_FACTOR, 0.05 / WANTED_FACTOR))  # 3s delay range
+        self.dm.post_message(email("guy3"), email("guy2"), "yowh2", "qhsdhqsdh", attachment=None, date_or_delay_mn=(0.04 / WANTED_FACTOR, 0.05 / WANTED_FACTOR)) # 3s delay range
         self.assertEqual(len(self.dm.get_all_sent_messages()), 0)
         queued_msgs = self.dm.get_all_queued_messages()
         self.assertEqual(len(queued_msgs), 2)
@@ -1410,7 +1410,7 @@ class TestDatamanager(BaseGameTestCase):
 
         # delayed message processing
 
-        self.dm.post_message(email("guy3"), email("guy2"), "yowh3", "qhsdhqsdh", attachment=None, date_or_delay_mn=0.01 / WANTED_FACTOR)  # 0.6s
+        self.dm.post_message(email("guy3"), email("guy2"), "yowh3", "qhsdhqsdh", attachment=None, date_or_delay_mn=0.01 / WANTED_FACTOR) # 0.6s
         self.assertEqual(len(self.dm.get_all_queued_messages()), 3)
         self.assertEqual(len(self.dm.get_all_sent_messages()), 0)
         res = self.dm.process_periodic_tasks()
@@ -1418,7 +1418,7 @@ class TestDatamanager(BaseGameTestCase):
         self.assertEqual(res["actions_executed"], 0)
         self.assertEqual(len(self.dm.get_all_sent_messages()), 0)
 
-        time.sleep(0.8)  # one message OK
+        time.sleep(0.8) # one message OK
 
         res = self.dm.process_periodic_tasks()
         # print self.dm.get_all_sent_messages(), datetime.utcnow()
@@ -1428,7 +1428,7 @@ class TestDatamanager(BaseGameTestCase):
         # print(">>>>>>>>>>>>>>>>>>>>>>##", self.dm.get_all_queued_messages())
         self.assertEqual(len(self.dm.get_all_queued_messages()), 2)
 
-        time.sleep(2.5)  # last messages OK
+        time.sleep(2.5) # last messages OK
 
         res = self.dm.process_periodic_tasks()
         self.assertEqual(res["messages_sent"], 2)
@@ -1441,14 +1441,14 @@ class TestDatamanager(BaseGameTestCase):
 
 
         # forced sending of queued messages
-        myid1 = self.dm.post_message(email("guy3"), email("guy2"), "yowh2", "qhsdhqsdh", attachment=None, date_or_delay_mn=(1.0 / WANTED_FACTOR, 2.0 / WANTED_FACTOR))  # 3s delay range
-        myid2 = self.dm.post_message(email("guy3"), email("guy2"), "yowh2", "qhsdhqsdh", attachment=None, date_or_delay_mn=(1.0 / WANTED_FACTOR, 2.0 / WANTED_FACTOR))  # 3s delay range
+        myid1 = self.dm.post_message(email("guy3"), email("guy2"), "yowh2", "qhsdhqsdh", attachment=None, date_or_delay_mn=(1.0 / WANTED_FACTOR, 2.0 / WANTED_FACTOR)) # 3s delay range
+        myid2 = self.dm.post_message(email("guy3"), email("guy2"), "yowh2", "qhsdhqsdh", attachment=None, date_or_delay_mn=(1.0 / WANTED_FACTOR, 2.0 / WANTED_FACTOR)) # 3s delay range
         self.assertEqual(len(self.dm.get_all_queued_messages()), 2)
 
         self.assertFalse(self.dm.force_message_sending("dummyid"))
         self.assertTrue(self.dm.force_message_sending(myid1))
         self.assertEqual(len(self.dm.get_all_queued_messages()), 1)
-        self.assertFalse(self.dm.force_message_sending(myid1))  # already sent now
+        self.assertFalse(self.dm.force_message_sending(myid1)) # already sent now
         self.assertEqual(self.dm.get_all_queued_messages()[0]["id"], myid2)
         self.assertTrue(self.dm.get_sent_message_by_id(myid1))
 
@@ -1457,7 +1457,7 @@ class TestDatamanager(BaseGameTestCase):
 
     def test_delayed_action_processing(self):
 
-        WANTED_FACTOR = 2  # we only double durations below
+        WANTED_FACTOR = 2 # we only double durations below
         params = self.dm.get_global_parameters()
         assert params["game_theoretical_length_days"]
         params["game_theoretical_length_days"] = WANTED_FACTOR
@@ -1466,10 +1466,10 @@ class TestDatamanager(BaseGameTestCase):
         def _dm_delayed_action(arg1):
             self.dm.data["global_parameters"]["stuff"] = 23
             self.dm.commit()
-        self.dm._dm_delayed_action = _dm_delayed_action  # now an attribute of that speific instance, not class!
+        self.dm._dm_delayed_action = _dm_delayed_action # now an attribute of that speific instance, not class!
 
         self.dm.schedule_delayed_action(0.01 / WANTED_FACTOR, dummyfunc, 12, item=24)
-        self.dm.schedule_delayed_action((0.04 / WANTED_FACTOR, 0.05 / WANTED_FACTOR), dummyfunc)  # will raise error
+        self.dm.schedule_delayed_action((0.04 / WANTED_FACTOR, 0.05 / WANTED_FACTOR), dummyfunc) # will raise error
         self.dm.schedule_delayed_action((0.035 / WANTED_FACTOR, 0.05 / WANTED_FACTOR), "_dm_delayed_action", "hello")
 
         res = self.dm.process_periodic_tasks()
@@ -1490,7 +1490,7 @@ class TestDatamanager(BaseGameTestCase):
 
         self.assertEqual(len(self.dm.data["scheduled_actions"]), 0)
 
-        self.assertEqual(self.dm.get_event_count("DELAYED_ACTION_ERROR"), 1)  # error raised but swallowed
+        self.assertEqual(self.dm.get_event_count("DELAYED_ACTION_ERROR"), 1) # error raised but swallowed
         assert self.dm.data["global_parameters"]["stuff"] == 23
 
 
@@ -1547,7 +1547,7 @@ class TestDatamanager(BaseGameTestCase):
 
             # failure case: wrong ticket type
             request.session[SESSION_TICKET_KEY] = ["dqsdqs"]
-            try_authenticating_with_ticket(request)  # exception gets swallowed
+            try_authenticating_with_ticket(request) # exception gets swallowed
             assert request.session[SESSION_TICKET_KEY] is None
 
             self._set_user(None)
@@ -1556,15 +1556,15 @@ class TestDatamanager(BaseGameTestCase):
             request.session[SESSION_TICKET_KEY] = original_ticket.copy()
             request.session[SESSION_TICKET_KEY]["game_instance_id"] = "qsdjqsidub"
             _temp = request.session[SESSION_TICKET_KEY].copy()
-            try_authenticating_with_ticket(request)  # exception gets swallowed
+            try_authenticating_with_ticket(request) # exception gets swallowed
             assert request.session[SESSION_TICKET_KEY] == _temp
 
             self._set_user(None)
 
             request.session[SESSION_TICKET_KEY] = original_ticket.copy()
             request.session[SESSION_TICKET_KEY]["username"] = "qsdqsdqsd"
-            try_authenticating_with_ticket(request)  # exception gets swallowed
-            assert request.session[SESSION_TICKET_KEY] == None  # but ticket gets reset
+            try_authenticating_with_ticket(request) # exception gets swallowed
+            assert request.session[SESSION_TICKET_KEY] == None # but ticket gets reset
 
             self._set_user(None)
 
@@ -1580,7 +1580,7 @@ class TestDatamanager(BaseGameTestCase):
         # simple player case
 
         res = authenticate_with_credentials(request, player_login, player_password)
-        assert res is None  # no result expected
+        assert res is None # no result expected
         ticket = request.session[SESSION_TICKET_KEY]
         assert ticket == {'game_instance_id': u'TeStiNg', 'impersonation': None, 'username': player_login}
 
@@ -1593,7 +1593,7 @@ class TestDatamanager(BaseGameTestCase):
         # game master case
 
         res = authenticate_with_credentials(request, master_login, master_password)
-        assert res is None  # no result expected
+        assert res is None # no result expected
         ticket = request.session[SESSION_TICKET_KEY]
         assert ticket == {'game_instance_id': u'TeStiNg', 'impersonation': None, 'username': master_login}
 
@@ -1724,7 +1724,7 @@ class TestDatamanager(BaseGameTestCase):
         assert self.dm.user.has_write_access
         assert not self.dm.user.is_impersonation
         assert self.dm.user.real_username == master_login
-        assert not self.dm.user.has_notifications()  # IMPORTANT - no error message
+        assert not self.dm.user.has_notifications() # IMPORTANT - no error message
 
 
     @for_core_module(PlayerAuthentication)
@@ -1738,7 +1738,7 @@ class TestDatamanager(BaseGameTestCase):
 
         self.assertEqual(len(self.dm.get_all_queued_messages()), 0)
         res = self.dm.process_secret_answer_attempt("guy3", "FluFFy", "guy3@pangea.com")
-        self.assertEqual(res, "awesome")  # password
+        self.assertEqual(res, "awesome") # password
 
         msgs = self.dm.get_all_queued_messages()
         self.assertEqual(len(msgs), 1)
@@ -1748,7 +1748,7 @@ class TestDatamanager(BaseGameTestCase):
         self.assertRaises(dm_module.UsageError, self.dm.process_secret_answer_attempt, "badusername", "badanswer", "guy3@sciences.com")
         self.assertRaises(dm_module.UsageError, self.dm.process_secret_answer_attempt, "guy3", "badanswer", "guy3@sciences.com")
         self.assertRaises(dm_module.UsageError, self.dm.process_secret_answer_attempt, "guy3", "MiLoU", "bademail@sciences.com")
-        self.assertEqual(len(self.dm.get_all_queued_messages()), 1)  # untouched
+        self.assertEqual(len(self.dm.get_all_queued_messages()), 1) # untouched
 
 
         # password change
@@ -1756,13 +1756,13 @@ class TestDatamanager(BaseGameTestCase):
         with pytest.raises(NormalUsageError):
             self.dm.process_password_change_attempt("guy1", "badpwd", "newpwd")
         with pytest.raises(AbnormalUsageError):
-            self.dm.process_password_change_attempt("guy1", "badpwd", "new pwd")  # wrong new pwd
+            self.dm.process_password_change_attempt("guy1", "badpwd", "new pwd") # wrong new pwd
         with pytest.raises(AbnormalUsageError):
-            self.dm.process_password_change_attempt("guy1", "elixir", "newpwd\n")  # wrong new pwd
+            self.dm.process_password_change_attempt("guy1", "elixir", "newpwd\n") # wrong new pwd
         with pytest.raises(AbnormalUsageError):
-            self.dm.process_password_change_attempt("guy1", "elixir", "")  # wrong new pwd
+            self.dm.process_password_change_attempt("guy1", "elixir", "") # wrong new pwd
         with pytest.raises(AbnormalUsageError):
-            self.dm.process_password_change_attempt("guy1", "elixir", None)  # wrong new pwd
+            self.dm.process_password_change_attempt("guy1", "elixir", None) # wrong new pwd
 
 
         self.dm.process_password_change_attempt("guy1", "elixir", "newpwd")
@@ -1778,13 +1778,13 @@ class TestDatamanager(BaseGameTestCase):
     @for_core_module(GameViews)
     def test_game_view_registries(self):
 
-        assert self.dm.get_event_count("SYNC_GAME_VIEW_DATA_CALLED") == 0  # event stats have been cleared above
+        assert self.dm.get_event_count("SYNC_GAME_VIEW_DATA_CALLED") == 0 # event stats have been cleared above
 
         views_dict = self.dm.get_game_views()
-        assert views_dict is not self.dm.GAME_VIEWS_REGISTRY  # copy
+        assert views_dict is not self.dm.GAME_VIEWS_REGISTRY # copy
 
         activable_views_dict = self.dm.get_activable_views()
-        assert activable_views_dict is not self.dm.ACTIVABLE_VIEWS_REGISTRY  # copy
+        assert activable_views_dict is not self.dm.ACTIVABLE_VIEWS_REGISTRY # copy
         assert set(activable_views_dict.keys()) < set(self.dm.get_game_views().keys())
 
         random_view, random_klass = activable_views_dict.items()[0]
@@ -1813,15 +1813,15 @@ class TestDatamanager(BaseGameTestCase):
 
 
         # test registry resync
-        del self.dm.ACTIVABLE_VIEWS_REGISTRY[random_view]  # class-level registry
+        del self.dm.ACTIVABLE_VIEWS_REGISTRY[random_view] # class-level registry
         self.dm.sync_game_view_data()
-        assert not self.dm.is_game_view_activated(random_view)  # cleanup occurred
+        assert not self.dm.is_game_view_activated(random_view) # cleanup occurred
         assert self.dm.get_event_count("SYNC_GAME_VIEW_DATA_CALLED") == 1
 
         with temp_datamanager(TEST_GAME_INSTANCE_ID, self.request) as _dm2:
-            assert _dm2.get_event_count("SYNC_GAME_VIEW_DATA_CALLED") == 1  # sync well called at init!!
+            assert _dm2.get_event_count("SYNC_GAME_VIEW_DATA_CALLED") == 1 # sync well called at init!!
 
-        self.dm.ACTIVABLE_VIEWS_REGISTRY[random_view] = random_klass  # test cleanup
+        self.dm.ACTIVABLE_VIEWS_REGISTRY[random_view] = random_klass # test cleanup
 
 
         # test admin form tokens
@@ -1844,7 +1844,7 @@ class TestDatamanager(BaseGameTestCase):
     def test_special_abilities_registry(self):
 
         abilities = self.dm.get_abilities()
-        assert abilities is not self.dm.ABILITIES_REGISTRY  # copy
+        assert abilities is not self.dm.ABILITIES_REGISTRY # copy
         assert "runic_translation" in abilities
 
         @register_view
@@ -1853,7 +1853,7 @@ class TestDatamanager(BaseGameTestCase):
             NAME = "_private_dummy_ability"
             GAME_FORMS = {}
             ACTIONS = dict()
-            TEMPLATE = "base_main.html"  # must exist
+            TEMPLATE = "base_main.html" # must exist
             ACCESS = UserAccess.anonymous
             PERMISSIONS = []
             ALWAYS_AVAILABLE = False
@@ -1875,26 +1875,26 @@ class TestDatamanager(BaseGameTestCase):
                 assert settings["myvalue"] == "True"
 
 
-        assert "_private_dummy_ability" in self.dm.get_abilities()  # auto-registration of dummy test ability
+        assert "_private_dummy_ability" in self.dm.get_abilities() # auto-registration of dummy test ability
         self.dm.rollback()
         with pytest.raises(KeyError):
-            self.dm.get_ability_data("_private_dummy_ability")  # ability not yet setup in ZODB
+            self.dm.get_ability_data("_private_dummy_ability") # ability not yet setup in ZODB
 
 
         with temp_datamanager(TEST_GAME_INSTANCE_ID, self.request) as _dm:
             assert "_private_dummy_ability" in _dm.get_abilities()
             with pytest.raises(KeyError):
-                assert _dm.get_ability_data("_private_dummy_ability")  # no hotplug synchronization for abilities ATM
+                assert _dm.get_ability_data("_private_dummy_ability") # no hotplug synchronization for abilities ATM
             assert not hasattr(PrivateTestAbility, "_LATE_ABILITY_SETUP_DONE")
 
-        del GameDataManager.ABILITIES_REGISTRY["_private_dummy_ability"]  # important cleanup!!!
-        del GameDataManager.GAME_VIEWS_REGISTRY["_private_dummy_ability"]  # important cleanup!!!
+        del GameDataManager.ABILITIES_REGISTRY["_private_dummy_ability"] # important cleanup!!!
+        del GameDataManager.GAME_VIEWS_REGISTRY["_private_dummy_ability"] # important cleanup!!!
 
 
     @for_core_module(HelpPages)
     def test_help_pages(self):
 
-        utilities.check_is_restructuredtext(self.dm.get_help_page(" view_EncyClopedia "))  # tolerant fetching
+        utilities.check_is_restructuredtext(self.dm.get_help_page(" view_EncyClopedia ")) # tolerant fetching
 
         assert self.dm.get_help_page("qskiqsjdqsid") is None
 
@@ -1910,14 +1910,14 @@ class TestDatamanager(BaseGameTestCase):
 
         self._set_user("guy1")
         events = self.dm.get_game_events()
-        self.assertEqual(len(events), 1)  # fixture
+        self.assertEqual(len(events), 1) # fixture
 
         self.dm.log_game_event("hello there 1")
         self._set_user("master")
         self.dm.log_game_event("hello there 2", url="/my/url/")
         self.dm.commit()
 
-        events = self.dm.get_game_events()[1:]  # skip fixture
+        events = self.dm.get_game_events()[1:] # skip fixture
         self.assertEqual(len(events), 2)
         self.assertEqual(events[0]["message"], "hello there 1")
         self.assertEqual(events[0]["username"], "guy1")
@@ -1953,13 +1953,13 @@ class TestDatamanager(BaseGameTestCase):
         assert captcha1 != captcha2
 
         random_captchas = [self.dm.get_random_captcha() for i in range(30)]
-        assert set(v["id"] for v in random_captchas) == set(captcha_ids)  # unless very bad luck...
+        assert set(v["id"] for v in random_captchas) == set(captcha_ids) # unless very bad luck...
 
         with pytest.raises(AbnormalUsageError):
             self.dm.check_captcha_answer_attempt(captcha_id="unexisting_id", attempt="whatever")
 
         for captcha in (random_captchas + [captcha1, captcha2]):
-            assert set(captcha.keys()) == set("id text image".split())  # no spoiler of answer elements here
+            assert set(captcha.keys()) == set("id text image".split()) # no spoiler of answer elements here
             assert self.dm.get_selected_captcha(captcha["id"]) == captcha
             with pytest.raises(NormalUsageError):
                 self.dm.check_captcha_answer_attempt(captcha["id"], "")
@@ -1967,9 +1967,9 @@ class TestDatamanager(BaseGameTestCase):
                 self.dm.check_captcha_answer_attempt(captcha["id"], "random stuff ")
 
             _full_captch_data = self.dm.data["nightmare_captchas"][captcha["id"]]
-            answer = "  " + _full_captch_data["answer"].upper() + " "  # case and spaces are not important
+            answer = "  " + _full_captch_data["answer"].upper() + " " # case and spaces are not important
             res = self.dm.check_captcha_answer_attempt(captcha["id"], answer)
-            assert res == _full_captch_data["explanation"]  # sucess
+            assert res == _full_captch_data["explanation"] # sucess
 
 
 
@@ -1978,7 +1978,7 @@ class TestHttpRequests(BaseGameTestCase):
     def _master_auth(self):
         master_login = self.dm.get_global_parameter("master_login")
         login_page = reverse("rpgweb.views.login", kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID))
-        response = self.client.get(login_page)  # to set preliminary cookies
+        response = self.client.get(login_page) # to set preliminary cookies
         self.assertEqual(response.status_code, 200)
 
         response = self.client.post(login_page, data=dict(secret_username=master_login, secret_password=self.dm.get_global_parameter("master_password")))
@@ -1988,7 +1988,7 @@ class TestHttpRequests(BaseGameTestCase):
         if self.dm.is_game_started():
             self.assertRedirects(response, ROOT_GAME_URL + "/")
         else:
-            self.assertRedirects(response, ROOT_GAME_URL + "/opening/")  # beautiful intro for days before the game starts
+            self.assertRedirects(response, ROOT_GAME_URL + "/opening/") # beautiful intro for days before the game starts
 
         assert self.client.session["rpgweb_session_ticket"] == dict(game_instance_id=TEST_GAME_INSTANCE_ID,
                                                                     username=master_login,
@@ -1998,7 +1998,7 @@ class TestHttpRequests(BaseGameTestCase):
 
     def _player_auth(self, username):
         login_page = reverse("rpgweb.views.login", kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID))
-        response = self.client.get(login_page)  # to set preliminary cookies
+        response = self.client.get(login_page) # to set preliminary cookies
         self.assertEqual(response.status_code, 200)
 
         response = self.client.post(login_page, data=dict(secret_username=username, secret_password=self.dm.get_character_properties(username)["password"]))
@@ -2007,7 +2007,7 @@ class TestHttpRequests(BaseGameTestCase):
         if self.dm.is_game_started():
             self.assertRedirects(response, ROOT_GAME_URL + "/")
         else:
-            self.assertRedirects(response, ROOT_GAME_URL + "/opening/")  # beautiful intro for days before the game starts
+            self.assertRedirects(response, ROOT_GAME_URL + "/opening/") # beautiful intro for days before the game starts
 
         assert self.client.session["rpgweb_session_ticket"] == dict(game_instance_id=TEST_GAME_INSTANCE_ID,
                                                                     username=username,
@@ -2018,13 +2018,13 @@ class TestHttpRequests(BaseGameTestCase):
     def _logout(self):
         login_page = reverse("rpgweb.views.login", kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID))
         logout_page = reverse("rpgweb.views.logout", kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID))
-        response = self.client.get(logout_page)  # to set preliminary cookies
+        response = self.client.get(logout_page) # to set preliminary cookies
 
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, login_page)
 
         assert not self.client.session.has_key("rpgweb_session_ticket")
-        self.assertEqual(self.client.session.keys(), ["testcookie"])  # we get it once more
+        self.assertEqual(self.client.session.keys(), ["testcookie"]) # we get it once more
 
 
     def _simple_master_get_requests(self):
@@ -2034,9 +2034,9 @@ class TestHttpRequests(BaseGameTestCase):
         self.dm.data["global_parameters"]["online_presence_timeout_s"] = 1
         self.dm.data["global_parameters"]["chatroom_presence_timeout_s"] = 1
         self.dm.commit()
-        time.sleep(1.2)  # online/chatting users list gets emptied
+        time.sleep(1.2) # online/chatting users list gets emptied
 
-        self._master_auth()  # equivalent to self._set_user(self.dm.get_global_parameter("master_login"))
+        self._master_auth() # equivalent to self._set_user(self.dm.get_global_parameter("master_login"))
 
         from django.core.urlresolvers import RegexURLResolver
         from rpgweb.urls import final_urlpatterns
@@ -2045,13 +2045,13 @@ class TestHttpRequests(BaseGameTestCase):
                               DATABASE_OPERATIONS FAIL_TEST ajax item_3d_view chat_with_djinn static.serve encrypted_folder 
                               view_single_message logout login secret_question
                               friendship_management wiretapping_management
-                              mercenaries_hiring_view matter_analysis_view""".split()  # FIXME REMOVE THIS
+                              mercenaries_hiring_view matter_analysis_view""".split() # FIXME REMOVE THIS
 
 
         views_names = [url._callback_str for url in final_urlpatterns
                                    if not isinstance(url, RegexURLResolver) and
                                       not [veto for veto in skipped_patterns if veto in url._callback_str]
-                                      and "__" not in url._callback_str]  # skip disabled views
+                                      and "__" not in url._callback_str] # skip disabled views
         # print views_names
 
 
@@ -2125,7 +2125,7 @@ class TestHttpRequests(BaseGameTestCase):
         self.dm.data["global_parameters"]["online_presence_timeout_s"] = 1
         self.dm.data["global_parameters"]["chatroom_presence_timeout_s"] = 1
         self.dm.commit()
-        time.sleep(1.2)  # online/chatting users list gets emptied
+        time.sleep(1.2) # online/chatting users list gets emptied
 
         old_state = self.dm.is_game_started()
 
@@ -2135,8 +2135,8 @@ class TestHttpRequests(BaseGameTestCase):
         username = "guy2"
         user_money = self.dm.get_character_properties(username)["account"]
         if user_money:
-            self.dm.transfer_money_between_characters(username, self.dm.get_global_parameter("bank_name"), user_money)  # we empty money
-        self.dm.data["character_properties"][username]["permissions"] = PersistentList(["contact_djinns", "manage_agents", "manage_wiretaps"])  # we grant all necessary permissions
+            self.dm.transfer_money_between_characters(username, self.dm.get_global_parameter("bank_name"), user_money) # we empty money
+        self.dm.data["character_properties"][username]["permissions"] = PersistentList(["contact_djinns", "manage_agents", "manage_wiretaps"]) # we grant all necessary permissions
         self.dm.commit()
         self.dm.set_game_state(old_state)
         self._player_auth(username)
@@ -2146,7 +2146,7 @@ class TestHttpRequests(BaseGameTestCase):
         from django.core.urlresolvers import RegexURLResolver
         from rpgweb.urls import final_urlpatterns
         # we test views for which there is a distinction between master and player
-        selected_patterns = """inbox outbox compose_message intercepted_messages view_sales items_slideshow character_profile friendship_management""".split()  # TODO LATER network_management contact_djinns
+        selected_patterns = """inbox outbox compose_message intercepted_messages view_sales items_slideshow character_profile friendship_management""".split() # TODO LATER network_management contact_djinns
         views = [url._callback_str for url in final_urlpatterns if not isinstance(url, RegexURLResolver) and [match for match in selected_patterns if match in url._callback_str]]
         assert len(views) == len(selected_patterns)
 
@@ -2166,7 +2166,7 @@ class TestHttpRequests(BaseGameTestCase):
         test_views(views)
 
         self.dm.set_game_state(True)
-        gem_name = [key for key, value in self.dm.get_all_items().items() if value["is_gem"] and value["num_items"] >= 6][0]  # we only take numerous groups
+        gem_name = [key for key, value in self.dm.get_all_items().items() if value["is_gem"] and value["num_items"] >= 6][0] # we only take numerous groups
         self.dm.transfer_object_to_character(gem_name, username)
         self.dm.set_game_state(old_state)
 
@@ -2214,7 +2214,7 @@ class TestHttpRequests(BaseGameTestCase):
         url = reverse(views.view_help_page, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID,
                                                         keyword="logo_animation"))
         response = self.client.get(url)
-        assert response.status_code == 404  # view always available, but no help text available for it
+        assert response.status_code == 404 # view always available, but no help text available for it
 
 
     def test_encyclopedia_behaviour(self):
@@ -2229,7 +2229,7 @@ class TestHttpRequests(BaseGameTestCase):
 
             response = self.client.get(url_base + "?search=animal")
             assert response.status_code == 200
-            assert "under repair" in response.content.decode("utf8")  # no search results
+            assert "under repair" in response.content.decode("utf8") # no search results
 
             self.dm.set_game_state(True)
 
@@ -2245,7 +2245,7 @@ class TestHttpRequests(BaseGameTestCase):
             response = self.client.get(url_base + "?search=animal")
             assert response.status_code == 200
             # print(repr(response.content))
-            assert "results" in response.content.decode("utf8")  # several results displayed
+            assert "results" in response.content.decode("utf8") # several results displayed
 
             response = self.client.get(url_base + "?search=gerbil")
             assert response.status_code == 302
@@ -2260,14 +2260,14 @@ class TestGameViewSystem(BaseGameTestCase):
         Forms attached to actions must define AT LEAST the fields mandatory in the action callback.
         """
 
-        COMPUTED_VALUES = ["target_names"]  # values that are injected in get_normalized_values(), and so invisible until actual processing
+        COMPUTED_VALUES = ["target_names"] # values that are injected in get_normalized_values(), and so invisible until actual processing
 
-        self._set_user("guy1", has_write_access=True)  # later, we'll need to change it depending on abilities instantiated below...
+        self._set_user("guy1", has_write_access=True) # later, we'll need to change it depending on abilities instantiated below...
 
         check_done = 0
         for game_view_class in self.dm.GAME_VIEWS_REGISTRY.values():
 
-            game_view = self.dm.instantiate_game_view(game_view_class)  # must work for abilities too!
+            game_view = self.dm.instantiate_game_view(game_view_class) # must work for abilities too!
             if hasattr(game_view, "_perform_lazy_initializations"):
                 game_view._perform_lazy_initializations()
 
@@ -2277,26 +2277,26 @@ class TestGameViewSystem(BaseGameTestCase):
                 form_inst = game_view._instantiate_form(form_name)
 
                 callback = getattr(game_view, callback_name)
-                (args, varargs, varkw, defaults) = inspect.getargspec(callback)  # will fail if keyword-only arguments are used, in the future
+                (args, varargs, varkw, defaults) = inspect.getargspec(callback) # will fail if keyword-only arguments are used, in the future
                 if args[0] == "self":
-                    args = args[1:]  # PB if instance is not called "self"...
+                    args = args[1:] # PB if instance is not called "self"...
                 if varkw:
                     args = args[:-1]
                 if varargs:
                     args = args[:-1]
                 if defaults:
-                    args = args[:-len(defaults)]  # WRONG if defaults == ()
+                    args = args[:-len(defaults)] # WRONG if defaults == ()
 
-                for arg_name in args:  # remaining ones are mandatory
+                for arg_name in args: # remaining ones are mandatory
                     if arg_name in COMPUTED_VALUES:
                         continue
                     fields = form_inst.fields
                     print(fields)
-                    assert arg_name in fields  # might have been created dynamically at instantiation
+                    assert arg_name in fields # might have been created dynamically at instantiation
 
                 check_done += 1
 
-        assert check_done > 3  # increase that in the future, for safety
+        assert check_done > 3 # increase that in the future, for safety
 
 
 
@@ -2319,13 +2319,13 @@ class TestGameViewSystem(BaseGameTestCase):
 
         res = _normalize_view_access_parameters(UserAccess.anonymous, ["hi"], False)
         assert res == dict(access=UserAccess.anonymous,
-                            permissions=["hi"],  # would raise an issue later, in metaclass, because we're in anonymous access
+                            permissions=["hi"], # would raise an issue later, in metaclass, because we're in anonymous access
                             always_available=False)
 
         res = _normalize_view_access_parameters(UserAccess.anonymous)
         assert res == dict(access=UserAccess.anonymous,
                             permissions=[],
-                            always_available=False)  # even in anonymous access
+                            always_available=False) # even in anonymous access
 
         res = _normalize_view_access_parameters(UserAccess.character)
         assert res == dict(access=UserAccess.character,
@@ -2340,11 +2340,11 @@ class TestGameViewSystem(BaseGameTestCase):
         res = _normalize_view_access_parameters(UserAccess.master)
         assert res == dict(access=UserAccess.master,
                             permissions=[],
-                            always_available=True)  # logical
+                            always_available=True) # logical
 
         res = _normalize_view_access_parameters(UserAccess.character, permissions="sss")
         assert res == dict(access=UserAccess.character,
-                            permissions=["sss"],  # proper autofix of basestring to list of single item
+                            permissions=["sss"], # proper autofix of basestring to list of single item
                             always_available=False)
 
 
@@ -2362,7 +2362,7 @@ class TestGameViewSystem(BaseGameTestCase):
             while True:
                 a, b, c = [random.choice([_undefined, False]) for i in range(3)]
                 if not all((a, b, c)):
-                    break  # at leats one of them must NOT be _undefined
+                    break # at leats one of them must NOT be _undefined
             _normalize_view_access_parameters(a, b, c, attach_to=myview)
 
 
@@ -2377,26 +2377,26 @@ class TestGameViewSystem(BaseGameTestCase):
         with pytest.raises(AssertionError):
             register_view(my_little_view, access=UserAccess.master, permissions=["sss"])
         with pytest.raises(AssertionError):
-            register_view(my_little_view, access=UserAccess.master, always_available=False)  # master must always access his views!
+            register_view(my_little_view, access=UserAccess.master, always_available=False) # master must always access his views!
         with pytest.raises(AssertionError):
             register_view(my_little_view, access=UserAccess.anonymous, permissions=["sss"])
 
         klass = register_view(my_little_view, access=UserAccess.master,)
 
         assert issubclass(klass, AbstractGameView)
-        assert klass.__name__ == "MyLittleView"  # pascal case
-        assert klass.NAME == "my_little_view"  # snake case
+        assert klass.__name__ == "MyLittleView" # pascal case
+        assert klass.NAME == "my_little_view" # snake case
         assert klass.NAME in self.dm.GAME_VIEWS_REGISTRY
 
         with pytest.raises(AssertionError):
-            register_view(my_little_view, access=UserAccess.master)  # double registration impossible!
+            register_view(my_little_view, access=UserAccess.master) # double registration impossible!
 
 
         # case of class registration #
         class DummyViewNonGameView(object):
             ACCESS = "sqdqsjkdqskj"
         with pytest.raises(AssertionError):
-            register_view(DummyViewNonGameView)  # must be a subclass of AbstractGameView
+            register_view(DummyViewNonGameView) # must be a subclass of AbstractGameView
 
 
         class DummyView(AbstractGameView):
@@ -2404,17 +2404,17 @@ class TestGameViewSystem(BaseGameTestCase):
             ACCESS = UserAccess.anonymous
         klass = register_view(DummyView)
         assert isinstance(klass, type)
-        register_view(DummyView)  # double registration possible, since it's class creation which actually registers it, not that decorator
+        register_view(DummyView) # double registration possible, since it's class creation which actually registers it, not that decorator
 
 
         class OtherDummyView(AbstractGameView):
             NAME = "sdfsdzadsfsdff"
             ACCESS = UserAccess.anonymous
-        with pytest.raises(AssertionError):  # when a klass is given, all other arguments become forbidden
+        with pytest.raises(AssertionError): # when a klass is given, all other arguments become forbidden
             while True:
                 a, b, c, d = [random.choice([_undefined, False]) for i in range(4)]
                 if not all((a, b, c)):
-                    break  # at least one of them must NOT be _undefined
+                    break # at least one of them must NOT be _undefined
             register_view(OtherDummyView, a, b, c, d)
 
 
@@ -2442,23 +2442,23 @@ class TestGameViewSystem(BaseGameTestCase):
 
         def dummy_view_master(request):
             pass
-        view_master = register_view(dummy_view_master, access=UserAccess.master, always_available=True)  # always_available is enforced to True for master views, actually
+        view_master = register_view(dummy_view_master, access=UserAccess.master, always_available=True) # always_available is enforced to True for master views, actually
 
 
         # check global disabling of views by game master #
         for username in (None, "guy1", "guy2", self.dm.get_global_parameter("master_login")):
             self._set_user(username)
 
-            for my_view in (view_anonymous, view_character, view_character_permission, view_authenticated):  # not view_master
+            for my_view in (view_anonymous, view_character, view_character_permission, view_authenticated): # not view_master
 
                 my_view.klass.ALWAYS_AVAILABLE = False
                 assert my_view.get_access_token(datamanager) == AccessResult.globally_forbidden
-                self.dm.set_activated_game_views([my_view.NAME])  # exists in ACTIVABLE_VIEWS_REGISTRY because we registered view with always_available=True
+                self.dm.set_activated_game_views([my_view.NAME]) # exists in ACTIVABLE_VIEWS_REGISTRY because we registered view with always_available=True
                 assert my_view.get_access_token(datamanager) != AccessResult.globally_forbidden
 
                 my_view.klass.ALWAYS_AVAILABLE = True
                 assert my_view.get_access_token(datamanager) != AccessResult.globally_forbidden
-                self.dm.set_activated_game_views([])  # RESET
+                self.dm.set_activated_game_views([]) # RESET
                 assert my_view.get_access_token(datamanager) != AccessResult.globally_forbidden
 
 
@@ -2469,24 +2469,24 @@ class TestGameViewSystem(BaseGameTestCase):
         assert view_authenticated.get_access_token(datamanager) == AccessResult.authentication_required
         assert view_master.get_access_token(datamanager) == AccessResult.authentication_required
 
-        self._set_user("guy1")  # has runic_translation permission
+        self._set_user("guy1") # has runic_translation permission
         assert view_anonymous.get_access_token(datamanager) == AccessResult.available
         assert view_character.get_access_token(datamanager) == AccessResult.available
         assert view_character_permission.get_access_token(datamanager) == AccessResult.available
         assert view_authenticated.get_access_token(datamanager) == AccessResult.available
         assert view_master.get_access_token(datamanager) == AccessResult.authentication_required
 
-        self._set_user("guy2")  # has NO runic_translation permission
+        self._set_user("guy2") # has NO runic_translation permission
         assert view_anonymous.get_access_token(datamanager) == AccessResult.available
         assert view_character.get_access_token(datamanager) == AccessResult.available
-        assert view_character_permission.get_access_token(datamanager) == AccessResult.permission_required  # != authentication required
+        assert view_character_permission.get_access_token(datamanager) == AccessResult.permission_required # != authentication required
         assert view_authenticated.get_access_token(datamanager) == AccessResult.available
         assert view_master.get_access_token(datamanager) == AccessResult.authentication_required
 
         self._set_user(self.dm.get_global_parameter("master_login"))
         assert view_anonymous.get_access_token(datamanager) == AccessResult.available
-        assert view_character.get_access_token(datamanager) == AccessResult.authentication_required  # master must downgrade to character!!
-        assert view_character_permission.get_access_token(datamanager) == AccessResult.authentication_required  # master must downgrade to character!!
+        assert view_character.get_access_token(datamanager) == AccessResult.authentication_required # master must downgrade to character!!
+        assert view_character_permission.get_access_token(datamanager) == AccessResult.authentication_required # master must downgrade to character!!
         assert view_authenticated.get_access_token(datamanager) == AccessResult.available
         assert view_master.get_access_token(datamanager) == AccessResult.available
 
@@ -2503,17 +2503,17 @@ class TestActionMiddlewares(BaseGameTestCase):
         # setup
         bank_name = self.dm.get_global_parameter("bank_name")
         self.dm.transfer_money_between_characters(bank_name, "guy4", amount=1000)
-        self.dm.transfer_object_to_character("several_misc_gems", "guy4")  # 5 * 200 kashes
-        self.dm.transfer_object_to_character("several_misc_gems2", "guy4")  # 8 * 125 kashes
+        self.dm.transfer_object_to_character("several_misc_gems", "guy4") # 5 * 200 kashes
+        self.dm.transfer_object_to_character("several_misc_gems2", "guy4") # 8 * 125 kashes
 
         props = self.dm.get_character_properties("guy4")
         assert props["account"] == 1000
         utilities.assert_counters_equal(props["gems"], ([gem_125] * 8 + [gem_200] * 5))
 
-        self._set_user("guy4")  # important
+        self._set_user("guy4") # important
 
         ability = self.dm.instantiate_ability("dummy_ability")
-        ability._perform_lazy_initializations()  # normally done while treating HTTP request...
+        ability._perform_lazy_initializations() # normally done while treating HTTP request...
 
         assert isinstance(ability, DummyTestAbility)
         assert CostlyActionMiddleware
@@ -2525,7 +2525,7 @@ class TestActionMiddlewares(BaseGameTestCase):
         ability.reset_test_settings("middleware_wrapped", CostlyActionMiddleware, dict(money_price=None, gems_price=None))
 
         for value in (None, [], [gem_125], [gem_200, gem_125]):
-            assert ability.middleware_wrapped_callable1(use_gems=value)  # no limit is set at all
+            assert ability.middleware_wrapped_callable1(use_gems=value) # no limit is set at all
             assert ability.middleware_wrapped_callable2(value)
             assert ability.non_middleware_action_callable(use_gems=[gem_125])
 
@@ -2541,14 +2541,14 @@ class TestActionMiddlewares(BaseGameTestCase):
 
         # payment with money #
 
-        for gems_price in (None, 15, 100):  # WHATEVER gems prices
+        for gems_price in (None, 15, 100): # WHATEVER gems prices
 
             ability.reset_test_settings("middleware_wrapped", CostlyActionMiddleware, dict(money_price=15, gems_price=gems_price))
-            ability.reset_test_data("middleware_wrapped", CostlyActionMiddleware, dict())  # useless actually for that middleware
+            ability.reset_test_data("middleware_wrapped", CostlyActionMiddleware, dict()) # useless actually for that middleware
 
             # payments OK
-            assert 18277 == ability.middleware_wrapped_callable1(use_gems=random.choice((None, [])))  # triggers payment by money
-            assert True == ability.middleware_wrapped_callable2(34)  # idem, points to the same conf
+            assert 18277 == ability.middleware_wrapped_callable1(use_gems=random.choice((None, []))) # triggers payment by money
+            assert True == ability.middleware_wrapped_callable2(34) # idem, points to the same conf
 
             # not taken into account - no middlewares here
             assert 23 == ability.non_middleware_action_callable(use_gems=[gem_125])
@@ -2564,15 +2564,15 @@ class TestActionMiddlewares(BaseGameTestCase):
             assert 23 == ability.non_middleware_action_callable(use_gems=[gem_125])
 
         ability.reset_test_settings("middleware_wrapped", CostlyActionMiddleware, dict(money_price=53, gems_price=None))
-        assert 18277 == ability.middleware_wrapped_callable1(use_gems=[gem_125, gem_125])  # triggers payment by money ANYWAY!
+        assert 18277 == ability.middleware_wrapped_callable1(use_gems=[gem_125, gem_125]) # triggers payment by money ANYWAY!
 
         # we check data coherency
         props = self.dm.get_character_properties("guy4")
-        new_money_value = 1000 - 2 * 3 * 15 - 53  # 2 callables * 3 use_gems values * money price, and special 53 kashes payment
+        new_money_value = 1000 - 2 * 3 * 15 - 53 # 2 callables * 3 use_gems values * money price, and special 53 kashes payment
         assert props["account"] == new_money_value
-        utilities.assert_sets_equal(props["gems"], [gem_125] * 8 + [gem_200] * 5)  # unchanged
+        utilities.assert_sets_equal(props["gems"], [gem_125] * 8 + [gem_200] * 5) # unchanged
 
-        assert self.dm.get_event_count("INSIDE_MIDDLEWARE_WRAPPED1") == 4  # 3 + 1 extra call
+        assert self.dm.get_event_count("INSIDE_MIDDLEWARE_WRAPPED1") == 4 # 3 + 1 extra call
         assert self.dm.get_event_count("INSIDE_MIDDLEWARE_WRAPPED2") == 3
         assert self.dm.get_event_count("INSIDE_NON_MIDDLEWARE_ACTION_CALLABLE") == 6
 
@@ -2583,13 +2583,13 @@ class TestActionMiddlewares(BaseGameTestCase):
 
         # payment with gems #
 
-        for money_price in (None, 0, 15):  # WHATEVER money prices
+        for money_price in (None, 0, 15): # WHATEVER money prices
 
             ability.reset_test_settings("middleware_wrapped", CostlyActionMiddleware, dict(money_price=money_price, gems_price=150))
-            ability.reset_test_data("middleware_wrapped", CostlyActionMiddleware, dict())  # useless actually for that middleware
+            ability.reset_test_data("middleware_wrapped", CostlyActionMiddleware, dict()) # useless actually for that middleware
 
             # payments OK
-            assert ability.middleware_wrapped_callable1(use_gems=[gem_200])  # triggers payment by gems
+            assert ability.middleware_wrapped_callable1(use_gems=[gem_200]) # triggers payment by gems
 
             # not taken into account - no middlewares here
             assert ability.non_middleware_action_callable(use_gems=[gem_125, (128, None), (129, None)])
@@ -2598,10 +2598,10 @@ class TestActionMiddlewares(BaseGameTestCase):
             with raises_with_content(NormalUsageError, "kashes of gems"):
                 ability.middleware_wrapped_callable1(use_gems=[gem_125])
 
-            with raises_with_content(NormalUsageError, "top off"):  # we're nice with people who give too much...
+            with raises_with_content(NormalUsageError, "top off"): # we're nice with people who give too much...
                 ability.middleware_wrapped_callable1(use_gems=[gem_125, gem_200])
 
-            with raises_with_content(NormalUsageError, "top off"):  # that check is done before "whether or not they really own the games"
+            with raises_with_content(NormalUsageError, "top off"): # that check is done before "whether or not they really own the games"
                 ability.middleware_wrapped_callable1(use_gems=[(128, "several_misc_gems2"), (178, None)])
 
             # some wrong gems in input (even if a sufficient number  of them is OK)
@@ -2613,17 +2613,17 @@ class TestActionMiddlewares(BaseGameTestCase):
                 with raises_with_content(NormalUsageError, "kashes of gems"):
                     ability.middleware_wrapped_callable1(use_gems=random.choice((None, [])))
                 with raises_with_content(NormalUsageError, "kashes of gems"):
-                    ability.middleware_wrapped_callable2([gem_125, gem_125])  # wrong param name
+                    ability.middleware_wrapped_callable2([gem_125, gem_125]) # wrong param name
 
-        assert ability.middleware_wrapped_callable1(use_gems=[gem_200])  # OK
-        assert ability.middleware_wrapped_callable1(use_gems=[gem_125, gem_125])  # OK as long as not too many gems for the asset value
+        assert ability.middleware_wrapped_callable1(use_gems=[gem_200]) # OK
+        assert ability.middleware_wrapped_callable1(use_gems=[gem_125, gem_125]) # OK as long as not too many gems for the asset value
 
         # we check data coherency
         props = self.dm.get_character_properties("guy4")
-        assert props["account"] == new_money_value  # unchanged
-        utilities.assert_sets_equal(props["gems"], [gem_125] * 6 + [gem_200])  # 3 payments with 2 gems, + 2 separate payments
+        assert props["account"] == new_money_value # unchanged
+        utilities.assert_sets_equal(props["gems"], [gem_125] * 6 + [gem_200]) # 3 payments with 2 gems, + 2 separate payments
 
-        assert self.dm.get_event_count("INSIDE_MIDDLEWARE_WRAPPED1") == 5  # 3 + 2 extra calls
+        assert self.dm.get_event_count("INSIDE_MIDDLEWARE_WRAPPED1") == 5 # 3 + 2 extra calls
         assert self.dm.get_event_count("INSIDE_MIDDLEWARE_WRAPPED2") == 0
         assert self.dm.get_event_count("INSIDE_NON_MIDDLEWARE_ACTION_CALLABLE") == 3
 
@@ -2635,18 +2635,18 @@ class TestActionMiddlewares(BaseGameTestCase):
         # payment with both is possible #
 
         ability.reset_test_settings("middleware_wrapped", CostlyActionMiddleware, dict(money_price=11, gems_price=33))
-        ability.reset_test_data("middleware_wrapped", CostlyActionMiddleware, dict())  # useless actually for that middleware
+        ability.reset_test_data("middleware_wrapped", CostlyActionMiddleware, dict()) # useless actually for that middleware
 
-        ability.middleware_wrapped_callable1(use_gems=[gem_200])  # by gems, works even if smaller gems of user would fit better (no paternalism)
-        ability.middleware_wrapped_callable1(use_gems=None)  # by money
-        ability.middleware_wrapped_callable2("hi")  # by money
+        ability.middleware_wrapped_callable1(use_gems=[gem_200]) # by gems, works even if smaller gems of user would fit better (no paternalism)
+        ability.middleware_wrapped_callable1(use_gems=None) # by money
+        ability.middleware_wrapped_callable2("hi") # by money
         assert ability.non_middleware_action_callable(use_gems=[gem_125])
         assert ability.non_middleware_action_callable(use_gems=[])
 
         # we check data coherency
         props = self.dm.get_character_properties("guy4")
         assert props["account"] == new_money_value - 11 * 2
-        utilities.assert_sets_equal(props["gems"], [gem_125] * 2)  # "200 kashes" gem is out
+        utilities.assert_sets_equal(props["gems"], [gem_125] * 2) # "200 kashes" gem is out
 
         assert self.dm.get_event_count("INSIDE_MIDDLEWARE_WRAPPED1") == 2
         assert self.dm.get_event_count("INSIDE_MIDDLEWARE_WRAPPED2") == 1
@@ -2665,32 +2665,32 @@ class TestActionMiddlewares(BaseGameTestCase):
 
         ability.reset_test_settings("middleware_wrapped", CountLimitedActionMiddleware, dict(max_per_character=3, max_per_game=4))
 
-        self._set_user("guy4")  # important
-        ability._perform_lazy_initializations()  # normally done while treating HTTP request...
-        ability.reset_test_data("middleware_wrapped", CountLimitedActionMiddleware, dict())  # will be filled lazily, on call
+        self._set_user("guy4") # important
+        ability._perform_lazy_initializations() # normally done while treating HTTP request...
+        ability.reset_test_data("middleware_wrapped", CountLimitedActionMiddleware, dict()) # will be filled lazily, on call
 
 
-        assert 18277 == ability.middleware_wrapped_callable1(2524)  # 1 use for guy4
-        assert True == ability.middleware_wrapped_callable2(2234)  # 2 uses for guy4
-        assert 23 == ability.non_middleware_action_callable(use_gems=[125])  # no use
-        assert 18277 == ability.middleware_wrapped_callable1(132322)  # 3 uses for guy4
+        assert 18277 == ability.middleware_wrapped_callable1(2524) # 1 use for guy4
+        assert True == ability.middleware_wrapped_callable2(2234) # 2 uses for guy4
+        assert 23 == ability.non_middleware_action_callable(use_gems=[125]) # no use
+        assert 18277 == ability.middleware_wrapped_callable1(132322) # 3 uses for guy4
 
         with raises_with_content(NormalUsageError, "exceeded your quota"):
             ability.middleware_wrapped_callable1(2524)
 
 
-        self._set_user("guy3")  # important
-        ability._perform_lazy_initializations()  # normally done while treating HTTP request...
-        ability.reset_test_data("middleware_wrapped", CountLimitedActionMiddleware, dict())  # will be filled lazily, on call
+        self._set_user("guy3") # important
+        ability._perform_lazy_initializations() # normally done while treating HTTP request...
+        ability.reset_test_data("middleware_wrapped", CountLimitedActionMiddleware, dict()) # will be filled lazily, on call
 
-        assert ability.middleware_wrapped_callable2(None)  # 1 use for guy3
-        assert ability.non_middleware_action_callable(use_gems=True)  # no use
+        assert ability.middleware_wrapped_callable2(None) # 1 use for guy3
+        assert ability.non_middleware_action_callable(use_gems=True) # no use
         with raises_with_content(NormalUsageError, "exceeded the global quota"):
             ability.middleware_wrapped_callable2(11)
 
 
-        self._set_user("guy4")  # important
-        with raises_with_content(NormalUsageError, "exceeded the global quota"):  # this msg now takes precedence over "private quota" one
+        self._set_user("guy4") # important
+        with raises_with_content(NormalUsageError, "exceeded the global quota"): # this msg now takes precedence over "private quota" one
             ability.middleware_wrapped_callable1(222)
 
         assert self.dm.get_event_count("INSIDE_MIDDLEWARE_WRAPPED1") == 2
@@ -2705,14 +2705,14 @@ class TestActionMiddlewares(BaseGameTestCase):
 
         ability.reset_test_settings("middleware_wrapped", CountLimitedActionMiddleware, dict(max_per_character=3, max_per_game=None))
 
-        self._set_user("guy3")  # important
-        assert ability.middleware_wrapped_callable2(None)  # 2 uses for guy3
-        assert ability.middleware_wrapped_callable2(None)  # 3 uses for guy3
+        self._set_user("guy3") # important
+        assert ability.middleware_wrapped_callable2(None) # 2 uses for guy3
+        assert ability.middleware_wrapped_callable2(None) # 3 uses for guy3
         with raises_with_content(NormalUsageError, "exceeded your quota"):
             ability.middleware_wrapped_callable2(1111122)
 
-        self._set_user("guy4")  # important
-        with raises_with_content(NormalUsageError, "exceeded your quota"):  # back to private quota message
+        self._set_user("guy4") # important
+        with raises_with_content(NormalUsageError, "exceeded your quota"): # back to private quota message
             ability.middleware_wrapped_callable2(False)
         assert ability.non_middleware_action_callable(None)
 
@@ -2725,11 +2725,11 @@ class TestActionMiddlewares(BaseGameTestCase):
 
         # only global quota
 
-        ability.reset_test_settings("middleware_wrapped", CountLimitedActionMiddleware, dict(max_per_character=None, max_per_game=12))  # 6 more than current total
+        ability.reset_test_settings("middleware_wrapped", CountLimitedActionMiddleware, dict(max_per_character=None, max_per_game=12)) # 6 more than current total
 
-        assert ability.middleware_wrapped_callable1(None)  # guy4 still
+        assert ability.middleware_wrapped_callable1(None) # guy4 still
 
-        self._set_user("guy2")  # important
+        self._set_user("guy2") # important
         ability._perform_lazy_initializations()
 
         for i in range(5):
@@ -2751,7 +2751,7 @@ class TestActionMiddlewares(BaseGameTestCase):
                                     dict(max_per_character=random.choice((None, 0)), max_per_game=random.choice((None, 0))))
 
         for username in ("guy2", "guy3", "guy4"):
-            self._set_user(username)  # important
+            self._set_user(username) # important
             for i in range(10):
                 assert ability.middleware_wrapped_callable1(None)
                 assert ability.middleware_wrapped_callable2(None)
@@ -2763,8 +2763,8 @@ class TestActionMiddlewares(BaseGameTestCase):
 
         self.dm.clear_all_event_stats()
 
-        assert ability._get_global_usage_count("middleware_wrapped") == 72  # usage counts are yet updated
-        assert ability._get_global_usage_count("middleware_wrapped_other_action") == 0  # important - no collision between action names
+        assert ability._get_global_usage_count("middleware_wrapped") == 72 # usage counts are yet updated
+        assert ability._get_global_usage_count("middleware_wrapped_other_action") == 0 # important - no collision between action names
 
         ability.reset_test_settings("middleware_wrapped", CountLimitedActionMiddleware,
                                     dict(max_per_character=30, max_per_game=73))
@@ -2772,7 +2772,7 @@ class TestActionMiddlewares(BaseGameTestCase):
         self._set_user("guy2")
         assert ability.middleware_wrapped_callable1(None)
         with raises_with_content(NormalUsageError, "exceeded the global quota"):
-            ability.middleware_wrapped_callable1(False)  # quota of 75 reached
+            ability.middleware_wrapped_callable1(False) # quota of 75 reached
         assert ability.non_middleware_action_callable(None)
 
         assert self.dm.get_event_count("INSIDE_MIDDLEWARE_WRAPPED1") == 1
@@ -2783,15 +2783,15 @@ class TestActionMiddlewares(BaseGameTestCase):
 
     def test_time_limited_action_middleware(self):
 
-        WANTED_FACTOR = 2  # we only double durations below
+        WANTED_FACTOR = 2 # we only double durations below
         params = self.dm.get_global_parameters()
         assert params["game_theoretical_length_days"]
         params["game_theoretical_length_days"] = WANTED_FACTOR
 
 
         ability = self.dm.instantiate_ability("dummy_ability")
-        self._set_user("guy4")  # important
-        ability._perform_lazy_initializations()  # normally done while treating HTTP request...
+        self._set_user("guy4") # important
+        ability._perform_lazy_initializations() # normally done while treating HTTP request...
 
 
         # misconfiguration case #
@@ -2801,7 +2801,7 @@ class TestActionMiddlewares(BaseGameTestCase):
 
         ability.reset_test_settings("middleware_wrapped", TimeLimitedActionMiddleware,
                                     dict(waiting_period_mn=waiting_period_mn, max_uses_per_period=max_uses_per_period))
-        ability.reset_test_data("middleware_wrapped", TimeLimitedActionMiddleware, dict())  # will be filled lazily, on call
+        ability.reset_test_data("middleware_wrapped", TimeLimitedActionMiddleware, dict()) # will be filled lazily, on call
 
         for i in range(23):
             assert ability.middleware_wrapped_callable1(None)
@@ -2822,12 +2822,12 @@ class TestActionMiddlewares(BaseGameTestCase):
         # normal case #
 
         ability.reset_test_settings("middleware_wrapped", TimeLimitedActionMiddleware,
-                                    dict(waiting_period_mn=0.02 / WANTED_FACTOR, max_uses_per_period=3))  # 1.2s of waiting time
+                                    dict(waiting_period_mn=0.02 / WANTED_FACTOR, max_uses_per_period=3)) # 1.2s of waiting time
 
         for username in ("guy2", "guy3"):
-            self._set_user(username)  # important
-            ability._perform_lazy_initializations()  # normally done while treating HTTP request...
-            ability.reset_test_data("middleware_wrapped", TimeLimitedActionMiddleware, dict())  # will be filled lazily, on call
+            self._set_user(username) # important
+            ability._perform_lazy_initializations() # normally done while treating HTTP request...
+            ability.reset_test_data("middleware_wrapped", TimeLimitedActionMiddleware, dict()) # will be filled lazily, on call
 
             assert ability.middleware_wrapped_callable1(None)
             assert ability.middleware_wrapped_callable1(12)
@@ -2835,10 +2835,10 @@ class TestActionMiddlewares(BaseGameTestCase):
 
             assert not ability._purge_old_use_times(middleware_settings=ability.get_middleware_settings("middleware_wrapped", TimeLimitedActionMiddleware),
                                                     private_data=ability.get_private_middleware_data("middleware_wrapped", TimeLimitedActionMiddleware))
-            self.dm.commit()  # data was touched, even if unmodified
+            self.dm.commit() # data was touched, even if unmodified
 
             with raises_with_content(NormalUsageError, "waiting period"):
-                ability.middleware_wrapped_callable1(False)  # quota of 3 per period reached
+                ability.middleware_wrapped_callable1(False) # quota of 3 per period reached
             assert ability.non_middleware_action_callable(None)
 
             time.sleep(0.2)
@@ -2852,22 +2852,22 @@ class TestActionMiddlewares(BaseGameTestCase):
 
         time.sleep(1.3)
 
-        self._set_user("guy2")  # important
+        self._set_user("guy2") # important
 
 
         for i in range(7):
             assert ability.middleware_wrapped_callable1(None)
-            time.sleep(0.41)  # just enough to be under 4 accesses / 1.2s
+            time.sleep(0.41) # just enough to be under 4 accesses / 1.2s
 
         assert ability.middleware_wrapped_callable2(None)
         with raises_with_content(NormalUsageError, "waiting period"):
-            ability.middleware_wrapped_callable1(False)  # quota of 3 per period reached if we hit immediateley
+            ability.middleware_wrapped_callable1(False) # quota of 3 per period reached if we hit immediateley
 
         time.sleep(0.5)
 
         assert ability._purge_old_use_times(middleware_settings=ability.get_middleware_settings("middleware_wrapped", TimeLimitedActionMiddleware),
                                             private_data=ability.get_private_middleware_data("middleware_wrapped", TimeLimitedActionMiddleware))
-        self.dm.commit()  # data was touched, even if unmodified
+        self.dm.commit() # data was touched, even if unmodified
 
         assert ability.middleware_wrapped_callable1(False)
         with raises_with_content(NormalUsageError, "waiting period"):
@@ -2887,7 +2887,7 @@ class TestSpecialAbilities(BaseGameTestCase):
 
     def test_generic_ability_features(self):
 
-        assert AbstractAbility.__call__ == AbstractGameView.__call__  # must not be overlaoded, since it's decorated to catch exceptions
+        assert AbstractAbility.__call__ == AbstractGameView.__call__ # must not be overlaoded, since it's decorated to catch exceptions
 
         # ability is half-view half-datamanager, so beware baout sessions...
         assert AbstractAbility._process_standard_request._is_under_transaction_watcher
@@ -2917,7 +2917,7 @@ class TestSpecialAbilities(BaseGameTestCase):
             display_data = views._build_display_data_from_viewer_settings(viewer_settings)
 
 
-            assert "musics/mymusic.mp3" in display_data["music_url"]  # authenticated url
+            assert "musics/mymusic.mp3" in display_data["music_url"] # authenticated url
             del display_data["music_url"]
 
             rel_expected_image_urls = [["openinglogo/crystal0003.jpg",
@@ -3013,7 +3013,7 @@ class TestSpecialAbilities(BaseGameTestCase):
                                     if settings["decoding"].strip()]
         (rune_item, translation_settings) = available_translations[0]
 
-        transcription_attempt = translation_settings["decoding"]  # '|' and '#'symbols are automatically cleaned
+        transcription_attempt = translation_settings["decoding"] # '|' and '#'symbols are automatically cleaned
         expected_result = runic_translation._normalize_string(translation_settings["translation"].replace("#", " ").replace("|", " "))
         translation_result = runic_translation._translate_rune_message(rune_item, transcription_attempt)
         self.assertEqual(translation_result, expected_result)
@@ -3040,12 +3040,12 @@ class TestSpecialAbilities(BaseGameTestCase):
         house_locking = self.dm.instantiate_ability("house_locking")
         expected_password = house_locking.get_ability_parameter("house_doors_password")
 
-        self.assertEqual(house_locking.are_house_doors_open(), True)  # initial state
+        self.assertEqual(house_locking.are_house_doors_open(), True) # initial state
 
         self.assertTrue(house_locking.lock_house_doors())
         self.assertEqual(house_locking.are_house_doors_open(), False)
 
-        self.assertFalse(house_locking.lock_house_doors())  # already locked
+        self.assertFalse(house_locking.lock_house_doors()) # already locked
         self.assertEqual(house_locking.are_house_doors_open(), False)
 
         self.assertFalse(house_locking.try_unlocking_house_doors(password="blablabla"))
@@ -3055,12 +3055,270 @@ class TestSpecialAbilities(BaseGameTestCase):
         self.assertEqual(house_locking.are_house_doors_open(), True)
 
 
+
+
+    def ___test_agent_hiring(self):
+        self._reset_messages()
+
+        spy_cost_money = self.dm.get_global_parameter("spy_cost_money")
+        spy_cost_gems = self.dm.get_global_parameter("spy_cost_gems")
+        mercenary_cost_money = self.dm.get_global_parameter("mercenary_cost_money")
+        mercenary_cost_gems = self.dm.get_global_parameter("mercenary_cost_gems")
+
+        self.dm.get_character_properties("guy1")["gems"] = PersistentList([spy_cost_gems, spy_cost_gems, spy_cost_gems, mercenary_cost_gems])
+        self.dm.commit()
+
+        cities = self.dm.get_locations().keys()[0:5]
+
+
+        # hiring with gems #
+
+
+        self.assertRaises(Exception, self.dm.hire_remote_agent, "guy1",
+                          cities[0], mercenary=False, pay_with_gems=True)
+
+        self.assertRaises(Exception, self.dm.hire_remote_agent, "guy1",
+                          cities[0], mercenary=True, pay_with_gems=True, gems_list=[spy_cost_gems]) # mercenary more expensive than spy
+        self.assertRaises(Exception, self.dm.hire_remote_agent, "guy1",
+                          cities[0], mercenary=False, pay_with_gems=True, gems_list=[mercenary_cost_gems, mercenary_cost_gems])
+
+        self.assertEqual(len(self.dm.get_all_queued_messages()), 0)
+
+        self.dm.hire_remote_agent("guy1", cities[0], mercenary=False, pay_with_gems=True, gems_list=[spy_cost_gems])
+        self.assertRaises(Exception, self.dm.hire_remote_agent, "guy1", cities[0],
+                          mercenary=False, pay_with_gems=True, gems_list=[spy_cost_gems])
+
+        msgs = self.dm.get_all_queued_messages()
+        self.assertEqual(len(msgs), 1)
+        msg = msgs[0]
+        self.assertEqual(msg["recipient_emails"], ["guy1@masslavia.com"])
+        self.assertTrue("report" in msg["body"].lower())
+
+        self.dm.hire_remote_agent("guy1", cities[1], mercenary=True, pay_with_gems=True, gems_list=[spy_cost_gems, spy_cost_gems, mercenary_cost_gems])
+        self.assertEqual(self.dm.get_character_properties("guy1")["gems"], [])
+
+        self.assertEqual(len(self.dm.get_all_queued_messages()), 1)
+
+        # hiring with money #
+        old_nw_account = self.dm.get_character_properties("guy1")["account"]
+        self.dm.transfer_money_between_characters("guy3", "guy1", 2 * mercenary_cost_money) # loyd must have at least that on his account
+
+        self.assertRaises(Exception, self.dm.hire_remote_agent, "guy1",
+                          cities[0], mercenary=True, pay_with_gems=False, gems_list=[mercenary_cost_gems])
+
+        self.dm.hire_remote_agent("guy1", cities[2], mercenary=False, pay_with_gems=False)
+        self.dm.hire_remote_agent("guy1", cities[2], mercenary=True, pay_with_gems=False)
+        self.assertEqual(self.dm.get_locations()[cities[2]]["has_mercenary"], True)
+        self.assertEqual(self.dm.get_locations()[cities[2]]["has_spy"], True)
+
+        self.assertEqual(self.dm.get_character_properties("guy1")["account"], old_nw_account + mercenary_cost_money - spy_cost_money)
+
+        self.dm.transfer_money_between_characters("guy1", "guy3", self.dm.get_character_properties("guy1")["account"]) # we empty the account
+
+        self.assertRaises(Exception, self.dm.hire_remote_agent, "guy1",
+                          cities[3], mercenary=False, pay_with_gems=False)
+        self.assertEqual(self.dm.get_locations()[cities[3]]["has_spy"], False)
+
+        # game master case
+        self.dm.hire_remote_agent("master", cities[3], mercenary=True, pay_with_gems=False, gems_list=[])
+        self.assertEqual(self.dm.get_locations()[cities[3]]["has_mercenary"], True)
+        self.assertEqual(self.dm.get_locations()[cities[3]]["has_spy"], False)
+
+
+    def ___test_mercenary_intervention(self):
+        self._reset_messages()
+
+        cities = self.dm.get_locations().keys()[0:5]
+        self.dm.hire_remote_agent("guy1", cities[3], mercenary=True, pay_with_gems=False) # no message queued, since it's not a spy
+
+        self.assertEqual(len(self.dm.get_all_queued_messages()), 0)
+
+        self.assertRaises(dm_module.UsageError, self.dm.trigger_masslavian_mercenary_intervention, "guy1", cities[4], "Please attack this city.") # no mercenary ready
+
+        self.assertEqual(len(self.dm.get_all_queued_messages()), 0)
+
+        self.dm.trigger_masslavian_mercenary_intervention("guy1", cities[3], "Please attack this city.")
+
+        self.assertEqual(len(self.dm.get_all_queued_messages()), 0)
+
+        new_queue = self.dm.get_all_sent_messages()
+        self.assertEqual(len(new_queue), 1)
+
+        msg = new_queue[0]
+        self.assertEqual(msg["sender_email"], "guy1@masslavia.com", msg) # we MUST use a dummy email to prevent forgery here
+        self.assertEqual(msg["recipient_emails"], ["masslavian-army@special.com"], msg)
+        self.assertTrue(msg["is_certified"], msg)
+        self.assertTrue("attack" in msg["body"].lower())
+        self.assertTrue("***" in msg["body"].lower())
+
+
+    def ___test_teldorian_teleportation(self):
+        self._reset_messages()
+
+        cities = self.dm.get_locations().keys()[0:6]
+        max_actions = self.dm.get_global_parameter("max_teldorian_teleportations")
+        self.assertTrue(max_actions >= 2)
+
+        self.assertEqual(len(self.dm.get_all_queued_messages()), 0)
+
+        for i in range(max_actions):
+            if i == (max_actions - 1):
+                self.dm._add_to_scanned_locations([cities[3]]) # the last attack will be on scanned location !
+            self.dm.trigger_teldorian_teleportation("scanner", cities[3], "Please destroy this city.")
+
+        self.assertEqual(len(self.dm.get_all_queued_messages()), 0) # immediate sending performed
+
+        new_queue = self.dm.get_all_sent_messages()
+        self.assertEqual(len(new_queue), max_actions)
+
+        self.assertTrue("on unscanned" in new_queue[0]["subject"])
+
+        msg = new_queue[-1]
+        self.assertEqual(msg["sender_email"], "scanner@teldorium.com", msg) # we MUST use a dummy email to prevent forgery here
+        self.assertEqual(msg["recipient_emails"], ["teldorian-army@special.com"], msg)
+        self.assertTrue("on scanned" in msg["subject"])
+        self.assertTrue(msg["is_certified"], msg)
+        self.assertTrue("destroy" in msg["body"].lower())
+        self.assertTrue("***" in msg["body"].lower())
+
+        msg = new_queue[-2]
+        self.assertTrue("on unscanned" in msg["subject"])
+
+        self.assertEqual(self.dm.get_global_parameter("teldorian_teleportations_done"), self.dm.get_global_parameter("max_teldorian_teleportations"))
+        self.assertRaises(dm_module.UsageError, self.dm.trigger_teldorian_teleportation, "scanner", cities[3], "Please destroy this city.") # too many teleportations
+
+
+    def ___test_acharith_attack(self):
+        self._reset_messages()
+
+        cities = self.dm.get_locations().keys()[0:5]
+
+        self.assertEqual(len(self.dm.get_all_queued_messages()), 0)
+
+        self.dm.trigger_acharith_attack("guy2", cities[3], "Please annihilate this city.")
+
+        self.assertEqual(len(self.dm.get_all_queued_messages()), 0)
+
+        new_queue = self.dm.get_all_sent_messages()
+        self.assertEqual(len(new_queue), 1)
+
+        msg = new_queue[0]
+        self.assertEqual(msg["sender_email"], "guy2@acharis.com", msg) # we MUST use a dummy email to prevent forgery here
+        self.assertEqual(msg["recipient_emails"], ["acharis-army@special.com"], msg)
+        self.assertTrue(msg["is_certified"], msg)
+        self.assertTrue("annihilate" in msg["body"].lower())
+        self.assertTrue("***" in msg["body"].lower())
+
+
+    @for_ability(wiretapping_management_view)
+    def test_wiretapping_management(self):
+
+        self._reset_messages()
+
+        self._set_user("guy1") # has all permissions
+
+        char_names = self.dm.get_character_usernames()
+
+        wiretapping = self.dm.instantiate_ability("wiretapping")
+        wiretapping._perform_lazy_initializations() # normally done during request processing
+
+        assert wiretapping.get_wiretapping_slots_count() == 0
+        for i in range(3):
+            wiretapping.purchase_wiretapping_slot()
+        assert wiretapping.get_wiretapping_slots_count() == 3
+
+        wiretapping.change_current_user_wiretapping_targets(PersistentList())
+        self.assertEqual(wiretapping.get_wiretapping_targets(), [])
+
+        wiretapping.change_current_user_wiretapping_targets([char_names[0], char_names[0], char_names[1]])
+
+        self.assertEqual(set(wiretapping.get_wiretapping_targets()), set([char_names[0], char_names[1]]))
+        self.assertEqual(wiretapping.get_listeners_for(char_names[1]), ["guy1"])
+
+        self.assertRaises(UsageError, wiretapping.change_current_user_wiretapping_targets, ["dummy_name"])
+        self.assertRaises(UsageError, wiretapping.change_current_user_wiretapping_targets, [char_names[i] for i in range(wiretapping.get_wiretapping_slots_count() + 1)])
+
+        self.assertEqual(set(wiretapping.get_wiretapping_targets()), set([char_names[0], char_names[1]])) # didn't change
+        self.assertEqual(wiretapping.get_listeners_for(char_names[1]), ["guy1"])
+
+
+    def test_world_scan(self):
+
+        # TODO - NEED TO WEBTEST BLOCKING OF GEMS AND NON-OWNED ITEMS
+
+        self._reset_messages()
+
+        assert self.dm.data["abilities"] ["world_scan"]["settings"]["result_delay"]
+        self.dm.data["abilities"] ["world_scan"]["settings"]["result_delay"] = 0.03 / 45 # flexible time!
+        self.dm.commit()
+
+        scanner = self.dm.instantiate_ability("world_scan")
+        scanner._perform_lazy_initializations() # normally done during request processing
+        self._set_user("guy1")
+
+        res = scanner._compute_scanning_result("sacred_chest")
+        self.assertEqual(res, ["Alifir", "Baynon"])
+
+        with pytest.raises(AssertionError):
+            scanner.process_world_scan_submission("several_misc_gems") # no gems allowed here
+
+        # ##self.assertEqual(self.dm.get_global_parameter("scanned_locations"), [])
+
+        self.assertEqual(len(self.dm.get_all_sent_messages()), 0)
+        self.assertEqual(len(self.dm.get_all_queued_messages()), 0)
+
+        # AUTOMATED SCAN #
+        scanner.process_world_scan_submission("sacred_chest")
+        # print datetime.utcnow(), "----", self.dm.data["scheduled_actions"]
+
+
+        msgs = self.dm.get_all_queued_messages()
+        self.assertEqual(len(msgs), 1)
+        msg = msgs[0]
+        # print(">>>>>>", msg)
+        self.assertEqual(msg["recipient_emails"], ["guy1@pangea.com"])
+        self.assertTrue("scanning" in msg["body"].lower())
+        # print(msg["body"])
+        self.assertTrue("Alifir" in msg["body"])
+
+        msgs = self.dm.get_all_sent_messages()
+        self.assertEqual(len(msgs), 1)
+        msg = msgs[0]
+        self.assertEqual(msg["sender_email"], "guy1@pangea.com")
+        self.assertTrue("scan" in msg["body"])
+        self.assertTrue(self.dm.get_global_parameter("master_login") in msg["has_read"])
+
+        res = self.dm.process_periodic_tasks()
+
+        assert res == {"messages_sent": 0, "actions_executed": 0}
+
+        time.sleep(3)
+
+        self.assertEqual(self.dm.process_periodic_tasks(), {"messages_sent": 1, "actions_executed": 0})
+
+        self.assertEqual(self.dm.get_event_count("DELAYED_ACTION_ERROR"), 0)
+        self.assertEqual(self.dm.get_event_count("DELAYED_MESSAGE_ERROR"), 0)
+
+        # ##scanned_locations = self.dm.get_global_parameter("scanned_locations")
+        # ##self.assertTrue("Alifir" in scanned_locations, scanned_locations)
+
+
+
+
     def __test_telecom_investigations(self):
         # no reset of initial messages
 
-
         initial_length_queued_msgs = len(self.dm.get_all_queued_messages())
         initial_length_sent_msgs = len(self.dm.get_all_sent_messages())
+
+
+        assert self.dm.data["abilities"] ["telecom_investigation"]["settings"]["result_delay"]
+        self.dm.data["abilities"] ["world_scan"]["settings"]["result_delay"] = 0.03 / 45 # flexible time!
+        self.dm.commit()
+
+        scanner = self.dm.instantiate_ability("world_scan")
+        scanner._perform_lazy_initializations() # normally done during request processing
+        self._set_user("guy1")
 
 
         # text processing #
@@ -3117,256 +3375,7 @@ class TestSpecialAbilities(BaseGameTestCase):
         msgs = self.dm.get_all_queued_messages()
         self.assertEqual(len(msgs), initial_length_queued_msgs + max_telecom_investigations)
 
-        self.assertRaises(dm_module.UsageError, self.dm.launch_telecom_investigation, "guy2", "guy3")  # max count exceeded
-
-
-    def ___test_agent_hiring(self):
-        self._reset_messages()
-
-        spy_cost_money = self.dm.get_global_parameter("spy_cost_money")
-        spy_cost_gems = self.dm.get_global_parameter("spy_cost_gems")
-        mercenary_cost_money = self.dm.get_global_parameter("mercenary_cost_money")
-        mercenary_cost_gems = self.dm.get_global_parameter("mercenary_cost_gems")
-
-        self.dm.get_character_properties("guy1")["gems"] = PersistentList([spy_cost_gems, spy_cost_gems, spy_cost_gems, mercenary_cost_gems])
-        self.dm.commit()
-
-        cities = self.dm.get_locations().keys()[0:5]
-
-
-        # hiring with gems #
-
-
-        self.assertRaises(Exception, self.dm.hire_remote_agent, "guy1",
-                          cities[0], mercenary=False, pay_with_gems=True)
-
-        self.assertRaises(Exception, self.dm.hire_remote_agent, "guy1",
-                          cities[0], mercenary=True, pay_with_gems=True, gems_list=[spy_cost_gems])  # mercenary more expensive than spy
-        self.assertRaises(Exception, self.dm.hire_remote_agent, "guy1",
-                          cities[0], mercenary=False, pay_with_gems=True, gems_list=[mercenary_cost_gems, mercenary_cost_gems])
-
-        self.assertEqual(len(self.dm.get_all_queued_messages()), 0)
-
-        self.dm.hire_remote_agent("guy1", cities[0], mercenary=False, pay_with_gems=True, gems_list=[spy_cost_gems])
-        self.assertRaises(Exception, self.dm.hire_remote_agent, "guy1", cities[0],
-                          mercenary=False, pay_with_gems=True, gems_list=[spy_cost_gems])
-
-        msgs = self.dm.get_all_queued_messages()
-        self.assertEqual(len(msgs), 1)
-        msg = msgs[0]
-        self.assertEqual(msg["recipient_emails"], ["guy1@masslavia.com"])
-        self.assertTrue("report" in msg["body"].lower())
-
-        self.dm.hire_remote_agent("guy1", cities[1], mercenary=True, pay_with_gems=True, gems_list=[spy_cost_gems, spy_cost_gems, mercenary_cost_gems])
-        self.assertEqual(self.dm.get_character_properties("guy1")["gems"], [])
-
-        self.assertEqual(len(self.dm.get_all_queued_messages()), 1)
-
-        # hiring with money #
-        old_nw_account = self.dm.get_character_properties("guy1")["account"]
-        self.dm.transfer_money_between_characters("guy3", "guy1", 2 * mercenary_cost_money)  # loyd must have at least that on his account
-
-        self.assertRaises(Exception, self.dm.hire_remote_agent, "guy1",
-                          cities[0], mercenary=True, pay_with_gems=False, gems_list=[mercenary_cost_gems])
-
-        self.dm.hire_remote_agent("guy1", cities[2], mercenary=False, pay_with_gems=False)
-        self.dm.hire_remote_agent("guy1", cities[2], mercenary=True, pay_with_gems=False)
-        self.assertEqual(self.dm.get_locations()[cities[2]]["has_mercenary"], True)
-        self.assertEqual(self.dm.get_locations()[cities[2]]["has_spy"], True)
-
-        self.assertEqual(self.dm.get_character_properties("guy1")["account"], old_nw_account + mercenary_cost_money - spy_cost_money)
-
-        self.dm.transfer_money_between_characters("guy1", "guy3", self.dm.get_character_properties("guy1")["account"])  # we empty the account
-
-        self.assertRaises(Exception, self.dm.hire_remote_agent, "guy1",
-                          cities[3], mercenary=False, pay_with_gems=False)
-        self.assertEqual(self.dm.get_locations()[cities[3]]["has_spy"], False)
-
-        # game master case
-        self.dm.hire_remote_agent("master", cities[3], mercenary=True, pay_with_gems=False, gems_list=[])
-        self.assertEqual(self.dm.get_locations()[cities[3]]["has_mercenary"], True)
-        self.assertEqual(self.dm.get_locations()[cities[3]]["has_spy"], False)
-
-
-    def ___test_mercenary_intervention(self):
-        self._reset_messages()
-
-        cities = self.dm.get_locations().keys()[0:5]
-        self.dm.hire_remote_agent("guy1", cities[3], mercenary=True, pay_with_gems=False)  # no message queued, since it's not a spy
-
-        self.assertEqual(len(self.dm.get_all_queued_messages()), 0)
-
-        self.assertRaises(dm_module.UsageError, self.dm.trigger_masslavian_mercenary_intervention, "guy1", cities[4], "Please attack this city.")  # no mercenary ready
-
-        self.assertEqual(len(self.dm.get_all_queued_messages()), 0)
-
-        self.dm.trigger_masslavian_mercenary_intervention("guy1", cities[3], "Please attack this city.")
-
-        self.assertEqual(len(self.dm.get_all_queued_messages()), 0)
-
-        new_queue = self.dm.get_all_sent_messages()
-        self.assertEqual(len(new_queue), 1)
-
-        msg = new_queue[0]
-        self.assertEqual(msg["sender_email"], "guy1@masslavia.com", msg)  # we MUST use a dummy email to prevent forgery here
-        self.assertEqual(msg["recipient_emails"], ["masslavian-army@special.com"], msg)
-        self.assertTrue(msg["is_certified"], msg)
-        self.assertTrue("attack" in msg["body"].lower())
-        self.assertTrue("***" in msg["body"].lower())
-
-
-    def ___test_teldorian_teleportation(self):
-        self._reset_messages()
-
-        cities = self.dm.get_locations().keys()[0:6]
-        max_actions = self.dm.get_global_parameter("max_teldorian_teleportations")
-        self.assertTrue(max_actions >= 2)
-
-        self.assertEqual(len(self.dm.get_all_queued_messages()), 0)
-
-        for i in range(max_actions):
-            if i == (max_actions - 1):
-                self.dm._add_to_scanned_locations([cities[3]])  # the last attack will be on scanned location !
-            self.dm.trigger_teldorian_teleportation("scanner", cities[3], "Please destroy this city.")
-
-        self.assertEqual(len(self.dm.get_all_queued_messages()), 0)  # immediate sending performed
-
-        new_queue = self.dm.get_all_sent_messages()
-        self.assertEqual(len(new_queue), max_actions)
-
-        self.assertTrue("on unscanned" in new_queue[0]["subject"])
-
-        msg = new_queue[-1]
-        self.assertEqual(msg["sender_email"], "scanner@teldorium.com", msg)  # we MUST use a dummy email to prevent forgery here
-        self.assertEqual(msg["recipient_emails"], ["teldorian-army@special.com"], msg)
-        self.assertTrue("on scanned" in msg["subject"])
-        self.assertTrue(msg["is_certified"], msg)
-        self.assertTrue("destroy" in msg["body"].lower())
-        self.assertTrue("***" in msg["body"].lower())
-
-        msg = new_queue[-2]
-        self.assertTrue("on unscanned" in msg["subject"])
-
-        self.assertEqual(self.dm.get_global_parameter("teldorian_teleportations_done"), self.dm.get_global_parameter("max_teldorian_teleportations"))
-        self.assertRaises(dm_module.UsageError, self.dm.trigger_teldorian_teleportation, "scanner", cities[3], "Please destroy this city.")  # too many teleportations
-
-
-    def ___test_acharith_attack(self):
-        self._reset_messages()
-
-        cities = self.dm.get_locations().keys()[0:5]
-
-        self.assertEqual(len(self.dm.get_all_queued_messages()), 0)
-
-        self.dm.trigger_acharith_attack("guy2", cities[3], "Please annihilate this city.")
-
-        self.assertEqual(len(self.dm.get_all_queued_messages()), 0)
-
-        new_queue = self.dm.get_all_sent_messages()
-        self.assertEqual(len(new_queue), 1)
-
-        msg = new_queue[0]
-        self.assertEqual(msg["sender_email"], "guy2@acharis.com", msg)  # we MUST use a dummy email to prevent forgery here
-        self.assertEqual(msg["recipient_emails"], ["acharis-army@special.com"], msg)
-        self.assertTrue(msg["is_certified"], msg)
-        self.assertTrue("annihilate" in msg["body"].lower())
-        self.assertTrue("***" in msg["body"].lower())
-
-
-    @for_ability(wiretapping_management_view)
-    def test_wiretapping_management(self):
-
-        self._reset_messages()
-
-        self._set_user("guy1")  # has all permissions
-
-        char_names = self.dm.get_character_usernames()
-
-        wiretapping = self.dm.instantiate_ability("wiretapping")
-        wiretapping._perform_lazy_initializations()  # normally done during request processing
-
-        assert wiretapping.get_wiretapping_slots_count() == 0
-        for i in range(3):
-            wiretapping.purchase_wiretapping_slot()
-        assert wiretapping.get_wiretapping_slots_count() == 3
-
-        wiretapping.change_current_user_wiretapping_targets(PersistentList())
-        self.assertEqual(wiretapping.get_wiretapping_targets(), [])
-
-        wiretapping.change_current_user_wiretapping_targets([char_names[0], char_names[0], char_names[1]])
-
-        self.assertEqual(set(wiretapping.get_wiretapping_targets()), set([char_names[0], char_names[1]]))
-        self.assertEqual(wiretapping.get_listeners_for(char_names[1]), ["guy1"])
-
-        self.assertRaises(UsageError, wiretapping.change_current_user_wiretapping_targets, ["dummy_name"])
-        self.assertRaises(UsageError, wiretapping.change_current_user_wiretapping_targets, [char_names[i] for i in range(wiretapping.get_wiretapping_slots_count() + 1)])
-
-        self.assertEqual(set(wiretapping.get_wiretapping_targets()), set([char_names[0], char_names[1]]))  # didn't change
-        self.assertEqual(wiretapping.get_listeners_for(char_names[1]), ["guy1"])
-
-
-    def test_world_scan(self):
-
-        # TODO - NEED TO WEBTEST BLOCKING OF GEMS AND NON-OWNED ITEMS
-
-        self._reset_messages()
-
-        assert self.dm.data["abilities"] ["world_scan"]["settings"]["result_delay"]
-        self.dm.data["abilities"] ["world_scan"]["settings"]["result_delay"] = 0.03 / 45  # flexible time!
-        self.dm.commit()
-
-        scanner = self.dm.instantiate_ability("world_scan")
-        scanner._perform_lazy_initializations()  # normally done during request processing
-        self._set_user("guy1")
-
-        res = scanner._compute_scanning_result("sacred_chest")
-        self.assertEqual(res, ["Alifir", "Baynon"])
-
-        with pytest.raises(AssertionError):
-            scanner.process_world_scan_submission("several_misc_gems")  # no gems allowed here
-
-        # ##self.assertEqual(self.dm.get_global_parameter("scanned_locations"), [])
-
-        self.assertEqual(len(self.dm.get_all_sent_messages()), 0)
-        self.assertEqual(len(self.dm.get_all_queued_messages()), 0)
-
-        # AUTOMATED SCAN #
-        scanner.process_world_scan_submission("sacred_chest")
-        # print datetime.utcnow(), "----", self.dm.data["scheduled_actions"]
-
-
-        msgs = self.dm.get_all_queued_messages()
-        self.assertEqual(len(msgs), 1)
-        msg = msgs[0]
-        # print(">>>>>>", msg)
-        self.assertEqual(msg["recipient_emails"], ["guy1@pangea.com"])
-        self.assertTrue("scanning" in msg["body"].lower())
-        # print(msg["body"])
-        self.assertTrue("Alifir" in msg["body"])
-
-        msgs = self.dm.get_all_sent_messages()
-        self.assertEqual(len(msgs), 1)
-        msg = msgs[0]
-        self.assertEqual(msg["sender_email"], "guy1@pangea.com")
-        self.assertTrue("scan" in msg["body"])
-        self.assertTrue(self.dm.get_global_parameter("master_login") in msg["has_read"])
-
-        res = self.dm.process_periodic_tasks()
-
-        assert res == {"messages_sent": 0, "actions_executed": 0}
-
-        time.sleep(3)
-
-        self.assertEqual(self.dm.process_periodic_tasks(), {"messages_sent": 1, "actions_executed": 0})
-
-        self.assertEqual(self.dm.get_event_count("DELAYED_ACTION_ERROR"), 0)
-        self.assertEqual(self.dm.get_event_count("DELAYED_MESSAGE_ERROR"), 0)
-
-        # ##scanned_locations = self.dm.get_global_parameter("scanned_locations")
-        # ##self.assertTrue("Alifir" in scanned_locations, scanned_locations)
-
-
-
+        self.assertRaises(dm_module.UsageError, self.dm.launch_telecom_investigation, "guy2", "guy3") # max count exceeded
 
 
 
@@ -3377,11 +3386,11 @@ class TestSpecialAbilities(BaseGameTestCase):
         self._reset_messages()
 
         assert self.dm.data["abilities"] ["matter_analysis"]["settings"]["result_delay"]
-        self.dm.data["abilities"] ["matter_analysis"]["settings"]["result_delay"] = 0.03 / 45  # flexible time!
+        self.dm.data["abilities"] ["matter_analysis"]["settings"]["result_delay"] = 0.03 / 45 # flexible time!
         self.dm.commit()
 
         analyser = self.dm.instantiate_ability("matter_analysis")
-        analyser._perform_lazy_initializations()  # normally done during request processing
+        analyser._perform_lazy_initializations() # normally done during request processing
         self._set_user("guy1")
         self.dm.transfer_object_to_character("sacred_chest", "guy1")
         self.dm.transfer_object_to_character("several_misc_gems", "guy1")
@@ -3390,9 +3399,9 @@ class TestSpecialAbilities(BaseGameTestCase):
         self.assertEqual(res, "same, here stuffs about *sacred* chest")
 
         with pytest.raises(AssertionError):
-            analyser.process_artefact_analysis("several_misc_gems")  # no gems allowed here
+            analyser.process_artefact_analysis("several_misc_gems") # no gems allowed here
         with pytest.raises(AssertionError):
-            analyser.process_artefact_analysis("statue")  # item must be owned by current user
+            analyser.process_artefact_analysis("statue") # item must be owned by current user
 
         self.assertEqual(len(self.dm.get_all_sent_messages()), 0)
         self.assertEqual(len(self.dm.get_all_queued_messages()), 0)
@@ -3454,9 +3463,9 @@ class TestSpecialAbilities(BaseGameTestCase):
         '''
 
 
-    def ____test_bots(self):  # TODO PAKAL PUT BOTS BACK!!!
+    def ____test_bots(self): # TODO PAKAL PUT BOTS BACK!!!
 
-        bot_name = "Pay Rhuss"  # self.dm.data["AI_bots"]["Pay Rhuss"].keys()[0]
+        bot_name = "Pay Rhuss" # self.dm.data["AI_bots"]["Pay Rhuss"].keys()[0]
         # print bot_name, " --- ",self.dm.data["AI_bots"]["bot_properties"]
 
         self._reset_messages()
@@ -3511,7 +3520,7 @@ class TestGameViews(BaseGameTestCase):
             assert "Unexisting friendship" in view.do_cancel_friendship("guy2")
 
         assert "friendship proposal" in view.do_propose_friendship("guy2")
-        assert "friendship proposal" in view.do_cancel_friendship("guy2")  # cancel proposal only
+        assert "friendship proposal" in view.do_cancel_friendship("guy2") # cancel proposal only
         assert "friendship proposal" in view.do_propose_friendship("guy2")
         assert "friendship proposal" in view.do_cancel_proposal("guy2")
         assert "friendship proposal" in view.do_propose_friendship("guy2")
@@ -3520,33 +3529,33 @@ class TestGameViews(BaseGameTestCase):
 
         assert "friendship proposal" in view.do_propose_friendship("guy3")
         with pytest.raises(AbnormalUsageError):
-            view.do_propose_friendship("guy2")  # duplicate proposal
+            view.do_propose_friendship("guy2") # duplicate proposal
 
         self._set_user("guy2")
         assert "now friend with" in view.do_propose_friendship("guy1")
         with pytest.raises(AbnormalUsageError):
-            view.do_propose_friendship("guy1")  # already friends
+            view.do_propose_friendship("guy1") # already friends
         with pytest.raises(AbnormalUsageError):
-            view.do_accept_friendship("guy1")  # already friends
+            view.do_accept_friendship("guy1") # already friends
 
         self._set_user("guy3")
         assert "now friend" in view.do_accept_friendship("guy1")
         assert "friendship proposal" in view.do_accept_friendship("guy4")
-        with pytest.raises(AbnormalUsageError):  # too young friendship
+        with pytest.raises(AbnormalUsageError): # too young friendship
             view.do_cancel_friendship("guy1")
 
         self._set_user("guy4")
         assert "now friend" in view.do_accept_friendship("guy1")
 
         for pair, params in self.dm.data["friendships"]["sealed"].items():
-            params["acceptance_date"] -= timedelta(hours=30)  # delay should be 24h in dev
+            params["acceptance_date"] -= timedelta(hours=30) # delay should be 24h in dev
             self.dm.commit()
 
         self._set_user("guy3")
         assert "friendship with" in view.do_cancel_friendship("guy1")
 
         if random.choice((True, False)):
-            self._set_user("guy1")  # whatever side of the friendship acts...
+            self._set_user("guy1") # whatever side of the friendship acts...
             assert "friendship with" in view.do_cancel_proposal("guy4")
         else:
             self._set_user("guy4")

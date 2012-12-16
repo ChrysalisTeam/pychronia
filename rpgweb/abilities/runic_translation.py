@@ -39,11 +39,11 @@ class RunicTranslationAbility(AbstractAbility):
 
     def get_template_vars(self, previous_form_data=None):
 
-
         translation_form = self._instantiate_form(new_form_name="translation_form",
                                                   hide_on_success=False,
                                                   previous_form_data=previous_form_data)
-        translation_delay = self.get_ability_parameter("result_delay")
+
+        translation_delay = self.get_ability_parameter("result_delay")  # TODO - translate this
 
         return {
                  'page_title': _("Runic translations"),
@@ -65,23 +65,23 @@ class RunicTranslationAbility(AbstractAbility):
         return self.settings["references"]
 
     @classmethod
-    def _tokenize_rune_message(cls, string): #, left_to_right=True, top_to_bottom=True
+    def _tokenize_rune_message(cls, string):  # , left_to_right=True, top_to_bottom=True
         # parses a string of tokens separated by '#' (clauses) and '|' (word groups)
 
         string = cls._normalize_string(string)
 
         clauses = string.split("#")
 
-        #if not top_to_bottom:
+        # if not top_to_bottom:
         #    clauses.reverse()
 
-        clauses = [clause.split("|") for clause in clauses] # list of lists
+        clauses = [clause.split("|") for clause in clauses]  # list of lists
 
-        #if not left_to_right:
+        # if not left_to_right:
         #    for clause in clauses:
         #        clause.reverse()
 
-        words = [word.strip() for clause in clauses for word in clause if word.strip()] # flattened list of 'words' (actually, groups of tokens)
+        words = [word.strip() for clause in clauses for word in clause if word.strip()]  # flattened list of 'words' (actually, groups of tokens)
 
         return words
 
@@ -92,7 +92,7 @@ class RunicTranslationAbility(AbstractAbility):
         translated_tokens = cls._tokenize_rune_message(translated_string)
 
         assert len(real_rune_tokens) == len(translated_tokens), "Mismatch between rune an real tokens"
-        assert len(set(real_rune_tokens)) == len(real_rune_tokens), "No unicity of real rune tokens" # rune phrases must be unique in the message, to allow proper translation
+        assert len(set(real_rune_tokens)) == len(real_rune_tokens), "No unicity of real rune tokens"  # rune phrases must be unique in the message, to allow proper translation
 
         translator = PersistentDict(zip(real_rune_tokens, translated_tokens))
         return translator
@@ -147,7 +147,7 @@ class RunicTranslationAbility(AbstractAbility):
     def _translate_rune_message(self, item_name, rune_transcription):
 
         if item_name not in self.get_ability_parameter("references").keys():
-            translator = {} # we let random words translation deal with that
+            translator = {}  # we let random words translation deal with that
         else:
             translation_settings = self.get_ability_parameter("references")[item_name]
             translator = self._build_translation_dictionary(translation_settings["decoding"],
@@ -165,15 +165,15 @@ class RunicTranslationAbility(AbstractAbility):
                                               target_item,
                                               transcription)
 
-        return _("Runic transcription successfully submitted, the result will be emailed to you.") #TODO REMOVE THIS
+        return _("Runic transcription successfully submitted, the result will be emailed to you.")  # TODO REMOVE THIS
 
 
     @transaction_watcher
-    def _process_translation_submission(self, username, item_name, rune_transcription): # TODO remove username !!
+    def _process_translation_submission(self, username, item_name, rune_transcription):  # TODO remove username !!
 
 
         local_email = self.get_character_email(username)
-        remote_email = "translator-robot@hightech.com" # dummy domain too
+        remote_email = "translator-robot@hightech.com"  # dummy domain too
 
         # request email, to allow interception
 
@@ -210,16 +210,16 @@ class RunicTranslationAbility(AbstractAbility):
                               PersistentDict(username=username, item_title=item_title),
                               url=self.get_message_viewer_url(msg_id))
 
-        return msg_id # id of the automated response
+        return msg_id  # id of the automated response
 
 
 
     @classmethod
     def _setup_ability_settings(cls, settings):
-        pass # Nothing to do, all translation data must be fully present in initial fixture
+        pass  # Nothing to do, all translation data must be fully present in initial fixture
 
     def _setup_private_ability_data(self, private_data):
-        pass # nothing stored here at the moment
+        pass  # nothing stored here at the moment
 
 
     def _check_data_sanity(self, strict=False):
@@ -239,7 +239,7 @@ class RunicTranslationAbility(AbstractAbility):
             assert name in self.get_all_items().keys(), name
             utilities.check_is_string(properties["decoding"])
             utilities.check_is_string(properties["translation"])
-            assert self._build_translation_dictionary(properties["decoding"], properties["translation"]) # we ensure tokens are well matching
+            assert self._build_translation_dictionary(properties["decoding"], properties["translation"])  # we ensure tokens are well matching
 
         if strict:
             assert not any(self.all_private_data)
