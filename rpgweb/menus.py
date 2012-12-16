@@ -29,9 +29,9 @@ class MenuEntry:
             self.url = None
 
         self.submenus = tuple(submenu for submenu in submenus if submenu) if submenus else []
-        self.user_access = view.get_access_token(request.datamanager)
+        self.user_access = view.get_access_token(request.datamanager) if view else None
         self.forced_visibility = forced_visibility
-        self.is_active = self.url and (self.user_access == AccessResult.available) # doesn't rely on submenus state
+        self.is_active = bool(self.url and (self.user_access == AccessResult.available)) # doesn't rely on submenus state
 
     @property
     def is_visible(self):
@@ -41,7 +41,7 @@ class MenuEntry:
             return bool(self.submenus or (self.user_access in (AccessResult.available, AccessResult.permission_required)))
 
 
-def generate_full_menu(request):  ## game_menu_generator
+def generate_full_menu(request): # # game_menu_generator
 
 
     assert request.datamanager
@@ -60,7 +60,7 @@ def generate_full_menu(request):  ## game_menu_generator
         return res # no filtering here!
 
 
-    ## Special additions to menu entries ##
+    # # Special additions to menu entries ##
 
     processed_view = request.processed_view # thanks to our middleware
 
@@ -94,7 +94,7 @@ def generate_full_menu(request):  ## game_menu_generator
                            menu_entry(_(u"Encyclopedia"), views.view_encyclopedia),
                            menu_entry(_(u"Team Items") if user.is_authenticated else _(u"Auction Items"), views.items_slideshow),
 
-                           #menu_entry(_(u"Radio Messages"), views.personal_radio_messages_listing), # TODO INTEGRATE TO INFO PAGES ???
+                           # menu_entry(_(u"Radio Messages"), views.personal_radio_messages_listing), # TODO INTEGRATE TO INFO PAGES ???
                        )),
 
             menu_entry(_(u"Communication"), views.homepage, # FIXME
@@ -111,7 +111,7 @@ def generate_full_menu(request):  ## game_menu_generator
                          # ADD ALL OTHER MESSAGING ENTRIES
                       )),
 
-            menu_entry(_(u"Admin"), views.homepage, # FIXME
+            menu_entry(_(u"Admin"), None, # FIXME
                        (
                          menu_entry(_(u"Dashboard"), abilities.admin_dashboard_view),
                          menu_entry(_(u"Manage Characters"), views.manage_characters),
@@ -131,16 +131,16 @@ def generate_full_menu(request):  ## game_menu_generator
                         menu_entry(_(u"Network Management"), abilities.mercenaries_hiring_view),
                         menu_entry(_(u"Matter Analysis"), abilities.matter_analysis_view),
 
-                        #menu_entry(_(u"Agents Hiring"), views.network_management),
-                        #menu_entry(_(u"Oracles"), views.contact_djinns),
-                        #menu_entry(_(u"Mercenary Commandos"), views.mercenary_commandos),
-                        #menu_entry(_(u"Teleportations"), views.teldorian_teleportations),
-                        #menu_entry(_(u"Zealot Attacks"), views.acharith_attacks),
-                        #menu_entry(_(u"Telecom Investigations"), views.telecom_investigation),
-                        #menu_entry(_(u"World Scans"), views.scanning_management),
+                        # menu_entry(_(u"Agents Hiring"), views.network_management),
+                        # menu_entry(_(u"Oracles"), views.contact_djinns),
+                        # menu_entry(_(u"Mercenary Commandos"), views.mercenary_commandos),
+                        # menu_entry(_(u"Teleportations"), views.teldorian_teleportations),
+                        # menu_entry(_(u"Zealot Attacks"), views.acharith_attacks),
+                        # menu_entry(_(u"Telecom Investigations"), views.telecom_investigation),
+                        # menu_entry(_(u"World Scans"), views.scanning_management),
                       )),
 
-            menu_entry(_(u"Profile"), views.homepage, # FIXME
+            menu_entry(_(u"Profile"), None, # FIXME
                        (
                         menu_entry(_(u"Profile"), views.character_profile, forced_visibility=(True if user.is_character else False)),
                         menu_entry(_(u"Friendships"), views.friendship_management, forced_visibility=(True if user.is_character else False)),
@@ -160,6 +160,7 @@ def filter_menu_tree(menu):
     recursed_submenus = [filter_menu_tree(submenu) for submenu in menu.submenus]
     menu.submenus = [submenu for submenu in recursed_submenus if submenu] # remove new 'None' entries
     if not menu.is_visible: # NOW only we can query the visibility state of this particular menu entry, since submenus have been updated
+        # print(">>>>>>>>>> returning none for", menu.title)
         return None
     return menu
 
@@ -173,11 +174,11 @@ def generate_filtered_menu(request):
         assert final_menu_tree.is_visible
         final_menu_entries = final_menu_tree.submenus
         for menu in final_menu_entries:
-            #print("*", menu.title, menu.is_active, menu.is_visible, menu.user_access)
+            # print("*", menu.title, menu.is_active, menu.is_visible, menu.user_access)
             assert menu.is_visible
             if menu.submenus:
                 for submenu in menu.submenus:
-                    #print(">>>",submenu.title, submenu.is_active, submenu.is_visible, submenu.user_access)
+                    # print(">>>", submenu.title, submenu.is_active, submenu.is_visible, submenu.user_access)
                     assert submenu.is_visible
 
     return final_menu_tree # might be None, in incredible cases...
