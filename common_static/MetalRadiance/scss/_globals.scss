@@ -1,0 +1,64 @@
+
+$IMGS: unquote("img/");
+
+$text_color: black;
+$alt_text_color: white;
+
+$drop_cap: black;
+
+$title_gold: #F8D85B;
+$title_white: white;
+
+$light_blue: #0104A2;
+$dark_blue: #0B0D6C;
+$old_blue: #464780;
+
+$light_yellow: #9D8126;
+$dark_yellow: #775F13;
+$old_yellow: #A79353;
+
+$dark_red: #8E0D0D;
+
+$dark_green: #386D2C;
+
+$outline_gold: #B89215;
+ 
+ 
+@font-face
+{
+    font-family: black_chancery;
+    src: url('#{$IMGS}fonts/black_chancery.ttf');
+} 
+@font-face
+{
+    font-family: rothenburg_decorative;
+    src: url('#{$IMGS}fonts/rothenburg_decorative.ttf');
+} 
+@font-face
+{
+    font-family: kingthings_calligraphica_light;
+    src: url('#{$IMGS}fonts/kingthings_calligraphica_light.ttf');
+} 
+
+
+@mixin header_common {
+    color: #BF9635; //#f4ed62; //#ac8b28; // #cc9933;
+    text-shadow: 1px 1px 0 black, -1px -1px 0 black,
+                 1px -1px 0 black, -1px 1px 0 black;
+    font-family: black_chancery, serif;
+    margin: 2px;
+    text-align: center;
+}
+
+
+.float_left {
+    float: left;
+    clear: left; // so that they stack
+}
+
+.float_right {
+    float: right;
+    clear: right; // so that they stack
+}
+
+ 

@@ -1,0 +1,214 @@
+
+@import "_globals.scss";
+
+
+
+h1 {
+
+    @include header_common;
+    font-size: 30pt;
+    color: $title_gold;
+    
+    &:before {
+        top: 12px;
+        left: -14px;
+        content: url('#{$IMGS}decorations/primary_title_left_gradient.png');
+        padding: 0;
+        position: relative;
+    }
+    &:after {
+        top: 12px;
+        left: 14px;
+        content: url('#{$IMGS}decorations/primary_title_right_gradient.png');
+        padding: 0;
+        position: relative;
+    }
+}
+
+
+h2 {
+    
+    @include header_common;
+    font-size: 24pt;
+    color: $title_white;
+    
+    &:before {
+        top: 0px;
+        left: -10px;
+        content: url('#{$IMGS}decorations/secondary_title_left.png');
+        padding: 0;
+        position: relative;
+    }
+    &:after {
+        top: 0px;
+        left: 10px;
+        content: url('#{$IMGS}decorations/secondary_title_right.png');
+        padding: 0;
+        position: relative;
+    }
+}
+
+
+p.beautiful:first-letter { // to be used with the "class" directive of rst
+    font-family: rothenburg_decorative, serif;
+    color: $drop_cap;
+    float: left;
+    font-size: 3em;
+    line-height: 1;
+    margin-right: 0.1em;
+}
+
+
+div, span {
+    background-color: transparent;
+    border-color: transparent;
+}
+
+
+a {
+    &:link { color: $light_blue; }
+    &:visited, &:active { color: $dark_blue; }
+    &:hover { color: old_blue; }
+}
+
+
+dt {
+    font-weight: bold;
+}
+
+dd {
+
+}
+
+
+ul
+{
+    list-style-position: outside;
+    list-style-image: url('#{$IMGS}icons/bullet_gold_small.png');
+    
+    ul {
+        list-style-image: url('#{$IMGS}icons/bullet_silver_small.png');
+        
+        ul {
+            list-style-image: url('#{$IMGS}icons/bullet_bronze_small.png');
+        }
+    }
+}
+
+ 
+
+
+
+
+
+
+
+/*  Wrapping of text in scrolls and plates  */
+
+
+blockquote, q, cite {
+    color: white;
+    font-family: kingthings_calligraphica_light;
+    margin: 8px;
+    padding: 6px;
+    width: 50%;
+    border-style: solid; 
+    border-width: 7px 10px 10px; 
+    border-image: url('#{$IMGS}borders/marble_plate.png') 7 10 10 fill stretch;
+}
+
+.post-it {
+    color: black;
+    font-family: kingthings_calligraphica_light;
+    margin: 8px;
+    padding: 6px;
+    width: 50%;
+    border-style: solid; 
+    border-width: 4px 4px 6px; 
+    border-image: url('#{$IMGS}borders/post-it.png') 4 4 6 fill stretch;
+}
+
+.scroll_realistic {
+    width: 30%;
+    border-style: solid; 
+    border-width: 142px 63px 124px 71px; 
+    border-image: url('#{$IMGS}borders/scroll_realistic.png') 142 63 124 71 fill stretch stretch;
+}
+
+.scroll_realistic_thin_ends {
+    width: 30%;
+    min-width: 150px;
+    border-style: solid; 
+    border-width: 79px 45px 81px 39px;
+    border-image: url('#{$IMGS}borders/scroll_realistic_thin_ends.png') 79 45 81 39 fill stretch stretch;
+}
+ 
+.scroll_yellow_flat {
+    padding: 25px;
+    background: url('#{$IMGS}borders/scroll_yellow_flat.png');
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+}
+
+.scroll_yellow_rolled {
+    padding: 55px 30px;
+    background: url('#{$IMGS}borders/scroll_yellow_rolled.png');
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+}
+
+
+
+
+
+
+table.realtable {
+    border-collapse: collapse;
+	margin:0px;
+    padding:0px;
+	width:100%;
+	box-shadow: 5px 5px 3px #888888;
+	border:1px solid #000000;
+
+    tr:nth-child(odd){ background-color:#eed892; }
+    tr:nth-child(even) { background-color:#f1d875; }
+    
+    td {
+        vertical-align:middle;
+        border:1px solid #000000;
+        border-width:1px 1px 1px 1px;
+        text-align:center;
+        padding:7px;
+        font-size:10px;
+        font-family:Arial;
+        font-weight:normal;
+        color:#000000;
+    }
+    
+    tr:last-child td {
+    }
+    tr td:last-child {
+    }
+    tr:last-child td:last-child {
+    }
+    
+    thead td {
+        background-color:#ff7f00;
+        border:0px solid #000000;
+        text-align:center;
+        border-width:0px 0px 1px 1px;
+        font-size:14px;
+        font-family:Arial;
+        font-weight:bold;
+        color:#ffffff;
+    }
+
+    thead th:first-child {
+        border-width:0px 0px 1px 0px;
+    }
+    
+    thead th:last-child {
+        border-width:0px 0px 1px 1px;
+    }
+}
+

@@ -1,0 +1,30 @@
+
+
+@import "_rst_html4css1.scss";  
+
+
+div {
+    
+    
+    .attention, .caution, .danger, .error, .important, .warning {
+        p.admonition-title {
+            color: $dark_red;
+        }
+        border: medium ridge; // or groove
+        border-color: $outline_gold;
+    }
+
+    .hint, .note, .tip, .admonition {
+        p.admonition-title {
+            color: $dark_green;
+        }
+        border: medium ridge; // or groove
+        border-color: $outline_gold;
+    }
+
+}
+
+
+table.footnote {
+    border-color: $light_yellow;
+}

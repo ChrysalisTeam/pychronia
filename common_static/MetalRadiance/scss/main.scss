@@ -1,0 +1,389 @@
+ 
+  
+@import "_globals.scss";
+
+@import "_corner_decorations.scss";  
+
+@import "_standard_content.scss"; 
+    
+@import "_rst_customization.scss";
+
+ 
+body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    min-width: 1000px;
+     
+    font-size: 18px;
+    font-family: Arial, Helvetica, sans-serif;
+    
+    background-color: black;
+    background-image: url('#{$IMGS}background/nazur_temple_75.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: scroll;
+    background-position: center; 
+    
+    /* useful and little known properties */
+    word-spacing: normal; // or length measure
+    word-wrap: normal; // or break-word
+    word-break: normal; // or break-all/hyphenate
+    white-space: normal; // or nowrap/pre/pre-line/pre-wrap
+    quotes: none; // or string string string string
+    text-overflow: ellipsis; // or clip or string, not inherited
+    
+    &:after
+    {
+    // put here all images to PRELOAD (eg. used in dynamic menus and hover effects)
+    content: url('#{$IMGS}borders/tube_gold_small.png') 
+             url('#{$IMGS}borders/tube_silver_small.png')
+             url('#{$IMGS}borders/tube_bronze_small.png')
+             url('#{$IMGS}borders/dropdown_menu.png');
+    display: none;
+    }
+}
+ 
+
+
+
+
+
+#full_header {
+    width: 100%;
+    position: relative;
+    z-index: 3000;
+    
+    #full_header_center {
+        margin: auto;
+        //min-width: 1000px;
+        height: 167px;
+        text-align: center;
+        
+        background: {
+            image: url('#{$IMGS}background/header_center.png');
+            repeat: no-repeat;
+            position: center;
+        }
+  
+    
+        #title_table {
+            display: table;
+            width: 1000px;
+            margin: 0px auto 0px;
+            padding: 20px 0 0;
+            table-layout: fixed;
+            
+            div {
+                display: table-cell;
+                height: 46px;
+            }
+            .motto{
+                width: 225px;
+                &.left {
+                    background: {
+                        image: url('#{$IMGS}titles/ad_augusta.png');
+                        repeat: no-repeat;
+                        position: center;
+                    }
+                }
+                &.right {
+                    background: {
+                        image: url('#{$IMGS}titles/per_angusta.png');
+                        repeat: no-repeat;
+                        position: center;
+                    }
+                }
+            }
+            
+            
+            #site_title{
+                background: {
+                    image: url('#{$IMGS}titles/anthropia.png');
+                    repeat: no-repeat;
+                    position: center;
+                }
+            }
+            
+        }  
+
+        #notification_table {
+            display: table;
+            width: 840px;
+            margin: 0px auto 0px;
+            padding: 10px;
+            table-layout: fixed;
+            vertical-align: center;
+            
+            div {
+                display: table-cell;
+                height: 40px;
+                padding: 8px 10px;
+            }
+            .carving{
+                
+                width: 163px;
+
+                background: {
+                    image:url('#{$IMGS}background/carving1.png');
+                    repeat:no-repeat;
+                }
+        
+            }
+            .separator{
+                
+            }
+            
+        }  
+    }        
+    
+}
+
+
+
+
+#full_menu {
+    
+    margin-top: -35px;
+    width: 100%;
+    position: relative;
+    z-index: 2000; // below the title panel
+    
+    #main_menu {
+
+        margin: auto;
+        display: table;
+        
+        div {
+            display: table-cell;
+            padding: 0px;
+        }
+        
+        .big_icon_panel {
+            position: relative; 
+            text-align: center;
+            vertical-align: middle;
+            width: 90px;
+            background: {
+                image: url('#{$IMGS}icons/big_icon_bg.png');
+                repeat: no-repeat;
+                position: center;
+            }     
+            
+            img {
+               /* display: inline-block;
+                margin: auto;
+                position: absolute;
+                top: 0; bottom: 0; */ // aligns Vertically
+                max-height: 100%;
+                max-width: 100%;
+            }
+        }
+         
+        .marble_menu_container {
+            z-index: 0;
+            padding-top: 12px;
+            height: 73px;
+            
+            .marble_menu {
+                
+                @import "_dropdown_menu.scss";
+            
+                width: 600px;
+                height: 73px;
+                border-style: solid; 
+                border-width: 16px 52px 20px 55px; 
+                border-image: url('#{$IMGS}borders/menu_border.png') 16 52 20 55 fill round stretch;
+            }
+            
+        }
+    }
+}
+
+
+
+
+#full_content {
+     
+    width: 960px;
+    margin: 2px auto;
+        
+    .mini_frame {
+    
+        position: relative;
+        padding: 0px;
+        width: 280px;
+        margin: 7px 10px 10px;
+        
+        background: transparent url('#{$IMGS}background/wood_bg.png') repeat center center;
+        background-origin: content-box; //padding-box|border-box
+        background-clip: content-box;
+        background-position: left top; 
+        
+        .mini_frame_content {
+            position: relative;
+            margin: -5px; // to cover the background
+            border-style: solid; 
+            border-width: 22px 22px; 
+            border-image: url('#{$IMGS}borders/mini_frame4.png') 22 22 repeat;
+        }
+        
+    }
+    
+    @mixin main_frame_common{
+        // inheritance is slightly buggy...
+        position: relative;
+        padding: 10px;
+        margin: 0px 5px 10px;
+        background: transparent url('#{$IMGS}background/leather_bg.jpg') repeat center center;
+        background-clip: content-box; 
+    }
+    
+    .big_frame {
+        @include main_frame_common;
+        width: 630px;
+    }
+    
+    .giant_frame {
+        @include main_frame_common;
+        width: 940px;
+        margin: auto 10px; !important
+    }
+
+    .big_frame_border {
+        position: relative;
+        
+        margin: -15px; // to cover the background
+        padding: 2px 6px;
+        border-style: solid; 
+        border-width: 41px 43px 43px 41px; 
+        border-image: url('#{$IMGS}borders/big_frame.png') 41 43 43 41 fill round round;
+        
+        .big_frame_content {
+            margin: 0 0 55px; // bottom space to avoid collisions with decorations
+            padding: 0;
+            position: relative;
+            z-index: 30; // important for text selection
+        }
+    }       
+}
+      
+
+    
+#up_footer_wrapper {
+
+    clear: both;
+    width: 100%;
+    text-align: center;
+    vertical-align: top;
+    color: $alt_text_color;
+     
+    @mixin up_footer_common {
+        margin: 0;
+        display: inline-block;
+        height: 55px;
+        min-width: 40px;
+        max-width: 250px;
+        padding: 38px 0px 38px;
+        overflow: hidden; // important to avoid mess with vertical alignment
+    }
+    
+    #up_footer_border_left {
+        @include up_footer_common;
+        border-style: solid;
+        border-width: 0px 0px 0px 121px;
+        border-image: url('#{$IMGS}borders/up_footer_left.png') 0 0 0 121 fill round stretch;
+    }
+    
+    #up_footer_border_right {
+        @include up_footer_common;
+        border-style: solid;
+        border-width: 0px 121px 0px 0px;
+        border-image: url('#{$IMGS}borders/up_footer_right.png') 0 121 0 0 fill round stretch;
+    }
+    
+    #up_footer_border_center {
+        @include up_footer_common;
+        background-image: url('#{$IMGS}borders/up_footer_center.png');
+        background-origin: padding-box; //padding-box|border-box
+        background-clip: padding-box;
+        width: 225px;
+        position: relative;
+    }
+    
+    .footer_center_img {
+        display: block;
+        position: absolute; // else it breaks the table layout...
+        left: 9px;
+        top: 10px;
+    }
+}
+
+
+#low_footer_wrapper {
+
+    clear: both;
+    width: 100%;
+    text-align: center;
+    color: $alt_text_color;
+    
+    #low_footer_border {
+    
+        position: relative;
+        padding: 12px 0 16px;
+        min-width: 30px;
+        height: 30px;
+        display: inline-block;
+        border-style: solid;
+        border-width: 0px 300px 0px 304px;
+        border-image: url('#{$IMGS}borders/low_footer_border.png') 0 300 0 304 fill stretch;
+        overflow: visible; // important to avoid mess with vertical alignment
+        
+        &:before {
+            top: -6px;
+            left: -60px;
+            content: url('#{$IMGS}decorations/low_footer_deco_left.png');
+            padding: 0;
+            position: absolute;
+        }
+        &:after {
+            top: -9px;
+            right: -56px;
+            content: url('#{$IMGS}decorations/low_footer_deco_right.png');
+            padding: 0;
+            position: absolute;
+        } 
+
+    }
+
+}
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

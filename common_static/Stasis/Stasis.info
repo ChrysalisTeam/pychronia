@@ -1,0 +1,23 @@
+; $Id:
+
+name = Stasis 
+description = Stasis theme
+core = 6.x
+engine = phptemplate
+
+features[] = name
+features[] = slogan
+features[] = favicon
+features[] = primary_links
+features[] = secondary_links
+
+regions[left] = Side Bar
+regions[footer] = Footer
+
+
+; Information added by drupal.org packaging script on 2009-12-12
+version = "6.x-1.0"
+core = "6.x"
+project = "Stasis"
+datestamp = "1260657957"
+

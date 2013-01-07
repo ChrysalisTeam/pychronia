@@ -1,0 +1,96 @@
+
+@import "_globals.scss";
+
+
+/* for foliage on small floating panel corners */
+
+@mixin small_decorations {
+    //user-select: none; // not working on images
+    position: absolute;
+}
+
+.stick_bottom_left {
+    @include small_decorations;
+    bottom: 0;
+    left: 0;
+}
+.stick_bottom_right {
+    @include small_decorations;
+    bottom: 0;
+    right: 0;
+}
+.stick_top_left {
+    @include small_decorations;
+    top: 0;
+    left: 0;
+}
+.stick_top_right {
+    @include small_decorations;
+    top: 0;
+    right: 0;
+}
+
+
+/* for foliage on main content panel corners */
+
+@mixin big_decorations {
+    //user-select: none; // not working on images
+    position: absolute;
+    z-index: 8;
+}
+
+.big_stick_bottom_left {
+    @include big_decorations;
+    bottom: -10px;
+    left: -10px;
+}
+.big_stick_bottom_right {
+    @include big_decorations;
+    bottom: -12px;
+    right: -19px;
+}
+.big_stick_top_left {
+    @include big_decorations;
+    top: -10px;
+    left: -10px;
+}
+.big_stick_top_right {
+    @include big_decorations;
+    top: -7px;
+    right: -15px;
+}
+
+
+/* for golden icons on main content panel corners */
+
+@mixin icon_decorations {
+    //user-select: none; // not working on images
+    position: absolute;
+    z-index: 10;
+}
+
+.icon_stick_bottom_left {
+    @include icon_decorations;
+    bottom: 5px;
+    left: 2px;
+} 
+
+.icon_stick_bottom_right {
+    @include icon_decorations;
+    bottom: 10px;
+    right: 8px;
+} 
+
+.icon_stick_top_left {
+    @include icon_decorations;
+    top: 10px;
+    left: 10px;
+} 
+
+.icon_stick_top_right {
+    @include icon_decorations;
+    top: 10px;
+    right: 10px;
+} 
+
+

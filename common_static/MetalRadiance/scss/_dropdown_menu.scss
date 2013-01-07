@@ -1,0 +1,112 @@
+
+
+
+ul.dropmenu {
+
+	margin: 0; 
+	padding: 0; 
+	height: 40px;
+	display: none;
+
+    line-height: 36px;
+    position: relative;
+    top: 3px;
+
+      
+    /* 		All items 			*/
+    
+    li a, li span { 
+        @include header_common;
+        
+        margin: 0;
+        padding: 0;
+        color: $title_white;
+        font-size: 20pt;
+        
+        border-style: solid; 
+        border-width: 0px 32px 0px 33px; 
+        border-image: url('#{$IMGS}borders/tube_gold_small.png') 0 32 0 33 fill stretch;
+
+        list-style-type: none;
+        list-style-image: none;
+        text-decoration: none;
+    }
+    
+    
+     li li a, li li span {
+        border-image: url('#{$IMGS}borders/tube_silver_small.png') 0 32 0 33 fill stretch;
+     }
+     
+     li li li a, li li li span {
+        border-image: url('#{$IMGS}borders/tube_bronze_small.png') 0 32 0 33 fill stretch;
+     }
+        
+
+
+            
+    /*		Top items			*/
+
+    li.toplevel	{	
+	
+        display: inline; 
+       
+        a:after, span:after {
+            content: url('#{$IMGS}icons/arrowhead_double.png');
+            vertical-align: middle;
+            display: inline-block;
+            margin-top: -3px;
+            margin-left: 10px;
+        }
+        
+        &.hover {		
+            //todo
+        }
+        
+        &.selected {
+            //todo
+        }
+        
+        &.hover.selected { 	
+            //todo
+        }
+    }
+
+    
+    /*      Submenus            */
+    
+    ul {
+        // width: 250px; // optional but recommended
+        margin: 0;
+        padding: 0;
+        border-style: solid; 
+        border-width: 4px 3px;
+        border-image: url('#{$IMGS}borders/dropdown_menu.png') 4 3 fill stretch;
+    }
+    
+    
+    /*		Subitems			*/
+    
+    li.sublevel {	
+    
+        // border-bottom: 1px solid #DFBD99; 
+
+        &.hover {				
+            //todo
+        }
+
+        &.selected { 			
+            //todo
+        }
+
+        &.hover.selected {	
+            //todo
+        }
+    
+    }
+
+
+}
+
+
+
+
