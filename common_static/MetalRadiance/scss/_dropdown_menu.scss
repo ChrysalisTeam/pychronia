@@ -8,7 +8,7 @@ ul.dropmenu {
 	height: 40px;
 	display: none;
 
-    line-height: 36px;
+    #{$IMGS}: 36px;
     position: relative;
     top: 3px;
 
@@ -21,7 +21,8 @@ ul.dropmenu {
         margin: 0;
         padding: 0;
         color: $title_white;
-        font-size: 20pt;
+        font-size: 20pt; // needs to be PRECISE, so no em.
+        line-height: 37px;
         
         border-style: solid; 
         border-width: 0px 32px 0px 33px; 

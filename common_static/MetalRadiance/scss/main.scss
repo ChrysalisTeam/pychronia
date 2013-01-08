@@ -14,9 +14,12 @@ body {
     padding: 0;
     width: 100%;
     min-width: 1000px;
-     
-    font-size: 18px;
+    
+    font-size: 100%;
+    //font-size: 18px;
+    line-height: 20px;
     font-family: Arial, Helvetica, sans-serif;
+    
     
     background-color: black;
     background-image: url('#{$IMGS}background/nazur_temple_75.jpg');
@@ -43,9 +46,9 @@ body {
     display: none;
     }
 }
+
+
  
-
-
 
 
 
@@ -153,6 +156,7 @@ body {
 
         margin: auto;
         display: table;
+        max-width: 960px;
         
         div {
             display: table-cell;
@@ -189,8 +193,8 @@ body {
                 
                 @import "_dropdown_menu.scss";
             
-                width: 600px;
-                height: 73px;
+                min-width: 600px;
+                height: 37px;
                 border-style: solid; 
                 border-width: 16px 52px 20px 55px; 
                 border-image: url('#{$IMGS}borders/menu_border.png') 16 52 20 55 fill round stretch;
@@ -260,7 +264,7 @@ body {
         border-image: url('#{$IMGS}borders/big_frame.png') 41 43 43 41 fill round round;
         
         .big_frame_content {
-            margin: 0 0 55px; // bottom space to avoid collisions with decorations
+            margin: 0 20px 55px; // bottom space to avoid collisions with decorations
             padding: 0;
             position: relative;
             z-index: 30; // important for text selection

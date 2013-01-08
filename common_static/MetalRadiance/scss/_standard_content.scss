@@ -6,7 +6,8 @@
 h1 {
 
     @include header_common;
-    font-size: 30pt;
+    font-size: 2.3em;
+    line-height: normal;
     color: $title_gold;
     
     &:before {
@@ -29,8 +30,10 @@ h1 {
 h2 {
     
     @include header_common;
-    font-size: 24pt;
+    font-size: 1.8em;
+    line-height: normal;
     color: $title_white;
+    margin-top: 40px;
     
     &:before {
         top: 0px;
@@ -49,17 +52,44 @@ h2 {
 }
 
 
-p.beautiful:first-letter { // to be used with the "class" directive of rst
-    font-family: rothenburg_decorative, serif;
-    color: $drop_cap;
-    float: left;
-    font-size: 3em;
-    line-height: 1;
-    margin-right: 0.1em;
+
+.section {
+
+    p {
+        text-align: justify;
+        overflow: hidden; // for drop caps
+        text-decoration: none; // underline, overline, line-through, blink or inherit
+        text-indent: 20px;
+        
+        /* useful and little known properties */
+        word-spacing: normal; // or length measure
+        word-wrap: normal; // or break-word
+        word-break: normal; // or break-all/hyphenate
+        white-space: normal; // or nowrap/pre/pre-line/pre-wrap
+        quotes: none; // or string string string string
+        text-overflow: ellipsis; // or clip or string, not inherited
+
+    }
+
+    p:first-child:not(.post-it), p:first-of-type:not(.post-it), p.beautiful { // class to be used with the "class" directive of rst
+    
+        text-indent: 0;
+        
+        &:first-letter {
+            font-family: rothenburg_decorative, serif;
+            color: $drop_cap;
+            float: left;
+            font-size: 3em;
+            // line-height: normal;
+            margin-right: 0.1em;
+        }
+    }
 }
 
 
-div, span {
+
+
+div, span, p {
     background-color: transparent;
     border-color: transparent;
 }
@@ -119,6 +149,10 @@ blockquote, q, cite {
 
 .post-it {
     color: black;
+    
+    font-size: 2em;
+    line-height: normal;
+    
     font-family: kingthings_calligraphica_light;
     margin: 8px;
     padding: 6px;
@@ -179,7 +213,7 @@ table.realtable {
         border-width:1px 1px 1px 1px;
         text-align:center;
         padding:7px;
-        font-size:10px;
+        font-size:1.2em;
         font-family:Arial;
         font-weight:normal;
         color:#000000;
@@ -197,7 +231,7 @@ table.realtable {
         border:0px solid #000000;
         text-align:center;
         border-width:0px 0px 1px 1px;
-        font-size:14px;
+        font-size:1.5em;
         font-family:Arial;
         font-weight:bold;
         color:#ffffff;

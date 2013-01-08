@@ -1,4 +1,4 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 {% load cms_tags menu_tags sekizai_tags %}
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -71,9 +71,12 @@
     
     <div id="full_menu">
         <div id="main_menu">
+            {% block left_big_icon %} 
             <div class="big_icon_panel">
                 <img src="{{ STATIC_URL }}MetalRadiance/img/icons/speaker.png"/>
             </div>
+            {% endblock %}
+            
             <div class="marble_menu_container">
                 <div class="marble_menu">
                         <ul id="menulist" class="dropmenu" style="z-index: 100;">
@@ -82,15 +85,18 @@
                         </ul>
                 </div>
             </div>
+            
+            {% block right_big_icon %} 
             <div class="big_icon_panel">
                 <img src="{{ STATIC_URL }}MetalRadiance/img/icons/question_mark.png"/>
             </div>
+            {% endblock %}
         </div>
     </div> 
     
     <div id="full_content">
     
-        <div class="big_frame float_right">
+        <div class="giant_frame">
         
         
             <img class="big_stick_bottom_left" src="{{ STATIC_URL }}MetalRadiance/img/decorations/big_deco_bl.png"/>
@@ -108,12 +114,8 @@
             <div class="big_frame_border">
               <div class="big_frame_content">
                 
-                <h1>Grand titre</h1>
+                <h1>{% page_attribute "page_title" %}</h1>
                         
-                <p class="post-it">
-                Here is a post-it paragraph, with much text and stuffs and stuffs to show wrapping.
-                </p>
-                
                 {% block main_content %}  
                 {% endblock %}
                 
@@ -124,6 +126,7 @@
            
         </div>
         
+      {% comment %}
         <div class="mini_frame float_left">
             <img class="stick_bottom_right" src="{{ STATIC_URL }}MetalRadiance/img/decorations/mini_deco_bottom_right_1.png"/>
             <img class="stick_top_left" src="{{ STATIC_URL }}MetalRadiance/img/decorations/mini_deco_top_left_1.png"/>
@@ -154,7 +157,8 @@
                 <br/><br/><br/><br/><br/>
            </div>
         </div>
-        
+      {% endcomment %}
+         
     </div>
 
     

@@ -1,12 +1,17 @@
 {% extends "metalradiance_base.html" %}
 
-{% load cms_tags menu_tags sekizai_tags %}
+{% load cms_tags menu_tags sekizai_tags heading %}
 
  
 {% block html_headers %}  
     {{ block.super }}
 {% endblock %}
 
+{% block left_big_icon %} 
+{% endblock %}
+
+{% block right_big_icon %} 
+{% endblock %}
 
 {% block main_menu %}  
     {{ block.super }}
@@ -15,5 +20,7 @@
 
 {% block main_content %}  
     {{ block.super }}
-    {% placeholder "content" %}
+    {% headingcontext target_level=2 %}
+        {% placeholder "content" %}
+    {% endheadingcontext %}
 {% endblock %}

@@ -4,6 +4,11 @@ from __future__ import unicode_literals
 
 from django.conf.urls.defaults import * # default HTTP404 etc.
 from django.conf import settings
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+
+# ... the rest of your URLconf goes here ...
+
+
 
 from ..urls import urlpatterns as site_urls
 
@@ -14,11 +19,11 @@ test_urls = patterns('',
 
     url(r'^media/(?P<path>.*)$', 'django.views.static.serve',
         {'document_root': settings.MEDIA_ROOT, 'show_indexes': True}),
-    url(r'^static/(?P<path>.*)$', 'django.views.static.serve',
-        {'document_root': settings.STATIC_ROOT, 'show_indexes': True}),
 
-    url(r'', include('django.contrib.staticfiles.urls')),
+    ############url(r'', include('django.contrib.staticfiles.urls')), # UNNEEDED WITH RUNSERVER
 )
 
 
 urlpatterns = test_urls + site_urls # all test urls
+
+urlpatterns += staticfiles_urlpatterns() # in DEV only

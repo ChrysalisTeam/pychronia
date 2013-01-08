@@ -102,8 +102,11 @@ LOCALE_INDEPENDENT_PATHS = (
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(ROOT_PATH, "chrysalis", "media")
 
+STATICFILES_DIRS = (
+    os.path.join(ROOT_PATH, "common_static"),
+)
 
-STATIC_ROOT = os.path.join(ROOT_PATH, "common_static")
+### STATIC_ROOT = "" # where collectstatic cmd will place files
 STATIC_URL = "/static/"
 ADMIN_MEDIA_PREFIX = "/static/admin/" # deprecated but needed by django-cms
 
@@ -156,6 +159,7 @@ TEMPLATE_DIRS = (
 INSTALLED_APPS = [
 
     'sessionprofile', # keeps track of sessions/users in DB table, for PHPBB integration
+    'templateaddons',
 
     'debug_toolbar',
     'django.contrib.auth',

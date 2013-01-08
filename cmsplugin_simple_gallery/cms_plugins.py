@@ -12,10 +12,11 @@ class SimpleGalleryPlugin(CMSPluginBase):
 
     def render(self, context, instance, placeholder):
         images = instance.gallery.simpleimage_set.all()
-        print images[0].src
+        #print images[0].src
         context.update({
             'images': images,
-            'placeholder':placeholder
+            'placeholder': placeholder,
+            'gallery': instance.gallery,
         })
         self.render_template = instance.template
         return context

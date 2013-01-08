@@ -41,8 +41,8 @@
 
 .big_stick_bottom_left {
     @include big_decorations;
-    bottom: -10px;
-    left: -10px;
+    bottom: -12px;
+    left: -12px;
 }
 .big_stick_bottom_right {
     @include big_decorations;
@@ -72,7 +72,7 @@
 .icon_stick_bottom_left {
     @include icon_decorations;
     bottom: 5px;
-    left: 2px;
+    left: 0px;
 } 
 
 .icon_stick_bottom_right {

@@ -10,11 +10,16 @@
   font-family: kingthings_calligraphica_light;
   src: url(img/fonts/kingthings_calligraphica_light.ttf);
 }
-.float_left {
+.center {
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+}
+.float-left, .float_left, .floatleft {
   float: left;
   clear: left;
 }
-.float_right {
+.float-right, .float_right, .floatright {
   float: right;
   clear: right;
 }
@@ -41,8 +46,8 @@
 .big_stick_bottom_left {
   position: absolute;
   z-index: 8;
-  bottom: -10px;
-  left: -10px;
+  bottom: -12px;
+  left: -12px;
 }
 .big_stick_bottom_right {
   position: absolute;
@@ -66,7 +71,7 @@
   position: absolute;
   z-index: 10;
   bottom: 5px;
-  left: 2px;
+  left: 0px;
 }
 .icon_stick_bottom_right {
   position: absolute;
@@ -93,7 +98,8 @@ h1 {
   font-family: black_chancery, serif;
   margin: 2px;
   text-align: center;
-  font-size: 30pt;
+  font-size: 2.3em;
+  line-height: normal;
   color: #f8d85b;
 }
 h1:before {
@@ -117,8 +123,10 @@ h2 {
   font-family: black_chancery, serif;
   margin: 2px;
   text-align: center;
-  font-size: 24pt;
+  font-size: 1.8em;
+  line-height: normal;
   color: #ffffff;
+  margin-top: 40px;
 }
 h2:before {
   top: 0px;
@@ -134,15 +142,32 @@ h2:after {
   padding: 0;
   position: relative;
 }
-p.beautiful:first-letter {
+.section p {
+  text-align: justify;
+  overflow: hidden;
+  text-decoration: none;
+  text-indent: 20px;
+  word-spacing: normal;
+  word-wrap: normal;
+  word-break: normal;
+  white-space: normal;
+  quotes: none;
+  text-overflow: ellipsis;
+}
+.section p.beautiful, .section p:first-child:not(.post-it),
+.section p:first-of-type:not(.post-it) {
+  text-indent: 0;
+}
+.section p.beautiful:first-letter,
+.section p:first-child:not(.post-it):first-letter,
+.section p:first-of-type:not(.post-it):first-letter {
   font-family: rothenburg_decorative, serif;
   color: #000000;
   float: left;
   font-size: 3em;
-  line-height: 1;
   margin-right: 0.1em;
 }
-div, span {
+div, p, span {
   background-color: transparent;
   border-color: transparent;
 }
@@ -180,6 +205,8 @@ blockquote, cite, q {
 }
 .post-it {
   color: #000000;
+  font-size: 2em;
+  line-height: normal;
   font-family: kingthings_calligraphica_light;
   margin: 8px;
   padding: 6px;
@@ -233,7 +260,7 @@ table.realtable td {
   border-width: 1px 1px 1px 1px;
   text-align: center;
   padding: 7px;
-  font-size: 10px;
+  font-size: 1.2em;
   font-family: Arial;
   font-weight: normal;
   color: #000000;
@@ -243,7 +270,7 @@ table.realtable thead td {
   border: 0px solid #000000;
   text-align: center;
   border-width: 0px 0px 1px 1px;
-  font-size: 14px;
+  font-size: 1.5em;
   font-family: Arial;
   font-weight: bold;
   color: #ffffff;
@@ -549,7 +576,8 @@ body {
   padding: 0;
   width: 100%;
   min-width: 1000px;
-  font-size: 18px;
+  font-size: 100%;
+  line-height: 20px;
   font-family: Arial, Helvetica, sans-serif;
   background-color: #000000;
   background-image: url(img/background/nazur_temple_75.jpg);
@@ -637,6 +665,7 @@ body:after {
 #full_menu #main_menu {
   margin: auto;
   display: table;
+  max-width: 960px;
 }
 #full_menu #main_menu div {
   display: table-cell;
@@ -661,8 +690,8 @@ body:after {
   height: 73px;
 }
 #full_menu #main_menu .marble_menu_container .marble_menu {
-  width: 600px;
-  height: 73px;
+  min-width: 600px;
+  height: 37px;
   border-style: solid;
   border-width: 16px 52px 20px 55px;
   border-image: url(img/borders/menu_border.png) 16 52 20 55 fill round stretch;
@@ -672,7 +701,7 @@ body:after {
   padding: 0;
   height: 40px;
   display: none;
-  line-height: 36px;
+  img/: 36px;
   position: relative;
   top: 3px;
 }
@@ -688,6 +717,7 @@ body:after {
   padding: 0;
   color: #ffffff;
   font-size: 20pt;
+  line-height: 37px;
   border-style: solid;
   border-width: 0px 32px 0px 33px;
   border-image: url(img/borders/tube_gold_small.png) 0 32 0 33 fill stretch;
@@ -768,7 +798,7 @@ body:after {
   border-image: url(img/borders/big_frame.png) 41 43 43 41 fill round round;
 }
 #full_content .big_frame_border .big_frame_content {
-  margin: 0 0 55px;
+  margin: 0 20px 55px;
   padding: 0;
   position: relative;
   z-index: 30;

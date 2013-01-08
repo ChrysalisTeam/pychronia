@@ -9,9 +9,7 @@ urlpatterns = patterns('',
 
     #{'document_root': settings.MEDIA_ROOT, 'show_indexes': False}),
 
-
-
-    # Uncomment the admin/doc line below and add 'django.contrib.admindocs' 
+    # Uncomment the admin/doc line below and add 'django.contrib.admindocs'
     # to INSTALLED_APPS to enable admin documentation:
     # (r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
@@ -23,6 +21,6 @@ urlpatterns = patterns('',
     (r'^', include('cms.urls')), # this MUST end with '/' or be empty
 )
 
-from pprint import pprint
-pprint(urlpatterns)
+#from pprint import pprint
+#pprint(urlpatterns)
 
