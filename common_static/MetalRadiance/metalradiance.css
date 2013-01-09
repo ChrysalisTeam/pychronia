@@ -628,7 +628,7 @@ body:after {
   display: table;
   width: 1000px;
   margin: 0px auto 0px;
-  padding: 12px 0 0;
+  padding: 10px 0 0;
   table-layout: fixed;
 }
 #full_header #full_header_center #title_table div {

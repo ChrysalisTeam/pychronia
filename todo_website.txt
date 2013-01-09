@@ -2,12 +2,15 @@
 
 
 MENU
-- presentation
+- presentation (+ slides)
   - historique
-  - 
+  - faq
 
-- jouer
+- Creer une partie
+- Rejoindre une partie
+- Forum
 
+Communauté
 
 - contribuer
   profils
