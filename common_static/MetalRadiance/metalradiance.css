@@ -576,6 +576,7 @@ body {
   padding: 0;
   width: 100%;
   min-width: 1000px;
+  overflow: auto;
   font-size: 100%;
   line-height: 20px;
   font-family: Arial, Helvetica, sans-serif;
@@ -760,6 +761,7 @@ body:after {
   padding: 0px;
   width: 280px;
   margin: 7px 10px 10px;
+  overflow: auto;
   background: transparent url(img/background/wood_bg.png) repeat center center;
   background-origin: content-box;
   background-clip: content-box;
@@ -800,6 +802,7 @@ body:after {
 #full_content .big_frame_border .big_frame_content {
   margin: 0 20px 55px;
   padding: 0;
+  overflow: auto;
   position: relative;
   z-index: 30;
 }
