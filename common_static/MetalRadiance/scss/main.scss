@@ -75,12 +75,12 @@ body {
             display: table;
             width: 1000px;
             margin: 0px auto 0px;
-            padding: 20px 0 0;
+            padding: 12px 0 0;
             table-layout: fixed;
             
             div {
                 display: table-cell;
-                height: 46px;
+                height: 44px;
             }
             .motto{
                 width: 225px;
@@ -88,25 +88,24 @@ body {
                     background: {
                         image: url('#{$IMGS}titles/ad_augusta.png');
                         repeat: no-repeat;
-                        position: center;
+                        position: center center;
                     }
                 }
                 &.right {
                     background: {
                         image: url('#{$IMGS}titles/per_angusta.png');
                         repeat: no-repeat;
-                        position: center;
+                        position: center center;
                     }
                 }
             }
             
             
             #site_title{
-                background: {
-                    image: url('#{$IMGS}titles/anthropia.png');
-                    repeat: no-repeat;
-                    position: center;
-                }
+               text-align: center;
+               img {
+                 vertical-align: center;
+               }
             }
             
         }  
@@ -115,14 +114,14 @@ body {
             display: table;
             width: 840px;
             margin: 0px auto 0px;
-            padding: 10px;
+            padding: 5px 10px;
             table-layout: fixed;
             vertical-align: center;
             
             div {
                 display: table-cell;
                 height: 40px;
-                padding: 8px 10px;
+                padding: 4px 10px;
             }
             .carving{
                 
@@ -219,7 +218,7 @@ body {
         padding: 0px;
         width: 280px;
         margin: 7px 10px 10px;
-        overflow: auto; 
+        overflow: hidden; 
         
         background: transparent url('#{$IMGS}background/wood_bg.png') repeat center center;
         background-origin: content-box; //padding-box|border-box
@@ -266,9 +265,11 @@ body {
         border-image: url('#{$IMGS}borders/big_frame.png') 41 43 43 41 fill round round;
         
         .big_frame_content {
+            min-width: 200px;
+            min-height: 150px;
             margin: 0 20px 55px; // bottom space to avoid collisions with decorations
             padding: 0;
-            overflow: auto; 
+            overflow: hidden; 
             position: relative;
             z-index: 30; // important for text selection
         }

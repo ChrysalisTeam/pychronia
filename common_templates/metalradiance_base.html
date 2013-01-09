@@ -1,5 +1,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 {% load cms_tags menu_tags sekizai_tags kwacros %}
+
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -55,7 +56,10 @@
         
             <div id="title_table">
                 <div class="motto left"></div>
-                <div id="site_title"></div>
+                <div id="site_title">
+                    {% block site_title %} 
+                    <a href="/"><img src="{{ STATIC_URL }}MetalRadiance/img/titles/chrysalis.png"/></a></div>
+                    {% endblock %}
                 <div class="motto right"></div>
             </div>
 
@@ -69,11 +73,15 @@
 
     </div>
     
+    
+    
     <div id="full_menu">
         <div id="main_menu">
-            {% block left_big_icon%} 
+            {% block left_big_icon_panel %} 
             <div class="big_icon_panel">
+                {% block left_big_icon_img %} 
                 <img src="{{ STATIC_URL }}MetalRadiance/img/icons/speaker.png"/>
+                {% endblock %}
             </div>
             {% endblock %}
             
@@ -86,9 +94,11 @@
                 </div>
             </div>
             
-            {% block right_big_icon %} 
+            {% block right_big_icon_panel %} 
             <div class="big_icon_panel">
+                {% block right_big_icon_img %} 
                 <img src="{{ STATIC_URL }}MetalRadiance/img/icons/question_mark.png"/>
+                {% endblock %}
             </div>
             {% endblock %}
         </div>
@@ -97,97 +107,46 @@
     
     
     <div id="full_content">
-    
-        <div class="giant_frame">
-        
-        
-            <img class="big_stick_bottom_left" src="{{ STATIC_URL }}MetalRadiance/img/decorations/big_deco_bl.png"/>
-            <img class="icon_stick_bottom_left" src="{{ STATIC_URL }}MetalRadiance/img/icons/owl.png"/>
-            
-            <img class="big_stick_bottom_right" src="{{ STATIC_URL }}MetalRadiance/img/decorations/big_deco_br.png"/>
-            <img class="icon_stick_bottom_right" src="{{ STATIC_URL }}MetalRadiance/img/icons/hexagon.png"/>
-            
-            <img class="big_stick_top_left" src="{{ STATIC_URL }}MetalRadiance/img/decorations/big_deco_tl.png"/>
-            <img class="icon_stick_top_left" src="{{ STATIC_URL }}MetalRadiance/img/icons/skull.png"/>
-            
-            <img class="big_stick_top_right" src="{{ STATIC_URL }}MetalRadiance/img/decorations/big_deco_tr.png"/>
-            <img class="icon_stick_top_right" src="{{ STATIC_URL }}MetalRadiance/img/icons/sun_moon.png"/>
-            
-            <div class="big_frame_border">
-              <div class="big_frame_content">
-                
-                
-                
-                <h1>{% page_attribute "page_title" %}</h1>
-                        
-                {% block main_content %}  
-                {% endblock %}
-                
-                
-             </div>     
-           </div>
-
-           
-        </div>
-        
-      {% comment %}
-        <div class="mini_frame float_left">
-            <img class="stick_bottom_right" src="{{ STATIC_URL }}MetalRadiance/img/decorations/mini_deco_bottom_right_1.png"/>
-            <img class="stick_top_left" src="{{ STATIC_URL }}MetalRadiance/img/decorations/mini_deco_top_left_1.png"/>
-            
-            <div class="mini_frame_content">
-                <h2>Hello</h2>
-                <div class="scroll_realistic_thin_ends">
-                    Hi<br/>Hi<br/>Hi<br/>
-                    Hi<br/>Hi<br/>Hi<br/>
-                </div>
-           </div>
-        </div>
-   
-        <div class="mini_frame float_left">
-            <img class="stick_bottom_right" src="{{ STATIC_URL }}MetalRadiance/img/decorations/mini_deco_bottom_right_2.png"/>
-            <img class="stick_top_left" src="{{ STATIC_URL }}MetalRadiance/img/decorations/mini_deco_top_left_2.png"/>
-            
-            <div class="mini_frame_content">
-                <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
-           </div>
-        </div>
-        
-        <div class="mini_frame float_left">
-            <img class="stick_bottom_right" src="{{ STATIC_URL }}MetalRadiance/img/decorations/mini_deco_bottom_right_3.png"/>
-            <img class="stick_top_left" src="{{ STATIC_URL }}MetalRadiance/img/decorations/mini_deco_top_left_3.png"/>
-            
-            <div class="mini_frame_content">
-                <br/><br/><br/><br/><br/>
-           </div>
-        </div>
-      {% endcomment %}
-         
+        {% block panels %} 
+        {% endblock %}
     </div>
 
-    
+
+    {% block up_footer %} 
     <div id="up_footer_wrapper">
 
             <div id="up_footer_border_left">
+                {% block up_footer_left_content %}
                 <div>
                 sdsdsdsd sfdqsd sdf sdf <br/> qsdqsdqsd
                 </div>
+                {% endblock %}
             </div><!-- NO SPACE HERE --><div id="up_footer_border_center"> dd&nbsp;
                 <img class="footer_center_img" src="{{ STATIC_URL }}MetalRadiance/img/icons/pegasus_medal.png"/>
             </div><!-- NO SPACE HERE --><div id="up_footer_border_right">
+                {% block up_footer_right_content %}
                 sdsdsdsd sdfsdf sqd qd
+                {% endblock %}
             </div>
   
     </div>
+    {% endblock %}
     
     
+    {% block low_footer %} 
     <div id="low_footer_wrapper">
         <div id="low_footer_border">
+            {% block low_footer_content %} 
             sdsdsdsd sdfs
+            {% endblock %}
         </div>
     </div>
-
+    {% endblock %}
+    
+    
+    {% block bottom_padding %} 
     <br/><br/><br/>
+    {% endblock %}
     
 
 </body>

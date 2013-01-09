@@ -614,12 +614,12 @@ body:after {
   display: table;
   width: 1000px;
   margin: 0px auto 0px;
-  padding: 20px 0 0;
+  padding: 12px 0 0;
   table-layout: fixed;
 }
 #full_header #full_header_center #title_table div {
   display: table-cell;
-  height: 46px;
+  height: 44px;
 }
 #full_header #full_header_center #title_table .motto {
   width: 225px;
@@ -627,30 +627,31 @@ body:after {
 #full_header #full_header_center #title_table .motto.left {
   background-image: url(img/titles/ad_augusta.png);
   background-repeat: no-repeat;
-  background-position: center;
+  background-position: center center;
 }
 #full_header #full_header_center #title_table .motto.right {
   background-image: url(img/titles/per_angusta.png);
   background-repeat: no-repeat;
-  background-position: center;
+  background-position: center center;
 }
 #full_header #full_header_center #title_table #site_title {
-  background-image: url(img/titles/anthropia.png);
-  background-repeat: no-repeat;
-  background-position: center;
+  text-align: center;
+}
+#full_header #full_header_center #title_table #site_title img {
+  vertical-align: center;
 }
 #full_header #full_header_center #notification_table {
   display: table;
   width: 840px;
   margin: 0px auto 0px;
-  padding: 10px;
+  padding: 5px 10px;
   table-layout: fixed;
   vertical-align: center;
 }
 #full_header #full_header_center #notification_table div {
   display: table-cell;
   height: 40px;
-  padding: 8px 10px;
+  padding: 4px 10px;
 }
 #full_header #full_header_center #notification_table .carving {
   width: 163px;
@@ -761,7 +762,7 @@ body:after {
   padding: 0px;
   width: 280px;
   margin: 7px 10px 10px;
-  overflow: auto;
+  overflow: hidden;
   background: transparent url(img/background/wood_bg.png) repeat center center;
   background-origin: content-box;
   background-clip: content-box;
@@ -800,9 +801,11 @@ body:after {
   border-image: url(img/borders/big_frame.png) 41 43 43 41 fill round round;
 }
 #full_content .big_frame_border .big_frame_content {
+  min-width: 200px;
+  min-height: 150px;
   margin: 0 20px 55px;
   padding: 0;
-  overflow: auto;
+  overflow: hidden;
   position: relative;
   z-index: 30;
 }

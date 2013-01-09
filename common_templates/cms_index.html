@@ -1,17 +1,18 @@
 {% extends "metalradiance_base.html" %}
+{% load cms_tags menu_tags sekizai_tags heading kwacros %}
 {% loadkwacros "metalradiance_kwacros.html" %}
 
-{% load cms_tags menu_tags sekizai_tags heading %}
+
 
  
 {% block html_headers %}  
     {{ block.super }}
 {% endblock %}
 
-{% block left_big_icon %} 
+{% block left_big_icon_panel %} 
 {% endblock %}
 
-{% block right_big_icon %} 
+{% block right_big_icon_panel %} 
 {% endblock %}
 
 {% block main_menu %}  
@@ -19,9 +20,24 @@
     {% show_menu 0 100 100 100 %}
 {% endblock %}
 
-{% block main_content %}  
-    {{ block.super }}
-    {% headingcontext target_level=2 %}
-        {% placeholder "content" %}
-    {% endheadingcontext %}
+
+{% block panels %} 
+
+    {% usekwacro main_panel_start frame_class="giant_frame" %}
+        
+        <h1>{% page_attribute "page_title" %}</h1>
+        
+        {% headingcontext target_level=2 %}
+            {% placeholder "content" %}
+        {% endheadingcontext %}
+    
+    {% usekwacro main_panel_end %}
+
+{% endblock %}
+
+
+
+
+{% block low_footer_content %} 
+TODO
 {% endblock %}
