@@ -1,8 +1,11 @@
 
 docutils
 sphinx
+pytz
 
 PIL
+
+django-debug-toolbar>=0.9.4
 
 Django>=1.4
 django-cms>=2.3
@@ -11,8 +14,12 @@ django-debug-toolbar>=0.8.5
 cmsplugin-filer>=0.9
 django-inline-ordering>=0.1.3
 
-cmsplugin_zinnia>=0.3
-django-blog-zinnia>=0.12
+django-tagging>=0.3.1
+
+# if trouble with "Unknown column 'zinnia_entry.content_placeholder_id' in 'field list" : python manage.py reset zinnia 
+git+https://github.com/Fantomas42/cmsplugin-zinnia.git
+git+https://github.com/Fantomas42/django-blog-zinnia.git
+
 # other plugins, not well maintained, are included in repository
 
 django-templateaddons>=0.1

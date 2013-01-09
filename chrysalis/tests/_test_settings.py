@@ -19,6 +19,15 @@ DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 TEMPLATE_STRING_IF_INVALID = "" # "<INVALID %s>" # important
 
+DEBUG_TOOLBAR_CONFIG = {
+    'INTERCEPT_REDIRECTS': False,
+    'SHOW_TOOLBAR_CALLBACK': lambda *args, **kwargs: True,
+    'HIDE_DJANGO_SQL': False,
+    'ENABLE_STACKTRACES' : True,
+    'HIDE_DJANGO_SQL': True,
+    'SHOW_TEMPLATE_CONTEXT': True,
+}
+
 
 
 SERVER_EMAIL = DEFAULT_FROM_EMAIL = ""
@@ -64,6 +73,10 @@ CMS_TEMPLATES = (
  #       ('templatemo_main.html', ugettext('emeraud')),
  ('cms_index.html', ugettext('Home')),
 )
+CMS_REDIRECTS = True # handy for "dummy" menu entries
+CMS_SOFTROOT = False # no need to cut the menu in sections
+CMS_PUBLIC_FOR = "all" # no restricted to "staff"
+CMS_PERMISSION = False # no fine grained restrictions ATM
 CMS_TEMPLATE_INHERITANCE = True
 CMS_LANGUAGE_FALLBACK = True
 CMS_MULTILINGUAL_PATCH_REVERSE = False
@@ -77,6 +90,12 @@ CMS_LANGUAGES = (
     ('fr', ugettext('French')),
     ('en', ugettext('English')),
 )
+CMS_CACHE_DURATIONS = {
+    'menus': 60 * 60,
+    'content': 60,
+    'permissions': 60 * 60,
+}
+
 
 
 LOCALE_INDEPENDENT_PATHS = ()
@@ -162,11 +181,11 @@ INSTALLED_APPS = [
     'templateaddons',
 
     'debug_toolbar',
+
     'django.contrib.auth',
     'django.contrib.admin',
-
     'django.contrib.contenttypes',
-    #####'django.contrib.comments',
+    'django.contrib.comments', # for blog
     'django.contrib.sessions', # only these sessions are scalable for "sharding"
     'django.contrib.messages',
     'django.contrib.sites',
@@ -206,11 +225,12 @@ INSTALLED_APPS = [
     'cmsplugin_filer_teaser',
     'cmsplugin_filer_video',
 
-   # 'tagging',
-#    'zinnia',
-#    'cmsplugin_zinnia',
+    'tagging',
+    'zinnia',
+    'cmsplugin_zinnia',
 
 ]
+
 
 THUMBNAIL_PROCESSORS = (
     'easy_thumbnails.processors.colorspace',
@@ -226,16 +246,17 @@ CMS_SIMPLEGALLERY_THUMBNAIL_OPTIONS = {
     'quality': 80,
 }
 
-"""
-#ZINNIA_ENTRY_BASE_MODEL = 'cmsplugin_zinnia.placeholder.EntryPlaceholder'
-CMSPLUGIN_ZINNIA_HIDE_ENTRY_MENU = False
-CMSPLUGIN_ZINNIA_TEMPLATES = []
-CMSPLUGIN_ZINNIA_APP_MENUS = ('cmsplugin_zinnia.menu.EntryMenu',
-                             'cmsplugin_zinnia.menu.CategoryMenu',
-                             'cmsplugin_zinnia.menu.TagMenu',
-                             'cmsplugin_zinnia.menu.AuthorMenu')
 
-"""
+ZINNIA_ENTRY_BASE_MODEL = 'cmsplugin_zinnia.placeholder.EntryPlaceholder'
+CMSPLUGIN_ZINNIA_HIDE_ENTRY_MENU = True
+CMSPLUGIN_ZINNIA_TEMPLATES = []
+CMSPLUGIN_ZINNIA_APP_MENUS = []
+
+ZINNIA_PAGINATION = 1
+ZINNIA_UPLOAD_TO = "uploads/zinnia"
+ZINNIA_PROTOCOL = "http"
+ZINNIA_COPYRIGHT = "ChrysalisGame"
+ZINNIA_USE_TWITTER = False # todo later
 
 
 try:
