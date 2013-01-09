@@ -1,5 +1,5 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-{% load cms_tags menu_tags sekizai_tags %}
+{% load cms_tags menu_tags sekizai_tags kwacros %}
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -71,7 +71,7 @@
     
     <div id="full_menu">
         <div id="main_menu">
-            {% block left_big_icon %} 
+            {% block left_big_icon%} 
             <div class="big_icon_panel">
                 <img src="{{ STATIC_URL }}MetalRadiance/img/icons/speaker.png"/>
             </div>
@@ -94,6 +94,8 @@
         </div>
     </div> 
     
+    
+    
     <div id="full_content">
     
         <div class="giant_frame">
@@ -113,6 +115,8 @@
             
             <div class="big_frame_border">
               <div class="big_frame_content">
+                
+                
                 
                 <h1>{% page_attribute "page_title" %}</h1>
                         
