@@ -46,7 +46,7 @@ $outline_gold: #B89215;
     text-shadow: 1px 1px 0 black, -1px -1px 0 black,
                  1px -1px 0 black, -1px 1px 0 black;
     font-family: black_chancery, serif;
-    margin: 2px;
+    margin: 2px; 
     text-align: center;
 }
 
@@ -57,12 +57,12 @@ $outline_gold: #B89215;
     margin-right: auto;
 }
 
-.float_left, .float-left, .floatleft {
+.left, .float_left, .float-left, .floatleft {
     float: left;
     clear: left; // so that they stack
 }
 
-.float_right, .float-right, .floatright {
+.right, .float_right, .float-right, .floatright {
     float: right;
     clear: right; // so that they stack
 }

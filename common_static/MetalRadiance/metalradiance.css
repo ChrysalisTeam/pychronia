@@ -15,11 +15,11 @@
   margin-left: auto;
   margin-right: auto;
 }
-.float-left, .float_left, .floatleft {
+.float-left, .float_left, .floatleft, .left {
   float: left;
   clear: left;
 }
-.float-right, .float_right, .floatright {
+.float-right, .float_right, .floatright, .right {
   float: right;
   clear: right;
 }
@@ -126,7 +126,6 @@ h2 {
   font-size: 1.8em;
   line-height: normal;
   color: #ffffff;
-  margin-top: 40px;
 }
 h2:before {
   top: 0px;
@@ -170,6 +169,7 @@ h2:after {
 div, p, span {
   background-color: transparent;
   border-color: transparent;
+  overflow: visible;
 }
 a:link {
   color: #0104a2;
@@ -184,6 +184,7 @@ dt {
   font-weight: bold;
 }
 ul {
+  padding-left: 32px;
   list-style-position: outside;
   list-style-image: url(img/icons/bullet_gold_small.png);
 }
@@ -221,7 +222,7 @@ blockquote, cite, q {
   border-width: 142px 63px 124px 71px;
   border-image: url(img/borders/scroll_realistic.png) 142 63 124 71 fill stretch stretch;
 }
-.scroll_realistic_thin_ends {
+.hentry, .scroll_realistic_thin_ends {
   width: 30%;
   min-width: 150px;
   border-style: solid;
@@ -568,8 +569,21 @@ div .admonition p.admonition-title, div .hint p.admonition-title,
 div .note p.admonition-title, div .tip p.admonition-title {
   color: #386d2c;
 }
+.section h1, .section h2 {
+  margin-top: 40px;
+}
 table.footnote {
   border-color: #9d8126;
+}
+.entry-body {
+  overflow: visible;
+}
+.hentry {
+  width: 85%;
+  margin: auto;
+}
+.entry-image img {
+  margin: 1px 10px;
 }
 body {
   margin: 0;
@@ -756,21 +770,24 @@ body:after {
 #full_content {
   width: 960px;
   margin: 2px auto;
+  overflow: visible;
 }
 #full_content .mini_frame {
   position: relative;
   padding: 0px;
   width: 280px;
   margin: 7px 10px 10px;
-  overflow: hidden;
+  overflow: visible;
   background: transparent url(img/background/wood_bg.png) repeat center center;
   background-origin: content-box;
   background-clip: content-box;
   background-position: left top;
 }
 #full_content .mini_frame .mini_frame_content {
+  min-height: 45px;
   position: relative;
   margin: -5px;
+  padding: 1px 5px;
   border-style: solid;
   border-width: 22px 22px;
   border-image: url(img/borders/mini_frame4.png) 22 22 repeat;
@@ -805,7 +822,7 @@ body:after {
   min-height: 150px;
   margin: 0 20px 55px;
   padding: 0;
-  overflow: hidden;
+  overflow: visible;
   position: relative;
   z-index: 30;
 }

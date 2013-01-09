@@ -1,29 +1,52 @@
 {% extends "cms_index.html" %}
 
-{% load cms_tags menu_tags sekizai_tags heading %}
-
-
+{% load cms_tags menu_tags sekizai_tags heading kwacros %}
 {% load zinnia_tags i18n %}
 {% load url from future %}
+{% loadkwacros "metalradiance_kwacros.html" %}
  
  
  
-{% block html_headers %}  
-    {{ block.super }}
+{% block panels %} 
+
+    {% usekwacro main_panel_start frame_class="big_frame float_right" %}
+        
+        
+        <h1>{% block title %}ssssss{% endblock %}</h1>
+            
+        {% block content %}
+        {% endblock %}
+        
+        
+    {% usekwacro main_panel_end %}
+
+
+
+    {% usekwacro side_panel_start frame_class="mini_frame float_left" decos="2" %}
+        <div id="widget-categories" class="widget">
+          <h2>{% trans "Categories" %}</h2>
+          <div class ="scroll_yellow_flat"> 
+            {% get_categories %}
+          </div>
+        </div>
+    {% usekwacro side_panel_end %}
     
+    
+    {% usekwacro side_panel_start frame_class="mini_frame float_left" decos="3" %}
+        <div id="widget-archives" class="widget">
+          <h2>{% trans "Archives" %}</h2>
+          <div class ="scroll_yellow_flat"> 
+            {% get_archives_entries_tree %}
+          </div>
+        </div>
+    {% usekwacro side_panel_end %}
+    
+       
 {% endblock %}
-
-
-{% block main_menu %}  
-    {{ block.super }}
-{% endblock %}
-
 
 
  
-{% block main_content %}  
-    {{ block.super }}
-{% endblock %}
+ 
 
 
 

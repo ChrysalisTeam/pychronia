@@ -5,16 +5,15 @@
 {% load url from future %}
 
 
-{% block main_content %}  
-    {{ block.super }}
-     
-    {% headingcontext target_level=2 %}
+{% block content %}
+
+    {% headingcontext target_level=1 %}
 
         {% for object in object_list %}
-          {% include "zinnia/_entry_detail.html" with object_content=object.html_content|truncatewords_html:100|safe continue_reading=1 %}
+          {% include "zinnia/_entry_detail.html" with object_content=object.html_content|safe continue_reading=0 %}
         {% empty %}
           <p class="info">
-            <a href="{% url 'admin:zinnia_entry_add' %}">{% trans "No entries yet." %}</a>
+            {% trans "No entries yet." %}
           </p>
         {% endfor %}
 

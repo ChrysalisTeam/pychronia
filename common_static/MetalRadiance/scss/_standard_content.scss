@@ -33,7 +33,6 @@ h2 {
     font-size: 1.8em;
     line-height: normal;
     color: $title_white;
-    margin-top: 40px;
     
     &:before {
         top: 0px;
@@ -92,6 +91,7 @@ h2 {
 div, span, p {
     background-color: transparent;
     border-color: transparent;
+    overflow: visible;
 }
 
 
@@ -113,6 +113,7 @@ dd {
 
 ul
 {
+    padding-left: 32px;
     list-style-position: outside;
     list-style-image: url('#{$IMGS}icons/bullet_gold_small.png');
     

@@ -3,11 +3,6 @@
 {% load kwacros %}
 
 
-    {% firstof arg1 "default arg1" %}
-    {% if arg2 %}{{ arg2 }}{% else %}default arg2{% endif %}
-    {{ baz }}
-    {% endkwacro %}
-
 
 
 {% kwacro main_panel_start frame_class="giant_frame" %}
@@ -32,11 +27,6 @@
             
 {% endkwacro %} 
                 
-                <h1>{% page_attribute "page_title" %}</h1>
-                        
-                {% block main_content %}  
-                {% endblock %}
-                
           
 {% kwacro main_panel_end %}   
           
@@ -45,3 +35,33 @@
     </div>
     
 {% endkwacro %} 
+
+
+
+
+
+{% kwacro side_panel_start frame_class="mini_frame float_left" decos="1" %}
+
+    <div class="mini_frame float_left">
+        
+        {% if decos %}
+            <img class="stick_top_left" src="{{ STATIC_URL }}MetalRadiance/img/decorations/mini_deco_top_left_{{ decos }}.png"/>
+            <img class="stick_bottom_right" src="{{ STATIC_URL }}MetalRadiance/img/decorations/mini_deco_bottom_right_{{ decos }}.png"/>
+        {% endif %}
+        
+        <div class="mini_frame_content">
+            
+{% endkwacro %} 
+
+
+{% kwacro side_panel_end %}   
+          
+        </div>
+    </div>
+   
+{% endkwacro %} 
+
+
+
+
+         
