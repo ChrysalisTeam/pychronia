@@ -41,10 +41,14 @@ $outline_gold: #B89215;
 } 
 
 
+@mixin text_shadow {
+    text-shadow: 1px 1px 0 black, -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black;
+}
+
+
 @mixin header_common {
+    @include text_shadow;
     color: #BF9635; //#f4ed62; //#ac8b28; // #cc9933;
-    text-shadow: 1px 1px 0 black, -1px -1px 0 black,
-                 1px -1px 0 black, -1px 1px 0 black;
     font-family: black_chancery, serif;
     margin: 2px; 
     text-align: center;

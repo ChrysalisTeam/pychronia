@@ -92,9 +92,9 @@
   right: 10px;
 }
 h1 {
-  color: #BF9635;
   text-shadow: 1px 1px 0 #000000, -1px -1px 0 #000000, 1px -1px 0 #000000,
     -1px 1px 0 #000000;
+  color: #BF9635;
   font-family: black_chancery, serif;
   margin: 2px;
   text-align: center;
@@ -117,9 +117,9 @@ h1:after {
   position: relative;
 }
 h2 {
-  color: #BF9635;
   text-shadow: 1px 1px 0 #000000, -1px -1px 0 #000000, 1px -1px 0 #000000,
     -1px 1px 0 #000000;
+  color: #BF9635;
   font-family: black_chancery, serif;
   margin: 2px;
   text-align: center;
@@ -708,64 +708,82 @@ body:after {
 #full_menu #main_menu .marble_menu_container .marble_menu {
   min-width: 600px;
   height: 37px;
+  padding: 2px 0;
   border-style: solid;
-  border-width: 16px 52px 20px 55px;
-  border-image: url(img/borders/menu_border.png) 16 52 20 55 fill round stretch;
+  border-width: 18px 52px 20px 55px;
+  border-image: url(img/borders/menu_border.png) 18 52 20 55 fill round stretch;
 }
 #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu {
   margin: 0;
   padding: 0;
   height: 40px;
   display: none;
-  img/: 36px;
+  line-height: 36px;
   position: relative;
-  top: 3px;
 }
 #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu li a,
 #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu li span {
-  color: #BF9635;
   text-shadow: 1px 1px 0 #000000, -1px -1px 0 #000000, 1px -1px 0 #000000,
     -1px 1px 0 #000000;
+  color: #BF9635;
   font-family: black_chancery, serif;
   margin: 2px;
   text-align: center;
-  margin: 0;
+  font-size: 25pt;
+  margin: 2px;
   padding: 0;
   color: #ffffff;
-  font-size: 20pt;
-  line-height: 37px;
-  border-style: solid;
-  border-width: 0px 32px 0px 33px;
-  border-image: url(img/borders/tube_gold_small.png) 0 32 0 33 fill stretch;
   list-style-type: none;
   list-style-image: none;
   text-decoration: none;
 }
-#full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu li li a,
-#full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu li li span {
+#full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu li.toplevel li a,
+#full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu li.toplevel li span {
+  font-size: 20pt;
+  border-style: solid;
+  border-width: 0px 32px 0px 33px;
+  border-image: url(img/borders/tube_gold_small.png) 0 32 0 33 fill stretch;
+}
+#full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu li.toplevel li li a,
+#full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu li.toplevel li li span {
   border-image: url(img/borders/tube_silver_small.png) 0 32 0 33 fill stretch;
 }
-#full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu li li li a,
-#full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu li li li span {
+#full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu li.toplevel li li li a,
+#full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu li.toplevel li li li span {
   border-image: url(img/borders/tube_bronze_small.png) 0 32 0 33 fill stretch;
 }
 #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu li.toplevel {
   display: inline;
 }
+#full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu li.toplevel a,
+#full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu li.toplevel span {
+  border-width: 0;
+  border-right: 3px ridge #9d8126;
+}
 #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu li.toplevel a:after,
 #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu li.toplevel span:after {
   content: url(img/icons/arrowhead_double.png);
-  vertical-align: middle;
+  #vertical-align: bottom;
   display: inline-block;
-  margin-top: -3px;
-  margin-left: 10px;
+  margin: 4px 4px;
 }
-#full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu ul {
+#full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu li.toplevel:last-child > a,
+#full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu li.toplevel:last-child > span {
+  border-width: 0;
+}
+#full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu li.toplevel a.hover,
+#full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu li.toplevel span.hover {
+  outline: #9d8126 solid 1px;
+}
+#full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu li.toplevel ul {
   margin: 0;
   padding: 0;
   border-style: solid;
   border-width: 4px 3px;
   border-image: url(img/borders/dropdown_menu.png) 4 3 fill stretch;
+}
+#full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu li.sublevel {
+  line-height: 20px;
 }
 #full_content {
   width: 960px;

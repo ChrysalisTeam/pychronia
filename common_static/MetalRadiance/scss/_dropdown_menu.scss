@@ -8,41 +8,48 @@ ul.dropmenu {
 	height: 40px;
 	display: none;
 
-    #{$IMGS}: 36px;
+    line-height: 36px;
     position: relative;
-    top: 3px;
 
       
     /* 		All items 			*/
     
-    li a, li span { 
+
+    
+    li a, li span {
+       
         @include header_common;
         
-        margin: 0;
+        font-size: 25pt; // needs to be PRECISE, so no em. 
+        
+        margin: 2px;
         padding: 0;
         color: $title_white;
-        font-size: 20pt; // needs to be PRECISE, so no em.
-        line-height: 37px;
         
-        border-style: solid; 
-        border-width: 0px 32px 0px 33px; 
-        border-image: url('#{$IMGS}borders/tube_gold_small.png') 0 32 0 33 fill stretch;
-
         list-style-type: none;
         list-style-image: none;
         text-decoration: none;
-    }
-    
-    
-     li li a, li li span {
-        border-image: url('#{$IMGS}borders/tube_silver_small.png') 0 32 0 33 fill stretch;
-     }
-     
-     li li li a, li li li span {
-        border-image: url('#{$IMGS}borders/tube_bronze_small.png') 0 32 0 33 fill stretch;
-     }
         
+    }
 
+       
+        
+    /* all sublevels are in metal&glass tubes */
+    li.toplevel li a, li.toplevel li span {
+        font-size: 20pt; // needs to be PRECISE, so no em. 
+        border-style: solid;
+        border-width: 0px 32px 0px 33px; 
+        border-image: url('#{$IMGS}borders/tube_gold_small.png') 0 32 0 33 fill stretch;
+    }   
+    li.toplevel li li a, li.toplevel li li span {
+        border-image: url('#{$IMGS}borders/tube_silver_small.png') 0 32 0 33 fill stretch;
+    }
+    li.toplevel li li li a, li.toplevel li li li span {
+        border-image: url('#{$IMGS}borders/tube_bronze_small.png') 0 32 0 33 fill stretch;
+    }
+     
+
+        
 
             
     /*		Top items			*/
@@ -51,16 +58,26 @@ ul.dropmenu {
 	
         display: inline; 
        
+       
+        a, span {
+            border-width: 0;
+            border-right: 3px ridge $light_yellow;     
+        }
+       
         a:after, span:after {
             content: url('#{$IMGS}icons/arrowhead_double.png');
-            vertical-align: middle;
+            #vertical-align: bottom;
             display: inline-block;
-            margin-top: -3px;
-            margin-left: 10px;
+            margin: 4px 4px;
         }
         
-        &.hover {		
-            //todo
+        &:last-child > a, &:last-child > span {
+            border-width: 0;
+        }  
+    
+    
+        a.hover, span.hover {		
+            outline: $light_yellow solid 1px; // FAILED!!!!
         }
         
         &.selected {
@@ -75,7 +92,7 @@ ul.dropmenu {
     
     /*      Submenus            */
     
-    ul {
+    li.toplevel ul {
         // width: 250px; // optional but recommended
         margin: 0;
         padding: 0;
@@ -88,7 +105,8 @@ ul.dropmenu {
     /*		Subitems			*/
     
     li.sublevel {	
-    
+        
+        line-height: 20px;
         // border-bottom: 1px solid #DFBD99; 
 
         &.hover {				

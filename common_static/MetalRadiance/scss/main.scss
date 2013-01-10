@@ -6,7 +6,7 @@
 
 @import "_standard_content.scss"; 
     
-@import "_rst_customization.scss";
+@import "_docutils_customization.scss";
 
 @import "_zinnia_customization.scss";
 
@@ -197,9 +197,11 @@ body {
             
                 min-width: 600px;
                 height: 37px;
+                padding: 2px 0;
+                
                 border-style: solid; 
-                border-width: 16px 52px 20px 55px; 
-                border-image: url('#{$IMGS}borders/menu_border.png') 16 52 20 55 fill round stretch;
+                border-width: 18px 52px 20px 55px; 
+                border-image: url('#{$IMGS}borders/menu_border.png') 18 52 20 55 fill round stretch;
             }
             
         }

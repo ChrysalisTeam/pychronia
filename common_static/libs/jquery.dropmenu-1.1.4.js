@@ -44,7 +44,7 @@
 			
 			var css = {
 				display: 'block',
-				outline: 'none'
+				// PAKAL - outline: 'none'
 			};
 			if (opts.nbsp) css['whiteSpace'] = 'nowrap';
 			
@@ -79,7 +79,7 @@
 			$topl
 				.find('> ul')
 				.css({
-					left: 0,
+					left: "-3px",
 					top: $topl.outerHeight()
 				})
 				.find('li > a, li > span')
