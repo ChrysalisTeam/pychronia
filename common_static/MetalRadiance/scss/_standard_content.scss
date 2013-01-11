@@ -95,13 +95,22 @@ div, span, p {
 }
 
 
+
+
 a {
     &:link { color: $light_blue; }
     &:visited, &:active { color: $dark_blue; }
     &:hover { color: old_blue; }
 }
 
-
+h1, h2 {
+    a:link, a:visited, a:hover {
+        color: $title_white;
+        text-decoration: none;
+    }
+}
+    
+    
 dt {
     font-weight: bold;
 }

@@ -98,6 +98,7 @@ h1 {
   font-family: black_chancery, serif;
   margin: 2px;
   text-align: center;
+  letter-spacing: 1px;
   font-size: 2.3em;
   line-height: normal;
   color: #f8d85b;
@@ -123,6 +124,7 @@ h2 {
   font-family: black_chancery, serif;
   margin: 2px;
   text-align: center;
+  letter-spacing: 1px;
   font-size: 1.8em;
   line-height: normal;
   color: #ffffff;
@@ -179,6 +181,11 @@ a:active, a:visited {
 }
 a:hover {
   color: old_blue;
+}
+h1 a:hover, h1 a:link, h1 a:visited, h2 a:hover, h2 a:link,
+h2 a:visited {
+  color: #ffffff;
+  text-decoration: none;
 }
 dt {
   font-weight: bold;
@@ -731,6 +738,7 @@ body:after {
   font-family: black_chancery, serif;
   margin: 2px;
   text-align: center;
+  letter-spacing: 1px;
   font-size: 31px;
   margin: 0;
   padding: 2px 6px;
