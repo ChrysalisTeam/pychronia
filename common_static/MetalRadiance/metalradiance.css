@@ -628,7 +628,7 @@ body:after {
   display: table;
   width: 1000px;
   margin: 0px auto 0px;
-  padding: 10px 0 0;
+  padding: 9px 0 0;
   table-layout: fixed;
 }
 #full_header #full_header_center #title_table div {
@@ -721,8 +721,11 @@ body:after {
   line-height: 36px;
   position: relative;
 }
-#full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu li a,
-#full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu li span {
+#full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu li.toplevel {
+  display: inline;
+}
+#full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu li.toplevel a,
+#full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu li.toplevel span {
   text-shadow: 1px 1px 0 #000000, -1px -1px 0 #000000, 1px -1px 0 #000000,
     -1px 1px 0 #000000;
   color: #BF9635;
@@ -752,9 +755,6 @@ body:after {
 #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu li.toplevel li li li span {
   border-image: url(img/borders/tube_bronze_small.png) 0 32 0 33 fill stretch;
 }
-#full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu li.toplevel {
-  display: inline;
-}
 #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu li.toplevel a,
 #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu li.toplevel span {
   border-width: 0;
@@ -773,7 +773,7 @@ body:after {
 }
 #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu li.toplevel a.hover,
 #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu li.toplevel span.hover {
-  outline: #9d8126 solid 1px;
+  color: #cccccc;
 }
 #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu li.toplevel ul {
   margin: 0;
@@ -782,7 +782,7 @@ body:after {
   border-width: 4px 3px;
   border-image: url(img/borders/dropdown_menu.png) 4 3 fill stretch;
 }
-#full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu li.sublevel {
+#full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu li.toplevel li.sublevel {
   line-height: 20px;
 }
 #full_content {
