@@ -5,10 +5,10 @@ ul.dropmenu {
 
 	margin: 0; 
 	padding: 0; 
-	height: 40px;
-	display: none;
-
-    line-height: 36px;
+	height: 35px;
+	line-height: 31px;
+	
+    // display: none; -> useless
     position: relative;
 
       
@@ -21,10 +21,10 @@ ul.dropmenu {
             
             @include header_common;
             
-            font-size: 25pt; // needs to be PRECISE, so no em. 
+            font-size: 31px; // needs to be PRECISE, so no em. 
             
-            margin: 2px;
-            padding: 0;
+            margin: 0;
+            padding: 2px 6px;
             color: $title_white;
             
             list-style-type: none;
@@ -54,22 +54,25 @@ ul.dropmenu {
 	
         display: inline; 
        
-        a, span {
+       
+        & {
             border-width: 0;
             border-right: 3px ridge $light_yellow;     
         }
-       
+        
+        &:last-child {
+            border-width: 0;
+        }  
+
+        /* TODO - marker for submenus
         a:after, span:after {
-            content: url('#{$IMGS}icons/arrowhead_double.png');
+            content: ">"; // url('#{$IMGS}icons/arrowhead_double.png');
             #vertical-align: bottom;
             display: inline-block;
             margin: 4px 4px;
-        }
+        }*/
         
-        &:last-child > a, &:last-child > span {
-            border-width: 0;
-        }  
-    
+
         a.hover, span.hover {	
             color: $title_white_highlight;	
             //outline: $light_yellow solid 1px; // FAILED!!!!

@@ -196,7 +196,9 @@ body {
                 @import "_dropdown_menu.scss";
             
                 min-width: 600px;
-                height: 37px;
+                
+               // TOTAL height must be 73px !
+                height: 35px;
                 padding: 2px 0;
                 
                 border-style: solid; 

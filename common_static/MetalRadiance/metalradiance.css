@@ -707,7 +707,7 @@ body:after {
 }
 #full_menu #main_menu .marble_menu_container .marble_menu {
   min-width: 600px;
-  height: 37px;
+  height: 35px;
   padding: 2px 0;
   border-style: solid;
   border-width: 18px 52px 20px 55px;
@@ -716,9 +716,8 @@ body:after {
 #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu {
   margin: 0;
   padding: 0;
-  height: 40px;
-  display: none;
-  line-height: 36px;
+  height: 35px;
+  line-height: 31px;
   position: relative;
 }
 #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu > li {
@@ -732,9 +731,9 @@ body:after {
   font-family: black_chancery, serif;
   margin: 2px;
   text-align: center;
-  font-size: 25pt;
-  margin: 2px;
-  padding: 0;
+  font-size: 31px;
+  margin: 0;
+  padding: 2px 6px;
   color: #ffffff;
   list-style-type: none;
   list-style-image: none;
@@ -755,20 +754,11 @@ body:after {
 #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu > li li li li span {
   border-image: url(img/borders/tube_bronze_small.png) 0 32 0 33 fill stretch;
 }
-#full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu > li a,
-#full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu > li span {
+#full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu > li {
   border-width: 0;
   border-right: 3px ridge #9d8126;
 }
-#full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu > li a:after,
-#full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu > li span:after {
-  content: url(img/icons/arrowhead_double.png);
-  #vertical-align: bottom;
-  display: inline-block;
-  margin: 4px 4px;
-}
-#full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu > li:last-child > a,
-#full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu > li:last-child > span {
+#full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu > li:last-child {
   border-width: 0;
 }
 #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu > li a.hover,
