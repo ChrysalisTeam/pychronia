@@ -1,4 +1,4 @@
-
+# -*- coding: utf-8 -*-
 
 from ._test_settings import *
 
