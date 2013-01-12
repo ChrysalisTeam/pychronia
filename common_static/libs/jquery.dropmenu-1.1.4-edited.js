@@ -79,7 +79,7 @@
 			$topl
 				.find('> ul')
 				.css({
-					left: "-3px",
+					left: "-3px", // PAKAL
 					top: $topl.outerHeight()
 				})
 				.find('li > a, li > span')

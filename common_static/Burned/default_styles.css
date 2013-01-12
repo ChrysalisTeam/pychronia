@@ -210,7 +210,7 @@ a:hover
 
 #menu
 {
-	background: #F0D4AF url('/media/images/a1.jpg') top left no-repeat;
+	background: #F0D4AF url('img/a1.jpg') top left no-repeat;
 	height: 94px;
 	width: 778px;
 }
@@ -257,14 +257,14 @@ a:hover
 {
 	position: absolute;
 	z-index: 1;
-	background: #F0D4AF url('/media/images/a2.jpg') top left no-repeat;
+	background: #F0D4AF url('img/a2.jpg') top left no-repeat;
 	width: 778px;
 	height: 98px;
 }
 
 #content
 {
-	background: #F0D4AF url('/media/images/a3.jpg') top left repeat-y;
+	background: #F0D4AF url('img/a3.jpg') top left repeat-y;
 }
 
 #content p, #primaryContent div
@@ -465,7 +465,7 @@ span.message_operation {
 	width: 778px;
 	height: 56px;
 	padding-top: 5px;
-	background: #F0D4AF url('/media/images/a4.jpg') top left no-repeat;
+	background: #F0D4AF url('img/a4.jpg') top left no-repeat;
 	text-align: center;
 }
 

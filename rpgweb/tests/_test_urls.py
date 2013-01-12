@@ -9,8 +9,10 @@ from ..urls import urlpatterns as game_urls
 
 test_urls = patterns('',
     (r'^%s(?P<path>.*)$' % config.MEDIA_URL[1:], 'django.views.static.serve',
-     {'document_root': config.MEDIA_ROOT, 'show_indexes': False}),
+                    {'document_root': config.MEDIA_ROOT, 'show_indexes': False}),
     (r'^i18n/', include('django.conf.urls.i18n')), # set language
+
+    url(r'', include('django.contrib.staticfiles.urls')), # UNNEEDED WITH RUNSERVER
 )
 
 urlpatterns = test_urls + game_urls # all test urls

@@ -9,8 +9,6 @@ logging.disable(0)
 
 
 
-TEST_DIR = os.path.dirname(os.path.normpath(__file__))
-
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -45,12 +43,21 @@ DATABASES = {
 ZODB_FILE = os.path.join(TEMP_DIR, 'gamedata.fs.%s' % UNICITY_STRING)
 
 
+TEST_DIR = os.path.dirname(os.path.abspath(__file__))
+ROOT_PATH = os.path.dirname(os.path.dirname(TEST_DIR))
+print "ROOT PATH:", ROOT_PATH
+
 GAME_ROOT = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 MEDIA_ROOT = os.path.join(GAME_ROOT, 'static')
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
 MEDIA_URL = '/media/'
+
+STATIC_URL = "/static/"
+STATICFILES_DIRS = (
+    os.path.join(ROOT_PATH, "common_static"),
+)
 
 
 # List of callables that know how to import templates from various sources.
@@ -66,7 +73,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 "django.core.context_processors.media",
 "django.core.context_processors.request",
 "django.contrib.messages.context_processors.messages",
-
+"django.core.context_processors.static",
 "rpgweb.context_processors.rpgweb_template_context",
 
 )
@@ -86,8 +93,9 @@ MIDDLEWARE_CLASSES = (
 
 SITE_ID = 1
 
+
 TEMPLATE_DIRS = (
-    os.path.join(GAME_ROOT, "templates")
+    os.path.join(ROOT_PATH, "common_templates")
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
@@ -119,7 +127,7 @@ ROOT_URLCONF = 'rpgweb.tests._test_urls'
 
 from django.contrib.messages import constants as message_constants
 MESSAGE_LEVEL = message_constants.DEBUG
-# Set MESSAGE_TAGS to control corresponding CSS classes 
+# Set MESSAGE_TAGS to control corresponding CSS classes
 
 _curdir = os.path.dirname(os.path.realpath(__file__))
 GAME_FILES_ROOT = os.path.join(_curdir, "test_game_files")
