@@ -38,7 +38,6 @@ from rpgweb.views.gameviews import friendship_management
 
 
 
-
 class TestUtilities(TestCase):
 
     def __call__(self, *args, **kwds):
@@ -2066,7 +2065,7 @@ class TestHttpRequests(BaseGameTestCase):
         # these urls and their post data might easily change, beware !
         special_urls = {ROOT_GAME_URL + "/item3dview/sacred_chest/": None,
                         # FIXME NOT YET READYROOT_GAME_URL + "/djinn/": {"djinn": "Pay Rhuss"},
-                        config.MEDIA_URL + "Burned/default_styles.css": None,
+                        ##### FIXME LATER config.MEDIA_URL + "Burned/default_styles.css": None,
                         game_file_url("attachments/image1.png"): None,
                         game_file_url("encrypted/guy2_report/evans/orb.jpg"): None,
                         ROOT_GAME_URL + "/messages/view_single_message/instructions_bewitcher/": None,

@@ -6,7 +6,8 @@ from rpgweb_common.common_settings import *
 TEST_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
-
+DEBUG = True
+TEMPLATE_DEBUG = DEBUG
 
 
 # Make this unique, and don't share it with anybody.
@@ -20,8 +21,10 @@ SITE_DOMAIN = "http://127.0.0.1" # NO trailing slash ! # USELESS ?? FIXME
 MEDIA_ROOT = os.path.join(ROOT_PATH, "chrysalis", "media")
 
 
-TEMPLATE_CONTEXT_PROCESSORS = TEMPLATE_CONTEXT_PROCESSORS + ("cms.context_processors.media",)
+ROOT_URLCONF = 'chrysalis.tests._test_urls'
 
+
+TEMPLATE_CONTEXT_PROCESSORS = TEMPLATE_CONTEXT_PROCESSORS + ("cms.context_processors.media",)
 
 
 MIDDLEWARE_CLASSES = (
@@ -40,8 +43,6 @@ MIDDLEWARE_CLASSES = (
 )
 
 
-ROOT_URLCONF = 'chrysalis.tests._test_urls'
-
 
 INSTALLED_APPS += [
     'chrysalis',
@@ -55,17 +56,18 @@ INSTALLED_APPS += [
 
     # 'cms.plugins.flash',
     # 'cms.plugins.googlemap',
-
     'cms.plugins.link',
     'cms.plugins.snippet',
     'cms.plugins.text',
 
-    ###########
+
+    ## too weak ##
     # 'cms.plugins.file',
     # 'cms.plugins.picture',
     # 'cms.plugins.teaser',
     # 'cms.plugins.video',
-    # OR BETTER:
+
+    ## OR BETTER: ##
     'filer',
     'easy_thumbnails',
     'cmsplugin_filer_file',
@@ -74,6 +76,8 @@ INSTALLED_APPS += [
     'cmsplugin_filer_teaser',
     'cmsplugin_filer_video',
 
+
+    'django.contrib.comments', # for blog
     'tagging',
     'zinnia',
     'cmsplugin_zinnia',

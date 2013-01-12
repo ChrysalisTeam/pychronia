@@ -100,7 +100,6 @@ INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.admin',
     'django.contrib.contenttypes',
-    'django.contrib.comments', # for blog
     'django.contrib.sessions', # only these sessions are scalable for "sharding"
     'django.contrib.messages',
     'django.contrib.sites',
@@ -119,6 +118,7 @@ try:
     INSTALLED_APPS.append('sentry.client')
 except ImportError:
     pass # sentry is optional
+
 
 
 ## DJANGO CONTRIB MESSAGES CONF ##
@@ -182,3 +182,9 @@ LOCALE_INDEPENDENT_PATHS = (
       '^/i18n/', # TO BE REMOVED
       )
 '''
+
+## DJANGO CONTRIB RST CONF ##
+RESTRUCTUREDTEXT_FILTER_SETTINGS = {"initial_header_level": 2,
+                                    "doctitle_xform": False, # important to have evenb lone titles stay in the html fragment
+                                    "sectsubtitle_xform": False}
+
