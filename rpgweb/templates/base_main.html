@@ -1,53 +1,40 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-{% load i18n helpers %} 
+{% extends "metalradiance_base.html" %}
+{% load sekizai_tags heading kwacros helpers i18n %}
+{% loadkwacros "metalradiance_kwacros.html" %}
+
+
+{% addtoblock "meta" %}
+    <meta name="ROBOTS" content="NOINDEX,NOFOLLOW">
+{% endaddtoblock %}
+
+
+{% block html_title %}{% if page_title %}{{ page_title}}{% else %}Welcome to Pangea Network{% endif %}{% endblock %}
+
+
+{% addtoblock "js" %}
+    <script src="{{ STATIC_URL }}jquery.ba-outside-events.js" type="text/javascript"></script>
+    <script src="{{ STATIC_URL }}jquery.mousewheel-3.0.6.pack.js" type="text/javascript"></script>
+
+    <script src="{{ STATIC_URL }}jquery-ui-1.8.16.custom.js" type="text/javascript"></script>
+    <script src="{{ STATIC_URL }}jquery-ui/combobox.js" type="text/javascript"></script>
+    
+    <script src="{{ STATIC_URL }}jquery-ui/ui.dropdownchecklist-1.4.js" type="text/javascript"></script>
+    <link href="{{ STATIC_URL }}jquery-ui/ui.dropdownchecklist.css" rel="stylesheet" type="text/css" />
+    
+    <script src="{{ STATIC_URL }}videoplayers/quicktimeplayer/AC_QuickTime.js" type="text/javascript"></script>
+    <script src="{{ STATIC_URL }}videoplayers/wmvplayer/wmvplayer.js" type="text/javascript"></script>
+    <!--script src="{{ MEDIA_URL }}videoplayers/wmvplayer/silverlight.js" type="text/javascript"></script-->
+
+    <script src="{{ STATIC_URL }}utilities.js" type="text/javascript"></script>
+{% endaddtoblock %}
+    
  
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<meta name="ROBOTS" content="NOINDEX,NOFOLLOW">
-<meta http-equiv="content-type" content="text/html; charset=utf-8" />
-<title>{% if page_title %}{{ page_title}}{% else %}Welcome to Pangea Network{% endif %}</title>
-<link href="{{ STATIC_URL }}Burned/default_styles.css" rel="stylesheet" type="text/css" />
-
-<script src="{{ MEDIA_URL }}jquery-1.7.1.min.js" type="text/javascript"></script>
-
-<script src="{{ MEDIA_URL }}jquery.mousewheel-3.0.6.pack.js" type="text/javascript"></script>
-<script src="{{ MEDIA_URL }}jquery.fancybox.js" type="text/javascript"></script>
-<link href="{{ MEDIA_URL }}jquery.fancybox.css" rel="stylesheet" type="text/css" />
-
-<script src="{{ MEDIA_URL }}jquery-ui-1.8.16.custom.js" type="text/javascript"></script>
-<script src="{{ MEDIA_URL }}jquery.ba-outside-events.js" type="text/javascript"></script>
-
-<script src="{{ MEDIA_URL }}combobox.js" type="text/javascript"></script>
-<script src="{{ MEDIA_URL }}utilities.js" type="text/javascript"></script>
-
-<script src="{{ MEDIA_URL }}videoplayers/quicktimeplayer/AC_QuickTime.js" type="text/javascript"></script>
-<script src="{{ MEDIA_URL }}videoplayers/wmvplayer/wmvplayer.js" type="text/javascript"></script>
-<!--script src="{{ MEDIA_URL }}videoplayers/wmvplayer/silverlight.js" type="text/javascript"></script-->
-
-<script src="{{ MEDIA_URL }}jquery.dropmenu-1.1.4-edited.js" type="text/javascript"></script>
-<link href="{{ MEDIA_URL }}dropmenu.css" rel="stylesheet" type="text/css" />
-
-<script src="{{ MEDIA_URL }}ui.dropdownchecklist-1.4.js" type="text/javascript"></script>
-<link href="{{ MEDIA_URL }}ui.dropdownchecklist.css" rel="stylesheet" type="text/css" />
  
-<script language="javascript" type="text/javascript">
+{% addtoblock "inline_js" %}
 
     $(document).ready(function() {
     	
     	$(".multichecklist").dropdownchecklist({minWidth: "150px", emptyText: "<i>...</i>"}); 
-    	
-    	
-        $('#menulist').dropmenu(
-            {
-                effect          : "slide",       //  "slide", "fade", or "none"
-                speed           : "fast", //  "normal", "fast", "slow", 100, 1000, etc
-                timeout         : 50,
-                nbsp            : true,
-                maxWidth        : 0
-
-            }
-        );
-        
         
         $('.fancybox').fancybox({
             padding : 5,
@@ -73,7 +60,7 @@
         });
         
         /*
-        GOOOD
+        GOOOD FIXME
         $(function() {
             $( "#sortable1, #sortable2" ).sortable({
                 connectWith: ".connectedSortable"
@@ -89,7 +76,7 @@
         
         
         /* ADD GLOBAL AJAX ERROR HANDLERS (all executed on error)
-        
+        FIXME
         $(document).ajaxError( handler(event, jqXHR, ajaxSettings, thrownError) )
         
         jQuery.ajax({
@@ -131,18 +118,15 @@
         	});
         */
         
-        
     });
-</script>
+    
+{% endaddtoblock %}
 
 
 
-{% block headers %}  
 
-{% endblock %}
 
-</head>
-<body>
+{% block body_top %}
 
     {% if possible_impersonations %}
     <div style="float:left;">
@@ -162,103 +146,106 @@
         {% endif %}
     </div>
     {% endif %}
-    
-<div id="outer">
-  <div id="header">
 
+{% endblock %} 
+
+
+
+
+{% block site_title %} 
+    <a href="/"><img src="{{ STATIC_URL }}MetalRadiance/img/titles/anthropia.png"/></a></div>
+{% endblock %}
+
+
+    {% comment %}
     <h2>
-	    <a href="{% gameurl rpgweb.views.homepage %}">
-		    {% if user.is_authenticated %}
-		          {% blocktrans with user.username|capfirst as user_name %}
-		              Welcome to your Realm, {{ user_name }} 
-		          {% endblocktrans %}
-		    {% else %}
-		    	{% trans "Welcome, Visitor" %}
-		    {% endif %}
-	    </a>
+        <a href="{% gameurl rpgweb.views.homepage %}">
+            {% if user.is_authenticated %}
+                  {% blocktrans with user.username|capfirst as user_name %}
+                      Welcome to your Realm, {{ user_name }} 
+                  {% endblocktrans %}
+            {% else %}
+                {% trans "Welcome, Visitor" %}
+            {% endif %}
+        </a>
     </h2>
-    {% if not game_is_started %} <h2>{% trans "Server in maintenance mode - no form submission possible" %}</h2> {% endif %}
-  </div>
-  <div id="menu">
-    <ul id="menulist" class="dropmenu" style="z-index: 100; display: none;">
-        {% for menu in menus %} 
-        	 {% comment %} here we only handle 2-levels menus, at the moment... {% endcomment %}
-        	 
-             <li id="submenu" class="toplevel">
-             
-                 {% if menu.is_active %}
-                 	<a href="{{ menu.url }}">{{ menu.title }}</a>
-                 {% else %}
-                 	{{ menu.title }}
-                 {% endif %}
-                 
-                 {% if menu.submenus %}
-	                 <ul>
-	                	{% for submenu in menu.submenus %} 
-	                  		<li>
-	                  		     {% if submenu.is_active %}
-				                 	<a href="{{ submenu.url }}" accesskey="{{ forloop.counter }}">{{ submenu.title }}</a>
-				                 {% else %}
-				                 	{{ submenu.title }}
-				                 {% endif %}
-				                 
-	                  		    {% comment %}<a {% if user.is_master %} style="font-size: 0.6em; line-height: 0.5em;" {% endif %}
-	                  		        href="{{ item_url }}" >{{ item_name }}</a>{% endcomment %}
-	                  		</li>
-	                  	{% endfor %}
-	              	 </ul>
-	             {% endif %}
-	             
-          	</li>
-          	
-        {% endfor %}
-    </ul>
-  </div>
-  <div id="content">
-    <div id="xbg1">&nbsp;</div>
-    <div id="primaryContentContainer">
-      <div id="primaryContent">
-      
-		{% if page_title %}<h2>{{ page_title }}</h2>{% endif %}
 
-        {% if help_keyword %}    
+    {% if not game_is_started %} <h2>{% trans "Server in maintenance mode - no form submission possible" %}</h2> {% endif %}
+    
+    {% endcomment %}
+    
+
+{% block main_menu %}  
+    {% for menu in menus %} 
+    
+         {% comment %} here we only handle 2-levels menus, at the moment... {% endcomment %}
+         
+         <li id="submenu" class="toplevel">
+         
+             {% if menu.is_active %}
+                <a href="{{ menu.url }}">{{ menu.title }}</a>
+             {% else %}
+                {{ menu.title }}
+             {% endif %}
+             
+             {% if menu.submenus %}
+                 <ul>
+                    {% for submenu in menu.submenus %} 
+                        <li>
+                             {% if submenu.is_active %}
+                                <a href="{{ submenu.url }}" accesskey="{{ forloop.counter }}">{{ submenu.title }}</a>
+                             {% else %}
+                                {{ submenu.title }}
+                             {% endif %}
+                             
+                            {% comment %}<a {% if user.is_master %} style="font-size: 0.6em; line-height: 0.5em;" {% endif %}
+                                href="{{ item_url }}" >{{ item_name }}</a>{% endcomment %}
+                        </li>
+                    {% endfor %}
+                 </ul>
+             {% endif %}
+             
+        </li>
+        
+    {% endfor %}
+{% endblock %}
+    
+    
+{% block panels %} 
+
+    {% usekwacro main_panel_start frame_class="giant_frame" %}
+        
+        // USE DJANGO INCLUDE HERE //
+        
+        {% if page_title %}<h2>{{ page_title }}</h2>{% endif %}
+
+        {% if help_keyword %}    TODO CHANGE THIS
         <a href="{% gameurl rpgweb.views.view_help_page keyword=help_keyword %}" class="fancybox fancybox.ajax" title="{{ page_title }}">
             <img style="width 50px; height: 50px; float: right;" src="{{ MEDIA_URL }}images/question_mark.png"/>
         </a>
         {% endif %}
     
 
-	    {% if messages %}
-	       <ul class="messages">
-	           {% for message in messages %}
-	           <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message|linebreaksbr }}</li>
-	           {% endfor %}
-	       </ul>
-	    {% endif %}
-		
-               
+        {% if messages %}
+           <ul class="messages">
+               {% for message in messages %}
+               <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message|linebreaksbr }}</li>
+               {% endfor %}
+           </ul>
+        {% endif %}
+    
         {% block content %}  
-      
+        {% endblock %}
         
-		{% endblock %}
-		
-		
+    {% usekwacro main_panel_end %}
 
-      </div>
-    </div>
-   
-   
-   {% block additional_column %} 
 
-    
-	{% endblock %}
+{% endblock %}
+
    
    
-    <div class="clear"></div>
-  </div>
-  <div id="footer">
-  
-    
+
+{% block up_footer_left_content %}
         <b><i>
         {% if online_users %}
             {% blocktrans count online_users|length as counter %}
@@ -271,22 +258,22 @@
             {% trans "No users currently online." %} 
         {% endif %}
         </i></b>
-        
-        <br/>
-        
+{% endblock %}
+
+
+{% block up_footer_right_content %} 
         <b>{% trans "Pangea Cybernetics Network" %}</b> -
         
         <form id="change_language_fr" style="display:inline; vertical-align: middle;" method="POST" action="{% url django.views.i18n.set_language %}">
         <input type="hidden" name="language" value="fr"/>
-        <a href="javascript:document.getElementById('change_language_fr').submit()"><img src="{{ MEDIA_URL }}images/France.jpg"/></a>
+        <a href="javascript:document.getElementById('change_language_fr').submit()"><img src="{{ STATIC_URL }}img/flags/France.jpg"/></a>
         </form> 
-
+        
         <form id="change_language_en" style="display:inline; vertical-align: middle;" method="POST" action="{% url django.views.i18n.set_language %}">
         <input type="hidden" name="language" value="en"/>
-        <a href="javascript:document.getElementById('change_language_en').submit()"><img src="{{ MEDIA_URL }}images/UK.jpg"/></a>
+        <a href="javascript:document.getElementById('change_language_en').submit()"><img src="{{ STATIC_URL }}img/flags/UK.jpg"/></a>
         </form>         
+{% endblock %}
 
-  </div>
-</div>
-</body>
-</html>
+
+

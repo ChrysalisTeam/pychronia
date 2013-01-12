@@ -21,7 +21,7 @@ ul.dropmenu {
             
             @include header_common;
             
-            font-size: 31px; // needs to be PRECISE, so no em. 
+            font-size: 29px; // MAX 31px, needs to be PRECISE, so no em. 
             
             margin: 0;
             padding: 2px 6px;

@@ -3,10 +3,8 @@
 {% loadkwacros "metalradiance_kwacros.html" %}
 
 
-
- 
-{% block html_headers %}  
-    {{ block.super }}
+{% block body_top %}
+    {% cms_toolbar %}
 {% endblock %}
 
 {% block left_big_icon_panel %} 

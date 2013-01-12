@@ -98,7 +98,7 @@ h1 {
   font-family: black_chancery, serif;
   margin: 2px;
   text-align: center;
-  letter-spacing: 1px;
+  letter-spacing: 0px;
   font-size: 2.3em;
   line-height: normal;
   color: #f8d85b;
@@ -124,7 +124,7 @@ h2 {
   font-family: black_chancery, serif;
   margin: 2px;
   text-align: center;
-  letter-spacing: 1px;
+  letter-spacing: 0px;
   font-size: 1.8em;
   line-height: normal;
   color: #ffffff;
@@ -738,8 +738,8 @@ body:after {
   font-family: black_chancery, serif;
   margin: 2px;
   text-align: center;
-  letter-spacing: 1px;
-  font-size: 31px;
+  letter-spacing: 0px;
+  font-size: 29px;
   margin: 0;
   padding: 2px 6px;
   color: #ffffff;
