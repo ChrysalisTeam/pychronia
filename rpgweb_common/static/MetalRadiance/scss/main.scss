@@ -39,6 +39,9 @@ body {
     quotes: none; // or string string string string
     text-overflow: ellipsis; // or clip or string, not inherited
     
+    //box-sizing: border-box; // content-box|border-box|inherit - very useful, but has some quirks still
+    
+    
     &:after
     {
     // put here all images to PRELOAD (eg. used in dynamic menus and hover effects)
@@ -82,13 +85,34 @@ body {
             padding: 9px 0 0;
             table-layout: fixed;
             
+            
+            .notification_flag {
+                
+                display: block;
+                position: absolute;
+                top: -70px;
+                left: 50%;
+                margin-left: -201px; // half of image size 
+                padding: 120px 50px 50px;
+                width: 301px;
+                height: 129px;
+                background: {
+                    image: url('#{$IMGS}background/flag_red.png');
+                    repeat: no-repeat;
+                    position: bottom center;
+                    clip: padding-box;
+                    size: cover;
+                }
+            }
+            
+            
             .notification_panel {
                 display: block;
                 height: auto;
                 position: absolute;
                 top: 0px;
                 left: 50%;
-                margin-left: -248px;
+                margin-left: -248px; // half of image size
                 text-align: center;
                 width: 496px;
                 border: 3px groove $light_yellow;

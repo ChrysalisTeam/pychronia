@@ -648,6 +648,21 @@ body:after {
   padding: 9px 0 0;
   table-layout: fixed;
 }
+#full_header #full_header_center #title_table .notification_flag {
+  display: block;
+  position: absolute;
+  top: -70px;
+  left: 50%;
+  margin-left: -201px;
+  padding: 120px 50px 50px;
+  width: 301px;
+  height: 129px;
+  background-image: url(img/background/flag_red.png);
+  background-repeat: no-repeat;
+  background-position: bottom center;
+  background-clip: padding-box;
+  background-size: cover;
+}
 #full_header #full_header_center #title_table .notification_panel {
   display: block;
   height: auto;
