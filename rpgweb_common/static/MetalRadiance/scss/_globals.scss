@@ -23,7 +23,13 @@ $dark_red: #8E0D0D;
 $dark_green: #386D2C;
 
 $outline_gold: #B89215;
- 
+
+
+$notification_red: red;
+$notification_green: green;
+$notification_blue: blue;
+
+
  
 @font-face
 {
@@ -73,4 +79,15 @@ $outline_gold: #B89215;
     clear: right; // so that they stack
 }
 
- 
+
+.bg_red {
+    background-color: $notification_red;
+}
+.bg_green {
+    background-color: $notification_green;
+}
+.bg_blue {
+    background-color: $notification_blue;
+}
+
+

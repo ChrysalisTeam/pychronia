@@ -74,17 +74,59 @@ body {
   
     
         #title_table {
+            
             display: table;
+            position: relative;
             width: 1000px;
             margin: 0px auto 0px;
             padding: 9px 0 0;
             table-layout: fixed;
             
-            div {
+            .notification_panel {
+                display: block;
+                height: auto;
+                position: absolute;
+                top: 0px;
+                left: 50%;
+                margin-left: -248px;
+                text-align: center;
+                width: 496px;
+                border: 3px groove $light_yellow;
+                border-top: 0;
+                
+                .notification_panel_decorations {
+                    background: {
+                        image: url('#{$IMGS}background/notification_panel_decorations.png');
+                        repeat: no-repeat;
+                        position: bottom center;
+                        clip: padding-box;
+                        size: cover;
+                    }
+                    opacity: 0.85;
+                    display: block;
+                    width: 350px;
+                    //height: 100%;
+                    
+                    padding: 5px 73px 28px;
+                    //z-index: -1;   
+                    
+                    .notification_panel_content {
+                        opacity: 1;
+                        max-height: 120px;
+                        overflow: visible;
+                   }            
+                }   
+            }
+            
+     
+            
+            
+            @mixin top_labels {
                 display: table-cell;
                 height: 44px;
             }
             .motto{
+                @include top_labels;
                 width: 225px;
                 &.left {
                     background: {
@@ -102,8 +144,8 @@ body {
                 }
             }
             
-            
             #site_title{
+               @include top_labels;
                text-align: center;
                img {
                  vertical-align: center;
@@ -138,10 +180,8 @@ body {
             .separator{
                 
             }
-            
         }  
     }        
-    
 }
 
 

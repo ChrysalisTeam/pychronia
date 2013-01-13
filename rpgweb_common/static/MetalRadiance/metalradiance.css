@@ -23,6 +23,15 @@
   float: right;
   clear: right;
 }
+.bg_red {
+  background-color: #ff0000;
+}
+.bg_green {
+  background-color: #008000;
+}
+.bg_blue {
+  background-color: #0000ff;
+}
 .stick_bottom_left {
   position: absolute;
   bottom: 0;
@@ -633,16 +642,43 @@ body:after {
 }
 #full_header #full_header_center #title_table {
   display: table;
+  position: relative;
   width: 1000px;
   margin: 0px auto 0px;
   padding: 9px 0 0;
   table-layout: fixed;
 }
-#full_header #full_header_center #title_table div {
-  display: table-cell;
-  height: 44px;
+#full_header #full_header_center #title_table .notification_panel {
+  display: block;
+  height: auto;
+  position: absolute;
+  top: 0px;
+  left: 50%;
+  margin-left: -248px;
+  text-align: center;
+  width: 496px;
+  border: 3px groove #9d8126;
+  border-top: 0;
+}
+#full_header #full_header_center #title_table .notification_panel .notification_panel_decorations {
+  background-image: url(img/background/notification_panel_decorations.png);
+  background-repeat: no-repeat;
+  background-position: bottom center;
+  background-clip: padding-box;
+  background-size: cover;
+  opacity: 0.85;
+  display: block;
+  width: 350px;
+  padding: 5px 73px 28px;
+}
+#full_header #full_header_center #title_table .notification_panel .notification_panel_decorations .notification_panel_content {
+  opacity: 1;
+  max-height: 120px;
+  overflow: visible;
 }
 #full_header #full_header_center #title_table .motto {
+  display: table-cell;
+  height: 44px;
   width: 225px;
 }
 #full_header #full_header_center #title_table .motto.left {
@@ -656,6 +692,8 @@ body:after {
   background-position: center center;
 }
 #full_header #full_header_center #title_table #site_title {
+  display: table-cell;
+  height: 44px;
   text-align: center;
 }
 #full_header #full_header_center #title_table #site_title img {
