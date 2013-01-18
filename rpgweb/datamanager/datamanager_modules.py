@@ -3222,13 +3222,15 @@ class Encyclopedia(BaseDataManager):
 
 
     @readonly_method
-    def get_encyclopedia_keywords_mapping(self):
+    def get_encyclopedia_keywords_mapping(self, excluded_link=None):
         """
         Returns a dict mapping keywords (which can be regular expressions) to lists 
         of targeted article ids.
         """
         mapping = {}
         for article_id, article in self._get_encyclopedia_dict().items():
+            if article_id == excluded_link:
+                continue # we skip links to the current article of course
             for keyword in article["keywords"]:
                 mapping.setdefault(keyword, [])
                 mapping[keyword].append(article_id)

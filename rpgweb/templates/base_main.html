@@ -8,7 +8,11 @@
 {% endaddtoblock %}
 
 
-{% block html_title %}{% if page_title %}{{ page_title}}{% else %}Welcome to Pangea Network{% endif %}{% endblock %}
+{% block html_title %}
+    {% if page_title %}{% trans "Anthropia" %} - {{ page_title}}
+    {% else %}{% trans "Welcome to Anthropia" %}
+    {% endif %}
+{% endblock %}
 
 
 {% addtoblock "js" %}

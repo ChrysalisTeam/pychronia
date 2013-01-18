@@ -834,6 +834,8 @@ class TestDatamanager(BaseGameTestCase):
         assert "gerbil_species" in self.dm.get_encyclopedia_article_ids()
 
         assert ("animals?", ["lokon", "gerbil_species"]) in self.dm.get_encyclopedia_keywords_mapping().items()
+        assert ("animals?", ["lokon"]) in self.dm.get_encyclopedia_keywords_mapping(excluded_link="gerbil_species").items() # no links to currently viewed article
+
         for entry in self.dm.get_encyclopedia_keywords_mapping().keys():
             utilities.check_is_slug(entry)
             assert entry.lower() == entry

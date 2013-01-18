@@ -6,18 +6,18 @@ import re, logging
 from datetime import datetime
 
 from rpgweb.utilities import mediaplayers, autolinker
-from rpgweb.common import exception_swallower, game_file_url as real_game_file_url, reverse
+from rpgweb.common import exception_swallower, game_file_url as real_game_file_url, reverse, _
 
 import django.template
 from django.template import defaulttags
 from django.utils.safestring import SafeData, EscapeData, mark_safe, mark_for_escaping
 from django.utils.html import escape
 from django.utils.http import urlencode
-from django.contrib.markup.templatetags.markup import restructuredtext
 from django.core.serializers import serialize
 from django.db.models.query import QuerySet
 from django.utils import simplejson
 import urllib
+from textwrap import dedent
 
 
 register = django.template.Library() # IMPORTANT, module-level object used by templates !
@@ -53,9 +53,9 @@ def usercolor(context, username_or_email):
 
 
 
-def _generate_encyclopedia_links(html_snippet, datamanager):
+def _generate_encyclopedia_links(html_snippet, datamanager, excluded_link=None):
 
-    keywords_mapping = datamanager.get_encyclopedia_keywords_mapping()
+    keywords_mapping = datamanager.get_encyclopedia_keywords_mapping(excluded_link=excluded_link)
 
     def link_attr_generator(match):
         matched_str = match.group(0)
@@ -71,17 +71,70 @@ def _generate_encyclopedia_links(html_snippet, datamanager):
     return res_html
 
 
-@register.simple_tag(takes_context=True)
-def rich_text(context, rst):
+
+
+
+def advanced_restructuredtext(value, initial_header_level=None):
+    from django import template
+    from django.conf import settings
+    from django.utils.encoding import smart_str, force_unicode
+    try:
+        from docutils.core import publish_parts
+    except ImportError:
+        if settings.DEBUG:
+            raise template.TemplateSyntaxError("Error in 'restructuredtext' filter: The Python docutils library isn't installed.")
+        return force_unicode(value)
+    else:
+        docutils_settings = getattr(settings, "RESTRUCTUREDTEXT_FILTER_SETTINGS", {})
+        if initial_header_level is not None:
+            docutils_settings.udpate(initial_header_level=initial_header_level)
+        parts = publish_parts(source=smart_str(value), writer_name="html4css1", settings_overrides=docutils_settings)
+        return mark_safe(force_unicode(parts["fragment"]))
+
+
+
+
+
+def _enrich_text(datamanager, content, initial_header_level=None, excluded_link=None):
     """
-    Converts a restructured
+    Converts RST content to HTML and adds encyclopedia links.
+    """
+    html = advanced_restructuredtext(content, initial_header_level=initial_header_level)
+    with exception_swallower():
+        return _generate_encyclopedia_links(html, datamanager, excluded_link=excluded_link) # on error
+    return ""
+
+
+@register.simple_tag(takes_context=True)
+def rich_text(context, content, initial_header_level=None):
+    """
+    Converts to enriched html the restructuredtext content of the variable.
     """
     request = context.get('request')
-    html = restructuredtext(rst)
+    return _enrich_text(request.datamanager, content, initial_header_level=initial_header_level)
 
-    with exception_swallower():
-        return _generate_encyclopedia_links(html, request.datamanager)
-    return html  # on error
+
+@register.simple_tag(takes_context=True)
+def static_page(context, article_name, initial_header_level=None):
+    """
+    Converts to enriched html the restructuredtext content of the targeted article (or displays nothing).
+    """
+    assert article_name, article_name
+    request = context.get('request')
+    pages_table = request.datamanager.static_pages
+    if pages_table.contains_item(article_name):
+        content = pages_table.get_item(article_name)["content"]
+    elif request.datamanager.is_master:
+        content = _(dedent("""
+                        .. container:: missing-content
+                        
+                            Article *%s* would appear here.
+                        """)) % article_name
+    else:
+        return "" # normal users see nothing here
+
+    return _enrich_text(request.datamanager, content, initial_header_level=initial_header_level, excluded_link=article_name)
+
 
 
 ''' ???
@@ -108,7 +161,7 @@ def dict_get(value, arg):
         return value[arg]
     except:
         # NO ERROR, templates can just be used to test for the existence of a key, this way !
-        return "" # value evaluating to false    
+        return "" # value evaluating to false
 register.filter('dict_get', dict_get)
 
 

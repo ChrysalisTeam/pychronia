@@ -445,8 +445,15 @@ static_pages:
     
     uncategorized_stuff:
         content: "whatever"
-        
-        
+    
+    
+    # STATIC SITE CONTENT
+    
+    home_message:
+        content: |
+          Welcome to *Anthropia Networks*
+          
+          
     # HELP PAGES #
     
     homepage:
@@ -481,7 +488,7 @@ static_pages:
     
     
     
-    # HELP PAGES #
+    # ENCYCLOPEDIA PAGES #
 
     lokon:    
         categories: encyclopedia
