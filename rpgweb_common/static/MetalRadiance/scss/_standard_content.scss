@@ -172,6 +172,11 @@ blockquote, q, cite {
     border-image: url('#{$IMGS}borders/post-it.png') 4 4 6 fill stretch;
 }
 
+.missing-content {
+    @extend .post-it;
+    color: $dark_red;
+}
+
 .scroll_realistic {
     width: 30%;
     border-style: solid; 
