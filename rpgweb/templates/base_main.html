@@ -132,6 +132,7 @@
 
 {% block body_top %}
 
+    {% comment %} FIX IMPERSONATION PANEL
     {% if possible_impersonations %}
     <div style="float:left;">
         <div style="color: #FFF; font-size: 10px;">Write: {{ user.has_write_access }} <br/> Impersonation: {{ user.is_impersonation}}</div>
@@ -150,7 +151,8 @@
         {% endif %}
     </div>
     {% endif %}
-
+    {% endcomment %}
+    
 {% endblock %} 
 
 
@@ -177,7 +179,24 @@
     {% if not game_is_started %} <h2>{% trans "Server in maintenance mode - no form submission possible" %}</h2> {% endif %}
     
     {% endcomment %}
-    
+
+
+{% block notification_banners %}
+    {% if messages %}
+    <div class="notification_panel bg_red {{ messages.0.tags }}">
+        <div class="notification_panel_decorations">
+            <div class="notification_panel_content">
+               {% for message in messages %}
+                   <p>{{ message|linebreaksbr }}</p>
+               {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+{% endblock %} 
+
+
+
 
 {% block main_menu %}  
     {% for menu in menus %} 

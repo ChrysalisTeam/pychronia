@@ -55,8 +55,9 @@
     <div id="full_header">
 
         <div id="full_header_center">
-        
+             
             <div id="title_table">
+                {% block notification_banners %}{% endblock %} 
                 <div class="motto left"></div>
                 <div id="site_title">
                     {% block site_title %} 
@@ -109,8 +110,7 @@
     
     
     <div id="full_content">
-        {% block panels %} 
-        {% endblock %}
+        {% block panels %}{% endblock %}
     </div>
 
 

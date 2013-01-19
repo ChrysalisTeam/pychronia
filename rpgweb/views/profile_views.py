@@ -16,30 +16,29 @@ def login(request, template_name='registration/login.html'):
 
     if request.method == "POST":
         if not request.session.test_cookie_worked():
-            user.add_error(_("Your Web browser doesn't appear to have cookies enabled. Cookies are required for logging in."))
-            # we let form == None, since anyway changing the settings of the browser is required before anything can work.
-        else:
-            form = forms.AuthenticationForm(data=request.POST)
-            if form.is_valid():
-                username = form.cleaned_data["secret_username"].strip()
-                password = form.cleaned_data["secret_password"].strip()
+            user.add_error(_("Your Web browser might have cookies disabled. Cookies are required to properly log in."))
 
-                if request.POST.get("password_forgotten", None):
+        form = forms.AuthenticationForm(data=request.POST)
+        if form.is_valid():
+            username = form.cleaned_data["secret_username"].strip()
+            password = form.cleaned_data["secret_password"].strip()
 
-                    if username == "master":
-                        user.add_error(_("Game master can't recover his password through a secret question."))
-                    elif username not in request.datamanager.get_character_usernames():
-                        user.add_error(_("You must provide a valid username to recover your password."))
-                    else:
-                        return secret_question(request)
+            if request.POST.get("password_forgotten", None):
 
-                else:  # normal authentication
-                    with action_failure_handler(request, _("You've been successfully logged in.")):  # message won't be seen because of redirect...
-                        authenticate_with_credentials(request, username, password)
-                        return HttpResponseRedirect(reverse("rpgweb-homepage", kwargs=dict(game_instance_id=request.datamanager.game_instance_id)))
+                # TODO MOVE THIS
+                if username == "master":
+                    user.add_error(_("Game master can't recover his password through a secret question."))
+                elif username not in request.datamanager.get_character_usernames():
+                    user.add_error(_("You must provide a valid username to recover your password."))
+                else:
+                    return secret_question(request)
+
+            else:  # normal authentication
+                with action_failure_handler(request, _("You've been successfully logged in.")):  # message won't be seen because of redirect...
+                    authenticate_with_credentials(request, username, password)
+                    return HttpResponseRedirect(reverse("rpgweb-homepage", kwargs=dict(game_instance_id=request.datamanager.game_instance_id)))
 
     else:
-        g = forms
         request.session.set_test_cookie()
         form = forms.AuthenticationForm()
 

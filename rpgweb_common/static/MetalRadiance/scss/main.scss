@@ -118,6 +118,9 @@ body {
                 border: 3px groove $light_yellow;
                 border-top: 0;
                 
+                font-weight: bold;
+                color: $alt_text_color;
+                
                 .notification_panel_decorations {
                     background: {
                         image: url('#{$IMGS}background/notification_panel_decorations.png');

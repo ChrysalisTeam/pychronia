@@ -4,34 +4,33 @@
 
 {% block content %}  
 
-
-{% if login_form %}
-    <form action="{% gameurl rpgweb.views.login %}" method="post" autocomplete="off">
-    <table style="margin:auto;width:400px;">
+    <div class="scroll_yellow_flat center" style="width: 400px">
     
-    {{ login_form.as_table }}
-    <tr>
-    
-        <td>
-            <br/>
-            <input type="submit" id="login" name="login" value="{% trans "Log Me In !" %}" />
-        </td>
+        <form action="{% gameurl rpgweb.views.login %}" method="post" autocomplete="off">
+        <table class="center">
         
-        <td>
-            <br/>
-            <input type="submit" name="password_forgotten" value="{% trans "Forgot password ?" %}" />
-        </td>
-    
-    </tr>
-    </table>
-    </form>
-    
-    <script type="text/javascript">
-        document.getElementById("id_secret_username").focus();
-    </script>
-
-{% endif %}
-
+        {{ login_form.as_table }}
+        <tr>
+        
+            <td>
+                <br/>
+                <input type="submit" id="login" name="login" value="{% trans "Log Me In !" %}" />
+            </td>
+            
+            <td>
+                <br/>
+                <input type="submit" name="password_forgotten" value="{% trans "Forgot password ?" %}" />
+            </td>
+        
+        </tr>
+        </table>
+        </form>
+        
+        <script type="text/javascript">
+            $("#login").focus();
+        </script>
+        
+    </div>
 
 
 {% endblock %}

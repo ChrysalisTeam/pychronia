@@ -111,6 +111,7 @@ h1 {
   font-size: 2.3em;
   line-height: normal;
   color: #f8d85b;
+  margin-bottom: 20px;
 }
 h1:before {
   top: 12px;
@@ -263,6 +264,12 @@ blockquote, cite, q {
   background: url(img/borders/scroll_yellow_rolled.png);
   background-size: 100% 100%;
   background-repeat: no-repeat;
+}
+.errorlist {
+  list-style-type: none;
+  list-style-image: none;
+  color: #ff0000;
+  margin: 0;
 }
 table.realtable {
   border-collapse: collapse;
@@ -681,6 +688,8 @@ body:after {
   width: 496px;
   border: 3px groove #9d8126;
   border-top: 0;
+  font-weight: bold;
+  color: #ffffff;
 }
 #full_header #full_header_center #title_table .notification_panel .notification_panel_decorations {
   background-image: url(img/background/notification_panel_decorations.png);
