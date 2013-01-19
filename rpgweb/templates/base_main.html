@@ -202,8 +202,10 @@
                                 {{ submenu.title }}
                              {% endif %}
                              
-                            {% comment %}<a {% if user.is_master %} style="font-size: 0.6em; line-height: 0.5em;" {% endif %}
-                                href="{{ item_url }}" >{{ item_name }}</a>{% endcomment %}
+                            {% comment %}
+                                <a {% if user.is_master %} style="font-size: 0.6em; line-height: 0.5em;" {% endif %}
+                                href="{{ item_url }}" >{{ item_name }}</a>
+                            {% endcomment %}
                         </li>
                     {% endfor %}
                  </ul>
@@ -218,31 +220,14 @@
 {% block panels %} 
 
     {% usekwacro main_panel_start frame_class="giant_frame" %}
-        
-        // USE DJANGO INCLUDE HERE //
-        
-        {% if page_title %}<h2>{{ page_title }}</h2>{% endif %}
 
-        {% if help_keyword %}    TODO CHANGE THIS
-        <a href="{% gameurl rpgweb.views.view_help_page keyword=help_keyword %}" class="fancybox fancybox.ajax" title="{{ page_title }}">
-            <img style="width 50px; height: 50px; float: right;" src="{{ MEDIA_URL }}images/question_mark.png"/>
-        </a>
-        {% endif %}
-    
+        {% if page_title %}<h1>{{ page_title }}</h1>{% endif %}
 
-        {% if messages %}
-           <ul class="messages">
-               {% for message in messages %}
-               <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message|linebreaksbr }}</li>
-               {% endfor %}
-           </ul>
-        {% endif %}
-    
+
         {% block content %}  
         {% endblock %}
         
     {% usekwacro main_panel_end %}
-
 
 {% endblock %}
 

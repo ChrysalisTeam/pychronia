@@ -604,6 +604,10 @@ class PlayerAuthentication(BaseDataManager):
 
     # Utility functions for tests on other usernames than current player's one #
 
+    @property
+    def username(self):
+        return self.user.username
+
     @readonly_method
     def is_anonymous(self, username=PLACEHOLDER):
         if username is PLACEHOLDER:

@@ -79,15 +79,15 @@ def generate_full_menu(request): # # game_menu_generator
         chatroom_suffix = u""
 
 
-    full_menu_tree = menu_entry(_(u"Home"), views.homepage,
+    full_menu_tree = menu_entry(_(u"Auction"), views.homepage,
         (
             # encoding note : \xa0 <-> &nbsp <-> alt+0160;
 
             menu_entry(_(u"Home"), views.homepage,
                         (
-                           menu_entry(_(u"Home"), views.homepage),
-                           menu_entry(_(u"Opening"), views.opening),
-                           menu_entry(_(u"Instructions"), views.instructions),
+                           ###menu_entry(_(u"Home"), views.homepage),
+                           ###menu_entry(_(u"Opening"), views.opening),
+                           ###menu_entry(_(u"Instructions"), views.instructions),
                            menu_entry(_(u"Characters"), views.view_characters),
                            menu_entry(_(u"Personal Folder"), views.personal_folder),
                            menu_entry(_(u"Auction"), views.view_sales),
@@ -144,10 +144,11 @@ def generate_full_menu(request): # # game_menu_generator
                        (
                         menu_entry(_(u"Profile"), views.character_profile, forced_visibility=(True if user.is_character else False)),
                         menu_entry(_(u"Friendships"), views.friendship_management, forced_visibility=(True if user.is_character else False)),
-                        )),
+                        menu_entry(_(u"Logout"), views.logout),
+                        ), forced_visibility=(False if not user.is_authenticated else True)),
 
            menu_entry(_(u"Login"), views.login, forced_visibility=(False if user.is_authenticated else True)),
-           menu_entry(_(u"Logout"), views.logout),
+
         ))
 
     return full_menu_tree

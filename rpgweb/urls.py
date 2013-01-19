@@ -11,55 +11,54 @@ view_urlpatterns = patterns('rpgweb.views',
 
     # WARNING - DANGEROUS #
 
-    (r'^TEST_CAPTCHA/$', 'gameview_mixins.test_captcha'),
+    url(r'^TEST_CAPTCHA/$', 'gameview_mixins.test_captcha'),
 
-    (r'^CHARACTERS_IDENTITIES/$', 'CHARACTERS_IDENTITIES'),
-    (r'^DATABASE_OPERATIONS/$', 'DATABASE_OPERATIONS'),
-    (r'^FAIL_TEST/$', 'FAIL_TEST'),
-    (r'^MEDIA_TEST/$', 'MEDIA_TEST'), # to check that all audio/video formats are well read by web browser!
-
-
-    (r'^$', 'homepage'),
+    url(r'^CHARACTERS_IDENTITIES/$', 'CHARACTERS_IDENTITIES'),
+    url(r'^DATABASE_OPERATIONS/$', 'DATABASE_OPERATIONS'),
+    url(r'^FAIL_TEST/$', 'FAIL_TEST'),
+    url(r'^MEDIA_TEST/$', 'MEDIA_TEST'), # to check that all audio/video formats are well read by web browser!
 
 
-    (r'^opening/$', 'opening'),
-    ('^openinglogo/$', 'logo_animation'),
+    url(r'^$', 'homepage', name="rpgweb-homepage"),
 
-    (r'^instructions/$', 'instructions'),
+
+    url(r'^opening/$', 'opening'),
+    url('^openinglogo/$', 'logo_animation'),
+
+    url(r'^instructions/$', 'instructions'),
 
     #(r'^radio_messages/$', 'personal_radio_messages_listing'),
 
-    (r'^view_media/$', 'view_media'),
-    (r'^personal_folder/$', 'personal_folder'),
-    (r'^encrypted_folders/(?P<folder>[^/]*)/$', 'encrypted_folder'),
+    url(r'^view_media/$', 'view_media'),
+    url(r'^personal_folder/$', 'personal_folder'),
+    url(r'^encrypted_folders/(?P<folder>[^/]*)/$', 'encrypted_folder'),
 
 
-    (r'^slideshow/$', 'items_slideshow'), # Beware: slideshow URLs must not contain underscores,
-    (r'^item3dview/(?P<item>.*)/$', 'item_3d_view'), # else 3D images are flashing !
+    url(r'^slideshow/$', 'items_slideshow'), # Beware: slideshow URLs must not contain underscores,
+    url(r'^item3dview/(?P<item>.*)/$', 'item_3d_view'), # else 3D images are flashing !
 
 
-    (r'^webradio/$', 'listen_to_webradio'),
-    (r'^webradio_conf/$', 'get_radio_xml_conf'),
-    (r'^webradio_applet/$', 'listen_to_audio_messages'),
+    url(r'^webradio/$', 'listen_to_webradio'),
+    url(r'^webradio_conf/$', 'get_radio_xml_conf'),
+    url(r'^webradio_applet/$', 'listen_to_audio_messages'),
 
-    (r'^view_sales/$', 'view_sales'),
-    (r'^view_characters/$', 'view_characters'),
+    url(r'^view_sales/$', 'view_sales'),
+    url(r'^view_characters/$', 'view_characters'),
 
-    (r'^encyclopedia/$', 'view_encyclopedia'),
-    (r'^encyclopedia/(?P<article_id>[^/]*)/$', 'view_encyclopedia'),
+    url(r'^encyclopedia/$', 'view_encyclopedia'),
+    url(r'^encyclopedia/(?P<article_id>[^/]*)/$', 'view_encyclopedia'),
 
-    (r'^manual/(?P<keyword>[^/]*)/$', 'view_help_page'),
+    url(r'^manual/(?P<keyword>[^/]*)/$', 'view_help_page'),
 
-    (r'^manage_characters/$', 'manage_characters'),
-    (r'^webradio_management/$', 'manage_audio_messages'),
-    (r'^game_events/$', 'game_events'),
-    (r'^manage_databases/$', 'manage_databases'),
-
-
+    url(r'^manage_characters/$', 'manage_characters'),
+    url(r'^webradio_management/$', 'manage_audio_messages'),
+    url(r'^game_events/$', 'game_events'),
+    url(r'^manage_databases/$', 'manage_databases'),
 
 
-    (r'^chatroom/$', 'chatroom'),
-    (r'^ajax_chat/$', 'ajax_chat'),
+
+    url(r'^chatroom/$', 'chatroom'),
+    url(r'^ajax_chat/$', 'ajax_chat'),
 
 
     #(r'^wiretapping_management/$', 'wiretapping_management'),
@@ -78,41 +77,39 @@ view_urlpatterns = patterns('rpgweb.views',
 #    (r'^ajax_domotics_security/$', 'ajax_domotics_security'), # for heavy client, if used
 #    (r'^domotics_security/$', 'domotics_security'),
 
-    (r'^login/$', 'login'),
-    (r'^secret_question/$', 'secret_question'),
-    (r'^profile/$', 'character_profile'),
-    (r'^friendships/$', 'friendship_management'),
-    (r'^logout/$', 'logout'),
+    url(r'^login/$', 'login'),
+    url(r'^secret_question/$', 'secret_question'),
+    url(r'^profile/$', 'character_profile'),
+    url(r'^friendships/$', 'friendship_management'),
+    url(r'^logout/$', 'logout'),
 
 
-    (r'^messages/compose/$', 'compose_message'),
-    (r'^messages/inbox/$', 'inbox'),
-    (r'^messages/outbox/$', 'outbox'),
-    (r'^messages/conversation/$', 'conversation'),
-    (r'^messages/all_sent_messages/$', 'all_sent_messages'),
-    (r'^messages/all_queued_messages/$', 'all_queued_messages'),
-    (r'^messages/intercepted_messages/$', 'intercepted_messages'),
-    (r'^messages/messages_templates/$', 'messages_templates'),
-    (r'^messages/ajax_mark_msg_read/$', 'ajax_set_message_read_state'),
-    (r'^messages/ajax_force_email_sending/$', 'ajax_force_email_sending'),
+    url(r'^messages/compose/$', 'compose_message'),
+    url(r'^messages/inbox/$', 'inbox'),
+    url(r'^messages/outbox/$', 'outbox'),
+    url(r'^messages/conversation/$', 'conversation'),
+    url(r'^messages/all_sent_messages/$', 'all_sent_messages'),
+    url(r'^messages/all_queued_messages/$', 'all_queued_messages'),
+    url(r'^messages/intercepted_messages/$', 'intercepted_messages'),
+    url(r'^messages/messages_templates/$', 'messages_templates'),
+    url(r'^messages/ajax_mark_msg_read/$', 'ajax_set_message_read_state'),
+    url(r'^messages/ajax_force_email_sending/$', 'ajax_force_email_sending'),
 
-    (r'^messages/view_single_message/(?P<msg_id>\w+)/$', 'view_single_message'),
+    url(r'^messages/view_single_message/(?P<msg_id>\w+)/$', 'view_single_message'),
 
-
-    (r'^ajax_get_next_audio_message/$', 'ajax_get_next_audio_message'),
-    (r'^ajax_notify_audio_success/$', 'ajax_notify_audio_message_finished'),
+    url(r'^ajax_get_next_audio_message/$', 'ajax_get_next_audio_message'),
+    url(r'^ajax_notify_audio_success/$', 'ajax_notify_audio_message_finished'),
 
 )
 
 
 ability_urlpatterns = patterns("rpgweb.abilities",
-
-    (r'^ability/house_locking/$', 'house_locking_view'),
-    (r'^ability/runic_translation/$', 'runic_translation_view'),
-    (r'^ability/wiretapping_management/$', 'wiretapping_management_view'),
-    (r'^ability/admin_dashboard/$', 'admin_dashboard_view'),
-    (r'^ability/network_management/$', 'mercenaries_hiring_view'),
-    (r'^ability/matter_analysis/$', 'matter_analysis_view'),
+    url(r'^ability/house_locking/$', 'house_locking_view'),
+    url(r'^ability/runic_translation/$', 'runic_translation_view'),
+    url(r'^ability/wiretapping_management/$', 'wiretapping_management_view'),
+    url(r'^ability/admin_dashboard/$', 'admin_dashboard_view'),
+    url(r'^ability/network_management/$', 'mercenaries_hiring_view'),
+    url(r'^ability/matter_analysis/$', 'matter_analysis_view'),
 )
 
 
@@ -122,9 +119,9 @@ final_urlpatterns = view_urlpatterns + ability_urlpatterns
 urlpatterns = patterns('',
 
                     # serving of game files is currently independent of ZODB data
-                    (r'^%s(?P<hash>[^/]*)/?(?P<path>.*)$' % config.GAME_FILES_URL[1:], 'rpgweb.views.serve_game_file'), # NOT a gameview
+                    url(r'^%s(?P<hash>[^/]*)/?(?P<path>.*)$' % config.GAME_FILES_URL[1:], 'rpgweb.views.serve_game_file'), # NOT a gameview
 
-                    (r'^(?P<game_instance_id>\w+)/', include(final_urlpatterns)),
+                    url(r'^(?P<game_instance_id>\w+)/', include(final_urlpatterns)),
 
                     #(r'^', include(final_urlpatterns), {"game_instance_id": "DEMO"}), # default game instance, just as a demo
 )
