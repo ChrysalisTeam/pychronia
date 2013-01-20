@@ -4,9 +4,8 @@ from __future__ import unicode_literals
 
 
 from rpgweb.common import *
-import weakref, functools
 from django.contrib import messages
-import inspect
+
 
 
 class GameUser(object):
@@ -57,7 +56,7 @@ class GameUser(object):
 
         self._datamanager = weakref.ref(datamanager)
 
-        # notifications only used for the current request/response, 
+        # notifications only used for the current request/response,
         # but persistent through user authentications
         #self.messages = previous_user.messages if previous_user else []
         #elf.errors = previous_user.errors if previous_user else []
@@ -129,7 +128,10 @@ class GameUser(object):
             self.datamanager.request._messages = default_storage(self.datamanager.request) # big hack
 
 
-    ''' USELESS
+
+
+
+''' USELESS
     def _dm_call_forwarder(self, func_name, *args, **kwargs):
         """
         Forwards call to the select function of the attached datamanager, 

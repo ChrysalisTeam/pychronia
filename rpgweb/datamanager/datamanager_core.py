@@ -3,31 +3,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from rpgweb.common import *
-
-from django.shortcuts import render
-from django.template import RequestContext
-from difflib import SequenceMatcher
-
 from .datamanager_tools import *
-
-
-"""
-import traceback
-print "\n------------"
-print "importing datamanager ! "
-traceback.print_stack()
-"""
-
-###DEFAULT_YAML_FILE = os.path.join(os.path.dirname(os.path.dirname(__file__)), "game_initial_data.yaml")
-
-
-logging.getLogger("txn").setLevel(logging.WARNING) # ZODB transactions
-
-
-
-
-
-
 
 
 
@@ -105,7 +81,7 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
         return self._request() if self._request else None
 
 
-    # NO transaction_watcher here!        
+    # NO transaction_watcher here!
     def close(self):
         """
         Should be called before terminating the server, to prevent any DB trouble.
@@ -131,7 +107,7 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
 
         #print "RESETTING DATABASE !"
 
-        # ZODB reset - warning, we must replace content of dictionary "data", 
+        # ZODB reset - warning, we must replace content of dictionary "data",
         # not rebind the attribute "data", else we lose ZODB support
         self.data.clear()
 
@@ -192,9 +168,6 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
 
         assert _expected_game_params <= _actual_game_params, ("Missing global params", _expected_game_params - _actual_game_params)
 
-
-
-
         
         for name, value in game_data["global_parameters"].items():
 
@@ -253,8 +226,10 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
         self._process_periodic_tasks(report)
         return report
 
+
     def _process_periodic_tasks(self, report):
         self.notify_event("BASE_PROCESS_PERIODIC_TASK_CALLED")
+
 
     @readonly_method
     def dump_zope_database(self, **kwargs):
@@ -284,11 +259,6 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
         string = yaml.dump(data_dump, **dump_args) # TODO fix safe_dump() to accept unicode in input!!
 
         return string
-
-
-
-
-
 
 
 

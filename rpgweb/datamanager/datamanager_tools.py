@@ -4,16 +4,7 @@ from __future__ import unicode_literals
 
 from rpgweb.common import *
 
-from django.shortcuts import render
-from django.template import RequestContext
 
-
-
-"""
-def _ensure_data_ok(datamanager):
-    if not datamanager.is_initialized:
-        raise AbnormalUsageError(_("Game databases haven't yet been initialized !"))
-"""
 
 def readonly_method(obj):
     @decorator
@@ -24,7 +15,7 @@ def readonly_method(obj):
         """
 
         if hasattr(self, "_inner_datamanager"):
-            connection = self._inner_datamanager.connection # for methods of ability or other kind of proxy 
+            connection = self._inner_datamanager.connection # for methods of ability or other kind of proxy
         else:
             connection = self.connection # for datamanager methods
 
@@ -71,7 +62,7 @@ def transaction_watcher(object=None, ensure_data_ok=True, ensure_game_started=Tr
         def _transaction_watcher(func, self, *args, **kwargs): #@NoSelf
 
             if hasattr(self, "_inner_datamanager"):
-                datamanager = self._inner_datamanager # for methods of ability or other kind of proxy 
+                datamanager = self._inner_datamanager # for methods of ability or other kind of proxy
             else:
                 datamanager = self # for datamanager methods
 
@@ -97,7 +88,7 @@ def transaction_watcher(object=None, ensure_data_ok=True, ensure_game_started=Tr
             try:
 
                 res = func(self, *args, **kwargs)
-                #datamanager._check_database_coherency() # WARNING - quite CPU intensive, 
+                #datamanager._check_database_coherency() # WARNING - quite CPU intensive,
                 #to be removed later on ? TODO TODO REMOVE PAKAL !!!
                 #print("COMMITTING", func.__name__, savepoint)
                 datamanager.commit(savepoint)
@@ -279,23 +270,3 @@ class LazyInstantiationDescriptor(object):
 
 
 
-
-
-
-"""
-# HACK TO ALLOW THE PICKLING OF INSTANCE METHODS #
-# WOULD REQUIRE PICKLABILITY OF DATAMANAGER #
-import copy_reg
-import new
-def make_instancemethod(inst, methodname):
-    return getattr(inst, methodname)
-def pickle_instancemethod(method):
-    return make_instancemethod, (method.klass, method.im_func.__name__)
-copy_reg.pickle(new.instancemethod, pickle_instancemethod,
-make_instancemethod)
-
-def mark_always_available(func):
-    func.always_available = True
-    return func
-
-"""

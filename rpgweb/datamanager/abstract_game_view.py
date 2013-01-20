@@ -2,19 +2,16 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
-import inspect
+from rpgweb.common import *
+from rpgweb.common import _undefined # for static checker...
 import json
-
 from django.http import Http404, HttpResponseRedirect, HttpResponse, \
     HttpResponseForbidden, HttpResponseBadRequest
-from django.shortcuts import render
-from django.template import RequestContext, loader
+from django.template import loader
 
 from ..datamanager import GameDataManager
-from ..forms import AbstractGameForm
-from rpgweb.common import *
-from rpgweb.datamanager.datamanager_tools import transaction_watcher, \
-    readonly_method
+from .abstract_form import AbstractGameForm
+from .datamanager_tools import transaction_watcher, readonly_method
 
 
 
@@ -65,7 +62,7 @@ class ClassInstantiationProxy(object):
     def __init__(self, klass):
         self.klass = klass # important attribute
     def __getattr__(self, name):
-        return getattr(self.klass, name) # useful for introspection of views                
+        return getattr(self.klass, name) # useful for introspection of views
     def __call__(self, request, *args, **kwargs):
         return self.klass(request.datamanager)(request, *args, **kwargs) # we execute new instance of underlying class, without parameters
     def __str__(self):
@@ -137,7 +134,9 @@ class GameViewMetaclass(type):
 
 
 class SubmittedGameForm:
-
+    """
+    Simple container class.
+    """
     def __init__(self, form_name, form_instance, form_successful):
         utilities.check_is_slug(form_name)
         assert form_successful in (True, False)
@@ -169,7 +168,7 @@ class AbstractGameView(object):
 
 
     ACCESS = None # UserAccess entry
-    PERMISSIONS = [] # list of required permission names, only used for character access    
+    PERMISSIONS = [] # list of required permission names, only used for character access
     ALWAYS_AVAILABLE = False # True iff view can't be globally hidden by game master
 
     _ACTION_FIELD = "_action_" # for ajax and no-form request

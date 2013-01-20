@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import sys, os, tempfile, random
+import sys, os, tempfile, random, logging
 
 ugettext = lambda s: s # dummy placeholder for makemessages
 

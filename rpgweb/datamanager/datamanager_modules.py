@@ -3,13 +3,12 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from rpgweb.common import *
+from rpgweb.common import _, _lazy, _noop # just to shut up the static checker...
 
+from .datamanager_tools import *
 from .datamanager_user import GameUser
-from .datamanager_core import *
-from .datamanager_core import _, _lazy, _noop # just to shut up the static checker...
-from types import NoneType
-from persistent.list import PersistentList
-from rpgweb.datamanager.datamanager_tools import DataTableManager
+from .datamanager_core import BaseDataManager
+
 
 PLACEHOLDER = object()
 
@@ -1441,8 +1440,8 @@ class TextMessagingCore(BaseDataManager):
         Overridable method that raises a proper exception if the recipient identifier is unexisting or forbidden.
         Returns nothing.
         """
-        if not self.global_contacts.contains_item(identifier):
-            raise NormalUsageError(_("Unknown recipient %r") % identifier)
+        if not self.global_contacts.contains_item(__identifier):
+            raise NormalUsageError(_("Unknown recipient %r") % __identifier)
 
     @readonly_method
     def ___get_available_contacts(self, username):
@@ -2754,7 +2753,7 @@ class Items3dViewing(BaseDataManager):
             'autoreverse': bool,
             'rotomatic': (int, long) ,
 
-             'music': (NoneType, basestring),
+             'music': (types.NoneType, basestring),
             }
 
         for (name, properties) in game_data["item_3d_settings"].items():

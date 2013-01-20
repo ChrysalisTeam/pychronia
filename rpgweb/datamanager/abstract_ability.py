@@ -4,13 +4,10 @@ from __future__ import unicode_literals
 
 from rpgweb.common import *
 
-from django.http import HttpResponse
-from django.shortcuts import render
-from django.template import RequestContext, loader
 
-from ..datamanager import GameDataManager, readonly_method, transaction_watcher
-from ..forms import AbstractGameForm
-from .abstract_game_view import GameViewMetaclass, AbstractGameView, register_view
+from .datamanager_administrator import GameDataManager
+from .datamanager_tools import readonly_method, transaction_watcher
+from .abstract_game_view import GameViewMetaclass, AbstractGameView
 from .action_middlewares import ACTION_MIDDLEWARES
 
 

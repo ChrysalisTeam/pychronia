@@ -2,7 +2,7 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
-import inspect
+
 from rpgweb.common import *
 
 
@@ -67,7 +67,7 @@ class AbstractActionMiddleware(object):
         These methods must call their parent.
         """
 
-        # we check that no unknown middleware is in settings or private data (could be a typo), 
+        # we check that no unknown middleware is in settings or private data (could be a typo),
         # and that activated middlewares are well compatible with current ability
 
         middleware_settings = self.settings["middlewares"].values()
@@ -331,11 +331,11 @@ class CountLimitedActionMiddleware(AbstractActionMiddleware):
             middleware_settings = self.get_middleware_settings(action_name, CountLimitedActionMiddleware)
             private_data = self.get_private_middleware_data(action_name, CountLimitedActionMiddleware)
 
-            if middleware_settings["max_per_game"]: # 0 <-> None 
+            if middleware_settings["max_per_game"]: # 0 <-> None
                 if self._get_global_usage_count(action_name) >= middleware_settings["max_per_game"]:
                     raise NormalUsageError(_("You have exceeded the global quota (%(max_per_game)s uses) for that asset") % SDICT(max_per_game=middleware_settings["max_per_game"]))
 
-            if middleware_settings["max_per_character"]: # 0 <-> None 
+            if middleware_settings["max_per_character"]: # 0 <-> None
                 if private_data["private_usage_count"] >= middleware_settings["max_per_character"]:
                     raise NormalUsageError(_("You have exceeded your quota (%(max_per_character)s uses) for that asset") % SDICT(max_per_character=middleware_settings["max_per_character"]))
 

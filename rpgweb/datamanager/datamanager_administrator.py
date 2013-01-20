@@ -5,9 +5,10 @@ from __future__ import unicode_literals
 from BTrees.OOBTree import OOBTree
 
 from rpgweb.common import *
-from rpgweb.datamanager import datamanager_modules
-from rpgweb.datamanager.datamanager_tools import zodb_transaction
-from rpgweb.datamanager.datamanager_core import BaseDataManager
+from . import datamanager_modules
+from .datamanager_tools import zodb_transaction
+from .datamanager_core import BaseDataManager
+
 
 
 AllBases = tuple(reversed(datamanager_modules.MODULES_REGISTRY)) # latest classes must be first in hierarchy

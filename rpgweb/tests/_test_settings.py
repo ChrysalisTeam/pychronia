@@ -44,7 +44,7 @@ print("SETTING UP RPGWEB TEST LOGGING")
 import logging
 logging.basicConfig()
 logging.disable(0)
-
+logging.getLogger("txn").setLevel(logging.WARNING) # ZODB transactions
 
 
 TEMPLATE_CONTEXT_PROCESSORS = TEMPLATE_CONTEXT_PROCESSORS + ("rpgweb.context_processors.rpgweb_template_context",)
