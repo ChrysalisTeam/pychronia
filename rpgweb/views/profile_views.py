@@ -25,7 +25,7 @@ def login(request, template_name='registration/login.html'):
 
             if request.POST.get("password_forgotten", None):
 
-                # TODO MOVE THIS
+                # TODO MOVE THIS - + '?' + urllib.urlencode(kwargs)
                 if username == "master":
                     user.add_error(_("Game master can't recover his password through a secret question."))
                 elif username not in request.datamanager.get_character_usernames():

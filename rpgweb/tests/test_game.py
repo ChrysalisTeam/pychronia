@@ -1985,11 +1985,7 @@ class TestHttpRequests(BaseGameTestCase):
         response = self.client.post(login_page, data=dict(secret_username=master_login, secret_password=self.dm.get_global_parameter("master_password")))
 
         self.assertEqual(response.status_code, 302)
-
-        if self.dm.is_game_started():
-            self.assertRedirects(response, ROOT_GAME_URL + "/")
-        else:
-            self.assertRedirects(response, ROOT_GAME_URL + "/opening/") # beautiful intro for days before the game starts
+        self.assertRedirects(response, ROOT_GAME_URL + "/")
 
         assert self.client.session["rpgweb_session_ticket"] == dict(game_instance_id=TEST_GAME_INSTANCE_ID,
                                                                     username=master_login,
@@ -2005,10 +2001,7 @@ class TestHttpRequests(BaseGameTestCase):
         response = self.client.post(login_page, data=dict(secret_username=username, secret_password=self.dm.get_character_properties(username)["password"]))
 
         self.assertEqual(response.status_code, 302)
-        if self.dm.is_game_started():
-            self.assertRedirects(response, ROOT_GAME_URL + "/")
-        else:
-            self.assertRedirects(response, ROOT_GAME_URL + "/opening/") # beautiful intro for days before the game starts
+        self.assertRedirects(response, ROOT_GAME_URL + "/")
 
         assert self.client.session["rpgweb_session_ticket"] == dict(game_instance_id=TEST_GAME_INSTANCE_ID,
                                                                     username=username,
