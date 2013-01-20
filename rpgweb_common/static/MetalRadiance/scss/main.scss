@@ -25,7 +25,7 @@ body {
     
     
     background-color: black;
-    background-image: url('#{$IMGS}background/nazur_temple_75.jpg');
+    background-image: url('#{$IMGS}backgrounds/nazur_temple_75.jpg');
     background-size: cover;
     background-repeat: no-repeat;
     background-attachment: scroll;
@@ -45,10 +45,10 @@ body {
     &:after
     {
     // put here all images to PRELOAD (eg. used in dynamic menus and hover effects)
-    content: url('#{$IMGS}borders/tube_gold_small.png') 
-             url('#{$IMGS}borders/tube_silver_small.png')
-             url('#{$IMGS}borders/tube_bronze_small.png')
-             url('#{$IMGS}borders/dropdown_menu.png');
+    content: url('#{$IMGS}backgrounds/tube_gold_small.png') 
+             url('#{$IMGS}backgrounds/tube_silver_small.png')
+             url('#{$IMGS}backgrounds/tube_bronze_small.png')
+             url('#{$IMGS}backgrounds/dropdown_menu.png');
     display: none;
     }
 }
@@ -70,7 +70,7 @@ body {
         text-align: center;
         
         background: {
-            image: url('#{$IMGS}background/header_center.png');
+            image: url('#{$IMGS}backgrounds/header_center.png');
             repeat: no-repeat;
             position: center;
         }
@@ -97,7 +97,7 @@ body {
                 width: 301px;
                 height: 129px;
                 background: {
-                    image: url('#{$IMGS}background/flag_red.png');
+                    image: url('#{$IMGS}backgrounds/flag_red.png');
                     repeat: no-repeat;
                     position: bottom center;
                     clip: padding-box;
@@ -123,7 +123,7 @@ body {
                 
                 .notification_panel_decorations {
                     background: {
-                        image: url('#{$IMGS}background/notification_panel_decorations.png');
+                        image: url('#{$IMGS}backgrounds/notification_panel_decorations.png');
                         repeat: no-repeat;
                         position: bottom center;
                         clip: padding-box;
@@ -199,7 +199,7 @@ body {
                 width: 163px;
 
                 background: {
-                    image:url('#{$IMGS}background/carving1.png');
+                    image:url('#{$IMGS}backgrounds/carving1.png');
                     repeat:no-repeat;
                 }
         
@@ -270,7 +270,7 @@ body {
                 
                 border-style: solid; 
                 border-width: 18px 52px 20px 55px; 
-                border-image: url('#{$IMGS}borders/menu_border.png') 18 52 20 55 fill round stretch;
+                border-image: url('#{$IMGS}backgrounds/menu_border.png') 18 52 20 55 fill round stretch;
             }
             
         }
@@ -295,7 +295,7 @@ body {
         margin: 7px 10px 10px;
         overflow: visible; 
         
-        background: transparent url('#{$IMGS}background/wood_bg.png') repeat center center;
+        background: transparent url('#{$IMGS}backgrounds/wood_bg.png') repeat center center;
         background-origin: content-box; //padding-box|border-box
         background-clip: content-box;
         background-position: left top; 
@@ -307,7 +307,7 @@ body {
             padding: 1px 5px;
             border-style: solid; 
             border-width: 22px 22px; 
-            border-image: url('#{$IMGS}borders/mini_frame4.png') 22 22 repeat;
+            border-image: url('#{$IMGS}backgrounds/mini_frame4.png') 22 22 repeat;
         }
         
     }
@@ -317,7 +317,7 @@ body {
         position: relative;
         padding: 10px;
         margin: 0px 5px 10px;
-        background: transparent url('#{$IMGS}background/leather_bg.jpg') repeat center center;
+        background: transparent url('#{$IMGS}backgrounds/leather_bg.jpg') repeat center center;
         background-clip: content-box; 
     }
     
@@ -339,7 +339,7 @@ body {
         padding: 2px 6px;
         border-style: solid; 
         border-width: 41px 43px 43px 41px; 
-        border-image: url('#{$IMGS}borders/big_frame.png') 41 43 43 41 fill round round;
+        border-image: url('#{$IMGS}backgrounds/big_frame.png') 41 43 43 41 fill round round;
         
         .big_frame_content {
             min-width: 200px;
@@ -377,19 +377,19 @@ body {
         @include up_footer_common;
         border-style: solid;
         border-width: 0px 0px 0px 121px;
-        border-image: url('#{$IMGS}borders/up_footer_left.png') 0 0 0 121 fill round stretch;
+        border-image: url('#{$IMGS}backgrounds/up_footer_left.png') 0 0 0 121 fill round stretch;
     }
     
     #up_footer_border_right {
         @include up_footer_common;
         border-style: solid;
         border-width: 0px 121px 0px 0px;
-        border-image: url('#{$IMGS}borders/up_footer_right.png') 0 121 0 0 fill round stretch;
+        border-image: url('#{$IMGS}backgrounds/up_footer_right.png') 0 121 0 0 fill round stretch;
     }
     
     #up_footer_border_center {
         @include up_footer_common;
-        background-image: url('#{$IMGS}borders/up_footer_center.png');
+        background-image: url('#{$IMGS}backgrounds/up_footer_center.png');
         background-origin: padding-box; //padding-box|border-box
         background-clip: padding-box;
         width: 225px;
@@ -421,7 +421,7 @@ body {
         display: inline-block;
         border-style: solid;
         border-width: 0px 300px 0px 304px;
-        border-image: url('#{$IMGS}borders/low_footer_border.png') 0 300 0 304 fill stretch;
+        border-image: url('#{$IMGS}backgrounds/low_footer_border.png') 0 300 0 304 fill stretch;
         overflow: visible; // important to avoid mess with vertical alignment
         
         &:before {

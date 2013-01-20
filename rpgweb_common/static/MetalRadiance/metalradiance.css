@@ -223,7 +223,7 @@ blockquote, cite, q {
   width: 50%;
   border-style: solid;
   border-width: 7px 10px 10px;
-  border-image: url(img/borders/marble_plate.png) 7 10 10 fill stretch;
+  border-image: url(img/backgrounds/marble_plate.png) 7 10 10 fill stretch;
 }
 .missing-content, .post-it {
   color: #000000;
@@ -235,7 +235,7 @@ blockquote, cite, q {
   width: 50%;
   border-style: solid;
   border-width: 4px 4px 6px;
-  border-image: url(img/borders/post-it.png) 4 4 6 fill stretch;
+  border-image: url(img/backgrounds/post-it.png) 4 4 6 fill stretch;
 }
 .missing-content {
   color: #8e0d0d;
@@ -244,24 +244,24 @@ blockquote, cite, q {
   width: 30%;
   border-style: solid;
   border-width: 142px 63px 124px 71px;
-  border-image: url(img/borders/scroll_realistic.png) 142 63 124 71 fill stretch stretch;
+  border-image: url(img/backgrounds/scroll_realistic.png) 142 63 124 71 fill stretch stretch;
 }
 .hentry, .scroll_realistic_thin_ends {
   width: 30%;
   min-width: 150px;
   border-style: solid;
   border-width: 79px 45px 81px 39px;
-  border-image: url(img/borders/scroll_realistic_thin_ends.png) 79 45 81 39 fill stretch stretch;
+  border-image: url(img/backgrounds/scroll_realistic_thin_ends.png) 79 45 81 39 fill stretch stretch;
 }
 .scroll_yellow_flat {
   padding: 25px;
-  background: url(img/borders/scroll_yellow_flat.png);
+  background: url(img/backgrounds/scroll_yellow_flat.png);
   background-size: 100% 100%;
   background-repeat: no-repeat;
 }
 .scroll_yellow_rolled {
   padding: 55px 30px;
-  background: url(img/borders/scroll_yellow_rolled.png);
+  background: url(img/backgrounds/scroll_yellow_rolled.png);
   background-size: 100% 100%;
   background-repeat: no-repeat;
 }
@@ -625,7 +625,7 @@ body {
   line-height: 20px;
   font-family: Arial, Helvetica, sans-serif;
   background-color: #000000;
-  background-image: url(img/background/nazur_temple_75.jpg);
+  background-image: url(img/backgrounds/nazur_temple_75.jpg);
   background-size: cover;
   background-repeat: no-repeat;
   background-attachment: scroll;
@@ -638,7 +638,7 @@ body {
   text-overflow: ellipsis;
 }
 body:after {
-  content: url(img/borders/tube_gold_small.png) url(img/borders/tube_silver_small.png) url(img/borders/tube_bronze_small.png) url(img/borders/dropdown_menu.png);
+  content: url(img/backgrounds/tube_gold_small.png) url(img/backgrounds/tube_silver_small.png) url(img/backgrounds/tube_bronze_small.png) url(img/backgrounds/dropdown_menu.png);
   display: none;
 }
 #full_header {
@@ -650,7 +650,7 @@ body:after {
   margin: auto;
   height: 167px;
   text-align: center;
-  background-image: url(img/background/header_center.png);
+  background-image: url(img/backgrounds/header_center.png);
   background-repeat: no-repeat;
   background-position: center;
 }
@@ -671,7 +671,7 @@ body:after {
   padding: 120px 50px 50px;
   width: 301px;
   height: 129px;
-  background-image: url(img/background/flag_red.png);
+  background-image: url(img/backgrounds/flag_red.png);
   background-repeat: no-repeat;
   background-position: bottom center;
   background-clip: padding-box;
@@ -692,7 +692,7 @@ body:after {
   color: #ffffff;
 }
 #full_header #full_header_center #title_table .notification_panel .notification_panel_decorations {
-  background-image: url(img/background/notification_panel_decorations.png);
+  background-image: url(img/backgrounds/notification_panel_decorations.png);
   background-repeat: no-repeat;
   background-position: bottom center;
   background-clip: padding-box;
@@ -745,7 +745,7 @@ body:after {
 }
 #full_header #full_header_center #notification_table .carving {
   width: 163px;
-  background-image: url(img/background/carving1.png);
+  background-image: url(img/backgrounds/carving1.png);
   background-repeat: no-repeat;
 }
 #full_menu {
@@ -787,7 +787,7 @@ body:after {
   padding: 2px 0;
   border-style: solid;
   border-width: 18px 52px 20px 55px;
-  border-image: url(img/borders/menu_border.png) 18 52 20 55 fill round stretch;
+  border-image: url(img/backgrounds/menu_border.png) 18 52 20 55 fill round stretch;
 }
 #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu {
   margin: 0;
@@ -821,15 +821,15 @@ body:after {
   font-size: 20pt;
   border-style: solid;
   border-width: 0px 32px 0px 33px;
-  border-image: url(img/borders/tube_gold_small.png) 0 32 0 33 fill stretch;
+  border-image: url(img/backgrounds/tube_gold_small.png) 0 32 0 33 fill stretch;
 }
 #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu > li li li a,
 #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu > li li li span {
-  border-image: url(img/borders/tube_silver_small.png) 0 32 0 33 fill stretch;
+  border-image: url(img/backgrounds/tube_silver_small.png) 0 32 0 33 fill stretch;
 }
 #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu > li li li li a,
 #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu > li li li li span {
-  border-image: url(img/borders/tube_bronze_small.png) 0 32 0 33 fill stretch;
+  border-image: url(img/backgrounds/tube_bronze_small.png) 0 32 0 33 fill stretch;
 }
 #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu > li {
   border-width: 0;
@@ -847,7 +847,7 @@ body:after {
   padding: 0;
   border-style: solid;
   border-width: 4px 3px;
-  border-image: url(img/borders/dropdown_menu.png) 4 3 fill stretch;
+  border-image: url(img/backgrounds/dropdown_menu.png) 4 3 fill stretch;
 }
 #full_content {
   width: 960px;
@@ -860,7 +860,7 @@ body:after {
   width: 280px;
   margin: 7px 10px 10px;
   overflow: visible;
-  background: transparent url(img/background/wood_bg.png) repeat center center;
+  background: transparent url(img/backgrounds/wood_bg.png) repeat center center;
   background-origin: content-box;
   background-clip: content-box;
   background-position: left top;
@@ -872,13 +872,13 @@ body:after {
   padding: 1px 5px;
   border-style: solid;
   border-width: 22px 22px;
-  border-image: url(img/borders/mini_frame4.png) 22 22 repeat;
+  border-image: url(img/backgrounds/mini_frame4.png) 22 22 repeat;
 }
 #full_content .big_frame {
   position: relative;
   padding: 10px;
   margin: 0px 5px 10px;
-  background: transparent url(img/background/leather_bg.jpg) repeat center center;
+  background: transparent url(img/backgrounds/leather_bg.jpg) repeat center center;
   background-clip: content-box;
   width: 630px;
 }
@@ -886,7 +886,7 @@ body:after {
   position: relative;
   padding: 10px;
   margin: 0px 5px 10px;
-  background: transparent url(img/background/leather_bg.jpg) repeat center center;
+  background: transparent url(img/backgrounds/leather_bg.jpg) repeat center center;
   background-clip: content-box;
   width: 940px;
   margin: auto 10px;
@@ -897,7 +897,7 @@ body:after {
   padding: 2px 6px;
   border-style: solid;
   border-width: 41px 43px 43px 41px;
-  border-image: url(img/borders/big_frame.png) 41 43 43 41 fill round round;
+  border-image: url(img/backgrounds/big_frame.png) 41 43 43 41 fill round round;
 }
 #full_content .big_frame_border .big_frame_content {
   min-width: 200px;
@@ -925,7 +925,7 @@ body:after {
   overflow: hidden;
   border-style: solid;
   border-width: 0px 0px 0px 121px;
-  border-image: url(img/borders/up_footer_left.png) 0 0 0 121 fill round stretch;
+  border-image: url(img/backgrounds/up_footer_left.png) 0 0 0 121 fill round stretch;
 }
 #up_footer_wrapper #up_footer_border_right {
   margin: 0;
@@ -937,7 +937,7 @@ body:after {
   overflow: hidden;
   border-style: solid;
   border-width: 0px 121px 0px 0px;
-  border-image: url(img/borders/up_footer_right.png) 0 121 0 0 fill round stretch;
+  border-image: url(img/backgrounds/up_footer_right.png) 0 121 0 0 fill round stretch;
 }
 #up_footer_wrapper #up_footer_border_center {
   margin: 0;
@@ -947,7 +947,7 @@ body:after {
   max-width: 250px;
   padding: 38px 0px 38px;
   overflow: hidden;
-  background-image: url(img/borders/up_footer_center.png);
+  background-image: url(img/backgrounds/up_footer_center.png);
   background-origin: padding-box;
   background-clip: padding-box;
   width: 225px;
@@ -973,7 +973,7 @@ body:after {
   display: inline-block;
   border-style: solid;
   border-width: 0px 300px 0px 304px;
-  border-image: url(img/borders/low_footer_border.png) 0 300 0 304 fill stretch;
+  border-image: url(img/backgrounds/low_footer_border.png) 0 300 0 304 fill stretch;
   overflow: visible;
 }
 #low_footer_wrapper #low_footer_border:before {

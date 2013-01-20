@@ -40,13 +40,13 @@ ul.dropmenu {
             font-size: 20pt; // needs to be PRECISE, so no em. 
             border-style: solid;
             border-width: 0px 32px 0px 33px; 
-            border-image: url('#{$IMGS}borders/tube_gold_small.png') 0 32 0 33 fill stretch;
+            border-image: url('#{$IMGS}backgrounds/tube_gold_small.png') 0 32 0 33 fill stretch;
         }   
         li li a, li li span {
-            border-image: url('#{$IMGS}borders/tube_silver_small.png') 0 32 0 33 fill stretch;
+            border-image: url('#{$IMGS}backgrounds/tube_silver_small.png') 0 32 0 33 fill stretch;
         }
         li li li a, li li li span {
-            border-image: url('#{$IMGS}borders/tube_bronze_small.png') 0 32 0 33 fill stretch;
+            border-image: url('#{$IMGS}backgrounds/tube_bronze_small.png') 0 32 0 33 fill stretch;
         }
          
 
@@ -96,7 +96,7 @@ ul.dropmenu {
             padding: 0;
             border-style: solid; 
             border-width: 4px 3px;
-            border-image: url('#{$IMGS}borders/dropdown_menu.png') 4 3 fill stretch;
+            border-image: url('#{$IMGS}backgrounds/dropdown_menu.png') 4 3 fill stretch;
         }
         
         
