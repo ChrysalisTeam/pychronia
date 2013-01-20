@@ -183,7 +183,7 @@
 
 {% block notification_banners %}
     {% if messages %}
-    <div class="notification_panel bg_red {{ messages.0.tags }}">
+    <div class="notification_panel {{ notification_type }}">
         <div class="notification_panel_decorations">
             <div class="notification_panel_content">
                {% for message in messages %}

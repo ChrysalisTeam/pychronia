@@ -4,6 +4,9 @@ from __future__ import unicode_literals
 
 from rpgweb import menus as menus_module
 from rpgweb.authentication import IMPERSONATION_POST_VARIABLE
+from django.contrib.messages.api import get_messages
+
+
 
 
 def rpgweb_template_context(request):
@@ -25,6 +28,12 @@ def rpgweb_template_context(request):
         else:
             help_keyword = None
 
+        messages = get_messages(request) # lazy 'messages' context variable.
+        messages = list(messages)
+        notification_type = "mixed" # DEFAULT
+        levels = list(set(msg.tags for msg in messages))
+        if len(levels) == 1:
+            notification_type = levels[0]
 
         possible_impersonations = datamanager.get_impersonation_targets(datamanager.user.real_username)
 
@@ -32,10 +41,17 @@ def rpgweb_template_context(request):
                 'user': datamanager.user,
                 'game_is_started': datamanager.get_global_parameter("game_is_started"),
                 'online_users': online_users,
+
                 'menus': menus.submenus if menus else [],
+
                 'help_keyword': help_keyword,
+
                 'possible_impersonations': possible_impersonations,
-                'impersonation_post_variable': IMPERSONATION_POST_VARIABLE}
+                'impersonation_post_variable': IMPERSONATION_POST_VARIABLE,
+
+                # replacement of djanbgo.contrib.messages middleware
+                'notification_type': notification_type,
+                'messages': messages, }
 
     else:
         return {} # not in valid game instance

@@ -23,14 +23,20 @@
   float: right;
   clear: right;
 }
-.bg_red {
-  background-color: #ff0000;
+.bg_beige, .mixed {
+  background-color: #a89d97;
 }
-.bg_green {
+.bg_blue, .info {
+  background-color: #0000ff;
+}
+.bg_green, .success {
   background-color: #008000;
 }
-.bg_blue {
-  background-color: #0000ff;
+.bg_orange, .warning {
+  background-color: #ffa500;
+}
+.bg_red, .error {
+  background-color: #ff0000;
 }
 .stick_bottom_left {
   position: absolute;
@@ -684,12 +690,14 @@ body:after {
   background-size: cover;
 }
 #full_header #full_header_center #title_table .notification_panel {
+  padding: 0;
+  margin: 0;
+  margin-left: -248px;
   display: block;
   height: auto;
   position: absolute;
   top: 0px;
   left: 50%;
-  margin-left: -248px;
   text-align: center;
   width: 496px;
   border: 3px groove #9d8126;
