@@ -14,8 +14,7 @@ from ..datamanager import GameDataManager
 from ..forms import AbstractGameForm
 from rpgweb.common import *
 from rpgweb.datamanager.datamanager_tools import transaction_watcher
-from ._abstract_game_view import AbstractGameView
-from rpgweb.views._abstract_game_view import register_view
+from rpgweb.datamanager.abstract_game_view import AbstractGameView, register_view
 
 
 

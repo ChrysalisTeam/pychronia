@@ -10,8 +10,8 @@ from django.template import RequestContext, loader
 
 from ..datamanager import GameDataManager, readonly_method, transaction_watcher
 from ..forms import AbstractGameForm
-from ..views._abstract_game_view import GameViewMetaclass, AbstractGameView, register_view
-from ._action_middlewares import ACTION_MIDDLEWARES
+from .abstract_game_view import GameViewMetaclass, AbstractGameView, register_view
+from .action_middlewares import ACTION_MIDDLEWARES
 
 
 

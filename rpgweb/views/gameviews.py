@@ -3,7 +3,8 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from rpgweb.common import *
-from rpgweb.views._abstract_game_view import *
+from rpgweb.datamanager.abstract_game_view import AbstractGameView, register_view
+from rpgweb.forms import AbstractGameForm
 
 
 
@@ -113,7 +114,7 @@ class FriendshipManagementAbility(AbstractGameView):
 
 
         friendship_actions = sorted([(other_username, self._relation_type_to_action(relation_type))
-                                     for (other_username, relation_type) in friendship_statuses.items()]) # list of pairs (other_username, relation_type) 
+                                     for (other_username, relation_type) in friendship_statuses.items()]) # list of pairs (other_username, relation_type)
 
         return {
                  'page_title': _("Friendship Management"),

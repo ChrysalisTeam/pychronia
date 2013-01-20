@@ -10,8 +10,8 @@ import shutil
 from ._test_tools import *
 from ._dummy_abilities import *
 
-from rpgweb.abilities._abstract_ability import AbstractAbility
-from rpgweb.abilities._action_middlewares import CostlyActionMiddleware, \
+from rpgweb.datamanager.abstract_ability import AbstractAbility
+from rpgweb.datamanager.action_middlewares import CostlyActionMiddleware, \
     CountLimitedActionMiddleware, TimeLimitedActionMiddleware
 from rpgweb.common import _undefined, config, AbnormalUsageError, reverse, \
     UsageError
@@ -28,6 +28,8 @@ import inspect
 from django.forms.fields import Field
 from django.core.urlresolvers import resolve
 from rpgweb.views.gameviews import friendship_management
+from rpgweb.views.abilities import house_locking_view, \
+    wiretapping_management_view, runic_translation_view
 
 
 
@@ -1834,7 +1836,7 @@ class TestDatamanager(BaseGameTestCase):
         assert self.dm.resolve_admin_widget_identifier("runic_translation.") is None
         assert self.dm.resolve_admin_widget_identifier("runic_translation.qsdqsd") is None
 
-        from rpgweb.abilities import runic_translation_view
+        from rpgweb.views.abilities import runic_translation_view
         components = self.dm.resolve_admin_widget_identifier("runic_translation.translation_form")
         assert len(components) == 2
         assert isinstance(components[0], runic_translation_view.klass)
@@ -2303,7 +2305,7 @@ class TestGameViewSystem(BaseGameTestCase):
 
     def test_access_parameters_normalization(self):
 
-        from rpgweb.views._abstract_game_view import _normalize_view_access_parameters
+        from rpgweb.datamanager.abstract_game_view import _normalize_view_access_parameters
         from rpgweb.common import _undefined
 
         res = _normalize_view_access_parameters()

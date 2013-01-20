@@ -3,7 +3,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from rpgweb.common import *
-from rpgweb.views._abstract_game_view import register_view
+from rpgweb.datamanager.abstract_game_view import AbstractGameView, register_view
 from rpgweb import forms
 
 @register_view(access=UserAccess.anonymous, always_available=True)

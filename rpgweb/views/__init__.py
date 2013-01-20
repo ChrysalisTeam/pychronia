@@ -21,7 +21,7 @@ from django.utils.html import escape
 from django.utils.translation import ugettext as _, ugettext_lazy as _lazy, ungettext
 from rpgweb.common import *
 from .. import forms  # AFTER common, to replace django.forms
-from ._abstract_game_view import register_view
+from rpgweb.datamanager.abstract_game_view import AbstractGameView, register_view
 from ..authentication import authenticate_with_credentials, logout_session
 from .. import datamanager as dm_module
 from rpgweb.utilities import mediaplayers, fileservers
@@ -29,7 +29,7 @@ from rpgweb.datamanager import GameDataManager
 from django.shortcuts import render
 
 from decorator import decorator
-
+from . import abilities # init
 
 from .gameviews import character_profile, friendship_management  # IMPORTANT
 

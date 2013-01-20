@@ -4,8 +4,10 @@ from __future__ import unicode_literals
 
 from rpgweb.common import *
 
-from ._abstract_ability import *
+from rpgweb.datamanager.abstract_ability import AbstractAbility
 import json
+from rpgweb.forms import AbstractGameForm
+from rpgweb.datamanager.datamanager_tools import transaction_watcher
 
 
 class GemPayementFormMixin(AbstractGameForm):

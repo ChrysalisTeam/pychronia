@@ -2,7 +2,7 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from . import menus as menus_module
+from rpgweb import menus as menus_module
 from rpgweb.authentication import IMPERSONATION_POST_VARIABLE
 
 

@@ -20,17 +20,15 @@ from rpgweb.datamanager.datamanager_modules import *
 
 import rpgweb.middlewares
 import rpgweb.views
-from rpgweb.views._abstract_game_view import AbstractGameView
+from rpgweb.datamanager.abstract_game_view import AbstractGameView, register_view
 # we want django-specific checker methods
 # do NOT use the django.test.TestCase version, with SQL session management
-#from django.utils.unittest.case import TestCase 
+#from django.utils.unittest.case import TestCase
 #from django.test.testcases import TransactionTestCase as TestCase
 from django.test import TestCase
 from django.test.client import Client, RequestFactory
 from django.core.handlers.base import BaseHandler
 import django.utils.translation
-from rpgweb.views._abstract_game_view import register_view
-from rpgweb.abilities import *
 
 if not config.DB_RESET_ALLOWED:
     raise RuntimeError("Can't launch tests - we must be in a production environment !!")

@@ -3,7 +3,11 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from rpgweb.common import *
-from ._abstract_ability import *
+from rpgweb.datamanager.abstract_ability import AbstractAbility
+from rpgweb.datamanager.abstract_game_view import register_view
+from rpgweb.forms import AbstractGameForm
+from rpgweb.datamanager.datamanager_tools import readonly_method, \
+    transaction_watcher
 
 
 

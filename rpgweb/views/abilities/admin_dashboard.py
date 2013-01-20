@@ -3,8 +3,10 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from rpgweb.common import *
-from ._abstract_ability import *
+from rpgweb.datamanager.abstract_ability import AbstractAbility
 from django.http import Http404
+from rpgweb.datamanager.abstract_game_view import register_view
+from rpgweb.datamanager.datamanager_tools import transaction_watcher
 
 
 
@@ -24,7 +26,7 @@ class AdminDashboardAbility(AbstractAbility):
 
     @transaction_watcher
     def save_admin_widgets_order(self, ids_list):
-        print(">>>>>>>>>", ids_list)
+        #print(">>>>>>>>>", ids_list)
         self.settings["sorted_widget_ids"] = PersistentList(ids_list)
 
     def _process_ajax_request(self):

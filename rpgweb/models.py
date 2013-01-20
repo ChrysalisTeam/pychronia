@@ -4,4 +4,3 @@ from __future__ import unicode_literals
 
 # IMPORTANT to register all views/abilities/permissions #
 from . import views
-from . import abilities

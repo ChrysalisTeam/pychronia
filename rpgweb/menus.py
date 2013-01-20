@@ -4,7 +4,8 @@ from __future__ import unicode_literals
 
 from rpgweb.common import *
 
-from rpgweb import views, abilities
+from rpgweb import views
+from rpgweb.views import abilities
 from django.shortcuts import render
 from django.template import RequestContext
 from difflib import SequenceMatcher

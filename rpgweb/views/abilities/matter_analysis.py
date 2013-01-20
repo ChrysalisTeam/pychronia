@@ -4,9 +4,10 @@ from __future__ import unicode_literals
 
 from rpgweb.common import *
 
-from ._abstract_ability import *
+from rpgweb.datamanager.abstract_ability import AbstractAbility
 from rpgweb.forms import ArtefactForm
-
+from rpgweb.datamanager import readonly_method, \
+    transaction_watcher
 
 '''
 class PersonalItemForm(AbstractGameForm):

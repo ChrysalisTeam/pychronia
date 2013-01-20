@@ -4,9 +4,9 @@ from __future__ import unicode_literals
 
 
 from rpgweb.common import *
-from rpgweb.abilities._abstract_ability import AbstractAbility
-from rpgweb.views._abstract_game_view import register_view
-from rpgweb.abilities._action_middlewares import with_action_middlewares
+from rpgweb.datamanager.abstract_ability import AbstractAbility
+from rpgweb.datamanager.abstract_game_view import register_view
+from rpgweb.datamanager.action_middlewares import with_action_middlewares
 from rpgweb.forms import AbstractGameForm
 from rpgweb.datamanager.datamanager_tools import transaction_watcher
 
