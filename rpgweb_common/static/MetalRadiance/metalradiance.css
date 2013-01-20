@@ -889,24 +889,31 @@ body:after {
   border-width: 22px 22px;
   border-image: url(img/backgrounds/mini_frame4.png) 22 22 repeat;
 }
-#full_content .big_frame {
+#full_content .medium_frame {
   position: relative;
   padding: 10px;
-  margin: 0px 5px 10px;
+  margin: 10px auto;
   background: transparent url(img/backgrounds/leather_bg.jpg) repeat center center;
   background-clip: content-box;
   width: 630px;
 }
+#full_content .big_frame {
+  position: relative;
+  padding: 10px;
+  margin: 10px auto;
+  background: transparent url(img/backgrounds/leather_bg.jpg) repeat center center;
+  background-clip: content-box;
+  width: 720px;
+}
 #full_content .giant_frame {
   position: relative;
   padding: 10px;
-  margin: 0px 5px 10px;
+  margin: 10px auto;
   background: transparent url(img/backgrounds/leather_bg.jpg) repeat center center;
   background-clip: content-box;
   width: 940px;
-  margin: auto 10px;
 }
-#full_content .big_frame_border {
+#full_content .main_frame_border {
   position: relative;
   margin: -15px;
   padding: 2px 6px;
@@ -914,7 +921,7 @@ body:after {
   border-width: 41px 43px 43px 41px;
   border-image: url(img/backgrounds/big_frame.png) 41 43 43 41 fill round round;
 }
-#full_content .big_frame_border .big_frame_content {
+#full_content .main_frame_border .main_frame_content {
   min-width: 200px;
   min-height: 150px;
   margin: 0 20px 55px;
