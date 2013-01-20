@@ -29,13 +29,16 @@ from rpgweb.datamanager import GameDataManager
 from django.shortcuts import render
 
 from decorator import decorator
-from . import abilities # init
 
 from .gameviews import character_profile, friendship_management  # IMPORTANT
 
+from .auction_views import homepage, opening
+from .profile_views import login, logout, secret_question
 
-from auction_views import homepage, opening
-from profile_views import login, logout, secret_question
+from .abilities import house_locking_view, runic_translation_view, wiretapping_management_view, \
+        admin_dashboard_view, mercenaries_hiring_view, matter_analysis_view, worl_scan_view
+
+
 
 '''
 # TODO - transform this into instance which exposes real views as attributes, wrapped with register_view !!!!

@@ -5,18 +5,11 @@ from __future__ import unicode_literals
 
 from rpgweb.common import *
 
-from django.contrib import auth
-from django.core.exceptions import ImproperlyConfigured
-from django.utils.importlib import import_module
-from django.http import HttpResponseRedirect, HttpResponseServerError, HttpResponse, Http404
+from django.http import Http404
 import django.core.mail as mail
 
-from .datamanager.datamanager_tools import UsageError
 from . import authentication
-import rpgweb.datamanager as dm_module
 from rpgweb.datamanager.datamanager_administrator import retrieve_game_instance
-
-
 
 
 
@@ -31,7 +24,7 @@ class ZodbTransactionMiddleware(object):
 
         assert hasattr(request, 'session'), "The game authentication middleware requires session middleware to be installed. Edit your MIDDLEWARE_CLASSES setting to insert 'django.contrib.sessions.middleware.SessionMiddleware'."
 
-        request.processed_view = view_func # useful for computation of game menus 
+        request.processed_view = view_func # useful for computation of game menus
 
         if view_kwargs.has_key("game_instance_id"):
             # TOFIX select the proper subtree of ZODB
@@ -87,8 +80,6 @@ class AuthenticationMiddleware(object):
         if hasattr(request, "_request"):
             del request._request # force regeneration of MergeDict
         assert request._post._mutable and request._get._mutable
-
-        datamanager = request.datamanager
 
         if not hasattr(request, 'session'):
             raise RuntimeError("The game authentication middleware requires session middleware to be installed. Edit your MIDDLEWARE_CLASSES setting to insert 'django.contrib.sessions.middleware.SessionMiddleware'.")

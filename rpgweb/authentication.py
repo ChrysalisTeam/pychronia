@@ -3,9 +3,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from rpgweb.common import *
-from rpgweb.datamanager import UsageError, GameDataManager
-from django.http import Http404, HttpResponseRedirect, HttpResponse, \
-    HttpResponseForbidden
+
 
 SESSION_TICKET_KEY = 'rpgweb_session_ticket'
 IMPERSONATION_POST_VARIABLE = "_impersonate_rpgweb_user_"

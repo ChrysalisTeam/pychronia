@@ -5,11 +5,6 @@ from __future__ import unicode_literals
 from rpgweb.common import *
 
 from rpgweb import views
-from rpgweb.views import abilities
-from django.shortcuts import render
-from django.template import RequestContext
-from difflib import SequenceMatcher
-from rpgweb.authentication import AccessResult
 
 
 class MenuEntry:
@@ -114,7 +109,7 @@ def generate_full_menu(request): # # game_menu_generator
 
             menu_entry(_(u"Admin"), None, # FIXME
                        (
-                         menu_entry(_(u"Dashboard"), abilities.admin_dashboard_view),
+                         menu_entry(_(u"Dashboard"), views.admin_dashboard_view),
                          menu_entry(_(u"Manage Characters"), views.manage_characters),
 
                          menu_entry(_(u"Game Events"), views.game_events),
@@ -126,11 +121,11 @@ def generate_full_menu(request): # # game_menu_generator
             menu_entry(_(u"Abilities"), views.homepage, # FIXME
                        (
 
-                        menu_entry(_(u"Wiretaps"), abilities.wiretapping_management_view),
-                        menu_entry(_(u"Doors Locking"), abilities.house_locking_view),
-                        menu_entry(_(u"Runic Translations"), abilities.runic_translation_view),
-                        menu_entry(_(u"Network Management"), abilities.mercenaries_hiring_view),
-                        menu_entry(_(u"Matter Analysis"), abilities.matter_analysis_view),
+                        menu_entry(_(u"Wiretaps"), views.wiretapping_management_view),
+                        menu_entry(_(u"Doors Locking"), views.house_locking_view),
+                        menu_entry(_(u"Runic Translations"), views.runic_translation_view),
+                        menu_entry(_(u"Network Management"), views.mercenaries_hiring_view),
+                        menu_entry(_(u"Matter Analysis"), views.matter_analysis_view),
 
                         # menu_entry(_(u"Agents Hiring"), views.network_management),
                         # menu_entry(_(u"Oracles"), views.contact_djinns),

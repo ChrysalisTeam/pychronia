@@ -4,14 +4,12 @@ from __future__ import unicode_literals
 
 from rpgweb.common import *
 
-from django import forms
-from django.conf import settings
 from rpgweb.datamanager.abstract_form import AbstractGameForm
 
 
 
 
-"""
+""" ???
 class DropdownMultiSelect(forms.SelectMultiple):
     
     def render(self, name, value, attrs=None, choices=()):
