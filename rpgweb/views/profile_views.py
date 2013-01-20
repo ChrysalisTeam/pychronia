@@ -10,6 +10,7 @@ from rpgweb import forms
 
 
 
+
 @register_view(access=UserAccess.anonymous, always_available=True)
 def login(request, template_name='registration/login.html'):
 
@@ -25,15 +26,10 @@ def login(request, template_name='registration/login.html'):
             username = form.cleaned_data["secret_username"].strip()
             password = form.cleaned_data["secret_password"].strip()
 
-            if request.POST.get("password_forgotten", None):
-
-                # TODO MOVE THIS - + '?' + urllib.urlencode(kwargs)
-                if username == "master":
-                    user.add_error(_("Game master can't recover his password through a secret question."))
-                elif username not in request.datamanager.get_character_usernames():
-                    user.add_error(_("You must provide a valid username to recover your password."))
-                else:
-                    return secret_question(request)
+            if request.POST.get("password_forgotten", None): # password recovery system
+                with action_failure_handler(request, success_message=None):
+                    request.datamanager.get_secret_question(username)  # check that it's OK
+                    return HttpResponseRedirect(reverse(secret_question, kwargs=dict(game_instance_id=request.datamanager.game_instance_id, concerned_username=username)))
 
             else:  # normal authentication
                 with action_failure_handler(request, _("You've been successfully logged in.")):  # message won't be seen because of redirect...
@@ -65,14 +61,15 @@ def logout(request, template_name='registration/logout.html'):
 
 
 @register_view(access=UserAccess.anonymous)
-def secret_question(request, template_name='registration/secret_question.html'):
+def secret_question(request, concerned_username, template_name='registration/secret_question.html'):
 
     secret_question = None
     form = None
 
-    username = request.REQUEST.get("secret_username", None)
-    if not username or username not in request.datamanager.get_character_usernames():
-        # user.add_error("You must provide a valid username to recover your password") -> no, won't work with redirect !
+    try:
+        secret_question = request.datamanager.get_secret_question(concerned_username)
+    except UsageError:
+        request.datamanager.user.add_error(_("You must provide a valid username to recover your password"))
         return HttpResponseRedirect(reverse("rpgweb-homepage", kwargs=dict(game_instance_id=request.datamanager.game_instance_id)))
 
 
@@ -88,19 +85,18 @@ def secret_question(request, template_name='registration/secret_question.html'):
 
         with action_failure_handler(request, _("Your password has been successfully emailed to your backup address.")):
             try:
-                request.datamanager.process_secret_answer_attempt(username, secret_answer_attempt, target_email)  # raises error on bad answer/email
+                request.datamanager.process_secret_answer_attempt(concerned_username, secret_answer_attempt, target_email)  # raises error on bad answer/email
                 # success
-                form = None
                 secret_question = None
+                form = None
+
             except:
-                secret_question = request.datamanager.get_secret_question(username)
-                form = forms.SecretQuestionForm(username, data=request.POST)
+                form = forms.SecretQuestionForm(concerned_username, data=request.POST)
                 form.full_clean()
                 raise
 
     else:
-        secret_question = request.datamanager.get_secret_question(username)
-        form = forms.SecretQuestionForm(username)
+        form = forms.SecretQuestionForm(concerned_username)
 
     assert (not form and not secret_question) or (form and secret_question)
 
@@ -108,6 +104,7 @@ def secret_question(request, template_name='registration/secret_question.html'):
                   template_name,
                     {
                      'page_title': _("Password Recovery"),
+                     'concerned_username': concerned_username,
                      'secret_question': secret_question,
                      'secret_question_form': form,
                     })

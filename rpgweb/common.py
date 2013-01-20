@@ -75,6 +75,7 @@ class GameError(Exception):
         super(GameError, self).__init__(*args, **kwargs)
 
 
+
 class AccessDeniedError(GameError):
     """
     Raised if a view can't be accessed for whatever reason (if not subclass is used, 

@@ -42,7 +42,7 @@ def transform_usage_error(caller, self, *args, **kwargs):
                 return HttpResponseForbidden(_("Access denied")) # TODO FIXME - provide a proper template and message !!
 
     except GameError, e:
-        print("|||||||||||||||||||", repr(e))
+        #print("|||||||||||||||||||", repr(e))
         traceback.print_exc()
         return HttpResponseBadRequest(repr(e))
 

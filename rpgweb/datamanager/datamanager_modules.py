@@ -383,6 +383,9 @@ class PlayerAuthentication(BaseDataManager):
     def _load_initial_data(self, **kwargs):
         super(PlayerAuthentication, self)._load_initial_data(**kwargs)
 
+        for character in self.get_character_sets().values():
+            character["secret_answer"] = character["secret_answer"] if not character["secret_answer"] else character["secret_answer"].strip().lower()
+
 
     def _check_database_coherency(self, **kwargs):
         super(PlayerAuthentication, self)._check_database_coherency(**kwargs)
@@ -396,11 +399,12 @@ class PlayerAuthentication(BaseDataManager):
 
         for character in self.get_character_sets().values():
             utilities.check_is_slug(character["password"])
-            if character["secret_question"] is None:
+            if not character["secret_question"]:
                 assert not character["secret_answer"]
             else:
                 utilities.check_is_string(character["secret_question"])
                 utilities.check_is_slug(character["secret_answer"])
+                assert character["secret_answer"] == character["secret_answer"].lower()
 
 
         # MASTER and ANONYMOUS cases
@@ -530,7 +534,7 @@ class PlayerAuthentication(BaseDataManager):
             data = self.get_character_properties(username) # might raise UsageError
             wanted_pwd = data["password"]
 
-        if password == wanted_pwd:
+        if password and password == wanted_pwd:
             self._set_user(username, has_write_access=True) # when using credentials, it's always a real user
             session_ticket = dict(game_instance_id=self.game_instance_id,
                                   username=username,
@@ -542,10 +546,6 @@ class PlayerAuthentication(BaseDataManager):
 
         assert False
 
-
-    @readonly_method
-    def get_secret_question(self, username):
-        return self.get_character_properties(username)["secret_question"]
 
 
     @transaction_watcher # requires game started mode
@@ -560,15 +560,34 @@ class PlayerAuthentication(BaseDataManager):
 
         user_properties["password"] = new_password
 
+    @readonly_method
+    def get_secret_question(self, username):
+        """
+        Raises UsageError if username is incorrect or doesn't have a secret question setup.
+        """
+        if username == self.get_global_parameter("master_login"):
+            raise NormalUsageError(_("Game master can't recover his password through a secret question."))
+        elif username not in self.get_character_usernames():
+            raise NormalUsageError(_("Invalid username."))
+        else:
+            secret_question = self.get_character_properties(username)["secret_question"]
+            if not secret_question:
+                raise NormalUsageError(_("That user has no secret question set up."))
+            return secret_question
+
 
     @transaction_watcher # requires game started mode
     def process_secret_answer_attempt(self, username, secret_answer_attempt, target_email):
+
+        self.get_secret_question(username) # checks coherency of that call
+
         user_properties = self.get_character_properties(username)
 
-        secret_answer_attempt = secret_answer_attempt.lower().strip()
-        expected_answer = user_properties["secret_answer"].lower().strip()
+        secret_answer_attempt = secret_answer_attempt.lower().strip() # double security
+        expected_answer = user_properties["secret_answer"].lower().strip() # may NOT be None here
+        assert expected_answer, expected_answer
 
-        # WARNING - if no answer is actually expected, attempts must ALWAYS fail
+        # WARNING - if by bug, no answer is actually expected, attempts must ALWAYS fail
         if expected_answer and (secret_answer_attempt == expected_answer):
             if target_email not in self.get_user_contacts(self.get_global_parameter("master_login")): # all emails available
                 raise UsageError(_("Right answer, but invalid email address %s." % target_email))
@@ -597,7 +616,7 @@ class PlayerAuthentication(BaseDataManager):
             return password
 
         else:
-            raise UsageError(_("Wrong answer supplied."))
+            raise NormalUsageError(_("Wrong answer supplied."))
 
 
 
@@ -888,7 +907,7 @@ class FriendshipHandling(BaseDataManager):
                                old_friend=old_friend)
 
         if __debug__:
-            print (">>>", relation_groups.values())
+            #print (">>>", relation_groups.values())
             _users = sum(relation_groups.values(), [])
             assert len(set(_users)) == len(_users), relation_groups # no duplicates!
 
@@ -1790,17 +1809,17 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
     @readonly_method
     def get_unread_messages_count(self, username):
         # user_email == None -> unread messages of external contacts (i.e game master)
-        print ("1", self.connection._registered_objects)
+        #print ("1", self.connection._registered_objects)
         if self.is_master(username):
             unread_msgs = [message for message in self.get_game_master_messages()
                            if username not in message["has_read"]]
-            print("2", self.connection._registered_objects)
+            #print("2", self.connection._registered_objects)
         else:
             user_email = self.get_character_email(username)
             unread_msgs = [message for message in self.get_received_messages(user_email)
                            if username not in message["has_read"]]
-            print ("2bis", self.connection._registered_objects)
-        print ("3", self.connection._registered_objects)
+            #print ("2bis", self.connection._registered_objects)
+        #print ("3", self.connection._registered_objects)
         return len(unread_msgs)
 
 
@@ -2965,7 +2984,7 @@ class SpecialAbilities(BaseDataManager):
         game_data = self.data
         game_data.setdefault("abilities", {})
         for (key, klass) in self.ABILITIES_REGISTRY.items():
-            print("loading", klass)
+            #print("loading", klass)
             self.logger.debug("Setting up main settings for ability %s" % key) # TODO
             ability_data = game_data["abilities"].setdefault(key, {})
             klass.setup_main_ability_data(ability_data) # each ability fills its default values

@@ -290,7 +290,7 @@ def check_is_email(email):
     return True
 
 def check_is_slug(value):
-    usage_assert(isinstance(value, basestring), repr(value))
+    usage_assert(isinstance(value, basestring) and value, repr(value))
     usage_assert(" " not in value, repr(value))
     usage_assert("\n" not in value, repr(value))
     return True

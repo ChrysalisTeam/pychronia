@@ -78,7 +78,7 @@ view_urlpatterns = patterns('rpgweb.views',
 #    (r'^domotics_security/$', 'domotics_security'),
 
     url(r'^login/$', 'login'),
-    url(r'^secret_question/$', 'secret_question'),
+    url(r'^secret_question/(?P<concerned_username>[^/]*)/$', 'secret_question'),
     url(r'^profile/$', 'character_profile'),
     url(r'^friendships/$', 'friendship_management'),
     url(r'^logout/$', 'logout'),

@@ -215,6 +215,12 @@ ul ul {
 ul ul ul {
   list-style-image: url(img/icons/bullet_bronze_small.png);
 }
+.outlined {
+  max-width: 600px;
+  padding: 5px;
+  margin: 10px auto;
+  outline: #9d8126 ridge 2px;
+}
 blockquote, cite, q {
   color: #ffffff;
   font-family: kingthings_calligraphica_light;
@@ -794,6 +800,7 @@ body:after {
   padding: 0;
   height: 35px;
   line-height: 31px;
+  display: none;
   position: relative;
 }
 #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu > li {

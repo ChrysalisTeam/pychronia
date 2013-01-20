@@ -1597,7 +1597,7 @@ def manage_characters(request, template_name='administration/character_managemen
     for (username, data) in sorted(request.datamanager.get_character_sets().items()):
         # print ("AZZZZ", form["target_username"].value(), username)
         if form and form["target_username"].value() == username:
-            print (" REUSING FOR", username)
+            #print (" REUSING FOR", username)
             f = form
         else:
             f = forms.CharacterProfileForm(
