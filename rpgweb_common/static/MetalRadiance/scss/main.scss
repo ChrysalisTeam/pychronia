@@ -356,7 +356,7 @@ body {
             min-height: 150px;
             margin: 0 20px 55px; // bottom space to avoid collisions with decorations
             padding: 0;
-            overflow: visible; 
+            overflow: auto; 
             position: relative;
             z-index: 30; // important for text selection
         }

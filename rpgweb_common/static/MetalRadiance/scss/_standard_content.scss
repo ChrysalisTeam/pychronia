@@ -227,13 +227,14 @@ blockquote, q, cite {
 
 
 table.realtable {
+    box-sizing: border-box; // beware!
     border-collapse: collapse;
-	margin:0px;
+	margin: 15px 0;
     padding:0px;
 	width:100%;
 	box-shadow: 5px 5px 3px #888888;
 	border:1px solid #000000;
-
+    
     tr:nth-child(odd){ background-color:#eed892; }
     tr:nth-child(even) { background-color:#f1d875; }
     

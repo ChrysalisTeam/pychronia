@@ -208,7 +208,7 @@
              {% if menu.is_active %}
                 <a href="{{ menu.url }}">{{ menu.title }}</a>
              {% else %}
-                {{ menu.title }}
+                <span>{{ menu.title }}</span>
              {% endif %}
              
              {% if menu.submenus %}
@@ -218,7 +218,7 @@
                              {% if submenu.is_active %}
                                 <a href="{{ submenu.url }}" accesskey="{{ forloop.counter }}">{{ submenu.title }}</a>
                              {% else %}
-                                {{ submenu.title }}
+                                <span>{{ submenu.title }}</span>
                              {% endif %}
                              
                             {% comment %}

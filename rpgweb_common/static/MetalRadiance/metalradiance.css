@@ -284,8 +284,9 @@ blockquote, cite, q {
   margin: 0;
 }
 table.realtable {
+  box-sizing: border-box;
   border-collapse: collapse;
-  margin: 0px;
+  margin: 15px 0;
   padding: 0px;
   width: 100%;
   box-shadow: 5px 5px 3px #888888;
@@ -926,7 +927,7 @@ body:after {
   min-height: 150px;
   margin: 0 20px 55px;
   padding: 0;
-  overflow: visible;
+  overflow: auto;
   position: relative;
   z-index: 30;
 }

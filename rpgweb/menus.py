@@ -85,7 +85,7 @@ def generate_full_menu(request): # # game_menu_generator
                            ###menu_entry(_(u"Opening"), views.opening),
                            ###menu_entry(_(u"Instructions"), views.instructions),
                            menu_entry(_(u"Characters"), views.view_characters),
-                           menu_entry(_(u"Personal Folder"), views.personal_folder),
+
                            menu_entry(_(u"Auction"), views.view_sales),
                            menu_entry(_(u"Encyclopedia"), views.view_encyclopedia),
                            menu_entry(_(u"Team Items") if user.is_authenticated else _(u"Auction Items"), views.items_slideshow),
@@ -140,6 +140,7 @@ def generate_full_menu(request): # # game_menu_generator
                        (
                         menu_entry(_(u"Profile"), views.character_profile, forced_visibility=(True if user.is_character else False)),
                         menu_entry(_(u"Friendships"), views.friendship_management, forced_visibility=(True if user.is_character else False)),
+                        menu_entry(_(u"Personal Folder"), views.personal_folder),
                         menu_entry(_(u"Logout"), views.logout),
                         ), forced_visibility=(False if not user.is_authenticated else True)),
 

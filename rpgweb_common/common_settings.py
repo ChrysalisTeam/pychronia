@@ -59,7 +59,7 @@ DATABASES = {
 TIME_ZONE = 'Europe/Paris'
 USE_L10N = True
 USE_I18N = True
-LANGUAGE_CODE = 'fr'
+LANGUAGE_CODE = 'en'
 LANGUAGES = (
   ('fr', ugettext('French')),
   ('en', ugettext('English')),
