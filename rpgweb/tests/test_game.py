@@ -1736,6 +1736,21 @@ class TestDatamanager(BaseGameTestCase):
 
         # "secret question" system
 
+        with raises_with_content(NormalUsageError, "master"):
+            self.dm.get_secret_question(self.dm.get_global_parameter("master_login"))
+        with raises_with_content(NormalUsageError, "master"):
+            self.dm.process_secret_answer_attempt(self.dm.get_global_parameter("master_login"), "FluFFy", "guy3@pangea.com")
+
+        with raises_with_content(NormalUsageError, "invalid"):
+            self.dm.get_secret_question("sdqqsd")
+        with raises_with_content(NormalUsageError, "invalid"):
+            self.dm.process_secret_answer_attempt("sdqqsd", "FluFFy", "guy3@pangea.com")
+
+        with raises_with_content(NormalUsageError, "no secret question"):
+            self.dm.get_secret_question("guy1")
+        with raises_with_content(NormalUsageError, "no secret question"):
+            self.dm.process_secret_answer_attempt("guy1", "FluFFy", "guy3@pangea.com")
+
         res = self.dm.get_secret_question("guy3")
         self.assertTrue("pet" in res)
 

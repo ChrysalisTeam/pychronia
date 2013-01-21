@@ -46,6 +46,7 @@ Most of the *rpgweb* package consists in standard django components, and other c
 - template/: standard django templates
 - templatetags/: custom django template tags and filters
 - tests/: unit-tests and web-tests for the site
+- utilities/: misc. data types and handy functions
 
 Rpgweb adds to these some layers dedicated to the game system:
 
