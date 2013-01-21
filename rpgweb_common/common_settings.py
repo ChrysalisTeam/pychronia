@@ -185,6 +185,7 @@ LOCALE_INDEPENDENT_PATHS = (
 
 ## DJANGO CONTRIB RST CONF ##
 RESTRUCTUREDTEXT_FILTER_SETTINGS = {"initial_header_level": 2,
-                                    "doctitle_xform": False, # important to have evenb lone titles stay in the html fragment
-                                    "sectsubtitle_xform": False}
+                                    "doctitle_xform": False, # important, to have even lone titles stay in the html fragment
+                                    "sectsubtitle_xform": False,
+                                    'file_insertion_enabled': False, } # SECURITY MEASURE
 

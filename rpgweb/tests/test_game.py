@@ -73,6 +73,26 @@ class TestUtilities(TestCase):
         assert "title1" in html and "title2" in html
 
 
+        # IMPORTANT - security measures #
+
+        html = restructuredtext(dedent("""
+        
+                    .. include:: manage.py
+                    
+                    """))
+        assert "System Message" in html and "directive disabled" in html
+        assert "django" not in html
+
+        html = restructuredtext(dedent("""
+        
+                    .. raw:: python
+                        :file: manage.py
+                    
+                    """))
+        assert "System Message" in html and "directive disabled" in html
+        assert "django" not in html
+
+
     def test_sphinx_publisher_settings(self) :
         from django.utils.encoding import smart_str, force_unicode
         from docutils.core import publish_parts
