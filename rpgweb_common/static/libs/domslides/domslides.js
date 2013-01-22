@@ -273,7 +273,7 @@ function domslides()
         alert("-----");
         */
         
-		news.focus();
+		//news.focus();
 	}
 }
 
