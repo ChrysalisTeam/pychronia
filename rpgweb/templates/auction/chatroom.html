@@ -1,29 +1,27 @@
 
 {% extends "base_one_column.html" %}
 
-{% load i18n helpers %}  
-
-
-{% block headers %}  
-    {{ block.super }}
-    <script type="text/javascript" src="{{ MEDIA_URL }}jqchat.js"></script>
-    <script type="text/javascript">
-    
-   
-        $(document).ready(function(){
-            InitChatWindow("{% gameurl rpgweb.views.ajax_chat %}", 
-                            {% if is_master %}false{% else %}true{% endif %},
-                            HandleChattersList);
-        });
-  
-    </script>
-{% endblock %}
+{% load sekizai_tags i18n helpers %}  
 
 
 
 {% block content %}  
-    
+
+{% addtoblock "js" %}
+<script src="{{ STATIC_URL }}libs/jqchat.js" type="text/javascript" ></script>
+{% endaddtoblock %}
+
+{% addtoblock "inline_js" %}
+    $(document).ready(function(){
+        InitChatWindow("{% gameurl rpgweb.views.ajax_chat %}", 
+                        {% if is_master %}false{% else %}true{% endif %},
+                        HandleChattersList);
+    });
+{% endaddtoblock %}
+
+
     <div id="chatwindow"><span id="loading">Loading...</span></div>
+    
     <div align="center">
     {% if not game_is_started %}
         <b>{% trans "Chat messaging is currently disabled." %}</b>

@@ -65,6 +65,7 @@ LANGUAGES = (
   ('en', ugettext('English')),
 )
 
+APPEND_SLASH = True # so handy for mistyped urls...
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (

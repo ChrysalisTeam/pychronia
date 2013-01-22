@@ -321,7 +321,7 @@ body {
         // inheritance is slightly buggy...
         position: relative;
         padding: 10px;
-        margin: 10px auto;
+        margin: 0 auto;
         background: transparent url('#{$IMGS}backgrounds/leather_bg.jpg') repeat center center;
         background-clip: content-box; 
     }

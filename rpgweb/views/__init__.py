@@ -32,7 +32,8 @@ from decorator import decorator
 
 from .gameviews import character_profile, friendship_management  # IMPORTANT
 
-from .auction_views import homepage, opening, view_characters, view_sales, items_slideshow, item_3d_view
+from .auction_views import (homepage, opening, view_characters, view_sales, items_slideshow, item_3d_view,
+                            ajax_chat, chatroom)
 
 from .info_views import view_encyclopedia
 
@@ -165,69 +166,6 @@ def ajax_domotics_security(request):
 
 
 
-
-@register_view(access=UserAccess.authenticated)
-def ajax_chat(request):
-
-    if request.method == "POST":
-        # User has sent new data.
-        msg_text = request.POST.get('message', "")
-        msg_text = msg_text.strip()
-        if msg_text:  # Just ignore empty strings.
-            request.datamanager.send_chatroom_message(msg_text)  # will fail if user is master
-
-        return HttpResponse("OK")
-
-    else:
-        slice_index = int(request.GET['slice_index'])  # may raise exceptions
-
-        (new_slice_index, previous_msg_timestamp, new_messages) = request.datamanager.get_chatroom_messages(slice_index)
-        msg_format = "<b>%(official_name)s</b> - %(message)s"
-        time_format = "<i>=== %d/%m/%Y - %H:%M:%S UTC ===</i>"
-
-        threshold = request.datamanager.get_global_parameter("chatroom_timestamp_display_threshold_s")
-        chatroom_timestamp_display_threshold = timedelta(seconds=threshold)
-        text_lines = []
-        for msg in new_messages:
-            if not previous_msg_timestamp or (msg["time"] - previous_msg_timestamp) > chatroom_timestamp_display_threshold:
-                text_lines.append(msg["time"].strftime(time_format))
-            if msg["username"] in request.datamanager.get_character_usernames():
-                official_name = request.datamanager.get_official_name_from_username(msg["username"])
-                color = request.datamanager.get_character_color_or_none(msg["username"])
-            else:  # system message
-                official_name = _("system")
-                color = "#ea3f32"
-            data = dict(official_name=official_name,
-                        message=msg["message"])
-            text_lines.append({"username": msg["username"],
-                               "color": color,
-                               "message": msg_format % data})
-            previous_msg_timestamp = msg["time"]
-        all_data = {"slice_index": new_slice_index,
-                    "messages": text_lines
-                }
-        response = HttpResponse(json.dumps(all_data))
-        response['Content-Type'] = 'text/plain; charset=utf-8'
-        response['Cache-Control'] = 'no-cache'
-
-        return response
-
-
-
-
-
-@register_view(access=UserAccess.authenticated)  # game master can view too
-def chatroom(request, template_name='generic_operations/chatroom.html'):
-
-    # TODO - move "chatting users" to ajax part, because it must be updated !!
-    chatting_users = [request.datamanager.get_official_name_from_username(username)
-                      for username in request.datamanager.get_chatting_users()]
-    return render(request,
-                  template_name,
-                    {
-                     'page_title': _("Common Chatroom"),
-                     'chatting_users': chatting_users
-                    })
 
 
 

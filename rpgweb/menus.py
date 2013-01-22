@@ -87,14 +87,14 @@ def generate_full_menu(request): # # game_menu_generator
                            menu_entry(_(u"Characters"), views.view_characters),
                            menu_entry(_(u"Auction"), views.view_sales),
                            menu_entry(_(u"Team Items") if user.is_authenticated else _(u"Auction Items"), views.items_slideshow),
-
+                           menu_entry(_(u"Chatroom") + chatroom_suffix, views.chatroom),
                            # menu_entry(_(u"Radio Messages"), views.personal_radio_messages_listing), # TODO INTEGRATE TO INFO PAGES ???
                        )),
 
             menu_entry(_(u"Info"), views.homepage, # FIXME
                        (
                          menu_entry(_(u"Encyclopedia"), views.view_encyclopedia),
-                         menu_entry(_(u"Chatroom") + chatroom_suffix, views.chatroom),
+
                          menu_entry(_(u"Radio Applet"), views.listen_to_audio_messages, forced_visibility=(False if user.is_character else None)),
                          menu_entry(_(u"Radio Player"), views.listen_to_webradio)
                       )),

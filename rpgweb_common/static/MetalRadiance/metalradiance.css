@@ -893,7 +893,7 @@ body:after {
 #full_content .medium_frame {
   position: relative;
   padding: 10px;
-  margin: 10px auto;
+  margin: 0 auto;
   background: transparent url(img/backgrounds/leather_bg.jpg) repeat center center;
   background-clip: content-box;
   width: 630px;
@@ -901,7 +901,7 @@ body:after {
 #full_content .big_frame {
   position: relative;
   padding: 10px;
-  margin: 10px auto;
+  margin: 0 auto;
   background: transparent url(img/backgrounds/leather_bg.jpg) repeat center center;
   background-clip: content-box;
   width: 720px;
@@ -909,7 +909,7 @@ body:after {
 #full_content .giant_frame {
   position: relative;
   padding: 10px;
-  margin: 10px auto;
+  margin: 0 auto;
   background: transparent url(img/backgrounds/leather_bg.jpg) repeat center center;
   background-clip: content-box;
   width: 940px;
