@@ -8,7 +8,7 @@
  
 {% block panels %} 
 
-    {% usekwacro main_panel_start frame_class="medium_frame" %}
+    {% usekwacro main_panel_start frame_class="medium_frame float_right" %}
 
         {% if page_title %}<h1>{{ page_title }}</h1>{% endif %}
 
@@ -17,12 +17,18 @@
         
     {% usekwacro main_panel_end %}
 
-    {% comment %} <!-- USE THIS TO CREATE SIDE PANELS -->
-    {% usekwacro side_panel_start frame_class="mini_frame float_left" decos="1" %}
-        {% block sidebar_content %} 
-        {% endblock %}
-    {% usekwacro side_panel_end %}
-    {% endcomment %}
+
+    {% block sidebar %}  
+        {% comment %} <!-- USE THIS TO CREATE SIDE PANELS -->
+        {% usekwacro side_panel_start frame_class="mini_frame float_left" decos="1" %}
+            {% block sidebar_content %} 
+            {% endblock %}
+        {% usekwacro side_panel_end %}
+        {% endcomment %}
+    {% endblock %}
+    
+    
+
     
 {% endblock %}
 

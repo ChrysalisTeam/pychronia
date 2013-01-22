@@ -7,6 +7,7 @@ from rpgweb.datamanager.abstract_game_view import AbstractGameView, register_vie
 from rpgweb import forms
 from django.http import Http404
 
+
 @register_view(access=UserAccess.anonymous, always_available=True)
 def homepage(request, template_name='auction/homepage.html'):
 
