@@ -1,20 +1,21 @@
 
 {% extends "base_one_column.html" %}
 
-{% load i18n helpers %}  
+{% load sekizai_tags i18n helpers %}  
 
 
-{% block headers %}  
-    {{ block.super }}
-    
-    {% if access_authorized %}
-    
-        <!--link href="{{ MEDIA_URL }}webradio/niftyplayer.css" rel="stylesheet" type="text/css" /-->
-        
-        <script src="{{ MEDIA_URL }}webradio/niftyplayer.js" type="text/javascript"></script>
-        
-        <script type="text/javascript">
-            
+{% block content %}  
+
+
+{% if access_authorized %}
+
+<!--link href="{{ STATIC_URL }}libs/webradio/niftyplayer.css" rel="stylesheet" type="text/css" /-->
+{% addtoblock "js" %}
+<script src="{{ STATIC_URL }}libs/webradio/niftyplayer.js" type="text/javascript"></script>
+{% endaddtoblock %}
+         
+{% addtoblock "inline_js" %}
+
             var next_file_url = "{% gameurl rpgweb.views.ajax_get_next_audio_message %}"
             var notification_url = "{% gameurl rpgweb.views.ajax_notify_audio_message_finished %}"
         
@@ -41,7 +42,7 @@
                     plan_next_audio_fetching();
                 }  
             }
-            
+             
             function get_next_audio_message(){
                 if (ajax_call_in_process) return;
                 ajax_call_in_process = true;
@@ -87,20 +88,14 @@
             
             $(window).load(function() {setTimeout('initialize_webradio();', 1000);});
     
-            
-        </script>
+
     
-    {% endif %}
-    
-    
-{% endblock %}
-        
-    
+{% endaddtoblock %}
+
+{% endif %}
 
 
 
-
-{% block content %}  
 
     <div align="center">
     
@@ -118,7 +113,7 @@
              <param name="quality" value="high" />
              <param name="scale" value="showall" />
              <param name="bgcolor" value="#FFFFFF" />
-             <embed src="/media/webradio/niftyplayer.swf?file=&as=0" scale="showall" quality="high" bgcolor="#FFFFFF"
+             <embed src="{{ STATIC_URL }}libs/webradio/niftyplayer.swf?file=&as=0" scale="showall" quality="high" bgcolor="#FFFFFF"
                     width="170" height="40" name="niftyPlayer1" align="" 
                     type="application/x-shockwave-flash" swLiveConnect="true" pluginspage="http://www.macromedia.com/go/getflashplayer">
                     <!-- test : /files/<hash>/tests/betty.mp3 -->

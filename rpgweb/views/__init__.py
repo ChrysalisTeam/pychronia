@@ -116,7 +116,8 @@ def ajax_force_email_sending(request):
 
 # we don't put any security there, at worst a pirate might play with this and prevent playing
 # some audio notifications, but it's neither critical nor discreet
-def ajax_notify_audio_message_finished(request):
+@register_view(access=UserAccess.anonymous)
+def ajax_notify_audio_message_finished(request, always_available=True):
 
     audio_id = request.GET.get("audio_id", None)
 
@@ -132,8 +133,8 @@ def ajax_notify_audio_message_finished(request):
 
 
 # we don't put any security there either
+@register_view(access=UserAccess.anonymous, always_available=True)
 def ajax_get_next_audio_message(request):
-
     radio_is_on = request.datamanager.get_global_parameter("radio_is_on")
 
     if radio_is_on:
@@ -151,6 +152,7 @@ def ajax_get_next_audio_message(request):
 
 
 # no security authentication
+@register_view(access=UserAccess.anonymous, always_available=True)
 def ajax_domotics_security(request):
 
     action = request.REQUEST.get("action", None)
