@@ -150,7 +150,7 @@ def view_characters(request, template_name='auction/view_characters.html'):
 
 
 
-@register_view(access=UserAccess.authenticated)
+@register_view(access=UserAccess.authenticated, always_available=True) # fixme ? always available ?
 def view_sales(request, template_name='auction/view_sales.html'):
 
     user = request.datamanager.user

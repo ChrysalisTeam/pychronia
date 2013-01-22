@@ -7,6 +7,7 @@ from rpgweb.datamanager.abstract_game_view import AbstractGameView, register_vie
 from rpgweb import forms
 from django.http import Http404, HttpResponseRedirect, HttpResponse
 import json
+from rpgweb.utilities import mediaplayers
 
 
 
@@ -163,3 +164,72 @@ def listen_to_audio_messages(request, template_name='info/web_radio_applet.html'
                      'access_authorized': access_authorized,
                      'form': form
                     })
+
+
+
+
+
+
+
+
+
+@register_view(access=UserAccess.authenticated, always_available=True)
+def personal_folder(request, template_name='info/personal_folder.html'):
+
+    user = request.datamanager.user
+
+    try:
+
+        personal_files = request.datamanager.get_personal_files(user.username if not user.is_master else None,
+                                                                absolute_urls=False)  # to allow easier stealing of files from Loyd's session
+
+    except EnvironmentError, e:
+        personal_files = []
+        user.add_error(_("Your personal folder is unreachable."))
+
+
+    files_to_display = zip([os.path.basename(file) for file in personal_files], personal_files)
+
+    if not files_to_display:
+        user.add_message = _("You currently don't have any files in your personal folder.")
+
+    return render(request,
+                  template_name,
+                    {
+                        "page_title": _("Personal Folder"),
+                        "files": files_to_display,
+                        "display_maintenance_notice": True,  # upload disabled notification
+                    })
+
+
+
+# This page is meant for inclusion in pages offering all the required css/js files !
+@register_view(access=UserAccess.authenticated, always_available=True)
+def view_media(request, template_name='utilities/view_media.html'):
+
+    fileurl = request.REQUEST.get("url", None)
+    autostart = (request.REQUEST.get("autostart", "false") == "true")
+
+    if fileurl:
+        media_player = mediaplayers.build_proper_viewer(fileurl, autostart=autostart)
+    else:
+        media_player = "<p>" + _("You must provide a valid media url.") + "</p>"
+
+    return render(request,
+                  template_name,
+                    {
+                     'media_player': media_player
+                    })
+
+
+
+
+
+
+
+
+
+
+
+
+

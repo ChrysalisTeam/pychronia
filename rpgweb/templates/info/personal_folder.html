@@ -1,13 +1,15 @@
 
 {% extends "base_two_columns.html" %}
 
-{% load i18n helpers %}  
+{% load sekizai_tags i18n helpers kwacros %}  
+{% loadkwacros "metalradiance_kwacros.html" %}
 
 
-{% block headers %}  
-    {{ block.super }}
-    <script type="text/javaScript">
-    
+{% block sidebar %}
+
+
+{% addtoblock "inline_js" %}
+
     function load_media_frame(fileurl) {
     
         //alert("{% gameurl rpgweb.views.view_media %}?url=" + fileurl);
@@ -19,17 +21,16 @@
         $("#media_viewer").load("{% gameurl rpgweb.views.view_media %}?autostart=true&url=" + encodeURIComponent(fileurl)); 
     
     }
-    
-    </script>
-{% endblock %}
+
+{% endaddtoblock %}
 
 
 
 
-{% block sidebar %}
+{% usekwacro side_panel_start frame_class="mini_frame float_left" decos="3" %}
 
     {% if display_maintenance_notice %}
-    <div style="width:80%; border: solid 1px #DFBF99; padding:10px;">
+    <div style="width:80%; border: solid 1px #DFBF99; padding:10px; margin:auto;">
         <strong>{% trans "System Notification" %}</strong>
         <p style="font-size:11px;">
         {% blocktrans %}
@@ -47,29 +48,28 @@
 
     <ul>
         {% for filename, fileurl in files %}
-            <li><a href="{{ fileurl }}" 
-            onclick="load_media_frame('{{ fileurl|escapejs }}'); return false;">{{ filename }}</a></li>
+            <li><a href="{{ fileurl }}" onclick="load_media_frame('{{ fileurl|escapejs }}'); return false;">{{ filename }}</a></li>
         {% endfor %}
     </ul>
+
+{% usekwacro side_panel_end %}
 
 {% endblock %}    
 
 
 
+
 {% block content %}  
 
-
-        
-            
-        <div align="center">
-            <strong>
-            <div style="width:90%; font-size:0.9em; padding:3px; margin:auto; border:solid 1px #DFBF99;" id="media_url">
-                {% trans "Click left menu links to display content." %}
-            </div>
-            </strong>
+    <div align="center">
+        <strong>
+        <div style="width:90%; font-size:0.9em; padding:3px; margin:auto; border:solid 1px #DFBF99;" id="media_url">
+            {% trans "Click left menu links to display content." %}
         </div>
-        
-        <div align="center" id="media_viewer">&nbsp;</div>
+        </strong>
+    </div>
+    
+    <div align="center" id="media_viewer">&nbsp;</div>
 
     <br/>
 {% endblock %}

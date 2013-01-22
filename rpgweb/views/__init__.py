@@ -35,8 +35,10 @@ from .gameviews import character_profile, friendship_management  # IMPORTANT
 from .auction_views import (homepage, opening, view_characters, view_sales, items_slideshow, item_3d_view,
                             ajax_chat, chatroom)
 
-from .info_views import (view_encyclopedia, listen_to_webradio, get_radio_xml_conf, listen_to_audio_messages,
-                         ajax_get_next_audio_message, ajax_notify_audio_message_finished)
+from .info_views import (view_encyclopedia,
+                         listen_to_webradio, get_radio_xml_conf, listen_to_audio_messages,
+                         ajax_get_next_audio_message, ajax_notify_audio_message_finished,
+                         personal_folder, view_media)
 
 from .profile_views import login, logout, secret_question
 
@@ -71,7 +73,7 @@ def ability(request, ability_name):
     response = ability_handler.process_request(request)
 
     return response
-'''
+
 
 
 def is_nightmare_captcha_successful(request):
@@ -87,7 +89,7 @@ def is_nightmare_captcha_successful(request):
             except UsageError:
                 pass
     return False
-
+'''
 
 
 def serve_game_file(request, hash="", path="", **kwargs):
@@ -836,55 +838,6 @@ def encrypted_folder(request, folder, entry_template_name="generic_operations/en
                             "display_maintenance_notice": False,  # upload disabled notification
                         })
 
-
-
-@register_view(access=UserAccess.authenticated, always_available=True)
-def personal_folder(request, template_name='generic_operations/personal_folder.html'):
-
-    user = request.datamanager.user
-
-    try:
-
-        personal_files = request.datamanager.get_personal_files(user.username if not user.is_master else None,
-                                                                absolute_urls=False)  # to allow easier stealing of files from Loyd's session
-
-    except EnvironmentError, e:
-        personal_files = []
-        user.add_error(_("Your personal folder is unreachable."))
-
-
-    files_to_display = zip([os.path.basename(file) for file in personal_files], personal_files)
-
-    if not files_to_display:
-        user.add_message = _("You currently don't have any files in your personal folder.")
-
-    return render(request,
-                  template_name,
-                    {
-                        "page_title": _("Personal Folder"),
-                        "files": files_to_display,
-                        "display_maintenance_notice": True,  # upload disabled notification
-                    })
-
-
-
-# This page is meant for inclusion in pages offering all the required css/js files !
-@register_view(access=UserAccess.authenticated, always_available=True)
-def view_media(request, template_name='utilities/view_media.html'):
-
-    fileurl = request.REQUEST.get("url", None)
-    autostart = (request.REQUEST.get("autostart", "false") == "true")
-
-    if fileurl:
-        media_player = mediaplayers.build_proper_viewer(fileurl, autostart=autostart)
-    else:
-        media_player = "<p>" + _("You must provide a valid media url.") + "</p>"
-
-    return render(request,
-                  template_name,
-                    {
-                     'media_player': media_player
-                    })
 
 
 @register_view(access=UserAccess.master)
