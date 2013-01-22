@@ -5,7 +5,8 @@ from __future__ import unicode_literals
 from rpgweb.common import *
 from rpgweb.datamanager.abstract_game_view import AbstractGameView, register_view
 from rpgweb import forms
-from django.http import Http404, HttpResponseRedirect
+from django.http import Http404, HttpResponseRedirect, HttpResponse
+import json
 
 
 
@@ -56,4 +57,109 @@ def view_encyclopedia(request, article_id=None, template_name='info/encyclopedia
                      'article_ids': article_ids,
                      'entry': entry,
                      'search_results': search_results
+                    })
+
+
+
+
+
+
+
+
+# we don't put any security there, at worst a pirate might play with this and prevent playing
+# some audio notifications, but it's neither critical nor discreet
+@register_view(access=UserAccess.anonymous)
+def ajax_notify_audio_message_finished(request, always_available=True):
+
+    audio_id = request.GET.get("audio_id", None)
+
+    try:
+        audio_id = audio_id.decode("base64")
+    except:
+        return HttpResponse("ERROR")
+
+    res = request.datamanager.notify_audio_message_termination(audio_id)
+
+    return HttpResponse("OK" if res else "IGNORED")
+    # in case of error, a "500" code will be returned (should never happen here)
+
+
+# we don't put any security there either
+@register_view(access=UserAccess.anonymous, always_available=True)
+def ajax_get_next_audio_message(request):
+    radio_is_on = request.datamanager.get_global_parameter("radio_is_on")
+
+    if radio_is_on:
+        next_audio_id = request.datamanager.get_next_audio_message()
+        if next_audio_id:
+            fileurl = request.datamanager.get_audio_message_properties(next_audio_id)["url"]
+            next_audio_id = next_audio_id.encode("base64")
+        else:
+            fileurl = None
+    else:
+        next_audio_id = fileurl = None
+
+    response = json.dumps([next_audio_id, fileurl])
+    return HttpResponse(response)
+
+
+
+
+
+@register_view(access=UserAccess.anonymous, always_available=True)
+def listen_to_webradio(request, template_name='info/web_radio.html'):
+    return render(request,
+                  template_name,
+                    {
+                     "player_conf_url": reverse(get_radio_xml_conf, kwargs=dict(game_instance_id=request.datamanager.game_instance_id)),
+                     "player_width": 300,
+                     "player_height": 200,
+                    })
+
+@register_view(access=UserAccess.anonymous, always_available=True)
+def get_radio_xml_conf(request, template_name='info/web_radio_conf.xml'):
+    dm = request.datamanager
+    current_playlist = dm.get_all_next_audio_messages()
+    current_audio_messages = [dm.get_audio_message_properties(audio_id) for audio_id in current_playlist]
+
+    if not current_audio_messages:
+        # we had better not let the player empty, it's not tweaked for that case
+        current_audio_messages = [dict(url="http://", title=_("[No radio spot currently available]"))]
+
+    audio_urls = "|".join([msg["url"] for msg in current_audio_messages])  # we expect no "|" inside a single url
+    audio_titles = "|".join([msg["title"].replace("|", "") for msg in current_audio_messages])  # here we can cleanup
+
+    return render(request,
+                  template_name,
+                  dict(audio_urls=audio_urls,
+                       audio_titles=audio_titles))
+
+
+@register_view(access=UserAccess.anonymous, always_available=True)
+def listen_to_audio_messages(request, template_name='info/web_radio_applet.html'):
+
+    access_authorized = False
+
+    if request.method == "POST":
+        with action_failure_handler(request, _("You're listening to Pangea Radio.")):
+            frequency = request.POST.get("frequency", None)
+            if frequency:
+                frequency = frequency.strip()
+            request.datamanager.check_radio_frequency(frequency)  # raises UsageError on failure
+            access_authorized = True
+
+    if access_authorized:
+        form = None
+    else:
+        form = forms.RadioFrequencyForm()
+
+
+    assert (form and not access_authorized) or (not form and access_authorized)
+
+    return render(request,
+                  template_name,
+                    {
+                     'page_title': _("Radio Station"),
+                     'access_authorized': access_authorized,
+                     'form': form
                     })
