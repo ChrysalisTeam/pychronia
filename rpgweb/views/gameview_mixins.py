@@ -18,6 +18,8 @@ from rpgweb.datamanager.abstract_game_view import AbstractGameView, register_vie
 
 
 
+## TODO - test and move to datamanager package ####
+
 class AbstractCaptchaProtectedView(AbstractGameView):
 
     CAPTCHA_TEMPLATE = "utilities/captcha_check.html"

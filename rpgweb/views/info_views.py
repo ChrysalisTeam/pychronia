@@ -228,6 +228,73 @@ def view_media(request, template_name='utilities/view_media.html'):
 
 
 
+@register_view(access=UserAccess.anonymous, always_available=True)  # links in emails must NEVER be broken
+def encrypted_folder(request, folder, entry_template_name="generic_operations/encryption_password.html", display_template_name='personal_folder.html'):
+
+    if not request.datamanager.encrypted_folder_exists(folder):
+        raise Http404
+
+    user = request.datamanager.user
+    files = []
+    form = None
+
+    if request.method == "POST":
+        form = forms.SimplePasswordForm(request.POST)
+        if form.is_valid():
+            password = form.cleaned_data["simple_password"].lower()  # normalized !
+
+            with action_failure_handler(request, _("Folder decryption successful.")):
+                files = request.datamanager.get_encrypted_files(user.username, folder, password, absolute_urls=False)
+                form = None  # triggers the display of files
+
+    else:
+        form = forms.SimplePasswordForm()
+
+
+    if form:
+        return render(request,
+                      entry_template_name,
+                        {
+                            "page_title": _("Encrypted archive '%s'") % folder,
+                            "password_form": form,
+                            "folder": folder
+                        })
+
+
+    else:  # necessarily, we've managed to decrypt the folder
+
+        files_to_display = zip([os.path.basename(myfile) for myfile in files], files)
+
+        if not files_to_display:
+            user.add_message = _("No files were found in the folder.")
+
+
+        return render(request,
+                      display_template_name,
+                        {
+                            "page_title": _("Decrypted archive '%s'") % folder,
+                            "files": files_to_display,
+                            "display_maintenance_notice": False,  # upload disabled notification
+                        })
+
+
+
+@register_view(access=UserAccess.character, always_available=True) # TODO - remove that ?????
+def instructions(request, template_name='generic_operations/instructions.html'):
+
+    user = request.datamanager.user
+    intro_data = request.datamanager.get_game_instructions(user.username)
+
+    return render(request,
+                  template_name,
+                    {
+                     'page_title': _("Instructions"),
+                     'intro_data': intro_data,
+                    })
+
+
+
+
 
 
 

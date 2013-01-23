@@ -27,7 +27,7 @@ from rpgweb.tests._test_tools import temp_datamanager
 import inspect
 from django.forms.fields import Field
 from django.core.urlresolvers import resolve
-from rpgweb.views.gameviews import friendship_management
+from rpgweb.views import friendship_management
 from rpgweb.views.abilities import house_locking_view, \
     wiretapping_management_view, runic_translation_view
 

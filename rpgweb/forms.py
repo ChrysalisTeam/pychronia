@@ -64,6 +64,27 @@ class AuthenticationForm(forms.Form):
     secret_password = forms.CharField(label=_lazy("Password"), required=False, max_length=30, widget=forms.PasswordInput(attrs={'autocomplete':'off'}))  # not required for "password forgotten" action
 
 
+
+class PasswordChangeForm(AbstractGameForm):
+
+    old_password = forms.CharField(label=_lazy("Current password"), required=True, widget=forms.PasswordInput)
+    new_password1 = forms.CharField(label=_lazy("New password"), required=True, widget=forms.PasswordInput)
+    new_password2 = forms.CharField(label=_lazy("New password (again)"), required=True, widget=forms.PasswordInput)
+
+    def clean(self):
+        cleaned_data = super(PasswordChangeForm, self).clean()
+
+        new_password1 = cleaned_data.get("new_password1") # might be None
+        new_password2 = cleaned_data.get("new_password2") # might be None
+
+        if new_password1 and new_password2 and new_password1 != new_password2:
+            raise forms.ValidationError(_("New passwords not matching"))
+
+        # Always return the full collection of cleaned data.
+        return cleaned_data
+
+
+
 class SecretQuestionForm(forms.Form):
     secret_username = forms.CharField(widget=forms.HiddenInput())
     secret_answer = forms.CharField(label=_lazy("Answer"), max_length=50, widget=forms.TextInput(attrs={'autocomplete':'off'}))
