@@ -3370,3 +3370,52 @@ class NightmareCaptchas(BaseDataManager):
         return value["explanation"]
 
 
+
+
+
+
+@register_module
+class NovaltyTracker(BaseDataManager):
+    """
+    Tracks the *resources* (references by a unique key) that each authenticated 
+    player (and the game master) has, or not, already "accessed".
+    
+    Useful for new help pages, new radio playlists, new menu entries...
+    
+    Trocking objects are lazily created, only the first time a resource is accessed.
+    """
+
+    def _load_initial_data(self, **kwargs):
+        super(NovaltyTracker, self)._load_initial_data(**kwargs)
+        game_data = self.data
+        game_data.setdefault("novalty_tracker", PersistentDict())
+
+
+    def _check_database_coherency(self, strict=False, **kwargs):
+        super(NovaltyTracker, self)._check_database_coherency(**kwargs)
+        game_data = self.data
+
+        allowed_usernames = self.get_character_usernames() + [self.get_global_parameter("master_login")]
+        for item_key, usernames in game_data["novalty_tracker"].items():
+            utilities.check_is_slug(item_key)
+            for username in usernames:
+                assert username in allowed_usernames
+
+    @transaction_watcher
+    def access_novelty(self, item_key, username):
+        tracker = self.data["novalty_tracker"]
+        if item_key not in tracker:
+            tracker[item_key] = PersistentList()
+        tracker[item_key].append(username)
+
+    @readonly_method
+    def has_accessed(self, item_key, username):
+        assert isinstance(item_key, basestring) and (" " not in item_key) and item_key
+        assert username in (self.get_character_usernames() + [self.get_global_parameter("master_login")])
+        tracker = self.data["novalty_tracker"]
+        if item_key in tracker and username in tracker[item_key]:
+            return True
+        return False
+
+
+

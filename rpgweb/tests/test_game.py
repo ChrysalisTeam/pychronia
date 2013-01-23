@@ -329,7 +329,7 @@ class TestDatamanager(BaseGameTestCase):
 
             if not getattr(obj, "_is_under_transaction_watcher", None) \
                 and not getattr(obj, "_is_under_readonly_method", None):
-                raise AssertionError("Undecorated public DM method: %s" % obj)
+                raise AssertionError("Undecorated public datamanager method: %s" % obj)
 
 
 
