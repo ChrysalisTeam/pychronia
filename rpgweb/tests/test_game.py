@@ -28,8 +28,8 @@ import inspect
 from django.forms.fields import Field
 from django.core.urlresolvers import resolve
 from rpgweb.views import friendship_management
-from rpgweb.views.abilities import house_locking_view, \
-    wiretapping_management_view, runic_translation_view
+from rpgweb.views.abilities import house_locking, \
+    wiretapping_management, runic_translation
 
 
 
@@ -1871,10 +1871,10 @@ class TestDatamanager(BaseGameTestCase):
         assert self.dm.resolve_admin_widget_identifier("runic_translation.") is None
         assert self.dm.resolve_admin_widget_identifier("runic_translation.qsdqsd") is None
 
-        from rpgweb.views.abilities import runic_translation_view
+        from rpgweb.views.abilities import runic_translation
         components = self.dm.resolve_admin_widget_identifier("runic_translation.translation_form")
         assert len(components) == 2
-        assert isinstance(components[0], runic_translation_view.klass)
+        assert isinstance(components[0], runic_translation.klass)
         assert components[1] == "translation_form"
 
 
@@ -2076,7 +2076,7 @@ class TestHttpRequests(BaseGameTestCase):
                               DATABASE_OPERATIONS FAIL_TEST ajax item_3d_view chat_with_djinn static.serve encrypted_folder 
                               view_single_message logout login secret_question
                               friendship_management wiretapping_management
-                              mercenaries_hiring_view matter_analysis_view""".split() # FIXME REMOVE THIS
+                              mercenaries_hiring matter_analysis""".split() # FIXME REMOVE THIS
 
 
         views_names = [url._callback_str for url in final_urlpatterns
@@ -2986,7 +2986,7 @@ class TestSpecialAbilities(BaseGameTestCase):
                                         mode="object")
 
 
-    @for_ability(runic_translation_view)
+    @for_ability(runic_translation)
     def test_runic_translation(self):
 
         # TODO - NEED TO WEBTEST BLOCKING OF GEMS NUT NOT NON-OWNED ITEMS
@@ -3065,7 +3065,7 @@ class TestSpecialAbilities(BaseGameTestCase):
         self.assertTrue(self.dm.get_global_parameter("master_login") in msg["has_read"])
 
 
-    @for_ability(house_locking_view)
+    @for_ability(house_locking)
     def test_house_locking(self):
 
         house_locking = self.dm.instantiate_ability("house_locking")
@@ -3241,7 +3241,7 @@ class TestSpecialAbilities(BaseGameTestCase):
         self.assertTrue("***" in msg["body"].lower())
 
 
-    @for_ability(wiretapping_management_view)
+    @for_ability(wiretapping_management)
     def test_wiretapping_management(self):
 
         self._reset_messages()

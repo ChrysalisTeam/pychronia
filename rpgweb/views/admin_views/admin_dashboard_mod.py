@@ -99,3 +99,5 @@ class AdminDashboardAbility(AbstractAbility):
         if strict:
             pass
 
+admin_dashboard = AdminDashboardAbility.as_view
+

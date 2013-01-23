@@ -11,6 +11,8 @@ from rpgweb.utilities import mediaplayers
 from django.core.mail import send_mail
 
 
+from .admin_dashboard_mod import AdminDashboardAbility
+admin_dashboard = AdminDashboardAbility.as_view
 
 
 

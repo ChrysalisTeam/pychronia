@@ -45,10 +45,11 @@ from .messaging_views import (ajax_set_message_read_state, ajax_force_email_send
                               inbox, view_single_message, compose_message, all_sent_messages, all_queued_messages,
                               intercepted_messages, messages_templates)
 
-from .abilities import (house_locking_view, runic_translation_view, wiretapping_management_view,
-                        admin_dashboard_view, mercenaries_hiring_view, matter_analysis_view, worl_scan_view)
+from .abilities import (house_locking, runic_translation, wiretapping_management,
+                        mercenaries_hiring, matter_analysis, world_scan)
 
-from .admin_views import (game_events, manage_audio_messages, manage_databases, manage_characters, CHARACTERS_IDENTITIES,
+from .admin_views import (admin_dashboard, game_events, manage_audio_messages, manage_databases,
+                          manage_characters, CHARACTERS_IDENTITIES,
                           DATABASE_OPERATIONS, FAIL_TEST, MEDIA_TEST)
 
 

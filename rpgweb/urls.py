@@ -104,12 +104,12 @@ view_urlpatterns = patterns('rpgweb.views',
 
 
 ability_urlpatterns = patterns("rpgweb.views",
-    url(r'^ability/house_locking/$', 'house_locking_view'),
-    url(r'^ability/runic_translation/$', 'runic_translation_view'),
-    url(r'^ability/wiretapping_management/$', 'wiretapping_management_view'),
-    url(r'^ability/admin_dashboard/$', 'admin_dashboard_view'),
-    url(r'^ability/network_management/$', 'mercenaries_hiring_view'),
-    url(r'^ability/matter_analysis/$', 'matter_analysis_view'),
+    url(r'^ability/house_locking/$', 'house_locking'),
+    url(r'^ability/runic_translation/$', 'runic_translation'),
+    url(r'^ability/wiretapping_management/$', 'wiretapping_management'),
+    url(r'^ability/admin_dashboard/$', 'admin_dashboard'),
+    url(r'^ability/network_management/$', 'mercenaries_hiring'),
+    url(r'^ability/matter_analysis/$', 'matter_analysis'),
 )
 
 
