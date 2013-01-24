@@ -7,7 +7,7 @@
 
 
 
-<form action="{% gameurl rpgweb.views.manage_databases %}" method="post">
+<form action="{% gameurl "rpgweb.views.manage_databases" %}" method="post">
 <div align="center">
     <input type="hidden" name="new_game_state" value="{% if game_is_started %}0{% else %}1{% endif %}"/>
     <input type="submit" style="width: 200px" name="switch_game_state" 

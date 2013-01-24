@@ -36,7 +36,7 @@ archeological objects at auction.
 	{% for item_name, item_details in items_for_sale %}   {% comment %} item_details is at least (is_gem, number, total_cost, locations, owner, per_item_price) {% endcomment %}
 	    
 	        {% if user.is_master %}
-                 <form id="sale{{ forloop.counter }}" action="{% gameurl rpgweb.views.view_sales %}" method="POST">
+                 <form id="sale{{ forloop.counter }}" action="{% gameurl "rpgweb.views.view_sales" %}" method="POST">
                         <input type="hidden" name="object" value="{{ item_name }}"/>
             {% endif %}            
                         

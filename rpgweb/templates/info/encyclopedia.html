@@ -29,7 +29,7 @@
         
         <br/>
         
-        <form action="{% gameurl rpgweb.views.view_encyclopedia %}" method="get"
+        <form action="{% gameurl "rpgweb.views.view_encyclopedia" %}" method="get"
               onsubmit="if ($('#search').data('activated') !== 'true' || $.trim($('#search').attr('value')) === '') {return false;}">
             <input id="search" type="text" name="search" size="25" value="Enter phrase here..." 
                    onclick="if ($('#search').data('activated') !== 'true') {this.value=''; $('#search').data('activated', 'true');}"/>
@@ -43,7 +43,7 @@
         {% usekwacro side_panel_start frame_class="mini_frame float_left" decos="1" %}
             <ul>
                 {% for article_id in article_ids %}
-                    <li><a href="{% gameurl rpgweb.views.view_encyclopedia article_id=article_id %}">{{ article_id|capfirst }}</a></li>
+                    <li><a href="{% gameurl "rpgweb.views.view_encyclopedia" article_id=article_id %}">{{ article_id|capfirst }}</a></li>
                 {% endfor %} 
             </ul>
         {% usekwacro side_panel_end %}
@@ -65,7 +65,7 @@
         <p>{% trans "Search results:" %}</p>
         <ul>
             {% for article_id in search_results %}
-                <li><a href="{% gameurl rpgweb.views.view_encyclopedia article_id=article_id %}">{{ article_id|capfirst }}</a></li>
+                <li><a href="{% gameurl "rpgweb.views.view_encyclopedia" article_id=article_id %}">{{ article_id|capfirst }}</a></li>
             {% endfor %} 
         </ul>
         {% endif %}

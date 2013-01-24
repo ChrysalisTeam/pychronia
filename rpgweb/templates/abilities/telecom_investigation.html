@@ -18,7 +18,7 @@
 {% else %}
 
     {% if investigation_form %}
-        <form action="{% gameurl rpgweb.views.telecom_investigation %}" method="post">
+        <form action="{% "gameurl rpgweb.views.telecom_investigation" %}" method="post">
         <div align="center">
         <table>
         {{ investigation_form.as_table }}

@@ -9,7 +9,7 @@ from rpgweb.utilities import mediaplayers, autolinker
 from rpgweb.common import exception_swallower, game_file_url as real_game_file_url, reverse, _
 
 import django.template
-from django.template import defaulttags
+from django.templatetags.future import url as default_url_tag
 from django.utils.safestring import SafeData, EscapeData, mark_safe, mark_for_escaping
 from django.utils.html import escape
 from django.utils.http import urlencode
@@ -27,8 +27,9 @@ def gameurl(parser, token):
     """
     Only works if a "game_instance_id" template variable is available (use request processors for that).
     """
+    print ("PARSING IN GAMLEURL", token.contents, "\n")
     token.contents += " game_instance_id=game_instance_id" # we inject template var "game instance id"
-    url_node = defaulttags.url(parser, token)
+    url_node = default_url_tag(parser, token)
     return url_node
 
 @register.simple_tag(takes_context=False)
