@@ -1969,7 +1969,6 @@ class TestDatamanager(BaseGameTestCase):
             self.assertTrue(utcnow - timedelta(seconds=2) < event["time"] <= utcnow)
 
 
-
     @for_datamanager_base
     def test_database_management(self):
         self._reset_messages()
@@ -1977,7 +1976,6 @@ class TestDatamanager(BaseGameTestCase):
         # test "reset databases" too, in the future
         res = self.dm.dump_zope_database()
         assert isinstance(res, basestring) and len(res) > 1000
-
 
 
     @for_core_module(NightmareCaptchas)
@@ -2009,6 +2007,44 @@ class TestDatamanager(BaseGameTestCase):
             res = self.dm.check_captcha_answer_attempt(captcha["id"], answer)
             assert res == _full_captch_data["explanation"] # sucess
 
+
+    @for_core_module(NovaltyTracker)
+    def test_novelty_tracker(self):
+
+        assert self.dm.get_novelty_registry() == {}
+
+        assert self.dm.access_novelty("master", "qdq|sd")
+        assert self.dm.access_novelty("guy1", "qdq|sd")
+
+        assert self.dm.access_novelty("guy1", "qsdffsdf")
+        assert not self.dm.access_novelty("guy1", "qsdffsdf") # duplicate OK
+        assert self.dm.access_novelty("guy3", "qsdffsdf")
+        assert self.dm.access_novelty("guy2", "qsdffsdf")
+
+        assert self.dm.access_novelty("guy4", "dllll")
+
+        #print (self.dm.get_novelty_registry())
+
+        assert self.dm.has_accessed_novelty("master", "qdq|sd")
+        assert self.dm.has_accessed_novelty("guy1", "qdq|sd")
+        assert self.dm.has_accessed_novelty("guy1", "qsdffsdf")
+
+        assert not self.dm.has_accessed_novelty("guy1", "sdfdfsdkksdfksdkf")
+        assert not self.dm.has_accessed_novelty("guy1", "dllll")
+        assert self.dm.has_accessed_novelty("guy4", "dllll")
+        assert not self.dm.has_accessed_novelty("guy4", "dlllL") # case sensitive
+
+        # this method's input is not checked by coherency routines, so let's ensure it's protected...
+        with pytest.raises(AssertionError):
+            self.dm.has_accessed_novelty("badusername", "qsdffsdf")
+        with pytest.raises(AssertionError):
+            self.dm.has_accessed_novelty("guy1", "qsdf fsdf")
+
+        #print (self.dm.get_novelty_registry())
+
+        assert self.dm.get_novelty_registry() == {u'qsdffsdf': [u'guy1', u'guy3', u'guy2'],
+                                                  u'qdq|sd': [u'master', u'guy1'],
+                                                  u'dllll': [u'guy4']}
 
 
 class TestHttpRequests(BaseGameTestCase):

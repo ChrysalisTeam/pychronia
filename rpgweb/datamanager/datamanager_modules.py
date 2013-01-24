@@ -3407,14 +3407,20 @@ class NovaltyTracker(BaseDataManager):
         return copy.deepcopy(self.data["novalty_tracker"])
 
     @transaction_watcher
-    def access_novelty(self, item_key, username):
+    def access_novelty(self, username, item_key):
+        """Returns True iff the user access that resource for the first time."""
+        assert isinstance(item_key, basestring) and (" " not in item_key) and item_key
+        assert username in (self.get_character_usernames() + [self.get_global_parameter("master_login")])
         tracker = self.data["novalty_tracker"]
         if item_key not in tracker:
             tracker[item_key] = PersistentList()
-        tracker[item_key].append(username)
+        if username not in tracker[item_key]:
+            tracker[item_key].append(username)
+            return True
+        return False
 
     @readonly_method
-    def has_accessed(self, item_key, username):
+    def has_accessed_novelty(self, username, item_key):
         assert isinstance(item_key, basestring) and (" " not in item_key) and item_key
         assert username in (self.get_character_usernames() + [self.get_global_parameter("master_login")])
         tracker = self.data["novalty_tracker"]
