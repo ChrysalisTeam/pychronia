@@ -162,6 +162,10 @@ def filter_menu_tree(menu):
 
 
 def generate_filtered_menu(request):
+    """
+    We remove from the base, complete menu, all entries
+    that are invisible.
+    """
     potential_menu_tree = generate_full_menu(request)
     final_menu_tree = filter_menu_tree(potential_menu_tree)
 

@@ -3401,6 +3401,11 @@ class NovaltyTracker(BaseDataManager):
             for username in usernames:
                 assert username in allowed_usernames
 
+    @readonly_method
+    def get_novelty_registry(self):
+        """For tests..."""
+        return copy.deepcopy(self.data["novalty_tracker"])
+
     @transaction_watcher
     def access_novelty(self, item_key, username):
         tracker = self.data["novalty_tracker"]
