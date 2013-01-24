@@ -47,7 +47,7 @@
                 {% if items_3D_settings|dict_get:item_name %}
                     {% with items_3D_settings|dict_get:item_name as settings %}
                     <div align="center">
-                        <iframe src="{% gameurl "rpgweb.views.item"_3d_view item=item_name %}"
+                        <iframe src="{% gameurl "rpgweb.views.item_3d_view" item=item_name %}"
                         width="{{ settings.image_width }}" height="{{ settings.image_height }}"
                         scrolling="no" marginheight="0" marginwidth="0" frameborder="0">
                             <p>Error - your browser is not able to display IFrames.</p>

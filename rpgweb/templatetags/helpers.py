@@ -27,7 +27,7 @@ def gameurl(parser, token):
     """
     Only works if a "game_instance_id" template variable is available (use request processors for that).
     """
-    print ("PARSING IN GAMLEURL", token.contents, "\n")
+    #print ("PARSING IN GAMLEURL", token.contents, "\n")
     token.contents += " game_instance_id=game_instance_id" # we inject template var "game instance id"
     url_node = default_url_tag(parser, token)
     return url_node

@@ -165,7 +165,7 @@
 
     {% comment %}
     <h2>
-        <a href="{% gameurl rpgweb.views.homepage %}">
+        <a href="{% gameurl "rpgweb.views.homepage" %}">
             {% if user.is_authenticated %}
                   {% blocktrans with user.username|capfirst as user_name %}
                       Welcome to your Realm, {{ user_name }} 

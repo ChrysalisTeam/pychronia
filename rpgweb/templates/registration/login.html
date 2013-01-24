@@ -6,7 +6,7 @@
 
     <div class="scroll_yellow_flat center" style="width: 400px">
     
-        <form action="{% gameurl rpgweb.views.login %}" method="post" autocomplete="off">
+        <form action="{% gameurl "rpgweb.views.login" %}" method="post" autocomplete="off">
         <table class="center">
         
         {{ login_form.as_table }}

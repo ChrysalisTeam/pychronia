@@ -9,7 +9,7 @@
     
         function force_email_sending(msg_id) {
  
-            $.get("{% gameurl rpgweb.views.ajax_force_email_sending %}", 
+            $.get("{% gameurl "rpgweb.views.ajax_force_email_sending" %}", 
                     { id: escape(msg_id) },
                     function(data){
                         $("#"+msg_id).css("display", "none");
@@ -19,7 +19,7 @@
     
         function set_message_read_state(msg_id, is_read) {
 
-            $.get("{% gameurl rpgweb.views.ajax_set_message_read_state %}", 
+            $.get("{% gameurl "rpgweb.views.ajax_set_message_read_state" %}", 
                     { id: escape(msg_id), 
                       is_read: (is_read ? "1" : "0") },
                     function(data){
@@ -135,7 +135,7 @@
 		                    {{ message.attachment|mediaplayer:"false" }}
 		                {% endif %}
 					<span class="message_operation">
-						<a href="{% gameurl rpgweb.views.compose_message %}?message_id={{ message.id|urlencode }}"><img src="/media/images/fleche1.gif" style="width:30px; height:30px;"></img></a>
+						<a href="{% gameurl "rpgweb.views.compose_message" %}?message_id={{ message.id|urlencode }}"><img src="/media/images/fleche1.gif" style="width:30px; height:30px;"></img></a>
 					</span>
 		            </div>
 				{% endfor %}
