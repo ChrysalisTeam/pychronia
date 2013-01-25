@@ -214,6 +214,14 @@ blockquote, q, cite {
 }
 
 
+.antique_marble_frame {
+    padding: 10px;
+    border-style: solid; 
+    border-width: 24px 24px 24px 24px; 
+    border-image: url('#{$IMGS}backgrounds/antique_marble_frame.png') 24 24 24 24 fill round;
+}  
+    
+
 
 /* Django classes */
 
