@@ -820,7 +820,7 @@ body:after {
   height: 73px;
 }
 #full_menu #main_menu .marble_menu_container .marble_menu {
-  min-width: 600px;
+  min-width: 550px;
   height: 35px;
   padding: 2px 0;
   border-style: solid;

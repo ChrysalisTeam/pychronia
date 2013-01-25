@@ -292,7 +292,7 @@
 
                     // just in case someone set "top" larger than elements style top
                     if (init === true) {
-                        $this.css('top', ($this.css('position') == 'fixed') ? $wrapper.offset().top : 0);
+                        $this.css('top', ($this.css('position') == 'fixed') ? $this.data('hcSticky').top - top_spacing : 0);
                     }
 
                 };

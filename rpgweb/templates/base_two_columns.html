@@ -29,8 +29,28 @@
     {% endblock %}
     </div>
     
-
-    
+    {% block activate_floating_menu %} 
+        {% addtoblock "inline_js" %}
+        $(document).ready(function() {
+            $('#main_sidebar').hcSticky({ 
+                top: 20, // The distance from the top of the Window at which to trigger hcSticky.
+                bottom: 0, // The distance from the bottom of the Window at which to glue hcSticky.
+                bottomEnd: 0, // The distance from the bottom of the referring element at which to stop hcSticky.
+                bottomLimiter: null, // jQuery selector that selects element and calculates bottomEnd value based on its offset top position. 
+                                     //It works only if noContainer is set to “true” and it has higher priority than BottomEnd.
+                innerTop: 0, // The distance from the top inside of the sticky content at which to trigger hcSticky.
+                innerSticker: null, // jQuery selector that selects element at which to trigger hcSticky instead of top of sticky container. 
+                                    //This has higher priority than innerTop option.
+                noContainer: false, // When set to “true”, hcSticky will be referred to the Document.
+                followScroll: false, // When set to “false”, sticky content will not move with the page if it is bigger that Window.
+                className: 'sticky', // Class that will be applied to sticky element while it is floating.
+                wrapperClassName: 'sidebar-sticky', // Class that is set to wrapper that hcSticky creates around your sticky content.
+                onStart: function(){}, // Callback function on plugin Start event (when the element starts floating)
+                onStop: function(){} // Callback function on plugin Stop event (when the element stops floating and returns to its normal state)
+            });
+        }); 
+        {% endaddtoblock %}
+    {% endblock %} 
 {% endblock %}
 
      
