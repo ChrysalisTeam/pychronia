@@ -218,10 +218,15 @@ blockquote, q, cite {
     padding: 10px;
     border-style: solid; 
     border-width: 24px 24px 24px 24px; 
-    border-image: url('#{$IMGS}backgrounds/antique_marble_frame.png') 24 24 24 24 fill round;
+    border-image: url('#{$IMGS}backgrounds/antique_marble_frame2.png') 24 24 24 24 fill round;
 }  
     
-
+.antique_large_decorated_frame {
+    padding: 10px;
+    border-style: solid; 
+    border-width: 35px 40px 35px 40px; // only HALF of real border-image size here...
+    border-image: url('#{$IMGS}backgrounds/antique_large_decorated_frame.png') 70 80 70 80 fill stretch;
+}
 
 /* Django classes */
 

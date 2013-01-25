@@ -9,27 +9,33 @@
 
 
 {% block html_title %}
+
     {% if page_title %}{% trans "Anthropia" %} - {{ page_title}}
     {% else %}{% trans "Welcome to Anthropia" %}
     {% endif %}
-{% endblock %}
+
 
 
 {% addtoblock "js" %}
-    <script src="{{ STATIC_URL }}jquery.ba-outside-events.js" type="text/javascript"></script>
-    <script src="{{ STATIC_URL }}jquery.mousewheel-3.0.6.pack.js" type="text/javascript"></script>
 
-    <script src="{{ STATIC_URL }}jquery-ui-1.8.16.custom.js" type="text/javascript"></script>
-    <script src="{{ STATIC_URL }}jquery-ui/combobox.js" type="text/javascript"></script>
+    <script src="{{ STATIC_URL }}libs/jquery.ba-outside-events.js" type="text/javascript"></script>
+    <script src="{{ STATIC_URL }}libs/jquery.mousewheel-3.0.6.pack.js" type="text/javascript"></script>
+
+    <script src="{{ STATIC_URL }}libs/jquery-ui/jquery-ui-1.8.16.custom.js" type="text/javascript"></script>
+    <script src="{{ STATIC_URL }}libs/jquery-ui/combobox.js" type="text/javascript"></script>
     
-    <script src="{{ STATIC_URL }}jquery-ui/ui.dropdownchecklist-1.4.js" type="text/javascript"></script>
-    <link href="{{ STATIC_URL }}jquery-ui/ui.dropdownchecklist.css" rel="stylesheet" type="text/css" />
+    <script src="{{ STATIC_URL }}libs/jquery-ui/ui.dropdownchecklist-1.4.js" type="text/javascript"></script>
+    <link href="{{ STATIC_URL }}libs/jquery-ui/ui.dropdownchecklist.css" rel="stylesheet" type="text/css" />
     
-    <script src="{{ STATIC_URL }}videoplayers/quicktimeplayer/AC_QuickTime.js" type="text/javascript"></script>
-    <script src="{{ STATIC_URL }}videoplayers/wmvplayer/wmvplayer.js" type="text/javascript"></script>
+    <script src="{{ STATIC_URL }}libs/jquery.hcsticky.js" type="text/javascript"></script>
+    <!--script src="{{ STATIC_URL }}libs/portamento/portamento-min.js" type="text/javascript"></script-->
+    
+    <script src="{{ STATIC_URL }}libs/videoplayers/quicktimeplayer/AC_QuickTime.js" type="text/javascript"></script>
+    <script src="{{ STATIC_URL }}libs/videoplayers/wmvplayer/wmvplayer.js" type="text/javascript"></script>
     <!--script src="{{ MEDIA_URL }}videoplayers/wmvplayer/silverlight.js" type="text/javascript"></script-->
 
-    <script src="{{ STATIC_URL }}utilities.js" type="text/javascript"></script>
+    <script src="{{ STATIC_URL }}libs/utilities.js" type="text/javascript"></script>
+    
 {% endaddtoblock %}
     
  
@@ -120,12 +126,50 @@
         $("div.log").ajaxError(function(event, jqXHR, ajaxSettings, thrownError) {
         	  $(this).text( "Triggered ajaxError handler." );
         	});
-        */
+       */
         
+        $('#main_sidebar').hcSticky({ // TEMPLATE FOR HCSTICKY //
+            top: 84, // The distance from the top of the Window at which to trigger hcSticky.
+            bottom: 0, // The distance from the bottom of the Window at which to glue hcSticky.
+            bottomEnd: 0, // The distance from the bottom of the referring element at which to stop hcSticky.
+            bottomLimiter: null, // jQuery selector that selects element and calculates bottomEnd value based on its offset top position. 
+                                 //It works only if noContainer is set to “true” and it has higher priority than BottomEnd.
+            innerTop: 0, // The distance from the top inside of the sticky content at which to trigger hcSticky.
+            innerSticker: null, // jQuery selector that selects element at which to trigger hcSticky instead of top of sticky container. 
+                                //This has higher priority than innerTop option.
+            noContainer: false, // When set to “true”, hcSticky will be referred to the Document.
+            followScroll: false, // When set to “false”, sticky content will not move with the page if it is bigger that Window.
+            className: 'sticky', // Class that will be applied to sticky element while it is floating.
+            wrapperClassName: 'sidebar-sticky', // Class that is set to wrapper that hcSticky creates around your sticky content.
+            onStart: function(){}, // Callback function on plugin Start event (when the element starts floating)
+            onStop: function(){} // Callback function on plugin Stop event (when the element stops floating and returns to its normal state)
+        });
+        $('#main_sidebar').hcSticky('reinit')   
+            
+            
+        $('#full_menuss').hcSticky({
+            top: 30, 
+            bottom: 0, 
+            bottomEnd: 0,
+            innerTop: 0,
+            noContainer: true,
+        });
+              
+            
+            
+        /*
+        $('#main_sidebar').portamento({
+            wrapper: $('#full_content'), 
+            gap: 30, 
+            disableWorkaround: false
+        });
+        */  
     });
     
 {% endaddtoblock %}
 
+
+{% endblock %}
 
 
 

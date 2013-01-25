@@ -281,7 +281,13 @@ blockquote, cite, q {
   padding: 10px;
   border-style: solid;
   border-width: 24px 24px 24px 24px;
-  border-image: url(img/backgrounds/antique_marble_frame.png) 24 24 24 24 fill round;
+  border-image: url(img/backgrounds/antique_marble_frame2.png) 24 24 24 24 fill round;
+}
+.antique_large_decorated_frame {
+  padding: 10px;
+  border-style: solid;
+  border-width: 35px 40px 35px 40px;
+  border-image: url(img/backgrounds/antique_large_decorated_frame.png) 70 80 70 80 fill stretch;
 }
 .errorlist {
   list-style-type: none;
@@ -634,6 +640,17 @@ table.footnote {
 .entry-image img {
   margin: 1px 10px;
 }
+#portamento_container {
+  float: right;
+  position: relative;
+}
+#portamento_container > div {
+  float: none;
+  position: absolute;
+}
+#portamento_container > div.fixed {
+  position: fixed;
+}
 body {
   margin: 0;
   padding: 0;
@@ -873,8 +890,9 @@ body:after {
 }
 #full_content {
   width: 960px;
-  margin: 2px auto;
-  overflow: visible;
+  margin: -10px auto 2px;
+  padding: 10px;
+  overflow: hidden;
 }
 #full_content .mini_frame {
   position: relative;
@@ -882,7 +900,7 @@ body:after {
   width: 280px;
   margin: 7px 10px 10px;
   overflow: visible;
-  background: transparent url(img/backgrounds/wood_bg.png) repeat center center;
+  background: transparent url(img/backgrounds/leather_derby_tiled_small.png) repeat center center;
   background-origin: content-box;
   background-clip: content-box;
   background-position: left top;
@@ -895,6 +913,13 @@ body:after {
   border-style: solid;
   border-width: 22px 22px;
   border-image: url(img/backgrounds/mini_frame4.png) 22 22 repeat;
+}
+#full_content .main_sidebar {
+  padding: 0;
+  margin: 7px 10px 10px;
+}
+#full_content .main_sidebar .mini_frame {
+  margin: 0 0 20px 0;
 }
 #full_content .medium_frame {
   position: relative;

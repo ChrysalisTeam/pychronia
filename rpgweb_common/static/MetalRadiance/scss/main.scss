@@ -10,6 +10,7 @@
 
 @import "_zinnia_customization.scss";
 
+@import "_js_utils.scss";
 
 body {
     margin: 0;
@@ -287,9 +288,11 @@ body {
 #full_content {
      
     width: 960px;
-    margin: 2px auto;
-    overflow: visible; 
-        
+    margin: -10px auto 2px;
+    padding: 10px;
+    overflow: hidden; 
+    
+
     .mini_frame {
     
         position: relative;
@@ -299,7 +302,7 @@ body {
         margin: 7px 10px 10px;
         overflow: visible; 
         
-        background: transparent url('#{$IMGS}backgrounds/wood_bg.png') repeat center center;
+        background: transparent url('#{$IMGS}backgrounds/leather_derby_tiled_small.png') repeat center center;
         background-origin: content-box; //padding-box|border-box
         background-clip: content-box;
         background-position: left top; 
@@ -316,7 +319,17 @@ body {
         
     }
     
+    .main_sidebar { // container for miniframes
+        padding: 0;
+        margin: 7px 10px 10px;
+        
+        .mini_frame { 
+            // mini-frames that are inside sidebar must beware of their margins!
+            margin: 0 0 20px 0;
+        }
+    }
     
+
     @mixin main_frame_common{
         // inheritance is slightly buggy...
         position: relative;
