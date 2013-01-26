@@ -90,7 +90,7 @@ class MercenariesHiringAbility(AbstractAbility):
 
         mercenaries_locations = self.private_data["mercenaries_locations"]
 
-        print (">>>>>>>>>>>>>>>>", self.settings)
+        #print (">>>>>>>>>>>>>>>>", self.settings)
         return {
                  'page_title': _("Mercenaries Network Management"),
                  'settings': self.settings,

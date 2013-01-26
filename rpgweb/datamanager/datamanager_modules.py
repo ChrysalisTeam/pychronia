@@ -232,8 +232,11 @@ class CharacterHandling(BaseDataManager): # TODO REFINE
         return self.data["character_properties"]
 
     @readonly_method
-    def get_character_usernames(self):
-        return sorted(self.data["character_properties"].keys())
+    def get_character_usernames(self, exclude_current=False):
+        res = sorted(self.data["character_properties"].keys())
+        if exclude_current:
+            res.remove(self.user.username) # will crash if not a character
+        return res
 
     @readonly_method
     def get_character_official_names(self):
@@ -330,7 +333,6 @@ class DomainHandling(BaseDataManager): # TODO REFINE
             assert isinstance(content["prologue_music"], basestring)
             assert os.path.isfile(os.path.join(config.GAME_FILES_ROOT, "musics", content["prologue_music"]))
 
-            utilities.check_is_bool(content["show_official_identities"])
 
     @readonly_method
     def get_domain_names(self):

@@ -10,7 +10,7 @@ from django.http import Http404, HttpResponseRedirect, HttpResponse, \
 from django.template import loader
 
 from ..datamanager import GameDataManager
-from .abstract_form import AbstractGameForm
+from .abstract_form import AbstractGameForm, UninstantiableForm
 from .datamanager_tools import transaction_watcher, readonly_method
 
 
@@ -288,7 +288,10 @@ class AbstractGameView(object):
             pass
 
         form_initializer = self.datamanager # this property might be overridden by subclasses
-        form = NewFormClass(form_initializer, initial=initial_data)
+        try:
+            form = NewFormClass(form_initializer, initial=initial_data)
+        except UninstantiableForm:
+            form = None
         return form
 
 

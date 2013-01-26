@@ -4,24 +4,6 @@
 
 {% block content %}  
 
-{% comment %}
-    USELESS STUFFS - forget it !
-    {% if user.is_master %}
-    <p>
-        {% trans "Digital funds currently available in the bank, for conversions between cold cash and digital money:" %}
-        <strong>
-        {% blocktrans count bank_data.1 as money_amount %}
-            {{ money_amount }} kash.
-        {% plural %}
-            {{ money_amount }} kashes.
-        {% endblocktrans %}
-        </strong>
-    
-    </p>
-    {% endif %}
-{% endcomment %}
-
-
 
 <table class="realtable">
 	
@@ -46,9 +28,7 @@
 
 		    	<td class="bigtext">
 		    		<strong {% if user.is_master %} title="{% trans "Password:" %} {{ char_details.password }}" {% endif %}>
-		    		    {% if show_official_identities %}
-		    		        {{ char_details.official_name }} <br/>
-		    		    {% endif %}
+		    		    {{ char_details.official_name }} <br/>
 		    		    {{ char_name }}@{{ pangea_domain }}
 		    		    {% if user.is_master %}
 		    		        <br/>[{{ char_details.real_life_identity }}]
@@ -70,7 +50,7 @@
 		    
 		    	<td class="bigtext">
 		    		{% if char_details.gems %} 
-		    			{{ char_details.gems|join:", " }}
+		    			{{ char_details.gems|list_filter:0|join:", " }}
 		    		{% else %}
 		    			{% trans "None" %}
 		    		{% endif %}
@@ -82,11 +62,11 @@
 	</tbody>
 </table>
 
+<br/>
 
+{% include "utilities/scroll_form.html" with title=_("Digital Money Transfer") form=money_form class="float_left" button_title=_("Transfer money") button_name="money_transfer" %}
 
-{% include "utilities/scroll_form.html" with title=_("Digital Money Transfer") target_view="rpgweb.views.view_characters" form=money_form class="float_left" button_title=_("Transfer money") button_name="money_transfer" %}
-
-{% include "utilities/scroll_form.html" with title=_("Gems Transfer") target_view="rpgweb.views.view_characters" form=gems_form class="float_right" button_title=_("Transfer gems") button_name="gems_transfer" %}
+{% include "utilities/scroll_form.html" with title=_("Gems Transfer") form=gems_form class="float_right" button_title=_("Transfer gems") button_name="gems_transfer" %}
 
 
 

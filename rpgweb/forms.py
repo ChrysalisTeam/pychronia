@@ -4,8 +4,91 @@ from __future__ import unicode_literals
 
 from rpgweb.common import *
 
-from rpgweb.datamanager.abstract_form import AbstractGameForm
+from rpgweb.datamanager.abstract_form import AbstractGameForm, UninstantiableForm, form_field_jsonify, form_field_unjsonify
 
+
+
+
+
+class MoneyTransferForm(AbstractGameForm):
+
+    def __init__(self, datamanager, *args, **kwargs):
+        super(MoneyTransferForm, self).__init__(datamanager, *args, **kwargs)
+        user = datamanager.user
+
+        # dynamic fields here ...
+        if user.is_master:
+            _money_all_character_choices = [(datamanager.get_global_parameter("bank_name"), '<' + _("Bank") + '>')] + \
+                                            datamanager.build_select_choices_from_usernames(datamanager.get_character_usernames())
+
+            self.fields.insert(0, "sender_name", forms.ChoiceField(label=_("Sender"), choices=_money_all_character_choices))
+            self.fields.insert(1, "recipient_name", forms.ChoiceField(label=_("Recipient"),
+                               initial=_money_all_character_choices[min(1, len(_money_all_character_choices) - 1)][0], choices=_money_all_character_choices))
+        else:
+            # for standard characters
+            if self.datamanager.get_character_properties(user.username)["account"] <= 0:
+                raise UninstantiableForm("user has no money")
+            others = datamanager.get_other_usernames(user.username)
+            others_choices = datamanager.build_select_choices_from_usernames(others)
+            self.fields.insert(0, "recipient_name", forms.ChoiceField(label=_("Recipient"), choices=others_choices))
+
+    amount = forms.IntegerField(label=_("Amount"), widget=forms.TextInput(attrs={'size':'8', 'style':'text-align:center;'}),
+                                initial=0, min_value=1, max_value=1000000)
+
+
+
+
+class GemsTransferForm(AbstractGameForm):
+
+    def __init__(self, datamanager, *args, **kwargs):
+        super(GemsTransferForm, self).__init__(datamanager, *args, **kwargs)
+        user = datamanager.user
+
+
+        if user.is_master:
+            available_gems = []
+            for character, properties in datamanager.get_character_sets().items():
+                available_gems += properties["gems"]
+        else:
+            available_gems = datamanager.get_character_properties(user.username)["gems"]
+
+        # we prepare the choice sets for gems
+        gems_choices = []
+        for gem_value, gem_origin in available_gems:
+            gem_id = form_field_jsonify((gem_value, gem_origin))
+            if gem_origin:
+                title = datamanager.get_item_properties(gem_origin)["title"]
+            else:
+                title = _("External gems")
+            full_title = _("Gem of %s Kashes (%s)") % (gem_value, title)
+            gems_choices.append((gem_id, full_title))
+        if not gems_choices:
+            raise UninstantiableForm("no gems available")
+
+        # dynamic fields here ...
+        if user.is_master:
+            _character_choices = datamanager.build_select_choices_from_usernames(datamanager.get_character_usernames())
+            self.fields.insert(0, "sender_name", forms.ChoiceField(label=_("Sender"), choices=_character_choices))
+            self.fields.insert(1, "recipient_name", forms.ChoiceField(label=_("Recipient"), initial=_character_choices[min(1, len(_character_choices) - 1)][0], choices=_character_choices))
+        else:
+            others = datamanager.get_other_usernames(user.username)
+            others_choices = datamanager.build_select_choices_from_usernames(others)
+            self.fields.insert(1, "recipient_name", forms.ChoiceField(label=_("Recipient"), choices=others_choices))
+
+        self.fields.insert(2, "gems_choices", forms.MultipleChoiceField(required=False, label=_("Gems (use Ctrl key)"), choices=gems_choices))
+
+
+    def clean(self):
+        """We transform back *gems_choices* to proper python objects."""
+        cleaned_data = super(GemsTransferForm, self).clean()
+
+        raw_gems_choices = cleaned_data.get("gems_choices") # might be None, if errors
+
+        if raw_gems_choices:
+            gems_choices = [tuple(form_field_unjsonify(value)) for value in raw_gems_choices] # strings -> tuples (price, origin)
+            cleaned_data["gems_choices"] = gems_choices
+
+        return cleaned_data
 
 
 
@@ -97,47 +180,6 @@ class SecretQuestionForm(forms.Form):
 
 class RadioFrequencyForm(forms.Form):
     frequency = forms.CharField(label=_lazy(u"Radio Frequency"), widget=forms.TextInput(attrs={'autocomplete':'off'}))
-
-
-class MoneyTransferForm(forms.Form):
-
-    def __init__(self, datamanager, user, *args, **kwargs):
-        super(MoneyTransferForm, self).__init__(*args, **kwargs)
-        # dynamic fields here ...
-        if user.is_master:
-            _money_all_character_choices = [(datamanager.get_global_parameter("bank_name"), '<' + _("Bank") + '>')] + \
-                                            datamanager.build_select_choices_from_usernames(datamanager.get_character_usernames())
-
-            self.fields.insert(0, "sender_name", forms.ChoiceField(label=_("Sender"), choices=_money_all_character_choices))
-            self.fields.insert(1, "recipient_name", forms.ChoiceField(label=_("Recipient"),
-                               initial=_money_all_character_choices[min(1, len(_money_all_character_choices) - 1)][0], choices=_money_all_character_choices))
-        else:
-            others = datamanager.get_other_usernames(user.username)
-            others_choices = datamanager.build_select_choices_from_usernames(others)
-            self.fields.insert(0, "recipient_name", forms.ChoiceField(label=_("Recipient"), choices=others_choices))
-
-    amount = forms.IntegerField(label=_("Amount"), widget=forms.TextInput(attrs={'size':'8', 'style':'text-align:center;'}),
-                                initial=0, min_value=0, max_value=1000000)
-
-
-
-
-class GemsTransferForm(forms.Form):
-
-    def __init__(self, datamanager, user, gems_choices, *args, **kwargs):
-        super(GemsTransferForm, self).__init__(*args, **kwargs)
-        # dynamic fields here ...
-        if user.is_master:
-            _character_choices = datamanager.build_select_choices_from_usernames(datamanager.get_character_usernames())
-            self.fields.insert(0, "sender_name", forms.ChoiceField(label=_("Sender"), choices=_character_choices))
-            self.fields.insert(1, "recipient_name", forms.ChoiceField(label=_("Recipient"), initial=_character_choices[min(1, len(_character_choices) - 1)][0], choices=_character_choices))
-        else:
-            others = datamanager.get_other_usernames(user.username)
-            others_choices = datamanager.build_select_choices_from_usernames(others)
-            self.fields.insert(1, "recipient_name", forms.ChoiceField(label=_("Recipient"), choices=others_choices))
-
-        self.fields.insert(2, "gems_choices", forms.MultipleChoiceField(required=False, label=_("Gems (use Ctrl key)"), choices=gems_choices))
-
 
 
 

@@ -448,6 +448,22 @@ class TestDatamanager(BaseGameTestCase):
         with pytest.raises(UsageError):
             self.dm.update_real_life_data("guy1", real_life_email="bad_email")
 
+        self._set_user("guy1")
+        res1 = self.dm.get_character_usernames()
+        assert "guy1" in res1
+        res2 = self.dm.get_character_usernames(exclude_current=True)
+        assert "guy1" not in res2
+        assert len(res2) == len(res1) - 1
+
+        self._set_user("master")
+        with pytest.raises(ValueError):
+            self.dm.get_character_usernames(exclude_current=True) # crash if not a proper character currently set
+        self._set_user(None)
+        with pytest.raises(ValueError):
+            self.dm.get_character_usernames(exclude_current=True) # crash if not a proper character currently set
+
+
+
     @for_core_module(DomainHandling)
     def test_domain_handling(self):
 

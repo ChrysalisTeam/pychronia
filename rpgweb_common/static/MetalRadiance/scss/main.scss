@@ -12,6 +12,16 @@
 
 @import "_js_utils.scss";
 
+
+html {
+    /* just if we need to test higher or lower screen resolutions */
+    /* zoom: 1.0;
+    transform: scale(1.0);
+    transform-origin: center top;*/
+}
+
+
+
 body {
     margin: 0;
     padding: 0;
@@ -53,7 +63,6 @@ body {
     display: none;
     }
 }
-
 
  
 

@@ -3,6 +3,27 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from django import forms
+import json
+
+
+
+class UninstantiableForm(Exception):
+    """
+    Exception to be raised by a form constructor when 
+    the instance would be meaningless (eg. no data to choose from).
+    """
+    pass
+
+
+def form_field_jsonify(value):
+    """Value must be ASCII."""
+    res = json.dumps(value, indent=None)
+    assert "\n" not in res # must be compact form
+    return res
+def form_field_unjsonify(value):
+    res = json.loads(value)
+    return res
+
 
 
 class AbstractGameForm(forms.Form):

@@ -217,8 +217,6 @@ item_3d_settings:
 domains:
 
     acharis:
-    
-        show_official_identities: False
         victory: victory_acharis
         defeat: defeat_acharis
         prologue_music: sample.mp3
@@ -226,7 +224,6 @@ domains:
             *Il n’est d'autre Bien que la volonté des Dieux.*
             
     sciences:
-        show_official_identities: False
         #request_for_report: request_for_report_masslavia
         victory: new_messages_1
         defeat: new_messages_2

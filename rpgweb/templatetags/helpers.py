@@ -166,6 +166,15 @@ def dict_get(value, arg):
 register.filter('dict_get', dict_get)
 
 
+def list_filter(value, offset):
+    """
+    Extracts the nth elemet of each item in a list.
+    """
+    offset = int(offset)
+    return [val[offset] for val in value]
+register.filter('list_filter', list_filter)
+
+
 def utctolocal(value, arg=None):
     # poor man's timezone system, base on current time offset
     # all we want is to avoid dealing with the nightmare of TZ and DST...

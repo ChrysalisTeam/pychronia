@@ -235,8 +235,8 @@ blockquote, q, cite {
     list-style-image: none;
     color: $error_color;  
     margin: 0; 
+    padding: 0;
 }
-
 
 
 table.realtable {
@@ -260,6 +260,7 @@ table.realtable {
         font-size:1.2em;
         font-family:Arial;
         font-weight:normal;
+        line-height:1.2em;
         color:#000000;
     }
     
@@ -270,12 +271,12 @@ table.realtable {
     tr:last-child td:last-child {
     }
     
-    thead td {
-        background-color:#ff7f00;
+    thead th {
+        background-color:#AF411C;
         border:0px solid #000000;
         text-align:center;
         border-width:0px 0px 1px 1px;
-        font-size:1.5em;
+        font-size:1.3em;
         font-family:Arial;
         font-weight:bold;
         color:#ffffff;
@@ -287,6 +288,6 @@ table.realtable {
     
     thead th:last-child {
         border-width:0px 0px 1px 1px;
-    }
+    } 
 }
 

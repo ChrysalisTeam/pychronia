@@ -294,6 +294,7 @@ blockquote, cite, q {
   list-style-image: none;
   color: #ff0000;
   margin: 0;
+  padding: 0;
 }
 table.realtable {
   box-sizing: border-box;
@@ -319,14 +320,15 @@ table.realtable td {
   font-size: 1.2em;
   font-family: Arial;
   font-weight: normal;
+  line-height: 1.2em;
   color: #000000;
 }
-table.realtable thead td {
-  background-color: #ff7f00;
+table.realtable thead th {
+  background-color: #AF411C;
   border: 0px solid #000000;
   text-align: center;
   border-width: 0px 0px 1px 1px;
-  font-size: 1.5em;
+  font-size: 1.3em;
   font-family: Arial;
   font-weight: bold;
   color: #ffffff;
