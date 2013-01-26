@@ -1,13 +1,14 @@
 #!/usr/bin/env python
 
-import sys, os
+import sys, os, warnings
 
 root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__)))) # CHRYSALIS/ root dir
 sys.path.insert(0, root)
 sys.path.insert(0, os.path.join(root, "dependencies"))
 
-print ">>>>>>>", sys.path
+#print ">>>>>>>", sys.path
 
+#warnings.resetwarnings() # SHOW ALL
 
 os.environ["DJANGO_SETTINGS_MODULE"] = settings_module = "rpgweb.tests._persistent_settings" # with DB not in temp dir
 

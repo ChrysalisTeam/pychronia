@@ -38,6 +38,7 @@ STATIC_URL = "/static/"
 #>>>> STATIC_ROOT = "" # where collectstatic cmd will place files
 STATICFILES_DIRS = ()
 
+LOCALE_PATHS = () # TODO use this instead of application "locale" dirs
 
 SERVER_EMAIL = DEFAULT_FROM_EMAIL = ""
 EMAIL_HOST = ""
