@@ -46,8 +46,8 @@
     	$(".multichecklist").dropdownchecklist({minWidth: "150px", emptyText: "<i>...</i>"}); 
         
         $('.fancybox').fancybox({
-            padding : 5,
-            
+            padding: "35px",
+            width: "960px",
             openEffect: 'fade', // 'elastic', 'fade' or 'none'
             closeEffect: 'fade', // 'elastic', 'fade' or 'none'
             
@@ -240,7 +240,7 @@
                              
                             {% comment %}
                                 <a {% if user.is_master %} style="font-size: 0.6em; line-height: 0.5em;" {% endif %}
-                                href="{{ item_url }}" >{{ item_name }}</a>
+                                    href="{{ item_url }}" >{{ item_name }}</a>
                             {% endcomment %}
                         </li>
                     {% endfor %}
@@ -251,8 +251,24 @@
         
     {% endfor %}
 {% endblock %}
-    
-    
+
+
+{% block right_big_icon_panel %} 
+{% if help_keyword %}    
+<a href="{% gameurl "rpgweb.views.view_help_page" keyword=help_keyword %}" class="fancybox fancybox.ajax" title="{{ page_title }}">
+<div class="big_icon_panel">
+    <img src="{{ STATIC_URL }}MetalRadiance/img/icons/question_mark.png"/>
+</div>
+</a>
+{% else %}
+<div class="big_icon_panel">
+    <img src="{{ STATIC_URL }}MetalRadiance/img/icons/question_mark_disabled.png"/>
+</div>
+{% endif %}
+{% endblock %}
+
+
+
 {% block panels %} 
 
     {% usekwacro main_panel_start frame_class="giant_frame" %}

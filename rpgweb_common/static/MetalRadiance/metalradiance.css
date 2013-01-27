@@ -647,16 +647,8 @@ table.footnote {
 .entry-image img {
   margin: 1px 10px;
 }
-#portamento_container {
-  float: right;
-  position: relative;
-}
-#portamento_container > div {
-  float: none;
-  position: absolute;
-}
-#portamento_container > div.fixed {
-  position: fixed;
+.fancybox-opened {
+  z-index: 100000 !important;
 }
 body {
   margin: 0;
@@ -813,6 +805,7 @@ body:after {
   text-align: center;
   vertical-align: middle;
   width: 90px;
+  height: 90px;
   background-image: url(img/icons/big_icon_bg.png);
   background-repeat: no-repeat;
   background-position: center;
