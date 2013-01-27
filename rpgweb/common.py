@@ -175,7 +175,7 @@ def hash_url_path(url_path):
 
 def game_file_url(rel_path):
     rel_path = rel_path.lstrip("/") # IMPORTANT
-    url_hash = hash_url_path(rel_path) # unused atm
+    url_hash = hash_url_path(rel_path)
     return settings.GAME_FILES_URL + url_hash + "/" + rel_path
 
 __all__ = [key for key in globals().copy() if not key.startswith("_")]

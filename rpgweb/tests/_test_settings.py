@@ -71,9 +71,38 @@ MIDDLEWARE_CLASSES = (
 
 INSTALLED_APPS += [
     'rpgweb',
+    'easy_thumbnails',
 ]
 
 
+
+THUMBNAIL_PROCESSORS = (
+    'easy_thumbnails.processors.colorspace',
+    'easy_thumbnails.processors.autocrop',
+    'easy_thumbnails.processors.scale_and_crop',
+    'easy_thumbnails.processors.filters',
+)
+
+THUMBNAIL_DEBUG = True
+THUMBNAIL_QUALITY = 85
+THUMBNAIL_DEFAULT_STORAGE = 'rpgweb.storage.ProtectedGameFileSystemStorage'
+THUMBNAIL_MEDIA_ROOT = '' # NOT used by default
+THUMBNAIL_MEDIA_URL = '' # NOT used by default
+THUMBNAIL_BASEDIR = 'thumbs' # prefix of relative path
+THUMBNAIL_PREFIX = "" # prefix subdirectory of image file itself
+THUMBNAIL_EXTENSION = "jpg"
+THUMBNAIL_TRANSPARENCY_EXTENSION = "png"
+THUMBNAIL_PRESERVE_EXTENSIONS = True # or a tuple like ('png',)
+THUMBNAIL_CHECK_CACHE_MISS = True # can regenerate SQL table from storage
+
+THUMBNAIL_ALIASES = { '': {
+    # project-wide aliases here
+    'item_avatar' : {
+        'autocrop': True, # remove useless whitespace
+        'size': (50, 50), # one of these can be 0
+        #'crop': "scale", # True or <smart|scale|W,H>
+    }
+}}
 
 
 

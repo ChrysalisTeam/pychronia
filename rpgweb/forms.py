@@ -26,7 +26,7 @@ class MoneyTransferForm(AbstractGameForm):
                                initial=_money_all_character_choices[min(1, len(_money_all_character_choices) - 1)][0], choices=_money_all_character_choices))
         else:
             # for standard characters
-            if self.datamanager.get_character_properties(user.username)["account"] <= 0:
+            if datamanager.get_character_properties(user.username)["account"] <= 0:
                 raise UninstantiableForm("user has no money")
             others = datamanager.get_other_usernames(user.username)
             others_choices = datamanager.build_select_choices_from_usernames(others)

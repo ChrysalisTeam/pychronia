@@ -308,7 +308,7 @@ class TestDatamanager(BaseGameTestCase):
 
     def test_public_method_wrapping(self):
 
-        # TODO FIXME - extend this check to methods of all ABILITIES !!!
+        # TODO FIXME - extend this check action methods of all ABILITIES !!! FIXME
 
         for attr in dir(GameDataManager):
             if attr.startswith("_") or attr in "begin rollback commit close check_no_pending_transaction".split():
