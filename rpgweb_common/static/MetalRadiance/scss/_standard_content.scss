@@ -179,9 +179,10 @@ blockquote, q, cite {
     border-image: url('#{$IMGS}backgrounds/post-it.png') 4 4 6 fill stretch;
 }
 
-.missing-content {
+
+.admin-note, .missing-content {
     @extend .post-it;
-    color: $dark_red;
+    color: $dark_red; 
 }
 
 .scroll_realistic {
@@ -277,6 +278,7 @@ table.realtable {
         text-align:center;
         border-width:0px 0px 1px 1px;
         font-size:1.3em;
+        line-height:1.3em;
         font-family:Arial;
         font-weight:bold;
         color:#ffffff;

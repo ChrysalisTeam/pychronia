@@ -125,7 +125,7 @@ def view_sales(request, template_name='auction/view_sales.html'):
                 request.datamanager.transfer_object_to_character(params["object"], request.datamanager.get_username_from_official_name(params["character"]))
         elif "unbuy" in params and "character" in params and "object" in params:
             with action_failure_handler(request, _("Sale successfully canceled for %s.") % params["character"]):
-                request.datamanager.undo_object_transfer(params["object"], request.datamanager.get_username_from_official_name(params["character"]))
+                request.datamanager.transfer_object_to_character(params["object"], None)
 
 
     # IMPORTANT - we copy, so that we can modify the object without changing DBs !

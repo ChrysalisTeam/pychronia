@@ -1,25 +1,27 @@
 {% extends "base_one_giant_column.html" %}
 
-{% load i18n helpers %}  
+{% load i18n helpers thumbnail assign %}  
 
 {% block content %}  
 
 {% if user.is_master %}
-<p>
+<p class="admin-note">
 Players begin the game with a total of <strong>{{ total_cold_cash_available }}</strong> kashes in cold cash and 
 <strong>{{ total_bank_account_available }}</strong> kashes in their bank accounts, 
 while the total value of proposed items is <strong>{{ total_items_price }}</strong> kashes.
 </p>
 {% endif %}
+
 <p>
 There are altogether <strong>{{ total_gems_number }}</strong> gems and <strong>{{ total_archaeological_objects_number }}</strong> 
 archeological objects at auction.
 </p><br/>
 
 
-<table class="fullwidth">
-	<tbody>
-	
+
+
+<table class="realtable">
+	<thead>
 		<tr>
 		    <th style="width:40px;">{% trans "Id" %}</th>
 			<th>{% trans "Photo" %}</th>
@@ -32,8 +34,11 @@ archeological objects at auction.
 			     <th>{% trans "Comments" %}</th>
 			{% endif %}
 		</tr>
-	
-	{% for item_name, item_details in items_for_sale %}   {% comment %} item_details is at least (is_gem, number, total_cost, locations, owner, per_item_price) {% endcomment %}
+	</thead>
+	 
+	<tbody>
+	{% for item_name, item_details in items_for_sale %}   
+	        {% comment %} item_details is at least (is_gem, number, total_cost, locations, owner, per_item_price) {% endcomment %}
 	    
 	        {% if user.is_master %}
                  <form id="sale{{ forloop.counter }}" action="{% gameurl "rpgweb.views.view_sales" %}" method="POST">
@@ -43,17 +48,15 @@ archeological objects at auction.
 	    
 	    <tr class="{% cycle 'rowA' 'rowB' %}">	
 	    
-
 	    
 	    	<td>
 	    	{{ item_details.auction }}
 	    	</td>
-	    	
+
 	    	<td style="width:160px"> 
-	    	    <div>   <!-- style="table-layout:fixed; display:table; width:100%;"   mega hack to please IE8... -->
-	    		     <a href="{% game_file_url "sales/" item_details.image %}"><img class="thumbnail" title="{{ item_details.title }}" 
-	    		        src="{% game_file_url "sales/" item_details.image %}"/></a>
-	    	    </div>
+    		     <a href="{% game_file_url "sales/" item_details.image %}">
+    		         <img class="thumbnail" title="{{ item_details.title }}" src="{% game_file_img "sales/" item_details.image alias="item_avatar" %}"/>
+    		     </a>
 	    	</td>
 	    
 	    	
@@ -115,7 +118,7 @@ archeological objects at auction.
 	    
 	       {% if user.is_master %}
                  </form>
-            {% endif %}     
+           {% endif %}     
 	    
 	    
 	    

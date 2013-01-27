@@ -171,15 +171,19 @@ h2:after {
   quotes: none;
   text-overflow: ellipsis;
 }
-.section p.beautiful, .section p:first-child:not(.missing-content),
+.section p.beautiful, .section p:first-child:not(.admin-note),
+.section p:first-child:not(.missing-content),
 .section p:first-child:not(.post-it),
+.section p:first-of-type:not(.admin-note),
 .section p:first-of-type:not(.missing-content),
 .section p:first-of-type:not(.post-it) {
   text-indent: 0;
 }
 .section p.beautiful:first-letter,
+.section p:first-child:not(.admin-note):first-letter,
 .section p:first-child:not(.missing-content):first-letter,
 .section p:first-child:not(.post-it):first-letter,
+.section p:first-of-type:not(.admin-note):first-letter,
 .section p:first-of-type:not(.missing-content):first-letter,
 .section p:first-of-type:not(.post-it):first-letter {
   font-family: rothenburg_decorative, serif;
@@ -237,7 +241,7 @@ blockquote, cite, q {
   border-width: 7px 10px 10px;
   border-image: url(img/backgrounds/marble_plate.png) 7 10 10 fill stretch;
 }
-.missing-content, .post-it {
+.admin-note, .missing-content, .post-it {
   color: #000000;
   font-size: 2em;
   line-height: normal;
@@ -249,7 +253,7 @@ blockquote, cite, q {
   border-width: 4px 4px 6px;
   border-image: url(img/backgrounds/post-it.png) 4 4 6 fill stretch;
 }
-.missing-content {
+.admin-note, .missing-content {
   color: #8e0d0d;
 }
 .scroll_realistic {
@@ -329,6 +333,7 @@ table.realtable thead th {
   text-align: center;
   border-width: 0px 0px 1px 1px;
   font-size: 1.3em;
+  line-height: 1.3em;
   font-family: Arial;
   font-weight: bold;
   color: #ffffff;

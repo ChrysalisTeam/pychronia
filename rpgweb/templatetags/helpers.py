@@ -18,6 +18,9 @@ from django.db.models.query import QuerySet
 from django.utils import simplejson
 import urllib
 from textwrap import dedent
+from easy_thumbnails.templatetags.thumbnail import thumbnail_url
+from easy_thumbnails.files import get_thumbnailer
+from rpgweb.storage import protected_game_file_system_storage
 
 
 register = django.template.Library() # IMPORTANT, module-level object used by templates !
@@ -33,9 +36,26 @@ def gameurl(parser, token):
     return url_node
 
 @register.simple_tag(takes_context=False)
-def game_file_url(a="", b="", c="", d="", e="", f=""): # simple tag doesn't accept *args or **kwargs...
-    full_url = real_game_file_url("".join((a, b, c, d, e, f)))
+def game_file_url(a="", b="", c="", d="", e="", f="", thumb=None): # simple tag doesn't accept *args or **kwargs...4
+    rel_path = "".join((a, b, c, d, e, f))
+    full_url = real_game_file_url(rel_path)
     return full_url
+
+@register.simple_tag(takes_context=False)
+def game_file_img(a="", b="", c="", d="", e="", f="", alias=None): # simple tag doesn't accept *args or **kwargs...
+    rel_path = "".join((a, b, c, d, e, f))
+    if alias is not None:
+        try:
+            thumb = get_thumbnailer(protected_game_file_system_storage, relative_name=rel_path)[alias] # we enforce the GAME_FILES storage here!
+        except Exception, e:
+            print("ERROR GENERATING game_file_img ", rel_path, alias, repr(e))
+            return ''
+        return  thumb.url
+    else:
+        return real_game_file_url(rel_path) # original image
+
+
+
 
 @register.simple_tag(takes_context=True)
 def usercolor(context, username_or_email):
@@ -127,7 +147,7 @@ def static_page(context, article_name, initial_header_level=None):
         content = pages_table.get_item(article_name)["content"]
     elif request.datamanager.is_master:
         content = _(dedent("""
-                        .. container:: missing-content
+                        .. container:: .missing-content
                         
                             Article *%s* would appear here.
                         """)) % article_name

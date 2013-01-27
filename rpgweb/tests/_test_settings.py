@@ -26,7 +26,7 @@ GAME_ROOT = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 # rpgweb specific conf #
 
 _curdir = os.path.dirname(os.path.realpath(__file__))
-GAME_FILES_ROOT = os.path.join(_curdir, "test_game_files")
+GAME_FILES_ROOT = os.path.join(_curdir, "test_game_files") + "/"
 GAME_FILES_URL = "/files/"
 GAME_INITIAL_DATA_PATH = os.path.join(GAME_FILES_ROOT, "game_initial_data.yaml")
 
@@ -58,7 +58,7 @@ MIDDLEWARE_CLASSES = (
 'django.contrib.sessions.middleware.SessionMiddleware',
 'django.contrib.messages.middleware.MessageMiddleware',
 #'localeurl.middleware.LocaleURLMiddleware',
-# 'django.middleware.locale.LocaleMiddleware', replaced by LocaleURLMiddleware
+#'django.middleware.locale.LocaleMiddleware', replaced by LocaleURLMiddleware
 'django.middleware.common.CommonMiddleware',
 'django.contrib.auth.middleware.AuthenticationMiddleware',
 'rpgweb.middlewares.ZodbTransactionMiddleware',
@@ -83,7 +83,7 @@ THUMBNAIL_PROCESSORS = (
     'easy_thumbnails.processors.filters',
 )
 
-THUMBNAIL_DEBUG = True
+THUMBNAIL_DEBUG = True # NOT used by custom game_file_img tag
 THUMBNAIL_QUALITY = 85
 THUMBNAIL_DEFAULT_STORAGE = 'rpgweb.storage.ProtectedGameFileSystemStorage'
 THUMBNAIL_MEDIA_ROOT = '' # NOT used by default
@@ -99,7 +99,7 @@ THUMBNAIL_ALIASES = { '': {
     # project-wide aliases here
     'item_avatar' : {
         'autocrop': True, # remove useless whitespace
-        'size': (50, 50), # one of these can be 0
+        'size': (150, 0), # one of these can be 0
         #'crop': "scale", # True or <smart|scale|W,H>
     }
 }}

@@ -13,8 +13,12 @@ class ProtectedGameFileSystemStorage(FileSystemStorage):
     """
 
     def __init__(self):
-        super(ProtectedGameFileSystemStorage, self).__init__(location=config.GAME_FILES_ROOT,
+        location = config.GAME_FILES_ROOT
+        assert location.endswith("/"), location
+        super(ProtectedGameFileSystemStorage, self).__init__(location=location,
                                                              base_url=None) # useless here
 
     def url(self, name):
         return game_file_url(name)
+
+protected_game_file_system_storage = ProtectedGameFileSystemStorage()
