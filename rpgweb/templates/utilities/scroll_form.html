@@ -2,7 +2,7 @@
 
 {% if form %}
 <div class="scroll_yellow_rolled {{ class }}">
-    <form action="{{ form.target_url }}" method="post">
+    <form id="{% random_id %}" action="{{ form.target_url }}" method="post">
     <table style="margin:auto;width:280px;">
     <tr>
         <td colspan="2">

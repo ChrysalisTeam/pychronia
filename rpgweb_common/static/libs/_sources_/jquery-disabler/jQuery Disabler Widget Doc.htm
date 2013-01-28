@@ -1,0 +1,1289 @@
+ 
+ 
+ 
+ 
+ 
+
+
+
+
+  
+
+ 
+<!DOCTYPE html> 
+<html lang="en"> 
+	<head> 
+		<title>jQuery Disabler Widget</title> 
+		 
+ 
+ 
+ 
+ 
+
+
+
+
+  
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+<meta http-equiv="X-UA-Compatible" content="IE=edge" >	
+<meta name="author" content="Doug Estep"> 
+
+<link rel="stylesheet" type="text/css" href="/dme/web/css/bootstrap/bootstrap.min.css" media="screen"> 
+<link rel="stylesheet" type="text/css" href="/dme/web/css/bootstrap/bootstrap-responsive.min.css"> 
+<link rel="stylesheet" type="text/css" href="/dme/web/css/prettify.css"> 
+<link rel="stylesheet" type="text/css" href="/dme/web/css/jquery.multiselect.css"> 
+<link rel="stylesheet" type="text/css" href="/dme/web/css/jquery-ui-1.8.20.custom.css"> 
+<link rel="stylesheet" type="text/css" href="/dme/web/css/jquery-ui-pane-1.0.0.css">
+
+<script src="/dme/web/script/jquery-1.7.1.min.js"></script>
+
+
+	</head> 
+		
+	<body>
+		<div class="container-fluid">
+			<div class="row-fluid">
+				<div class="span1">
+					<img src="/dme/images/doug_business_tn.jpg" border="0" width="107" height="160" title="Doug Estep" alt="Doug Estep" />
+				</div>
+				<div class="span11">
+					<h2>jQuery Disabler Widget</h2>				
+					<em>A jQuery widget that can completely disable or present a read-only view of the content on your page!</em>
+				</div>
+			</div>
+			<hr />
+			<div class="row-fluid">
+				<div class="span12">
+					
+	<div class="row-fluid">
+		<div class="span3">		
+			<div class="well">
+				<ul class="nav nav-list">
+					<li><a href="/dme/resume" rel="tooltip" data-placement="right" title="Return to my home page">&lt;&lt; My Home Page</a></li>
+					<li class="divider"></li>
+					<li class="nav-header">Current Version 1.0.6</li>
+					<li class="divider"></li>
+					<li><a href="/dme/jquery-disabler-widget-demos" rel="tooltip" data-placement="right" title="View demos of Disabler">View DEMOs of Disabler in action!</a></li>
+					<li><a href="#widget-usage" rel="tooltip" data-placement="right" title="Describes how to setup and use Disabler">How to use Disabler</a></li>
+					<li><a href="#widget-usage-features" rel="tooltip" data-placement="right" title="Describes additional features and customizations you can make to influence the behavior of the plugin">Additional Features and Customizations</a></li>
+					
+					<li class="nav-header">API</li>
+					<li class="divider"></li>
+					<li><a href="#widget-options" rel="tooltip" data-placement="right" title="Describes the options you have with Disabler">Options</a></li>
+					<li><a href="#widget-events" rel="tooltip" data-placement="right" title="Describes the events that you can hook into with Disabler">Events</a></li>
+					<li><a href="#widget-methods" rel="tooltip" data-placement="right" title="Describes the methods that you can call after Disabler has been instantiated">Methods</a></li>
+					
+					<li class="nav-header">Git Hub</li>
+					<li class="divider"></li>
+					<li><a href="https://github.com/dgestep" rel="tooltip" data-placement="right" title="Follow me on Github" target="_followGitHub">Follow me on Github</a></li>
+					<li><a href="https://github.com/dgestep/jquery-disabler" rel="tooltip" data-placement="right" title="Follow this project on Github" target="_followGitHub">Follow this project on Github</a></li>
+					
+					<li class="nav-header">Download</li>
+					<li class="divider"></li>
+					<li><a href="https://raw.github.com/dgestep/jquery-disabler/1.0.6/src/jquery-disabler.min.js" rel="tooltip" data-placement="right" title="Download the compressed version of Disabler" target="_download">Download minified version</a></li>
+					<li><a href="https://raw.github.com/dgestep/jquery-disabler/1.0.6/src/jquery-disabler.js" rel="tooltip" data-placement="right" title="Download the uncompressed version of Disabler" target="_download">Download uncompressed version</a></li>
+				</ul>
+			</div>
+		</div>
+		
+		<div class="span9">
+			<blockquote>
+			<p>
+			You may think that disabling elements on an HTML page is as simple as assigning <code>disabled="disabled"</code> to every 
+			element or by invoking a jQuery selector such as <code>$("input").attr("disabled","disabled");</code>, 
+			but it's not that simple.  What about links or click events assigned to DIV's or tables?  When disabling content on a page, 
+			you may not want those links or clickable elements to function anymore.  Or... maybe instead of disabling your page, you would rather
+			have a display-only version of the contents of your page without having to write two versions of your page; one read-only and the other not.
+			This is where the jQuery Disabler widget can help you out. 
+			</p>
+			
+			<p>
+			<br />
+			The jQuery Disabler widget can be applied on an HTML container (such as a DIV tag) or on individual UI elements and disable or 
+			set the contents of the container to read-only, and back again.  If acting on an HTML container, the Disabler 
+			widget performs a deep-dive scan (evaluates descendants of descendants) of each element inside the container and disables or sets the element as 
+			read-only. When disabled or set to read-only, all events are removed from the elements and those elements that
+			usually respond to clicks (such as hyperlinks) become unresponsive.  When an enabled or a read-only operation is undone, 
+			all removed events are put back and all elements that usually respond to clicks become responsive again.
+			</p>
+			
+			<p>
+			<br />
+			By using special data attributes and CSS classes, pages can instruct the Disabler plugin to hide elements when 
+			disabling, ignore disable requests on certain elements, and change the element to display as text rather than 
+			disabling.  Disabler also includes support for all of the 
+			<a href="http://www.jqueryui.com" target="_jqueryui" title="View the jQuery UI webpage">jQuery UI widgets</a>.
+			</p>
+			
+			<p>
+			<br />
+			The jQuery Disabler widget is open source and can be downloaded from my GitHub page.  You are free to use it as-is or you can
+			download it and modify it for your own use cases.
+			</p>					
+			
+			<p>
+			<br />
+			Good Hunting!<br /><br />
+			</p>
+			<small>Doug Estep</small>
+			</blockquote>
+		</div>
+	</div>
+
+
+	<div class="row-fluid">
+		<div class="span12">
+			<a name="widget-usage"></a>
+			<div id="jquery-disabler-usage" style="clear: both; padding-top: 5px">
+				<h2>How to use Disabler</h2>
+				<hr />
+				To use this widget include the following JavaScript files in your page.  You must download the 
+				<a href="http://jquery.com/download/" title="jQuery's website" target="_jquerydownload">jQuery 1.7+</a> library and the 
+				<a href="http://jqueryui.com/download/" title="jQuery UI website" target="_jqueryuidownload">jQuery UI 1.8+</a> 
+				library separately.   
+<pre class="pre-scrollable prettyprint">
+&lt;script src="jquery-1.7.1.min.js"&gt;&lt;/script&gt;
+&lt;!-- the jquery ui custom file contains the widget factory  --&gt;
+&lt;script src="jquery-ui-1.8.20.custom.min.js"&gt;&lt;/script&gt;
+&lt;script src="jquery-disabler.min.js"&gt;&lt;/script&gt;
+</pre>
+				
+				<p>
+				Next construct or pick a division on your page with visible elements that you want to disable.  If you disable a division, all
+				visible elements within the division will be affected.  You can also only disable visible controls, such as INPUT's, SELECT's, etc.
+				</p>
+	
+				<div style="float: left; padding-right: 10px;">	
+					<div class="code" style="clear: both;">
+						<pre class="pre-scrollable prettyprint">
+&lt;div id="myExample1"&gt; 
+  &lt;form id="frmExample1" action="#"&gt; 
+    &lt;label for="myText"&gt;&lt;b&gt;Enter a Message&lt;/b&gt;&lt;/label&gt; 
+    &lt;input type="text" id="myText" name="myText" size="20" 
+	  value="Have a nice day!"/&gt; 
+    &lt;p&gt;
+    &lt!--
+    The rest of this HTML form is omitted from 
+    this code snippet. The demo to the right 
+    contains inputs, checkboxes, radio buttons, 
+    text area boxes, anchors, and select boxes. 
+    Disabler will disable them all!
+    --&gt;
+  &lt;/form&gt;				
+&lt;/div&gt;
+						</pre>
+					</div>
+					
+					<div style="clear: both; padding: 10px;">
+						Finally, initialize the widget on the division or visible element once the document is ready.
+					</div>
+					
+					<div style="clear: both;">
+						<pre class="pre-scrollable prettyprint">
+&lt;script&gt;
+$(function() {
+  // disables all visible elements inside the 
+  // myExample1 division
+  $("div#myExample1").disabler({
+    disable : true
+  });
+  // or...
+  // disables all input buttons, input submit buttons,
+  // button elements, and anchors.
+  $("input:button, input:submit, button, a").disabler({
+    disable : true
+  });
+});	
+&lt;/script&gt;
+						</pre>
+					</div>
+					<div style="clear: both; padding: 10px;">
+						That's it! Check out our <a href="/dme/jquery-disabler-widget-demos" rel="tooltip" data-placement="top" title="View demos of Disabler">demo page</a>
+						for advanced usages and for more code samples!
+					</div>
+				</div>
+					
+				<div id="myExample1" class="demo" style="float: left; padding-left: 10px;">
+					<form id="frmExample1" action="#" class="form-inline">
+					<fieldset>
+					<legend>Quick Demo</legend>
+					<p>
+					<label for="message"><b>Enter a Message</b></label><br />
+					<input type="text" id="myText" name="myText" value="Have a nice day!" 
+						rel="tooltip" data-placement="right" title="Enter a message" class="disabler-show-text-readonly input-large"/>
+					</p>
+					
+					<p>
+					<label for="numberChoice"><b>Pick a Number</b></label><br />
+					<select id="numberChoice" name="numberChoice" rel="tooltip" data-placement="right" title="Pick a number" class="disabler-show-text-readonly input-medium">
+					<option value=""  data-disabler-read-only-display="">-- pick a number --</option>
+					<option value="1">One</option>
+					<option value="2">Two</option>
+					<option value="3">Three</option>
+					<option value="4">Four</option>
+					<option value="5">Five</option>
+					</select>
+					</p>
+					
+					<p>
+					<label><b>Favorite Sport</b></label><br />				
+					<label class="checkbox">
+						<input type="checkbox" id="cbxFootball" name="cbxFootball" checked="checked" class="disabler-show-text-readonly" 
+							rel="tooltip" data-placement="top" title="Favorite Sport Football?" data-disabler-read-only-display="Football&nbsp;"/>
+						<span class="disabler-hide-readonly">Football</span>			
+					</label>
+					
+					<label class="checkbox">
+						<input type="checkbox" id="cbxBasketball" name="cbxBasketball" class="disabler-show-text-readonly" 
+							rel="tooltip" data-placement="top" title="Favorite Sport Basketball" data-disabler-read-only-display="Basketball&nbsp;" />
+						<span class="disabler-hide-readonly">Basketball</span>
+					</label>	
+					</p>
+					
+					<p>
+					<label><b>Happy?</b></label><br />
+					<label class="radio">
+						<input type="radio" id="myRadioYes" name="myRadio" checked="checked" class="disabler-show-text-readonly" 
+							rel="tooltip" data-placement="top" title="Yes, I'm happy" data-disabler-read-only-display="Yes, I'm happy" />
+							<span class="disabler-hide-readonly">Yes</span>
+					</label>
+					<label class="radio">
+						<input type="radio" id="myRadioNo" name="myRadio" class="disabler-show-text-readonly" 
+							rel="tooltip" data-placement="top" title="No, I'm not happy" data-disabler-read-only-display="No, I'm not happy" />
+							<span class="disabler-hide-readonly">No</span>
+					</label>			
+					</p>
+					
+					<p>
+					<label for="myTextArea"><b>Comment</b></label><br />
+					<textarea id="myTextArea" name="myTextArea" rows="3" cols="40" 
+						rel="tooltip" data-placement="right" title="Any comments?" class="disabler-show-text-readonly input-large">I have something to say!</textarea>
+					</p>
+					
+					<p>
+					<a id="link-to-google" href="http://www.google.com" rel="tooltip" data-placement="right" title="Feel like Googling?" target="_linktogoogle" 
+						class="disabler-show-text-readonly" data-disabler-read-only-display="Link to Google has been omitted!">Link to Google</a>
+					</p>
+					
+					<p>
+					<input type="button" name="btnExample1Disable" value="Click to Disable" 
+						class="btn btn-primary disabler-ignore-readonly" rel="tooltip" data-placement="bottom" title="Toggle between enable and disable"/>
+					<input type="button" name="btnExample1ReadOnlyText" value="Show ReadOnly View" 
+						class="btn btn-inverse disabler-ignore-readonly" rel="tooltip" data-placement="bottom" title="Toggle between read-only and back"/>
+					</p>
+					</fieldset>
+					</form>
+				</div>
+			</div>	
+			
+			<a name="widget-usage-features"></a>
+			<div id="jquery-disabler-usage-features" style="clear: both; padding-top: 5px">				
+				<h2>Additional Features and Customizations</h2>
+				<hr />
+				Your pages can influence the way in which the Disable plugin behaves by assigning specific CSS classes and DATA attributes to the HTML.  The following 
+				features only apply to the read-only operation.
+				
+				<h3>CSS: disabler-ignore-readonly</h3>
+				<div class="row-fluid">
+					<div class="span1">&nbsp;</div>
+					<div class="span10">
+						Assign the CSS class <code>disabler-ignore-readonly</code> to an element to instruct Disabler to ignore the element when disabling or setting to read-only. The 
+						input button defined below will not be disabled or set to read-only because it has the class <code>disabler-ignore-readonly</code> assigned to it. 
+						<p>
+						<pre class="prettyprint">
+&lt;input type="button" name="btnGo" value="GO" class="disabler-ignore-readonly" /&gt;
+&lt;!-- does not disable or set to read-only the GO button  --&gt; 
+						</pre>
+						</p>
+					</div>
+					<div class="span1">&nbsp;</div>
+				</div>
+				
+				<h3>CSS: disabler-hide-readonly</h3>
+				<div class="row-fluid">
+					<div class="span1">&nbsp;</div>
+					<div class="span10">
+						Assign the CSS class <code>disabler-hide-readonly</code> to an element to instruct Disabler to hide the element when disabling or setting to read-only. The 
+						input button defined below will be hidden when disabled or set to read-only because it has the class <code>disabler-hide-readonly</code> assigned to it. 
+						You can also assign the CCS class to container elements such as DIV's or SPAN's to hide the elements within the container.
+						<p>
+						<pre class="prettyprint">
+&lt;input type="button" name="btnGo" value="GO" class="disable-hide-readonly" /&gt;
+&lt;!-- hides the GO button when disabled or read-only  --&gt; 
+						</pre>
+						</p>
+					
+						<p>
+						<pre class="prettyprint">
+&lt;span class="disable-hide-readonly"&gt;
+	&lt;input type="button" name="btnGo" value="GO" /&gt; 
+	&lt;input type="button" name="btnStop" value="Stop" /&gt; 
+&lt;/span&gt;
+&lt;!-- hides the GO and Stop buttons when disabled or read-only --&gt; 
+						</pre>
+						</p>
+					</div>
+					<div class="span1">&nbsp;</div>
+				</div>
+						
+				<h3>CSS: disabler-show-text-readonly</h3>
+				<div class="row-fluid">
+					<div class="span1">&nbsp;</div>
+					<div class="span10">
+						Assign the CSS class <code>disabler-show-text-readonly</code> to an element to instruct Disabler to display the text of the element when disabled or set to read-only. For 
+						input and text area elements, the value attribute is displayed.  For anchors, the text of the anchor is displayed. For checkbox and radio buttons, the
+						value of the checked elements are display.  And for the Select element, the text of the selected option is displayed.  This feature does not apply to buttons.
+						<p>
+						<pre class="prettyprint">
+&lt;input type="text" name="accountNumber" value="12345678" class="disabler-show-text-readonly" /&gt;
+&lt;!-- Displays "12345678"  --&gt; 
+						</pre>
+						</p>
+						<p>
+						<pre class="prettyprint">
+&lt;textarea name="description" rows="4" cols="40" class="disabler-show-text-readonly"&gt;Big account.&lt;/textarea&gt;
+&lt;!-- Displays "Big account."  --&gt; 
+						</pre>
+						</p>
+						<p>
+						<pre class="prettyprint">
+&lt;a href="http://www.google.com" class="disabler-show-text-readonly"&gt;Google&lt;/a&gt;
+&lt;!-- Displays "Google" not hyperlinked  --&gt; 
+						</pre>
+						</p>
+						<p>
+						<pre class="prettyprint">
+&lt;input type="checkbox" value="51" checked="checked" class="disabler-show-text-readonly" /&gt; 
+&lt;input type="checkbox" value="52" class="disabler-show-text-readonly" /&gt; 
+&lt;!-- Displays "51". Does not display "52" because it is not checked  --&gt; 
+						</pre>
+						</p>
+						<p>
+						<pre class="prettyprint">
+&lt;input name="sex" type="radio" value="F" checked="checked" class="disabler-show-text-readonly" /&gt; 
+&lt;input name="sex" type="radio" value="M" class="disabler-show-text-readonly" /&gt; 
+&lt;!-- Displays "F". Does not display "M" because it is not checked  --&gt; 
+						</pre>
+						</p>
+						<p>
+						<pre class="prettyprint">
+&lt;select name="accountNumber" class="disabler-show-text-readonly" /&gt; 
+	&lt;option value="12345678"&gt;Lucasfilms&lt;/option&gt; 
+	&lt;option value="87654321" selected="selected"&gt;Skywalker Inc.&lt;/option&gt; 
+	&lt;option value="01010101"&gt;Solo Space Rides&lt;/option&gt; 
+&lt;/select&gt;
+&lt;!-- Displays "Skywalker Inc.". Does not display other options --&gt;
+&lt;!-- because they are not selected  --&gt; 
+						</pre>
+						</p>
+						<p>
+						<pre class="prettyprint">
+&lt;select name="accountNumber" multiple="multiple" class="disabler-show-text-readonly" /&gt;
+	&lt;option value="12345678"&gt;Lucasfilms&lt;/option&gt; 
+	&lt;option value="87654321" selected="selected"&gt;Skywalker Inc.&lt;/option&gt; 
+	&lt;option value="01010101" selected="selected"&gt;Solo Space Rides&lt;/option&gt; 
+&lt;/select&gt;
+&lt;!-- Displays "Skywalker Inc.,Solo Space Rides". A comma separates each  --&gt;
+&lt;!-- selected option on a multi-select box. Does not display the "Lucasfilms" --&gt; 
+&lt;!-- option because it is not selected  --&gt; 
+						</pre>
+						</p>
+					</div>
+					<div class="span1">&nbsp;</div>
+				</div>
+				
+				<h3>DATA: data-disabler-read-only-display</h3>
+				<div class="row-fluid">
+					<div class="span1">&nbsp;</div>
+					<div class="span10">
+					Assign the data attribute <code>data-disabler-read-only-display</code> to an element to override the value of the element when the <code>disabler-show-text-readonly</code> CSS 
+					class is assigned. For a Select element, assign the <code>data-disabler-read-only-display</code> data attribute to the options in order to override the option text. 
+					This data attribute is ignored if the element does not have the <code>disabler-show-text-readonly</code> class assigned to it.  This feature does not apply to buttons.
+					<p>
+					<pre class="prettyprint">
+&lt;input type="text" name="accountNumber" value="12345678" 
+  class="disabler-show-text-readonly" data-disabler-read-only-display="Account Hidden" /&gt;
+&lt;!-- Displays "Account Hidden" --&gt; 
+					</pre>
+					</p>
+					<p>
+					<pre class="prettyprint">
+&lt;textarea name="description" rows="4" cols="40" class="disabler-show-text-readonly" 
+  data-disabler-read-only-display="Account too big to show"&gt;Big account.&lt;/textarea&gt;
+&lt;!-- Displays "Account too big to show" --&gt; 
+					</pre>
+					</p>
+					<p>
+					<pre class="prettyprint">
+&lt;a href="http://www.google.com" class="disabler-show-text-readonly" 
+  data-disabler-read-only-display="Link Disabled"&gt;Google&lt;/a&gt;
+&lt;!-- Displays "Link Disabled" not hyperlinked --&gt; 
+					</pre>
+					</p>
+					<p>
+					<pre class="prettyprint">
+&lt;input type="checkbox" value="51" checked="checked" class="disabler-show-text-readonly" 
+  data-disabler-read-only-display="My favorite number is 51" /&gt;
+&lt;input type="checkbox" value="52" class="disabler-show-text-readonly" 
+  data-disabler-read-only-display="52 is OK also" /&gt;
+&lt;!-- Displays "My favorite number is 51". --&gt; 
+&lt;!-- Does not display "52 is OK also" because it is not checked --&gt; 
+					</pre>
+					</p>
+					<p>
+					<pre class="prettyprint">
+&lt;input name="sex" type="radio" value="F" checked="checked" class="disabler-show-text-readonly" 
+  data-disabler-read-only-display="Female" /&gt;
+&lt;input name="sex" type="radio" value="M" class="disabler-show-text-readonly" 
+  data-disabler-read-only-display="Male" /&gt;
+&lt;!-- Displays "Female". Does not display "Male" because it is not checked --&gt; 
+					</pre>
+					</p>
+					<p>
+					<pre class="prettyprint">
+&lt;select name="accountNumber" class="disabler-show-text-readonly" /&gt;
+  &lt;option value="12345678" 
+    data-disabler-read-only-display="George Lucas Rules"&gt;Lucasfilms&lt;/option&gt;
+  &lt;option value="87654321" 
+    data-disabler-read-only-display="I'm Luke Skywalker and I'm here to rescue you" selected="selected"&gt;Skywalker Inc.&lt;/option&gt;
+  &lt;option value="01010101" 
+    data-disabler-read-only-display="Chewie here tells me you're looking for passage to the Alderaan system"&gt;Solo Space Rides&lt;/option&gt;
+&lt;/select&gt;
+&lt;!-- Displays "I'm Luke Skywalker and I'm here to rescue you". --&gt; 
+&lt;!-- Does not display other options because they are not selected --&gt; 
+					</pre>
+					</p>
+					<p>
+					<pre class="prettyprint">
+&lt;select name="accountNumber" multiple="multiple" class="disabler-show-text-readonly" /&gt;
+  &lt;option value="12345678" 
+    data-disabler-read-only-display="George Lucas Rules"&gt;Lucasfilms&lt;/option&gt;
+  &lt;option value="87654321" 
+    data-disabler-read-only-display="I'm Luke Skywalker and I'm here to rescue you" 
+    selected="selected"&gt;Skywalker Inc.&lt;/option&gt;
+  &lt;option value="01010101" 
+    data-disabler-read-only-display="Chewie here tells me you're looking for passage to the Alderaan system"&gt;
+    Solo Space Rides&lt;/option&gt;
+&lt;/select&gt;
+&lt;!-- Displays "I'm Luke Skywalker and I'm here to rescue you,Chewie here tells me you're looking for passage to the Alderaan system".  --&gt;
+&lt;!-- A comma separates each selected option on a multi-select box. Does not display the "George Lucas Rules" --&gt;  
+&lt;!-- option because it is not selected --&gt;  
+					</pre>
+					</p>
+					</div>
+					<div class="span1">&nbsp;</div>
+				</div>
+			</div>
+			
+			<a name="widget-options"></a>
+			<div id="jquery-disabler-options" style="clear: both; padding-top: 5px">
+				<h2>Options</h2>
+				<hr size="1" color="black" />
+				<p>
+				All options offered by Disabler are truly optional meaning you can instantiate disabler with no options and it will work.  You can
+				instantiate Disabler and override options or you can change options after Disabler has already been instantiated. For
+				example, the below script instantiates Disabler on the "myData" DIV element and overrides the default <i>disable</i> option. It
+				also overrides the <i>expression</i> option, telling Disabler to not disable any element that has the CCS class 
+				"disabler-ignore-readonly" associated with it and to also not disable any <code>Label</code> tags.
+				</p>
+				<div class="row-fluid">
+					<div class="span1">&nbsp;</div>
+					<div class="span10">
+					<pre class="prettyprint">
+$("div#myData").disabler({ 
+&nbsp;&nbsp; disable : true, 
+&nbsp;&nbsp; expression : "*:not(.disabler-ignore-readonly):not(label)" 
+});
+					</pre>
+					</div>
+				</div>
+				
+				This example instantiates Disabler with default options and then changes the <i>disable</i> option after instantiation.
+				<div class="row-fluid">
+					<div class="span1">&nbsp;</div>
+					<div class="span10">
+						<pre class="prettyprint">
+$("div#myData").disabler();
+$("div#myData").disabler("option", "disable", true);
+						</pre>
+					</div>
+				</div>
+				
+				<table class="table table-bordered table-striped">
+				<thead>
+					<tr>
+						<th scope="col">Option</th>  
+						<th scope="col">type</th>  
+						<th scope="col"><div class="span3">default</div></th>  
+						<th scope="col">description</th>  
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td>disable</td>
+						<td>boolean</td>
+						<td>false</td>
+						<td>
+						Supply true to disable the contents of an HTML container or individual UI element.  Supply false to enable the contents of an 
+						HTML container or individual UI element that was previously disabled by this widget.							
+						</td>
+					</tr>
+					<tr>
+						<td>expression</td>
+						<td>string</td>
+						<td>'*:not(.disabler-ignore-readonly)'</td>
+						<td>
+						<p>
+						The jQuery selector expression to use to search through the descendants of each element in the DOM when evaluating elements to disable/enable.  The
+						default selector expression selects all elements within the container element that the Disabler widget is associated with, ignoring all elements that have
+						the CSS class <code>disabler-ignore-readonly</code> associated with it.  If the container element that the Disabler widget is associated with is a visual element (IE 
+						an INPUT, SELECT, Anchor, etc.), then the visual element will also be evaluated.  If the container element that the Disabler widget is associated with is
+						not a visual element, then only its children (and children of children) will be evaluated.
+						</p>
+						<p>
+						<strong>Warning</strong>: If you instantiate Disabler on a very busy section of your page and you set this option to <code>*</code>, the performance of Disabler 
+						may be slow. This is so because assigning <code>*</code> to this option is telling Disabler to travere every element in the DOM which Disabler is 
+						instantiated for. If you have many nested tags (such as tables, tr's, td's, etc.), this can cause slow performance.
+						</p>
+						</td>
+					</tr>
+					<tr>
+						<td>readonly</td>
+						<td>boolean</td>
+						<td>false</td>
+						<td>
+						Supply true to set the contents of an HTML container or individual UI element to read-only.  Supply false to set undo a previous 
+						read-only operation by this widget.							
+						</td>
+					</tr>
+				</tbody>
+				</table>
+			</div>
+	
+			<a name="widget-events"></a>
+			<div id="jquery-disabler-events" style="clear: both; padding-top: 5px">
+				<h2>Events</h2>
+				<hr size="1" color="black" />
+				<p>
+				These events are available in order for your scripts to react when the state of Disabler changes or inject your own custom logic inside Disabler at key points in
+				the logic. Although the beauty of open source projects is that you can download and customize code to your liking, I'd recommend that you try to use one of these events
+				to inject your custom code in.  Injecting your custom code into events allows for you to easily upgrade to a future version without having to re-implement your
+				customization again.  
+				</p>
+				<p>
+				You can hook into any of the events below by either binding to the event name or by passing the event handler as an option during the initialization of the widget. 
+				You can use the <code>bind</code> or <code>on</code> functions in jQuery to bind an event handler to one of the Disabler events.  The event name to bind to is
+				a combination of the plugin name (disabler) and the event name (<strong>all in lower case</strong>).  See the example below for binding an event handler to the "beforeDisable"
+				event.
+				</p>
+				<p>
+				If you have multiple event handlers bound to an event, they will be executed in the order that they were bound.  Event handlers that are passed in as options to 
+				this widget will be executed after events that are bound. 
+				</p>
+				<div class="row-fluid">
+					<div class="span1">&nbsp;</div>
+					<div class="span10">
+						<pre class="prettyprint">
+// to bind to an event, the event name is a combination of the name
+// of the plugin + the event name.  Example: "disablerbeforedisabler"
+// where "disabler" is the name of this plugin and "beforedisabler" is
+// the name of the event.  You can use "on" or "bind".
+// NOTE: the event is all in lower case!
+$("#mydiv").on("disablerbeforedisable", function(event, data) {
+	// event handler here
+	console.log(data.containerId);
+	console.log(data.disabling);
+	console.log(data.element); 
+}); 
+						</pre>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<div class="row-fluid">
+		<div class="span1">&nbsp;</div>
+		<div class="span10">
+<pre class="prettyprint">
+// or pass in the handler during initialization
+// NOTE: the event is NOT all in lower case!
+$("#mydiv").disabler({
+	beforeDisable : function(event, data) { 
+		// event handler here 
+		console.log(data.containerId); 
+		console.log(data.disabling); 
+		console.log(data.element); 
+	} 
+});  
+</pre>
+		</div>
+	</div>
+
+	<div class="row-fluid">
+		<div class="span12">
+		<table class="table">
+		<thead>
+			<tr>
+				<th scope="col">Event</th>  
+				<th scope="col">Description</th>  
+			</tr>
+		</thead>
+		<tbody>						
+			<tr>
+				<td>afterDisable</td>
+				<td>
+				Event fired after the contents is disabled or enabled. 
+				<p>
+				<strong>Parameters</strong>
+				<table>
+				<tr>
+					<td>event</td>
+					<td>The native event object that initiated the callback.</td>						
+				</tr>
+				<tr>
+					<td>data</td>
+					<td>
+						An object containing the following values:<br />
+						{<br /><br />
+						<table>
+						<tr>
+							<td>containerId</td>
+							<td>The ID representing the container to disable.</td>
+						</tr>
+						<tr>
+							<td>disabling</td>
+							<td>If true, a disable transaction happened. If false, a prior disable transaction was reversed.</td>
+						</tr>
+						<tr>
+							<td>element</td>
+							<td>the container element that the Disabler widget is acting on.  Populated by passing <code>this.element</code>.</td>
+						</tr>
+						</table>
+						} <br />
+					</td>						
+				</tr>
+				</table>
+				</p>			
+				</td>
+			</tr>
+			
+			<tr>
+				<td>afterReadOnly</td>
+				<td>
+				Event fired after a container or input control has been set to read-only or undone from a previous read-only call.
+				<p>
+				<strong>Parameters</strong>
+				<table>
+				<tr>
+					<td>event</td>
+					<td>The native event object that initiated the callback.</td>						
+				</tr>
+				<tr>
+					<td>data</td>
+					<td>
+						An object containing the following values:<br />
+						{<br /><br />
+						<table>
+						<tr>
+							<td>containerId</td>
+							<td>the ID representing the container to set to read-only.</td>
+						</tr>
+						<tr>
+							<td>readOnlyFlag</td>
+							<td>If true, the inputable columns were set to read-only. If false, a prior read-only function was reversed.</td>
+						</tr>
+						<tr>
+							<td>element</td>
+							<td>the container element that the Disabler widget is acting on.  Populated by passing <code>this.element</code>.</td>
+						</tr>
+						</table>
+						} <br />
+					</td>						
+				</tr>
+				</table>
+				</p>			
+				</td>
+			</tr>
+			
+			<tr>
+				<td>beforeReadOnly</td>
+				<td>
+				Event fired before a container or input control has been set to read-only or undone from a previous read-only call.  
+				Calling <code>event.preventDefault()</code> prevents the read-only logic from continuing, essentially cancelling the 
+				read-only transaction before it begins.
+				<p>
+				<strong>Parameters</strong>
+				<table>
+				<tr>
+					<td>event</td>
+					<td>The native event object that initiated the callback.</td>						
+				</tr>
+				<tr>
+					<td>data</td>
+					<td>
+						An object containing the following values:<br />
+						{<br /><br />
+						<table>
+						<tr>
+							<td>containerId</td>
+							<td>the ID representing the container to set to read-only.</td>
+						</tr>
+						<tr>
+							<td>readOnlyFlag</td>
+							<td>If true, the inputable columns were set to read-only. If false, a prior read-only function was reversed.</td>
+						</tr>
+						<tr>
+							<td>disabling</td>
+							<td>true if the readOnly was invoked because of a disable; false if not. </td>
+						</tr>
+						<tr>
+							<td>element</td>
+							<td>the container element that the Disabler widget is acting on.  Populated by passing <code>this.element</code>.</td>
+						</tr>
+						</table>
+						} <br />
+					</td>						
+				</tr>
+				</table>
+				</p>			
+				</td>
+			</tr>
+			
+			<tr>
+				<td>disableEvents</td>
+				<td>
+				Event fired at the beginning of the process of disabling all events on the supplied input control. 
+				Calling <code>event.preventDefault()</code> prevents the disable-events logic from continuing, essentially cancelling the disable-events transaction before it begins.				
+				<p>
+				<strong>Parameters</strong>
+				<table>
+				<tr>
+					<th>Parameter</th>
+					<th>Description</th>						
+				</tr>
+				<tr>
+					<td>event</td>
+					<td>The native event object that initiated the callback.</td>						
+				</tr>
+				<tr>
+					<td>input</td>
+					<td>
+						The input control being examined. 
+					</td>						
+				</tr>
+				</table>
+				</p>			
+				</td>
+			</tr>
+		
+			<tr>
+				<td>beforeDisable</td>
+				<td>
+				Event fired before the content is disabled or enabled. Calling <code>event.preventDefault()</code> prevents the disable logic from continuing, essentially cancelling the 
+				disable before it begins.
+				<p>
+				<strong>Parameters</strong>
+				<table>
+				<tr>
+					<th>event</th>
+					<td>The native event object that initiated the callback.</td>						
+				</tr>
+				<tr>
+					<th>data</th>
+					<td>
+						An object containing the following values:<br />
+						{<br /><br />
+						<table>
+						<tr>
+							<td>containerId</td>
+							<td>The ID representing the container to disable.</td>
+						</tr>
+						<tr>
+							<td>disabling</td>
+							<td>If true, a disable transaction is about to occur. If false, a prior disable transaction is about to be reversed.</td>
+						</tr>
+						<tr>
+							<td>element</td>
+							<td>the container element that the Disabler widget is acting on.  Populated by passing <code>this.element</code>.</td>
+						</tr>
+						</table>
+						} <br />
+					</td>						
+				</tr>
+				</table>
+				</p>			
+				</td>
+			</tr>
+			
+			<tr>
+				<td>enableEvents</td>
+				<td>
+				Event fired at the beginning of the process of enabling all previously disabled events on the supplied input control. 
+				Calling <code>event.preventDefault()</code> prevents the enable-events logic from continuing, essentially cancelling the enable-events transaction before it begins.				
+				<p>
+				<strong>Parameters</strong>
+				<table>
+				<tr>
+					<th>Parameter</th>
+					<th>Description</th>						
+				</tr>
+				<tr>
+					<td>event</td>
+					<td>The native event object that initiated the callback.</td>						
+				</tr>
+				<tr>
+					<td>input</td>
+					<td>
+						The input control being examined. 
+					</td>						
+				</tr>
+				</table>
+				</p>			
+				</td>
+			</tr>
+			
+			<tr>
+				<td>
+				processHiddenInputs NotReadOnlyIteration<br /><br />
+				(above event name is all one word)
+				</td>
+				<td>
+				Event fired at the end of each iteration through all hidden input controls after the control as been unhidden.
+				<p>
+				<strong>Parameters</strong>
+				<table>
+				<tr>
+					<th>Parameter</th>
+					<th>Description</th>						
+				</tr>
+				<tr>
+					<td>event</td>
+					<td>The native event object that initiated the callback.</td>						
+				</tr>
+				<tr>
+					<td>data</td>
+					<td>
+						An object containing the following values:<br />
+						{<br /><br />
+						<table>
+						<tr>
+							<td>containerId</td>
+							<td>The ID representing the container which contains the input controls that have been hidden.  The ID has been properly escaped.</td>
+						</tr>
+						<tr>
+							<td>hiddenInput</td>
+							<td>An array containing all input controls that have been hidden.</td>
+						</tr>
+						<tr>
+							<td>element</td>
+							<td>the container element that the Disabler widget is acting on.  Populated by passing <code>this.element</code>.</td>
+						</tr>
+						</table>
+						} <br />
+					</td>						
+				</tr>
+				</table>
+				</p>			
+				</td>
+			</tr>
+			
+			<tr>
+				<td>processHiddenInputsReadOnly</td>
+				<td>
+				Event fired after all input controls that have been flagged to be hidden upon a read-only operation have been successfully hidden.
+				<p>
+				<strong>Parameters</strong>
+				<table>
+				<tr>
+					<th>Parameter</th>
+					<th>Description</th>						
+				</tr>
+				<tr>
+					<td>event</td>
+					<td>The native event object that initiated the callback.</td>						
+				</tr>
+				<tr>
+					<td>data</td>
+					<td>
+						An object containing the following values:<br />
+						{<br /><br />
+						<table>
+						<tr>
+							<td>containerId</td>
+							<td>The ID representing the container which contains the input controls that have been hidden.  The ID has been properly escaped.</td>
+						</tr>
+						<tr>
+							<td>hiddenInput</td>
+							<td>An array containing all input controls that have been hidden.</td>
+						</tr>
+						<tr>
+							<td>element</td>
+							<td>the container element that the Disabler widget is acting on.  Populated by passing <code>this.element</code>.</td>
+						</tr>
+						</table>
+						} <br />
+					</td>						
+				</tr>
+				</table>
+				</p>			
+				</td>
+			</tr>
+			
+			<tr>
+				<td>readOnlyIteration</td>
+				<td>
+				Event fired at the beginning of an iteration within the loop which is examining each input when doing a readOnly function. 
+				Calling <code>event.preventDefault()</code> will result in the current record within the iteration being skipped.  The logic
+				will move on to the next record in the iteration.  
+				<p>
+				<strong>Parameters</strong>
+				<table>
+				<tr>
+					<td>event</td>
+					<td>The native event object that initiated the callback.</td>						
+				</tr>
+				<tr>
+					<td>data</td>
+					<td>
+						An object containing the following values:<br />
+						{<br /><br />
+						<table>
+						<tr>
+							<td>input</td>
+							<td>The input control being examined.</td>
+						</tr>
+						<tr>
+							<td>index</td>
+							<td>The index within the loop. Starts with zero.</td>
+						</tr>
+						<tr>
+							<td>containerId</td>
+							<td>the ID representing the container to set to read-only.</td>
+						</tr>
+						<tr>
+							<td>readOnlyFlag</td>
+							<td>If true, the inputable columns were set to read-only. If false, a prior read-only function was reversed.</td>
+						</tr>
+						<tr>
+							<td>disabling</td>
+							<td>true if the readOnly was invoked because of a disable; false if not.</td>
+						</tr>
+						<tr>
+							<td>element</td>
+							<td>the container element that the Disabler widget is acting on.  Populated by passing <code>this.element</code>.</td>
+						</tr>
+						</table>
+						} <br />
+					</td>						
+				</tr>
+				</table>
+				</p>			
+				</td>
+			</tr>
+			
+			<tr>
+				<td>showTextReadOnly</td>
+				<td>
+				Event fired at the beginning of the process of displaying an input control as text. 
+ 	 			Calling <code>event.preventDefault()</code> cancellings the show-as-text logic before it begins.
+				<p>
+				<strong>Parameters</strong>
+				<table>
+				<tr>
+					<td>event</td>
+					<td>The native event object that initiated the callback.</td>						
+				</tr>
+				<tr>
+					<td>input</td>
+					<td>
+						The input control being examined. 
+					</td>						
+				</tr>
+				</table>
+				</p>			
+				</td>
+			</tr>
+			
+			<tr>
+				<td>turnReadOnlyOff</td>
+				<td>
+				Event fired on an input control when undoing a prior read-only operation. Return true if the process should continue. 
+ 	 			Calling <code>event.preventDefault()</code> cancellings the read-only logic before it begins.
+				<p>
+				<strong>Parameters</strong>
+				<table>
+				<tr>
+					<td>event</td>
+					<td>The native event object that initiated the callback.</td>						
+				</tr>
+				<tr>
+					<td>input</td>
+					<td>
+						The input control where the read-only operation is being undone. 
+					</td>						
+				</tr>
+				</table>
+				</p>			
+				</td>
+			</tr>
+			
+			<tr>
+				<td>turnReadOnlyOn</td>
+				<td>
+				Event fired on an input control when making the control read-only. Return true if the process should continue. 
+	 			Calling <code>event.preventDefault()</code> cancellings the read-only logic before it begins.
+				<p>
+				<strong>Parameters</strong>
+				<table>
+				<tr>
+					<td>event</td>
+					<td>The native event object that initiated the callback.</td>						
+				</tr>
+				<tr>
+					<td>input</td>
+					<td>
+						The input control being set to read-only. 
+					</td>						
+				</tr>
+				</table>
+				</p>			
+				</td>
+			</tr>
+			
+			<tr>
+				<td>undoShowTextReadOnly</td>
+				<td>
+				Event fired at the beginning of the process of undoing a prior show-as-text operation. 
+ 	 			Calling <code>event.preventDefault()</code> cancellings the undo-show-as-text logic before it begins.
+				<p>
+				<strong>Parameters</strong>
+				<table>
+				<tr>
+					<td>event</td>
+					<td>The native event object that initiated the callback.</td>						
+				</tr>
+				<tr>
+					<td>input</td>
+					<td>
+						The input control being examined. 
+					</td>						
+				</tr>
+				</table>
+				</p>			
+				</td>
+			</tr>
+		</tbody>
+		</table>
+		</div>
+	</div>
+	
+	<a name="widget-methods"></a>
+	<div class="row-fluid">
+		<div class="span12">
+			<div id="jquery-disabler-methods" style="clear: both; padding-top: 5px">											
+				<h2>Methods</h2>
+				<hr size="1" color="black" />
+				<p>
+				After an instance has been initialized, interact with it by calling any of these methods:
+				</p>
+				
+				<div class="row-fluid">
+					<div class="span1">&nbsp;</div>
+					<div class="span10">
+						<pre class="prettyprint">
+// Enabling
+$("#myDiv").disabler("enable");
+
+// Disabling
+$("#myDiv").disabler("disable");
+
+// Setting content to read-only
+$("#myDiv").disabler("readOnly", "myDiv", true);
+
+// Undoing a read-only operation
+$("#myDiv").disabler("readOnly", "myDiv", false);
+						</pre>
+					</div>
+				</div>
+				
+				
+				
+				<div class="code">
+				</div>
+			
+				<table class="table">
+				<thead>
+					<tr>
+						<th scope="col">Method</th>  
+						<th scope="col">Description</th>  
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td>disable</td>
+						<td>
+						Disables the inputable columns within the supplied container.
+						<p>
+						<strong>Parameters</strong>
+						<table>
+						<tr>
+							<td>containerId</td>
+							<td>
+							the ID representing the container to disable. Set to null or undefined to disable the entire 
+							container in which this plugin is acting against.  If this value is null or undefined and the container in which this 
+							plugin is acting against doesn't have an ID attribute with a value then this method does nothing.
+							</td>						
+						</tr>
+						</table>
+						</p>			
+						</td>
+					</tr>
+					<tr>
+						<td>enable</td>
+						<td>
+						Enables the inputable columns within the supplied container.
+						<p>
+						<strong>Parameters</strong>
+						<table>
+						<tr>
+							<td>containerId</td>
+							<td>
+							The ID representing the container to enable. Set to null or undefined to enable the entire container in 
+							which this plugin is acting against.  If this value is null or undefined and the container in which this 
+							plugin is acting against doesn't have an ID attribute with a value then this method does nothing.
+							</td>						
+						</tr>
+						</table>
+						</p>			
+						</td>
+					</tr>
+					<tr>
+						<td>readOnly</td>
+						<td>
+						Sets the inputable columns contained with the supplied container to read-only, disables buttons, and unbinds all events.
+						<p>
+						<strong>Parameters</strong>
+						<table>
+						<tr>
+							<td>containerId</td>
+							<td>
+							the ID representing the container to set to read-only. Set to null or undefined to set the entire 
+							container in which this plugin is acting against to read-only.  If this value is null or undefined and the container in which this 
+							plugin is acting against doesn't have an ID attribute with a value then this method does nothing.
+							</td>						
+						</tr>
+						<tr>
+							<td>readOnlyFlag</td>
+							<td>
+							Set to true to set to read-only.  Set to false to undo the read-only columns set by this function, to enable the buttons, 
+							and bind the events back.  Setting this parameter to false will not remove the read-only attribute of a column that was 
+							not set to read-only by this function.
+							</td>						
+						</tr>
+						</table>
+						</p>			
+						</td>
+					</tr>
+				</tbody>
+				</table>
+			</div>		
+		</div>
+	</div>		
+	<hr />
+	<div class="row-fluid">
+		<div class="span12">
+		<p>
+		<i>That's all I have to say about that!</i> -- Forrest Gump. :-)
+		</p>
+		</div>
+	</div>	
+	
+				</div>
+			</div>
+		
+			<hr />	
+			<div class="row-fluid">
+				<div class="span12">
+					<footer>
+					&copy; Doug Estep
+					<p>
+					<br />
+					This site was developed using <a href="http://twitter.github.com/bootstrap/index.html" target="_tbs" 
+						title="Built using Twitter Bootstrap technology">Twitter Bootstrap</a>.  Thank you for the awesome technology!
+					</p>
+					<hr />	
+					</footer>
+				</div>
+			</div>
+		</div>
+		
+		 
+ 
+ 
+ 
+ 
+
+
+
+
+  
+
+<script src="/dme/web/script/jquery-ui-1.8.20.custom.min.js"></script>
+<script src="/dme/web/script/jquery-disabler.min.js"></script>
+<script src="/dme/web/script/jquery-ui-mod-highlighter-1.0.0.min.js"></script>
+<script src="/dme/web/script/jquery-ui-pane-1.0.0.min.js"></script>
+<script src="/dme/web/script/prettify.js"></script>
+<script src="/dme/web/script/bootstrap/bootstrap.min.js"></script>
+<script src="/dme/web/script/jquery.multiselect.min.js"></script>
+		
+		<script type="text/javascript">
+			$(function() {
+				$("a, input, select, textarea").tooltip();
+				
+				var example1 = $("div#myExample1").disabler();
+				
+				$("input[name='btnExample1Disable']").on("click", function(e) {
+					e.preventDefault();
+					
+					var readOnlyBtn = $("input[name='btnExample1ReadOnlyText']");
+					
+					var disabled = example1.disabler("option", "disable");
+					example1.disabler("option", "expression", "*:not(.disabler-ignore-readonly)");
+					if (disabled) {
+						$(this).val("Click to Disable");
+						example1.disabler("enable");
+						readOnlyBtn.removeAttr("disabled");
+					} else {
+						$(this).val("Click to Enable");
+						example1.disabler("disable");
+						readOnlyBtn.attr("disabled","disabled");
+					}
+				});
+				
+				$("input[name='btnExample1ReadOnlyText']").on("click", function(e) {
+					e.preventDefault();
+					
+					var disableBtn = $("input[name='btnExample1Disable']");
+					
+					var readonly = example1.disabler("option", "readonly");
+					example1.disabler("option", "expression", "*:not(.disabler-ignore-readonly):not(label)");
+					if (readonly) {
+						$(this).val("Show ReadOnly View");
+						example1.disabler("readOnly", "myExample1", false);
+						disableBtn.removeAttr("disabled");
+					} else {
+						$(this).val("Undo ReadOnly");
+						example1.disabler("readOnly", "myExample1", true);
+						disableBtn.attr("disabled","disabled");
+					}
+				});
+				
+				prettyPrint();
+			});	
+		</script>
+
+	</body>
+</html>
+

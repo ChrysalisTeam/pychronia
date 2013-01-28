@@ -2,7 +2,7 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
-import re, logging
+import re, logging, random
 from datetime import datetime
 
 from rpgweb.utilities import mediaplayers, autolinker
@@ -24,6 +24,11 @@ from rpgweb.storage import protected_game_file_system_storage
 
 
 register = django.template.Library() # IMPORTANT, module-level object used by templates !
+
+@register.simple_tag(takes_context=False)
+def random_id():
+    """Tag to generate random ids in HTML tags, just to please javascript utilities."""
+    return "uuid-" + str(random.randint(1000000, 1000000000))
 
 @register.tag
 def gameurl(parser, token):
