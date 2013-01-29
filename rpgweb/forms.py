@@ -375,7 +375,7 @@ class ArtefactForm(AbstractGameForm):
     def __init__(self, ability, *args, **kwargs):
         super(ArtefactForm, self).__init__(ability, *args, **kwargs)
 
-        _user_items = ability.get_available_items_for_user(ability.user.username)
+        _user_items = ability.get_available_items_for_user()
         _user_artefacts = {key: value for (key, value) in _user_items.items() if not value["is_gem"]}
         _user_artefacts_choices = [(key, value["title"]) for (key, value) in _user_artefacts.items()]
         _user_artefacts_choices.sort(key=lambda pair: pair[1])

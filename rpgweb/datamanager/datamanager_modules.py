@@ -2244,7 +2244,7 @@ class Chatroom(BaseDataManager):
             raise AbnormalUsageError(_("Only authenticated users may chat"))
 
         if self.user.is_character:
-            self._set_chatting_status(self.user.username)
+            self._set_chatting_status()
 
         message = escape(message.strip()) # we escape messages immediateley
 

@@ -166,18 +166,17 @@ class RunicTranslationAbility(AbstractAbility):
     @transaction_watcher
     def process_translation(self, target_item, transcription):
 
-        self._process_translation_submission(self.user.username,
-                                              target_item,
+        self._process_translation_submission(target_item,
                                               transcription)
 
         return _("Runic transcription successfully submitted, the result will be emailed to you.")  # TODO REMOVE THIS
 
 
     @transaction_watcher
-    def _process_translation_submission(self, username, item_name, rune_transcription):  # TODO remove username !!
+    def _process_translation_submission(self, item_name, rune_transcription):  # TODO remove username !!
 
 
-        local_email = self.get_character_email(username)
+        local_email = self.get_character_email()
         remote_email = "translator-robot@hightech.com"  # dummy domain too
 
         # request email, to allow interception
@@ -211,8 +210,8 @@ class RunicTranslationAbility(AbstractAbility):
 
         msg_id = self.post_message(remote_email, local_email, subject, body, attachment=attachment, date_or_delay_mn=translation_delay)
 
-        self.log_game_event(_noop("Translation request sent by %(username)s for item '%(item_title)s'."),
-                              PersistentDict(username=username, item_title=item_title),
+        self.log_game_event(_noop("Translation request sent for item '%(item_title)s'."),
+                              PersistentDict(item_title=item_title),
                               url=self.get_message_viewer_url(msg_id))
 
         return msg_id  # id of the automated response

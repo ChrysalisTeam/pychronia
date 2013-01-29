@@ -223,7 +223,7 @@ class CostlyActionMiddleware(AbstractActionMiddleware):
                     self.logger.critical("Action %s was configured to be NOT payable by gems, but gems were sent via input field", action_name)
                     use_gems = ()
 
-                character_properties = self.get_character_properties(self.user.username)
+                character_properties = self.get_character_properties()
 
                 if use_gems or not middleware_settings["money_price"]:
                     self._pay_with_gems(character_properties, middleware_settings, use_gems)

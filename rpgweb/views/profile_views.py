@@ -128,7 +128,7 @@ class CharacterProfile(AbstractGameView):
 
     def get_template_vars(self, previous_form_data=None):
 
-        character_properties = self.datamanager.get_character_properties(self.datamanager.user.username)
+        character_properties = self.datamanager.get_character_properties()
 
         password_change_form = self._instantiate_form(new_form_name="password_change_form",
                                                       hide_on_success=False,
@@ -148,7 +148,9 @@ class CharacterProfile(AbstractGameView):
         if new_password1 != new_password2:
             raise AbnormalUsageError(_("New passwords not matching")) # will be logged as critical - shouldn't happen due to form checks
 
-        self.datamanager.process_password_change_attempt(self.datamanager.user.username, old_password, new_password1)
+        self.datamanager.process_password_change_attempt(self.datamanager.user.username,
+                                                         old_password=old_password,
+                                                         new_password=new_password1)
 
         return _("Password change successfully performed.")
 
@@ -196,9 +198,7 @@ class FriendshipManagementAbility(AbstractGameView):
 
     def get_template_vars(self, previous_form_data=None):
 
-        username = self.datamanager.user.username
-        friendship_statuses = self.datamanager.get_other_characters_friendship_statuses(username)
-
+        friendship_statuses = self.datamanager.get_other_characters_friendship_statuses()
 
         friendship_actions = sorted([(other_username, self._relation_type_to_action(relation_type))
                                      for (other_username, relation_type) in friendship_statuses.items()]) # list of pairs (other_username, relation_type)
@@ -209,8 +209,7 @@ class FriendshipManagementAbility(AbstractGameView):
                }
 
     def do_propose_friendship(self, other_username):
-        res = self.datamanager.propose_friendship(username=self.datamanager.user.username,
-                                                  recipient=other_username)
+        res = self.datamanager.propose_friendship(recipient=other_username)
         if res:
             return _("You're now friend with %s, as that user concurrently proposed friendship too.") % other_username # should be fairly rare
         else:
@@ -218,8 +217,7 @@ class FriendshipManagementAbility(AbstractGameView):
 
 
     def do_accept_friendship(self, other_username):
-        res = self.datamanager.propose_friendship(username=self.datamanager.user.username,
-                                                  recipient=other_username)
+        res = self.datamanager.propose_friendship(recipient=other_username)
         if res:
             return _("You're now friend with %s.") % other_username
         else:
@@ -228,8 +226,7 @@ class FriendshipManagementAbility(AbstractGameView):
 
     def do_cancel_proposal(self, other_username):
 
-        res = self.datamanager.terminate_friendship(username=self.datamanager.user.username, # might raise exception if (rare) concurrent cancelation occurred
-                                                    rejected_user=other_username)
+        res = self.datamanager.terminate_friendship(rejected_user=other_username) # might raise exception if (rare) concurrent cancelation occurred
         if res:
             return _("Your friendship with %s has been properly canceled, as he had accepted it concurrently.") % other_username
         else:
@@ -239,8 +236,7 @@ class FriendshipManagementAbility(AbstractGameView):
 
     def do_cancel_friendship(self, other_username):
 
-        res = self.datamanager.terminate_friendship(username=self.datamanager.user.username, # might raise exception if (rare) concurrent cancelation occurred
-                                                    rejected_user=other_username)
+        res = self.datamanager.terminate_friendship(rejected_user=other_username) # might raise exception if (rare) concurrent cancelation occurred
         if res:
             return _("Your friendship with %s has been properly canceled.") % other_username
         else:

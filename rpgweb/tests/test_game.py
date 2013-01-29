@@ -3101,7 +3101,8 @@ class TestSpecialAbilities(BaseGameTestCase):
         translation_result = runic_translation._translate_rune_message(rune_item, transcription_attempt)
         self.assertEqual(translation_result, expected_result)
 
-        runic_translation._process_translation_submission("guy1", rune_item, transcription_attempt)
+        self._set_user("guy1")
+        runic_translation._process_translation_submission(rune_item, transcription_attempt)
 
         msgs = self.dm.get_all_queued_messages()
         self.assertEqual(len(msgs), 1)

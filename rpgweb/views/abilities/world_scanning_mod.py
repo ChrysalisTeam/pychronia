@@ -115,10 +115,8 @@ class WorldScanAbility(AbstractAbility):
 
         item_title = self.get_item_properties(item_name)["title"]
 
-        username = self.datamanager.user.username
         remote_email = "scanner-robot@hightech.com"  # dummy domain too
-        local_email = self.get_character_email(username)
-
+        local_email = self.get_character_email()
 
         # dummy request email, to allow wiretapping
 
@@ -152,8 +150,8 @@ class WorldScanAbility(AbstractAbility):
         msg_id = self.post_message(remote_email, local_email, subject, body, attachment=attachment,
                                    date_or_delay_mn=scanning_delay)
 
-        self.log_game_event(_noop("Automated scanning request sent by %(username)s for item '%(item_title)s'."),
-                             PersistentDict(username=username, item_title=item_title),
+        self.log_game_event(_noop("Automated scanning request sent for item '%(item_title)s'."),
+                             PersistentDict(item_title=item_title),
                              url=self.get_message_viewer_url(msg_id))
 
         return msg_id

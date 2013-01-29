@@ -21,7 +21,7 @@ class GemPayementFormMixin(AbstractGameForm):
     def __init__(self, datamanager, *args, **kwargs):
         super(GemPayementFormMixin, self).__init__(datamanager, *args, **kwargs)
 
-        _gems = datamanager.get_character_properties(datamanager.user.username)["gems"]
+        _gems = datamanager.get_character_properties()["gems"]
         _gems_choices = zip(self._encode_gems(_gems), [_("Gem of %d Kashes (%s)") % gem for gem in _gems]) # gem is (value, origin) here
 
         if _gems_choices:
@@ -79,7 +79,7 @@ class MercenariesHiringAbility(AbstractAbility):
 
     def get_template_vars(self, previous_form_data=None):
 
-        user_profile = self.get_character_properties(self.user.username)
+        user_profile = self.get_character_properties()
         gems = user_profile["gems"]
         total_gems_value = sum(gems)
 
@@ -105,8 +105,6 @@ class MercenariesHiringAbility(AbstractAbility):
     @transaction_watcher
     def hire_remote_agent(self, location, pay_with_gems=(),):
 
-        employer_name = self.datamanager.user.username
-
         private_data = self.private_data
 
         if location in private_data["mercenaries_locations"]:
@@ -116,8 +114,8 @@ class MercenariesHiringAbility(AbstractAbility):
 
         ### self._process_spy_activation(location) # USELESS ?
 
-        self.log_game_event(_noop("Mercenary hired by %(employer_name)s in %(location)s"),
-                             PersistentDict(employer_name=employer_name, location=location),
+        self.log_game_event(_noop("Mercenary hired in %(location)s"),
+                             PersistentDict(location=location),
                              url=None)
 
         return _("Mercenaries have been successfully hired")

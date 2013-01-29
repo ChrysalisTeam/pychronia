@@ -91,7 +91,7 @@ class WiretappingAbility(AbstractAbility):
 
         target_names = sorted(list(set(target_names))) # renormalization, just in case
 
-        self.set_wiretapping_targets(username=self.user.username, target_names=target_names)
+        self.set_wiretapping_targets(target_names=target_names)
 
         if len(target_names) > self.get_wiretapping_slots_count():
             raise AbnormalUsageError(_("Too many wiretapping targets"))
@@ -109,8 +109,8 @@ class WiretappingAbility(AbstractAbility):
         self.private_data["wiretapping_targets"] = PersistentList(target_names)
         '''
 
-        self.datamanager.log_game_event(_noop("Wiretapping targets set to (%(targets)s) by %(username)s."),
-                             PersistentDict(targets=", ".join(target_names), username=self.datamanager.user.username),
+        self.datamanager.log_game_event(_noop("Wiretapping targets set to (%(targets)s)."),
+                             PersistentDict(targets=", ".join(target_names)),
                              url=None)
 
         return _("Wiretapping successfully set up.")

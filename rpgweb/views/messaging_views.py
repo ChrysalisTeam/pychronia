@@ -225,8 +225,7 @@ def all_queued_messages(request, template_name='messaging/messages.html'):
 @register_view(access=UserAccess.authenticated)
 def intercepted_messages(request, template_name='messaging/messages.html'):
 
-    username = request.datamanager.user.username
-    messages = request.datamanager.get_intercepted_messages(username)
+    messages = request.datamanager.get_intercepted_messages()
 
     messages = list(reversed(messages))  # most recent first
 

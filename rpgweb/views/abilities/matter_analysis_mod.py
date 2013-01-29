@@ -65,10 +65,8 @@ class MatterAnalysisAbility(AbstractAbility):
 
         item_title = self.get_item_properties(item_name)["title"]
 
-        username = self.datamanager.user.username
         remote_email = self.settings["sender_email"]
-        local_email = self.get_character_email(username)
-
+        local_email = self.get_character_email()
 
         # dummy request email, to allow wiretapping
 
