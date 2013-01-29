@@ -134,7 +134,7 @@ def view_sales(request, template_name='auction/view_sales.html'):
     # we inject the official name of object owner
     for item in items_for_sales.values():
         if item["owner"]:
-            item["owner_official_name"] = request.datamanager.get_official_name_from_username(item["owner"])
+            item["owner_official_name"] = request.datamanager.get_official_name(item["owner"])
         else:
             item["owner_official_name"] = None
 
@@ -290,7 +290,7 @@ def ajax_chat(request):
             if not previous_msg_timestamp or (msg["time"] - previous_msg_timestamp) > chatroom_timestamp_display_threshold:
                 text_lines.append(msg["time"].strftime(time_format))
             if msg["username"] in request.datamanager.get_character_usernames():
-                official_name = request.datamanager.get_official_name_from_username(msg["username"])
+                official_name = request.datamanager.get_official_name(msg["username"])
                 color = request.datamanager.get_character_color_or_none(msg["username"])
             else:  # system message
                 official_name = _("system")
@@ -318,7 +318,7 @@ def ajax_chat(request):
 def chatroom(request, template_name='auction/chatroom.html'):
 
     # TODO - move "chatting users" to ajax part, because it must be updated !!
-    chatting_users = [request.datamanager.get_official_name_from_username(username)
+    chatting_users = [request.datamanager.get_official_name(username)
                       for username in request.datamanager.get_chatting_users()]
     return render(request,
                   template_name,

@@ -282,7 +282,7 @@ def wiretapping_management(request, template_name='specific_operations/wiretappi
     current_targets = request.datamanager.get_wiretapping_targets()
     current_target_form_data = {}
     for i in range(request.datamanager.get_global_parameter("max_wiretapping_targets")):
-        current_target_form_data["target_%d"%i] = request.datamanager.get_official_name_from_username(current_targets[i]) if i<len(current_targets) else "__none__"
+        current_target_form_data["target_%d"%i] = request.datamanager.get_official_name(current_targets[i]) if i<len(current_targets) else "__none__"
 
     displayed_form = forms.WiretapTargetsForm(request.datamanager, user, current_target_form_data)
     assert displayed_form.is_valid()
@@ -290,7 +290,7 @@ def wiretapping_management(request, template_name='specific_operations/wiretappi
     return render_to_response(template_name,
                                 {
                                  'page_title': _("Wiretap Management"),
-                                 'current_targets': [request.datamanager.get_official_name_from_username(current_target) for current_target in current_targets],
+                                 'current_targets': [request.datamanager.get_official_name(current_target) for current_target in current_targets],
                                  'wiretapping_form': displayed_form,
                                 },
                                 context_instance=RequestContext(request))

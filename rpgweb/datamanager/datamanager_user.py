@@ -89,7 +89,7 @@ class GameUser(object):
         return self._datamanager().get_character_properties(self._effective_username)
 
     def has_permission(self, permission):
-        return self._datamanager().has_permission(permission)
+        return self._datamanager().has_permission(username=self.username, permission=permission)
 
 
     ## Persistent user messages using django.contrib.messages ##

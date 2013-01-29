@@ -224,7 +224,7 @@ register.filter('mediaplayer', mediaplayer)
 
 
 def has_permission(user, permission):
-    if user.has_permission(permission):
+    if user.has_permission(permission=permission):
         return True
     else:
         return False

@@ -121,7 +121,7 @@ class TelecomInvestigationAbility(AbstractAbility):
     def process_telecom_investigation(self, target_username):
 
         username = self.datamanager.user.username
-        target_official_name = self.get_official_name_from_username(target_username)
+        target_official_name = self.get_official_name(target_username)
 
         if target_username == username:
             raise UsageError(_("Opening an inquiry into yourself doesn't make much sense."))

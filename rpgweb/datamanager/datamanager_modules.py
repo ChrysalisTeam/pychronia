@@ -249,20 +249,15 @@ class CharacterHandling(BaseDataManager): # TODO REFINE
             utilities.check_no_duplicates(identities)
 
 
-    def _username_fallback(self, username):
-        """
-        Important - completer method for first arguments that are by default meant to be
-        the "current user".
-        """
-        return username or self.user.username
-
-
     @readonly_method
-    def get_character_color_or_none(self, username):
+    def get_character_color_or_none(self, username=CURRENT_USER):
         """
         Very tolerant function, returns None if username is None or not a real character name.
         """
-        assert username is None or (isinstance("username", basestring) and " " not in username)
+        if not username:
+            return None # let it be
+        assert (isinstance("username", basestring) and " " not in username)
+        username = self._resolve_username(username)
         if username and self.data["character_properties"].has_key(username):
             return self.data["character_properties"][username]["character_color"]
         return None
@@ -283,7 +278,8 @@ class CharacterHandling(BaseDataManager): # TODO REFINE
         return sorted([char["official_name"] for char in self.data["character_properties"].values()])
 
     @readonly_method
-    def get_official_name_from_username(self, username):
+    def get_official_name(self, username=CURRENT_USER):
+        username = self._resolve_username(username)
         properties = self.data["character_properties"][username]
         return properties["official_name"]
 
@@ -294,8 +290,9 @@ class CharacterHandling(BaseDataManager): # TODO REFINE
         return matches[0] # may raise error
 
     @readonly_method
-    def get_character_properties(self, username):
+    def get_character_properties(self, username=CURRENT_USER):
         # for normal characters only
+        username = self._resolve_username(username)
         try:
             res = self.data["character_properties"][username] # .copy()
             #res["items"] = [] # FIXME !!!!
@@ -304,28 +301,30 @@ class CharacterHandling(BaseDataManager): # TODO REFINE
             raise UsageError(_("Unknown username %s") % username)
 
     @readonly_method
-    def __get_fellow_usernames(self, username):
+    def __get_fellow_usernames(self, username=CURRENT_USER):
         # returns team mates only, doesn't work for game master
+        username = self._resolve_username(username)
         domain = self.get_character_properties(username)["domain"]
         fellows = [name for (name, props) in self.get_character_sets().items() if
                    props["domain"] == domain and name != username]
         return fellows
 
     @readonly_method
-    def get_other_usernames(self, username):
+    def get_other_usernames(self, username=CURRENT_USER):
         # also works for game master : returns ALL players
+        username = self._resolve_username(username)
         others = [name for name in self.get_character_usernames() if name != username]
         return others
 
     @readonly_method
     def build_select_choices_from_usernames(self, usernames):
-        official_names = sorted([self.get_official_name_from_username(username) for username in usernames])
+        official_names = sorted([self.get_official_name(username) for username in usernames])
         character_choices = zip(usernames, official_names)
         return character_choices
 
     @transaction_watcher
-    def update_real_life_data(self, username, real_life_identity=None, real_life_email=None):
-
+    def update_real_life_data(self, username=CURRENT_USER, real_life_identity=None, real_life_email=None):
+        username = self._resolve_username(username)
         data = self.get_character_properties(username)
 
         action_done = False
@@ -383,10 +382,9 @@ class DomainHandling(BaseDataManager): # TODO REFINE
         return self.data["domains"][domain_name]
 
     @transaction_watcher(ensure_game_started=False)
-    def update_allegiances(self, username, allegiances):
-
-        assert len(set(allegiances)) == len(allegiances)
-
+    def update_allegiances(self, username=CURRENT_USER, allegiances=None):
+        assert allegiances is not None and len(set(allegiances)) == len(allegiances)
+        username = self._resolve_username(username)
         available_domains = self.get_domain_names()
         data = self.get_character_properties(username)
 
@@ -414,7 +412,10 @@ class DomainHandling(BaseDataManager): # TODO REFINE
 
 @register_module
 class PlayerAuthentication(BaseDataManager):
-
+    """
+    That class is mostly used BEFORE actual setup of user, so we don't
+    play much with CURRENT_USER placeholder here.
+    """
 
     def _load_initial_data(self, **kwargs):
         super(PlayerAuthentication, self)._load_initial_data(**kwargs)
@@ -543,7 +544,6 @@ class PlayerAuthentication(BaseDataManager):
         Tries to authenticate an user from its credentials, and raises an UsageError on failure,
         or returns a session ticket for that user.
         """
-
         username = username.strip()
         password = password.strip()
         if username == self.get_global_parameter("master_login"): # do not use is_master here, just in case...
@@ -565,7 +565,6 @@ class PlayerAuthentication(BaseDataManager):
         assert False
 
 
-
     @transaction_watcher # requires game started mode
     def process_password_change_attempt(self, username, old_password, new_password):
         user_properties = self.get_character_properties(username)
@@ -577,6 +576,7 @@ class PlayerAuthentication(BaseDataManager):
             raise NormalUsageError(_("Wrong current password submitted"))
 
         user_properties["password"] = new_password
+
 
     @readonly_method
     def get_secret_question(self, username):
@@ -645,24 +645,18 @@ class PlayerAuthentication(BaseDataManager):
         return self.user.username
 
     @readonly_method
-    def is_anonymous(self, username=PLACEHOLDER):
-        if username is PLACEHOLDER:
-            username = self.user.username
-        assert username
+    def is_anonymous(self, username=CURRENT_USER):
+        username = self._resolve_username(username)
         return (username == self.anonymous_login)
 
     @readonly_method
-    def is_master(self, username=PLACEHOLDER):
-        if username is PLACEHOLDER:
-            username = self.user.username
-        assert username
+    def is_master(self, username=CURRENT_USER):
+        username = self._resolve_username(username)
         return (username == self.master_login)
 
     @readonly_method
-    def is_character(self, username=PLACEHOLDER):
-        if username is PLACEHOLDER:
-            username = self.user.username
-        assert username
+    def is_character(self, username=CURRENT_USER):
+        username = self._resolve_username(username)
         return (username in self.get_character_usernames())
 
 
@@ -728,27 +722,29 @@ class PermissionsHandling(BaseDataManager): # TODO REFINE
         '''
 
     @transaction_watcher(ensure_game_started=False)
-    def update_permissions(self, username, permissions):
-
-        assert self.is_character(username)
+    def update_permissions(self, username=CURRENT_USER, permissions=None):
+        username = self._resolve_username(username)
+        assert self.is_character(username) and permissions
 
         data = self.get_character_properties(username)
         data["permissions"] = permissions
 
 
     @readonly_method
-    def has_permission(self, permission):
+    def has_permission(self, username=CURRENT_USER, permission=None):
+        assert permission
+        username = self._resolve_username(username)
 
-        if not self.user.is_character:
+        if not self.is_character(username):
             return False # anonymous and master must be handled differently
 
-        props = self.user.character_properties()
+        props = self.get_character_properties(username=username)
 
         if permission in props["permissions"]:
             return True
 
         for domain_name in props["domains"]:
-            domain = self.get_domain_properties(domain_name)
+            domain = self.get_domain_properties(domain_name=domain_name)
             if permission in domain["permissions"]:
                 return True
 
@@ -820,32 +816,34 @@ class FriendshipHandling(BaseDataManager):
     """
 
     @transaction_watcher
-    def propose_friendship(self, proposer, recipient):
+    def propose_friendship(self, username=CURRENT_USER, recipient=None):
         """
         Can also act as "seal friendship", if a reciprocal request existed.
         Returns True iif that's the case, i.e both characters are friend at the end of the action.
         """
-        assert self.is_character(proposer) and self.is_character(recipient)
-        if proposer == recipient:
-            raise AbnormalUsageError(_("User %s can't be friend with himself") % proposer)
-        if self.are_friends(proposer, recipient):
-            raise AbnormalUsageError(_("Already existing friendship between %s and %s") % (proposer, recipient))
+        assert recipient
+        username = self._resolve_username(username)
+        assert self.is_character(username) and self.is_character(recipient)
+        if username == recipient:
+            raise AbnormalUsageError(_("User %s can't be friend with himself") % username)
+        if self.are_friends(username, recipient):
+            raise AbnormalUsageError(_("Already existing friendship between %s and %s") % (username, recipient))
 
         friendship_proposals = self.data["friendships"]["proposed"]
         friendships = self.data["friendships"]["sealed"]
-        if (proposer, recipient) in friendship_proposals:
-            raise AbnormalUsageError(_("%s has already requested the friendship of %s") % (proposer, recipient))
+        if (username, recipient) in friendship_proposals:
+            raise AbnormalUsageError(_("%s has already requested the friendship of %s") % (username, recipient))
 
         current_date = datetime.utcnow()
-        if (recipient, proposer) in friendship_proposals:
+        if (recipient, username) in friendship_proposals:
             # we seal the deal, with "recipient" as the initial proposer!
-            existing_data = friendship_proposals[(recipient, proposer)]
-            del friendship_proposals[(recipient, proposer)] # important
-            friendships[(recipient, proposer)] = PersistentDict(proposal_date=existing_data["proposal_date"],
+            existing_data = friendship_proposals[(recipient, username)]
+            del friendship_proposals[(recipient, username)] # important
+            friendships[(recipient, username)] = PersistentDict(proposal_date=existing_data["proposal_date"],
                                                                 acceptance_date=current_date)
             res = True
         else:
-            friendship_proposals[(proposer, recipient)] = PersistentDict(proposal_date=current_date)
+            friendship_proposals[(username, recipient)] = PersistentDict(proposal_date=current_date)
             res = False
 
         # TODO - add game logging for both events
@@ -853,11 +851,12 @@ class FriendshipHandling(BaseDataManager):
 
 
     @readonly_method
-    def get_friendship_requests(self, username):
+    def get_friendship_requests(self, username=CURRENT_USER):
         """
         Returns a dict with entries "proposed_to" and "requested_by" (lists of character names).
         These entries are of course exclusive (if a frienship was wanted by both sides, it'd be already sealed).
         """
+        username = self._resolve_username(username)
         assert self.is_character(username)
         result = dict(proposed_to=[],
                       requested_by=[])
@@ -892,8 +891,8 @@ class FriendshipHandling(BaseDataManager):
 
 
     @readonly_method
-    def get_friends(self, username):
-
+    def get_friends(self, username=CURRENT_USER):
+        username = self._resolve_username(username)
         assert self.is_character(username)
         friendships = self.data["friendships"]["sealed"]
 
@@ -909,12 +908,12 @@ class FriendshipHandling(BaseDataManager):
 
 
     @readonly_method
-    def get_other_characters_friendship_statuses(self, username):
+    def get_other_characters_friendship_statuses(self, username=CURRENT_USER):
         """
         Returns a dict of target_username=>status entries for that username, 
         where status is one of: (proposed_to, requested_by, recent_friend, old_friend).
         """
-
+        username = self._resolve_username(username)
         friends = self.get_friends(username)
 
         recent_friend = []
@@ -955,10 +954,12 @@ class FriendshipHandling(BaseDataManager):
 
 
     @transaction_watcher
-    def terminate_friendship(self, username, rejected_user):
+    def terminate_friendship(self, username=CURRENT_USER, rejected_user=None):
         """
         Can also act as "abort friendship proposal" if people weren't friends - returns True iff a real friendship was broken.
         """
+        assert rejected_user
+        username = self._resolve_username(username)
         friendship_proposals = self.data["friendships"]["proposed"]
 
         if (username, rejected_user) in friendship_proposals:
@@ -1002,7 +1003,8 @@ class GameInstructions(BaseDataManager):
 
 
     @readonly_method
-    def get_game_instructions(self, username):
+    def get_game_instructions(self, username=CURRENT_USER):
+        username = self._resolve_username(username)
         global_introduction = self.get_global_parameter("global_introduction")
 
         team_introduction = None
@@ -1088,16 +1090,18 @@ class OnlinePresence(BaseDataManager):
 
     def _notify_user_change(self, username, **kwargs):
         super(OnlinePresence, self)._notify_user_change(username=username, **kwargs)
-
         if username in self.data["character_properties"]: # TODO improve
             self.set_online_status(username)
 
+
     @transaction_watcher(ensure_game_started=False)
-    def set_online_status(self, username):
+    def set_online_status(self, username=CURRENT_USER):
+        username = self._resolve_username(username)
         self.data["character_properties"][username]["last_online_time"] = datetime.utcnow()
 
     @readonly_method
-    def get_online_status(self, username):
+    def get_online_status(self, username=CURRENT_USER):
+        username = self._resolve_username(username)
         timestamp = self.data["character_properties"][username]["last_online_time"]
         return timestamp and timestamp >= (datetime.utcnow() - timedelta(seconds=self.get_global_parameter("online_presence_timeout_s")))
 
@@ -1431,10 +1435,9 @@ class TextMessagingCore(BaseDataManager):
                 raise UsageError(_("Mailbox %s has rejected your email"))
 
     @transaction_watcher
-    def grant_private_contact_access_to_character(self, username, contact_id, avatar=None, description=None):
-        """
-        """
-        assert username in self.get_character_usernames()
+    def grant_private_contact_access_to_character(self, username=CURRENT_USER, contact_id=None, avatar=None, description=None):
+        username = self._resolve_username(username)
+        assert contact_id and username in self.get_character_usernames()
         if not self.global_contacts.contains_item(contact_id):
             self.global_contacts.insert_item(contact_id, dict(avatar=avatar, description=description, access_token=PersistentList([username])))
         else:
@@ -1449,7 +1452,8 @@ class TextMessagingCore(BaseDataManager):
                 pass # swallow "access already granted" error
 
     @transaction_watcher
-    def revoke_private_contact_access_from_character(self, username, contact_id):
+    def revoke_private_contact_access_from_character(self, username=CURRENT_USER, contact_id=None):
+        assert contact_id
         if self.global_contacts.contains_item(contact_id):
             data = self.global_contacts.get_item(contact_id)
             if data["access_token"] is None:
@@ -1482,16 +1486,18 @@ class TextMessagingCore(BaseDataManager):
         """
         return [identifier]
 
-    def ____generate_contacts_list(self, username):
+    def ____generate_contacts_list(self, username=CURRENT_USER):
         """
         Overridable method that raises a proper exception if the recipient identifier is unexisting or forbidden.
         Returns nothing.
         """
+        username = self._resolve_username(username)
         if not self.global_contacts.contains_item(__identifier):
             raise NormalUsageError(_("Unknown recipient %r") % __identifier)
 
     @readonly_method
-    def ___get_available_contacts(self, username):
+    def ___get_available_contacts(self, username=CURRENT_USER):
+        username = self._resolve_username(username)
         return  {key: value for (key, value) in self.global_contacts}
 
 
@@ -1749,7 +1755,8 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
 
 
     @readonly_method
-    def get_character_email(self, username):
+    def get_character_email(self, username=CURRENT_USER):
+        username = self._resolve_username(username)
         assert self.is_character(username)
         return username + "@" + self.get_global_parameter("pangea_network_domain")
 
@@ -1786,8 +1793,9 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
 
 
     @readonly_method
-    def get_external_emails(self, username):
+    def get_external_emails(self, username=CURRENT_USER):
         # should NOT be called for anonymous users
+        username = self._resolve_username(username)
         if self.is_master(username):
             char_sets = self.get_character_sets()
             all_contacts = [contact for (name, character) in char_sets.items()
@@ -1799,8 +1807,9 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
 
 
     @readonly_method
-    def get_user_contacts(self, username):
+    def get_user_contacts(self, username=CURRENT_USER):
         # should NOT be called for anonymous users
+        username = self._resolve_username(username)
         return self.get_characters_emails() + self.get_external_emails(username)
 
 
@@ -1835,9 +1844,10 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
 
 
     @readonly_method
-    def get_unread_messages_count(self, username):
+    def get_unread_messages_count(self, username=CURRENT_USER):
         # user_email == None -> unread messages of external contacts (i.e game master)
         #print ("1", self.connection._registered_objects)
+        username = self._resolve_username(username)
         if self.is_master(username):
             unread_msgs = [message for message in self.get_game_master_messages()
                            if username not in message["has_read"]]
@@ -1852,16 +1862,18 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
 
 
     @transaction_watcher(ensure_game_started=False)
-    def _set_message_read_state(self, username, msg, is_read):
-        assert username
+    def _set_message_read_state(self, username=CURRENT_USER, msg=None, is_read=None):
+        username = self._resolve_username(username)
+        assert username and msg and is_read is not None
         if is_read and username not in msg["has_read"]:
             msg["has_read"].append(username)
         elif not is_read and username in msg["has_read"]:
             msg["has_read"].remove(username) # we don't care whether he had the right to view it or not - it doesn't matter
 
     @transaction_watcher
-    def _set_message_reply_state(self, username, msg, is_read):
-        assert username
+    def _set_message_reply_state(self, username=CURRENT_USER, msg=None, is_read=None):
+        username = self._resolve_username(username)
+        assert username and msg and is_read is not None
         if is_read and username not in msg["has_replied"]:
             msg["has_replied"].append(username)
         elif not is_read and username in msg["has_replied"]:
@@ -1869,15 +1881,15 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
                 username) # we don't care whether he had the right to view it or not - it doens't matter
 
     @transaction_watcher(ensure_game_started=False)
-    def set_message_read_state(self, username, msg_id, is_read):
-        # username can be master login here !
+    def set_message_read_state(self, username=CURRENT_USER, msg_id=None, is_read=None):
+        username = self._resolve_username(username) # username can be master login here !
+        assert username and msg_id and is_read is not None
         msg = self.get_sent_message_by_id(msg_id)
         self._set_message_read_state(username, msg, is_read)
 
     @readonly_method
     def get_pending_new_message_notifications(self):
         # returns users that must be notified, with corresponding message audio_id
-
         notifications = PersistentDict((username, properties["new_messages_notification"])
         for (username, properties) in self.get_character_sets().items()
         if properties["has_new_messages"])
@@ -1888,7 +1900,8 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
         return [char["new_messages_notification"] for char in self.get_character_sets().values()]
 
     @readonly_method
-    def has_new_message_notification(self, username):
+    def has_new_message_notification(self, username=CURRENT_USER):
+        username = self._resolve_username(username)
         return self.data["character_properties"][username]["has_new_messages"] # boolean
 
     @transaction_watcher(ensure_game_started=False)
@@ -1985,7 +1998,9 @@ class TextMessagingInterception(BaseDataManager):
 
 
     @readonly_method
-    def get_intercepted_messages(self, username=None): # for wiretapping
+    def get_intercepted_messages(self, username=CURRENT_USER): # for wiretapping
+        # FIXME HERE ###########
+        username = self._resolve_username(username)
         if username is not None and not self.is_master(username):
             assert username in self.get_character_usernames()
             records = [record for record in self.messaging_data["messages_sent"] if username in record["intercepted_by"]]
@@ -1994,8 +2009,9 @@ class TextMessagingInterception(BaseDataManager):
         return records # chronological order
 
     @transaction_watcher
-    def set_wiretapping_targets(self, username, target_names):
-
+    def set_wiretapping_targets(self, username=CURRENT_USER, target_names=None):
+        assert target_names is not None
+        username = self._resolve_username(username)
         target_names = sorted(list(set(target_names))) # renormalization, just in case
 
         character_names = self.get_character_usernames()
@@ -2011,8 +2027,8 @@ class TextMessagingInterception(BaseDataManager):
                              url=None)
 
     @readonly_method
-    def get_wiretapping_targets(self, username=None):
-        username = self._username_fallback(username)
+    def get_wiretapping_targets(self, username=CURRENT_USER):
+        username = self._resolve_username(username)
         return self.get_character_properties(username)["wiretapping_targets"]
 
 
@@ -2203,11 +2219,13 @@ class Chatroom(BaseDataManager):
             assert msg["username"] is None or msg["username"] in game_data["character_properties"].keys()
 
     @transaction_watcher
-    def _set_chatting_status(self, username):
+    def _set_chatting_status(self, username=CURRENT_USER):
+        username = self._resolve_username(username)
         self.data["character_properties"][username]["last_chatting_time"] = datetime.utcnow()
 
     @readonly_method
-    def get_chatting_status(self, username):
+    def get_chatting_status(self, username=CURRENT_USER):
+        username = self._resolve_username(username)
         timestamp = self.data["character_properties"][username]["last_chatting_time"]
         return timestamp and timestamp >= (datetime.utcnow() - timedelta(
             seconds=self.get_global_parameter("chatroom_presence_timeout_s")))
@@ -2392,12 +2410,13 @@ class PersonalFiles(BaseDataManager):
 
 
     @transaction_watcher # because of logs...
-    def get_encrypted_files(self, username, folder, password, absolute_urls=False):
+    def get_encrypted_files(self, username=CURRENT_USER, folder=None, password=None, absolute_urls=False):
         """
         Might raise environment errors if older/password incorrect.
         Username is used just for event logging.
         """
-
+        assert folder and password
+        username = self._resolve_username(username)
         if not self.encrypted_folder_exists(folder):
             raise UsageError(_("This encrypted archive doesn't exist."))
 
@@ -2424,17 +2443,19 @@ class PersonalFiles(BaseDataManager):
 
 
     @readonly_method
-    def get_personal_files(self, username=None, absolute_urls=False):
+    def get_personal_files(self, username=CURRENT_USER, absolute_urls=False):
         """
         'username == None' -> game master !
 
         Might raise environment errors.
         """
-
+        ## FIXME
         if username is None:
             username = self.get_global_parameter("master_login") # reserved folder with game administration files
 
-            """ # ACTUALLY NO ! Game master has its own files !!
+        username = self._resolve_username(username)
+
+        """ # ACTUALLY NO ! Game master has its own files !!
             # DEPRECATED !!!!!!!!!!!!
             # we list all the files of users
             root_folder = os.path.join(config.GAME_FILES_ROOT, personal_files)
@@ -2675,7 +2696,7 @@ class MoneyItemsOwnership(BaseDataManager):
         or None (i.e no more owner for the item).
         
         """
-
+        ## FIXME - make this a character-method too !!!
         item = self.get_item_properties(item_name)
         from_name = item["owner"] if item["owner"] else _("no one") # must be done IMMEDIATELY
         to_name = char_name if char_name else _("no one") # must be done IMMEDIATELY
@@ -2724,7 +2745,8 @@ class MoneyItemsOwnership(BaseDataManager):
 
 
     @readonly_method
-    def get_available_items_for_user(self, username):
+    def get_available_items_for_user(self, username=CURRENT_USER):
+        username = self._resolve_username(username)
         if username is None or self.is_master(username):
             available_items = self.get_all_items()
         else:
@@ -3288,21 +3310,25 @@ class Encyclopedia(BaseDataManager):
 
 
     @readonly_method
-    def get_character_known_article_ids(self):
-        return self.get_character_properties(self.user.username)["known_article_ids"]
+    def get_character_known_article_ids(self, username=CURRENT_USER):
+        username = self._resolve_username(username)
+        return self.get_character_properties(username)["known_article_ids"]
 
 
     @transaction_watcher(ensure_game_started=False) # automatic action - not harmful
-    def update_character_known_article_ids(self, article_ids):
-        known_article_ids = self.get_character_properties(self.user.username)["known_article_ids"]
+    def update_character_known_article_ids(self, username=CURRENT_USER, article_ids=None):
+        username = self._resolve_username(username)
+        assert article_ids is not None
+        known_article_ids = self.get_character_properties(username)["known_article_ids"]
         for article_id in article_ids:
             if article_id not in known_article_ids:
                 known_article_ids.append(article_id)
 
 
     @transaction_watcher(ensure_game_started=False) # admin action, actually
-    def reset_character_known_article_ids(self):
-        known_article_ids = self.get_character_properties(self.user.username)["known_article_ids"]
+    def reset_character_known_article_ids(self, username=CURRENT_USER):
+        username = self._resolve_username(username)
+        known_article_ids = self.get_character_properties(username)["known_article_ids"]
         del known_article_ids[:]
 
 
@@ -3435,8 +3461,9 @@ class NovaltyTracker(BaseDataManager):
         return copy.deepcopy(self.data["novalty_tracker"])
 
     @transaction_watcher
-    def access_novelty(self, username, item_key):
+    def access_novelty(self, username=CURRENT_USER, item_key=None):
         """Returns True iff the user access that resource for the first time."""
+        username = self._resolve_username(username)
         assert isinstance(item_key, basestring) and (" " not in item_key) and item_key
         assert username in (self.get_character_usernames() + [self.get_global_parameter("master_login")])
         tracker = self.data["novalty_tracker"]
@@ -3448,9 +3475,10 @@ class NovaltyTracker(BaseDataManager):
         return False
 
     @readonly_method
-    def has_accessed_novelty(self, username, item_key):
+    def has_accessed_novelty(self, username=CURRENT_USER, item_key=None):
         assert isinstance(item_key, basestring) and (" " not in item_key) and item_key
         assert username in (self.get_character_usernames() + [self.get_global_parameter("master_login")])
+        username = self._resolve_username(username)
         tracker = self.data["novalty_tracker"]
         if item_key in tracker and username in tracker[item_key]:
             return True

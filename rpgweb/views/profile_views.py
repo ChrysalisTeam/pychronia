@@ -209,7 +209,7 @@ class FriendshipManagementAbility(AbstractGameView):
                }
 
     def do_propose_friendship(self, other_username):
-        res = self.datamanager.propose_friendship(proposer=self.datamanager.user.username,
+        res = self.datamanager.propose_friendship(username=self.datamanager.user.username,
                                                   recipient=other_username)
         if res:
             return _("You're now friend with %s, as that user concurrently proposed friendship too.") % other_username # should be fairly rare
@@ -218,7 +218,7 @@ class FriendshipManagementAbility(AbstractGameView):
 
 
     def do_accept_friendship(self, other_username):
-        res = self.datamanager.propose_friendship(proposer=self.datamanager.user.username,
+        res = self.datamanager.propose_friendship(username=self.datamanager.user.username,
                                                   recipient=other_username)
         if res:
             return _("You're now friend with %s.") % other_username

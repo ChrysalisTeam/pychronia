@@ -652,7 +652,7 @@ class TestDatamanager(BaseGameTestCase):
     def test_getters_setters(self):
         self._reset_messages()
 
-        self.assertEqual(self.dm.get_username_from_official_name(self.dm.get_official_name_from_username("guy2")), "guy2")
+        self.assertEqual(self.dm.get_username_from_official_name(self.dm.get_official_name("guy2")), "guy2")
 
         # DEPRECATED self.assertEqual(self.dm.get_fellow_usernames("guy2"), ["guy1"])
 
@@ -920,15 +920,15 @@ class TestDatamanager(BaseGameTestCase):
             with pytest.raises(UsageError):
                 self.dm.get_character_known_article_ids()
             with pytest.raises(UsageError):
-                self.dm.update_character_known_article_ids(["lokon"])
+                self.dm.update_character_known_article_ids(article_ids=["lokon"])
             with pytest.raises(UsageError):
                 self.dm.reset_character_known_article_ids()
 
         self._set_user("guy1")
         assert self.dm.get_character_known_article_ids() == []
-        self.dm.update_character_known_article_ids(["lokon"])
+        self.dm.update_character_known_article_ids(article_ids=["lokon"])
         assert self.dm.get_character_known_article_ids() == ["lokon"]
-        self.dm.update_character_known_article_ids(["gerbil_species", "unexisting", "lokon", "gerbil_species"])
+        self.dm.update_character_known_article_ids(article_ids=["gerbil_species", "unexisting", "lokon", "gerbil_species"])
         assert self.dm.get_character_known_article_ids() == ["lokon", "gerbil_species", "unexisting"]
         self.dm.reset_character_known_article_ids()
         assert self.dm.get_character_known_article_ids() == []
@@ -1290,7 +1290,7 @@ class TestDatamanager(BaseGameTestCase):
         self.assertEqual(set([msg["subject"] for msg in res]), set(["hello everybody 1", "hello everybody 4"]))
         assert all(["guy1" in msg["intercepted_by"] for msg in res])
 
-        res = self.dm.get_intercepted_messages()
+        res = self.dm.get_intercepted_messages(self.dm.master_login)
         self.assertEqual(len(res), 3)
         self.assertEqual(set([msg["subject"] for msg in res]), set(["hello everybody 1", "hello everybody 2", "hello everybody 4"]))
         assert all([msg["intercepted_by"] for msg in res])
