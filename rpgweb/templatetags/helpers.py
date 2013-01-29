@@ -31,7 +31,7 @@ def random_id():
     return "uuid-" + str(random.randint(1000000, 1000000000))
 
 @register.tag
-def gameurl(parser, token):
+def game_view_url(parser, token):
     """
     Only works if a "game_instance_id" template variable is available (use request processors for that).
     """

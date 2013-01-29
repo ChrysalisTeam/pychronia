@@ -18,7 +18,7 @@
         </p>
     
     
-        <form action="{% gameurl "rpgweb.views.compose_message" %}" method="post">
+        <form action="{% game_view_url "rpgweb.views.compose_message" %}" method="post">
         <table class="same_width_widgets" style="margin: 20px auto;width:500px;">
         {{ message_form.as_table }}
         <tr>

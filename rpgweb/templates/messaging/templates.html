@@ -54,7 +54,7 @@
             
             
             <span class="message_operation">
-                <a href="{% gameurl "rpgweb.views.compose_message" %}?use_template={{ name }}">
+                <a href="{% game_view_url "rpgweb.views.compose_message" %}?use_template={{ name }}">
                     {% trans "Use Template" %} {% if message.is_used %}({% trans "already done" %}){% endif %}
                 </a>
             </span>

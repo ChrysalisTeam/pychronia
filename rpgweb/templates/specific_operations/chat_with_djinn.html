@@ -31,7 +31,7 @@
            
            addMessages(question, true);  
            
-           $.post("{% gameurl "rpgweb.views.ajax_consult_djinns" %}",
+           $.post("{% game_view_url "rpgweb.views.ajax_consult_djinns" %}",
                     { message: question,
                      djinn: "{{ bot_name|escapejs }}" }, 
                     function(answer) {  

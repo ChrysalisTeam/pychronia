@@ -9,7 +9,7 @@
   
 
     {% for character_form in character_forms %}
-    	<form action="{% gameurl "rpgweb.views.manage_characters" %}" method="post">
+    	<form action="{% game_view_url "rpgweb.views.manage_characters" %}" method="post">
     	<fieldset>
 		<legend align=top>{{ character_form.target_username.value }}</legend> 
 			<table style="margin:auto;width:400px;">

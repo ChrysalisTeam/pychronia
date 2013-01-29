@@ -182,7 +182,7 @@
 
     {% comment %}
     <h2>
-        <a href="{% gameurl "rpgweb.views.homepage" %}">
+        <a href="{% game_view_url "rpgweb.views.homepage" %}">
             {% if user.is_authenticated %}
                   {% blocktrans with user.username|capfirst as user_name %}
                       Welcome to your Realm, {{ user_name }} 
@@ -255,7 +255,7 @@
 
 {% block right_big_icon_panel %} 
 {% if help_keyword %}    
-<a href="{% gameurl "rpgweb.views.view_help_page" keyword=help_keyword %}" class="fancybox fancybox.ajax" title="{{ page_title }}">
+<a href="{% game_view_url "rpgweb.views.view_help_page" keyword=help_keyword %}" class="fancybox fancybox.ajax" title="{{ page_title }}">
 <div class="big_icon_panel">
     <img src="{{ STATIC_URL }}MetalRadiance/img/icons/question_mark.png"/>
 </div>

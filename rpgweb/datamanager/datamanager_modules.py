@@ -54,6 +54,48 @@ class GameGlobalParameters(BaseDataManager):
 
 
 
+CURRENT_USER = object() # placeholder for use in method signatures
+
+@register_module
+class CurrentUserHandling(BaseDataManager):
+    """
+    Initial setup of self.user, and useful hooks and proxies for 
+    current user handling.
+    """
+
+    def _init_from_db(self, **kwargs):
+        super(CurrentUserHandling, self)._init_from_db(**kwargs)
+        self.user = None
+        self._set_user(username=None, has_write_access=True) # TODO - improve by doing player authentication at init time?
+
+
+    def _notify_user_change(self, username, **kwargs):
+        assert not hasattr(super(CurrentUserHandling, self), "_notify_user_change") # we're well top-level here
+
+
+    @transaction_watcher(ensure_game_started=False)
+    def _set_user(self, username, has_write_access, impersonation=None):
+        assert not hasattr(super(CurrentUserHandling, self), "_set_user") # we're well top-level here
+        self.user = GameUser(datamanager=self,
+                             username=username,
+                            # DEPRECATED previous_user=self.user,
+                             has_write_access=has_write_access,
+                             impersonation=impersonation,) # might raise UsageError
+
+        self._notify_user_change(username=username)
+
+        return self.user
+
+
+    def _resolve_username(self, username):
+        if username is None:
+            raise RuntimeError("Wrong username==None detected")
+        if username == CURRENT_USER:
+            return self.user.username
+        return username
+
+
+
 @register_module
 class FlexibleTime(BaseDataManager): # TODO REFINE
     """
@@ -78,7 +120,6 @@ class FlexibleTime(BaseDataManager): # TODO REFINE
         # we always work in UTC
 
         new_time = datetime.utcnow()
-
         # print (">>>>>>>>>>>>>>>>>> DATETIME", new_time, "WITH DELAYS", delay_mn)
 
         if delay_mn:
@@ -93,7 +134,6 @@ class FlexibleTime(BaseDataManager): # TODO REFINE
                 assert delay_s_min <= delay_s_max, "delay min must be < delay max - %s vs %s" % (delay_s_min, delay_s_max)
 
                 delay_s = random.randint(delay_s_min, delay_s_max) # time range in seconds
-
 
             else:
                 delay_s = delay_mn * factor # no need to coerce to integer here
@@ -376,12 +416,6 @@ class DomainHandling(BaseDataManager): # TODO REFINE
 class PlayerAuthentication(BaseDataManager):
 
 
-    def _init_from_db(self, **kwargs):
-        super(PlayerAuthentication, self)._init_from_db(**kwargs)
-        self.user = None
-        self._set_user(username=None, has_write_access=True) # TODO - improve by doing player authentication at init time?
-
-
     def _load_initial_data(self, **kwargs):
         super(PlayerAuthentication, self)._load_initial_data(**kwargs)
 
@@ -426,24 +460,6 @@ class PlayerAuthentication(BaseDataManager):
         return ([self.get_global_parameter("anonymous_login")] +
                 self.get_character_usernames() +
                 [self.get_global_parameter("master_login")])
-
-
-    def _notify_user_change(self, username, **kwargs):
-        assert not hasattr(super(PlayerAuthentication, self), "_notify_user_change") # we're well top-level here
-
-
-    @transaction_watcher(ensure_game_started=False)
-    def _set_user(self, username, has_write_access, impersonation=None):
-
-        self.user = GameUser(datamanager=self,
-                             username=username,
-                            # DEPRECATED previous_user=self.user,
-                             has_write_access=has_write_access,
-                             impersonation=impersonation,) # might raise UsageError
-
-        self._notify_user_change(username=username)
-
-        return self.user
 
 
     @transaction_watcher(ensure_game_started=False)
@@ -633,14 +649,14 @@ class PlayerAuthentication(BaseDataManager):
         if username is PLACEHOLDER:
             username = self.user.username
         assert username
-        return (username == self.get_global_parameter("anonymous_login"))
+        return (username == self.anonymous_login)
 
     @readonly_method
     def is_master(self, username=PLACEHOLDER):
         if username is PLACEHOLDER:
             username = self.user.username
         assert username
-        return (username == self.get_global_parameter("master_login"))
+        return (username == self.master_login)
 
     @readonly_method
     def is_character(self, username=PLACEHOLDER):
@@ -648,6 +664,16 @@ class PlayerAuthentication(BaseDataManager):
             username = self.user.username
         assert username
         return (username in self.get_character_usernames())
+
+
+    @property
+    def anonymous_login(self):
+        return self.get_global_parameter("anonymous_login")
+
+    @property
+    def master_login(self):
+        return self.get_global_parameter("master_login")
+
 
 
 

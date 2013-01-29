@@ -13,7 +13,7 @@
 
 {% addtoblock "inline_js" %}
     $(document).ready(function(){
-        InitChatWindow("{% gameurl "rpgweb.views.ajax_chat" %}", 
+        InitChatWindow("{% game_view_url "rpgweb.views.ajax_chat" %}", 
                         {% if is_master %}false{% else %}true{% endif %},
                         HandleChattersList);
     });

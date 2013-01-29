@@ -22,7 +22,7 @@
 
 
     {% if scanning_form %}
-    <form action="{% gameurl "rpgweb.views.scanning_management" %}" method="post">
+    <form action="{% game_view_url "rpgweb.views.scanning_management" %}" method="post">
     <table style="margin:auto;width:450px;">
     {{ scanning_form.as_table }}
     <tr>

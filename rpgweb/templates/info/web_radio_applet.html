@@ -16,8 +16,8 @@
          
 {% addtoblock "inline_js" %}
 
-            var next_file_url = "{% gameurl "rpgweb.views.ajax_get_next_audio_message" %}"
-            var notification_url = "{% gameurl "rpgweb.views.ajax_notify_audio_message_finished" %}"
+            var next_file_url = "{% game_view_url "rpgweb.views.ajax_get_next_audio_message" %}"
+            var notification_url = "{% game_view_url "rpgweb.views.ajax_notify_audio_message_finished" %}"
         
             var current_audio_id = null;
             var ajax_call_in_process = false;
@@ -128,7 +128,7 @@
             {% endblocktrans %}
             </p>
          
-            <form action="{% gameurl "rpgweb.views.listen_to_audio_messages" %}" method="post">
+            <form action="{% game_view_url "rpgweb.views.listen_to_audio_messages" %}" method="post">
             <table style="margin: 20px auto;width:400px;">
             {{ form.as_table }}
             <tr>

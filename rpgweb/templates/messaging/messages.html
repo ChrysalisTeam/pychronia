@@ -10,7 +10,7 @@
     
         function force_email_sending(msg_id) {
  
-            $.get("{% gameurl "rpgweb.views.ajax_force_email_sending" %}", 
+            $.get("{% game_view_url "rpgweb.views.ajax_force_email_sending" %}", 
                     { id: escape(msg_id) },
                     function(data){
                         $("#"+msg_id).css("display", "none");
@@ -20,7 +20,7 @@
     
         function set_message_read_state(msg_id, is_read) {
 
-            $.get("{% gameurl "rpgweb.views.ajax_set_message_read_state" %}", 
+            $.get("{% game_view_url "rpgweb.views.ajax_set_message_read_state" %}", 
                     { id: escape(msg_id), 
                       is_read: (is_read ? "1" : "0") },
                     function(data){
@@ -132,13 +132,13 @@
                 
                 <span class="message_operation">
                     {% ifequal mode "inbox" %}
-                        <a href="{% gameurl "rpgweb.views.compose_message" %}?parent_id={{ message.id|urlencode }}">
+                        <a href="{% game_view_url "rpgweb.views.compose_message" %}?parent_id={{ message.id|urlencode }}">
                             {% trans "Reply to message" %} {% if user.username in message.has_replied %}({% trans "already done" %}){% endif %}
                         </a>
                     {% endifequal %}
                     
                     {% ifequal mode "outbox" %}
-                        <a href="{% gameurl "rpgweb.views.compose_message" %}?parent_id={{ message.id|urlencode }}">
+                        <a href="{% game_view_url "rpgweb.views.compose_message" %}?parent_id={{ message.id|urlencode }}">
                             {% trans "Recontact recipient" %}
                         </a>                
                     {% endifequal %}
