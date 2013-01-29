@@ -15,7 +15,7 @@ class PersonalItemForm(AbstractGameForm):
     def __init__(self, datamanager, *args, **kwargs):
         super(PersonalItemForm, self).__init__(datamanager, *args, **kwargs)
 
-        _objects = datamanager.get_available_items_for_user(datamanager.user.username)
+        _objects = datamanager.get_available_items_for_user()
         _objects_choices = [("", _("Choose..."))] + [(item_name, _objects[item_name]["title"]) for item_name in sorted(_objects.keys())]
 
         self.fields["item_name"] = forms.ChoiceField(label=_lazy(u"Item"), choices=_objects_choices)
@@ -61,7 +61,7 @@ class MatterAnalysisAbility(AbstractAbility):
     @transaction_watcher
     def process_artefact_analysis(self, item_name):
 
-        assert item_name in self.datamanager.get_available_items_for_user(self.user.username), item_name
+        assert item_name in self.datamanager.get_available_items_for_user(), item_name
 
         item_title = self.get_item_properties(item_name)["title"]
 
@@ -133,7 +133,7 @@ def network_management(request, template_name='specific_operations/network_manag
             mercenary = (request.POST["type"] == "mercenary")
             pay_with_money = request.POST.get("pay_with_money", False)
             selected_gems = [int(gem) for gem in request.POST.getlist("gems_choices")]
-            request.datamanager.hire_remote_agent(user.username, location, mercenary, not pay_with_money, selected_gems) # free for the game master
+            request.datamanager.hire_remote_agent(location, mercenary, not pay_with_money, selected_gems) # free for the game master
 
     places_with_spies = [key for key in sorted(locations.keys()) if locations[key]['has_spy']]
     places_with_mercenaries = [key for key in sorted(locations.keys()) if locations[key]['has_mercenary']]
@@ -144,8 +144,8 @@ def network_management(request, template_name='specific_operations/network_manag
         total_gems_value = None
         gems_choices = [] # hire_remote_agent("master") will allow the hiring of agents anyway !
     else:
-        employer_profile = request.datamanager.get_character_properties(user.username)
-        gems = request.datamanager.get_character_properties(user.username)["gems"]
+        employer_profile = request.datamanager.get_character_properties()
+        gems = request.datamanager.get_character_properties()["gems"]
         gems_choices = zip(gems, [_("Gem of %d Kashes")%gem for gem in gems])
         total_gems_value = sum(gems)
 

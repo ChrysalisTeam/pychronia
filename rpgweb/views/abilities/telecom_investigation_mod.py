@@ -127,7 +127,7 @@ class TelecomInvestigationAbility(AbstractAbility):
             raise UsageError(_("Opening an inquiry into yourself doesn't make much sense."))
 
         remote_email = "investigator@special.com"  # dummy domain too
-        local_email = self.get_character_email(username)
+        local_email = self.get_character_email()
 
 
         # request email to allow interception

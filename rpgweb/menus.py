@@ -62,7 +62,7 @@ def generate_full_menu(request): # # game_menu_generator
 
     if user.is_authenticated and processed_view != views.inbox:
         # in inbox, we can set/unset the read state of messages, so the "unread count" must not be considered
-        unread_msgs_count = datamanager.get_unread_messages_count(user.username)
+        unread_msgs_count = datamanager.get_unread_messages_count()
         message_suffix = u"(%d)" % unread_msgs_count
     else:
         message_suffix = u""

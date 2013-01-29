@@ -37,7 +37,7 @@ def compose_message(request, template_name='messaging/compose.html'):
                     sender_email = form.cleaned_data["sender"]
                     delay_mn = int(form.cleaned_data["delay_mn"])
                 else:
-                    sender_email = request.datamanager.get_character_email(user.username)
+                    sender_email = request.datamanager.get_character_email()
                     delay_mn = 0
 
                 # we parse the list of emails
@@ -80,7 +80,7 @@ def inbox(request, template_name='messaging/messages.html'):
         remove_to = False
 
     else:
-        messages = request.datamanager.pop_received_messages(request.datamanager.get_character_email(user.username))
+        messages = request.datamanager.pop_received_messages(request.datamanager.get_character_email())
         remove_to = True
 
     messages = list(reversed(messages))  # most recent first
@@ -103,7 +103,7 @@ def ajax_set_message_read_state(request):
     is_read = request.GET.get("is_read", None) == "1"
 
     user = request.datamanager.user
-    request.datamanager.set_message_read_state(user.username, msg_id, is_read)
+    request.datamanager.set_message_read_state(msg_id=msg_id, is_read=is_read)
 
     return HttpResponse("OK")
     # in case of error, a "500" code will be returned
@@ -136,11 +136,11 @@ def outbox(request, template_name='messaging/messages.html'):
     user = request.datamanager.user
     if user.is_master:
         all_messages = request.datamanager.get_all_sent_messages()
-        external_contacts = request.datamanager.get_external_emails(user.username)  # we list only messages sent by external contacts, not robots
+        external_contacts = request.datamanager.get_external_emails()  # we list only messages sent by external contacts, not robots
         messages = [message for message in all_messages if message["sender_email"] in external_contacts]
         remove_from = False
     else:
-        messages = request.datamanager.get_sent_messages(request.datamanager.get_character_email(user.username))
+        messages = request.datamanager.get_sent_messages(request.datamanager.get_character_email())
         remove_from = True
 
     messages = list(reversed(messages))  # most recent first

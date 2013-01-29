@@ -174,19 +174,14 @@ def view_sales(request, template_name='auction/view_sales.html'):
 
 
 
-@register_view(access=UserAccess.anonymous)  # not always available
+@register_view(access=UserAccess.authenticated)  # not always available
 def items_slideshow(request, template_name='auction/items_slideshow.html'):
 
     user = request.datamanager.user
 
-    if user.is_authenticated:
-        page_title = _("Team Items")
-        items = request.datamanager.get_available_items_for_user(user.username)
-        items_3D_settings = request.datamanager.get_items_3d_settings()
-    else:
-        page_title = _("Auction Items")
-        items = request.datamanager.get_available_items_for_user(None)  # all items
-        items_3D_settings = {}  # IMPORTANT - no access to 3D views here
+    page_title = _("Team Items")
+    items = request.datamanager.get_available_items_for_user()
+    items_3D_settings = request.datamanager.get_items_3d_settings()
 
     sorted_items = [(key, items[key]) for key in sorted(items.keys())]
 
@@ -198,12 +193,11 @@ def items_slideshow(request, template_name='auction/items_slideshow.html'):
                      'items_3D_settings': items_3D_settings
                     })
 
+
 @register_view(access=UserAccess.authenticated)  # not always available, so beware!! TODO FIXME ensure it's not displayed if not available!
 def item_3d_view(request, item, template_name='utilities/item_3d_viewer.html'):
 
-    user = request.datamanager.user
-
-    available_items = request.datamanager.get_available_items_for_user(user.username)
+    available_items = request.datamanager.get_available_items_for_user()
 
     if item not in available_items.keys():
         raise Http404
@@ -219,6 +213,7 @@ def item_3d_view(request, item, template_name='utilities/item_3d_viewer.html'):
                     {
                      'settings': _build_display_data_from_viewer_settings(viewer_settings),
                     })
+
 
 def _build_display_data_from_viewer_settings(viewer_settings):
 

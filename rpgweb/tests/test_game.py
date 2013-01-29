@@ -822,7 +822,7 @@ class TestDatamanager(BaseGameTestCase):
         self.assertEqual(len(files1), len(files1bis))
         self.assertTrue(files1bis[0].startswith("/"))
 
-        files2 = self.dm.get_personal_files(None) # private game master files
+        files2 = self.dm.get_personal_files(self.dm.master_login) # private game master files
         self.assertTrue(files2)
 
         c = Client() # file retrievals
@@ -2109,6 +2109,10 @@ class TestHttpRequests(BaseGameTestCase):
         assert not self.client.session.has_key("rpgweb_session_ticket")
         self.assertEqual(self.client.session.keys(), ["testcookie"]) # we get it once more
 
+
+    def guest_requests(self):
+        ## FIXME TODO
+        pass # FIXME
 
     def _simple_master_get_requests(self):
         # FIXME - currently not testing abilities

@@ -26,9 +26,9 @@ class MoneyTransferForm(AbstractGameForm):
                                initial=_money_all_character_choices[min(1, len(_money_all_character_choices) - 1)][0], choices=_money_all_character_choices))
         else:
             # for standard characters
-            if datamanager.get_character_properties(user.username)["account"] <= 0:
+            if datamanager.get_character_properties()["account"] <= 0:
                 raise UninstantiableForm("user has no money")
-            others = datamanager.get_other_usernames(user.username)
+            others = datamanager.get_other_usernames()
             others_choices = datamanager.build_select_choices_from_usernames(others)
             self.fields.insert(0, "recipient_name", forms.ChoiceField(label=_("Recipient"), choices=others_choices))
 
@@ -50,7 +50,7 @@ class GemsTransferForm(AbstractGameForm):
             for character, properties in datamanager.get_character_sets().items():
                 available_gems += properties["gems"]
         else:
-            available_gems = datamanager.get_character_properties(user.username)["gems"]
+            available_gems = datamanager.get_character_properties()["gems"]
 
         # we prepare the choice sets for gems
         gems_choices = []
@@ -71,7 +71,7 @@ class GemsTransferForm(AbstractGameForm):
             self.fields.insert(0, "sender_name", forms.ChoiceField(label=_("Sender"), choices=_character_choices))
             self.fields.insert(1, "recipient_name", forms.ChoiceField(label=_("Recipient"), initial=_character_choices[min(1, len(_character_choices) - 1)][0], choices=_character_choices))
         else:
-            others = datamanager.get_other_usernames(user.username)
+            others = datamanager.get_other_usernames()
             others_choices = datamanager.build_select_choices_from_usernames(others)
             self.fields.insert(1, "recipient_name", forms.ChoiceField(label=_("Recipient"), choices=others_choices))
 
@@ -235,7 +235,7 @@ class TelecomInvestigationForm(forms.Form):
         super(TelecomInvestigationForm, self).__init__(*args, **kwargs)
         # dynamic fields here ...
 
-        others = datamanager.get_other_usernames(user.username)
+        others = datamanager.get_other_usernames()
         others_choices = datamanager.build_select_choices_from_usernames(others)
         self.fields["official_name"] = forms.ChoiceField(label=_("Name"), choices=others_choices)
 
@@ -290,7 +290,7 @@ class MessageComposeForm(forms.Form):
             if request.datamanager.get_username_from_email(recipient) == user.username:
                 # reply message
                 parent_id = message_id
-                if not user.is_master and recipient != datamanager.get_character_email(user.username):  # TODO FIXME WEIRD
+                if not user.is_master and recipient != datamanager.get_character_email():  # TODO FIXME WEIRD
                     user.add_error(_("Access to initial message forbidden"))
                 else:
 
@@ -304,7 +304,7 @@ class MessageComposeForm(forms.Form):
             if request.datamanager.get_username_from_email(sender) == user.username:
                 # recontact message
                 parent_id = message_id
-                if not user.is_master and sender != datamanager.get_character_email(user.username):  # TODO FIXME WEIRD
+                if not user.is_master and sender != datamanager.get_character_email():  # TODO FIXME WEIRD
                     user.add_error(_("Access to original message forbidden"))
                 else:
                     sender = msg["sender_email"]
@@ -342,13 +342,12 @@ class MessageComposeForm(forms.Form):
             available_recipients = _all_email_contacts
 
             self.fields.insert(2, "delay_mn", forms.ChoiceField(label=_("Sending delay"), choices=_delay_values_minutes_choices, initial="0"))
-            files_username = None
+
         else:
             self.fields.insert(0, "recipients", forms.CharField(label=_(u"Recipient"), initial=recipient))
 
             available_recipients = datamanager.get_user_contacts(user.username)  # should not be "anonymous", as it's used only in member areas !
 
-            files_username = user.username
 
         recipients_str = "|".join(available_recipients)
         self.fields["recipients"].widget.attrs["selectBoxOptions"] = recipients_str
@@ -359,13 +358,13 @@ class MessageComposeForm(forms.Form):
         self.fields["attachment"].initial = attachment
 
         try:
-            files = datamanager.get_personal_files(files_username, absolute_urls=False)
+            files = datamanager.get_personal_files(absolute_urls=False)
             files_str = "|".join(files)
             self.fields["attachment"].widget.attrs["selectBoxOptions"] = files_str
             self.fields["attachment"].widget.attrs["autocomplete"] = "off"
         except:
             # we skip this selectBoxOptions attribute, so the input field won't turn into a combobox
-            logging.error("Error while gathering %s's personal files" % files_username , exc_info=True)
+            logging.error("Error while gathering %s's personal files" % user.username , exc_info=True)
 
 
 

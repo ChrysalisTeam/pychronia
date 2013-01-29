@@ -246,7 +246,7 @@ def translations_management(request,  template_name='specific_operations/transla
             with action_failure_handler(request, _("Runes transcription successfully submitted, the result will be emailed to you.")):
                 target_item = form.cleaned_data["target_item"]
                 transcription = form.cleaned_data["transcription"]
-                request.datamanager.process_translation_submission(user.username,
+                request.datamanager.process_translation_submission(,
                                                            target_item, transcription) # player must NOT be game master
                 form = None
     else:
@@ -275,7 +275,7 @@ def wiretapping_management(request, template_name='specific_operations/wiretappi
         if form.is_valid():
             with action_failure_handler(request, _("Wiretap operation successful.")):
                 targets = [request.datamanager.get_username_from_official_name(form.cleaned_data[name]) for name in form.fields if (name.startswith("target") and form.cleaned_data[name] != "__none__")]
-                request.datamanager.change_current_user_wiretapping_targets(user.username, targets)
+                request.datamanager.change_current_user_wiretapping_targets(targets)
         else:
             user.add_error(_("Wiretap operation failed - invalid parameters."))
     # we rebuild the formulary anyway !

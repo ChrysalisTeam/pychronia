@@ -180,8 +180,7 @@ def personal_folder(request, template_name='info/personal_folder.html'):
 
     try:
 
-        personal_files = request.datamanager.get_personal_files(user.username if not user.is_master else None,
-                                                                absolute_urls=False)  # to allow easier stealing of files from Loyd's session
+        personal_files = request.datamanager.get_personal_files(absolute_urls=False)  # to allow easier stealing of files from Loyd's session
 
     except EnvironmentError, e:
         personal_files = []
@@ -283,7 +282,7 @@ def encrypted_folder(request, folder, entry_template_name="generic_operations/en
 def instructions(request, template_name='generic_operations/instructions.html'):
 
     user = request.datamanager.user
-    intro_data = request.datamanager.get_game_instructions(user.username)
+    intro_data = request.datamanager.get_game_instructions()
 
     return render(request,
                   template_name,

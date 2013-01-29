@@ -517,7 +517,7 @@ class TimeLimitedActionMiddleware(AbstractActionMiddleware):
             raise AbnormalUsageError(_("You have already purchased that asset"))
 
 
-        player_properties = self.get_character_properties(user.username)
+        player_properties = self.get_character_properties()
 
         if pay_with_gems:
 

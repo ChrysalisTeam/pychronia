@@ -2445,14 +2445,10 @@ class PersonalFiles(BaseDataManager):
     @readonly_method
     def get_personal_files(self, username=CURRENT_USER, absolute_urls=False):
         """
-        'username == None' -> game master !
-
         Might raise environment errors.
+        
+        Game master has a reserved folder with game administration files
         """
-        ## FIXME
-        if username is None:
-            username = self.get_global_parameter("master_login") # reserved folder with game administration files
-
         username = self._resolve_username(username)
 
         """ # ACTUALLY NO ! Game master has its own files !!
@@ -2747,9 +2743,10 @@ class MoneyItemsOwnership(BaseDataManager):
     @readonly_method
     def get_available_items_for_user(self, username=CURRENT_USER):
         username = self._resolve_username(username)
-        if username is None or self.is_master(username):
+        if self.is_master(username):
             available_items = self.get_all_items()
         else:
+            assert self.is_character(username)
             all_sharing_users = [username] # FIXME - which objects should we include?
             # user_domain = self.get_character_properties(username)["domain"]
             # all_domain_users = [name for (name, value) in self.get_character_sets().items() if

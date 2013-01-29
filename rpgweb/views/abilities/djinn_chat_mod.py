@@ -44,7 +44,7 @@ def ajax_consult_djinns(request):
     if bot_name not in request.datamanager.get_bot_names():
         raise Http404
 
-    res = request.datamanager.get_bot_response(user.username, bot_name, message)
+    res = request.datamanager.get_bot_response(bot_name, message)
     return HttpResponse(escape(res))  # IMPORTANT - escape xml entities !!
 
     # in case of error, a "500" code will be returned
@@ -62,7 +62,7 @@ def contact_djinns(request, template_name='specific_operations/contact_djinns.ht
         available_bots = bots_properties.keys()
         # team_gems = None
     else:
-        domain = request.datamanager.get_character_properties(user.username)["domain"]
+        domain = request.datamanager.get_character_properties()["domain"]
         available_bots = [bot_name for bot_name in bots_properties.keys() if request.datamanager.is_bot_accessible(bot_name, domain)]
         # team_gems = request.datamanager.get_team_gems_count(domain)
 
