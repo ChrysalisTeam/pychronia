@@ -18,7 +18,7 @@
     {% usekwacro main_panel_end %}
 
 
-    <div id="main_sidebar">
+    <div class="main_sidebar">
     {% block sidebar %}  
         {% comment %} <!-- USE THIS TO CREATE SIDE PANELS -->
         {% usekwacro side_panel_start frame_class="mini_frame float_left" decos="1" %}
@@ -33,7 +33,7 @@
     {% block activate_floating_menu %} 
         {% addtoblock "inline_js" %}
         $(document).ready(function() {
-            $('#main_sidebar').hcSticky({ 
+            $('.main_sidebar').hcSticky({ 
                 top: 20, // The distance from the top of the Window at which to trigger hcSticky.
                 bottom: 0, // The distance from the bottom of the Window at which to glue hcSticky.
                 bottomEnd: 0, // The distance from the bottom of the referring element at which to stop hcSticky.

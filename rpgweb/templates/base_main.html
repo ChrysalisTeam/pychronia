@@ -5,6 +5,7 @@
 
 
 {% block sekizai_calls %}
+{{ block.super }}
 
 {% addtoblock "meta" %}
     <meta name="ROBOTS" content="NOINDEX,NOFOLLOW">
@@ -124,15 +125,6 @@
        */
         
 
-        /*    
-        $('#full_menu').hcSticky({
-            top: 30, 
-            bottom: 0, 
-            bottomEnd: 0,
-            innerTop: 0,
-            noContainer: true,
-        });
-        */  
     });
     
 {% endaddtoblock %}

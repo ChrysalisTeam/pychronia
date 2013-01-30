@@ -302,7 +302,7 @@ body {
     padding: 10px;
     overflow: hidden; 
     
-
+     
     .mini_frame {
     
         position: relative;
@@ -330,8 +330,9 @@ body {
     }
     
     .main_sidebar { // container for miniframes
-        padding: 0;
-        margin: 7px 10px 10px;
+        padding: 10px;
+        margin: 0px;
+        overflow: auto; // important to have a proper size with floats inside
         
         .mini_frame { 
             // mini-frames that are inside sidebar must beware of their margins!

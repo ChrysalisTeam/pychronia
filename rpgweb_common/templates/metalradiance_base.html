@@ -65,10 +65,11 @@
                               repeat: true,                           // will repeat forever if true, if given a number will repeat for that many times
                               onHover: false                          // if true only pulsate if user hovers over the element
                             });
-                            
-           $("form").disabler({ // diabled container must have an ID !!
+           
+           /*                
+           $("form").disabler({ // FIXME - ALL disabled container must have an ID !! Let's create it on demand!!
               disable : true
-            });
+            });*/
         
         });
             
@@ -79,7 +80,7 @@
     {% endblock %}
 
     {% block sekizai_calls %}  
-        <!-- block solely used to place sekizai calls in sub-templates -->
+        <!-- block solely used to place sekizai calls in sub-templates, must always call "block.super" -->
     {% endblock %}
            
 </head>
