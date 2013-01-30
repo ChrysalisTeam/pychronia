@@ -189,5 +189,6 @@ LOCALE_INDEPENDENT_PATHS = (
 RESTRUCTUREDTEXT_FILTER_SETTINGS = {"initial_header_level": 2,
                                     "doctitle_xform": False, # important, to have even lone titles stay in the html fragment
                                     "sectsubtitle_xform": False,
-                                    'file_insertion_enabled': False, } # SECURITY MEASURE
+                                    'file_insertion_enabled': False,  # SECURITY MEASURE (file hacking)
+                                    'raw_enabled': False, } # SECURITY MEASURE (script tag)
 

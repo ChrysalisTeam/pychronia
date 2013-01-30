@@ -93,6 +93,19 @@ class TestUtilities(TestCase):
         assert "django" not in html
 
 
+        html = restructuredtext(dedent("""
+        
+                    .. raw:: html
+                    
+                        <script></script>
+                        
+                    
+                    """))
+        assert "System Message" in html and "directive disabled" in html
+        assert "<script" not in html
+
+
+
     def test_sphinx_publisher_settings(self) :
         from django.utils.encoding import smart_str, force_unicode
         from docutils.core import publish_parts
