@@ -86,7 +86,8 @@ def generate_full_menu(request): # # game_menu_generator
                            ###menu_entry(_(u"Instructions"), views.instructions),
                            menu_entry(_(u"Characters"), views.view_characters),
                            menu_entry(_(u"Auction"), views.view_sales),
-                           menu_entry(_(u"Team Items") if user.is_authenticated else _(u"Auction Items"), views.items_slideshow),
+                           menu_entry(_(u"Auction Items"), views.auction_items_slideshow),
+                           menu_entry(_(u"My Items"), views.personal_items_slideshow),
                            menu_entry(_(u"Chatroom") + chatroom_suffix, views.chatroom),
                            # menu_entry(_(u"Radio Messages"), views.personal_radio_messages_listing), # TODO INTEGRATE TO INFO PAGES ???
                        )),

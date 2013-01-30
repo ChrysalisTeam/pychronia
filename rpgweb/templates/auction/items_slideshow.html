@@ -6,7 +6,8 @@
 <!-- UNNNEEEDED ??? script src="{{ MEDIA_URL }}combobox.js" type="text/javascript"></script-->
 
 
-{% block content %}  
+
+{% block sekizai_calls %}  
 
 {% addtoblock "css" %}
 <link href="{{ STATIC_URL }}libs/domslides/domslides_styles.css" rel="stylesheet" type="text/css" />
@@ -16,6 +17,11 @@
 <script src="{{ STATIC_URL }}libs/domslides/domslides.js" type="text/javascript"></script>
 {% endaddtoblock %}
 
+{% endblock %}
+
+
+
+{% block content %}  
 
 <div id="outer" style="display: none;">
     
@@ -43,9 +49,9 @@
         
 
             <div style="margin:auto; width:600px;">
-                 
-                {% if items_3D_settings|dict_get:item_name %}
-                    {% with items_3D_settings|dict_get:item_name as settings %}
+              {% with items_3D_settings|dict_get:item_name as settings %} 
+                {% if settings%}
+                    
                     <div align="center">
                         <iframe src="{% game_view_url "rpgweb.views.item_3d_view" item=item_name %}"
                         width="{{ settings.image_width }}" height="{{ settings.image_height }}"
@@ -53,11 +59,13 @@
                             <p>Error - your browser is not able to display IFrames.</p>
                         </iframe>
                     </div>
-                    {% endwith %}
+                    
                 {% else %}
                     <img class="bigimage" title="{{ item_details.title }}" src="{% game_file_url "sales/" item_details.image %}"/>
                 {% endif %}
                 
+              {% endwith %}
+              
                 <blockquote>
                     <p>
                     {{ item_details.comments}}

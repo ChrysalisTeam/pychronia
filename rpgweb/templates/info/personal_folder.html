@@ -5,8 +5,9 @@
 {% loadkwacros "metalradiance_kwacros.html" %}
 
 
-{% block sidebar %}
 
+
+{% block sekizai_calls %}
 
 {% addtoblock "inline_js" %}
 
@@ -24,8 +25,13 @@
 
 {% endaddtoblock %}
 
+{% endblock %}
 
 
+
+
+
+{% block sidebar %}
 
 {% usekwacro side_panel_start frame_class="mini_frame float_left" decos="3" %}
 
@@ -54,7 +60,7 @@
 
 {% usekwacro side_panel_end %}
 
-{% endblock %}    
+{% endblock %}
 
 
 

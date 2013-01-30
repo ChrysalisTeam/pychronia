@@ -2246,7 +2246,7 @@ class TestHttpRequests(BaseGameTestCase):
         from django.core.urlresolvers import RegexURLResolver
         from rpgweb.urls import final_urlpatterns
         # we test views for which there is a distinction between master and player
-        selected_patterns = """inbox outbox compose_message intercepted_messages view_sales items_slideshow character_profile friendship_management""".split() # TODO LATER network_management contact_djinns
+        selected_patterns = """inbox outbox compose_message intercepted_messages view_sales personal_items_slideshow character_profile friendship_management""".split() # TODO LATER network_management contact_djinns
         views = [url._callback_str for url in final_urlpatterns if not isinstance(url, RegexURLResolver) and [match for match in selected_patterns if match in url._callback_str]]
         assert len(views) == len(selected_patterns)
 

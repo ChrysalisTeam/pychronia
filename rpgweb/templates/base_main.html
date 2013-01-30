@@ -3,18 +3,12 @@
 {% loadkwacros "metalradiance_kwacros.html" %}
 
 
+
+{% block sekizai_calls %}
+
 {% addtoblock "meta" %}
     <meta name="ROBOTS" content="NOINDEX,NOFOLLOW">
 {% endaddtoblock %}
-
-
-{% block html_title %}
-
-    {% if page_title %}{% trans "Anthropia" %} - {{ page_title}}
-    {% else %}{% trans "Welcome to Anthropia" %}
-    {% endif %}
-
-
 
 {% addtoblock "js" %}
 
@@ -37,13 +31,15 @@
     
 {% endaddtoblock %}
     
+    
+
  
  
 {% addtoblock "inline_js" %}
 
     $(document).ready(function() {
-    	
-    	$(".multichecklist").dropdownchecklist({minWidth: "150px", emptyText: "<i>...</i>"}); 
+        
+        $(".multichecklist").dropdownchecklist({minWidth: "150px", emptyText: "<i>...</i>"}); 
         
         $('.fancybox').fancybox({
             padding: "35px",
@@ -51,20 +47,20 @@
             openEffect: 'fade', // 'elastic', 'fade' or 'none'
             closeEffect: 'fade', // 'elastic', 'fade' or 'none'
             
-	        helpers:  {
-		        overlay: {
-		            speedIn: 0,
-		            speedOut: 300,
-		            opacity: 0.6,
-		            css: {
-		                cursor: 'pointer'
-		            },
-		            closeClick: true
-		        },
-		        title: {
-		            type: 'inside' // 'float', 'inside', 'outside' or 'over'
-		        }
-	        }
+            helpers:  {
+                overlay: {
+                    speedIn: 0,
+                    speedOut: 300,
+                    opacity: 0.6,
+                    css: {
+                        cursor: 'pointer'
+                    },
+                    closeClick: true
+                },
+                title: {
+                    type: 'inside' // 'float', 'inside', 'outside' or 'over'
+                }
+            }
         
         });
         
@@ -78,9 +74,9 @@
         
         
         $('.radiotrack').draggable( {
-        	containment: "#radiotracks",
-        	cursor: "move",
-        	revert: "invalid",
+            containment: "#radiotracks",
+            cursor: "move",
+            revert: "invalid",
           } );*/
         
         
@@ -89,13 +85,13 @@
         $(document).ajaxError( handler(event, jqXHR, ajaxSettings, thrownError) )
         
         jQuery.ajax({
-			...,
-			complete: function(event, XHR, ajaxSettings, thrownError) {
-			if (XHR.status == 200) { // success
-			} elseif (XHR.status == 500) { // Internal Server Error
-			} elseif (XHR.status == 404) { // File Not found
-			}
-			});
+            ...,
+            complete: function(event, XHR, ajaxSettings, thrownError) {
+            if (XHR.status == 200) { // success
+            } elseif (XHR.status == 500) { // Internal Server Error
+            } elseif (XHR.status == 404) { // File Not found
+            }
+            });
         
         */
         
@@ -123,8 +119,8 @@
         });
         
         $("div.log").ajaxError(function(event, jqXHR, ajaxSettings, thrownError) {
-        	  $(this).text( "Triggered ajaxError handler." );
-        	});
+              $(this).text( "Triggered ajaxError handler." );
+            });
        */
         
 
@@ -144,7 +140,17 @@
 
 {% endblock %}
 
+    
+    
+    
 
+{% block html_title %}
+
+    {% if page_title %}{% trans "Anthropia" %} - {{ page_title}}
+    {% else %}{% trans "Welcome to Anthropia" %}
+    {% endif %}
+
+{% endblock %}
 
 
 {% block body_top %}

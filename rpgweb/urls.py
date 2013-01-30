@@ -34,8 +34,10 @@ view_urlpatterns = patterns('rpgweb.views',
     url(r'^encrypted_folders/(?P<folder>[^/]*)/$', 'encrypted_folder'),
 
 
-    url(r'^slideshow/$', 'items_slideshow'), # Beware: slideshow URLs must not contain underscores,
-    url(r'^item3dview/(?P<item>.*)/$', 'item_3d_view'), # else 3D images are flashing !
+    url(r'^auction_items/$', 'auction_items_slideshow'),
+    url(r'^personal_items/$', 'personal_items_slideshow'),
+
+    url(r'^item3dview/(?P<item>.*)/$', 'item_3d_view'), # Beware: slideshow URLs must not contain underscores, else 3D images are flashing !
 
 
     url(r'^webradio/$', 'listen_to_webradio'),

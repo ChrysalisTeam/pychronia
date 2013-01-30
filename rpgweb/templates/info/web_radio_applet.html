@@ -4,8 +4,9 @@
 {% load sekizai_tags i18n helpers %}  
 
 
-{% block content %}  
 
+
+{% block sekizai_calls %}
 
 {% if access_authorized %}
 
@@ -94,8 +95,17 @@
 
 {% endif %}
 
+{% endblock %}        
 
 
+
+
+
+
+
+
+
+{% block content %}  
 
     <div align="center">
     

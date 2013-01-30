@@ -31,7 +31,7 @@ from decorator import decorator
 
 
 from .auction_views import (_build_display_data_from_viewer_settings, homepage, opening, view_characters,
-                            view_sales, items_slideshow, item_3d_view, ajax_chat, chatroom)
+                            view_sales, auction_items_slideshow, personal_items_slideshow, item_3d_view, ajax_chat, chatroom)
 
 from .info_views import (instructions, view_encyclopedia,
                          listen_to_webradio, get_radio_xml_conf, listen_to_audio_messages,
