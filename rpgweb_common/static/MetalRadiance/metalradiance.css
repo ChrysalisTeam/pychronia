@@ -232,7 +232,10 @@ ul ul ul {
   outline: #9d8126 ridge 2px;
 }
 blockquote, cite, q {
+  font-size: 1.5em;
+  line-height: 1.2em;
   color: #ffffff;
+  text-shadow: 1px 1px 0px #000000;
   font-family: kingthings_calligraphica_light;
   margin: 8px;
   padding: 6px;
@@ -649,6 +652,95 @@ table.footnote {
 }
 .fancybox-opened {
   z-index: 100000 !important;
+}
+#domslideshow {
+  position: relative;
+}
+#domslideshow * {
+  list-style-type: none;
+  list-style-image: none;
+}
+#domslideshow div#loading_msg {
+  width: 1em;
+  color: #fff;
+  margin: 60px auto;
+  font-weight: bold;
+  text-align: center;
+}
+#domslideshow .hide {
+  display: none;
+}
+#domslideshow img.slideshow_image {
+  max-width: 500px;
+  max-height: 375px;
+  display: block;
+  margin: 30px auto;
+  border: solid 1px #DFBF99;
+}
+#domslideshow blockquote {
+  width: 70%;
+}
+#domslideshow .counter {
+  display: block;
+  position: absolute;
+  top: 0;
+  right: 0;
+  font-weight: bold;
+  font-size: 1.3em;
+  margin: 5px 10px 5px 55px;
+  padding: 10px;
+}
+#domslideshow .counter li {
+  float: left;
+  padding: 0 1em 0 0;
+  margin: 0;
+}
+#domslideshow #toclist {
+  left: 5px;
+  top: 0px;
+  font-size: 1.8em;
+  margin: 5px 55px 5px 10px;
+  padding: 10px;
+  position: absolute;
+}
+#domslideshow #toclist li {
+  text-align: right;
+  position: relative;
+  font-size: 1em;
+}
+#domslideshow #toclist li a {
+  font-weight: bold;
+}
+#domslideshow #toclist li ul li {
+  list-style-type: none;
+  font-size: 0.6em;
+  text-align: left;
+  position: relative;
+}
+#domslideshow #toclist li li a {
+  line-height: 1em;
+}
+#domslideshow #toclist li li a:hover {
+  line-height: 0.7em;
+  background: #fff;
+}
+#domslideshow #toclist li ul {
+  background: #DCCBB5;
+  padding: 10px;
+  width: 260px;
+  position: absolute;
+  top: 1em;
+  border-bottom: 1px solid #9d8126;
+  z-index: 100;
+}
+#domslideshow #toclist li ul li#closeToc {
+  text-align: right;
+  position: relative;
+  top: 4px;
+  padding-right: 10px;
+  padding-bottom: 5px;
+  background: #C5AE8F;
+  line-height: 1em;
 }
 body {
   margin: 0;

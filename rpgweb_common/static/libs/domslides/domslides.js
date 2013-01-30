@@ -18,7 +18,7 @@ window.onload=function()
         loading_tag.style.display = "none";
     }    
 
-	enclosing_tag = document.getElementById("outer");
+	enclosing_tag = document.getElementById("domslideshow");
 	if(enclosing_tag)
 	{
 		enclosing_tag.style.display = "block";
@@ -226,12 +226,16 @@ function domslides()
 	document.getElementById(boundaryId).className=jsIndicatorClass;
 	newf.className=hideClass;
 	showslide(startslide);
+	
+	/* useless - move title to bottom
 	var mainheading=document.getElementsByTagName('h1')[0];
 	var headcontent=mainheading.firstChild.nodeValue;
 	mainheading.className=hideClass;
 	var newspan=document.createElement('span');
 	newspan.appendChild(document.createTextNode(titleAdd+headcontent));
 	document.getElementById('footer').appendChild(newspan);
+	*/
+	
 	/* tool methods */
 	// creates a new link
 	function ds_link(t)

@@ -5,3 +5,122 @@
 .fancybox-opened {
     z-index: 100000 !important; // we must be in front of dropdown menus
 }
+
+
+
+
+
+
+
+
+
+
+/**    DOMSLIDES     **/
+
+#domslideshow {
+    
+    position:relative;
+    * {
+        list-style-type: none;
+        list-style-image: none;   
+    }
+    
+    div#loading_msg {
+        width: 1em;
+        color: #fff;
+        margin: 60px auto;
+        font-weight: bold;
+        text-align: center;
+    }
+      
+    .hide {
+        display: none;
+    }
+    
+    img.slideshow_image {
+        max-width: 500px;
+        max-height: 375px;
+        display: block;
+        margin : 30px auto;
+        border: solid 1px #DFBF99;
+    }
+    
+    
+    blockquote {
+        width: 70%;
+    }
+
+    .counter {
+        display:block;
+        position:absolute;
+        top: 0;
+        right:0;
+        font-weight:bold;
+        font-size: 1.3em;
+        margin:5px 10px 5px 55px;
+        padding:10px;
+        
+        li{
+            float:left;
+            padding:0 1em 0 0;
+            margin:0;
+        }
+    }
+    
+    
+    
+    
+    #toclist {
+        left:5px;
+        top:0px;
+        font-size:1.8em;
+        margin:5px 55px 5px 10px;
+        padding:10px;
+        position:absolute;
+    }
+    
+    #toclist li{
+        text-align:right;
+        position:relative;
+        font-size:1em;
+    }
+    #toclist li a{
+        font-weight: bold;
+    }
+    
+    #toclist li ul li{
+        list-style-type:none;
+        font-size:0.6em;
+        text-align:left;
+        position:relative;
+    }
+    #toclist li li a{
+        line-height:1em;
+    }
+    #toclist li li a:hover{
+        line-height:0.7em;
+        background:#fff;
+    }
+    #toclist li ul{
+        background:#DCCBB5;
+        padding:10px;
+        width:260px;
+        position:absolute;
+        top:1em;
+        border-bottom:1px solid $light_yellow;
+        z-index:100;
+    }
+    /* close TOC item */    
+    #toclist li ul li#closeToc{
+        text-align:right;
+        position:relative;
+        top:4px;
+        //right:0px;
+        padding-right:10px;
+        padding-bottom:5px;
+        //width:290px;
+        background: #C5AE8F;
+        line-height:1em;
+    }
+    
+}

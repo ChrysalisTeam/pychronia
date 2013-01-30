@@ -10,7 +10,7 @@
 {% block sekizai_calls %}  
 
 {% addtoblock "css" %}
-<link href="{{ STATIC_URL }}libs/domslides/domslides_styles.css" rel="stylesheet" type="text/css" />
+<!--link href="{{ STATIC_URL }}libs/domslides/domslides_styles.css" rel="stylesheet" type="text/css" /-->
 {% endaddtoblock %}
 
 {% addtoblock "js" %}
@@ -23,71 +23,76 @@
 
 {% block content %}  
 
-<div id="outer" style="display: none;">
-    
-    <div id="loading_msg">{% trans "Please wait while loading..." %}</div>
-    
-    <div id="boundary">
-        
-    {% if not items|length %}
-        <br/>
-        <div class="message_notifications">
-            <p><strong>Slideshow Empty</strong></p>
-            <p>You haven't yet bought any object at auction.</p>
-        </div>
+
+{% if not items|length %}
+    <br/>
+    <div class="post-it center">
+        <p><strong>{% trans "No object to be shown" %}</strong></p>
+    </div>
   
-    {% else %}
+{% else %}
     
-        {% for item_name, item_details in items %} 
-    
-        <div class="slide">
-    
-                
-            <h2>
-                {{ item_details.title }}
-            </h2>
+    <div id="domslideshow" style="display: none;">
         
-
-            <div style="margin:auto; width:600px;">
-              {% with items_3D_settings|dict_get:item_name as settings %} 
-                {% if settings%}
+        <div id="loading_msg">{% trans "Please wait while loading..." %}</div>
+        
+        <div id="boundary">
+            
+            <div id="footer"></div>
+            
+            
+            {% for item_name, item_details in items %} 
+        
+            <div class="slide">
+        
                     
-                    <div align="center">
-                        <iframe src="{% game_view_url "rpgweb.views.item_3d_view" item=item_name %}"
-                        width="{{ settings.image_width }}" height="{{ settings.image_height }}"
-                        scrolling="no" marginheight="0" marginwidth="0" frameborder="0">
-                            <p>Error - your browser is not able to display IFrames.</p>
-                        </iframe>
-                    </div>
+                <h2>
+                    {{ item_details.title }}
+                </h2>
+            
+    
+                <div align="center">
                     
-                {% else %}
-                    <img class="bigimage" title="{{ item_details.title }}" src="{% game_file_url "sales/" item_details.image %}"/>
-                {% endif %}
-                
-              {% endwith %}
-              
-                <blockquote>
-                    <p>
-                    {{ item_details.comments}}
-                    </p>
-                    <p>
-                       Total Estimated Value : <b>{{ item_details.total_price }} {% trans "kashes" %}</b>
-                    </p>
-                </blockquote>
-
+                  {% with items_3D_settings|dict_get:item_name as settings %} 
+                    {% if settings%}
+                        
+                        <div align="center">
+                            <iframe src="{% game_view_url "rpgweb.views.item_3d_view" item=item_name %}"
+                            width="{{ settings.image_width }}" height="{{ settings.image_height }}"
+                            scrolling="no" marginheight="0" marginwidth="0" frameborder="0">
+                                <p>Error - your browser is not able to display IFrames.</p>
+                            </iframe>
+                        </div>
+                        
+                    {% else %}
+                        <img class="slideshow_image" title="{{ item_details.title }}" src="{% game_file_url "sales/" item_details.image %}"/>
+                    {% endif %}
+                    
+                  {% endwith %}
+                  
+                  
+                    <blockquote>
+                        <p>
+                        {{ item_details.comments}}
+                        </p>
+                        <p>
+                           Total Estimated Value : <b>{{ item_details.total_price }} {% trans "kashes" %}</b>
+                        </p>
+                    </blockquote>
+    
+                </div>
+            
             </div>
         
+            {% endfor %}
+            
         </div>
-    
-        {% endfor %}
         
-    {% endif %}
     </div>
     
     
-    <div id="footer"></div>
-  
-</div>
+{% endif %}
+
 {% endblock %}
 
 
