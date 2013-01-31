@@ -36,7 +36,14 @@ def game_view_url(parser, token):
     Only works if a "game_instance_id" template variable is available (use request processors for that).
     """
     #print ("PARSING IN GAMLEURL", token.contents, "\n")
-    token.contents += " game_instance_id=game_instance_id" # we inject template var "game instance id"
+    sep = " as "
+    parts = token.contents.split(sep) # beware of alternate form of url tag
+    if len(parts) > 1:
+        new_content = " as ".join(parts[:-1]) + " game_instance_id=game_instance_id" + sep + parts[-1]
+    else:
+        new_content = parts[0] + " game_instance_id=game_instance_id"
+
+    token.contents = new_content # we thus injected template var "game instance id"
     url_node = default_url_tag(parser, token)
     return url_node
 

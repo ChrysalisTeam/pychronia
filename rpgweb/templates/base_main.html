@@ -38,6 +38,13 @@
  
 {% addtoblock "inline_js" %}
 
+    {% game_view_url "rpgweb.views.webradio_popup" as player_view_url %} 
+    function open_webradio_popup(){
+        window.open('{{ player_view_url|escapejs }}', '_blank',
+                    'width=400,height=200,directories=no,location=no,menubar=no,resizeable=yes,scrollbars=no,status=no,titlebar=no,toolbar=no',
+                    false); // new history entry
+    }
+
     $(document).ready(function() {
         
         $(".multichecklist").dropdownchecklist({minWidth: "150px", emptyText: "<i>...</i>"}); 
@@ -211,6 +218,22 @@
 {% endblock %} 
 
 
+
+
+
+{% block left_big_icon_panel %} 
+{% if 1 %}    
+<a onclick="open_webradio_popup(); return False;" href="#">
+<div class="big_icon_panel">
+    <img src="{{ STATIC_URL }}MetalRadiance/img/icons/speaker.png"/>
+</div>
+</a>
+{% else %}
+<div class="big_icon_panel">
+    <img src="{{ STATIC_URL }}MetalRadiance/img/icons/speaker_disabled.png"/>
+</div>
+{% endif %}
+{% endblock %}
 
 
 {% block main_menu %}  

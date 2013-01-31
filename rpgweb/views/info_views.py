@@ -108,14 +108,19 @@ def ajax_get_next_audio_message(request):
 
 
 @register_view(access=UserAccess.anonymous, always_available=True)
-def listen_to_webradio(request, template_name='info/web_radio.html'):
+def listen_to_webradio(request, template_name='info/web_radio_page.html'):
     return render(request,
                   template_name,
                     {
-                     "player_conf_url": reverse(get_radio_xml_conf, kwargs=dict(game_instance_id=request.datamanager.game_instance_id)),
-                     "player_width": 300,
-                     "player_height": 200,
+                     'page_title': _("Pangea Webradio"),
                     })
+
+
+@register_view(access=UserAccess.anonymous, always_available=True)
+def webradio_popup(request, template_name='info/web_radio_popup.html'):
+    return render(request,
+                  template_name)
+
 
 @register_view(access=UserAccess.anonymous, always_available=True)
 def get_radio_xml_conf(request, template_name='info/web_radio_conf.xml'):
