@@ -11,21 +11,21 @@
     <param name="shuffle" value="0" /> <!-- 0, 1 or 2 -->
     
     <!-- skin: url of jpeg file to load (not progressive) -->
-    <param name="loadingcolor" value="cccc99" />
-    <param name="bgcolor" value="cccc99" />
-    <param name="bgcolor1" value="e79a2d" />
-    <param name="bgcolor2" value="d38c29" />
-    <param name="buttoncolor" value="dddddd" />
-    <param name="buttonovercolor" value="f9bf37" />
-    <param name="slidercolor1" value="dddddd" />
-    <param name="slidercolor2" value="cccccc" />
-    <param name="sliderovercolor" value="f9bf37" />
-    <param name="textcolor" value="dddddd" />
-    <param name="playlistcolor" value="999999" /> 
-    <param name="playlistalpha" value="50" /> <!-- 0 to 100 -->
-    <param name="currentmp3color" value="f9bf37" />
-    <param name="scrollbarcolor" value="cccccc" />
-    <param name="scrollbarovercolor" value="f9bf37" />
+    <param name="loadingcolor" value="cccccc" />
+    <param name="bgcolor" value="cccccc" />
+    <param name="bgcolor1" value="f6f6f6" />
+    <param name="bgcolor2" value="cccccc" />
+    <param name="buttoncolor" value="888888" />
+    <param name="buttonovercolor" value="0" />
+    <param name="slidercolor1" value="cccccc" />
+    <param name="slidercolor2" value="999999" />
+    <param name="sliderovercolor" value="666666" />
+    <param name="textcolor" value="0" />
+    <param name="playlistcolor" value="bbbbbb" /> 
+    <param name="playlistalpha" value="70" /> <!-- 0 to 100 -->
+    <param name="currentmp3color" value="89722E" />
+    <param name="scrollbarcolor" value="999999" />
+    <param name="scrollbarovercolor" value="0" />
     
     <param name="showvolume" value="1" />
     <param name="showinfo" value="1" />
@@ -43,3 +43,4 @@
         showplaylistnumbers     0 to hide numbers in the playlist.
     -->
 </config>
+
