@@ -1,12 +1,17 @@
 
-
+@import "_standard_content.scss"
  
 
 .fancybox-opened {
     z-index: 100000 !important; // we must be in front of dropdown menus
+    background-image: url('#{$IMGS}backgrounds/ricepaper-hue-orange.jpg')
+    
+    .fancybox-outer {
+        @extend .antique_large_decorated_frame;
+        background-color: transparent;
+    }
+
 }
-
-
 
 
 

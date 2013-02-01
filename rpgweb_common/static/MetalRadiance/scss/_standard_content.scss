@@ -96,7 +96,7 @@ div, span, p {
 }
 
 
-div:after, .clearfix:after { 
+.clearfix:after { 
    /* quick fix for the dumb problem of "float collapsing - better than using overflow:hidden/auto */
    content: "."; 
    visibility: hidden; 
@@ -241,6 +241,7 @@ blockquote, q, cite {
     border-style: solid; 
     border-width: 35px 40px 35px 40px; // only HALF of real border-image size here...
     border-image: url('#{$IMGS}backgrounds/antique_large_decorated_frame.png') 70 80 70 80 fill stretch;
+    margin: -5px;
 }
 
 /* Django classes */
