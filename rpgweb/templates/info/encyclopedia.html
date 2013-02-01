@@ -41,7 +41,7 @@
     
     {% if article_ids %}
         {% usekwacro side_panel_start frame_class="mini_frame float_left" decos="1" %}
-        <div class="rose_paper">
+        <div class="beige_paper">
             <ul>
                 {% for article_id in article_ids %}
                     <li><a href="{% game_view_url "rpgweb.views.view_encyclopedia" article_id=article_id %}">{{ article_id|capfirst }}</a></li>

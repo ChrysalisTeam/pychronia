@@ -37,7 +37,7 @@
 {% usekwacro side_panel_start frame_class="mini_frame float_left" decos="3" %}
 
     {% if display_maintenance_notice %}
-    <div style="width:80%; border: solid 1px #DFBF99; padding:10px; margin:auto;">
+    <div class="post-it center" style="font-size:0.8em; width:85%;">
         <strong>{% trans "System Notification" %}</strong>
         <p style="font-size:11px;">
         {% blocktrans %}
@@ -52,13 +52,14 @@
     <br/><br/><br/>
     {% endif %}
     
-
+    <div class="beige_paper">
     <ul>
         {% for filename, fileurl in files %}
             <li><a href="{{ fileurl }}" onclick="load_media_frame('{{ fileurl|escapejs }}'); return false;">{{ filename }}</a></li>
         {% endfor %}
     </ul>
-
+    </div>
+    
 {% usekwacro side_panel_end %}
 
 {% endblock %}

@@ -309,9 +309,9 @@ blockquote, cite, q {
   border-image: url(img/backgrounds/antique_large_decorated_frame.png) 70 80 70 80 fill stretch;
   margin: -5px;
 }
-.rose_paper {
+.beige_paper {
   padding: 10px 5px;
-  background-image: url(img/backgrounds/seamless_paper_rose.jpg);
+  background-image: url(img/backgrounds/seamless_paper_beige.jpg);
   box-shadow: 2px 2px 3px #000000;
 }
 .errorlist {
@@ -1046,7 +1046,7 @@ body:after {
 #full_content .medium_frame {
   position: relative;
   padding: 10px;
-  margin: 0 auto;
+  margin: 3px auto;
   background: transparent url(img/backgrounds/leather_bg.jpg) repeat center center;
   background-clip: content-box;
   width: 630px;
@@ -1054,7 +1054,7 @@ body:after {
 #full_content .big_frame {
   position: relative;
   padding: 10px;
-  margin: 0 auto;
+  margin: 3px auto;
   background: transparent url(img/backgrounds/leather_bg.jpg) repeat center center;
   background-clip: content-box;
   width: 720px;
@@ -1062,7 +1062,7 @@ body:after {
 #full_content .giant_frame {
   position: relative;
   padding: 10px;
-  margin: 0 auto;
+  margin: 3px auto;
   background: transparent url(img/backgrounds/leather_bg.jpg) repeat center center;
   background-clip: content-box;
   width: 940px;
