@@ -9,9 +9,9 @@
 
     {% usekwacro side_panel_start frame_class="mini_frame float_left" decos="3" %}
             
-        <div style="width:80%; border: solid 1px #DFBF99; padding:10px; margin:auto;">
+        <div class="post-it center" style="font-size:0.8em; width:85%;">
             <strong>{% trans "System Notification" %}</strong>
-            <p style="font-size:11px;">
+            <p>
             {% if not article_ids %}
     	        {% blocktrans %}
     	            Due to a very unfortunate overclocking attempt on our data servers, 
@@ -41,11 +41,13 @@
     
     {% if article_ids %}
         {% usekwacro side_panel_start frame_class="mini_frame float_left" decos="1" %}
+        <div class="rose_paper">
             <ul>
                 {% for article_id in article_ids %}
                     <li><a href="{% game_view_url "rpgweb.views.view_encyclopedia" article_id=article_id %}">{{ article_id|capfirst }}</a></li>
                 {% endfor %} 
             </ul>
+        </div>
         {% usekwacro side_panel_end %}
     {% endif %}
     
