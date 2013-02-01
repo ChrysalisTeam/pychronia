@@ -298,7 +298,7 @@ blockquote, cite, q {
   border-width: 24px 24px 24px 24px;
   border-image: url(img/backgrounds/antique_marble_frame2.png) 24 24 24 24 fill round;
 }
-.antique_large_decorated_frame, .fancybox-opened .fancybox-outer {
+.antique_large_decorated_frame, .fancybox-default .fancybox-outer {
   padding: 10px;
   border-style: solid;
   border-width: 35px 40px 35px 40px;
@@ -659,12 +659,19 @@ table.footnote {
 .entry-image img {
   margin: 1px 10px;
 }
-.fancybox-opened {
+.fancybox-default {
   z-index: 100000 !important;
   background-image: url(img/backgrounds/ricepaper-hue-orange.jpg);
+  margin: 10px;
 }
-.fancybox-opened .fancybox-outer {
+.fancybox-default .fancybox-outer {
   background-color: transparent;
+  box-shadow: none !important;
+}
+.fancybox-default .fancybox-title-float-wrap .child {
+  background: none;
+  line-height: 28px;
+  text-shadow: 0px 1px 0px #000000;
 }
 #domslideshow {
   position: relative;
