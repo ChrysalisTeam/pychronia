@@ -171,7 +171,7 @@ function refresh_visible_image() {
 	// javascript modulo is buggy...
 	current_index = ((current_index % per_level) + per_level) % per_level;
 	current_level = ((current_level % levels) + levels) % levels;
-    document.body.background = ThreeDNPImage[current_level][current_index].src;     
+    document.body.style.backgroundImage = "url('" + ThreeDNPImage[current_level][current_index].src + "')"; // BACKGROUND attribute leads to problems with firefox (no refresh)
 }
 
 function preloadImages() {
