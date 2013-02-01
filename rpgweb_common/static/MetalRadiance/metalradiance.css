@@ -197,6 +197,14 @@ div, p, span {
   border-color: transparent;
   overflow: visible;
 }
+.clearfix:after, div:after {
+  content: ".";
+  visibility: hidden;
+  display: block;
+  width: 0;
+  height: 0;
+  clear: both;
+}
 a:link {
   color: #0104a2;
 }

@@ -96,6 +96,17 @@ div, span, p {
 }
 
 
+div:after, .clearfix:after { 
+   /* quick fix for the dumb problem of "float collapsing - better than using overflow:hidden/auto */
+   content: "."; 
+   visibility: hidden; 
+   display: block; 
+   width: 0;
+   height: 0; 
+   clear: both;
+}
+
+
 
 
 a {
