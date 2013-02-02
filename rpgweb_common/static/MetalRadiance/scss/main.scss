@@ -134,6 +134,7 @@ body {
                 
                 font-weight: bold;
                 color: $alt_text_color;
+                cursor: pointer; // clickable thanks to jquery
                 
                 .notification_panel_decorations {
                     background: {

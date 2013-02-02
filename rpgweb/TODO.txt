@@ -1,3 +1,30 @@
+
+
+
+- interactive world map
+- ability for users to transfer their objects to someone else
+- mobile version of site
+- global styles and messages for any "readonly mode"
+
+- drag&drop radio playlist management
+- interface to edit static pages
+- interface to edit external contacts
+- filling of footer with game info
+- filling of headers with game info and notifications
+- javascript-obfuscated-popuped "report bug" div in mini footer
+
+
+
+
+
+
+
+
+
+====================
+
+
+
 ELITE RPG:
 eclectic
 enchanting -> bewitching, captivating, enthralling, entrancing, fascinating

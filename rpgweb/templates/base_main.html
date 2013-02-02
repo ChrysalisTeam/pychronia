@@ -131,7 +131,14 @@
             });
        */
         
-
+        $(".notification_panel").css( 'cursor', 'pointer' );
+        $(".notification_panel_content").css( 'cursor', 'auto' );
+        $(".notification_panel").click(function() {
+            $(this).slideUp();
+        });
+        $(".notification_panel_content").click(function(event) {
+            event.stopPropagation();
+        });
     });
     
 {% endaddtoblock %}

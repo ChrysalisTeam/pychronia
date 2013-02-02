@@ -30,7 +30,7 @@ def GAME_INITIAL_FIXTURE_SCRIPT(dm):
     # we can see all articles
     dm.set_encyclopedia_index_visibility(True)
 
-    # we fill the messages 
+    # we fill the messages
     email_guy1 = dm.get_character_email("guy1")
     email_guy2 = dm.get_character_email("guy2")
     email_master = dm.data["global_parameters"]["master_email"]
@@ -47,7 +47,8 @@ def GAME_INITIAL_FIXTURE_SCRIPT(dm):
     msg5 = dm.get_sent_message_by_id(msg_id5)
     msg_id6 = dm.post_message(email_guy1, email_master, subject="Bis:%s" % msg5["subject"], body="ask for something", parent_id=msg_id5)
 
+    # we distribute auction items
     dm.transfer_object_to_character("statue", "guy1")
-
+    dm.transfer_object_to_character("several_misc_gems", "guy2")
 
 
