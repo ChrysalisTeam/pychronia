@@ -97,7 +97,9 @@ def generate_full_menu(request): # # game_menu_generator
                          menu_entry(_(u"Encyclopedia"), views.view_encyclopedia),
 
                          menu_entry(_(u"Radio Applet"), views.listen_to_audio_messages, forced_visibility=(False if user.is_character else None)),
-                         menu_entry(_(u"Radio Player"), views.listen_to_webradio)
+                         menu_entry(_(u"Radio Player"), views.listen_to_webradio),
+
+                         menu_entry(_(u"__ENCRYPTED__"), views.encrypted_folder, view_kwargs=dict(folder="guy2_report")),
                       )),
 
             menu_entry(_(u"Messaging"), views.homepage, # FIXME

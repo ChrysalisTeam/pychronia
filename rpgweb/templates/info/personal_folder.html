@@ -35,7 +35,7 @@
 {% block sidebar %}
 
 {% usekwacro side_panel_start frame_class="mini_frame float_left" decos="3" %}
-
+    <h2>{% trans "Fichiers" %}</h2>
     {% if display_maintenance_notice %}
     <div class="post-it center" style="font-size:0.8em; width:85%;">
         <strong>{% trans "System Notification" %}</strong>
@@ -48,8 +48,6 @@
         </p>
     </div>
     <br/>
-    {% else %}
-    <br/><br/><br/>
     {% endif %}
     
     <div class="beige_paper">
@@ -71,15 +69,14 @@
 
     <div align="center">
         <strong>
-        <div style="width:90%; font-size:0.9em; padding:3px; margin:auto; border:solid 1px #DFBF99;" id="media_url">
+        <div style="width:90%; font-size:0.9em; padding:3px; margin:auto; border:solid 1px #DFBF99; margin: 10px 0;" id="media_url">
             {% trans "Click left menu links to display content." %}
         </div>
         </strong>
     </div>
     
-    <div align="center" id="media_viewer">&nbsp;</div>
+    <div align="center" id="media_viewer"  style="min-height:200px;">&nbsp;</div>
 
-    <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
 {% endblock %}
 
 

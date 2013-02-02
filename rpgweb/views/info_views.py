@@ -233,13 +233,13 @@ def view_media(request, template_name='utilities/view_media.html'):
 
 
 @register_view(access=UserAccess.anonymous, always_available=True)  # links in emails must NEVER be broken
-def encrypted_folder(request, folder, entry_template_name="generic_operations/encryption_password.html", display_template_name='personal_folder.html'):
+def encrypted_folder(request, folder, entry_template_name="generic_operations/encryption_password.html", display_template_name='info/personal_folder.html'):
 
     if not request.datamanager.encrypted_folder_exists(folder):
         raise Http404
 
     user = request.datamanager.user
-    files = []
+    files = None
     form = None
 
     if request.method == "POST":
@@ -266,7 +266,7 @@ def encrypted_folder(request, folder, entry_template_name="generic_operations/en
 
 
     else:  # necessarily, we've managed to decrypt the folder
-
+        assert files is not None
         files_to_display = zip([os.path.basename(myfile) for myfile in files], files)
 
         if not files_to_display:
@@ -276,15 +276,15 @@ def encrypted_folder(request, folder, entry_template_name="generic_operations/en
         return render(request,
                       display_template_name,
                         {
-                            "page_title": _("Decrypted archive '%s'") % folder,
+                            "page_title": _("Decrypted archive"),
                             "files": files_to_display,
                             "display_maintenance_notice": False,  # upload disabled notification
                         })
 
 
 
-@register_view(access=UserAccess.character, always_available=True) # TODO - remove that ?????
-def instructions(request, template_name='generic_operations/instructions.html'):
+@register_view(access=UserAccess.character, always_available=True)
+def instructions(request, template_name='generic_operations/instructions.html'): # TODO - remove that ?????
 
     user = request.datamanager.user
     intro_data = request.datamanager.get_game_instructions()
