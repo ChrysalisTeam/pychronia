@@ -69,7 +69,7 @@ def generate_full_menu(request): # # game_menu_generator
 
     if user.is_authenticated and processed_view != views.chatroom:
         # same for chatroom
-        num_chatters = len(request.datamanager.get_chatting_users())
+        num_chatters = len(request.datamanager.get_chatting_users(exclude_current=True))
         chatroom_suffix = u"(%d)" % num_chatters
     else:
         chatroom_suffix = u""

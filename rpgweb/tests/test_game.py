@@ -469,11 +469,9 @@ class TestDatamanager(BaseGameTestCase):
         assert len(res2) == len(res1) - 1
 
         self._set_user("master")
-        with pytest.raises(ValueError):
-            self.dm.get_character_usernames(exclude_current=True) # crash if not a proper character currently set
+        assert self.dm.get_character_usernames(exclude_current=True) == self.dm.get_character_usernames() # no crash if not a proper character currently set
         self._set_user(None)
-        with pytest.raises(ValueError):
-            self.dm.get_character_usernames(exclude_current=True) # crash if not a proper character currently set
+        assert self.dm.get_character_usernames(exclude_current=True) == self.dm.get_character_usernames() # no crash if not a proper character currently set
 
 
 
@@ -645,11 +643,27 @@ class TestDatamanager(BaseGameTestCase):
         self.dm.commit()
 
         self.assertFalse(self.dm.get_online_status("guy1"))
-        self.assertFalse(self.dm.get_online_status("guy2"))
+        self.assertTrue(self.dm.get_online_status("guy2")) # propagated too
         self.assertFalse(self.dm.get_chatting_status("guy1"))
         self.assertTrue(self.dm.get_chatting_status("guy2"))
-        self.assertEqual(self.dm.get_online_users(), [])
+        self.assertEqual(self.dm.get_online_users(), ["guy2"])
         self.assertEqual(self.dm.get_chatting_users(), ["guy2"])
+        self.assertEqual(self.dm.get_chatting_users(exclude_current=True), ["guy2"])
+
+        self._set_user("guy2")
+        self.assertEqual(self.dm.get_chatting_users(), ["guy2"])
+        self.assertEqual(self.dm.get_chatting_users(exclude_current=True), [])
+
+        time.sleep(1.2)
+
+        self.dm.get_chatroom_messages(from_slice_index=0)
+        self.assertFalse(self.dm.get_online_status("guy1"))
+        self.assertTrue(self.dm.get_online_status("guy2")) # UP for online presence
+        self.assertFalse(self.dm.get_chatting_status("guy1"))
+        self.assertTrue(self.dm.get_chatting_status("guy2")) # just fetching msgs does update chatting presence
+        self.assertEqual(self.dm.get_online_users(), ["guy2"])
+        self.assertEqual(self.dm.get_chatting_users(), ["guy2"])
+
 
         time.sleep(1.2)
 

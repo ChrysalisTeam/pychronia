@@ -59,6 +59,10 @@ function processResponse(payload) {
 	// Get the slice index, store it in global variable to be passed to the server on next call.
 	slice_index = payload.slice_index;
 	
+	chatting_users = payload.chatting_users;
+	$("#chatting_users").html(chatting_users.join(",") || " --- ");
+	
+	
 	for(id in payload.messages) {
 		var message = payload.messages[id]["message"];
 		if (message) {

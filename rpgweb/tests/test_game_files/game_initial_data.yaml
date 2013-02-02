@@ -80,7 +80,7 @@ global_parameters:
     opening_music: sample.mp3
 
     online_presence_timeout_s: 600
-    chatroom_presence_timeout_s: 15
+    chatroom_presence_timeout_s: 30
     chatroom_timestamp_display_threshold_s: 120
 
     bank_name: bank

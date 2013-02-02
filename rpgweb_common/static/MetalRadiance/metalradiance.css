@@ -301,6 +301,7 @@ blockquote, cite, q {
   border-style: solid;
   border-width: 24px 24px 24px 24px;
   border-image: url(img/backgrounds/antique_marble_frame2.png) 24 24 24 24 fill round;
+  margin: -5px;
 }
 .antique_large_decorated_frame, .fancybox-default .fancybox-outer {
   padding: 10px;
@@ -310,9 +311,12 @@ blockquote, cite, q {
   margin: -5px;
 }
 .beige_paper {
-  padding: 10px 5px;
+  padding: 5px 5px;
   background-image: url(img/backgrounds/seamless_paper_beige.jpg);
   box-shadow: 2px 2px 3px #000000;
+}
+.rice_paper {
+  background-image: url(img/backgrounds/seamless_paper_rose1.jpg);
 }
 .errorlist {
   list-style-type: none;
@@ -320,6 +324,14 @@ blockquote, cite, q {
   color: #ff0000;
   margin: 0;
   padding: 0;
+}
+#chatwindow {
+  margin: auto;
+  height: 350px;
+  width: 500px;
+  padding: 5px;
+  overflow: auto;
+  background-color: transparent;
 }
 table.realtable {
   box-sizing: border-box;
@@ -346,7 +358,6 @@ table.realtable td {
   font-family: Arial;
   font-weight: normal;
   line-height: 1.2em;
-  color: #000000;
 }
 table.realtable thead th {
   background-color: #AF411C;
@@ -682,6 +693,10 @@ table.footnote {
   line-height: 28px;
   text-shadow: 0px 1px 0px #000000;
 }
+.fancybox-default .fancybox-close {
+  right: -18px;
+  top: -18px;
+}
 #domslideshow {
   position: relative;
 }
@@ -794,7 +809,8 @@ body {
   text-overflow: ellipsis;
 }
 body:after {
-  content: url(img/backgrounds/tube_gold_small.png) url(img/backgrounds/tube_silver_small.png) url(img/backgrounds/tube_bronze_small.png) url(img/backgrounds/dropdown_menu.png);
+  content: url(img/backgrounds/tube_gold_small.png) url(img/backgrounds/tube_silver_small.png) url(img/backgrounds/tube_bronze_small.png) url(img/backgrounds/dropdown_menu.png),
+    url("img/backgrounds/notification_panel_decorations.png");
   display: none;
 }
 #full_header {
@@ -1094,6 +1110,7 @@ body:after {
 #up_footer_wrapper #up_footer_border_left {
   margin: 0;
   display: inline-block;
+  vertical-align: top;
   height: 55px;
   min-width: 40px;
   max-width: 250px;
@@ -1106,6 +1123,7 @@ body:after {
 #up_footer_wrapper #up_footer_border_right {
   margin: 0;
   display: inline-block;
+  vertical-align: top;
   height: 55px;
   min-width: 40px;
   max-width: 250px;
@@ -1118,6 +1136,7 @@ body:after {
 #up_footer_wrapper #up_footer_border_center {
   margin: 0;
   display: inline-block;
+  vertical-align: top;
   height: 55px;
   min-width: 40px;
   max-width: 250px;
@@ -1147,6 +1166,7 @@ body:after {
   min-width: 30px;
   height: 30px;
   display: inline-block;
+  vertical-align: top;
   border-style: solid;
   border-width: 0px 300px 0px 304px;
   border-image: url(img/backgrounds/low_footer_border.png) 0 300 0 304 fill stretch;

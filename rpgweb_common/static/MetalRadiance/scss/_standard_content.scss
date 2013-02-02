@@ -234,6 +234,7 @@ blockquote, q, cite {
     border-style: solid; 
     border-width: 24px 24px 24px 24px; 
     border-image: url('#{$IMGS}backgrounds/antique_marble_frame2.png') 24 24 24 24 fill round;
+    margin: -5px;
 }  
     
 .antique_large_decorated_frame {
@@ -245,11 +246,14 @@ blockquote, q, cite {
 }
 
 .beige_paper {
-    padding: 10px 5px;
+    padding: 5px 5px;
     background-image: url('#{$IMGS}backgrounds/seamless_paper_beige.jpg');
     box-shadow: 2px 2px 3px black;
 }
 
+.rice_paper {
+    background-image: url('#{$IMGS}backgrounds/seamless_paper_rose1.jpg');
+}
 
 /* Django classes */
 
@@ -260,6 +264,18 @@ blockquote, q, cite {
     margin: 0; 
     padding: 0;
 }
+
+
+#chatwindow {
+    margin: auto;
+    height: 350px;
+    width: 500px;
+    padding: 5px;
+    overflow: auto;
+    background-color: transparent;
+}
+
+
 
 
 table.realtable {
@@ -284,7 +300,6 @@ table.realtable {
         font-family:Arial;
         font-weight:normal;
         line-height:1.2em;
-        color:#000000;
     }
     
     tr:last-child td {

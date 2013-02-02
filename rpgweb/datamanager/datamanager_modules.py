@@ -269,8 +269,8 @@ class CharacterHandling(BaseDataManager): # TODO REFINE
     @readonly_method
     def get_character_usernames(self, exclude_current=False):
         res = sorted(self.data["character_properties"].keys())
-        if exclude_current:
-            res.remove(self.user.username) # will crash if not a character
+        if exclude_current and self.user.username in res:
+            res.remove(self.user.username)
         return res
 
     @readonly_method
@@ -1094,10 +1094,13 @@ class OnlinePresence(BaseDataManager):
             self.set_online_status(username)
 
 
+    def _set_online_status(self, username): # no fallback system here
+        self.data["character_properties"][username]["last_online_time"] = datetime.utcnow()
+
     @transaction_watcher(ensure_game_started=False)
     def set_online_status(self, username=CURRENT_USER):
         username = self._resolve_username(username)
-        self.data["character_properties"][username]["last_online_time"] = datetime.utcnow()
+        self._set_online_status(username=username)
 
     @readonly_method
     def get_online_status(self, username=CURRENT_USER):
@@ -2222,17 +2225,17 @@ class Chatroom(BaseDataManager):
     def _set_chatting_status(self, username=CURRENT_USER):
         username = self._resolve_username(username)
         self.data["character_properties"][username]["last_chatting_time"] = datetime.utcnow()
+        self._set_online_status(username=username) # chatting means being there too...
 
     @readonly_method
     def get_chatting_status(self, username=CURRENT_USER):
         username = self._resolve_username(username)
         timestamp = self.data["character_properties"][username]["last_chatting_time"]
-        return timestamp and timestamp >= (datetime.utcnow() - timedelta(
-            seconds=self.get_global_parameter("chatroom_presence_timeout_s")))
+        return timestamp and timestamp >= (datetime.utcnow() - timedelta(seconds=self.get_global_parameter("chatroom_presence_timeout_s")))
 
     @readonly_method
-    def get_chatting_users(self):
-        return [username for username in self.get_character_usernames() if self.get_chatting_status(username)]
+    def get_chatting_users(self, exclude_current=False):
+        return sorted([username for username in self.get_character_usernames(exclude_current=exclude_current) if self.get_chatting_status(username)])
 
     @transaction_watcher
     def send_chatroom_message(self, message):
@@ -2257,6 +2260,7 @@ class Chatroom(BaseDataManager):
 
     @readonly_method
     def get_chatroom_messages(self, from_slice_index): # from_slice_index might be negative
+
         new_messages = self.data["chatroom_messages"][from_slice_index:]
         new_slice_index = from_slice_index + len(new_messages)
 
@@ -2268,6 +2272,9 @@ class Chatroom(BaseDataManager):
                 previous_msg_timestamp = previous_msg["time"]
             except IndexError:
                 previous_msg_timestamp = None
+
+        if self.user.is_character:
+            self._set_chatting_status() # just reading chats is an act of presence
 
         return (new_slice_index, previous_msg_timestamp, new_messages)
 
@@ -2690,7 +2697,6 @@ class MoneyItemsOwnership(BaseDataManager):
         """
         Item might be free or not, and char_name may be a character 
         or None (i.e no more owner for the item).
-        
         """
         ## FIXME - make this a character-method too !!!
         item = self.get_item_properties(item_name)

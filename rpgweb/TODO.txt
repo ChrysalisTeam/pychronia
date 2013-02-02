@@ -1,5 +1,7 @@
 
 
+- test that get_chatroom_messages actiavtes chatting status
+
 
 - interactive world map
 - ability for users to transfer their objects to someone else

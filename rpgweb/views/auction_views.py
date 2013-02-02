@@ -307,19 +307,23 @@ def ajax_chat(request):
                 color = request.datamanager.get_character_color_or_none(msg["username"])
             else:  # system message
                 official_name = _("system")
-                color = "#ea3f32"
+                color = "grey"
             data = dict(official_name=official_name,
                         message=msg["message"])
             text_lines.append({"username": msg["username"],
                                "color": color,
                                "message": msg_format % data})
             previous_msg_timestamp = msg["time"]
+
         all_data = {"slice_index": new_slice_index,
-                    "messages": text_lines
-                }
+                    "messages": text_lines,
+                    'chatting_users': request.datamanager.get_chatting_users(), }
+
         response = HttpResponse(json.dumps(all_data))
         response['Content-Type'] = 'text/plain; charset=utf-8'
         response['Cache-Control'] = 'no-cache'
+
+        #  -> n
 
         return response
 
@@ -330,13 +334,9 @@ def ajax_chat(request):
 @register_view(access=UserAccess.authenticated)  # game master can view too
 def chatroom(request, template_name='auction/chatroom.html'):
 
-    # TODO - move "chatting users" to ajax part, because it must be updated !!
-    chatting_users = [request.datamanager.get_official_name(username)
-                      for username in request.datamanager.get_chatting_users()]
     return render(request,
                   template_name,
                     {
                      'page_title': _("Common Chatroom"),
-                     'chatting_users': chatting_users
                     })
 

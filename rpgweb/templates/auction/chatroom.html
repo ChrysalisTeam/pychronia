@@ -27,7 +27,11 @@
 
 {% block content %}  
 
-    <div id="chatwindow"><span id="loading">Loading...</span></div>
+    <div class="rice_paper" style="margin:10px; padding:0; box-shadow:none;">
+        <div class="antique_marble_frame">
+            <div id="chatwindow"><span id="loading">Loading...</span></div>
+        </div>
+    </div>
     
     <div align="center">
     {% if not game_is_started %}
@@ -49,6 +53,10 @@
         <div id="errordiv" style="text-align:center; visibility:hidden; color:red">
             {% trans "Communication channel seems faulty..." %}
         </div>
+    </div>
+    
+    <div align="center">
+        <b>Now chatting:</b> <span id="chatting_users">...</span>
     </div>
     {% endif %}
 

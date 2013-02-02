@@ -5,7 +5,7 @@
     
     <!--param name="height" value="400" />
     <param name="width" value="600" /-->
-    <param name="volume" value="4" /> <!-- 0 to 200 -->
+    <param name="volume" value="150" /> <!-- 0 to 200 -->
     <param name="autoplay" value="1" />
     <param name="loop" value="1" />
     <param name="shuffle" value="0" /> <!-- 0, 1 or 2 -->
