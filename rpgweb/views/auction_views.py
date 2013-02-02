@@ -68,6 +68,8 @@ class CharactersView(AbstractGameView):
         characters = self.datamanager.get_character_sets().items()
 
         sorted_characters = sorted(characters, key=lambda (key, value): key)  # sort by character username
+        character_item_details = {username: self.datamanager.get_available_items_for_user(username=username).values()
+                                for username, user_details in sorted_characters}
 
         return {
                  'page_title': _("Account Management"),
@@ -75,6 +77,7 @@ class CharactersView(AbstractGameView):
                  'money_form': new_money_form,
                  'gems_form': new_gems_form,
                  'char_sets': [sorted_characters], # single set ATM
+                 'character_item_details': character_item_details,
                }
 
 
@@ -118,25 +121,27 @@ def view_sales(request, template_name='auction/view_sales.html'):
     user = request.datamanager.user
 
     if user.is_master:
-        # we process sale management operations
+        # we process sale management operations - BEWARE, input checking is LOW here!
         params = request.POST
-        if "buy" in params and "character" in params and "object" in params:
-            with action_failure_handler(request, _("Object successfully transferred to %s.") % params["character"]):
-                request.datamanager.transfer_object_to_character(params["object"], request.datamanager.get_username_from_official_name(params["character"]))
-        elif "unbuy" in params and "character" in params and "object" in params:
-            with action_failure_handler(request, _("Sale successfully canceled for %s.") % params["character"]):
-                request.datamanager.transfer_object_to_character(params["object"], None)
+        if "buy" in params and "username" in params and "object" in params:
+            with action_failure_handler(request, _("Object successfully transferred to %s.") % params["username"].capitalize()):
+                request.datamanager.transfer_object_to_character(params["object"], char_name=params["username"])
+        elif "unbuy" in params and "username" in params and "object" in params:
+            with action_failure_handler(request, _("Sale successfully canceled for %s.") % params["username"].capitalize()):
+                request.datamanager.transfer_object_to_character(params["object"], char_name=None)
 
 
     # IMPORTANT - we copy, so that we can modify the object without changing DBs !
     items_for_sales = copy.deepcopy(request.datamanager.get_auction_items())
 
+    ''' Useless
     # we inject the official name of object owner
     for item in items_for_sales.values():
         if item["owner"]:
             item["owner_official_name"] = request.datamanager.get_official_name(item["owner"])
         else:
             item["owner_official_name"] = None
+    '''
 
     sorted_items_for_sale = items_for_sales.items()
     sorted_items_for_sale.sort(key=lambda x: x[1]['auction'])
@@ -158,7 +163,8 @@ def view_sales(request, template_name='auction/view_sales.html'):
                     {
                      'page_title': _("Auction"),
                      'items_for_sale': sorted_items_for_sale,
-                     'character_names': request.datamanager.get_character_official_names(),
+                     'usernames':  request.datamanager.get_character_usernames(),
+                     #'character_names': request.datamanager.get_character_official_names(),
                      'total_items_price': total_items_price,
                      'total_cold_cash_available': total_cold_cash_available,
                      'total_bank_account_available': total_bank_account_available,

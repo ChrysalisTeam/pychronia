@@ -60,6 +60,7 @@ body {
              url('#{$IMGS}backgrounds/tube_silver_small.png')
              url('#{$IMGS}backgrounds/tube_bronze_small.png')
              url('#{$IMGS}backgrounds/dropdown_menu.png');
+             url("#{$IMGS}backgrounds/notification_panel_decorations.png")
     display: none;
     }
 }
@@ -134,7 +135,6 @@ body {
                 
                 font-weight: bold;
                 color: $alt_text_color;
-                cursor: pointer; // clickable thanks to jquery
                 
                 .notification_panel_decorations {
                     background: {

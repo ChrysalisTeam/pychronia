@@ -175,6 +175,7 @@ def hash_url_path(url_path):
 
 def game_file_url(rel_path):
     rel_path = rel_path.lstrip("/") # IMPORTANT
+    rel_path = rel_path.replace("\\", "/") # some external libs use os.path methods to create urls.......
     url_hash = hash_url_path(rel_path)
     return settings.GAME_FILES_URL + url_hash + "/" + rel_path
 

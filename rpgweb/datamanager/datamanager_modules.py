@@ -318,8 +318,8 @@ class CharacterHandling(BaseDataManager): # TODO REFINE
 
     @readonly_method
     def build_select_choices_from_usernames(self, usernames):
-        official_names = sorted([self.get_official_name(username) for username in usernames])
-        character_choices = zip(usernames, official_names)
+        visible_names = [username.capitalize() for username in usernames] # no need for real official names here
+        character_choices = zip(usernames, visible_names)
         return character_choices
 
     @transaction_watcher

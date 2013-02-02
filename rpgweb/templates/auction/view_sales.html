@@ -81,9 +81,9 @@ archeological objects at auction.
         	    	{% if not item_details.owner %}
         	    	 
         		 		<td>
-        		 			<select name="character">
-        	 				{% for character_name in character_names %}
-        						<option value="{{ character_name }}"> {{ character_name }} </option>
+        		 			<select name="username">
+        	 				{% for username in usernames %}
+        						<option value="{{ username }}">{{ username|capfirst }}</option>
         					{% endfor %}
         					</select>
         		 		</td>
@@ -94,8 +94,8 @@ archeological objects at auction.
         			{% else %}
         			
         				<td>
-        		 			<strong title="{{ item_details.owner }}">{% trans "Buyer" %}: {{ item_details.owner_official_name }}</strong>
-        		 			<input type="hidden" name="character" value="{{ item_details.owner_official_name }}"/>
+        		 			<strong>{% trans "Buyer" %}: {{ item_details.owner }}</strong>
+        		 			<input type="hidden" name="username" value="{{ item_details.owner }}"/>
         		 		</td>
         		 		 <td>
         		 			<input type="submit" name="unbuy" value="{% trans "Reset" %}"/>

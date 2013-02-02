@@ -28,9 +28,9 @@
 
 		    	<td class="bigtext">
 		    		<strong {% if user.is_master %} title="{% trans "Password:" %} {{ char_details.password }}" {% endif %}>
-		    		    {{ char_details.official_name }} <br/>
-		    		    {{ char_name }}@{{ pangea_domain }}
-		    		    {% if user.is_master %}
+		    		    {{ char_name }}@{{ pangea_domain }} <br/>
+		    		    {{ char_details.official_name }}
+		    		    {% if user.is_master and char_details.real_life_identity %}
 		    		        <br/>[{{ char_details.real_life_identity }}]
 		    		    {% endif %}
 					</strong>
@@ -41,8 +41,8 @@
 		    	</td>
 		    	
 		    	<td class="bigtext">
-		    		{% for item_name in char_details.user_items %} # FIXME FIXME
-		    			<img class="minithumbnail" title="{{ item_name }}" src="{% game_file_url "sales/" item_name ".jpg" %}"/><br/>
+		    		{% for item in character_item_details|dict_get:char_name %}
+		    		    {{ item.title }} <br/>
 		    		{% empty %}
 		    			{% trans "None" %}
 		    		{% endfor %}
