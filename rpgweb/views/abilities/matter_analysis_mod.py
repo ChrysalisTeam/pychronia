@@ -29,7 +29,7 @@ class MatterAnalysisAbility(AbstractAbility):
     NAME = "matter_analysis"
 
     GAME_FORMS = {"artefact_form": (ArtefactForm, "process_artefact_analysis")}
-    ADMIN_FORMS = {}
+    ADMIN_FORMS = GAME_FORMS.copy()
     TEMPLATE = "abilities/matter_analysis.html"
 
     ACCESS = UserAccess.character

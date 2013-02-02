@@ -16,7 +16,7 @@
 <script src="{{ STATIC_URL }}libs/webradio/niftyplayer.js" type="text/javascript"></script>
 {% endaddtoblock %}
          
-{% addtoblock "inline_js" %}
+{% addtoblock "definition_js" %}
 
             var next_file_url = "{% game_view_url "rpgweb.views.ajax_get_next_audio_message" %}"
             var notification_url = "{% game_view_url "rpgweb.views.ajax_notify_audio_message_finished" %}"
@@ -87,12 +87,14 @@
                 
                 setTimeout('get_next_audio_message();', 500);        
             }
-            
-            $(window).load(function() {setTimeout('initialize_webradio();', 1000);});
+{% endaddtoblock %}
+
+
+{% addtoblock "onload_js" %}
+            setTimeout('initialize_webradio();', 1000);
+{% endaddtoblock %}
     
 
-    
-{% endaddtoblock %}
 
 {% endif %}
 

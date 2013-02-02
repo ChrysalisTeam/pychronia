@@ -36,7 +36,7 @@
 
  
  
-{% addtoblock "inline_js" %}
+{% addtoblock "definition_js" %}
 
     {% game_view_url "rpgweb.views.webradio_popup" as player_view_url %} 
     function open_webradio_popup(){
@@ -44,9 +44,11 @@
                     'width=400,height=200,directories=no,location=no,menubar=no,resizeable=yes,scrollbars=no,status=no,titlebar=no,toolbar=no',
                     false); // new history entry
     }
+{% endaddtoblock %}
 
-    $(document).ready(function() {
-        
+
+{% addtoblock "onload_js" %}
+
         $(".multichecklist").dropdownchecklist({minWidth: "150px", emptyText: "<i>...</i>"}); 
         
         $('.fancybox').fancybox({
@@ -139,7 +141,6 @@
         $(".notification_panel_content").click(function(event) {
             event.stopPropagation();
         });
-    });
     
 {% endaddtoblock %}
 
@@ -248,10 +249,12 @@
     
          {% comment %} here we only handle 2-levels menus, at the moment... {% endcomment %}
          
+         {% with page_transition="flip" %}
+         
          <li id="submenu" class="toplevel">
          
              {% if menu.is_active %}
-                <a href="{{ menu.url }}">{{ menu.title }}</a>
+                <a data-ftrans="{{ page_transition }}" href="{{ menu.url }}">{{ menu.title }}</a>
              {% else %}
                 <span>{{ menu.title }}</span>
              {% endif %}
@@ -261,7 +264,7 @@
                     {% for submenu in menu.submenus %} 
                         <li>
                              {% if submenu.is_active %}
-                                <a href="{{ submenu.url }}" accesskey="{{ forloop.counter }}">{{ submenu.title }}</a>
+                                <a data-ftrans="{{ page_transition }}" href="{{ submenu.url }}" accesskey="{{ forloop.counter }}">{{ submenu.title }}</a>
                              {% else %}
                                 <span>{{ submenu.title }}</span>
                              {% endif %}
@@ -275,7 +278,8 @@
                  </ul>
              {% endif %}
              
-        </li>
+         </li>
+         {% endwith%}
         
     {% endfor %}
 {% endblock %}

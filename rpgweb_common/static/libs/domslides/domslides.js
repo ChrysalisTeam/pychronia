@@ -9,7 +9,7 @@ var Browser = {
 }
 
 
-window.onload=function()
+init_domslides = function init_domslides()
 {
 
     loading_tag = document.getElementById("loading_msg");
@@ -31,6 +31,7 @@ window.onload=function()
 	if(!document.getElementById || !document.createTextNode){return;}
 	domslides();
 }
+
 /* 
  * DOMSlides 
  * written by Christian Heilmann
@@ -70,22 +71,22 @@ function domslides()
 	var ds_error=false;
 	if(!document.getElementById(boundaryId))
 	{
-		alert('Boundary Element is missing');
+		//alert('Boundary Element is missing');
 		ds_error=true;
 	}
 	if(!document.getElementById(footerId))
 	{
-		alert('Footer Element is missing');
+		//alert('Footer Element is missing');
 		ds_error=true;
 	}
 	if(!document.getElementsByTagName('h1')[0])
 	{
-		alert('Heading not existant');
+		//alert('Heading not existant');
 		ds_error=true;
 	}
 	if(document.getElementsByTagName('h1')[0] && !document.getElementsByTagName('h1')[0].firstChild)
 	{
-		alert('Heading has no content');
+		//alert('Heading has no content');
 		ds_error=true;
 	}
 	if(ds_error){return false;}

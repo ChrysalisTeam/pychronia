@@ -96,14 +96,16 @@ div, span, p {
 }
 
 
-.clearfix:after { 
-   /* quick fix for the dumb problem of "float collapsing - better than using overflow:hidden/auto */
-   content: "."; 
-   visibility: hidden; 
-   display: block; 
-   width: 0;
-   height: 0; 
-   clear: both;
+.clearfix { 
+   &:after {
+       /* quick fix for the dumb problem of "float collapsing - better than using overflow:hidden/auto */
+       content: "."; 
+       visibility: hidden; 
+       display: block; 
+       width: 0;
+       height: 0; 
+       clear: both;
+   }
 }
 
 
@@ -275,7 +277,12 @@ blockquote, q, cite {
     background-color: transparent;
 }
 
-
+.admin_widgets {
+    list-style-type: none;
+    list-style-image: none;
+    padding: 0;
+    margin: 10px auto;
+}
 
 
 table.realtable {

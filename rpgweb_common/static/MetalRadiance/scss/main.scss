@@ -40,7 +40,7 @@ body {
     background-size: cover;
     background-repeat: no-repeat;
     background-attachment: scroll;
-    background-position: center; 
+    background-position: center top; 
     
     /* useful and little known properties */
     word-spacing: normal; // or length measure
@@ -377,11 +377,12 @@ body {
         border-image: url('#{$IMGS}backgrounds/big_frame.png') 41 43 43 41 fill round round;
         
         .main_frame_content {
+            @extend .clearfix;
             min-width: 200px;
             min-height: 150px;
             margin: 0 20px 55px; // bottom space to avoid collisions with decorations
             padding: 0;
-            overflow: auto; 
+            overflow: visible; 
             position: relative;
             z-index: 30; // important for text selection
         }

@@ -12,12 +12,10 @@
 <script src="{{ STATIC_URL }}libs/jqchat.js" type="text/javascript" ></script>
 {% endaddtoblock %}
 
-{% addtoblock "inline_js" %}
-    $(document).ready(function(){
-        InitChatWindow("{% game_view_url "rpgweb.views.ajax_chat" %}", 
-                        {% if is_master %}false{% else %}true{% endif %},
-                        HandleChattersList);
-    });
+{% addtoblock "onload_js" %}
+    InitChatWindow("{% game_view_url "rpgweb.views.ajax_chat" %}", 
+                    {% if is_master %}false{% else %}true{% endif %},
+                    HandleChattersList);
 {% endaddtoblock %}
 
 {% endblock %}

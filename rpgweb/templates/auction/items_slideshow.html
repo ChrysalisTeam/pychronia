@@ -18,7 +18,12 @@
 <script src="{{ STATIC_URL }}libs/domslides/domslides.js" type="text/javascript"></script>
 {% endaddtoblock %}
 
+{% addtoblock "onload_js" %}
+    init_domslides();
+{% endaddtoblock %}
+
 {% endblock %}
+
 
 
 

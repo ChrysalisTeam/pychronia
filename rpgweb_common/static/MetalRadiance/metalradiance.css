@@ -201,6 +201,7 @@ div, p, span {
   border-color: transparent;
   overflow: visible;
 }
+#full_content .main_frame_border .main_frame_content:after,
 .clearfix:after {
   content: ".";
   visibility: hidden;
@@ -332,6 +333,12 @@ blockquote, cite, q {
   padding: 5px;
   overflow: auto;
   background-color: transparent;
+}
+.admin_widgets {
+  list-style-type: none;
+  list-style-image: none;
+  padding: 0;
+  margin: 10px auto;
 }
 table.realtable {
   box-sizing: border-box;
@@ -800,7 +807,7 @@ body {
   background-size: cover;
   background-repeat: no-repeat;
   background-attachment: scroll;
-  background-position: center;
+  background-position: center top;
   word-spacing: normal;
   word-wrap: normal;
   word-break: normal;
@@ -1096,7 +1103,7 @@ body:after {
   min-height: 150px;
   margin: 0 20px 55px;
   padding: 0;
-  overflow: auto;
+  overflow: visible;
   position: relative;
   z-index: 30;
 }

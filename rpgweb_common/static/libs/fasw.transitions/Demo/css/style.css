@@ -1,0 +1,39 @@
+body
+{
+	background-color: #777788;
+	font-family: arial, helvetica;
+}
+
+.middle {
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: 100px;
+	padding: 20px 20px 20px 20px;
+	background-color: #f0f0f8;
+    width: 700px;
+    height: 500px;
+}
+.tittle
+{
+	margin-top: 50px;
+	text-align: center;
+	font-weight: bold;
+	margin-left: auto;
+	margin-right: auto;
+	font-size: large;
+}
+.content
+{
+	margin-top: 20px;
+	margin-bottom: 20px;
+	text-align: center;
+	height: 350px;
+	background-image: url(../images/fasw-logo.png);
+	background-repeat: no-repeat;
+	background-position: center;
+}
+.nav
+{
+	margin-right: auto;
+	text-align: right;
+}

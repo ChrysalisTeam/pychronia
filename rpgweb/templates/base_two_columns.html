@@ -31,8 +31,7 @@
     
     
     {% block activate_floating_menu %} 
-        {% addtoblock "inline_js" %}
-        $(document).ready(function() {
+        {% addtoblock "onload_js" %}
             $('.main_sidebar').hcSticky({ 
                 top: 20, // The distance from the top of the Window at which to trigger hcSticky.
                 bottom: 0, // The distance from the bottom of the Window at which to glue hcSticky.
@@ -49,7 +48,6 @@
                 onStart: function(){}, // Callback function on plugin Start event (when the element starts floating)
                 onStop: function(){} // Callback function on plugin Stop event (when the element stops floating and returns to its normal state)
             });
-        }); 
         {% endaddtoblock %}
     {% endblock %} 
 

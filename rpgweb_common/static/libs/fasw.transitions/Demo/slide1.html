@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link href="css/style.css" rel="stylesheet" type="text/css"/>
+	<link href="css/transition.css" rel="stylesheet" type="text/css"/>
+	<script type="text/javascript" src="js/fasw.transitions.min.js"></script>
+</head>
+<body>
+<script type="text/javascript">
+(function inittrans() 
+{
+	var params =	//All params are optional, you can just assign {} 
+		{ 
+			"navB" : "slide reverse",	//Effect for navigation button, leave it empty to disable it
+			"but" : true,				//Flag to enable transitions on button, false by default
+			"cBa" : onTransitionFinished // function() { alert("Done!"); }	//callback function
+		};
+	new ft(params);
+})();
+
+function onTransitionFinished()
+{
+	//Do anything you want 
+}
+
+</script>
+<div class="middle">
+<div class="tittle">NON JQUERY PAGE TRANSITIONS LIGHTWEIGHT</div> 
+<div class="content">No need to use jquery for your page transitions. <br />This javascript weights 2.1K<br/>Ideal for mobile sites.</div>
+<div class="nav" style="margin-top: -100px;">
+<a href="http://www.fasw.ws/faswwp/non-jquery-page-transitions-lightweight/" style="margin-right: 20px;">Back to post (Normal link)</a>
+<a data-ftrans="slide" href="slide2.html">Next</a><br /><br/>
+You can use Buttons as well:&nbsp;&nbsp;&nbsp;&nbsp;<input type="button" data-ftrans="slide" data-href="slide2.html" value="Next"><br/><br/>
+<a data-ftrans="slide" href="slide2.html">Or nested items in an anchor:&nbsp;&nbsp;&nbsp;&nbsp;<img alt="next" src="images/next.gif" /></a>
+</div>
+</div>
+</body>
+</html>
