@@ -35,12 +35,14 @@
         
      INIT_JS = function() {
             
-            new ft({ /* data-ftrans attr must be set to slide/slideup/slidedown/fade/flip/pop */
-                    "navB" : "",   //Effect for navigation button, leave it empty to disable it
-                    "but" : false,           //Flag to enable transitions on button, false by default
-                    "cBa" : function(){INIT_JS();}      //callback function
-            }); // nifty javascript transitions between pages
-            
+            if (typeof my_fast_transitions == 'undefined') {
+                my_fast_transitions = new ft({ /* data-ftrans attr must be set to slide/slideup/slidedown/fade/flip/pop */
+                        "navB" : "",   //Effect for navigation button, leave it empty to disable it
+                        "but" : false,           //Flag to enable transitions on button, false by default
+                        "cBa" : function(){INIT_JS();}      //callback function
+                }); // nifty javascript transitions between pages
+            }
+                
             $('#menulist').dropmenu(
                 {
                     effect          : "slide",       //  "slide", "fade", or "none"

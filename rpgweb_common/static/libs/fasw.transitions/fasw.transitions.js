@@ -72,9 +72,11 @@ function DE()		//Div Effect
 	d1.style.top = "0px";
     document.body.appendChild(d1);
     d1.innerHTML = dochtml;
+    
     var d2 = document.createElement("div");
     d2.id = "d2";
     d2.style.zIndex = 1;
+    d2.style.visibility = "hidden"; 
     d2.style.position = "absolute"; 
     d2.style.width = "100%"; 
     d2.style.height = "100%"; 
@@ -87,7 +89,7 @@ function DE()		//Div Effect
 function timeOuts(e, d1,d2)
 {
 	setTimeout(function() { d1.className = e + " out"; }, 1);
-	setTimeout(function() { d2.className = e + " in"; }, 1);
+	setTimeout(function() { d2.style.visibility = "visible"; d2.className = e + " in"; }, 1);
 	setTimeout(function() { 
 		document.body.innerHTML = d2.innerHTML;
 		cBa();

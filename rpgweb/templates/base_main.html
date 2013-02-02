@@ -230,7 +230,7 @@
 
 
 {% block left_big_icon_panel %} 
-{% if 1 %}    
+{% if 0 %}    
 <a onclick="open_webradio_popup(); return False;" href="#">
 <div class="big_icon_panel">
     <img src="{{ STATIC_URL }}MetalRadiance/img/icons/speaker.png"/>
@@ -249,7 +249,7 @@
     
          {% comment %} here we only handle 2-levels menus, at the moment... {% endcomment %}
          
-         {% with page_transition="flip" %}
+         {% with page_transition="slide" %}
          
          <li id="submenu" class="toplevel">
          
@@ -286,7 +286,7 @@
 
 
 {% block right_big_icon_panel %} 
-{% if help_keyword %}    
+{% if 0 and help_keyword %}    
 <a href="{% game_view_url "rpgweb.views.view_help_page" keyword=help_keyword %}" class="fancybox fancybox.ajax" title="{{ page_title }}">
 <div class="big_icon_panel">
     <img src="{{ STATIC_URL }}MetalRadiance/img/icons/question_mark.png"/>
