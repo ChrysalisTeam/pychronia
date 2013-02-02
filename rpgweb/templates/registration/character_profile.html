@@ -4,13 +4,10 @@
 
 {% block content %}  
     
-        <p>
-        {{ character_properties }}
-        </p>
         
-        **Here put note about why secret questions are being removed in new accounts.**
+        <i>Here put note about why secret questions are being removed in new accounts.</i>
         
-        <div align="center"><strong>{% trans "Password change form" %}</strong></div>
+        <h2>{% trans "Password change" %}</strong></h2>
         
         <form action="{{ password_change_form.url }}" method="post">
         <table style="margin:auto;width:400px;">

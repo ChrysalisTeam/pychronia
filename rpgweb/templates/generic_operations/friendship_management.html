@@ -12,19 +12,21 @@
 {% block content %}
 
 
+<div class="post-it">
+    {% trans "You're are currently in a blind friendship with:" %} 
+    {{ current_friends|join:", "|default:_("No one") }}
+</div>
+
 {% for other_username, action_params in friendship_actions %}
-    {{ other_username }}
+    <b>{{ other_username }}: {{ action_params.2 }} </b>
  
-    {% if action_params %}
+    {% if action_params.0 %}
     <form action="#" method="post">
         <input type="hidden" name="_action_" value="{{ action_params.0 }}" />
         <input type="hidden" name="other_username" value="{{ other_username }}" />
         <input type="submit" name="submit" value="{{ action_params.1 }}" />
     </form>
     {% endif %}
-
-    {{ relation_type }} 
-    
 
 
     <br/>

@@ -333,7 +333,7 @@ class AbstractGameView(object):
     def _do_process_form_submission(self, data, form_name, FormClass, action_name):
 
         user = self.datamanager.user
-        res = dict(result=None,
+        res = dict(result=False, # by default
                    form_data=None)
 
         assert self.request.method == "POST"
@@ -345,7 +345,6 @@ class AbstractGameView(object):
         if bound_form.is_valid():
             with action_failure_handler(self.request, success_message=None): # only for unhandled exceptions
                 action = getattr(self, action_name)
-
                 relevant_args = utilities.adapt_parameters_to_func(bound_form.get_normalized_values(), action)
                 success_message = action(**relevant_args)
 
@@ -355,6 +354,7 @@ class AbstractGameView(object):
                 else:
                     self.logger.error("Action %s returned wrong success message: %r", action_name, success_message)
                     user.add_message(_("Operation successful")) # default msg
+                res["result"] = True
 
         else:
             user.add_error(_("Submitted data is invalid"))
@@ -364,13 +364,15 @@ class AbstractGameView(object):
         return res
 
 
-    def _process_post_data(self):
+    def _process_html_post_data(self):
         """
         Returns a dict with keys:
         
             - result (ternary, None means "no action done")
             - form_data (instance of SubmittedGameForm, or None)
         """
+        assert not self.request.is_ajax()
+
         res = dict(result=None,
                    form_data=None)
 
@@ -381,8 +383,12 @@ class AbstractGameView(object):
         data = self.request.POST
 
         if data.get(self._ACTION_FIELD): # manually built form
+            res["result"] = False # by default
             with action_failure_handler(self.request, success_message=None): # only for unhandled exceptions
-                res["result"] = self._try_processing_action(data)
+                result = self._try_processing_action(data)
+                if isinstance(result, basestring) and result:
+                    user.add_message(result) # since we're NOT in ajax here
+                res["result"] = True
 
         else: # it must be a call using registered django newforms
             for (form_name, (FormClass, action_name)) in self.GAME_FORMS.items():
@@ -394,6 +400,7 @@ class AbstractGameView(object):
                 user.add_error(_("Submitted form data hasn't been recognized"))
                 logging.error("Unexpected form data sent to %s - %r" % (self.NAME, self.request.POST))
 
+        assert set(res.keys()) == set("result form_data".split()), res
         return res
 
 
@@ -403,7 +410,7 @@ class AbstractGameView(object):
 
     def _process_html_request(self):
 
-        res = self._process_post_data()
+        res = self._process_html_post_data()
 
         success = res["result"] # can be None also if nothing processed
         previous_form_data = res["form_data"]

@@ -184,16 +184,16 @@ class FriendshipManagementAbility(AbstractGameView):
 
     def _relation_type_to_action(self, relation_type):
         if relation_type == "proposed_to":
-            return ("do_cancel_proposal", _("Cancel proposal"))
+            return ("do_cancel_proposal", _("Cancel friendship proposal"), _("You've proposed a friendship to that user"))
         elif relation_type == "requested_by":
-            return ("do_accept_friendship", _("Accept friendship"))
+            return ("do_accept_friendship", _("Accept friendship proposal"), _("You've been proposed a friendship by that user"))
         elif relation_type == "recent_friend":
-            return None
+            return (None, None, _("You've been friend with that user for a short time (impossible to break that friendship at the moment)"))
         elif relation_type == "old_friend":
-            return ("do_cancel_friendship", _("Abort friendship"))
+            return ("do_cancel_friendship", _("Abort friendship proposal"), _("You're friends with that user"))
         else:
             assert relation_type is None, repr(relation_type)
-            return ("do_propose_friendship", _("Propose friendship"))
+            return ("do_propose_friendship", _("Propose friendship"), _("You're not friends with that user"))
 
 
     def get_template_vars(self, previous_form_data=None):
@@ -205,6 +205,7 @@ class FriendshipManagementAbility(AbstractGameView):
 
         return {
                  'page_title': _("Friendship Management"),
+                 'current_friends': self.datamanager.get_friends(),
                  "friendship_actions": friendship_actions,
                }
 
