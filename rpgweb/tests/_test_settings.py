@@ -58,7 +58,7 @@ MIDDLEWARE_CLASSES = (
 'django.contrib.sessions.middleware.SessionMiddleware',
 'django.contrib.messages.middleware.MessageMiddleware',
 #'localeurl.middleware.LocaleURLMiddleware',
-#'django.middleware.locale.LocaleMiddleware', replaced by LocaleURLMiddleware
+'django.middleware.locale.LocaleMiddleware', # can be replaced by LocaleURLMiddleware
 'django.middleware.common.CommonMiddleware',
 'django.contrib.auth.middleware.AuthenticationMiddleware',
 'rpgweb.middlewares.ZodbTransactionMiddleware',

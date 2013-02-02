@@ -1,7 +1,5 @@
 
 
-- test that get_chatroom_messages actiavtes chatting status
-
 
 - interactive world map
 - ability for users to transfer their objects to someone else
@@ -15,7 +13,7 @@
 - filling of headers with game info and notifications
 - javascript-obfuscated-popuped "report bug" div in mini footer
 
-
+- check what happens when calling setlanguage flags from a "POST-access-only" page like private files ??
 
 
 
