@@ -74,20 +74,23 @@
         
         });
         
-        /*
-        GOOOD FIXME
+ 
         $(function() {
-            $( "#sortable1, #sortable2" ).sortable({
-                connectWith: ".connectedSortable"
-            }).disableSelection();
+            $( "#current_playlist" ).sortable({
+                //connectWith: ".connectedSortable"
+                helper: "original",
+            })//.disableSelection();
         });
         
         
         $('.radiotrack').draggable( {
-            containment: "#radiotracks",
+            //containment: "#radiotracks",
             cursor: "move",
-            revert: "invalid",
-          } );*/
+            helper: "clone",
+            revert: false,
+            opacity: 0.7,
+            connectToSortable: "#current_playlist",
+          } );
         
         
         /* ADD GLOBAL AJAX ERROR HANDLERS (all executed on error)

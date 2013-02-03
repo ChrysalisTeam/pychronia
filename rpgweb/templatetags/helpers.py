@@ -47,14 +47,22 @@ def game_view_url(parser, token):
     url_node = default_url_tag(parser, token)
     return url_node
 
-@register.simple_tag(takes_context=False)
-def game_file_url(a="", b="", c="", d="", e="", f="", thumb=None): # simple tag doesn't accept *args or **kwargs...4
+@register.simple_tag(takes_context=True)
+def game_file_url(context, a="", b="", c="", d="", e="", f="", varname=None):
+    """
+    Here "varname" is the varuiable under which to store the result, if any.
+    """
     rel_path = "".join((a, b, c, d, e, f))
     full_url = real_game_file_url(rel_path)
-    return full_url
+    if varname is not None:
+        assert varname, "wrong game_file_url varname %s" % varname
+        context[varname] = full_url
+        return ""
+    else:
+        return full_url
 
 @register.simple_tag(takes_context=False)
-def game_file_img(a="", b="", c="", d="", e="", f="", alias=None): # simple tag doesn't accept *args or **kwargs...
+def game_file_img(a="", b="", c="", d="", e="", f="", alias=None):
     rel_path = "".join((a, b, c, d, e, f))
     if alias is not None:
         try:

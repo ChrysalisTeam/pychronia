@@ -1894,8 +1894,8 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
     def get_pending_new_message_notifications(self):
         # returns users that must be notified, with corresponding message audio_id
         notifications = PersistentDict((username, properties["new_messages_notification"])
-        for (username, properties) in self.get_character_sets().items()
-        if properties["has_new_messages"])
+                                        for (username, properties) in self.get_character_sets().items()
+                                        if properties["has_new_messages"])
         return notifications
 
     @readonly_method
@@ -2128,12 +2128,9 @@ class RadioMessaging(BaseDataManager): # TODO REFINE
     @readonly_method
     def get_audio_message_properties(self, audio_id):
         """
-        Returns a copy of audio properties, including url of sound file.
+        Returns audio properties.
         """
-        audio_properties = self.data["audio_messages"][audio_id]
-        return dict(url=game_file_url("audio_messages/" + audio_properties["file"]),
-                    **audio_properties)
-
+        return self.data["audio_messages"][audio_id]
 
 
     @transaction_watcher

@@ -793,6 +793,9 @@ table.footnote {
   background: #C5AE8F;
   line-height: 1em;
 }
+img {
+  -webkit-filter: #010101;
+}
 body {
   margin: 0;
   padding: 0;

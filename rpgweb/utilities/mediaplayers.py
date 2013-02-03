@@ -6,11 +6,14 @@ from rpgweb.common import *
 
 from django.utils.http import urlencode
 
+
+LIB_DIR = config.STATIC_URL + "libs/"
+
 _media_player_templates = \
 {
     ("flv", "mp3"): """
-    <object  type="application/x-shockwave-flash" class="mediaplayer" style="width:%(width)spx;height:%(height)spx;" data="%(media_full_url)svideoplayers/mediaplayer/player.swf" title="%(title)s">
-        <param name="movie" value="%(media_full_url)svideoplayers/mediaplayer/player.swf" />
+    <object  type="application/x-shockwave-flash" class="mediaplayer" style="width:%(width)spx;height:%(height)spx;" data="%(lib_dir)svideoplayers/mediaplayer/player.swf" title="%(title)s">
+        <param name="movie" value="%(lib_dir)svideoplayers/mediaplayer/player.swf" />
         <param name="quality" value="high" />
         <param name="wmode" value="%(transparency)s" />
         <param name="bgcolor" value="%(background)s" />
@@ -39,7 +42,7 @@ _media_player_templates = \
     <script type="text/javascript">
     
     var cnt = document.getElementById('avID_%(id)s');
-    var src = '%(media_full_url)svideoplayers/wmvplayer/wmvplayer.xaml';
+    var src = '%(lib_dir)svideoplayers/wmvplayer/wmvplayer.xaml';
     var cfg = {
         file:'%(fileurl)s',
         width:'%(width)s',
@@ -114,7 +117,7 @@ def generate_media_player(fileurl, image="", autostart=False, **kwargs):
     {
         "title": "Video Viewer",
         "id": myhash, # risks of collision are ultra weak...
-        "media_full_url": config.MEDIA_URL,
+        "lib_dir": LIB_DIR,
         "autoplay": "true" if autostart else "false",
         "allowfullscreen": "true",
         "transparency": "opaque", # transparent, window
@@ -144,10 +147,10 @@ def generate_media_player(fileurl, image="", autostart=False, **kwargs):
 
 
 # We could use the JS script to load this SWF in a safer way, but well...
-# <!--script language="JavaScript" src="{{ media_full_url }}audioplayer/audio-player.js"></script-->
+# <!--script language="JavaScript" src="{{ lib_dir }}audioplayer/audio-player.js"></script-->
 _mp3_template = """
-    <object width="300px" height="24px" type="application/x-shockwave-flash" data="%(media_full_url)saudioplayer/player.swf" class="audioplayer">
-        <param name="movie" value="%(media_full_url)saudioplayer/player.swf" />
+    <object width="300px" height="24px" type="application/x-shockwave-flash" data="%(lib_dir)saudioplayer/player.swf" class="audioplayer">
+        <param name="movie" value="%(lib_dir)saudioplayer/player.swf" />
         <param name="FlashVars" value="%(audiosettings)s" /> <!-- additional value: &playerID=id-of-script-tag -->
         <param name="quality" value="high" />
         <param name="scale" value="showall" />
@@ -191,7 +194,7 @@ def generate_audio_player(files, titles=None, artists=None, autostart=False):
                     )
 
     options = {
-                "media_full_url": config.MEDIA_URL,
+                "lib_dir": LIB_DIR,
                 "audiosettings": audiosettings
               }
 

@@ -43,7 +43,8 @@
                 
                 <td style="text-align: left;">
                     {{ forloop.counter }} - {{ audio_id }} : &quot;{{ audio_properties.text }}&quot; <br/>
-                      {{ audio_properties.url|mediaplayer:"false" }}
+                      {% game_file_url "audio_messages/" audio_properties.file varname="fileurl" %}
+                      {{ fileurl|mediaplayer:"false" }}
                 </td>
                 
             </tr>
@@ -85,7 +86,7 @@
 
 
 
-<ul id="sortable1" class="connectedSortable">
+<!--ul id="sortable1" class="connectedSortable">
     <li class="ui-state-default">Item 1</li>
     <li class="ui-state-default">Item 2</li>
     <li class="ui-state-default">Item 3</li>
@@ -93,44 +94,34 @@
     <li class="ui-state-default">Item 5</li>
 </ul>
 
-<ul id="sortable2" class="connectedSortable">
+
     <li class="ui-state-highlight">Item 1</li>
     <li class="ui-state-highlight">Item 2</li>
     <li class="ui-state-highlight">Item 3</li>
     <li class="ui-state-highlight">Item 4</li>
     <li class="ui-state-highlight">Item 5</li>
-</ul>
+</ul-->
 
+<ul id="current_playlist">
+    <li class="ui-state-highlight">Item 1</li>
+    <li class="ui-state-highlight">Item 2</li>
+    <li class="ui-state-highlight">Item 3</li>
+</div>
 
 
 <div id="radiotracks" align="center">
     
-   
-
-        {% for audio_id, audio_properties in special_audio_messages %}  
-                <div class="rowB radiotrack" >  
-                    <table><tr>
-                    <td  style="text-align: left;">
-                      {{ audio_id }}  : &quot;{{ audio_properties.text }}&quot; <br/>
-                      {{ audio_properties.url|mediaplayer:"false" }}
-                    </td>
-                    
-                    <td width="30px">
-                        <a name="anchor{{ audio_id }}">
-                        <form action="{% game_view_url "rpgweb.views.manage_audio_messages" %}#anchor_playlist_building" method="POST">
-                            <input type="hidden" name="audio_message_added" value="{{ audio_id }}"/>
-                            <input type="submit" name="add_audio_message" value="Add"/><br/><br/>
-                        </form>
-                        </a>
-                    </td>
-                    </tr></table>
-                </div>
-        {% endfor %}
-   
-    
-    
-    
-    
+    <ul id="available_radio_spots" class="connectedSortable">
+    	
+            {% for audio_id, audio_properties in special_audio_messages %}  
+            <li class="radiotrack">
+                {{ audio_id }}  : &quot;{{ audio_properties.text }}&quot; <br/>
+                {% game_file_url "audio_messages/" audio_properties.file varname="fileurl" %}
+                {{ fileurl|mediaplayer:"false" }}
+    		</li>
+            {% endfor %}
+       
+    </ul>
     
 </div>
 
