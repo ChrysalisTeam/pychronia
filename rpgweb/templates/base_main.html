@@ -230,15 +230,15 @@
 
 
 {% block left_big_icon_panel %} 
-{% if 0 %}    
+{% if 1 %}    
 <a onclick="open_webradio_popup(); return False;" href="#">
 <div class="big_icon_panel">
-    <img src="{{ STATIC_URL }}MetalRadiance/img/icons/speaker.png"/>
+    <img src="{{ STATIC_URL }}MetalRadiance/img/icons/radio.png"/>
 </div>
 </a>
 {% else %}
 <div class="big_icon_panel">
-    <img src="{{ STATIC_URL }}MetalRadiance/img/icons/speaker_disabled.png"/>
+    <img src="{{ STATIC_URL }}MetalRadiance/img/icons/radio_disabled.png"/>
 </div>
 {% endif %}
 {% endblock %}
@@ -286,7 +286,7 @@
 
 
 {% block right_big_icon_panel %} 
-{% if 0 and help_keyword %}    
+{% if help_keyword %}    
 <a href="{% game_view_url "rpgweb.views.view_help_page" keyword=help_keyword %}" class="fancybox fancybox.ajax" title="{{ page_title }}">
 <div class="big_icon_panel">
     <img src="{{ STATIC_URL }}MetalRadiance/img/icons/question_mark.png"/>
