@@ -75,22 +75,44 @@
         });
         
  
-        $(function() {
-            $( "#current_playlist" ).sortable({
-                //connectWith: ".connectedSortable"
-                helper: "original",
-            })//.disableSelection();
-        });
+ 
+        function save_radio_playlist() {
+           $.post("",
+                   { _action_: "save_radio_playlist",
+                    ids_list: $('#current_playlist').sortable('toArray', { attribute: "data-spotid" })},
+                   function(answer) {  }
+                 );            
+       }
+       
+        //$( "#trashcan" ).sortable({
+        //    scroll: false,
+        //})
+       
+        $( "#trashcan" ).droppable({
+           drop: function( event, ui ) {ui.draggable.hide();},
+           accept: "#current_playlist li",
+        });     
+            
+        $( "#current_playlist" ).sortable({
+            connectWith: "#trashcan",
+            dropOnEmpty: true,
+            helper: "original",
+            scroll: false,
+            stop: function(event, ui) { 
+                save_radio_playlist();
+            }
+        })//.disableSelection();
         
-        
-        $('.radiotrack').draggable( {
+        $('.radio_spot').draggable( {
             //containment: "#radiotracks",
             cursor: "move",
             helper: "clone",
+            dropOnEmpty: true,
             revert: false,
             opacity: 0.7,
             connectToSortable: "#current_playlist",
           } );
+        
         
         
         /* ADD GLOBAL AJAX ERROR HANDLERS (all executed on error)

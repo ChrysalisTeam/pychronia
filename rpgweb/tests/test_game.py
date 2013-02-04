@@ -1397,7 +1397,7 @@ class TestDatamanager(BaseGameTestCase):
         self.assertEqual(username, "guy3")
 
         properties = self.dm.get_audio_message_properties(audio_id)
-        self.assertEqual(set(properties.keys()), set(["text", "file", "url", "title"]))
+        self.assertEqual(set(properties.keys()), set(["text", "file", "title"]))
 
         # self.assertEqual(properties["new_messages_notification_for_user"], "guy3")
         # self.assertEqual(self.dm.get_audio_message_properties("request_for_report_teldorium")["new_messages_notification_for_user"], None)

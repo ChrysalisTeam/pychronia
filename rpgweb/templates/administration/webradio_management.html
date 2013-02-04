@@ -1,6 +1,34 @@
-{% extends "base_one_column.html" %}
+{% extends "base_two_columns.html" %}
 
-{% load i18n helpers %}  
+{% load sekizai_tags i18n helpers kwacros %}  
+{% loadkwacros "metalradiance_kwacros.html" %}
+
+
+
+
+{% block sidebar %}
+
+{% usekwacro side_panel_start frame_class="mini_frame float_left" decos="2" %}
+    <h2>{% trans "Playlist" %}</h2>
+    
+    <div class="beige_paper">
+        <ul id="current_playlist" style="min-height:30px;">
+        {% for audio_id, audio_properties in pending_audio_messages %}  
+             {% include "utilities/radio_spot_placeholder.html" with audio_id=audio_id audio_properties=audio_properties %}
+        {% endfor %}
+        </ul>
+    </div>
+    
+    <div id="trashcan">&nbsp;</div>
+{% usekwacro side_panel_end %}
+
+{% endblock %}
+
+
+
+
+
+
 
 {% block content %}  
 
@@ -36,22 +64,7 @@
 
 {% if pending_audio_messages %}
 
-<table>
-    <tbody>
-    {% for audio_id, audio_properties in pending_audio_messages %}  
-            <tr class="rowB" >  
-                
-                <td style="text-align: left;">
-                    {{ forloop.counter }} - {{ audio_id }} : &quot;{{ audio_properties.text }}&quot; <br/>
-                      {% game_file_url "audio_messages/" audio_properties.file varname="fileurl" %}
-                      {{ fileurl|mediaplayer:"false" }}
-                </td>
-                
-            </tr>
-    {% endfor %}
-    
-    </tbody>
-</table>
+
 
 <form action="{% game_view_url "rpgweb.views.manage_audio_messages" %}" method="POST">
     <input type="submit" name="reset_playlist" value="Reset Playlist"/>
@@ -85,42 +98,17 @@
 </a>
 
 
-
-<!--ul id="sortable1" class="connectedSortable">
-    <li class="ui-state-default">Item 1</li>
-    <li class="ui-state-default">Item 2</li>
-    <li class="ui-state-default">Item 3</li>
-    <li class="ui-state-default">Item 4</li>
-    <li class="ui-state-default">Item 5</li>
-</ul>
-
-
-    <li class="ui-state-highlight">Item 1</li>
-    <li class="ui-state-highlight">Item 2</li>
-    <li class="ui-state-highlight">Item 3</li>
-    <li class="ui-state-highlight">Item 4</li>
-    <li class="ui-state-highlight">Item 5</li>
-</ul-->
-
-<ul id="current_playlist">
-    <li class="ui-state-highlight">Item 1</li>
-    <li class="ui-state-highlight">Item 2</li>
-    <li class="ui-state-highlight">Item 3</li>
-</div>
-
-
-<div id="radiotracks" align="center">
+<div id="radiotracks" align="left">
     
-    <ul id="available_radio_spots" class="connectedSortable">
+    <ul id="available_radio_spots" class="">
     	
-            {% for audio_id, audio_properties in special_audio_messages %}  
-            <li class="radiotrack">
-                {{ audio_id }}  : &quot;{{ audio_properties.text }}&quot; <br/>
-                {% game_file_url "audio_messages/" audio_properties.file varname="fileurl" %}
-                {{ fileurl|mediaplayer:"false" }}
-    		</li>
-            {% endfor %}
-       
+        {% for audio_id, audio_properties in special_audio_messages %}  
+            {% include "utilities/radio_spot_placeholder.html" with audio_id=audio_id audio_properties=audio_properties %}<br/>
+            
+            {% game_file_url "audio_messages/" audio_properties.file varname="fileurl" %}
+            {{ fileurl|mediaplayer:"false" }}
+        {% endfor %}
+   
     </ul>
     
 </div>

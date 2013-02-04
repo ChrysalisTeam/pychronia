@@ -285,6 +285,16 @@ blockquote, q, cite {
 }
 
 
+#trashcan {
+  margin: 20px 10px 5px;
+  height:110px;
+  background: transparent center center no-repeat url('#{$IMGS}icons/trashbin.png');
+  * {
+    visibility: hidden;
+  }
+}
+
+
 table.realtable {
     box-sizing: border-box; // beware!
     border-collapse: collapse;

@@ -340,6 +340,14 @@ blockquote, cite, q {
   padding: 0;
   margin: 10px auto;
 }
+#trashcan {
+  margin: 20px 10px 5px;
+  height: 110px;
+  background: transparent center center no-repeat url(img/icons/trashbin.png);
+}
+#trashcan * {
+  visibility: hidden;
+}
 table.realtable {
   box-sizing: border-box;
   border-collapse: collapse;
@@ -1064,7 +1072,7 @@ body:after {
 #full_content .main_sidebar {
   padding: 10px;
   margin: 0px;
-  overflow: auto;
+  overflow: hidden;
 }
 #full_content .main_sidebar .mini_frame {
   margin: 0 0 20px 0;
