@@ -45,7 +45,7 @@
 </div>
 
 <div align="center">
-<form action="{% game_view_url "rpgweb.views.manage_audio_messages" %}" method="POST">
+<form action="" method="POST">
 {% if radio_is_on %}
     <input type="submit" name="turn_radio_off" value="{% trans "Turn Radio Off" %}"/>
 {%else %}
@@ -53,7 +53,7 @@
 {% endif %}
 </form>
 <br/>
-<form action="{% game_view_url "rpgweb.views.manage_audio_messages" %}" method="GET">
+<form action="" method="GET">
     <input type="submit" value="{% trans "Refresh Radio State" %}"/>
 </form>
 </div>
@@ -66,7 +66,7 @@
 
 
 
-<form action="{% game_view_url "rpgweb.views.manage_audio_messages" %}" method="POST">
+<form action="" method="POST">
     <input type="submit" name="reset_playlist" value="Reset Playlist"/>
 </form>
 
@@ -86,7 +86,7 @@
     {{ players_with_new_messages.keys|join:", "|default:_("None") }}.</span>
     <br/><br/>
     {% if players_with_new_messages.keys %}
-    <form action="{% game_view_url "rpgweb.views.manage_audio_messages" %}" method="POST">
+    <form action="" method="POST">
         <input type="submit" name="notify_new_messages" value="{% trans "Notify Users About New Messages" %}"/>
     </form>
     {% endif %}

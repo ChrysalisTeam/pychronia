@@ -2088,15 +2088,28 @@ class RadioMessaging(BaseDataManager): # TODO REFINE
 
 
 
+    def _check_audio_ids(self, audio_ids):
+        for audio_id in audio_ids:
+            if audio_id not in self.data["audio_messages"].keys():
+                raise UsageError(_("Unknown radio message identifier - %(audio_id)s") % SDICT(audio_id=audio_id))
+
     @transaction_watcher
     def add_radio_message(self, audio_id):
-        if audio_id not in self.data["audio_messages"].keys():
-            raise UsageError(_("Unknown radio message identifier - %(audio_id)s") % SDICT(audio_id=audio_id))
-
+        """
+        No-op if audio message already in queue.
+        """
+        self._check_audio_ids([audio_id])
         queue = self.data["global_parameters"]["pending_radio_messages"]
         if audio_id not in queue:
             queue.append(audio_id)
 
+    @transaction_watcher
+    def set_radio_messages(self, audio_ids):
+        """
+        Allows duplicate audio messages.
+        """
+        self._check_audio_ids(audio_ids)
+        self.data["global_parameters"]["pending_radio_messages"] = PersistentList(audio_ids)
 
     @transaction_watcher
     def reset_audio_messages(self):

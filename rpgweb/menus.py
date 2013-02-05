@@ -114,7 +114,7 @@ def generate_full_menu(request): # # game_menu_generator
                          menu_entry(_(u"Manage Characters"), views.manage_characters),
 
                          menu_entry(_(u"Game Events"), views.game_events),
-                         menu_entry(_(u"Manage Webradio"), views.manage_audio_messages),
+                         menu_entry(_(u"Manage Webradio"), views.webradio_management),
                          menu_entry(_(u"Databases"), views.manage_databases),
                       )),
 

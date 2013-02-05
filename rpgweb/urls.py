@@ -54,7 +54,7 @@ view_urlpatterns = patterns('rpgweb.views',
     url(r'^manual/(?P<keyword>[^/]*)/$', 'view_help_page'),
 
     url(r'^manage_characters/$', 'manage_characters'),
-    url(r'^webradio_management/$', 'manage_audio_messages'),
+    url(r'^webradio_management/$', 'webradio_management'),
     url(r'^game_events/$', 'game_events'),
     url(r'^manage_databases/$', 'manage_databases'),
 

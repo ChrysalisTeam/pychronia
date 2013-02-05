@@ -159,7 +159,7 @@ class AbstractGameView(object):
 
     NAME = None # slug to be overridden, used as primary identifier
 
-    ACTIONS = {} # dict mapping action identifiers to processing method names (for ajax calls or custom forms)
+    ACTIONS = {} # dict mapping action identifiers to processing method names (for ajax calls or custom forms) - BEWARE OF DATA VALIDATION HERE
     GAME_FORMS = {} # dict mapping form identifiers to tuples (AbstractGameForm subclass, processing method name)
     ADMIN_FORMS = {} # same as GAME_FORMS but for forms that should be exposed as admin forms
 
@@ -348,13 +348,13 @@ class AbstractGameView(object):
                 relevant_args = utilities.adapt_parameters_to_func(bound_form.get_normalized_values(), action)
                 success_message = action(**relevant_args)
 
-                form_successful = True
+                res["result"] = form_successful = True
                 if isinstance(success_message, basestring) and success_message:
                     user.add_message(success_message)
                 else:
                     self.logger.error("Action %s returned wrong success message: %r", action_name, success_message)
                     user.add_message(_("Operation successful")) # default msg
-                res["result"] = True
+
 
         else:
             user.add_error(_("Submitted data is invalid"))
@@ -372,12 +372,10 @@ class AbstractGameView(object):
             - form_data (instance of SubmittedGameForm, or None)
         """
         assert not self.request.is_ajax()
+        assert self.request.method == "POST"
 
         res = dict(result=None,
                    form_data=None)
-
-        if self.request.method != "POST":
-            return res
 
         user = self.datamanager.user
         data = self.request.POST
@@ -410,10 +408,15 @@ class AbstractGameView(object):
 
     def _process_html_request(self):
 
-        res = self._process_html_post_data()
+        if self.request.method == "POST":
+            res = self._process_html_post_data()
+            success = res["result"] # can be None also if nothing processed
+            previous_form_data = res["form_data"]
+        else:
+            success = None # unused ATM
+            previous_form_data = None
 
-        success = res["result"] # can be None also if nothing processed
-        previous_form_data = res["form_data"]
+        assert not previous_form_data or previous_form_data.form_successful == success # coherency
 
         template_vars = self.get_template_vars(previous_form_data)
 

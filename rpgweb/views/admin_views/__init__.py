@@ -14,6 +14,9 @@ from django.core.mail import send_mail
 from .admin_dashboard_mod import AdminDashboardAbility
 admin_dashboard = AdminDashboardAbility.as_view
 
+from .webradio_management_mod import WebradioManagement
+webradio_management = WebradioManagement.as_view
+
 
 
 @register_view(access=UserAccess.master)
@@ -40,70 +43,6 @@ def game_events(request, template_name='administration/game_events.html'):
                      'page_title': _("Game events"),
                      'events': trans_events
                     })
-
-
-
-
-@register_view(access=UserAccess.master)
-def manage_audio_messages(request, template_name='administration/webradio_management.html'):
-
-    user = request.datamanager.user
-
-    if request.method == "POST":
-        # manual form management, as there are hell a lot...
-        if request.POST.has_key("turn_radio_off"):
-            with action_failure_handler(request, _("Web Radio has been turned OFF.")):
-                request.datamanager.set_radio_state(is_on=False)
-        elif request.POST.has_key("turn_radio_on"):
-            with action_failure_handler(request, _("Web Radio has been turned ON.")):
-                request.datamanager.set_radio_state(is_on=True)
-        elif request.POST.has_key("reset_playlist"):
-            with action_failure_handler(request, _("Audio Playlist has been emptied.")):
-                request.datamanager.reset_audio_messages()
-        elif request.POST.has_key("notify_new_messages"):
-            with action_failure_handler(request, _("Player notifications have been enqueued.")):
-                request.datamanager.add_radio_message("intro_audio_messages")
-                for (username, audio_id) in request.datamanager.get_pending_new_message_notifications().items():
-                    request.datamanager.add_radio_message(audio_id)
-        elif request.POST.has_key("add_audio_message"):
-            with action_failure_handler(request, _("Player notifications have been enqueued.")):
-                audio_id = request.POST["audio_message_added"]  # might raise KeyError
-                request.datamanager.add_radio_message(audio_id)
-        else:
-            user.add_error(_("Unrecognized management request."))
-
-
-
-    radio_is_on = request.datamanager.get_global_parameter("radio_is_on")
-
-    pending_audio_messages = [(audio_id, request.datamanager.get_audio_message_properties(audio_id))
-                              for audio_id in request.datamanager.get_all_next_audio_messages()]
-
-    players_with_new_messages = request.datamanager.get_pending_new_message_notifications()
-
-
-    all_new_message_notifications = request.datamanager.get_all_new_message_notification_sounds()
-
-    # we filter out numerous "new emails" messages, which can be summoned in batch anyway
-    all_audio_messages = request.datamanager.get_all_audio_messages().items()
-    special_audio_messages = [msg for msg in all_audio_messages if msg[0] not in all_new_message_notifications]
-
-    special_audio_messages.sort(key=lambda x: x[0])
-
-
-    return render(request,
-                  template_name,
-                    {
-                     'page_title': _("Web Radio Management"),
-                     'radio_is_on': radio_is_on,
-                     'pending_audio_messages': pending_audio_messages,
-                     'players_with_new_messages': players_with_new_messages,
-                     'special_audio_messages': special_audio_messages
-                    })
-
-
-
-
 
 
 

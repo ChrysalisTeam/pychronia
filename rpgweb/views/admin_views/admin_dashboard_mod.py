@@ -77,8 +77,6 @@ class AdminDashboardAbility(AbstractAbility):
 
 
 
-    def store_widget_order(self, tokens_csv=None):
-        pass
 
     @classmethod
     def _setup_ability_settings(cls, settings):

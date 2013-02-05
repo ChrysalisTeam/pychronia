@@ -21,13 +21,11 @@ from django.utils.html import escape
 from django.utils.translation import ugettext as _, ugettext_lazy as _lazy, ungettext
 from rpgweb.common import *
 from .. import forms  # AFTER common, to replace django.forms
-from rpgweb.datamanager.abstract_game_view import AbstractGameView, register_view
+from rpgweb.datamanager import AbstractGameView, register_view
 from ..authentication import authenticate_with_credentials, logout_session
 from .. import datamanager as dm_module
 from rpgweb.utilities import mediaplayers, fileservers
 from rpgweb.datamanager import GameDataManager
-from django.shortcuts import render
-from decorator import decorator
 
 
 from .auction_views import (_build_display_data_from_viewer_settings, homepage, opening, view_characters,
@@ -48,7 +46,7 @@ from .messaging_views import (ajax_set_message_read_state, ajax_force_email_send
 from .abilities import (house_locking, runic_translation, wiretapping_management,
                         mercenaries_hiring, matter_analysis, world_scan)
 
-from .admin_views import (admin_dashboard, game_events, manage_audio_messages, manage_databases,
+from .admin_views import (admin_dashboard, game_events, webradio_management, manage_databases,
                           manage_characters, CHARACTERS_IDENTITIES,
                           DATABASE_OPERATIONS, FAIL_TEST, MEDIA_TEST)
 

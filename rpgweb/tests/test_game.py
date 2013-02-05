@@ -1425,6 +1425,7 @@ class TestDatamanager(BaseGameTestCase):
         self.dm.add_radio_message(audio_id_ter)
 
         self.assertEqual(len(self.dm.get_all_next_audio_messages()), 3)
+        assert self.dm.get_all_next_audio_messages() == [audio_id, audio_id_bis, audio_id_ter]
 
         self.assertEqual(self.dm.get_next_audio_message(), audio_id)
 
@@ -1443,6 +1444,11 @@ class TestDatamanager(BaseGameTestCase):
 
         self.assertEqual(self.dm.get_next_audio_message(), None)
         self.assertEqual(len(self.dm.get_all_next_audio_messages()), 0)
+
+        self.dm.set_radio_messages([audio_id_bis, audio_id_ter, audio_id_ter])
+        assert self.dm.get_all_next_audio_messages() == [audio_id_bis, audio_id_ter, audio_id_ter]
+        self.assertEqual(self.dm.get_next_audio_message(), audio_id_bis)
+
 
 
     def test_delayed_message_processing(self):
