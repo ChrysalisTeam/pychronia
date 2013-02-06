@@ -130,7 +130,7 @@ def get_radio_xml_conf(request, template_name='info/web_radio_conf.xml'):
 
     if not current_audio_messages:
         # we had better not let the player empty, it's not tweaked for that case
-        current_audio_messages = [dict(url="http://", title=_("[No radio spot currently available]"))]
+        current_audio_messages = [dict(file="[None]", title=_("[No radio spot currently available]"))]
 
     audio_urls = "|".join([game_file_url("audio_messages/" + msg["file"]) for msg in current_audio_messages])  # we expect no "|" inside a single url
     audio_titles = "|".join([msg["title"].replace("|", "") for msg in current_audio_messages])  # here we can cleanup
