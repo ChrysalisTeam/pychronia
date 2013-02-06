@@ -234,7 +234,7 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
     @readonly_method
     def dump_zope_database(self, **kwargs):
 
-        dump_args = dict(width=60, indent=4, # NO default_style nor canonical, else stuffs break
+        dump_args = dict(width=100, indent=4, # NO default_style nor canonical, else stuffs break
                             default_flow_style=False, allow_unicode=True)
         dump_args.update(kwargs)
 
@@ -247,12 +247,13 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
 
         data_dump = utilities.convert_object_tree(data_dump, utilities.zodb_to_python_types)
 
+        '''
         def coerce_to_ascii_if_possible(dumper, value):
             try:
                 return dumper.represent_scalar(u'tag:yaml.org,2002:str', value.encode("ascii"))
             except UnicodeError:
                 return dumper.represent_unicode(value)
-
+        '''
         yaml.add_representer(unicode, lambda dumper, value: dumper.represent_scalar(u'tag:yaml.org,2002:str', value))
 
         # FIXME yaml.add_representer(unicode, lambda dumper, value: dumper.represent_scalar(u'tag:yaml.org,2002:str', value))

@@ -24,9 +24,12 @@
 
            $( ".admin_widgets" ).sortable({
                     //connectWith: ".connectedSortable"
+                    helper: "clone",
+                    tolerance: "pointer",
+                    scroll: false,
                     stop: function(event, ui) { save_widgets_order();}
                                                     //alert($('.admin_widgets').sortable('serialize', { expression: /(.+)=(.+)/ }));
-                                         });
+           });
            
           
                $("#test1").on("submit", "form",
