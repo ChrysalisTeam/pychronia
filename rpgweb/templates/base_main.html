@@ -16,7 +16,6 @@
     <script src="{{ STATIC_URL }}libs/jquery.ba-outside-events.js" type="text/javascript"></script>
     <script src="{{ STATIC_URL }}libs/jquery.mousewheel-3.0.6.pack.js" type="text/javascript"></script>
 
-    <script src="{{ STATIC_URL }}libs/jquery-ui/jquery-ui-1.8.16.custom.js" type="text/javascript"></script>
     <script src="{{ STATIC_URL }}libs/jquery-ui/combobox.js" type="text/javascript"></script>
     
     <script src="{{ STATIC_URL }}libs/jquery-ui/ui.dropdownchecklist-1.4.js" type="text/javascript"></script>
@@ -85,28 +84,28 @@
         }
     
         $("#trashcan").droppable({
-           drop: function(event, ui) {ui.draggable.remove(); console.log(ui); },
-           //accept: "#current_playlist li",
+           drop: function(event, ui) {ui.draggable.remove();},
+           accept: "#current_playlist li",
            tolerance: "pointer",
         });      
 
         $("#current_playlist").sortable({
             //connectWith: "#trashcan",
             dropOnEmpty: true,
-            helper: "original",
+            helper: "clone",
             tolerance: "pointer",
             scroll: false,
             stop: function(event, ui) { 
-                save_radio_playlist();
+               save_radio_playlist();
             }
         })//.disableSelection();
             
-        $('.radio_spot').draggable( {
+        $('#available_radio_spots .radio_spot').draggable( {
             //containment: "#radiotracks",
             cursor: "move",
             helper: "clone",
             dropOnEmpty: true,
-            revert: true,
+            revert: "invalid",
             opacity: 0.7,
             connectToSortable: "#current_playlist",
           } );
