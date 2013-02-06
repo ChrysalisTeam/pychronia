@@ -22,7 +22,7 @@ webradio_management = WebradioManagement.as_view
 @register_view(access=UserAccess.master)
 def game_events(request, template_name='administration/game_events.html'):
 
-    events = request.datamanager.get_game_events()  # keys : time, message, username
+    events = request.datamanager.get_game_events()
 
     trans_events = []
     for event in events:

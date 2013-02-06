@@ -6,26 +6,26 @@
 
 <p>
 {% blocktrans %} 
-All important events which have occurred so far are logged below. Actions performed by the game master are in italic. 
+All important events which have occurred so far are logged below.
 Some events point to other pages, where more details can be found.
 {% endblocktrans %}
 </p>
 
 {% if events %}
 
-    <table style="margin:10px auto;" class=""> <!--fullwidth-->
+    <table class="realtable">
         <tbody>
         
-            <tr>
+            <thead>
                 <th>{% trans "Time" %}</th>
                 <th>{% trans "Message" %}</th>
-            </tr>
+            </thead>
         
         
             {% for event in events %} 
             
             <tr>    
-                <td style="width:70px">{{ event.time|utctolocal|date:"H:i:s" }}</td>   {%comment %}{% load humanize %}{{ event.time|utctolocal|naturalday:"d/N/Y" }}{% endcomment %}
+                <td style="width:70px">{{ event.time|utctolocal|date:"d/m/Y H:i:s" }}</td>   {%comment %}{% load humanize %}{{ event.time|utctolocal|naturalday:"d/N/Y" }}{% endcomment %}
                 <td style="text-align: left;">
                     {% if event.url %}
                         <a href="{{ event.url }}">

@@ -166,7 +166,7 @@ class GameEvents(BaseDataManager): # TODO REFINE
 
         event_reference = {
             "time": datetime,
-            "message": basestring,
+            "message": basestring, # UNTRANSLATED message
             "substitutions": (types.NoneType, PersistentDict),
             "url": (types.NoneType, basestring),
             "username": (types.NoneType, basestring)
@@ -184,7 +184,7 @@ class GameEvents(BaseDataManager): # TODO REFINE
                     username == self.get_global_parameter("anonymous_login")
 
     @transaction_watcher
-    def log_game_event(self, message, substitutions=None, url=None, is_master_action=False):
+    def log_game_event(self, message, substitutions=None, url=None):
         assert message, "log message must not be empty"
 
         if substitutions:
@@ -203,6 +203,7 @@ class GameEvents(BaseDataManager): # TODO REFINE
             "substitutions": substitutions,
             "url": url,
             "username": self.user.username
+            # FIXME - add impersonation data here!!
         })
         self.data["events_log"].append(record)
 
