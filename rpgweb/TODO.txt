@@ -9,12 +9,14 @@
 - drag&drop radio playlist management
 - interface to edit static pages
 - interface to edit external contacts
+- interface to activate views
 - filling of footer with game info
 - filling of headers with game info and notifications
 - javascript-obfuscated-popuped "report bug" div in mini footer
+- global management of ajax errors, with popups
 
 - check what happens when calling setlanguage flags from a "POST-access-only" page like private files ??
-
+- include timezone handling
 
 
 
