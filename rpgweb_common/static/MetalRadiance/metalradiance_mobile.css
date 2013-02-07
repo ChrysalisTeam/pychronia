@@ -45,20 +45,13 @@ blockquote, q {
 blockquote:before, blockquote:after,
 q:before, q:after {
 	content: '';
-	content: none;
-}
-table {
-	border-collapse: collapse;
-	border-spacing: 0;
 }
 
 
-
-
-/* CUSTOM STYLESHEET FOR METAL RADIANCE MOBILE */
+/** === CUSTOM STYLESHEET FOR METAL RADIANCE MOBILE === **/
 
 body {
-	background: #152421 url(../img/bg.jpg) repeat-y top center;
+	background: #152421 url("img/backgrounds/mobile/body-bg.jpg") repeat-y top center;
 	margin: 0 auto;
 	font-family: Arial, Tahoma, Verdana, sans-serif;
 	width: auto;
@@ -67,14 +60,14 @@ body {
 #header {
 	width: 100%;
 	height: 74px;
-	background: #342716 url(../img/header-bg.jpg) repeat-x top center;
+	background: #342716 url("img/backgrounds/mobile/header-bg.jpg") repeat-x top center;
 	text-align: center;
 }
 
 #menu {
 	width: 100%;
 	height: 60px;
-	background: #342716 url(../img/menu-bg.jpg) repeat-x bottom center;
+	background: #342716 url("img/backgrounds/mobile/menu-bg.jpg") repeat-x bottom center;
 	text-align: center;
 }
 
@@ -93,7 +86,7 @@ body {
 #menu-bar{
 	width: 100%;
 	height: 13px;
-	background: url(../img/menu-bar.png) repeat-x top center;
+	background: url("img/backgrounds/mobile/menu-bar.png") repeat-x top center;
 }
 
 #page {
@@ -102,101 +95,120 @@ body {
 	text-align: center;
 }
 
+table.frame {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+div.frame {
+    border-style: solid; 
+    border-width: 14px;
+    border-image: url("img/backgrounds/mobile/frame.jpg") 14 fill repeat;
+    margin: 4px 0;
+}
 
 
-/** TABLE DE CADRE **/
 
-td.cadre-hg {
+
+/** background and borders of frame, if not using border-image **/
+
+td.frame-hg {
 	height: 15px;
 	width: 15px;
-	background: url(../img/cadre.jpg) no-repeat top left;
+	background: url("img/backgrounds/mobile/frame.jpg") no-repeat top left;
 }
 
-td.cadre-h {
+td.frame-h {
 	height: 15px;
-	background: url(../img/cadre-h.jpg) repeat-x top center;
+	background: url("img/backgrounds/mobile/frame-h.jpg") repeat-x top center;
 }
 
-td.cadre-hd {
-	height: 15px;
-	width: 15px;
-	background: url(../img/cadre.jpg) no-repeat top right;
-}
-
-td.cadre-cg {
-	width: 15px;
-	background: url(../img/cadre-v.jpg) repeat-y top left;
-}
-
-td.cadre-c {
-	background: #21140b;
-	text-align: left;
-	font-size: 12px;
-	line-height: 14px;
-	color: #ffeaa3;
-}
-
-td.cadre-c a {
-	font-size: 12px;
-	color: #ffeaa3;
-	line-height: 16px;
-	text-decoration: underline;
-	font-style: italic;
-}
-
-td.cadre-espace {
-	height: 5px;
-	background: #21140b;
-}
-
-td.cadre-cd {
-	width: 15px;
-	background: url(../img/cadre-v.jpg) repeat-y top right;
-}
-
-td.cadre-bg {
+td.frame-hd {
 	height: 15px;
 	width: 15px;
-	background: url(../img/cadre.jpg) no-repeat bottom left;
+	background: url("img/backgrounds/mobile/frame.jpg") no-repeat top right;
 }
 
-td.cadre-b {
-	height: 15px;
-	background: url(../img/cadre-h.jpg) repeat-x bottom center;
+
+td.frame-cg {
+	width: 15px;
+	background: url("img/backgrounds/mobile/frame-v.jpg") repeat-y top left;
 }
 
-td.cadre-bd {
+td.frame-cd {
+    width: 15px;
+    background: url("img/backgrounds/mobile/frame-v.jpg") repeat-y top right;
+}
+
+
+td.frame-bg {
 	height: 15px;
 	width: 15px;
-	background: url(../img/cadre.jpg) no-repeat bottom right;
+	background: url("img/backgrounds/mobile/frame.jpg") no-repeat bottom left;
 }
 
-td.cadre-blank {
+td.frame-b {
+	height: 15px;
+	background: url("img/backgrounds/mobile/frame-h.jpg") repeat-x bottom center;
+}
+
+td.frame-bd {
+	height: 15px;
+	width: 15px;
+	background: url("img/backgrounds/mobile/frame.jpg") no-repeat bottom right;
+}
+
+
+td.frame-space {
+    height: 5px;
+    background: #21140b;
+}
+
+td.frame-blank {
 	height: 10px;
 }
-/** CONTENU CADRE **/
 
-td.cadre-c img {
+
+
+/** misc. stuffs in content frame **/
+
+ 
+.frame, .frame-c {
+    background: #21140b;
+    text-align: left;
+    font-size: 12px;
+    line-height: 14px;
+    color: #ffeaa3;
+}
+
+.frame a {
+    font-size: 12px;
+    color: #ffeaa3;
+    line-height: 16px;
+    text-decoration: underline;
+    font-style: italic;
+}
+
+.frame img {
 	position: relative;
 	float: left;
 }
 
-div.contenu-cadre {
-	position: relative;
+h1 {
+    font-size: 16px;
+    line-height: 20px;
+}
+
+h2{
 	padding: 0px 0px 0px 34px;
 }
 
-div.contenu-cadre-lu{
-	position: relative;
-	padding: 0px 0px 0px 34px;
 
-}
-
-div.contenu-cadre-lu a, div.contenu-cadre-lu p{
+div.read a, div.read p{
 	color: #b5b1a3
 }
 
-a.lien {
+a.link {
 	color: #ffeaa3;
 	text-decoration: underline;
 	font-style: italic;
@@ -208,13 +220,10 @@ img.img-article {
 	margin: 5px 5px 5px 0px;
 }
 
-p.petit{
+p.small{
 	font-size: 10px;
 }
-p.grand {
-	font-size: 16px;
-	line-height: 20px;
-}
+
 p.footer {
 	color: #ffeaa3;
 	font-size: 10px;
@@ -234,7 +243,7 @@ p.chat {
 	font-style: italic;
 }
 
-p.titre {
+p.title {
 	text-decoration: underline;
 }
 
@@ -256,12 +265,12 @@ input.chat {
 	margin-right: 5px;
 }
 
-input.envoi {
+input.submit {
 	width: 70px;
 	margin-bottom: 0px;
 }
 
-input.recherche{
+input.search{
 	width: 80px;
 	margin-bottom: 0px;
 }
