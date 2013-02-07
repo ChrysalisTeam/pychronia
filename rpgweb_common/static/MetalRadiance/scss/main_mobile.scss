@@ -1,0 +1,267 @@
+@charset "UTF-8";
+
+@import "_reset.scss";
+
+
+@font-face
+{
+    font-family: augustus;
+    src: url('#{$IMGS}fonts/augustus.ttf');
+} 
+
+
+/** === CUSTOM STYLESHEET FOR METAL RADIANCE MOBILE === **/
+
+body {
+  background: #152421 url("img/backgrounds/mobile/body-bg.jpg") repeat-y top center;
+  margin: 0 auto;
+  font-family: Arial, Tahoma, Verdana, sans-serif;
+  width: auto;
+}
+
+#header {
+  width: 100%;
+  height: 74px;
+  background: #342716 url("img/backgrounds/mobile/header-bg.jpg") repeat-x top center;
+  text-align: center;
+}
+
+
+#menu {
+  width: 100%;
+  height: 60px;
+  background: #342716 url("img/backgrounds/mobile/menu-bg.jpg") repeat-x bottom center;
+  text-align: center;
+}
+
+#menu a{
+  font-size: 16px;
+  color: #ffeaa3;
+  text-decoration: none;
+  line-height: 27px;
+  padding: 0px 10px 0px 10px;
+}
+
+#menu a:hover{
+  text-decoration: underline;
+}
+
+#menu-bar{
+  width: 100%;
+  height: 13px;
+  background: url("img/backgrounds/mobile/menu-bar.png") repeat-x top center;
+}
+
+
+#page {
+  margin: 0 auto;
+  width: 97%;
+  text-align: center;
+}
+
+table.frame {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+div.frame {
+  border-style: solid; 
+  border-width: 14px;
+  border-image: url("img/backgrounds/mobile/frame.jpg") 14 fill repeat;
+  margin: 4px 0;
+}
+
+
+
+
+/** background and borders of frame, if not using border-image **/
+
+td.frame-hg {
+  height: 15px;
+  width: 15px;
+  background: url("img/backgrounds/mobile/frame.jpg") no-repeat top left;
+}
+
+td.frame-h {
+  height: 15px;
+  background: url("img/backgrounds/mobile/frame-h.jpg") repeat-x top center;
+}
+
+td.frame-hd {
+  height: 15px;
+  width: 15px;
+  background: url("img/backgrounds/mobile/frame.jpg") no-repeat top right;
+}
+
+
+td.frame-cg {
+  width: 15px;
+  background: url("img/backgrounds/mobile/frame-v.jpg") repeat-y top left;
+}
+
+td.frame-cd {
+  width: 15px;
+  background: url("img/backgrounds/mobile/frame-v.jpg") repeat-y top right;
+}
+
+
+td.frame-bg {
+  height: 15px;
+  width: 15px;
+  background: url("img/backgrounds/mobile/frame.jpg") no-repeat bottom left;
+}
+
+td.frame-b {
+  height: 15px;
+  background: url("img/backgrounds/mobile/frame-h.jpg") repeat-x bottom center;
+}
+
+td.frame-bd {
+  height: 15px;
+  width: 15px;
+  background: url("img/backgrounds/mobile/frame.jpg") no-repeat bottom right;
+}
+
+
+td.frame-space {
+  height: 5px;
+  background: #21140b;
+}
+
+td.frame-blank {
+  height: 10px;
+}
+
+
+
+
+/** misc. stuffs in content frame **/
+
+ 
+.frame {
+  background: #21140b;
+  text-align: left;
+  font-size: 12px;
+  line-height: 14px;
+  color: #ffeaa3;
+}
+
+.frame a {
+  font-size: 12px;
+  color: #ffeaa3;
+  line-height: 16px;
+  text-decoration: underline;
+  font-style: italic;
+}
+
+.frame img {
+  position: relative;
+  float: left;
+}
+
+
+h1 {
+  font-size: 30px;
+  line-height: 34px;
+  color: #ffd21d;
+  text-shadow: 2px 2px 1px black, -2px -2px 1px black;
+  font-family: augustus;
+  text-stroke: 1px #000; // barely supported
+}
+
+h2 {
+  font-size: 16px;
+  line-height: 20px;
+}
+
+h3{
+  padding: 0px 0px 0px 34px;
+}
+
+
+
+
+a.big-link {
+  color: #ffeaa3;
+  text-decoration: underline;
+  font-style: italic;
+  font-size: 14px;
+  padding: 5px 10px 5px 10px;
+}
+
+
+
+p.footer {
+  color: #ffeaa3;
+  font-size: 10px;
+  line-height: 80px;
+}
+  
+p.footer a {
+  text-decoration: underline;
+  font-style: italic;
+  color: #ffeaa3;
+}
+
+
+
+
+/** POTENTIALLY USELESS STUFFS ?? **/
+
+div.read a, div.read p{
+  color: #b5b1a3
+}
+
+img.img-article {
+  margin: 5px 5px 5px 0px;
+}
+
+p.small{
+  font-size: 10px;
+}
+
+p.chat {
+  padding-left: 10px;
+  padding-top: 4px;
+  padding-bottom: 10px;
+  font-style: italic;
+}
+
+p.title {
+  text-decoration: underline;
+}
+
+p.info{
+  font-style: italic;
+  color: red;
+  font-size: 14px;
+  padding: 5px 0px 5px 0px;
+}
+
+
+input {
+  width: 98%;
+  margin-bottom: 8px;
+}
+
+input.chat {
+  width: 72%;
+  margin-bottom: 0px;
+  margin-right: 5px;
+}
+
+input.submit {
+  width: 70px;
+  margin-bottom: 0px;
+}
+
+input.search{
+  width: 80px;
+  margin-bottom: 0px;
+}
+
+textarea {
+  width:100%;
+  margin-right: 3px;
+  font-family: Arial, Tahoma, Verdana, sans-serif;
+}
