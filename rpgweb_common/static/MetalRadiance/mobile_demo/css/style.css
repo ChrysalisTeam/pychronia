@@ -1,0 +1,273 @@
+@charset "UTF-8";
+
+
+
+/* CSS RESET
+   http://meyerweb.com/eric/tools/css/reset/ 
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed, 
+figure, figcaption, footer, header, hgroup, 
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure, 
+footer, header, hgroup, menu, nav, section {
+	display: block;
+}
+body {
+	line-height: 1;
+}
+ol, ul {
+	list-style: none;
+}
+blockquote, q {
+	quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: '';
+	content: none;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+
+
+
+/* CUSTOM STYLESHEET FOR METAL RADIANCE MOBILE */
+
+body {
+	background: #152421 url(../img/bg.jpg) repeat-y top center;
+	margin: 0 auto;
+	font-family: Arial, Tahoma, Verdana, sans-serif;
+	width: auto;
+}
+
+#header {
+	width: 100%;
+	height: 74px;
+	background: #342716 url(../img/header-bg.jpg) repeat-x top center;
+	text-align: center;
+}
+
+#menu {
+	width: 100%;
+	height: 60px;
+	background: #342716 url(../img/menu-bg.jpg) repeat-x bottom center;
+	text-align: center;
+}
+
+#menu a{
+	font-size: 16px;
+	color: #ffeaa3;
+	text-decoration: none;
+	line-height: 27px;
+	padding: 0px 10px 0px 10px;
+}
+
+#menu a:hover{
+	text-decoration: underline;
+}
+
+#menu-bar{
+	width: 100%;
+	height: 13px;
+	background: url(../img/menu-bar.png) repeat-x top center;
+}
+
+#page {
+	margin: 0 auto;
+	width: 97%;
+	text-align: center;
+}
+
+
+
+/** TABLE DE CADRE **/
+
+td.cadre-hg {
+	height: 15px;
+	width: 15px;
+	background: url(../img/cadre.jpg) no-repeat top left;
+}
+
+td.cadre-h {
+	height: 15px;
+	background: url(../img/cadre-h.jpg) repeat-x top center;
+}
+
+td.cadre-hd {
+	height: 15px;
+	width: 15px;
+	background: url(../img/cadre.jpg) no-repeat top right;
+}
+
+td.cadre-cg {
+	width: 15px;
+	background: url(../img/cadre-v.jpg) repeat-y top left;
+}
+
+td.cadre-c {
+	background: #21140b;
+	text-align: left;
+	font-size: 12px;
+	line-height: 14px;
+	color: #ffeaa3;
+}
+
+td.cadre-c a {
+	font-size: 12px;
+	color: #ffeaa3;
+	line-height: 16px;
+	text-decoration: underline;
+	font-style: italic;
+}
+
+td.cadre-espace {
+	height: 5px;
+	background: #21140b;
+}
+
+td.cadre-cd {
+	width: 15px;
+	background: url(../img/cadre-v.jpg) repeat-y top right;
+}
+
+td.cadre-bg {
+	height: 15px;
+	width: 15px;
+	background: url(../img/cadre.jpg) no-repeat bottom left;
+}
+
+td.cadre-b {
+	height: 15px;
+	background: url(../img/cadre-h.jpg) repeat-x bottom center;
+}
+
+td.cadre-bd {
+	height: 15px;
+	width: 15px;
+	background: url(../img/cadre.jpg) no-repeat bottom right;
+}
+
+td.cadre-blank {
+	height: 10px;
+}
+/** CONTENU CADRE **/
+
+td.cadre-c img {
+	position: relative;
+	float: left;
+}
+
+div.contenu-cadre {
+	position: relative;
+	padding: 0px 0px 0px 34px;
+}
+
+div.contenu-cadre-lu{
+	position: relative;
+	padding: 0px 0px 0px 34px;
+
+}
+
+div.contenu-cadre-lu a, div.contenu-cadre-lu p{
+	color: #b5b1a3
+}
+
+a.lien {
+	color: #ffeaa3;
+	text-decoration: underline;
+	font-style: italic;
+	font-size: 14px;
+	padding: 5px 10px 5px 10px;
+}
+
+img.img-article {
+	margin: 5px 5px 5px 0px;
+}
+
+p.petit{
+	font-size: 10px;
+}
+p.grand {
+	font-size: 16px;
+	line-height: 20px;
+}
+p.footer {
+	color: #ffeaa3;
+	font-size: 10px;
+	line-height: 80px;
+}
+	
+p.footer a {
+	text-decoration: underline;
+	font-style: italic;
+	color: #ffeaa3;
+}
+
+p.chat {
+	padding-left: 10px;
+	padding-top: 4px;
+	padding-bottom: 10px;
+	font-style: italic;
+}
+
+p.titre {
+	text-decoration: underline;
+}
+
+p.info{
+	font-style: italic;
+	color: red;
+	font-size: 14px;
+	padding: 5px 0px 5px 0px;
+}
+
+input {
+	width: 98%;
+	margin-bottom: 8px;
+}
+
+input.chat {
+	width: 72%;
+	margin-bottom: 0px;
+	margin-right: 5px;
+}
+
+input.envoi {
+	width: 70px;
+	margin-bottom: 0px;
+}
+
+input.recherche{
+	width: 80px;
+	margin-bottom: 0px;
+}
+
+textarea {
+	width:100%;
+	margin-right: 3px;
+	font-family: Arial, Tahoma, Verdana, sans-serif;
+}
