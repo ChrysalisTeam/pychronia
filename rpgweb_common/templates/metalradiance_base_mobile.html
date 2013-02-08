@@ -1,0 +1,55 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+{% load sekizai_tags %}
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+
+    <title>{% block html_title %}Bienvenue{% endblock %}</title>
+   
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=320">
+    {% render_block "meta" %}
+
+    <link href="{{ STATIC_URL }}MetalRadiance/metalradiance_mobile.css" rel="stylesheet" type="text/css" />
+    <link href="{{ STATIC_URL }}img/favicon_diamond.png" rel="shortcut icon" type="image/png" />
+    {% render_block "css" %}
+    
+    {% render_block "js" %}
+    
+</head>
+
+<body>
+
+    <div id="header">
+        <img src="{{ STATIC_URL }}MetalRadiance/img/backgrounds/mobile/header.jpg" />
+    </div>
+
+    <div id="menu">
+        {% block top_links %}{% endblock %}
+        <!--a href="index.html">Accueil</a> <a href="webradio.html">WebRadio</a> <a href="encyclopedie.html">Encyclopédie</a><br /><a href="message.html">Messages</a> <a href="chatroom.html">Chatroom</a-->
+    </div>
+    <div id="menu-bar"></div>
+
+    <div id="page">
+        
+        {% block page_content %}
+            <h1>Encyclopédie</h1>
+            <img src="img/encyclopedie.jpg" />
+            
+            <div align="center"><input type="text" class="chat" value="Rechercher dans l'encyclopédie"><input class="search" type="submit" value="Rechercher"></div>
+        
+        
+            <div class="frame">
+                <p>Here is a border-image frame</p>
+            </div>
+        {% endblock %}
+    
+        {% block bottom_links %}<a class="big-link" href="#">Modifier l'article</a>{% endblock %}
+        
+        {% block footer_links %}<p class="footer">© Anthropia 2012 | <a href="#">Déconnexion</a> | <a href="#">Afficher la version classique</a>{% endblock %}</p>{% endblock %}
+    
+    </div>
+    
+</body>
+
+</html>
