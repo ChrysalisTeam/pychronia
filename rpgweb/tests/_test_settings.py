@@ -14,8 +14,11 @@ SECRET_KEY = '=%f!!2^yh5gk92728363982827p8725wsdfsdf2kz^$vbjy'
 
 SITE_DOMAIN = "http://127.0.0.1" # NO trailing slash !
 
-ROOT_URLCONF = 'rpgweb.tests._test_urls'
-
+ROOT_URLCONF = 'rpgweb.tests._test_urls_web'
+MULTIHOST_URLCONF_MAP = {
+                         "127.0.0.1": "rpgweb.tests._test_urls_mobile", # if we use IP instead of localhost, we debug the mobile version
+                         #"localhost:8000": "badmodule",
+                         }
 
 ZODB_FILE = os.path.join(TEMP_DIR, 'gamedata.fs.%s' % UNICITY_STRING)
 
@@ -61,6 +64,7 @@ MIDDLEWARE_CLASSES = (
 'django.middleware.locale.LocaleMiddleware', # can be replaced by LocaleURLMiddleware
 'django.middleware.common.CommonMiddleware',
 'django.contrib.auth.middleware.AuthenticationMiddleware',
+'rpgweb.utilities.multihost_middleware.MultiHostMiddleware',
 'rpgweb.middlewares.ZodbTransactionMiddleware',
 'rpgweb.middlewares.AuthenticationMiddleware',
 'rpgweb.middlewares.PeriodicProcessingMiddleware',
