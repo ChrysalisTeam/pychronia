@@ -85,7 +85,7 @@ logging.disable(logging.CRITICAL) # to be commented if more output is wanted !!!
 
 
 
-class RequestMock(RequestFactory):
+class BREAKRequestMock(RequestFactory):
     def request(self, **request):
         """Constructs a generic request object, INCLUDING middleware modifications."""
 
@@ -106,7 +106,6 @@ class RequestMock(RequestFactory):
         urlconf = settings.ROOT_URLCONF
         urlresolvers.set_urlconf(urlconf)
         resolver = urlresolvers.RegexURLResolver(r'^/', urlconf)
-
 
         callback, callback_args, callback_kwargs = resolver.resolve(
                             request.path_info)

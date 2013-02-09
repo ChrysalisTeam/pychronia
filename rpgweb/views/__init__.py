@@ -28,6 +28,9 @@ from rpgweb.utilities import mediaplayers, fileservers
 from rpgweb.datamanager import GameDataManager
 
 
+from .mobile_views import homepage_mobile
+
+
 from .auction_views import (_build_display_data_from_viewer_settings, homepage, opening, view_characters,
                             view_sales, auction_items_slideshow, personal_items_slideshow, item_3d_view, ajax_chat, chatroom)
 

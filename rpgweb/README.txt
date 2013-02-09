@@ -80,7 +80,25 @@ Development tips
 - *register_view* can be used to register a GameView, but also to turn a standard django view into a GameView.
 
 
+- Django debug toolbar requires a fix in django core/handlers/base.py to work with custom urlconfs:: 
 
+	SEE https://code.djangoproject.com/ticket/19784#ticket
+
+            try:
+                # Apply response middleware, regardless of the response
+                for middleware_method in self._response_middleware:
+                    response = middleware_method(request, response)
+                response = self.apply_response_fixes(request, response)
+            except: # Any exception should be gathered and handled
+                signals.got_request_exception.send(sender=self.__class__, request=request)
+                response = self.handle_uncaught_exception(request, resolver, sys.exc_info())
+
+            return response
+
+        finally:
+            # Reset URLconf for this thread on the way out for complete
+            # isolation of request.urlconf
+            urlresolvers.set_urlconf(None)
 
 
 

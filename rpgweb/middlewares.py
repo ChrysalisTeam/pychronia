@@ -7,9 +7,37 @@ from rpgweb.common import *
 
 from django.http import Http404
 import django.core.mail as mail
+from django.utils.cache import patch_vary_headers
+from django.core.exceptions import MiddlewareNotUsed
 
 from . import authentication
 from rpgweb.datamanager.datamanager_administrator import retrieve_game_instance
+
+settings = None
+del settings # use config instead
+
+
+class MobileHostMiddleware:
+
+    def __init__(self):
+        if not config.MOBILE_HOST_NAMES:
+            raise MiddlewareNotUsed
+
+    def process_request(self, request):
+        host = request.META["HTTP_HOST"]
+        if host[-3:] == ":80":
+            host = host[:-3] # ignore default port number, if present
+        if host in config.MOBILE_HOST_NAMES:
+            request.urlconf = config.ROOT_URLCONF_MOBILE
+            request.is_mobile = True
+        else:
+            assert not hasattr(request, "urlconf")
+            request.is_mobile = False
+
+    def process_response(self, request, response):
+        if getattr(request, "urlconf", None):
+            patch_vary_headers(response, ('Host',))
+        return response
 
 
 

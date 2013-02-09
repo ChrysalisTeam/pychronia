@@ -37,24 +37,26 @@ class MenuEntry:
             return bool(self.submenus or (self.user_access in (AccessResult.available, AccessResult.permission_required)))
 
 
-def generate_full_menu(request): # # game_menu_generator
 
 
-    assert request.datamanager
+def _generate_mobile_menu(request, menu_entry_generator):
+
+    menu_entry = menu_entry_generator
+
+    full_menu_tree = menu_entry(_(u"Anthropia"), views.homepage_mobile,
+        (
+            # encoding note : \xa0 <-> &nbsp <-> alt+0160;
+
+            menu_entry(_(u"Home"), views.homepage_mobile),
+        ))
+    return full_menu_tree
 
 
+def _generate_web_menu(request, menu_entry_generator):
+
+    menu_entry = menu_entry_generator
     datamanager = request.datamanager
     user = datamanager.user
-
-
-    def menu_entry(*args, **kwargs):
-        """
-        Returns a visible *MenuEntry* instance or None,
-        depending on the content of the request.
-        """
-        res = MenuEntry(request, *args, **kwargs)
-        return res # no filtering here!
-
 
     # # Special additions to menu entries ##
 
@@ -75,7 +77,7 @@ def generate_full_menu(request): # # game_menu_generator
         chatroom_suffix = u""
 
 
-    full_menu_tree = menu_entry(_(u"Auction"), views.homepage,
+    full_menu_tree = menu_entry(_(u"Anthropia"), views.homepage,
         (
             # encoding note : \xa0 <-> &nbsp <-> alt+0160;
 
@@ -150,6 +152,27 @@ def generate_full_menu(request): # # game_menu_generator
         ))
 
     return full_menu_tree
+
+
+
+def generate_full_menu(request): # # game_menu_generator
+
+    assert request.datamanager
+
+    def menu_entry_generator(*args, **kwargs):
+        """
+        Returns a visible *MenuEntry* instance or None,
+        depending on the content of the request.
+        """
+        res = MenuEntry(request, *args, **kwargs)
+        return res # no filtering here!
+
+
+    if request.is_mobile:
+        return _generate_mobile_menu(request=request, menu_entry_generator=menu_entry_generator)
+    else:
+        return _generate_web_menu(request=request, menu_entry_generator=menu_entry_generator)
+
 
 
 def filter_menu_tree(menu):
