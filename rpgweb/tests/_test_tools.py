@@ -3,7 +3,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 
-import os, sys, pytest, unittest, traceback
+import os, sys, pytest, unittest, traceback, pprint
 
 
 ## TEST CONFIGURATION ##
@@ -85,7 +85,7 @@ logging.disable(logging.CRITICAL) # to be commented if more output is wanted !!!
 
 
 
-class BREAKRequestMock(RequestFactory):
+class RequestMock(RequestFactory):
     def request(self, **request):
         """Constructs a generic request object, INCLUDING middleware modifications."""
 
@@ -93,6 +93,8 @@ class BREAKRequestMock(RequestFactory):
 
 
         request = RequestFactory.request(self, **request)
+        pprint.pprint(request)
+
         handler = BaseHandler()
 
         handler.load_middleware()
@@ -204,8 +206,14 @@ class BaseGameTestCase(TestCase):
 
         try:
 
+            # need for custom urlconf setup
+            if "mobile" in self.__class__.__name__.lower():
+                test_http_host = config.MOBILE_HOST_NAMES[0]
+            else:
+                test_http_host = "localhost:80"
+
             self.client = Client()
-            self.factory = RequestMock()
+            self.factory = RequestMock(HTTP_HOST=test_http_host)
 
             self.request = self.factory.get(HOME_URL)
             assert self.request.user
@@ -240,7 +248,7 @@ class BaseGameTestCase(TestCase):
             self.dm = AutoCheckingDM(self.dm) # protection against uncommitted, pending changes
 
         except Exception, e:
-            print(">>>>>>>>>", e)
+            print(">>>>>>>>>", repr(e))
             self.tearDown(check=False) # cleanup of connection
             raise
 

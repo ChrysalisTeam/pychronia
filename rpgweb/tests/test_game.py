@@ -2159,7 +2159,7 @@ class TestHttpRequests(BaseGameTestCase):
         self._master_auth() # equivalent to self._set_user(self.dm.get_global_parameter("master_login"))
 
         from django.core.urlresolvers import RegexURLResolver
-        from rpgweb.urls import final_urlpatterns
+        from rpgweb.urls import web_game_urlpatterns
 
         skipped_patterns = """ability instructions view_help_page profile
                               DATABASE_OPERATIONS FAIL_TEST ajax item_3d_view chat_with_djinn static.serve encrypted_folder 
@@ -2168,7 +2168,7 @@ class TestHttpRequests(BaseGameTestCase):
                               mercenaries_hiring matter_analysis""".split() # FIXME REMOVE THIS
 
 
-        views_names = [url._callback_str for url in final_urlpatterns
+        views_names = [url._callback_str for url in web_game_urlpatterns
                                    if not isinstance(url, RegexURLResolver) and
                                       not [veto for veto in skipped_patterns if veto in url._callback_str]
                                       and "__" not in url._callback_str] # skip disabled views
@@ -2203,7 +2203,7 @@ class TestHttpRequests(BaseGameTestCase):
             else:
                 response = self.client.get(url)
 
-            print ("WE TRY TO LOAD ", url, response.__dict__)
+            ##print ("WE TRY TO LOAD ", url, response.__dict__)
             self.assertNotContains(response, 'class="error_notifications"', msg_prefix=response.content)
             self.assertEqual(response.status_code, 200, url + " | " + str(response.status_code))
 
@@ -2264,10 +2264,10 @@ class TestHttpRequests(BaseGameTestCase):
 
         # VIEWS SELECTION
         from django.core.urlresolvers import RegexURLResolver
-        from rpgweb.urls import final_urlpatterns
+        from rpgweb.urls import web_game_urlpatterns
         # we test views for which there is a distinction between master and player
         selected_patterns = """inbox outbox compose_message intercepted_messages view_sales personal_items_slideshow character_profile friendship_management""".split() # TODO LATER network_management contact_djinns
-        views = [url._callback_str for url in final_urlpatterns if not isinstance(url, RegexURLResolver) and [match for match in selected_patterns if match in url._callback_str]]
+        views = [url._callback_str for url in web_game_urlpatterns if not isinstance(url, RegexURLResolver) and [match for match in selected_patterns if match in url._callback_str]]
         assert len(views) == len(selected_patterns)
 
         def test_views(views):

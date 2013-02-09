@@ -9,7 +9,7 @@ from .utilities import config
 
 mobile_game_urlpatterns = patterns('rpgweb.views',
 
-    url(r'^$', 'homepage_mobile', name="rpgweb-homepage-mobile"),
+    url(r'^$', 'homepage_mobile', name="rpgweb-homepage"),
 )
 
 
@@ -25,7 +25,7 @@ web_game_urlpatterns = patterns('rpgweb.views',
     url(r'^MEDIA_TEST/$', 'MEDIA_TEST'), # to check that all audio/video formats are well read by web browser!
 
 
-    url(r'^$', 'homepage', name="rpgweb-homepage-web"),
+    url(r'^$', 'homepage', name="rpgweb-homepage"),
 
 
     url(r'^opening/$', 'opening'),  # FIXME - deprecated ?

@@ -24,7 +24,7 @@ class MobileHostMiddleware:
             raise MiddlewareNotUsed
 
     def process_request(self, request):
-        host = request.META["HTTP_HOST"]
+        host = request.META.get("HTTP_HOST", "") # not present in django test client
         if host[-3:] == ":80":
             host = host[:-3] # ignore default port number, if present
         if host in config.MOBILE_HOST_NAMES:
