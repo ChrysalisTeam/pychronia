@@ -241,7 +241,7 @@ class BaseGameTestCase(TestCase):
             #self.default_player = self.dm.get_character_usernames()[0]
             #self._set_user(self.TEST_LOGIN)
 
-            self.initial_msg_sent_length = len(self.dm.get_all_sent_messages())
+            self.initial_msg_sent_length = len(self.dm.get_all_dispatched_messages())
             self.initial_msg_queue_length = len(self.dm.get_all_queued_messages())
 
             # comment this to have eclipse's autocompletion to work for datamanager anyway

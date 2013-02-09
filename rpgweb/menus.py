@@ -106,8 +106,11 @@ def _generate_web_menu(request, menu_entry_generator):
 
             menu_entry(_(u"Messaging"), views.homepage, # FIXME
                       (
-                         menu_entry(_(u"Messages") + message_suffix, views.inbox),
-                         # ADD ALL OTHER MESSAGING ENTRIES
+                         menu_entry(_(u"Conversations") + message_suffix, views.conversation),
+                         menu_entry(_(u"Compose"), views.compose_message),
+                         menu_entry(_(u"Pending messages"), views.all_queued_messages),
+                         menu_entry(_(u"Templates"), views.messages_templates),
+
                       )),
 
             menu_entry(_(u"Admin"), None, # FIXME

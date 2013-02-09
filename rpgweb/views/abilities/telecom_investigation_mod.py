@@ -102,7 +102,7 @@ class TelecomInvestigationAbility(AbstractAbility):
                             team_introductions]
             result += "\n\n------------\n\n".join(intro_chunks)
 
-        instructions = [msg for msg in self.get_all_sent_messages() if msg["id"] == "instructions_" + target_username]
+        instructions = [msg for msg in self.get_all_dispatched_messages() if msg["id"] == "instructions_" + target_username]
         if instructions:
             if raw_team_intro:
                 result += "\n\n------------\n\n"

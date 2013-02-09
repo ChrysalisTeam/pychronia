@@ -1,39 +1,46 @@
-﻿{% extends "base_one_column.html" %}
+﻿{% extends "base_two_columns.html" %}
  
-{% load i18n helpers %}
+{% load i18n helpers kwacros %}
+{% loadkwacros "metalradiance_kwacros.html" %}
  
- 
-{% block content %}  
 
+{% block sidebar %}
 
+{% usekwacro side_panel_start frame_class="mini_frame float_left" decos="3" %}
 
-
-<ul class="minimenu">
-
-    <li class="{% ifequal mode "compose" %}highlight{% endifequal %}"><a href="{% game_view_url "rpgweb.views.compose_message" %}">{% trans "Compose" %}</a></li>
-    <li class="{% ifequal mode "inbox" %}highlight{% endifequal %}"><a href="{% game_view_url "rpgweb.views.inbox" %}">{% trans "Inbox" %}</a></li>
-    <li class="{% ifequal mode "outbox" %}highlight{% endifequal %}"><a href="{% game_view_url "rpgweb.views.outbox" %}">{% trans "Outbox" %}</a></li>
-    <li class="{% ifequal mode "conversation" %}highlight{% endifequal %}"><a href="{% game_view_url "rpgweb.views.conversation" %}">{% trans "Conversation" %}</a></li>
-
-    {% if user.is_master %}
-        <li class="{% ifequal mode "all_sent_messages" %}highlight{% endifequal %}"><a href="{% game_view_url "rpgweb.views.all_sent_messages" %}">{% trans "All Transferred" %}</a></li>
-    {% endif %}
     
-    {% if user.is_master %}
-        <li class="{% ifequal mode "all_queued_messages" %}highlight{% endifequal %}"><a href="{% game_view_url "rpgweb.views.all_queued_messages" %}">{% trans "All Queued" %}</a></li>
-    {% endif %}
+    <ul class="minimenu">
+        <li>Many stuffs here</li>
+        <!--
+        <li class="{% ifequal mode "compose" %}highlight{% endifequal %}"><a href="{% game_view_url "rpgweb.views.compose_message" %}">{% trans "Compose" %}</a></li>
+        <li class="{% ifequal mode "inbox" %}highlight{% endifequal %}"><a href="{% game_view_url "rpgweb.views.inbox" %}">{% trans "Inbox" %}</a></li>
+        <li class="{% ifequal mode "outbox" %}highlight{% endifequal %}"><a href="{% game_view_url "rpgweb.views.outbox" %}">{% trans "Outbox" %}</a></li>
+        <li class="{% ifequal mode "conversation" %}highlight{% endifequal %}"><a href="{% game_view_url "rpgweb.views.conversation" %}">{% trans "Conversation" %}</a></li>
     
-    {% if user|has_permission:"manage_wiretaps" %}
-        <li class="{% ifequal mode "intercepted_messages" %}highlight{% endifequal %}"><a href="{% game_view_url "rpgweb.views.intercepted_messages" %}">{% trans "Intercepted" %}</a></li>
-    {% endif %}
+        {% if user.is_master %}
+            <li class="{% ifequal mode "all_sent_messages" %}highlight{% endifequal %}"><a href="{% game_view_url "rpgweb.views.all_sent_messages" %}">{% trans "All Transferred" %}</a></li>
+        {% endif %}
+        
+        {% if user.is_master %}
+            <li class="{% ifequal mode "all_queued_messages" %}highlight{% endifequal %}"><a href="{% game_view_url "rpgweb.views.all_queued_messages" %}">{% trans "All Queued" %}</a></li>
+        {% endif %}
+        
+        {% if user|has_permission:"manage_wiretaps" %}
+            <li class="{% ifequal mode "intercepted_messages" %}highlight{% endifequal %}"><a href="{% game_view_url "rpgweb.views.intercepted_messages" %}">{% trans "Intercepted" %}</a></li>
+        {% endif %}
+        
+        {% if user.is_master %}
+            <li class="{% ifequal mode "messages_templates" %}highlight{% endifequal %}"><a href="{% game_view_url "rpgweb.views.messages_templates" %}">{% trans "Templates" %}</a></li>
+        {% endif %}
+        -->
     
-    {% if user.is_master %}
-        <li class="{% ifequal mode "messages_templates" %}highlight{% endifequal %}"><a href="{% game_view_url "rpgweb.views.messages_templates" %}">{% trans "Templates" %}</a></li>
-    {% endif %}
+    </ul>
 
-</ul>
+    
+{% usekwacro side_panel_end %}
 
 {% endblock %}
+
 
 
 

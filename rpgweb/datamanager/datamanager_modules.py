@@ -1158,6 +1158,9 @@ class TextMessagingCore(BaseDataManager):
             if "@" not in msg["sender_email"]:
                 msg["sender_email"] = (msg["sender_email"] + "@" + pangea_network) # we allow short username as sender/recipient
 
+            msg["visible_by"] = msg.get("visible_by", {})
+            msg["visible_by"].update(self._determine_base_visibility(msg)) # we might override here
+
             msg["attachment"] = msg.get("attachment", None)
             msg["is_certified"] = msg.get("is_certified", False)
 
@@ -1198,13 +1201,17 @@ class TextMessagingCore(BaseDataManager):
 
         messaging = self.messaging_data
         message_reference = {
-                             "sender_email": basestring,
-                             "recipient_emails": PersistentList,
+                             "sender_email": basestring, # only initial one
+                             "recipient_emails": PersistentList, # only initial, theoretical ones
+                             "visible_by": PersistentDict, # mapping usernames (including master_login) to translatable (_noop'ed) string "reason of visibility" or None (if obvious)
+
                              "subject": basestring,
                              "body": basestring,
                              "attachment": (types.NoneType, basestring), # None or string
+
                              "sent_at": datetime,
                              "is_certified": bool, # for messages sent via automated processes
+
                              "id": basestring,
                              "group_id": basestring,
                              }
@@ -1224,6 +1231,13 @@ class TextMessagingCore(BaseDataManager):
                 utilities.check_is_email(msg["sender_email"])
                 for recipient in msg["recipient_emails"]:
                     utilities.check_is_email(recipient)
+
+                potential_viewers = self.get_character_usernames() + [self.master_login] # master_login is set if NPCs were concerned
+                for username, reason in msg["visible_by"].items():
+                    assert username in potential_viewers
+                    utilities.check_is_slug(reason)
+                # later, special script events might make it normal that even senders or recipients do NOT see the message anymore, but NOT NOW
+                assert set(self._determine_base_visibility(msg).keys()) <= set(msg["visible_by"].keys())
 
             all_ids = [msg["id"] for msg in msg_list]
             utilities.check_no_duplicates(all_ids)
@@ -1279,7 +1293,8 @@ class TextMessagingCore(BaseDataManager):
     def _build_new_message(self, sender_email, recipient_emails, subject, body, attachment=None,
                            date_or_delay_mn=None, is_read=False, is_certified=False,
                            parent_id=None, use_template=None):
-        # TOP LEVEL HERE - no parent call
+        # TOP LEVEL HERE - no parent call #
+        assert not hasattr(super(TextMessagingCore, self), "_build_new_message")
 
         sender_email = sender_email.strip()
         recipient_emails = self._normalize_recipient_emails(recipient_emails)
@@ -1288,8 +1303,8 @@ class TextMessagingCore(BaseDataManager):
         if attachment:
             attachment = attachment.strip()
 
-        if not all([sender_email, recipient_emails, subject, body]):
-            raise UsageError(_("Sender, recipient, subject and body of the message mustn't be empty"))
+        if not all([sender_email, recipient_emails, subject]):
+            raise UsageError(_("Sender, recipient, and subject of the message mustn't be empty"))
 
         # sender and recipient can be the same !
         # we don't check sender email or recipient email more than that
@@ -1303,28 +1318,32 @@ class TextMessagingCore(BaseDataManager):
         if sender_email not in all_emails:
             no_reply = True # we consider it's a no-reply robot which has sent the mail
         """
+
         group_id = None
-        if parent_id:
-            try:
-                msg = self.get_sent_message_by_id(parent_id)
-                group_id = msg["group_id"]
-                self._set_message_reply_state(self.get_username_from_email(sender_email), msg, True) # FIXME
-                self._set_message_read_state(self.get_username_from_email(sender_email), msg, True)
-            except UsageError, e:
-                self.logger.error(e, exc_info=True)
 
         if use_template:
             try:
-                msg = self.get_message_template(use_template)
-                group_id = msg["group_id"]
-                msg["is_used"] = True
+                tpl = self.get_message_template(use_template)
+                group_id = tpl["group_id"]
+                tpl["is_used"] = True
             except UsageError, e:
                 self.logger.error(e, exc_info=True)
+
+
+        if parent_id:
+            try:
+                parent_msg = self.get_sent_message_by_id(parent_id)
+                group_id = parent_msg["group_id"] # OVERRIDES template's one
+                sender_username = self.get_username_from_email(sender_email) # character, or fallback to master
+                self._set_message_reply_state(sender_username, parent_msg, True) # do not touch the READ state - must be done MANUALLY
+            except UsageError, e:
+                self.logger.error(e, exc_info=True)
+
 
         new_id = self._get_new_msg_id(len(self.messaging_data["messages_sent"]) + len(self.messaging_data["messages_queued"]),
                                       subject + body) # unicity more than guaranteed
 
-        # NO - let them relative if needed...
+        # NO - let attachements relative if needed...
         # if attachment and attachment.startswith("/"):
         #    attachment = config.SITE_DOMAIN + attachment
 
@@ -1523,7 +1542,7 @@ class TextMessagingCore(BaseDataManager):
         return unicode(index) + "_" + my_hash
 
     @readonly_method
-    def get_message_viewer_url(self, msg_id): # where shall this actually be ?
+    def get_message_viewer_url(self, msg_id): # FIXME - where shall this method actually be ?
         return reverse('rpgweb.views.view_single_message',
                         kwargs=dict(msg_id=msg_id, game_instance_id=self.game_instance_id))
 
@@ -1533,7 +1552,7 @@ class TextMessagingCore(BaseDataManager):
         return self.messaging_data["messages_queued"]
 
     @readonly_method
-    def get_all_sent_messages(self):
+    def get_all_dispatched_messages(self):
         return self.messaging_data["messages_sent"]
 
     @readonly_method
@@ -1701,6 +1720,8 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
             for external_contact in character_set["external_contacts"]:
                 utilities.check_is_email(external_contact)
 
+    def _determine_base_visibility(self, msg):
+        return {} # FIXME
 
     def _normalize_recipient_emails(self, recipient_emails): # FIXME CUT THIS IN HIERARCHY
         # accepts any form of argument as "recipients_lists", and converts short names to full emails
@@ -1793,7 +1814,7 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
         if username:
             return username
         else:
-            return self.get_global_parameter("master_login")
+            return self.master_login
 
 
     @readonly_method
@@ -1818,9 +1839,9 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
 
 
     @readonly_method
-    def get_game_master_messages(self):
+    def get_game_master_messages(self):  # FIXME with visible_by ****
         # returns all emails sent to external contacts or robots
-        all_messages = self.get_all_sent_messages()
+        all_messages = self.get_all_dispatched_messages()
         normal_emails = self.get_characters_emails()
         messages = []
         for message in all_messages:
@@ -1831,20 +1852,14 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
         return messages
 
     @transaction_watcher(ensure_game_started=False)
-    def get_user_related_messages(self, email):
-        username = self.get_username_from_email(email)
-        emails = [record for record in self.messaging_data["messages_sent"] if email in record["recipient_emails"] or record["sender_email"] == email or username in record["intercepted_by"]]
+    def get_user_related_messages(self, username=CURRENT_USER):
+        username = self._resolve_username(username)
+        email = self.get_character_email(username)
+        emails = [record for record in self.messaging_data["messages_sent"] if email in record["recipient_emails"] or \
+                  record["sender_email"] == email or username in record["intercepted_by"]]
         return emails
 
 
-    @transaction_watcher(ensure_game_started=False)
-    def pop_received_messages(self, recipient_email):
-        """
-        Also resets the 'new message' notification.
-        """
-        records = self.get_received_messages(recipient_email)
-        self.set_new_message_notification([recipient_email], False)
-        return records
 
 
     @readonly_method
@@ -1891,13 +1906,24 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
         msg = self.get_sent_message_by_id(msg_id)
         self._set_message_read_state(username, msg, is_read)
 
+
+
+    @transaction_watcher(ensure_game_started=False)
+    def pop_received_messages(self, recipient_email):
+        """
+        Also resets the 'new message' notification.
+        """
+        records = self.get_received_messages(recipient_email)
+        self.set_new_message_notification([recipient_email], False)
+        return records
+
     @readonly_method
     def get_pending_new_message_notifications(self):
         # returns users that must be notified, with corresponding message audio_id
-        notifications = PersistentDict((username, properties["new_messages_notification"])
-                                        for (username, properties) in self.get_character_sets().items()
-                                        if properties["has_new_messages"])
-        return notifications
+        needing_notifications = PersistentDict((username, properties["new_messages_notification"])
+                                                for (username, properties) in self.get_character_sets().items()
+                                                if properties["has_new_messages"])
+        return needing_notifications
 
     @readonly_method
     def get_all_new_message_notification_sounds(self):
@@ -1916,6 +1942,8 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
             if email in recipient_emails:
                 self.data["character_properties"][username]["has_new_messages"] = new_status
                 # thus, "invented" emails are simply ignored in this process
+
+
 
 
     @readonly_method

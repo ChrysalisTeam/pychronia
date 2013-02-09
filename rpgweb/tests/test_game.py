@@ -984,9 +984,7 @@ class TestDatamanager(BaseGameTestCase):
         self.assertEqual(len(msg["has_replied"]), 2)
         self.assertTrue("guy2" in msg["has_replied"])
         self.assertTrue("guy3" in msg["has_replied"])
-        self.assertEqual(len(msg["has_read"]), 2)
-        self.assertTrue("guy2" in msg["has_read"])
-        self.assertTrue("guy3" in msg["has_read"])
+        self.assertEqual(len(msg["has_read"]), 0) # read state of parent messages do NOT autochange
 
         ######
 
@@ -1281,7 +1279,7 @@ class TestDatamanager(BaseGameTestCase):
 
         self.assertEqual(self.dm.get_unread_messages_count(self.dm.get_global_parameter("master_login")), 1)
 
-        self.assertEqual(len(self.dm.get_all_sent_messages()), 6)
+        self.assertEqual(len(self.dm.get_all_dispatched_messages()), 6)
 
         self.assertEqual(len(self.dm.get_game_master_messages()), 2) # secret services + wrong email address
 
@@ -1325,8 +1323,8 @@ class TestDatamanager(BaseGameTestCase):
         # NO - we dont notify interceptions - self.assertTrue(self.dm.get_global_parameter("message_intercepted_audio_id") in self.dm.get_all_next_audio_messages(), self.dm.get_all_next_audio_messages())
 
         # msg has_read state changes
-        msg_id1 = self.dm.get_all_sent_messages()[0]["id"] # sent to guy3
-        msg_id2 = self.dm.get_all_sent_messages()[3]["id"] # sent to external contact
+        msg_id1 = self.dm.get_all_dispatched_messages()[0]["id"] # sent to guy3
+        msg_id2 = self.dm.get_all_dispatched_messages()[3]["id"] # sent to external contact
 
         """ # NO PROBLEM with wrong msg owner
         self.assertRaises(Exception, self.dm.set_message_read_state, MASTER, msg_id1, True)
@@ -1338,29 +1336,29 @@ class TestDatamanager(BaseGameTestCase):
         self.assertRaises(Exception, self.dm.set_message_read_state, "dummyid", False)
 
 
-        # self.assertEqual(self.dm.get_all_sent_messages()[0]["no_reply"], False)
-        # self.assertEqual(self.dm.get_all_sent_messages()[4]["no_reply"], True)# msg from robot
+        # self.assertEqual(self.dm.get_all_dispatched_messages()[0]["no_reply"], False)
+        # self.assertEqual(self.dm.get_all_dispatched_messages()[4]["no_reply"], True)# msg from robot
 
-        self.assertEqual(self.dm.get_all_sent_messages()[0]["is_certified"], False)
-        self.assertFalse(self.dm.get_all_sent_messages()[0]["has_read"])
+        self.assertEqual(self.dm.get_all_dispatched_messages()[0]["is_certified"], False)
+        self.assertFalse(self.dm.get_all_dispatched_messages()[0]["has_read"])
         self.dm.set_message_read_state("guy3", msg_id1, True)
         self.dm.set_message_read_state("guy2", msg_id1, True)
 
-        self.assertEqual(len(self.dm.get_all_sent_messages()[0]["has_read"]), 2)
-        self.assertTrue("guy2" in self.dm.get_all_sent_messages()[0]["has_read"])
-        self.assertTrue("guy3" in self.dm.get_all_sent_messages()[0]["has_read"])
+        self.assertEqual(len(self.dm.get_all_dispatched_messages()[0]["has_read"]), 2)
+        self.assertTrue("guy2" in self.dm.get_all_dispatched_messages()[0]["has_read"])
+        self.assertTrue("guy3" in self.dm.get_all_dispatched_messages()[0]["has_read"])
 
         self.assertEqual(self.dm.get_unread_messages_count("guy3"), 2)
         self.dm.set_message_read_state("guy3", msg_id1, False)
-        self.assertEqual(self.dm.get_all_sent_messages()[0]["has_read"], ["guy2"])
+        self.assertEqual(self.dm.get_all_dispatched_messages()[0]["has_read"], ["guy2"])
         self.assertEqual(self.dm.get_unread_messages_count("guy3"), 3)
 
-        self.assertFalse(self.dm.get_all_sent_messages()[3]["has_read"])
+        self.assertFalse(self.dm.get_all_dispatched_messages()[3]["has_read"])
         self.dm.set_message_read_state(MASTER, msg_id2, True)
-        self.assertTrue(MASTER in self.dm.get_all_sent_messages()[3]["has_read"])
+        self.assertTrue(MASTER in self.dm.get_all_dispatched_messages()[3]["has_read"])
         self.assertEqual(self.dm.get_unread_messages_count(self.dm.get_global_parameter("master_login")), 0)
         self.dm.set_message_read_state(MASTER, msg_id2, False)
-        self.assertFalse(self.dm.get_all_sent_messages()[3]["has_read"])
+        self.assertFalse(self.dm.get_all_dispatched_messages()[3]["has_read"])
         self.assertEqual(self.dm.get_unread_messages_count(self.dm.get_global_parameter("master_login")), 1)
 
 
@@ -1466,14 +1464,14 @@ class TestDatamanager(BaseGameTestCase):
         # delayed message sending
 
         self.dm.post_message(email("guy3"), email("guy2"), "yowh1", "qhsdhqsdh", attachment=None, date_or_delay_mn=0.03 / WANTED_FACTOR)
-        self.assertEqual(len(self.dm.get_all_sent_messages()), 0)
+        self.assertEqual(len(self.dm.get_all_dispatched_messages()), 0)
         queued_msgs = self.dm.get_all_queued_messages()
         self.assertEqual(len(queued_msgs), 1)
         # print datetime.utcnow(), " << ", queued_msgs[0]["sent_at"]
         self.assertTrue(datetime.utcnow() < queued_msgs[0]["sent_at"] < datetime.utcnow() + timedelta(minutes=0.22))
 
         self.dm.post_message(email("guy3"), email("guy2"), "yowh2", "qhsdhqsdh", attachment=None, date_or_delay_mn=(0.04 / WANTED_FACTOR, 0.05 / WANTED_FACTOR)) # 3s delay range
-        self.assertEqual(len(self.dm.get_all_sent_messages()), 0)
+        self.assertEqual(len(self.dm.get_all_dispatched_messages()), 0)
         queued_msgs = self.dm.get_all_queued_messages()
         self.assertEqual(len(queued_msgs), 2)
         self.assertEqual(queued_msgs[1]["subject"], "yowh2", queued_msgs)
@@ -1484,19 +1482,19 @@ class TestDatamanager(BaseGameTestCase):
 
         self.dm.post_message(email("guy3"), email("guy2"), "yowh3", "qhsdhqsdh", attachment=None, date_or_delay_mn=0.01 / WANTED_FACTOR) # 0.6s
         self.assertEqual(len(self.dm.get_all_queued_messages()), 3)
-        self.assertEqual(len(self.dm.get_all_sent_messages()), 0)
+        self.assertEqual(len(self.dm.get_all_dispatched_messages()), 0)
         res = self.dm.process_periodic_tasks()
         self.assertEqual(res["messages_sent"], 0)
         self.assertEqual(res["actions_executed"], 0)
-        self.assertEqual(len(self.dm.get_all_sent_messages()), 0)
+        self.assertEqual(len(self.dm.get_all_dispatched_messages()), 0)
 
         time.sleep(0.8) # one message OK
 
         res = self.dm.process_periodic_tasks()
-        # print self.dm.get_all_sent_messages(), datetime.utcnow()
+        # print self.dm.get_all_dispatched_messages(), datetime.utcnow()
         self.assertEqual(res["messages_sent"], 1)
         self.assertEqual(res["actions_executed"], 0)
-        self.assertEqual(len(self.dm.get_all_sent_messages()), 1)
+        self.assertEqual(len(self.dm.get_all_dispatched_messages()), 1)
         # print(">>>>>>>>>>>>>>>>>>>>>>##", self.dm.get_all_queued_messages())
         self.assertEqual(len(self.dm.get_all_queued_messages()), 2)
 
@@ -1505,7 +1503,7 @@ class TestDatamanager(BaseGameTestCase):
         res = self.dm.process_periodic_tasks()
         self.assertEqual(res["messages_sent"], 2)
         self.assertEqual(res["actions_executed"], 0)
-        self.assertEqual(len(self.dm.get_all_sent_messages()), 3)
+        self.assertEqual(len(self.dm.get_all_dispatched_messages()), 3)
         self.assertEqual(len(self.dm.get_all_queued_messages()), 0)
 
         # due to the strength of coherency checks, it's about impossible to enforce a sending here here...
@@ -3149,7 +3147,7 @@ class TestSpecialAbilities(BaseGameTestCase):
         self.assertEqual(msg["recipient_emails"], ["guy1@pangea.com"])
         self.assertTrue("translation" in msg["body"].lower())
 
-        msgs = self.dm.get_all_sent_messages()
+        msgs = self.dm.get_all_dispatched_messages()
         self.assertEqual(len(msgs), 1)
         msg = msgs[0]
         self.assertEqual(msg["sender_email"], "guy1@pangea.com")
@@ -3264,7 +3262,7 @@ class TestSpecialAbilities(BaseGameTestCase):
 
         self.assertEqual(len(self.dm.get_all_queued_messages()), 0)
 
-        new_queue = self.dm.get_all_sent_messages()
+        new_queue = self.dm.get_all_dispatched_messages()
         self.assertEqual(len(new_queue), 1)
 
         msg = new_queue[0]
@@ -3291,7 +3289,7 @@ class TestSpecialAbilities(BaseGameTestCase):
 
         self.assertEqual(len(self.dm.get_all_queued_messages()), 0) # immediate sending performed
 
-        new_queue = self.dm.get_all_sent_messages()
+        new_queue = self.dm.get_all_dispatched_messages()
         self.assertEqual(len(new_queue), max_actions)
 
         self.assertTrue("on unscanned" in new_queue[0]["subject"])
@@ -3322,7 +3320,7 @@ class TestSpecialAbilities(BaseGameTestCase):
 
         self.assertEqual(len(self.dm.get_all_queued_messages()), 0)
 
-        new_queue = self.dm.get_all_sent_messages()
+        new_queue = self.dm.get_all_dispatched_messages()
         self.assertEqual(len(new_queue), 1)
 
         msg = new_queue[0]
@@ -3387,7 +3385,7 @@ class TestSpecialAbilities(BaseGameTestCase):
 
         # ##self.assertEqual(self.dm.get_global_parameter("scanned_locations"), [])
 
-        self.assertEqual(len(self.dm.get_all_sent_messages()), 0)
+        self.assertEqual(len(self.dm.get_all_dispatched_messages()), 0)
         self.assertEqual(len(self.dm.get_all_queued_messages()), 0)
 
         # AUTOMATED SCAN #
@@ -3404,7 +3402,7 @@ class TestSpecialAbilities(BaseGameTestCase):
         # print(msg["body"])
         self.assertTrue("Alifir" in msg["body"])
 
-        msgs = self.dm.get_all_sent_messages()
+        msgs = self.dm.get_all_dispatched_messages()
         self.assertEqual(len(msgs), 1)
         msg = msgs[0]
         self.assertEqual(msg["sender_email"], "guy1@pangea.com")
@@ -3432,7 +3430,7 @@ class TestSpecialAbilities(BaseGameTestCase):
         # no reset of initial messages
 
         initial_length_queued_msgs = len(self.dm.get_all_queued_messages())
-        initial_length_sent_msgs = len(self.dm.get_all_sent_messages())
+        initial_length_sent_msgs = len(self.dm.get_all_dispatched_messages())
 
 
         assert self.dm.data["abilities"] ["telecom_investigation"]["settings"]["result_delay"]
@@ -3486,7 +3484,7 @@ class TestSpecialAbilities(BaseGameTestCase):
         msg = msgs[-1]
         self.assertEqual(msg["recipient_emails"], ["guy2@sciences.com"])
 
-        msgs = self.dm.get_all_sent_messages()
+        msgs = self.dm.get_all_dispatched_messages()
         self.assertEqual(len(msgs), initial_length_sent_msgs + 1)
         msg = msgs[-1]
         self.assertEqual(msg["sender_email"], "guy2@sciences.com")
@@ -3526,7 +3524,7 @@ class TestSpecialAbilities(BaseGameTestCase):
         with pytest.raises(AssertionError):
             analyser.process_artefact_analysis("statue") # item must be owned by current user
 
-        self.assertEqual(len(self.dm.get_all_sent_messages()), 0)
+        self.assertEqual(len(self.dm.get_all_dispatched_messages()), 0)
         self.assertEqual(len(self.dm.get_all_queued_messages()), 0)
 
         # AUTOMATED SCAN #
@@ -3540,7 +3538,7 @@ class TestSpecialAbilities(BaseGameTestCase):
         self.assertEqual(msg["recipient_emails"], ["guy1@pangea.com"])
         self.assertTrue("*sacred* chest" in msg["body"].lower())
 
-        msgs = self.dm.get_all_sent_messages()
+        msgs = self.dm.get_all_dispatched_messages()
         self.assertEqual(len(msgs), 1)
         msg = msgs[0]
         self.assertEqual(msg["sender_email"], "guy1@pangea.com")
@@ -3575,7 +3573,7 @@ class TestSpecialAbilities(BaseGameTestCase):
         msgs = self.dm.get_all_queued_messages()
         self.assertEqual(len(msgs), 0) # still empty
 
-        msgs = self.dm.get_all_sent_messages()
+        msgs = self.dm.get_all_dispatched_messages()
         self.assertEqual(len(msgs), 3) # 2 messages from previous operation, + new one
         msg = msgs[2]
         self.assertEqual(msg["sender_email"], "scanner@teldorium.com")

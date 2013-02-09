@@ -27,23 +27,24 @@ def conversation(request):
     mode = "conversation"
     user = request.datamanager.user
     if user.is_master:
-        remove_to = False
         messages = request.datamanager.get_game_master_messages()
     else:
-        remove_to = True
         messages = request.datamanager.get_user_related_messages(request.datamanager.get_character_email(user.username))
 
     group_ids = map(lambda message: message.get("group_id", ""), messages)
     group_ids = list(set(group_ids))
     grouped_messages = []
 
+    group_id = message = None
     for group_id in group_ids:
         unordered_messages = [message for message in messages if message.get("group_id", "") == group_id]
         ordered_messsages = list(reversed(unordered_messages))
         grouped_messages.append(ordered_messsages)
-
     del group_id, message # shall not leak
+
     return render(request, 'messaging/conversation.html', locals())
+
+
 
 
 @register_view(access=UserAccess.authenticated)
@@ -139,7 +140,7 @@ def outbox(request, template_name='messaging/messages.html'):
 
     user = request.datamanager.user
     if user.is_master:
-        all_messages = request.datamanager.get_all_sent_messages()
+        all_messages = request.datamanager.get_all_dispatched_messages()
         external_contacts = request.datamanager.get_external_emails()  # we list only messages sent by external contacts, not robots
         messages = [message for message in all_messages if message["sender_email"] in external_contacts]
         remove_from = False
@@ -166,7 +167,7 @@ def view_single_message(request, msg_id, template_name='messaging/single_message
     message = None
     is_queued = False
 
-    messages = [msg for msg in request.datamanager.get_all_sent_messages() if msg["id"] == msg_id]
+    messages = [msg for msg in request.datamanager.get_all_dispatched_messages() if msg["id"] == msg_id]
     if messages:
         assert len(messages) == 1
         message = messages[0]
@@ -193,7 +194,7 @@ def view_single_message(request, msg_id, template_name='messaging/single_message
 @register_view(access=UserAccess.master)
 def all_sent_messages(request, template_name='messaging/messages.html'):
 
-    messages = request.datamanager.get_all_sent_messages()
+    messages = request.datamanager.get_all_dispatched_messages()
 
     messages = list(reversed(messages))  # most recent first
 
