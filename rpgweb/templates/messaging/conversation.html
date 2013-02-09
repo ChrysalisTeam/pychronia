@@ -135,7 +135,7 @@
 		                    {{ message.attachment|mediaplayer:"false" }}
 		                {% endif %}
 					<span class="message_operation">
-						<a href="{% game_view_url "rpgweb.views.compose_message" %}?message_id={{ message.id|urlencode }}"><img src="/media/images/fleche1.gif" style="width:30px; height:30px;"></img></a>
+						<a href="{% game_view_url "rpgweb.views.compose_message" %}?message_id={{ message.id|urlencode }}"><img src="{{ STATIC_URL }}/media/images/fleche1BROKEN.gif" style="width:30px; height:30px;"></img></a>
 					</span>
 		            </div>
 				{% endfor %}

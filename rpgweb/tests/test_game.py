@@ -2208,9 +2208,11 @@ class TestHttpRequests(BaseGameTestCase):
             self.assertEqual(response.status_code, 200, url + " | " + str(response.status_code))
 
 
+
+        ## UNEXISTING response = self.client.get("/media/")
+        ##self.assertEqual(response.status_code, 404)
+
         # no directory index !
-        response = self.client.get("/media/")
-        self.assertEqual(response.status_code, 404)
         response = self.client.get("/files/")
         self.assertEqual(response.status_code, 404)
 

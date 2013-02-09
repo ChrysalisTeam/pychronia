@@ -256,8 +256,8 @@ function launch() {
 	{% load helpers %} 
 	//player = "{% if settings.music %}{{ settings.music|mediaplayer:"true"|escapejs }}{% endif %}";
 	{% if settings.music_url %}
-    player = '<object width="300px" height="24px" type="application/x-shockwave-flash" data="/media/audioplayer/player.swf" class="audioplayer">\
-            <param name="movie" value="/media/audioplayer/player.swf" />\
+    player = '<object width="300px" height="24px" type="application/x-shockwave-flash" data="{{ STATIC_URL }}/libs/audioplayer/player.swf" class="audioplayer">\
+            <param name="movie" value="{{ STATIC_URL }}/libs/audioplayer/player.swf" />\
             <param name="FlashVars" value="bg=0x000000&leftbg=0x000000&lefticon=0x000000&voltrack=0x000000&volslider=0x000000&rightbg=0x000000&rightbghover=0x000000&righticon=0x000000&righticonhover=0x000000&text=0x000000&track=0x000000&tracker=0x000000&border=0x000000&loader=0x000000&skip=0x000000&loop=yes&autostart=yes&animation=no&initialvolume=60&soundFile={{ settings.music_url }}" />\
             <param name="quality" value="high" />\
             <param name="scale" value="showall" />\

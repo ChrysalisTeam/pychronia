@@ -93,7 +93,7 @@ def ajax_get_next_audio_message(request):
     if radio_is_on:
         next_audio_id = request.datamanager.get_next_audio_message()
         if next_audio_id:
-            fileurl = request.datamanager.get_audio_message_properties(next_audio_id)["url"]
+            fileurl = game_file_url("audio_messages/" + request.datamanager.get_audio_message_properties(next_audio_id)["file"])
             next_audio_id = next_audio_id.encode("base64")
         else:
             fileurl = None
