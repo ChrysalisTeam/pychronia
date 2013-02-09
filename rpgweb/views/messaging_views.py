@@ -21,6 +21,30 @@ def ajax_force_email_sending(request):
 
 
 
+@register_view(access=UserAccess.authenticated, always_available=True)
+def conversation(request):
+
+    mode = "conversation"
+    user = request.datamanager.user
+    if user.is_master:
+        remove_to = False
+        messages = request.datamanager.get_game_master_messages()
+    else:
+        remove_to = True
+        messages = request.datamanager.get_user_related_messages(request.datamanager.get_character_email(user.username))
+
+    group_ids = map(lambda message: message.get("group_id", ""), messages)
+    group_ids = list(set(group_ids))
+    grouped_messages = []
+
+    for group_id in group_ids:
+        unordered_messages = [message for message in messages if message.get("group_id", "") == group_id]
+        ordered_messsages = list(reversed(unordered_messages))
+        grouped_messages.append(ordered_messsages)
+
+    del group_id, message # shall not leak
+    return render(request, 'messaging/conversation.html', locals())
+
 
 @register_view(access=UserAccess.authenticated)
 def compose_message(request, template_name='messaging/compose.html'):
@@ -108,27 +132,7 @@ def ajax_set_message_read_state(request):
     return HttpResponse("OK")
     # in case of error, a "500" code will be returned
 
-@register_view(access=UserAccess.authenticated, always_available=True)
-def conversation(request):
 
-    mode = "conversation"
-    user = request.datamanager.user
-    if user.is_master:
-        remove_to = False
-        messages = request.datamanager.get_game_master_messages()
-    else:
-        remove_to = True
-        messages = request.datamanager.get_user_related_messages(request.datamanager.get_character_email(user.username))
-
-    group_ids = map(lambda message: message.get("group_id", ""), messages)
-    group_ids = list(set(group_ids))
-    grouped_messages = []
-
-    for group_id in group_ids:
-        unordered_messages = [message for message in messages if message.get("group_id", "") == group_id]
-        ordered_messsages = list(reversed(unordered_messages))
-        grouped_messages.append(ordered_messsages)
-    return render(request, 'messaging/conversation.html', locals())
 
 @register_view(access=UserAccess.authenticated)
 def outbox(request, template_name='messaging/messages.html'):

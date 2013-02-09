@@ -28,10 +28,10 @@ def rpgweb_template_context(request):
         else:
             help_keyword = None
 
-        messages = get_messages(request) # lazy 'messages' context variable.
-        messages = list(messages)
+        notifications = get_messages(request) # lazy 'messages' context variable.
+        notifications = list(notifications)
         notification_type = "mixed" # DEFAULT
-        levels = list(set(msg.tags for msg in messages))
+        levels = list(set(msg.tags for msg in notifications))
         if len(levels) == 1:
             notification_type = levels[0]
 
@@ -51,7 +51,7 @@ def rpgweb_template_context(request):
 
                 # replacement of djanbgo.contrib.messages middleware
                 'notification_type': notification_type,
-                'messages': messages, }
+                'notifications': notifications, }
 
     else:
         return {} # not in valid game instance

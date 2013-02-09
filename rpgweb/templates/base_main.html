@@ -241,11 +241,11 @@
 
 
 {% block notification_banners %}
-    {% if messages %}
+    {% if notifications %}
     <div class="notification_panel {{ notification_type }}">
         <div class="notification_panel_decorations">
             <div class="notification_panel_content">
-               {% for message in messages %}
+               {% for message in notifications %}
                    <p>{{ message|linebreaksbr }}</p>
                {% endfor %}
             </div>

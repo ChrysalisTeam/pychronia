@@ -62,7 +62,7 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
 
         self.logger = logging.getLogger("rpgweb.%s" % game_instance_id) #FIXME
 
-        self._request = weakref.ref(request) if request else None # if None, user messages won't work
+        self._request = weakref.ref(request) if request else None # if None, user notifications won't work
 
         self.data = game_root # can be empty, here
         self.connection = game_root._p_jar # can be empty, for transient persistent objects
