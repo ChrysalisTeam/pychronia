@@ -281,7 +281,7 @@ class MessageComposeForm(forms.Form):
         recontact = None
         message_id = request.GET.get("message_id", "")
         if message_id:
-            msg = request.datamanager.get_sent_message_by_id(message_id)
+            msg = request.datamanager.get_dispatched_message_by_id(message_id)
             recipient = msg["recipient_emails"]
             if hasattr(recipient, "__iter__"):
                 recipient = recipient[0]  # FIXME, WELL BUGGY

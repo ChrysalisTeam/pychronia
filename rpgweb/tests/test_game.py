@@ -968,7 +968,7 @@ class TestDatamanager(BaseGameTestCase):
 
         msg_id = self.dm.post_message(email("guy1"), email("guy2"), subject="ssd", body="qsdqsd")
 
-        msg = self.dm.get_sent_message_by_id(msg_id)
+        msg = self.dm.get_dispatched_message_by_id(msg_id)
         self.assertFalse(msg["has_replied"])
         self.assertFalse(msg["has_read"])
 
@@ -976,11 +976,11 @@ class TestDatamanager(BaseGameTestCase):
         msg_id2 = self.dm.post_message(email("guy2"), email("guy1"), subject="ssd", body="qsdqsd", parent_id=msg_id)
         msg_id3 = self.dm.post_message(email("guy3"), email("guy2"), subject="ssd", body="qsdqsd", parent_id=msg_id)
 
-        msg = self.dm.get_sent_message_by_id(msg_id2) # new message isn't impacted by parent_id
+        msg = self.dm.get_dispatched_message_by_id(msg_id2) # new message isn't impacted by parent_id
         self.assertFalse(msg["has_replied"])
         self.assertFalse(msg["has_read"])
 
-        msg = self.dm.get_sent_message_by_id(msg_id) # replied-to message impacted
+        msg = self.dm.get_dispatched_message_by_id(msg_id) # replied-to message impacted
         self.assertEqual(len(msg["has_replied"]), 2)
         self.assertTrue("guy2" in msg["has_replied"])
         self.assertTrue("guy3" in msg["has_replied"])
@@ -993,7 +993,7 @@ class TestDatamanager(BaseGameTestCase):
 
         msg_id4 = self.dm.post_message(email("guy3"), email("guy1"), subject="ssd", body="qsdqsd", use_template=tpl_id)
 
-        msg = self.dm.get_sent_message_by_id(msg_id4) # new message isn't impacted
+        msg = self.dm.get_dispatched_message_by_id(msg_id4) # new message isn't impacted
         self.assertFalse(msg["has_replied"])
         self.assertFalse(msg["has_read"])
 
@@ -1520,7 +1520,7 @@ class TestDatamanager(BaseGameTestCase):
         self.assertEqual(len(self.dm.get_all_queued_messages()), 1)
         self.assertFalse(self.dm.force_message_sending(myid1)) # already sent now
         self.assertEqual(self.dm.get_all_queued_messages()[0]["id"], myid2)
-        self.assertTrue(self.dm.get_sent_message_by_id(myid1))
+        self.assertTrue(self.dm.get_dispatched_message_by_id(myid1))
 
 
 

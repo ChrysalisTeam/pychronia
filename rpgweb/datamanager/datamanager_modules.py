@@ -625,7 +625,8 @@ class PlayerAuthentication(BaseDataManager):
 
             attachment = None
 
-            msg_id = self.post_message(sender_email, target_email, subject, body, attachment=attachment,
+            msg_id = self.post_message(sender_email=sender_email, recipient_emails=target_email,
+                                       subject=subject, body=body, attachment=attachment,
                                        date_or_delay_mn=self.get_global_parameter("password_recovery_delays"))
 
             self.log_game_event(_noop("Password of %(username)s has been recovered by %(target_email)s."),
@@ -1117,7 +1118,6 @@ class OnlinePresence(BaseDataManager):
 
 
 
-
 @register_module
 class TextMessagingCore(BaseDataManager):
 
@@ -1136,7 +1136,6 @@ class TextMessagingCore(BaseDataManager):
 
         messaging.setdefault("messages_dispatched", PersistentList())
         messaging.setdefault("messages_queued", PersistentList())
-        messaging.setdefault("manual_messages_templates", PersistentDict())
 
         pangea_network = game_data["global_parameters"]["pangea_network_domain"]
 
@@ -1175,23 +1174,6 @@ class TextMessagingCore(BaseDataManager):
 
         messaging["messages_dispatched"].sort(key=lambda msg: msg["sent_at"])
         messaging["messages_queued"].sort(key=lambda msg: msg["sent_at"])
-
-
-        def _complete_messages_templates(msg_list, is_manual):
-            for msg in msg_list.values():
-                if is_manual:
-                    msg["recipient_emails"] = self._normalize_recipient_emails(msg.get("recipient_emails", []))
-                    msg["sender_email"] = msg.get("sender_email", "")
-                    if msg["sender_email"] and "@" not in msg["sender_email"]: # email could be empty
-                        msg["sender_email"] = msg["sender_email"] + "@" + pangea_network # we allow short username as sender/recipient
-
-                msg["subject"] = msg.get("subject", "")
-                msg["body"] = msg.get("body", "")
-                msg["attachment"] = msg.get("attachment", None)
-                msg["is_used"] = msg.get("is_used", False)
-
-        # complete_messages_templates(game_data["automated_messages_templates"], is_manual=False)
-        _complete_messages_templates(messaging["manual_messages_templates"], is_manual=True)
 
 
     def _check_database_coherency(self, strict=False, **kwargs):
@@ -1275,8 +1257,8 @@ class TextMessagingCore(BaseDataManager):
 
     @transaction_watcher
     def post_message(self, *args, **kwargs):
-        msg = self._build_new_message(*args, **kwargs)
 
+        msg = self._build_new_message(*args, **kwargs)
         sent_at = msg["sent_at"]
 
         if sent_at > datetime.utcnow():
@@ -1290,7 +1272,7 @@ class TextMessagingCore(BaseDataManager):
 
     def _build_new_message(self, sender_email, recipient_emails, subject, body, attachment=None,
                            date_or_delay_mn=None, is_read=False, is_certified=False,
-                           parent_id=None, use_template=None):
+                           parent_id=None, **kwargs):
         # TOP LEVEL HERE - no parent call #
         assert not hasattr(super(TextMessagingCore, self), "_build_new_message")
 
@@ -1318,20 +1300,10 @@ class TextMessagingCore(BaseDataManager):
         """
 
         group_id = None
-
-        if use_template:
-            try:
-                tpl = self.get_message_template(use_template)
-                group_id = tpl["group_id"]
-                tpl["is_used"] = True
-            except UsageError, e:
-                self.logger.error(e, exc_info=True)
-
-
         if parent_id:
             try:
-                parent_msg = self.get_sent_message_by_id(parent_id)
-                group_id = parent_msg["group_id"] # OVERRIDES template's one
+                parent_msg = self.get_dispatched_message_by_id(parent_id)
+                group_id = parent_msg["group_id"]
                 sender_username = self.get_username_from_email(sender_email) # character, or fallback to master
                 self._set_message_reply_state(sender_username, parent_msg, True) # do not touch the READ state - must be done MANUALLY
             except UsageError, e:
@@ -1426,20 +1398,12 @@ class TextMessagingCore(BaseDataManager):
         return records # chronological order
 
     @readonly_method
-    def get_messages_templates(self):
-        return self.messaging_data["manual_messages_templates"]
-
-    @readonly_method
-    def get_message_template(self, tpl_id):
-        return self.messaging_data["manual_messages_templates"][tpl_id]
-
-    @readonly_method
     def get_received_messages(self, recipient_email):
         records = [record for record in self.messaging_data["messages_dispatched"] if recipient_email in record["recipient_emails"]]
         return records # chronological order
 
     @readonly_method
-    def get_sent_message_by_id(self, msg_id):
+    def get_dispatched_message_by_id(self, msg_id):
         msgs = [message for message in self.messaging_data["messages_dispatched"] if message["id"] == msg_id]
         assert len(msgs) <= 1, "len(msgs) must be < 1"
         if not msgs:
@@ -1487,7 +1451,7 @@ class TextMessagingCore(BaseDataManager):
         self.messaging_data["messages_dispatched"].append(msg)
         self.messaging_data["messages_dispatched"].sort(key=lambda msg: msg["sent_at"]) # python sorting is stable !
 
-
+    '''
     @transaction_watcher
     def __TODO_REVIVE_try_filling_message_template(self, template, values, part_name, tpl_name):
 
@@ -1508,7 +1472,7 @@ class TextMessagingCore(BaseDataManager):
             self.logger.critical("Definitely impossible to format %s of automated message %s, returning original value",
                              part_name, tpl_name, exc_info=True)
             return template
-
+    '''
 
 
 
@@ -1628,6 +1592,69 @@ class TextMessagingContacts(BaseDataManager):
         May be overridden.
         """
         return self.get_characters_emails()
+
+
+
+@register_module
+class TextMessagingTemplates(BaseDataManager):
+
+    def _load_initial_data(self, **kwargs):
+        super(TextMessagingTemplates, self)._load_initial_data(**kwargs)
+
+        game_data = self.data
+        messaging = self.messaging_data
+        messaging.setdefault("manual_messages_templates", PersistentDict())
+
+        def _complete_messages_templates(msg_list):
+
+            for msg in msg_list.values():
+
+                msg["recipient_emails"] = self._normalize_recipient_emails(msg.get("recipient_emails", []))
+                msg["sender_email"] = msg.get("sender_email", "")
+                if msg["sender_email"] and "@" not in msg["sender_email"]: # email could be empty
+                    pangea_network = game_data["global_parameters"]["pangea_network_domain"]
+                    msg["sender_email"] = msg["sender_email"] + "@" + pangea_network # we allow short username as sender/recipient
+
+                msg["subject"] = msg.get("subject", "")
+                msg["body"] = msg.get("body", "")
+                msg["attachment"] = msg.get("attachment", None)
+                msg["is_used"] = msg.get("is_used", False)
+
+        # complete_messages_templates(game_data["automated_messages_templates"], is_manual=False)
+        _complete_messages_templates(messaging["manual_messages_templates"])
+
+
+    def _check_database_coherency(self, **kwargs):
+        super(TextMessagingTemplates, self)._check_database_coherency(**kwargs)
+
+        messaging = self.messaging_data
+        # FIXME - check templates here
+
+
+    def _build_new_message(self, *args, **kwargs):
+        use_template = kwargs.pop("use_template", None) # we remove our specific use_template param
+        msg = super(TextMessagingTemplates, self)._build_new_message(*args, **kwargs)
+
+        if use_template:
+            try:
+                tpl = self.get_message_template(use_template)
+                tpl["is_used"] = True
+            except UsageError, e:
+                self.logger.error(e, exc_info=True) # non-fatal error
+
+        return msg
+
+
+    @readonly_method
+    def get_messages_templates(self):
+        return self.messaging_data["manual_messages_templates"]
+
+    @readonly_method
+    def get_message_template(self, tpl_id):
+        mydata = self.messaging_data["manual_messages_templates"]
+        if tpl_id not in mydata:
+            raise AbnormalUsageError(_("Unexisting template id %r") % tpl_id)
+        return mydata[tpl_id]
 
 
 
@@ -1888,7 +1915,7 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
     def set_message_read_state(self, username=CURRENT_USER, msg_id=None, is_read=None):
         username = self._resolve_username(username) # username can be master login here !
         assert username and msg_id and is_read is not None
-        msg = self.get_sent_message_by_id(msg_id)
+        msg = self.get_dispatched_message_by_id(msg_id)
         self._set_message_read_state(username, msg, is_read)
 
 
