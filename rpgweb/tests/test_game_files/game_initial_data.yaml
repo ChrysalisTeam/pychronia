@@ -385,7 +385,7 @@ messaging:
         
         ALL_CONTACTS: null
       
-    messages_sent:  #-> list of messages processed
+    messages_dispatched:  #-> list of messages processed
     
         - id: instructions_bewitcher
           sender_email: judicators1@acharis.com

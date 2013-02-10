@@ -1484,7 +1484,7 @@ class TestDatamanager(BaseGameTestCase):
         self.assertEqual(len(self.dm.get_all_queued_messages()), 3)
         self.assertEqual(len(self.dm.get_all_dispatched_messages()), 0)
         res = self.dm.process_periodic_tasks()
-        self.assertEqual(res["messages_sent"], 0)
+        self.assertEqual(res["messages_dispatched"], 0)
         self.assertEqual(res["actions_executed"], 0)
         self.assertEqual(len(self.dm.get_all_dispatched_messages()), 0)
 
@@ -1492,7 +1492,7 @@ class TestDatamanager(BaseGameTestCase):
 
         res = self.dm.process_periodic_tasks()
         # print self.dm.get_all_dispatched_messages(), datetime.utcnow()
-        self.assertEqual(res["messages_sent"], 1)
+        self.assertEqual(res["messages_dispatched"], 1)
         self.assertEqual(res["actions_executed"], 0)
         self.assertEqual(len(self.dm.get_all_dispatched_messages()), 1)
         # print(">>>>>>>>>>>>>>>>>>>>>>##", self.dm.get_all_queued_messages())
@@ -1501,7 +1501,7 @@ class TestDatamanager(BaseGameTestCase):
         time.sleep(2.5) # last messages OK
 
         res = self.dm.process_periodic_tasks()
-        self.assertEqual(res["messages_sent"], 2)
+        self.assertEqual(res["messages_dispatched"], 2)
         self.assertEqual(res["actions_executed"], 0)
         self.assertEqual(len(self.dm.get_all_dispatched_messages()), 3)
         self.assertEqual(len(self.dm.get_all_queued_messages()), 0)
@@ -3411,11 +3411,11 @@ class TestSpecialAbilities(BaseGameTestCase):
 
         res = self.dm.process_periodic_tasks()
 
-        assert res == {"messages_sent": 0, "actions_executed": 0}
+        assert res == {"messages_dispatched": 0, "actions_executed": 0}
 
         time.sleep(3)
 
-        self.assertEqual(self.dm.process_periodic_tasks(), {"messages_sent": 1, "actions_executed": 0})
+        self.assertEqual(self.dm.process_periodic_tasks(), {"messages_dispatched": 1, "actions_executed": 0})
 
         self.assertEqual(self.dm.get_event_count("DELAYED_ACTION_ERROR"), 0)
         self.assertEqual(self.dm.get_event_count("DELAYED_MESSAGE_ERROR"), 0)
@@ -3547,11 +3547,11 @@ class TestSpecialAbilities(BaseGameTestCase):
 
         res = self.dm.process_periodic_tasks()
 
-        assert res == {"messages_sent": 0, "actions_executed": 0}
+        assert res == {"messages_dispatched": 0, "actions_executed": 0}
 
         time.sleep(3)
 
-        self.assertEqual(self.dm.process_periodic_tasks(), {"messages_sent": 1, "actions_executed": 0})
+        self.assertEqual(self.dm.process_periodic_tasks(), {"messages_dispatched": 1, "actions_executed": 0})
 
         self.assertEqual(self.dm.get_event_count("DELAYED_ACTION_ERROR"), 0)
         self.assertEqual(self.dm.get_event_count("DELAYED_MESSAGE_ERROR"), 0)

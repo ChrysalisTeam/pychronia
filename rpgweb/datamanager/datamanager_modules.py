@@ -1115,13 +1115,16 @@ class OnlinePresence(BaseDataManager):
 
 
 
+
+
+
 @register_module
 class TextMessagingCore(BaseDataManager):
 
 
     @property
     def messaging_data(self):
-        return self.data["messaging"]
+        return self.data["messaging"] # base mount point for all messaging-related features
 
 
     def _load_initial_data(self, **kwargs):
@@ -1131,10 +1134,7 @@ class TextMessagingCore(BaseDataManager):
 
         messaging = game_data.setdefault("messaging", PersistentList())
 
-        messaging.setdefault("globally_registered_contacts", PersistentDict()) # identifier -> None or dict(description, avatar)
-        self.global_contacts._load_initial_data(**kwargs)
-
-        messaging.setdefault("messages_sent", PersistentList())
+        messaging.setdefault("messages_dispatched", PersistentList())
         messaging.setdefault("messages_queued", PersistentList())
         messaging.setdefault("manual_messages_templates", PersistentDict())
 
@@ -1150,7 +1150,7 @@ class TextMessagingCore(BaseDataManager):
             details.setdefault("avatar", None)
         '''
 
-        for (index, msg) in enumerate(messaging["messages_sent"] + messaging["messages_queued"]):
+        for (index, msg) in enumerate(messaging["messages_dispatched"] + messaging["messages_queued"]):
             # we modify the dicts in place
 
             msg["recipient_emails"] = self._normalize_recipient_emails(msg["recipient_emails"])
@@ -1173,11 +1173,11 @@ class TextMessagingCore(BaseDataManager):
             if not msg.get("group_id"):
                 msg["group_id"] = msg["id"]
 
-        messaging["messages_sent"].sort(key=lambda msg: msg["sent_at"])
+        messaging["messages_dispatched"].sort(key=lambda msg: msg["sent_at"])
         messaging["messages_queued"].sort(key=lambda msg: msg["sent_at"])
 
 
-        def complete_messages_templates(msg_list, is_manual):
+        def _complete_messages_templates(msg_list, is_manual):
             for msg in msg_list.values():
                 if is_manual:
                     msg["recipient_emails"] = self._normalize_recipient_emails(msg.get("recipient_emails", []))
@@ -1191,13 +1191,11 @@ class TextMessagingCore(BaseDataManager):
                 msg["is_used"] = msg.get("is_used", False)
 
         # complete_messages_templates(game_data["automated_messages_templates"], is_manual=False)
-        complete_messages_templates(messaging["manual_messages_templates"], is_manual=True)
+        _complete_messages_templates(messaging["manual_messages_templates"], is_manual=True)
 
 
     def _check_database_coherency(self, strict=False, **kwargs):
         super(TextMessagingCore, self)._check_database_coherency(strict=strict, **kwargs)
-
-        self.global_contacts._check_database_coherency(strict=strict, **kwargs)
 
         messaging = self.messaging_data
         message_reference = {
@@ -1216,7 +1214,7 @@ class TextMessagingCore(BaseDataManager):
                              "group_id": basestring,
                              }
 
-        def check_message_list(msg_list):
+        def _check_message_list(msg_list):
             previous_sent_at = None
             for msg in msg_list:
 
@@ -1244,8 +1242,8 @@ class TextMessagingCore(BaseDataManager):
 
         # WARNING - we must separate the two lists, because little incoherencies can appear at their junction due to the workflow
         # (the first queued messages might actually be younger than the last ones of the sent messages list)
-        check_message_list(messaging["messages_sent"])
-        check_message_list(messaging["messages_queued"])
+        _check_message_list(messaging["messages_dispatched"])
+        _check_message_list(messaging["messages_queued"])
 
 
 
@@ -1270,9 +1268,9 @@ class TextMessagingCore(BaseDataManager):
 
         if last_index_processed is not None:
             self.messaging_data["messages_queued"] = self.messaging_data["messages_queued"][last_index_processed + 1:]
-            report["messages_sent"] = last_index_processed + 1
+            report["messages_dispatched"] = last_index_processed + 1
         else:
-            report["messages_sent"] = 0
+            report["messages_dispatched"] = 0
 
 
     @transaction_watcher
@@ -1340,7 +1338,7 @@ class TextMessagingCore(BaseDataManager):
                 self.logger.error(e, exc_info=True)
 
 
-        new_id = self._get_new_msg_id(len(self.messaging_data["messages_sent"]) + len(self.messaging_data["messages_queued"]),
+        new_id = self._get_new_msg_id(len(self.messaging_data["messages_dispatched"]) + len(self.messaging_data["messages_queued"]),
                                       subject + body) # unicity more than guaranteed
 
         # NO - let attachements relative if needed...
@@ -1352,7 +1350,7 @@ class TextMessagingCore(BaseDataManager):
         else:
             sent_at = self.compute_remote_datetime(date_or_delay_mn) # date_or_delay_mn is None or number
 
-        msg = PersistentDict({ # the ids of emails are simply their location in the global message list !
+        msg = PersistentDict({
                               "sender_email": sender_email,
                               "recipient_emails": recipient_emails,
                               "subject": subject,
@@ -1365,139 +1363,6 @@ class TextMessagingCore(BaseDataManager):
                               })
         return msg
 
-
-
-    # Handling of contacts #
-
-    class GloballyRegisteredContactsManager(DataTableManager):
-
-        TRANSLATABLE_ITEM_NAME = _lazy("contact")
-
-        def _load_initial_data(self, **kwargs):
-            for identifier, details in self._table.items():
-                if details is None:
-                    details = PersistentDict()
-                    self._table[identifier] = details
-                details.setdefault("immutable", True)
-                details.setdefault("avatar", None)
-                details.setdefault("description", None)
-                details.setdefault("access_tokens", None) # PUBLIC contact
-
-        def _preprocess_new_item(self, key, value):
-            if key in self._inner_datamanager._list_reserved_contact_ids():
-                raise NormalUsageError(_("Contact id %s is reserved") % key)
-            assert "immutable" not in value
-            value["immutable"] = False # always, else new entry can't even be deleted later on
-            value.setdefault("access_tokens", None)
-            return (key, value)
-            # other params are supposed to exist in "value"
-
-        def _check_item_validity(self, key, value, strict=False):
-            utilities.check_is_slug(key) # not necessarily an email
-            utilities.check_has_keys(value, ["immutable", "avatar", "description", "access_tokens"], strict=strict)
-            utilities.check_is_bool(value["immutable"],)
-            if value["access_tokens"] is not None: # None means "public"
-                all_usernames = self.get_character_usernames()
-                for username in value["access_tokens"]:
-                    assert username in all_usernames # this check could be removed in the future, if other kinds of tokens are used!!
-            if value["description"]: # optional
-                utilities.check_is_string(value["description"], multiline=False)
-            if value["avatar"]: # optional
-                utilities.check_is_slug(value["avatar"]) # FIXME improve that
-
-        def _sorting_key(self, item_pair):
-            return item_pair[0] # we sort by email, simply...
-
-        def _get_table_container(self, root):
-            return root["messaging"]["globally_registered_contacts"]
-
-        def _item_can_be_edited(self, key, value):
-            return (True if not value.get("immutable") else False)
-
-    global_contacts = LazyInstantiationDescriptor(GloballyRegisteredContactsManager)
-
-    '''
-    def __check_contact_is_in_registry(self, registry, identifier):
-        if identifier not in registry:
-            raise AbnormalUsageError(_("Unknown contact %r") % identifier)       
-    
-    @transaction_watcher(ensure_game_started=False)
-    def add_globally_registered_contact(self, identifier):
-        utilities.check_is_slug(identifier)
-        registry = self.messaging_data["globally_registered_contacts"]
-        registry.setdefault(identifier, None) # anonymous contact
-    
-    @transaction_watcher(ensure_game_started=False)
-    def remove_globally_registered_contact(self, identifier):
-        registry = self.messaging_data["globally_registered_contacts"]
-        self.__check_contact_is_in_registry(registry, identifier)
-        del registry[identifier]
-        
-    @readonly_method
-    def get_globally_registered_contacts(self):
-        return self.messaging_data["globally_registered_contacts"]
-
-    @readonly_method
-    def get_globally_registered_contact_info(self, identifier):
-        registry = self.messaging_data["globally_registered_contacts"]
-        self.__check_contact_is_in_registry(registry, identifier)
-        return registry[identifier]
-     
-    @readonly_method
-    def is_globally_registered_contact(self, identifier):
-        return (identifier in self.messaging_data["globally_registered_contacts"])
-    '''
-
-    def _check_contact_is_allowed(self, contact_id, access_token=None):
-        assert contact_id
-        if not self.global_contacts.contains_item(contact_id):
-            raise UsageError(_("Mailbox %s doesn't exist"))
-        data = self.global_contacts.get_item(contact_id)
-        if data["access_token"] is not None: # not a public address
-            if not access_token or access_token not in data["access_token"] :
-                raise UsageError(_("Mailbox %s has rejected your email"))
-
-    @transaction_watcher
-    def grant_private_contact_access_to_character(self, username=CURRENT_USER, contact_id=None, avatar=None, description=None):
-        username = self._resolve_username(username)
-        assert contact_id and username in self.get_character_usernames()
-        if not self.global_contacts.contains_item(contact_id):
-            self.global_contacts.insert_item(contact_id, dict(avatar=avatar, description=description, access_token=PersistentList([username])))
-        else:
-            data = self.global_contacts.get_item(contact_id)
-            data["avatar"] = avatar or data["avatar"] # we let current as fallback
-            data["description"] = description or data["description"] # we let current as fallback
-            if data["access_token"] is None:
-                pass # let PUBLIC access remain as is
-            elif username not in data["access_token"]:
-                data["access_token"].append(username) # will fail if it was a public contact, i.e "None"
-            else:
-                pass # swallow "access already granted" error
-
-    @transaction_watcher
-    def revoke_private_contact_access_from_character(self, username=CURRENT_USER, contact_id=None):
-        assert contact_id
-        if self.global_contacts.contains_item(contact_id):
-            data = self.global_contacts.get_item(contact_id)
-            if data["access_token"] is None:
-                pass # let PUBLIC access remain as is
-            elif username in data["access_token"]:
-                data["access_token"].remove(username)
-                assert username not in data["access_token"] # only 1 occurrence existed
-                if not data["access_token"]:
-                    # no one has access to that contact anymore, do some cleanup!
-                    self.global_contacts.delete_item(contact_id)
-            else:
-                pass # swallow "access already removed" error
-        else:
-            pass # swallow "no such contact" error
-
-
-    def _list_reserved_contact_ids(self):
-        """
-        May be overridden.
-        """
-        return self.get_characters_emails()
 
 
 
@@ -1553,11 +1418,11 @@ class TextMessagingCore(BaseDataManager):
 
     @readonly_method
     def get_all_dispatched_messages(self):
-        return self.messaging_data["messages_sent"]
+        return self.messaging_data["messages_dispatched"]
 
     @readonly_method
     def get_sent_messages(self, sender_email):
-        records = [record for record in self.messaging_data["messages_sent"] if record["sender_email"] == sender_email]
+        records = [record for record in self.messaging_data["messages_dispatched"] if record["sender_email"] == sender_email]
         return records # chronological order
 
     @readonly_method
@@ -1570,12 +1435,12 @@ class TextMessagingCore(BaseDataManager):
 
     @readonly_method
     def get_received_messages(self, recipient_email):
-        records = [record for record in self.messaging_data["messages_sent"] if recipient_email in record["recipient_emails"]]
+        records = [record for record in self.messaging_data["messages_dispatched"] if recipient_email in record["recipient_emails"]]
         return records # chronological order
 
     @readonly_method
     def get_sent_message_by_id(self, msg_id):
-        msgs = [message for message in self.messaging_data["messages_sent"] if message["id"] == msg_id]
+        msgs = [message for message in self.messaging_data["messages_dispatched"] if message["id"] == msg_id]
         assert len(msgs) <= 1, "len(msgs) must be < 1"
         if not msgs:
             raise UsageError(_("Unknown message id"))
@@ -1619,8 +1484,8 @@ class TextMessagingCore(BaseDataManager):
         self._update_external_contacts(msg)
         self.set_new_message_notification(msg["recipient_emails"], new_status=True)
 
-        self.messaging_data["messages_sent"].append(msg)
-        self.messaging_data["messages_sent"].sort(key=lambda msg: msg["sent_at"]) # python sorting is stable !
+        self.messaging_data["messages_dispatched"].append(msg)
+        self.messaging_data["messages_dispatched"].sort(key=lambda msg: msg["sent_at"]) # python sorting is stable !
 
 
     @transaction_watcher
@@ -1646,6 +1511,126 @@ class TextMessagingCore(BaseDataManager):
 
 
 
+
+@register_module
+class TextMessagingContacts(BaseDataManager):
+
+
+    def _load_initial_data(self, **kwargs):
+        super(TextMessagingContacts, self)._load_initial_data(**kwargs)
+
+        self.messaging_data.setdefault("globally_registered_contacts", PersistentDict()) # identifier -> None or dict(description, avatar)
+        self.global_contacts._load_initial_data(**kwargs)
+
+    def _check_database_coherency(self, strict=False, **kwargs):
+        super(TextMessagingContacts, self)._check_database_coherency(strict=strict, **kwargs)
+
+        self.global_contacts._check_database_coherency(strict=strict, **kwargs)
+
+
+    # Handling of contacts #
+
+    class GloballyRegisteredContactsManager(DataTableManager):
+
+        TRANSLATABLE_ITEM_NAME = _lazy("contact")
+
+        def _load_initial_data(self, **kwargs):
+            for identifier, details in self._table.items():
+                if details is None:
+                    details = PersistentDict()
+                    self._table[identifier] = details
+                details.setdefault("immutable", True)
+                details.setdefault("avatar", None)
+                details.setdefault("description", None)
+                details.setdefault("access_tokens", None) # PUBLIC contact
+
+        def _preprocess_new_item(self, key, value):
+            if key in self._inner_datamanager._list_reserved_contact_ids():
+                raise NormalUsageError(_("Contact id %s is reserved") % key)
+            assert "immutable" not in value
+            value["immutable"] = False # always, else new entry can't even be deleted later on
+            value.setdefault("access_tokens", None)
+            return (key, value)
+            # other params are supposed to exist in "value"
+
+        def _check_item_validity(self, key, value, strict=False):
+            utilities.check_is_slug(key) # not necessarily an email
+            utilities.check_has_keys(value, ["immutable", "avatar", "description", "access_tokens"], strict=strict)
+            utilities.check_is_bool(value["immutable"],)
+            if value["access_tokens"] is not None: # None means "public"
+                all_usernames = self.get_character_usernames()
+                for username in value["access_tokens"]:
+                    assert username in all_usernames # this check could be removed in the future, if other kinds of tokens are used!!
+            if value["description"]: # optional
+                utilities.check_is_string(value["description"], multiline=False)
+            if value["avatar"]: # optional
+                utilities.check_is_slug(value["avatar"]) # FIXME improve that
+
+        def _sorting_key(self, item_pair):
+            return item_pair[0] # we sort by email, simply...
+
+        def _get_table_container(self, root):
+            return root["messaging"]["globally_registered_contacts"]
+
+        def _item_can_be_edited(self, key, value):
+            return (True if not value.get("immutable") else False)
+
+    global_contacts = LazyInstantiationDescriptor(GloballyRegisteredContactsManager)
+
+
+    def _check_contact_is_allowed(self, contact_id, access_token=None):
+        assert contact_id
+        if not self.global_contacts.contains_item(contact_id):
+            raise UsageError(_("Mailbox %s doesn't exist"))
+        data = self.global_contacts.get_item(contact_id)
+        if data["access_token"] is not None: # not a public address
+            if not access_token or access_token not in data["access_token"] :
+                raise UsageError(_("Mailbox %s has rejected your email"))
+
+    @transaction_watcher
+    def grant_private_contact_access_to_character(self, username=CURRENT_USER, contact_id=None, avatar=None, description=None):
+        username = self._resolve_username(username)
+        assert contact_id and username in self.get_character_usernames()
+        if not self.global_contacts.contains_item(contact_id):
+            self.global_contacts.insert_item(contact_id, dict(avatar=avatar, description=description, access_token=PersistentList([username])))
+        else:
+            data = self.global_contacts.get_item(contact_id)
+            data["avatar"] = avatar or data["avatar"] # we let current as fallback
+            data["description"] = description or data["description"] # we let current as fallback
+            if data["access_token"] is None:
+                pass # let PUBLIC access remain as is
+            elif username not in data["access_token"]:
+                data["access_token"].append(username) # will fail if it was a public contact, i.e "None"
+            else:
+                pass # swallow "access already granted" error
+
+    @transaction_watcher
+    def revoke_private_contact_access_from_character(self, username=CURRENT_USER, contact_id=None):
+        assert contact_id
+        if self.global_contacts.contains_item(contact_id):
+            data = self.global_contacts.get_item(contact_id)
+            if data["access_token"] is None:
+                pass # let PUBLIC access remain as is
+            elif username in data["access_token"]:
+                data["access_token"].remove(username)
+                assert username not in data["access_token"] # only 1 occurrence existed
+                if not data["access_token"]:
+                    # no one has access to that contact anymore, do some cleanup!
+                    self.global_contacts.delete_item(contact_id)
+            else:
+                pass # swallow "access already removed" error
+        else:
+            pass # swallow "no such contact" error
+
+
+    def _list_reserved_contact_ids(self):
+        """
+        May be overridden.
+        """
+        return self.get_characters_emails()
+
+
+
 @register_module
 class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
 
@@ -1661,7 +1646,7 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
             character.setdefault("has_new_messages", False)
 
 
-        for (index, msg) in enumerate(messaging["messages_sent"] + messaging["messages_queued"]):
+        for (index, msg) in enumerate(messaging["messages_dispatched"] + messaging["messages_queued"]):
             # we modify the dicts in place
 
             msg["has_read"] = msg.get("has_read", PersistentList())
@@ -1703,7 +1688,7 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
 
         # WARNING - we must separate the two lists, because little incoherencies can appear at their junction due to the workflow
         # (the first queued messages might actually be younger than the last ones of the sent messages list)
-        check_message_list(messaging["messages_sent"])
+        check_message_list(messaging["messages_dispatched"])
         check_message_list(messaging["messages_queued"])
 
         #TODO CHECK THAT !! New message notification system ###
@@ -1855,7 +1840,7 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
     def get_user_related_messages(self, username=CURRENT_USER):
         username = self._resolve_username(username)
         email = self.get_character_email(username)
-        emails = [record for record in self.messaging_data["messages_sent"] if email in record["recipient_emails"] or \
+        emails = [record for record in self.messaging_data["messages_dispatched"] if email in record["recipient_emails"] or \
                   record["sender_email"] == email or username in record["intercepted_by"]]
         return emails
 
@@ -1982,7 +1967,7 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
 
     def _recompute_all_external_contacts_via_msgs(self):
         external_contacts_changed = False
-        for msg in self.messaging_data["messages_sent"]:
+        for msg in self.messaging_data["messages_dispatched"]:
             res = self._update_external_contacts(msg)
             if res:
                 external_contacts_changed = True
@@ -2002,7 +1987,7 @@ class TextMessagingInterception(BaseDataManager):
         for (name, data) in game_data["character_properties"].items():
             data.setdefault("wiretapping_targets", PersistentList())
 
-        for (index, msg) in enumerate(messaging["messages_sent"] + messaging["messages_queued"]):
+        for (index, msg) in enumerate(messaging["messages_dispatched"] + messaging["messages_queued"]):
             # we modify the dicts in place
             msg["intercepted_by"] = msg.get("intercepted_by", PersistentList())
 
@@ -2018,7 +2003,7 @@ class TextMessagingInterception(BaseDataManager):
             for char_name in data["wiretapping_targets"]:
                 assert char_name in character_names
 
-        for (index, msg) in enumerate(messaging["messages_sent"] + messaging["messages_queued"]):
+        for (index, msg) in enumerate(messaging["messages_dispatched"] + messaging["messages_queued"]):
 
             assert isinstance(msg["intercepted_by"], PersistentList)
 
@@ -2035,9 +2020,9 @@ class TextMessagingInterception(BaseDataManager):
         username = self._resolve_username(username)
         if username is not None and not self.is_master(username):
             assert username in self.get_character_usernames()
-            records = [record for record in self.messaging_data["messages_sent"] if username in record["intercepted_by"]]
+            records = [record for record in self.messaging_data["messages_dispatched"] if username in record["intercepted_by"]]
         else:
-            records = [record for record in self.messaging_data["messages_sent"] if record["intercepted_by"]] # intercepted by anyone
+            records = [record for record in self.messaging_data["messages_dispatched"] if record["intercepted_by"]] # intercepted by anyone
         return records # chronological order
 
     @transaction_watcher

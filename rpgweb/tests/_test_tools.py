@@ -270,7 +270,7 @@ class BaseGameTestCase(TestCase):
 
 
     def _reset_messages(self):
-        self.dm.messaging_data["messages_sent"] = PersistentList()
+        self.dm.messaging_data["messages_dispatched"] = PersistentList()
         self.dm.messaging_data["messages_queued"] = PersistentList()
         self.dm.commit()
 
