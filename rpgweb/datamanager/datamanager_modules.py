@@ -1249,7 +1249,7 @@ class TextMessagingCore(BaseDataManager):
                 break # since messages are queued in CHRONOLOGICAL order...
 
         if last_index_processed is not None:
-            self.messaging_data["messages_queued"] = self.messaging_data["messages_queued"][last_index_processed + 1:]
+            self.messaging_data["messages_queued"] = self.messaging_data["messages_queued"][last_index_processed + 1:] # cleanup
             report["messages_dispatched"] = last_index_processed + 1
         else:
             report["messages_dispatched"] = 0
@@ -1336,6 +1336,47 @@ class TextMessagingCore(BaseDataManager):
         return msg
 
 
+    @transaction_watcher
+    def _immediately_send_message(self, msg):
+
+        # wiretapping - FIXME MOVE TO OWN MODULE
+        for username in self.get_character_usernames():
+
+            wiretapping_targets_emails = [self.get_character_email(target)
+                                          for target in self.get_wiretapping_targets(username)]
+
+            if (msg["sender_email"] in wiretapping_targets_emails or
+                any(True for recipient in msg["recipient_emails"] if recipient in wiretapping_targets_emails)):
+                msg["intercepted_by"].append(username)
+
+        # audio_notification = self.get_global_parameter("message_intercepted_audio_id")
+        # NO NOTIFICATION - self.add_radio_message(audio_notification)
+
+        self._update_external_contacts(msg)
+        self.set_new_message_notification(msg["recipient_emails"], new_status=True)
+
+        self.messaging_data["messages_dispatched"].append(msg)
+        self.messaging_data["messages_dispatched"].sort(key=lambda msg: msg["sent_at"]) # python sorting is stable !
+
+
+    @transaction_watcher(ensure_game_started=False)
+    def force_message_sending(self, msg_id):
+        # immediately sends a queued message
+
+        items = [item for item in enumerate(self.get_all_queued_messages()) if item[1]["id"] == msg_id]
+        assert len(items) <= 1
+
+        if not items:
+            return False
+
+        (index, msg) = items[0]
+
+        del self.messaging_data["messages_queued"][index] # we remove the msg from queued list
+
+        msg["sent_at"] = datetime.utcnow() # we force the timestamp to NOW
+        self._immediately_send_message(msg)
+
+        return True
 
 
     def ___normalize_recipient_identifier(self, identifier):
@@ -1409,47 +1450,6 @@ class TextMessagingCore(BaseDataManager):
         if not msgs:
             raise UsageError(_("Unknown message id"))
         return msgs[0]
-
-    @transaction_watcher(ensure_game_started=False)
-    def force_message_sending(self, msg_id):
-        # immediately sends a queued message
-
-        items = [item for item in enumerate(self.get_all_queued_messages()) if item[1]["id"] == msg_id]
-        assert len(items) <= 1
-
-        if not items:
-            return False
-
-        (index, msg) = items[0]
-
-        del self.messaging_data["messages_queued"][index] # we remove the msg from queued list
-
-        msg["sent_at"] = datetime.utcnow() # we force the timestamp to NOW
-        self._immediately_send_message(msg)
-
-        return True
-
-    @transaction_watcher
-    def _immediately_send_message(self, msg):
-
-        # wiretapping - FIXME MOVE TO OWN MODULE
-        for username in self.get_character_usernames():
-
-            wiretapping_targets_emails = [self.get_character_email(target)
-                                          for target in self.get_wiretapping_targets(username)]
-
-            if (msg["sender_email"] in wiretapping_targets_emails or
-                any(True for recipient in msg["recipient_emails"] if recipient in wiretapping_targets_emails)):
-                msg["intercepted_by"].append(username)
-
-        # audio_notification = self.get_global_parameter("message_intercepted_audio_id")
-        # NO NOTIFICATION - self.add_radio_message(audio_notification)
-
-        self._update_external_contacts(msg)
-        self.set_new_message_notification(msg["recipient_emails"], new_status=True)
-
-        self.messaging_data["messages_dispatched"].append(msg)
-        self.messaging_data["messages_dispatched"].sort(key=lambda msg: msg["sent_at"]) # python sorting is stable !
 
     '''
     @transaction_watcher
