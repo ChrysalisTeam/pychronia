@@ -23,6 +23,9 @@ def register_module(Klass):
 
 
 
+VISIBILITY_REASONS = Enum(["sender", "recipient", "interceptor"]) # token identifying why one can see an email
+
+
 @register_module
 class GameGlobalParameters(BaseDataManager):
 
@@ -1137,28 +1140,10 @@ class TextMessagingCore(BaseDataManager):
         messaging.setdefault("messages_dispatched", PersistentList())
         messaging.setdefault("messages_queued", PersistentList())
 
-        pangea_network = game_data["global_parameters"]["pangea_network_domain"]
-
-        '''
-        for identifier, details in messaging["globally_registered_contacts"].items():
-            if details is None:
-                details = PersistentDict()
-                messaging["globally_registered_contacts"][identifier] = details
-            details["immutable"] = True
-            details.setdefault("description", None)
-            details.setdefault("avatar", None)
-        '''
-
         for (index, msg) in enumerate(messaging["messages_dispatched"] + messaging["messages_queued"]):
             # we modify the dicts in place
 
-            msg["recipient_emails"] = self._normalize_recipient_emails(msg["recipient_emails"])
-
-            if "@" not in msg["sender_email"]:
-                msg["sender_email"] = (msg["sender_email"] + "@" + pangea_network) # we allow short username as sender/recipient
-
-            msg["visible_by"] = msg.get("visible_by", {})
-            msg["visible_by"].update(self._determine_base_visibility(msg)) # we might override here
+            msg["sender_email"], msg["recipient_emails"] = self._normalize_message_addresses(msg["sender_email"], msg["recipient_emails"])
 
             msg["attachment"] = msg.get("attachment", None)
             msg["is_certified"] = msg.get("is_certified", False)
@@ -1448,17 +1433,17 @@ class TextMessagingCore(BaseDataManager):
 
 
 @register_module
-class TextMessagingContacts(BaseDataManager):
+class TextMessagingExternalContacts(BaseDataManager):
 
 
     def _load_initial_data(self, **kwargs):
-        super(TextMessagingContacts, self)._load_initial_data(**kwargs)
+        super(TextMessagingExternalContacts, self)._load_initial_data(**kwargs)
 
         self.messaging_data.setdefault("globally_registered_contacts", PersistentDict()) # identifier -> None or dict(description, avatar)
         self.global_contacts._load_initial_data(**kwargs)
 
     def _check_database_coherency(self, strict=False, **kwargs):
-        super(TextMessagingContacts, self)._check_database_coherency(strict=strict, **kwargs)
+        super(TextMessagingExternalContacts, self)._check_database_coherency(strict=strict, **kwargs)
 
         self.global_contacts._check_database_coherency(strict=strict, **kwargs)
 
@@ -1466,11 +1451,11 @@ class TextMessagingContacts(BaseDataManager):
     def _check_sender_email(self, sender_email):
         if self.global_contacts.contains_item(sender_email):
             return
-        super(TextMessagingContacts, self)._check_sender_email(sender_email=sender_email)
+        super(TextMessagingExternalContacts, self)._check_sender_email(sender_email=sender_email)
 
     def _check_recipient_email(self, recipient_email, sender_email):
         if self.global_contacts.contains_item(recipient_email):
-            sending_character = self.get_character_or_none_from_email(recipient_email)
+            sending_character = self.get_character_or_none_from_email(sender_email) # FIXME - here we cheat, method not existing yet
             if sending_character is None:
                 return # external contacts can send emails to any existing contact
             else:
@@ -1482,9 +1467,9 @@ class TextMessagingContacts(BaseDataManager):
                 else:
                     raise UsageError(_("Mailbox %s has rejected your email") % recipient_email)
         else:
-            super(TextMessagingContacts, self)._check_recipient_email(sender_email=sender_email)
-            
-            
+            super(TextMessagingExternalContacts, self)._check_recipient_email(recipient_email=recipient_email, sender_email=sender_email)
+
+
     # Handling of contacts #
 
     class GloballyRegisteredContactsManager(DataTableManager):
@@ -1568,6 +1553,8 @@ class TextMessagingContacts(BaseDataManager):
             pass # swallow "no such contact" error
 
 
+
+
 @register_module
 class TextMessagingTemplates(BaseDataManager):
 
@@ -1640,15 +1627,22 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
         game_data = self.data
         messaging = self.messaging_data
 
-
         for (name, character) in game_data["character_properties"].items():
             character.setdefault("has_new_messages", False)
 
+        pangea_network = game_data["global_parameters"]["pangea_network_domain"]
+
         for (index, msg) in enumerate(messaging["messages_dispatched"] + messaging["messages_queued"]):
             # we modify the dicts in place
+
+            if "@" not in msg["sender_email"]:
+                msg["sender_email"] = (msg["sender_email"] + "@" + pangea_network) # we allow short character usernames as sender/recipient
+
             msg["has_read"] = msg.get("has_read", PersistentList())
             msg["has_replied"] = msg.get("has_replied", PersistentList())
+
             msg["visible_by"] = msg.get("visible_by", PersistentDict())
+            msg["visible_by"].update(self._determine_basic_visibility(msg)) # we might override here
 
         # we compute automatic external_contacts for the first time
         self._recompute_all_external_contacts_via_msgs()  #FIXME BUGGY
@@ -1664,7 +1658,7 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
 
         utilities.check_is_slug(game_data["global_parameters"]["pangea_network_domain"])
 
-        utilities.check_is_slug(game_data["global_parameters"]["global_email"]) # shortcut tag to send email to everyone
+        utilities.check_is_slug(game_data["global_parameters"]["global_email"]) # shortcut tag to send email to every character
 
         message_reference = {
                              "has_read": PersistentList,
@@ -1672,7 +1666,7 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
                              "is_certified": bool, # for messages sent via automated processes
                              }
 
-        def check_message_list(msg_list):
+        def _check_message_list(msg_list):
 
             for msg in msg_list:
 
@@ -1688,29 +1682,25 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
                     assert username in potential_viewers
                     utilities.check_is_slug(reason)
                 # later, special script events might make it normal that even senders or recipients do NOT see the message anymore, but NOT NOW
-                assert set(self._determine_base_visibility(msg).keys()) <= set(msg["visible_by"].keys())
+                assert set(self._determine_basic_visibility(msg).keys()) <= set(msg["visible_by"].keys())
 
 
-        # WARNING - we must separate the two lists, because little incoherencies can appear at their junction due to the workflow
+        # WARNING - we must check the two lists separately, because little incoherencies can appear at their junction due to the workflow
         # (the first queued messages might actually be younger than the last ones of the sent messages list)
-        check_message_list(messaging["messages_dispatched"])
-        check_message_list(messaging["messages_queued"])
+        _check_message_list(messaging["messages_dispatched"])
+        _check_message_list(messaging["messages_queued"])
 
-        #TODO CHECK THAT !! New message notification system ###
+        # new-message audio notification system
         all_msg_files = [self.data["audio_messages"][properties["new_messages_notification"]]["file"]
                          for properties in self.data["character_properties"].values()]
-        # all_msg_files += [self.data["audio_messages"][properties["request_for_report"]]["file"] for properties in self.data["domains"].values()]
-        assert len(set(all_msg_files)) == len(self.data["character_properties"]) # + len(self.data["domains"])# users must NOT share new-message audio notifications
-
-        # we recompute external_contacts, and check everything is coherent
-        assert not self._recompute_all_external_contacts_via_msgs()
+        utilities.check_no_duplicates(all_msg_files) # users must NOT have the same new-message audio notifications
 
         for character_set in self.data["character_properties"].values():
             utilities.check_no_duplicates(character_set["external_contacts"])
             for external_contact in character_set["external_contacts"]:
-                utilities.check_is_email(external_contact)
+                utilities.check_is_email(external_contact) # FIXME - check that it exists and is authorized, too ???
 
-
+        assert not self._recompute_all_external_contacts_via_msgs() # we recompute external_contacts, and check everything is coherent
 
     """
     @staticmethod
@@ -1724,23 +1714,44 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
     def _build_new_message(self, *args, **kwargs):
         msg = super(TextMessagingForCharacters, self)._build_new_message(*args, **kwargs)
 
-        is_read = kwargs.get("is_read", False)
+        is_read = kwargs.get("is_read", False) # we expect it in keyword args... bring on py3k plz
 
-        msg.update({"intercepted_by": PersistentList(), # by default...
-                    "has_read": PersistentList(), # for dummy automated messages
-                    "has_replied": PersistentList(), })
+        assert "has_read" not in msg and "has_replied" not in msg and "visible_by" not in msg
+        msg.update({"has_read": PersistentList(),
+                    "has_replied": PersistentList(),
+                    "visible_by": PersistentDict(), })
 
-        if is_read: # workaround : we add ALL players to the "has read" list !
-            msg["has_read"] = PersistentList(
-                self.get_character_usernames() + [self.get_global_parameter("master_login")])
+        if is_read: # workaround : we add ALL users to the "has read" list !
+            msg["has_read"] = PersistentList(self.get_character_usernames() + [self.master_login])
 
         return msg
+    
+    def _check_sender_email(self, sender_email):
+        if sender_email in self.characters_emails():
+            return  # OK, sent by a character (player or not)
+        super(TextMessagingForCharacters, self)._check_sender_email(sender_email=sender_email)
 
+    def _check_recipient_email(self, recipient_email, sender_email):
+        super(TextMessagingForCharacters, self)._check_recipient_email(recipient_email=recipient_email, sender_email=sender_email)
 
     @readonly_method
-    def _BROKEN__get_available_contacts(self, username=CURRENT_USER):
-        username = self._resolve_username(username)
-        return  {key: value for (key, value) in self.global_contacts}
+    def _determine_basic_visibility(self, msg):
+        """
+        This method does NOT modify the message, it just returns a dict suitable as "visible_by" message field.
+        """
+        visibilities = {}
+
+        sender_username = self.get_character_or_none_from_email(msg["sender_email"])
+        if sender_username:
+            visibilities[sender_username] = VISIBILITY_REASONS.sender
+
+        for recipient_email in msg["recipient_emails"]:
+            recipient_username = self.get_character_or_none_from_email(recipient_email)
+            if recipient_username:
+                visibilities[recipient_username] = VISIBILITY_REASONS.recipient
+
+        return visibilities
+        
 
     @readonly_method
     def get_character_email(self, username=CURRENT_USER):
@@ -1748,12 +1759,10 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
         assert self.is_character(username)
         return username + "@" + self.get_global_parameter("pangea_network_domain")
 
-
     @readonly_method
-    def get_characters_emails(self):
+    def get_character_emails(self):
         pangea_network_domain = self.get_global_parameter("pangea_network_domain")
         return [username + "@" + pangea_network_domain for username in self.get_character_usernames()]
-
 
     @readonly_method
     def get_character_or_none_from_email(self, email):
@@ -1765,7 +1774,6 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
             return username
         else:
             return None
-
 
     @readonly_method
     def get_username_from_email(self, email):
@@ -1780,7 +1788,8 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
             return self.master_login
 
 
-    @readonly_method
+    """ DEPRECATED          FIXME FIXME
+    @readonly_method    
     def get_external_emails(self, username=CURRENT_USER):
         # should NOT be called for anonymous users
         username = self._resolve_username(username)
@@ -1792,75 +1801,62 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
         else:
             character = self.get_character_properties(username)
             return character["external_contacts"]
-
+    
 
     @readonly_method
     def get_user_contacts(self, username=CURRENT_USER):
         # should NOT be called for anonymous users
         username = self._resolve_username(username)
-        return self.get_characters_emails() + self.get_external_emails(username)
+        return self.get_characters_email() + self.get_external_emails(username)
 
 
     @readonly_method
+    def _BROKEN__get_available_contacts(self, username=CURRENT_USER): # FIXME
+        username = self._resolve_username(username)
+        return  {key: value for (key, value) in self.global_contacts}
+    
+    """
+
+    '''
+    @readonly_method USELESS, use get_user_related_messages
     def get_game_master_messages(self):  # FIXME with visible_by ****
         # returns all emails sent to external contacts or robots
         all_messages = self.get_all_dispatched_messages()
-        normal_emails = self.get_characters_emails()
-        messages = []
-        for message in all_messages:
-            for recipient in message["recipient_emails"]:
-                if recipient not in normal_emails:
-                    messages.append(message)
-                    break
-        return messages
+        master_login = self.master_login
+        return [msg for msg in all_messages if master_login in msg["visible_by"]]
+    '''
 
     @transaction_watcher(ensure_game_started=False)
     def get_user_related_messages(self, username=CURRENT_USER):
+        # for game master, actually returns all emails sent to external contacts
         username = self._resolve_username(username)
-        email = self.get_character_email(username)
-        emails = [record for record in self.messaging_data["messages_dispatched"] if email in record["recipient_emails"] or \
-                  record["sender_email"] == email or username in record["intercepted_by"]]
-        return emails
-
-
-
+        all_messages = self.get_all_dispatched_messages()
+        return [msg for msg in all_messages if username in msg["visible_by"]]
 
     @readonly_method
     def get_unread_messages_count(self, username=CURRENT_USER):
-        # user_email == None -> unread messages of external contacts (i.e game master)
-        #print ("1", self.connection._registered_objects)
-        username = self._resolve_username(username)
-        if self.is_master(username):
-            unread_msgs = [message for message in self.get_game_master_messages()
-                           if username not in message["has_read"]]
-            #print("2", self.connection._registered_objects)
-        else:
-            user_email = self.get_character_email(username)
-            unread_msgs = [message for message in self.get_received_messages(user_email)
-                           if username not in message["has_read"]]
-            #print ("2bis", self.connection._registered_objects)
-        #print ("3", self.connection._registered_objects)
+        unread_msgs = [msg for msg in self.get_received_messages(username)
+                           if username not in msg["has_read"]]
         return len(unread_msgs)
 
 
-    @transaction_watcher(ensure_game_started=False)
     def _set_message_read_state(self, username=CURRENT_USER, msg=None, is_read=None):
+        # we don't care about whether user had the right to view msg or not
         username = self._resolve_username(username)
         assert username and msg and is_read is not None
         if is_read and username not in msg["has_read"]:
             msg["has_read"].append(username)
         elif not is_read and username in msg["has_read"]:
-            msg["has_read"].remove(username) # we don't care whether he had the right to view it or not - it doesn't matter
+            msg["has_read"].remove(username)
 
-    @transaction_watcher
     def _set_message_reply_state(self, username=CURRENT_USER, msg=None, is_read=None):
+        # we don't care about whether user had the right to view msg or not
         username = self._resolve_username(username)
         assert username and msg and is_read is not None
         if is_read and username not in msg["has_replied"]:
             msg["has_replied"].append(username)
         elif not is_read and username in msg["has_replied"]:
-            msg["has_replied"].remove(
-                username) # we don't care whether he had the right to view it or not - it doens't matter
+            msg["has_replied"].remove(username)
 
     @transaction_watcher(ensure_game_started=False)
     def set_message_read_state(self, username=CURRENT_USER, msg_id=None, is_read=None):
@@ -1870,15 +1866,22 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
         self._set_message_read_state(username, msg, is_read)
 
 
-    @readonly_method
-    def get_sent_messages(self, sender_email):
-        records = [record for record in self.messaging_data["messages_dispatched"] if record["sender_email"] == sender_email]
+    def _get_messages_visible_for_reason(self, reason, username):
+        assert reason in VISIBILITY_REASONS
+        assert username in self._characters_emails() + [self.master_login]
+        username = self._resolve_username(username)
+        records = [record for record in self.messaging_data["messages_dispatched"] if record["visible_by"].get("username" == VISIBILITY_REASONS.sender)]
         return records # chronological order
+    
+    @readonly_method
+    def get_sent_messages(self, username=CURRENT_USER):
+        username = self._resolve_username(username)
+        return self._get_messages_visible_for_reason(reason=VISIBILITY_REASONS.sender, username=username)
 
     @readonly_method
-    def get_received_messages(self, recipient_email):
-        records = [record for record in self.messaging_data["messages_dispatched"] if recipient_email in record["recipient_emails"]]
-        return records # chronological order
+    def get_received_messages(self, username=CURRENT_USER):
+        username = self._resolve_username(username)
+        return self._get_messages_visible_for_reason(reason=VISIBILITY_REASONS.recipient, username=username)
 
     @transaction_watcher(ensure_game_started=False)
     def pop_received_messages(self, recipient_email):
@@ -1888,6 +1891,48 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
         records = self.get_received_messages(recipient_email)
         self.set_new_message_notification([recipient_email], False)
         return records
+
+
+    def _recompute_all_external_contacts_via_msgs(self):
+        external_contacts_changed = False
+        for msg in self.messaging_data["messages_dispatched"]:
+            res = self._update_external_contacts(msg)
+            if res:
+                external_contacts_changed = True
+        return external_contacts_changed
+
+    @transaction_watcher(ensure_game_started=False)
+    def _update_external_contacts(self, msg):
+
+        (concerned_characters, external_emails) = self._get_external_contacts_updates(msg)
+
+        for username in concerned_characters:
+            props = self.get_character_properties(username)
+            old_external_contacts = set(props["external_contacts"])
+            new_external_contacts = old_external_contacts | external_emails
+            assert set(props["external_contacts"]) <= new_external_contacts # that list can only grow - of course
+            props["external_contacts"] = PersistentList(new_external_contacts) # no particular sorting here, but unicity is ensured
+
+            new_contacts_added = (new_external_contacts != old_external_contacts) # SETS comparison
+            return new_contacts_added
+
+    @readonly_method
+    def _get_external_contacts_updates(self, msg):
+        """
+        Retrieve info needed to update the *external_contacts* fields of character accounts,
+        when they send/receive this single message.
+        """
+        all_characters_emails = set(self.get_character_emails())
+        msg_emails = set(msg["recipient_emails"] + [msg["sender_email"]])
+        external_emails = msg_emails - all_characters_emails
+
+        concerned_characters = msg["visible_by"]
+
+        return (concerned_characters, external_emails)
+
+
+
+    # Audio notifications for new messages #
 
     @readonly_method
     def get_pending_new_message_notifications(self):
@@ -1917,47 +1962,6 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
 
 
 
-
-
-    def _recompute_all_external_contacts_via_msgs(self):
-        external_contacts_changed = False
-        for msg in self.messaging_data["messages_dispatched"]:
-            res = self._update_external_contacts(msg)
-            if res:
-                external_contacts_changed = True
-        return external_contacts_changed
-
-    @transaction_watcher(ensure_game_started=False)
-    def _update_external_contacts(self, msg):
-
-        (concerned_characters, external_emails) = self._get_external_contacts_updates(msg)
-
-        for username in concerned_characters:
-            props = self.get_character_properties(username)
-            old_external_contacts = set(props["external_contacts"])
-            new_external_contacts = old_external_contacts | external_emails
-            assert set(props["external_contacts"]) <= new_external_contacts # that list can only grow - of course
-            props["external_contacts"] = PersistentList(new_external_contacts) # no particular sorting here, but unicity is ensured
-
-            new_contacts_added = (new_external_contacts != old_external_contacts)
-            return new_contacts_added
-
-    @readonly_method
-    def _get_external_contacts_updates(self, msg):
-        """
-        Retrieve info needed to update the *external_contacts* fields of character accounts,
-        when they send/receive this single message.
-        """
-        all_characters_emails = set(self.get_characters_emails())
-        msg_emails = set(msg["recipient_emails"] + [msg["sender_email"]])
-
-        external_emails = msg_emails - all_characters_emails
-
-        msg_characters_emails = all_characters_emails & msg_emails
-        concerned_characters = [self.get_character_or_none_from_email(email) for email in msg_characters_emails]
-        assert all(concerned_characters) # no None value here
-
-        return (concerned_characters, external_emails)
 
 
 
@@ -1999,17 +2003,25 @@ class TextMessagingInterception(BaseDataManager):
             for username in msg["intercepted_by"]:
                 assert username in all_chars
 
+    @transaction_watcher
+    def _immediately_send_message(self, msg):
 
+        for username in self.get_character_usernames():
+            wiretapping_targets_emails = [self.get_character_email(target)
+                                          for target in self.get_wiretapping_targets(username)]
+            if (msg["sender_email"] in wiretapping_targets_emails or
+               any(True for recipient in msg["recipient_emails"] if recipient in wiretapping_targets_emails)):
+                msg["visible_by"][username] = VISIBILITY_REASONS.interceptor # that character will see the message
+
+        super(TextMessagingInterception, self)._immediately_send_message(msg)
+        
     @readonly_method
     def get_intercepted_messages(self, username=CURRENT_USER): # for wiretapping
-        # FIXME HERE ###########
         username = self._resolve_username(username)
-        if username is not None and not self.is_master(username):
-            assert username in self.get_character_usernames()
-            records = [record for record in self.messaging_data["messages_dispatched"] if username in record["intercepted_by"]]
-        else:
-            records = [record for record in self.messaging_data["messages_dispatched"] if record["intercepted_by"]] # intercepted by anyone
-        return records # chronological order
+        return self._get_messages_visible_for_reason(reason=VISIBILITY_REASONS.interceptor, username=username)
+
+
+    # management of wiretapping targets #
 
     @transaction_watcher
     def set_wiretapping_targets(self, username=CURRENT_USER, target_names=None):
@@ -2034,14 +2046,13 @@ class TextMessagingInterception(BaseDataManager):
         username = self._resolve_username(username)
         return self.get_character_properties(username)["wiretapping_targets"]
 
-
     @readonly_method
     def get_listeners_for(self, target):
         listeners = []
-        for player, data in self.get_character_sets().items():
+        for username, data in self.get_character_sets().items():
             if target in data["wiretapping_targets"]:
-                listeners.append(player)
-        return sorted(listeners)
+                listeners.append(username)
+        return sorted(listeners) # list of character usernames
 
 
 
