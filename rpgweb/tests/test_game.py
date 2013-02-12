@@ -1003,17 +1003,17 @@ class TestDatamanager(BaseGameTestCase):
 
     @for_core_module(TextMessagingForCharacters)
     def test_email_recipients_parsing(self):
-        input1 = "guy1 , ; ; guy2@acharis.com , master, ; everyone ,master"
-        input2 = ["everyone", "guy1@pangea.com", "guy2@acharis.com", "master@administration.com"]
+        input1 = "guy1 , ; ; guy2@acharis.com , master, ; everyone@lg-auction.com ,master, stuff@micro.fr"
+        input2 = ["everyone@lg-auction.com", "guy1@pangea.com", "guy2@acharis.com", "master@pangea.com", "stuff@micro.fr"]
 
-        # unknown user login added
-        self.assertRaises(dm_module.UsageError, self.dm._normalize_recipient_emails, input1 + " ; dummy value")
 
-        recipients = self.dm._normalize_recipient_emails(input1)
+        sender, recipients = self.dm._normalize_message_addresses("  guy1   ", input1)
+        assert sender == "guy1@pangea.com"
         self.assertEqual(len(recipients), len(input2))
         self.assertEqual(set(recipients), set(input2))
 
-        recipients = self.dm._normalize_recipient_emails(input2)
+        sender, recipients = self.dm._normalize_message_addresses(" gu222@microkosm.com", input2)
+        assert sender == "gu222@microkosm.com"
         self.assertEqual(len(recipients), len(input2))
         self.assertEqual(set(recipients), set(input2))
 

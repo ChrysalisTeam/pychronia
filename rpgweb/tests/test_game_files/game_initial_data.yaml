@@ -68,7 +68,7 @@ global_parameters:
 
     game_is_started: True # used to forbid access to some features before the party itself
 
-    global_email: everyone # shortcut to email every user at once
+    global_email: everyone@lgauctions.com # shortcut to email every user at once
     pangea_network_domain: pangea.com
 
     anonymous_login: guest

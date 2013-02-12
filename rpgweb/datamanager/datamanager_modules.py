@@ -1218,7 +1218,7 @@ class TextMessagingCore(BaseDataManager):
         for (index, msg) in enumerate(self.messaging_data["messages_queued"]):
             if msg["sent_at"] <= utcnow:
                 try:
-                    self._immediately_send_message(msg)
+                    self._immediately_dispatch_message(msg)
                 except:
                     if __debug__: self.notify_event("DELAYED_MESSAGE_ERROR")
                     self.logger.critical("Delayed message couldn't be sent : %s" % msg, exc_info=True)
@@ -1243,7 +1243,7 @@ class TextMessagingCore(BaseDataManager):
             self.messaging_data["messages_queued"].append(msg)
             self.messaging_data["messages_queued"].sort(key=lambda msg: msg["sent_at"]) # python sorting is stable !
         else:
-            self._immediately_send_message(msg)
+            self._immediately_dispatch_message(msg)
 
         return msg["id"]
 
@@ -1306,12 +1306,19 @@ class TextMessagingCore(BaseDataManager):
         """
         assert not hasattr(super(TextMessagingCore, self), "_normalize_message_addresses")
 
-        sender_email = sender_email.strip()
+        pangea_network = self.data["global_parameters"]["pangea_network_domain"]
+        def _complete_domain(address):
+            if address and "@" not in address:
+                address = address + "@" + pangea_network
+            return address
+
+        sender_email = _complete_domain(sender_email.strip())
 
         if isinstance(recipient_emails, basestring):
             recipient_emails = recipient_emails.replace(",", ";")
             recipient_emails = recipient_emails.split(";")
-        recipient_emails = [stripped for stripped in (email.strip() for email in recipient_emails) if stripped]
+        recipient_emails = [_complete_domain(stripped) for stripped in (email.strip() for email in recipient_emails) if stripped]
+        recipient_emails = PersistentList(set(recipient_emails)) # remove duplicates
 
         return sender_email, recipient_emails
 
@@ -1346,12 +1353,20 @@ class TextMessagingCore(BaseDataManager):
 
 
     @transaction_watcher
-    def _immediately_send_message(self, msg):
+    def _immediately_dispatch_message(self, msg):
         """
         Here we don't care about "enqueued messages" cleanup.
         """
+        assert not hasattr(super(TextMessagingCore, self), "_immediately_dispatch_message")
         self.messaging_data["messages_dispatched"].append(msg)
         self.messaging_data["messages_dispatched"].sort(key=lambda msg: msg["sent_at"]) # python sorting is stable !
+
+        self._message_dispatching_post_hook(copy.deepcopy(msg))
+
+
+    def _message_dispatching_post_hook(self, frozen_msg):
+        assert not hasattr(super(TextMessagingCore, self), "_message_dispatching_post_hook")
+        pass
 
 
     @transaction_watcher(ensure_game_started=False)
@@ -1369,7 +1384,7 @@ class TextMessagingCore(BaseDataManager):
         del self.messaging_data["messages_queued"][index] # we remove the msg from queued list
 
         msg["sent_at"] = datetime.utcnow() # we force the timestamp to UTCNOW
-        self._immediately_send_message(msg)
+        self._immediately_dispatch_message(msg)
 
         return True
 
@@ -1569,11 +1584,7 @@ class TextMessagingTemplates(BaseDataManager):
 
             for msg in msg_list.values():
 
-                msg["recipient_emails"] = self._normalize_recipient_emails(msg.get("recipient_emails", []))
-                msg["sender_email"] = msg.get("sender_email", "")
-                if msg["sender_email"] and "@" not in msg["sender_email"]: # email could be empty
-                    pangea_network = game_data["global_parameters"]["pangea_network_domain"]
-                    msg["sender_email"] = msg["sender_email"] + "@" + pangea_network # we allow short username as sender/recipient
+                msg["sender_email"], msg["recipient_emails"] = self._normalize_message_addresses(msg.get("sender_email", ""), msg.get("recipient_emails", []))
 
                 msg["subject"] = msg.get("subject", "")
                 msg["body"] = msg.get("body", "")
@@ -1598,7 +1609,7 @@ class TextMessagingTemplates(BaseDataManager):
         if use_template:
             try:
                 tpl = self.get_message_template(use_template)
-                tpl["is_used"] = True
+                tpl["is_used"] = True # will stay True even if message sending is actually canceled - we don't care
             except UsageError, e:
                 self.logger.error(e, exc_info=True) # non-fatal error
 
@@ -1725,13 +1736,29 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
             msg["has_read"] = PersistentList(self.get_character_usernames() + [self.master_login])
 
         return msg
-    
+
+    def _immediately_dispatch_message(self, msg):
+
+        msg["visible_by"].update(self._determine_basic_visibility(msg))
+
+        super(TextMessagingForCharacters, self)._immediately_dispatch_message(msg)
+
+    def _message_dispatching_post_hook(self, frozen_msg):
+        super(TextMessagingForCharacters, self)._message_dispatching_post_hook(frozen_msg)
+        print (">>>>>>>>>>>", frozen_msg["visible_by"])
+        characters = set(self.get_character_usernames())
+        target_characters = [username for username, reason in frozen_msg["visible_by"].items() 
+                                      if reason != VISIBILITY_REASONS.sender and username in characters] # thus we remove master_login
+        self.set_new_message_notification(concerned_characters=target_characters, new_status=True)
+        
     def _check_sender_email(self, sender_email):
-        if sender_email in self.characters_emails():
-            return  # OK, sent by a character (player or not)
+        if sender_email in self.get_character_emails():
+            return # OK, sent by a character (player or not)
         super(TextMessagingForCharacters, self)._check_sender_email(sender_email=sender_email)
 
     def _check_recipient_email(self, recipient_email, sender_email):
+        if recipient_email in self.get_character_emails():
+            return # OK, sent by a character (player or not)
         super(TextMessagingForCharacters, self)._check_recipient_email(recipient_email=recipient_email, sender_email=sender_email)
 
     @readonly_method
@@ -1751,7 +1778,7 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
                 visibilities[recipient_username] = VISIBILITY_REASONS.recipient
 
         return visibilities
-        
+
 
     @readonly_method
     def get_character_email(self, username=CURRENT_USER):
@@ -1868,11 +1895,11 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
 
     def _get_messages_visible_for_reason(self, reason, username):
         assert reason in VISIBILITY_REASONS
-        assert username in self._characters_emails() + [self.master_login]
+        assert username in self.get_character_emails() + [self.master_login]
         username = self._resolve_username(username)
         records = [record for record in self.messaging_data["messages_dispatched"] if record["visible_by"].get("username" == VISIBILITY_REASONS.sender)]
         return records # chronological order
-    
+
     @readonly_method
     def get_sent_messages(self, username=CURRENT_USER):
         username = self._resolve_username(username)
@@ -1886,10 +1913,12 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
     @transaction_watcher(ensure_game_started=False)
     def pop_received_messages(self, recipient_email):
         """
-        Also resets the 'new message' notification.
+        Also resets the 'new message' notification of concerner character, if any.
         """
         records = self.get_received_messages(recipient_email)
-        self.set_new_message_notification([recipient_email], False)
+        character = self.get_character_or_none_from_email(recipient_email)
+        if character:
+            self.set_new_message_notification(concerned_characters=[character], new_status=False)
         return records
 
 
@@ -1952,13 +1981,9 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
         return self.data["character_properties"][username]["has_new_messages"] # boolean
 
     @transaction_watcher(ensure_game_started=False)
-    def set_new_message_notification(self, recipient_emails, new_status):
-        assert isinstance(recipient_emails, (list, PersistentList, tuple)), (recipient_emails, type(recipient_emails))
-        for username in self.get_character_usernames():
-            email = self.get_character_email(username)
-            if email in recipient_emails:
-                self.data["character_properties"][username]["has_new_messages"] = new_status
-                # thus, "invented" emails are simply ignored in this process
+    def set_new_message_notification(self, concerned_characters, new_status):
+        for character in concerned_characters:
+            self.data["character_properties"][character]["has_new_messages"] = new_status
 
 
 
@@ -2004,7 +2029,7 @@ class TextMessagingInterception(BaseDataManager):
                 assert username in all_chars
 
     @transaction_watcher
-    def _immediately_send_message(self, msg):
+    def _immediately_dispatch_message(self, msg):
 
         for username in self.get_character_usernames():
             wiretapping_targets_emails = [self.get_character_email(target)
@@ -2013,8 +2038,8 @@ class TextMessagingInterception(BaseDataManager):
                any(True for recipient in msg["recipient_emails"] if recipient in wiretapping_targets_emails)):
                 msg["visible_by"][username] = VISIBILITY_REASONS.interceptor # that character will see the message
 
-        super(TextMessagingInterception, self)._immediately_send_message(msg)
-        
+        super(TextMessagingInterception, self)._immediately_dispatch_message(msg)
+
     @readonly_method
     def get_intercepted_messages(self, username=CURRENT_USER): # for wiretapping
         username = self._resolve_username(username)
