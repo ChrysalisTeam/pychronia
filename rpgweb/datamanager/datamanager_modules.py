@@ -1874,18 +1874,6 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
         return [msg for msg in all_messages if master_login in msg["visible_by"]]
     '''
 
-    @transaction_watcher(ensure_game_started=False)
-    def get_user_related_messages(self, username=CURRENT_USER):
-        # for game master, actually returns all emails sent to external contacts
-        username = self._resolve_username(username)
-        all_messages = self.get_all_dispatched_messages()
-        return [msg for msg in all_messages if username in msg["visible_by"]]
-
-    @readonly_method
-    def get_unread_messages_count(self, username=CURRENT_USER):
-        unread_msgs = [msg for msg in self.get_received_messages(username)
-                           if username not in msg["has_read"]]
-        return len(unread_msgs)
 
 
     def _set_message_read_state(self, username=CURRENT_USER, msg=None, is_read=None):
@@ -1916,7 +1904,7 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
 
     def _get_messages_visible_for_reason(self, reason, username):
         assert reason in VISIBILITY_REASONS
-        assert username in self.get_character_emails() + [self.master_login]
+        assert username in self.get_character_usernames() + [self.master_login]
         username = self._resolve_username(username)
         records = [record for record in self.messaging_data["messages_dispatched"] if record["visible_by"].get("username" == VISIBILITY_REASONS.sender)]
         return records # chronological order
@@ -1932,15 +1920,30 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
         return self._get_messages_visible_for_reason(reason=VISIBILITY_REASONS.recipient, username=username)
 
     @transaction_watcher(ensure_game_started=False)
-    def pop_received_messages(self, recipient_email):
+    def pop_received_messages(self, username=CURRENT_USER):
         """
         Also resets the 'new message' notification of concerner character, if any.
         """
+        username = self._resolve_username(username)
         records = self.get_received_messages(recipient_email)
         character = self.get_character_or_none_from_email(recipient_email)
         if character:
             self.set_new_message_notification(concerned_characters=[character], new_status=False)
         return records
+
+    @transaction_watcher(ensure_game_started=False)
+    def get_user_related_messages(self, username=CURRENT_USER):
+        # for game master, actually returns all emails sent to external contacts
+        username = self._resolve_username(username)
+        all_messages = self.get_all_dispatched_messages()
+        return [msg for msg in all_messages if username in msg["visible_by"]]
+
+    @readonly_method
+    def get_unread_messages_count(self, username=CURRENT_USER):
+        unread_msgs = [msg for msg in self.get_received_messages(username)
+                           if username not in msg["has_read"]]
+        return len(unread_msgs)
+
 
 
     @readonly_method
@@ -1951,6 +1954,8 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
         else:
             return self.get_character_emails() + self.get_character_external_contacts(username=username) # including user himself
 
+
+    @readonly_method
     def get_character_external_contacts(self, username=CURRENT_USER):
         username = self._resolve_username(username)
         props = self.get_character_properties(username)

@@ -42,8 +42,7 @@ from .info_views import (instructions, view_encyclopedia,
 from .profile_views import login, logout, secret_question, character_profile, friendship_management
 
 
-from .messaging_views import (ajax_set_message_read_state, ajax_force_email_sending, conversation, outbox,
-                              inbox, view_single_message, compose_message, all_sent_messages, all_queued_messages,
+from .messaging_views import (ajax_set_message_read_state, ajax_force_email_sending, conversation, view_single_message, compose_message, all_dispatched_messages, all_queued_messages,
                               intercepted_messages, messages_templates)
 
 from .abilities import (house_locking, runic_translation, wiretapping_management,

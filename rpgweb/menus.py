@@ -62,7 +62,7 @@ def _generate_web_menu(request, menu_entry_generator):
 
     processed_view = request.processed_view # thanks to our middleware
 
-    if user.is_authenticated and processed_view != views.inbox:
+    if user.is_authenticated and processed_view != views.conversation:
         # in inbox, we can set/unset the read state of messages, so the "unread count" must not be considered
         unread_msgs_count = datamanager.get_unread_messages_count()
         message_suffix = u"(%d)" % unread_msgs_count

@@ -1263,8 +1263,8 @@ class TestDatamanager(BaseGameTestCase):
             }
 
         self.dm.post_message("guy1@masslavia.com", "netsdfworkerds@masslavia.com", subject="ssd", body="qsdqsd") # this works too !
-        self.assertEqual(len(self.dm.get_game_master_messages()), 1)
-        self.dm.get_game_master_messages()[0]["has_read"] = utilities.PersistentList(
+        self.assertEqual(len(self.dm.get_user_related_messages(self.dm.master_login)), 1)
+        self.dm.get_user_related_messages(self.dm.master_login)[0]["has_read"] = utilities.PersistentList(
             self.dm.get_character_usernames() + [self.dm.get_global_parameter("master_login")]) # we hack this message not to break following assertions
 
         self.dm.post_message(**record1)
@@ -1287,7 +1287,7 @@ class TestDatamanager(BaseGameTestCase):
 
         self.assertEqual(len(self.dm.get_all_dispatched_messages()), 6)
 
-        self.assertEqual(len(self.dm.get_game_master_messages()), 2) # secret services + wrong email address
+        self.assertEqual(len(self.dm.get_user_related_messages(self.dm.master_login)), 2) # secret services + wrong email address
 
         expected_notifications = {'guy2': "new_messages_2", 'guy3': "new_messages_1"}
         self.assertEqual(self.dm.get_pending_new_message_notifications(), expected_notifications)
@@ -2272,7 +2272,7 @@ class TestHttpRequests(BaseGameTestCase):
         from django.core.urlresolvers import RegexURLResolver
         from rpgweb.urls import web_game_urlpatterns
         # we test views for which there is a distinction between master and player
-        selected_patterns = """inbox outbox compose_message intercepted_messages view_sales personal_items_slideshow character_profile friendship_management""".split() # TODO LATER network_management contact_djinns
+        selected_patterns = """ compose_message intercepted_messages view_sales personal_items_slideshow character_profile friendship_management""".split() # TODO LATER network_management contact_djinns
         views = [url._callback_str for url in web_game_urlpatterns if not isinstance(url, RegexURLResolver) and [match for match in selected_patterns if match in url._callback_str]]
         assert len(views) == len(selected_patterns)
 

@@ -26,10 +26,8 @@ def conversation(request):
 
     mode = "conversation"
     user = request.datamanager.user
-    if user.is_master:
-        messages = request.datamanager.get_game_master_messages()
-    else:
-        messages = request.datamanager.get_user_related_messages(request.datamanager.get_character_email(user.username))
+
+    messages = request.datamanager.get_user_related_messages(user.username) # master or character
 
     group_ids = map(lambda message: message.get("group_id", ""), messages)
     group_ids = list(set(group_ids))
@@ -96,7 +94,7 @@ def compose_message(request, template_name='messaging/compose.html'):
 
 
 @register_view(access=UserAccess.authenticated)
-def inbox(request, template_name='messaging/messages.html'):
+def ___inbox(request, template_name='messaging/messages.html'):
 
     user = request.datamanager.user
     if user.is_master:
@@ -120,7 +118,8 @@ def inbox(request, template_name='messaging/messages.html'):
                      'mode': "inbox"
                     })
 
-@register_view(attach_to=inbox)
+
+@register_view(attach_to=conversation)
 def ajax_set_message_read_state(request):
 
     # to be used by AJAX
@@ -136,7 +135,7 @@ def ajax_set_message_read_state(request):
 
 
 @register_view(access=UserAccess.authenticated)
-def outbox(request, template_name='messaging/messages.html'):
+def ___outbox(request, template_name='messaging/messages.html'):
 
     user = request.datamanager.user
     if user.is_master:
@@ -192,7 +191,7 @@ def view_single_message(request, msg_id, template_name='messaging/single_message
 
 
 @register_view(access=UserAccess.master)
-def all_sent_messages(request, template_name='messaging/messages.html'):
+def all_dispatched_messages(request, template_name='messaging/messages.html'):
 
     messages = request.datamanager.get_all_dispatched_messages()
 
@@ -205,7 +204,7 @@ def all_sent_messages(request, template_name='messaging/messages.html'):
                      'messages': messages,
                      'remove_from': False,
                      'remove_to': False,
-                     'mode': "all_sent_messages"
+                     'mode': "all_sent_messages" # FIXME
                     })
 
 

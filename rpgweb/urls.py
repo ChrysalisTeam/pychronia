@@ -93,10 +93,10 @@ web_game_urlpatterns = patterns('rpgweb.views',
 
 
     url(r'^messages/compose/$', 'compose_message'),
-    url(r'^messages/inbox/$', 'inbox'),
-    url(r'^messages/outbox/$', 'outbox'),
+    #url(r'^messages/inbox/$', 'inbox'),
+    #url(r'^messages/outbox/$', 'outbox'),
     url(r'^messages/conversation/$', 'conversation'),
-    url(r'^messages/all_sent_messages/$', 'all_sent_messages'),
+    url(r'^messages/all_dispatched_messages/$', 'all_dispatched_messages'),
     url(r'^messages/all_queued_messages/$', 'all_queued_messages'),
     url(r'^messages/intercepted_messages/$', 'intercepted_messages'),
     url(r'^messages/messages_templates/$', 'messages_templates'),
