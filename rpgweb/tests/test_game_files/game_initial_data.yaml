@@ -68,7 +68,7 @@ global_parameters:
 
     game_is_started: True # used to forbid access to some features before the party itself
 
-    global_email: everyone@lgauctions.com # shortcut to email every user at once
+    global_email: everyone@lg-auction.com # shortcut to email every user at once
     pangea_network_domain: pangea.com
 
     anonymous_login: guest
@@ -383,8 +383,16 @@ messaging:
             avatar: "here.jpg"
             description: "the terrible judicators"
         
-        ALL_CONTACTS: null
+        judicators1@acharis.com: {}
+        
+        judicators2@acharis.com: {}
       
+        othercontact@anything.fr: {}
+        
+        master@administration.com: {}
+        
+        everyone@chars.com : {}
+        
     messages_dispatched:  #-> list of messages processed
     
         - id: instructions_bewitcher
@@ -401,7 +409,7 @@ messaging:
     
         - id: instructions_oracle
           sender_email: judicators2@acharis.com
-          recipient_emails: guy2
+          recipient_emails: ["guy2", "othercontact@anything.fr"]
           subject: "Ordres de Missions"
           attachment: "attachments/image1.png"
           sent_at: -8000

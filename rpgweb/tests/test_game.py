@@ -1064,18 +1064,24 @@ class TestDatamanager(BaseGameTestCase):
 
     def test_external_contacts(self):
 
-        emails = self.dm.get_user_contacts(self.dm.get_global_parameter("master_login"))
+        master_contacts = set(self.dm.get_user_contacts(self.dm.master_login))
 
-        # guy1 and guy2 have 3 external contacts altogether, + 2 judicators @ implied by original sent msgs
-        self.assertEqual(len(emails), len(self.dm.get_character_usernames()) + 5)
+        char_emails = set(self.dm.get_character_emails())
+        assert master_contacts & char_emails == char_emails # all chars are in
+        assert len(master_contacts) > len(char_emails) + 4
+        assert "judicators2@acharis.com" in master_contacts
 
-        emails = self.dm.get_user_contacts("guy2")
-        self.assertEqual(len(emails), len(self.dm.get_character_usernames()) + 2, emails) # himself & fellows, + 1 external contact + 1 implied by original msgs
-        self.assertTrue("guy3@pangea.com" in emails) # proper domain name...
+        emails = set(self.dm.get_user_contacts("guy2"))
+        assert self.dm.get_character_email("guy2") in emails # self-emailing OK
+        assert "guy3@pangea.com" in emails
+        assert "judicators2@acharis.com" in emails
+        emails = self.dm.get_character_external_contacts("guy2")
+        assert "guy3@pangea.com" not in emails
+        assert "judicators2@acharis.com" in emails
 
         emails = self.dm.get_user_contacts("guy3")
         self.assertEqual(len(emails), len(self.dm.get_character_usernames()), emails)
-        emails = self.dm.get_external_emails("guy3")
+        emails = self.dm.get_character_external_contacts("guy3")
         self.assertEqual(len(emails), 0, emails)
 
 
@@ -1090,7 +1096,7 @@ class TestDatamanager(BaseGameTestCase):
         container = self.dm.global_contacts
 
         # preexisting, immutable entry
-        fixture_key = "ALL_CONTACTS" # test fixture
+        fixture_key = "everyone@chars.com" # test fixture
         assert container.contains_item(fixture_key)
         assert fixture_key in container.list_keys()
         assert fixture_key in container.get_all_data()

@@ -28,7 +28,7 @@ class MoneyTransferForm(AbstractGameForm):
             # for standard characters
             if datamanager.get_character_properties()["account"] <= 0:
                 raise UninstantiableForm("user has no money")
-            others = datamanager.get_other_usernames()
+            others = datamanager.get_other_character_usernames()
             others_choices = datamanager.build_select_choices_from_usernames(others)
             self.fields.insert(0, "recipient_name", forms.ChoiceField(label=_("Recipient"), choices=others_choices))
 
@@ -71,7 +71,7 @@ class GemsTransferForm(AbstractGameForm):
             self.fields.insert(0, "sender_name", forms.ChoiceField(label=_("Sender"), choices=_character_choices))
             self.fields.insert(1, "recipient_name", forms.ChoiceField(label=_("Recipient"), initial=_character_choices[min(1, len(_character_choices) - 1)][0], choices=_character_choices))
         else:
-            others = datamanager.get_other_usernames()
+            others = datamanager.get_other_character_usernames()
             others_choices = datamanager.build_select_choices_from_usernames(others)
             self.fields.insert(1, "recipient_name", forms.ChoiceField(label=_("Recipient"), choices=others_choices))
 
@@ -235,7 +235,7 @@ class TelecomInvestigationForm(forms.Form):
         super(TelecomInvestigationForm, self).__init__(*args, **kwargs)
         # dynamic fields here ...
 
-        others = datamanager.get_other_usernames()
+        others = datamanager.get_other_character_usernames()
         others_choices = datamanager.build_select_choices_from_usernames(others)
         self.fields["official_name"] = forms.ChoiceField(label=_("Name"), choices=others_choices)
 
