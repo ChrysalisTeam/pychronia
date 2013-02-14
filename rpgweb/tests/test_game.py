@@ -1001,21 +1001,6 @@ class TestDatamanager(BaseGameTestCase):
         self.assertEqual(tpl["is_used"], True) # template properly marked as used
 
 
-    @for_core_module(TextMessagingForCharacters)
-    def test_email_recipients_parsing(self):
-        input1 = "guy1 , ; ; guy2@acharis.com , master, ; everyone@lg-auction.com ,master, stuff@micro.fr"
-        input2 = ["everyone@lg-auction.com", "guy1@pangea.com", "guy2@acharis.com", "master@pangea.com", "stuff@micro.fr"]
-
-
-        sender, recipients = self.dm._normalize_message_addresses("  guy1   ", input1)
-        assert sender == "guy1@pangea.com"
-        self.assertEqual(len(recipients), len(input2))
-        self.assertEqual(set(recipients), set(input2))
-
-        sender, recipients = self.dm._normalize_message_addresses(" gu222@microkosm.com", input2)
-        assert sender == "gu222@microkosm.com"
-        self.assertEqual(len(recipients), len(input2))
-        self.assertEqual(set(recipients), set(input2))
 
 
 
@@ -1214,9 +1199,29 @@ class TestDatamanager(BaseGameTestCase):
             assert contact not in self.dm.get_globally_registered_contacts()
     '''
 
+    @for_core_module(TextMessagingForCharacters)
+    def test_messaging_utilities(self):
+
+        input1 = "guy1 , ; ; guy2@acharis.com , master, ; everyone@lg-auction.com ,master, stuff@micro.fr"
+        input2 = ["everyone@lg-auction.com", "guy1@pangea.com", "guy2@acharis.com", "master@pangea.com", "stuff@micro.fr"]
 
 
-    def test_text_messaging(self):
+        sender, recipients = self.dm._normalize_message_addresses("  guy1   ", input1)
+        assert sender == "guy1@pangea.com"
+        self.assertEqual(len(recipients), len(input2))
+        self.assertEqual(set(recipients), set(input2))
+
+        sender, recipients = self.dm._normalize_message_addresses(" gu222@microkosm.com", input2)
+        assert sender == "gu222@microkosm.com"
+        self.assertEqual(len(recipients), len(input2))
+        self.assertEqual(set(recipients), set(input2))
+
+        assert self.dm.get_character_or_none_from_email("guy1@pangea.com") == "guy1"
+        assert self.dm.get_character_or_none_from_email("guy1@wrongdomain.com") is None
+        assert self.dm.get_character_or_none_from_email("master@pangea.com") is None
+
+
+    def test_text_messaging_workflow(self):
 
         self._reset_messages()
 
