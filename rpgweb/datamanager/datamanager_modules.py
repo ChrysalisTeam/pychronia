@@ -1334,22 +1334,22 @@ class TextMessagingCore(BaseDataManager):
 
     def _check_sender_email(self, sender_email):
         """
-        Default : reject.
+        Default : ALLOW ATM.
         
         To be overridden.
         """
-        raise UsageError(_("Unknown sender address %r") % sender_email)
+        return # raise UsageError(_("Unknown sender address %r") % sender_email)
 
     def _check_recipient_email(self, recipient_email, sender_email):
         """
-        Default : reject
+        Default : ALLOW ATM
         
         Only *sender_email* must be taken into account, not currently logged user,
         since some abilities might allow to send an email in the name of someone else.
         
         To be overridden.
         """
-        raise UsageError(_("Unknown recipient address %r") % recipient_email)
+        return # raise UsageError(_("Unknown recipient address %r") % recipient_email)
 
 
     @transaction_watcher
@@ -1762,7 +1762,7 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
         #print (">>>>>>>>>>>", frozen_msg["visible_by"])
         characters = set(self.get_character_usernames())
         target_characters = [username for username, reason in frozen_msg["visible_by"].items()
-                                      if reason != VISIBILITY_REASONS.sender and username in characters] # thus we remove master_login
+                                      if reason != VISIBILITY_REASONS.sender and username in characters] # thus we remove master_login and sender
         self.set_new_message_notification(concerned_characters=target_characters, new_status=True)
 
     def _check_sender_email(self, sender_email):
@@ -1785,11 +1785,15 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
         sender_username = self.get_character_or_none_from_email(msg["sender_email"])
         if sender_username:
             visibilities[sender_username] = VISIBILITY_REASONS.sender
+        else:
+            visibilities[self.master_login] = VISIBILITY_REASONS.sender
 
         for recipient_email in msg["recipient_emails"]:
             recipient_username = self.get_character_or_none_from_email(recipient_email)
             if recipient_username:
                 visibilities[recipient_username] = VISIBILITY_REASONS.recipient
+            else:
+                visibilities[self.master_login] = VISIBILITY_REASONS.recipient # might occur several times, we don't care
 
         return visibilities
 
@@ -1817,7 +1821,11 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
         """
         Returns the character username corresponding to that email, or None.
         """
-        username = email.split("@")[0]
+        parts = email.split("@")
+        if len(parts) != 2 or parts[1] != self.get_global_parameter("pangea_network_domain"):
+            return None
+
+        username = parts[0]
         if username in self.get_character_usernames():
             return username
         else:
@@ -1906,7 +1914,7 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
         assert reason in VISIBILITY_REASONS
         assert username in self.get_character_usernames() + [self.master_login]
         username = self._resolve_username(username)
-        records = [record for record in self.messaging_data["messages_dispatched"] if record["visible_by"].get("username" == VISIBILITY_REASONS.sender)]
+        records = [record for record in self.messaging_data["messages_dispatched"] if (record["visible_by"].get(username) == reason)]
         return records # chronological order
 
     @readonly_method
@@ -1917,7 +1925,9 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
     @readonly_method
     def get_received_messages(self, username=CURRENT_USER):
         username = self._resolve_username(username)
-        return self._get_messages_visible_for_reason(reason=VISIBILITY_REASONS.recipient, username=username)
+        res = self._get_messages_visible_for_reason(reason=VISIBILITY_REASONS.recipient, username=username)
+        print(">>>>>>>>>>", res)
+        return res
 
     @transaction_watcher(ensure_game_started=False)
     def pop_received_messages(self, username=CURRENT_USER):
@@ -1925,10 +1935,9 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
         Also resets the 'new message' notification of concerner character, if any.
         """
         username = self._resolve_username(username)
-        records = self.get_received_messages(recipient_email)
-        character = self.get_character_or_none_from_email(recipient_email)
-        if character:
-            self.set_new_message_notification(concerned_characters=[character], new_status=False)
+        records = self.get_received_messages(username=username)
+        if self.is_character(username):
+            self.set_new_message_notification(concerned_characters=[username], new_status=False)
         return records
 
     @transaction_watcher(ensure_game_started=False)
@@ -1936,11 +1945,12 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
         # for game master, actually returns all emails sent to external contacts
         username = self._resolve_username(username)
         all_messages = self.get_all_dispatched_messages()
+        print("@@@@@@@@@@", all_messages)
         return [msg for msg in all_messages if username in msg["visible_by"]]
 
     @readonly_method
     def get_unread_messages_count(self, username=CURRENT_USER):
-        unread_msgs = [msg for msg in self.get_received_messages(username)
+        unread_msgs = [msg for msg in self.get_received_messages(username=username)
                            if username not in msg["has_read"]]
         return len(unread_msgs)
 
@@ -1999,7 +2009,8 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
         msg_emails = set(msg["recipient_emails"] + [msg["sender_email"]])
         external_emails = msg_emails - all_characters_emails
 
-        concerned_characters = msg["visible_by"]
+        master_login = self.master_login
+        concerned_characters = {key: value for (key, value) in msg["visible_by"].items() if key != master_login} # can't use dict.copy() here because it modifies stuffs
 
         return (concerned_characters, external_emails)
 

@@ -379,6 +379,9 @@ messaging:
      
     globally_registered_contacts:
         
+        authenticator@hightech.com: {}
+        
+     
         judicators@acharis.com: 
             avatar: "here.jpg"
             description: "the terrible judicators"

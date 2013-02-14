@@ -1262,7 +1262,9 @@ class TestDatamanager(BaseGameTestCase):
             "body": "Here is the body of this message lililili...",
             }
 
-        self.dm.post_message("guy1@masslavia.com", "netsdfworkerds@masslavia.com", subject="ssd", body="qsdqsd") # this works too !
+        self.dm.post_message("guy1@masslavia.com", # NOT recognised as guy1, because wrong domain
+                             "netsdfworkerds@masslavia.com", subject="ssd", body="qsdqsd") # this works too !
+
         self.assertEqual(len(self.dm.get_user_related_messages(self.dm.master_login)), 1)
         self.dm.get_user_related_messages(self.dm.master_login)[0]["has_read"] = utilities.PersistentList(
             self.dm.get_character_usernames() + [self.dm.get_global_parameter("master_login")]) # we hack this message not to break following assertions
@@ -1281,51 +1283,55 @@ class TestDatamanager(BaseGameTestCase):
         time.sleep(0.2)
         self.dm.post_message(**record1) # this message will get back to the 2nd place of list !
 
+        print ("@>@>@>@>", self.dm.get_all_dispatched_messages())
         self.assertEqual(self.dm.get_unread_messages_count("guy3"), 3)
 
         self.assertEqual(self.dm.get_unread_messages_count(self.dm.get_global_parameter("master_login")), 1)
 
         self.assertEqual(len(self.dm.get_all_dispatched_messages()), 6)
 
-        self.assertEqual(len(self.dm.get_user_related_messages(self.dm.master_login)), 2) # secret services + wrong email address
+        res = self.dm.get_user_related_messages(self.dm.master_login)
+        pprint.pprint(res)
+        self.assertEqual(len(res), 3) # secret services masslavia + wrong newtorker email address + dummy-robot
 
-        expected_notifications = {'guy2': "new_messages_2", 'guy3': "new_messages_1"}
+        expected_notifications = {'guy2': "new_messages_2", 'guy3': "new_messages_1", 'guy1': 'info_spots_1'} # guy1 because of wiretapping, not guy4 because was only a sender
         self.assertEqual(self.dm.get_pending_new_message_notifications(), expected_notifications)
-
         self.assertEqual(self.dm.get_pending_new_message_notifications(), expected_notifications) # no disappearance
 
         self.assertTrue(self.dm.has_new_message_notification("guy3"))
-        self.assertEqual(len(self.dm.pop_received_messages("guy3@pangea.com")), 3)
+        self.assertEqual(len(self.dm.pop_received_messages("guy3")), 3)
         self.assertFalse(self.dm.has_new_message_notification("guy3"))
 
         # here we can't do check messages of secret-services@masslavia.com since it's not a normal character
 
         self.assertTrue(self.dm.has_new_message_notification("guy2"))
-        self.assertEqual(len(self.dm.get_received_messages("guy2@pangea.com")), 1)
+        self.assertEqual(len(self.dm.get_received_messages("guy2")), 1)
         self.assertTrue(self.dm.has_new_message_notification("guy2"))
-        self.dm.set_new_message_notification(utilities.PersistentList(["guy2@pangea.com"]), new_status=False)
+        self.dm.set_new_message_notification(utilities.PersistentList(["guy1", "guy2"]), new_status=False)
+        self.assertFalse(self.dm.has_new_message_notification("guy1"))
         self.assertFalse(self.dm.has_new_message_notification("guy2"))
 
         self.assertEqual(self.dm.get_pending_new_message_notifications(), {}) # all have been reset
 
-        self.assertEqual(len(self.dm.get_received_messages(self.dm.get_character_email("guy1"))), 0)
+        self.assertEqual(len(self.dm.get_received_messages("guy1")), 0)
 
-        self.assertEqual(len(self.dm.get_sent_messages("guy2@pangea.com")), 2)
-        self.assertEqual(len(self.dm.get_sent_messages("guy1@pangea.com")), 1)
-        self.assertEqual(len(self.dm.get_sent_messages("guy3@pangea.com")), 0)
+        self.assertEqual(len(self.dm.get_sent_messages("guy2")), 2)
+        self.assertEqual(len(self.dm.get_sent_messages("guy1")), 1)
+        self.assertEqual(len(self.dm.get_sent_messages("guy3")), 0)
 
         assert not self.dm.get_intercepted_messages("guy3")
 
         res = self.dm.get_intercepted_messages("guy1")
         self.assertEqual(len(res), 2)
         self.assertEqual(set([msg["subject"] for msg in res]), set(["hello everybody 1", "hello everybody 4"]))
-        assert all(["guy1" in msg["intercepted_by"] for msg in res])
+        assert all([msg["visible_by"]["guy1"] == VISIBILITY_REASONS.interceptor for msg in res])
 
         res = self.dm.get_intercepted_messages(self.dm.master_login)
-        self.assertEqual(len(res), 3)
-        self.assertEqual(set([msg["subject"] for msg in res]), set(["hello everybody 1", "hello everybody 2", "hello everybody 4"]))
-        assert all([msg["intercepted_by"] for msg in res])
+        self.assertEqual(len(res), 0)
 
+        # game master doesn't need these...
+        #self.assertEqual(set([msg["subject"] for msg in res]), set(["hello everybody 1", "hello everybody 2", "hello everybody 4"]))
+        #assert all([msg["intercepted_by"] for msg in res])
         # NO - we dont notify interceptions - self.assertTrue(self.dm.get_global_parameter("message_intercepted_audio_id") in self.dm.get_all_next_audio_messages(), self.dm.get_all_next_audio_messages())
 
         # msg has_read state changes
