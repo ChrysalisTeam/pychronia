@@ -248,6 +248,9 @@ ul ul {
 ul ul ul {
   list-style-image: url(img/icons/bullet_bronze_small.png);
 }
+textarea {
+  resize: vertical;
+}
 .outlined {
   max-width: 600px;
   padding: 5px;
@@ -745,6 +748,21 @@ table.footnote {
 .fancybox-default .fancybox-close {
   right: -18px;
   top: -18px;
+}
+.main_frame_border .markItUp {
+  width: 95%;
+  margin: auto;
+  border: #9d8126 ridge 2px;
+}
+.main_frame_border .markItUpContainer {
+  background-image: url(img/backgrounds/ricepaper-hue-orange.jpg);
+}
+.main_frame_border .markItUpEditor {
+  width: 100%;
+  height: 150px;
+}
+.main_frame_border .markItUpFooter {
+  display: none;
 }
 #domslideshow {
   position: relative;

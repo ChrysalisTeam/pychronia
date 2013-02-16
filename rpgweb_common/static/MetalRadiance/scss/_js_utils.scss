@@ -28,7 +28,31 @@
 }
 
 
+.main_frame_border {
 
+    .markItUp  {
+        width: 95%;
+        margin: auto;
+        border: $light_yellow ridge 2px;
+    }
+    
+    .markItUpContainer  {
+        background-image: url('#{$IMGS}backgrounds/ricepaper-hue-orange.jpg');
+    }
+    
+    .markItUpHeader {
+      
+    }
+    
+    .markItUpEditor {
+        width: 100%;
+        height: 150px;
+    }
+    
+    .markItUpFooter {
+        display: none;
+    }
+}
 
 
 

@@ -104,7 +104,6 @@ def compose_message(request, template_name='messaging/compose.html'):
                 attachment = form.cleaned_data["attachment"]
 
                 parent_id = form.cleaned_data.get("parent_id", None)
-
                 use_template = form.cleaned_data.get("use_template", None)
 
                 # sender_email and one of the recipient_emails can be the same email, we don't care !

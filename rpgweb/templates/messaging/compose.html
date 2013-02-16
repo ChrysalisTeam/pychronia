@@ -1,6 +1,34 @@
 ﻿{% extends "messaging/base.html" %}
 
-{% load i18n helpers %}  
+{% load sekizai_tags i18n helpers %}  
+
+
+
+{% block sekizai_calls %}
+{{ block.super }}
+
+
+{% addtoblock "css" %}
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}libs/markitup/skins/simple/style.css" />
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}libs/markitup/sets/rest/style.css" />
+{% endaddtoblock %}
+
+    
+{% addtoblock "js" %}
+<script type="text/javascript" src="{{ STATIC_URL }}libs/markitup/jquery.markitup.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}libs/markitup/sets/rest/set.js"></script>
+{% endaddtoblock %}
+
+{% addtoblock "onload_js" %}
+mySettings.markupSet = mySettings["markupSet"].slice(0, -3); // remove code and preview system ATM
+mySettings.resizeHandle = false; // we can't remove autohandle of browser though
+$("#id_body").markItUp(mySettings); // mySettings comes from /markitup/sets/rest/set.js
+{% endaddtoblock %}
+
+{% endblock %}
+
+
+
 
 
 {% block content %}  
@@ -16,11 +44,13 @@
             You may attach to your message one of your personal files, or any url.
             {% endblocktrans %}
         </p>
-    
-    
+        
         <form action="{% game_view_url "rpgweb.views.compose_message" %}" method="post">
+        {{ message_form.as_p }}
+        </form>
+        
         <table class="same_width_widgets" style="margin: 20px auto;width:500px;">
-        {{ message_form.as_table }}
+        
         <tr>
         
             <td colspan="2">
@@ -30,7 +60,7 @@
         
         </tr>
         </table>
-        </form>
+        
     
     {% else %}
     <br/>
