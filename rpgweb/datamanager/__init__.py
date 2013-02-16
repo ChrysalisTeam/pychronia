@@ -6,6 +6,7 @@ from __future__ import unicode_literals
 from .datamanager_tools import *
 from .datamanager_core import * # only for temporary compatibility
 from .datamanager_administrator import GameDataManager
+from .datamanager_modules import VISIBILITY_REASONS
 
 from .abstract_form import AbstractGameForm, UninstantiableForm, form_field_jsonify, form_field_unjsonify
 from .abstract_game_view import AbstractGameView, register_view

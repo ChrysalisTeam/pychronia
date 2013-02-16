@@ -3,7 +3,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from rpgweb.common import *
-from rpgweb.datamanager.abstract_game_view import AbstractGameView, register_view
+from rpgweb.datamanager import AbstractGameView, register_view, VISIBILITY_REASONS
 from rpgweb import forms
 from django.http import Http404, HttpResponseRedirect, HttpResponse
 
@@ -21,31 +21,64 @@ def ajax_force_email_sending(request):
 
 
 
+def _determine_message_display_context(datamanager, messages):
+    """
+    Works for both conversations and simple message lists.
+    """
+    assert datamanager.is_authenticated()
+    username = datamanager.user.username
+
+    def _display_ctx(msg):
+        visibility_reason = msg["visible_by"][username], # one of VISIBILITY_REASONS
+        return dict(
+                    has_read=(username in msg["has_read"]),
+                    visibility_reason=visibility_reason,
+                    was_intercepted=(datamanager.is_master() and VISIBILITY_REASONS.interceptor in msg["visible_by"].values()),
+                    can_forward=True, # always ATM
+                    can_reply=(visibility_reason == VISIBILITY_REASONS.recipient),
+                    can_repost=(visibility_reason == VISIBILITY_REASONS.sender),
+                    )
+
+    if not messages:
+        res = messages
+    if isinstance(messages[0], (list, tuple)):
+        res = [[(_display_ctx(msg), msg) for msg in msg_list] for msg_list in messages] # conversations
+    else:
+        res = [(_display_ctx(msg), msg) for msg in messages]
+    return res
+
 @register_view(access=UserAccess.authenticated, always_available=True)
 def conversation(request):
 
-    mode = "conversation"
+    messages = request.datamanager.get_user_related_messages() # for current master or character
+
+    grouped_messages = request.datamanager.sort_messages_by_conversations(messages)
+
+    enriched_messages = _determine_message_display_context(request.datamanager, messages=grouped_messages)
+
+    return render(request, 'messaging/conversation.html', dict(page_title=_("Conversations"),
+                                                               conversations=enriched_messages,
+                                                               mode="conversation"))
+
+
+
+@register_view(attach_to=conversation)
+def ajax_set_message_read_state(request):
+
+    # to be used by AJAX
+    msg_id = request.GET.get("id", None)
+    is_read = request.GET.get("is_read", None) == "1"
+
     user = request.datamanager.user
+    request.datamanager.set_message_read_state(msg_id=msg_id, is_read=is_read)
 
-    messages = request.datamanager.get_user_related_messages(user.username) # master or character
-
-    group_ids = map(lambda message: message.get("group_id", ""), messages)
-    group_ids = list(set(group_ids))
-    grouped_messages = []
-
-    group_id = message = None
-    for group_id in group_ids:
-        unordered_messages = [message for message in messages if message.get("group_id", "") == group_id]
-        ordered_messsages = list(reversed(unordered_messages))
-        grouped_messages.append(ordered_messsages)
-    del group_id, message # shall not leak
-
-    return render(request, 'messaging/conversation.html', locals())
+    return HttpResponse("OK")
+    # in case of error, a "500" code will be returned
 
 
 
 
-@register_view(access=UserAccess.authenticated)
+@register_view(attach_to=conversation)
 def compose_message(request, template_name='messaging/compose.html'):
 
     user = request.datamanager.user
@@ -119,18 +152,7 @@ def ___inbox(request, template_name='messaging/messages.html'):
                     })
 
 
-@register_view(attach_to=conversation)
-def ajax_set_message_read_state(request):
 
-    # to be used by AJAX
-    msg_id = request.GET.get("id", None)
-    is_read = request.GET.get("is_read", None) == "1"
-
-    user = request.datamanager.user
-    request.datamanager.set_message_read_state(msg_id=msg_id, is_read=is_read)
-
-    return HttpResponse("OK")
-    # in case of error, a "500" code will be returned
 
 
 
@@ -227,7 +249,7 @@ def all_queued_messages(request, template_name='messaging/messages.html'):
 
 
 @register_view(access=UserAccess.authenticated)
-def intercepted_messages(request, template_name='messaging/messages.html'):
+def __intercepted_messages(request, template_name='messaging/messages.html'):
 
     messages = request.datamanager.get_intercepted_messages()
 

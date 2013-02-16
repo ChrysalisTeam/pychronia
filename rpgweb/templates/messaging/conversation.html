@@ -1,12 +1,18 @@
 {% extends "messaging/base.html" %}
 
-{% load i18n helpers markup %}
+{% load sekizai_tags i18n helpers %}  
 
-{% block headers %}  
-    {{ block.super }}
+
+
+
+{% block sekizai_calls %}
+{{ block.super }}
+
+
+
     
-    <script type="text/javascript">
-    
+{% addtoblock "definition_js" %}
+
         function force_email_sending(msg_id) {
  
             $.get("{% game_view_url "rpgweb.views.ajax_force_email_sending" %}", 
@@ -23,121 +29,73 @@
                     { id: escape(msg_id), 
                       is_read: (is_read ? "1" : "0") },
                     function(data){
-             
                         if (is_read) {
                             $("#"+msg_id).removeClass("email_unread");
                             $("#"+msg_id).addClass("email_read");
+                            $("#"+msg_id +" .mark_read_tag").css("display", "none");
+                            $("#"+msg_id +" .mark_unread_tag").css("display", "inline");
                         }
                         else {
                             $("#"+msg_id).removeClass("email_read");   
                             $("#"+msg_id).addClass("email_unread");  
+                            $("#"+msg_id +" .mark_read_tag").css("display", "inline");
+                            $("#"+msg_id +" .mark_unread_tag").css("display", "none");
                         } 
                   
                     });
        }
-
-	$.fn.togglepanels = function(){   
+       
+    $.fn.togglepanels = function(){   
             return this.each(function(){
-        	    $(this).addClass("ui-accordion ui-accordion-icons ui-widget ui-helper-reset")
-        	  .find(".otherTitle")
-        	    .addClass("ui-accordion-header ui-helper-reset ui-state-default ui-corner-top ui-corner-bottom")
-        	    .hover(function() { $(this).toggleClass("ui-state-hover"); })
-        	    .prepend('<span class="ui-icon ui-icon-triangle-1-e"></span>')
-        	    .click(function() {
-        	      $(this)
-        	        .toggleClass("ui-accordion-header-active ui-state-active ui-state-default ui-corner-bottom")
-        	        .find("> .ui-icon").toggleClass("ui-icon-triangle-1-e ui-icon-triangle-1-s").end()
-        	        .next().slideToggle();
-        	      return false;
-        	    });
-        	    $(this).find(".otherDiv").addClass("ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom").hide();
-        	  });
-        	};
-	
-	$(document).ready(function() {
-	    $(".notaccordion").togglepanels();
-	  });
+                $(this).addClass("ui-accordion ui-accordion-icons ui-widget ui-helper-reset")
+              .find(".otherTitle")
+                .addClass("ui-accordion-header ui-helper-reset ui-state-default ui-corner-top ui-corner-bottom")
+                .hover(function() { $(this).toggleClass("ui-state-hover"); })
+                .prepend('<span class="ui-icon ui-icon-triangle-1-e"></span>')
+                .click(function() {
+                  $(this)
+                    .toggleClass("ui-accordion-header-active ui-state-active ui-state-default ui-corner-bottom")
+                    .find("> .ui-icon").toggleClass("ui-icon-triangle-1-e ui-icon-triangle-1-s").end()
+                    .next().slideToggle();
+                  return false;
+                });
+                $(this).find(".otherDiv").addClass("ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom").hide();
+              });
+            };
     
-</script>
+{% endaddtoblock %}
+
+
+{% addtoblock "onload_js" %}
+
+    // NOT YET $(".notaccordion").togglepanels();
+    
+{% endaddtoblock %}
 
 {% endblock %}
 
+
+
+
+
+
 {% block content %}  
+
     {{ block.super }}
-	{% if not messages %}
+	{% if not conversations %}
     	<div style="text-align:center;">
         	<i>{% trans "No messages yet." %}</i>
     	</div>
 	{% else %}
-		{% for message_list in grouped_messages %}
+		{% for message_list in conversations %}
 			<div class="notaccordion">
-				{% for message in message_list %}
-					<h3 class="{% if forloop.first %}firstTitle{% else %}otherTitle{% endif %}"><a href="#">{{ message.subject }}</a></h3>
-					<div id="{{ message.id }}" class="email 
-					{% if user.username in message.has_read %}email_read{% else %}email_unread{% endif %} {% if forloop.first %} firstDiv{% else %} otherDiv {% endif %}">
-		                <span class="message_operation">
-		                    <a class="mark_read_tag" onclick="set_message_read_state('{{ message.id|escapejs }}', true); return false;" href="#">
-		                        {% trans "Mark as read" %}
-		                    </a>   
-		                    <a class="mark_unread_tag" onclick="set_message_read_state('{{ message.id|escapejs }}', false); return false;" href="#">
-		                        {% trans "Mark as unread" %}
-		                    </a>                  
-		                </span>  
+			    
+			    <!--h3 class="{% if forloop.first %}firstTitle{% else %}otherTitle{% endif %}"><a href="#">{{ message.subject }}</a></h-->
+			    
+				{% for ctx, message in message_list reversed %}
 
-		                {% ifequal mode "all_queued_messages" %}
-		                <span class="message_operation">
-		                    <a onclick="force_email_sending('{{ message.id|escapejs }}', true); return false;" href="#">
-		                        {% trans "Force sending" %}
-		                    </a> 
-		                </span>  
-		                {% endifequal %}
-
-
-		                <table style="margin:2px 24px; line-height:0.6em;">
-
-		                {% if not remove_from %}
-		                <tr>
-		                <td><strong>{% trans "From:" %}</strong></td>
-		                <td style="color:{% usercolor message.sender_email %};">{{ message.sender_email }}</td>
-		                </tr>  
-		                {% endif %}
-
-		                {% if not remove_to %}
-		                <tr>
-		                <td><strong>{% trans "To:" %}</strong></td>
-		                <td>{{ message.recipient_emails|join:"; " }}</td>
-		                </tr>               
-		                {% endif %}
-
-		                <tr>
-		                <td><strong>Date:</strong></td>
-		                <td>{{ message.sent_at|utctolocal|date:"d N Y - H:i:s" }}</td>  {%comment %} IF NEEDED {% load humanize %}{{ event.time|utctolocal|naturalday:"d/N/Y" }}{% endcomment %}
-		                </tr>  
-		                </table>
-		
-		                <p style="color:{% usercolor message.sender_email %};">
-		                    <strong>
-		                        {% if user.is_master %}
-		                            <!-- only for game master -->
-		                            {% if message.intercepted %}
-		                                {% trans "[intercepted]" %} 
-		                            {% endif %}
-		                        {% endif %}
-		                        {{ message.subject }}
-		                    </strong>
-		                </p>
-		                <div style="color:{% usercolor message.sender_email %};">
-		                    {{ message.body|restructuredtext }}
-		                </div>
-
-		                {% if message.attachment %}
-		                    <br/>
-		                    {{ message.attachment|mediaplayer:"false" }}
-		                {% endif %}
-					<span class="message_operation">
-						<a href="{% game_view_url "rpgweb.views.compose_message" %}?message_id={{ message.id|urlencode }}"><img src="{{ STATIC_URL }}/media/images/fleche1BROKEN.gif" style="width:30px; height:30px;"></img></a>
-					</span>
-		            </div>
+					{% include "messaging/single_message.html" with ctx=ctx message=message is_first=forloop.first%}
+		            
 				{% endfor %}
 			</div>
 		{% endfor %}

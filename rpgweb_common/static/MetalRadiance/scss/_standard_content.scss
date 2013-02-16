@@ -202,15 +202,17 @@ blockquote, q, cite {
 }
 
 .scroll_realistic {
-    width: 30%;
+    //width: 30%;
+    padding: 0 10px;
     border-style: solid; 
     border-width: 142px 63px 124px 71px; 
     border-image: url('#{$IMGS}backgrounds/scroll_realistic.png') 142 63 124 71 fill stretch stretch;
 }
 
 .scroll_realistic_thin_ends {
-    width: 30%;
+    //width: 30%;
     min-width: 150px;
+    padding: 0 10px;
     border-style: solid; 
     border-width: 79px 45px 81px 39px;
     border-image: url('#{$IMGS}backgrounds/scroll_realistic_thin_ends.png') 79 45 81 39 fill stretch stretch;

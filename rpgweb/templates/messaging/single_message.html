@@ -1,66 +1,64 @@
-{% extends "base_one_column.html" %}
- 
 
 {% load i18n helpers markup %}  
 
+<div id="{{ message.id }}" class="{% if ctx.has_read %}email_read{% else %}email_unread{% endif %} {% if not is_first %}cover_previous{% endif %}">
+    <span class="message_operations">
+        <a {% if ctx.has_read %}style="display: none;"{% endif %} class="mark_read_tag" onclick="set_message_read_state('{{ message.id|escapejs }}', true); return false;" href="#">
+            {% trans "Mark as read" %}
+        </a>   
+        <a {% if not ctx.has_read %}style="display: none;"{% endif %} class="mark_unread_tag" onclick="set_message_read_state('{{ message.id|escapejs }}', false); return false;" href="#">
+            {% trans "Mark as unread" %}
+        </a>                  
 
-{% block content %}  
-    {{ block.super }}
+        {% ifequal mode "all_queued_messages" %} TODO FIXME
+            <a onclick="force_email_sending('{{ message.id|escapejs }}', true); return false;" href="#">
+                {% trans "Force sending" %}
+            </a> 
+        {% endifequal %}
     
-    {% if message %}
+    </span>  
+
+    <table style="margin:2px 24px; font-size:0.9em; line-height:0.9em;">
+
+        <tr>
+        <td><strong>{% trans "From:" %}</strong></td>
+        <td style="color:{% usercolor message.sender_email %};">{{ message.sender_email }}</td>
+        </tr>  
+    
+        <tr>
+        <td><strong>{% trans "To:" %}</strong></td>
+        <td>{{ message.recipient_emails|join:"; " }}</td>
+        </tr>               
+    
+        <tr>
+        <td><strong>Date:</strong></td>
+        <td>{{ message.sent_at|utctolocal|date:"d N Y - H:i:s" }}</td>  {%comment %} IF NEEDED {% load humanize %}{{ event.time|utctolocal|naturalday:"d/N/Y" }}{% endcomment %}
+        </tr>  
         
-        <div id="{{ message.id }}" class="email {% if user.username in message.has_read %}email_read{% else %}email_unread{% endif %}">
-            
-            <p style="text-align:center;"><strong>
-            {% if is_queued %}
-                {% trans "Message queued for delivery." %}
-            {% else %}
-                {% trans "Message delivered to recipient." %}
-            {% endif %}
-            </strong></p>
-            
-            <table style="margin:2px 20px; line-height:0.6em;">
-            
-            <tr>
-            <td><strong>{% trans "From:" %}</strong></td>
-            <td>{{ message.sender_email }}</td>
-            </tr>  
+    </table>
 
-            <tr>
-            <td><strong>{% trans "To:" %}</strong></td>
-            <td>{{ message.recipient_emails|join:"; " }}</td>
-            </tr>               
-            
-            <tr>
-            <td><strong>{% trans "Date:" %}</strong></td>
-            <td>{{ message.sent_at|utctolocal|date:"d N Y - H:i:s" }}</td>  {%comment %} IF NEEDED {% load humanize %}{{ event.time|utctolocal|naturalday:"d/N/Y" }}{% endcomment %}
-            </tr>  
-            </table>
-            
-   
-            <p>
-                <strong>
-                        {% if message.intercepted %}
-                            {% trans "[intercepted]" %}
-                        {% endif %}
-                    {{ message.subject }}
-                </strong>
-            </p>
-  
-  
-            <p>
-                {{ message.body|restructuredtext }}
-            </p>
-            
-            {% if message.attachment %}
-                </br>
-                {% filter mediaplayer:"false" %}{% game_file_url message.attachment %}{% endfilter %}
-            {% endif %}
-            
-        </div> 
+    
+    
+    <p style="color:{% usercolor message.sender_email %};">
+        <strong>
+            {% if ctx.was_intercepted %}{% trans "[intercepted]" %}{% endif %}
+            {{ message.subject }}
+        </strong>
+    </p>
+    <div style="color:{% usercolor message.sender_email %};">
+        {{ message.body|restructuredtext }}
+    </div>
 
+    {% if message.attachment %}
+    <br/>
+    <div class="center_content">
+        {% filter mediaplayer:"false" %}{% game_file_url message.attachment %}{% endfilter %}
+    </div>
     {% endif %}
     
-{% endblock %}
+    
+    <span class="conversation_operations">
+        <a href="{% game_view_url "rpgweb.views.compose_message" %}?message_id={{ message.id|urlencode }}"><img src="{{ STATIC_URL }}/media/images/fleche1BROKEN.gif" style="width:30px; height:30px;"></img></a>
+    </span>
 
-
+</div>

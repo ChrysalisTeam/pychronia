@@ -70,10 +70,18 @@ $error_color: red;
 
 
 .center {
-    text-align: center;
     margin-left: auto;
     margin-right: auto;
 }
+
+.center_content {
+    text-align: center;
+    & > * {
+      margin-left: auto;
+      margin-right: auto;
+    }
+}
+
 
 .left, .float_left, .float-left, .floatleft {
     float: left;
@@ -85,6 +93,10 @@ $error_color: red;
     clear: right; // so that they stack
 }
 
+
+.full_width {
+    width: 100% !important;
+}
 
 .bg_beige, .mixed {
     background-color: $notification_beige;

@@ -8,7 +8,6 @@
 
 {% usekwacro side_panel_start frame_class="mini_frame float_left" decos="3" %}
 
-    
     <ul class="minimenu">
         <li>Many stuffs here</li>
         <!--
@@ -26,17 +25,15 @@
         {% endif %}
         
         {% if user|has_permission:"manage_wiretaps" %}
-            <li class="{% ifequal mode "intercepted_messages" %}highlight{% endifequal %}"><a href="{% game_view_url "rpgweb.views.intercepted_messages" %}">{% trans "Intercepted" %}</a></li>
+            <li class="{% ifequal mode "intercepted_messages" %}highlight{% endifequal %}"><a href="{% game_view_url "rpgweb.views.conversation" %}">{% trans "Intercepted" %}</a></li>
         {% endif %}
         
         {% if user.is_master %}
             <li class="{% ifequal mode "messages_templates" %}highlight{% endifequal %}"><a href="{% game_view_url "rpgweb.views.messages_templates" %}">{% trans "Templates" %}</a></li>
         {% endif %}
         -->
-    
     </ul>
 
-    
 {% usekwacro side_panel_end %}
 
 {% endblock %}

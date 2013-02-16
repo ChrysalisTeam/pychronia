@@ -12,7 +12,13 @@
   src: url(img/fonts/kingthings_calligraphica_light.ttf);
 }
 .center {
+  margin-left: auto;
+  margin-right: auto;
+}
+.center_content {
   text-align: center;
+}
+.center_content > * {
   margin-left: auto;
   margin-right: auto;
 }
@@ -23,6 +29,9 @@
 .float-right, .float_right, .floatright, .right {
   float: right;
   clear: right;
+}
+.full_width {
+  width: 100% !important;
 }
 .bg_beige, .mixed {
   background-color: #a89d97;
@@ -274,14 +283,14 @@ blockquote, cite, q {
   color: #8e0d0d;
 }
 .scroll_realistic {
-  width: 30%;
+  padding: 0 10px;
   border-style: solid;
   border-width: 142px 63px 124px 71px;
   border-image: url(img/backgrounds/scroll_realistic.png) 142 63 124 71 fill stretch stretch;
 }
 .hentry, .scroll_realistic_thin_ends {
-  width: 30%;
   min-width: 150px;
+  padding: 0 10px;
   border-style: solid;
   border-width: 79px 45px 81px 39px;
   border-image: url(img/backgrounds/scroll_realistic_thin_ends.png) 79 45 81 39 fill stretch stretch;
@@ -391,6 +400,30 @@ table.realtable thead th:first-child {
 }
 table.realtable thead th:last-child {
   border-width: 0px 0px 1px 1px;
+}
+.email_unread {
+  position: relative;
+  min-width: 150px;
+  padding: 0 10px;
+  border-style: solid;
+  border-width: 79px 45px 81px 39px;
+  border-image: url(img/backgrounds/scroll_realistic_thin_ends.png) 79 45 81 39 fill stretch stretch;
+}
+.email_read {
+  position: relative;
+  min-width: 150px;
+  padding: 0 10px;
+  border-style: solid;
+  border-width: 79px 45px 81px 39px;
+  border-image: url(img/backgrounds/scroll_realistic_thin_ends_disabled.png) 79 45 81 39 fill stretch stretch;
+}
+.message_operations {
+  position: absolute;
+  top: -60px;
+  left: 5px;
+}
+.cover_previous {
+  margin-top: -60px;
 }
 .borderless, table.borderless td, table.borderless th {
   border: 0;
@@ -988,7 +1021,6 @@ body:after {
   padding: 0;
   height: 35px;
   line-height: 31px;
-  display: none;
   position: relative;
 }
 #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu > li {
@@ -1038,6 +1070,7 @@ body:after {
   color: #cccccc;
 }
 #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu > li ul {
+  display: none;
   margin: 0;
   padding: 0;
   border-style: solid;

@@ -655,6 +655,11 @@ class PlayerAuthentication(BaseDataManager):
         return (username == self.anonymous_login)
 
     @readonly_method
+    def is_authenticated(self, username=CURRENT_USER):
+        username = self._resolve_username(username)
+        return (username != self.anonymous_login)
+
+    @readonly_method
     def is_master(self, username=CURRENT_USER):
         username = self._resolve_username(username)
         return (username == self.master_login)
@@ -1407,11 +1412,11 @@ class TextMessagingCore(BaseDataManager):
 
     @readonly_method
     def get_all_queued_messages(self):
-        return self.messaging_data["messages_queued"]
+        return self.messaging_data["messages_queued"][:]
 
     @readonly_method
     def get_all_dispatched_messages(self):
-        return self.messaging_data["messages_dispatched"]
+        return self.messaging_data["messages_dispatched"][:]
 
 
     @readonly_method
@@ -1791,7 +1796,7 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
         for recipient_email in msg["recipient_emails"]:
             recipient_username = self.get_character_or_none_from_email(recipient_email)
             if recipient_username:
-                visibilities[recipient_username] = VISIBILITY_REASONS.recipient
+                visibilities[recipient_username] = VISIBILITY_REASONS.recipient # might override "sender" status for that user
             else:
                 visibilities[self.master_login] = VISIBILITY_REASONS.recipient # might occur several times, we don't care
 
@@ -1926,7 +1931,6 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
     def get_received_messages(self, username=CURRENT_USER):
         username = self._resolve_username(username)
         res = self._get_messages_visible_for_reason(reason=VISIBILITY_REASONS.recipient, username=username)
-        print(">>>>>>>>>>", res)
         return res
 
     @transaction_watcher(ensure_game_started=False)
@@ -1942,11 +1946,33 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
 
     @transaction_watcher(ensure_game_started=False)
     def get_user_related_messages(self, username=CURRENT_USER):
-        # for game master, actually returns all emails sent to external contacts
+        """
+        For game master, actually returns all emails sent to external contacts.
+        Ptreserves msg order by date ascending.
+        """
         username = self._resolve_username(username)
         all_messages = self.get_all_dispatched_messages()
-        print("@@@@@@@@@@", all_messages)
         return [msg for msg in all_messages if username in msg["visible_by"]]
+
+
+    @readonly_method
+    def sort_messages_by_conversations(self, messages):
+        """
+        Returns groups of conversation-relation messages, sorted by "most recent first". 
+        The first groups contain the conversations which have been updated most recently.
+        
+        Returns non-ZODB structures!
+        """
+        del self # static method actually
+        assert sorted(messages, key=lambda msg: msg["sent_at"]) == messages # msgs must be naturally well sorted first, in DATE ASC order
+
+        groups = OrderedDict()
+        for msg in reversed(messages):
+            groups.setdefault(msg["group_id"], [])
+            groups[msg["group_id"]].append(msg)
+
+        return groups.values()
+
 
     @readonly_method
     def get_unread_messages_count(self, username=CURRENT_USER):
@@ -2078,7 +2104,8 @@ class TextMessagingInterception(BaseDataManager):
                                           for target in self.get_wiretapping_targets(username)]
             if (msg["sender_email"] in wiretapping_targets_emails or
                any(True for recipient in msg["recipient_emails"] if recipient in wiretapping_targets_emails)):
-                msg["visible_by"][username] = VISIBILITY_REASONS.interceptor # that character will see the message
+                if username not in msg["visible_by"]: # if already sender or recipient, we skip interception
+                    msg["visible_by"][username] = VISIBILITY_REASONS.interceptor # that character will see the message
 
         super(TextMessagingInterception, self)._immediately_dispatch_message(msg)
 

@@ -7,17 +7,17 @@ ul.dropmenu {
 	padding: 0; 
 	height: 35px;
 	line-height: 31px;
-	
-    display: none; // cosmetic
-    position: relative;
+  position: relative;
 
       
     /* 		All items 			*/
     
 
     & > li {
+      
+        display: inline; 
         
-        a, span { // every desceendant, too
+        a, span { // every descendant, too
             
             @include header_common;
             
@@ -51,9 +51,6 @@ ul.dropmenu {
          
 
 	    /* specifically for top-level links */
-	
-        display: inline; 
-       
        
         & {
             border-width: 0;
@@ -92,6 +89,7 @@ ul.dropmenu {
         
         ul {
             // width: 250px; // optional but recommended
+            display: none; // cosmetic
             margin: 0;
             padding: 0;
             border-style: solid; 

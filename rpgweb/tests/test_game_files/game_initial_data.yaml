@@ -411,6 +411,7 @@ messaging:
     
     
         - id: instructions_oracle
+          group_id: "A111"
           sender_email: judicators2@acharis.com
           recipient_emails: ["guy2", "othercontact@anything.fr"]
           subject: "Ordres de Missions"
@@ -418,6 +419,15 @@ messaging:
           sent_at: -8000
           body: >
             Salazur, l’intimité médiumnique que vous avez développée avec le monde invisible va nous être plus que vitale.
+    
+        - id: instructions_oracle_bis
+          group_id: "A111"
+          sender_email: judicators2@acharis.com
+          recipient_emails: ["guy2", "othercontact@anything.fr"]
+          subject: "Ordres de Missions 2"
+          sent_at: -7000
+          body: >
+            Rien à ajouter...
     
     
     
