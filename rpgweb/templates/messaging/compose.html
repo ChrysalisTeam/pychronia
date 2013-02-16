@@ -11,19 +11,37 @@
 {% addtoblock "css" %}
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}libs/markitup/skins/simple/style.css" />
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}libs/markitup/sets/rest/style.css" />
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}libs/select2/select2.css" />
 {% endaddtoblock %}
 
-    
 {% addtoblock "js" %}
 <script type="text/javascript" src="{{ STATIC_URL }}libs/markitup/jquery.markitup.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL }}libs/markitup/sets/rest/set.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}libs/select2/select2.js"></script>
 {% endaddtoblock %}
 
 {% addtoblock "onload_js" %}
 mySettings.markupSet = mySettings["markupSet"].slice(0, -3); // remove code and preview system ATM
 mySettings.resizeHandle = false; // we can't remove autohandle of browser though
 $("#id_body").markItUp(mySettings); // mySettings comes from /markitup/sets/rest/set.js
+
+
+ $("#jjj").select2({
+    //multiple: true,
+    //createSearchChoice: function(term) {return {id:}},
+    width: "90%", // off/element/copy/resolve/<value>
+    placeholder: "Select a State",
+    allowClear: true,
+    //minimumInputLength: 0,
+    //maximumSelectionSize: null,
+    //data:[{id:0,text:'enhancement'},{id:1,text:'bug'},{id:2,text:'duplicate'},{id:3,text:'invalid'},{id:4,text:'wontfix'}],
+    maximumInputLength: 80,
+    tags: ["hi", "how", "ji"],
+    tokenSeparators: [",", ";", " "]
+ });
+ 
 {% endaddtoblock %}
+
 
 {% endblock %}
 
@@ -33,8 +51,13 @@ $("#id_body").markItUp(mySettings); // mySettings comes from /markitup/sets/rest
 
 {% block content %}  
 
-    {{ block.super }}
-    
+<input type='hidden' id="jjj"/><br/>
+
+<select id="e1" >
+<option value="AL">Alabama</option>
+<option value="WY">Wyoming</option>
+</select>
+
         
     {% if message_form %}
         <p>

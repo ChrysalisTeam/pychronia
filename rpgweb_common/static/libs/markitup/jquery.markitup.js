@@ -55,7 +55,7 @@
 					markupSet:			[	{ /* set */ } ]
 				};
 		$.extend(options, settings, extraSettings);
-		console.log(options);
+
 		// compute markItUp! path
 		if (!options.root) {
 			$('script').each(function(a, tag) {

@@ -363,7 +363,7 @@ class MessageComposeForm(forms.Form):
             self.fields["attachment"].widget.attrs["selectBoxOptions"] = files_str
             self.fields["attachment"].widget.attrs["autocomplete"] = "off"
         except:
-            # we skip this selectBoxOptions attribute, so the input field won't turn into a combobox
+            # we skip this selectBoxOptions attribute, so the input field won't turn into a combobox FIXME DEPRECATED
             logging.error("Error while gathering %s's personal files" % user.username , exc_info=True)
 
 
