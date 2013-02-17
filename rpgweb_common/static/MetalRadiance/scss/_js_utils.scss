@@ -1,6 +1,47 @@
 
 @import "_standard_content.scss"
- 
+
+.jnotify-container {
+    max-height: 400px;
+    min-width: 200px;
+    width: auto;
+    max-width: 550px;
+    box-sizing: border-box;
+    
+    .jnotify-notification {
+        // margin-bottom: 5px;
+    }
+  
+    .jnotify-notification .jnotify-background {
+        box-sizing: border-box;
+        border: 2px solid $dark_yellow;
+        border-top-left-radius: 30px 10px;
+        border-top-right-radius: 30px 10px;
+        border-bottom-right-radius: 30px 10px;
+        border-bottom-left-radius: 30px 10px;
+        opacity: 0.97;
+        background-image: url('#{$IMGS}backgrounds/metal_bump_semitransparent.png');
+    }
+    
+    .jnotify-notification-warning .jnotify-close, 
+    .jnotify-notification-warning .jnotify-message {
+        color: #A9911C !important; // FIX - was unreadable before
+    }
+
+    /* notification type == "error" */
+    .jnotify-notification-success .jnotify-background {
+      background-color: #50B14F; 
+    }
+    
+    .jnotify-notification-success .jnotify-close,
+    .jnotify-notification-success .jnotify-message {
+      color: #008000 !important;
+    }
+}
+
+
+}
+
 
 .fancybox-default {
     z-index: 100000 !important; // we must be in front of dropdown menus

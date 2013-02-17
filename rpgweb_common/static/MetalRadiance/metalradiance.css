@@ -1,4 +1,5 @@
 @charset "UTF-8";
+};
 @font-face {
   font-family: black_chancery;
   src: url(img/fonts/black_chancery.ttf);
@@ -736,6 +737,34 @@ table.footnote {
 }
 .entry-image img {
   margin: 1px 10px;
+}
+.jnotify-container {
+  max-height: 400px;
+  min-width: 200px;
+  width: auto;
+  max-width: 550px;
+  box-sizing: border-box;
+}
+.jnotify-container .jnotify-notification .jnotify-background {
+  box-sizing: border-box;
+  border: 2px solid #775f13;
+  border-top-left-radius: 30px 10px;
+  border-top-right-radius: 30px 10px;
+  border-bottom-right-radius: 30px 10px;
+  border-bottom-left-radius: 30px 10px;
+  opacity: 0.97;
+  background-image: url(img/backgrounds/metal_bump_semitransparent.png);
+}
+.jnotify-container .jnotify-notification-warning .jnotify-close,
+.jnotify-container .jnotify-notification-warning .jnotify-message {
+  color: #a9911c !important;
+}
+.jnotify-container .jnotify-notification-success .jnotify-background {
+  background-color: #50B14F;
+}
+.jnotify-container .jnotify-notification-success .jnotify-close,
+.jnotify-container .jnotify-notification-success .jnotify-message {
+  color: #008000 !important;
 }
 .fancybox-default {
   z-index: 100000 !important;
