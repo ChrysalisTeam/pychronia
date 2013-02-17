@@ -16,12 +16,13 @@ from django.utils.http import urlencode
 from django.core.serializers import serialize
 from django.db.models.query import QuerySet
 from django.utils import simplejson
+from django.template.defaultfilters import stringfilter
+
 import urllib
 from textwrap import dedent
 from easy_thumbnails.templatetags.thumbnail import thumbnail_url
 from easy_thumbnails.files import get_thumbnailer
 from rpgweb.storage import protected_game_file_system_storage
-
 
 register = django.template.Library() # IMPORTANT, module-level object used by templates !
 
@@ -177,6 +178,14 @@ def static_page(context, article_name, initial_header_level=None):
     return _enrich_text(request.datamanager, content, initial_header_level=initial_header_level, excluded_link=article_name)
 
 
+
+
+def _do_corrupt_string(value):
+    return ''.join(['&#%s;<span class="obfusk">%s</span>' % (ord(char), random.randint(10, 100)) for char in value]) # html entities
+@stringfilter
+def corrupt_string(value):
+    return mark_safe(_do_corrupt_string(value))
+register.filter('corrupt_string', corrupt_string)
 
 ''' ???
 def threefirstletters(value):

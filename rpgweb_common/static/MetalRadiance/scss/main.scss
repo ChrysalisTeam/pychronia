@@ -65,11 +65,17 @@ body {
     &:after
     {
     // put here all images to PRELOAD (eg. used in dynamic menus and hover effects)
-    content: url('#{$IMGS}backgrounds/tube_gold_small.png') 
-             url('#{$IMGS}backgrounds/tube_silver_small.png')
-             url('#{$IMGS}backgrounds/tube_bronze_small.png')
-             url('#{$IMGS}backgrounds/dropdown_menu.png'),
-             url("#{$IMGS}backgrounds/notification_panel_decorations.png");
+    content: " ";
+    background: url('#{$IMGS}backgrounds/tube_gold_small.png'),
+               url('#{$IMGS}backgrounds/tube_silver_small.png'),
+               url('#{$IMGS}backgrounds/tube_bronze_small.png'),
+               url('#{$IMGS}backgrounds/dropdown_menu.png'),
+               url("#{$IMGS}backgrounds/notification_panel_decorations.png"),
+               url("img/backgrounds/antique_large_decorated_frame.png"),
+               url("img/backgrounds/ricepaper-hue-orange.jpg"),
+               url('#{$IMGS}backgrounds/decorated_golden_frame.png'),
+               url('#{$IMGS}backgrounds/ricepaper-hue-gold.jpg');
+               
     display: none;
     }
 }
@@ -412,11 +418,20 @@ body {
         margin: 0;
         display: inline-block;
         vertical-align:top; // important to avoid mess with vertical alignment
-        height: 55px;
+        text-align: left;
+        height: 51px;
         min-width: 40px;
-        max-width: 250px;
-        padding: 38px 0px 38px;
-        overflow: hidden; // idem...
+        max-width: 300px;
+        padding: 40px 0px 40px;
+        overflow: visible; // idem...
+        background-origin: padding-box; //padding-box|border-box
+        background-clip: padding-box;
+        background-position: center top; 
+        position: relative;
+        
+        a {
+          color: $alt_text_color !important;
+        }
     }
     
     #up_footer_border_left {
@@ -436,10 +451,7 @@ body {
     #up_footer_border_center {
         @include up_footer_common;
         background-image: url('#{$IMGS}backgrounds/up_footer_center.png');
-        background-origin: padding-box; //padding-box|border-box
-        background-clip: padding-box;
         width: 225px;
-        position: relative;
     }
     
     .footer_center_img {
@@ -453,15 +465,25 @@ body {
 
 #low_footer_wrapper {
 
+    position: relative;
     clear: both;
     width: 100%;
     text-align: center;
-    color: $alt_text_color;
-    
+
+
     #low_footer_border {
+      
+        a {
+            color: $alt_text_color !important;
+            text-decoration: none;
+        }
+        
+        color: $alt_text_color;
+        font-size: 22px;
+        line-height: 26px;
     
-        position: relative;
-        padding: 12px 0 16px;
+        position:relative;
+        padding: 12px 4px 16px;
         min-width: 30px;
         height: 30px;
         display: inline-block;
@@ -492,6 +514,22 @@ body {
 
 
 
+#bug_report_panel {
+    //display: none;
+    z-index: 10000;
+    position: fixed;
+    left: 50%;
+    width: 600px;
+    margin-left: -300px;
+    top: 50px;
+    background-image: url('#{$IMGS}backgrounds/ricepaper-hue-gold.jpg');
+    color: $text_color;
+    
+    .bug_report_panel_content {
+      min-height: 200px; // single child expected
+      padding: 5px 20px 20px;
+    }
+}
 
 
 

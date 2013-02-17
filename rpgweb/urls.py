@@ -24,6 +24,8 @@ web_game_urlpatterns = patterns('rpgweb.views',
     url(r'^FAIL_TEST/$', 'FAIL_TEST'),
     url(r'^MEDIA_TEST/$', 'MEDIA_TEST'), # to check that all audio/video formats are well read by web browser!
 
+    url(r'^bug_report/$', 'bug_report_treatment'),
+    
 
     url(r'^$', 'homepage', name="rpgweb-homepage"),
 

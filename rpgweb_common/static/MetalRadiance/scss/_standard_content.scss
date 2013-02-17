@@ -249,6 +249,13 @@ blockquote, q, cite {
     margin: -5px;
 }
 
+.decorated_golden_frame {
+    border-style: solid; 
+    border-width: 25px 27px 25px; 
+    border-image: url('#{$IMGS}backgrounds/decorated_golden_frame.png') 25 27 25 fill stretch;
+    margin: -5px;
+}
+
 .beige_paper {
     padding: 5px 5px;
     background-image: url('#{$IMGS}backgrounds/seamless_paper_beige.jpg');
@@ -300,11 +307,11 @@ blockquote, q, cite {
 table.realtable {
     box-sizing: border-box; // beware!
     border-collapse: collapse;
-	margin: 15px 0;
+	  margin: 15px 0;
     padding:0px;
-	width:100%;
-	box-shadow: 5px 5px 3px #888888;
-	border:1px solid #000000;
+	  width:100%;
+	  box-shadow: 5px 5px 3px #888888;
+	  border:1px solid #000000;
     
     tr:nth-child(odd){ background-color:#eed892; }
     tr:nth-child(even) { background-color:#f1d875; }

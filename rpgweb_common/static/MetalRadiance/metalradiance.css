@@ -324,6 +324,12 @@ blockquote, cite, q {
   border-image: url(img/backgrounds/antique_large_decorated_frame.png) 70 80 70 80 fill stretch;
   margin: -5px;
 }
+.decorated_golden_frame {
+  border-style: solid;
+  border-width: 25px 27px 25px;
+  border-image: url(img/backgrounds/decorated_golden_frame.png) 25 27 25 fill stretch;
+  margin: -5px;
+}
 .beige_paper {
   padding: 5px 5px;
   background-image: url(img/backgrounds/seamless_paper_beige.jpg);
@@ -879,8 +885,16 @@ body {
   text-overflow: ellipsis;
 }
 body:after {
-  content: url(img/backgrounds/tube_gold_small.png) url(img/backgrounds/tube_silver_small.png) url(img/backgrounds/tube_bronze_small.png) url(img/backgrounds/dropdown_menu.png),
-    url("img/backgrounds/notification_panel_decorations.png");
+  content: " ";
+  background: url(img/backgrounds/tube_gold_small.png),
+    url(img/backgrounds/tube_silver_small.png),
+    url(img/backgrounds/tube_bronze_small.png),
+    url(img/backgrounds/dropdown_menu.png),
+    url("img/backgrounds/notification_panel_decorations.png"),
+    url("img/backgrounds/antique_large_decorated_frame.png"),
+    url("img/backgrounds/ricepaper-hue-orange.jpg"),
+    url(img/backgrounds/decorated_golden_frame.png),
+    url(img/backgrounds/ricepaper-hue-gold.jpg);
   display: none;
 }
 #full_header {
@@ -1181,42 +1195,63 @@ body:after {
   margin: 0;
   display: inline-block;
   vertical-align: top;
-  height: 55px;
+  text-align: left;
+  height: 51px;
   min-width: 40px;
-  max-width: 250px;
-  padding: 38px 0px 38px;
-  overflow: hidden;
+  max-width: 300px;
+  padding: 40px 0px 40px;
+  overflow: visible;
+  background-origin: padding-box;
+  background-clip: padding-box;
+  background-position: center top;
+  position: relative;
   border-style: solid;
   border-width: 0px 0px 0px 121px;
   border-image: url(img/backgrounds/up_footer_left.png) 0 0 0 121 fill round stretch;
+}
+#up_footer_wrapper #up_footer_border_left a {
+  color: #ffffff !important;
 }
 #up_footer_wrapper #up_footer_border_right {
   margin: 0;
   display: inline-block;
   vertical-align: top;
-  height: 55px;
+  text-align: left;
+  height: 51px;
   min-width: 40px;
-  max-width: 250px;
-  padding: 38px 0px 38px;
-  overflow: hidden;
+  max-width: 300px;
+  padding: 40px 0px 40px;
+  overflow: visible;
+  background-origin: padding-box;
+  background-clip: padding-box;
+  background-position: center top;
+  position: relative;
   border-style: solid;
   border-width: 0px 121px 0px 0px;
   border-image: url(img/backgrounds/up_footer_right.png) 0 121 0 0 fill round stretch;
+}
+#up_footer_wrapper #up_footer_border_right a {
+  color: #ffffff !important;
 }
 #up_footer_wrapper #up_footer_border_center {
   margin: 0;
   display: inline-block;
   vertical-align: top;
-  height: 55px;
+  text-align: left;
+  height: 51px;
   min-width: 40px;
-  max-width: 250px;
-  padding: 38px 0px 38px;
-  overflow: hidden;
-  background-image: url(img/backgrounds/up_footer_center.png);
+  max-width: 300px;
+  padding: 40px 0px 40px;
+  overflow: visible;
   background-origin: padding-box;
   background-clip: padding-box;
-  width: 225px;
+  background-position: center top;
   position: relative;
+  background-image: url(img/backgrounds/up_footer_center.png);
+  width: 225px;
+}
+#up_footer_wrapper #up_footer_border_center a {
+  color: #ffffff !important;
 }
 #up_footer_wrapper .footer_center_img {
   display: block;
@@ -1225,14 +1260,17 @@ body:after {
   top: 10px;
 }
 #low_footer_wrapper {
+  position: relative;
   clear: both;
   width: 100%;
   text-align: center;
-  color: #ffffff;
 }
 #low_footer_wrapper #low_footer_border {
+  color: #ffffff;
+  font-size: 22px;
+  line-height: 26px;
   position: relative;
-  padding: 12px 0 16px;
+  padding: 12px 4px 16px;
   min-width: 30px;
   height: 30px;
   display: inline-block;
@@ -1241,6 +1279,10 @@ body:after {
   border-width: 0px 300px 0px 304px;
   border-image: url(img/backgrounds/low_footer_border.png) 0 300 0 304 fill stretch;
   overflow: visible;
+}
+#low_footer_wrapper #low_footer_border a {
+  color: #ffffff !important;
+  text-decoration: none;
 }
 #low_footer_wrapper #low_footer_border:before {
   top: -6px;
@@ -1255,5 +1297,19 @@ body:after {
   content: url(img/decorations/low_footer_deco_right.png);
   padding: 0;
   position: absolute;
+}
+#bug_report_panel {
+  z-index: 10000;
+  position: fixed;
+  left: 50%;
+  width: 600px;
+  margin-left: -300px;
+  top: 50px;
+  background-image: url(img/backgrounds/ricepaper-hue-gold.jpg);
+  color: #000000;
+}
+#bug_report_panel .bug_report_panel_content {
+  min-height: 200px;
+  padding: 5px 20px 20px;
 }
 

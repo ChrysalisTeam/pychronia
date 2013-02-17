@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import re
 from rpgweb_common.common_settings import *
 
 
@@ -54,10 +55,14 @@ logging.getLogger("txn").setLevel(logging.WARNING) # ZODB transactions
 TEMPLATE_CONTEXT_PROCESSORS = TEMPLATE_CONTEXT_PROCESSORS + ("rpgweb.context_processors.rpgweb_template_context",)
 
 
+IGNORABLE_404_URLS = (# ONLY SOON IN 1.5
+    re.compile(r'\.(php|cgi)$'),
+)
 
 
 MIDDLEWARE_CLASSES = (
 #'sessionprofile.middleware.SessionProfileMiddleware', NEEDED FOR PHPBB here too ?
+#'django.middleware.common.BrokenLinkEmailsMiddleware', ONLY SOON IN 1.5
 'django.contrib.sessions.middleware.SessionMiddleware',
 'django.contrib.messages.middleware.MessageMiddleware',
 #'localeurl.middleware.LocaleURLMiddleware',

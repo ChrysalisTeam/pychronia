@@ -18,8 +18,7 @@ def rpgweb_template_context(request):
 
         datamanager = request.datamanager
 
-        online_users = [datamanager.get_official_name(username)
-                        for username in datamanager.get_online_users()]
+        online_users = datamanager.get_online_users() # usernames are fine // to test: (datamanager.get_character_usernames() * 2)
         menus = menus_module.generate_filtered_menu(request)
 
         view_name = request.processed_view.NAME # thanks to our middleware

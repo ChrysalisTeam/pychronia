@@ -131,8 +131,29 @@ def view_help_page(request, keyword, template_name='generic_operations/help_page
                     })
 
 
+@register_view(access=UserAccess.anonymous, always_available=True)
+def bug_report_treatment(request):
+    report_data = request.REQUEST.get("report_data", "[no report_data]")
+    location = request.REQUEST.get("report_data", "[no location]")
+    """
+    from django.views import debug
+    res = debug.technical_500_response(request, None, None, None)
+    print (res.content)
+    """
+    message = dedent("""
+                    Bug report submitted by player %(username)r.
+                    
+                    URL: %(location)r
+                    
+                    Message: %(report_data)r
+                    """) % dict(username=request.datamanager.user.username,
+                                location=location,
+                                report_data=report_data)
 
-
+    logging.getLogger("django.request").critical(message) # will also send email with all necessary info
+    
+    return HttpResponse("OK - bug reported")
+    
 
 
 

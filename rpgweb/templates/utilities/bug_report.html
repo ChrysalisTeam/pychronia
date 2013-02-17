@@ -1,0 +1,28 @@
+{% load helpers i18n %}
+
+
+<div id="bug_report_panel" style="display: none;">
+    <div class="bug_report_panel_content decorated_golden_frame clearfix">
+        <h2>{% trans "Bug Report" %}</h2>
+        
+        <p>
+        {% blocktrans %}
+        Please use this form to describe the bug you've encountered on our portal.
+        {% endblocktrans %}
+        </p>
+        <p>
+        {% blocktrans %}
+        If this form doesn't work, then please directly send a real email to the following address:
+        {% endblocktrans %}
+        <b>{{ "myeimai@sfr.com"|corrupt_string }}</b>
+        </p>
+
+        <textarea id="bug_report_textarea" rows="8" cols="60"/></textarea>
+        
+        <div style="margin: 10px 40px 10px;">
+        <input id="abort_bug_report" type="button" style="float: left;" value="{% trans "Annuler" %}" onclick="$('#bug_report_panel').css('display', 'none');" />
+        <input id="submit_bug_report" type="button" style="float: right;" value="{% trans "Envoyer" %}" onclick="submit_report_data(); return False;"/>
+        </div>
+        
+    </div>
+</div>

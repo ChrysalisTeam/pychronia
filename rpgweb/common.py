@@ -11,8 +11,8 @@ from decorator import decorator
 from functools import partial
 from textwrap import dedent
 
-
 from odict import odict as OrderedDict
+from rpgweb.utilities.pafo import printObject
 
 import yaml, pyparsing
 

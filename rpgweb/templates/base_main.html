@@ -43,6 +43,27 @@
                     'width=400,height=200,directories=no,location=no,menubar=no,resizeable=yes,scrollbars=no,status=no,titlebar=no,toolbar=no',
                     false); // new history entry
     }
+    
+    function display_bug_report_panel(){
+        $('#bug_report_panel .obfusk').css('display', 'none'); // definitively remove antispam markers
+        $('#bug_report_panel').css('display', 'block');
+    }
+    
+    function submit_report_data(){   
+        var report_data = $("#bug_report_textarea").val().trim()
+        
+        if (report_data.length < 10){
+            // FIXME - add jnotify call here!!!
+        }else{
+         $.post("{% game_view_url "rpgweb.views.bug_report_treatment" %}",
+                   { report_data: report_data,
+                     location: window.location.toString() }, 
+                   function(answer) {$('#bug_report_panel').css('display', 'none');}
+                   // FIXME - add jnotify call here!!!
+         );   
+         }
+    }
+    
 {% endaddtoblock %}
 
 
@@ -212,6 +233,7 @@
     {% endif %}
     {% endcomment %}
     
+    {% include "utilities/bug_report.html" %}
 {% endblock %} 
 
 
@@ -348,34 +370,47 @@
    
 
 {% block up_footer_left_content %}
-        <b><i>
+
         {% if online_users %}
             {% blocktrans count online_users|length as counter %}
                 Online user:
             {% plural %}
                 Online users:
             {% endblocktrans %}
-            {{ online_users|join:", " }}
+            <i>{{ online_users|join:", " }}</i>
         {% else %}
-            {% trans "No users currently online." %} 
+            <i>{% trans "No users currently online." %}</i>
         {% endif %}
-        </i></b>
+
+ 
+        
 {% endblock %}
 
 
 {% block up_footer_right_content %} 
-        <b>{% trans "Pangea Cybernetics Network" %}</b><br>
+   
+        {% trans "Interface : " %}
         
-        <form id="change_language_fr" style="display:inline; vertical-align: middle;" method="POST" action="{% url django.views.i18n.set_language %}">
+        <form id="change_language_fr" style="display:inline;" method="POST" action="{% url django.views.i18n.set_language %}">
         <input type="hidden" name="language" value="fr"/>
-        <a href="javascript:document.getElementById('change_language_fr').submit()"><img src="{{ STATIC_URL }}img/flags/France.jpg"/></a>
+        <a href="javascript:document.getElementById('change_language_fr').submit()"><img src="{{ STATIC_URL }}img/flags/France.jpg" style="vertical-align: middle"/></a>
         </form> 
         
-        <form id="change_language_en" style="display:inline; vertical-align: middle;" method="POST" action="{% url django.views.i18n.set_language %}">
+        <form id="change_language_en" style="display:inline;" method="POST" action="{% url django.views.i18n.set_language %}">
         <input type="hidden" name="language" value="en"/>
-        <a href="javascript:document.getElementById('change_language_en').submit()"><img src="{{ STATIC_URL }}img/flags/UK.jpg"/></a>
-        </form>         
+        <a href="javascript:document.getElementById('change_language_en').submit()"><img src="{{ STATIC_URL }}img/flags/UK.jpg" style="vertical-align: middle"/></a>
+        </form>    <br/>
+        
+        <b><a href="{{ mobile_site_url }}">{% trans "Mobile Version" %}</a></b>
 {% endblock %}
+
+
+{% block low_footer_content %} 
+    <a id="bug_report_link" href="#" onclick="display_bug_report_panel(); return false;" >{% trans "Report Bug" %}</a>
+{% endblock %}
+
+
+
 
 
 
