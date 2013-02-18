@@ -11,6 +11,16 @@ from rpgweb.utilities import mediaplayers
 
 
 
+@register_view(access=UserAccess.anonymous, always_available=True)
+def view_world_map(request, template_name='info/world_map.html'):
+    
+    return render(request,
+                  template_name,
+                    {
+                     'page_title': _("Strategic Map"),
+                    })
+
+    
 
 
 @register_view(access=UserAccess.anonymous, always_available=True)

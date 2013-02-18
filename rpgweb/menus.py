@@ -102,6 +102,7 @@ def _generate_web_menu(request, menu_entry_generator):
                          menu_entry(_(u"Radio Player"), views.listen_to_webradio),
 
                          menu_entry(_(u"__ENCRYPTED__"), views.encrypted_folder, view_kwargs=dict(folder="guy2_report")),
+                         menu_entry(_(u"World Map"), views.view_world_map),
                       )),
 
             menu_entry(_(u"Messaging"), views.homepage, # FIXME

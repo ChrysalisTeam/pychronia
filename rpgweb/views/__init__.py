@@ -37,7 +37,7 @@ from .auction_views import (_build_display_data_from_viewer_settings, homepage, 
 from .info_views import (instructions, view_encyclopedia,
                          webradio_popup, listen_to_webradio, get_radio_xml_conf, listen_to_audio_messages,
                          ajax_get_next_audio_message, ajax_notify_audio_message_finished,
-                         personal_folder, view_media, encrypted_folder)
+                         personal_folder, view_media, encrypted_folder, view_world_map)
 
 from .profile_views import login, logout, secret_question, character_profile, friendship_management
 

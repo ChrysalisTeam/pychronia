@@ -738,6 +738,9 @@ table.footnote {
 .entry-image img {
   margin: 1px 10px;
 }
+.zoomable > img {
+  border: 5px ridge #775f13;
+}
 .jnotify-container {
   max-height: 400px;
   min-width: 200px;
@@ -1142,7 +1145,7 @@ body:after {
   width: 960px;
   margin: -10px auto 2px;
   padding: 10px;
-  overflow: hidden;
+  overflow: visible;
 }
 #full_content .mini_frame {
   position: relative;

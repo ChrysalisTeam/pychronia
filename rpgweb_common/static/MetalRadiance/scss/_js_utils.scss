@@ -1,6 +1,11 @@
 
 @import "_standard_content.scss"
 
+.zoomable > img {
+    border: 5px ridge $dark_yellow;
+}
+
+
 .jnotify-container {
     max-height: 400px;
     min-width: 200px;

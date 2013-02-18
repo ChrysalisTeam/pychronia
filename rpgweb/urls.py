@@ -35,6 +35,7 @@ web_game_urlpatterns = patterns('rpgweb.views',
 
     url(r'^instructions/$', 'instructions'), # FIXME - deprecated ?
 
+    url(r'^world_map/$', 'view_world_map'),
     #(r'^radio_messages/$', 'personal_radio_messages_listing'),
 
     url(r'^view_media/$', 'view_media'),

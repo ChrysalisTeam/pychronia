@@ -17,6 +17,7 @@
 {% addtoblock "css" %}
     <link href="{{ STATIC_URL }}libs/jquery-ui/ui.dropdownchecklist.css" rel="stylesheet" type="text/css" />
     <link href="{{ STATIC_URL }}libs/jnotify/css/jquery.jnotify-alt.css" rel="stylesheet" type="text/css" />
+    <link href="{{ STATIC_URL }}libs/zoomy/zoomy.css" rel="stylesheet" type="text/css" />
 {% endaddtoblock %}
 
 
@@ -38,6 +39,8 @@
     <script src="{{ STATIC_URL }}libs/videoplayers/wmvplayer/wmvplayer.js" type="text/javascript"></script>
     <!--script src="{{ MEDIA_URL }}videoplayers/wmvplayer/silverlight.js" type="text/javascript"></script-->
 
+    <script src="{{ STATIC_URL }}libs/zoomy/zoomy.js" type="text/javascript"></script>
+    
     <script src="{{ STATIC_URL }}libs/utilities.js" type="text/javascript"></script>
     
 {% endaddtoblock %}
@@ -80,6 +83,21 @@
 
 {% addtoblock "onload_js" %}
 
+        zoomy_options = {
+              zoomSize    : 350,
+              round       : true,
+              glare       : true,
+              clickable   : false,
+              attr        : 'href', // we would use rel or data-x instead
+              border      : '5px solid #775F13',
+              zoomInit    : null,  //callback for when zoom initializes
+              zoomStart   : null, // callback for when zoom starts
+              zoomStop    : null // callback for when the zoom ends
+        }
+        $('.zoomable').zoomy('mouseenter', zoomy_options); // click dblclick mouseover 
+
+
+
         {% comment %}
             jNotify Usage:
             $.jnotify(message, [options]);
@@ -92,8 +110,8 @@
               // define core settings
                 type: ""                                  // if a type is specified, then an additional class of classNotification 
                                                           // + type is created for each notification
-              , delay: 3000                               // the default time to show each notification (in milliseconds)
-              , sticky: true                             // determines if the message should be considered "sticky" (user 
+              , delay: 3500                               // the default time to show each notification (in milliseconds)
+              , sticky: false                             // determines if the message should be considered "sticky" (user 
                                                           // must manually close notification)
               , closeLabel: "&times;"                     // the HTML to use for the "Close" link
               , showClose: true                           // determines if the "Close" link should be shown if notification is also sticky
@@ -126,9 +144,9 @@
         $.jnotify.setup(jnotify_options);
         
         $.jnotify("mehello", "success");
-        $.jnotify("mehello", "warning");
+        /*$.jnotify("mehello", "warning");
         $.jnotify("mehello", "error");
-        $.jnotify("mehello", "");
+        $.jnotify("mehello", "");*/
         
         $(".multichecklist").dropdownchecklist({minWidth: "150px", emptyText: "<i>...</i>"}); 
         
