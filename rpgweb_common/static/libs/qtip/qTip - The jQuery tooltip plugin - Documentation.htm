@@ -1,0 +1,890 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>qTip - The jQuery tooltip plugin - Documentation</title>
+<!--Stylesheets-->
+<link rel="shortcut icon" href="/projects/qtip/favicon.ico" />
+<link type="text/css" rel="stylesheet" href="/projects/qtip/css/master.css"  />
+<link type="text/css" rel="stylesheet" href="/projects/qtip/css/qtip.css"  />
+<link type="text/css" rel="stylesheet" href="/projects/qtip/css/docs.css"  />
+<!--Meta-->
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<meta name="description" content="Simpletip jQuery plugin. Making tooltips simple!" />
+<meta name="keywords" content="simpletip, jquery, javascript, plugin, tooltip, tooltips, craigsworks, craig thompson" />
+<meta name="author" content="Craig Thompson" />
+</head>
+<body>
+<div id="master">
+
+<a id="qtip2" href="/projects/qtip2/download">
+	<img src="/projects/forums/images/icons/exclamation.gif" alt="" />
+	qTip 1.0 will soon be obsolete... check-out the qTip2 preview here!
+</a>
+
+
+   <div id="header">
+      <div class="center">
+         <a class="craigsworks right" href="/"><img src="/projects/qtip/images/craigsworks.png" alt="Craig Thompson Web Development" /></a>
+         <img class="bubbles right" src="/projects/qtip/images/bubbles_blue.png" alt="" />
+         
+         <h1 class="left"><a href="/projects/qtip/"><img class="logo" src="/projects/qtip/images/logo_small.png" alt="qTip - jQuery plugin" /></a></h1>
+         <div class="intro left">
+            <div class="default">
+               <p><b>qTip</b> is a tooltip plugin for the jQuery framework. It's <b>cross-browser</b>, <b>customizable</b> and <b>packed full of features</b>!</p>
+               <p>So what are you waiting for? <b>Join the qTip community!</b></p>
+            </div>
+            <div class="hover"></div>
+         </div>
+         
+         <div class="clear">&nbsp;</div>
+         
+         <ul class="nav">
+            <li><a href="/projects/qtip">Home</a></li>
+            <li><a href="/projects/qtip/features/">Features</a></li>
+            <li><a href="/projects/qtip/demos/">Demos</a></li>
+            <li><a href="/projects/qtip/download/">Download</a></li>
+            <li><a href="/projects/qtip/docs/">Documentation</a></li>
+            <li><a href="/projects/forums/forum-qtip">Forum</a></li>
+         </ul>
+      </div>
+   </div>
+   
+   <div id="navarrow" class="center"><div class="docs"></div></div>
+   <div id="contentheader">
+   <div class="center">
+      <h2>Documentation</h2>
+      <ul class="index">
+         <li class="left">
+            <h4><a href="/projects/qtip/docs/">Getting started</a></h4>
+            <ul class="subindex">
+               <li><a href="/projects/qtip/docs/#requirements">Requirements</a></li>
+               <li><a href="/projects/qtip/docs/#downloading">Downloading qTip</a></li>
+               <li><a href="/projects/qtip/docs/#installation">Installation</a></li>
+               <li><a href="/projects/qtip/docs/#structure">HTML structure</a></li>
+               <li><a href="/projects/qtip/docs/#create">Creating a tooltip</a></li>
+               <li><a href="/projects/qtip/docs/#replace">Replacing title tooltips</a></li>
+            </ul>
+         </li>
+         <li class="left">
+            <h4><a href="/projects/qtip/docs/tutorials/">Tutorials</a></h4>
+            <ul class="subindex">
+               <li><a href="/projects/qtip/docs/tutorials/#position">Positioning</a></li>
+               <li><a href="/projects/qtip/docs/tutorials/#styling">Styling</a></li>
+               <li><a href="/projects/qtip/docs/tutorials/#borders">Borders</a></li>
+               <li><a href="/projects/qtip/docs/tutorials/#tips">Tips</a></li>
+               <li><a href="/projects/qtip/docs/tutorials/#dynamic">Dynamic content</a></li>
+               <li><a href="/projects/qtip/docs/tutorials/#effects">Effects</a></li>
+               <li><a href="/projects/qtip/docs/tutorials/#events">Events</a></li>
+               <li><a href="/projects/qtip/docs/tutorials/#override">Overriding defaults</a></li>
+               <li><a href="/projects/qtip/forum/forum/11/tutorials-and-howtos/">User submitted</a></li>
+            </ul>
+         </li>
+         <li class="left">
+            <h4><a href="/projects/qtip/docs/reference/">Option Reference</a></h4>
+            <ul class="subindex">
+               <li><a href="/projects/qtip/docs/reference/#content">Content</a></li>
+               <li><a href="/projects/qtip/docs/reference/#position">Position</a></li>
+               <li><a href="/projects/qtip/docs/reference/#show">Show</a></li>
+               <li><a href="/projects/qtip/docs/reference/#hide">Hide</a></li>
+               <li><a href="/projects/qtip/docs/reference/#style">Style</a></li>
+               <li><a href="/projects/qtip/docs/reference/#api">API</a></li>
+            </ul>
+         </li>
+         <li class="left">
+            <h4><a href="/projects/qtip/docs/api/">API Reference</a></h4>
+            <ul class="subindex">
+               <li><a href="/projects/qtip/docs/api/#shortcuts">Shortcut methods</a></li>
+               <li><a href="/projects/qtip/docs/api/#access">Accessing the API</a></li>
+               <li><a href="/projects/qtip/docs/api/#methods">Methods</a></li>
+               <li><a href="/projects/qtip/docs/api/#callbacks">Callbacks</a></li>
+               <li><a href="/projects/qtip/docs/api/#attributes">Attributes</a></li>
+            </ul>
+         </li>
+         <li class="left">
+            <h4><a href="/projects/qtip/docs/support/">Support</a></h4>
+            <ul class="subindex">
+               <li><a href="/projects/qtip/docs/support/#faq">FAQ</a></li>
+               <li><a href="/projects/qtip/forum/">User forum</a></li>
+               <li><a href="http://bugs.launchpad.net/qtip/"><b>Submit a bug report</b></a></li>
+               <li><a href="/projects/qtip/donate/">Make a donation</a></li>
+               <li><a href="/projects/qtip/docs/support/#contact">Contact me</a></li>
+            </ul>
+         </li>
+      </ul>
+
+      <div class="clear">&nbsp;</div>
+   </div>
+   </div>
+
+<div id="content">   
+   <div class="center">
+      <div id="reference" class="section">
+         <h2>Options Reference</h2>
+         <div id="ref-content" class="subsection">
+            <a name="content"></a>
+            <h3><a href="#">Back to the top</a>Content</h3>
+            The content option allows you to specify what appears inside the tooltip. A variety of sub-options are available to you regarding data, simple text strings, HTML, and even dynamically loaded content from other local files. The content option also allows you to specify a title header for your tooltip.
+
+            <table cellspacing="0" cellpadding="0">
+               <tr class="header">
+                  <th class="name">Name</th>
+                  <th class="default">Value</th>
+                  <th class="description">Description</th>
+                  <th class="example"></th>
+               </tr>
+               <tr class="option">
+                  <td class="name"><a name="content-prerender"></a>prerender</td>
+                  <td class="default">&nbsp;</td>
+                  <td class="description">
+                     <b>As of beta3, this option is false by default! Meaning all tooltips are generated when needed, not at page load.</b>
+                     <br /><br />
+                     If set to <b>true</b>, the tooltip will be created on document load, like pre-beta3 releases.
+                  </td>
+                  <td class="example">
+                     Setting this to false is useful when your creating tooltips on a large amount of elements at page load:
+                     <pre><code class="javascript">content: { prerender: false }</code></pre>
+                     The tooltip will then be created before it is first shown, dramatically reducing page load times.
+                  </td>
+               </tr>
+               <tr class="option">
+                  <td class="name"><a name="content-text"></a>text</td>
+                  <td class="default">&nbsp;</td>
+                  <td class="description">Text/HTML which will appear inside the tooltip initially. If set to false <i>the title attribute of the target element will be used, and if that isn't present, the alt attribute will be used instead.</i>
+                  <br /><br />
+                  You can also pass a <b>jQuery DOM array</b> as the argument, which will <i>clone the referenced elements and append them to the tooltip content.</i>
+                  <br /><br />
+                  <b>Note:</b> Any content set using this property will be overwritten upon retrieval of remote data <i>e.g. using the url attribute or API updateContent or loadContent methods.</i></td>
+                  <td class="example">
+                     This will create a default tooltip with the content 'My tooltip content'
+                     <pre><code class="javascript">content: { text: 'My tooltip content' }</code></pre>
+                  </td>
+               </tr>
+               <tr class="optionhead">
+                  <td colspan="5"><b>Dynamic content options. Only needed when retrieving content via AJAX.</b></td>
+               </tr>
+                  <tr class="suboption">
+                     <td class="name"><a name="content-url"></a>url</td>
+                     <td class="default">false</td>
+                     <td class="description">URL (Uniform Resource Locater) of the content to load. The content <b>must be stored locally</b> as cross-site XMLHTTPRequest is not yet supported by any major browsers.
+                     <br /><br />
+                     If set to <b>false</b>, no data retrieval will occur.</td>
+                     <td class="example">
+                        When created, this tooltip will load its content from the local file 'localcontent.html'
+                        <pre><code class="javascript">content: { url: 'localcontent.html' }</code></pre>
+                     </td>
+                  </tr>
+                  <tr class="suboption">
+                     <td class="name"><a name="content-data"></a>data</td>
+                     <td class="default">null</td>
+                     <td class="description">An object containing key/value pairs of all data to be transmitted during the content request to the above URL. </td>
+                     <td class="example">
+                        The data option is useful if you want to send along identifiers e.g. an articleID, like so:
+                        <pre><code class="javascript">content: { url: 'showarticle.php', data: { id: 1 } }</code></pre>
+                     </td>
+                  </tr>
+                  <tr class="suboption">
+                     <td class="name"><a name="content-method"></a>method</td>
+                     <td class="default">get</td>
+                     <td class="description">A string determining the type of request to use. <b>Possible values are 'get' and 'post'</b>.</td>
+                     <td class="example">
+                        This option allows you to determine what type of request is used to send the data and retrieve the page. For example, this would result in a GET request:
+                        <pre><code class="javascript">content: { url: 'showarticle.php', method: 'get' }</code></pre>
+                        This below example however would result in a POST request, which is useful for sending large amounts of information without including it directly in the URL:
+                        <pre><code class="javascript">content: { url: 'showarticle.php', method: 'post' }</code></pre>
+                     </td>
+                  </tr>
+               <tr class="optionhead">
+                  <td class="name" colspan="2">title: {</td>
+                  <td class="description" colspan="3">Object containing sub-options below</td>
+               </tr>
+                  <tr class="suboption">
+                     <td class="name"><a name="content-title-text"></a>text</td>
+                     <td class="default">false</td>
+                     <td class="description">Text/HTML which will appear inside the title element of the content.
+                     <br /><br />
+                     If set to <b>false</b>, no title element will be created.</td>
+                     <td class="example">
+                        Let's create an About Me tooltip with a title to indicate what the contents are about:
+                        <pre><code class="javascript">content: {
+   text: 'I really like owls!',
+   title: { text: 'About me' }
+}</code></pre>
+                        You can also omit the object if your not supplying any other sub-options, like so:
+                        <pre><code class="javascript">content: { title: 'About Me' }</code></pre>
+                     </td>
+                  </tr>
+                  <tr class="suboption">
+                     <td class="name"><a name="content-title-button"></a>button</td>
+                     <td class="default">false</td>
+                     <td class="description">Text/HTML which will appear inside the title's button element (e.g. close link) located to the right of the title content. Button only appears if title element is created e.g. above title attributes is <b>not</b> false.
+                     <br /><br />
+                     If set to <b>false</b>, no button will appear.</td>
+                     <td class="example">
+                        Here's another About Me tooltip, but this time the tooltip stays open until the button, with the text 'Close', is clicked:
+                        <pre><code class="javascript">content: {
+   text: 'I really like owls!',
+   title: {
+      text: 'About Me',
+      button: 'Close'
+   }
+},
+hide: false</code></pre>
+                     </td>
+                  </tr>
+            </table>
+         </div>
+
+         <div id="ref-position" class="subsection">
+            <a name="position"></a>
+            <h3><a href="#">Back to the top</a>Position</h3>
+            The position option specifies how your tooltip will be positioned in relation to the document. First a target is specified, by default the element which the qTip method was called upon, and placed in relation to it using the corner sub-option. This can then be adjusted using the adjust sub-option's x and y values.
+
+            <table cellspacing="0" cellpadding="0">
+               <tr class="header">
+                  <th class="name">Name</th>
+                  <th class="default">Value</th>
+                  <th class="description">Description</th>
+                  <th class="example"></th>
+               </tr>
+               <tr class="option">
+                  <td class="name"><a name="position-target"></a>target</td>
+                  <td class="default">false</td>
+                  <td class="description">HTML element to position the tooltip in relation to. <br /><br />
+                  <b>Can also be set to position in relation to the mouse.</b></td>
+                  <td class="example">
+                     You can position the tooltip in relation to any element. Let's position one by the last item of the first unordered list in our document:
+                     <pre><code class="javascript">position: { target: $('ul:first li:last') }</code></pre>
+                     We can also position the tooltip <b>in relation to the mouse</b>, so that the tooltip moves with the mouse as long as its on show:
+                     <pre><code class="javascript">position: { target: 'mouse' }</code></pre>
+                     You can also specify it as false, which positions it in relation to the element which the qtip method was called upon. <b>This is the default behaviour</b>.
+                     <pre><code class="javascript">position: { target: false }</code></pre>
+                  </td>
+               </tr>
+               <tr class="option">
+                  <td class="name"><a name="position-type"></a>type</td>
+                  <td class="default">absolute</td>
+                  <td class="description">Positioning type of the tooltip e.g. absolute. In most cases absolute positioning is sufficient.</td>
+                  <td class="example">
+                     You can use any valid CSS position value in this option including:
+                     <pre><code class="javascript">position: { type: 'absolute' }</code></pre>
+                     <pre><code class="javascript">position: { type: 'fixed' }</code></pre>
+                     <b>The default option is 'absolute'</b> but you can also specify valid non-absolute values:
+                     <pre><code class="javascript">position: { type: 'relative' }</code></pre>
+                     <pre><code class="javascript">position: { type: 'static' }</code></pre>
+                     If you specify 'static', its position will be determined like a regular block element, and <b>position adjustments will no longer work</b>.
+                  </td>
+               </tr>
+               <tr class="option">
+                  <td class="name"><a name="position-container"></a>container</td>
+                  <td class="default">$(document.body)</td>
+                  <td class="description">Determines the HTML element which the tooltip is appended to e.g. its container.</td>
+                  <td class="example">
+                     By specifying the container option you can decide which element your tooltip element will be appended to:
+                     <pre><code class="javascript">position: { container: $('div.tooltips') }</code></pre>
+                     This is useful if you want to style tooltips based on CSS selectors.
+                  </td>
+               </tr>
+               <tr class="optionhead">
+                  <td class="name" colspan="2">corner: {</td>
+                  <td class="description" colspan="3">Object containing sub-options below</td>
+               </tr>
+                  <tr class="suboption">
+                     <td class="name"><a name="position-corner-target"></a>target</td>
+                     <td class="default">bottomRight</td>
+                     <td class="description">The corner of the target element by which to position the tooltip by. See the <a href="/projects/qtip/docs/tutorials/#position">positioning tutorial</a> for all possible corner values.</td>
+                     <td class="example">
+                        Determines the corner of the target element which the tooltip is positioned in relation to.
+                        <pre><code class="javascript">position: { corner: { target: 'topMiddle' } }</code></pre>
+                        By omitting the object and supplying simply a string, both the target and tooltip suboption below will be set to the corner, for example:
+                        <pre><code class="javascript">position: { corner: 'topMiddle' }</code></pre>
+                        Is equivalent to:
+                        <pre><code class="javascript">position: {
+   corner: {
+      target: 'topMiddle',
+      tooltip: 'topMiddle'
+   }
+}</code></pre>
+                     </td>
+                  </tr>
+                  <tr class="suboption">
+                     <td class="name"><a name="position-corner-tooltip"></a>tooltip</td>
+                     <td class="default">topLeft</td>
+                     <td class="description">The corner of the tooltip to position in relation to the above targets corner. See the <a href="/projects/qtip/docs/tutorials/#position">positioning tutorial</a> for all possible corner values.</td>
+                     <td class="example">
+                        Determines the corner of the tooltip element which is used to position the tooltip.
+                        <pre><code class="javascript">position: { corner: { tooltip: 'leftMiddle' } }</code></pre>
+                     </td>
+                  </tr>
+
+               <tr class="optionhead">
+                  <td class="name" colspan="2">adjust: {</td>
+                  <td class="description" colspan="3">Object containing sub-options below</td>
+               </tr>
+                  <tr class="suboption">
+                     <td class="name"><a name="position-adjust-x"></a>x</td>
+                     <td class="default">0</td>
+                     <td class="description">Increment by which to increase the x value of the tooltip coordinate. To decrease, use a minus number.</td>
+                     <td class="example">
+                        Use this option to specify adjustments to the x coordinate of the final tooltip position.
+                        <pre><code class="javascript">position: { adjust: { x: 13, y: 0 } }</code></pre>
+                     </td>
+                  </tr>
+                  <tr class="suboption">
+                     <td class="name"><a name="position-adjust-y"></a>y</td>
+                     <td class="default">0</td>
+                     <td class="description">Increment by which to increase the y value of the tooltip coordinate. To decrease, use a minus number.</td>
+                     <td class="example">
+                        Use this option to specify adjustments to the y coordinate of the final tooltip position.
+                        <pre><code class="javascript">position: { adjust: { x: 0, y: 21 } }</code></pre>
+                     </td>
+                  </tr>
+                  <tr class="suboption">
+                     <td class="name"><a name="position-adjust-mouse"></a>mouse</td>
+                     <td class="default">true</td>
+                     <td class="description">Determines if the tooltips position is adjusted to the mouse position <b>when the position.target is set to 'mouse'</b>.</td>
+                     <td class="example">
+                        When the position.target is the mouse, this option causes the tooltip position to respond to mouse movement when hovering over the show.target:
+                        <pre><code class="javascript">position: {
+   target: 'mouse',
+   adjust: { mouse: true }
+}</code></pre>
+                        Alternatively, you can set it to false, which <i>causes the tooltip to assume the position of the mouse click, but stays static:
+                        <pre><code class="javascript">position: {
+   target: 'mouse',
+   adjust: { mouse: false }
+}</code></pre>
+                        This allows you to place the tooltip much like the right-click context menu.
+                     </td>
+                  </tr>
+                  <tr class="suboption">
+                     <td class="name"><a name="position-adjust-screen"></a>screen</td>
+                     <td class="default">false</td>
+                     <td class="description">Determines if the tooltips positioning takes into account screen width and height, preventing it from rendering off screen if possible.
+                     <br /><br />
+                     <b>Note:</b> Your tip and target corner options may be ignored when adjusting the position.</td>
+                     <td class="example">
+                        Set this option to true to keep the tooltip on-screen at all times, like so:
+                        <pre><code class="javascript">position: { adjust: { screen: true } }</code></pre>
+                        When enabled, <b>corner positions and adjustment options may be disregarded</b> to keep the tooltip on-screen.
+                     </td>
+                  </tr>
+                  <tr class="suboption">
+                     <td class="name"><a name="position-adjust-scroll"></a>scroll</td>
+                     <td class="default">true</td>
+                     <td class="description">Determines if the tooltips position is adjusted when the document is scrolled.</td>
+                     <td class="example">
+                        Set this option to true to adjust the tooltips position when the document is scrolled:
+                        <pre><code class="javascript">position: { adjust: { scroll: true } }</code></pre>
+                        Alternatively, set it to false to prevent its position being updated:
+                        <pre><code class="javascript">position: { adjust: { scroll: false } }</code></pre>
+                     </td>
+                  </tr>
+                  <tr class="suboption">
+                     <td class="name"><a name="position-adjust-resize"></a>resize</td>
+                     <td class="default">true</td>
+                     <td class="description">Determines if the tooltips position is adjusted when the window is resized.</td>
+                     <td class="example">
+                        Set this option to true to adjust the tooltips position when the window is resized:
+                        <pre><code class="javascript">position: { adjust: { resize: true } }</code></pre>
+                        Alternatively, set it to false to prevent its position being updated:
+                        <pre><code class="javascript">position: { adjust: { resize: false } }</code></pre>
+                     </td>
+                  </tr>
+            </table>
+         </div>
+
+         <div id="ref-show" class="subsection">
+            <a name="show"></a>
+            <h3><a href="#">Back to the top</a>Show</h3>
+            The show option determines how the tooltip is shown, what effect is used to display it, and when to show it e.g. what event must be triggered.
+
+            <table cellspacing="0" cellpadding="0">
+               <tr class="header">
+                  <th class="name">Name</th>
+                  <th class="default">Value</th>
+                  <th class="description">Description</th>
+                  <th class="example"></th>
+               </tr>
+               <tr class="option">
+                  <td class="name"><a name="show-delay"></a>delay</td>
+                  <td class="default">140</td>
+                  <td class="description">Time in milliseconds by which to delay the showing of the tooltip.</td>
+                  <td class="example">
+                     Delay the showing of the tooltip by a set period of milliseconds. If set to zero, no delay will occur:
+                     <pre><code class="javascript">show: { delay: 1000 }</code></pre>
+                  </td>
+               </tr>
+               <tr class="option">
+                  <td class="name"><a name="show-solo"></a>solo</td>
+                  <td class="default">false</td>
+                  <td class="description">Determines whether or not the tooltip will be shown in conjunction with other tooltips or on its own</td>
+                  <td class="example">
+                     If set to <b>true</b>, all other tooltips will he hidden when this tooltip is shown.
+                     <pre><code class="javascript">show: { solo: true }</code></pre>
+                     You may also specify a jQuery DOM array to select specific tooltips which should be hidden, for example:
+                     <pre><code class="javascript">show: { solo: $('.qtip-light') }</code></pre>
+                     The above code will hide all tooltips with class name 'qtip-light' before the current tooltip is shown.
+                  </td>
+               </tr>
+               <tr class="option">
+                  <td class="name"><a name="show-ready"></a>ready</td>
+                  <td class="default">false</td>
+                  <td class="description">Determines whether or not the tooltip is initially hidden or shown when ready</td>
+                  <td class="example">
+                     If set to <b>true</b>, the tooltip will be shown upon creation:
+                     <pre><code class="javascript">show: { ready: true }</code></pre>
+                     If false, it will be <b>initially hidden, which is the default behaviour</b>.
+                     <pre><code class="javascript">show: { ready: false }</code></pre>
+                  </td>
+               </tr>
+               <tr class="optionhead">
+                  <td class="name" colspan="2">when: {</td>
+                  <td class="description" colspan="3">Object containing sub-options below</td>
+               </tr>
+                  <tr class="suboption">
+                     <td class="name"><a name="show-when-target"></a>target</td>
+                     <td class="default">false</td>
+                     <td class="description">Defines the HTML element which will assigned the show event handler.</td>
+                     <td class="example">
+                        The example below will cause the first h1 element to show the tooltip when a mouseover event occurs (default event type):
+                        <pre><code class="javascript">show: { when: { target: $('h1:first') } }</code></pre>
+                        When set to false, the tooltip target element will be used e.g. the element the qtip method was called upon. <b>This is the default behaviour</b>.
+                        <pre><code class="javascript">show: { when: { target: false } }</code></pre>
+                     </td>
+                  </tr>
+                  <tr class="suboption">
+                     <td class="name"><a name="show-when-event"></a>event</td>
+                     <td class="default">mouseover</td>
+                     <td class="description">Event type which will trigger the show event of the tooltip. All possible values are documented under <a href="http://docs.jquery.com/Events/bind#typedatafn">jQuery's Event: bind()</a> documentation.</td>
+                     <td class="example">
+                        The below example will cause the tooltip to be shown when the target element is clicked:
+                        <pre><code class="javascript">show: { when: { event: 'click' } }</code></pre>
+                        All possible values are documented under <a href="http://docs.jquery.com/Events/bind#typedatafn">jQuery's Event: bind()</a> documentation.
+                     </td>
+                  </tr>
+
+               <tr class="optionhead">
+                  <td class="name" colspan="2">effect: {</td>
+                  <td class="description" colspan="3">Object containing sub-options below</td>
+               </tr>
+                  <tr class="suboption">
+                     <td class="name"><a name="show-effect-type"></a>type</td>
+                     <td class="default">fade</td>
+                     <td class="description">Effect type to use upon showing the tooltip e.g. fade, slide or grow. Can also be a callback method which will be called when the tooltip is shown.</td>
+                     <td class="example">
+                        Create a tooltip with the 'slide' type show effect:
+                        <pre><code class="javascript">show: { effect: { type: 'slide' } }</code></pre>
+                        The object can omitted if you are not specifying any additional sub-options:
+                        <pre><code class="javascript">show: { effect: 'slide' }</code></pre>
+                        You can also specify a callback method, which allows for custom effects to be created.
+                        <pre><code class="javascript">show: { effect: myCustomEffect }</code></pre>
+                        <b>The effect length is passed as a parameter</b> to the custom callback to allow for easy referencing.
+                     </td>
+                  </tr>
+                  <tr class="suboption">
+                     <td class="name"><a name="show-effect-length"></a>length</td>
+                     <td class="default">100</td>
+                     <td class="description">Length of time in milliseconds the above effect will last for.</td>
+                     <td class="example">
+                        This option allows you to set the length of time, in milliseconds, the above effect will occur
+                        <pre><code class="javascript">show: { effect: { length: 430 } }</code></pre>
+                     </td>
+                  </tr>
+            </table>
+         </div>
+
+         <div id="ref-hide" class="subsection">
+            <a name="hide"></a>
+            <h3><a href="#">Back to the top</a>Hide</h3>
+            The hide option determines how the tooltip is hidden, what effect is used to hide it, and what event must be triggered to hide it.
+
+            <table cellspacing="0" cellpadding="0">
+               <tr class="header">
+                  <th class="name">Name</th>
+                  <th class="default">Value</th>
+                  <th class="description">Description</th>
+                  <th class="example"></th>
+               </tr>
+               <tr class="option">
+                  <td class="name"><a name="hide-delay"></a>delay</td>
+                  <td class="default">0</td>
+                  <td class="description">Time in milliseconds by which to delay the hiding of the tooltip.
+                  <br /><br />
+                  When used in conjunction with the <i>fixed</i> hide event, it determines the amount of time the user has to mouseover the tooltip when exiting the target element before the tooltip is hidden.
+                  <br /><br />
+                  When used in conjunction with the <i>inactive<i> hide event, it determines how long the tooltip stays visible for before being hidden, when to events are triggered on the tooltip.
+                  </td>
+                  <td class="example">
+                     Delay the hiding of the tooltip by a set period of milliseconds. If set to zero, no delay will occur:
+                     <pre><code class="javascript">hide: { delay: 1000 }</code></pre>
+                     Allow the user 1000 milliseconds (1 second) to mouseover the tooltip when exiting the target element, before it is hidden:
+                     <pre><code class="javascript">hide: { fixed: true, delay: 1000 }</code></pre>
+                     Hide the tooltip after 3000 milliseconds (3 seconds) of inactivity:
+                     <pre><code class="javascript">hide: { when: 'inactive', delay: 1000 }</code></pre>
+                  </td>
+               </tr>
+               <tr class="option">
+                  <td class="name"><a name="hide-fixed"></a>fixed</td>
+                  <td class="default">false</td>
+                  <td class="description">
+                     <b>For use in conjunction with mouseout and similar hide events.</b><br /><br />
+                     When set to <b>true</b>, the tooltip will not hide if moused over, allowing the contents to be clicked and interacted with.
+                  </td>
+                  <td class="example">
+                     When set to true and mouseout or similar events are used, tooltips remain visible when hovered over:
+                     <pre><code class="javascript">hide: { when: 'mouseout', fixed: true }</code></pre>
+                     This is useful for creating tooltips with functionality e.g. edit/delete links for articles etc.
+                  </td>
+               </tr>
+               <tr class="optionhead">
+                  <td class="name" colspan="2">when: {</td>
+                  <td class="description" colspan="3">Object containing sub-options below</td>
+               </tr>
+                  <tr class="suboption">
+                     <td class="name"><a name="hide-when-target"></a>target</td>
+                     <td class="default">false</td>
+                     <td class="description">Defines the HTML element which will assigned the hide event handler.</td>
+                     <td class="example">
+                        The example below will cause the first h1 element to hide the tooltip when a mouseover event occurs (default event type):
+                        <pre><code class="javascript">hide: { when: { target: $('h1:first') } }</code></pre>
+                        When set to false, the tooltip target element will be used e.g. the element the qtip method was called upon. <b>This is the default behaviour</b>.
+                        <pre><code class="javascript">hide: { when: { target: false } }</code></pre>
+                     </td>
+                  </tr>
+                  <tr class="suboption">
+                     <td class="name"><a name="hide-when-event"></a>event</td>
+                     <td class="default">mouseover</td>
+                     <td class="description">Event type which will trigger the hide event of the tooltip. There are two custom events available: 'inactive' and 'unfocus'.
+                     <br /><br />
+                     The 'unfocus' event hides the tooltip when anywhere else on the document, except the tooltip itself, is clicked. The 'inactive' event hies the tooltip after a set period of inactivity, which is determined by the <a href="#hide-delay">hide.delay option</a>.
+                     <br /><br />
+                     All other possible values are documented under <a href="http://docs.jquery.com/Events/bind">jQuery's Event: bind()</a> documentation.</td>
+                     <td class="example">
+                        The below example will cause the tooltip to be hidden when the target element is clicked:
+                        <pre><code class="javascript">hide: { when: { event: 'click' } }</code></pre>
+                        This one will hide the tooltip when anywhere else except the tooltip is clicked:
+                        <pre><code class="javascript">hide: { when: { event: 'unfocus' } }</code></pre>
+                        And this will hide the tooltip after 2 seconds of inactivity:
+                        <pre><code class="javascript">hide: { when: { event: 'inactive' }, delay: 2000 }</code></pre>
+                        You can also omit the when object and simply declare a string, if your not declaring a target:
+                        <pre><code class="javascript">hide: { when: 'inactive', delay: 2000 }</code></pre>
+                     </td>
+                  </tr>
+
+               <tr class="optionhead">
+                  <td class="name" colspan="2">effect: {</td>
+                  <td class="description" colspan="3">Object containing sub-options below</td>
+               </tr>
+                  <tr class="suboption">
+                     <td class="name"><a name="hide-effect-type"></a>type</td>
+                     <td class="default">fade</td>
+                     <td class="description">Effect type to use upon hiding the tooltip e.g. fade, slide or grow. Can also be a callback method which will be called when the tooltip is hidden.</td>
+                     <td class="example">
+                        Create a tooltip with the 'slide' type hide effect:
+                        <pre><code class="javascript">hide: { effect: { type: 'slide' } }</code></pre>
+                        The object can omitted if you are not specifying any additional sub-options:
+                        <pre><code class="javascript">hide: { effect: 'slide' }</code></pre>
+                        You can also specify a callback method, which allows for custom effects to be created.
+                        <pre><code class="javascript">hide: { effect: myCustomEffect }</code></pre>
+                        <b>The effect length is passed as a parameter</b> to the custom callback to allow for easy referencing.
+                     </td>
+                  </tr>
+                  <tr class="suboption">
+                     <td class="name"><a name="hide-effect-length"></a>length</td>
+                     <td class="default">100</td>
+                     <td class="description">Length of time in milliseconds the above effect will last for.</td>
+                     <td class="example">
+                        This option allows you to set the length of time, in milliseconds, the above effect will occur
+                        <pre><code class="javascript">show: { effect: { length: 430 } }</code></pre>
+                     </td>
+                  </tr>
+            </table>
+         </div>
+
+         <div id="ref-style" class="subsection">
+            <a name="style"></a>
+            <h3><a href="#">Back to the top</a>Style</h3>
+            The style option allows you to set how your tooltip styled, including many sub-options such as width, border and element classes. Each tooltip is styled according to the passed style option, allowing you to customize each tooltip separately.
+
+            <table cellspacing="0" cellpadding="0">
+               <tr class="header">
+                  <th class="name">Name</th>
+                  <th class="default">Value</th>
+                  <th class="description">Description</th>
+                  <th class="example"></th>
+               </tr>
+               <tr class="option">
+                  <td class="name"><a name="style-name"></a>name</td>
+                  <td class="default">&nbsp;</td>
+                  <td class="description">Name of the tooltip style to apply to the generated tooltip.</td>
+                  <td class="example">
+                     Use this option to choose what tooltip style to apply to your tooltip. qTip comes with 5 preset styles: <b>cream</b>, <b>light</b>, <b>dark</b>, <b>green</b> and <b>red</b>.
+                     <pre><code class="javascript">style: { name: 'dark' }</code></pre>
+                     Any properties that are not explicitly set in your style object will inherit values from the style you chose above. You can also create custom styles to be inherited from, which is <a href="/projects/qtip/docs/tutorials/#styling">documented here</a>. To use a custom style, simply declare its name as the name value:
+                     <pre><code class="javascript">style: { name: 'mystyle' }</code></pre>
+                  </td>
+               </tr>
+               <tr class="option">
+                  <td class="name"><a name="style-css"></a>CSS-Attribute</td>
+                  <td class="default">&nbsp;</td>
+                  <td class="description">
+                     Any valid CSS attribute/value pair can be specified here.
+                     <br /><br />
+                     <b>Note: Make sure to surround attribute names in quotation marks to avoid problems!</b>
+                  </td>
+                  <td class="example">
+                     You can declare any CSS attribute and value pair here:
+                     <pre><code class="javascript">style: { title: { 'color': 'red', 'overflow': 'hidden' } }</code></pre>
+                     Be sure to surround all your attribute names in quotation marks, as many of them contain hyphens, which are not valid charaters for object names in JavaScript! For example:
+                     <pre><code class="javascript">style: { title: { 'font-size': 12 } } // Valid
+style: { title: { font-size: 12 } } // NOT valid!</code></pre>
+                     See the <a href="http://docs.jquery.com/CSS/css#properties">jQuery CSS section</a> for more details.
+                  </td>
+               </tr>
+               <tr class="optionhead">
+                  <td class="name" colspan="2">width: {</td>
+                  <td class="description" colspan="3">Either a <b>number</b> OR an object containing sub-options below</td>
+               </tr>
+                  <tr class="suboption">
+                     <td class="name"><a name="style-border-width-min"></a>min</td>
+                     <td class="default">0</td>
+                     <td class="description">Determines the minimum width of the tooltip.</td>
+                     <td class="example">
+                        Determines the minimum width of the tooltip in pixels:
+                        <pre><code class="javascript">style: { width: { min: 75 } }</code></pre>
+                        If the width of the tooltip is lower than this set value at any point, it will be set to the defined value.
+                     </td>
+                  </tr>
+                  <tr class="suboption">
+                     <td class="name"><a name="style-border-width-max"></a>max</td>
+                     <td class="default">250</td>
+                     <td class="description">Determines the maximum width of the tooltip.</td>
+                     <td class="example">
+                        Determines the maximum width of the tooltip in pixels:
+                        <pre><code class="javascript">style: { width: { max: 250 } }</code></pre>
+                        If the width of the tooltip exceeds this set value at any point, it will be set to the defined value.
+                     </td>
+                  </tr>
+               <tr class="optionhead">
+                  <td class="name" colspan="2">border: {</td>
+                  <td class="description" colspan="3">Object containing sub-options below</td>
+               </tr>
+                  <tr class="suboption">
+                     <td class="name"><a name="style-border-width"></a>width</td>
+                     <td class="default">3</td>
+                     <td class="description">Determines the border width of the tooltip.</td>
+                     <td class="example">
+                        Determines the width of the tooltips border in pixels
+                        <pre><code class="javascript">style: { border: { width: 5 } }</code></pre>
+                        You can omit the object if you are not specifying any other sub-options like so:
+                        <pre><code class="javascript">style: { border: 5 }</code></pre>
+                     </td>
+                  </tr>
+                  <tr class="suboption">
+                     <td class="name"><a name="style-border-radius"></a>radius</td>
+                     <td class="default">0</td>
+                     <td class="description">Determines the border radius, or roundness, of the tooltip border.</td>
+                     <td class="example">
+                        Determines the radius of the tooltips border in pixels.
+                        <pre><code class="javascript">style: { border: { radius: 5 } }</code></pre>
+                        It's recommended you also specify a width to prevent rendering bugs:
+                        <pre><code class="javascript">style: { border: { width: 2, radius: 5 } }</code></pre>
+                     </td>
+                  </tr>
+                  <tr class="suboption">
+                     <td class="name"><a name="style-border-color"></a>color</td>
+                     <td class="default">#d3d3d3</td>
+                     <td class="description">Determines the colour of the tooltip border</td>
+                     <td class="example">
+                        Determines the colour of the tooltips border.
+                        <pre><code class="javascript">style: { border: { color: 'black' } }</code></pre>
+                        Any <b>valid CSS color value</b> can be used as the option value.
+                     </td>
+                  </tr>
+
+               <tr class="optionhead">
+                  <td class="name" colspan="2">tip: {</td>
+                  <td class="description" colspan="3">Object containing sub-options below</td>
+               </tr>
+                  <tr class="suboption">
+                     <td class="name"><a name="style-tip-corner"></a>corner</td>
+                     <td class="default">topLeft</td>
+                     <td class="description">The corner of the tooltip the tip will be placed in relation to. See the <a href="/projects/qtip/docs/tutorials/#position">positioning tutorial</a> for all possible corner strings.</td>
+                     <td class="example">
+                        Determines the corner of the tooltip on which the tip will be displayed
+                        <pre><code class="javascript">style: { tip: { corner: 'rightBottom' } }</code></pre>
+                        See the <a href="/projects/qtip/docs/tutorials/#tips">tips tutorial</a> for all possible corner strings.
+                     </td>
+                  </tr>
+                  <tr class="suboption">
+                     <td class="name"><a name="style-tip-color"></a>color</td>
+                     <td class="default">false</td>
+                     <td class="description">Determines the colour of the tooltips tip. If set to <b>false</b>, the border colour will be used</td>
+                     <td class="example">
+                        Determines the colour of the tooltips tip.
+                        <pre><code class="javascript">style: { border: { color: '#D1E6BB' } }</code></pre>
+                        Any <b>valid CSS color value</b> can be used as the option value.
+                     </td>
+                  </tr>
+                  <tr class="suboption">
+                     <td class="name"><a name="style-tip-size"></a>size</td>
+                     <td class="default">{x:12,y:12}</td>
+                     <td class="description">An object containing x and y coordinates, or width and height, of the tip.</td>
+                     <td class="example">
+                        This option allows you to set the height and width of the tip via x and y coordinates
+                        <pre><code class="javascript">style: { tip: { size: { x: 12, y: 18 } } }</code></pre>
+                        <b>Note:</b> Depending on the corner which the tip is located, the x and y values could relate to either the width <b>or</b> the height! So watch out.
+                     </td>
+                  </tr>
+
+               <tr class="optionhead">
+                  <td class="name" colspan="2">title: {</td>
+                  <td class="description" colspan="3">Object containing sub-options below</td>
+               </tr>
+                  <tr class="suboption">
+                     <td class="name"><a name="style-title-css"></a>CSS-Attribute</td>
+                     <td class="default">&nbsp;</td>
+                     <td class="description">
+                        Any valid CSS attribute/value pair can be specified here.
+                        <br /><br />
+                        <b>Note: Make sure to surround attribute names in quotation marks to avoid problems!</b>
+                     </td>
+                     <td class="example">
+                        You can declare any CSS attribute and value pair here:
+                        <pre><code class="javascript">style: { title: { 'color': 'red', 'overflow': 'hidden' } }</code></pre>
+                        Be sure to surround all your attribute names in quotation marks, as many of them contain hyphens, which are not valid charaters for object names in JavaScript! For example:
+                        <pre><code class="javascript">style: { title: { 'font-size': 12 } } // Valid
+style: { title: { font-size: 12 } } // NOT valid!</code></pre>
+                        See the <a href="http://docs.jquery.com/CSS/css#properties">jQuery CSS section</a> for more details.
+                     </td>
+                  </tr>
+
+               <tr class="optionhead">
+                  <td class="name" colspan="2">button: {</td>
+                  <td class="description" colspan="3">Object containing sub-options below</td>
+               </tr>
+                  <tr class="suboption">
+                     <td class="name"><a name="style-title-css"></a>CSS-Attribute</td>
+                     <td class="default">&nbsp;</td>
+                     <td class="description">
+                        Any valid CSS attribute/value pair can be specified here.
+                        <br /><br />
+                        <b>Note: Make sure to surround attribute names in quotation marks to avoid problems!</b>
+                     </td>
+                     <td class="example">
+                        You can declare any CSS attribute and value pair here:
+                        <pre><code class="javascript">style: { button: { 'color': 'red', 'font-weight': 'bold' } }</code></pre>
+                        Be sure to surround all your attribute names in quotation marks, as many of them contain hyphens, which are not valid charaters for object names in JavaScript! For example:
+                        <pre><code class="javascript">style: { button: { 'font-size': 12 } } // Valid
+style: { title: { font-size: 12 } } // NOT valid!</code></pre>
+                        See the <a href="http://docs.jquery.com/CSS/css#properties">jQuery CSS section</a> for more details.
+                     </td>
+                  </tr>
+
+               <tr class="optionhead">
+                  <td class="name" colspan="2">classes: {</td>
+                  <td class="description" colspan="3">Object containing sub-options below</td>
+               </tr>
+                  <tr class="suboption">
+                     <td class="name"><a name="style-classes-target"></a>target</td>
+                     <td class="default">&nbsp;</td>
+                     <td class="description">Class name assigned to the target element e.g. the element defined by the target option</td>
+                     <td class="">&nbsp;</td>
+                  </tr>
+                  <tr class="suboption">
+                     <td class="name"><a name="style-classes-tooltip"></a>tooltip</td>
+                     <td class="default">qtip</td>
+                     <td class="description">Class name assigned to the tooltip.</td>
+                     <td class="">&nbsp;</td>
+                  </tr>
+                  <tr class="suboption">
+                     <td class="name"><a name="style-classes-tip"></a>tip</td>
+                     <td class="default">qtip-tip</td>
+                     <td class="description">Class name assigned to the tooltip tip.</td>
+                     <td class="">&nbsp;</td>
+                  </tr>
+                  <tr class="suboption">
+                     <td class="name"><a name="style-classes-title"></a>title</td>
+                     <td class="default">qtip-title</td>
+                     <td class="description">Class name assigned to the tooltip title.</td>
+                     <td class="">&nbsp;</td>
+                  </tr>
+                  <tr class="suboption">
+                     <td class="name"><a name="style-classes-content"></a>content</td>
+                     <td class="default">qtip-content</td>
+                     <td class="description">Class name assigned to the tooltip content.</td>
+                     <td class="">&nbsp;</td>
+                  </tr>
+                  <tr class="suboption">
+                     <td class="name"><a name="style-classes-active"></a>active</td>
+                     <td class="default">qtip-active</td>
+                     <td class="description">Class name assigned to any tooltip which is currently active e.g. on show.</td>
+                     <td class="">&nbsp;</td>
+                  </tr>
+            </table>
+         </div>
+
+         <div id="ref-api" class="subsection">
+            <a name="api"></a>
+            <h3><a href="#">Back to the top</a>API</h3>
+            <p>The API option is simply a subset of the <a href="/projects/qtip/docs/api/#callbacks">API Callbacks</a> object. See <a href="/projects/qtip/docs/api/#callbacks">here</a> for full details and documentation.</p>
+            <table cellspacing="0" cellpadding="0">
+               <tr class="header">
+                  <th class="name">Name</th>
+                  <th class="default">Value</th>
+                  <th class="description">Description</th>
+                  <th class="example"></th>
+               </tr>
+               <tr class="optionhead">
+                  <td class="name" colspan="2">api: {</td>
+                  <td class="description" colspan="3">Object containing sub-options below</td>
+               </tr>
+                  <tr class="suboption">
+                     <td class="name"><a name="style-classes-target"></a>Callback</td>
+                     <td class="default">&nbsp;</td>
+                     <td class="description"> See <a href="/projects/qtip/docs/api/#callbacks">here</a> for full details on all valid API callbacks for this object.</td>
+                     <td class="">&nbsp;</td>
+                  </tr>
+            </table>
+         </div>
+      </div>
+   </div>
+   </div>
+   <div id="footer">
+   <div class="center">
+      <div class="right">
+         <a href="http://launchpad.net/qtip">launchpad project</a> -
+         <a href="http://plugins.jquery.com/project/qtip">jQuery plugin project</a> -
+         <a href="mailto:craig@craigsworks.com">contact me</a> 
+      </div>
+      
+      Content copyright 2013 &copy; <a href="/">Craig Thompson</a>
+   </div>
+   </div>
+</div>
+
+<!--JavaScript-->
+<script type="text/javascript" src="/projects/qtip/packages/jquery-1.3.2.min.js"></script>
+<script type="text/javascript" src="/projects/qtip/js/jquery-ui-personalized-1.5.3.min.js"></script>
+<script type="text/javascript" src="/projects/qtip/packages/1.0.0-rc3/jquery.qtip-1.0.0-rc3.js"></script>
+<script type="text/javascript" src="/projects/qtip/js/docs/examples.js"></script>
+<script type="text/javascript" src="/projects/qtip/js/docs/reference.js"></script>
+
+<!--Highlight JavaScript-->
+<script type="text/javascript" src="/projects/qtip/js/highlight.js"></script>
+<script type="text/javascript" src="/projects/qtip/js/highlight/html.js"></script>
+<script type="text/javascript" src="/projects/qtip/js/highlight/css.js"></script>
+<script type="text/javascript" src="/projects/qtip/js/highlight/javascript.js"></script>
+<script type="text/javascript">hljs.initHighlightingOnLoad('html', 'css', 'javascript');</script>
+
+<!--Google Analytics-->
+<script type="text/javascript">
+document.write(unescape("%3Cscript src='http://www.google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-5228245-5");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+</body>
+</html>
