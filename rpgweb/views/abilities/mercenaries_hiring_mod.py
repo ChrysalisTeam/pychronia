@@ -2,10 +2,12 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from rpgweb.common import *
-
-from rpgweb.datamanager.abstract_ability import AbstractAbility
 import json
+from django import forms
+
+from rpgweb.common import *
+from rpgweb.datamanager.abstract_ability import AbstractAbility
+
 from rpgweb.forms import AbstractGameForm
 from rpgweb.datamanager.datamanager_tools import transaction_watcher
 

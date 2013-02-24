@@ -1,18 +1,18 @@
 
 
 
-- interactive world map
+- interactive world map DONE
 - ability for users to transfer their objects to someone else
 - mobile version of site
 - global styles and messages for any "readonly mode"
 
-- drag&drop radio playlist management
+- drag&drop radio playlist management WIP
 - interface to edit static pages
 - interface to edit external contacts
 - interface to activate views
 - filling of footer with game info
 - filling of headers with game info and notifications
-- javascript-obfuscated-popuped "report bug" div in mini footer
+- javascript-obfuscated-popuped "report bug" div in mini footer WIP
 - global management of ajax errors, with popups
 
 - check what happens when calling setlanguage flags from a "POST-access-only" page like private files ??

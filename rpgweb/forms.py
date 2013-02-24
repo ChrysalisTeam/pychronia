@@ -3,7 +3,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from rpgweb.common import *
-
+from django import forms
 from rpgweb.datamanager.abstract_form import AbstractGameForm, UninstantiableForm, form_field_jsonify, form_field_unjsonify
 
 

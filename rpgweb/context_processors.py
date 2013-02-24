@@ -37,6 +37,8 @@ def rpgweb_template_context(request):
         possible_impersonations = datamanager.get_impersonation_targets(datamanager.user.real_username)
 
         return {'game_instance_id': datamanager.game_instance_id,
+                'processed_view': request.processed_view,
+
                 'user': datamanager.user,
                 'game_is_started': datamanager.get_global_parameter("game_is_started"),
                 'online_users': online_users,

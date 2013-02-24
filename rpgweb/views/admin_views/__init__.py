@@ -17,6 +17,8 @@ admin_dashboard = AdminDashboardAbility.as_view
 from .webradio_management_mod import WebradioManagement
 webradio_management = WebradioManagement.as_view
 
+from .static_pages_management_mod import StaticPagesManagement
+static_pages_management = StaticPagesManagement.as_view
 
 
 @register_view(access=UserAccess.master)

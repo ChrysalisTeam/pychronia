@@ -6,6 +6,7 @@
 
 @mixin small_decorations {
     //user-select: none; // not working on images
+    pointer-events: none; // auto | none | visiblePainted | visibleFill | visibleStroke | visible | painted | fill | stroke | all | inherit
     position: absolute;
     z-index: 8;
 }
@@ -36,6 +37,7 @@
 
 @mixin big_decorations {
     //user-select: none; // not working on images
+    pointer-events: none; // auto | none | visiblePainted | visibleFill | visibleStroke | visible | painted | fill | stroke | all | inherit
     position: absolute;
     z-index: 8;
 }

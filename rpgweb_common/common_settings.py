@@ -95,7 +95,8 @@ ROOT_URLCONF = None # TO OVERRIDE
 
 INSTALLED_APPS = [
     'sessionprofile', # keeps track of sessions/users in DB table, for PHPBB integration
-    'templateaddons',
+    'templateaddons', # assing and headers
+    'django_select2', # advanced select box
 
     'debug_toolbar',
 
@@ -114,6 +115,8 @@ INSTALLED_APPS = [
     'rpgweb_common', # common templates, tags, static files etc.
 ]
 
+
+AUTO_RENDER_SELECT2_STATICS = False
 
 try:
     import sentry.client

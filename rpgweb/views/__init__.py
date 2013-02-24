@@ -48,7 +48,8 @@ from .messaging_views import (ajax_set_message_read_state, ajax_force_email_send
 from .abilities import (house_locking, runic_translation, wiretapping_management,
                         mercenaries_hiring, matter_analysis, world_scan)
 
-from .admin_views import (admin_dashboard, game_events, webradio_management, manage_databases,
+from .admin_views import (admin_dashboard, game_events, webradio_management,
+                          manage_databases, static_pages_management,
                           manage_characters, CHARACTERS_IDENTITIES,
                           DATABASE_OPERATIONS, FAIL_TEST, MEDIA_TEST)
 

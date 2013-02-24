@@ -1,0 +1,17 @@
+{% extends "base_one_column.html" %}
+
+{% load i18n helpers %}  
+
+{% block content %}  
+
+            <form id="locking_form" action="" method="post">
+                {{ form.as_p }}
+                <input type="submit" class="digit" value="{% trans "Lock Doors" %}"/>
+            </form>
+
+
+
+{% endblock %}
+
+
+

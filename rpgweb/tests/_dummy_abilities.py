@@ -2,6 +2,7 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
+from django import forms
 
 from rpgweb.common import *
 from rpgweb.datamanager.abstract_ability import AbstractAbility

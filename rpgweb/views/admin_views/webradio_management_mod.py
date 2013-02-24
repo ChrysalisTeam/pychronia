@@ -1,5 +1,3 @@
-
-
 # -*- coding: utf-8 -*-
 from __future__ import print_function
 from __future__ import unicode_literals
@@ -91,10 +89,10 @@ class WebradioManagement(AbstractGameView):
         return dict(result=result,
                 form_data=None) # no form data unless with went through super()._process_html_request() above
 
-    
+
     def save_radio_playlist(self, audio_ids):
         self.datamanager.set_radio_messages(audio_ids) # breaks if not a proper list of audio ids
         return True
 
-                                     
+
 
