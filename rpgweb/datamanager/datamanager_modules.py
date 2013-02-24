@@ -1471,17 +1471,17 @@ class TextMessagingExternalContacts(BaseDataManager):
 
 
     def _check_sender_email(self, sender_email):
-        if self.global_contacts.contains_item(sender_email):
+        if sender_email in self.global_contacts:
             return
         super(TextMessagingExternalContacts, self)._check_sender_email(sender_email=sender_email)
 
     def _check_recipient_email(self, recipient_email, sender_email):
-        if self.global_contacts.contains_item(recipient_email):
+        if recipient_email in self.global_contacts:
             sending_character = self.get_character_or_none_from_email(sender_email) # FIXME - here we cheat, method not existing yet
             if sending_character is None:
                 return # external contacts can send emails to any existing contact
             else:
-                data = self.global_contacts.get_item(recipient_email)
+                data = self.global_contacts[recipient_email]
                 if data["access_tokens"] is None:
                     return # OK, it's a public address
                 elif sending_character in data["access_tokens"]:
@@ -1543,10 +1543,10 @@ class TextMessagingExternalContacts(BaseDataManager):
     def grant_private_contact_access_to_character(self, username=CURRENT_USER, contact_id=None, avatar=None, description=None):
         username = self._resolve_username(username)
         assert contact_id and username in self.get_character_usernames()
-        if not self.global_contacts.contains_item(contact_id):
-            self.global_contacts.insert_item(contact_id, dict(avatar=avatar, description=description, access_token=PersistentList([username])))
+        if contact_id not in self.global_contacts:
+            self.global_contacts[contact_id] = dict(avatar=avatar, description=description, access_token=PersistentList([username]))
         else:
-            data = self.global_contacts.get_item(contact_id)
+            data = self.global_contacts[contact_id]
             data["avatar"] = avatar or data["avatar"] # we let current as fallback
             data["description"] = description or data["description"] # we let current as fallback
             if data["access_tokens"] is None:
@@ -1559,8 +1559,8 @@ class TextMessagingExternalContacts(BaseDataManager):
     @transaction_watcher
     def revoke_private_contact_access_from_character(self, username=CURRENT_USER, contact_id=None):
         assert contact_id
-        if self.global_contacts.contains_item(contact_id):
-            data = self.global_contacts.get_item(contact_id)
+        if contact_id in self.global_contacts:
+            data = self.global_contacts[contact_id]
             if data["access_tokens"] is None:
                 pass # let PUBLIC access remain as is
             elif username in data["access_token"]:
@@ -1568,7 +1568,7 @@ class TextMessagingExternalContacts(BaseDataManager):
                 assert username not in data["s"] # only 1 occurrence existed
                 if not data["access_tokens"]:
                     # no one has access to that contact anymore, do some cleanup!
-                    self.global_contacts.delete_item(contact_id)
+                    del self.global_contacts[contact_id]
             else:
                 pass # swallow "access already removed" error
         else:
@@ -1986,7 +1986,7 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
     def get_user_contacts(self, username=CURRENT_USER):
         username = self._resolve_username(username)
         if self.is_master(username=username):
-            return self.get_character_emails() + self.global_contacts.list_keys()
+            return self.get_character_emails() + sorted(self.global_contacts.keys())
         else:
             return self.get_character_emails() + self.get_character_external_contacts(username=username) # including user himself
 
@@ -3298,9 +3298,9 @@ class HelpPages(BaseDataManager):
         Fetching is case-insensitive.
         """
         key = name.lower().strip()
-        if not self.static_pages.contains_item(name):
+        if name not in self.static_pages:
             return None
-        value = self.static_pages.get_item(key)
+        value = self.static_pages[key]
         if self.HELP_CATEGORY in value["categories"]:
             return value
         else:

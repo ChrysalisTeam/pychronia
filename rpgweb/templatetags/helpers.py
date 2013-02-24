@@ -164,8 +164,8 @@ def static_page(context, article_name, initial_header_level=None):
     assert article_name, article_name
     request = context.get('request')
     pages_table = request.datamanager.static_pages
-    if pages_table.contains_item(article_name):
-        content = pages_table.get_item(article_name)["content"]
+    if article_name in pages_table:
+        content = pages_table[article_name]["content"]
     elif request.datamanager.is_master:
         content = _(dedent("""
                         .. container:: .missing-content

@@ -132,11 +132,11 @@ def zodb_transaction(func, *args, **kwargs):
 
 
 
-class DataTableManager(dict):
+class DataTableManager(object):
     """
-    Put an instance of this class in a datamanager class, 
+    Put an instance of this class as an attribute of a datamanager class, 
     to automatically extend it to handle (get/set/delete...)
-    on a (ZODB) dict of data items.
+    a (ZODB) dict of data items.
     """
 
     TRANSLATABLE_ITEM_NAME = None # must be a lazy-translatable string
@@ -201,11 +201,7 @@ class DataTableManager(dict):
     def _check_item_is_not_in_table(cls, table, key):
         if key in table:
             raise AbnormalUsageError(_("Items of type %s with key %s already exists") % (cls.TRANSLATABLE_ITEM_NAME, key))
-
-    @readonly_method
-    def list_keys(self):
-        return sorted(self._table.keys())
-
+    
     @readonly_method
     def get_all_data(self, as_sorted_list=False):
         if not as_sorted_list:
@@ -215,44 +211,41 @@ class DataTableManager(dict):
             mylist.sort(key=self._sorting_key)
             return mylist
 
+
     @readonly_method
-    def contains_item(self, key):
+    def __len__(self):
+        return len(self._table)
+                   
+    @readonly_method
+    def __contains__(self, key):
         return (key in self._table)
 
     @readonly_method
-    def get_item(self, key):
+    def __getitem__(self, key):
         table = self._table
         self._check_item_is_in_table(table, key)
         return table[key]
 
     # Beware - ensure_game_started=False because we assume these are game master items mostly
     @transaction_watcher(ensure_game_started=False)
-    def insert_item(self, key, value):
-        table = self._table
-        self._check_item_is_not_in_table(table, key)
-        key, value = self._preprocess_new_item(key, value)
-        self._check_item_validity(key, value)
-        table[key] = value
-
-    @transaction_watcher(ensure_game_started=False)
-    def update_item(self, key, value):
-        table = self._table
-        self._check_item_is_in_table(table, key)
-        if not self._item_can_be_edited(key, table[key]):
+    def __setitem__(self, key, value):
+        table = self._table       
+        if key in table and not self._item_can_be_edited(key, table[key]):
             raise AbnormalUsageError(_("Can't modify %s item with key %s") % (self.TRANSLATABLE_ITEM_NAME, key))
         key, value = self._preprocess_new_item(key, value)
         self._check_item_validity(key, value)
         table[key] = value
 
     @transaction_watcher(ensure_game_started=False)
-    def delete_item(self, key):
+    def __delitem__(self, key):
         table = self._table
         self._check_item_is_in_table(table, key)
         if not self._item_can_be_edited(key, table[key]):
             raise AbnormalUsageError(_("Can't delete %s item with key %s") % (self.TRANSLATABLE_ITEM_NAME, key))
         del table[key]
 
-
+    def __getattr__(self, name):
+        return getattr(self._table, name) # for methods like keys()...
 
 
 class LazyInstantiationDescriptor(object):

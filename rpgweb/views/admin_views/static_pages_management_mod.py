@@ -183,7 +183,9 @@ class StaticPagesManagement(AbstractGameView):
         
         form = self.instantiate_table_form(post_data=self.request.POST)
         if form.is_valid():
-            pass # TODO  
+            data = form.clean_data
+
+            # don't forget to remove old entry, if renaming occurred
         
             res["result"] = True
 

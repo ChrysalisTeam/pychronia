@@ -1082,80 +1082,74 @@ class TestDatamanager(BaseGameTestCase):
 
         # preexisting, immutable entry
         fixture_key = "everyone@chars.com" # test fixture
-        assert container.contains_item(fixture_key)
-        assert fixture_key in container.list_keys()
+        assert fixture_key in container
+        assert fixture_key in sorted(container.keys())
         assert fixture_key in container.get_all_data()
-        assert container.list_keys() == sorted(container.get_all_data().keys())
+        assert sorted(container.keys()) == sorted(container.get_all_data().keys())
         assert fixture_key in [i[0] for i in container.get_all_data(as_sorted_list=True)]
 
-        res = container.get_item(fixture_key)
+        res = container[fixture_key]
         assert res["immutable"]
         with pytest.raises(UsageError):
-            container.insert_item(fixture_key, good_content.copy()) # already existing
+            container[fixture_key] = good_content.copy() # already existing
         with pytest.raises(UsageError):
-            container.update_item(fixture_key, good_content.copy()) # immutable
+            container[fixture_key] = good_content.copy() # immutable
         with pytest.raises(UsageError):
-            container.delete_item(fixture_key) # immutable
-        assert container.contains_item(fixture_key)
+            del container[fixture_key] # immutable
+        assert fixture_key in container
 
 
         with pytest.raises(UsageError):
-            container.insert_item(contact_bad, good_content.copy()) # bad key
+            container[contact_bad] = good_content.copy() # bad key
 
 
         # dealing with new entry (mutable)
         for contact in (contact1, contact2):
 
             # not yet present
-            assert not container.contains_item(contact)
+            assert contact not in container
             assert contact not in container.get_all_data()
-            assert contact not in container.list_keys()
+            assert contact not in sorted(container.keys())
 
             with pytest.raises(UsageError):
-                container.get_item(contact)
+                container[contact]
             with pytest.raises(UsageError):
-                container.update_item(contact, good_content.copy())
-            with pytest.raises(UsageError):
-                container.delete_item(contact)
+                del container[contact]
 
 
             with pytest.raises(UsageError):
-                container.insert_item(contact, {"avatar": 11}) # bad content
+                container[contact] = {"avatar": 11} # bad content
             with pytest.raises(UsageError):
-                container.insert_item(contact, {"description": False}) # bad content
+                container[contact] = {"description": False} # bad content
 
 
-            container.insert_item(contact, good_content.copy())
-            with pytest.raises(UsageError):
-                container.insert_item(contact, good_content.copy())
+            container[contact] = good_content.copy()
 
-            assert container.contains_item(contact)
-            res = container.get_item(contact).copy()
+            assert contact in container
+            res = container[contact].copy()
             assert res["immutable"] == False
             del res["immutable"]
             assert res == good_content
 
             with pytest.raises(UsageError):
-                container.update_item(contact, {"avatar": 11}) # bad content
-            container.update_item(contact, {"avatar": None, "description": None})
+                container[contact] = {"avatar": 11} # bad content
+            container[contact] = {"avatar": None, "description": None}
 
-            res = container.get_item(contact).copy()
+            res = container[contact].copy()
             assert res["immutable"] == False
             del res["immutable"]
             assert res == {"avatar": None, "description": None, "access_tokens": None}
 
-            assert container.contains_item(contact)
+            assert contact in container
 
-            container.delete_item(contact)
+            del container[contact]
             with pytest.raises(UsageError):
-                container.delete_item(contact)
-            with pytest.raises(UsageError):
-                container.update_item(contact, good_content.copy())
-            assert not container.contains_item(contact)
+                del container[contact]
+            assert contact not in container
 
             assert contact not in container.get_all_data()
             with pytest.raises(UsageError):
-                container.get_item(contact)
+                container[contact]
 
     '''        
     @for_core_module(TextMessagingCore)
