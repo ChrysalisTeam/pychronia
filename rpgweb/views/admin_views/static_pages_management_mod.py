@@ -83,22 +83,23 @@ class Select2TagsField(HeavySelect2MultipleChoiceField):
 
 class StaticPageForm(AbstractGameForm):
 
-    previous_identifier = forms.SlugField(label=_lazy("Initial identifier"), widget=forms.HiddenInput())
+    previous_identifier = forms.SlugField(label=_lazy("Initial identifier"), widget=forms.HiddenInput(), required=False)
     identifier = forms.SlugField(label=_lazy("Identifier"))
-    description = forms.CharField(label=_lazy("Hidden description"), widget=forms.Textarea(attrs={'rows': '8', 'cols':'35'}))
-    content = forms.CharField(label=_lazy("Content"), widget=forms.Textarea(attrs={'rows': '8', 'cols':'35'}))
 
-    categories = forms.CharField(label=_lazy("Categories"))
-    keywords = forms.CharField(label=_lazy("Keywords"))
+    categories = Select2TagsField(label=_lazy("Categories"))
+    keywords = Select2TagsField(label=_lazy("Keywords"))
 
+    description = forms.CharField(label=_lazy("Hidden description"), widget=forms.Textarea(attrs={'rows': '2', 'cols':'40'}))
+    content = forms.CharField(label=_lazy("Content"), widget=forms.Textarea(attrs={'rows': '8', 'cols':'40'}))
 
-    test = Select2TagsField(label=_lazy("TESTING"), choice_tags=["kkk", "lll"])
+    ###test = Select2TagsField(label=_lazy("TESTING"), choice_tags=["kkk", "lll"])
+
 
     def __init__(self, datamanager, initial=None, **kwargs):
-        
+
         if initial:
             initial["previous_identifier"] = initial["identifier"]
-        
+
         super(StaticPageForm, self).__init__(datamanager, initial=initial, **kwargs)
 
 
@@ -128,7 +129,7 @@ class StaticPagesManagement(AbstractGameView):
 
     NAME = "static_pages_management"
 
-    GAME_FORMS = {"static_page_form": (StaticPageForm, "static_page_form")}
+    GAME_FORMS = {}
     ACTIONS = {}
     TEMPLATE = "administration/static_pages_management.html"
 
@@ -136,11 +137,73 @@ class StaticPagesManagement(AbstractGameView):
     PERMISSIONS = []
     ALWAYS_AVAILABLE = True
 
+    DATA_TABLE_FORM = StaticPageForm
 
     def get_data_table_instance(self):
-        return self._datamanager.static_pages
+        return self.datamanager.static_pages
+
+    def instantiate_table_form(self, table_item=None, post_data=None, idx=None):
+        assert table_item or post_data or (idx == 0)
+
+        initial_data = None
+        if table_item:
+            table_key, table_value = table_item
+            initial_data = dict(previous_identifier=table_key,
+                           identifier=table_key)
+            initial_data.update(table_value)
+
+        res = self.DATA_TABLE_FORM(self.datamanager,
+                                    data=post_data,
+                                    initial=initial_data,
+                                    prefix=None, # NO prefix, all forms must submit the same data names
+                                    auto_id="id_%s_%%s" % idx, # needed by select2 to wrap fields
+                                    label_suffix=":<br/>") # no id, since there will be numerous such forms
+        return res
+
+
 
     def get_template_vars(self, previous_form_data=None):
+
+        table = self.get_data_table_instance()
+        table_items = table.get_all_data(as_sorted_list=True)
+
+        #print("@@@kkk", table_items)
+        forms = [(None, self.instantiate_table_form(idx=0))] # form for new table entry
+        forms += [(table_item[0], self.instantiate_table_form(table_item=table_item, idx=idx)) for (idx, table_item) in enumerate(table_items, start=1)]
+
+        return dict(page_title=_("TO DEFINE FIXME"),
+                    forms=forms)
+
+
+    def _process_html_post_data(self):
+        assert not self.request.is_ajax()
+        assert self.request.method == "POST"
+        res = dict(result=None,
+                   form_data=None)
+        
+        form = self.instantiate_table_form(post_data=self.request.POST)
+        if form.is_valid():
+            pass # TODO  
+        
+            res["result"] = True
+
+        return res
+
+
+    def _____________process_html_request(self):
+
+
+        template_vars = self.get_template_vars()
+        assert isinstance(template_vars, collections.Mapping), template_vars
+
+        response = render(self.request,
+                          self.TEMPLATE,
+                          template_vars)
+        return response
+
+
+
+    def ____________get_template_vars(self, previous_form_data=None):
 
         form = StaticPageForm(self.datamanager, initial=None, data=dict(_ability_form="HHH", test=("aaa", "hhhh")))
         if form.is_valid():
@@ -149,16 +212,4 @@ class StaticPagesManagement(AbstractGameView):
          #                                        hide_on_success=False,
          #                                         previous_form_data=None)
         return dict(form=form)
-        '''
-        if self.request.GET.get("new"):
-            pass
-        elif self.request.REQUEST.get("edited_item"): # can be given by GET or hidden POST field
-            pass
-        else:
-            pass
-        
-            '''
-
-    def static_page_form(self):
-        return
 

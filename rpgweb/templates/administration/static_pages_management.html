@@ -1,15 +1,45 @@
-{% extends "base_one_column.html" %}
+{% extends "base_two_columns.html" %}
 
-{% load i18n helpers %}  
+{% load i18n helpers kwacros %}  
+{% loadkwacros "metalradiance_kwacros.html" %}
+
+
+
+{% block sidebar %}
+
+{% usekwacro side_panel_start frame_class="mini_frame float_left" decos="2" %}
+    <h2>{% trans "Entries" %}</h2>
+    
+    <div class="beige_paper">
+    <ul>
+        {% for identifier, form in forms %}
+            <li><a href="#entry-{{ identifier }}">{{ identifier|default:_("NEW ENTRY") }}</a></li>
+        {% endfor %}
+    </ul>
+    </div>
+    
+{% usekwacro side_panel_end %}
+
+{% endblock %}
+
+
+
 
 {% block content %}  
 
-            <form id="locking_form" action="" method="post">
-                {{ form.as_p }}
-                <input type="submit" class="digit" value="{% trans "Lock Doors" %}"/>
-            </form>
-
-
+    {% for identifier, form in forms %}
+    <div class="scroll_realistic_thin_ends center">
+        <form id="delete_form" action="" method="post" class="float_right">
+            <input type="hidden" name="deleted_item" value="{{ identifier }}"/>
+            <input type="submit" name="delete" value="{% trans "Delete" %}" onclick="return confirm('{% trans "Are you sure you want this entry ?" %}');"/>
+        </form>
+        <a name="entry-{{ identifier }}"><h2>{{ identifier|default:_("NEW ENTRY") }}</h2></a>
+        <form id="update_form" action="" method="post">
+            {{ form.as_p }}
+            <input type="submit" name="submit" value="{% trans "Submit" %}"/>
+        </form>
+    </div>
+    {% endfor %}
 
 {% endblock %}
 

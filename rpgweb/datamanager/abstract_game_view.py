@@ -392,7 +392,7 @@ class AbstractGameView(object):
             for (form_name, (FormClass, action_name)) in self.GAME_FORMS.items():
                 if FormClass.matches(data): # class method
                     res = self._do_process_form_submission(data=data,
-                                                                form_name=form_name, FormClass=FormClass, action_name=action_name)
+                                                            form_name=form_name, FormClass=FormClass, action_name=action_name)
                     break # IMPORTANT
             else:
                 user.add_error(_("Submitted form data hasn't been recognized"))

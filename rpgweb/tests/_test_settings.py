@@ -73,7 +73,7 @@ MIDDLEWARE_CLASSES = (
 'rpgweb.middlewares.ZodbTransactionMiddleware',
 'rpgweb.middlewares.AuthenticationMiddleware',
 'rpgweb.middlewares.PeriodicProcessingMiddleware',
-###'debug_toolbar.middleware.DebugToolbarMiddleware',
+'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
 
 

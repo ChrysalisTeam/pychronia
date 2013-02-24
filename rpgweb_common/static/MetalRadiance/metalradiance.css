@@ -50,48 +50,56 @@
   background-color: #ff0000;
 }
 .stick_bottom_left {
+  pointer-events: none;
   position: absolute;
   z-index: 8;
   bottom: 0;
   left: 0;
 }
 .stick_bottom_right {
+  pointer-events: none;
   position: absolute;
   z-index: 8;
   bottom: 0;
   right: 0;
 }
 .stick_top_left {
+  pointer-events: none;
   position: absolute;
   z-index: 8;
   top: 0;
   left: 0;
 }
 .stick_top_right {
+  pointer-events: none;
   position: absolute;
   z-index: 8;
   top: 0;
   right: 0;
 }
 .big_stick_bottom_left {
+  pointer-events: none;
   position: absolute;
   z-index: 8;
   bottom: -12px;
   left: -12px;
 }
 .big_stick_bottom_right {
+  pointer-events: none;
   position: absolute;
   z-index: 8;
   bottom: -12px;
   right: -19px;
 }
 .big_stick_top_left {
+  pointer-events: none;
   position: absolute;
   z-index: 8;
   top: -10px;
   left: -10px;
 }
 .big_stick_top_right {
+  pointer-events: none;
   position: absolute;
   z-index: 8;
   top: -7px;
@@ -213,7 +221,7 @@ div, p, span {
   overflow: visible;
 }
 #full_content .main_frame_border .main_frame_content:after,
-.clearfix:after {
+#full_content:after, .clearfix:after {
   content: ".";
   visibility: hidden;
   display: block;
@@ -927,7 +935,9 @@ body:after {
     url("img/backgrounds/ricepaper-hue-orange.jpg"),
     url(img/backgrounds/decorated_golden_frame.png),
     url(img/backgrounds/ricepaper-hue-gold.jpg);
-  display: none;
+  background-repeat: no-repeat;
+  background-position: -2000000;
+  display: inline;
 }
 #full_header {
   width: 100%;

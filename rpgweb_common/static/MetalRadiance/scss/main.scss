@@ -75,8 +75,9 @@ body {
                url("img/backgrounds/ricepaper-hue-orange.jpg"),
                url('#{$IMGS}backgrounds/decorated_golden_frame.png'),
                url('#{$IMGS}backgrounds/ricepaper-hue-gold.jpg');
-               
-    display: none;
+    background-repeat: no-repeat;
+    background-position: -1000000 - 1000000;
+    display: inline; // caching doesn't work if display==None'background-position:
     }
 }
 
@@ -317,7 +318,7 @@ body {
     margin: -10px auto 2px;
     padding: 10px;
     overflow: visible; 
-    
+    @extend .clearfix;
      
     .mini_frame {
     
