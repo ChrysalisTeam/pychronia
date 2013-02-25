@@ -155,6 +155,8 @@ class DataTableManager(object):
         """
         Method that completes and normalizes a new item (for example with enforced default values).
         Must return the (possibly modified) (key, value) pair.
+        
+        Beware of well converting python types to zodb types here if needed.
         """
         raise NotImplementedError("_preprocess_new_item")
 
@@ -244,8 +246,14 @@ class DataTableManager(object):
             raise AbnormalUsageError(_("Can't delete %s item with key %s") % (self.TRANSLATABLE_ITEM_NAME, key))
         del table[key]
 
+    @readonly_method
+    def copy(self):
+        return copy.copy(self._table) # thus no WRITE on dict
+
+    # transaction watching here would make no sense
     def __getattr__(self, name):
-        return getattr(self._table, name) # for methods like keys()...
+        return getattr(self._table, name) # for methods like keys()... don't use copy() as it's MODIFYING object
+
 
 
 class LazyInstantiationDescriptor(object):

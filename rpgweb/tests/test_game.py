@@ -1126,7 +1126,7 @@ class TestDatamanager(BaseGameTestCase):
             container[contact] = good_content.copy()
 
             assert contact in container
-            res = container[contact].copy()
+            res = copy.copy(container[contact])
             assert res["immutable"] == False
             del res["immutable"]
             assert res == good_content
@@ -1135,7 +1135,7 @@ class TestDatamanager(BaseGameTestCase):
                 container[contact] = {"avatar": 11} # bad content
             container[contact] = {"avatar": None, "description": None}
 
-            res = container[contact].copy()
+            res = copy.copy(container[contact])
             assert res["immutable"] == False
             del res["immutable"]
             assert res == {"avatar": None, "description": None, "access_tokens": None}

@@ -1512,7 +1512,7 @@ class TextMessagingExternalContacts(BaseDataManager):
             assert "immutable" not in value
             value["immutable"] = False # always, else new entry can't even be deleted later on
             value.setdefault("access_tokens", None)
-            return (key, value)
+            return (key, PersistentDict(value))
             # other params are supposed to exist in "value"
 
         def _check_item_validity(self, key, value, strict=False):
@@ -3244,7 +3244,7 @@ class StaticPages(BaseDataManager):
         def _preprocess_new_item(self, key, value):
             assert "immutable" not in value
             value["immutable"] = False
-            return (key, value)
+            return (key, PersistentDict(value))
             # other params are supposed to exist in "value"
 
         def _check_item_validity(self, key, value, strict=False):

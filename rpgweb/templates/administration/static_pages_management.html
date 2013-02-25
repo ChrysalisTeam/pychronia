@@ -30,7 +30,8 @@
     {% for identifier, form in forms %}
     <div class="scroll_realistic_thin_ends center">
         <form id="delete_form" action="" method="post" class="float_right">
-            <input type="hidden" name="deleted_item" value="{{ identifier }}"/>
+            <input type="hidden" name="_action_" value="delete_item"/>
+            <input type="hidden" name="deleted_item" value="{{ identifier }}"/>_action_
             <input type="submit" name="delete" value="{% trans "Delete" %}" onclick="return confirm('{% trans "Are you sure you want this entry ?" %}');"/>
         </form>
         <a name="entry-{{ identifier }}"><h2>{{ identifier|default:_("NEW ENTRY") }}</h2></a>

@@ -257,10 +257,13 @@ class AbstractGameView(object):
                           new_form_name, # id of the form to be potentially instantiated
                           hide_on_success=False, # should we return None if this form has just been submitted successfully?
                           previous_form_data=None, # data about previously submitted form, if any
-                          initial_data=None):
+                          initial_data=None,
+                          **form_options):
         """
         *form_initializer* will be passed as 1st argument to the form. By default, it's the datamanager.
         """
+        form_options = form_options or {}
+        
         if previous_form_data:
             previous_form_name = previous_form_data.form_name
             previous_form_instance = previous_form_data.form_instance
@@ -289,7 +292,7 @@ class AbstractGameView(object):
 
         form_initializer = self.datamanager # this property might be overridden by subclasses
         try:
-            form = NewFormClass(form_initializer, initial=initial_data)
+            form = NewFormClass(form_initializer, initial=initial_data, **form_options)
         except UninstantiableForm:
             form = None
         return form
