@@ -84,13 +84,13 @@ class Select2TagsField(HeavySelect2MultipleChoiceField):
 class StaticPageForm(AbstractGameForm):
 
     previous_identifier = forms.SlugField(label=_lazy("Initial identifier"), widget=forms.HiddenInput(), required=False)
-    identifier = forms.SlugField(label=_lazy("Identifier"))
+    identifier = forms.SlugField(label=_lazy("Identifier"), required=True)
 
-    categories = Select2TagsField(label=_lazy("Categories"))
-    keywords = Select2TagsField(label=_lazy("Keywords"))
+    categories = Select2TagsField(label=_lazy("Categories"), required=False)
+    keywords = Select2TagsField(label=_lazy("Keywords"), required=False)
 
-    description = forms.CharField(label=_lazy("Hidden description"), widget=forms.Textarea(attrs={'rows': '2', 'cols':'40'}))
-    content = forms.CharField(label=_lazy("Content"), widget=forms.Textarea(attrs={'rows': '8', 'cols':'40'}))
+    description = forms.CharField(label=_lazy("Hidden description"), widget=forms.Textarea(attrs={'rows': '2', 'cols':'40'}), required=False)
+    content = forms.CharField(label=_lazy("Content"), widget=forms.Textarea(attrs={'rows': '8', 'cols':'40'}), required=True)
 
     ###test = Select2TagsField(label=_lazy("TESTING"), choice_tags=["kkk", "lll"])
 
@@ -168,7 +168,7 @@ class StaticPagesManagement(AbstractGameView):
         table = self.get_data_table_instance()
         
         # insertion and update are the same
-        table["identifier"] = dict(categories=categories,
+        table[identifier] = dict(categories=categories,
                                    keywords=keywords,
                                    description=description,
                                    content=content)
@@ -176,20 +176,20 @@ class StaticPagesManagement(AbstractGameView):
         # cleanup in case of renaming
         if previous_identifier and previous_identifier != identifier:
             if previous_identifier in table:
-                del table["previous_identifier"]
+                del table[previous_identifier]
             else:
                 self.logger.critical("Wrong previous_identifier submitted in StaticPagesManagement: %r", previous_identifier)
 
         return _("Entry %r properly submitted") % identifier
 
 
-    def delete_item(self, deleted_id):
+    def delete_item(self, deleted_item):
         table = self.get_data_table_instance()
         
-        if not deleted_id or deleted_id not in table:
-            raise AbnormalUsageError(_("Entry %r not found") % deleted_id)
-        del table[deleted_id]
-        return _("Entry %r properly deleted") % deleted_id
+        if not deleted_item or deleted_item not in table:
+            raise AbnormalUsageError(_("Entry %r not found") % deleted_item)
+        del table[deleted_item]
+        return _("Entry %r properly deleted") % deleted_item
 
         
     def get_template_vars(self, previous_form_data=None):
@@ -197,16 +197,16 @@ class StaticPagesManagement(AbstractGameView):
         table = self.get_data_table_instance()
         table_items = table.get_all_data(as_sorted_list=True)
 
-        submitted_identifier = None
+        concerned_identifier = None
         if previous_form_data and not previous_form_data.form_successful:
-            submitted_identifier = self.request.POST.get("identifier")
+            concerned_identifier = self.request.POST.get("previous_identifier", "") # empty string if it was a new item
 
 
-        forms = [(None, self.instantiate_table_form(idx=0))] # form for new table entry
+        forms = [(None, self.instantiate_table_form(idx=0, previous_form_data=(previous_form_data if concerned_identifier == "" else None)))] # form for new table entry
         
         for (idx, (table_key, table_value)) in enumerate(table_items, start=1):
             
-            transfered_previous_form_data = previous_form_data if (submitted_identifier and submitted_identifier == table_key) else None
+            transfered_previous_form_data = previous_form_data if (concerned_identifier and concerned_identifier == table_key) else None
             transfered_table_item = (table_key, table_value) if not transfered_previous_form_data else None # slight optimization
             
             new_form = self.instantiate_table_form(table_item=transfered_table_item, previous_form_data=transfered_previous_form_data, idx=idx)

@@ -304,6 +304,7 @@ class AbstractGameView(object):
             relevant_args = utilities.adapt_parameters_to_func(data, func)
             return relevant_args
         except (TypeError, ValueError), e:
+            self.logger.error("Wrong signature when calling %s : %s (exception is %r)", func.__name__, data, e)
             raise UsageError(_("Wrong arguments when calling method %s") % func.__name__)
 
 
