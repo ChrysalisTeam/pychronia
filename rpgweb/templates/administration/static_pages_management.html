@@ -29,16 +29,21 @@
 
     {% for identifier, form in forms %}
     <div class="scroll_realistic_thin_ends center">
+        
+        {% if identifier %}
         <form id="delete_form" action="" method="post" class="float_right">
             <input type="hidden" name="_action_" value="delete_item"/>
             <input type="hidden" name="deleted_item" value="{{ identifier }}"/>
             <input type="submit" name="delete" value="{% trans "Delete" %}" onclick="return confirm('{% trans "Are you sure you want to delete this entry ?" %}');"/>
         </form>
+        {% endif %}
+        
         <a name="entry-{{ identifier }}"><h2>{{ identifier|default:_("NEW ENTRY") }}</h2></a>
         <form id="update_form" action="" method="post">
             {{ form.as_p }}
             <input type="submit" name="submit" value="{% trans "Submit" %}"/>
         </form>
+        
     </div>
     {% endfor %}
 

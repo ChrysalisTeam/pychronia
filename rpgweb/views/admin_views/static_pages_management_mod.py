@@ -4,81 +4,8 @@ from __future__ import unicode_literals
 
 from rpgweb.common import *
 from rpgweb.datamanager import register_view, AbstractGameView, AbstractGameForm
+from rpgweb.utilities.select2_extensions import Select2TagsField
 from django import forms
-
-from django_select2.util import JSVar
-from django_select2 import HeavySelect2MultipleChoiceField, Select2MultipleWidget
-from django_select2.widgets import MultipleSelect2HiddenInput, Select2Mixin
-from django.forms.widgets import Input
-
-
-"""
-SEPARATOR = "||"
-
-class SpecialHiddenInput(Input):
-    input_type = 'hidden'
-    is_hidden = False
-"""
-
-class Select2TagsWidget(Select2Mixin, MultipleSelect2HiddenInput): ##SpecialHiddenInput): ###forms.HiddenInput): ###MultipleSelect2HiddenInput):
-
-    def init_options(self):
-        self.options.update({"separator": JSVar('django_select2.MULTISEPARATOR'),
-                            "tokenSeparators": [",", ";", " "],
-                            "tags": []}) # no tags proposed by default
-
-    def set_choice_tags(self, tags):
-        self.options["tags"] = tags
-
-    '''
-    def render(self, name, value, attrs=None):
-        print(">>>>>>>>>", name, repr(value))
-        if isinstance(value, (list, tuple)):
-            value = SEPARATOR.join(value)
-        return super(Select2SpecialWidget, self).render(name=name, value=value, attrs=attrs)
-
-    def value_from_datadict(self, data, files, name):
-        value = data.get(name, None)
-        if value and isinstance(value, basestring):
-            value = value.split(SEPARATOR)
-        return value
-    '''
-
-class Select2TagsField(HeavySelect2MultipleChoiceField):
-    widget = Select2TagsWidget
-
-    def __init__(self, **kwargs):
-
-        choice_tags = kwargs.pop("choice_tags", None) # done first
-
-        if kwargs.get('widget', None) is None:
-            # we override the nasty behaviour of HeavySelect2MultipleChoiceField mixins
-            #who expect data_view to be sent to widget
-            kwargs['widget'] = self.widget()
-
-        super(Select2TagsField, self).__init__(**kwargs)
-
-        if choice_tags:
-            self.choice_tags = choice_tags # triggers property
-
-    def coerce_value(self, value):
-        """
-        Coerces ``value`` to a Python data type.
-        Sub-classes should override this if they do not want unicode values.
-        """
-        return super(Select2TagsField, self).coerce_value(value=value)
-
-    def _get_choice_tags(self):
-        return self._choice_tags
-
-    def _set_choice_tags(self, value):
-        # tags can be any iterable, but we call list() on it because
-        # it will be consumed more than once.
-        self._choice_tags = list(value)
-        self.widget.set_choice_tags(value)
-
-    choice_tags = property(_get_choice_tags, _set_choice_tags)
-
 
 
 class StaticPageForm(AbstractGameForm):
@@ -98,30 +25,13 @@ class StaticPageForm(AbstractGameForm):
     def __init__(self, datamanager, initial=None, **kwargs):
 
         if initial:
+            assert "previous_identifier" not in initial
             initial["previous_identifier"] = initial["identifier"]
 
         super(StaticPageForm, self).__init__(datamanager, initial=initial, **kwargs)
 
 
-    def ___clean(self):
-        cleaned_data = super(StaticPageForm, self).clean()
 
-        cleaned_data["categories"] = cleaned_data["categories"].split(SEPARATOR)
-        cleaned_data["keywords"] = cleaned_data["keywords"].split(SEPARATOR)
-
-        # Always return the full collection of cleaned data.
-        return cleaned_data
-
-
-'''
-class MultipleTagField(forms.Field):
-
-    def prepare_value(self, value):
-        return value
-
-    def to_python(self, value):
-        return value
-'''
 
 
 @register_view
@@ -142,37 +52,45 @@ class StaticPagesManagement(AbstractGameView):
     def get_data_table_instance(self):
         return self.datamanager.static_pages
 
+
+    def _instantiate_form(self, new_form_name, **kwargs):
+        final_kwargs = dict(prefix=None, # NO prefix, all forms must submit the same data names
+                                auto_id="id_default_%s",
+                                label_suffix=":<br/>") # no id, since there will be numerous such forms
+        final_kwargs.update(kwargs)
+
+        # FIXME - PROBLEM, NOT USED FOR BOUND FORM INSTANTIATION !!!!!!!!!!!! TODO
+
+        return super(StaticPagesManagement, self)._instantiate_form(new_form_name=new_form_name, **final_kwargs)
+
+
     def instantiate_table_form(self, table_item=None, previous_form_data=None, idx=None):
-             
+
         assert table_item or previous_form_data or (idx == 0)
- 
+
         initial_data = None
         if table_item:
             table_key, table_value = table_item
-            initial_data = dict(previous_identifier=table_key,
-                                identifier=table_key)
+            initial_data = dict(identifier=table_key)
             initial_data.update(table_value)
-        
-        form_options = dict(prefix=None, # NO prefix, all forms must submit the same data names
-                            auto_id="id_%s_%%s" % slugify(idx), # needed by select2 to wrap fields
-                            label_suffix=":<br/>") # no id, since there will be numerous such forms
 
-        res = self._instantiate_form("submit_item", 
+        res = self._instantiate_form(new_form_name="submit_item",
                                      previous_form_data=previous_form_data,
                                      initial_data=initial_data,
-                                     **form_options)
-        
+                                     auto_id="id_%s_%%s" % slugify(idx)) # needed by select2 to wrap fields
+
         return res
+
 
     def submit_item(self, previous_identifier, identifier, categories, keywords, description, content):
         table = self.get_data_table_instance()
-        
+
         # insertion and update are the same
         table[identifier] = dict(categories=categories,
                                    keywords=keywords,
                                    description=description,
                                    content=content)
-        
+
         # cleanup in case of renaming
         if previous_identifier and previous_identifier != identifier:
             if previous_identifier in table:
@@ -185,13 +103,13 @@ class StaticPagesManagement(AbstractGameView):
 
     def delete_item(self, deleted_item):
         table = self.get_data_table_instance()
-        
+
         if not deleted_item or deleted_item not in table:
             raise AbnormalUsageError(_("Entry %r not found") % deleted_item)
         del table[deleted_item]
         return _("Entry %r properly deleted") % deleted_item
 
-        
+
     def get_template_vars(self, previous_form_data=None):
 
         table = self.get_data_table_instance()
@@ -203,12 +121,12 @@ class StaticPagesManagement(AbstractGameView):
 
 
         forms = [(None, self.instantiate_table_form(idx=0, previous_form_data=(previous_form_data if concerned_identifier == "" else None)))] # form for new table entry
-        
+
         for (idx, (table_key, table_value)) in enumerate(table_items, start=1):
-            
+
             transfered_previous_form_data = previous_form_data if (concerned_identifier and concerned_identifier == table_key) else None
             transfered_table_item = (table_key, table_value) if not transfered_previous_form_data else None # slight optimization
-            
+
             new_form = self.instantiate_table_form(table_item=transfered_table_item, previous_form_data=transfered_previous_form_data, idx=idx)
             forms.append((table_key, new_form))
 
@@ -225,33 +143,33 @@ class StaticPagesManagement(AbstractGameView):
 
 
 
-
+''' USELESS
 
     def _________process_html_post_data(self):
         assert not self.request.is_ajax()
         assert self.request.method == "POST"
         res = dict(result=False, # default
                    form_data=None)
-        
+
         POST = self.request.POST
-        
+
         table = self.get_data_table_instance()
-        
+
         if "delete" in POST:
             with action_failure_handler(self.request, success_message): # only for unhandled exceptions
                 deleted_id = POST.get("deleted_id", None)
 
-                
+
         else:
-            
+
             with action_failure_handler(self.request, success_message=_("Entry %r properly submitted") % deleted_id):
-            
+
                 form = self.instantiate_table_form(post_data=self.request.POST)
                 if form.is_valid():
                     data = form.clean_data
-                
+
                 # don't forget to remove old entry, if renaming occurred
-            
+
                 res["result"] = True
 
         return res
@@ -279,4 +197,4 @@ class StaticPagesManagement(AbstractGameView):
          #                                        hide_on_success=False,
          #                                         previous_form_data=None)
         return dict(form=form)
-
+'''
