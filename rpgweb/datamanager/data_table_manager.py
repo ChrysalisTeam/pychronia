@@ -15,6 +15,8 @@ class DataTableManager(object):
 
     TRANSLATABLE_ITEM_NAME = None # must be a lazy-translatable string
 
+    #####INPUT_FIELDS = [] # list of fields allowed in the data dict
+
     def _load_initial_data(self, **kwargs):
         # NO NEED TO CALL UPPER CLASS !
         raise NotImplementedError("_load_initial_data")
@@ -108,6 +110,7 @@ class DataTableManager(object):
         table = self._table
         if key in table and not self._item_can_be_edited(key, table[key]):
             raise AbnormalUsageError(_("Can't modify %s item with key %s") % (self.TRANSLATABLE_ITEM_NAME, key))
+        ###value = {k: v for (k, v) in value.items() if k in self.INPUT_FIELDS} # we filter out useless values
         key, value = self._preprocess_new_item(key, value)
         self._check_item_validity(key, value)
         table[key] = value
@@ -140,5 +143,13 @@ class LazyInstantiationDescriptor(object):
 
     def __get__(self, obj, objtype):
         return self.target_klass(datamanager=obj)
+
+
+
+
+
+
+
+
 
 

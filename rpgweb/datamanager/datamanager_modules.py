@@ -8,7 +8,7 @@ from rpgweb.common import _, _lazy, _noop # just to shut up the static checker..
 from .datamanager_tools import *
 from .datamanager_user import GameUser
 from .datamanager_core import BaseDataManager
-from .data_table_management import *
+from .data_table_manager import *
 
 PLACEHOLDER = object()
 
