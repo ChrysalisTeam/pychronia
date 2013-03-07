@@ -33,11 +33,16 @@ class AbstractGameForm(forms.Form):
 
     _ability_field_name = "_ability_form"
 
-    def __init__(self, datamanager, *args, **kwargs):
+    def __init__(self, datamanager, **kwargs):
         """
         *datamanager* may also be an ability, since it proxies datamanager methods too.
         """
-        super(AbstractGameForm, self).__init__(*args, **kwargs)
+
+        kwargs.setdefault("prefix", None) # NO prefix, all forms must submit the same data names
+        kwargs.setdefault("auto_id", "id_default_%s") # in multi-form case, this one will be used for unique "bound" form
+        kwargs.setdefault("label_suffix", ":<br/>") # better presentation
+
+        super(AbstractGameForm, self).__init__(**kwargs)
 
         self.fields.insert(0, self.__class__._ability_field_name, forms.CharField(initial=self._get_dotted_class_name(),
                                                                                   widget=forms.HiddenInput))

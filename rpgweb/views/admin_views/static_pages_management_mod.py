@@ -47,21 +47,9 @@ class StaticPagesManagement(AbstractGameView):
     PERMISSIONS = []
     ALWAYS_AVAILABLE = True
 
-    DATA_TABLE_FORM = StaticPageForm
 
     def get_data_table_instance(self):
         return self.datamanager.static_pages
-
-
-    def _instantiate_form(self, new_form_name, **kwargs):
-        final_kwargs = dict(prefix=None, # NO prefix, all forms must submit the same data names
-                                auto_id="id_default_%s",
-                                label_suffix=":<br/>") # no id, since there will be numerous such forms
-        final_kwargs.update(kwargs)
-
-        # FIXME - PROBLEM, NOT USED FOR BOUND FORM INSTANTIATION !!!!!!!!!!!! TODO
-
-        return super(StaticPagesManagement, self)._instantiate_form(new_form_name=new_form_name, **final_kwargs)
 
 
     def instantiate_table_form(self, table_item=None, previous_form_data=None, idx=None):
