@@ -39,7 +39,6 @@ class AbstractDataTableManagement(AbstractGameView):
 
     def submit_item(self, previous_identifier, identifier, **data): ####, previous_identifier, identifier, categories, keywords, description, content):
 
-        del data[AbstractGameForm._ability_field_name] # all other form fields should be OK for data table
         table = self.get_data_table_instance()
 
         # insertion and update are the same

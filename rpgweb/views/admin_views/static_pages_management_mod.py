@@ -3,15 +3,13 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from rpgweb.common import *
-from rpgweb.datamanager import register_view, AbstractGameForm, AbstractDataTableManagement
+from rpgweb.datamanager import register_view, AbstractGameForm, AbstractDataTableManagement, DataTableForm
 from rpgweb.utilities.select2_extensions import Select2TagsField
 from django import forms
 
 
-class StaticPageForm(AbstractGameForm):
+class StaticPageForm(DataTableForm):
 
-    previous_identifier = forms.SlugField(label=_lazy("Initial identifier"), widget=forms.HiddenInput(), required=False)
-    identifier = forms.SlugField(label=_lazy("Identifier"), required=True)
 
     categories = Select2TagsField(label=_lazy("Categories"), required=False)
     keywords = Select2TagsField(label=_lazy("Keywords"), required=False)
@@ -22,16 +20,8 @@ class StaticPageForm(AbstractGameForm):
     ###test = Select2TagsField(label=_lazy("TESTING"), choice_tags=["kkk", "lll"])
 
 
-    def __init__(self, datamanager, initial=None, **kwargs):
 
-        if initial:
-            assert "previous_identifier" not in initial
-            initial["previous_identifier"] = initial["identifier"]
-
-        super(StaticPageForm, self).__init__(datamanager, initial=initial, **kwargs)
-
-
-
+### TODO - DEAL WITH IMMUTABLES ???
 
 
 @register_view

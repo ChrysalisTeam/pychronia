@@ -1,27 +1,7 @@
-{% extends "base_two_columns.html" %}
+{% extends "base_one_column.html" %}
 
 {% load i18n helpers kwacros %}  
 {% loadkwacros "metalradiance_kwacros.html" %}
-
-
-
-{% block sidebar %}
-
-{% usekwacro side_panel_start frame_class="mini_frame float_left" decos="2" %}
-    <h2>{% trans "Entries" %}</h2>
-    
-    <div class="beige_paper">
-    <ul>
-        {% for identifier, form in forms %}
-            <li><a href="#entry-{{ identifier }}">{{ identifier|default:_("NEW ENTRY") }}</a></li>
-        {% endfor %}
-    </ul>
-    </div>
-    
-{% usekwacro side_panel_end %}
-
-{% endblock %}
-
 
 
 

@@ -122,6 +122,10 @@ def _generate_web_menu(request, menu_entry_generator):
                          menu_entry(_(u"Game Events"), views.game_events),
                          menu_entry(_(u"Manage Webradio"), views.webradio_management),
                          menu_entry(_(u"Databases"), views.manage_databases),
+
+                         menu_entry(_(u"Static Pages"), views.static_pages_management),
+                         menu_entry(_(u"Global Contacts"), views.global_contacts_management),
+
                       )),
 
 

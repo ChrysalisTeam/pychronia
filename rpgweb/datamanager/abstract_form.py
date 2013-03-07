@@ -6,6 +6,9 @@ from django import forms
 import json
 
 
+from rpgweb.common import *
+
+
 
 class UninstantiableForm(Exception):
     """
@@ -63,5 +66,23 @@ class AbstractGameForm(forms.Form):
         values = self.cleaned_data.copy()
         del values[self._ability_field_name]
         return values
+
+
+
+
+
+class DataTableForm(AbstractGameForm):
+
+    previous_identifier = forms.SlugField(label=_lazy("Initial identifier"), widget=forms.HiddenInput(), required=False)
+    identifier = forms.SlugField(label=_lazy("Identifier"), required=True)
+
+
+    def __init__(self, datamanager, initial=None, **kwargs):
+
+        if initial:
+            assert "previous_identifier" not in initial
+            initial["previous_identifier"] = initial["identifier"]
+
+        super(DataTableForm, self).__init__(datamanager, initial=initial, **kwargs)
 
 

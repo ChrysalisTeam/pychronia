@@ -1,8 +1,19 @@
 
 
-{% load kwacros %}
+{% load kwacros i18n %}
 
 
+
+{% kwacro deletion_button del_id %}
+    {% if del_id %}
+    <form id="delete_form" action="" method="post" class="float_right">
+        <input type="hidden" name="_action_" value="delete_item"/>
+        <input type="hidden" name="deleted_item" value="{{ del_id }}"/>
+        <input type="submit" name="delete" value="{% trans "Delete" %}" onclick="return confirm('{% trans "Are you sure you want to delete this entry ?" %}');"/>
+    </form>
+    {% endif %}
+{% endkwacro %} 
+                
 
 
 {% kwacro main_panel_start frame_class="giant_frame" %}

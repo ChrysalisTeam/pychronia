@@ -49,7 +49,7 @@ from .abilities import (house_locking, runic_translation, wiretapping_management
                         mercenaries_hiring, matter_analysis, world_scan)
 
 from .admin_views import (admin_dashboard, game_events, webradio_management,
-                          manage_databases, static_pages_management,
+                          manage_databases, static_pages_management, global_contacts_management,
                           manage_characters, CHARACTERS_IDENTITIES,
                           DATABASE_OPERATIONS, FAIL_TEST, MEDIA_TEST)
 

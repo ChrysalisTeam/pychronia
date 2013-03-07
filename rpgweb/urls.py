@@ -67,6 +67,7 @@ web_game_urlpatterns = patterns('rpgweb.views',
     url(r'^game_events/$', 'game_events'),
     url(r'^manage_databases/$', 'manage_databases'),
     url(r'^static_pages_management/$', 'static_pages_management'),
+    url(r'^global_contacts_management/$', 'global_contacts_management'),
 
     url(r'^chatroom/$', 'chatroom'),
     url(r'^ajax_chat/$', 'ajax_chat'),
