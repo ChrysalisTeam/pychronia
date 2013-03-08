@@ -3,46 +3,38 @@
 from django_select2.util import JSVar
 from django_select2 import HeavySelect2MultipleChoiceField, Select2MultipleWidget
 from django_select2.widgets import MultipleSelect2HiddenInput, Select2Mixin
+from django.utils.translation import ugettext_lazy as _lazy
+from django.core.exceptions import ValidationError
 
-
-"""
-SEPARATOR = "||"
-
-class SpecialHiddenInput(Input):
-    input_type = 'hidden'
-    is_hidden = False
-"""
 
 class Select2TagsWidget(Select2Mixin, MultipleSelect2HiddenInput): ##SpecialHiddenInput): ###forms.HiddenInput): ###MultipleSelect2HiddenInput):
 
     def init_options(self):
-        self.options.update({"separator": JSVar('django_select2.MULTISEPARATOR'),
+        self.options.update({"maximumSelectionSize":1, # overridden by field
+                             "separator": JSVar('django_select2.MULTISEPARATOR'),
                             "tokenSeparators": [",", ";", " "],
-                            "tags": []}) # no tags proposed by default
+                            "tags": []}) # overridden by field
 
     def set_choice_tags(self, tags):
         self.options["tags"] = tags
 
-    '''
-    def render(self, name, value, attrs=None):
-        print(">>>>>>>>>", name, repr(value))
-        if isinstance(value, (list, tuple)):
-            value = SEPARATOR.join(value)
-        return super(Select2SpecialWidget, self).render(name=name, value=value, attrs=attrs)
+    def set_max_selection_size(self, size):
+        self.options["maximumSelectionSize"] = size
 
-    def value_from_datadict(self, data, files, name):
-        value = data.get(name, None)
-        if value and isinstance(value, basestring):
-            value = value.split(SEPARATOR)
-        return value
-    '''
+
+
 
 class Select2TagsField(HeavySelect2MultipleChoiceField):
     widget = Select2TagsWidget
 
+    default_error_messages = {
+        'too_many': _lazy(u'Too many values sent.'),
+    }
+
     def __init__(self, **kwargs):
 
-        choice_tags = kwargs.pop("choice_tags", None) # done first
+        choice_tags = kwargs.pop("choice_tags", []) # done first
+        max_selection_size = kwargs.pop("max_selection_size", -1) # done first
 
         if kwargs.get('widget', None) is None:
             # we override the nasty behaviour of HeavySelect2MultipleChoiceField mixins
@@ -51,15 +43,27 @@ class Select2TagsField(HeavySelect2MultipleChoiceField):
 
         super(Select2TagsField, self).__init__(**kwargs)
 
-        if choice_tags:
-            self.choice_tags = choice_tags # triggers property
+        self.choice_tags = choice_tags # triggers property
+        self.max_selection_size = max_selection_size # triggers property
 
+    '''
     def coerce_value(self, value):
         """
         Coerces ``value`` to a Python data type.
         Sub-classes should override this if they do not want unicode values.
         """
         return super(Select2TagsField, self).coerce_value(value=value)
+    '''
+
+    def validate(self, value):
+        """
+        Validates that the input is in self.choices.
+        """
+        super(Select2TagsField, self).validate(value)
+        if value and self.max_selection_size > 0:
+            if len(value) > self.max_selection_size:
+                raise ValidationError(self.error_messages['too_many'])
+
 
     def _get_choice_tags(self):
         return self._choice_tags
@@ -68,9 +72,19 @@ class Select2TagsField(HeavySelect2MultipleChoiceField):
         # tags can be any iterable, but we call list() on it because
         # it will be consumed more than once.
         self._choice_tags = list(value)
-        self.widget.set_choice_tags(value)
+        self.widget.set_choice_tags(self._choice_tags)
 
     choice_tags = property(_get_choice_tags, _set_choice_tags)
+
+
+    def _get_max_selection_size(self):
+        return self._max_selection_size
+
+    def _set_max_selection_size(self, value):
+        self._max_selection_size = value
+        self.widget.set_max_selection_size(self._max_selection_size)
+
+    max_selection_size = property(_get_max_selection_size, _set_max_selection_size)
 
 
 '''
