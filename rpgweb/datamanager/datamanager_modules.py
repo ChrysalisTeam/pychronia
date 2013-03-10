@@ -1520,7 +1520,7 @@ class TextMessagingExternalContacts(BaseDataManager):
             utilities.check_has_keys(value, ["immutable", "avatar", "description", "access_tokens"], strict=strict)
             utilities.check_is_bool(value["immutable"],)
             if value["access_tokens"] is not None: # None means "public"
-                all_usernames = self.get_character_usernames()
+                all_usernames = self._inner_datamanager.get_character_usernames()
                 for username in value["access_tokens"]:
                     assert username in all_usernames # this check could be removed in the future, if other kinds of tokens are used!!
             if value["description"]: # optional
@@ -1538,6 +1538,7 @@ class TextMessagingExternalContacts(BaseDataManager):
             return (True if not value.get("immutable") else False)
 
     global_contacts = LazyInstantiationDescriptor(GloballyRegisteredContactsManager)
+
 
     @transaction_watcher
     def grant_private_contact_access_to_character(self, username=CURRENT_USER, contact_id=None, avatar=None, description=None):

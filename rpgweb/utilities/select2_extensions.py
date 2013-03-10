@@ -46,6 +46,13 @@ class Select2TagsField(HeavySelect2MultipleChoiceField):
         self.choice_tags = choice_tags # triggers property
         self.max_selection_size = max_selection_size # triggers property
 
+
+    def __deepcopy__(self, memo):
+        result = super(Select2TagsField, self).__deepcopy__(memo)
+        result._choice_tags = copy.deepcopy(self._choice_tags, memo) # in case it's modified in place by end user
+        return result
+
+
     '''
     def coerce_value(self, value):
         """
