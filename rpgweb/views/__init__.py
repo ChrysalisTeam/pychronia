@@ -50,6 +50,7 @@ from .abilities import (house_locking, runic_translation, wiretapping_management
 
 from .admin_views import (admin_dashboard, game_events, webradio_management,
                           manage_databases, static_pages_management, global_contacts_management,
+                          radio_spots_editing,
                           manage_characters, CHARACTERS_IDENTITIES,
                           DATABASE_OPERATIONS, FAIL_TEST, MEDIA_TEST)
 

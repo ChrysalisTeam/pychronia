@@ -126,6 +126,8 @@ def _generate_web_menu(request, menu_entry_generator):
                          menu_entry(_(u"Static Pages"), views.static_pages_management),
                          menu_entry(_(u"Global Contacts"), views.global_contacts_management),
 
+                         menu_entry(_(u"Radio Spots"), views.radio_spots_editing),
+
                       )),
 
 

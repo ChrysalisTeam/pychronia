@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import copy
 from django_select2.util import JSVar
 from django_select2 import HeavySelect2MultipleChoiceField, Select2MultipleWidget
 from django_select2.widgets import MultipleSelect2HiddenInput, Select2Mixin

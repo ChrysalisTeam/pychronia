@@ -2181,7 +2181,8 @@ class RadioMessaging(BaseDataManager): # TODO REFINE
             utilities.check_is_slug(name)
             utilities.check_is_string(properties["title"])
             assert properties["text"] and isinstance(properties["text"], basestring)
-            assert properties["file"] and isinstance(properties["file"], basestring)
+            assert not properties["file"] or isinstance(properties["file"], basestring)
+            assert not properties["url"] or isinstance(properties["file"], basestring)
 
             # TODO - ensure no "|" in file name!!
             assert os.path.isfile(os.path.join(config.GAME_FILES_ROOT,

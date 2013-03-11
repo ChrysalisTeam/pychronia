@@ -23,6 +23,10 @@ static_pages_management = StaticPagesManagement.as_view
 from .global_contacts_management_mod import GlobalContactsManagement
 global_contacts_management = GlobalContactsManagement.as_view
 
+from .radio_spots_editing_mod import RadioSpotsEditing
+radio_spots_editing = RadioSpotsEditing.as_view
+
+
 
 @register_view(access=UserAccess.master)
 def game_events(request, template_name='administration/game_events.html'):

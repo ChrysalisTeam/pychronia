@@ -39,6 +39,7 @@ class AcapelaClient(object):
         print("INPUT", final_params)
 
         res = requests.post(self._url, data=final_params)
+        print ("TTS RESULT:", res.content)
         res.raise_for_status()
 
 
@@ -79,6 +80,8 @@ class AcapelaClient(object):
 
                         comment=None, # the information to store concerning this operation (author, reason, ...) you can get it back 
                         response_type=None, # INFO(default, urlencoded params)/SOUND/STREAM
+                        # INFO obj is like {'alt_sound_size': None, 'sound_size': u'6799', 'sound_time': u'805.75', 'sound_id': u'289917192_cffb883a5e363',
+                        #                   'alt_sound_url': None, 'sound_url': u'http://vaas/3a5e363.mp3', 'warning': u'', 'get_count': 0}
 
                         sound_id=None, # you can enforce the id to use/replace for a new message (do not use the dot character (\'.\') inside and make sure it is unique!).
                         volume=None, # min = 50, default = 32768, max = 65535 

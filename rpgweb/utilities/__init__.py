@@ -232,7 +232,7 @@ def adapt_parameters_to_func(all_parameters, func):
 
 
     (args, varargs, keywords, defaults) = inspect.getargspec(func)
-    print("########", func, all_parameters, args)
+    print("########>>>", func, all_parameters, args)
 
     if keywords is not None:
         relevant_args = all_parameters # exceeding args will be handled properly

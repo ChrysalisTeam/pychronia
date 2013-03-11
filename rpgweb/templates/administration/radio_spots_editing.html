@@ -1,0 +1,56 @@
+{% extends "base_two_columns.html" %}
+
+{% load sekizai_tags i18n helpers kwacros %}  
+{% loadkwacros "metalradiance_kwacros.html" %}
+
+
+{% block sekizai_calls %}
+{{ block.super }}
+
+{% addtoblock "definition_js" %}
+
+    function generate_tts_sample(target_id) {
+        $('#id_'+target_id+'_sound_preview').html('');
+        $.post("",
+               { _action_: "generate_tts_sample", text: $('#id_'+target_id+'_text').val()},
+               function(answer){
+                   $('#id_'+target_id+'_sound_preview').html(answer.mediaplayer); },
+                   'json'
+             );   
+    }
+
+{% endaddtoblock %}
+
+{% endblock %}
+
+
+
+{% block sidebar %}
+
+{% usekwacro side_panel_start frame_class="mini_frame float_left" decos="2" %}
+    <h2>{% trans "STUFFS" %}</h2>
+
+    
+{% usekwacro side_panel_end %}
+
+{% endblock %}
+
+
+
+
+{% block content %}  
+
+    <div class="scroll_realistic_thin_ends center">
+        <form id="update_form" action="" method="post">
+            {{ form.as_p }}
+            <div id="id_default_sound_preview">PLACEHOLDER</div>
+            <input type="button" name="preview" value="{% trans "Preview" %}" onclick="generate_tts_sample('default'); return false;" />
+            <input type="submit" name="submit" value="{% trans "Submit" %}"/>
+        </form>
+    </div>
+
+
+{% endblock %}
+
+
+
