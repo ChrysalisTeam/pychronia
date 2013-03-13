@@ -6,6 +6,7 @@ from rpgweb.common import *
 from .datamanager_tools import *
 
 
+
 class DataTableManager(object):
     """
     Put an instance of this class as an attribute of a datamanager class, 

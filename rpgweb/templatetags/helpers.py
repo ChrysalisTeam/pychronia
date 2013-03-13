@@ -6,7 +6,7 @@ import re, logging, random
 from datetime import datetime
 
 from rpgweb.utilities import mediaplayers, autolinker
-from rpgweb.common import exception_swallower, game_file_url as real_game_file_url, reverse, _
+from rpgweb.common import exception_swallower, game_file_url as real_game_file_url, determine_asset_url, reverse, _
 
 import django.template
 from django.templatetags.future import url as default_url_tag
@@ -236,7 +236,10 @@ def utctolocal(value, arg=None):
 register.filter('utctolocal', utctolocal)
 
 
-def mediaplayer(fileurl, autostart):
+def mediaplayer(properties, autostart):
+
+    fileurl = determine_asset_url(properties)
+
     try:
         res = mediaplayers.build_proper_viewer(fileurl, autostart=(autostart == "true"))
         return mark_safe(res)

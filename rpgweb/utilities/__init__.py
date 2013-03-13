@@ -339,11 +339,21 @@ def check_is_restructuredtext(value):
     return True
 
 def check_is_game_file(*paths_elements):
+    assert all(not os.path.isabs(s) for s in paths_elements)
     usage_assert(os.path.isfile(os.path.join(config.GAME_FILES_ROOT, *paths_elements)))
     return True
 
 def is_email(email):
     return email_re.match(email)
+
+
+def complete_game_file_path(filename, *elements):
+    basename = os.path.basename(filename)
+    if basename == filename:
+        return os.path.join(*(elements + (filename,)))
+    return filename # already contains dirs...
+
+
 
 
 def _make_elements_hashable(sequence):

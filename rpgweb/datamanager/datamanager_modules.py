@@ -2157,42 +2157,78 @@ class RadioMessaging(BaseDataManager): # TODO REFINE
 
     def _load_initial_data(self, **kwargs):
         super(RadioMessaging, self)._load_initial_data(**kwargs)
-
-        game_data = self.data
-        # do nothing
+        self.radio_spots._load_initial_data(**kwargs)
 
     def _check_database_coherency(self, **kwargs):
         super(RadioMessaging, self)._check_database_coherency(**kwargs)
+        self.radio_spots._check_database_coherency(**kwargs)
 
         game_data = self.data
-
         value = game_data["global_parameters"]["pending_radio_messages"]
         utilities.check_is_list(value) # must be ordered, we can't use a set !
         for audio_id in value:
-            assert audio_id in game_data["audio_messages"].keys()
+            assert audio_id in self.radio_spots # audio IDs here
 
         utilities.check_is_slug(game_data["global_parameters"]["pangea_radio_frequency"])
         utilities.check_is_bool(game_data["global_parameters"]["radio_is_on"])
 
 
-        assert game_data["audio_messages"]
-        assert game_data["audio_messages"]["intro_audio_messages"]
-        for (name, properties) in game_data["audio_messages"].items():
-            utilities.check_is_slug(name)
-            utilities.check_is_string(properties["title"])
-            assert properties["text"] and isinstance(properties["text"], basestring)
-            assert not properties["file"] or isinstance(properties["file"], basestring)
-            assert not properties["url"] or isinstance(properties["file"], basestring)
+
+    class RadioSpotsManager(DataTableManager):
+
+        TRANSLATABLE_ITEM_NAME = _lazy("radio spots")
+
+        def _load_initial_data(self, **kwargs):
+
+            for identifier, details in self._table.items():
+                details.setdefault("immutable", False) # we assume ANY radio spot is optional for the game, and can be edited/delete
+                details.setdefault("file", None) # LOCAL file
+                if details["file"]:
+                    details["file"] = utilities.complete_game_file_path(details["file"], "audio_messages")
+                details.setdefault("url", None) # LOCAL file
+
+
+            audiofiles = [value["file"] for value in self._table.values()]
+            utilities.check_no_duplicates(audiofiles) # only checked at load time, next game master can do whatever he wants
+
+
+        def _preprocess_new_item(self, key, value):
+            assert "immutable" not in value
+            value["immutable"] = False
+            return (key, PersistentDict(value))
+            # other params are supposed to exist in "value"
+
+        def _check_item_validity(self, key, value, strict=False):
+
+            utilities.check_is_slug(key)
+
+            utilities.check_has_keys(value, ["title", "text", "file", "url", "immutable"], strict=strict)
+
+            utilities.check_is_string(value["title"])
+            assert value["text"] and isinstance(value["text"], basestring)
+
+            assert not value["file"] or isinstance(value["file"], basestring)
+            assert not value["url"] or isinstance(value["url"], basestring)
+
+            assert value["url"] or value["file"] # if both, it's supposed to be the same sound file
 
             # TODO - ensure no "|" in file name!!
-            assert os.path.isfile(os.path.join(config.GAME_FILES_ROOT,
-                                  "audio_messages", properties["file"])), properties["file"]
+            if value["file"]:
+                utilities.check_is_game_file(value["file"])
+            if value["url"]:
+                assert value["url"].startswith("http") # ROUGH check...
 
-        utilities.check_no_duplicates(game_data["audio_messages"])
 
-        audiofiles = [value["file"] for value in game_data["audio_messages"].values()]
-        utilities.check_no_duplicates(audiofiles)
+        def _sorting_key(self, item_pair):
+            return item_pair[0] # we sort by key, simply...
 
+        def _get_table_container(self, root):
+            return root["audio_messages"]
+
+        def _item_can_be_edited(self, key, value):
+            return not value["immutable"]
+
+    radio_spots = LazyInstantiationDescriptor(RadioSpotsManager)
 
 
     def _check_audio_ids(self, audio_ids):
@@ -2225,7 +2261,7 @@ class RadioMessaging(BaseDataManager): # TODO REFINE
 
     @readonly_method
     def get_all_audio_messages(self):
-        return self.data["audio_messages"]
+        return self.radio_spots
 
     @readonly_method
     def check_radio_frequency(self, frequency):
@@ -2235,13 +2271,13 @@ class RadioMessaging(BaseDataManager): # TODO REFINE
     @readonly_method
     def get_all_next_audio_messages(self):
         queue = self.data["global_parameters"]["pending_radio_messages"]
-        return queue
+        return queue # audio ids
 
     @readonly_method
     def get_next_audio_message(self):
         queue = self.data["global_parameters"]["pending_radio_messages"]
         if queue:
-            return queue[0] # we let the audio message in the queue anyway !
+            return queue[0] # we let the audio id in the queue anyway !
         else:
             return None
 
@@ -2250,7 +2286,7 @@ class RadioMessaging(BaseDataManager): # TODO REFINE
         """
         Returns audio properties.
         """
-        return self.data["audio_messages"][audio_id]
+        return self.radio_spots[audio_id]
 
 
     @transaction_watcher

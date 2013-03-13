@@ -176,10 +176,20 @@ def hash_url_path(url_path):
     return url_hash
 
 def game_file_url(rel_path):
-    rel_path = rel_path.lstrip("/") # IMPORTANT
     rel_path = rel_path.replace("\\", "/") # some external libs use os.path methods to create urls.......
+    rel_path = rel_path.lstrip("/") # IMPORTANT
     url_hash = hash_url_path(rel_path)
     return settings.GAME_FILES_URL + url_hash + "/" + rel_path
+
+def determine_asset_url(properties):
+    if isinstance(properties, basestring):
+        fileurl = properties
+    elif properties.get("url"):
+        fileurl = properties["url"]
+    else:
+        myfile = properties["file"] # MUST exist and be relative to GAME_FILES_ROOT
+        fileurl = game_file_url(myfile)
+    return fileurl
 
 __all__ = [key for key in globals().copy() if not key.startswith("_")]
 __all__ += ["_", "_lazy", "_noop", "_undefined"] # we add translation shortcuts and _undefined placeholder for default function args

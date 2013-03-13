@@ -1,5 +1,6 @@
 ACCESS CONTROL ON HELP PAGES !!!!!!!!!!!!
 
+- add protections to ensure that all file requests never leave GAME_FILES_ROOT
 
 - interactive world map DONE
 - ability for users to transfer their objects to someone else

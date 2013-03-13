@@ -13,14 +13,14 @@ from rpgweb.utilities import mediaplayers
 
 @register_view(access=UserAccess.anonymous, always_available=True)
 def view_world_map(request, template_name='info/world_map.html'):
-    
+
     return render(request,
                   template_name,
                     {
                      'page_title': _("Strategic Map"),
                     })
 
-    
+
 
 
 @register_view(access=UserAccess.anonymous, always_available=True)
@@ -103,7 +103,7 @@ def ajax_get_next_audio_message(request):
     if radio_is_on:
         next_audio_id = request.datamanager.get_next_audio_message()
         if next_audio_id:
-            fileurl = game_file_url("audio_messages/" + request.datamanager.get_audio_message_properties(next_audio_id)["file"])
+            fileurl = determine_asset_url(request.datamanager.get_audio_message_properties(next_audio_id))
             next_audio_id = next_audio_id.encode("base64")
         else:
             fileurl = None
@@ -142,7 +142,7 @@ def get_radio_xml_conf(request, template_name='info/web_radio_conf.xml'):
         # we had better not let the player empty, it's not tweaked for that case
         current_audio_messages = [dict(file="[None]", title=_("[No radio spot currently available]"))]
 
-    audio_urls = "|".join([game_file_url("audio_messages/" + msg["file"]) for msg in current_audio_messages])  # we expect no "|" inside a single url
+    audio_urls = "|".join([determine_asset_url(msg) for msg in current_audio_messages])  # we expect no "|" inside a single url
     audio_titles = "|".join([msg["title"].replace("|", "") for msg in current_audio_messages])  # here we can cleanup
 
     return render(request,
