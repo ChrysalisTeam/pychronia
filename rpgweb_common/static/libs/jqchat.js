@@ -28,6 +28,12 @@ var prCallback = null;
 var get_request_in_progress = false;
 var post_request_in_progress = false;
 
+
+function PropagateChatError(jqXHR, extStatus, errorThrown){ 
+	$("#errordiv").css("visibility", "visible"); 
+	default_ajax_error_handler(jqXHR, extStatus, errorThrown); 
+}
+
 function callServer(){
 
 	// At each call to the server we pass data.
@@ -42,9 +48,7 @@ function callServer(){
           dataType: "json",
           timeout: ajax_timeout_ms, // in ms
           success: processResponse,
-          error: function(){
-                            $("#errordiv").css("visibility", "visible");
-                           },
+          error: PropagateChatError,
           complete: function(){ get_request_in_progress = false; } // always called
           });
 }
@@ -107,7 +111,7 @@ function InitChatWindow(ChatMessagesUrl, CanChat, ProcessResponseCallback){
     if (CanChat){
     	// Process messages input by the user & send them to the server.
     	$("form#chatform").submit(function(){
-    	
+    		
     	   if (post_request_in_progress) return false;
     
     		// If user clicks to send a message on a empty message box, then don't do anything.
@@ -115,7 +119,7 @@ function InitChatWindow(ChatMessagesUrl, CanChat, ProcessResponseCallback){
     		if(msg == "") return false;
     		
     		post_request_in_progress = true;
-    		 
+
             $.ajax({
               url: url,
               type: "POST",
@@ -126,7 +130,7 @@ function InitChatWindow(ChatMessagesUrl, CanChat, ProcessResponseCallback){
                                         $("#msg").val(""); // clean out contents of input field.
                                         $("#errordiv").css("visibility", "hidden");
                                         },
-              error: function(){ $("#errordiv").css("visibility", "visible"); },
+              error: PropagateChatError,
               complete: function(){ post_request_in_progress = false; // always called
                                     callServer(); } 
               });

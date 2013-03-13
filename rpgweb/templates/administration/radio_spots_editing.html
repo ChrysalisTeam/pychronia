@@ -14,8 +14,9 @@
         $.post("",
                { _action_: "generate_tts_sample", text: $('#id_'+target_id+'_text').val()},
                function(answer){
-                   $('#id_'+target_id+'_sound_preview').html(answer.mediaplayer); },
-                   'json'
+                   $('#id_'+target_id+'_sound_preview').html(answer.mediaplayer); 
+               },
+               json'
              );   
     }
 

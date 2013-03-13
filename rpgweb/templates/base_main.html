@@ -84,10 +84,42 @@
          }
     }
     
+    function default_ajax_error_handler(jqXHR, extStatus, errorThrown) {
+        msg = "Server communication problem - " + extStatus
+        if (errorThrown) { 
+            msg += " (" + errorThrown + ")"; 
+        }
+        $.jnotify(msg, "error", 2000); 
+    }
+    
+    
+    String.prototype.format = String.prototype.f = function() {
+        var s = this,
+            i = arguments.length;
+    
+        while (i--) {
+            s = s.replace(new RegExp('\\{' + i + '\\}', 'gm'), arguments[i]);
+        }
+        return s;
+    };
+    
 {% endaddtoblock %}
 
 
 {% addtoblock "onload_js" %}
+
+        window.onerror = function(msg, url, linenumber){
+             //alert("{0} ({1})".format(msg, url));
+             //alert('Error message: '+msg+'\nURL: '+url+'\nLine Number: '+linenumber); 
+             $.jnotify('{% trans "Application error (please consider reporting that bug)" %} - {0} - URL: {1}'.format(msg, url), "error", true); 
+        }
+        
+
+        // $.ajaxError(handler(event, jqXHR, ajaxSettings, thrownError)) - NO, we want it to be OVERRIDDEN by individual ajax settings
+        $.ajaxSetup({
+                    error: default_ajax_error_handler
+                    });
+            
 
         $('*[title]').qtip({ style: { name: 'cream', tip: true } }); // lots of options remain
         
@@ -280,6 +312,8 @@
             event.stopPropagation();
         });
     
+    
+        
 {% endaddtoblock %}
 
 
