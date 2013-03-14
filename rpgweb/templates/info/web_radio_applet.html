@@ -23,15 +23,20 @@
         
             var current_audio_id = null;
             var ajax_call_in_process = false;
-            
+            var refresh_timer_is_set = false;
             var ajax_timeout_ms = 5000;
             var playlist_refreshing_delay_ms = 5000;
             
             function plan_next_audio_fetching(){
-                setTimeout('get_next_audio_message();', playlist_refreshing_delay_ms);
+                if (!refresh_timer_is_set){
+                    setTimeout('get_next_audio_message();', playlist_refreshing_delay_ms);
+                    refresh_timer_is_set = true;
+                }
             }
             
             function process_next_audio_message(data){
+                
+                refresh_timer_is_set = false;
                 
                 //if (!data) return; // may only happen in buggy jquery 1.4.2
                 
@@ -46,6 +51,9 @@
             }
              
             function get_next_audio_message(){
+                
+                refresh_timer_is_set = false;
+                
                 if (ajax_call_in_process) return;
                 ajax_call_in_process = true;
                 
@@ -67,6 +75,8 @@
             function notify_play_termination(){
                  // no need to check ajax_call_in_process for that one !
                  
+                 refresh_timer_is_set = false;
+                 
                  $.ajax({
                       url: notification_url,
                       type: "GET",
@@ -74,7 +84,7 @@
                       // not json !
                       timeout: ajax_timeout_ms, // in ms
                       success: get_next_audio_message,
-                      error: function(){ setTimeout('notify_play_termination();', playlist_refreshing_delay_ms); }, // we retry, if network pb
+                      error: function(){ refresh_timer_is_set = true; setTimeout('notify_play_termination();', playlist_refreshing_delay_ms); }, // we retry, if network pb
                       complete: function(){ } // always called
                       });
                       
@@ -85,6 +95,7 @@
                 niftyplayer('niftyPlayer1').registerEvent('onSongOver', 'notify_play_termination();');
                 niftyplayer('niftyPlayer1').registerEvent('onError', 'plan_next_audio_fetching();'); 
                 
+                refresh_timer_is_set = true;
                 setTimeout('get_next_audio_message();', 500);        
             }
 {% endaddtoblock %}
