@@ -29,14 +29,19 @@ VISIBILITY_REASONS = Enum(["sender", "recipient", "interceptor"]) # token identi
 @register_module
 class GameGlobalParameters(BaseDataManager):
 
+    def _load_initial_data(self, **kwargs):
+        super(GameGlobalParameters, self)._load_initial_data(**kwargs)
+
+        game_data = self.data
+        game_data["global_parameters"]["opening_music"] = utilities.complete_game_file_path(game_data["global_parameters"]["opening_music"], "musics")
+
+
     def _check_database_coherency(self, **kwargs):
         super(GameGlobalParameters, self)._check_database_coherency(**kwargs)
 
         game_data = self.data
-
         utilities.check_is_bool(game_data["global_parameters"]["game_is_started"])
-
-        assert os.path.isfile(os.path.join(config.GAME_FILES_ROOT, "musics", game_data["global_parameters"]["opening_music"]))
+        utilities.check_is_game_file(game_data["global_parameters"]["opening_music"])
 
 
     @readonly_method
@@ -355,6 +360,10 @@ class DomainHandling(BaseDataManager): # TODO REFINE
     def _load_initial_data(self, **kwargs):
         super(DomainHandling, self)._load_initial_data(**kwargs)
 
+        game_data = self.data
+        for (name, content) in game_data["domains"].items():
+            content["prologue_music"] = utilities.complete_game_file_path(content["prologue_music"], "musics")
+
     def _check_database_coherency(self, **kwargs):
         super(DomainHandling, self)._check_database_coherency(**kwargs)
 
@@ -374,7 +383,8 @@ class DomainHandling(BaseDataManager): # TODO REFINE
             assert isinstance(content["defeat"], basestring) and content["defeat"] in game_data["audio_messages"]
 
             assert isinstance(content["prologue_music"], basestring)
-            assert os.path.isfile(os.path.join(config.GAME_FILES_ROOT, "musics", content["prologue_music"]))
+
+            utilities.check_is_game_file(content["prologue_music"])
 
 
     @readonly_method
@@ -1005,10 +1015,7 @@ class GameInstructions(BaseDataManager):
         utilities.check_is_string(game_data["global_parameters"]["global_introduction"])
         utilities.check_is_string(game_data["global_parameters"]["history_summary"])
 
-
         for (name, content) in game_data["domains"].items():
-            assert isinstance(content["prologue_music"], basestring)
-            assert os.path.isfile(os.path.join(config.GAME_FILES_ROOT, "musics", content["prologue_music"]))
             assert isinstance(content["instructions"], (types.NoneType, basestring)) # can be empty
 
 
@@ -1065,7 +1072,7 @@ class LocationsHandling(BaseDataManager):
             if properties["spy_message"] is not None:
                 utilities.check_is_string(properties["spy_message"])
             if properties["spy_audio"]:
-                assert os.path.isfile(os.path.join(config.GAME_FILES_ROOT, "spy_reports", "spy_" + name.lower() + ".mp3")), name
+                utilities.check_is_game_file(os.path.join("spy_reports", "spy_" + name.lower() + ".mp3"))
 
 
     @readonly_method
