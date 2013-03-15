@@ -19,20 +19,24 @@ class AbstractDataTableManagement(AbstractGameView):
         raise NotImplementedError("get_data_table_instance")
 
 
-    def instantiate_table_form(self, table_item=None, previous_form_data=None, idx=None):
-
-        assert table_item or previous_form_data or (idx == 0)
+    def instantiate_table_form(self, table_item=None, previous_form_data=None):
+        """
+        If not table_item and not previous_form_data, it's necessarily the "new entry" form.
+        """
 
         initial_data = None
         if table_item:
             table_key, table_value = table_item
             initial_data = dict(identifier=table_key)
             initial_data.update(table_value)
+            idx = table_key
+        else:
+            idx = ""
 
         res = self._instantiate_form(new_form_name="submit_item",
                                      previous_form_data=previous_form_data,
                                      initial_data=initial_data,
-                                     auto_id="id%s_%%s" % slugify(idx)) # needed by select2 to wrap fields
+                                     auto_id="id_%s_%%s" % slugify(idx)) # needed by select2 to wrap fields
 
         return res
 
@@ -76,15 +80,14 @@ class AbstractDataTableManagement(AbstractGameView):
         if previous_form_data and not previous_form_data.form_successful:
             concerned_identifier = self.request.POST.get("previous_identifier", "") # empty string if it was a new item
 
+        forms = [("", self.instantiate_table_form(previous_form_data=(previous_form_data if concerned_identifier == "" else None)))] # form for new table entry
 
-        forms = [(None, self.instantiate_table_form(idx=0, previous_form_data=(previous_form_data if concerned_identifier == "" else None)))] # form for new table entry
+        for (table_key, table_value) in table_items:
 
-        for (idx, (table_key, table_value)) in enumerate(table_items, start=1):
-
+            transfered_table_item = (table_key, table_value) # even if previous_form_data is set for that entry
             transfered_previous_form_data = previous_form_data if (concerned_identifier and concerned_identifier == table_key) else None
-            transfered_table_item = (table_key, table_value) if not transfered_previous_form_data else None # slight optimization
 
-            new_form = self.instantiate_table_form(table_item=transfered_table_item, previous_form_data=transfered_previous_form_data, idx=idx)
+            new_form = self.instantiate_table_form(table_item=transfered_table_item, previous_form_data=transfered_previous_form_data)
             forms.append((table_key, new_form))
 
         return dict(page_title=_("TO DEFINE FIXME"),

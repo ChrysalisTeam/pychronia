@@ -33,10 +33,6 @@ class StaticPagesManagement(AbstractDataTableManagement):
     ACTIONS = {"delete_item": "delete_item"}
     TEMPLATE = "administration/static_pages_management.html"
 
-    ACCESS = UserAccess.master
-    PERMISSIONS = []
-    ALWAYS_AVAILABLE = True
-
 
     def get_data_table_instance(self):
         return self.datamanager.static_pages

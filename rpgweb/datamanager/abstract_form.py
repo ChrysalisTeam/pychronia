@@ -66,10 +66,12 @@ class AbstractGameForm(forms.Form):
         """
         We never need fields with leading/trailing spaces in that game, so we strip everything...
         """
-        for field in self.cleaned_data:
+        cleaned_data = super(AbstractGameForm, self).clean()
+
+        for field in cleaned_data:
             if isinstance(self.cleaned_data[field], basestring):
-                self.cleaned_data[field] = self.cleaned_data[field].strip()
-        return self.cleaned_data
+                cleaned_data[field] = cleaned_data[field].strip()
+        return cleaned_data
    
     def get_normalized_values(self):
         values = self.cleaned_data.copy()

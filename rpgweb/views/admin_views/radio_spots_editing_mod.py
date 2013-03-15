@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 from django import forms
 
 from rpgweb.common import *
-from rpgweb.datamanager import register_view, AbstractGameView, DataTableForm
+from rpgweb.datamanager import register_view, AbstractGameView, DataTableForm, AbstractDataTableManagement
 
 from rpgweb.utilities.acapela_vaas_tts import AcapelaClient
 from rpgweb.utilities import mediaplayers
@@ -15,24 +15,53 @@ class RadioSpotForm(DataTableForm):
     title = forms.CharField(label=_lazy("Title"), required=True)
     text = forms.CharField(label=_lazy("Content"), widget=forms.Textarea(attrs={'rows': '2', 'cols':'40'}), required=True)
 
-    url = forms.CharField(label=_lazy("Remote url"), required=True)
+    url_or_file = forms.CharField(label=_lazy("Url or local file"), required=True)
+
+    def __init__(self, datamanager, initial=None, **kwargs):
+        """
+        *datamanager* may also be an ability, since it proxies datamanager methods too.
+        """
+        if initial:
+            initial["url_or_file"] = initial.get("url") or initial.get("file") # URL taken first then
+        super(DataTableForm, self).__init__(datamanager=datamanager, initial=initial, **kwargs)
+
+    def clean(self):
+        cleaned_data = super(RadioSpotForm, self).clean()
+
+        data = cleaned_data.get("url_or_file")
+
+        if data:
+            if data.startswith("http://") or data.startswith("https://"):
+                cleaned_data["url"] = data
+                cleaned_data["file"] = None # ERASED
+            else:
+                try:
+                    utilities.check_is_game_file(data)
+                except UsageError:
+                    raise forms.ValidationError(_("Invalid local file path or remote rl."))
+                cleaned_data["url"] = None # ERASED
+                cleaned_data["file"] = data
+
+        del cleaned_data["url_or_file"]
+        return cleaned_data
+
 
 
 
 @register_view
-class RadioSpotsEditing(AbstractGameView):
+class RadioSpotsEditing(AbstractDataTableManagement):
 
     NAME = "radio_spots_editing"
 
-    ACTIONS = {"generate_tts_sample": "generate_tts_sample"}
+    GAME_FORMS = {"submit_item": (RadioSpotForm, "submit_item")}
+    ACTIONS = {"delete_item": "delete_item", "generate_tts_sample": "generate_tts_sample"}
     TEMPLATE = "administration/radio_spots_editing.html"
 
-    ACCESS = UserAccess.master
-    PERMISSIONS = []
-    ALWAYS_AVAILABLE = True
+    def get_data_table_instance(self):
+        return self.datamanager.radio_spots
 
 
-    def get_template_vars(self, previous_form_data=None):
+    def ________get_template_vars(self, previous_form_data=None):
 
         form = RadioSpotForm(self.datamanager)
 
@@ -54,7 +83,7 @@ class RadioSpotsEditing(AbstractGameView):
             ###res = tts.create_sample(voice=voice, text=text, response_type="INFO")
         except EnvironmentError, e:
             self.logger.critical("TTS generation failed for %s/%r: %r", voice, text, e)
-            raise
+            raise # OK for AJAX request
 
         print (">>>>>>>>>>>>>", res)
 

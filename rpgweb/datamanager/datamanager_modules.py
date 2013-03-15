@@ -2194,7 +2194,6 @@ class RadioMessaging(BaseDataManager): # TODO REFINE
                     details["file"] = utilities.complete_game_file_path(details["file"], "audio_messages")
                 details.setdefault("url", None) # LOCAL file
 
-
             audiofiles = [value["file"] for value in self._table.values()]
             utilities.check_no_duplicates(audiofiles) # only checked at load time, next game master can do whatever he wants
 
@@ -2207,6 +2206,8 @@ class RadioMessaging(BaseDataManager): # TODO REFINE
 
         def _check_item_validity(self, key, value, strict=False):
 
+            print ("RADIOSPOT IS", key, value)
+
             utilities.check_is_slug(key)
 
             utilities.check_has_keys(value, ["title", "text", "file", "url", "immutable"], strict=strict)
@@ -2214,8 +2215,8 @@ class RadioMessaging(BaseDataManager): # TODO REFINE
             utilities.check_is_string(value["title"])
             assert value["text"] and isinstance(value["text"], basestring)
 
-            assert not value["file"] or isinstance(value["file"], basestring)
-            assert not value["url"] or isinstance(value["url"], basestring)
+            assert not value["file"] or isinstance(value["file"], basestring), value["file"]
+            assert not value["url"] or isinstance(value["url"], basestring), value["url"]
 
             assert value["url"] or value["file"] # if both, it's supposed to be the same sound file
 
