@@ -79,7 +79,7 @@
     .markItUp  {
         width: 95%;
         margin: auto;
-        border: $light_yellow ridge 2px;
+        border: $medium_yellow ridge 2px;
     }
     
     .markItUpContainer  {
@@ -194,7 +194,7 @@
         width:260px;
         position:absolute;
         top:1em;
-        border-bottom:1px solid $light_yellow;
+        border-bottom:1px solid $medium_yellow;
         z-index:100;
     }
     /* close TOC item */    

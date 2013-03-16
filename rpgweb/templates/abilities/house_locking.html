@@ -1,14 +1,11 @@
 
 {% extends "base_one_column.html" %}
 
-{% load i18n helpers %}
+{% load sekizai_tags i18n helpers kwacros %}  
 
-
-
-{% block headers %}
-    {{ block.super }}
-
-    <script type="text/javascript">
+{% block sekizai_calls %}
+{{ block.super }}
+{% addtoblock "definition_js" %}
 
         function append_digit(digit){
             curlen = $('#password_display').html().length
@@ -23,10 +20,9 @@
             $('#unlocking_form').submit();
         }
 
-
-    </script>
-
+{% endaddtoblock %}
 {% endblock %}
+
 
 {% block content %}
 
@@ -56,7 +52,6 @@
 
 
              <div id="password_display"></div>
-
 
              <br/>
              <table>

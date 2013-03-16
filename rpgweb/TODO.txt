@@ -8,13 +8,14 @@ ACCESS CONTROL ON HELP PAGES !!!!!!!!!!!!
 - global styles and messages for any "readonly mode"
 
 - drag&drop radio playlist management WIP
-- interface to edit static pages
-- interface to edit external contacts
+- interface to edit static pages WIP
+- interface to edit radio spots WIP
+- interface to edit external contacts WIP
 - interface to activate views
 - filling of footer with game info
 - filling of headers with game info and notifications
 - javascript-obfuscated-popuped "report bug" div in mini footer WIP
-- global management of ajax errors, with popups
+- global management of ajax errors, with popups DONE
 
 - check what happens when calling setlanguage flags from a "POST-access-only" page like private files ??
 - include timezone handling
@@ -22,7 +23,7 @@ ACCESS CONTROL ON HELP PAGES !!!!!!!!!!!!
 
 ====================
 
-
+Idea of captcha: play with colors illusions!!
 
 ELITE RPG:
 eclectic

@@ -899,6 +899,25 @@ table.footnote {
   background: #C5AE8F;
   line-height: 1em;
 }
+#password_display {
+  display: table-cell;
+  vertical-align: middle;
+  margin: 20px;
+  font-weight: bold;
+  font-size: 35px;
+  width: 200px;
+  height: 60px;
+  background-color: #d3c469;
+  border: solid 2px #775f13;
+}
+input.digit {
+  width: 150px;
+  height: 50px;
+  margin: 7px;
+  font-size: 20px;
+  font-weight: bold;
+  background-color: #d3c469;
+}
 img {
   -webkit-filter: #010101;
 }
