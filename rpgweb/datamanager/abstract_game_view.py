@@ -318,7 +318,7 @@ class AbstractGameView(object):
 
         action_name = data.get(self._ACTION_FIELD)
         if not action_name or action_name not in self.ACTIONS:
-            raise AbnormalUsageError(_("Abnormal action name: %s") % action_name)
+            raise AbnormalUsageError(_("Abnormal action name: %s (available: %r)") % (action_name, self.ACTIONS.keys()))
 
         func = getattr(self, self.ACTIONS[action_name])
 

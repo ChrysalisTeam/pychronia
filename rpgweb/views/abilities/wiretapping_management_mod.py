@@ -3,12 +3,9 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from rpgweb.common import *
-from rpgweb.datamanager.abstract_ability import AbstractAbility
-from rpgweb.datamanager.abstract_game_view import register_view
+from rpgweb.datamanager import UninstantiableForm, AbstractAbility, register_view, readonly_method, transaction_watcher
 from rpgweb.forms import AbstractGameForm
-from rpgweb.datamanager.datamanager_tools import readonly_method, \
-    transaction_watcher
-
+from django import forms
 
 
 class WiretappingTargetsForm(AbstractGameForm):
@@ -19,7 +16,11 @@ class WiretappingTargetsForm(AbstractGameForm):
         names = ability.get_character_usernames()
         user_choices = ability.build_select_choices_from_usernames(names)
 
-        for i in range(ability.get_wiretapping_slots_count()):
+        num_slots = ability.get_wiretapping_slots_count()
+
+        if not num_slots:
+            raise UninstantiableForm
+        for i in range(num_slots):
             self.fields["target_%d" % i] = forms.ChoiceField(label=_("Target %d") % i, required=False, choices=[("", "")] + user_choices)
 
     def get_normalized_values(self):
@@ -45,7 +46,7 @@ class WiretappingAbility(AbstractAbility):
 
     GAME_FORMS = {"targets_form": (WiretappingTargetsForm, "change_current_user_wiretapping_targets")}
     ADMIN_FORMS = {}
-    ACTION_FORMS = {"purchase_wiretapping_slot": "purchase_wiretapping_slot"}
+    ACTIONS = {"purchase_wiretapping_slot": "purchase_wiretapping_slot"}
 
     TEMPLATE = "abilities/wiretapping_management.html"
 
