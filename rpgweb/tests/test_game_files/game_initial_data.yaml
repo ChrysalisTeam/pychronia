@@ -5,6 +5,32 @@
 
 abilities:
 
+    artificial_intelligence:
+      
+        settings:
+
+            bots_answer_delays_ms: 1000
+            bot_max_answers: 500
+            
+            terminal_answers:
+                - "I'm fed up, please stop boring me."
+                - "I think we've talked enough for today."
+                          
+            common_bot_properties:
+                version: "1.0"
+                brain: "genius"
+                age: "18876"
+                gender: "Djinn"
+                location: "Olympia"
+                nationality: "Acharith"
+                birthplace: "Zorzas"
+
+            specific_bot_properties:
+                "Bot Alpha": {}
+                "Bot Omega": {}
+
+
+
     house_locking:
         settings:
             house_doors_password: "7777" # must be max 6 digits long to fit the javascript form
@@ -354,30 +380,6 @@ events_log:  #-> list of event dicts
 scheduled_actions: [] #-> list of scheduled action dicts
 
 
-AI_bots:
-
-    common_properties:
-        version: ""
-        brain: "genius"
-        age: "18876"
-        gender: "Djinn"
-        location: "Olympia"
-        nationality: "Acharith"
-        birthplace: "Zorzas"
-
-    bot_properties:
-
-        "Bot Alpha":
-            gems_required: 7
-            bot_sessions: {}
-
-        "Bot Omega":
-            gems_required: 20
-            bot_sessions: {}
-
-    bot_terminal_answers:
-        - "I'm fed up, please stop boring me."
-        - "I think we've talked enough for today."
 
 
 

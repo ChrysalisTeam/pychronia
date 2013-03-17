@@ -2,64 +2,86 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
+from rpgweb.common import *
+from rpgweb.datamanager.abstract_ability import AbstractAbility
+from rpgweb.datamanager.abstract_game_view import register_view
+from rpgweb.datamanager import readonly_method, \
+    transaction_watcher
 
 
-## INIT
+@register_view
+class ArtificialIntelligenceAbility(AbstractAbility):
 
-for props in game_data["AI_bots"]["bot_properties"].values():
-    props["bot_sessions"]["_inputStack"] = [] # always empty between bot requests !
-    props["bot_sessions"]["_inputHistory"] = props["bot_sessions"].get("_inputHistory", [])
-    props["bot_sessions"]["_outputHistory"] = props["bot_sessions"].get("_outputHistory", [])
+    NAME = "artificial_intelligence"
 
-            if name in "bots_max_answers".split():
-                assert isinstance(value, (long, int)) and value > 0
+    GAME_FORMS = {}
 
+    ACTIONS = dict()
 
+    TEMPLATE = "abilities/artificial_intelligence.html"
 
-## CHECK
-
-
-    bots = game_data["AI_bots"]
-    assert isinstance(bots, PersistentDict)
-    assert set(bots.keys()) == set("common_properties bot_properties bot_terminal_answers".split())
-    for (name, value) in bots["common_properties"].items():
-        assert isinstance(name, basestring)
-        assert isinstance(value, basestring)
-    for (name, value) in bots["bot_properties"].items():
-        assert isinstance(name, basestring)
-        assert len(value) == 2
-        assert isinstance(value["gems_required"], (int, long)) and value["gems_required"] > 0
-        #for aiml in value["specific_aiml"]: # NOT USED ANYMORE, 1 AIML for all djinns now !
-        #    assert os.path.isfile(config.GAME_FILES_ROOT, "AI", "specific_aiml", aiml)
-        assert isinstance(value["bot_sessions"], PersistentDict)
-        for predicate in "_inputHistory _inputStack _outputHistory".split():
-            assert predicate in value["bot_sessions"].keys()
-            assert isinstance(value["bot_sessions"][predicate], PersistentList)
-    for value in bots["bot_terminal_answers"]:
-        assert isinstance(value, basestring) and value
+    ACCESS = UserAccess.acharacter
+    PERMISSIONS = []
+    ALWAYS_AVAILABLE = True
 
 
+    @classmethod
+    def _setup_ability_settings(cls, settings):
+        pass
+
+    def _setup_private_ability_data(self, private_data):
+        settings = self.settings
+
+        for bot_name in settings["specific_bot_properties"].keys():
+            bot_session = private_data.setdefault(bot_name, {})
+            bot_session.setdefault("_inputStack", []) # always empty between bot requests !
+            bot_session.setdefault("_inputHistory", [])
+            bot_session.setdefault("_outputHistory", [])
+
+    def _check_data_sanity(self, strict=False):
+        settings = self.settings
+
+
+        utilities.check_is_range_or_num(settings["bots_answer_delays_ms"])
+        utilities.check_is_int(settings["bot_max_answers"])
+
+        for value in settings["terminal_answers"]:
+            utilities.check_is_string(value)
+
+        for key, value in settings["common_bot_properties"].items():
+            utilities.check_is_string(key)
+            utilities.check_is_string(value)
+
+        for bot_name, bot_props in settings["common_bot_properties"].items():
+            utilities.check_is_string(bot_name)
+            utilities.check_is_dict(bot_props) # nothing precise about what's here ATM
+
+
+        for bot_session in self.all_private_data.values():
+            utilities.check_has_keys(bot_session, ["_inputStack", "_inputHistory", "_outputHistory"], strict=strict)
+            for val in bot_session.values():
+                utilities.check_is_list(val) # let's not check further that data
 
 
 
+    def get_template_vars(self, previous_form_data=None):
+        return {
+                'page_title': _("Djinns Chatroom"),
+               }
 
-
-
-
-
-
-
-    def get_bots_properties(self):
-        return self.data["AI_bots"]["bot_properties"]
-
+    @readonly_method
     def get_bot_names(self):
-        return self.data["AI_bots"]["bot_properties"].keys()
+        return self.settings["specific_bot_properties"].keys()
 
-    def is_bot_accessible(self, bot_name, domain):
-        WRONG - gems_owned = self.get_team_gems_count(domain)
-        gems_required = self.get_bots_properties()[bot_name]["gems_required"]
+    @readonly_method
+    def get_bot_session(self, bot_name):
+        return self.settings["specific_bot_properties"][bot_name]
 
-        return (gems_owned >= gems_required)
+    @readonly_method
+    def get_bot_history(self, bot_name):
+        bot_session = self.get_bot_session(bot_name)
+        return (bot_session["_inputHistory"], bot_session["_outputHistory"])
+
 
 
     @transaction_watcher
@@ -68,58 +90,39 @@ for props in game_data["AI_bots"]["bot_properties"].values():
 
         # we use only the "global session" of bot kernel, in the following calls !
 
-        bot_properties = self.data["AI_bots"]["bot_properties"][bot_name] # we load previous session
-        djinn_proxy.setSessionData(bot_properties["bot_sessions"])
+        bot_session = self.get_bot_session(bot_name) # we load previous session
+        djinn_proxy.setSessionData(bot_session)
 
         # heavy, we override the personality of the target bot
-        for (predicate, value) in self.data["AI_bots"]["common_properties"].items():
+        for (predicate, value) in self.settings["common_bot_properties"].items():
             djinn_proxy.setBotPredicate(predicate, value) # hobbies and tastes
 
         djinn_proxy.setBotPredicate("name", bot_name) # we change the bot personality
-        djinn_proxy.setPredicate("name", username) # who is talking to him ?
+
+        djinn_proxy.setPredicate("name", self.username) # who is talking to him ?
+
         if "?" in input:
-            djinn_proxy.setPredicate("topic",
-                                     "")  # WARNING - TODO - Hack to help the bot get away from its "persistent ideas", as long as A.I. don't work very well...
+            djinn_proxy.setPredicate("topic", "")  # WARNING - a hack to help the bot get away from its "persistent ideas", as long as A.I. doesn't work very well...
             djinn_proxy.setPredicate("orbType", "")
 
         (inputs, outputs) = self.get_bot_history(bot_name)
 
-        if len(outputs) > self.get_global_parameter("bots_max_answers"):
-            res = random.choice(self.data["AI_bots"]["bot_terminal_answers"])
-            # these persistent lists will keep the history OK
+        if len(outputs) > self.settings["bot_max_answers"]:
+            res = random.choice(self.settings["terminal_answers"])
+            # then let's manually update history
             inputs.append(input)
             outputs.append(res)
-
         else:
             res = djinn_proxy.respond(input)
-            bot_properties["bot_sessions"] = djinn_proxy.getSessionData() # we save current session
-
+            self.private_data.update(djinn_proxy.getSessionData()) # we save current session
 
         # we simulate answer delay
-        delay_ms = self.get_global_parameter("bots_answer_delays_ms")
+        delay_ms = self.settings["bots_answer_delays_ms"]
         if not isinstance(delay_ms, (int, long, float)):
             delay_ms = random.randint(delay_ms[0], delay_ms[1])
         time.sleep(float(delay_ms) / 1000)
 
         return res
-
-
-    def get_bot_history(self, bot_name):
-        data = self.data["AI_bots"]["bot_properties"][bot_name]["bot_sessions"]
-        return (data["_inputHistory"], data["_outputHistory"])
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -143,9 +146,9 @@ class DjinnProxy(object):
 
         if config.ACTIVATE_AIML_BOTS: # in prod we shall NOT use bots, too memory-consuming !
 
-            import aimllib
+            import aiml
 
-            kernel = aimllib.Kernel()
+            kernel = aiml.Kernel()
             kernel.verbose(False) # DEBUG OUTPUT
             kernel.bootstrap(
                 brainFile=os.path.join(config.GAME_FILES_ROOT, "AI", "botbrain.brn"),
@@ -178,7 +181,7 @@ class DjinnProxy(object):
         return self.bot_kernel.getBotPredicate(key)
 
     def setPredicate(self, key, value):
-        self.bot_kernel.setPredicate(key, value) # we change the bot personality
+        self.bot_kernel.setPredicate(key, value) # we change the context of conversation
 
     def getPredicate(self, key):
         return self.bot_kernel.getPredicate(key)
