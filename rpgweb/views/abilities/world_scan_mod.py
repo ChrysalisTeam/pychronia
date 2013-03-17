@@ -6,7 +6,7 @@ from rpgweb.common import *
 from rpgweb.datamanager.abstract_ability import AbstractAbility
 import functools
 from rpgweb import utilities
-from rpgweb.forms import ArtefactForm
+from rpgweb.forms import ArtefactForm, UninstantiableFormError
 from rpgweb.datamanager.datamanager_tools import transaction_watcher, \
     readonly_method
 from rpgweb.datamanager.abstract_game_view import register_view
@@ -23,27 +23,33 @@ class WorldScanAbility(AbstractAbility):
 
     NAME = "world_scan"
 
-    GAME_FORMS = {"artefact_form": (ArtefactForm, "process_world_scan_submission")}
+    GAME_FORMS = {"scan_form": (ArtefactForm, "process_world_scan_submission")}
     ADMIN_FORMS = {}
     ACTION_FORMS = {}
 
     TEMPLATE = "abilities/world_scan.html"
 
-    ACCESS = UserAccess.authenticated
+    ACCESS = UserAccess.character
     PERMISSIONS = ["world_scan", "messaging"]
-    ALWAYS_AVAILABLE = False
+    ALWAYS_AVAILABLE = True
 
 
 
     def get_template_vars(self, previous_form_data=None):
 
-        artefact_form = self._instantiate_form(new_form_name="artefact_form",
-                                                  hide_on_success=True,
-                                                  previous_form_data=previous_form_data)
+        try:
+            scan_form = self._instantiate_form(new_form_name="scan_form",
+                                                      hide_on_success=True,
+                                                      previous_form_data=previous_form_data)
+            specific_message = None
+        except UninstantiableFormError, e:
+            scan_form = None
+            specific_message = unicode(e)
 
         return {
                  'page_title': _("World Scan"),
-                 'artefact_form': artefact_form
+                 'scan_form': scan_form,
+                 'specific_message': specific_message,
                }
 
 
@@ -154,7 +160,7 @@ class WorldScanAbility(AbstractAbility):
                              PersistentDict(item_title=item_title),
                              url=self.get_message_viewer_url(msg_id))
 
-        return msg_id
+        return _("World scan submission in progress, the result will be emailed to you.")
 
         """ Canceled for now - manual response by gamemaster, from a description of the object...
         else:

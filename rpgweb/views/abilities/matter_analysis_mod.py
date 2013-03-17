@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 from rpgweb.common import *
 
 from rpgweb.datamanager.abstract_ability import AbstractAbility
-from rpgweb.forms import ArtefactForm
+from rpgweb.forms import ArtefactForm, UninstantiableFormError
 from rpgweb.datamanager import readonly_method, \
     transaction_watcher
 
@@ -40,9 +40,13 @@ class MatterAnalysisAbility(AbstractAbility):
     def get_template_vars(self, previous_form_data=None):
 
         # for now we don't exclude objects already analysed, players just have to take care !
-        item_form = self._instantiate_form(new_form_name="artefact_form",
-                                             hide_on_success=True,
-                                             previous_form_data=previous_form_data)
+        try:
+            item_form = self._instantiate_form(new_form_name="artefact_form",
+                                                 hide_on_success=True,
+                                                 previous_form_data=previous_form_data)
+        except UninstantiableFormError, e:
+            item_form = None
+            pass # TODO ADD ERROR MSG
 
         return {
                  'page_title': _("Deep Matter Analysis"),

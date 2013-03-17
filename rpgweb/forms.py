@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 
 from rpgweb.common import *
 from django import forms
-from rpgweb.datamanager.abstract_form import AbstractGameForm, UninstantiableForm, form_field_jsonify, form_field_unjsonify
+from rpgweb.datamanager.abstract_form import AbstractGameForm, UninstantiableFormError, form_field_jsonify, form_field_unjsonify
 
 
 
@@ -27,7 +27,7 @@ class MoneyTransferForm(AbstractGameForm):
         else:
             # for standard characters
             if datamanager.get_character_properties()["account"] <= 0:
-                raise UninstantiableForm("user has no money")
+                raise UninstantiableFormError(_("No money available for transfer."))
             others = datamanager.get_other_character_usernames()
             others_choices = datamanager.build_select_choices_from_usernames(others)
             self.fields.insert(0, "recipient_name", forms.ChoiceField(label=_("Recipient"), choices=others_choices))
@@ -63,7 +63,7 @@ class GemsTransferForm(AbstractGameForm):
             full_title = _("Gem of %s Kashes (%s)") % (gem_value, title)
             gems_choices.append((gem_id, full_title))
         if not gems_choices:
-            raise UninstantiableForm("no gems available")
+            raise UninstantiableFormError("no gems available")
 
         # dynamic fields here ...
         if user.is_master:
@@ -376,10 +376,14 @@ class ArtefactForm(AbstractGameForm):
 
         _user_items = ability.get_available_items_for_user()
         _user_artefacts = {key: value for (key, value) in _user_items.items() if not value["is_gem"]}
+
+        if not _user_artefacts:
+            raise UninstantiableFormError(_("No artefacts currently owned."))
+
         _user_artefacts_choices = [(key, value["title"]) for (key, value) in _user_artefacts.items()]
         _user_artefacts_choices.sort(key=lambda pair: pair[1])
 
-        _user_artefacts_choices = [("", _("Select your artefact..."))] + _user_artefacts_choices  # ALWAYS non-empty choice field
+        _user_artefacts_choices = [("", _("Select your artefact..."))] + _user_artefacts_choices
         self.fields["item_name"] = forms.ChoiceField(label=_("Object"), choices=_user_artefacts_choices, required=True)
 
 

@@ -3,7 +3,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from rpgweb.common import *
-from rpgweb.datamanager import UninstantiableForm, AbstractAbility, register_view, readonly_method, transaction_watcher
+from rpgweb.datamanager import UninstantiableFormError, AbstractAbility, register_view, readonly_method, transaction_watcher
 from rpgweb.forms import AbstractGameForm
 from django import forms
 
@@ -19,7 +19,7 @@ class WiretappingTargetsForm(AbstractGameForm):
         num_slots = ability.get_wiretapping_slots_count()
 
         if not num_slots:
-            raise UninstantiableForm
+            raise UninstantiableFormError(_("No wiretapping slots available."))
         for i in range(num_slots):
             self.fields["target_%d" % i] = forms.ChoiceField(label=_("Target %d") % i, required=False, choices=[("", "")] + user_choices)
 
@@ -66,10 +66,14 @@ class WiretappingAbility(AbstractAbility):
             else:
                 initial_data["target_%d" % i] = ""
 
-        targets_form = self._instantiate_form(new_form_name="targets_form",
-                                              hide_on_success=False,
-                                              initial_data=initial_data,
-                                              previous_form_data=previous_form_data,)
+        try:
+            targets_form = self._instantiate_form(new_form_name="targets_form",
+                                                  hide_on_success=False,
+                                                  initial_data=initial_data,
+                                                  previous_form_data=previous_form_data,)
+        except UninstantiableFormError:
+            targets_form = None
+            pass # infos already displayed for that case
 
         return {
                  'page_title': _("Wiretapping Management"),

@@ -122,6 +122,7 @@ web_game_urlpatterns = patterns('rpgweb.views',
     url(r'^ability/network_management/$', 'mercenaries_hiring'),
     url(r'^ability/matter_analysis/$', 'matter_analysis'),
     url(r'^ability/telecom_investigation/$', 'telecom_investigation'),
+    url(r'^ability/world_scan/$', 'world_scan'),
 
 )
 

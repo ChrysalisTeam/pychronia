@@ -7,7 +7,7 @@ from rpgweb.datamanager import AbstractGameView, register_view, transaction_watc
 from rpgweb import forms
 from django.http import Http404, HttpResponse
 import json
-from rpgweb.forms import MoneyTransferForm, GemsTransferForm
+from rpgweb.forms import MoneyTransferForm, GemsTransferForm, UninstantiableFormError
 
 
 @register_view(access=UserAccess.anonymous, always_available=True)
@@ -54,14 +54,22 @@ class CharactersView(AbstractGameView):
 
 
         # Preparing form for money transfer
-        new_money_form = self._instantiate_form(new_form_name="money_transfer_form",
-                                                 hide_on_success=False,
-                                                 previous_form_data=previous_form_data)
+        try:
+            new_money_form = self._instantiate_form(new_form_name="money_transfer_form",
+                                                     hide_on_success=False,
+                                                     previous_form_data=previous_form_data)
+        except UninstantiableFormError:
+            new_money_form = None
+            pass # TODO ADD MESSAGE
 
         # preparing gems transfer form
-        new_gems_form = self._instantiate_form(new_form_name="gems_transfer_form",
-                                                 hide_on_success=False,
-                                                 previous_form_data=previous_form_data)
+        try:
+            new_gems_form = self._instantiate_form(new_form_name="gems_transfer_form",
+                                                     hide_on_success=False,
+                                                     previous_form_data=previous_form_data)
+        except UninstantiableFormError:
+            new_gems_form = None
+            pass # TODO ADD MESSAGE
 
         # we display the list of available character accounts
 
@@ -179,7 +187,7 @@ def auction_items_slideshow(request, template_name='auction/items_slideshow.html
     """
     Contains ALL auction items, WITHOUT 3D viewers.
     """
-    page_title = _("Team Items")
+    page_title = _("Auction Items")
     items = request.datamanager.get_auction_items()
     sorted_items = list(sorted(items.items()))# pairs key/dict
 

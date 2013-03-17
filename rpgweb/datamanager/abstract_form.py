@@ -10,7 +10,7 @@ from rpgweb.common import *
 
 
 
-class UninstantiableForm(Exception):
+class UninstantiableFormError(Exception):
     """
     Exception to be raised by a form constructor when 
     the instance would be meaningless (eg. no data to choose from).

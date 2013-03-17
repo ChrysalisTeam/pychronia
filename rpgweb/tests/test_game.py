@@ -2174,7 +2174,8 @@ class TestHttpRequests(BaseGameTestCase):
                               DATABASE_OPERATIONS FAIL_TEST ajax item_3d_view chat_with_djinn static.serve encrypted_folder 
                               view_single_message logout login secret_question
                               friendship_management wiretapping_management
-                              mercenaries_hiring matter_analysis runic_translation""".split() # FIXME REMOVE THIS
+                              mercenaries_hiring matter_analysis runic_translation 
+                              telecom_investigation world_scan""".split() # FIXME REMOVE THIS
 
 
         views_names = [url._callback_str for url in web_game_urlpatterns
@@ -2394,6 +2395,11 @@ class TestGameViewSystem(BaseGameTestCase):
         COMPUTED_VALUES = ["target_names"] # values that are injected in get_normalized_values(), and so invisible until actual processing
 
         self._set_user("guy1", has_write_access=True) # later, we'll need to change it depending on abilities instantiated below...
+        # all forms must be instantiable, so provided items etc. !
+        self.dm.transfer_object_to_character("statue", "guy1")
+        wiretapping = self.dm.instantiate_ability("wiretapping")
+        wiretapping._perform_lazy_initializations()
+        wiretapping.purchase_wiretapping_slot()
 
         check_done = 0
         for game_view_class in self.dm.GAME_VIEWS_REGISTRY.values():
