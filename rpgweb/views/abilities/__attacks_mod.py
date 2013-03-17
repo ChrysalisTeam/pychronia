@@ -2,6 +2,8 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
+    OBSOLETE - ATTACKS WILL BE MANAGED BY EMAILS AT THE MOMENT
+
     @transaction_watcher
     def trigger_acharith_attack(self, username, city_name, message):
         # no special check is performed, as acharith agents are infiltrated about everywhere !

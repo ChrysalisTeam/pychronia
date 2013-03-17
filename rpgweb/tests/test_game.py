@@ -3033,63 +3033,6 @@ class TestSpecialAbilities(BaseGameTestCase):
 
 
 
-    def test_3D_items_display(self):
-
-        for autoreverse in (True, False):
-
-            viewer_settings = dict(levels=2,
-                                    per_level=5,
-                                    index_steps=5,
-                                    index_offset=3,
-                                    start_level=1,
-                                    file_template="openinglogo/crystal%04d.jpg",
-                                    image_width=528,
-                                    image_height=409,
-                                    mode="object",
-                                    x_coefficient=12,
-                                    y_coefficient=160,
-                                    autoreverse=autoreverse,
-                                    rotomatic=150,
-                                    music="musics/mymusic.mp3")
-            display_data = views._build_display_data_from_viewer_settings(viewer_settings)
-
-
-            assert "musics/mymusic.mp3" in display_data["music_url"] # authenticated url
-            del display_data["music_url"]
-
-            rel_expected_image_urls = [["openinglogo/crystal0003.jpg",
-                                       "openinglogo/crystal0008.jpg",
-                                       "openinglogo/crystal0013.jpg",
-                                       "openinglogo/crystal0018.jpg",
-                                       "openinglogo/crystal0023.jpg"],
-                                      ["openinglogo/crystal0028.jpg",
-                                       "openinglogo/crystal0033.jpg",
-                                       "openinglogo/crystal0038.jpg",
-                                       "openinglogo/crystal0043.jpg",
-                                       "openinglogo/crystal0048.jpg"], ]
-            expected_image_urls = [[game_file_url(rel_path) for rel_path in level] for level in rel_expected_image_urls]
-
-            if autoreverse:
-                for id, value in enumerate(expected_image_urls):
-                    expected_image_urls[id] = value + list(reversed(value))
-
-
-            # pprint.pprint(display_data["image_urls"])
-            # pprint.pprint(expected_image_urls)
-
-            assert display_data["image_urls"] == expected_image_urls
-
-            del display_data["image_urls"]
-
-            assert display_data == dict(levels=2,
-                                        per_level=5 if not autoreverse else 10,
-                                        x_coefficient=12,
-                                        y_coefficient=160,
-                                        rotomatic=150,
-                                        image_width=528,
-                                        image_height=409,
-                                        start_level=1,
-                                        mode="object")
 
 
     @for_ability(runic_translation)
@@ -3196,6 +3139,7 @@ class TestSpecialAbilities(BaseGameTestCase):
 
 
     def ___test_agent_hiring(self):
+        FIXME
         self._reset_messages()
 
         spy_cost_money = self.dm.get_global_parameter("spy_cost_money")
@@ -3444,15 +3388,22 @@ class TestSpecialAbilities(BaseGameTestCase):
 
 
     def __test_telecom_investigations(self):
+
+        FIXME
+
         # no reset of initial messages
 
         initial_length_queued_msgs = len(self.dm.get_all_queued_messages())
         initial_length_sent_msgs = len(self.dm.get_all_dispatched_messages())
 
+        ability = self.dm.instantiate_ability("telecom_investigation")
+        ability._perform_lazy_initializations() # normally done during request processing
 
+        """
         assert self.dm.data["abilities"] ["telecom_investigation"]["settings"]["result_delay"]
         self.dm.data["abilities"] ["world_scan"]["settings"]["result_delay"] = 0.03 / 45 # flexible time!
         self.dm.commit()
+        """
 
         scanner = self.dm.instantiate_ability("world_scan")
         scanner._perform_lazy_initializations() # normally done during request processing
@@ -3646,6 +3597,67 @@ class TestSpecialAbilities(BaseGameTestCase):
 
 
 class TestGameViews(BaseGameTestCase):
+
+
+
+    def test_3D_items_display(self):
+
+        for autoreverse in (True, False):
+
+            viewer_settings = dict(levels=2,
+                                    per_level=5,
+                                    index_steps=5,
+                                    index_offset=3,
+                                    start_level=1,
+                                    file_template="openinglogo/crystal%04d.jpg",
+                                    image_width=528,
+                                    image_height=409,
+                                    mode="object",
+                                    x_coefficient=12,
+                                    y_coefficient=160,
+                                    autoreverse=autoreverse,
+                                    rotomatic=150,
+                                    music="musics/mymusic.mp3")
+            display_data = views._build_display_data_from_viewer_settings(viewer_settings)
+
+
+            assert "musics/mymusic.mp3" in display_data["music_url"] # authenticated url
+            del display_data["music_url"]
+
+            rel_expected_image_urls = [["openinglogo/crystal0003.jpg",
+                                       "openinglogo/crystal0008.jpg",
+                                       "openinglogo/crystal0013.jpg",
+                                       "openinglogo/crystal0018.jpg",
+                                       "openinglogo/crystal0023.jpg"],
+                                      ["openinglogo/crystal0028.jpg",
+                                       "openinglogo/crystal0033.jpg",
+                                       "openinglogo/crystal0038.jpg",
+                                       "openinglogo/crystal0043.jpg",
+                                       "openinglogo/crystal0048.jpg"], ]
+            expected_image_urls = [[game_file_url(rel_path) for rel_path in level] for level in rel_expected_image_urls]
+
+            if autoreverse:
+                for id, value in enumerate(expected_image_urls):
+                    expected_image_urls[id] = value + list(reversed(value))
+
+
+            # pprint.pprint(display_data["image_urls"])
+            # pprint.pprint(expected_image_urls)
+
+            assert display_data["image_urls"] == expected_image_urls
+
+            del display_data["image_urls"]
+
+            assert display_data == dict(levels=2,
+                                        per_level=5 if not autoreverse else 10,
+                                        x_coefficient=12,
+                                        y_coefficient=160,
+                                        rotomatic=150,
+                                        image_width=528,
+                                        image_height=409,
+                                        start_level=1,
+                                        mode="object")
+
 
     @for_gameview(friendship_management)
     def test_friendship_management(self):

@@ -177,6 +177,8 @@ class AbstractAbility(AbstractAbilityBasesAdapter):
         assert isinstance(self.ability_data["data"], collections.Mapping), self.ability_data["data"]
 
         if strict:
+            assert len(self.ability_data.keys()) == 2 # prevents misconfigurations
+
             available_logins = self._inner_datamanager.get_available_logins()
             for name, value in self.ability_data["data"].items():
                 assert name in available_logins
