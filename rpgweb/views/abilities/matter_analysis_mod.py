@@ -40,7 +40,7 @@ class MatterAnalysisAbility(AbstractAbility):
     def get_template_vars(self, previous_form_data=None):
 
         # for now we don't exclude objects already analysed, players just have to take care !
-        item_form = self._instantiate_form(new_form_name="item_form",
+        item_form = self._instantiate_form(new_form_name="artefact_form",
                                              hide_on_success=True,
                                              previous_form_data=previous_form_data)
 
