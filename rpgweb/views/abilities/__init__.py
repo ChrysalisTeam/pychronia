@@ -20,3 +20,6 @@ matter_analysis = MatterAnalysisAbility.as_view
 
 from .world_scanning_mod import WorldScanAbility
 world_scan = WorldScanAbility.as_view
+
+from .telecom_investigation_mod import TelecomInvestigationAbility
+telecom_investigation = TelecomInvestigationAbility.as_view

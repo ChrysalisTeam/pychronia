@@ -382,3 +382,28 @@ class ArtefactForm(AbstractGameForm):
         _user_artefacts_choices = [("", _("Select your artefact..."))] + _user_artefacts_choices  # ALWAYS non-empty choice field
         self.fields["item_name"] = forms.ChoiceField(label=_("Object"), choices=_user_artefacts_choices, required=True)
 
+
+
+class OtherCharactersForm(AbstractGameForm):
+
+
+    def __init__(self, datamanager, *args, **kwargs):
+        super(OtherCharactersForm, self).__init__(datamanager=datamanager, *args, **kwargs)
+
+        usernames = datamanager.get_character_usernames(exclude_current=True)
+        usernames_choices = datamanager.build_select_choices_from_usernames(usernames)
+        self.fields['target_username'] = forms.ChoiceField(label=_("User"), choices=usernames_choices)
+
+
+'''
+class CharacterForm(forms.Form):
+
+    def __init__(self, datamanager, *args, **kwargs):
+        super(CharacterForm, self).__init__(*args, **kwargs)
+
+        _usernames = datamanager.get_character_usernames()
+        _usernames_choices = zip(_usernames, _usernames)
+        _usernames_choices.sort()
+
+        self.fields['target_username'] = forms.ChoiceField(label=_("User"), choices=_usernames_choices)
+'''

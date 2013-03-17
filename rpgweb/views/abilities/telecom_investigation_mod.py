@@ -7,19 +7,7 @@ from rpgweb.datamanager.abstract_ability import AbstractAbility
 from rpgweb.datamanager.abstract_game_view import register_view
 from rpgweb.datamanager.datamanager_tools import readonly_method, \
     transaction_watcher
-
-
-class CharacterForm(forms.Form):
-
-    def __init__(self, datamanager, *args, **kwargs):
-        super(CharacterForm, self).__init__(*args, **kwargs)
-
-        _usernames = datamanager.get_character_usernames()
-        _usernames_choices = zip(_usernames, _usernames)
-        _usernames_choices.sort()
-
-        self.fields['target_username'] = forms.ChoiceField(label=_("User"), choices=_usernames_choices)
-
+from rpgweb.forms import OtherCharactersForm
 
 
 @register_view
@@ -28,7 +16,7 @@ class TelecomInvestigationAbility(AbstractAbility):
 
     NAME = "telecom_investigation"
 
-    GAME_FORMS = {"character_form": (CharacterForm, "process_telecom_investigation")}
+    GAME_FORMS = {"investigation_form": (OtherCharactersForm, "process_telecom_investigation")}
     ADMIN_FORMS = {}
 
     TEMPLATE = "abilities/telecom_investigation.html"
@@ -38,17 +26,29 @@ class TelecomInvestigationAbility(AbstractAbility):
     ALWAYS_AVAILABLE = False
 
 
+    @classmethod
+    def _setup_ability_settings(cls, settings):
+        pass # nothing to do
+
+    def _setup_private_ability_data(self, private_data):
+        pass # nothing to do
+
+    def _check_data_sanity(self, strict=False):
+        pass # nothing to do
+
+
+
     def get_template_vars(self, previous_form_data=None):
 
-        translation_form = self._instantiate_form(new_form_name="translation_form",
+        translation_form = self._instantiate_form(new_form_name="investigation_form",
                                                   hide_on_success=False,
                                                   previous_form_data=previous_form_data)
 
-        translation_delay = self.get_ability_parameter("result_delay")  # TODO - translate this
+        translation_delay = (2, 3) # FIXME TODO self.get_ability_parameter("result_delay")  # TODO - translate this
 
         return {
                  'page_title': _("Telecom Investigation"),
-                 "translation_form": translation_form,
+                 "investigation_form": translation_form,
                  'min_delay_mn': translation_delay[0],
                  'max_delay_mn': translation_delay[1],
                }
@@ -154,7 +154,7 @@ class TelecomInvestigationAbility(AbstractAbility):
                              PersistentDict(target_official_name=target_official_name),
                              url=self.get_message_viewer_url(msg_id))
 
-
+        return _("Telecom investigation is in process, you'll receive the result by email.")
 
 
 '''

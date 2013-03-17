@@ -5,20 +5,9 @@
 {% block content %}  
 
 
-<p>
-   {{ instructions }}
-</p>
-
-{% if investigation_impossible_msg %}
-
-    <p><strong>
-    {{ investigation_impossible_msg }}
-    </strong></p>
-
-{% else %}
-
-    {% if investigation_form %}
-        <form action="{% "game_view_url rpgweb.views.telecom_investigation" %}" method="post">
+{% if investigation_form %}
+    <div align="center" class="scroll_yellow_flat center" style="text-align:center; width:300px;">
+        <form action="{{ investigation_form.url }}" method="post">
         <div align="center">
         <table>
         {{ investigation_form.as_table }}
@@ -31,8 +20,9 @@
         </table>
         </div>
         </form>
-    {% endif %}
-
+    </div>
+{% else %}
+    {# add stuffs here #} 
 {% endif %}
 
 

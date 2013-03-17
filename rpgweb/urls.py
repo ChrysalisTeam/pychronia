@@ -25,7 +25,7 @@ web_game_urlpatterns = patterns('rpgweb.views',
     url(r'^MEDIA_TEST/$', 'MEDIA_TEST'), # to check that all audio/video formats are well read by web browser!
 
     url(r'^bug_report/$', 'bug_report_treatment'),
-    
+
 
     url(r'^$', 'homepage', name="rpgweb-homepage"),
 
@@ -121,12 +121,13 @@ web_game_urlpatterns = patterns('rpgweb.views',
     url(r'^ability/admin_dashboard/$', 'admin_dashboard'),
     url(r'^ability/network_management/$', 'mercenaries_hiring'),
     url(r'^ability/matter_analysis/$', 'matter_analysis'),
+    url(r'^ability/telecom_investigation/$', 'telecom_investigation'),
 
 )
 
 
 support_urlpatterns = patterns('',
-    
+
     # serving of game files is currently independent of ZODB data
     url(r'^%s(?P<hash>[^/]*)/?(?P<path>.*)$' % config.GAME_FILES_URL[1:], 'rpgweb.views.serve_game_file'), # NOT a gameview
 
