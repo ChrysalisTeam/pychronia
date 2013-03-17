@@ -2174,7 +2174,7 @@ class TestHttpRequests(BaseGameTestCase):
                               DATABASE_OPERATIONS FAIL_TEST ajax item_3d_view chat_with_djinn static.serve encrypted_folder 
                               view_single_message logout login secret_question
                               friendship_management wiretapping_management
-                              mercenaries_hiring matter_analysis""".split() # FIXME REMOVE THIS
+                              mercenaries_hiring matter_analysis runic_translation""".split() # FIXME REMOVE THIS
 
 
         views_names = [url._callback_str for url in web_game_urlpatterns
