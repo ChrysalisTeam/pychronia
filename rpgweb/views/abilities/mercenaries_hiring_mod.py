@@ -6,7 +6,7 @@ import json
 from django import forms
 
 from rpgweb.common import *
-from rpgweb.datamanager.abstract_ability import AbstractAbility
+from rpgweb.datamanager import AbstractAbility, with_action_middlewares
 
 from rpgweb.forms import AbstractGameForm
 from rpgweb.datamanager.datamanager_tools import transaction_watcher
@@ -27,10 +27,10 @@ class GemPayementFormMixin(AbstractGameForm):
         _gems_choices = zip(self._encode_gems(_gems), [_("Gem of %d Kashes (%s)") % gem for gem in _gems]) # gem is (value, origin) here
 
         if _gems_choices:
-            self.fields["pay_with_money"] = forms.BooleanField(label=_("Pay with money"), initial=False)
+            self.fields["pay_with_money"] = forms.BooleanField(label=_("Pay with money"), initial=False, required=False)
             self.fields["gems_list"] = forms.MultipleChoiceField(required=False, label=_("Or pay with gems (press Ctrl key to select/deselect)"), choices=_gems_choices)
         else:
-            self.fields["pay_with_money"] = forms.BooleanField(initial=True, widget=forms.HiddenInput)
+            self.fields["pay_with_money"] = forms.BooleanField(initial=True, widget=forms.HiddenInput, required=True)
             self.fields["gems_list"] = forms.MultipleChoiceField(required=False, widget=forms.HiddenInput)
 
 
@@ -39,10 +39,15 @@ class GemPayementFormMixin(AbstractGameForm):
         parameters = super(GemPayementFormMixin, self).get_normalized_values()
 
         try:
-            parameters["pay_with_gems"] = self._decode_gems(parameters["gems_list"])
+            parameters["use_gems"] = self._decode_gems(parameters["gems_list"])
         except (TypeError, ValueError), e:
             logger.critical("Wrong data submitted - %r", parameters["gems_list"], exc_info=True) # FIXME LOGGER MISSING
             raise AbnormalUsageError("Wrong data submitted")
+
+        if ((parameters["pay_with_money"] and parameters["use_gems"]) or
+           not (parameters["pay_with_money"] or parameters["use_gems"])):
+            raise AbnormalUsageError("You must choose between money and gems, for payment.")
+
         return parameters
 
 
@@ -83,7 +88,7 @@ class MercenariesHiringAbility(AbstractAbility):
 
         user_profile = self.get_character_properties()
         gems = user_profile["gems"]
-        total_gems_value = sum(gems)
+        total_gems_value = sum(gem[0] for gem in gems)
 
         # for now we don't exclude locations of already hired mercenaries
         hiring_form = self._instantiate_form(new_form_name="hiring_form",
@@ -94,7 +99,7 @@ class MercenariesHiringAbility(AbstractAbility):
 
         #print (">>>>>>>>>>>>>>>>", self.settings)
         return {
-                 'page_title': _("Mercenaries Network Management"),
+                 'page_title': _("Mercenaries Management"),
                  'settings': self.settings,
                  'mercenaries_locations': mercenaries_locations,
                  'user_profile': user_profile,
@@ -105,7 +110,9 @@ class MercenariesHiringAbility(AbstractAbility):
 
 
     @transaction_watcher
-    def hire_remote_agent(self, location, pay_with_gems=(),):
+    @with_action_middlewares("hire_remote_agent")
+    def hire_remote_agent(self, location,
+                          use_gems=()): # intercepted by action middlewares
 
         private_data = self.private_data
 
@@ -137,12 +144,13 @@ class MercenariesHiringAbility(AbstractAbility):
 
         settings = self.settings
 
+        ''' OBSOLETE
         _reference = dict(
                             mercenary_cost_money=utilities.check_is_positive_int,
                             mercenary_cost_gems=utilities.check_is_positive_int
                          )
         utilities.check_dictionary_with_template(settings, _reference, strict=strict)
-
+        '''
 
         for data in self.all_private_data.values():
 

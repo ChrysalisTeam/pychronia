@@ -29,7 +29,7 @@ def with_action_middlewares(action_name):
     
     Wrapped mehods must not use *args and **kwargs notations!
     """
-    @decorator
+    @decorator # IMPORTANt - keep same signature so that adapt_parameters_to_func() works
     def _execute_with_middlewares(method, self, *args, **kwargs):
         # session management must be on TOP of stack
         assert not getattr(method, "_is_under_transaction_watcher", None) or getattr(method, "_is_under_readonly_method", None)
@@ -138,12 +138,13 @@ class AbstractActionMiddleware(object):
     def is_action_middleware_activated(self, action_name, middleware_class):
         """
         We assume a middleware is activated only if it has an entry in middleware settings 
-        for that actions (even if that entry is None/empty).
+        for that action (even if that entry is None/empty).
         """
         assert action_name
-        return (action_name in self.settings["middlewares"] and
+        res = (action_name in self.settings["middlewares"] and
                 middleware_class.__name__ in self.settings["middlewares"][action_name])
-
+        print("is_action_middleware_activated", action_name, middleware_class, res, "---------", self.settings) # FIXME REMOVE
+        return res
 
     def _lazy_setup_private_action_middleware_data(self, action_name):
         """
@@ -171,12 +172,12 @@ class CostlyActionMiddleware(AbstractActionMiddleware):
     If payement by gem is activated, then the concerned action callable
     must accept a *use_gems* argument (list of gem values) in input.
     
-    settings::
+    settings:
     
         money_price: 115 (None if forbidden)
         gems_price: 234 (None if forbidden)
         
-    private_data::
+    private_data:
         
         <nothing>
         
@@ -196,7 +197,6 @@ class CostlyActionMiddleware(AbstractActionMiddleware):
     def _check_action_middleware_data_sanity(self, strict=False):
         super(CostlyActionMiddleware, self)._check_action_middleware_data_sanity(strict=strict)
 
-        settings = self.settings
         for _action_name_, settings in self.get_all_middleware_settings(CostlyActionMiddleware).items():
 
             for setting in "money_price gems_price".split():
@@ -218,7 +218,7 @@ class CostlyActionMiddleware(AbstractActionMiddleware):
 
                 # non-fatal coherency checks
                 if middleware_settings["gems_price"] and "use_gems" not in params:
-                    self.logger.critical("Action %s was configured to be payable by gems, but no input field is available for this", action_name)
+                    self.logger.critical("Action %s was configured to be payable by gems, but no input field is available for this : %r", action_name, params)
                 if not middleware_settings["gems_price"] and use_gems:
                     self.logger.critical("Action %s was configured to be NOT payable by gems, but gems were sent via input field", action_name)
                     use_gems = ()
@@ -240,7 +240,7 @@ class CostlyActionMiddleware(AbstractActionMiddleware):
 
         provided_gems_value = sum(gems_values) if gems_values else 0 # gems_list could be empty!!
         if (provided_gems_value < gems_price):
-            raise NormalUsageError(_("You need at least %(price)s kashes of gems to buy this asset") % SDICT(gems_price=gems_price))
+            raise NormalUsageError(_("You need at least %(gems_price)s kashes of gems to buy this asset") % SDICT(gems_price=gems_price))
 
         min_gem_value = min(gems_values) if gems_values else 0 # necessarily non-empty here
         if (provided_gems_value - gems_price) >= min_gem_value:

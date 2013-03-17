@@ -12,3 +12,5 @@ from .abstract_form import AbstractGameForm, DataTableForm, UninstantiableFormEr
 from .abstract_game_view import AbstractGameView, register_view
 from .abstract_ability import AbstractAbility
 from .abstract_data_table_view import AbstractDataTableManagement
+
+from .action_middlewares import with_action_middlewares

@@ -37,6 +37,12 @@ abilities:
             mercenary_cost_money: 100
             mercenary_cost_gems: 200
 
+            middlewares:
+                hire_remote_agent:
+                    CostlyActionMiddleware:
+                        money_price: 115
+                        gems_price: 234
+
 
     matter_analysis:
         settings:
