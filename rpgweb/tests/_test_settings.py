@@ -30,7 +30,7 @@ GAME_ROOT = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 # rpgweb specific conf #
 
 _curdir = os.path.dirname(os.path.realpath(__file__))
-GAME_FILES_ROOT = os.path.join(_curdir, "test_game_files") + "/"
+GAME_FILES_ROOT = os.path.join(_curdir, "test_game_files") + os.sep
 GAME_FILES_URL = "/files/"
 GAME_INITIAL_DATA_PATH = os.path.join(GAME_FILES_ROOT, "game_initial_data.yaml")
 

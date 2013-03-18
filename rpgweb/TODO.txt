@@ -12,10 +12,12 @@ ACCESS CONTROL ON HELP PAGES !!!!!!!!!!!!
 - interface to edit radio spots WIP
 - interface to edit external contacts WIP
 - interface to activate views
-- filling of footer with game info
+- SSL protection to be added to wiratapping page
+- filling of footer with game info DONE
 - filling of headers with game info and notifications
 - javascript-obfuscated-popuped "report bug" div in mini footer WIP
 - global management of ajax errors, with popups DONE
+- place calls to novelty tracker
 
 - check what happens when calling setlanguage flags from a "POST-access-only" page like private files ??
 - include timezone handling

@@ -20,7 +20,7 @@ class ArtificialIntelligenceAbility(AbstractAbility):
 
     TEMPLATE = "abilities/artificial_intelligence.html"
 
-    ACCESS = UserAccess.acharacter
+    ACCESS = UserAccess.character
     PERMISSIONS = []
     ALWAYS_AVAILABLE = True
 
@@ -52,7 +52,7 @@ class ArtificialIntelligenceAbility(AbstractAbility):
             utilities.check_is_string(key)
             utilities.check_is_string(value)
 
-        for bot_name, bot_props in settings["common_bot_properties"].items():
+        for bot_name, bot_props in settings["specific_bot_properties"].items():
             utilities.check_is_string(bot_name)
             utilities.check_is_dict(bot_props) # nothing precise about what's here ATM
 
@@ -89,6 +89,8 @@ class ArtificialIntelligenceAbility(AbstractAbility):
         # TIP : say "startup xml" to the bot, to list its main predicates !!
 
         # we use only the "global session" of bot kernel, in the following calls !
+
+        djinn_proxy = DJINN_PROXY # SINGLETON instance ATM
 
         bot_session = self.get_bot_session(bot_name) # we load previous session
         djinn_proxy.setSessionData(bot_session)
@@ -188,7 +190,7 @@ class DjinnProxy(object):
 
 
 # singleton
-djinn_proxy = DjinnProxy()
+DJINN_PROXY = DjinnProxy()
 
 
 

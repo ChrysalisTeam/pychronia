@@ -2,6 +2,7 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import os
 from django.core.files.storage import FileSystemStorage
 from .utilities import config
 from rpgweb.common import game_file_url
@@ -14,7 +15,7 @@ class ProtectedGameFileSystemStorage(FileSystemStorage):
 
     def __init__(self):
         location = config.GAME_FILES_ROOT
-        assert location.endswith("/"), location
+        assert location.endswith(os.sep), location
         super(ProtectedGameFileSystemStorage, self).__init__(location=location,
                                                              base_url=None) # useless here
 

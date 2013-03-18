@@ -141,6 +141,7 @@ def _generate_web_menu(request, menu_entry_generator):
                         menu_entry(_(u"Matter Analysis"), views.matter_analysis),
                         menu_entry(_(u"Telecom Investigation"), views.telecom_investigation),
                         menu_entry(_(u"World Scans"), views.world_scan),
+                        menu_entry(_(u"Djinns"), views.artificial_intelligence),
 
                         # menu_entry(_(u"Agents Hiring"), views.network_management),
                         # menu_entry(_(u"Oracles"), views.contact_djinns),
