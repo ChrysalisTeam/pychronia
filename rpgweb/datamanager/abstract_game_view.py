@@ -265,7 +265,7 @@ class AbstractGameView(object):
         Might raise UninstantiableFormError.
         """
         form_options = form_options or {}
-        
+
         if previous_form_data:
             previous_form_name = previous_form_data.form_name
             previous_form_instance = previous_form_data.form_instance

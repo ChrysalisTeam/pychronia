@@ -240,13 +240,6 @@ class TelecomInvestigationForm(forms.Form):
         self.fields["official_name"] = forms.ChoiceField(label=_("Name"), choices=others_choices)
 
 
-class DjinnContactForm(forms.Form):
-
-    def __init__(self, available_djinns, *args, **kwargs):
-        super(DjinnContactForm, self).__init__(*args, **kwargs)
-        available_djinns_choices = zip(available_djinns, available_djinns)
-        self.fields["djinn"] = forms.ChoiceField(label=_("Djinn"), choices=available_djinns_choices)
-
 
 class MessageComposeForm(forms.Form):
     """

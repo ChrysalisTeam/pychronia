@@ -3,10 +3,26 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from rpgweb.common import *
-from rpgweb.datamanager.abstract_ability import AbstractAbility
-from rpgweb.datamanager.abstract_game_view import register_view
-from rpgweb.datamanager import readonly_method, \
-    transaction_watcher
+from rpgweb.datamanager import readonly_method, transaction_watcher, register_view, AbstractAbility, AbstractGameForm
+from django import forms
+from django.http import Http404
+
+""" DEPRECATED
+class DjinnContactForm(AbstractGameForm):
+
+    def __init__(self, ability, *args, **kwargs):
+        super(DjinnContactForm, self).__init__(*args, **kwargs)
+        available_djinns_choices = zip(available_djinns, available_djinns)
+        self.fields["djinn"] = forms.ChoiceField(label=_("Djinn"), choices=available_djinns_choices)
+
+"""
+
+
+class DjinnContactForm(AbstractGameForm):
+    djinn_name = forms.CharField(label=_("Djinn"), required=True)
+
+
+
 
 
 @register_view
@@ -54,6 +70,7 @@ class ArtificialIntelligenceAbility(AbstractAbility):
 
         for bot_name, bot_props in settings["specific_bot_properties"].items():
             utilities.check_is_string(bot_name)
+            assert bot_name.strip() == bot_name, bot_name
             utilities.check_is_dict(bot_props) # nothing precise about what's here ATM
 
 
@@ -63,11 +80,49 @@ class ArtificialIntelligenceAbility(AbstractAbility):
                 utilities.check_is_list(val) # let's not check further that data
 
 
+    def _process_html_post_data(self):
+        """We prevent default form handling and error reporting."""
+        assert not self.request.is_ajax()
+        assert self.request.method == "POST"
+        return dict(result=None, form_data=None)
+
+
+    def _get_entrance_template_vars(self):
+        return {
+                'page_title': _("Djinns' Temple"),
+                'selected_djinn': None,
+                'bot_max_answers': self.settings["bot_max_answers"],
+               }
+
+    def _get_djinn_template_vars(self, selected_bot):
+
+        history = self.get_bot_history(bot_name=selected_bot)
+        sentences = []
+        for i in range(max(len(history[0]), len(history[1]))):
+            if i < len(history[0]):
+                sentences.append(history[0][i])  # input
+            if i < len(history[1]):
+                sentences.append(history[1][i])  # output
+
+        return {
+                'page_title': _("%s's Shrine") % selected_bot,
+                'selected_djinn': selected_bot,
+                'history': sentences,
+               }
+
 
     def get_template_vars(self, previous_form_data=None):
-        return {
-                'page_title': _("Djinns Chatroom"),
-               }
+        selected_bot = self.request.POST.get("target_djinn_name", None)
+        if selected_bot is not None: # post var was sent
+            selected_bot = selected_bot.strip() # normalize
+            if selected_bot in self.get_bot_names():
+                return self._get_djinn_template_vars(selected_bot=selected_bot) # success, talk with a djinn
+            else:
+                self.user.add_error(_("Unknown djinn name '%s'") % selected_bot)
+        return self._get_entrance_template_vars() # page to choose wanted djinn
+
+
+
 
     @readonly_method
     def get_bot_names(self):
@@ -75,7 +130,7 @@ class ArtificialIntelligenceAbility(AbstractAbility):
 
     @readonly_method
     def get_bot_session(self, bot_name):
-        return self.settings["specific_bot_properties"][bot_name]
+        return self.private_data[bot_name] # specific to the current user
 
     @readonly_method
     def get_bot_history(self, bot_name):
@@ -127,11 +182,88 @@ class ArtificialIntelligenceAbility(AbstractAbility):
         return res
 
 
+    def process_user_sentence(self, djinn_name, message):
+
+        if djinn_name not in self.get_bot_names():
+            raise Http404 # pathological
+
+        res = self.get_bot_response(self.username, bot_name=djinn_name, input=message) # in case of error, a "500" code will be returned
+        return dict(response=res)
 
 
 
 
+        '''
 
+        def chat_with_djinn(request, template_name='specific_operations/chat_with_djinn.html'):
+
+            bot_name = request.POST.get("djinn", None)
+
+            # TODO BAD - add security here !!!!!!!!!!
+
+            if not request.datamanager.is_game_started():
+                return HttpResponse(_("Game is not yet started"))
+
+            if bot_name not in request.datamanager.get_bot_names():
+                raise Http404
+
+
+
+            return render(request,
+                          template_name,
+                            {
+                             'page_title': _("Djinn Communication"),
+                             'bot_name': bot_name,
+                             'history': sentences
+                            })
+
+
+        def ajax_consult_djinns(request):
+            user = request.datamanager.user
+            message = request.REQUEST.get("message", "")
+            bot_name = request.REQUEST.get("djinn", None)
+
+            if bot_name not in request.datamanager.get_bot_names():
+                raise Http404
+
+            res = request.datamanager.get_bot_response(bot_name, message)
+            return HttpResponse(escape(res))  # IMPORTANT - escape xml entities !!
+
+            # in case of error, a "500" code will be returned
+
+
+        def contact_djinns(request, template_name='specific_operations/contact_djinns.html'):
+
+            user = request.datamanager.user
+
+            bots_properties = request.datamanager.get_bots_properties()
+
+            if user.is_master:  # FIXME
+                available_bots = bots_properties.keys()
+                # team_gems = None
+            else:
+                domain = request.datamanager.get_character_properties()["domain"]
+                available_bots = [bot_name for bot_name in bots_properties.keys() if request.datamanager.is_bot_accessible(bot_name, domain)]
+                # team_gems = request.datamanager.get_team_gems_count(domain)
+
+            if available_bots:
+                djinn_form = forms.DjinnContactForm(available_bots)
+            else:
+                djinn_form = None
+
+            all_bots = bots_properties.items()
+            all_bots.sort(key=lambda t: t[1]["gems_required"])
+
+            return render(request,
+                          template_name,
+                            {
+                             'page_title': _("Shrine of Oracles"),
+                             'djinn_form': djinn_form,
+                             'all_bots': all_bots,
+                             # 'team_gems': team_gems,
+                             'bots_max_answers': request.datamanager.get_global_parameter("bots_max_answers")
+                            })
+            '''
 
 
 class DjinnProxy(object):
