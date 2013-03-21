@@ -22,9 +22,6 @@ class DjinnContactForm(AbstractGameForm):
     djinn_name = forms.CharField(label=_("Djinn"), required=True)
 
 
-
-
-
 @register_view
 class ArtificialIntelligenceAbility(AbstractAbility):
 
@@ -32,7 +29,7 @@ class ArtificialIntelligenceAbility(AbstractAbility):
 
     GAME_FORMS = {}
 
-    ACTIONS = dict()
+    ACTIONS = dict(process_user_sentence="process_user_sentence")
 
     TEMPLATE = "abilities/artificial_intelligence.html"
 
@@ -75,9 +72,7 @@ class ArtificialIntelligenceAbility(AbstractAbility):
 
 
         for bot_session in self.all_private_data.values():
-            utilities.check_has_keys(bot_session, ["_inputStack", "_inputHistory", "_outputHistory"], strict=strict)
-            for val in bot_session.values():
-                utilities.check_is_list(val) # let's not check further that data
+            utilities.check_has_keys(bot_session, ["_inputStack", "_inputHistory", "_outputHistory"], strict=False) # other session values may exist
 
 
     def _process_html_post_data(self):
@@ -142,7 +137,7 @@ class ArtificialIntelligenceAbility(AbstractAbility):
     @transaction_watcher
     def get_bot_response(self, username, bot_name, input):
         # TIP : say "startup xml" to the bot, to list its main predicates !!
-
+        # TODO - use loadSubs to make proper substitutions
         # we use only the "global session" of bot kernel, in the following calls !
 
         djinn_proxy = DJINN_PROXY # SINGLETON instance ATM
@@ -282,6 +277,12 @@ class DjinnProxy(object):
 
             import aiml
 
+            # MONKEY PATCHING #
+            def setSessionData(self, data, sessionID="_global"):
+                self._sessions[sessionID] = data
+            aiml.Kernel.setSessionData = setSessionData
+
+
             kernel = aiml.Kernel()
             kernel.verbose(False) # DEBUG OUTPUT
             kernel.bootstrap(
@@ -294,9 +295,9 @@ class DjinnProxy(object):
             logging.debug("AI bots not initialized to preserve memory")
 
             """
-            print "INITIALIZED SESSION  for %s : " % name, self.data["AI_bots"]["bot_properties"][name]["bot_sessions"]
+            print ("INITIALIZED SESSION  for %s : " % name, self.data["AI_bots"]["bot_properties"][name]["bot_sessions"])
             props["bot_sessions"] = kernel.getSessionData() # IMPORTANT - initialized values, with I/O history etc.
-            print "COMMITTING DATA for %s :" % name, self.data["AI_bots"]["bot_properties"][name]
+            print ("COMMITTING DATA for %s :" % name, self.data["AI_bots"]["bot_properties"][name])
             """
 
     def respond(self, input):

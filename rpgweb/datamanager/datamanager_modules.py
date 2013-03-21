@@ -3028,7 +3028,7 @@ class GameViews(BaseDataManager):
     def register_game_view(cls, view_class):
         assert isinstance(view_class, type)
 
-        assert view_class.NAME and view_class.NAME not in cls.GAME_VIEWS_REGISTRY
+        assert view_class.NAME and view_class.NAME not in cls.GAME_VIEWS_REGISTRY, view_class.NAME
         cls.GAME_VIEWS_REGISTRY[view_class.NAME] = view_class
 
         if not view_class.ALWAYS_AVAILABLE:
