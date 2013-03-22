@@ -1,0 +1,42 @@
+<html>
+<head>
+<link rel="stylesheet" href="p4wn.css" />
+<style>
+.p4wn-fen-switches .p4wn-control-button{
+  display:block;
+}
+#log {
+  width: 20em;
+}
+
+.p4wn-fen-switches {
+        clear: both;
+}
+
+</style>
+</head>
+<body>
+<div id="board"></div>
+
+<script src="engine.js"></script>
+<script src="display.js"></script>
+<script src="fen-test.js"></script>
+<script src="parse-test.js"></script>
+<script>
+P4_DEBUG = true;
+P4WN_ADAPTIVE_LEVELS = false;
+P4WN_ROTATE_BOARD = false;
+
+var game = p4wnify("board");
+game.write_controls_html(TEST_BUTTONS);
+write_fen_switches(game);
+
+add_extra_searches(game);
+
+p4_fen2state(FEN[0][1], game.board_state);
+game.interpret_query_string();
+game.refresh();
+game.next_move();
+</script>
+
+</body>

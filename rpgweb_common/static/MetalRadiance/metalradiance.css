@@ -899,6 +899,16 @@ table.footnote {
   background: #C5AE8F;
   line-height: 1em;
 }
+.p4wn-board {
+  float: none;
+}
+.p4wn-board table * {
+  line-height: 8px;
+  user-select: none;
+}
+.p4wn-log, .p4wn-messages {
+  display: none;
+}
 #password_display {
   display: table-cell;
   vertical-align: middle;

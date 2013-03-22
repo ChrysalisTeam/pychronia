@@ -211,3 +211,26 @@
     }
     
 }
+
+
+
+
+
+
+
+
+/* P4WN customization */
+
+.p4wn-board {
+    float: none;
+    
+    table * {
+        line-height: 8px;
+        user-select: none;  
+    } 
+   
+}
+
+.p4wn-log, .p4wn-messages {
+    display: none;
+}

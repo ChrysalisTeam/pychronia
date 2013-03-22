@@ -2175,7 +2175,8 @@ class TestHttpRequests(BaseGameTestCase):
                               view_single_message logout login secret_question
                               friendship_management wiretapping_management
                               mercenaries_hiring matter_analysis runic_translation 
-                              telecom_investigation world_scan artificial_intelligence""".split() # FIXME REMOVE THIS
+                              telecom_investigation world_scan artificial_intelligence
+                              chess_challenge""".split() # FIXME REMOVE THIS
 
 
         views_names = [url._callback_str for url in web_game_urlpatterns

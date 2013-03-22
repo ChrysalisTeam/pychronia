@@ -1,0 +1,61 @@
+
+{% extends "base_one_column.html" %}
+
+{% load sekizai_tags i18n helpers kwacros %}  
+
+{% block sekizai_calls %}
+{{ block.super }}
+
+{% addtoblock "definition_js" %}
+
+{% endaddtoblock %}
+
+{% addtoblock "onload_js" %}
+
+P4WN_SQUARE_WIDTH = 30;
+P4WN_SQUARE_HEIGHT = 30;
+P4WN_WRAPPER_CLASS = 'p4wn-wrapper';
+P4WN_BOARD_CLASS = 'p4wn-board';
+P4WN_MESSAGES_CLASS = 'p4wn-messages';
+P4WN_LOG_CLASS = 'p4wn-log';
+P4WN_CONTROLS_CLASS = 'p4wn-controls';
+P4WN_BLACK_SQUARE = 'p4wn-black-square';
+P4WN_WHITE_SQUARE = 'p4wn-white-square';
+
+P4WN_ROTATE_BOARD = false;
+P4WN_LEVELS = ['stupid', 'middling', 'default', 'slow', 'slowest'];
+P4WN_DEFAULT_LEVEL = 4; // slowest
+P4WN_ADAPTIVE_LEVELS = true;
+
+P4WN_IMAGE_DIR = '{{ STATIC_URL }}libs/p4wn/images';
+
+P4WN_PROMOTION_STRINGS = ['queen', 'rook', 'knight', 'bishop'];
+P4WN_PROMOTION_INTS = [P4_QUEEN, P4_ROOK, P4_KNIGHT, P4_BISHOP];
+
+P4WN_CONTROLS.splice(0, 3); // remove player choices
+P4WN_CONTROLS.splice(2, 1); // remove computer level choice
+
+
+p4wnify($("#chess_panel")).next_move();
+
+/// p4_log(p4_state2fen(p4d.board_state));
+
+{% endaddtoblock %}
+
+
+{% endblock %}
+
+
+{% block content %}
+
+    <div align="center">
+
+       <div id="chess_panel"></div>
+
+    </div>
+
+{% endblock %}
+
+
+
+

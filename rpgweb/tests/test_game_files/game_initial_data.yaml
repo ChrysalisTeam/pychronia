@@ -4,7 +4,10 @@
 
 
 abilities:
-
+    chess_challenge:
+        settings: {}
+      
+      
     artificial_intelligence:
       
         settings:
