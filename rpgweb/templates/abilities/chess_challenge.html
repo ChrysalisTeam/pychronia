@@ -8,6 +8,64 @@
 
 {% addtoblock "definition_js" %}
 
+
+function notify_chess_player_victory() {
+    $.post("",
+            {
+             _action_: "notify_chess_player_victory",
+             }, 
+            function(answer) {  
+                $.jnotify("{% trans "Your victory has well been recorded!" %}", "success", true)
+            },
+            'json').fail(function() {
+                            // duplicate with default error handler $.jnotify("{% trans "Victory registration, retrying..." %}", "error", 2000)
+                            window.setTimeout(notify_chess_player_victory, 2000);
+                            
+                        }); 
+    
+}
+
+/* Monkey-patch move function of displayer */
+P4wn_display.prototype.move = function(start, end, promotion){
+    var state = this.board_state;
+    var move_result = state.move(start, end, promotion);
+    if(move_result.ok){
+        this.display_move_text(state.moveno, move_result.string);
+        this.refresh();
+        if ((move_result.flags & P4_MOVE_FLAG_MATE) && (move_result.flags & P4_MOVE_FLAG_CHECK)) {
+            // checkmate situation
+            if (this.players[state.to_play] == 'computer') { 
+                // previous player is assumed to be human
+                //alert("HUMAN WON");
+                notify_chess_player_victory();
+            }
+            else {
+                // DO NOTHING alert("COMPUTER WON");
+            }
+        }
+        
+        if (! (move_result.flags & P4_MOVE_FLAG_MATE)){
+            this.next_move_timeout = window.setTimeout(
+                function(p4d){
+                    return function(){
+                        p4d.next_move();
+                    };
+                }(this), 1);
+        }
+    }
+    else {
+        p4_log("bad move!", start, end);
+    }
+    for (var i = 0; i < this.move_listeners.length; i++){
+        this.move_listeners[i](move_result);
+    }
+    
+    // p4_log(p4_state2fen(this.board_state)); -> dumps board state
+    
+    return move_result.ok;
+};
+
+
 {% endaddtoblock %}
 
 {% addtoblock "onload_js" %}
@@ -24,7 +82,7 @@ P4WN_WHITE_SQUARE = 'p4wn-white-square';
 
 P4WN_ROTATE_BOARD = false;
 P4WN_LEVELS = ['stupid', 'middling', 'default', 'slow', 'slowest'];
-P4WN_DEFAULT_LEVEL = 4; // slowest
+P4WN_DEFAULT_LEVEL = 2; // default
 P4WN_ADAPTIVE_LEVELS = true;
 
 P4WN_IMAGE_DIR = '{{ STATIC_URL }}libs/p4wn/images';
@@ -32,13 +90,12 @@ P4WN_IMAGE_DIR = '{{ STATIC_URL }}libs/p4wn/images';
 P4WN_PROMOTION_STRINGS = ['queen', 'rook', 'knight', 'bishop'];
 P4WN_PROMOTION_INTS = [P4_QUEEN, P4_ROOK, P4_KNIGHT, P4_BISHOP];
 
-P4WN_CONTROLS.splice(0, 3); // remove player choices
-P4WN_CONTROLS.splice(2, 1); // remove computer level choice
+//P4WN_CONTROLS.splice(0, 3); // remove player choices
+//P4WN_CONTROLS.splice(2, 1); // remove computer level choice
 
 
 p4wnify($("#chess_panel")).next_move();
 
-/// p4_log(p4_state2fen(p4d.board_state));
 
 {% endaddtoblock %}
 
@@ -48,6 +105,19 @@ p4wnify($("#chess_panel")).next_move();
 
 {% block content %}
 
+    <div align="center">
+    <form id="new_chess_game" action="" method="get">
+        <span>{% trans "Your colour:" %}</span>
+        <select name="player">
+            <option value="white">white</option>
+            <option value="black">black</option>
+        </select>
+        <input type="submit" class="" value="{% trans "New Game" %}"/>
+    </form>
+    </div>
+    
+    <br/>
+    
     <div align="center">
 
        <div id="chess_panel"></div>

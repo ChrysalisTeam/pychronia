@@ -30,7 +30,7 @@ Some events point to other pages, where more details can be found.
                     {% if event.url %}
                         <a href="{{ event.url }}">
                     {% endif %}
-                        <span style="color:{% usercolor event.username %};">{{ event.trans_message }}</span>
+                        <span style="color:{% usercolor event.username %};">[{{event.username}}] {{ event.trans_message }}</span>
                     {% if event.url %}
                         </a>
                     {% endif %}            

@@ -14,7 +14,7 @@ class ChessChallengeAbility(AbstractAbility):
 
     GAME_FORMS = {}
 
-    ACTIONS = {}
+    ACTIONS = {'notify_chess_player_victory': 'notify_chess_player_victory'}
 
     TEMPLATE = "abilities/chess_challenge.html"
 
@@ -38,3 +38,7 @@ class ChessChallengeAbility(AbstractAbility):
         return {
                 'page_title': _("Chess Challenge"),
                }
+
+    @transaction_watcher
+    def notify_chess_player_victory(self):
+        self.log_game_event(_noop("Chess AI has been defeated by user.")) # username auto-logged
