@@ -3,7 +3,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from rpgweb import menus as menus_module
-from rpgweb.authentication import IMPERSONATION_POST_VARIABLE
+from rpgweb.authentication import IMPERSONATION_TARGET_POST_VARIABLE, IMPERSONATION_WRITABILITY_POST_VARIABLE # TODO USE WRITABILITY
 from django.contrib.messages.api import get_messages
 
 
@@ -48,7 +48,7 @@ def rpgweb_template_context(request):
                 'help_keyword': help_keyword,
 
                 'possible_impersonations': possible_impersonations,
-                'impersonation_post_variable': IMPERSONATION_POST_VARIABLE,
+                'impersonation_post_variable': IMPERSONATION_TARGET_POST_VARIABLE,
 
                 # replacement of djanbgo.contrib.messages middleware
                 'notification_type': notification_type,

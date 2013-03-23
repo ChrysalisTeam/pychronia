@@ -86,7 +86,6 @@ class CurrentUserHandling(BaseDataManager):
         assert not hasattr(super(CurrentUserHandling, self), "_set_user") # we're well top-level here
         self.user = GameUser(datamanager=self,
                              username=username,
-                            # DEPRECATED previous_user=self.user,
                              has_write_access=has_write_access,
                              impersonation=impersonation,) # might raise UsageError
 
@@ -489,6 +488,7 @@ class PlayerAuthentication(BaseDataManager):
         
         Returns True iff user *username* can temporarily take the identity of *impersonation*.
         """
+        # FIXME - what about friendship ?? Todo ??
         assert username and impersonation
 
         if username == impersonation: # no sense
@@ -501,15 +501,55 @@ class PlayerAuthentication(BaseDataManager):
 
 
     @readonly_method
-    def get_impersonation_targets(self, username):
+    def get_impersonation_targets(self, username):  #FIXME TODO? USELESS ??
         assert username
         possible_impersonations = [target for target in self.get_available_logins()
                                    if self.can_impersonate(username, target)]
         return possible_impersonations
 
 
+    def _filter_impersonation_request(self, 
+                                       game_username,
+                                       session_ticket, 
+                                       requested_impersonation_target, 
+                                       requested_impersonation_writability,
+                                       django_user):
+                                       
+        assert session_ticket.get("game_instance_id") == self.game_instance_id
+
+        # first, we compute the impersonation we actually want #
+        if requested_impersonation_target == "": # special case "delete current impersonation target"
+            requested_impersonation_target = None
+        elif requested_impersonation_target is None: # means "use legacy one"
+            requested_impersonation_target = session_ticket.get("impersonation_target", None)
+        else:
+            pass # we let submitted requested_impersonation_target continue
+
+        requested_impersonation_writability = (requested_impersonation_writability 
+                                               if requested_impersonation_writability is not None 
+                                               else session_ticket.get("impersonation_writability", None))
+
+        # then we filter out forbidden impersonation choices #
+        if requested_impersonation_target:
+            if django_user and (django_user.is_staff or django_user.is_superuser):
+                pass # special django users can impersonate anyone
+            elif game_username and self.can_impersonate(game_username, requested_impersonation_target):
+                pass # user is game master, or a character with friendship rights
+            else:
+                requested_impersonation_target = requested_impersonation_writability = None # this stops impersonation completely
+                self.user.add_error(_("Unauthorized user impersonation detected: %s") % requested_impersonation_target)
+                
+        return dict(impersonation_target=requested_impersonation_target,
+                    impersonation_writability=requested_impersonation_writability)
+
+
+
     @transaction_watcher(ensure_game_started=False)
-    def authenticate_with_ticket(self, session_ticket, requested_impersonation=None):
+    def authenticate_with_ticket(self, 
+                                 session_ticket,
+                                 requested_impersonation_target=None,
+                                 requested_impersonation_writability=None,
+                                 django_user=None):
         """
         Allows a logged other to continue using his normal session,
         or to impersonate a lower-rank user (but in readonly mode, then).
@@ -517,35 +557,32 @@ class PlayerAuthentication(BaseDataManager):
         Raises UsageError if problem.
         """
 
-        if not hasattr(session_ticket, "get"):
-            raise AbnormalUsageError(_("Invalid session ticket: %s") % (session_ticket,)) # beware of dict!
+        if not isinstance(session_ticket, dict):
+            raise AbnormalUsageError(_("Invalid session ticket: %s") % session_ticket)
 
         game_instance_id = session_ticket.get("game_instance_id")
         if game_instance_id != self.game_instance_id:
             raise NormalUsageError(_("Session ticket doesn't belong to this instance"))
 
-        username = session_ticket.get("username")
+        game_username = session_ticket.get("game_username", None) # instance-local user set via login page
+        
+        # FIXME - todo, change username to master automatically if a django staff member ????
 
-        # Beware of the (requested_impersonation == "") special case
-        impersonation = requested_impersonation if requested_impersonation is not None else session_ticket.get("impersonation")
+        new_impersonation_data = self._filter_impersonation_request(game_username=game_username,
+                                                                   session_ticket=session_ticket, 
+                                                                   requested_impersonation_target=requested_impersonation_target, 
+                                                                   requested_impersonation_writability=requested_impersonation_writability,
+                                                                   django_user=django_user)
+        assert len(new_impersonation_data) == 2
+        impersonation_target = new_impersonation_data["impersonation_target"]
+        impersonation_writability = new_impersonation_data["impersonation_writability"]
+        session_ticket.update(new_impersonation_data) # SAVED
+        
+        final_username = game_username # ALWAYS, can also be None if user is logged as staff in django but not logged in rpgweb
+        final_has_write_access = True if not impersonation_target else bool(impersonation_writability) # game-authenticated users can always write
+        final_impersonation = impersonation_target
 
-        final_username = username # ALWAYS
-        final_has_write_access = True
-        final_impersonation = None
-
-        if impersonation is not None:
-            if impersonation == "":
-                session_ticket["impersonation"] = None # we stop current impersonation
-            elif not self.can_impersonate(username, impersonation):
-                session_ticket["impersonation"] = None # we reset it even if it was actually good, and just requested_impersonation bad
-                self.user.add_error(_("Unauthorized user impersonation detected: %s") % impersonation)
-            else:
-                # OK go for impersonation
-                session_ticket["impersonation"] = impersonation # in case it was newly requested
-                final_has_write_access = False # always readonly
-                final_impersonation = impersonation
-
-        self._set_user(username=final_username,
+        self._set_user(username=final_username, # can be None and yet have an impersonation
                        has_write_access=final_has_write_access,
                        impersonation=final_impersonation)
 
@@ -567,10 +604,11 @@ class PlayerAuthentication(BaseDataManager):
             wanted_pwd = data["password"]
 
         if password and password == wanted_pwd:
-            self._set_user(username, has_write_access=True) # when using credentials, it's always a real user
+            self._set_user(username, has_write_access=True, impersonation=None) # when using credentials, it's always a real user
             session_ticket = dict(game_instance_id=self.game_instance_id,
-                                  username=username,
-                                  impersonation=None)
+                                  game_username=username,
+                                  impersonation_target=None,
+                                  impersonation_writability=None) # we reset impersonation then
             return session_ticket
 
         else:

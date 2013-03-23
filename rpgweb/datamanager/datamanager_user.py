@@ -34,11 +34,10 @@ class GameUser(object):
 
         if username not in available_logins:
             raise AbnormalUsageError(_("Username %s is unknown") % username)
-        if impersonation and impersonation not in datamanager.get_available_logins():
+        if impersonation and impersonation not in available_logins:
             raise AbnormalUsageError(_("Impersonation %s is unknown") % username)
 
-        if impersonation:
-            assert datamanager.can_impersonate(username, impersonation)
+        assert not impersonation or datamanager.can_impersonate(username, impersonation)
 
         self._real_username = username
         self.is_impersonation = bool(impersonation)
@@ -102,11 +101,11 @@ class GameUser(object):
 
     def add_message(self, message):
         if self._check_request_available():
-            messages.success(self.datamanager.request, message)
+            messages.success(self.datamanager.request, message) # shared between all game instances...
 
     def add_error(self, error):
         if self._check_request_available():
-            messages.error(self.datamanager.request, error)
+            messages.error(self.datamanager.request, error) # shared between all game instances...
 
     def get_notifications(self):
         """

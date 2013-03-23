@@ -6,8 +6,8 @@ from rpgweb.common import *
 
 
 SESSION_TICKET_KEY = 'rpgweb_session_ticket'
-IMPERSONATION_POST_VARIABLE = "_impersonate_rpgweb_user_"
-
+IMPERSONATION_TARGET_POST_VARIABLE = "_set_impersonation_target_"
+IMPERSONATION_WRITABILITY_POST_VARIABLE = "_set_impersonation_writability_"
 
 """
 Django Notes
@@ -50,26 +50,35 @@ def try_authenticating_with_ticket(request):
 
     if session_ticket:
 
-        # beware, here we distinguish between empty string (stop impersonation) and None (do nothing)
-        if IMPERSONATION_POST_VARIABLE in request.POST:
-            requested_impersonation = request.POST[IMPERSONATION_POST_VARIABLE] # Beware, pop() on QueryDict returns a LIST always
+        # beware, here we distinguish between empty string (stop impersonation) and None (use current settings)
+        if IMPERSONATION_TARGET_POST_VARIABLE in request.POST or IMPERSONATION_WRITABILITY_POST_VARIABLE in request.POST:
+
+            # Beware here, pop() on QueryDict would return a LIST always
+            requested_impersonation_target = request.POST.get(IMPERSONATION_TARGET_POST_VARIABLE, None) # beware, != "" here
+            requested_impersonation_writability = request.POST.get(IMPERSONATION_WRITABILITY_POST_VARIABLE, None) # ternary value
+            if requested_impersonation_writability is not None:
+                requested_impersonation_writability = True if requested_impersonation_writability.lower() == "true" else requested_impersonation_writability
+
             request.POST.clear() # thanks to our middleware that made it mutable...
             request.method = "GET" # dirty, isn't it ?
+
         else:
-            requested_impersonation = None # beware, != "" here
+            requested_impersonation_target = requested_impersonation_writability = None
 
         try:
-            res = datamanager.authenticate_with_ticket(session_ticket,
-                                                       requested_impersonation=requested_impersonation)
+            res = datamanager.authenticate_with_ticket(session_ticket=session_ticket,
+                                                       requested_impersonation_target=requested_impersonation_target,
+                                                       requested_impersonation_writability=requested_impersonation_writability,
+                                                       django_user=request.user)
             request.session[SESSION_TICKET_KEY] = res # this refreshes expiry time, and ensures we properly modify session
         except NormalUsageError, e:
-            pass # wrong game instance, surely... let it be.
+            pass # wrong game instance, surely, or no right to impersonate... let it be.
         except UsageError, e:
-            # a disappeared character ? wrong impersonation username ?
-            logging.critical("Wrong session ticket detected: %r" % (session_ticket,), exc_info=True)
+            # wrong username ?
+            logging.critical("Wrong authentication data detected: %r" % repr(locals()), exc_info=True)
             request.session[SESSION_TICKET_KEY] = None # important cleanup!
 
-        # anyway, we let the anonymous user be...
+        # anyway, if error, we let the anonymous user be...
 
 
 def logout_session(request):
