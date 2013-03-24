@@ -1643,7 +1643,7 @@ class TestDatamanager(BaseGameTestCase):
             self._set_user(None)
 
             request.session[SESSION_TICKET_KEY] = original_ticket.copy()
-            request.session[SESSION_TICKET_KEY]["username"] = "qsdqsdqsd"
+            request.session[SESSION_TICKET_KEY]["game_username"] = "qsdqsdqsd"
             try_authenticating_with_ticket(request) # exception gets swallowed
             assert request.session[SESSION_TICKET_KEY] == None # but ticket gets reset
 
@@ -1663,7 +1663,8 @@ class TestDatamanager(BaseGameTestCase):
         res = authenticate_with_credentials(request, player_login, player_password)
         assert res is None # no result expected
         ticket = request.session[SESSION_TICKET_KEY]
-        assert ticket == {'game_instance_id': u'TeStiNg', 'impersonation': None, 'username': player_login}
+        assert ticket == {'game_instance_id': TEST_GAME_INSTANCE_ID, 'impersonation_target': None,
+                          'impersonation_writability': None, 'game_username': player_login}
 
         assert request.datamanager.user.username == player_login
         assert not self.dm.get_impersonation_targets(player_login)
@@ -1676,7 +1677,8 @@ class TestDatamanager(BaseGameTestCase):
         res = authenticate_with_credentials(request, master_login, master_password)
         assert res is None # no result expected
         ticket = request.session[SESSION_TICKET_KEY]
-        assert ticket == {'game_instance_id': u'TeStiNg', 'impersonation': None, 'username': master_login}
+        assert ticket == {'game_instance_id': TEST_GAME_INSTANCE_ID, 'impersonation_target': None,
+                          'impersonation_writability': None, 'game_username': master_login}
 
         _standard_authenticated_checks()
 
@@ -1687,6 +1689,8 @@ class TestDatamanager(BaseGameTestCase):
 
     @for_core_module(PlayerAuthentication)
     def test_impersonation(self):
+
+        # FIXME - test for django super user, test writability................
 
         self._reset_django_db()
 
@@ -1726,7 +1730,8 @@ class TestDatamanager(BaseGameTestCase):
         request = self.request
         authenticate_with_credentials(request, master_login, master_password)
         session_ticket = request.session[SESSION_TICKET_KEY]
-        assert session_ticket == {'game_instance_id': u'TeStiNg', 'impersonation': None, 'username': master_login}
+        assert session_ticket == {'game_instance_id': TEST_GAME_INSTANCE_ID, 'impersonation_target': None,
+                                  'impersonation_writability': None, 'game_username': master_login}
         assert self.dm.user.username == master_login
         assert self.dm.user.has_write_access
         assert not self.dm.user.is_impersonation
@@ -1736,9 +1741,11 @@ class TestDatamanager(BaseGameTestCase):
 
         # Impersonate player
         res = self.dm.authenticate_with_ticket(session_ticket,
-                                               requested_impersonation=player_login)
+                                               requested_impersonation_target=player_login)
         assert res is session_ticket
-        assert session_ticket == {'game_instance_id': u'TeStiNg', 'impersonation': player_login, 'username': master_login}
+        assert session_ticket == {'game_instance_id': TEST_GAME_INSTANCE_ID, 'impersonation_target': player_login,
+                                  'impersonation_writability': None, 'game_username': master_login}
+
         assert self.dm.user.username == player_login
         assert not self.dm.user.has_write_access
         assert self.dm.user.is_impersonation
@@ -1749,15 +1756,19 @@ class TestDatamanager(BaseGameTestCase):
         self._set_user(None)
         assert self.dm.user.username == anonymous_login
         self.dm.authenticate_with_ticket(session_ticket,
-                                         requested_impersonation=None)
-        assert session_ticket == {'game_instance_id': u'TeStiNg', 'impersonation': player_login, 'username': master_login}
+                                         requested_impersonation_target=None)
+        assert session_ticket == {'game_instance_id': TEST_GAME_INSTANCE_ID, 'impersonation_target': player_login,
+                                  'impersonation_writability': None, 'game_username': master_login}
+
         assert self.dm.user.username == player_login
         assert not self.dm.user.has_notifications()
 
         # Impersonation stops because of unexisting username
         self.dm.authenticate_with_ticket(session_ticket,
-                                         requested_impersonation="dsfsdfkjsqodsd")
-        assert session_ticket == {'game_instance_id': u'TeStiNg', 'impersonation': None, 'username': master_login}
+                                         requested_impersonation_target="dsfsdfkjsqodsd")
+        assert session_ticket == {'game_instance_id': TEST_GAME_INSTANCE_ID, 'impersonation_target': None,
+                                  'impersonation_writability': None, 'game_username': master_login}
+
         assert self.dm.user.username == master_login
         assert self.dm.user.has_write_access
         assert not self.dm.user.is_impersonation
@@ -1767,8 +1778,10 @@ class TestDatamanager(BaseGameTestCase):
 
         # Impersonate anonymous
         self.dm.authenticate_with_ticket(session_ticket,
-                                         requested_impersonation=anonymous_login)
-        assert session_ticket == {'game_instance_id': u'TeStiNg', 'impersonation': anonymous_login, 'username': master_login}
+                                         requested_impersonation_target=anonymous_login)
+        assert session_ticket == {'game_instance_id': TEST_GAME_INSTANCE_ID, 'impersonation_target': anonymous_login,
+                                  'impersonation_writability': None, 'game_username': master_login}
+
         assert self.dm.user.username == anonymous_login
         assert not self.dm.user.has_write_access
         assert self.dm.user.is_impersonation
@@ -1778,8 +1791,10 @@ class TestDatamanager(BaseGameTestCase):
 
         # Impersonation stops completely because of unauthorized impersonation attempt
         self.dm.authenticate_with_ticket(session_ticket,
-                                         requested_impersonation=master_login)
-        assert session_ticket == {'game_instance_id': u'TeStiNg', 'impersonation': None, 'username': master_login}
+                                         requested_impersonation_target=master_login)
+        assert session_ticket == {'game_instance_id': TEST_GAME_INSTANCE_ID, 'impersonation_target': None,
+                                  'impersonation_writability': None, 'game_username': master_login}
+
         assert self.dm.user.username == master_login
         assert self.dm.user.has_write_access
         assert not self.dm.user.is_impersonation
@@ -1789,8 +1804,10 @@ class TestDatamanager(BaseGameTestCase):
 
         # Back as anonymous
         self.dm.authenticate_with_ticket(session_ticket,
-                                         requested_impersonation=anonymous_login)
-        assert session_ticket == {'game_instance_id': u'TeStiNg', 'impersonation': anonymous_login, 'username': master_login}
+                                         requested_impersonation_target=anonymous_login)
+        assert session_ticket == {'game_instance_id': TEST_GAME_INSTANCE_ID, 'impersonation_target': anonymous_login,
+                                  'impersonation_writability': None, 'game_username': master_login}
+
         assert self.dm.user.username == anonymous_login
         assert not self.dm.user.has_write_access
         assert self.dm.user.is_impersonation
@@ -1799,8 +1816,9 @@ class TestDatamanager(BaseGameTestCase):
 
         # Standard stopping of impersonation
         self.dm.authenticate_with_ticket(session_ticket,
-                                         requested_impersonation="")
-        assert session_ticket == {'game_instance_id': u'TeStiNg', 'impersonation': None, 'username': master_login}
+                                         requested_impersonation_target="")
+        assert session_ticket == {'game_instance_id': TEST_GAME_INSTANCE_ID, 'impersonation_target': None,
+                                  'impersonation_writability': None, 'game_username': master_login}
         assert self.dm.user.username == master_login
         assert self.dm.user.has_write_access
         assert not self.dm.user.is_impersonation
@@ -2118,9 +2136,9 @@ class TestHttpRequests(BaseGameTestCase):
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, ROOT_GAME_URL + "/")
 
-        assert self.client.session["rpgweb_session_ticket"] == dict(game_instance_id=TEST_GAME_INSTANCE_ID,
-                                                                    username=master_login,
-                                                                    impersonation=None)
+        assert self.client.session["rpgweb_session_ticket"] == {'game_instance_id': TEST_GAME_INSTANCE_ID, 'impersonation_target': None,
+                                                                'impersonation_writability': None, 'game_username': master_login}
+
         self.assertTrue(self.client.cookies["sessionid"])
 
 
@@ -2134,9 +2152,9 @@ class TestHttpRequests(BaseGameTestCase):
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, ROOT_GAME_URL + "/")
 
-        assert self.client.session["rpgweb_session_ticket"] == dict(game_instance_id=TEST_GAME_INSTANCE_ID,
-                                                                    username=username,
-                                                                    impersonation=None)
+        assert self.client.session["rpgweb_session_ticket"] == {'game_instance_id': TEST_GAME_INSTANCE_ID, 'impersonation_target': None,
+                                                                'impersonation_writability': None, 'game_username': username}
+
         self.assertTrue(self.client.cookies["sessionid"])
 
 
