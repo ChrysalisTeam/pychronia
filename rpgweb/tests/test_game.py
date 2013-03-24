@@ -1691,7 +1691,7 @@ class TestDatamanager(BaseGameTestCase):
         self._reset_django_db()
 
         from rpgweb.authentication import (authenticate_with_credentials, try_authenticating_with_ticket, logout_session,
-                                           SESSION_TICKET_KEY, IMPERSONATION_POST_VARIABLE)
+                                           SESSION_TICKET_KEY, IMPERSONATION_TARGET_POST_VARIABLE, IMPERSONATION_WRITABILITY_POST_VARIABLE)
 
 
         master_login = self.dm.get_global_parameter("master_login")

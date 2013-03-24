@@ -7,10 +7,11 @@ from rpgweb.common import *
 from django.contrib import messages
 
 
+SUPERUSER_SPECIAL_LOGIN = "OVERMIND"
 
 class GameUser(object):
 
-    def __init__(self, datamanager, username=None, ##previous_user=None, DEPRECATED
+    def __init__(self, datamanager, username=None,
                  has_write_access=None, impersonation=None):
         """
         Builds a user object, storing notifications for the current HTTP request,
@@ -25,40 +26,39 @@ class GameUser(object):
         """
         assert has_write_access in (True, False)
 
-        assert has_write_access == (impersonation is None) # at the moment only...
-
+        # data normalization #
+        _game_anonymous_login = datamanager.get_global_parameter("anonymous_login")
         if username is None:
-            username = datamanager.get_global_parameter("anonymous_login") # better than None, to display in templates
+            username = _game_anonymous_login # better than None, to display in templates
+        if username == SUPERUSER_SPECIAL_LOGIN and not impersonation:
+            impersonation = _game_anonymous_login # superuser NECESSARILY impersonates someone
 
         available_logins = datamanager.get_available_logins()
-
         if username not in available_logins:
             raise AbnormalUsageError(_("Username %s is unknown") % username)
         if impersonation and impersonation not in available_logins:
             raise AbnormalUsageError(_("Impersonation %s is unknown") % username)
 
-        assert not impersonation or datamanager.can_impersonate(username, impersonation)
+        assert not impersonation or (username == SUPERUSER_SPECIAL_LOGIN) or datamanager.can_impersonate(username, impersonation)
 
         self._real_username = username
         self.is_impersonation = bool(impersonation)
 
         self.has_write_access = has_write_access # allows, or not, POST requests
 
-        _effective_username = impersonation if impersonation else username
-        self._effective_username = _effective_username
-        del username, impersonation # security
+        self._effective_username = _effective_username = (impersonation if impersonation else username)
+        assert self._effective_username in available_logins # can't be SUPERUSER_SPECIAL_LOGIN without impersonation
+        del username, impersonation, _game_anonymous_login # security
 
         self.is_master = datamanager.is_master(_effective_username)
         self.is_character = datamanager.is_character(_effective_username)
         self.is_anonymous = datamanager.is_anonymous(_effective_username)
+        self.is_authenticated = not self.is_anonymous
+
         assert len([item for item in (self.is_master, self.is_character, self.is_anonymous) if item]) == 1
 
         self._datamanager = weakref.ref(datamanager)
 
-        # notifications only used for the current request/response,
-        # but persistent through user authentications
-        #self.messages = previous_user.messages if previous_user else []
-        #elf.errors = previous_user.errors if previous_user else []
 
 
     @property
@@ -72,13 +72,9 @@ class GameUser(object):
     @property
     def username(self):
         """
-        Returns *effective* user name.
+        Returns *effective* user name!!
         """
         return self._effective_username
-
-    @property
-    def is_authenticated(self):
-        return not self.is_anonymous
 
     def character_properties(self):
         """
