@@ -2,25 +2,33 @@ ACCESS CONTROL ON HELP PAGES !!!!!!!!!!!!
 
 - add protections to ensure that all file requests never leave GAME_FILES_ROOT
 
-- interactive world map DONE
+- messaging reply/resend + templates + filtering?
+
 - ability for users to transfer their objects to someone else
 - mobile version of site
 - global styles and messages for any "readonly mode"
 
-- drag&drop radio playlist management WIP
+
 - interface to edit static pages WIP
 - interface to edit radio spots WIP
 - interface to edit external contacts WIP
-- interface to activate views
-- SSL protection to be added to wiratapping page
-- filling of footer with game info DONE
-- filling of headers with game info and notifications
 - javascript-obfuscated-popuped "report bug" div in mini footer WIP
-- global management of ajax errors, with popups DONE
-- place calls to novelty tracker
+- SSL protection to be added to wiretapping page
+
+- interface to activate views
+- filling of headers with game info and notifications
+- adding novelty tags everywhere (menu, radio and help icons, events...)
+- adding of impersonation controls to site top
+- adding of impersionation to player menus
 
 - check what happens when calling setlanguage flags from a "POST-access-only" page like private files ??
-- include timezone handling
+
+
+
+- interactive world map DONE
+- drag&drop radio playlist management DONE
+- filling of footer with game info DONE
+- global management of ajax errors, with popups DONE
 
 
 ====================
@@ -68,6 +76,7 @@ ADD unittests for template helpers !!!
 
 BUG html injection dans chat.js ????
 
+- include timezone handling NOT ATM
 
 Add colors specific to each chatter + "system" chatter
 Launch pychecker or pylint of each file of rpgweb package
