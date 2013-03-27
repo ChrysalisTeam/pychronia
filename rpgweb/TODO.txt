@@ -15,11 +15,13 @@ ACCESS CONTROL ON HELP PAGES !!!!!!!!!!!!
 - javascript-obfuscated-popuped "report bug" div in mini footer WIP
 - SSL protection to be added to wiretapping page
 
+- add auto-generation fo ActionHandler help pages (middlewares)
+
 - interface to activate views
 - filling of headers with game info and notifications
 - adding novelty tags everywhere (menu, radio and help icons, events...)
 - adding of impersonation controls to site top
-- adding of impersionation to player menus
+- adding of impersonation to player menus
 
 - check what happens when calling setlanguage flags from a "POST-access-only" page like private files ??
 

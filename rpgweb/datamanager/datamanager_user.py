@@ -30,14 +30,15 @@ class GameUser(object):
         _game_anonymous_login = datamanager.get_global_parameter("anonymous_login")
         if username is None:
             username = _game_anonymous_login # better than None, to display in templates
-        if username == SUPERUSER_SPECIAL_LOGIN and not impersonation:
+        elif username == SUPERUSER_SPECIAL_LOGIN and not impersonation:
+            assert False # this SHOULDN'T happen
             impersonation = _game_anonymous_login # superuser NECESSARILY impersonates someone
 
         available_logins = datamanager.get_available_logins()
-        if username not in available_logins:
+        if username != SUPERUSER_SPECIAL_LOGIN and username not in available_logins:
             raise AbnormalUsageError(_("Username %s is unknown") % username)
         if impersonation and impersonation not in available_logins:
-            raise AbnormalUsageError(_("Impersonation %s is unknown") % username)
+            raise AbnormalUsageError(_("Impersonation %s is unknown") % impersonation)
 
         assert not impersonation or (username == SUPERUSER_SPECIAL_LOGIN) or datamanager.can_impersonate(username, impersonation)
 

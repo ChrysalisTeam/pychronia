@@ -509,7 +509,7 @@ class PlayerAuthentication(BaseDataManager):
                                    if self.can_impersonate(username, target)]
         return possible_impersonations
 
-
+ 
     def _filter_impersonation_request(self,
                                        game_username,
                                        session_ticket,
@@ -533,10 +533,11 @@ class PlayerAuthentication(BaseDataManager):
 
         # then we filter out forbidden impersonation choices #
         if requested_impersonation_target:
-            if django_user and (django_user.is_staff or django_user.is_superuser):
+            if game_username and self.can_impersonate(game_username, requested_impersonation_target):
+                pass # PRIORITY - user is game master, or a character with friendship rights
+            elif (django_user and django_user.is_active and (django_user.is_staff or django_user.is_superuser)
+                    and requested_impersonation_target in self.get_available_logins()):
                 game_username = SUPERUSER_SPECIAL_LOGIN # special django users can impersonate anyone
-            elif game_username and self.can_impersonate(game_username, requested_impersonation_target):
-                pass # user is game master, or a character with friendship rights
             else:
                 requested_impersonation_target = requested_impersonation_writability = None # this stops impersonation completely
                 self.user.add_error(_("Unauthorized user impersonation detected: %s") % requested_impersonation_target)
@@ -559,13 +560,15 @@ class PlayerAuthentication(BaseDataManager):
         
         Raises UsageError if problem.
         """
+        assert requested_impersonation_target is None or isinstance(requested_impersonation_target, basestring)
+        assert requested_impersonation_writability in (None, True, False)
 
         if not isinstance(session_ticket, dict):
             raise AbnormalUsageError(_("Invalid session ticket: %s") % session_ticket)
 
         game_instance_id = session_ticket.get("game_instance_id")
         if game_instance_id != self.game_instance_id:
-            raise NormalUsageError(_("Session ticket doesn't belong to this instance"))
+            raise NormalUsageError(_("Session ticket doesn't belong to this instance")) # CHECK IS IT TESTED TODO FIXME ??????
 
         game_username = session_ticket.get("game_username", None) # instance-local user set via login page
 
@@ -580,16 +583,21 @@ class PlayerAuthentication(BaseDataManager):
         game_username = new_impersonation_data["game_username"]
         impersonation_target = new_impersonation_data["impersonation_target"]
         impersonation_writability = new_impersonation_data["impersonation_writability"]
-        session_ticket.update(new_impersonation_data) # SAVED
+
 
         final_username = game_username # ALWAYS, can also be None if user is logged as staff in django but not logged in rpgweb
-        final_has_write_access = True if not impersonation_target else bool(impersonation_writability) # game-authenticated users can always write
+        final_has_write_access = True if not impersonation_target else bool(impersonation_writability) # game-authenticated users can always write, and None means False here
         final_impersonation = impersonation_target
 
-        self._set_user(username=final_username, # can be SUPERUSER_SPECIAL_LOGIN (then it must impersonate someone), or None -> anonymous
-                       has_write_access=final_has_write_access,
-                       impersonation=final_impersonation)
+        self.logger.info("Authenticating user with ticket, as %r",
+                             repr(dict(final_username=final_username, final_has_write_access=final_has_write_access, final_impersonation=final_impersonation)))
 
+
+        self._set_user(username=final_username, # can be SUPERUSER_SPECIAL_LOGIN (then it must impersonate someone), or None -> anonymous
+                           has_write_access=final_has_write_access,
+                           impersonation=final_impersonation)
+
+        session_ticket.update(impersonation_target=impersonation_target, impersonation_writability=impersonation_writability) # SAVED, except game_username!
         return session_ticket
 
 
@@ -2250,7 +2258,7 @@ class RadioMessaging(BaseDataManager): # TODO REFINE
 
         def _check_item_validity(self, key, value, strict=False):
 
-            print ("RADIOSPOT IS", key, value)
+            #print ("RADIOSPOT IS", key, value)
 
             utilities.check_is_slug(key)
 

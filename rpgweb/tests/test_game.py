@@ -10,6 +10,7 @@ import shutil
 from ._test_tools import *
 from ._dummy_abilities import *
 
+from django.utils import timezone
 from rpgweb.datamanager.abstract_ability import AbstractAbility
 from rpgweb.datamanager.action_middlewares import CostlyActionMiddleware, \
     CountLimitedActionMiddleware, TimeLimitedActionMiddleware
@@ -30,7 +31,7 @@ from django.core.urlresolvers import resolve
 from rpgweb.views import friendship_management
 from rpgweb.views.abilities import house_locking, \
     wiretapping_management, runic_translation
-
+from django.contrib.auth.models import User
 
 
 
@@ -1575,8 +1576,9 @@ class TestDatamanager(BaseGameTestCase):
         assert self.dm.data["global_parameters"]["stuff"] == 23
 
 
+
     @for_core_module(PlayerAuthentication)
-    def test_standard_player_authentication(self):
+    def test_standard_user_authentication(self):
         """
         Here we use frontend methods from authentication.py instead of
         directly datamanager methods.
@@ -1684,13 +1686,92 @@ class TestDatamanager(BaseGameTestCase):
 
 
 
+    @for_core_module(PlayerAuthentication)
+    def test_impersonation_by_superuser(self):
+
+        # TODO check that staff django_user doesn't mess with friendship impersonations either!!!!!!!!
+
+        master_login = self.dm.get_global_parameter("master_login")
+        master_password = self.dm.get_global_parameter("master_password")
+        player_login = "guy1"
+        player_password = "elixir"
+        player_login_bis = "guy2"
+        anonymous_login = self.dm.get_global_parameter("anonymous_login")
+
+
+        # use django user, without privileges or inactive #
+
+        now = timezone.now()
+        user = User(username='fakename', email='my@email.fr',
+                      is_staff=False, is_active=True, is_superuser=False,
+                      last_login=now, date_joined=now)
+
+
+        session_ticket = {'game_instance_id': TEST_GAME_INSTANCE_ID, 'impersonation_target': None,
+                           'impersonation_writability': None, 'game_username': None}
+
+        for i in range(10):
+
+            if random.choice((True, False)):
+                user.is_active = True
+                user.is_staff = user.is_superuser = False
+            else:
+                user.is_active = False
+                user.is_staff = random.choice((True, False))
+                if user.is_staff:
+                    user.is_superuser = random.choice((True, False))
+                else:
+                    user.is_superuser = False
+
+            requested_impersonation_target = random.choice((None, master_login, player_login, anonymous_login))
+            requested_impersonation_writability = random.choice((True, False, None))
+            res = self.dm.authenticate_with_ticket(session_ticket.copy(), # COPY
+                                                   requested_impersonation_target=requested_impersonation_target,
+                                                   requested_impersonation_writability=requested_impersonation_writability,
+                                                   django_user=user)
+            assert res == {u'game_username': None,
+                           u'impersonation_target': None, # we can't impersonate
+                           u'impersonation_writability': requested_impersonation_writability if not requested_impersonation_target else None, # blocked if impersonation attempt
+                           u'game_instance_id': TEST_GAME_INSTANCE_ID}
+            assert self.dm.user.username == anonymous_login
+            assert self.dm.user.has_write_access
+            assert not self.dm.user.is_impersonation
+            assert self.dm.user.real_username == anonymous_login
+            assert self.dm.user.has_notifications() == bool(requested_impersonation_target)
+            self.dm.user.discard_notifications()
+
+
+        # then we look at impersonation by django super user #
+
+        user.is_active = True
+        user.is_staff = True
+        user.is_superuser = random.choice((True, False))
+
+        requested_impersonation_target = random.choice((None, master_login, player_login, anonymous_login))
+        requested_impersonation_writability = random.choice((True, False, None))
+        res = self.dm.authenticate_with_ticket(session_ticket.copy(), # COPY
+                                               requested_impersonation_target=requested_impersonation_target,
+                                               requested_impersonation_writability=requested_impersonation_writability,
+                                               django_user=user)
+        assert res == {u'game_username': None, # left as None!
+                       u'impersonation_target': requested_impersonation_target, # no saving of fallback impersonation into session
+                       u'impersonation_writability': requested_impersonation_writability,
+                       u'game_instance_id': TEST_GAME_INSTANCE_ID}
+        assert self.dm.user.username == requested_impersonation_target if requested_impersonation_target else anonymous_login # AUTO FALLBACK
+
+        _expected_writability = True if not requested_impersonation_target else bool(requested_impersonation_writability)
+        assert self.dm.user.has_write_access == _expected_writability
+        assert self.dm.user.is_impersonation # ALWAYS
+        assert self.dm.user.real_username == SUPERUSER_SPECIAL_LOGIN
+        assert not self.dm.user.has_notifications()
+        self.dm.user.discard_notifications()
 
 
 
     @for_core_module(PlayerAuthentication)
-    def test_impersonation(self):
+    def test_impersonation_by_master(self):
 
-        # FIXME - test for django super user, test writability................
+        # FIXME - test for django super user, for friendship................
 
         self._reset_django_db()
 
@@ -1705,6 +1786,14 @@ class TestDatamanager(BaseGameTestCase):
         player_login_bis = "guy2"
         anonymous_login = self.dm.get_global_parameter("anonymous_login")
 
+        if random.choice((True, False)):
+            # has no effect on authentications, as long as a game user is provided
+            now = timezone.now()
+            django_user = User(username='fakename', email='my@email.fr',
+                              is_staff=True, is_active=True, is_superuser=True,
+                              last_login=now, date_joined=now)
+        else:
+            django_user = None
 
         # build complete request
 
@@ -1723,15 +1812,15 @@ class TestDatamanager(BaseGameTestCase):
         assert not self.dm.can_impersonate(anonymous_login, anonymous_login)
 
 
-        # impersonation cases #
+        # Impersonation cases #
 
         self.dm.user.discard_notifications()
 
         request = self.request
         authenticate_with_credentials(request, master_login, master_password)
-        session_ticket = request.session[SESSION_TICKET_KEY]
-        assert session_ticket == {'game_instance_id': TEST_GAME_INSTANCE_ID, 'impersonation_target': None,
-                                  'impersonation_writability': None, 'game_username': master_login}
+        base_session_ticket = request.session[SESSION_TICKET_KEY]
+        assert base_session_ticket == {'game_instance_id': TEST_GAME_INSTANCE_ID, 'impersonation_target': None,
+                                       'impersonation_writability': None, 'game_username': master_login}
         assert self.dm.user.username == master_login
         assert self.dm.user.has_write_access
         assert not self.dm.user.is_impersonation
@@ -1740,90 +1829,113 @@ class TestDatamanager(BaseGameTestCase):
 
 
         # Impersonate player
-        res = self.dm.authenticate_with_ticket(session_ticket,
-                                               requested_impersonation_target=player_login)
-        assert res is session_ticket
-        assert session_ticket == {'game_instance_id': TEST_GAME_INSTANCE_ID, 'impersonation_target': player_login,
-                                  'impersonation_writability': None, 'game_username': master_login}
+        for writability in (None, True, False):
 
-        assert self.dm.user.username == player_login
-        assert not self.dm.user.has_write_access
-        assert self.dm.user.is_impersonation
-        assert self.dm.user.real_username == master_login
-        assert not self.dm.user.has_notifications()
+            session_ticket = base_session_ticket.copy()
 
-        # Impersonated player renewed just with ticket
-        self._set_user(None)
-        assert self.dm.user.username == anonymous_login
-        self.dm.authenticate_with_ticket(session_ticket,
-                                         requested_impersonation_target=None)
-        assert session_ticket == {'game_instance_id': TEST_GAME_INSTANCE_ID, 'impersonation_target': player_login,
-                                  'impersonation_writability': None, 'game_username': master_login}
+            res = self.dm.authenticate_with_ticket(session_ticket,
+                                                   requested_impersonation_target=player_login,
+                                                   requested_impersonation_writability=writability,
+                                                   django_user=django_user)
+            assert res is session_ticket
+            assert session_ticket == {'game_instance_id': TEST_GAME_INSTANCE_ID, 'impersonation_target': player_login,
+                                      'impersonation_writability': writability, 'game_username': master_login}
 
-        assert self.dm.user.username == player_login
-        assert not self.dm.user.has_notifications()
+            assert self.dm.user.username == player_login
+            assert self.dm.user.has_write_access == bool(writability) # no write access by default, if requested_impersonation_writability is None
+            assert self.dm.user.is_impersonation
+            assert self.dm.user.real_username == master_login
+            assert not self.dm.user.has_notifications()
 
-        # Impersonation stops because of unexisting username
-        self.dm.authenticate_with_ticket(session_ticket,
-                                         requested_impersonation_target="dsfsdfkjsqodsd")
-        assert session_ticket == {'game_instance_id': TEST_GAME_INSTANCE_ID, 'impersonation_target': None,
-                                  'impersonation_writability': None, 'game_username': master_login}
+            # Impersonated player renewed just with ticket
+            self._set_user(None)
+            assert self.dm.user.username == anonymous_login
+            self.dm.authenticate_with_ticket(session_ticket,
+                                             requested_impersonation_target=None,
+                                             requested_impersonation_writability=None,
+                                             django_user=django_user)
+            assert session_ticket == {'game_instance_id': TEST_GAME_INSTANCE_ID, 'impersonation_target': player_login,
+                                      'impersonation_writability': writability, 'game_username': master_login}
 
-        assert self.dm.user.username == master_login
-        assert self.dm.user.has_write_access
-        assert not self.dm.user.is_impersonation
-        assert self.dm.user.real_username == master_login
-        assert self.dm.user.has_notifications()
-        self.dm.user.discard_notifications()
+            assert self.dm.user.username == player_login
+            assert not self.dm.user.has_notifications()
 
-        # Impersonate anonymous
-        self.dm.authenticate_with_ticket(session_ticket,
-                                         requested_impersonation_target=anonymous_login)
-        assert session_ticket == {'game_instance_id': TEST_GAME_INSTANCE_ID, 'impersonation_target': anonymous_login,
-                                  'impersonation_writability': None, 'game_username': master_login}
+            # Unexisting impersonation leads to stop of impersonation
+            self.dm.authenticate_with_ticket(session_ticket,
+                                             requested_impersonation_target="dsfsdfkjsqodsd",
+                                             requested_impersonation_writability=not writability,
+                                             django_user=django_user)
+            assert session_ticket == {'game_instance_id': TEST_GAME_INSTANCE_ID, 'impersonation_target': None,
+                                      'impersonation_writability': None, 'game_username': master_login}
+            assert self.dm.user.username == master_login
+            assert self.dm.user.has_write_access # always if not impersonation
+            assert not self.dm.user.is_impersonation
+            assert self.dm.user.real_username == master_login
+            assert self.dm.user.has_notifications()
+            self.dm.user.discard_notifications()
 
-        assert self.dm.user.username == anonymous_login
-        assert not self.dm.user.has_write_access
-        assert self.dm.user.is_impersonation
-        assert self.dm.user.real_username == master_login
-        assert not self.dm.user.has_notifications()
-        _copy = session_ticket.copy()
 
-        # Impersonation stops completely because of unauthorized impersonation attempt
-        self.dm.authenticate_with_ticket(session_ticket,
-                                         requested_impersonation_target=master_login)
-        assert session_ticket == {'game_instance_id': TEST_GAME_INSTANCE_ID, 'impersonation_target': None,
-                                  'impersonation_writability': None, 'game_username': master_login}
+            # Impersonate anonymous
+            self.dm.authenticate_with_ticket(session_ticket,
+                                             requested_impersonation_target=anonymous_login,
+                                             requested_impersonation_writability=writability,
+                                             django_user=django_user)
+            assert session_ticket == {'game_instance_id': TEST_GAME_INSTANCE_ID, 'impersonation_target': anonymous_login,
+                                      'impersonation_writability': writability, 'game_username': master_login}
 
-        assert self.dm.user.username == master_login
-        assert self.dm.user.has_write_access
-        assert not self.dm.user.is_impersonation
-        assert self.dm.user.real_username == master_login
-        assert self.dm.user.has_notifications()
-        self.dm.user.discard_notifications()
+            assert self.dm.user.username == anonymous_login
+            assert self.dm.user.has_write_access == bool(writability)
+            assert self.dm.user.is_impersonation
+            assert self.dm.user.real_username == master_login
+            assert not self.dm.user.has_notifications()
+            _copy = session_ticket.copy()
 
-        # Back as anonymous
-        self.dm.authenticate_with_ticket(session_ticket,
-                                         requested_impersonation_target=anonymous_login)
-        assert session_ticket == {'game_instance_id': TEST_GAME_INSTANCE_ID, 'impersonation_target': anonymous_login,
-                                  'impersonation_writability': None, 'game_username': master_login}
 
-        assert self.dm.user.username == anonymous_login
-        assert not self.dm.user.has_write_access
-        assert self.dm.user.is_impersonation
-        assert self.dm.user.real_username == master_login
-        assert not self.dm.user.has_notifications()
+            # Impersonation stops completely because of unauthorized impersonation attempt
+            self.dm.authenticate_with_ticket(session_ticket,
+                                             requested_impersonation_target=master_login,
+                                             requested_impersonation_writability=writability,
+                                             django_user=django_user)
+            assert session_ticket == {'game_instance_id': TEST_GAME_INSTANCE_ID, 'impersonation_target': None,
+                                      'impersonation_writability': None, 'game_username': master_login}
+            assert self.dm.user.username == master_login
+            assert self.dm.user.has_write_access # always if not impersonation
+            assert not self.dm.user.is_impersonation
+            assert self.dm.user.real_username == master_login
+            assert self.dm.user.has_notifications()
+            self.dm.user.discard_notifications()
 
-        # Standard stopping of impersonation
-        self.dm.authenticate_with_ticket(session_ticket,
-                                         requested_impersonation_target="")
-        assert session_ticket == {'game_instance_id': TEST_GAME_INSTANCE_ID, 'impersonation_target': None,
-                                  'impersonation_writability': None, 'game_username': master_login}
-        assert self.dm.user.username == master_login
-        assert self.dm.user.has_write_access
-        assert not self.dm.user.is_impersonation
-        assert self.dm.user.real_username == master_login
-        assert not self.dm.user.has_notifications() # IMPORTANT - no error message
+
+            # Back as anonymous
+            self.dm.authenticate_with_ticket(session_ticket,
+                                             requested_impersonation_target=anonymous_login,
+                                             requested_impersonation_writability=writability,
+                                             django_user=django_user)
+            assert session_ticket == {'game_instance_id': TEST_GAME_INSTANCE_ID, 'impersonation_target': anonymous_login,
+                                      'impersonation_writability': writability, 'game_username': master_login}
+
+            assert self.dm.user.username == anonymous_login
+            assert self.dm.user.has_write_access == bool(writability)
+            assert self.dm.user.is_impersonation
+            assert self.dm.user.real_username == master_login
+            assert not self.dm.user.has_notifications()
+
+
+            # Standard stopping of impersonation
+            self.dm.authenticate_with_ticket(session_ticket,
+                                             requested_impersonation_target="",
+                                             requested_impersonation_writability=writability,
+                                             django_user=django_user)
+            assert session_ticket == {'game_instance_id': TEST_GAME_INSTANCE_ID,
+                                      'impersonation_target': None,
+                                      'impersonation_writability': writability, # MAINTAINED
+                                      'game_username': master_login}
+
+            assert self.dm.user.username == master_login
+            assert self.dm.user.has_write_access # always
+            assert not self.dm.user.is_impersonation
+            assert self.dm.user.real_username == master_login
+            assert not self.dm.user.has_notifications() # IMPORTANT - no error message
 
 
     @for_core_module(PlayerAuthentication)

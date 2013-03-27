@@ -81,7 +81,7 @@ sys.setrecursionlimit(800) # to help detect recursion problems
 
 logging.basicConfig()
 logging.getLogger().setLevel(logging.DEBUG)
-logging.disable(logging.CRITICAL) # to be commented if more output is wanted !!!
+logging.disable(logging.DEBUG) # to be commented if more output is wanted !!!
 
 
 
@@ -93,7 +93,7 @@ class RequestMock(RequestFactory):
 
 
         request = RequestFactory.request(self, **request)
-        pprint.pprint(request)
+        ###pprint.pprint(request)
 
         handler = BaseHandler()
 
