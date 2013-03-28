@@ -509,13 +509,18 @@ class TestDatamanager(BaseGameTestCase):
         with pytest.raises(AbnormalUsageError):
             dm.propose_friendship("guy1", "guy1") # auto-friendship impossible
 
-        assert not dm.propose_friendship("guy2", "guy1")
+        assert not dm.propose_friendship("guy2", "guy1") # proposes
         assert not dm.are_friends("guy1", "guy2")
         assert not dm.are_friends("guy2", "guy1")
         assert not dm.are_friends("guy1", "guy3")
 
         assert self.dm.get_other_characters_friendship_statuses("guy1") == {u'guy2': 'requested_by', 'guy3': None, 'guy4': None}
         assert self.dm.get_other_characters_friendship_statuses("guy2") == {u'guy1': 'proposed_to', 'guy3': None, 'guy4': None}
+
+        # friendship proposals don't impact impersonation
+        assert not self.dm.can_impersonate("guy1", "guy3")
+        assert not self.dm.can_impersonate("guy1", "guy2")
+        assert not self.dm.can_impersonate("guy2", "guy1")
 
         with pytest.raises(AbnormalUsageError):
             dm.propose_friendship("guy2", "guy1") # friendship already requested
@@ -534,6 +539,11 @@ class TestDatamanager(BaseGameTestCase):
                                                           requested_by=[])
         time.sleep(0.5)
         assert dm.propose_friendship("guy1", "guy2") # we seal friendship, here
+
+        # friends can impersonate each other!
+        assert not self.dm.can_impersonate("guy1", "guy3")
+        assert self.dm.can_impersonate("guy1", "guy2")
+        assert self.dm.can_impersonate("guy2", "guy1")
 
         assert self.dm.get_other_characters_friendship_statuses("guy1") == {u'guy2': 'recent_friend', 'guy3': None, 'guy4': None}
         assert self.dm.get_other_characters_friendship_statuses("guy2") == {u'guy1': 'recent_friend', 'guy3': None, 'guy4': None}
@@ -583,6 +593,11 @@ class TestDatamanager(BaseGameTestCase):
         with pytest.raises(AbnormalUsageError):
             dm.terminate_friendship("guy1", "guy2") # too young friendship
 
+        # old friendship still makes impersonation possible of course
+        assert not self.dm.can_impersonate("guy1", "guy3")
+        assert self.dm.can_impersonate("guy1", "guy2")
+        assert self.dm.can_impersonate("guy2", "guy1")
+
         for pair, params in dm.data["friendships"]["sealed"].items():
             if "guy1" in pair:
                 params["acceptance_date"] -= timedelta(hours=30) # delay should be 24h in dev
@@ -592,6 +607,12 @@ class TestDatamanager(BaseGameTestCase):
         assert self.dm.get_other_characters_friendship_statuses("guy2") == {u'guy1': 'old_friend', 'guy3': 'recent_friend', 'guy4': None}
 
         assert dm.terminate_friendship("guy1", "guy2") # success
+
+        # no more friends -> no more impersonation
+        assert not self.dm.can_impersonate("guy1", "guy3")
+        assert not self.dm.can_impersonate("guy1", "guy2")
+        assert not self.dm.can_impersonate("guy2", "guy1")
+
         assert not dm.are_friends("guy2", "guy1")
         with pytest.raises(UsageError):
             dm.get_friendship_params("guy1", "guy2")
@@ -3805,9 +3826,7 @@ class TestGameViews(BaseGameTestCase):
         assert "friendship proposal" in view.do_propose_friendship("guy2")
         assert "friendship proposal" in view.do_cancel_proposal("guy2")
         assert "friendship proposal" in view.do_propose_friendship("guy2")
-
         assert "friendship proposal" in view.do_propose_friendship("guy4")
-
         assert "friendship proposal" in view.do_propose_friendship("guy3")
         with pytest.raises(AbnormalUsageError):
             view.do_propose_friendship("guy2") # duplicate proposal
