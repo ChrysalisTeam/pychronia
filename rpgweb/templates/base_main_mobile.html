@@ -1,0 +1,13 @@
+{% extends "metalradiance_base_mobile.html" %}
+
+{% block top_links %}
+
+    {% for menu in menus %} 
+        {% if menu.is_active %}
+           <a href="{{ menu.url }}">{{ menu.title }}</a>
+        {% else %}
+           <span>{{ menu.title }}</span>
+        {% endif %}
+    {% endfor %}
+
+{% endblock %}

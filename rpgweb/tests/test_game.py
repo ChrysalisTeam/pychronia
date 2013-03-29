@@ -2319,7 +2319,7 @@ class TestHttpRequests(BaseGameTestCase):
         self._master_auth() # equivalent to self._set_user(self.dm.get_global_parameter("master_login"))
 
         from django.core.urlresolvers import RegexURLResolver
-        from rpgweb.urls import web_game_urlpatterns
+        from rpgweb.urls import web_game_urlpatterns # FIXME ADD MOBILE VIEWS
 
         skipped_patterns = """ability instructions view_help_page profile
                               DATABASE_OPERATIONS FAIL_TEST ajax item_3d_view chat_with_djinn static.serve encrypted_folder 
@@ -2428,7 +2428,7 @@ class TestHttpRequests(BaseGameTestCase):
 
         # VIEWS SELECTION
         from django.core.urlresolvers import RegexURLResolver
-        from rpgweb.urls import web_game_urlpatterns
+        from rpgweb.urls import web_game_urlpatterns  # FIXME ADD MOBILE VIEWS
         # we test views for which there is a distinction between master and player
         selected_patterns = """ compose_message view_sales personal_items_slideshow character_profile friendship_management""".split() # TODO LATER network_management contact_djinns
         views = [url._callback_str for url in web_game_urlpatterns if not isinstance(url, RegexURLResolver) and [match for match in selected_patterns if match in url._callback_str]]

@@ -48,6 +48,8 @@ def _generate_mobile_menu(request, menu_entry_generator):
             # encoding note : \xa0 <-> &nbsp <-> alt+0160;
 
             menu_entry(_(u"Home"), views.homepage_mobile),
+            menu_entry(_(u"Encyclopedia"), views.encyclopedia_mobile),
+
         ))
     return full_menu_tree
 

@@ -26,6 +26,7 @@ from persistent.list import PersistentList
 from django.conf import settings
 from django.utils.html import escape
 from django.utils.translation import ungettext, ugettext as _, ugettext_lazy as _lazy, ugettext_noop as _noop
+from django.template.response import SimpleTemplateResponse, TemplateResponse
 from django.shortcuts import render
 from django.core.urlresolvers import reverse
 ## from django.utils.text import slugify - FIXME - for 1.5 only

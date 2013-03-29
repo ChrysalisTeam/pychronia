@@ -61,14 +61,14 @@ def view_encyclopedia(request, article_id=None, template_name='info/encyclopedia
     else:
         assert dm.is_anonymous()  # we leave article_ids to None
 
-    return render(request,
-                  template_name,
-                    {
-                     'page_title': _("Pangea Encyclopedia"),
-                     'article_ids': article_ids,
-                     'entry': entry,
-                     'search_results': search_results
-                    })
+    return TemplateResponse(request=request,
+                            template=template_name,
+                            context={
+                             'page_title': _("Pangea Encyclopedia"),
+                             'article_ids': article_ids,
+                             'entry': entry,
+                             'search_results': search_results
+                            })
 
 
 

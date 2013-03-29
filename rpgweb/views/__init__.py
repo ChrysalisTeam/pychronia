@@ -28,7 +28,7 @@ from rpgweb.utilities import mediaplayers, fileservers
 from rpgweb.datamanager import GameDataManager
 
 
-from .mobile_views import homepage_mobile
+from .mobile_views import homepage_mobile, encyclopedia_mobile
 
 
 from .auction_views import (_build_display_data_from_viewer_settings, homepage, opening, view_characters,
