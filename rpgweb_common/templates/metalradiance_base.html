@@ -30,72 +30,58 @@
     
     
     <script language="javascript" type="text/javascript">
-    
-    {% render_block "definition_js" %}
-      
-        
-     INIT_JS = function() {
-            
-            if (typeof my_fast_transitions == 'undefined' && 0) {  // JS PAGE TRANSITIONS DISABLED ATM
-                my_fast_transitions = new ft({ /* data-ftrans attr must be set to slide/slideup/slidedown/fade/flip/pop */
-                        "navB" : "",   //Effect for navigation button, leave it empty to disable it
-                        "but" : false,           //Flag to enable transitions on button, false by default
-                        "cBa" : function(){INIT_JS();}      //callback function
-                }); // nifty javascript transitions between pages
-            }
-                
-            $('#menulist').dropmenu(
-                {
-                    effect          : "slide",       //  "slide", "fade", or "none"
-                    speed           : "fast", //  "normal", "fast", "slow", 100, 1000, etc
-                    timeout         : 400,
-                    nbsp            : true,
-                    maxWidth        : 0
-                }
-            );
-            
-            /* only half working parralax system
-
-            window.onscroll = function() {
-                
-                    var speed = 0.6;
-                    var posX = Math.floor(window.pageXOffset * speed);
-                    var posY = Math.floor(window.pageYOffset * speed);
-                    
-                    $("body").css("background-position", posX + "px " + posY + "px"); 
-                }
-            */
-           
-           /* sign that parts of the page are for admins only */
-           $(".admin-note").pulsate({
-                              color: "#9D8126",                       // set the color of the pulse
-                              reach: 10,                              // how far the pulse goes in px
-                              speed: 1000,                            // how long one pulse takes in ms
-                              pause: 500,                               // how long the pause between pulses is in ms
-                              glow: true,                             // if the glow should be shown too
-                              repeat: true,                           // will repeat forever if true, if given a number will repeat for that many times
-                              onHover: false                          // if true only pulsate if user hovers over the element
-                            });
-           
-           /*                
-           $("form").disabler({ // FIXME - ALL disabled container must have an ID !! Let's create it on demand!!
-              disable : true
-            });*/
+        /* here put JS that must be executed only on PAGE LOAD, not fast transitions */
+        var JS_TIMER_START = setTimeout(function(){}, 0);
         
         
-            {% render_block "onload_js" %}
-        
-        }       
-        
-        
+      var xhrPool = [];
+      $(document).ajaxSend(function(e, jqXHR, options){
+        xhrPool.push(jqXHR);
+      });
+      $(document).ajaxComplete(function(e, jqXHR, options) {
+        xhrPool = $.grep(xhrPool, function(x){return x!=jqXHR});
+      });
+      var abort_pending_ajax_requests = function() {
+        $.each(xhrPool, function(idx, jqXHR) {
+          jqXHR.abort();
+        });
+      };
  
+       /*
+      var oldbeforeunload = window.onbeforeunload;
+      window.onbeforeunload = function() {
+        var r = oldbeforeunload ? oldbeforeunload() : undefined;
+        if (r == undefined) {
+          // only cancel requests if there is no prompt to stay on the page
+          // if there is a prompt, it will likely give the requests enough time to finish
+          abort_pending_ajax_requests();
+        }
+        return r;
+      }*/
+      
+      
+      
+     function clear_all_js_timeouts() {
+         
+         var maxId = setTimeout(function(){}, 0);
+         var i;
+         
+         for(i=JS_TIMER_START; i <= maxId; i+=1) { 
+            //console.log("CLEARING TIMER "  + i);
+            clearTimeout(i);
+        }
+        
+        JS_TIMER_START = i; // value of the FIRST next timer created
+     }
+    
+    
+    function CLEANUP_PENDING_JS_WORKFLOWS () {
+        abort_pending_ajax_requests(); // beware, might trigger completion events anyway
+        clear_all_js_timeouts();
+    }
 
-        $(document).ready(INIT_JS);
-        
-        
     </script>
     
-          
     {% block html_headers %}  
     {% endblock %}
 
@@ -208,5 +194,71 @@
     {% endblock %}
     
 
+
+
+    <script language="javascript" type="text/javascript">
+    
+    {% render_block "definition_js" %}
+     
+
+        
+        
+        
+     INIT_JS = function() {
+            
+            if (typeof my_fast_transitions == 'undefined' && 0) {  // JS PAGE TRANSITIONS DISABLED ATM
+                my_fast_transitions = new ft({ /* data-ftrans attr must be set to slide/slideup/slidedown/fade/flip/pop */
+                        "navB" : "",   //Effect for navigation button, leave it empty to disable it
+                        "but" : false,           //Flag to enable transitions on button, false by default
+                        "cBa" : INIT_JS,      //callback function, with newly defined body
+                }); // nifty javascript transitions between pages
+            }
+            
+            $('#menulist').dropmenu(
+                {
+                    effect          : "slide",       //  "slide", "fade", or "none"
+                    speed           : "fast", //  "normal", "fast", "slow", 100, 1000, etc
+                    timeout         : 400,
+                    nbsp            : true,
+                    maxWidth        : 0
+                }
+            );
+            
+            /* only half working parralax system
+
+            window.onscroll = function() {
+                
+                    var speed = 0.6;
+                    var posX = Math.floor(window.pageXOffset * speed);
+                    var posY = Math.floor(window.pageYOffset * speed);
+                    
+                    $("body").css("background-position", posX + "px " + posY + "px"); 
+                }
+            */
+           
+           /* sign that parts of the page are for admins only */
+           $(".admin-note").pulsate({
+                              color: "#9D8126",                       // set the color of the pulse
+                              reach: 10,                              // how far the pulse goes in px
+                              speed: 1000,                            // how long one pulse takes in ms
+                              pause: 500,                               // how long the pause between pulses is in ms
+                              glow: true,                             // if the glow should be shown too
+                              repeat: true,                           // will repeat forever if true, if given a number will repeat for that many times
+                              onHover: false                          // if true only pulsate if user hovers over the element
+                            });
+           
+           /*                
+           $("form").disabler({ // FIXME - ALL disabled container must have an ID !! Let's create it on demand!!
+              disable : true
+            });*/
+        
+        
+            {% render_block "onload_js" %}
+        
+        }       
+        
+       $(document).ready(INIT_JS); // only called on full page loading, not on ajax-based fast-transitions
+    </script>
+    
 </body>
 </html>

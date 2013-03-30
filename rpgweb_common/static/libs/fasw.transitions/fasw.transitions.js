@@ -98,6 +98,9 @@ function timeOuts(e, d1,d2)
 
 function slideTo(href, effect, pushstate)
 {
+	if (window.CLEANUP_PENDING_JS_WORKFLOWS) {
+		window.CLEANUP_PENDING_JS_WORKFLOWS(); // disable timers and ajax requests that are in progress
+	}
 	var d = DE();
 	var d1 = d.d1;
 	var d2 = d.d2;
