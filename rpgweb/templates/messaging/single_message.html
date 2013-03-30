@@ -52,7 +52,10 @@
     {% if message.attachment %}
     <br/>
     <div class="center_content">
-        {% filter mediaplayer:"false" %}{% game_file_url message.attachment %}{% endfilter %}
+        {% if message.attachment %}
+            <b>{{ message.attachment }}</b><br/>
+            {{ message.attachment|mediaplayer:"false" }}
+        {% endif %}
     </div>
     {% endif %}
     

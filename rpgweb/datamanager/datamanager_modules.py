@@ -2670,6 +2670,7 @@ class PersonalFiles(BaseDataManager):
         Game master has a reserved folder with game administration files
         """
         username = self._resolve_username(username)
+        assert self.is_master(username) or self.is_character(username), username
 
         """ # ACTUALLY NO ! Game master has its own files !!
             # DEPRECATED !!!!!!!!!!!!

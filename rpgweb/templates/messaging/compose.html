@@ -23,9 +23,10 @@
 {% addtoblock "onload_js" %}
 mySettings.markupSet = mySettings["markupSet"].slice(0, -3); // remove code and preview system ATM
 mySettings.resizeHandle = false; // we can't remove autohandle of browser though
-$("#id_body").markItUp(mySettings); // mySettings comes from /markitup/sets/rest/set.js
+$("#id_default_body").markItUp(mySettings); // mySettings comes from /markitup/sets/rest/set.js
 
 
+/*
  $("#jjj").select2({
     //multiple: true,
     //createSearchChoice: function(term) {return {id:}},
@@ -39,6 +40,20 @@ $("#id_body").markItUp(mySettings); // mySettings comes from /markitup/sets/rest
     tags: ["hi", "how", "ji"],
     tokenSeparators: [",", ";", " "]
  });
+ <input type='hidden' id="jjj"/><br/>
+
+<select id="e1" >
+<option value="AL">Alabama</option>
+<option value="WY">Wyoming</option>
+</select>
+        <p>
+            {% blocktrans %}
+            The "recipients" field may contain a list of values separated with commas or semi-colons.
+            Each value may be a full email (of an user or an external entity), or the login of an existing user.
+            You may attach to your message one of your personal files, or any url.
+            {% endblocktrans %}
+        </p>
+*/
  
 {% endaddtoblock %}
 
@@ -47,44 +62,19 @@ $("#id_body").markItUp(mySettings); // mySettings comes from /markitup/sets/rest
 
 
 
-
-
 {% block content %}  
-
-<input type='hidden' id="jjj"/><br/>
-
-<select id="e1" >
-<option value="AL">Alabama</option>
-<option value="WY">Wyoming</option>
-</select>
 
         
     {% if message_form %}
-        <p>
-            {% blocktrans %}
-            The "recipients" field may contain a list of values separated with commas or semi-colons.
-            Each value may be a full email (of an user or an external entity), or the login of an existing user.
-            You may attach to your message one of your personal files, or any url.
-            {% endblocktrans %}
-        </p>
+
         
-        <form action="{% game_view_url "rpgweb.views.compose_message" %}" method="post">
+        <form action="" method="post">
         {{ message_form.as_p }}
+        
+        <p><input type="submit" style="width: 200px" name="send_message" value="{% trans "Send Message" %}" /></p>
         </form>
         
-        <table class="same_width_widgets" style="margin: 20px auto;width:500px;">
-        
-        <tr>
-        
-            <td colspan="2">
-                <br/>
-                <input type="submit" style="width: 200px" name="send_message" value="{% trans "Send Message" %}" />
-            </td>
-        
-        </tr>
-        </table>
-        
-    
+       
     {% else %}
     <br/>
     <p>
@@ -94,3 +84,4 @@ $("#id_body").markItUp(mySettings); // mySettings comes from /markitup/sets/rest
     {% endif %}
 
 {% endblock %}
+

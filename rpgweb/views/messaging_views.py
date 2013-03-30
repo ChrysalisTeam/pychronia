@@ -3,9 +3,138 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from rpgweb.common import *
-from rpgweb.datamanager import AbstractGameView, register_view, VISIBILITY_REASONS
-from rpgweb import forms
+from rpgweb.datamanager import AbstractGameView, register_view, VISIBILITY_REASONS, AbstractGameForm
+from django import forms
 from django.http import Http404, HttpResponseRedirect, HttpResponse
+from rpgweb.utilities.select2_extensions import Select2TagsField
+
+
+"""
+    categories = Select2TagsField(label=_lazy("Categories"), required=False)
+    keywords = Select2TagsField(label=_lazy("Keywords"), required=False)
+
+"""
+
+class MessageComposeForm(AbstractGameForm):
+    """
+    A simple default form for private messages.
+    """
+
+    # origin = forms.CharField(required=False, widget=forms.HiddenInput) # the id of the message to which we replay, if any
+
+
+    recipients = Select2TagsField(label=_lazy("Recipients"), required=True)
+
+    subject = forms.CharField(label=_lazy("Subject"), widget=forms.TextInput(attrs={'size':'35'}), required=True)
+
+    body = forms.CharField(label=_lazy("Body"), widget=forms.Textarea(attrs={'rows': '8', 'cols':'35'}), required=False)
+
+    attachment = Select2TagsField(label=_lazy("Attachment"), required=False)
+
+
+
+    def __init__(self, request, *args, **kwargs):
+        super(MessageComposeForm, self).__init__(request.datamanager, *args, **kwargs)
+
+        # data to be determined
+        sender = None
+        recipients = None
+        subject = None
+        body = None
+        attachment = None
+
+        datamanager = request.datamanager
+        user = request.datamanager.user
+
+        parent_id = request.GET.get("parent_id", "")
+        if parent_id:
+            # we transfer data from the parent email, to help user save time #
+            try:
+                tpl = msg = request.datamanager.get_dispatched_message_by_id(parent_id)
+            except UsageError:
+                user.add_error(_("Parent message %s not found") % parent_id)
+            else:
+
+                visibility_reason = msg["visible_by"].get(user.username, None)
+
+                if visibility_reason == VISIBILITY_REASONS.recipient: # we reply a message
+                    sender = None # let the sender empty even for master, since we couldn't determine which of the external contacts is wanted as sender
+                    recipients = [msg["sender_email"]] + msg["recipient_emails"] # send to ALL
+                    subject = _("Re: ") + msg["subject"]
+                    attachment = msg["attachment"]
+
+                elif visibility_reason == VISIBILITY_REASONS.sender: # we recontact recipients
+                    sender = msg["sender_email"] # for master
+                    recipients = msg["recipient_emails"]
+                    subject = _("Bis: ") + msg["subject"]
+                    attachment = None # don't resend it
+
+                else: # visibility reason is None, or another visibility case (eg. interception)
+                    self.logger.warning("Access to forbidden message parent_id %s was attempted", parent_id)
+                    user.add_error(_("Access to initial message forbidden."))
+                    parent_id = None
+        self.fields["parent_id"] = forms.CharField(required=False, initial=parent_id, widget=forms.HiddenInput())
+
+
+        use_template = request.GET.get("use_template", "")
+        if user.is_master: # only master has templates ATM
+
+            if use_template:
+
+                # non-empty template fields override parent message fields #
+
+                try:
+                    tpl = datamanager.get_message_template(use_template)
+                except UsageError:
+                    user.add_error(_("Message template %s not found") % use_template)
+                else:
+                    sender = tpl["sender_email"] or sender
+                    recipients = tpl["recipient_emails"] or recipients
+                    subject = tpl["subject"] or subject
+                    body = tpl["body"] or body
+                    attachment = tpl["attachment"] or attachment
+        self.fields["use_template"] = forms.CharField(required=False, initial=use_template, widget=forms.HiddenInput())
+
+
+        # we build dynamic fields from the data we gathered #
+
+        if user.is_master:
+
+            sender = Select2TagsField(label=_lazy("Sender"), required=True, initial=sender)
+            sender.choice_tags = datamanager.global_contacts.keys()
+            assert sender.max_selection_size is not None
+            sender.max_selection_size = 1
+            self.fields.insert(0, "sender", sender)
+
+            _delay_values_minutes = [unicode(value) for value in [0, 5, 10, 15, 30, 45, 60, 120, 720, 1440]]
+            _delay_values_minutes_labels = [_("%s minutes") % value for value in _delay_values_minutes]
+            _delay_values_minutes_choices = zip(_delay_values_minutes, _delay_values_minutes_labels)
+            self.fields.insert(2, "delay_mn", forms.ChoiceField(label=_("Sending delay"), choices=_delay_values_minutes_choices, initial="0"))
+
+        else:
+            pass # no sender or delay_mn fields!
+
+
+        available_recipients = datamanager.get_user_contacts()  # current username should not be "anonymous", since it's used only in member areas !
+        self.fields["recipients"].initial = recipients
+        self.fields["recipients"].choice_tags = available_recipients
+
+        self.fields["subject"].initial = subject
+        self.fields["body"].initial = body
+
+        self.fields["attachment"].initial = attachment
+        self.fields["attachment"].choice_tags = datamanager.get_personal_files(absolute_urls=False)
+        self.fields["attachment"].max_selection_size = 1
+
+    def clean_sender(self):
+        # called only for master
+        data = self.cleaned_data['sender']
+        return data[0] # MUST exist if we're here
+
+    def clean_attachment(self):
+        data = self.cleaned_data['attachment']
+        return data[0] # MUST exist if we're here
+
 
 
 @register_view(access=UserAccess.master)
@@ -84,7 +213,7 @@ def compose_message(request, template_name='messaging/compose.html'):
     user = request.datamanager.user
     form = None
     if request.method == "POST":
-        form = forms.MessageComposeForm(request, data=request.POST)
+        form = MessageComposeForm(request, data=request.POST)
         if form.is_valid():
 
             with action_failure_handler(request, _("Message successfully sent.")):
@@ -110,10 +239,11 @@ def compose_message(request, template_name='messaging/compose.html'):
                 request.datamanager.post_message(sender_email, recipient_emails, subject, body, attachment, date_or_delay_mn=delay_mn,
                                                  parent_id=parent_id, use_template=use_template)
 
-                form = forms.MessageComposeForm(request)  # new empty form
-
+                form = MessageComposeForm(request)  # new empty form
+        else:
+            user.add_error(_("Errors in message fields."))
     else:
-        form = forms.MessageComposeForm(request)
+        form = MessageComposeForm(request)
 
     return render(request,
                   template_name,

@@ -11,7 +11,8 @@ from django.core.exceptions import ValidationError
 class Select2TagsWidget(Select2Mixin, MultipleSelect2HiddenInput): ##SpecialHiddenInput): ###forms.HiddenInput): ###MultipleSelect2HiddenInput):
 
     def init_options(self):
-        self.options.update({"maximumSelectionSize":1, # overridden by field
+        self.options.update({"closeOnSelect": True, # maximumSelectionSize buggy when not closeOnSelect, so we workaround...
+                             "maximumSelectionSize":-1, # overridden by form field
                              "separator": JSVar('django_select2.MULTISEPARATOR'),
                             "tokenSeparators": [",", ";", " "],
                             "tags": []}) # overridden by field

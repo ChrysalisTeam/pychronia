@@ -47,8 +47,7 @@ class AbstractGameForm(forms.Form):
 
         super(AbstractGameForm, self).__init__(**kwargs)
 
-        self.fields.insert(0, self.__class__._ability_field_name, forms.CharField(initial=self._get_dotted_class_name(),
-                                                                                  widget=forms.HiddenInput))
+        self.fields[self.__class__._ability_field_name] = forms.CharField(initial=self._get_dotted_class_name(), widget=forms.HiddenInput) # appended at the end
         self.target_url = ""  # by default we stay on the same page when submitting
 
 
