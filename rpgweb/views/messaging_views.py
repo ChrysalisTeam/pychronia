@@ -100,7 +100,7 @@ class MessageComposeForm(AbstractGameForm):
 
         if user.is_master:
 
-            sender = Select2TagsField(label=_lazy("Sender"), required=True, initial=sender)
+            sender = Select2TagsField(label=_lazy("Sender"), required=True, initial=[sender]) # initial MUST be a 1-item list!
             sender.choice_tags = datamanager.global_contacts.keys()
             assert sender.max_selection_size is not None
             sender.max_selection_size = 1
@@ -133,7 +133,7 @@ class MessageComposeForm(AbstractGameForm):
 
     def clean_attachment(self):
         data = self.cleaned_data['attachment']
-        return data[0] # MUST exist if we're here
+        return data[0] if data else None # MUST exist if we're here
 
 
 
@@ -399,13 +399,12 @@ def __intercepted_messages(request, template_name='messaging/messages.html'):
 @register_view(access=UserAccess.master)
 def messages_templates(request, template_name='messaging/templates.html'):
 
-    messages = request.datamanager.get_messages_templates().items()
-    messages.sort(key=lambda msg: msg[0])  # we sort by template name
+    templates = request.datamanager.get_messages_templates().items() # PAIRS (id, value)
+    templates.sort(key=lambda msg: msg[0])  # we sort by template name
 
     return render(request,
                   template_name,
                     {
                      'page_title': _("Message Templates"),
-                     'messages': messages,
-                     'mode': "messages_templates",
+                     'templates': templates,
                     })

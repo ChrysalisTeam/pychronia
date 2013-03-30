@@ -3,13 +3,16 @@
 
 <div id="{{ message.id }}" class="{% if ctx.has_read %}email_read{% else %}email_unread{% endif %} {% if not is_first %}cover_previous{% endif %}">
     <span class="message_operations">
-        <a {% if ctx.has_read %}style="display: none;"{% endif %} class="mark_read_tag" onclick="set_message_read_state('{{ message.id|escapejs }}', true); return false;" href="#">
-            {% trans "Mark as read" %}
-        </a>   
-        <a {% if not ctx.has_read %}style="display: none;"{% endif %} class="mark_unread_tag" onclick="set_message_read_state('{{ message.id|escapejs }}', false); return false;" href="#">
-            {% trans "Mark as unread" %}
-        </a>                  
-
+        
+        {% if ctx %}
+            <a {% if ctx.has_read %}style="display: none;"{% endif %} class="mark_read_tag" onclick="set_message_read_state('{{ message.id|escapejs }}', true); return false;" href="#">
+                {% trans "Mark as read" %}
+            </a>   
+            <a {% if not ctx.has_read %}style="display: none;"{% endif %} class="mark_unread_tag" onclick="set_message_read_state('{{ message.id|escapejs }}', false); return false;" href="#">
+                {% trans "Mark as unread" %}
+            </a>                  
+        {% endif %}
+        
         {% ifequal mode "all_queued_messages" %} TODO FIXME
             <a onclick="force_email_sending('{{ message.id|escapejs }}', true); return false;" href="#">
                 {% trans "Force sending" %}
@@ -50,7 +53,7 @@
     </div>
 
     {% if message.attachment %}
-    <br/>
+    <hr/>
     <div class="center_content">
         {% if message.attachment %}
             <b>{{ message.attachment }}</b><br/>
@@ -62,6 +65,11 @@
     
     <span class="conversation_operations">
         <a href="{% game_view_url "rpgweb.views.compose_message" %}?message_id={{ message.id|urlencode }}"><img src="{{ STATIC_URL }}/media/images/fleche1BROKEN.gif" style="width:30px; height:30px;"></img></a>
-    </span>
+    
 
+            <a href="{% game_view_url "rpgweb.views.compose_message" %}?use_template={{ template_id }}">
+                {% trans "Use Template" %} {% if message.is_used %}({% trans "already done" %}){% endif %}
+            </a>
+        </span>
+                
 </div>
