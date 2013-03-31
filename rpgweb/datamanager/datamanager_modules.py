@@ -1847,18 +1847,19 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
         """
         visibilities = {}
 
-        sender_username = self.get_character_or_none_from_email(msg["sender_email"])
-        if sender_username:
-            visibilities[sender_username] = VISIBILITY_REASONS.sender
-        else:
-            visibilities[self.master_login] = VISIBILITY_REASONS.sender
-
         for recipient_email in msg["recipient_emails"]:
             recipient_username = self.get_character_or_none_from_email(recipient_email)
             if recipient_username:
-                visibilities[recipient_username] = VISIBILITY_REASONS.recipient # might override "sender" status for that user
+                visibilities[recipient_username] = VISIBILITY_REASONS.recipient
             else:
                 visibilities[self.master_login] = VISIBILITY_REASONS.recipient # might occur several times, we don't care
+
+        sender_username = self.get_character_or_none_from_email(msg["sender_email"])
+        if sender_username:
+            visibilities[sender_username] = VISIBILITY_REASONS.sender # might override "recipient" status in case of self-mailing
+        else:
+            visibilities[self.master_login] = VISIBILITY_REASONS.sender
+
 
         return visibilities
 
@@ -2027,7 +2028,7 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
         assert sorted(messages, key=lambda msg: msg["sent_at"]) == messages # msgs must be naturally well sorted first, in DATE ASC order
 
         groups = OrderedDict()
-        for msg in reversed(messages):
+        for msg in reversed(messages): # important
             groups.setdefault(msg["group_id"], [])
             groups[msg["group_id"]].append(msg)
 
@@ -2036,6 +2037,9 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
 
     @readonly_method
     def get_unread_messages_count(self, username=CURRENT_USER):
+        """
+        Only considers RECEIVED messages.
+        """
         unread_msgs = [msg for msg in self.get_received_messages(username=username)
                            if username not in msg["has_read"]]
         return len(unread_msgs)

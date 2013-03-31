@@ -1,0 +1,32 @@
+
+{% extends "messaging/base.html" %}
+
+{% load i18n helpers markup %}  
+
+
+
+
+{% block content %}  
+
+    {{ block.super }}
+
+    <p style="text-align:center;"><strong>
+    {% if is_queued %}
+        {% trans "Message queued for delivery." %}
+    {% else %}
+        {% trans "Message delivered to recipient." %}
+    {% endif %}
+    </strong></p>
+    
+    {% include "messaging/single_message.html" with ctx=ctx message=message is_first=1 %}
+
+{% endblock %}
+    
+    
+    
+    
+    
+    
+    
+    
+    

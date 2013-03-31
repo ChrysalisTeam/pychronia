@@ -25,6 +25,7 @@ def homepage_mobile(request, template_name="mobile/homepage.html"):
 
 @register_view(access=UserAccess.anonymous, always_available=True)
 def encyclopedia_mobile(request, article_id=None, template_name='mobile/encyclopedia.html'):
+    # FIXME THIS IS USELESS, JUST OVERRIDE template_name ARG!!
     template_response = view_encyclopedia(request, article_id=article_id)
     assert template_response.template_name and not template_response.is_rendered
     template_response.template_name = template_name

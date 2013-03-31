@@ -36,6 +36,7 @@ def transform_usage_error(caller, self, *args, **kwargs):
 
             if isinstance(e, AuthenticationRequiredError):
                 # uses HTTP code for TEMPORARY redirection
+                self.datamanager.user.add_error(_("Access denied to page %s") % self.NAME)
                 return HttpResponseRedirect(reverse("rpgweb.views.login", kwargs=dict(game_instance_id=self.datamanager.game_instance_id)))
             else:
                 # even permission errors are treated like base class AccessDeniedError ATM

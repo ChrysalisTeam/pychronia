@@ -1,8 +1,82 @@
 ﻿{% extends "base_two_columns.html" %}
  
-{% load i18n helpers kwacros %}
+{% load sekizai_tags i18n helpers kwacros %}
 {% loadkwacros "metalradiance_kwacros.html" %}
  
+ 
+ 
+ 
+{% block sekizai_calls %}
+{{ block.super }}
+
+{% addtoblock "definition_js" %}
+
+        function force_email_sending(msg_id) {
+ 
+            $.get("{% game_view_url "rpgweb.views.ajax_force_email_sending" %}", 
+                    { id: escape(msg_id) },
+                    function(data){
+                        $("#"+msg_id).css("display", "none");
+                        $.jnotify('{% trans "Queued message successfully dispatched" %}', "success"); 
+                    });
+        }        
+       
+    
+        function set_message_read_state(msg_id, is_read) {
+
+            $.get("{% game_view_url "rpgweb.views.ajax_set_message_read_state" %}", 
+                    { id: escape(msg_id), 
+                      is_read: (is_read ? "1" : "0") },
+                    function(data){
+                        if (is_read) {
+                            $("#"+msg_id).removeClass("email_unread");
+                            $("#"+msg_id).addClass("email_read");
+                            $("#"+msg_id +" .mark_read_tag").css("display", "none");
+                            $("#"+msg_id +" .mark_unread_tag").css("display", "inline");
+                        }
+                        else {
+                            $("#"+msg_id).removeClass("email_read");   
+                            $("#"+msg_id).addClass("email_unread");  
+                            $("#"+msg_id +" .mark_read_tag").css("display", "inline");
+                            $("#"+msg_id +" .mark_unread_tag").css("display", "none");
+                        } 
+                  
+                    });
+        }
+       
+       
+       $.fn.togglepanels = function(){   
+            return this.each(function(){
+                $(this).addClass("ui-accordion ui-accordion-icons ui-widget ui-helper-reset")
+              .find(".otherTitle")
+                .addClass("ui-accordion-header ui-helper-reset ui-state-default ui-corner-top ui-corner-bottom")
+                .hover(function() { $(this).toggleClass("ui-state-hover"); })
+                .prepend('<span class="ui-icon ui-icon-triangle-1-e"></span>')
+                .click(function() {
+                  $(this)
+                    .toggleClass("ui-accordion-header-active ui-state-active ui-state-default ui-corner-bottom")
+                    .find("> .ui-icon").toggleClass("ui-icon-triangle-1-e ui-icon-triangle-1-s").end()
+                    .next().slideToggle();
+                  return false;
+                });
+                $(this).find(".otherDiv").addClass("ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom").hide();
+              });
+            };
+    
+{% endaddtoblock %}
+
+
+{% addtoblock "onload_js" %}
+
+    // NOT YET - NEEDS TESTING $(".notaccordion").togglepanels();
+    
+{% endaddtoblock %}
+
+{% endblock %}
+
+
+
+
 
 {% block sidebar %}
 

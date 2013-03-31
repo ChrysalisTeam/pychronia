@@ -28,7 +28,7 @@ def rpgweb_template_context(request):
             help_keyword = None
 
         notifications = get_messages(request) # lazy 'messages' context variable.
-        notifications = list(notifications)
+        notifications = list(set(notifications)) # order doesn't matter, and we don't want duplicates!
         notification_type = "mixed" # DEFAULT
         levels = list(set(msg.tags for msg in notifications))
         if len(levels) == 1:
@@ -52,7 +52,13 @@ def rpgweb_template_context(request):
 
                 # replacement of djanbgo.contrib.messages middleware
                 'notification_type': notification_type,
-                'notifications': notifications, }
+                'notifications': notifications,
+
+                # useful constants
+                'None': None,
+                'True': True,
+                'False': False,
+                }
 
     else:
         return {} # not in valid game instance

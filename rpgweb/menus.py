@@ -64,12 +64,14 @@ def _generate_web_menu(request, menu_entry_generator):
 
     processed_view = request.processed_view # thanks to our middleware
 
+    ''' FIXME - we must beware what messages are considered exactly
     if user.is_authenticated and processed_view != views.conversation:
         # in inbox, we can set/unset the read state of messages, so the "unread count" must not be considered
         unread_msgs_count = datamanager.get_unread_messages_count()
         message_suffix = u"(%d)" % unread_msgs_count
     else:
         message_suffix = u""
+    '''
 
     if user.is_authenticated and processed_view != views.chatroom:
         # same for chatroom
@@ -109,9 +111,10 @@ def _generate_web_menu(request, menu_entry_generator):
 
             menu_entry(_(u"Messaging"), views.homepage, # FIXME
                       (
-                         menu_entry(_(u"Conversations") + message_suffix, views.conversation),
-                         menu_entry(_(u"Compose"), views.compose_message),
+                         menu_entry(_(u"Dispatched messages"), views.all_dispatched_messages),
                          menu_entry(_(u"Pending messages"), views.all_queued_messages),
+                         menu_entry(_(u"My conversations"), views.conversation),
+                         menu_entry(_(u"Compose message"), views.compose_message),
                          menu_entry(_(u"Templates"), views.messages_templates),
 
                       )),

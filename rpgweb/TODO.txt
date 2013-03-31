@@ -1,3 +1,6 @@
+
+{% comment %} !! Remember that these div ids can be used as url anchors : "/my/url/#1-fa4" ! {% endcomment %}
+
 ACCESS CONTROL ON HELP PAGES !!!!!!!!!!!!
 
 - add protections to ensure that all file requests never leave GAME_FILES_ROOT

@@ -46,6 +46,8 @@ class MessageComposeForm(AbstractGameForm):
         datamanager = request.datamanager
         user = request.datamanager.user
 
+        # TODO - extract these decisions tables to a separate method and test it thoroughly #
+
         parent_id = request.GET.get("parent_id", "")
         if parent_id:
             # we transfer data from the parent email, to help user save time #
@@ -57,17 +59,19 @@ class MessageComposeForm(AbstractGameForm):
 
                 visibility_reason = msg["visible_by"].get(user.username, None)
 
-                if visibility_reason == VISIBILITY_REASONS.recipient: # we reply a message
-                    sender = None # let the sender empty even for master, since we couldn't determine which of the external contacts is wanted as sender
-                    recipients = [msg["sender_email"]] + msg["recipient_emails"] # send to ALL
-                    subject = _("Re: ") + msg["subject"]
-                    attachment = msg["attachment"]
-
-                elif visibility_reason == VISIBILITY_REASONS.sender: # we recontact recipients
+                if visibility_reason == VISIBILITY_REASONS.sender: # we simply recontact recipients (even if we were one of the recipients too)
                     sender = msg["sender_email"] # for master
                     recipients = msg["recipient_emails"]
                     subject = _("Bis: ") + msg["subject"]
                     attachment = None # don't resend it
+
+                elif visibility_reason == VISIBILITY_REASONS.recipient: # we reply a message
+                    sender = msg["recipient_emails"][0] if len(msg["recipient_emails"]) == 1 else None # let the sender empty even for master, if we're not sure which recipient we represent
+                    recipients = [msg["sender_email"]]
+                    my_email = datamanager.get_character_email() if user.is_character else None
+                    recipients += [_email for _email in msg["recipient_emails"] if _email != my_email and _email != sender]  # works OK if my_email is None (i.e game master) or sender is None
+                    subject = _("Re: ") + msg["subject"]
+                    attachment = msg["attachment"]
 
                 else: # visibility reason is None, or another visibility case (eg. interception)
                     self.logger.warning("Access to forbidden message parent_id %s was attempted", parent_id)
@@ -100,7 +104,7 @@ class MessageComposeForm(AbstractGameForm):
 
         if user.is_master:
 
-            sender = Select2TagsField(label=_lazy("Sender"), required=True, initial=[sender]) # initial MUST be a 1-item list!
+            sender = Select2TagsField(label=_lazy("Sender"), required=True, initial=([sender] if sender else [])) # initial MUST be a 1-item list!
             sender.choice_tags = datamanager.global_contacts.keys()
             assert sender.max_selection_size is not None
             sender.max_selection_size = 1
@@ -137,7 +141,86 @@ class MessageComposeForm(AbstractGameForm):
 
 
 
+
+
+
+
+
+
+
+
+def _determine_template_display_context(datamanager, template_id):
+    """
+    Only used for message templates, not real ones.
+    """
+    assert datamanager.is_master()
+    return dict(
+                template_id=template_id, # allow use as template
+                has_read=None, # no buttons at all for that
+                visibility_reason=None,
+                was_intercepted=False,
+                can_reply=False,
+                can_recontact=False,
+                can_force_sending=False,
+                )
+
+
+def _determine_message_display_context(datamanager, msg, is_pending):
+    """
+    Useful for both pending and dispatched messages.
+    """
+    assert datamanager.is_authenticated()
+    username = datamanager.user.username
+    visibility_reason = msg["visible_by"].get(username, None) # one of VISIBILITY_REASONS, or None
+
+    return dict(
+                template_id=None,
+                has_read=(username in msg["has_read"]) if not is_pending else None,
+                visibility_reason=visibility_reason,
+                was_intercepted=(datamanager.is_master() and VISIBILITY_REASONS.interceptor in msg["visible_by"].values()),
+                can_reply=(visibility_reason == VISIBILITY_REASONS.recipient) if not is_pending else None,
+                can_recontact=(visibility_reason == VISIBILITY_REASONS.sender) if not is_pending else None,
+                can_force_sending=is_pending,
+                )
+
+def _determine_message_list_display_context(datamanager, messages, is_pending):
+    """
+    Works for both conversations and simple message lists.
+    """
+    if not messages:
+        res = []
+    elif isinstance(messages[0], (list, tuple)):
+        res = [[(_determine_message_display_context(datamanager, msg, is_pending=is_pending), msg) for msg in msg_list] for msg_list in messages] # conversations
+    else:
+        res = [(_determine_message_display_context(datamanager, msg, is_pending=is_pending), msg) for msg in messages]
+    return res
+
+
+
+
+
+
+
 @register_view(access=UserAccess.master)
+def all_dispatched_messages(request, template_name='messaging/messages.html'):
+    messages = list(reversed(request.datamanager.get_all_dispatched_messages()))
+    enriched_messages = _determine_message_list_display_context(request.datamanager, messages=messages, is_pending=False)
+    return render(request,
+                  template_name,
+                  dict(page_title=_("All Transferred Messages"),
+                       messages=enriched_messages))
+
+
+@register_view(access=UserAccess.master)
+def all_queued_messages(request, template_name='messaging/messages.html'):
+    messages = list(reversed(request.datamanager.get_all_queued_messages()))
+    enriched_messages = _determine_message_list_display_context(request.datamanager, messages=messages, is_pending=True)
+    return render(request,
+                  template_name,
+                  dict(page_title=_("All Queued Messages"),
+                       messages=enriched_messages))
+
+@register_view(attach_to=all_queued_messages)
 def ajax_force_email_sending(request):
     # to be used by AJAX
     msg_id = request.GET.get("id", None)
@@ -150,46 +233,26 @@ def ajax_force_email_sending(request):
 
 
 
-def _determine_message_display_context(datamanager, messages):
-    """
-    Works for both conversations and simple message lists.
-    """
-    assert datamanager.is_authenticated()
-    username = datamanager.user.username
+@register_view(access=UserAccess.master)
+def messages_templates(request, template_name='messaging/messages.html'):
+    templates = request.datamanager.get_messages_templates().items() # PAIRS (template_id, template_dict)
+    templates.sort(key=lambda msg: msg[0])  # we sort by template name
+    enriched_templates = [(_determine_template_display_context(request.datamanager, template_id=tpl[0]), tpl[1]) for tpl in templates]
+    return render(request,
+                  template_name,
+                  dict(page_title=_("Message Templates"),
+                       messages=enriched_templates))
 
-    def _display_ctx(msg):
-        visibility_reason = msg["visible_by"][username], # one of VISIBILITY_REASONS
-        return dict(
-                    has_read=(username in msg["has_read"]),
-                    visibility_reason=visibility_reason,
-                    was_intercepted=(datamanager.is_master() and VISIBILITY_REASONS.interceptor in msg["visible_by"].values()),
-                    can_forward=True, # always ATM
-                    can_reply=(visibility_reason == VISIBILITY_REASONS.recipient),
-                    can_repost=(visibility_reason == VISIBILITY_REASONS.sender),
-                    )
-
-    if not messages:
-        res = messages
-    if isinstance(messages[0], (list, tuple)):
-        res = [[(_display_ctx(msg), msg) for msg in msg_list] for msg_list in messages] # conversations
-    else:
-        res = [(_display_ctx(msg), msg) for msg in messages]
-    return res
 
 @register_view(access=UserAccess.authenticated, always_available=True)
-def conversation(request):
-
+def conversation(request, template_name='messaging/conversation.html'):
     messages = request.datamanager.get_user_related_messages() # for current master or character
-
     grouped_messages = request.datamanager.sort_messages_by_conversations(messages)
-
-    enriched_messages = _determine_message_display_context(request.datamanager, messages=grouped_messages)
-
-    return render(request, 'messaging/conversation.html', dict(page_title=_("Conversations"),
-                                                               conversations=enriched_messages,
-                                                               mode="conversation"))
-
-
+    enriched_messages = _determine_message_list_display_context(request.datamanager, messages=grouped_messages, is_pending=False)
+    return render(request,
+                  template_name,
+                  dict(page_title=_("Conversations"),
+                       conversations=enriched_messages))
 
 @register_view(attach_to=conversation)
 def ajax_set_message_read_state(request):
@@ -198,12 +261,10 @@ def ajax_set_message_read_state(request):
     msg_id = request.GET.get("id", None)
     is_read = request.GET.get("is_read", None) == "1"
 
-    user = request.datamanager.user
     request.datamanager.set_message_read_state(msg_id=msg_id, is_read=is_read)
 
     return HttpResponse("OK")
     # in case of error, a "500" code will be returned
-
 
 
 
@@ -281,10 +342,6 @@ def ___inbox(request, template_name='messaging/messages.html'):
                     })
 
 
-
-
-
-
 @register_view(access=UserAccess.authenticated)
 def ___outbox(request, template_name='messaging/messages.html'):
 
@@ -311,8 +368,10 @@ def ___outbox(request, template_name='messaging/messages.html'):
                     })
 
 @register_view(access=UserAccess.master)
-def view_single_message(request, msg_id, template_name='messaging/single_message.html'):
-
+def view_single_message(request, msg_id, template_name='messaging/view_single_message.html'):
+    """
+    To be used only in event logging.
+    """
     user = request.datamanager.user
     message = None
     is_queued = False
@@ -336,45 +395,12 @@ def view_single_message(request, msg_id, template_name='messaging/single_message
                     {
                      'page_title': _("Single Message"),
                      'is_queued': is_queued,
+                     'ctx': _determine_message_display_context(request.datamanager, message, is_pending=is_queued),
                      'message': message
                     })
 
 
 
-@register_view(access=UserAccess.master)
-def all_dispatched_messages(request, template_name='messaging/messages.html'):
-
-    messages = request.datamanager.get_all_dispatched_messages()
-
-    messages = list(reversed(messages))  # most recent first
-
-    return render(request,
-                  template_name,
-                    {
-                     'page_title': _("All Transferred Messages"),
-                     'messages': messages,
-                     'remove_from': False,
-                     'remove_to': False,
-                     'mode': "all_sent_messages" # FIXME
-                    })
-
-
-@register_view(access=UserAccess.master)
-def all_queued_messages(request, template_name='messaging/messages.html'):
-
-    messages = request.datamanager.get_all_queued_messages()
-
-    messages = list(reversed(messages))  # most recent first
-
-    return render(request,
-                  template_name,
-                    {
-                     'page_title': _("All Queued Messages"),
-                     'messages': messages,
-                     'remove_from': False,
-                     'remove_to': False,
-                     'mode': "all_queued_messages"
-                    })
 
 
 @register_view(access=UserAccess.authenticated)
@@ -396,15 +422,3 @@ def __intercepted_messages(request, template_name='messaging/messages.html'):
 
 
 
-@register_view(access=UserAccess.master)
-def messages_templates(request, template_name='messaging/templates.html'):
-
-    templates = request.datamanager.get_messages_templates().items() # PAIRS (id, value)
-    templates.sort(key=lambda msg: msg[0])  # we sort by template name
-
-    return render(request,
-                  template_name,
-                    {
-                     'page_title': _("Message Templates"),
-                     'templates': templates,
-                    })
