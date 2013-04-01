@@ -495,8 +495,9 @@ class AbstractGameView(object):
 
 
 
+
+    @transaction_watcher
     @transform_usage_error
-    @transaction_watcher(ensure_data_ok=True, ensure_game_started=False)
     def process_admin_request(self, request, form_name):
 
         assert form_name in self.ADMIN_FORMS # else big pb!

@@ -96,7 +96,7 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
 
 
 
-    @transaction_watcher(ensure_data_ok=False)
+    @transaction_watcher(always_writable=True) # might operate on broken data
     def reset_game_data(self, yaml_fixture=config.GAME_INITIAL_DATA_PATH):
         """
         This method might raise exceptions, and leave the datamanager uninitialized.
@@ -142,7 +142,7 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
         self.notify_event("BASE_LOAD_INITIAL_DATA_CALLED")
 
 
-    @transaction_watcher(ensure_game_started=False) # that checking might lead to corrections
+    @transaction_watcher(always_writable=True) # that checking might lead to corrections
     def check_database_coherency(self, **kwargs):
 
         self.notify_event("BASE_CHECK_DB_COHERENCY_PUBLIC_CALLED")

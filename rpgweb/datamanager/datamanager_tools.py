@@ -10,8 +10,9 @@ def readonly_method(obj):
     @decorator
     def _readonly_method(func, self, *args, **kwargs):
         """
-        This method can only ensure that no uncommitted changes are made by the function and its callees,
-        committed changes might not be seen.
+        This method can only ensure that no uncommitted changes 
+        are made by the function and its callees,
+        committed changes might not be detected.
         """
 
         if hasattr(self, "_inner_datamanager"):
@@ -44,18 +45,17 @@ def readonly_method(obj):
     return new_func
 
 
-def transaction_watcher(object=None, ensure_data_ok=True, ensure_game_started=True):
+def transaction_watcher(object=None, always_writable=True):
     """
     Decorator for use on datamanager and ability methods.
     
     It that can be directly applied to a method, or customized with 
     keyword arguments and then only applied to a method.
     
-    *ensure_data_ok* false implies *ensure_game_started* false too.
+    *always_writable* ensure that game state or user permissions have no effect
+    on the ability to use the wrapped method.
     """
 
-    if not ensure_data_ok:
-        ensure_game_started = False
 
     def _decorate_and_sign(obj):
         @decorator
@@ -70,15 +70,15 @@ def transaction_watcher(object=None, ensure_data_ok=True, ensure_game_started=Tr
             if not datamanager.connection: # special bypass
                 return func(self, *args, **kwargs)
 
-            if ensure_data_ok:
+            if not always_writable:
+                # then, we assume that - NECESSARILY - data is in a coherent state
 
-                if ensure_game_started:
-                    if not datamanager.is_game_started():
-                        # some state-changing methods are allowed even before the game starts !
-                        #if func.__name__ not in ["set_message_read_state", "set_new_message_notification", "force_message_sending",
-                        #                         "set_online_status"]:
-                        if not getattr(func, "always_available", None):
-                            raise UsageError(_("This feature is unavailable at the moment"))
+                if not datamanager.is_game_started():
+                    # some state-changing methods are allowed even before the game starts !
+                    #if func.__name__ not in ["set_message_read_state", "set_new_message_notification", "force_message_sending",
+                    #                         "set_online_status"]:
+                    if not getattr(func, "always_available", None):
+                        raise UsageError(_("This feature is unavailable at the moment"))
 
             was_in_transaction = datamanager._in_transaction
             savepoint = datamanager.begin()

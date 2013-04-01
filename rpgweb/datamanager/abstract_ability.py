@@ -65,7 +65,7 @@ class AbstractAbility(AbstractAbilityBasesAdapter):
         return self # TRICK - abilities behaves as extensions of the datamanager!!
 
 
-    @transaction_watcher(ensure_data_ok=True, ensure_game_started=False) # needed, because in ability, we're partly INSIDE the datamanager
+    @transaction_watcher # needed, because in ability, we're partly INSIDE the datamanager
     def _process_standard_request(self, request, *args, **kwargs):
         # Access checks have already been done here, so we may initialize lazy data
         self._perform_lazy_initializations()
@@ -149,7 +149,7 @@ class AbstractAbility(AbstractAbilityBasesAdapter):
         pass # to be overridden
 
 
-    @transaction_watcher(ensure_game_started=False) # authorized anytime
+    @transaction_watcher(always_writable=True) # lazy setup authorized anytime
     def _perform_lazy_initializations(self):
         private_key = self._get_private_key()
         #print ("@@@@@@@@@@", self.ability_data)

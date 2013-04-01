@@ -56,7 +56,7 @@ class GameGlobalParameters(BaseDataManager):
     def is_game_started(self):
         return self.get_global_parameter("game_is_started")
 
-    @transaction_watcher(ensure_game_started=False)
+    @transaction_watcher
     def set_game_state(self, started):
         self.data["global_parameters"]["game_is_started"] = started
 
@@ -81,7 +81,7 @@ class CurrentUserHandling(BaseDataManager):
         assert not hasattr(super(CurrentUserHandling, self), "_notify_user_change") # we're well top-level here
 
 
-    @transaction_watcher(ensure_game_started=False)
+    @transaction_watcher(always_writable=True)
     def _set_user(self, username, has_write_access, impersonation=None):
         assert not hasattr(super(CurrentUserHandling, self), "_set_user") # we're well top-level here
         self.user = GameUser(datamanager=self,
@@ -394,7 +394,7 @@ class DomainHandling(BaseDataManager): # TODO REFINE
     def get_domain_properties(self, domain_name):
         return self.data["domains"][domain_name]
 
-    @transaction_watcher(ensure_game_started=False)
+    @transaction_watcher
     def update_allegiances(self, username=CURRENT_USER, allegiances=None):
         assert allegiances is not None and len(set(allegiances)) == len(allegiances)
         username = self._resolve_username(username)
@@ -477,7 +477,7 @@ class PlayerAuthentication(BaseDataManager):
                 [self.get_global_parameter("master_login")])
 
 
-    @transaction_watcher(ensure_game_started=False)
+    @transaction_watcher(always_writable=True)
     def logout_user(self):
         self._set_user(username=None, has_write_access=True)
 
@@ -509,7 +509,7 @@ class PlayerAuthentication(BaseDataManager):
                                    if self.can_impersonate(username, target)]
         return possible_impersonations
 
- 
+
     def _filter_impersonation_request(self,
                                        game_username,
                                        session_ticket,
@@ -548,7 +548,7 @@ class PlayerAuthentication(BaseDataManager):
 
 
 
-    @transaction_watcher(ensure_game_started=False)
+    @transaction_watcher(always_writable=True)
     def authenticate_with_ticket(self,
                                  session_ticket,
                                  requested_impersonation_target=None,
@@ -601,7 +601,7 @@ class PlayerAuthentication(BaseDataManager):
         return session_ticket
 
 
-    @transaction_watcher(ensure_game_started=False)
+    @transaction_watcher(always_writable=True)
     def authenticate_with_credentials(self, username, password):
         """
         Tries to authenticate an user from its credentials, and raises an UsageError on failure,
@@ -791,7 +791,7 @@ class PermissionsHandling(BaseDataManager): # TODO REFINE
                 assert permission in self.PERMISSIONS_REGISTRY
         '''
 
-    @transaction_watcher(ensure_game_started=False)
+    @transaction_watcher
     def update_permissions(self, username=CURRENT_USER, permissions=None):
         username = self._resolve_username(username)
         assert self.is_character(username) and permissions
@@ -1166,7 +1166,7 @@ class OnlinePresence(BaseDataManager):
     def _set_online_status(self, username): # no fallback system here
         self.data["character_properties"][username]["last_online_time"] = datetime.utcnow()
 
-    @transaction_watcher(ensure_game_started=False)
+    @transaction_watcher(always_writable=True)
     def set_online_status(self, username=CURRENT_USER):
         username = self._resolve_username(username)
         self._set_online_status(username=username)
@@ -1416,7 +1416,6 @@ class TextMessagingCore(BaseDataManager):
         return # raise UsageError(_("Unknown recipient address %r") % recipient_email)
 
 
-    @transaction_watcher
     def _immediately_dispatch_message(self, msg):
         """
         Here we don't care about "enqueued messages" cleanup.
@@ -1433,7 +1432,7 @@ class TextMessagingCore(BaseDataManager):
         pass
 
 
-    @transaction_watcher(ensure_game_started=False)
+    @transaction_watcher
     def force_message_sending(self, msg_id):
         # immediately sends a queued message
 
@@ -1968,7 +1967,7 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
         elif not is_read and username in msg["has_replied"]:
             msg["has_replied"].remove(username)
 
-    @transaction_watcher(ensure_game_started=False)
+    @transaction_watcher(always_writable=True)
     def set_message_read_state(self, username=CURRENT_USER, msg_id=None, is_read=None):
         username = self._resolve_username(username) # username can be master login here !
         assert username and msg_id and is_read is not None
@@ -1994,7 +1993,7 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
         res = self._get_messages_visible_for_reason(reason=VISIBILITY_REASONS.recipient, username=username)
         return res
 
-    @transaction_watcher(ensure_game_started=False)
+    @transaction_watcher(always_writable=True)
     def pop_received_messages(self, username=CURRENT_USER):
         """
         Also resets the 'new message' notification of concerner character, if any.
@@ -2005,7 +2004,7 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
             self.set_new_message_notification(concerned_characters=[username], new_status=False)
         return records
 
-    @transaction_watcher(ensure_game_started=False)
+    @transaction_watcher
     def get_user_related_messages(self, username=CURRENT_USER):
         """
         For game master, actually returns all emails sent to external contacts.
@@ -2071,7 +2070,7 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
                 external_contacts_changed = True
         return external_contacts_changed
 
-    @transaction_watcher(ensure_game_started=False)
+    @transaction_watcher(always_writable=True)
     def _update_external_contacts(self, msg):
 
         new_contacts_added = False
@@ -2125,7 +2124,7 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
         username = self._resolve_username(username)
         return self.data["character_properties"][username]["has_new_messages"] # boolean
 
-    @transaction_watcher(ensure_game_started=False)
+    @transaction_watcher(always_writable=True)
     def set_new_message_notification(self, concerned_characters, new_status):
         for character in concerned_characters:
             self.data["character_properties"][character]["has_new_messages"] = new_status
@@ -3097,7 +3096,7 @@ class GameViews(BaseDataManager):
             cls.register_permissions(view_class.PERMISSIONS)
 
 
-    @transaction_watcher(ensure_game_started=False)
+    @transaction_watcher(always_writable=True)
     def sync_game_view_data(self):
         """
         If we add/remove views to rpgweb without resetting the DB, a normal desynchronization occurs.
@@ -3135,7 +3134,7 @@ class GameViews(BaseDataManager):
         return self.data["views"]["activated_views"]
 
 
-    @transaction_watcher(ensure_game_started=False)
+    @transaction_watcher
     def set_activated_game_views(self, view_names):
         assert not isinstance(view_names, basestring)
         activable_views = self.ACTIVABLE_VIEWS_REGISTRY.keys()
@@ -3233,7 +3232,7 @@ class SpecialAbilities(BaseDataManager):
         return self.instantiate_game_view(name_or_klass)
 
     '''
-    @transaction_watcher(ensure_game_started=False)
+    @transaction_watcher(always_writable=True/False)
     def sync_ability_data(self):
         """
         NO - abilities cant be hot plugged!!
@@ -3536,7 +3535,7 @@ class Encyclopedia(BaseDataManager):
         return self.get_character_properties(username)["known_article_ids"]
 
 
-    @transaction_watcher(ensure_game_started=False) # automatic action - not harmful
+    @transaction_watcher(always_writable=True) # automatic action - not harmful
     def update_character_known_article_ids(self, username=CURRENT_USER, article_ids=None):
         username = self._resolve_username(username)
         assert article_ids is not None
@@ -3546,7 +3545,7 @@ class Encyclopedia(BaseDataManager):
                 known_article_ids.append(article_id)
 
 
-    @transaction_watcher(ensure_game_started=False) # admin action, actually
+    @transaction_watcher
     def reset_character_known_article_ids(self, username=CURRENT_USER):
         username = self._resolve_username(username)
         known_article_ids = self.get_character_properties(username)["known_article_ids"]

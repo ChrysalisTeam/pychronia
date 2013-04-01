@@ -105,8 +105,7 @@ class DataTableManager(object):
         self._check_item_is_in_table(table, key)
         return table[key]
 
-    # Beware - ensure_game_started=False because we assume these are game master items mostly
-    @transaction_watcher(ensure_game_started=False)
+    @transaction_watcher
     def __setitem__(self, key, value):
         table = self._table
         if key in table and not self._item_can_be_edited(key, table[key]):
@@ -116,7 +115,7 @@ class DataTableManager(object):
         self._check_item_validity(key, value)
         table[key] = value
 
-    @transaction_watcher(ensure_game_started=False)
+    @transaction_watcher
     def __delitem__(self, key):
         table = self._table
         self._check_item_is_in_table(table, key)
