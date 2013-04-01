@@ -22,7 +22,7 @@ from django.utils.translation import ugettext as _, ugettext_lazy as _lazy, unge
 from rpgweb.common import *
 from .. import forms  # AFTER common, to replace django.forms
 from rpgweb.datamanager import AbstractGameView, register_view
-from ..authentication import authenticate_with_credentials, logout_session
+from ..authentication import try_authenticating_with_credentials, logout_session
 from .. import datamanager as dm_module
 from rpgweb.utilities import mediaplayers, fileservers
 from rpgweb.datamanager import GameDataManager

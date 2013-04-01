@@ -30,7 +30,7 @@ def clear_session(request):
     request.session.cycle_key()
 
 
-def authenticate_with_credentials(request, username, password):
+def try_authenticating_with_credentials(request, username, password):
     """
     This function lets exceptions flow...
     """
@@ -41,7 +41,7 @@ def authenticate_with_credentials(request, username, password):
     request.session[SESSION_TICKET_KEY] = session_ticket
 
 
-def try_authenticating_with_ticket(request):
+def try_authenticating_with_session(request):
     """
     This function lets exceptions flow...
     """
@@ -66,7 +66,7 @@ def try_authenticating_with_ticket(request):
             requested_impersonation_target = requested_impersonation_writability = None
 
         try:
-            res = datamanager.authenticate_with_ticket(session_ticket=session_ticket,
+            res = datamanager.authenticate_with_session_data(session_ticket=session_ticket,
                                                        requested_impersonation_target=requested_impersonation_target,
                                                        requested_impersonation_writability=requested_impersonation_writability,
                                                        django_user=request.user)

@@ -112,7 +112,7 @@ class AuthenticationMiddleware(object):
         if not hasattr(request, 'session'):
             raise RuntimeError("The game authentication middleware requires session middleware to be installed. Edit your MIDDLEWARE_CLASSES setting to insert 'django.contrib.sessions.middleware.SessionMiddleware'.")
 
-        authentication.try_authenticating_with_ticket(request)
+        authentication.try_authenticating_with_session(request)
 
         return None
 

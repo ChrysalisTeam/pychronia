@@ -1606,7 +1606,7 @@ class TestDatamanager(BaseGameTestCase):
         """
         self._reset_django_db()
 
-        from rpgweb.authentication import (authenticate_with_credentials, try_authenticating_with_ticket, logout_session,
+        from rpgweb.authentication import (try_authenticating_with_credentials, try_authenticating_with_session, logout_session,
                                            SESSION_TICKET_KEY)
         from django.contrib.sessions.middleware import SessionMiddleware
 
@@ -1641,7 +1641,7 @@ class TestDatamanager(BaseGameTestCase):
             self._set_user(None)
             assert request.datamanager.user.username == anonymous_login
 
-            res = try_authenticating_with_ticket(request)
+            res = try_authenticating_with_session(request)
             assert res is None
 
             assert request.session[SESSION_TICKET_KEY] == original_ticket
@@ -1651,7 +1651,7 @@ class TestDatamanager(BaseGameTestCase):
 
             # failure case: wrong ticket type
             request.session[SESSION_TICKET_KEY] = ["dqsdqs"]
-            try_authenticating_with_ticket(request) # exception gets swallowed
+            try_authenticating_with_session(request) # exception gets swallowed
             assert request.session[SESSION_TICKET_KEY] is None
 
             self._set_user(None)
@@ -1660,20 +1660,20 @@ class TestDatamanager(BaseGameTestCase):
             request.session[SESSION_TICKET_KEY] = original_ticket.copy()
             request.session[SESSION_TICKET_KEY]["game_instance_id"] = "qsdjqsidub"
             _temp = request.session[SESSION_TICKET_KEY].copy()
-            try_authenticating_with_ticket(request) # exception gets swallowed
+            try_authenticating_with_session(request) # exception gets swallowed
             assert request.session[SESSION_TICKET_KEY] == _temp
 
             self._set_user(None)
 
             request.session[SESSION_TICKET_KEY] = original_ticket.copy()
             request.session[SESSION_TICKET_KEY]["game_username"] = "qsdqsdqsd"
-            try_authenticating_with_ticket(request) # exception gets swallowed
+            try_authenticating_with_session(request) # exception gets swallowed
             assert request.session[SESSION_TICKET_KEY] == None # but ticket gets reset
 
             self._set_user(None)
 
             request.session[SESSION_TICKET_KEY] = original_ticket.copy()
-            try_authenticating_with_ticket(request)
+            try_authenticating_with_session(request)
             assert request.datamanager.user.username == original_username
 
             logout_session(request)
@@ -1683,7 +1683,7 @@ class TestDatamanager(BaseGameTestCase):
 
         # simple player case
 
-        res = authenticate_with_credentials(request, player_login, player_password)
+        res = try_authenticating_with_credentials(request, player_login, player_password)
         assert res is None # no result expected
         ticket = request.session[SESSION_TICKET_KEY]
         assert ticket == {'game_instance_id': TEST_GAME_INSTANCE_ID, 'impersonation_target': None,
@@ -1697,7 +1697,7 @@ class TestDatamanager(BaseGameTestCase):
 
         # game master case
 
-        res = authenticate_with_credentials(request, master_login, master_password)
+        res = try_authenticating_with_credentials(request, master_login, master_password)
         assert res is None # no result expected
         ticket = request.session[SESSION_TICKET_KEY]
         assert ticket == {'game_instance_id': TEST_GAME_INSTANCE_ID, 'impersonation_target': None,
@@ -1746,7 +1746,7 @@ class TestDatamanager(BaseGameTestCase):
 
             requested_impersonation_target = random.choice((None, master_login, player_login, anonymous_login))
             requested_impersonation_writability = random.choice((True, False, None))
-            res = self.dm.authenticate_with_ticket(session_ticket.copy(), # COPY
+            res = self.dm.authenticate_with_session_data(session_ticket.copy(), # COPY
                                                    requested_impersonation_target=requested_impersonation_target,
                                                    requested_impersonation_writability=requested_impersonation_writability,
                                                    django_user=user)
@@ -1771,7 +1771,7 @@ class TestDatamanager(BaseGameTestCase):
 
             requested_impersonation_target = random.choice((None, master_login, player_login, anonymous_login))
             requested_impersonation_writability = random.choice((True, False, None))
-            res = self.dm.authenticate_with_ticket(session_ticket.copy(), # COPY
+            res = self.dm.authenticate_with_session_data(session_ticket.copy(), # COPY
                                                    requested_impersonation_target=requested_impersonation_target,
                                                    requested_impersonation_writability=requested_impersonation_writability,
                                                    django_user=user)
@@ -1797,7 +1797,7 @@ class TestDatamanager(BaseGameTestCase):
 
         self._reset_django_db()
 
-        from rpgweb.authentication import (authenticate_with_credentials, try_authenticating_with_ticket, logout_session,
+        from rpgweb.authentication import (try_authenticating_with_credentials, try_authenticating_with_session, logout_session,
                                            SESSION_TICKET_KEY, IMPERSONATION_TARGET_POST_VARIABLE, IMPERSONATION_WRITABILITY_POST_VARIABLE)
 
 
@@ -1839,7 +1839,7 @@ class TestDatamanager(BaseGameTestCase):
         self.dm.user.discard_notifications()
 
         request = self.request
-        authenticate_with_credentials(request, master_login, master_password)
+        try_authenticating_with_credentials(request, master_login, master_password)
         base_session_ticket = request.session[SESSION_TICKET_KEY]
         assert base_session_ticket == {'game_instance_id': TEST_GAME_INSTANCE_ID, 'impersonation_target': None,
                                        'impersonation_writability': None, 'game_username': master_login}
@@ -1855,7 +1855,7 @@ class TestDatamanager(BaseGameTestCase):
 
             session_ticket = base_session_ticket.copy()
 
-            res = self.dm.authenticate_with_ticket(session_ticket,
+            res = self.dm.authenticate_with_session_data(session_ticket,
                                                    requested_impersonation_target=player_login,
                                                    requested_impersonation_writability=writability,
                                                    django_user=django_user)
@@ -1872,7 +1872,7 @@ class TestDatamanager(BaseGameTestCase):
             # Impersonated player renewed just with ticket
             self._set_user(None)
             assert self.dm.user.username == anonymous_login
-            self.dm.authenticate_with_ticket(session_ticket,
+            self.dm.authenticate_with_session_data(session_ticket,
                                              requested_impersonation_target=None,
                                              requested_impersonation_writability=None,
                                              django_user=django_user)
@@ -1883,7 +1883,7 @@ class TestDatamanager(BaseGameTestCase):
             assert not self.dm.user.has_notifications()
 
             # Unexisting impersonation leads to stop of impersonation
-            self.dm.authenticate_with_ticket(session_ticket,
+            self.dm.authenticate_with_session_data(session_ticket,
                                              requested_impersonation_target="dsfsdfkjsqodsd",
                                              requested_impersonation_writability=not writability,
                                              django_user=django_user)
@@ -1898,7 +1898,7 @@ class TestDatamanager(BaseGameTestCase):
 
 
             # Impersonate anonymous
-            self.dm.authenticate_with_ticket(session_ticket,
+            self.dm.authenticate_with_session_data(session_ticket,
                                              requested_impersonation_target=anonymous_login,
                                              requested_impersonation_writability=writability,
                                              django_user=django_user)
@@ -1913,7 +1913,7 @@ class TestDatamanager(BaseGameTestCase):
 
 
             # Impersonation stops completely because of unauthorized impersonation attempt
-            self.dm.authenticate_with_ticket(session_ticket,
+            self.dm.authenticate_with_session_data(session_ticket,
                                              requested_impersonation_target=master_login,
                                              requested_impersonation_writability=writability,
                                              django_user=None) # no django staff user here
@@ -1928,7 +1928,7 @@ class TestDatamanager(BaseGameTestCase):
 
 
             # Back as anonymous
-            self.dm.authenticate_with_ticket(session_ticket,
+            self.dm.authenticate_with_session_data(session_ticket,
                                              requested_impersonation_target=anonymous_login,
                                              requested_impersonation_writability=writability,
                                              django_user=django_user)
@@ -1943,7 +1943,7 @@ class TestDatamanager(BaseGameTestCase):
 
 
             # Standard stopping of impersonation
-            self.dm.authenticate_with_ticket(session_ticket,
+            self.dm.authenticate_with_session_data(session_ticket,
                                              requested_impersonation_target="",
                                              requested_impersonation_writability=writability,
                                              django_user=django_user)

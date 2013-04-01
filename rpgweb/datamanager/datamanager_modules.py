@@ -60,7 +60,7 @@ class GameGlobalParameters(BaseDataManager):
     def set_game_state(self, started):
         self.data["global_parameters"]["game_is_started"] = started
 
-    @readonly_method # TDOO FIXME TEST THIS UTIL!!
+    @readonly_method # TODO FIXME TEST THIS UTIL!!
     def determine_actual_game_writability(self):
         if self.is_game_started():
             return dict(writable=True,
@@ -568,14 +568,14 @@ class PlayerAuthentication(BaseDataManager):
 
 
     @transaction_watcher(always_writable=True)
-    def authenticate_with_ticket(self,
+    def authenticate_with_session_data(self,
                                  session_ticket,
                                  requested_impersonation_target=None,
                                  requested_impersonation_writability=None,
                                  django_user=None):
         """
         Allows a logged other to continue using his normal session,
-        or to impersonate a lower-rank user (but in readonly mode, then).
+        or to impersonate a lower-rank user.
         
         Raises UsageError if problem.
         """

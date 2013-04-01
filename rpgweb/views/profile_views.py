@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 
 from rpgweb.common import *
 from rpgweb.datamanager import AbstractGameView, register_view, AbstractGameForm
-from rpgweb.authentication import authenticate_with_credentials, logout_session
+from rpgweb.authentication import try_authenticating_with_credentials, logout_session
 from django.http import HttpResponseRedirect
 from rpgweb import forms
 
@@ -31,7 +31,7 @@ def login(request, template_name='registration/login.html'):
 
             else:  # normal authentication
                 with action_failure_handler(request, _("You've been successfully logged in.")):  # message won't be seen because of redirect...
-                    authenticate_with_credentials(request, username, password)
+                    try_authenticating_with_credentials(request, username, password)
                     return HttpResponseRedirect(reverse("rpgweb-homepage", kwargs=dict(game_instance_id=request.datamanager.game_instance_id)))
 
     else:
