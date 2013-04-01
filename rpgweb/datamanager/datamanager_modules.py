@@ -60,6 +60,14 @@ class GameGlobalParameters(BaseDataManager):
     def set_game_state(self, started):
         self.data["global_parameters"]["game_is_started"] = started
 
+    @readonly_method # TDOO FIXME TEST THIS UTIL!!
+    def determine_actual_game_writability(self):
+        if self.is_game_started():
+            return dict(writable=True,
+                        reason=None)
+        else:
+            return dict(writable=False,
+                        reason=_("Website currently in read-only mode, for maintenance."))
 
 
 CURRENT_USER = object() # placeholder for use in method signatures
@@ -101,7 +109,18 @@ class CurrentUserHandling(BaseDataManager):
             return self.user.username
         return username
 
-
+    @readonly_method
+    def determine_actual_game_writability(self):
+        if not self.user.has_write_access:
+            if self.user.is_impersonation:
+                reason = _("Your impersonation is in read-only mode.")
+            else:
+                reason = _("Your access restricted to read-only mode.")
+            return dict(writable=False,
+                        reason=reason)
+        else:
+            return super(CurrentUserHandling, self).determine_actual_game_writability()
+        assert False
 
 @register_module
 class FlexibleTime(BaseDataManager): # TODO REFINE

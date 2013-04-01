@@ -48,7 +48,7 @@ class GameUser(object):
         self.has_write_access = has_write_access # allows, or not, POST requests
 
         self._effective_username = _effective_username = (impersonation if impersonation else username)
-        assert self._effective_username in available_logins # can't be SUPERUSER_SPECIAL_LOGIN without impersonation
+        assert self._effective_username in available_logins # CRUCIAL - can't be SUPERUSER_SPECIAL_LOGIN without impersonation!!
         del username, impersonation, _game_anonymous_login # security
 
         self.is_master = datamanager.is_master(_effective_username)
@@ -99,6 +99,10 @@ class GameUser(object):
     def add_message(self, message):
         if self._check_request_available():
             messages.success(self.datamanager.request, message) # shared between all game instances...
+
+    def add_warning(self, message):
+        if self._check_request_available():
+            messages.warning(self.datamanager.request, message) # shared between all game instances...
 
     def add_error(self, error):
         if self._check_request_available():

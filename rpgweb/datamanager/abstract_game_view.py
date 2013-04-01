@@ -170,7 +170,7 @@ class AbstractGameView(object):
 
     ACCESS = None # UserAccess entry
     PERMISSIONS = [] # list of required permission names, only used for character access
-    ALWAYS_AVAILABLE = False # True iff view can't be globally hidden by game master
+    ALWAYS_AVAILABLE = False # True iff view can't be globally hidden by game master, for players
 
     _ACTION_FIELD = "_action_" # for ajax and no-form request
 

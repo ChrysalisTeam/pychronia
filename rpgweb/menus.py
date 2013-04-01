@@ -73,7 +73,7 @@ def _generate_web_menu(request, menu_entry_generator):
         message_suffix = u""
     '''
 
-    if user.is_authenticated and processed_view != views.chatroom:
+    if user.is_authenticated and processed_view is not views.chatroom:
         # same for chatroom
         num_chatters = len(request.datamanager.get_chatting_users(exclude_current=True))
         chatroom_suffix = u"(%d)" % num_chatters

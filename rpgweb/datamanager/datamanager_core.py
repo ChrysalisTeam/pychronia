@@ -221,6 +221,8 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
     def process_periodic_tasks(self, **kwargs):
         """
         Each core module performs its periodic tasks, and appends to the common report.
+        
+        Note that none of these tasks should rely on current user, which could be anything...
         """
         report = PersistentDict()
         self._process_periodic_tasks(report)

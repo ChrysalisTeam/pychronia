@@ -11,21 +11,27 @@ from django.contrib.messages.api import get_messages
 
 def rpgweb_template_context(request):
     """
-    Template context manager which adds "player" to the template context.
+    Template context manager which adds all necessary game data to all pages.
     """
 
     if hasattr(request, "datamanager") and request.datamanager:
 
         datamanager = request.datamanager
 
+        # WARNING - must be BEFORE messages retrieval!
+        writability_data = datamanager.determine_actual_game_writability()
+        if writability_data["reason"]:
+            datamanager.user.add_warning(writability_data["reason"]) # a reason for no-writability most probably
+
         online_users = datamanager.get_online_users() # usernames are fine // to test: (datamanager.get_character_usernames() * 2)
         menus = menus_module.generate_filtered_menu(request)
 
         view_name = request.processed_view.NAME # thanks to our middleware
-        if view_name in datamanager.get_help_page_names():
-            help_keyword = view_name # we NECESSARILY have access permissions for this view, logically..
-        else:
-            help_keyword = None
+        help_keyword = None
+        if datamanager.get_help_page(view_name):
+            help_keyword = view_name
+
+        possible_impersonations = datamanager.get_impersonation_targets(datamanager.user.real_username) # REAL user!!
 
         notifications = get_messages(request) # lazy 'messages' context variable.
         notifications = list(set(notifications)) # order doesn't matter, and we don't want duplicates!
@@ -34,13 +40,12 @@ def rpgweb_template_context(request):
         if len(levels) == 1:
             notification_type = levels[0]
 
-        possible_impersonations = datamanager.get_impersonation_targets(datamanager.user.real_username)
-
         return {'game_instance_id': datamanager.game_instance_id,
-                'processed_view': request.processed_view,
+                'processed_view': request.processed_view, # view proxy object
 
                 'user': datamanager.user,
-                'game_is_started': datamanager.get_global_parameter("game_is_started"),
+                'game_is_writable': writability_data["writable"],
+                'is_mobile_page': request.is_mobile,
                 'online_users': online_users,
 
                 'menus': menus.submenus if menus else [],
@@ -48,9 +53,10 @@ def rpgweb_template_context(request):
                 'help_keyword': help_keyword,
 
                 'possible_impersonations': possible_impersonations,
-                'impersonation_post_variable': IMPERSONATION_TARGET_POST_VARIABLE,
+                'impersonation_target_post_variable': IMPERSONATION_TARGET_POST_VARIABLE,
+                'impersonation_writability_post_variable': IMPERSONATION_WRITABILITY_POST_VARIABLE,
 
-                # replacement of djanbgo.contrib.messages middleware
+                # replacement of django.contrib.messages middleware
                 'notification_type': notification_type,
                 'notifications': notifications,
 

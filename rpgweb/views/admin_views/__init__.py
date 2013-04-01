@@ -79,7 +79,7 @@ def manage_databases(request, template_name='administration/database_management.
                     {
                      'page_title': _("Database Content"),
                      'formatted_data': formatted_data,
-                     'game_is_started': game_is_started
+                     'game_is_started': game_is_started,
                     })
 
 

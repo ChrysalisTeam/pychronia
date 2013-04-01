@@ -72,13 +72,10 @@ def transaction_watcher(object=None, always_writable=True):
 
             if not always_writable:
                 # then, we assume that - NECESSARILY - data is in a coherent state
-
-                if not datamanager.is_game_started():
-                    # some state-changing methods are allowed even before the game starts !
-                    #if func.__name__ not in ["set_message_read_state", "set_new_message_notification", "force_message_sending",
-                    #                         "set_online_status"]:
-                    if not getattr(func, "always_available", None):
-                        raise UsageError(_("This feature is unavailable at the moment"))
+                writability_data = datamanager.determine_actual_game_writability()
+                if not writability_data["writability"]: # abnormal, views should have blocked that feature
+                    datamanager.logger.critical("Forbidden access to %s while having writability_data = %r", func.__name__, writability_data)
+                    raise AbnormalUsageError(_("This feature is unavailable at the moment"))
 
             was_in_transaction = datamanager._in_transaction
             savepoint = datamanager.begin()
