@@ -7,54 +7,53 @@ from rpgweb.common import *
 from django.contrib import messages
 
 
-SUPERUSER_SPECIAL_LOGIN = "OVERMIND"
 
 class GameUser(object):
 
     def __init__(self, datamanager, username=None,
-                 has_write_access=None, impersonation=None):
+                 has_write_access=None, impersonation=None,
+                 is_superuser=False):
         """
         Builds a user object, storing notifications for the current HTTP request,
         and exposing shortcuts to useful data.
         
-        .. 
-            *previous_user* is used when logging in/out a user, to ensure no
-            notifications and other persistent data gets lost in the change.
-        
         Existence of provided logins is checked, not the permission to use them 
         (which must be done at upper levels).
+        
+        If is_superuser (django notion, != is_master), user can impersonate anyone, 
+        yet keep his real_username as anonymous.
         """
         assert has_write_access in (True, False)
 
         # data normalization #
-        _game_anonymous_login = datamanager.get_global_parameter("anonymous_login")
+        _game_anonymous_login = datamanager.anonymous_login
+        _available_logins = datamanager.get_available_logins()
+
         if username is None:
             username = _game_anonymous_login # better than None, to display in templates
-        elif username == SUPERUSER_SPECIAL_LOGIN and not impersonation:
-            assert False # this SHOULDN'T happen
-            impersonation = _game_anonymous_login # superuser NECESSARILY impersonates someone
 
-        available_logins = datamanager.get_available_logins()
-        if username != SUPERUSER_SPECIAL_LOGIN and username not in available_logins:
+        if username not in _available_logins:
             raise AbnormalUsageError(_("Username %s is unknown") % username)
-        if impersonation and impersonation not in available_logins:
+        if impersonation and impersonation not in _available_logins:
             raise AbnormalUsageError(_("Impersonation %s is unknown") % impersonation)
 
-        assert not impersonation or (username == SUPERUSER_SPECIAL_LOGIN) or datamanager.can_impersonate(username, impersonation)
+        assert not impersonation or is_superuser or datamanager.can_impersonate(username, impersonation)
+        assert not (is_superuser and username != _game_anonymous_login) # game authentication "hides" the superuser status
 
         self._real_username = username
         self.is_impersonation = bool(impersonation)
 
         self.has_write_access = has_write_access # allows, or not, POST requests
 
-        self._effective_username = _effective_username = (impersonation if impersonation else username)
-        assert self._effective_username in available_logins # CRUCIAL - can't be SUPERUSER_SPECIAL_LOGIN without impersonation!!
+        _effective_username = (impersonation if impersonation else username)
+        assert _effective_username in _available_logins # redundant but yah...
         del username, impersonation, _game_anonymous_login # security
 
         self.is_master = datamanager.is_master(_effective_username)
         self.is_character = datamanager.is_character(_effective_username)
         self.is_anonymous = datamanager.is_anonymous(_effective_username)
         self.is_authenticated = not self.is_anonymous
+        self._effective_username = _effective_username
 
         assert len([item for item in (self.is_master, self.is_character, self.is_anonymous) if item]) == 1
 
@@ -81,14 +80,15 @@ class GameUser(object):
         """
         Only for normal players.
         """
-        assert self.is_character, self._effective_username
+        assert self.is_character, [self._effective_username]
         return self._datamanager().get_character_properties(self._effective_username)
 
     def has_permission(self, permission):
         return self._datamanager().has_permission(username=self.username, permission=permission)
 
 
-    ## Persistent user messages using django.contrib.messages ##
+
+    ## Persistent user messages, using django.contrib.messages ##
 
     def _check_request_available(self):
         if not self.datamanager.request:

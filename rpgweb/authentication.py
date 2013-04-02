@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 from rpgweb.common import *
 
 
-SESSION_TICKET_KEY = 'rpgweb_session_ticket'
+SESSION_TICKET_KEY_TEMPLATE = 'rpgweb_session_ticket_%s'
 IMPERSONATION_TARGET_POST_VARIABLE = "_set_impersonation_target_"
 IMPERSONATION_WRITABILITY_POST_VARIABLE = "_set_impersonation_writability_"
 
@@ -22,12 +22,18 @@ Django only sends a cookie if it needs to. If you don't set any session data, it
 """
 
 
+def instance_session_key(game_instance_id):
+    utilities.check_is_slug(game_instance_id)
+    return SESSION_TICKET_KEY_TEMPLATE % game_instance_id
 
 
-
-def clear_session(request):
+def clear_all_sessions(request):
     request.session.flush()
-    request.session.cycle_key()
+
+def clear_instance_session(request):
+    instance_key = instance_session_key(request.datamanager.game_instance_id)
+    if instance_key in request.session:
+        del request.session[instance_key]
 
 
 def try_authenticating_with_credentials(request, username, password):
@@ -36,9 +42,10 @@ def try_authenticating_with_credentials(request, username, password):
     """
     datamanager = request.datamanager
     session_ticket = datamanager.authenticate_with_credentials(username, password)
-    clear_session(request)
 
-    request.session[SESSION_TICKET_KEY] = session_ticket
+    clear_instance_session(request)
+    instance_key = instance_session_key(request.datamanager.game_instance_id)
+    request.session[instance_key] = session_ticket
 
 
 def try_authenticating_with_session(request):
@@ -46,44 +53,41 @@ def try_authenticating_with_session(request):
     This function lets exceptions flow...
     """
     datamanager = request.datamanager
-    session_ticket = request.session.get(SESSION_TICKET_KEY)
+    instance_key = instance_session_key(datamanager.game_instance_id)
+    session_ticket = request.session.get(instance_key, None)
 
-    if session_ticket:
+    # beware, here we distinguish between empty string (stop impersonation) and None (use current settings)
+    if IMPERSONATION_TARGET_POST_VARIABLE in request.POST or IMPERSONATION_WRITABILITY_POST_VARIABLE in request.POST:
 
-        # beware, here we distinguish between empty string (stop impersonation) and None (use current settings)
-        if IMPERSONATION_TARGET_POST_VARIABLE in request.POST or IMPERSONATION_WRITABILITY_POST_VARIABLE in request.POST:
+        # Beware here, pop() on QueryDict would return a LIST always
+        requested_impersonation_target = request.POST.get(IMPERSONATION_TARGET_POST_VARIABLE, None) # beware, != "" here
+        requested_impersonation_writability = request.POST.get(IMPERSONATION_WRITABILITY_POST_VARIABLE, None) # ternary value
+        if requested_impersonation_writability is not None:
+            requested_impersonation_writability = True if requested_impersonation_writability.lower() == "true" else False
 
-            # Beware here, pop() on QueryDict would return a LIST always
-            requested_impersonation_target = request.POST.get(IMPERSONATION_TARGET_POST_VARIABLE, None) # beware, != "" here
-            requested_impersonation_writability = request.POST.get(IMPERSONATION_WRITABILITY_POST_VARIABLE, None) # ternary value
-            if requested_impersonation_writability is not None:
-                requested_impersonation_writability = True if requested_impersonation_writability.lower() == "true" else requested_impersonation_writability
+        request.POST.clear() # thanks to our middleware that made it mutable...
+        request.method = "GET" # dirty, isn't it ?
 
-            request.POST.clear() # thanks to our middleware that made it mutable...
-            request.method = "GET" # dirty, isn't it ?
+    else:
+        requested_impersonation_target = requested_impersonation_writability = None
 
-        else:
-            requested_impersonation_target = requested_impersonation_writability = None
+    try:
+        res = datamanager.authenticate_with_session_data(session_ticket=session_ticket, # may be None
+                                                           requested_impersonation_target=requested_impersonation_target,
+                                                           requested_impersonation_writability=requested_impersonation_writability,
+                                                           django_user=request.user) # can be anonymous
+        request.session[instance_key] = res # this refreshes expiry time, and ensures we properly modify session
+    except UsageError, e:
+        # invalid session data, or request vars...
+        logging.critical("Error in try_authenticating_with_session with locals %r" % repr(locals()), exc_info=True)
+        request.session[instance_key] = None # important cleanup!
 
-        try:
-            res = datamanager.authenticate_with_session_data(session_ticket=session_ticket,
-                                                       requested_impersonation_target=requested_impersonation_target,
-                                                       requested_impersonation_writability=requested_impersonation_writability,
-                                                       django_user=request.user)
-            request.session[SESSION_TICKET_KEY] = res # this refreshes expiry time, and ensures we properly modify session
-        except NormalUsageError, e:
-            pass # wrong game instance, surely, or no right to impersonate... let it be.
-        except UsageError, e:
-            # wrong username ?
-            logging.critical("Wrong authentication data detected: %r" % repr(locals()), exc_info=True)
-            request.session[SESSION_TICKET_KEY] = None # important cleanup!
-
-        # anyway, if error, we let the anonymous user be...
+    # anyway, if error, we let the anonymous user be...
 
 
 def logout_session(request):
     request.datamanager.logout_user()
-    clear_session(request)
+    clear_instance_session(request)
 
 
 

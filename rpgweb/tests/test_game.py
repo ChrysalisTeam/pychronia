@@ -1784,7 +1784,7 @@ class TestDatamanager(BaseGameTestCase):
             _expected_writability = True if not requested_impersonation_target else bool(requested_impersonation_writability)
             assert self.dm.user.has_write_access == _expected_writability
             assert self.dm.user.is_impersonation == bool(requested_impersonation_target)
-            assert self.dm.user.real_username == SUPERUSER_SPECIAL_LOGIN if requested_impersonation_target else anonymous_login
+            assert self.dm.user.real_username == SUPERUSER_SPECIAL_LOGIN if requested_impersonation_target else anonymous_login # FIXME
             assert not self.dm.user.has_notifications()
             self.dm.user.discard_notifications()
 
