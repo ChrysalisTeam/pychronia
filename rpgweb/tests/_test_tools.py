@@ -17,7 +17,8 @@ from rpgweb.datamanager.datamanager_administrator import create_game_instance, \
 import rpgweb.datamanager as dm_module
 from rpgweb.datamanager import *
 from rpgweb.datamanager.datamanager_modules import *
-
+from rpgweb.authentication import (try_authenticating_with_credentials, try_authenticating_with_session, logout_session,
+                                   SESSION_TICKET_KEY_TEMPLATE, IMPERSONATION_TARGET_POST_VARIABLE, IMPERSONATION_WRITABILITY_POST_VARIABLE)
 import rpgweb.middlewares
 import rpgweb.views
 from rpgweb.datamanager.abstract_game_view import AbstractGameView, register_view
@@ -75,6 +76,8 @@ def for_ability(view):
 TEST_GAME_INSTANCE_ID = "TeStiNg"
 ROOT_GAME_URL = "/%s" % TEST_GAME_INSTANCE_ID
 HOME_URL = reverse(rpgweb.views.homepage, kwargs={"game_instance_id": TEST_GAME_INSTANCE_ID})
+
+SESSION_TICKET_KEY = SESSION_TICKET_KEY_TEMPLATE % TEST_GAME_INSTANCE_ID
 
 sys.setrecursionlimit(800) # to help detect recursion problems
 
@@ -262,11 +265,11 @@ class BaseGameTestCase(TestCase):
 
 
 
-    def _set_user(self, username, has_write_access=True, **kwargs):
+    def _set_user(self, username, **kwargs):
         """
         Here *username* might be "master" or None, too. 
         """
-        self.dm._set_user(username, has_write_access=has_write_access, **kwargs)
+        self.dm._set_user(username, **kwargs)
 
 
     def _reset_messages(self):

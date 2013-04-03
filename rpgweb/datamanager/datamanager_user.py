@@ -49,6 +49,7 @@ class GameUser(object):
         assert _effective_username in _available_logins # redundant but yah...
         del username, impersonation, _game_anonymous_login # security
 
+        self.is_superuser = is_superuser
         self.is_master = datamanager.is_master(_effective_username)
         self.is_character = datamanager.is_character(_effective_username)
         self.is_anonymous = datamanager.is_anonymous(_effective_username)

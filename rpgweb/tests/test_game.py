@@ -32,6 +32,7 @@ from rpgweb.views import friendship_management
 from rpgweb.views.abilities import house_locking, \
     wiretapping_management, runic_translation
 from django.contrib.auth.models import User
+from rpgweb.authentication import clear_all_sessions
 
 
 
@@ -1606,9 +1607,7 @@ class TestDatamanager(BaseGameTestCase):
         """
         self._reset_django_db()
 
-        from rpgweb.authentication import (try_authenticating_with_credentials, try_authenticating_with_session, logout_session,
-                                           SESSION_TICKET_KEY)
-        from django.contrib.sessions.middleware import SessionMiddleware
+        OTHER_SESSION_TICKET_KEY = SESSION_TICKET_KEY_TEMPLATE % "my_other_test_game_id"
 
         home_url = reverse(views.homepage, kwargs={"game_instance_id": TEST_GAME_INSTANCE_ID})
 
@@ -1634,18 +1633,31 @@ class TestDatamanager(BaseGameTestCase):
 
         def _standard_authenticated_checks():
 
+            # we set a ticket for another game instance, different
+            other_session_ticket = random.choice((None, True, {'a': 'b'}, [1, 2]))
+            request.session[OTHER_SESSION_TICKET_KEY] = copy.copy(other_session_ticket)
+
+
             original_ticket = request.session[SESSION_TICKET_KEY].copy()
             original_username = request.datamanager.user.username
 
             assert request.datamanager == self.dm
             self._set_user(None)
             assert request.datamanager.user.username == anonymous_login
+            assert request.datamanager.user.real_username == anonymous_login
+            assert request.datamanager.user.has_write_access
+            assert not request.datamanager.user.is_impersonation
+            assert not request.datamanager.user.is_superuser
 
             res = try_authenticating_with_session(request)
             assert res is None
 
             assert request.session[SESSION_TICKET_KEY] == original_ticket
             assert request.datamanager.user.username == original_username
+            assert request.datamanager.user.real_username == original_username
+            assert request.datamanager.user.has_write_access
+            assert not request.datamanager.user.is_impersonation
+            assert not request.datamanager.user.is_superuser
 
             self._set_user(None)
 
@@ -1660,8 +1672,8 @@ class TestDatamanager(BaseGameTestCase):
             request.session[SESSION_TICKET_KEY] = original_ticket.copy()
             request.session[SESSION_TICKET_KEY]["game_instance_id"] = "qsdjqsidub"
             _temp = request.session[SESSION_TICKET_KEY].copy()
-            try_authenticating_with_session(request) # exception gets swallowed
-            assert request.session[SESSION_TICKET_KEY] == _temp
+            try_authenticating_with_session(request)
+            assert request.session[SESSION_TICKET_KEY] == None # removed
 
             self._set_user(None)
 
@@ -1678,7 +1690,17 @@ class TestDatamanager(BaseGameTestCase):
 
             logout_session(request)
             assert SESSION_TICKET_KEY not in request.session
-            assert request.datamanager.user.username == anonymous_login
+            assert request.datamanager.user.username == anonymous_login # reset
+            assert request.session[OTHER_SESSION_TICKET_KEY] == other_session_ticket # other session ticket UNTOUCHED by logout
+
+            request.session[SESSION_TICKET_KEY] = original_ticket.copy()
+            try_authenticating_with_session(request)
+            assert request.datamanager.user.username == original_username
+
+            clear_all_sessions(request) # FULL reset, including django user data
+            assert SESSION_TICKET_KEY not in request.session
+            assert request.datamanager.user.username == anonymous_login # reset
+            assert OTHER_SESSION_TICKET_KEY not in request.session
 
 
         # simple player case
@@ -1751,11 +1773,12 @@ class TestDatamanager(BaseGameTestCase):
                                                    requested_impersonation_writability=requested_impersonation_writability,
                                                    django_user=user)
             assert res == {u'game_username': None,
-                           u'impersonation_target': None, # we can't impersonate
+                           u'impersonation_target': None, # we can't impersonate because inactive or not staff user
                            u'impersonation_writability': requested_impersonation_writability if not requested_impersonation_target else None, # blocked if impersonation attempt
                            u'game_instance_id': TEST_GAME_INSTANCE_ID}
             assert self.dm.user.username == anonymous_login
             assert self.dm.user.has_write_access
+            assert not self.dm.user.is_superuser
             assert not self.dm.user.is_impersonation
             assert self.dm.user.real_username == anonymous_login
             assert self.dm.user.has_notifications() == bool(requested_impersonation_target)
@@ -1783,8 +1806,9 @@ class TestDatamanager(BaseGameTestCase):
 
             _expected_writability = True if not requested_impersonation_target else bool(requested_impersonation_writability)
             assert self.dm.user.has_write_access == _expected_writability
+            assert self.dm.user.is_superuser
             assert self.dm.user.is_impersonation == bool(requested_impersonation_target)
-            assert self.dm.user.real_username == SUPERUSER_SPECIAL_LOGIN if requested_impersonation_target else anonymous_login # FIXME
+            assert self.dm.user.real_username == anonymous_login # LEFT ANONYMOUS, superuser status does it all
             assert not self.dm.user.has_notifications()
             self.dm.user.discard_notifications()
 
@@ -1796,10 +1820,6 @@ class TestDatamanager(BaseGameTestCase):
         # FIXME - test for django super user, for friendship................
 
         self._reset_django_db()
-
-        from rpgweb.authentication import (try_authenticating_with_credentials, try_authenticating_with_session, logout_session,
-                                           SESSION_TICKET_KEY, IMPERSONATION_TARGET_POST_VARIABLE, IMPERSONATION_WRITABILITY_POST_VARIABLE)
-
 
         master_login = self.dm.get_global_parameter("master_login")
         master_password = self.dm.get_global_parameter("master_password")
@@ -1845,6 +1865,7 @@ class TestDatamanager(BaseGameTestCase):
                                        'impersonation_writability': None, 'game_username': master_login}
         assert self.dm.user.username == master_login
         assert self.dm.user.has_write_access
+        assert not self.dm.user.is_superuser # reserved to staff django users
         assert not self.dm.user.is_impersonation
         assert self.dm.user.real_username == master_login
         assert not self.dm.user.has_notifications()
@@ -1865,6 +1886,7 @@ class TestDatamanager(BaseGameTestCase):
 
             assert self.dm.user.username == player_login
             assert self.dm.user.has_write_access == bool(writability) # no write access by default, if requested_impersonation_writability is None
+            assert not self.dm.user.is_superuser
             assert self.dm.user.is_impersonation
             assert self.dm.user.real_username == master_login
             assert not self.dm.user.has_notifications()
@@ -1882,19 +1904,16 @@ class TestDatamanager(BaseGameTestCase):
             assert self.dm.user.username == player_login
             assert not self.dm.user.has_notifications()
 
-            # Unexisting impersonation leads to stop of impersonation
-            self.dm.authenticate_with_session_data(session_ticket,
-                                             requested_impersonation_target="dsfsdfkjsqodsd",
-                                             requested_impersonation_writability=not writability,
-                                             django_user=django_user)
-            assert session_ticket == {'game_instance_id': TEST_GAME_INSTANCE_ID, 'impersonation_target': None,
-                                      'impersonation_writability': None, 'game_username': master_login}
-            assert self.dm.user.username == master_login
-            assert self.dm.user.has_write_access # always if not impersonation
-            assert not self.dm.user.is_impersonation
-            assert self.dm.user.real_username == master_login
-            assert self.dm.user.has_notifications()
-            self.dm.user.discard_notifications()
+            # Unexisting impersonation target leads to bad exception (should never happen)
+            with pytest.raises(AbnormalUsageError):
+                self.dm.authenticate_with_session_data(session_ticket,
+                                                 requested_impersonation_target="dsfsdfkjsqodsd",
+                                                 requested_impersonation_writability=not writability,
+                                                 django_user=django_user)
+            # untouched - upper layers must reset that ticket in session
+            assert session_ticket == {'game_instance_id': TEST_GAME_INSTANCE_ID, 'impersonation_target': player_login,
+                                      'impersonation_writability': writability, 'game_username': master_login}
+
 
 
             # Impersonate anonymous
@@ -1907,6 +1926,7 @@ class TestDatamanager(BaseGameTestCase):
 
             assert self.dm.user.username == anonymous_login
             assert self.dm.user.has_write_access == bool(writability)
+            assert not self.dm.user.is_superuser
             assert self.dm.user.is_impersonation
             assert self.dm.user.real_username == master_login
             assert not self.dm.user.has_notifications()
@@ -1921,6 +1941,7 @@ class TestDatamanager(BaseGameTestCase):
                                       'impersonation_writability': None, 'game_username': master_login}
             assert self.dm.user.username == master_login
             assert self.dm.user.has_write_access # always if not impersonation
+            assert not self.dm.user.is_superuser
             assert not self.dm.user.is_impersonation
             assert self.dm.user.real_username == master_login
             assert self.dm.user.has_notifications()
@@ -1937,6 +1958,7 @@ class TestDatamanager(BaseGameTestCase):
 
             assert self.dm.user.username == anonymous_login
             assert self.dm.user.has_write_access == bool(writability)
+            assert not self.dm.user.is_superuser
             assert self.dm.user.is_impersonation
             assert self.dm.user.real_username == master_login
             assert not self.dm.user.has_notifications()
@@ -1954,6 +1976,7 @@ class TestDatamanager(BaseGameTestCase):
 
             assert self.dm.user.username == master_login
             assert self.dm.user.has_write_access # always
+            assert not self.dm.user.is_superuser
             assert not self.dm.user.is_impersonation
             assert self.dm.user.real_username == master_login
             assert not self.dm.user.has_notifications() # IMPORTANT - no error message
@@ -2259,6 +2282,7 @@ class TestDatamanager(BaseGameTestCase):
 class TestHttpRequests(BaseGameTestCase):
 
     def _master_auth(self):
+
         master_login = self.dm.get_global_parameter("master_login")
         login_page = reverse("rpgweb.views.login", kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID))
         response = self.client.get(login_page) # to set preliminary cookies
@@ -2269,13 +2293,15 @@ class TestHttpRequests(BaseGameTestCase):
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, ROOT_GAME_URL + "/")
 
-        assert self.client.session["rpgweb_session_ticket"] == {'game_instance_id': TEST_GAME_INSTANCE_ID, 'impersonation_target': None,
+        assert self.client.session[SESSION_TICKET_KEY] == {'game_instance_id': TEST_GAME_INSTANCE_ID, 'impersonation_target': None,
                                                                 'impersonation_writability': None, 'game_username': master_login}
 
         self.assertTrue(self.client.cookies["sessionid"])
 
 
     def _player_auth(self, username):
+
+
         login_page = reverse("rpgweb.views.login", kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID))
         response = self.client.get(login_page) # to set preliminary cookies
         self.assertEqual(response.status_code, 200)
@@ -2285,27 +2311,25 @@ class TestHttpRequests(BaseGameTestCase):
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, ROOT_GAME_URL + "/")
 
-        assert self.client.session["rpgweb_session_ticket"] == {'game_instance_id': TEST_GAME_INSTANCE_ID, 'impersonation_target': None,
+        assert self.client.session[SESSION_TICKET_KEY] == {'game_instance_id': TEST_GAME_INSTANCE_ID, 'impersonation_target': None,
                                                                 'impersonation_writability': None, 'game_username': username}
 
         self.assertTrue(self.client.cookies["sessionid"])
 
 
     def _logout(self):
+
         login_page = reverse("rpgweb.views.login", kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID))
         logout_page = reverse("rpgweb.views.logout", kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID))
-        response = self.client.get(logout_page) # to set preliminary cookies
+        response = self.client.get(logout_page, follow=False)
 
         self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, login_page)
+        assert not self.client.session.has_key(SESSION_TICKET_KEY)
 
-        assert not self.client.session.has_key("rpgweb_session_ticket")
-        self.assertEqual(self.client.session.keys(), ["testcookie"]) # we get it once more
+        self.assertRedirects(response, login_page) # beware - LOADS TARGET LOGIN PAGE
+        assert self.client.session.has_key("testcookie") # we get it once more thanks to the assertRedirects() above
+        assert self.client.session.has_key(SESSION_TICKET_KEY)
 
-
-    def guest_requests(self):
-        ## FIXME TODO
-        pass # FIXME
 
     def _simple_master_get_requests(self):
         # FIXME - currently not testing abilities

@@ -51,8 +51,8 @@ def logout(request, template_name='registration/logout.html'):
 
     logout_session(request)
 
-    user = request.datamanager.user  # take user only NOW, after logout
-    user.add_message(_("You've been successfully logged out."))  # will not be seen with redirection
+    user = request.datamanager.user  # better to take user only NOW, after logout
+    user.add_message(_("You've been successfully logged out."))
     return HttpResponseRedirect(reverse(login, kwargs=dict(game_instance_id=request.datamanager.game_instance_id)))
 
 

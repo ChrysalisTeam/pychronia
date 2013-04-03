@@ -224,14 +224,14 @@ def list_filter(value, offset):
 register.filter('list_filter', list_filter)
 
 
-def utctolocal(value, arg=None):
+def utctolocal(value, arg=None): # FIXME - BUGGY CALLS
     # poor man's timezone system, base on current time offset
     # all we want is to avoid dealing with the nightmare of TZ and DST...
     try:
         timedelta = datetime.now() - datetime.utcnow()
         return value + timedelta
     except:
-        logging.error("utctolocal filter failed", exc_info=True)
+        logging.critical("utctolocal filter failed", exc_info=True)
         return value
 register.filter('utctolocal', utctolocal)
 

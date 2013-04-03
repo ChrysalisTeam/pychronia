@@ -90,7 +90,7 @@ class CurrentUserHandling(BaseDataManager):
 
 
     @transaction_watcher(always_writable=True)
-    def _set_user(self, username, has_write_access, impersonation=None, is_superuser=False):
+    def _set_user(self, username, has_write_access=True, impersonation=None, is_superuser=False):
         assert not hasattr(super(CurrentUserHandling, self), "_set_user") # we're well top-level here
         self.user = GameUser(datamanager=self,
                              username=username,

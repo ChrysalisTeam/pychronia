@@ -28,12 +28,17 @@ def instance_session_key(game_instance_id):
 
 
 def clear_all_sessions(request):
+    request.datamanager.logout_user()
     request.session.flush()
+    ## USELESSrequest.session.cycle_key() # security
 
-def clear_instance_session(request):
+
+def logout_session(request):
+    request.datamanager.logout_user()
     instance_key = instance_session_key(request.datamanager.game_instance_id)
     if instance_key in request.session:
         del request.session[instance_key]
+
 
 
 def try_authenticating_with_credentials(request, username, password):
@@ -43,9 +48,8 @@ def try_authenticating_with_credentials(request, username, password):
     datamanager = request.datamanager
     session_ticket = datamanager.authenticate_with_credentials(username, password)
 
-    clear_instance_session(request)
     instance_key = instance_session_key(request.datamanager.game_instance_id)
-    request.session[instance_key] = session_ticket
+    request.session[instance_key] = session_ticket # overrides
 
 
 def try_authenticating_with_session(request):
@@ -77,17 +81,13 @@ def try_authenticating_with_session(request):
                                                            requested_impersonation_writability=requested_impersonation_writability,
                                                            django_user=request.user) # can be anonymous
         request.session[instance_key] = res # this refreshes expiry time, and ensures we properly modify session
+
     except UsageError, e:
         # invalid session data, or request vars...
         logging.critical("Error in try_authenticating_with_session with locals %r" % repr(locals()), exc_info=True)
         request.session[instance_key] = None # important cleanup!
 
     # anyway, if error, we let the anonymous user be...
-
-
-def logout_session(request):
-    request.datamanager.logout_user()
-    clear_instance_session(request)
 
 
 
