@@ -5,14 +5,14 @@ from __future__ import unicode_literals
 from rpgweb.common import *
 
 from django.utils.http import urlencode
-
+from django.utils.html import escape
 
 LIB_DIR = config.STATIC_URL + "libs/"
 
 _media_player_templates = \
 {
     ("flv", "mp3"): """
-    <object  type="application/x-shockwave-flash" class="mediaplayer" style="width:%(width)spx;height:%(height)spx;" data="%(lib_dir)svideoplayers/mediaplayer/player.swf" title="%(title)s">
+    <object type="application/x-shockwave-flash" class="mediaplayer" style="width:%(width)spx;height:%(height)spx;" data="%(lib_dir)svideoplayers/mediaplayer/player.swf" title="%(title)s">
         <param name="movie" value="%(lib_dir)svideoplayers/mediaplayer/player.swf" />
         <param name="quality" value="high" />
         <param name="wmode" value="%(transparency)s" />
@@ -36,24 +36,26 @@ _media_player_templates = \
     </object>
     """,
 
-    # uses silverlight/moonlight - badly supported, preferably not used
-    ("wmv", "wma",): """
-    <span id="avID_%(id)s" class="mediaplayer" style="width:%(width)spx;height:%(height)spx;" title="%(title)s"></span>
-    <script type="text/javascript">
-    
-    var cnt = document.getElementById('avID_%(id)s');
-    var src = '%(lib_dir)svideoplayers/wmvplayer/wmvplayer.xaml';
-    var cfg = {
-        file:'%(fileurl)s',
-        width:'%(width)s',
-        height:'%(height)s',
-        autostart:'%(autoplay)s',
-        image:'%(image)s'
-    };
-    var ply = new jeroenwijering.Player(cnt,src,cfg);
-    </script>
-    """,
+#    UNUSABLE, NEEDS JS ESCAPING AND NOT HTML ESCAPING
+#    # uses silverlight/moonlight - badly supported, preferably not used
+#    ("wmv", "wma",): """
+#    <span id="avID_%(id)s" class="mediaplayer" style="width:%(width)spx;height:%(height)spx;" title="%(title)s"></span>
+#    <script type="text/javascript">
+#
+#    var cnt = document.getElementById('avID_%(id)s');
+#    var src = '%(lib_dir)svideoplayers/wmvplayer/wmvplayer.xaml';
+#    var cfg = {
+#        file:'%(fileurl)s',
+#        width:'%(width)s',
+#        height:'%(height)s',
+#        autostart:'%(autoplay)s',
+#        image:'%(image)s'
+#    };
+#    var ply = new jeroenwijering.Player(cnt,src,cfg);
+#    </script>
+#    """,
 
+    
     ("avi", "divx"): """
     <object type="video/divx" data="%(fileurl)s" class="mediaplayer" style="width:%(width)spx;height:%(height)spx;" title="%(title)s">
         <param name="type" value="video/divx" />
@@ -72,41 +74,41 @@ _media_player_templates = \
     </object>
     """,
 
+#    UNUSED BECAUSE NEEDS JS ESCAPING FOR PARAMS, NOT HTML ENTITIES
+#    # warning - quicktime videos have their controller right under the image,
+#    # not at the bottom of the <object> area, so it's better to specify width/height
+#    # with the right ratio...
+#    ("mov", "mp4", "3gp", "mpg", "mpeg"): """
+#    <span id="qtID_%(id)s" class="mediaplayer" style="width:%(width)spx;height:%(height)spx;" title="%(title)s"></span>
+#    <script type="text/javascript">
+#        html = QT_Generate_XHTML('%(fileurl)s', '%(width)s', '%(height)s', '', 'autoplay', '%(autoplay)s',
+#        'bgcolor', '%(backgroundqt)s', 'scale', 'aspect', 'class', 'mediaplayer', 'title', '%(title)s');
+#        document.getElementById("qtID_%(id)s").innerHTML = html;
+#    </script>
+#    """,
 
-    # warning - quicktime videos have their controller right under the image, 
-    # not at the bottom of the <object> area, so it's better to specify width/height 
-    # with the right ratio...
-    ("mov", "mp4", "3gp", "mpg", "mpeg"): """
-    <span id="qtID_%(id)s" class="mediaplayer" style="width:%(width)spx;height:%(height)spx;" title="%(title)s"></span>
-    <script type="text/javascript">
-        html = QT_Generate_XHTML('%(fileurl)s', '%(width)s', '%(height)s', '', 'autoplay', '%(autoplay)s', 
-        'bgcolor', '%(backgroundqt)s', 'scale', 'aspect', 'class', 'mediaplayer', 'title', '%(title)s');
-        document.getElementById("qtID_%(id)s").innerHTML = html;
-    </script>
-    """,
-
-    #    # Might be useful if silverlight isn't portable enough for avi/divx files...
-    #    
-    #    ("divx", "avi"): """
-    #    <object type="video/divx" data="%(fileurl)s" style="width:%(width)spx;height:%(height)spx;" title="%(title)s">
-    #        <param name="type" value="video/divx" />
-    #        <param name="src" value="%(fileurl)s" />
-    #        <param name="data" value="%(fileurl)s" />
-    #        <param name="codebase" value="%(fileurl)s" />
-    #        <param name="url" value="%(fileurl)s" />
-    #        <param name="mode" value="full" />
-    #        <param name="pluginspage" value="http://go.divx.com/plugin/download/" />
-    #        <param name="allowContextMenu" value="true" />
-    #        <param name="previewImage" value="%(image)s" />
-    #        <param name="autoPlay" value="%(autoplay)s" />
-    #        <param name="minVersion" value="1.0.0" />
-    #        <param name="custommode" value="none" />
-    #        <p>No video? Get the DivX browser plug-in for <a href="http://download.divx.com/player/DivXWebPlayerInstaller.exe">Windows</a> or <a href="http://download.divx.com/player/DivXWebPlayer.dmg">Mac</a></p>
-    #    </object>
-    #    """
+#    # Might be useful if silverlight isn't portable enough for avi/divx files...
+#
+#    ("divx", "avi"): """
+#    <object type="video/divx" data="%(fileurl)s" style="width:%(width)spx;height:%(height)spx;" title="%(title)s">
+#        <param name="type" value="video/divx" />
+#        <param name="src" value="%(fileurl)s" />
+#        <param name="data" value="%(fileurl)s" />
+#        <param name="codebase" value="%(fileurl)s" />
+#        <param name="url" value="%(fileurl)s" />
+#        <param name="mode" value="full" />
+#        <param name="pluginspage" value="http://go.divx.com/plugin/download/" />
+#        <param name="allowContextMenu" value="true" />
+#        <param name="previewImage" value="%(image)s" />
+#        <param name="autoPlay" value="%(autoplay)s" />
+#        <param name="minVersion" value="1.0.0" />
+#        <param name="custommode" value="none" />
+#        <p>No video? Get the DivX browser plug-in for <a href="http://download.divx.com/player/DivXWebPlayerInstaller.exe">Windows</a> or <a href="http://download.divx.com/player/DivXWebPlayer.dmg">Mac</a></p>
+#    </object>
+#    """
 }
 
-def generate_media_player(fileurl, image="", autostart=False, **kwargs):
+def generate_media_player(fileurl, image="", autostart=False, width=450, height=350, **kwargs):
     # Warning - fileurl had better be an ABSOLUTE url, else some media players won't find the file !
 
     md5 = hashlib.md5()
@@ -117,17 +119,17 @@ def generate_media_player(fileurl, image="", autostart=False, **kwargs):
     {
         "title": "Video Viewer",
         "id": myhash, # risks of collision are ultra weak...
-        "lib_dir": LIB_DIR,
+        "lib_dir": escape(LIB_DIR),
         "autoplay": "true" if autostart else "false",
         "allowfullscreen": "true",
         "transparency": "opaque", # transparent, window
         "background": "#000000",
         "backgroundqt": "black",
-        "fileurl": fileurl,
-        "image": image, # warning - gif images aren't supported by all players !
-        "width": 450,
-        "height": 350,
-        "additional_flash_vars": "" # must begin with '&' if present
+        "fileurl": escape(fileurl), # warning, sometimes would need urlencoding actually!
+        "image": escape(image), # warning - gif images aren't supported by all players !
+        "width": escape(width),
+        "height": escape(height),
+        "additional_flash_vars": "" # must begin with '&' if present, and be escaped/urlencoded properly
     }
     options.update(kwargs)
 
@@ -202,7 +204,7 @@ def generate_audio_player(files, titles=None, artists=None, autostart=False):
 
 
 
-def generate_image_viewer(imageurl, **kwargs):
+def generate_image_viewer(imageurl, width=450, height=350, **kwargs):
 
     md5 = hashlib.md5()
     md5.update(imageurl.encode('ascii', 'ignore'))
@@ -212,14 +214,21 @@ def generate_image_viewer(imageurl, **kwargs):
     {
         "title": "Image Viewer",
         "id": myhash,
-        "imageurl": imageurl,
-        "width": 450,
-        "height": 350,
+        "imageurl": escape(imageurl),
+        "width": escape(width),
+        "height": escape(height),
     }
 
     template = ("""<a href="%(imageurl)s"><img class="imageviewer" src="%(imageurl)s" title="%(title)s"id="%(id)s" """ +
                """style="max-width: %(width)spx; max-height:%(height)spx"/></a>""")
 
+    '''
+        try:
+            thumb = get_thumbnailer(protected_game_file_system_storage, relative_name=rel_path)[alias] # we enforce the GAME_FILES storage here!
+        except Exception, e:
+            print("ERROR GENERATING game_file_img ", rel_path, alias, repr(e))
+            return ''
+        '''
     return template % options
 
 
@@ -243,5 +252,6 @@ def build_proper_viewer(fileurl, **kwargs): # interesting kwarg : "autostart"
             return generate_media_player(fileurl, **kwargs) # warning - this media player also supports mp3, so put it after the audio player !
         except ValueError:
             name = os.path.basename(fileurl)
-            return '<div class="medialink">' + _("Access file") + ' <a target="_blank" href="%s">%s</a></div>' % (fileurl, name if name else _("here")) # last solution - giving a simple link
+            return '<div class="medialink">' + _("Access file") + ' <a target="_blank" href="%s">%s</a></div>' % \
+                    (escape(fileurl), escape(name if name else _("here"))) # last solution - giving a simple link
 

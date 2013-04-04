@@ -133,7 +133,7 @@ web_game_urlpatterns = patterns('rpgweb.views',
 support_urlpatterns = patterns('',
 
     # serving of game files is currently independent of ZODB data
-    url(r'^%s(?P<hash>[^/]*)/?(?P<path>.*)$' % config.GAME_FILES_URL[1:], 'rpgweb.views.serve_game_file'), # NOT a gameview
+    url(r'^%s(?P<hash>[^/]*)/(?P<path>.*)$' % config.GAME_FILES_URL[1:], 'rpgweb.views.serve_game_file'), # NOT a gameview
 
     # USELESS - NO MEDIA ATM : (r'^%s(?P<path>.*)$' % config.MEDIA_URL[1:], 'django.views.static.serve', {'document_root': config.MEDIA_ROOT, 'show_indexes': False}),
     (r'^i18n/', include('django.conf.urls.i18n')), # to set language

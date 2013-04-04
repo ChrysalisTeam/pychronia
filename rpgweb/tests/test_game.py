@@ -15,7 +15,7 @@ from rpgweb.datamanager.abstract_ability import AbstractAbility
 from rpgweb.datamanager.action_middlewares import CostlyActionMiddleware, \
     CountLimitedActionMiddleware, TimeLimitedActionMiddleware
 from rpgweb.common import _undefined, config, AbnormalUsageError, reverse, \
-    UsageError
+    UsageError, checked_game_file_path
 from rpgweb.templatetags.helpers import _generate_encyclopedia_links
 from rpgweb import views
 from rpgweb.utilities import fileservers, autolinker
@@ -61,6 +61,8 @@ class TestUtilities(TestCase):
 
         assert "title1" in restructuredtext("""title1\n=======\n\naaa""") # thx to our conf, title1 stays in html fragment
 
+        print("\n-_-\n", file=sys.stderr)
+
         html = restructuredtext(dedent("""
                     title1
                     -------
@@ -71,8 +73,23 @@ class TestUtilities(TestCase):
                     -------
                     
                     bbbbb
+                    
+                    .. embed_audio:: http://mydomain.com/myfile<ABC
+                    
+                    .. embed_video:: https://hi.com/a&b.flv
+                        :width: 219
+                        :height: 121
+                        :image: /a<kl.jpg
+                    
                     """))
+
         assert "title1" in html and "title2" in html
+
+        for mystr in ("<object", "audioplayer", "http%3A%2F%2Fmydomain.com%2Fmyfile%3CABC"): # IMPORTANT - url-escaping of file url
+            assert mystr in html
+
+        for mystr in ("<object", "mediaplayer", "https://hi.com/a&amp;b.flv"): # AT LEAST html-escaped, but urlescaping could be necessary for some media types
+            assert mystr in html
 
 
         # IMPORTANT - security measures #
@@ -280,16 +297,21 @@ class TestUtilities(TestCase):
         _check_standard_headers(response)
 
 
-    def test_url_hashing_func(self):
+    def test_url_protection_functions(self):
 
         hash = hash_url_path("whatever/shtiff/kk.mp3?sssj=33")
-
         assert len(hash) == 8
         for c in hash:
             assert c in "abcdefghijklmnopqrstuvwxyz01234567"
 
+        rel_path = checked_game_file_path(game_file_url("/my/file/path"))
+        assert rel_path == "my/file/path"
 
+        rel_path = checked_game_file_path("http://baddomain/files/%s/my_file/a.jpg" % hash_url_path("my_file/a.jpg")) # we only care about PATH component of url
+        assert rel_path == "my_file/a.jpg"
 
+        assert checked_game_file_path("/bad/stuffs.mpg") is None
+        assert checked_game_file_path(config.GAME_FILES_URL + "bad/stuffs.mpg") is None
 
 
 class TestMetaAdministration(unittest.TestCase): # no setup required
@@ -2398,8 +2420,8 @@ class TestHttpRequests(BaseGameTestCase):
         ## UNEXISTING response = self.client.get("/media/")
         ##self.assertEqual(response.status_code, 404)
 
-        # no directory index !
-        response = self.client.get("/files/")
+        # no directory index, especially because of hash-protected file serving
+        response = self.client.get("/files/") # because ValueError: Unexisting instance u'files'
         self.assertEqual(response.status_code, 404)
 
         # no direct file access, we need the hash tag

@@ -10,6 +10,7 @@ from contextlib import contextmanager, closing, nested
 from decorator import decorator
 from functools import partial
 from textwrap import dedent
+from urlparse import urlparse
 
 from odict import odict as OrderedDict
 from rpgweb.utilities.pafo import printObject
@@ -21,7 +22,6 @@ import transaction
 from persistent import Persistent
 from persistent.dict import PersistentDict
 from persistent.list import PersistentList
-
 
 from django.conf import settings
 from django.utils.html import escape
@@ -176,11 +176,40 @@ def hash_url_path(url_path):
     url_hash = base64.b32encode(hash)[:8].lower()
     return url_hash
 
+
 def game_file_url(rel_path):
     rel_path = rel_path.replace("\\", "/") # some external libs use os.path methods to create urls.......
     rel_path = rel_path.lstrip("/") # IMPORTANT
     url_hash = hash_url_path(rel_path)
-    return settings.GAME_FILES_URL + url_hash + "/" + rel_path
+    return config.GAME_FILES_URL + url_hash + "/" + rel_path
+
+
+_game_files_url_prefix = urlparse(config.GAME_FILES_URL).path
+def checked_game_file_path(url):
+    """
+    Returns a relative (without leading /) file path, or None if the given 
+    url doesn't have a proper security hash inside.
+    
+    Url can be complete, or only an absolute path component starting with /.
+    """
+    match_obj = None
+    try:
+        path = urlparse(url).path
+        match_obj = re.match("%s(?P<hash>[^/]*)/(?P<path>.*)$" % _game_files_url_prefix, path)
+    except Exception, e:
+        # FIXME, log error
+        pass
+
+    if not match_obj:
+        return None
+    else:
+        hash, url_path = (match_obj.group("hash"), match_obj.group("path"))
+        if hash == hash_url_path(url_path):
+            return url_path # path has NO leading /
+        # FIXME, log error
+        return None
+        hash_url_path
+
 
 def determine_asset_url(properties):
     if isinstance(properties, basestring):

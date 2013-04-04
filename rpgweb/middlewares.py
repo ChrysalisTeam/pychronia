@@ -61,7 +61,10 @@ class ZodbTransactionMiddleware(object):
             game_instance_id = view_kwargs["game_instance_id"]
             del view_kwargs["game_instance_id"]
 
-            request.datamanager = retrieve_game_instance(game_instance_id=game_instance_id, request=request)
+            try:
+                request.datamanager = retrieve_game_instance(game_instance_id=game_instance_id, request=request)
+            except ValueError:
+                raise Http404
 
             if not request.datamanager.is_initialized:
                 raise RuntimeError("ZodbTransactionMiddleware - Game data isn't in initialized state")

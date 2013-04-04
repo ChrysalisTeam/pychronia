@@ -5,7 +5,8 @@ from __future__ import unicode_literals
 import re, logging, random
 from datetime import datetime
 
-from rpgweb.utilities import mediaplayers, autolinker
+from rpgweb.utilities import (mediaplayers, autolinker,
+                             rst_directives) # important to register RST extensions
 from rpgweb.common import exception_swallower, game_file_url as real_game_file_url, determine_asset_url, reverse, _
 
 import django.template
