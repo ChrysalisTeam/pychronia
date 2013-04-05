@@ -6,6 +6,7 @@ from rpgweb.common import *
 
 from django.utils.http import urlencode
 from django.utils.html import escape
+from rpgweb.storage import get_game_thumbnailer
 
 LIB_DIR = config.STATIC_URL + "libs/"
 
@@ -55,7 +56,7 @@ _media_player_templates = \
 #    </script>
 #    """,
 
-    
+
     ("avi", "divx"): """
     <object type="video/divx" data="%(fileurl)s" class="mediaplayer" style="width:%(width)spx;height:%(height)spx;" title="%(title)s">
         <param name="type" value="video/divx" />
@@ -204,31 +205,53 @@ def generate_audio_player(files, titles=None, artists=None, autostart=False):
 
 
 
-def generate_image_viewer(imageurl, width=450, height=350, **kwargs):
+def generate_image_viewer(imageurl, width=450, height=350, preset=None, **kwargs):
 
     md5 = hashlib.md5()
     md5.update(imageurl.encode('ascii', 'ignore'))
     myhash = md5.hexdigest()[0:8]
+
+    thumb = None
+
+    rel_path = checked_game_file_path(imageurl)
+    if not rel_path:
+        thumburl = imageurl
+    else:
+        try:
+            # this url is actually a local game file
+            thumbnailer = get_game_thumbnailer(rel_path)
+            thumb = None
+            if preset:
+                try:
+                    thumb = thumbnailer[preset]
+                except Exception, e:
+                    logging.critical("THUMNAILING FAILED 1", exc_info=True)# FIXME LOGGING HERE
+                    pass
+            if not thumb:
+                options = {
+                           'autocrop': False, # remove useless whitespace
+                           'crop': False, # no cropping at all,thumb must fit in both W and H
+                           'size': (width, height), # one of these can be 0
+                           }
+                thumb = thumbnailer.get_thumbnail(options)
+            thumburl = thumb.url
+        except Exception, e:
+            logging.critical("THUMNAILING FAILED 2", exc_info=True)# FIXME LOGGING HERE
+            thumburl = imageurl # we give up thumbnailing...
 
     options = \
     {
         "title": "Image Viewer",
         "id": myhash,
         "imageurl": escape(imageurl),
-        "width": escape(width),
-        "height": escape(height),
+        "thumburl": escape(thumburl),
+        "width": escape(thumb.width if thumb else width),
+        "height": escape(thumb.height if thumb else height),
     }
 
-    template = ("""<a href="%(imageurl)s"><img class="imageviewer" src="%(imageurl)s" title="%(title)s"id="%(id)s" """ +
+    template = ("""<a href="%(imageurl)s"><img class="imageviewer" src="%(thumburl)s" title="%(title)s"id="%(id)s" """ +
                """style="max-width: %(width)spx; max-height:%(height)spx"/></a>""")
 
-    '''
-        try:
-            thumb = get_thumbnailer(protected_game_file_system_storage, relative_name=rel_path)[alias] # we enforce the GAME_FILES storage here!
-        except Exception, e:
-            print("ERROR GENERATING game_file_img ", rel_path, alias, repr(e))
-            return ''
-        '''
     return template % options
 
 

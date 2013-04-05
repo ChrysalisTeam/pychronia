@@ -6,7 +6,7 @@ from docutils import nodes
 from docutils.parsers.rst import directives
 from docutils.parsers import rst
 
-from .mediaplayers import generate_audio_player, generate_media_player
+from .mediaplayers import generate_audio_player, generate_media_player, generate_image_viewer
 
 
 class AudioEmbedDirective(rst.Directive):
@@ -33,7 +33,6 @@ class VideoEmbedDirective(rst.Directive):
     option_spec = {'height': directives.length_or_unitless,
                    'width': directives.length_or_percentage_or_unitless,
                    'image': directives.unchanged} # front image url
-
     has_content = False
 
     def run(self):
@@ -42,6 +41,26 @@ class VideoEmbedDirective(rst.Directive):
         return [nodes.raw('', code, format='html')]
 
 directives.register_directive("embed_video", VideoEmbedDirective)
+
+
+
+class ImageEmbedDirective(rst.Directive):
+
+    required_arguments = 1
+    optional_arguments = 0
+    final_argument_whitespace = False
+    option_spec = {'alias': directives.unchanged} # easy-thumbnail preset
+    has_content = False
+
+    def run(self):
+        code = generate_image_viewer(imageurl=self.arguments[0],
+                                     preset=self.options.get("alias", "default")) # BEWARE - we expect that "default" preset to exist in stetings!
+        return [nodes.raw('', code, format='html')]
+
+directives.register_directive("embed_image", ImageEmbedDirective)
+
+
+
 
 
 

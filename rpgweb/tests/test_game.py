@@ -17,7 +17,7 @@ from rpgweb.datamanager.action_middlewares import CostlyActionMiddleware, \
 from rpgweb.common import _undefined, config, AbnormalUsageError, reverse, \
     UsageError, checked_game_file_path
 from rpgweb.templatetags.helpers import _generate_encyclopedia_links
-from rpgweb import views
+from rpgweb import views, utilities
 from rpgweb.utilities import fileservers, autolinker
 from django.test.client import RequestFactory
 import pprint
@@ -33,6 +33,7 @@ from rpgweb.views.abilities import house_locking, \
     wiretapping_management, runic_translation
 from django.contrib.auth.models import User
 from rpgweb.authentication import clear_all_sessions
+from rpgweb.utilities.mediaplayers import generate_image_viewer
 
 
 
@@ -41,12 +42,11 @@ from rpgweb.authentication import clear_all_sessions
 
 
 
-
-class TestUtilities(TestCase):
-
+class TestUtilities(BaseGameTestCase):
+    '''
     def __call__(self, *args, **kwds):
         return unittest.TestCase.run(self, *args, **kwds) # we bypass test setups from django's TestCase, to use py.test instead
-
+        '''
     def test_restructuredtext_handling(self):
         from docutils.utils import SystemMessage
         from django.contrib.markup.templatetags.markup import restructuredtext
@@ -77,10 +77,13 @@ class TestUtilities(TestCase):
                     .. embed_audio:: http://mydomain.com/myfile<ABC
                     
                     .. embed_video:: https://hi.com/a&b.flv
-                        :width: 219
-                        :height: 121
+                        :width: 219px
+                        :height: 121px
                         :image: /a<kl.jpg
-                    
+               
+                    .. embed_image:: https://hisss.com/a&b.jpg
+                        :alias: default
+                             
                     """))
 
         assert "title1" in html and "title2" in html
@@ -90,6 +93,11 @@ class TestUtilities(TestCase):
 
         for mystr in ("<object", "mediaplayer", "https://hi.com/a&amp;b.flv"): # AT LEAST html-escaped, but urlescaping could be necessary for some media types
             assert mystr in html
+
+        for mystr in ("<img class=\"imageviewer\"", "https://hisss.com/a&amp;b.jpg", "450px"): # fallback to default width/height since image url is buggy (so easy-thumbnails fails)
+            assert mystr in html
+
+
 
 
         # IMPORTANT - security measures #
@@ -175,6 +183,23 @@ class TestUtilities(TestCase):
 
 
 
+    def test_generate_image_viewer(self):
+
+        self._reset_django_db()
+
+        code = generate_image_viewer("http://otherdomain/myimage.jpg")
+        assert 'src="http://otherdomain/myimage.jpg"' in code # untouched
+
+        local_img_url = game_file_url("unexisting/img.jpg")
+        code = generate_image_viewer(local_img_url, preset=random.choice(("default", "badalias")))
+        assert "unexisting/img.jpg" in code
+
+        real_img = "personal_files/master/1236637123369.jpg"
+        utilities.check_is_game_file(real_img)
+        local_img_url = game_file_url(real_img)
+        code = generate_image_viewer(local_img_url, preset=random.choice(("default", "badalias")))
+        assert real_img in code # as target only
+        assert "thumbs/" in code
 
 
     def test_type_conversions(self):

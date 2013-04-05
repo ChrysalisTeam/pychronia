@@ -282,6 +282,7 @@ class BaseGameTestCase(TestCase):
         from django.test.utils import setup_test_environment ## ,???
         from django.core import management
         management.call_command('syncdb', verbosity=0, interactive=False)
+        management.call_command('migrate', verbosity=1, interactive=False)
         management.call_command('flush', verbosity=0, interactive=False)
 
 

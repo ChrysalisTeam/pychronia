@@ -23,7 +23,8 @@ import urllib
 from textwrap import dedent
 from easy_thumbnails.templatetags.thumbnail import thumbnail_url
 from easy_thumbnails.files import get_thumbnailer
-from rpgweb.storage import protected_game_file_system_storage
+from rpgweb.storage import protected_game_file_system_storage, \
+    get_game_thumbnailer
 
 register = django.template.Library() # IMPORTANT, module-level object used by templates !
 
@@ -68,7 +69,7 @@ def game_file_img(a="", b="", c="", d="", e="", f="", alias=None):
     rel_path = "".join((a, b, c, d, e, f))
     if alias is not None:
         try:
-            thumb = get_thumbnailer(protected_game_file_system_storage, relative_name=rel_path)[alias] # we enforce the GAME_FILES storage here!
+            thumb = get_game_thumbnailer(rel_path)[alias] # we enforce the GAME_FILES storage here!
         except Exception, e:
             print("ERROR GENERATING game_file_img ", rel_path, alias, repr(e))
             return ''

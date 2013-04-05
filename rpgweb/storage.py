@@ -6,6 +6,7 @@ import os
 from django.core.files.storage import FileSystemStorage
 from .utilities import config
 from rpgweb.common import game_file_url
+from easy_thumbnails.files import get_thumbnailer
 
 
 class ProtectedGameFileSystemStorage(FileSystemStorage):
@@ -23,3 +24,8 @@ class ProtectedGameFileSystemStorage(FileSystemStorage):
         return game_file_url(name)
 
 protected_game_file_system_storage = ProtectedGameFileSystemStorage()
+
+
+def get_game_thumbnailer(rel_path):
+    assert not rel_path.startswith("/")
+    return get_thumbnailer(protected_game_file_system_storage, relative_name=rel_path)

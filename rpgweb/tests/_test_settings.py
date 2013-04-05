@@ -107,6 +107,11 @@ THUMBNAIL_CHECK_CACHE_MISS = True # can regenerate SQL table from storage
 
 THUMBNAIL_ALIASES = { '': {
     # project-wide aliases here
+    'default' : { # NECESSARY
+        'autocrop': True, # remove useless whitespace
+        'size': (300, 200), # one of these can be 0
+        #'crop': "scale", # True or <smart|scale|W,H>
+    },
     'item_avatar' : {
         'autocrop': True, # remove useless whitespace
         'size': (150, 0), # one of these can be 0
