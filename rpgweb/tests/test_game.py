@@ -555,6 +555,10 @@ class TestDatamanager(BaseGameTestCase):
         assert not dm.data["friendships"]["sealed"]
 
         with pytest.raises(AbnormalUsageError):
+            dm.propose_friendship(dm.anonymous_login, "guy1")
+        with pytest.raises(AbnormalUsageError):
+            dm.propose_friendship("guy1", dm.anonymous_login)
+        with pytest.raises(AbnormalUsageError):
             dm.propose_friendship("guy1", "guy1") # auto-friendship impossible
 
         assert not dm.propose_friendship("guy2", "guy1") # proposes
@@ -1796,7 +1800,7 @@ class TestDatamanager(BaseGameTestCase):
         # use django user, without privileges or inactive #
 
         now = timezone.now()
-        user = User(username='fakename', email='my@email.fr',
+        django_user = User(username='fakename', email='my@email.fr',
                       is_staff=False, is_active=True, is_superuser=False,
                       last_login=now, date_joined=now)
 
@@ -1807,25 +1811,25 @@ class TestDatamanager(BaseGameTestCase):
         for i in range(6):
 
             if random.choice((True, False)):
-                user.is_active = True
-                user.is_staff = user.is_superuser = False
+                django_user.is_active = True
+                django_user.is_staff = django_user.is_superuser = False
             else:
-                user.is_active = False
-                user.is_staff = random.choice((True, False))
-                if user.is_staff:
-                    user.is_superuser = random.choice((True, False))
+                django_user.is_active = False
+                django_user.is_staff = random.choice((True, False))
+                if django_user.is_staff:
+                    django_user.is_superuser = random.choice((True, False))
                 else:
-                    user.is_superuser = False
+                    django_user.is_superuser = False
 
             requested_impersonation_target = random.choice((None, master_login, player_login, anonymous_login))
             requested_impersonation_writability = random.choice((True, False, None))
             res = self.dm.authenticate_with_session_data(session_ticket.copy(), # COPY
                                                    requested_impersonation_target=requested_impersonation_target,
                                                    requested_impersonation_writability=requested_impersonation_writability,
-                                                   django_user=user)
+                                                   django_user=django_user)
             assert res == {u'game_username': None,
                            u'impersonation_target': None, # we can't impersonate because inactive or not staff user
-                           u'impersonation_writability': requested_impersonation_writability if not requested_impersonation_target else None, # blocked if impersonation attempt
+                           u'impersonation_writability': None, # blocked because non-privileged user
                            u'game_instance_id': TEST_GAME_INSTANCE_ID}
             assert self.dm.user.username == anonymous_login
             assert self.dm.user.has_write_access
@@ -1839,16 +1843,16 @@ class TestDatamanager(BaseGameTestCase):
 
             # then we look at impersonation by django super user #
 
-            user.is_active = True
-            user.is_staff = True
-            user.is_superuser = random.choice((True, False))
+            django_user.is_active = True
+            django_user.is_staff = True
+            django_user.is_superuser = random.choice((True, False))
 
             requested_impersonation_target = random.choice((None, master_login, player_login, anonymous_login))
             requested_impersonation_writability = random.choice((True, False, None))
             res = self.dm.authenticate_with_session_data(session_ticket.copy(), # COPY
                                                    requested_impersonation_target=requested_impersonation_target,
                                                    requested_impersonation_writability=requested_impersonation_writability,
-                                                   django_user=user)
+                                                   django_user=django_user)
             assert res == {u'game_username': None, # left as None!
                            u'impersonation_target': requested_impersonation_target, # no saving of fallback impersonation into session
                            u'impersonation_writability': requested_impersonation_writability,
@@ -1892,7 +1896,8 @@ class TestDatamanager(BaseGameTestCase):
 
         # build complete request
 
-        # Impersonation control with can_impersonate()
+
+        # Impersonation control with can_impersonate() - THAT TEST COULD BE MOVED SOEMWHERE ELSE
         assert not self.dm.can_impersonate(master_login, master_login)
         assert self.dm.can_impersonate(master_login, player_login)
         assert self.dm.can_impersonate(master_login, anonymous_login)
@@ -2045,6 +2050,72 @@ class TestDatamanager(BaseGameTestCase):
             assert self.dm.user.impersonation_writability == writability # well saved
             assert self.dm.user.real_username == master_login
             assert not self.dm.user.has_notifications() # IMPORTANT - no error message
+
+
+
+    @for_core_module(PlayerAuthentication)
+    def test_impersonation_by_character(self):
+
+        django_user = None
+        if random.choice((True, False)):
+            now = timezone.now()
+            django_user = User(username='fakename', email='my@email.fr',
+                          is_staff=random.choice((True, False)), is_active=random.choice((True, False)),
+                          is_superuser=random.choice((True, False)), last_login=now, date_joined=now)
+
+        player_name = "guy1"
+        other_player = "guy2"
+        session_ticket = {'game_instance_id': TEST_GAME_INSTANCE_ID, 'impersonation_target': None,
+                            'impersonation_writability': None, 'game_username': player_name}
+
+        if random.choice((True, False)):
+            if random.choice((True, False)):
+                self.dm.propose_friendship(player_name, other_player)
+            else:
+                self.dm.propose_friendship(other_player, player_name)
+
+        self.dm.authenticate_with_session_data(session_ticket,
+                                                 requested_impersonation_target=other_player,
+                                                 requested_impersonation_writability=random.choice((True, False)),
+                                                 django_user=django_user)
+        session_ticket = {'game_instance_id': TEST_GAME_INSTANCE_ID, 'impersonation_target': None,
+                            'impersonation_writability': None, 'game_username': player_name} # writability change rejected as well
+        assert self.dm.username == player_name # no impersonation, even if friendship proposals
+        assert self.dm.user.has_write_access
+        assert not self.dm.user.is_superuser
+        assert not self.dm.user.is_impersonation
+        assert not self.dm.user.impersonation_target
+        assert not self.dm.user.impersonation_writability
+        assert self.dm.user.real_username == player_name
+
+
+        # we finish the friendship
+        try:
+            self.dm.propose_friendship(player_name, other_player)
+        except AbnormalUsageError:
+            pass
+        try:
+            self.dm.propose_friendship(other_player, player_name)
+        except AbnormalUsageError:
+            pass
+        assert self.dm.are_friends(player_name, other_player)
+
+        self.dm.authenticate_with_session_data(session_ticket,
+                                                 requested_impersonation_target=other_player,
+                                                 requested_impersonation_writability=random.choice((True, False)),
+                                                 django_user=django_user)
+        session_ticket = {'game_instance_id': TEST_GAME_INSTANCE_ID, 'impersonation_target': None,
+                            'impersonation_writability': None, 'game_username': player_name} # writability change rejected in ANY CASE
+        assert self.dm.username == other_player # no impersonation, even if friendship proposals
+        assert not self.dm.user.has_write_access
+        assert not self.dm.user.is_superuser
+        assert self.dm.user.is_impersonation
+        assert self.dm.user.impersonation_target == other_player
+        assert not self.dm.user.impersonation_writability
+        assert self.dm.user.real_username == player_name # well kept
+
+
+
 
 
     @for_core_module(PlayerAuthentication)

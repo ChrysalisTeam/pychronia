@@ -552,10 +552,10 @@ class PlayerAuthentication(BaseDataManager):
         return dict(display_impersonation_shortcuts=display_impersonation_shortcuts,
                     impersonation_targets=impersonation_targets,
                     has_writability_control=has_writability_control,
-                    
+
                     current_impersonation_target=self.user.impersonation_target,
                     current_impersonation_writability=self.user.impersonation_writability)
-        
+
 
     def _compute_new_session_data(self,
                                    session_ticket,
@@ -593,7 +593,7 @@ class PlayerAuthentication(BaseDataManager):
             if django_user and django_user.is_active and (django_user.is_staff or django_user.is_superuser):
                 is_superuser = True
 
-        if requested_impersonation_target:
+        if requested_impersonation_target is not None:
             # we filter out forbidden impersonation choices #
             if is_superuser or (game_username and self.can_impersonate(game_username, requested_impersonation_target)):
                 pass # OK, impersonation granted
@@ -601,6 +601,13 @@ class PlayerAuthentication(BaseDataManager):
                 # here we don't erase the session data, but this stops impersonation completely
                 requested_impersonation_target = requested_impersonation_writability = None # TODO FIXME TEST THAT CURRENT GAME USERNAME REMAINS
                 self.user.add_error(_("Unauthorized user impersonation detected: %s") % requested_impersonation_target)
+
+        if requested_impersonation_writability is not None:
+            if is_superuser or (game_username and self.is_master(game_username)):
+                pass # OK, writability control authorized
+            else:
+                self.logger.critical("Attempt at controlling impersonation writability (%s) by non-privileged player %r", requested_impersonation_writability, game_username)
+                requested_impersonation_writability = None # we just ignore that flag for now, no exception raised
 
         return dict(is_superuser=is_superuser,
                     game_username=game_username,
@@ -965,7 +972,8 @@ class FriendshipHandling(BaseDataManager):
         """
         assert recipient
         username = self._resolve_username(username)
-        assert self.is_character(username) and self.is_character(recipient)
+        if not self.is_character(username) or not self.is_character(recipient):
+            raise AbnormalUsageError(_("Forbidden friendship proposal: %s -> %s"), username, recipient)
         if username == recipient:
             raise AbnormalUsageError(_("User %s can't be friend with himself") % username)
         if self.are_friends(username, recipient):

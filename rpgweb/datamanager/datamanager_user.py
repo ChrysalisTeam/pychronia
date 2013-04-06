@@ -59,6 +59,7 @@ class GameUser(object):
         self._effective_username = _effective_username
 
         assert len([item for item in (self.is_master, self.is_character, self.is_anonymous) if item]) == 1
+        assert self.is_superuser or datamanager.is_master(self._real_username) or not self.impersonation_writability # normal players can NEVER impersonate with write access
 
         self._datamanager = weakref.ref(datamanager)
 
