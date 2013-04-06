@@ -529,26 +529,28 @@ class PlayerAuthentication(BaseDataManager):
         return possible_impersonations
 
     @readonly_method
-    def ________get_current_user_impersonation_capabilities(self):
-        AAAAAAAA
+    def get_current_user_impersonation_capabilities(self):
         # safe default values
         display_impersonation_shortcuts = False
         impersonation_targets = []
         has_writability_control = False
 
-        if self.user.is_superuser or self.user.is_master:
+        real_username = self.user.real_username
+        if self.user.is_superuser or self.is_master(real_username):
             display_impersonation_shortcuts = True
-            impersonation_targets = self.get_available_logins()
+            impersonation_targets = self.get_available_logins() if self.user.is_superuser else self.get_impersonation_targets(real_username)
             has_writability_control = True
-            if self.user.is_master:
+            if not self.user.is_superuser and self.user.is_master:
+                assert real_username == self.master_login
                 assert not self.user.is_impersonation # no one except super user can, at the moment, impersonate master...
-                assert impersonation_targets == self.get_impersonation_targets(self.master_login) # we optimized out
+                assert impersonation_targets == self.get_impersonation_targets(self.master_login)
         else:
             # we don't care about current impersonation status of player here
-            real_username = self.user.real_username
             assert self.is_character(real_username) or self.is_anonymous(real_username)
             impersonation_targets = self.get_impersonation_targets(username=real_username) # INCLUDING ANONYMOUS, for fun
 
+        assert not self.user.impersonation_target or self.user.impersonation_target in impersonation_targets
+        assert has_writability_control or not self.user.impersonation_writability
         return dict(display_impersonation_shortcuts=display_impersonation_shortcuts,
                     impersonation_targets=impersonation_targets,
                     has_writability_control=has_writability_control,

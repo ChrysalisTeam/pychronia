@@ -1839,7 +1839,13 @@ class TestDatamanager(BaseGameTestCase):
             assert self.dm.user.has_notifications() == bool(requested_impersonation_target)
             self.dm.user.discard_notifications()
 
-
+            # ANONYMOUS CASE
+            expected_capabilities = dict(display_impersonation_shortcuts=False,
+                                        impersonation_targets=[],
+                                        has_writability_control=False,
+                                        current_impersonation_target=None,
+                                        current_impersonation_writability=False)
+            assert self.dm.get_current_user_impersonation_capabilities() == expected_capabilities
 
             # then we look at impersonation by django super user #
 
@@ -1864,10 +1870,18 @@ class TestDatamanager(BaseGameTestCase):
             assert self.dm.user.is_superuser
             assert self.dm.user.is_impersonation == bool(requested_impersonation_target)
             assert self.dm.user.impersonation_target == requested_impersonation_target
-            assert self.dm.user.impersonation_writability == requested_impersonation_writability
+            assert self.dm.user.impersonation_writability == bool(requested_impersonation_writability)
             assert self.dm.user.real_username == anonymous_login # LEFT ANONYMOUS, superuser status does it all
             assert not self.dm.user.has_notifications()
             self.dm.user.discard_notifications()
+
+            # SUPERUSER CASE
+            expected_capabilities = dict(display_impersonation_shortcuts=True,
+                                        impersonation_targets=self.dm.get_available_logins(),
+                                        has_writability_control=True,
+                                        current_impersonation_target=requested_impersonation_target,
+                                        current_impersonation_writability=bool(requested_impersonation_writability))
+            assert self.dm.get_current_user_impersonation_capabilities() == expected_capabilities
 
 
 
@@ -1949,7 +1963,7 @@ class TestDatamanager(BaseGameTestCase):
             assert not self.dm.user.is_superuser
             assert self.dm.user.is_impersonation
             assert self.dm.user.impersonation_target == player_login
-            assert self.dm.user.impersonation_writability == writability
+            assert self.dm.user.impersonation_writability == bool(writability)
             assert self.dm.user.real_username == master_login
             assert not self.dm.user.has_notifications()
 
@@ -1991,9 +2005,17 @@ class TestDatamanager(BaseGameTestCase):
             assert not self.dm.user.is_superuser
             assert self.dm.user.is_impersonation
             assert self.dm.user.impersonation_target == anonymous_login
-            assert self.dm.user.impersonation_writability == writability
+            assert self.dm.user.impersonation_writability == bool(writability)
             assert self.dm.user.real_username == master_login
             assert not self.dm.user.has_notifications()
+
+            # MASTER CASE
+            expected_capabilities = dict(display_impersonation_shortcuts=True,
+                                        impersonation_targets=[self.dm.anonymous_login] + self.dm.get_character_usernames(),
+                                        has_writability_control=True,
+                                        current_impersonation_target=anonymous_login,
+                                        current_impersonation_writability=bool(writability))
+            assert self.dm.get_current_user_impersonation_capabilities() == expected_capabilities
 
 
             # Impersonation stops completely because of unauthorized impersonation attempt
@@ -2027,7 +2049,7 @@ class TestDatamanager(BaseGameTestCase):
             assert not self.dm.user.is_superuser
             assert self.dm.user.is_impersonation
             assert self.dm.user.impersonation_target == anonymous_login
-            assert self.dm.user.impersonation_writability == writability
+            assert self.dm.user.impersonation_writability == bool(writability)
             assert self.dm.user.real_username == master_login
             assert not self.dm.user.has_notifications()
 
@@ -2047,7 +2069,7 @@ class TestDatamanager(BaseGameTestCase):
             assert not self.dm.user.is_superuser
             assert not self.dm.user.is_impersonation
             assert not self.dm.user.impersonation_target
-            assert self.dm.user.impersonation_writability == writability # well saved
+            assert self.dm.user.impersonation_writability == bool(writability) # well saved
             assert self.dm.user.real_username == master_login
             assert not self.dm.user.has_notifications() # IMPORTANT - no error message
 
@@ -2088,6 +2110,14 @@ class TestDatamanager(BaseGameTestCase):
         assert not self.dm.user.impersonation_writability
         assert self.dm.user.real_username == player_name
 
+        expected_capabilities = dict(display_impersonation_shortcuts=False,
+                                    impersonation_targets=[], # needs frienships
+                                    has_writability_control=False,
+                                    current_impersonation_target=None,
+                                    current_impersonation_writability=False)
+        assert self.dm.get_current_user_impersonation_capabilities() == expected_capabilities
+
+
 
         # we finish the friendship
         try:
@@ -2114,7 +2144,16 @@ class TestDatamanager(BaseGameTestCase):
         assert not self.dm.user.impersonation_writability
         assert self.dm.user.real_username == player_name # well kept
 
-
+        
+        expected_capabilities = dict(display_impersonation_shortcuts=False,
+                                    impersonation_targets=[other_player],
+                                    has_writability_control=False,
+                                    current_impersonation_target=other_player,
+                                    current_impersonation_writability=False)
+        assert self.dm.get_current_user_impersonation_capabilities() == expected_capabilities
+                                                                             
+                                                                             
+                                                                     
 
 
 

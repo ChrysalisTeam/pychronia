@@ -20,11 +20,11 @@ class GameUser(object):
         Existence of provided logins is checked, not the permission to use them 
         (which must be done at upper levels).
         
-        If is_superuser (django notion, != is_master), user can impersonate anyone, 
+        If is_superuser (django notion, different from is_master), user can impersonate anyone, 
         yet keep his real_username as anonymous.
         """
         assert impersonation_writability in (None, True, False)
-
+        impersonation_writability = bool(impersonation_writability) # we don't care about genesis details here, None => False
         # data normalization #
         _game_anonymous_login = datamanager.anonymous_login
         _available_logins = datamanager.get_available_logins()
