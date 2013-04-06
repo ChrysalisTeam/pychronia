@@ -18,6 +18,8 @@ def rpgweb_template_context(request):
 
         datamanager = request.datamanager
 
+        ### datamanager.user.add_warning("THIS IZ A TEST")
+
         # WARNING - must be BEFORE messages retrieval!
         writability_data = datamanager.determine_actual_game_writability()
         if writability_data["reason"]:

@@ -93,7 +93,7 @@ body {
     position: relative;
     z-index: 3000;
 
-    #full_header_center {
+    #full_header_background {
         margin: auto;
         //min-width: 1000px;
         height: 167px;
@@ -105,35 +105,12 @@ body {
             position: center;
         }
 
-
-        #title_table {
-
-            display: table;
+        #full_header_center {
             position: relative;
             width: 1000px;
             margin: 0px auto 0px;
             padding: 13px 0 0;
-            table-layout: fixed;
 
-
-            .notification_flag {
-
-                display: block;
-                position: absolute;
-                top: -70px;
-                left: 50%;
-                margin-left: -201px; // half of image size
-                padding: 120px 50px 50px;
-                width: 301px;
-                height: 129px;
-                background: {
-                    image: url('#{$IMGS}backgrounds/flag_red.png');
-                    repeat: no-repeat;
-                    position: bottom center;
-                    clip: padding-box;
-                    size: cover;
-                }
-            }
 
 
             .notification_panel {
@@ -180,40 +157,67 @@ body {
             }
 
 
+            #title_table {
 
+                display: table;
+                table-layout: fixed;
+                width: 1000px;
+                margin: 0px auto 0px;
 
-            @mixin top_labels {
-                display: table-cell;
-                vertical-align: middle;
-                height: 44px;
-            }
-            .motto{
-                @include top_labels;
-                width: 225px;
-                &.left_image {
+                .notification_flag {
+
+                    display: block;
+                    position: absolute;
+                    top: -70px;
+                    left: 50%;
+                    margin-left: -201px; // half of image size
+                    padding: 120px 50px 50px;
+                    width: 301px;
+                    height: 129px;
                     background: {
-                        image: url('#{$IMGS}titles/ad_augusta.png');
+                        image: url('#{$IMGS}backgrounds/flag_red.png');
                         repeat: no-repeat;
-                        position: center center;
+                        position: bottom center;
+                        clip: padding-box;
+                        size: cover;
                     }
                 }
-                &.right_image {
-                    background: {
-                        image: url('#{$IMGS}titles/per_angusta.png');
-                        repeat: no-repeat;
-                        position: center center;
+
+
+
+                @mixin top_labels {
+                    display: table-cell;
+                    vertical-align: middle;
+                    height: 44px;
+                }
+                .motto{
+                    @include top_labels;
+                    width: 225px;
+                    &.left_image {
+                        background: {
+                            image: url('#{$IMGS}titles/ad_augusta.png');
+                            repeat: no-repeat;
+                            position: center center;
+                        }
+                    }
+                    &.right_image {
+                        background: {
+                            image: url('#{$IMGS}titles/per_angusta.png');
+                            repeat: no-repeat;
+                            position: center center;
+                        }
                     }
                 }
-            }
 
-            #site_title{
-               @include top_labels;
-               text-align: center;
-               img {
-                 vertical-align: center;
-               }
-            }
+                #site_title{
+                   @include top_labels;
+                   text-align: center;
+                   img {
+                     vertical-align: center;
+                   }
+                }
 
+            }
         }
 
         #notification_table {

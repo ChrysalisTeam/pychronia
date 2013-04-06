@@ -553,7 +553,7 @@ class PlayerAuthentication(BaseDataManager):
         assert has_writability_control or not self.user.impersonation_writability
         return dict(display_impersonation_shortcuts=display_impersonation_shortcuts,
                     impersonation_targets=impersonation_targets,
-                    has_writability_control=has_writability_control,
+                    has_writability_control=has_writability_control, # TODO FIXME REMOVE THAT STUFF
 
                     current_impersonation_target=self.user.impersonation_target,
                     current_impersonation_writability=self.user.impersonation_writability)

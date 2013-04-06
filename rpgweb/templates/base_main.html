@@ -366,26 +366,33 @@
 
 
 {% block top_left_motto %}
-<div class="motto">
-	{% trans "Impersonation:" %}
-	<select name="">
-	  <option value="volvo">Volvo</option>
-	  <option value="saab">Saab</option>
-	  <option value="mercedes">Mercedes</option>
-	  <option value="audi">Audi</option>
-	</select>
-</div>{% endblock %}
+{% if not impersonation_capabilities.display_impersonation_shortcuts %}
+    {{ block.super }}
+{% else %}
+	<div class="motto">
+		{% trans "Impersonation:" %}
+		<select name="{{ impersonation_capabilities.impersonation_target_post_variable }}">
+			<option value="">{% trans "Choose..." %}</option>
+			{% for target in impersonation_capabilities.impersonation_targets %}
+		    <option value="{{ target }}" {% if impersonation_capabilities.current_impersonation_target == target %}selected{% endif %}>{{ target|capfirst }}</option>
+		    {% endfor %}
+		</select>
+    </div>
+{% endif %}
+{% endblock %}
 
 {% block top_right_motto %}
-<div class="motto">
-	{% trans "Writability:" %}
-    <select name="">
-      <option value="volvo">Volvo</option>
-      <option value="saab">Saab</option>
-      <option value="mercedes">Mercedes</option>
-      <option value="audi">Audi</option>
-    </select>
-</div>
+{% if not impersonation_capabilities.display_impersonation_shortcuts %}
+    {{ block.super }}
+{% else %}
+	<div class="motto">
+	    {% trans "Writability:" %}
+	    <select name="{{ impersonation_capabilities.impersonation_writability_post_variable }}">
+	      <option value="false">{% trans "Read-only" %}</option>
+	      <option value="true" {% if impersonation_capabilities.current_impersonation_writability == target %}selected{% endif %}>{% trans "Writable" %}</option>
+	    </select>
+	</div>
+{% endif %}
 {% endblock %}
 
 

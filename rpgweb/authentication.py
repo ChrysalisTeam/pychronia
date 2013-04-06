@@ -67,7 +67,7 @@ def try_authenticating_with_session(request):
         requested_impersonation_target = request.POST.get(IMPERSONATION_TARGET_POST_VARIABLE, None) # beware, != "" here
         requested_impersonation_writability = request.POST.get(IMPERSONATION_WRITABILITY_POST_VARIABLE, None) # ternary value
         if requested_impersonation_writability is not None:
-            requested_impersonation_writability = True if requested_impersonation_writability.lower() == "true" else False
+            requested_impersonation_writability = True if requested_impersonation_writability.strip().lower() == "true" else False
 
         request.POST.clear() # thanks to our middleware that made it mutable...
         request.method = "GET" # dirty, isn't it ?

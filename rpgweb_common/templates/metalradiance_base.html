@@ -97,24 +97,28 @@
 
     <div id="full_header">
 
-        <div id="full_header_center">
+        <div id="full_header_background">
 
-            <div id="title_table">
-                {% block notification_banners %}{% endblock %}
-                {% block top_left_motto %}<div class="motto left_image"></div>{% endblock %}
-                <div id="site_title">
-                    {% block site_title %}
-                    <a href="/"><img src="{{ STATIC_URL }}MetalRadiance/img/titles/chrysalis.png"/></a></div>
-                    {% endblock %}
-                {% block top_right_motto %}<div class="motto right_image"></div>{% endblock %}
+        	<div id="full_header_center">
+
+	            {% block notification_banners %}{% endblock %}
+
+	            <div id="title_table">
+	                {% block top_left_motto %}<div class="motto left_image"></div>{% endblock %}
+	                <div id="site_title">
+	                    {% block site_title %}
+	                    <a href="/"><img src="{{ STATIC_URL }}MetalRadiance/img/titles/chrysalis.png"/></a></div>
+	                    {% endblock %}
+	                {% block top_right_motto %}<div class="motto right_image"></div>{% endblock %}
+	            </div>
+
+	            <div id="notification_table">
+	                <div class="carving"></div>
+	                <div class="separator"></div>
+	                <div class="carving"></div>
+	            </div>
+
             </div>
-
-            <div id="notification_table">
-                <div class="carving"></div>
-                <div class="separator"></div>
-                <div class="carving"></div>
-            </div>
-
         </div>
 
     </div>

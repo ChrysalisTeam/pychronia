@@ -973,7 +973,7 @@ body:after {
   position: relative;
   z-index: 3000;
 }
-#full_header #full_header_center {
+#full_header #full_header_background {
   margin: auto;
   height: 167px;
   text-align: center;
@@ -981,30 +981,13 @@ body:after {
   background-repeat: no-repeat;
   background-position: center;
 }
-#full_header #full_header_center #title_table {
-  display: table;
+#full_header #full_header_background #full_header_center {
   position: relative;
   width: 1000px;
   margin: 0px auto 0px;
   padding: 13px 0 0;
-  table-layout: fixed;
 }
-#full_header #full_header_center #title_table .notification_flag {
-  display: block;
-  position: absolute;
-  top: -70px;
-  left: 50%;
-  margin-left: -201px;
-  padding: 120px 50px 50px;
-  width: 301px;
-  height: 129px;
-  background-image: url(img/backgrounds/flag_red.png);
-  background-repeat: no-repeat;
-  background-position: bottom center;
-  background-clip: padding-box;
-  background-size: cover;
-}
-#full_header #full_header_center #title_table .notification_panel {
+#full_header #full_header_background #full_header_center .notification_panel {
   padding: 0;
   margin: 0;
   margin-left: -248px;
@@ -1020,7 +1003,7 @@ body:after {
   font-weight: bold;
   color: #ffffff;
 }
-#full_header #full_header_center #title_table .notification_panel .notification_panel_decorations {
+#full_header #full_header_background #full_header_center .notification_panel .notification_panel_decorations {
   background-image: url(img/backgrounds/notification_panel_decorations.png);
   background-repeat: no-repeat;
   background-position: bottom center;
@@ -1031,37 +1014,58 @@ body:after {
   width: 350px;
   padding: 5px 73px 28px;
 }
-#full_header #full_header_center #title_table .notification_panel .notification_panel_decorations .notification_panel_content {
+#full_header #full_header_background #full_header_center .notification_panel .notification_panel_decorations .notification_panel_content {
   opacity: 1;
   max-height: 120px;
   overflow: visible;
 }
-#full_header #full_header_center #title_table .motto {
+#full_header #full_header_background #full_header_center #title_table {
+  display: table;
+  table-layout: fixed;
+  width: 1000px;
+  margin: 0px auto 0px;
+}
+#full_header #full_header_background #full_header_center #title_table .notification_flag {
+  display: block;
+  position: absolute;
+  top: -70px;
+  left: 50%;
+  margin-left: -201px;
+  padding: 120px 50px 50px;
+  width: 301px;
+  height: 129px;
+  background-image: url(img/backgrounds/flag_red.png);
+  background-repeat: no-repeat;
+  background-position: bottom center;
+  background-clip: padding-box;
+  background-size: cover;
+}
+#full_header #full_header_background #full_header_center #title_table .motto {
   display: table-cell;
   vertical-align: middle;
   height: 44px;
   width: 225px;
 }
-#full_header #full_header_center #title_table .motto.left_image {
+#full_header #full_header_background #full_header_center #title_table .motto.left_image {
   background-image: url(img/titles/ad_augusta.png);
   background-repeat: no-repeat;
   background-position: center center;
 }
-#full_header #full_header_center #title_table .motto.right_image {
+#full_header #full_header_background #full_header_center #title_table .motto.right_image {
   background-image: url(img/titles/per_angusta.png);
   background-repeat: no-repeat;
   background-position: center center;
 }
-#full_header #full_header_center #title_table #site_title {
+#full_header #full_header_background #full_header_center #title_table #site_title {
   display: table-cell;
   vertical-align: middle;
   height: 44px;
   text-align: center;
 }
-#full_header #full_header_center #title_table #site_title img {
+#full_header #full_header_background #full_header_center #title_table #site_title img {
   vertical-align: center;
 }
-#full_header #full_header_center #notification_table {
+#full_header #full_header_background #notification_table {
   display: table;
   width: 840px;
   margin: 0px auto 0px;
@@ -1069,12 +1073,12 @@ body:after {
   table-layout: fixed;
   vertical-align: center;
 }
-#full_header #full_header_center #notification_table div {
+#full_header #full_header_background #notification_table div {
   display: table-cell;
   height: 40px;
   padding: 4px 10px;
 }
-#full_header #full_header_center #notification_table .carving {
+#full_header #full_header_background #notification_table .carving {
   width: 163px;
   background-image: url(img/backgrounds/carving1.png);
   background-repeat: no-repeat;
