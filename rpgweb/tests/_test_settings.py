@@ -11,7 +11,7 @@ TEMPLATE_DEBUG = DEBUG
 
 
 # Make this unique, and don't share it with anybody.
-SECRET_KEY = '=%f!!2^yh5gk92728363982827p8725wsdfsdf2kz^$vbjy'
+SECRET_KEY = '=%f!!2^yh5gk92728363982827p8725wsdQHjsgubGFjkqnfsdf2kz^$vbjy'
 
 SITE_DOMAIN = "http://127.0.0.1" # NO trailing slash !
 

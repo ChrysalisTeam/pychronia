@@ -1,8 +1,6 @@
 
 {% comment %} !! Remember that these div ids can be used as url anchors : "/my/url/#1-fa4" ! {% endcomment %}
 
-ACCESS CONTROL ON HELP PAGES !!!!!!!!!!!!
-
 
 
 - messaging reply/resend + templates + filtering?
@@ -36,6 +34,8 @@ ACCESS CONTROL ON HELP PAGES !!!!!!!!!!!!
 - filling of footer with game info DONE
 - global management of ajax errors, with popups DONE
 - add protections to ensure that all file requests never leave GAME_FILES_ROOT - ALREADY OK
+- ACCESS CONTROL ON HELP PAGES -> ALREADY DONE
+
 
 ====================
 

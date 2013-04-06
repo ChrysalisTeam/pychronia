@@ -35,7 +35,7 @@ from django.template.defaultfilters import slugify
 from . import utilities
 from .utilities import config, SDICT, Enum
 from .utilities.counter import Counter
-
+from .utilities.encryption import unicode_decrypt, unicode_encrypt, hash
 
 _undefined = object()
 
@@ -172,9 +172,14 @@ def hash_url_path(url_path):
     Only accepts relative url paths.
     """
     assert not url_path.startswith("/")
-    hash = hashlib.sha1(config.SECRET_KEY + url_path.lstrip("/")).digest() # in prod, we remove the possible "/" anyway
+    url_hash = hash(url_path.lstrip("/"), length=8) # in prod, we remove the possible "/" anyway
+    assert url_hash == url_hash.lower()
+    return url_hash
+    '''
+    hash = hashlib.sha1(config.SECRET_KEY + url_path.lstrip("/")).digest() 
     url_hash = base64.b32encode(hash)[:8].lower()
     return url_hash
+    '''
 
 
 def game_file_url(rel_path):

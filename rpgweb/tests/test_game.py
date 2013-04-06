@@ -2685,14 +2685,20 @@ class TestHttpRequests(BaseGameTestCase):
         assert response.status_code == 404
 
         url = reverse(views.view_help_page, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID,
+                                                        keyword="qsd8778GAVVV"))
+        response = self.client.get(url)
+        assert response.status_code == 404
+
+        url = reverse(views.view_help_page, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID,
                                                         keyword="homepage"))
         response = self.client.get(url)
         assert response.status_code == 200
 
+        assert self.dm.get_help_page("runic_translation")
         url = reverse(views.view_help_page, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID,
                                                         keyword="runic_translation"))
         response = self.client.get(url)
-        assert response.status_code == 404
+        assert response.status_code == 404 # ACCESS FORBIDDEN
 
         url = reverse(views.view_help_page, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID,
                                                         keyword="logo_animation"))

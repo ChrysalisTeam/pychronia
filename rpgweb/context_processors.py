@@ -31,7 +31,9 @@ def rpgweb_template_context(request):
         if datamanager.get_help_page(view_name):
             help_keyword = view_name
 
-        possible_impersonations = datamanager.get_impersonation_targets(datamanager.user.real_username) # REAL user!!
+        impersonation_capabilities = datamanager.get_current_user_impersonation_capabilities()
+        impersonation_capabilities.update(impersonation_target_post_variable=IMPERSONATION_TARGET_POST_VARIABLE,
+                                          impersonation_writability_post_variable=IMPERSONATION_WRITABILITY_POST_VARIABLE)
 
         notifications = get_messages(request) # lazy 'messages' context variable.
         notifications = list(set(notifications)) # order doesn't matter, and we don't want duplicates!
@@ -52,9 +54,7 @@ def rpgweb_template_context(request):
 
                 'help_keyword': help_keyword,
 
-                'possible_impersonations': possible_impersonations,
-                'impersonation_target_post_variable': IMPERSONATION_TARGET_POST_VARIABLE,
-                'impersonation_writability_post_variable': IMPERSONATION_WRITABILITY_POST_VARIABLE,
+                'impersonation_capabilities': impersonation_capabilities,
 
                 # replacement of django.contrib.messages middleware
                 'notification_type': notification_type,

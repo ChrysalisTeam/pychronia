@@ -3486,7 +3486,7 @@ class HelpPages(BaseDataManager):
         if self.HELP_CATEGORY in value["categories"]:
             return value
         else:
-            return None
+            return None # no leaks
         assert False
 
 

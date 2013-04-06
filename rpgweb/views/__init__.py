@@ -108,8 +108,9 @@ def logo_animation(request, template_name='utilities/item_3d_viewer.html'):
 
 @register_view(access=UserAccess.anonymous, always_available=True)
 def view_help_page(request, keyword, template_name='generic_operations/help_page.html'):
-
-    # FIXME TODO - check access rights to the concerned view !!!
+    """
+    Access for targeted pages is checked here!
+    """
 
     datamanager = request.datamanager
     allowed_entry = None
@@ -117,7 +118,7 @@ def view_help_page(request, keyword, template_name='generic_operations/help_page
     if keyword:
         if keyword in datamanager.get_game_views():
             token = datamanager.get_game_view_access_token(keyword)
-            if token == AccessResult.available:
+            if token == AccessResult.available: # IMPORTANT
                 entry = datamanager.get_help_page(keyword)
                 if entry:
                     allowed_entry = entry
@@ -153,9 +154,9 @@ def bug_report_treatment(request):
                                 report_data=report_data)
 
     logging.getLogger("django.request").critical(message) # will also send email with all necessary info
-    
+
     return HttpResponse("OK - bug reported")
-    
+
 
 
 
