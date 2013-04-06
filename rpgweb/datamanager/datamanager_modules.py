@@ -522,11 +522,40 @@ class PlayerAuthentication(BaseDataManager):
 
     @readonly_method
     def get_impersonation_targets(self, username):  #FIXME TODO? USELESS ??
+        """Only for game users, not external superusers."""
         assert username
         possible_impersonations = [target for target in self.get_available_logins()
                                    if self.can_impersonate(username, target)]
         return possible_impersonations
 
+    @readonly_method
+    def get_current_user_impersonation_capabilities(self): 
+ r r r r
+        # safe default values
+        display_impersonation_shortcuts = False
+        impersonation_targets = []
+        has_writability_control = False
+
+        if self.user.is_superuser or self.user.is_master:
+            display_impersonation_shortcuts = True
+            impersonation_targets = self.get_available_logins()
+            has_writability_control = True
+            if self.user.is_master:
+                assert not self.user.is_impersonation # no one except super user can, at the moment, impersonate master...
+                assert impersonation_targets == self.get_impersonation_targets(self.master_login) # we optimized out
+        else:
+            # we don't care about current impersonation status of player here
+            real_username = self.user.real_username
+            assert self.is_character(real_username) or self.is_anonymous(real_username)
+            impersonation_targets = self.get_impersonation_targets(username=real_username) # INCLUDING ANONYMOUS, for fun
+
+        return dict(display_impersonation_shortcuts=display_impersonation_shortcuts,
+                    impersonation_targets=impersonation_targets,
+                    has_writability_control=has_writability_control,
+                    
+                    current_impersonation_target=self.user.username if self.user.is_impersonation else None,
+                    current_impersonation_writability=self.user.has_write_access)
+        
 
     def _compute_new_session_data(self,
                                    session_ticket,

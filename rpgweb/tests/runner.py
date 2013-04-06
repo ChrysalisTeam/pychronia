@@ -39,6 +39,8 @@ if __name__ == "__main__":
     elif "reset_django" in arguments:
         sys.argv[1:] = ("syncdb --noinput --settings=%s" % settings_module).split()
         execute_from_command_line()
+        sys.argv[1:] = ("migrate --noinput --settings=%s" % settings_module).split()
+        execute_from_command_line()
         sys.argv[1:] = ("flush --noinput --settings=%s" % settings_module).split()
         execute_from_command_line()
 

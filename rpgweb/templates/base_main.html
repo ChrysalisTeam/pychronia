@@ -365,6 +365,29 @@
 
 
 
+{% block top_left_motto %}
+<div class="motto">
+	{% trans "Impersonation:" %}
+	<select name="">
+	  <option value="volvo">Volvo</option>
+	  <option value="saab">Saab</option>
+	  <option value="mercedes">Mercedes</option>
+	  <option value="audi">Audi</option>
+	</select>
+</div>{% endblock %}
+
+{% block top_right_motto %}
+<div class="motto">
+	{% trans "Writability:" %}
+    <select name="">
+      <option value="volvo">Volvo</option>
+      <option value="saab">Saab</option>
+      <option value="mercedes">Mercedes</option>
+      <option value="audi">Audi</option>
+    </select>
+</div>
+{% endblock %}
+
 
 {% block site_title %}
     <a href="{% game_view_url "rpgweb.views.homepage" %}"><img src="{{ STATIC_URL }}MetalRadiance/img/titles/anthropia.png"/></a></div>

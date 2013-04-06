@@ -986,7 +986,7 @@ body:after {
   position: relative;
   width: 1000px;
   margin: 0px auto 0px;
-  padding: 9px 0 0;
+  padding: 13px 0 0;
   table-layout: fixed;
 }
 #full_header #full_header_center #title_table .notification_flag {
@@ -1038,21 +1038,23 @@ body:after {
 }
 #full_header #full_header_center #title_table .motto {
   display: table-cell;
+  vertical-align: middle;
   height: 44px;
   width: 225px;
 }
-#full_header #full_header_center #title_table .motto.left {
+#full_header #full_header_center #title_table .motto.left_image {
   background-image: url(img/titles/ad_augusta.png);
   background-repeat: no-repeat;
   background-position: center center;
 }
-#full_header #full_header_center #title_table .motto.right {
+#full_header #full_header_center #title_table .motto.right_image {
   background-image: url(img/titles/per_angusta.png);
   background-repeat: no-repeat;
   background-position: center center;
 }
 #full_header #full_header_center #title_table #site_title {
   display: table-cell;
+  vertical-align: middle;
   height: 44px;
   text-align: center;
 }

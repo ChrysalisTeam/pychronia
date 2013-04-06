@@ -1,10 +1,10 @@
-@charset "UTF-8"; 
-  
+@charset "UTF-8";
+
 @import "_globals.scss";
 
-@import "_corner_decorations.scss";  
+@import "_corner_decorations.scss";
 
-@import "_standard_content.scss"; 
+@import "_standard_content.scss";
 
 @import "_messaging.scss";
 
@@ -26,9 +26,9 @@ html {
 }
 
 img {
-    // filter: url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\'><filter id=\'grayscale\'><feColorMatrix type=\'matrix\' values=\'0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0 0 0 1 0\'/></filter></svg>#grayscale"); 
+    // filter: url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\'><filter id=\'grayscale\'><feColorMatrix type=\'matrix\' values=\'0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0 0 0 1 0\'/></filter></svg>#grayscale");
     /* Firefox 10+, Firefox on Android */
-   
+
     // filter: gray; /* IE6-9 */
     -webkit-filter: grayscale(1);
     //-webkit-filter: grayscale(0.5) blur(10px);
@@ -40,20 +40,20 @@ body {
     width: 100%;
     min-width: 1000px;
     overflow: auto; // needed for djangocms front-editing mode, which uses floats
-    
+
     font-size: 100%;
     //font-size: 18px;
     line-height: 20px;
     font-family: Arial, Helvetica, sans-serif;
-    
-    
+
+
     background-color: black;
     background-image: url('#{$IMGS}backgrounds/nazur_temple_75.jpg');
     background-size: cover;
     background-repeat: no-repeat;
     background-attachment: scroll;
-    background-position: center top; 
-    
+    background-position: center top;
+
     /* useful and little known properties */
     word-spacing: normal; // or length measure
     word-wrap: normal; // or break-word
@@ -61,10 +61,10 @@ body {
     white-space: normal; // or nowrap/pre/pre-line/pre-wrap
     quotes: none; // or string string string string
     text-overflow: ellipsis; // or clip or string, not inherited
-    
+
     //box-sizing: border-box; // content-box|border-box|inherit - very useful, but has some quirks still
-    
-    
+
+
     &:after
     {
     // put here all images to PRELOAD (eg. used in dynamic menus and hover effects)
@@ -84,7 +84,7 @@ body {
     }
 }
 
- 
+
 
 
 
@@ -92,37 +92,37 @@ body {
     width: 100%;
     position: relative;
     z-index: 3000;
-    
+
     #full_header_center {
         margin: auto;
         //min-width: 1000px;
         height: 167px;
         text-align: center;
-        
+
         background: {
             image: url('#{$IMGS}backgrounds/header_center.png');
             repeat: no-repeat;
             position: center;
         }
-  
-    
+
+
         #title_table {
-            
+
             display: table;
             position: relative;
             width: 1000px;
             margin: 0px auto 0px;
-            padding: 9px 0 0;
+            padding: 13px 0 0;
             table-layout: fixed;
-            
-            
+
+
             .notification_flag {
-                
+
                 display: block;
                 position: absolute;
                 top: -70px;
                 left: 50%;
-                margin-left: -201px; // half of image size 
+                margin-left: -201px; // half of image size
                 padding: 120px 50px 50px;
                 width: 301px;
                 height: 129px;
@@ -134,27 +134,27 @@ body {
                     size: cover;
                 }
             }
-            
-            
+
+
             .notification_panel {
                 padding: 0;
                 margin: 0;
                 margin-left: -248px; // half of image size
-                
+
                 display: block;
                 height: auto;
                 position: absolute;
                 top: 0px;
                 left: 50%;
-                
+
                 text-align: center;
                 width: 496px;
                 border: 3px groove $medium_yellow;
                 border-top: 0;
-                
+
                 font-weight: bold;
                 color: $alt_text_color;
-                
+
                 .notification_panel_decorations {
                     background: {
                         image: url('#{$IMGS}backgrounds/notification_panel_decorations.png');
@@ -167,36 +167,37 @@ body {
                     display: block;
                     width: 350px;
                     //height: 100%;
-                    
+
                     padding: 5px 73px 28px;
-                    //z-index: -1;   
-                    
+                    //z-index: -1;
+
                     .notification_panel_content {
                         opacity: 1;
                         max-height: 120px;
                         overflow: visible;
-                   }            
-                }   
+                   }
+                }
             }
-            
-     
-            
-            
+
+
+
+
             @mixin top_labels {
                 display: table-cell;
+                vertical-align: middle;
                 height: 44px;
             }
             .motto{
                 @include top_labels;
                 width: 225px;
-                &.left {
+                &.left_image {
                     background: {
                         image: url('#{$IMGS}titles/ad_augusta.png');
                         repeat: no-repeat;
                         position: center center;
                     }
                 }
-                &.right {
+                &.right_image {
                     background: {
                         image: url('#{$IMGS}titles/per_angusta.png');
                         repeat: no-repeat;
@@ -204,7 +205,7 @@ body {
                     }
                 }
             }
-            
+
             #site_title{
                @include top_labels;
                text-align: center;
@@ -212,8 +213,8 @@ body {
                  vertical-align: center;
                }
             }
-            
-        }  
+
+        }
 
         #notification_table {
             display: table;
@@ -222,52 +223,52 @@ body {
             padding: 5px 10px;
             table-layout: fixed;
             vertical-align: center;
-            
+
             div {
                 display: table-cell;
                 height: 40px;
                 padding: 4px 10px;
             }
             .carving{
-                
+
                 width: 163px;
 
                 background: {
                     image:url('#{$IMGS}backgrounds/carving1.png');
                     repeat:no-repeat;
                 }
-        
+
             }
             .separator{
-                
+
             }
-        }  
-    }        
+        }
+    }
 }
 
 
 
 
 #full_menu {
-    
+
     margin-top: -35px;
     width: 100%;
     position: relative;
     z-index: 2000; // below the title panel
-    
+
     #main_menu {
 
         margin: auto;
         display: table;
         max-width: 960px;
-        
+
         div {
             display: table-cell;
             padding: 0px;
         }
-        
+
         .big_icon_panel {
-            position: relative; 
+            position: relative;
             text-align: center;
             vertical-align: middle;
             width: 90px;
@@ -276,8 +277,8 @@ body {
                 image: url('#{$IMGS}icons/big_icon_bg.png');
                 repeat: no-repeat;
                 position: center;
-            }     
-            
+            }
+
             img {
                /* display: inline-block;
                 margin: auto;
@@ -287,27 +288,27 @@ body {
                 max-width: 100%;
             }
         }
-         
+
         .marble_menu_container {
             z-index: 0;
             padding-top: 12px;
             height: 73px;
-            
+
             .marble_menu {
-                
+
                 @import "_dropdown_menu.scss";
-            
+
                 min-width: 550px;
-                
+
                // TOTAL height must be 73px !
                 height: 35px;
                 padding: 2px 0;
-                
-                border-style: solid; 
-                border-width: 18px 52px 20px 55px; 
+
+                border-style: solid;
+                border-width: 18px 52px 20px 55px;
                 border-image: url('#{$IMGS}backgrounds/menu_border.png') 18 52 20 55 fill round stretch;
             }
-            
+
         }
     }
 }
@@ -316,50 +317,50 @@ body {
 
 
 #full_content {
-     
+
     width: 960px;
     margin: -10px auto 2px;
     padding: 10px;
-    overflow: visible; 
+    overflow: visible;
     @extend .clearfix;
-     
+
     .mini_frame {
-    
+
         position: relative;
         padding: 0px;
-        
+
         width: 280px;
         margin: 7px 10px 10px;
-        overflow: visible; 
-        
+        overflow: visible;
+
         background: transparent url('#{$IMGS}backgrounds/leather_derby_tiled_small.png') repeat center center;
         background-origin: content-box; //padding-box|border-box
         background-clip: content-box;
-        background-position: left top; 
-        
+        background-position: left top;
+
         .mini_frame_content {
             min-height: 45px;
             position: relative;
             margin: -5px; // to cover the background
             padding: 1px 5px;
-            border-style: solid; 
-            border-width: 22px 22px; 
+            border-style: solid;
+            border-width: 22px 22px;
             border-image: url('#{$IMGS}backgrounds/mini_frame4.png') 22 22 repeat;
         }
-        
+
     }
-    
+
     .main_sidebar { // container for miniframes
         padding: 10px;
         margin: 0px;
         overflow: hidden; // important to have a proper size with floats inside
-        
-        .mini_frame { 
+
+        .mini_frame {
             // mini-frames that are inside sidebar must beware of their margins!
             margin: 0 0 20px 0;
         }
     }
-    
+
 
     @mixin main_frame_common{
         // inheritance is slightly buggy...
@@ -367,19 +368,19 @@ body {
         padding: 10px;
         margin: 3px auto;
         background: transparent url('#{$IMGS}backgrounds/leather_bg.jpg') repeat center center;
-        background-clip: content-box; 
+        background-clip: content-box;
     }
-    
+
     .medium_frame { // meant to be floated left or right
         @include main_frame_common;
         width: 630px;
     }
-    
+
     .big_frame {
         @include main_frame_common;
         width: 720px;
-    }    
-    
+    }
+
     .giant_frame {
         @include main_frame_common;
         width: 940px;
@@ -388,28 +389,28 @@ body {
 
     .main_frame_border {
         position: relative;
-        
+
         margin: -15px; // to cover the background
         padding: 2px 6px;
-        border-style: solid; 
-        border-width: 41px 43px 43px 41px; 
+        border-style: solid;
+        border-width: 41px 43px 43px 41px;
         border-image: url('#{$IMGS}backgrounds/big_frame.png') 41 43 43 41 fill round round;
-        
+
         .main_frame_content {
             @extend .clearfix;
             min-width: 200px;
             min-height: 150px;
             margin: 0 20px 55px; // bottom space to avoid collisions with decorations
             padding: 0;
-            overflow: visible; 
+            overflow: visible;
             position: relative;
             z-index: 30; // important for text selection
         }
-    }       
+    }
 }
-      
 
-    
+
+
 #up_footer_wrapper {
 
     clear: both;
@@ -417,7 +418,7 @@ body {
     text-align: center;
     vertical-align: top;
     color: $alt_text_color;
-     
+
     @mixin up_footer_common {
         margin: 0;
         display: inline-block;
@@ -430,34 +431,34 @@ body {
         overflow: visible; // idem...
         background-origin: padding-box; //padding-box|border-box
         background-clip: padding-box;
-        background-position: center top; 
+        background-position: center top;
         position: relative;
-        
+
         a {
           color: $alt_text_color !important;
         }
     }
-    
+
     #up_footer_border_left {
         @include up_footer_common;
         border-style: solid;
         border-width: 0px 0px 0px 121px;
         border-image: url('#{$IMGS}backgrounds/up_footer_left.png') 0 0 0 121 fill round stretch;
     }
-    
+
     #up_footer_border_right {
         @include up_footer_common;
         border-style: solid;
         border-width: 0px 121px 0px 0px;
         border-image: url('#{$IMGS}backgrounds/up_footer_right.png') 0 121 0 0 fill round stretch;
     }
-    
+
     #up_footer_border_center {
         @include up_footer_common;
         background-image: url('#{$IMGS}backgrounds/up_footer_center.png');
         width: 225px;
     }
-    
+
     .footer_center_img {
         display: block;
         position: absolute; // else it breaks the table layout...
@@ -476,16 +477,16 @@ body {
 
 
     #low_footer_border {
-      
+
         a {
             color: $alt_text_color !important;
             text-decoration: none;
         }
-        
+
         color: $alt_text_color;
         font-size: 22px;
         line-height: 26px;
-    
+
         position:relative;
         padding: 12px 4px 16px;
         min-width: 30px;
@@ -496,7 +497,7 @@ body {
         border-width: 0px 300px 0px 304px;
         border-image: url('#{$IMGS}backgrounds/low_footer_border.png') 0 300 0 304 fill stretch;
         overflow: visible; // important to avoid mess with vertical alignment
-        
+
         &:before {
             top: -6px;
             left: -60px;
@@ -510,7 +511,7 @@ body {
             content: url('#{$IMGS}decorations/low_footer_deco_right.png');
             padding: 0;
             position: absolute;
-        } 
+        }
 
     }
 
@@ -528,7 +529,7 @@ body {
     top: 50px;
     background-image: url('#{$IMGS}backgrounds/ricepaper-hue-gold.jpg');
     color: $text_color;
-    
+
     .bug_report_panel_content {
       min-height: 200px; // single child expected
       padding: 5px 20px 20px;
@@ -538,7 +539,7 @@ body {
 
 
 
- 
+
 
 
 

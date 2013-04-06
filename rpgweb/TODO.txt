@@ -3,7 +3,7 @@
 
 ACCESS CONTROL ON HELP PAGES !!!!!!!!!!!!
 
-- add protections to ensure that all file requests never leave GAME_FILES_ROOT
+
 
 - messaging reply/resend + templates + filtering?
 
@@ -11,6 +11,7 @@ ACCESS CONTROL ON HELP PAGES !!!!!!!!!!!!
 - mobile version of site
 - global styles and messages for any "readonly mode"
 
+- Add captcha to some pages ?
 
 - interface to edit static pages WIP
 - interface to edit radio spots WIP
@@ -18,7 +19,7 @@ ACCESS CONTROL ON HELP PAGES !!!!!!!!!!!!
 - javascript-obfuscated-popuped "report bug" div in mini footer WIP
 - SSL protection to be added to wiretapping page
 
-- add auto-generation fo ActionHandler help pages (middlewares)
+- add auto-generation of ActionHandler help pages (middlewares)
 
 - interface to activate views
 - filling of headers with game info and notifications
@@ -34,7 +35,7 @@ ACCESS CONTROL ON HELP PAGES !!!!!!!!!!!!
 - drag&drop radio playlist management DONE
 - filling of footer with game info DONE
 - global management of ajax errors, with popups DONE
-
+- add protections to ensure that all file requests never leave GAME_FILES_ROOT - ALREADY OK
 
 ====================
 
@@ -58,7 +59,7 @@ class WebFactionFixes(object):
         if 'HTTP_X_FORWARDED_FOR' in request.META:
             ip = request.META['HTTP_X_FORWARDED_FOR'].split(",")[0].strip()
             request.META['REMOTE_ADDR'] = ip
-            
+
 
 ITEMS NEEDING TO BE EDITABLE
 - radios spots
@@ -133,7 +134,7 @@ Some bots can require archéological objects too !
 
 Les achariths doivent avoir choix de trahir leur camp en milieu de partie plutôt !
 
-Ajouter interactions entre joueurs, chantages etc. 
+Ajouter interactions entre joueurs, chantages etc.
 
 Ajouter aide déroulante dans chaque section (en particulier, mises sur écoute -> "intercepted" folder)
 
