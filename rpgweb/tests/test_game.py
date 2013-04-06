@@ -1694,6 +1694,8 @@ class TestDatamanager(BaseGameTestCase):
             assert request.datamanager.user.real_username == anonymous_login
             assert request.datamanager.user.has_write_access
             assert not request.datamanager.user.is_impersonation
+            assert not request.datamanager.user.impersonation_target
+            assert not request.datamanager.user.impersonation_writability
             assert not request.datamanager.user.is_superuser
 
             res = try_authenticating_with_session(request)
@@ -1704,6 +1706,8 @@ class TestDatamanager(BaseGameTestCase):
             assert request.datamanager.user.real_username == original_username
             assert request.datamanager.user.has_write_access
             assert not request.datamanager.user.is_impersonation
+            assert not request.datamanager.user.impersonation_target
+            assert not request.datamanager.user.impersonation_writability
             assert not request.datamanager.user.is_superuser
 
             self._set_user(None)
@@ -1855,6 +1859,8 @@ class TestDatamanager(BaseGameTestCase):
             assert self.dm.user.has_write_access == _expected_writability
             assert self.dm.user.is_superuser
             assert self.dm.user.is_impersonation == bool(requested_impersonation_target)
+            assert self.dm.user.impersonation_target == requested_impersonation_target
+            assert self.dm.user.impersonation_writability == requested_impersonation_writability
             assert self.dm.user.real_username == anonymous_login # LEFT ANONYMOUS, superuser status does it all
             assert not self.dm.user.has_notifications()
             self.dm.user.discard_notifications()
@@ -1914,6 +1920,8 @@ class TestDatamanager(BaseGameTestCase):
         assert self.dm.user.has_write_access
         assert not self.dm.user.is_superuser # reserved to staff django users
         assert not self.dm.user.is_impersonation
+        assert not self.dm.user.impersonation_target
+        assert not self.dm.user.impersonation_writability
         assert self.dm.user.real_username == master_login
         assert not self.dm.user.has_notifications()
 
@@ -1935,6 +1943,8 @@ class TestDatamanager(BaseGameTestCase):
             assert self.dm.user.has_write_access == bool(writability) # no write access by default, if requested_impersonation_writability is None
             assert not self.dm.user.is_superuser
             assert self.dm.user.is_impersonation
+            assert self.dm.user.impersonation_target == player_login
+            assert self.dm.user.impersonation_writability == writability
             assert self.dm.user.real_username == master_login
             assert not self.dm.user.has_notifications()
 
@@ -1975,6 +1985,8 @@ class TestDatamanager(BaseGameTestCase):
             assert self.dm.user.has_write_access == bool(writability)
             assert not self.dm.user.is_superuser
             assert self.dm.user.is_impersonation
+            assert self.dm.user.impersonation_target == anonymous_login
+            assert self.dm.user.impersonation_writability == writability
             assert self.dm.user.real_username == master_login
             assert not self.dm.user.has_notifications()
 
@@ -1990,6 +2002,8 @@ class TestDatamanager(BaseGameTestCase):
             assert self.dm.user.has_write_access # always if not impersonation
             assert not self.dm.user.is_superuser
             assert not self.dm.user.is_impersonation
+            assert not self.dm.user.impersonation_target
+            assert not self.dm.user.impersonation_writability
             assert self.dm.user.real_username == master_login
             assert self.dm.user.has_notifications()
             self.dm.user.discard_notifications()
@@ -2007,6 +2021,8 @@ class TestDatamanager(BaseGameTestCase):
             assert self.dm.user.has_write_access == bool(writability)
             assert not self.dm.user.is_superuser
             assert self.dm.user.is_impersonation
+            assert self.dm.user.impersonation_target == anonymous_login
+            assert self.dm.user.impersonation_writability == writability
             assert self.dm.user.real_username == master_login
             assert not self.dm.user.has_notifications()
 
@@ -2025,6 +2041,8 @@ class TestDatamanager(BaseGameTestCase):
             assert self.dm.user.has_write_access # always
             assert not self.dm.user.is_superuser
             assert not self.dm.user.is_impersonation
+            assert not self.dm.user.impersonation_target
+            assert self.dm.user.impersonation_writability == writability # well saved
             assert self.dm.user.real_username == master_login
             assert not self.dm.user.has_notifications() # IMPORTANT - no error message
 
@@ -2617,7 +2635,7 @@ class TestGameViewSystem(BaseGameTestCase):
 
         COMPUTED_VALUES = ["target_names"] # values that are injected in get_normalized_values(), and so invisible until actual processing
 
-        self._set_user("guy1", has_write_access=True) # later, we'll need to change it depending on abilities instantiated below...
+        self._set_user("guy1") # later, we'll need to change it depending on abilities instantiated below...
         # all forms must be instantiable, so provided items etc. !
         self.dm.transfer_object_to_character("statue", "guy1")
         wiretapping = self.dm.instantiate_ability("wiretapping")

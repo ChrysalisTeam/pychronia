@@ -82,7 +82,7 @@ class CurrentUserHandling(BaseDataManager):
     def _init_from_db(self, **kwargs):
         super(CurrentUserHandling, self)._init_from_db(**kwargs)
         self.user = None
-        self._set_user(username=None, has_write_access=True) # TODO - improve by doing player authentication at init time?
+        self._set_user(username=None) # TODO - improve by doing player authentication at init time?
 
 
     def _notify_user_change(self, username, **kwargs):
@@ -90,12 +90,12 @@ class CurrentUserHandling(BaseDataManager):
 
 
     @transaction_watcher(always_writable=True)
-    def _set_user(self, username, has_write_access=True, impersonation=None, is_superuser=False):
+    def _set_user(self, username, impersonation_target=None, impersonation_writability=False, is_superuser=False):
         assert not hasattr(super(CurrentUserHandling, self), "_set_user") # we're well top-level here
         self.user = GameUser(datamanager=self,
                              username=username,
-                             has_write_access=has_write_access,
-                             impersonation=impersonation,
+                             impersonation_target=impersonation_target,
+                             impersonation_writability=impersonation_writability,
                              is_superuser=is_superuser) # might raise UsageError
 
         self._notify_user_change(username=username)
@@ -116,7 +116,7 @@ class CurrentUserHandling(BaseDataManager):
             if self.user.is_impersonation:
                 reason = _("Your impersonation is in read-only mode.")
             else:
-                reason = _("Your access restricted to read-only mode.")
+                reason = _("Your access is restricted to read-only mode.")
             return dict(writable=False,
                         reason=reason)
         else:
@@ -529,8 +529,8 @@ class PlayerAuthentication(BaseDataManager):
         return possible_impersonations
 
     @readonly_method
-    def get_current_user_impersonation_capabilities(self): 
- r r r r
+    def ________get_current_user_impersonation_capabilities(self):
+        AAAAAAAA
         # safe default values
         display_impersonation_shortcuts = False
         impersonation_targets = []
@@ -553,8 +553,8 @@ class PlayerAuthentication(BaseDataManager):
                     impersonation_targets=impersonation_targets,
                     has_writability_control=has_writability_control,
                     
-                    current_impersonation_target=self.user.username if self.user.is_impersonation else None,
-                    current_impersonation_writability=self.user.has_write_access)
+                    current_impersonation_target=self.user.impersonation_target,
+                    current_impersonation_writability=self.user.impersonation_writability)
         
 
     def _compute_new_session_data(self,
@@ -650,23 +650,18 @@ class PlayerAuthentication(BaseDataManager):
         impersonation_target = new_session_data["impersonation_target"]
         impersonation_writability = new_session_data["impersonation_writability"]
 
-        final_is_superuser = is_superuser
-        final_username = game_username # ALWAYS, can remain None even if impersonation, in the "is_superuser" case
-        final_has_write_access = True if not impersonation_target else bool(impersonation_writability) # game-authenticated users can always write, and None means False here
-        final_impersonation = impersonation_target
-
         self.logger.info("Authenticating user with ticket, as %r",
-                             repr(dict(final_username=final_username, final_has_write_access=final_has_write_access, final_impersonation=final_impersonation)))
+                             repr(dict(username=game_username, impersonation_target=impersonation_target,
+                                       impersonation_writability=impersonation_writability, is_superuser=is_superuser)))
 
-
-        self._set_user(username=final_username,
-                        has_write_access=final_has_write_access,
-                        impersonation=final_impersonation,
-                        is_superuser=final_is_superuser)
+        self._set_user(username=game_username,
+                        impersonation_target=impersonation_target,
+                        impersonation_writability=impersonation_writability,
+                        is_superuser=is_superuser)
 
         if session_ticket is not None:
             assert session_ticket.get("game_instance_id") == self.game_instance_id
-            assert session_ticket.get("game_username") == final_username # NEVER TOUCHED ATM
+            assert session_ticket.get("game_username") == game_username # NEVER TOUCHED ATM
             session_ticket.update(impersonation_target=impersonation_target,
                                   impersonation_writability=impersonation_writability)
 
@@ -691,7 +686,7 @@ class PlayerAuthentication(BaseDataManager):
 
         if password and password == wanted_pwd:
             # when using credentials, it's always a real user, with writability (and django user status is hidden)
-            self._set_user(username, has_write_access=True, impersonation=None, is_superuser=False)
+            self._set_user(username, impersonation_target=None, impersonation_writability=False, is_superuser=False)
             session_ticket = dict(game_instance_id=self.game_instance_id,
                                   game_username=username,
                                   impersonation_target=None,

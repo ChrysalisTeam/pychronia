@@ -342,7 +342,7 @@
     ALSO : impersonation_writability_post_variable <---
     {% if possible_impersonations %}
     <div style="float:left;">
-        <div style="color: #FFF; font-size: 10px;">Write: {{ user.has_write_access }} <br/> Impersonation: {{ user.is_impersonation}}</div>
+        <div style="color: #FFF; font-size: 10px;">Write: {{ user.ssss }} <br/> Impersonation: {{ user.is_impersonation}}</div>
         {% for impersonation in possible_impersonations %}
         <form action="" method="POST">
             <input type="hidden" name="{{ impersonation_target_post_variable }}" value="{{ impersonation }}"/>

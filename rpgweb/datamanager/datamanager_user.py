@@ -11,7 +11,7 @@ from django.contrib import messages
 class GameUser(object):
 
     def __init__(self, datamanager, username=None,
-                 has_write_access=None, impersonation=None,
+                 impersonation_target=None, impersonation_writability=False,
                  is_superuser=False):
         """
         Builds a user object, storing notifications for the current HTTP request,
@@ -23,7 +23,7 @@ class GameUser(object):
         If is_superuser (django notion, != is_master), user can impersonate anyone, 
         yet keep his real_username as anonymous.
         """
-        assert has_write_access in (True, False)
+        assert impersonation_writability in (None, True, False)
 
         # data normalization #
         _game_anonymous_login = datamanager.anonymous_login
@@ -34,22 +34,24 @@ class GameUser(object):
 
         if username not in _available_logins:
             raise AbnormalUsageError(_("Username %s is unknown") % username)
-        if impersonation and impersonation not in _available_logins:
-            raise AbnormalUsageError(_("Impersonation %s is unknown") % impersonation)
+        if impersonation_target and impersonation_target not in _available_logins:
+            raise AbnormalUsageError(_("Impersonation target %s is unknown") % impersonation_target)
 
-        assert not impersonation or is_superuser or datamanager.can_impersonate(username, impersonation)
+        assert not impersonation_target or is_superuser or datamanager.can_impersonate(username, impersonation_target)
         assert not (is_superuser and username != _game_anonymous_login) # game authentication "hides" the superuser status
 
+        self.is_superuser = is_superuser # REAL state of user, whatever impersonation is happening
         self._real_username = username
-        self.is_impersonation = bool(impersonation)
+        self.is_impersonation = bool(impersonation_target)
+        self.impersonation_target = impersonation_target
+        self.impersonation_writability = impersonation_writability # saved even we're not currently impersonating
 
-        self.has_write_access = has_write_access # allows, or not, POST requests
+        self.has_write_access = bool(impersonation_writability) if impersonation_target else True # normal logged-in user always HAS write access ATM
 
-        _effective_username = (impersonation if impersonation else username)
+        _effective_username = (impersonation_target if impersonation_target else username)
         assert _effective_username in _available_logins # redundant but yah...
-        del username, impersonation, _game_anonymous_login # security
+        del username, impersonation_target, impersonation_writability, _game_anonymous_login # security
 
-        self.is_superuser = is_superuser
         self.is_master = datamanager.is_master(_effective_username)
         self.is_character = datamanager.is_character(_effective_username)
         self.is_anonymous = datamanager.is_anonymous(_effective_username)
