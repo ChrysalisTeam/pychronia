@@ -339,7 +339,7 @@ class TestUtilities(BaseGameTestCase):
         assert checked_game_file_path(config.GAME_FILES_URL + "bad/stuffs.mpg") is None
 
 
-class TestMetaAdministration(unittest.TestCase): # no setup required
+class TestMetaAdministration(unittest.TestCase): # no django setup required ATM
 
     def test_game_instance_management_api(self):
 

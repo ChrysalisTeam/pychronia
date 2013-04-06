@@ -52,7 +52,8 @@ EMAIL_USE_TLS = False
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(TEMP_DIR, "django.db.%s" % UNICITY_STRING)
+        'NAME': os.path.join(TEMP_DIR, "django.db.%s" % UNICITY_STRING),
+        'TEST_NAME': os.path.join(TEMP_DIR, "djangotest.db.%s" % UNICITY_STRING),
     }
 }
 

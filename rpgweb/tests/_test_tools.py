@@ -186,14 +186,18 @@ def temp_datamanager(game_instance_id, request=None):
 
 
 
-class BaseGameTestCase(TestCase):
+class BaseGameTestCase(TestCase): # one day, use pytest-django module to make it cleaner
 
     """
     WARNING - when directly modifying "self.dm.data" content, 
     don't forget to commit() after that !!
     """
 
+
     def __call__(self, *args, **kwds):
+        #self._reset_django_db()
+        #print ("USING CONF", config.DATABASES, config.INSTALLED_APPS)
+        ##return super(BaseGameTestCase, self).__call__(*args, **kwds)
         return unittest.TestCase.run(self, *args, **kwds) # we bypass test setups from django's TestCase, to use py.test instead
 
 
@@ -279,11 +283,11 @@ class BaseGameTestCase(TestCase):
 
 
     def _reset_django_db(self):
-        from django.test.utils import setup_test_environment ## ,???
+        from django.test.utils import setup_test_environment
         from django.core import management
-        management.call_command('syncdb', verbosity=0, interactive=False)
-        management.call_command('migrate', verbosity=1, interactive=False)
-        management.call_command('flush', verbosity=0, interactive=False)
+        management.call_command('syncdb', verbosity=1, interactive=False)
+        ##management.call_command('migrate', verbosity=1, interactive=False)
+        management.call_command('flush', verbosity=1, interactive=False)
 
 
 
