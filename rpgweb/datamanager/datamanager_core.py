@@ -242,7 +242,7 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
 
         data_dump = copy.deepcopy(dict(self.data)) # beware - memory-intensive call
 
-        # special, we remove info that is already well visible in messaging system
+        # special, we remove info that is already well visible in messaging system and chatroom
         for key in list(data_dump.keys()): # in case it'd be a "dict-view"
             if "message" in key:
                 del data_dump[key]

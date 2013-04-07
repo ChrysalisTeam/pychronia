@@ -6,27 +6,28 @@
 - messaging reply/resend + templates + filtering?
 
 - ability for users to transfer their objects to someone else
-- mobile version of site
-- global styles and messages for any "readonly mode"
+- mobile version of site (-> refactor base_mobile to mimic base_web structure)
+- global page styles and messages for any "readonly mode"
 
-- Add captcha to some pages ?
+- Add captcha to some special static pages ?
 
 - interface to edit static pages WIP
 - interface to edit radio spots WIP
 - interface to edit external contacts WIP
 - javascript-obfuscated-popuped "report bug" div in mini footer WIP
+
 - SSL protection to be added to wiretapping page
 
-- add auto-generation of ActionHandler help pages (middlewares)
+- add auto-generation of ActionHandler help pages (via action middlewares)
 
-- interface to activate views
+- admin-form to activate views
 - filling of headers with game info and notifications
 - adding novelty tags everywhere (menu, radio and help icons, events...)
-- adding of impersonation controls to site top
-- adding of impersonation to player menus
+- adding of impersonation controls to site top WIP (needs JS code)
+- adding of impersonation to player menus (in generate...())
 
 - check what happens when calling setlanguage flags from a "POST-access-only" page like private files ??
-
+- tweak access checking of gameviews, so that if impersonation we get no error and just get redirected to homepage of impersoinated user
 
 
 - interactive world map DONE
@@ -62,25 +63,25 @@ class WebFactionFixes(object):
 
 
 ITEMS NEEDING TO BE EDITABLE
-- radios spots
-- globally registered contacts
-- encyclopedia articles
-- items, gems & artefacts ?
-- nightmare captcha
+- radios spots OK
+- globally registered contacts OK
+- encyclopedia articles OK
+- items, gems & artefacts ? not for v1
+- nightmare captcha ? not for v1
 
 
 @register_view(access=UserAccess.authenticated) # not always available, so beware!! TODO FIXME ensure it's not displayed if not available!
 def item_3d_view(request, item, template_name='utilities/item_3d_viewer.html'):
 
-ADD standard 404 and 500 templates, + custom 403 etc.
+ADD standard 404 and 500 templates, + custom 403 in latest django etc.
 
-Make access error msgs persist until login page, when redirecting !!
+Make access error msgs persist until login page, when redirecting !! OK
 
 Add next argument to login page !!!!
 
 ADD unittests for template helpers !!!
 
-BUG html injection dans chat.js ????
+BUG html injection dans chat.js ? NOPE it's OK !
 
 - include timezone handling NOT ATM
 
@@ -105,20 +106,17 @@ CHECK THAT NO PB WHEN GAME PAUSED, FOR PERIODIC PROCESSING !!!
 - create game
 - livre d'or
 
-self._normalize_recipient_email all buggy, while loading yaml data : needs to control access and data availability!
 
-Add periodic retrieval of chatters in chat !!
+Add periodic retrieval of chatters in chat !! DONE
 
 TODO - check that no periodic task fails while game paused !!
 
 
-Add security to djinn chat - check authorizations
+Add security to djinn chat - check authorizations - NO, knowing their NAME is the best protection!
 
-Big problem - how to ensure javascript functions are well called periodically ??? with .ajaxError() reset
+Big problem - how to ensure javascript functions are well called periodically ??? with .ajaxError() reset ??
 
-Add thread-local variable to ensure no transaction is committed twice by transaction watcher !!
-
-Test that chatting presence works OK, when ajax calls made
+Add thread-local variable to ensure no transaction is committed twice by transaction watcher !! OSEF
 
 Remove also test constructions in utilities.AIML
 
@@ -128,27 +126,27 @@ Ajouter <instructions> possibilité échange objets archéologiques et lots enti
 
 Print description of partners in instruction page !
 
--- bugfix --
 
-Some bots can require archéological objects too !
+
+Some bots can require archéological objects too ! NOT ATM
 
 Les achariths doivent avoir choix de trahir leur camp en milieu de partie plutôt !
 
 Ajouter interactions entre joueurs, chantages etc.
 
-Ajouter aide déroulante dans chaque section (en particulier, mises sur écoute -> "intercepted" folder)
+Ajouter aide déroulante dans chaque section DONE
 
 - ajouter des details cruciaux à TOUTES runes !
 
-- clarifier règles absolues : pas de vol d'argent, pas de triche...
+- clarifier règles absolues : pas de vol d'argent, pas de triche, emails uniquement valables à l'intérieur du site
 
-- compléter les oracles, valeurs par défaut si pas de réponses surtout !
+- compléter les djinns, valeurs par défaut si pas de réponses surtout !
 
-- ajouter instructions ou systèmes pour éviter abus de mercenaires
+- ajouter instructions ou systèmes pour éviter abus de mercenaires ?
 
 - automatiquement notifier autres camps s'ils chopent objets archéologiques ???
 
-- donner reductions aux gens, qu'ils peuvent perdre s'ils sont démasqués
+- LG donne reductions aux gens, qu'ils peuvent perdre s'ils sont démasqués
 
 - refaire carte en découpant mieux pays
 
@@ -158,23 +156,18 @@ Faire page d'introduction
 - situation géopolitique
 - bestaire des ennemis ?
 
-ADD DEPENDENCY LIST : docutils
 
 - internationalize personal documents (all in yaml ??)
 
-- make html templates cross-browser compatible (two-column layout !!!!!)
-- refactor CSS stylesheets ?
+- refactor CSS stylesheets ? DONE
 
-- recode in simple html the door unlocker !
+- recode in simple html the door unlocker ! DONE
 
-- add better management of ajax errors (read/unread mails, oracle answers...)
+- add better management of ajax errors (read/unread mails, oracle answers...) DONE
 
 - switch to small JALICE bot !
 
-
-==FUTURE==
-
-- make wiretapping and agent hiring per-player or per-domain ?? not useful...
+- make wiretapping and agent hiring per-player or per-domain ?? not useful... DONE
 
 
 

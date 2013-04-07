@@ -2545,7 +2545,7 @@ class Chatroom(BaseDataManager):
         if self.user.is_character:
             self._set_chatting_status()
 
-        message = escape(message.strip()) # we escape messages immediateley
+        message = escape(message.strip()) # we escape messages immediately, it's much safer
 
         if not message:
             raise UsageError(_("Chat message can't be empty"))

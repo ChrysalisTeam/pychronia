@@ -1091,7 +1091,7 @@ class TestDatamanager(BaseGameTestCase):
 
         self.assertEqual(self.dm.get_chatroom_messages(0), (0, None, []))
 
-        self.dm.send_chatroom_message(" hello ! ")
+        self.dm.send_chatroom_message(u" héllo <tag> ! ")
         self.dm.send_chatroom_message(" re ")
 
         self._set_user("guy2")
@@ -1105,7 +1105,7 @@ class TestDatamanager(BaseGameTestCase):
         self.assertEqual(sorted(msgs, key=lambda x: x["time"]), msgs)
 
         data = [(msg["username"], msg["message"]) for msg in msgs]
-        self.assertEqual(data, [("guy1", "hello !"), ("guy1", "re"), ("guy2", "back")])
+        self.assertEqual(data, [("guy1", u"héllo &lt;tag&gt; !"), ("guy1", "re"), ("guy2", "back")]) # MESSAGES ARE ESCAPED IN ZODB, for safety
 
         (slice_end, previous_msg_timestamp, nextmsgs) = self.dm.get_chatroom_messages(3)
         self.assertEqual(slice_end, 3)
