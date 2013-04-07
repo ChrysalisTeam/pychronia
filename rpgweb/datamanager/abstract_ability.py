@@ -77,12 +77,12 @@ class AbstractAbility(AbstractAbilityBasesAdapter):
         self._lazy_setup_private_action_middleware_data(action_name=action_name)
         return self.process_action_through_middlewares(action_name=action_name, method=flattened_method, params=params)
 
-    @transaction_watcher
-    def execute_game_action_callback(self, action_name, unfiltered_params):
+
+    def _execute_game_action_callback(self, action_name, unfiltered_params):
         has_middlewares = (action_name in self.settings["middlewares"])
         if not has_middlewares:
             # slight optimization, we bypass all the middlewares chain
-            return super(AbstractAbility, self).execute_game_action_callback(action_name=action_name,
+            return super(AbstractAbility, self)._execute_game_action_callback(action_name=action_name,
                                                                               unfiltered_params=unfiltered_params)
         else:
             callback_name = self.GAME_ACTIONS[action_name]["callback"]
@@ -90,7 +90,6 @@ class AbstractAbility(AbstractAbilityBasesAdapter):
             return self._execute_game_action_with_middlewares(action_name=action_name, method=callback, **relevant_args)
 
 
-    @transaction_watcher # needed, because in ability, we're partly INSIDE the datamanager
     def _process_standard_request(self, request, *args, **kwargs):
         # Access checks have already been done here, so we may initialize lazy data
         self._perform_lazy_initializations()

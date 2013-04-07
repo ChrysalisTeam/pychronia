@@ -2144,16 +2144,16 @@ class TestDatamanager(BaseGameTestCase):
         assert not self.dm.user.impersonation_writability
         assert self.dm.user.real_username == player_name # well kept
 
-        
+
         expected_capabilities = dict(display_impersonation_shortcuts=False,
                                     impersonation_targets=[other_player],
                                     has_writability_control=False,
                                     current_impersonation_target=other_player,
                                     current_impersonation_writability=False)
         assert self.dm.get_current_user_impersonation_capabilities() == expected_capabilities
-                                                                             
-                                                                             
-                                                                     
+
+
+
 
 
 
@@ -2770,7 +2770,7 @@ class TestGameViewSystem(BaseGameTestCase):
                 FormClass = action_properties["form_class"]
                 if not FormClass:
                     continue # action without predefined form class
-                
+
                 form_inst = game_view._instantiate_form(action_name)
 
                 callback_name = action_properties["callback"]
@@ -2998,7 +2998,7 @@ class TestActionMiddlewares(BaseGameTestCase):
         """
         Actions that have no entry of the ability's middleware settings shouldn't go through the middlewares chain
         """
-        
+
         self._set_user("guy4") # important
 
         ability = self.dm.instantiate_ability("dummy_ability")
@@ -3366,10 +3366,14 @@ class TestActionMiddlewares(BaseGameTestCase):
             assert ability.middleware_wrapped_callable1(None)
             assert ability.middleware_wrapped_callable1(12)
             assert ability.middleware_wrapped_callable2(32)
+            self.dm.commit() # data was touched, even if not really
 
-            assert not ability._purge_old_use_times(middleware_settings=ability.get_middleware_settings("middleware_wrapped_test_action", TimeLimitedActionMiddleware),
-                                                    private_data=ability.get_private_middleware_data("middleware_wrapped_test_action", TimeLimitedActionMiddleware))
-            self.dm.commit() # data was touched, even if unmodified
+            old_last_use_times = ability.get_private_middleware_data("middleware_wrapped_test_action", TimeLimitedActionMiddleware)["last_use_times"]
+            res = ability._computed_purge_old_use_times(middleware_settings=ability.get_middleware_settings("middleware_wrapped_test_action", TimeLimitedActionMiddleware),
+                                                             last_use_times=old_last_use_times[:])
+            assert res == old_last_use_times # unchanged
+            del res, old_last_use_times
+            self.dm.commit() # data was touched, even if not really changed in place
 
             with raises_with_content(NormalUsageError, "waiting period"):
                 ability.middleware_wrapped_callable1(False) # quota of 3 per period reached
@@ -3399,9 +3403,12 @@ class TestActionMiddlewares(BaseGameTestCase):
 
         time.sleep(0.5)
 
-        assert ability._purge_old_use_times(middleware_settings=ability.get_middleware_settings("middleware_wrapped_test_action", TimeLimitedActionMiddleware),
-                                            private_data=ability.get_private_middleware_data("middleware_wrapped_test_action", TimeLimitedActionMiddleware))
-        self.dm.commit() # data was touched, even if unmodified
+        old_last_use_times = ability.get_private_middleware_data("middleware_wrapped_test_action", TimeLimitedActionMiddleware)["last_use_times"]
+        res = ability._computed_purge_old_use_times(middleware_settings=ability.get_middleware_settings("middleware_wrapped_test_action", TimeLimitedActionMiddleware),
+                                                         last_use_times=old_last_use_times[:])
+        assert set(res) < set(old_last_use_times) # purged
+        del res, old_last_use_times
+        # data was touched, even if not really changed in place
 
         assert ability.middleware_wrapped_callable1(False)
         with raises_with_content(NormalUsageError, "waiting period"):
@@ -3424,8 +3431,8 @@ class TestSpecialAbilities(BaseGameTestCase):
         assert AbstractAbility.__call__ == AbstractGameView.__call__ # must not be overlaoded, since it's decorated to catch exceptions
 
         # ability is half-view half-datamanager, so beware baout sessions...
-        assert AbstractAbility._process_standard_request._is_under_transaction_watcher
-        assert AbstractAbility._perform_lazy_initializations._is_under_transaction_watcher
+        assert AbstractAbility.__call__._is_under_transaction_watcher
+        assert AbstractAbility._perform_lazy_initializations._is_under_transaction_watcher # just for tests...
         assert AbstractAbility.process_admin_request._is_under_transaction_watcher
 
 

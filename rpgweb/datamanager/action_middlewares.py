@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 
 
 from rpgweb.common import *
+from rpgweb.datamanager.datamanager_tools import readonly_method
 
 
 
@@ -145,6 +146,19 @@ class AbstractActionMiddleware(object):
         return method(**params)
 
 
+    def _get_middleware_data_explanations(self, action_name):
+        """
+        Override this to agregate a list of lists/tuples of human-readable instruction strings.
+        """
+        return []
+
+
+    @readonly_method
+    def get_middleware_data_explanations(self, action_name):
+        return self._get_middleware_data_explanations(action_name=action_name)
+
+
+
 
 
 
@@ -188,6 +202,28 @@ class CostlyActionMiddleware(AbstractActionMiddleware):
                 if settings[setting] is not None: # None means "impossible to buy this way"
                     utilities.check_is_positive_int(settings[setting], non_zero=True)
             assert settings["money_price"] or settings["gems_price"] # at least one means must be offered
+
+
+    def _get_middleware_data_explanations(self, action_name):
+        """
+        Override this to agregate the whole list of huma-readable instruction strings.
+        """
+        res = []
+        if self.is_action_middleware_activated(action_name, CostlyActionMiddleware):
+            middleware_settings = self.get_middleware_settings(action_name, CostlyActionMiddleware)
+
+            if middleware_settings["money_price"] is not None:
+                res.append(_("Cost when paying with money: %s kashes.") % middleware_settings["money_price"])
+            else:
+                res.append(_("Can't be bought with money."))
+
+            if middleware_settings["gems_price"] is not None:
+                res.append(_("Cost when paying with gems: %s kashes.") % middleware_settings["gems_price"])
+            else:
+                res.append(_("Can't be bought with gems."))
+
+        other_instructions = super(CostlyActionMiddleware, self)._get_middleware_data_explanations(action_name)
+        return [res] + other_instructions # list of lists of strings!
 
 
     def process_action_through_middlewares(self, action_name, method, params):
@@ -302,6 +338,29 @@ class CountLimitedActionMiddleware(AbstractActionMiddleware):
                 assert self._get_global_usage_count(action_name) <= settings["max_per_game"]
 
 
+    def _get_middleware_data_explanations(self, action_name):
+        """
+        Override this to agregate the whole list of huma-readable instruction strings.
+        """
+        res = []
+        if self.is_action_middleware_activated(action_name, CountLimitedActionMiddleware):
+            middleware_settings = self.get_middleware_settings(action_name, CountLimitedActionMiddleware)
+
+            if middleware_settings["max_per_game"] is not None:
+                res.append(_("Total units available: %s.") % middleware_settings["max_per_game"])
+                res.append(_("Tital units already used: %s.") % self._get_global_usage_count(action_name))
+
+            if middleware_settings["max_per_character"] is not None:
+                res.append(_("Units available per user: %s.") % middleware_settings["max_per_character"])
+
+            # in ANY case
+            private_data = self.get_private_middleware_data(action_name, CountLimitedActionMiddleware)
+            res.append(_("Units already consumed by yourself: %s.") % private_data["private_usage_count"])
+
+        other_instructions = super(CountLimitedActionMiddleware, self)._get_middleware_data_explanations(action_name)
+        return [res] + other_instructions # list of lists of strings!
+
+
     def _get_global_usage_count(self, action_name):
         data_dicts = self.get_all_private_middleware_data(middleware_class=CountLimitedActionMiddleware,
                                                           filter_by_action_name=action_name)
@@ -382,15 +441,36 @@ class TimeLimitedActionMiddleware(AbstractActionMiddleware):
                     assert item <= now
 
 
-    def _purge_old_use_times(self, middleware_settings, private_data):
+    def _get_middleware_data_explanations(self, action_name):
         """
-        Returns True iff some datetime entries were removed.
+        Override this to agregate the whole list of huma-readable instruction strings.
+        """
+        res = []
+        if self.is_action_middleware_activated(action_name, TimeLimitedActionMiddleware):
+            middleware_settings = self.get_middleware_settings(action_name, TimeLimitedActionMiddleware)
+
+            res.append(_("This action can be performed %s time(s) every %s minutes.") %
+                        (middleware_settings["max_uses_per_period"], middleware_settings["waiting_period_mn"]))
+
+            private_data = self.get_private_middleware_data(action_name, TimeLimitedActionMiddleware)
+            blocking_times = self._computed_purge_old_use_times(middleware_settings=middleware_settings, last_use_times=private_data["last_use_times"])
+
+            res.append(_("In this last period, you've done it %s time(s).") % len(blocking_times))
+
+        other_instructions = super(TimeLimitedActionMiddleware, self)._get_middleware_data_explanations(action_name)
+        return [res] + other_instructions # list of lists of strings!
+
+
+    def _computed_purge_old_use_times(self, middleware_settings, last_use_times):
+        """
+        Returns a copied list, with non-outdated last use dates.
         """
         threshold = self.compute_remote_datetime(delay_mn= -middleware_settings["waiting_period_mn"]) # in the past
-        purged_old_use_times = [dt for dt in private_data["last_use_times"] if dt > threshold]
-        res = bool(len(purged_old_use_times) < len(private_data["last_use_times"]))
-        private_data["last_use_times"] = PersistentList(purged_old_use_times)
-        return res
+        purged_old_use_times = [dt for dt in last_use_times if dt > threshold]
+        return PersistentList(purged_old_use_times)
+        #res = bool(len(purged_old_use_times) < len(last_use_times))
+        ##private_data["last_use_times"] = PersistentList(purged_old_use_times)
+        #return res
 
 
     def process_action_through_middlewares(self, action_name, method, params):
@@ -402,7 +482,7 @@ class TimeLimitedActionMiddleware(AbstractActionMiddleware):
 
             if middleware_settings["waiting_period_mn"] and middleware_settings["max_uses_per_period"]: # in case of misconfiguration
 
-                self._purge_old_use_times(middleware_settings=middleware_settings, private_data=private_data)
+                private_data["last_use_times"] = self._computed_purge_old_use_times(middleware_settings=middleware_settings, last_use_times=private_data["last_use_times"])
 
                 last_use_times = private_data["last_use_times"]
                 now = datetime.utcnow() # to debug

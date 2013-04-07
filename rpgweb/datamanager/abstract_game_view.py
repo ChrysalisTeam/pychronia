@@ -332,8 +332,7 @@ class AbstractGameView(object):
         relevant_args = self._try_coercing_arguments_to_func(data=unfiltered_params, func=callback) # might raise UsageError
         return (callback, relevant_args)
 
-    @transaction_watcher
-    def execute_game_action_callback(self, action_name, unfiltered_params):
+    def _execute_game_action_callback(self, action_name, unfiltered_params):
         """
         Might raise any kind of exception.
         """
@@ -341,6 +340,12 @@ class AbstractGameView(object):
         (callback, relevant_args) = self._resolve_callback_callargs(callback_name=callback_name, unfiltered_params=unfiltered_params)
         res = callback(**relevant_args) # might fail
         return res
+
+    @transaction_watcher
+    def execute_game_action_callback(self, action_name, unfiltered_params):
+        """Public interface, just for transaction watching in tests atm..."""
+        return self._execute_game_action_callback(action_name=action_name,
+                                                 unfiltered_params=unfiltered_params)
 
 
     def _try_processing_formless_game_action(self, data):
@@ -497,6 +502,7 @@ class AbstractGameView(object):
 
 
     @transform_usage_error
+    @transaction_watcher
     def __call__(self, request, *args, **kwargs):
 
         self._pre_request(request, *args, **kwargs)
