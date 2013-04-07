@@ -10,6 +10,7 @@ from .datamanager_tools import readonly_method, transaction_watcher
 from .abstract_game_view import GameViewMetaclass, AbstractGameView
 from .action_middlewares import ACTION_MIDDLEWARES
 
+from rpgweb.utilities import resolving_decorator
 
 
 class AbilityMetaclass(GameViewMetaclass, type):
@@ -32,7 +33,7 @@ class AbilityMetaclass(GameViewMetaclass, type):
 
 
 
-# just because we can't dynamically assign a tuple of bases, in a normal "class" definition
+# we us this syntax, because we can't dynamically assign a tuple of bases in a normal "class" definition
 AbstractAbilityBases = tuple(reversed(ACTION_MIDDLEWARES)) + (AbstractGameView,)
 AbstractAbilityBasesAdapter = AbilityMetaclass(str('AbstractAbilityBasesAdapter'), AbstractAbilityBases, {})
 
@@ -63,6 +64,32 @@ class AbstractAbility(AbstractAbilityBasesAdapter):
     @property
     def datamanager(self):
         return self # TRICK - abilities behaves as extensions of the datamanager!!
+
+
+    def _execute_game_action_with_middlewares(self, action_name, method, *args, **kwargs):
+        assert method.__name__ == self.GAME_ACTIONS[action_name]["callback"], (action_name, method) # duplication here, just for optimization
+
+        # zodb session management must be on TOP of stack # FIXME, are we sure ?? FIXME
+        assert not getattr(method, "_is_under_transaction_watcher", None) or getattr(method, "_is_under_readonly_method", None)
+
+        # we transform the callback method so that it only expects keyword arguments (easier to deal with, in middleware chain)
+        flattened_method = resolving_decorator.flatten_function_signature(method)
+        params = resolving_decorator.resolve_call_args(flattened_method, *args, **method)
+
+        self._lazy_setup_private_action_middleware_data(action_name=action_name)
+        return self.process_action_through_middlewares(action_name=action_name, method=flattened_method, params=params)
+
+
+    def _execute_game_action_callback(self, action_name, callback_name, unfiltered_params):
+        has_middlewares = False
+        if not has_middlewares:
+            # slight optimization, we bypass all the middlewares chain
+            return super(AbstractAbility, self)._execute_game_action_callback(action_name=action_name,
+                                                                              callback_name=callback_name,
+                                                                              unfiltered_params=unfiltered_params)
+        else:
+            (callback, relevant_args) = self._resolve_callback_callargs(callback_name=callback_name, unfiltered_params=unfiltered_params)
+            return self._execute_game_action_with_middlewares(action_name=action_name, method=callback, **relevant_args)
 
 
     @transaction_watcher # needed, because in ability, we're partly INSIDE the datamanager
@@ -131,9 +158,6 @@ class AbstractAbility(AbstractAbilityBasesAdapter):
         Summary for super user ?
         """
         raise NotImplementedError
-
-
-
 
     @classmethod
     def setup_main_ability_data(cls, ability_data):

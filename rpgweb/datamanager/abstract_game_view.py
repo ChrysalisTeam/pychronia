@@ -316,7 +316,7 @@ class AbstractGameView(object):
 
 
     def _try_coercing_arguments_to_func(self, data, func):
-        # TEST THIS STUFF!!
+        # FIXME - TEST THIS STUFF!!??
         try:
             relevant_args = utilities.adapt_parameters_to_func(data, func)
             return relevant_args
@@ -325,29 +325,46 @@ class AbstractGameView(object):
             raise UsageError(_("Wrong arguments when calling method %s") % func.__name__)
 
 
-    def _try_processing_action(self, data):
+    def _resolve_callback_callargs(self, callback_name, unfiltered_params):
+        callback = getattr(self, callback_name) # MUST exist
+        relevant_args = self._try_coercing_arguments_to_func(data=unfiltered_params, func=callback) # might raise UsageError
+        return (callback, relevant_args)
+
+
+    def _execute_game_action_callback(self, action_name, callback_name, unfiltered_params):
+        """
+        Beware, *callback_name* is an attribute of self, not an action name
+        from action registries.
+        
+        Might raise any kind of exception.
+        """
+        (callback, relevant_args) = self._resolve_callback_callargs(callback_name=callback_name, unfiltered_params=unfiltered_params)
+        res = callback(**relevant_args) # might fail
+        return res
+
+
+    def _try_processing_formless_action(self, data):
         """
         Raises AbnormalUsageError if action is not determined,
         else returns its result (or raises an action exception).
         
         """
-        data = utilities.sanitize_query_dict(data)
+        data = utilities.sanitize_query_dict(data) # translates params to arrays, for example
 
         action_name = data.get(self._ACTION_FIELD)
         if not action_name or action_name not in self.GAME_ACTIONS:
             raise AbnormalUsageError(_("Abnormal action name: %s (available: %r)") % (action_name, self.GAME_ACTIONS.keys()))
 
         callback_name = self.GAME_ACTIONS[action_name]["callback"]
-        callback = getattr(self, callback_name)
 
-        relevant_args = self._try_coercing_arguments_to_func(data=data, func=callback) # might raise UsageError
-        res = callback(**relevant_args)
+        res = self._execute_game_action_callback(action_name=action_name, callback_name=callback_name, unfiltered_params=data)
+
         return res
 
 
     def _process_ajax_request(self):
         # we let exceptions flow upto upper level handlers
-        res = self._try_processing_action(self.request.POST)
+        res = self._try_processing_formless_action(self.request.POST)
         response = json.dumps(res)
         return HttpResponse(response)
 
@@ -366,10 +383,8 @@ class AbstractGameView(object):
 
         if bound_form.is_valid():
             with action_failure_handler(self.request, success_message=None): # only for unhandled exceptions
-                action = getattr(self, callback_name)
-                relevant_args = utilities.adapt_parameters_to_func(bound_form.get_normalized_values(), action)
-                success_message = action(**relevant_args)
-
+                success_message = self._execute_game_action_callback(callback_name=callback_name,
+                                                                     unfiltered_params=bound_form.get_normalized_values())
                 res["result"] = form_successful = True
                 if isinstance(success_message, basestring) and success_message:
                     user.add_message(success_message)
@@ -405,7 +420,7 @@ class AbstractGameView(object):
         if data.get(self._ACTION_FIELD): # manually built form
             res["result"] = False # by default
             with action_failure_handler(self.request, success_message=None): # only for unhandled exceptions
-                result = self._try_processing_action(data)
+                result = self._try_processing_formless_action(data)
                 if isinstance(result, basestring) and result:
                     user.add_message(result) # since we're NOT in ajax here
                 res["result"] = True
@@ -529,7 +544,7 @@ class AbstractGameView(object):
             self._check_admin_access() # crucial
 
             data = request.POST
-            
+
             form_data = self.ADMIN_ACTIONS[form_name]
             FormClass = form_data["form_class"]
             callback_name = form_data["callback"]

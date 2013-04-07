@@ -23,26 +23,8 @@ def register_action_middleware(klass):
 
 
 def with_action_middlewares(action_name):
-    """
-    Apply this decorator to actions, so that they get processed
-    through middlewares.
-    
-    Wrapped mehods must not use *args and **kwargs notations!
-    """
-    @decorator # IMPORTANt - keep same signature so that adapt_parameters_to_func() works
-    def _execute_with_middlewares(method, self, *args, **kwargs):
-        # session management must be on TOP of stack
-        assert not getattr(method, "_is_under_transaction_watcher", None) or getattr(method, "_is_under_readonly_method", None)
-
-        (_args, varargs, varkw, _defaults) = inspect.getargspec(method)
-        assert varargs is None and varkw is None
-        params = inspect.getcallargs(method, self, *args, **kwargs)
-
-        self._lazy_setup_private_action_middleware_data(action_name=action_name)
-        return self.process_action_through_middlewares(action_name, method, params)
-
-    return _execute_with_middlewares
-
+    # OBSOLETE DEPRECATED
+    return lambda a: a
 
 
 class AbstractActionMiddleware(object):
@@ -154,8 +136,11 @@ class AbstractActionMiddleware(object):
 
 
     def process_action_through_middlewares(self, action_name, method, params):
-        """The chain of middleware processing ends here, by normal execution of the
-        proper action callable."""
+        """
+        The chain of middleware processing ends here, by normal execution of the
+        proper *method* callable (possibly a flattened version of thge original callback) 
+        with the dict of arguments *params*.
+        """
         assert action_name
         return method(**params)
 
@@ -230,7 +215,7 @@ class CostlyActionMiddleware(AbstractActionMiddleware):
                 else:
                     self._pay_with_money(character_properties, middleware_settings)
 
-        return super(CostlyActionMiddleware, self).process_action_through_middlewares(action_name, method, params)
+        return super(CostlyActionMiddleware, self).process_action_through_middlewares(action_name=action_name, method=method, params=params)
 
 
     def _pay_with_gems(self, character_properties, middleware_settings, gems_list):
@@ -341,7 +326,7 @@ class CountLimitedActionMiddleware(AbstractActionMiddleware):
 
             private_data["private_usage_count"] += 1 # important
 
-        return super(CountLimitedActionMiddleware, self).process_action_through_middlewares(action_name, method, params)
+        return super(CountLimitedActionMiddleware, self).process_action_through_middlewares(action_name=action_name, method=method, params=params)
 
 
 
@@ -426,7 +411,7 @@ class TimeLimitedActionMiddleware(AbstractActionMiddleware):
 
             private_data["last_use_times"].append(datetime.utcnow()) # updated in any case
 
-        return super(TimeLimitedActionMiddleware, self).process_action_through_middlewares(action_name, method, params)
+        return super(TimeLimitedActionMiddleware, self).process_action_through_middlewares(action_name=action_name, method=method, params=params)
 
 
 
