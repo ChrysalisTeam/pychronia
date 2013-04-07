@@ -135,6 +135,8 @@ class GameViewMetaclass(type):
                 _check_action_registry(NewClass.GAME_ACTIONS, form_class_required=False) # can be directly called via ajax/custom forms
                 _check_action_registry(NewClass.ADMIN_ACTIONS, form_class_required=True) # must be auto-exposed via forms
 
+                # FIXME RESTORE THIS ASAP assert not (set(NewClass.GAME_ACTIONS) | set(NewClass.ADMIN_ACTIONS)) # let's avoid ambiguities on action names
+
             GameDataManager.register_game_view(NewClass)
 
 
@@ -331,23 +333,20 @@ class AbstractGameView(object):
         return (callback, relevant_args)
 
 
-    def _execute_game_action_callback(self, action_name, callback_name, unfiltered_params):
+    def _execute_game_action_callback(self, action_name, unfiltered_params):
         """
-        Beware, *callback_name* is an attribute of self, not an action name
-        from action registries.
-        
         Might raise any kind of exception.
         """
+        callback_name = self.GAME_ACTIONS[action_name]["callback"]
         (callback, relevant_args) = self._resolve_callback_callargs(callback_name=callback_name, unfiltered_params=unfiltered_params)
         res = callback(**relevant_args) # might fail
         return res
 
 
-    def _try_processing_formless_action(self, data):
+    def _try_processing_formless_game_action(self, data):
         """
         Raises AbnormalUsageError if action is not determined,
         else returns its result (or raises an action exception).
-        
         """
         data = utilities.sanitize_query_dict(data) # translates params to arrays, for example
 
@@ -364,27 +363,29 @@ class AbstractGameView(object):
 
     def _process_ajax_request(self):
         # we let exceptions flow upto upper level handlers
-        res = self._try_processing_formless_action(self.request.POST)
+        res = self._try_processing_formless_game_action(self.request.POST)
         response = json.dumps(res)
         return HttpResponse(response)
 
 
-    def _do_process_form_submission(self, data, form_name, FormClass, callback_name):
+    def _do_process_form_submission(self, action_registry, action_name, unfiltered_data, execution_processor):
+        assert self.request.method == "POST"
 
         user = self.datamanager.user
         res = dict(result=False, # by default
                    form_data=None)
 
-        assert self.request.method == "POST"
-        assert FormClass.matches(data)
+        callback_name = action_registry[action_name]["callback"]
+        FormClass = action_registry[action_name]["form_class"]
+        assert FormClass.matches(unfiltered_data)
 
         form_successful = False
-        bound_form = FormClass(self.datamanager, data=data)
+        bound_form = FormClass(self.datamanager, data=unfiltered_data)
 
         if bound_form.is_valid():
             with action_failure_handler(self.request, success_message=None): # only for unhandled exceptions
-                success_message = self._execute_game_action_callback(callback_name=callback_name,
-                                                                     unfiltered_params=bound_form.get_normalized_values())
+                success_message = execution_processor(callback_name=callback_name,
+                                                      unfiltered_params=bound_form.get_normalized_values())
                 res["result"] = form_successful = True
                 if isinstance(success_message, basestring) and success_message:
                     user.add_message(success_message)
@@ -420,7 +421,7 @@ class AbstractGameView(object):
         if data.get(self._ACTION_FIELD): # manually built form
             res["result"] = False # by default
             with action_failure_handler(self.request, success_message=None): # only for unhandled exceptions
-                result = self._try_processing_formless_action(data)
+                result = self._try_processing_formless_game_action(data)
                 if isinstance(result, basestring) and result:
                     user.add_message(result) # since we're NOT in ajax here
                 res["result"] = True
@@ -429,11 +430,10 @@ class AbstractGameView(object):
             for (action_name, action_data) in self.GAME_ACTIONS.items():
                 FormClass = action_data["form_class"] # MIGHT BE NONE
                 if FormClass and FormClass.matches(data): # class method
-                    callback_name = action_data["callback"]
-                    res = self._do_process_form_submission(data=data,
-                                                            form_name=action_name,
-                                                            FormClass=FormClass,
-                                                            callback_name=callback_name)
+                    res = self._do_process_form_submission(action_registry=self.GAME_ACTIONS,
+                                                           action_name=action_name,
+                                                           unfiltered_data=data,
+                                                           execution_processor=self._execute_game_action_callback)
                     break # IMPORTANT
             else:
                 user.add_error(_("Submitted form data hasn't been recognized"))
@@ -530,6 +530,16 @@ class AbstractGameView(object):
         return template_vars
 
 
+    def _execute_admin_action_callback(self, action_name, unfiltered_params):
+        """
+        No action middlewares involved here, at the moment.
+        
+        Might raise any kind of exception.
+        """
+        callback_name = self.ADMIN_ACTIONS[action_name]["callback"]
+        (callback, relevant_args) = self._resolve_callback_callargs(callback_name=callback_name, unfiltered_params=unfiltered_params)
+        res = callback(**relevant_args) # might fail
+        return res
 
 
     @transaction_watcher
@@ -545,15 +555,12 @@ class AbstractGameView(object):
 
             data = request.POST
 
-            form_data = self.ADMIN_ACTIONS[form_name]
-            FormClass = form_data["form_class"]
-            callback_name = form_data["callback"]
-
             if request.method == "POST":
-                res = self._do_process_form_submission(data=data,
-                                                      form_name=form_name,
-                                                      FormClass=FormClass,
-                                                      callback_name=callback_name)
+                res = self._do_process_form_submission(action_registry=self.ADMIN_ACTIONS,
+                                                       action_name=form_name,
+                                                       unfiltered_data=data,
+                                                       execution_processor=self._execute_admin_action_callback)
+
             else:
                 res = dict(result=None,
                            form_data=None)

@@ -68,6 +68,7 @@ class AbstractAbility(AbstractAbilityBasesAdapter):
 
     def _execute_game_action_with_middlewares(self, action_name, method, *args, **kwargs):
         assert method.__name__ == self.GAME_ACTIONS[action_name]["callback"], (action_name, method) # duplication here, just for optimization
+        if __debug__: self.notify_event("EXECUTE_GAME_ACTION_WITH_MIDDLEWARES")
 
         # zodb session management must be on TOP of stack # FIXME, are we sure ?? FIXME
         assert not getattr(method, "_is_under_transaction_watcher", None) or getattr(method, "_is_under_readonly_method", None)
@@ -80,14 +81,14 @@ class AbstractAbility(AbstractAbilityBasesAdapter):
         return self.process_action_through_middlewares(action_name=action_name, method=flattened_method, params=params)
 
 
-    def _execute_game_action_callback(self, action_name, callback_name, unfiltered_params):
-        has_middlewares = False
+    def _execute_game_action_callback(self, action_name, unfiltered_params):
+        has_middlewares = (action_name in self.settings["middlewares"])
         if not has_middlewares:
             # slight optimization, we bypass all the middlewares chain
             return super(AbstractAbility, self)._execute_game_action_callback(action_name=action_name,
-                                                                              callback_name=callback_name,
                                                                               unfiltered_params=unfiltered_params)
         else:
+            callback_name = self.GAME_ACTIONS[action_name]["callback"]
             (callback, relevant_args) = self._resolve_callback_callargs(callback_name=callback_name, unfiltered_params=unfiltered_params)
             return self._execute_game_action_with_middlewares(action_name=action_name, method=callback, **relevant_args)
 

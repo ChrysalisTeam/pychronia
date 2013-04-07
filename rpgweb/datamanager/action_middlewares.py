@@ -48,9 +48,8 @@ class AbstractActionMiddleware(object):
         """
         These methods must call their parent.
         """
-
         # we check that no unknown middleware is in settings or private data (could be a typo),
-        # and that activated middlewares are well compatible with current ability
+        # and that activated middlewares are well compatible with current ability (security measure)
 
         middleware_settings = self.settings["middlewares"].values()
         if "middlewares" in self.all_private_data:
@@ -67,7 +66,6 @@ class AbstractActionMiddleware(object):
             if strict:
                 assert pack_keys <= known_middleware_names_set, known_middleware_names_set - pack_keys # unknown middleware (typo ?)
             assert pack_keys <= compatible_middleware_names_set, (pack_keys, compatible_middleware_names_set, self.ACCESS, known_middleware_names_set) # middleware can't be used with that kind of ability ACCESS
-
 
 
     def get_all_middleware_settings(self, middleware_class):
