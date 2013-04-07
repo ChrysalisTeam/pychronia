@@ -3263,7 +3263,7 @@ class GameViews(BaseDataManager):
         """
         ids = [self.build_admin_widget_identifier(klass, form_name)
                for klass in self.GAME_VIEWS_REGISTRY.values()
-               for form_name in klass.ADMIN_FORMS]
+               for form_name in klass.ADMIN_ACTIONS]
         return ids
 
     @readonly_method
@@ -3276,7 +3276,7 @@ class GameViews(BaseDataManager):
             klass_name, form_name = identifier.split(".")
             if klass_name in self.GAME_VIEWS_REGISTRY:
                 klass = self.GAME_VIEWS_REGISTRY[klass_name]
-                if form_name in klass.ADMIN_FORMS:
+                if form_name in klass.ADMIN_ACTIONS:
                     return (self.instantiate_game_view(klass), form_name)
         return None
 

@@ -11,9 +11,9 @@ from django import forms
 class GlobalContactForm(DataTableForm):
 
     avatar = forms.CharField(label=_lazy("Avatar"), required=False)
-    
+
     description = forms.CharField(label=_lazy("Description"), widget=forms.Textarea(attrs={'rows': '2', 'cols':'40'}), required=False)
-    
+
     is_public = forms.BooleanField(label=_lazy("Public contact"), required=False, initial=True) # public by default
 
     access_tokens = Select2MultipleChoiceField(label=_lazy("Or restricted to"), required=False)
@@ -27,9 +27,9 @@ class GlobalContactForm(DataTableForm):
         super(GlobalContactForm, self).__init__(datamanager=datamanager, **kwargs)
         assert not self.fields["access_tokens"].choices
         self.fields["access_tokens"].choices = datamanager.build_select_choices_from_usernames(datamanager.get_character_usernames())
-        
-        
-        
+
+
+
 
     def get_normalized_values(self):
         values = super(GlobalContactForm, self).get_normalized_values()
@@ -45,8 +45,13 @@ class GlobalContactsManagement(AbstractDataTableManagement):
 
     NAME = "global_contacts_management"
 
-    GAME_FORMS = {"submit_item": (GlobalContactForm, "submit_item")}
-    ACTIONS = {"delete_item": "delete_item"}
+    GAME_ACTIONS = dict(submit_item=dict(title=_lazy("Submit a contact"),
+                                                          form_class=GlobalContactForm,
+                                                          callback="submit_item"),
+                        delete_item=dict(title=_lazy("Delete a contact"),
+                                                          form_class=None,
+                                                          callback="delete_item"))
+
     TEMPLATE = "administration/global_contacts_management.html"
 
 

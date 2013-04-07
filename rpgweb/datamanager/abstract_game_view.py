@@ -12,6 +12,8 @@ from django.template import loader
 from ..datamanager import GameDataManager
 from .abstract_form import AbstractGameForm, UninstantiableFormError
 from .datamanager_tools import transaction_watcher, readonly_method
+from django.forms import Form
+from django.utils.functional import Promise
 
 
 
@@ -106,18 +108,32 @@ class GameViewMetaclass(type):
                 if NewClass.TEMPLATE is not None:
                     assert loader.get_template(NewClass.TEMPLATE)
 
-                def _check_callback(name):
-                    assert getattr(NewClass, callback)
+                def _check_callback(callback):
+                    ###print ("CALLBACK", callback)
+                    assert getattr(NewClass, callback, None), callback
                     assert callback not in RESERVED_NAMES, (callback, RESERVED_NAMES)
                     assert not callback.startswith("_")
 
-                for (action_name, callback) in NewClass.ACTIONS.items():
-                    _check_callback(callback)
 
-                for form_setup in (NewClass.GAME_FORMS, NewClass.ADMIN_FORMS):
-                    for (form_name, (FormClass, callback)) in NewClass.GAME_FORMS.items():
-                        assert issubclass(FormClass, AbstractGameForm)
-                        _check_callback(callback)
+                def _check_action_registry(action_registry, form_class_required):
+                    for (action_name, action_properties) in action_registry.items():
+                        utilities.check_is_slug(action_name)
+                        action_properties_reference = {
+                            "title": Promise, # LAZILY translated string!!
+                            "form_class": (types.NoneType, types.TypeType),
+                            "callback": basestring,
+                        }
+                        utilities.check_dictionary_with_template(action_properties, action_properties_reference)
+                        _check_callback(action_properties["callback"])
+
+                        form_class = action_properties["form_class"]
+                        if form_class_required:
+                            assert form_class
+                        if form_class:
+                            assert issubclass(form_class, Form) # not necessarily AbstractGameForm - may be managed manually
+
+                _check_action_registry(NewClass.GAME_ACTIONS, form_class_required=False) # can be directly called via ajax/custom forms
+                _check_action_registry(NewClass.ADMIN_ACTIONS, form_class_required=True) # must be auto-exposed via forms
 
             GameDataManager.register_game_view(NewClass)
 
@@ -160,9 +176,8 @@ class AbstractGameView(object):
 
     NAME = None # slug to be overridden, used as primary identifier
 
-    ACTIONS = {} # dict mapping action identifiers to processing method names (for ajax calls or custom forms) - BEWARE OF DATA VALIDATION HERE
-    GAME_FORMS = {} # dict mapping form identifiers to tuples (AbstractGameForm subclass, processing method name)
-    ADMIN_FORMS = {} # same as GAME_FORMS but for forms that should be exposed as admin forms
+    GAME_ACTIONS = {} # dict mapping action identifiers to a dict of action properties (that might use action middlewares)
+    ADMIN_ACTIONS = {} # idem, but reserved to admin (no middlewares), and form classes are mandatory here
 
     TEMPLATE = None # HTML template name, required when using default request handler
     ADMIN_TEMPLATE = "utilities/admin_form_widget.html" # TODO - template to render a single admin form, with notifications
@@ -274,7 +289,8 @@ class AbstractGameView(object):
         else:
             previous_form_name = previous_form_instance = previous_form_successful = None
 
-        NewFormClass = self.GAME_FORMS[new_form_name][0]
+        NewFormClass = self.GAME_ACTIONS[new_form_name]["form_class"]
+        assert NewFormClass, new_form_name # important, not all actions have form classes available
 
         if __debug__:
             form_data = (previous_form_name, previous_form_instance, (previous_form_successful is not None))
@@ -318,13 +334,14 @@ class AbstractGameView(object):
         data = utilities.sanitize_query_dict(data)
 
         action_name = data.get(self._ACTION_FIELD)
-        if not action_name or action_name not in self.ACTIONS:
-            raise AbnormalUsageError(_("Abnormal action name: %s (available: %r)") % (action_name, self.ACTIONS.keys()))
+        if not action_name or action_name not in self.GAME_ACTIONS:
+            raise AbnormalUsageError(_("Abnormal action name: %s (available: %r)") % (action_name, self.GAME_ACTIONS.keys()))
 
-        func = getattr(self, self.ACTIONS[action_name])
+        callback_name = self.GAME_ACTIONS[action_name]["callback"]
+        callback = getattr(self, callback_name)
 
-        relevant_args = self._try_coercing_arguments_to_func(data=data, func=func) # might raise UsageError
-        res = func(**relevant_args)
+        relevant_args = self._try_coercing_arguments_to_func(data=data, func=callback) # might raise UsageError
+        res = callback(**relevant_args)
         return res
 
 
@@ -335,7 +352,7 @@ class AbstractGameView(object):
         return HttpResponse(response)
 
 
-    def _do_process_form_submission(self, data, form_name, FormClass, action_name):
+    def _do_process_form_submission(self, data, form_name, FormClass, callback_name):
 
         user = self.datamanager.user
         res = dict(result=False, # by default
@@ -349,7 +366,7 @@ class AbstractGameView(object):
 
         if bound_form.is_valid():
             with action_failure_handler(self.request, success_message=None): # only for unhandled exceptions
-                action = getattr(self, action_name)
+                action = getattr(self, callback_name)
                 relevant_args = utilities.adapt_parameters_to_func(bound_form.get_normalized_values(), action)
                 success_message = action(**relevant_args)
 
@@ -357,13 +374,13 @@ class AbstractGameView(object):
                 if isinstance(success_message, basestring) and success_message:
                     user.add_message(success_message)
                 else:
-                    self.logger.error("Action %s returned wrong success message: %r", action_name, success_message)
+                    self.logger.error("Action %s returned wrong success message: %r", callback_name, success_message)
                     user.add_message(_("Operation successful")) # default msg
 
 
         else:
             user.add_error(_("Submitted data is invalid"))
-        res["form_data"] = SubmittedGameForm(form_name=form_name,
+        res["form_data"] = SubmittedGameForm(form_name=form_name, # same as action name, actually
                                                form_instance=bound_form,
                                                form_successful=form_successful)
         return res
@@ -394,10 +411,14 @@ class AbstractGameView(object):
                 res["result"] = True
 
         else: # it must be a call using registered django newforms
-            for (form_name, (FormClass, action_name)) in self.GAME_FORMS.items():
-                if FormClass.matches(data): # class method
+            for (action_name, action_data) in self.GAME_ACTIONS.items():
+                FormClass = action_data["form_class"] # MIGHT BE NONE
+                if FormClass and FormClass.matches(data): # class method
+                    callback_name = action_data["callback"]
                     res = self._do_process_form_submission(data=data,
-                                                            form_name=form_name, FormClass=FormClass, action_name=action_name)
+                                                            form_name=action_name,
+                                                            FormClass=FormClass,
+                                                            callback_name=callback_name)
                     break # IMPORTANT
             else:
                 user.add_error(_("Submitted form data hasn't been recognized"))
@@ -500,7 +521,7 @@ class AbstractGameView(object):
     @transform_usage_error
     def process_admin_request(self, request, form_name):
 
-        assert form_name in self.ADMIN_FORMS # else big pb!
+        assert form_name in self.ADMIN_ACTIONS # else big pb!
 
         self._pre_request(request)
         try:
@@ -508,11 +529,16 @@ class AbstractGameView(object):
             self._check_admin_access() # crucial
 
             data = request.POST
-            (FormClass, action_name) = self.ADMIN_FORMS[form_name]
+            
+            form_data = self.ADMIN_ACTIONS[form_name]
+            FormClass = form_data["form_class"]
+            callback_name = form_data["callback"]
 
             if request.method == "POST":
                 res = self._do_process_form_submission(data=data,
-                                                      form_name=form_name, FormClass=FormClass, action_name=action_name)
+                                                      form_name=form_name,
+                                                      FormClass=FormClass,
+                                                      callback_name=callback_name)
             else:
                 res = dict(result=None,
                            form_data=None)

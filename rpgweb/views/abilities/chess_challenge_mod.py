@@ -12,9 +12,9 @@ class ChessChallengeAbility(AbstractAbility):
 
     NAME = "chess_challenge"
 
-    GAME_FORMS = {}
-
-    ACTIONS = {'notify_chess_player_victory': 'notify_chess_player_victory'}
+    GAME_ACTIONS = dict(notify_chess_player_victory=dict(title=_lazy("Notify victory of a chess player"),
+                                                          form_class=None,
+                                                          callback="notify_chess_player_victory"))
 
     TEMPLATE = "abilities/chess_challenge.html"
 

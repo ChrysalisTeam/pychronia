@@ -12,7 +12,10 @@ class WebradioManagement(AbstractGameView):
 
     NAME = "webradio_management"
 
-    ACTIONS = {"save_radio_playlist": "save_radio_playlist"}
+    GAME_ACTIONS = dict(save_radio_playlist=dict(title=_lazy("Save radio playlist"),
+                                                          form_class=None,
+                                                          callback="save_radio_playlist"))
+
     TEMPLATE = "administration/webradio_management.html"
 
     ACCESS = UserAccess.master

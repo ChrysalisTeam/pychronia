@@ -75,8 +75,10 @@ class MercenariesHiringAbility(AbstractAbility):
 
     NAME = "mercenaries_hiring"
 
-    GAME_FORMS = {"hiring_form": (AgentsHiringForm, "hire_remote_agent")}
-    ADMIN_FORMS = {}
+    GAME_ACTIONS = dict(hiring_form=dict(title=_lazy("Hire mercenaries"),
+                                                      form_class=AgentsHiringForm,
+                                                      callback="hire_remote_agent"))
+
     TEMPLATE = "abilities/mercenaries_hiring.html"
 
     ACCESS = UserAccess.character

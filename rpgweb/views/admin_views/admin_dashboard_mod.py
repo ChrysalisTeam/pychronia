@@ -15,7 +15,10 @@ class AdminDashboardAbility(AbstractAbility):
 
     NAME = "admin_dashboard"
 
-    ACTIONS = {"save_admin_widgets_order": "save_admin_widgets_order"}
+    GAME_ACTIONS = dict(save_admin_widgets_order=dict(title=_lazy("Save admin widgets' order"),
+                                                          form_class=None,
+                                                          callback="save_admin_widgets_order"))
+
     TEMPLATE = "administration/admin_dashboard.html"
 
     ACCESS = UserAccess.master

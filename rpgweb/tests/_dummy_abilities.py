@@ -28,8 +28,12 @@ class DummyTestAbility(AbstractAbility):
 
     NAME = "dummy_ability"
 
-    ACTIONS = dict(middleware_wrapped_callable1="non_middleware_action_callable") # we check that this name doesnt affect middlwares
-    GAME_FORMS = {"middleware_wrapped_callable1": (DummyForm, "non_middleware_action_callable")} # neither does this one
+    GAME_ACTIONS = dict(middleware_wrapped_callable1=dict(title=_lazy("my test title 1"),
+                                                          form_class=None,
+                                                          callback="non_middleware_action_callable"),
+                        middleware_wrapped_callable2=dict(title=_lazy("my test title 2"),
+                                                          form_class=DummyForm,
+                                                          callback="non_middleware_action_callable"))
 
     TEMPLATE = "base_main.html" # must exist
     ACCESS = UserAccess.character

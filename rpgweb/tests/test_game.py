@@ -2296,8 +2296,7 @@ class TestDatamanager(BaseGameTestCase):
         class PrivateTestAbility(AbstractAbility):
 
             NAME = "_private_dummy_ability"
-            GAME_FORMS = {}
-            ACTIONS = dict()
+            GAME_ACTIONS = {}
             TEMPLATE = "base_main.html" # must exist
             ACCESS = UserAccess.anonymous
             PERMISSIONS = []
@@ -2766,11 +2765,17 @@ class TestGameViewSystem(BaseGameTestCase):
                 game_view._perform_lazy_initializations()
 
 
-            for form_name, (form_class, callback_name) in game_view.GAME_FORMS.items() + game_view.ADMIN_FORMS.items():
+            for form_name, action_properties in game_view.GAME_ACTIONS.items() + game_view.ADMIN_ACTIONS.items():
 
+                form_class = action_properties["form_class"]
+                if not form_class:
+                    continue # action without predefined form class
+                
                 form_inst = game_view._instantiate_form(form_name)
 
+                callback_name = action_properties["callback"]
                 callback = getattr(game_view, callback_name)
+
                 (args, varargs, varkw, defaults) = inspect.getargspec(callback) # will fail if keyword-only arguments are used, in the future
                 if args[0] == "self":
                     args = args[1:] # PB if instance is not called "self"...

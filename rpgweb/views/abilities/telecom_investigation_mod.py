@@ -16,8 +16,9 @@ class TelecomInvestigationAbility(AbstractAbility):
 
     NAME = "telecom_investigation"
 
-    GAME_FORMS = {"investigation_form": (OtherCharactersForm, "process_telecom_investigation")}
-    ADMIN_FORMS = {}
+    GAME_ACTIONS = dict(investigation_form=dict(title=_lazy("Process telecom investigation"),
+                                              form_class=OtherCharactersForm,
+                                              callback="process_telecom_investigation"))
 
     TEMPLATE = "abilities/telecom_investigation.html"
 

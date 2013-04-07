@@ -40,13 +40,16 @@ class WiretappingTargetsForm(AbstractGameForm):
 @register_view
 class WiretappingAbility(AbstractAbility):
 
-    TITLE = _lazy("Wiretapping")
+    TITLE = _lazy("Wiretapping") # FIXME, USELESS ???
 
     NAME = "wiretapping"
 
-    GAME_FORMS = {"targets_form": (WiretappingTargetsForm, "change_current_user_wiretapping_targets")}
-    ADMIN_FORMS = {}
-    ACTIONS = {"purchase_wiretapping_slot": "purchase_wiretapping_slot"}
+    GAME_ACTIONS = dict(targets_form=dict(title=_lazy("Choose wiretapping targets"),
+                                              form_class=WiretappingTargetsForm,
+                                              callback="change_current_user_wiretapping_targets"),
+                        purchase_wiretapping_slot=dict(title=_lazy("Purchase wiretapping slot"),
+                                              form_class=None,
+                                              callback="purchase_wiretapping_slot"))
 
     TEMPLATE = "abilities/wiretapping_management.html"
 

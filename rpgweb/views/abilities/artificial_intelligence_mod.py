@@ -27,9 +27,9 @@ class ArtificialIntelligenceAbility(AbstractAbility):
 
     NAME = "artificial_intelligence"
 
-    GAME_FORMS = {}
-
-    ACTIONS = dict(process_user_sentence="process_user_sentence")
+    GAME_ACTIONS = dict(process_user_sentence=dict(title=_lazy("Respond to user input"),
+                                                          form_class=None,
+                                                          callback="process_user_sentence"))
 
     TEMPLATE = "abilities/artificial_intelligence.html"
 

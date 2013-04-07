@@ -23,9 +23,9 @@ class WorldScanAbility(AbstractAbility):
 
     NAME = "world_scan"
 
-    GAME_FORMS = {"scan_form": (ArtefactForm, "process_world_scan_submission")}
-    ADMIN_FORMS = {}
-    ACTION_FORMS = {}
+    GAME_ACTIONS = dict(scan_form=dict(title=_lazy("Choose wiretapping targets"),
+                                              form_class=None,
+                                              callback="process_world_scan_submission"))
 
     TEMPLATE = "abilities/world_scan.html"
 

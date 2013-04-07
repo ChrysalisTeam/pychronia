@@ -123,9 +123,11 @@ class CharacterProfile(AbstractGameView):
     ACCESS = UserAccess.character
     ALWAYS_AVAILABLE = True
 
-    GAME_FORMS = {"password_change_form": (forms.PasswordChangeForm, "process_password_change_form")}
+    GAME_ACTIONS = dict(password_change_form=dict(title=_lazy("Change password"),
+                                                          form_class=forms.PasswordChangeForm,
+                                                          callback="process_password_change_form"))
 
-
+                                                          
     def get_template_vars(self, previous_form_data=None):
 
         character_properties = self.datamanager.get_character_properties()
@@ -167,13 +169,18 @@ class FriendshipManagementAbility(AbstractGameView):
 
     NAME = "friendship_management"
 
-    GAME_FORMS = {}
-    ACTIONS = {"do_propose_friendship": "do_propose_friendship",
-               "do_accept_friendship": "do_accept_friendship",
-               "do_cancel_proposal" : "do_cancel_proposal",
-               "do_cancel_friendship": "do_cancel_friendship"}
-
-    ADMIN_FORMS = {}
+    GAME_ACTIONS = dict(do_propose_friendship=dict(title=_lazy("Propose friendship"),
+                                                          form_class=None,
+                                                          callback="do_propose_friendship"),
+                        do_accept_friendship=dict(title=_lazy("Accept friendship"),
+                                                          form_class=None,
+                                                          callback="do_accept_friendship"),
+                        do_cancel_proposal=dict(title=_lazy("Cancel friendship proposal"),
+                                                          form_class=None,
+                                                          callback="do_cancel_proposal"),
+                        do_cancel_friendship=dict(title=_lazy("Cancel friendship"),
+                                                          form_class=None,
+                                                          callback="do_cancel_friendship"))
 
     TEMPLATE = "generic_operations/friendship_management.html"
 
@@ -222,7 +229,7 @@ class FriendshipManagementAbility(AbstractGameView):
         if res:
             return _("You're now friend with %s.") % other_username
         else:
-            return _("Your friendship proposal to user %s has been recorded, as he has cancelled his own friendship proposal.") % other_username  # should be fairly rare
+            return _("Your friendship proposal to user %s has been recorded, since he has cancelled his own friendship proposal.") % other_username  # should be fairly rare
 
 
     def do_cancel_proposal(self, other_username):

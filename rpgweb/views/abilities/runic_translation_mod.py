@@ -34,8 +34,10 @@ class RunicTranslationAbility(AbstractAbility):
 
     NAME = "runic_translation"
 
-    GAME_FORMS = {"translation_form": (TranslationForm, "process_translation")}
-    ADMIN_FORMS = GAME_FORMS.copy()
+    GAME_ACTIONS = dict(translation_form=dict(title=_lazy("Translate runes"),
+                                              form_class=TranslationForm,
+                                              callback="process_translation"))
+    ADMIN_ACTIONS = GAME_ACTIONS.copy() # FIXME REMOVE THAT ASAP
 
     TEMPLATE = "abilities/runic_translation.html"
 

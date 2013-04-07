@@ -16,10 +16,12 @@ class HouseLockingAbility(AbstractAbility):
 
     NAME = "house_locking"
 
-    GAME_FORMS = {}
-
-    ACTIONS = dict(lock="lock_house_doors",
-                   unlock="try_unlocking_house_doors")
+    GAME_ACTIONS = dict(lock=dict(title=_lazy("Lock house doors"),
+                                              form_class=None,
+                                              callback="lock_house_doors"),
+                        unlock=dict(title=_lazy("Unlock house doors"),
+                                              form_class=None,
+                                              callback="try_unlocking_house_doors"))
 
     TEMPLATE = "abilities/house_locking.html"
 

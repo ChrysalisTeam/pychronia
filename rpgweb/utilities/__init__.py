@@ -387,7 +387,7 @@ def assert_sets_equal(set1, set2):
 def validate_value(value, validator):
 
     if issubclass(type(validator), types.TypeType) or isinstance(validator, (list, tuple)): # should be a list of types
-        usage_assert(isinstance(value, validator))
+        usage_assert(isinstance(value, validator), locals())
 
     elif isinstance(validator, collections.Callable):
         res = validator(value)

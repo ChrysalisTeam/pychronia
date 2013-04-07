@@ -37,9 +37,13 @@ class CharactersView(AbstractGameView):
 
     NAME = "characters_view"
 
-    GAME_FORMS = {"money_transfer_form": (MoneyTransferForm, "transfer_money"),
-                  "gems_transfer_form": (GemsTransferForm, "transfer_gems"), }
-    ADMIN_FORMS = {}
+    GAME_ACTIONS = dict(money_transfer_form=dict(title=_lazy("Transfer money"),
+                                                          form_class=MoneyTransferForm,
+                                                          callback="transfer_money"),
+                        gems_transfer_form=dict(title=_lazy("Transfer gems"),
+                                                          form_class=GemsTransferForm,
+                                                          callback="transfer_gems"))
+
     TEMPLATE = "auction/view_characters.html"
 
     ACCESS = UserAccess.authenticated

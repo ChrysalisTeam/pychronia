@@ -53,8 +53,15 @@ class RadioSpotsEditing(AbstractDataTableManagement):
 
     NAME = "radio_spots_editing"
 
-    GAME_FORMS = {"submit_item": (RadioSpotForm, "submit_item")}
-    ACTIONS = {"delete_item": "delete_item", "generate_tts_sample": "generate_tts_sample"}
+    GAME_ACTIONS = dict(submit_item=dict(title=_lazy("Submit radio spot"),
+                                                          form_class=RadioSpotForm,
+                                                          callback="submit_item"),
+                        delete_item=dict(title=_lazy("Delete radio spot"),
+                                                          form_class=None,
+                                                          callback="delete_item"),
+                        generate_tts_sample=dict(title=_lazy("Generate text-to-speech sample"),
+                                                          form_class=None,
+                                                          callback="generate_tts_sample"))
     TEMPLATE = "administration/radio_spots_editing.html"
 
     def get_data_table_instance(self):

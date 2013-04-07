@@ -29,8 +29,13 @@ class StaticPagesManagement(AbstractDataTableManagement):
 
     NAME = "static_pages_management"
 
-    GAME_FORMS = {"submit_item": (StaticPageForm, "submit_item")}
-    ACTIONS = {"delete_item": "delete_item"}
+    GAME_ACTIONS = dict(submit_item=dict(title=_lazy("Submit a static page"),
+                                                          form_class=StaticPageForm,
+                                                          callback="submit_item"),
+                        delete_item=dict(title=_lazy("Delete a static page"),
+                                                          form_class=None,
+                                                          callback="delete_item"))
+
     TEMPLATE = "administration/static_pages_management.html"
 
 
