@@ -2993,6 +2993,49 @@ class TestGameViewSystem(BaseGameTestCase):
 
 class TestActionMiddlewares(BaseGameTestCase):
 
+    def test_all_get_middleware_data_explanations(self):
+
+        def _flatten(list_of_lists_of_strings):
+            return u"\n".join(u"".join(strs) for strs in list_of_lists_of_strings)
+
+        self._set_user("guy4") # important
+        bank_name = self.dm.get_global_parameter("bank_name")
+        self.dm.transfer_money_between_characters(bank_name, "guy4", amount=1000)
+
+        ability = self.dm.instantiate_ability("dummy_ability")
+        ability._perform_lazy_initializations() # normally done while treating HTTP request...
+
+        assert not ability.has_action_middlewares_activated(action_name="middleware_wrapped_test_action")
+
+        explanations = ability.get_middleware_data_explanations(action_name="middleware_wrapped_test_action")
+        assert explanations == [] # no middlewares activated
+
+
+        ability.reset_test_settings("middleware_wrapped_test_action", CostlyActionMiddleware, dict(money_price=203, gems_price=123))
+        assert ability.has_action_middlewares_activated(action_name="middleware_wrapped_test_action")
+        assert ability.get_middleware_data_explanations(action_name="middleware_wrapped_test_action") # no pb with non-activated ones
+
+        ability.reset_test_settings("middleware_wrapped_test_action", CountLimitedActionMiddleware, dict(max_per_character=23, max_per_game=33))
+        assert ability.has_action_middlewares_activated(action_name="middleware_wrapped_test_action")
+        assert ability.get_middleware_data_explanations(action_name="middleware_wrapped_test_action") # no pb with non-activated ones
+
+        ability.reset_test_settings("middleware_wrapped_test_action", TimeLimitedActionMiddleware, dict(waiting_period_mn=87, max_uses_per_period=12))
+        assert ability.has_action_middlewares_activated(action_name="middleware_wrapped_test_action")
+        assert ability.get_middleware_data_explanations(action_name="middleware_wrapped_test_action") # no pb with non-activated ones
+
+        assert 18277 == ability.middleware_wrapped_callable1(use_gems=None) # we perform action ONCE
+
+        explanations = ability.get_middleware_data_explanations(action_name="middleware_wrapped_test_action")
+        explanations = _flatten(explanations)
+        assert "%s" not in explanations and "%r" not in explanations, explanations
+
+        for stuff in (203, 123, 23, 33, 87, 12, " 1 "):
+            assert str(stuff) in explanations
+
+        print(">>>>>|||>>>>>", explanations)
+
+        # TODO FIXME, improve testing by calling get_middleware_data_explanations() in tests below!!!
+
 
     def test_action_middleware_bypassing(self):
         """

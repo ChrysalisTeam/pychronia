@@ -116,6 +116,9 @@ class AbstractActionMiddleware(object):
         return middleware_data[action_name][middleware_class.__name__]
 
 
+    def has_action_middlewares_activated(self, action_name):
+        return (action_name in self.settings["middlewares"])
+
     def is_action_middleware_activated(self, action_name, middleware_class):
         """
         We assume a middleware is activated only if it has an entry in middleware settings 
@@ -135,15 +138,20 @@ class AbstractActionMiddleware(object):
         assert action_name
 
 
+    def _process_action_through_middlewares(self, action_name, method, params):
+        if __debug__: self.notify_event("TOP_LEVEL_PROCESS_ACTION_THROUGH_MIDDLEWARES")
+        assert action_name
+        return method(**params)
+
+
     def process_action_through_middlewares(self, action_name, method, params):
         """
         The chain of middleware processing ends here, by normal execution of the
         proper *method* callable (possibly a flattened version of thge original callback) 
         with the dict of arguments *params*.
         """
-        if __debug__: self.notify_event("TOP_LEVEL_PROCESS_ACTION_THROUGH_MIDDLEWARES")
-        assert action_name
-        return method(**params)
+        self._lazy_setup_private_action_middleware_data(action_name=action_name)
+        return self._process_action_through_middlewares(action_name=action_name, method=method, params=params)
 
 
     def _get_middleware_data_explanations(self, action_name):
@@ -155,7 +163,10 @@ class AbstractActionMiddleware(object):
 
     @readonly_method
     def get_middleware_data_explanations(self, action_name):
-        return self._get_middleware_data_explanations(action_name=action_name)
+        if not self.has_action_middlewares_activated(action_name=action_name):
+            return []
+        else:
+            return self._get_middleware_data_explanations(action_name=action_name)
 
 
 
@@ -226,7 +237,7 @@ class CostlyActionMiddleware(AbstractActionMiddleware):
         return [res] + other_instructions # list of lists of strings!
 
 
-    def process_action_through_middlewares(self, action_name, method, params):
+    def _process_action_through_middlewares(self, action_name, method, params):
 
         if self.is_action_middleware_activated(action_name, CostlyActionMiddleware):
 
@@ -251,7 +262,7 @@ class CostlyActionMiddleware(AbstractActionMiddleware):
                 else:
                     self._pay_with_money(character_properties, middleware_settings)
 
-        return super(CostlyActionMiddleware, self).process_action_through_middlewares(action_name=action_name, method=method, params=params)
+        return super(CostlyActionMiddleware, self)._process_action_through_middlewares(action_name=action_name, method=method, params=params)
 
 
     def _pay_with_gems(self, character_properties, middleware_settings, gems_list):
@@ -354,8 +365,12 @@ class CountLimitedActionMiddleware(AbstractActionMiddleware):
                 res.append(_("Units available per user: %s.") % middleware_settings["max_per_character"])
 
             # in ANY case
-            private_data = self.get_private_middleware_data(action_name, CountLimitedActionMiddleware)
-            res.append(_("Units already consumed by yourself: %s.") % private_data["private_usage_count"])
+            try:
+                private_data = self.get_private_middleware_data(action_name, CountLimitedActionMiddleware, create_if_unexisting=False) # important
+                units_consumed = private_data["private_usage_count"]
+            except LookupError: # user has never used that action
+                units_consumed = 0
+            res.append(_("Units already consumed by yourself: %s.") % units_consumed)
 
         other_instructions = super(CountLimitedActionMiddleware, self)._get_middleware_data_explanations(action_name)
         return [res] + other_instructions # list of lists of strings!
@@ -368,12 +383,12 @@ class CountLimitedActionMiddleware(AbstractActionMiddleware):
         return global_usage_count
 
 
-    def process_action_through_middlewares(self, action_name, method, params):
+    def _process_action_through_middlewares(self, action_name, method, params):
 
         if self.is_action_middleware_activated(action_name, CountLimitedActionMiddleware):
 
             middleware_settings = self.get_middleware_settings(action_name, CountLimitedActionMiddleware)
-            private_data = self.get_private_middleware_data(action_name, CountLimitedActionMiddleware)
+            private_data = self.get_private_middleware_data(action_name, CountLimitedActionMiddleware) # MUST EXIST HERE
 
             if middleware_settings["max_per_game"]: # 0 <-> None
                 if self._get_global_usage_count(action_name) >= middleware_settings["max_per_game"]:
@@ -385,7 +400,7 @@ class CountLimitedActionMiddleware(AbstractActionMiddleware):
 
             private_data["private_usage_count"] += 1 # important
 
-        return super(CountLimitedActionMiddleware, self).process_action_through_middlewares(action_name=action_name, method=method, params=params)
+        return super(CountLimitedActionMiddleware, self)._process_action_through_middlewares(action_name=action_name, method=method, params=params)
 
 
 
@@ -429,6 +444,7 @@ class TimeLimitedActionMiddleware(AbstractActionMiddleware):
 
         for action_name, settings in self.get_all_middleware_settings(TimeLimitedActionMiddleware).items():
 
+            # all these settings must be > 0 !!
             utilities.check_is_positive_float(settings["waiting_period_mn"], non_zero=True)
             utilities.check_is_positive_float(settings["max_uses_per_period"], non_zero=True)
 
@@ -452,8 +468,11 @@ class TimeLimitedActionMiddleware(AbstractActionMiddleware):
             res.append(_("This action can be performed %s time(s) every %s minutes.") %
                         (middleware_settings["max_uses_per_period"], middleware_settings["waiting_period_mn"]))
 
-            private_data = self.get_private_middleware_data(action_name, TimeLimitedActionMiddleware)
-            blocking_times = self._computed_purge_old_use_times(middleware_settings=middleware_settings, last_use_times=private_data["last_use_times"])
+            try:
+                private_data = self.get_private_middleware_data(action_name, TimeLimitedActionMiddleware, create_if_unexisting=False) # important
+                blocking_times = self._computed_purge_old_use_times(middleware_settings=middleware_settings, last_use_times=private_data["last_use_times"])
+            except LookupError: # user has never used that action
+                blocking_times = ()
 
             res.append(_("In this last period, you've done it %s time(s).") % len(blocking_times))
 
@@ -473,12 +492,12 @@ class TimeLimitedActionMiddleware(AbstractActionMiddleware):
         #return res
 
 
-    def process_action_through_middlewares(self, action_name, method, params):
+    def _process_action_through_middlewares(self, action_name, method, params):
 
         if self.is_action_middleware_activated(action_name, TimeLimitedActionMiddleware):
 
             middleware_settings = self.get_middleware_settings(action_name, TimeLimitedActionMiddleware)
-            private_data = self.get_private_middleware_data(action_name, TimeLimitedActionMiddleware)
+            private_data = self.get_private_middleware_data(action_name, TimeLimitedActionMiddleware) # MUST EXIST
 
             if middleware_settings["waiting_period_mn"] and middleware_settings["max_uses_per_period"]: # in case of misconfiguration
 
@@ -491,7 +510,7 @@ class TimeLimitedActionMiddleware(AbstractActionMiddleware):
 
             private_data["last_use_times"].append(datetime.utcnow()) # updated in any case
 
-        return super(TimeLimitedActionMiddleware, self).process_action_through_middlewares(action_name=action_name, method=method, params=params)
+        return super(TimeLimitedActionMiddleware, self)._process_action_through_middlewares(action_name=action_name, method=method, params=params)
 
 
 

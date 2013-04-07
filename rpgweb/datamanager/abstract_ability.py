@@ -74,13 +74,11 @@ class AbstractAbility(AbstractAbilityBasesAdapter):
         flattened_method = resolving_decorator.flatten_function_signature(method)
         params = resolving_decorator.resolve_call_args(flattened_method, *args, **kwargs)
 
-        self._lazy_setup_private_action_middleware_data(action_name=action_name)
         return self.process_action_through_middlewares(action_name=action_name, method=flattened_method, params=params)
 
 
     def _execute_game_action_callback(self, action_name, unfiltered_params):
-        has_middlewares = (action_name in self.settings["middlewares"])
-        if not has_middlewares:
+        if not self.has_action_middlewares_activated(action_name=action_name):
             # slight optimization, we bypass all the middlewares chain
             return super(AbstractAbility, self)._execute_game_action_callback(action_name=action_name,
                                                                               unfiltered_params=unfiltered_params)
