@@ -41,7 +41,7 @@ class TelecomInvestigationAbility(AbstractAbility):
 
     def get_template_vars(self, previous_form_data=None):
 
-        translation_form = self._instantiate_form(new_form_name="investigation_form",
+        translation_form = self._instantiate_form(new_action_name="investigation_form",
                                                   hide_on_success=False,
                                                   previous_form_data=previous_form_data)
 

@@ -48,8 +48,8 @@ class AdminDashboardAbility(AbstractAbility):
             if not components:
                 raise Http404
 
-            instance, form_name = components
-            html_res = instance.process_admin_request(request, form_name)
+            instance, action_name = components
+            html_res = instance.process_admin_request(request, action_name)
             return html_res
 
 
@@ -70,8 +70,8 @@ class AdminDashboardAbility(AbstractAbility):
 
         widgets = []
         for widget_id in final_ids:
-            instance, form_name = self.datamanager.resolve_admin_widget_identifier(identifier=widget_id)
-            widget_vars = instance.compute_admin_template_variables(form_name, previous_form_data=None)
+            instance, action_name = self.datamanager.resolve_admin_widget_identifier(identifier=widget_id)
+            widget_vars = instance.compute_admin_template_variables(action_name, previous_form_data=None)
             widgets.append(widget_vars)
 
         #compute_admin_template_variables

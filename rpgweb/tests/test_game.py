@@ -2765,13 +2765,13 @@ class TestGameViewSystem(BaseGameTestCase):
                 game_view._perform_lazy_initializations()
 
 
-            for form_name, action_properties in game_view.GAME_ACTIONS.items() + game_view.ADMIN_ACTIONS.items():
+            for action_name, action_properties in game_view.GAME_ACTIONS.items() + game_view.ADMIN_ACTIONS.items():
 
-                form_class = action_properties["form_class"]
-                if not form_class:
+                FormClass = action_properties["form_class"]
+                if not FormClass:
                     continue # action without predefined form class
                 
-                form_inst = game_view._instantiate_form(form_name)
+                form_inst = game_view._instantiate_form(action_name)
 
                 callback_name = action_properties["callback"]
                 callback = getattr(game_view, callback_name)

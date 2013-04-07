@@ -45,7 +45,7 @@ class MatterAnalysisAbility(AbstractAbility):
 
         # for now we don't exclude objects already analysed, players just have to take care !
         try:
-            item_form = self._instantiate_form(new_form_name="process_artefact",
+            item_form = self._instantiate_form(new_action_name="process_artefact",
                                                  hide_on_success=True,
                                                  previous_form_data=previous_form_data)
         except UninstantiableFormError, e:

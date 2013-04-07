@@ -59,7 +59,7 @@ class CharactersView(AbstractGameView):
 
         # Preparing form for money transfer
         try:
-            new_money_form = self._instantiate_form(new_form_name="money_transfer_form",
+            new_money_form = self._instantiate_form(new_action_name="money_transfer_form",
                                                      hide_on_success=False,
                                                      previous_form_data=previous_form_data)
         except UninstantiableFormError:
@@ -68,7 +68,7 @@ class CharactersView(AbstractGameView):
 
         # preparing gems transfer form
         try:
-            new_gems_form = self._instantiate_form(new_form_name="gems_transfer_form",
+            new_gems_form = self._instantiate_form(new_action_name="gems_transfer_form",
                                                      hide_on_success=False,
                                                      previous_form_data=previous_form_data)
         except UninstantiableFormError:

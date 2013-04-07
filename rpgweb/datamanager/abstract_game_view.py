@@ -126,11 +126,11 @@ class GameViewMetaclass(type):
                         utilities.check_dictionary_with_template(action_properties, action_properties_reference)
                         _check_callback(action_properties["callback"])
 
-                        form_class = action_properties["form_class"]
+                        FormClass = action_properties["form_class"]
                         if form_class_required:
-                            assert form_class
-                        if form_class:
-                            assert issubclass(form_class, Form) # not necessarily AbstractGameForm - may be managed manually
+                            assert FormClass
+                        if FormClass:
+                            assert issubclass(FormClass, Form) # not necessarily AbstractGameForm - may be managed manually
 
                 _check_action_registry(NewClass.GAME_ACTIONS, form_class_required=False) # can be directly called via ajax/custom forms
                 _check_action_registry(NewClass.ADMIN_ACTIONS, form_class_required=True) # must be auto-exposed via forms
@@ -156,12 +156,12 @@ class SubmittedGameForm:
     """
     Simple container class.
     """
-    def __init__(self, form_name, form_instance, form_successful):
-        utilities.check_is_slug(form_name)
-        assert form_successful in (True, False)
-        self.form_name = form_name
+    def __init__(self, action_name, form_instance, action_successful):
+        utilities.check_is_slug(action_name)
+        assert action_successful in (True, False)
+        self.action_name = action_name
         self.form_instance = form_instance
-        self.form_successful = form_successful
+        self.action_successful = action_successful
 
 
 
@@ -272,7 +272,7 @@ class AbstractGameView(object):
 
 
     def _instantiate_form(self,
-                          new_form_name, # id of the form to be potentially instantiated
+                          new_action_name, # id of the form to be potentially instantiated
                           hide_on_success=False, # should we return None if this form has just been submitted successfully?
                           previous_form_data=None, # data about previously submitted form, if any
                           initial_data=None,
@@ -285,22 +285,22 @@ class AbstractGameView(object):
         form_options = form_options or {}
 
         if previous_form_data:
-            previous_form_name = previous_form_data.form_name
+            previous_action_name = previous_form_data.action_name
             previous_form_instance = previous_form_data.form_instance
-            previous_form_successful = previous_form_data.form_successful
+            previous_action_successful = previous_form_data.action_successful
         else:
-            previous_form_name = previous_form_instance = previous_form_successful = None
+            previous_action_name = previous_form_instance = previous_action_successful = None
 
-        NewFormClass = self.GAME_ACTIONS[new_form_name]["form_class"]
-        assert NewFormClass, new_form_name # important, not all actions have form classes available
-
+        NewFormClass = self.GAME_ACTIONS[new_action_name]["form_class"]
+        assert NewFormClass, new_action_name # important, not all actions have form classes available
+        assert not previous_form_instance or previous_form_instance.__class__ == NewFormClass # let's be coherent, same form class used in both
         if __debug__:
-            form_data = (previous_form_name, previous_form_instance, (previous_form_successful is not None))
+            form_data = (previous_action_name, previous_form_instance, (previous_action_successful is not None))
             assert all(form_data) or not any(form_data)
 
-        if new_form_name == previous_form_name:
+        if new_action_name == previous_action_name:
             # this particular form has just been submitted
-            if previous_form_successful:
+            if previous_action_successful:
                 if hide_on_success:
                     return None
                 else:
@@ -379,14 +379,14 @@ class AbstractGameView(object):
         FormClass = action_registry[action_name]["form_class"]
         assert FormClass.matches(unfiltered_data)
 
-        form_successful = False
+        action_successful = False
         bound_form = FormClass(self.datamanager, data=unfiltered_data)
 
         if bound_form.is_valid():
             with action_failure_handler(self.request, success_message=None): # only for unhandled exceptions
                 success_message = execution_processor(callback_name=callback_name,
                                                       unfiltered_params=bound_form.get_normalized_values())
-                res["result"] = form_successful = True
+                res["result"] = action_successful = True
                 if isinstance(success_message, basestring) and success_message:
                     user.add_message(success_message)
                 else:
@@ -395,9 +395,9 @@ class AbstractGameView(object):
 
         else:
             user.add_error(_("Submitted data is invalid"))
-        res["form_data"] = SubmittedGameForm(form_name=action_name, # same as action name, actually
+        res["form_data"] = SubmittedGameForm(action_name=action_name, # same as action name, actually
                                                form_instance=bound_form,
-                                               form_successful=form_successful)
+                                               action_successful=action_successful)
         return res
 
 
@@ -456,7 +456,7 @@ class AbstractGameView(object):
             success = None # unused ATM
             previous_form_data = None
 
-        assert not previous_form_data or previous_form_data.form_successful == success # coherency
+        assert not previous_form_data or previous_form_data.action_successful == success # coherency
 
         template_vars = self.get_template_vars(previous_form_data)
 
@@ -515,16 +515,16 @@ class AbstractGameView(object):
 
 
     @readonly_method
-    def compute_admin_template_variables(self, form_name, previous_form_data=None):
+    def compute_admin_template_variables(self, action_name, previous_form_data=None):
         """
         Can be used both in and out of request processing.
         """
-        form = self._instantiate_form(new_form_name=form_name,
+        form = self._instantiate_form(new_action_name=action_name,
                                       hide_on_success=False,
                                       previous_form_data=previous_form_data,
                                       initial_data=None,)
 
-        template_vars = dict(target_form_id=self.datamanager.build_admin_widget_identifier(self.__class__, form_name),
+        template_vars = dict(target_form_id=self.datamanager.build_admin_widget_identifier(self.__class__, action_name),
                              form=form)
         return template_vars
 
@@ -543,9 +543,9 @@ class AbstractGameView(object):
 
     @transaction_watcher
     @transform_usage_error
-    def process_admin_request(self, request, form_name):
+    def process_admin_request(self, request, action_name):
 
-        assert form_name in self.ADMIN_ACTIONS # else big pb!
+        assert action_name in self.ADMIN_ACTIONS # else big pb!
 
         self._pre_request(request)
         try:
@@ -556,7 +556,7 @@ class AbstractGameView(object):
 
             if request.method == "POST":
                 res = self._do_process_form_submission(action_registry=self.ADMIN_ACTIONS,
-                                                       action_name=form_name,
+                                                       action_name=action_name,
                                                        unfiltered_data=data,
                                                        execution_processor=self._execute_admin_action_callback)
 
@@ -567,7 +567,7 @@ class AbstractGameView(object):
             success = res["result"] # can be None also if nothing processed
             previous_form_data = res["form_data"]
 
-            template_vars = self.compute_admin_template_variables(form_name=form_name, previous_form_data=previous_form_data)
+            template_vars = self.compute_admin_template_variables(action_name=action_name, previous_form_data=previous_form_data)
 
             response = render(request,
                               self.ADMIN_TEMPLATE,

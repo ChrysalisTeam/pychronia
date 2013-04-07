@@ -33,7 +33,7 @@ class AbstractDataTableManagement(AbstractGameView):
         else:
             idx = ""
 
-        res = self._instantiate_form(new_form_name="submit_item",
+        res = self._instantiate_form(new_action_name="submit_item",
                                      previous_form_data=previous_form_data,
                                      initial_data=initial_data,
                                      auto_id="id_%s_%%s" % slugify(idx)) # needed by select2 to wrap fields
@@ -77,7 +77,7 @@ class AbstractDataTableManagement(AbstractGameView):
         table_items = table.get_all_data(as_sorted_list=True)
 
         concerned_identifier = None
-        if previous_form_data and not previous_form_data.form_successful:
+        if previous_form_data and not previous_form_data.action_successful:
             concerned_identifier = self.request.POST.get("previous_identifier", "") # empty string if it was a new item
 
         forms = [("", self.instantiate_table_form(previous_form_data=(previous_form_data if concerned_identifier == "" else None)))] # form for new table entry

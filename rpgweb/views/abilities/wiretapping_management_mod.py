@@ -70,7 +70,7 @@ class WiretappingAbility(AbstractAbility):
                 initial_data["target_%d" % i] = ""
 
         try:
-            targets_form = self._instantiate_form(new_form_name="targets_form",
+            targets_form = self._instantiate_form(new_action_name="targets_form",
                                                   hide_on_success=False,
                                                   initial_data=initial_data,
                                                   previous_form_data=previous_form_data,)

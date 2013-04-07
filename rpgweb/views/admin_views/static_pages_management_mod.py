@@ -101,7 +101,7 @@ class StaticPagesManagement(AbstractDataTableManagement):
         form = StaticPageForm(self.datamanager, initial=None, data=dict(_ability_form="HHH", test=("aaa", "hhhh")))
         if form.is_valid():
             print ("@@@@@@@@@#", form.cleaned_data)
-        #self._instantiate_form(new_form_name="static_page_form",
+        #self._instantiate_form(new_action_name="static_page_form",
          #                                        hide_on_success=False,
          #                                         previous_form_data=None)
         return dict(form=form)

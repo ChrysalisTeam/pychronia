@@ -132,7 +132,7 @@ class CharacterProfile(AbstractGameView):
 
         character_properties = self.datamanager.get_character_properties()
 
-        password_change_form = self._instantiate_form(new_form_name="password_change_form",
+        password_change_form = self._instantiate_form(new_action_name="password_change_form",
                                                       hide_on_success=False,
                                                       previous_form_data=previous_form_data)
 

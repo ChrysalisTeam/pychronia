@@ -3250,10 +3250,10 @@ class GameViews(BaseDataManager):
 
 
     @readonly_method
-    def build_admin_widget_identifier(self, klass, form_name):
+    def build_admin_widget_identifier(self, klass, action_name):
         assert isinstance(klass, type)
-        assert isinstance(form_name, basestring)
-        return "%s.%s" % (klass.NAME, form_name)
+        assert isinstance(action_name, basestring)
+        return "%s.%s" % (klass.NAME, action_name)
 
     @readonly_method
     def get_admin_widget_identifiers(self):
@@ -3261,23 +3261,23 @@ class GameViews(BaseDataManager):
         Gets a list of qualified names, each one targetting a single
         admin form widget.
         """
-        ids = [self.build_admin_widget_identifier(klass, form_name)
+        ids = [self.build_admin_widget_identifier(klass, action_name)
                for klass in self.GAME_VIEWS_REGISTRY.values()
-               for form_name in klass.ADMIN_ACTIONS]
+               for action_name in klass.ADMIN_ACTIONS]
         return ids
 
     @readonly_method
     def resolve_admin_widget_identifier(self, identifier):
         """
-        Returns the (game_view_instance, form_name_string) tuple corresponding to that
+        Returns the (game_view_instance, action_name_string) tuple corresponding to that
         admin widget token (and its instantiation pmarams), or None. 
         """
         if identifier.count(".") == 1:
-            klass_name, form_name = identifier.split(".")
+            klass_name, action_name = identifier.split(".")
             if klass_name in self.GAME_VIEWS_REGISTRY:
                 klass = self.GAME_VIEWS_REGISTRY[klass_name]
-                if form_name in klass.ADMIN_ACTIONS:
-                    return (self.instantiate_game_view(klass), form_name)
+                if action_name in klass.ADMIN_ACTIONS:
+                    return (self.instantiate_game_view(klass), action_name)
         return None
 
 
