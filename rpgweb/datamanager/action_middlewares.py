@@ -126,6 +126,7 @@ class AbstractActionMiddleware(object):
         print("is_action_middleware_activated", action_name, middleware_class, res, "---------", self.settings) # FIXME REMOVE
         return res
 
+
     def _lazy_setup_private_action_middleware_data(self, action_name):
         """
         To be overriden by each subclass.
@@ -139,6 +140,7 @@ class AbstractActionMiddleware(object):
         proper *method* callable (possibly a flattened version of thge original callback) 
         with the dict of arguments *params*.
         """
+        if __debug__: self.notify_event("TOP_LEVEL_PROCESS_ACTION_THROUGH_MIDDLEWARES")
         assert action_name
         return method(**params)
 

@@ -67,25 +67,22 @@ class AbstractAbility(AbstractAbilityBasesAdapter):
 
 
     def _execute_game_action_with_middlewares(self, action_name, method, *args, **kwargs):
-        assert method.__name__ == self.GAME_ACTIONS[action_name]["callback"], (action_name, method) # duplication here, just for optimization
+        assert "_test_" in action_name or method.__name__ == self.GAME_ACTIONS[action_name]["callback"], (action_name, method) # only in tests it could be false
         if __debug__: self.notify_event("EXECUTE_GAME_ACTION_WITH_MIDDLEWARES")
-
-        # zodb session management must be on TOP of stack # FIXME, are we sure ?? FIXME
-        assert not getattr(method, "_is_under_transaction_watcher", None) or getattr(method, "_is_under_readonly_method", None)
 
         # we transform the callback method so that it only expects keyword arguments (easier to deal with, in middleware chain)
         flattened_method = resolving_decorator.flatten_function_signature(method)
-        params = resolving_decorator.resolve_call_args(flattened_method, *args, **method)
+        params = resolving_decorator.resolve_call_args(flattened_method, *args, **kwargs)
 
         self._lazy_setup_private_action_middleware_data(action_name=action_name)
         return self.process_action_through_middlewares(action_name=action_name, method=flattened_method, params=params)
 
-
-    def _execute_game_action_callback(self, action_name, unfiltered_params):
+    @transaction_watcher
+    def execute_game_action_callback(self, action_name, unfiltered_params):
         has_middlewares = (action_name in self.settings["middlewares"])
         if not has_middlewares:
             # slight optimization, we bypass all the middlewares chain
-            return super(AbstractAbility, self)._execute_game_action_callback(action_name=action_name,
+            return super(AbstractAbility, self).execute_game_action_callback(action_name=action_name,
                                                                               unfiltered_params=unfiltered_params)
         else:
             callback_name = self.GAME_ACTIONS[action_name]["callback"]

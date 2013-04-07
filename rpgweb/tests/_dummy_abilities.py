@@ -7,7 +7,6 @@ from django import forms
 from rpgweb.common import *
 from rpgweb.datamanager.abstract_ability import AbstractAbility
 from rpgweb.datamanager.abstract_game_view import register_view
-from rpgweb.datamanager.action_middlewares import with_action_middlewares
 from rpgweb.forms import AbstractGameForm
 from rpgweb.datamanager.datamanager_tools import transaction_watcher
 
@@ -23,17 +22,29 @@ class DummyForm(AbstractGameForm):
 
 
 
+def with_enforced_action_middlewares(action_name):
+    """
+    Apply this decorator to tested actions, so that they get automatically processed
+    through action middlewares.
+    """
+    @decorator # IMPORTANT - keep same signature so that adapt_parameters_to_func() works
+    def _execute_with_middlewares(method, self, *args, **kwargs):
+        assert not getattr(method, "_is_under_transaction_watcher", None) or getattr(method, "_is_under_readonly_method", None) # session management must be on TOP of decorators' stack
+        method = method.__get__(self) # we transform into bound method, to mimic real cases
+        return self._execute_game_action_with_middlewares(action_name, method, *args, **kwargs)
+    return _execute_with_middlewares
+
+
+
 @register_view
 class DummyTestAbility(AbstractAbility):
 
     NAME = "dummy_ability"
 
-    GAME_ACTIONS = dict(middleware_wrapped_callable1=dict(title=_lazy("my test title 1"),
-                                                          form_class=None,
-                                                          callback="non_middleware_action_callable"),
-                        middleware_wrapped_callable2=dict(title=_lazy("my test title 2"),
-                                                          form_class=DummyForm,
-                                                          callback="non_middleware_action_callable"))
+    # BEWARE - we cheat to test action middlewares, using with_enforced_action_middlewares() system
+    GAME_ACTIONS = dict(non_middleware_action_callable=dict(title=_lazy("my test title 1"),
+                                                              form_class=None,
+                                                              callback="non_middleware_action_callable"))
 
     TEMPLATE = "base_main.html" # must exist
     ACCESS = UserAccess.character
@@ -82,20 +93,20 @@ class DummyTestAbility(AbstractAbility):
         return 23
 
     @transaction_watcher # must be on the OUTSIDE
-    @with_action_middlewares("middleware_wrapped")
+    @with_enforced_action_middlewares("middleware_wrapped_test_action") # SHARED MIDDELWARE CONFIG, possible in tests only
     def middleware_wrapped_callable1(self, use_gems):
         self.notify_event("INSIDE_MIDDLEWARE_WRAPPED1")
         return 18277
 
     @transaction_watcher # must be on the OUTSIDE
-    @with_action_middlewares("middleware_wrapped")
+    @with_enforced_action_middlewares("middleware_wrapped_test_action") # SHARED MIDDELWARE CONFIG, possible in tests only
     def middleware_wrapped_callable2(self, my_arg):
         self.notify_event("INSIDE_MIDDLEWARE_WRAPPED2")
         return True
 
     @transaction_watcher # must be on the OUTSIDE
-    @with_action_middlewares("middleware_wrapped_other_action")
-    def middleware_wrapped_other_action(self, my_arg):
+    @with_enforced_action_middlewares("middleware_wrapped_other_test_action")
+    def middleware_wrapped_other_test_action(self, my_arg):
         self.notify_event("INSIDE_MIDDLEWARE_WRAPPED2")
         return True
 

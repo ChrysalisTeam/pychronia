@@ -2994,6 +2994,41 @@ class TestGameViewSystem(BaseGameTestCase):
 class TestActionMiddlewares(BaseGameTestCase):
 
 
+    def test_action_middleware_bypassing(self):
+        """
+        Actions that have no entry of the ability's middleware settings shouldn't go through the middlewares chain
+        """
+        
+        self._set_user("guy4") # important
+
+        ability = self.dm.instantiate_ability("dummy_ability")
+        ability._perform_lazy_initializations() # normally done while treating HTTP request...
+
+        transactional_processor = ability.execute_game_action_callback # needs transaction watcher else test is buggy...
+
+        assert not self.dm.get_event_count("EXECUTE_GAME_ACTION_WITH_MIDDLEWARES")
+        assert not self.dm.get_event_count("TOP_LEVEL_PROCESS_ACTION_THROUGH_MIDDLEWARES")
+
+        res = transactional_processor("non_middleware_action_callable", unfiltered_params=dict(use_gems=True, aaa=33))
+        assert res == 23
+
+        assert not self.dm.get_event_count("EXECUTE_GAME_ACTION_WITH_MIDDLEWARES") # BYPASSED
+        assert not self.dm.get_event_count("TOP_LEVEL_PROCESS_ACTION_THROUGH_MIDDLEWARES")
+
+        ability.reset_test_settings("non_middleware_action_callable", CountLimitedActionMiddleware, dict(max_per_character=1, max_per_game=12))
+
+        res = transactional_processor("non_middleware_action_callable", unfiltered_params=dict(use_gems=True, aaa=33))
+        assert res == 23
+
+        assert self.dm.get_event_count("EXECUTE_GAME_ACTION_WITH_MIDDLEWARES") # NOT BYPASSED, because configured
+        assert self.dm.get_event_count("TOP_LEVEL_PROCESS_ACTION_THROUGH_MIDDLEWARES")
+
+        with raises_with_content(NormalUsageError, "exceeded your quota"):
+            transactional_processor("non_middleware_action_callable", unfiltered_params=dict(use_gems=True, aaa=33))
+
+        self.dm.rollback()
+
+
     def test_costly_action_middleware(self):
 
         gem_125 = (125, "several_misc_gems2")
@@ -3021,7 +3056,7 @@ class TestActionMiddlewares(BaseGameTestCase):
 
         # misconfiguration case #
 
-        ability.reset_test_settings("middleware_wrapped", CostlyActionMiddleware, dict(money_price=None, gems_price=None))
+        ability.reset_test_settings("middleware_wrapped_test_action", CostlyActionMiddleware, dict(money_price=None, gems_price=None))
 
         for value in (None, [], [gem_125], [gem_200, gem_125]):
             assert ability.middleware_wrapped_callable1(use_gems=value) # no limit is set at all
@@ -3042,8 +3077,8 @@ class TestActionMiddlewares(BaseGameTestCase):
 
         for gems_price in (None, 15, 100): # WHATEVER gems prices
 
-            ability.reset_test_settings("middleware_wrapped", CostlyActionMiddleware, dict(money_price=15, gems_price=gems_price))
-            ability.reset_test_data("middleware_wrapped", CostlyActionMiddleware, dict()) # useless actually for that middleware
+            ability.reset_test_settings("middleware_wrapped_test_action", CostlyActionMiddleware, dict(money_price=15, gems_price=gems_price))
+            ability.reset_test_data("middleware_wrapped_test_action", CostlyActionMiddleware, dict()) # useless actually for that middleware
 
             # payments OK
             assert 18277 == ability.middleware_wrapped_callable1(use_gems=random.choice((None, []))) # triggers payment by money
@@ -3053,7 +3088,7 @@ class TestActionMiddlewares(BaseGameTestCase):
             assert 23 == ability.non_middleware_action_callable(use_gems=[gem_125])
 
             # too expensive
-            ability.reset_test_settings("middleware_wrapped", CostlyActionMiddleware, dict(money_price=999, gems_price=gems_price))
+            ability.reset_test_settings("middleware_wrapped_test_action", CostlyActionMiddleware, dict(money_price=999, gems_price=gems_price))
             with raises_with_content(NormalUsageError, "in money"):
                 ability.middleware_wrapped_callable1(use_gems=random.choice((None, [])))
             with raises_with_content(NormalUsageError, "in money"):
@@ -3062,7 +3097,7 @@ class TestActionMiddlewares(BaseGameTestCase):
             # not taken into account - no middlewares here
             assert 23 == ability.non_middleware_action_callable(use_gems=[gem_125])
 
-        ability.reset_test_settings("middleware_wrapped", CostlyActionMiddleware, dict(money_price=53, gems_price=None))
+        ability.reset_test_settings("middleware_wrapped_test_action", CostlyActionMiddleware, dict(money_price=53, gems_price=None))
         assert 18277 == ability.middleware_wrapped_callable1(use_gems=[gem_125, gem_125]) # triggers payment by money ANYWAY!
 
         # we check data coherency
@@ -3084,8 +3119,8 @@ class TestActionMiddlewares(BaseGameTestCase):
 
         for money_price in (None, 0, 15): # WHATEVER money prices
 
-            ability.reset_test_settings("middleware_wrapped", CostlyActionMiddleware, dict(money_price=money_price, gems_price=150))
-            ability.reset_test_data("middleware_wrapped", CostlyActionMiddleware, dict()) # useless actually for that middleware
+            ability.reset_test_settings("middleware_wrapped_test_action", CostlyActionMiddleware, dict(money_price=money_price, gems_price=150))
+            ability.reset_test_data("middleware_wrapped_test_action", CostlyActionMiddleware, dict()) # useless actually for that middleware
 
             # payments OK
             assert ability.middleware_wrapped_callable1(use_gems=[gem_200]) # triggers payment by gems
@@ -3133,8 +3168,8 @@ class TestActionMiddlewares(BaseGameTestCase):
 
         # payment with both is possible #
 
-        ability.reset_test_settings("middleware_wrapped", CostlyActionMiddleware, dict(money_price=11, gems_price=33))
-        ability.reset_test_data("middleware_wrapped", CostlyActionMiddleware, dict()) # useless actually for that middleware
+        ability.reset_test_settings("middleware_wrapped_test_action", CostlyActionMiddleware, dict(money_price=11, gems_price=33))
+        ability.reset_test_data("middleware_wrapped_test_action", CostlyActionMiddleware, dict()) # useless actually for that middleware
 
         ability.middleware_wrapped_callable1(use_gems=[gem_200]) # by gems, works even if smaller gems of user would fit better (no paternalism)
         ability.middleware_wrapped_callable1(use_gems=None) # by money
@@ -3162,11 +3197,11 @@ class TestActionMiddlewares(BaseGameTestCase):
 
         # BOTH quotas
 
-        ability.reset_test_settings("middleware_wrapped", CountLimitedActionMiddleware, dict(max_per_character=3, max_per_game=4))
+        ability.reset_test_settings("middleware_wrapped_test_action", CountLimitedActionMiddleware, dict(max_per_character=3, max_per_game=4))
 
         self._set_user("guy4") # important
         ability._perform_lazy_initializations() # normally done while treating HTTP request...
-        ability.reset_test_data("middleware_wrapped", CountLimitedActionMiddleware, dict()) # will be filled lazily, on call
+        ability.reset_test_data("middleware_wrapped_test_action", CountLimitedActionMiddleware, dict()) # will be filled lazily, on call
 
 
         assert 18277 == ability.middleware_wrapped_callable1(2524) # 1 use for guy4
@@ -3180,7 +3215,7 @@ class TestActionMiddlewares(BaseGameTestCase):
 
         self._set_user("guy3") # important
         ability._perform_lazy_initializations() # normally done while treating HTTP request...
-        ability.reset_test_data("middleware_wrapped", CountLimitedActionMiddleware, dict()) # will be filled lazily, on call
+        ability.reset_test_data("middleware_wrapped_test_action", CountLimitedActionMiddleware, dict()) # will be filled lazily, on call
 
         assert ability.middleware_wrapped_callable2(None) # 1 use for guy3
         assert ability.non_middleware_action_callable(use_gems=True) # no use
@@ -3202,7 +3237,7 @@ class TestActionMiddlewares(BaseGameTestCase):
 
         # only per-character quota
 
-        ability.reset_test_settings("middleware_wrapped", CountLimitedActionMiddleware, dict(max_per_character=3, max_per_game=None))
+        ability.reset_test_settings("middleware_wrapped_test_action", CountLimitedActionMiddleware, dict(max_per_character=3, max_per_game=None))
 
         self._set_user("guy3") # important
         assert ability.middleware_wrapped_callable2(None) # 2 uses for guy3
@@ -3224,7 +3259,7 @@ class TestActionMiddlewares(BaseGameTestCase):
 
         # only global quota
 
-        ability.reset_test_settings("middleware_wrapped", CountLimitedActionMiddleware, dict(max_per_character=None, max_per_game=12)) # 6 more than current total
+        ability.reset_test_settings("middleware_wrapped_test_action", CountLimitedActionMiddleware, dict(max_per_character=None, max_per_game=12)) # 6 more than current total
 
         assert ability.middleware_wrapped_callable1(None) # guy4 still
 
@@ -3246,7 +3281,7 @@ class TestActionMiddlewares(BaseGameTestCase):
 
         # no quota (or misconfiguration):
 
-        ability.reset_test_settings("middleware_wrapped", CountLimitedActionMiddleware,
+        ability.reset_test_settings("middleware_wrapped_test_action", CountLimitedActionMiddleware,
                                     dict(max_per_character=random.choice((None, 0)), max_per_game=random.choice((None, 0))))
 
         for username in ("guy2", "guy3", "guy4"):
@@ -3262,10 +3297,10 @@ class TestActionMiddlewares(BaseGameTestCase):
 
         self.dm.clear_all_event_stats()
 
-        assert ability._get_global_usage_count("middleware_wrapped") == 72 # usage counts are yet updated
-        assert ability._get_global_usage_count("middleware_wrapped_other_action") == 0 # important - no collision between action names
+        assert ability._get_global_usage_count("middleware_wrapped_test_action") == 72 # usage counts are yet updated
+        assert ability._get_global_usage_count("middleware_wrapped_other_test_action") == 0 # important - no collision between action names
 
-        ability.reset_test_settings("middleware_wrapped", CountLimitedActionMiddleware,
+        ability.reset_test_settings("middleware_wrapped_test_action", CountLimitedActionMiddleware,
                                     dict(max_per_character=30, max_per_game=73))
 
         self._set_user("guy2")
@@ -3298,9 +3333,9 @@ class TestActionMiddlewares(BaseGameTestCase):
         waiting_period_mn = random.choice((0, None, 3))
         max_uses_per_period = random.choice((0, None, 3)) if not waiting_period_mn else None
 
-        ability.reset_test_settings("middleware_wrapped", TimeLimitedActionMiddleware,
+        ability.reset_test_settings("middleware_wrapped_test_action", TimeLimitedActionMiddleware,
                                     dict(waiting_period_mn=waiting_period_mn, max_uses_per_period=max_uses_per_period))
-        ability.reset_test_data("middleware_wrapped", TimeLimitedActionMiddleware, dict()) # will be filled lazily, on call
+        ability.reset_test_data("middleware_wrapped_test_action", TimeLimitedActionMiddleware, dict()) # will be filled lazily, on call
 
         for i in range(23):
             assert ability.middleware_wrapped_callable1(None)
@@ -3312,7 +3347,7 @@ class TestActionMiddlewares(BaseGameTestCase):
         assert self.dm.get_event_count("INSIDE_NON_MIDDLEWARE_ACTION_CALLABLE") == 23
         self.dm.clear_all_event_stats()
 
-        private_data = ability.get_private_middleware_data(action_name="middleware_wrapped",
+        private_data = ability.get_private_middleware_data(action_name="middleware_wrapped_test_action",
                                                            middleware_class=TimeLimitedActionMiddleware)
         assert len(private_data["last_use_times"]) == 2 * 23
 
@@ -3320,20 +3355,20 @@ class TestActionMiddlewares(BaseGameTestCase):
 
         # normal case #
 
-        ability.reset_test_settings("middleware_wrapped", TimeLimitedActionMiddleware,
+        ability.reset_test_settings("middleware_wrapped_test_action", TimeLimitedActionMiddleware,
                                     dict(waiting_period_mn=0.02 / WANTED_FACTOR, max_uses_per_period=3)) # 1.2s of waiting time
 
         for username in ("guy2", "guy3"):
             self._set_user(username) # important
             ability._perform_lazy_initializations() # normally done while treating HTTP request...
-            ability.reset_test_data("middleware_wrapped", TimeLimitedActionMiddleware, dict()) # will be filled lazily, on call
+            ability.reset_test_data("middleware_wrapped_test_action", TimeLimitedActionMiddleware, dict()) # will be filled lazily, on call
 
             assert ability.middleware_wrapped_callable1(None)
             assert ability.middleware_wrapped_callable1(12)
             assert ability.middleware_wrapped_callable2(32)
 
-            assert not ability._purge_old_use_times(middleware_settings=ability.get_middleware_settings("middleware_wrapped", TimeLimitedActionMiddleware),
-                                                    private_data=ability.get_private_middleware_data("middleware_wrapped", TimeLimitedActionMiddleware))
+            assert not ability._purge_old_use_times(middleware_settings=ability.get_middleware_settings("middleware_wrapped_test_action", TimeLimitedActionMiddleware),
+                                                    private_data=ability.get_private_middleware_data("middleware_wrapped_test_action", TimeLimitedActionMiddleware))
             self.dm.commit() # data was touched, even if unmodified
 
             with raises_with_content(NormalUsageError, "waiting period"):
@@ -3364,8 +3399,8 @@ class TestActionMiddlewares(BaseGameTestCase):
 
         time.sleep(0.5)
 
-        assert ability._purge_old_use_times(middleware_settings=ability.get_middleware_settings("middleware_wrapped", TimeLimitedActionMiddleware),
-                                            private_data=ability.get_private_middleware_data("middleware_wrapped", TimeLimitedActionMiddleware))
+        assert ability._purge_old_use_times(middleware_settings=ability.get_middleware_settings("middleware_wrapped_test_action", TimeLimitedActionMiddleware),
+                                            private_data=ability.get_private_middleware_data("middleware_wrapped_test_action", TimeLimitedActionMiddleware))
         self.dm.commit() # data was touched, even if unmodified
 
         assert ability.middleware_wrapped_callable1(False)

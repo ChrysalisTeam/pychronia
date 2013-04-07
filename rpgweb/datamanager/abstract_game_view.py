@@ -332,8 +332,8 @@ class AbstractGameView(object):
         relevant_args = self._try_coercing_arguments_to_func(data=unfiltered_params, func=callback) # might raise UsageError
         return (callback, relevant_args)
 
-
-    def _execute_game_action_callback(self, action_name, unfiltered_params):
+    @transaction_watcher
+    def execute_game_action_callback(self, action_name, unfiltered_params):
         """
         Might raise any kind of exception.
         """
@@ -356,7 +356,7 @@ class AbstractGameView(object):
 
         callback_name = self.GAME_ACTIONS[action_name]["callback"]
 
-        res = self._execute_game_action_callback(action_name=action_name, callback_name=callback_name, unfiltered_params=data)
+        res = self.execute_game_action_callback(action_name=action_name, callback_name=callback_name, unfiltered_params=data)
 
         return res
 
@@ -393,10 +393,9 @@ class AbstractGameView(object):
                     self.logger.error("Action %s returned wrong success message: %r", callback_name, success_message)
                     user.add_message(_("Operation successful")) # default msg
 
-
         else:
             user.add_error(_("Submitted data is invalid"))
-        res["form_data"] = SubmittedGameForm(form_name=form_name, # same as action name, actually
+        res["form_data"] = SubmittedGameForm(form_name=action_name, # same as action name, actually
                                                form_instance=bound_form,
                                                form_successful=form_successful)
         return res
@@ -433,7 +432,7 @@ class AbstractGameView(object):
                     res = self._do_process_form_submission(action_registry=self.GAME_ACTIONS,
                                                            action_name=action_name,
                                                            unfiltered_data=data,
-                                                           execution_processor=self._execute_game_action_callback)
+                                                           execution_processor=self.execute_game_action_callback)
                     break # IMPORTANT
             else:
                 user.add_error(_("Submitted form data hasn't been recognized"))
