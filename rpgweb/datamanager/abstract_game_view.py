@@ -140,7 +140,6 @@ class GameViewMetaclass(type):
             GameDataManager.register_game_view(NewClass)
 
 
-
     @property
     def as_view(cls):
         """
@@ -514,6 +513,14 @@ class AbstractGameView(object):
         finally:
             self._post_request()
 
+
+    @readonly_method
+    def get_game_actions_explanations(self):
+        """
+        Must return a tuple (action_title, explanations) 
+        where explanation is a list of (per-middleware) lists of strings.
+        """
+        return []
 
 
 

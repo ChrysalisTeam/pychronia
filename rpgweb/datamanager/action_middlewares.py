@@ -119,6 +119,7 @@ class AbstractActionMiddleware(object):
     def has_action_middlewares_activated(self, action_name):
         return (action_name in self.settings["middlewares"])
 
+
     def is_action_middleware_activated(self, action_name, middleware_class):
         """
         We assume a middleware is activated only if it has an entry in middleware settings 
@@ -169,6 +170,17 @@ class AbstractActionMiddleware(object):
             return self._get_middleware_data_explanations(action_name=action_name)
 
 
+    @readonly_method
+    def get_game_actions_explanations(self):
+        """
+        BEWARE - overrides AbstractGameView stuffs!
+        """
+        res = super(AbstractActionMiddleware, self).get_game_actions_explanations()
+        for (action_name, action_data) in sorted(self.GAME_ACTIONS.items()): # so by IDENTIFIER order at the moment....
+            explanations = self.get_middleware_data_explanations(action_name=action_name) # atm, we assume that ALWAYS at least 1 middelware class is merged into hierarchy...
+            if explanations: # empty if no middlewares activated for that action_name
+                res.append((action_data["title"], explanations))
+        return res
 
 
 
@@ -219,8 +231,12 @@ class CostlyActionMiddleware(AbstractActionMiddleware):
         """
         Override this to agregate the whole list of huma-readable instruction strings.
         """
-        res = []
+
+        other_instructions = super(CostlyActionMiddleware, self)._get_middleware_data_explanations(action_name)
+        
         if self.is_action_middleware_activated(action_name, CostlyActionMiddleware):
+            
+            res = []
             middleware_settings = self.get_middleware_settings(action_name, CostlyActionMiddleware)
 
             if middleware_settings["money_price"] is not None:
@@ -233,9 +249,14 @@ class CostlyActionMiddleware(AbstractActionMiddleware):
             else:
                 res.append(_("Can't be bought with gems."))
 
-        other_instructions = super(CostlyActionMiddleware, self)._get_middleware_data_explanations(action_name)
-        return [res] + other_instructions # list of lists of strings!
+            assert res
+            return [res] + other_instructions # list of lists of strings!
 
+        else:
+            return other_instructions
+
+        assert False
+        
 
     def _process_action_through_middlewares(self, action_name, method, params):
 
@@ -353,8 +374,12 @@ class CountLimitedActionMiddleware(AbstractActionMiddleware):
         """
         Override this to agregate the whole list of huma-readable instruction strings.
         """
-        res = []
+        other_instructions = super(CountLimitedActionMiddleware, self)._get_middleware_data_explanations(action_name)
+
+
         if self.is_action_middleware_activated(action_name, CountLimitedActionMiddleware):
+
+            res = []
             middleware_settings = self.get_middleware_settings(action_name, CountLimitedActionMiddleware)
 
             if middleware_settings["max_per_game"] is not None:
@@ -372,8 +397,13 @@ class CountLimitedActionMiddleware(AbstractActionMiddleware):
                 units_consumed = 0
             res.append(_("Units already consumed by yourself: %s.") % units_consumed)
 
-        other_instructions = super(CountLimitedActionMiddleware, self)._get_middleware_data_explanations(action_name)
-        return [res] + other_instructions # list of lists of strings!
+            assert res
+            return [res] + other_instructions # list of lists of strings!
+
+        else:
+            return other_instructions
+
+        assert False
 
 
     def _get_global_usage_count(self, action_name):
@@ -461,23 +491,38 @@ class TimeLimitedActionMiddleware(AbstractActionMiddleware):
         """
         Override this to agregate the whole list of huma-readable instruction strings.
         """
-        res = []
+
+        other_instructions = super(TimeLimitedActionMiddleware, self)._get_middleware_data_explanations(action_name)
+
         if self.is_action_middleware_activated(action_name, TimeLimitedActionMiddleware):
+
+            res = []
             middleware_settings = self.get_middleware_settings(action_name, TimeLimitedActionMiddleware)
 
             res.append(_("This action can be performed %s time(s) every %s minutes.") %
                         (middleware_settings["max_uses_per_period"], middleware_settings["waiting_period_mn"]))
 
-            try:
-                private_data = self.get_private_middleware_data(action_name, TimeLimitedActionMiddleware, create_if_unexisting=False) # important
-                blocking_times = self._computed_purge_old_use_times(middleware_settings=middleware_settings, last_use_times=private_data["last_use_times"])
-            except LookupError: # user has never used that action
+            if middleware_settings["waiting_period_mn"] and middleware_settings["max_uses_per_period"]: # in case of misconfiguration
+                try:
+                    private_data = self.get_private_middleware_data(action_name, TimeLimitedActionMiddleware, create_if_unexisting=False) # important
+                    blocking_times = self._computed_purge_old_use_times(middleware_settings=middleware_settings, last_use_times=private_data["last_use_times"])
+                except LookupError: # user has never used that action
+                    blocking_times = ()
+            else:
                 blocking_times = ()
-
+                
             res.append(_("In this last period, you've done it %s time(s).") % len(blocking_times))
 
-        other_instructions = super(TimeLimitedActionMiddleware, self)._get_middleware_data_explanations(action_name)
-        return [res] + other_instructions # list of lists of strings!
+            assert res
+            return [res] + other_instructions # list of lists of strings!
+
+        else:
+            return other_instructions
+
+        assert False
+
+
+
 
 
     def _computed_purge_old_use_times(self, middleware_settings, last_use_times):

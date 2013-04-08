@@ -7,7 +7,7 @@ from django import forms
 from rpgweb.common import *
 from rpgweb.datamanager.abstract_ability import AbstractAbility
 from rpgweb.datamanager.abstract_game_view import register_view
-from rpgweb.forms import AbstractGameForm
+from rpgweb.forms import AbstractGameForm, MoneyTransferForm
 from rpgweb.datamanager.datamanager_tools import transaction_watcher
 
 
@@ -20,6 +20,9 @@ class DummyForm(AbstractGameForm):
         self.fields["target_item"] = forms.ChoiceField(label=_("Object"), choices=["one", "two"])
         self.fields["transcription"] = forms.CharField(label=_("Transcription"), widget=forms.Textarea(attrs={'rows': '5', 'cols':'30'}))
 
+
+class DummyFormOther(AbstractGameForm):
+    my_arg = forms.CharField()
 
 
 def with_enforced_action_middlewares(action_name):
@@ -36,6 +39,7 @@ def with_enforced_action_middlewares(action_name):
 
 
 
+
 @register_view
 class DummyTestAbility(AbstractAbility):
 
@@ -44,7 +48,10 @@ class DummyTestAbility(AbstractAbility):
     # BEWARE - we cheat to test action middlewares, using with_enforced_action_middlewares() system
     GAME_ACTIONS = dict(non_middleware_action_callable=dict(title=_lazy("my test title 1"),
                                                               form_class=None,
-                                                              callback="non_middleware_action_callable"))
+                                                              callback="non_middleware_action_callable"),
+                        middleware_wrapped_other_test_action=dict(title=_lazy("my test title 2"),
+                                                              form_class=DummyFormOther,
+                                                              callback="middleware_wrapped_other_test_action"))
 
     TEMPLATE = "base_main.html" # must exist
     ACCESS = UserAccess.character
@@ -107,6 +114,6 @@ class DummyTestAbility(AbstractAbility):
     @transaction_watcher # must be on the OUTSIDE
     @with_enforced_action_middlewares("middleware_wrapped_other_test_action")
     def middleware_wrapped_other_test_action(self, my_arg):
-        self.notify_event("INSIDE_MIDDLEWARE_WRAPPED2")
+        self.notify_event("INSIDE_MIDDLEWARE_WRAPPED_OTHER_ACTION")
         return True
 

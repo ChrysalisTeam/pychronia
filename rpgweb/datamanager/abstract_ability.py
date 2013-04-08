@@ -34,7 +34,7 @@ class AbilityMetaclass(GameViewMetaclass, type):
 
 
 # we us this syntax, because we can't dynamically assign a tuple of bases in a normal "class" definition
-AbstractAbilityBases = tuple(reversed(ACTION_MIDDLEWARES)) + (AbstractGameView,)
+AbstractAbilityBases = tuple(reversed(ACTION_MIDDLEWARES)) + (AbstractGameView,) # middlewares FIRST, so that they can override game view stuffs...
 AbstractAbilityBasesAdapter = AbilityMetaclass(str('AbstractAbilityBasesAdapter'), AbstractAbilityBases, {})
 
 
@@ -92,6 +92,7 @@ class AbstractAbility(AbstractAbilityBasesAdapter):
         # Access checks have already been done here, so we may initialize lazy data
         self._perform_lazy_initializations()
         return super(AbstractAbility, self)._process_standard_request(request, *args, **kwargs)
+
 
 
     def __getattr__(self, name):

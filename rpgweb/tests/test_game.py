@@ -34,6 +34,7 @@ from rpgweb.views.abilities import house_locking, \
 from django.contrib.auth.models import User
 from rpgweb.authentication import clear_all_sessions
 from rpgweb.utilities.mediaplayers import generate_image_viewer
+from django.utils.functional import Promise
 
 
 
@@ -2993,8 +2994,26 @@ class TestGameViewSystem(BaseGameTestCase):
 
 class TestActionMiddlewares(BaseGameTestCase):
 
+
     def _flatten_explanations(self, list_of_lists_of_strings):
+        """
+        Also checks for coherency of list_of_lists_of_strings.
+        """
+        assert isinstance(list_of_lists_of_strings, list) # may be empty
+        for l in list_of_lists_of_strings:
+            assert l # important -> if a middleware has nothing to say, he musn't include its sublist
+            for s in l:
+                assert s
+                assert isinstance(s, basestring)
         return u"\n".join(u"".join(strs) for strs in list_of_lists_of_strings)
+
+    def _check_full_action_explanations(self, full_list):
+        for title, explanations in full_list:
+            assert isinstance(title, Promise) and unicode(title)
+            assert explanations # NO empty lists here
+            assert self._flatten_explanations(explanations)
+        return full_list # if caller wants to check non-emptiness
+
 
     def test_all_get_middleware_data_explanations(self):
 
@@ -3032,6 +3051,33 @@ class TestActionMiddlewares(BaseGameTestCase):
             assert str(stuff) in explanations
 
         ##print(">>>>>|||>>>>>", explanations)
+
+
+    def test_get_game_actions_explanations(self):
+        
+        self._set_user("guy4") # important
+        bank_name = self.dm.get_global_parameter("bank_name")
+        self.dm.transfer_money_between_characters(bank_name, "guy4", amount=1000)
+
+        view = self.dm.instantiate_game_view("characters_view")
+        assert view.get_game_actions_explanations() == [] # has game actions, but no middlewares, because not an ability
+        del view
+        
+        ability = self.dm.instantiate_ability("dummy_ability")
+        ability._perform_lazy_initializations() # normally done while treating HTTP request...
+
+
+        ability.reset_test_settings("middleware_wrapped_other_test_action", CostlyActionMiddleware, dict(money_price=203, gems_price=123))
+        assert self._check_full_action_explanations(ability.get_game_actions_explanations())
+
+        ability.reset_test_settings("middleware_wrapped_other_test_action", CountLimitedActionMiddleware, dict(max_per_character=23, max_per_game=33))
+        assert self._check_full_action_explanations(ability.get_game_actions_explanations())
+
+        ability.reset_test_settings("middleware_wrapped_other_test_action", TimeLimitedActionMiddleware, dict(waiting_period_mn=87, max_uses_per_period=12))
+        assert self._check_full_action_explanations(ability.get_game_actions_explanations())
+
+        assert True == ability.middleware_wrapped_other_test_action(my_arg=None) # we perform action ONCE
+        assert self._check_full_action_explanations(ability.get_game_actions_explanations())
 
 
     def test_action_middleware_bypassing(self):
