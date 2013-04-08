@@ -2993,10 +2993,10 @@ class TestGameViewSystem(BaseGameTestCase):
 
 class TestActionMiddlewares(BaseGameTestCase):
 
-    def test_all_get_middleware_data_explanations(self):
+    def _flatten_explanations(self, list_of_lists_of_strings):
+        return u"\n".join(u"".join(strs) for strs in list_of_lists_of_strings)
 
-        def _flatten(list_of_lists_of_strings):
-            return u"\n".join(u"".join(strs) for strs in list_of_lists_of_strings)
+    def test_all_get_middleware_data_explanations(self):
 
         self._set_user("guy4") # important
         bank_name = self.dm.get_global_parameter("bank_name")
@@ -3009,7 +3009,6 @@ class TestActionMiddlewares(BaseGameTestCase):
 
         explanations = ability.get_middleware_data_explanations(action_name="middleware_wrapped_test_action")
         assert explanations == [] # no middlewares activated
-
 
         ability.reset_test_settings("middleware_wrapped_test_action", CostlyActionMiddleware, dict(money_price=203, gems_price=123))
         assert ability.has_action_middlewares_activated(action_name="middleware_wrapped_test_action")
@@ -3026,15 +3025,13 @@ class TestActionMiddlewares(BaseGameTestCase):
         assert 18277 == ability.middleware_wrapped_callable1(use_gems=None) # we perform action ONCE
 
         explanations = ability.get_middleware_data_explanations(action_name="middleware_wrapped_test_action")
-        explanations = _flatten(explanations)
+        explanations = self._flatten_explanations(explanations)
         assert "%s" not in explanations and "%r" not in explanations, explanations
 
         for stuff in (203, 123, 23, 33, 87, 12, " 1 "):
             assert str(stuff) in explanations
 
-        print(">>>>>|||>>>>>", explanations)
-
-        # TODO FIXME, improve testing by calling get_middleware_data_explanations() in tests below!!!
+        ##print(">>>>>|||>>>>>", explanations)
 
 
     def test_action_middleware_bypassing(self):
@@ -3114,7 +3111,7 @@ class TestActionMiddlewares(BaseGameTestCase):
 
         self.dm.clear_all_event_stats()
 
-
+        assert self._flatten_explanations(ability.get_middleware_data_explanations(action_name="middleware_wrapped_test_action"))
 
         # payment with money #
 
@@ -3155,7 +3152,7 @@ class TestActionMiddlewares(BaseGameTestCase):
 
         self.dm.clear_all_event_stats()
 
-
+        assert self._flatten_explanations(ability.get_middleware_data_explanations(action_name="middleware_wrapped_test_action"))
 
 
         # payment with gems #
@@ -3192,6 +3189,8 @@ class TestActionMiddlewares(BaseGameTestCase):
                 with raises_with_content(NormalUsageError, "kashes of gems"):
                     ability.middleware_wrapped_callable2([gem_125, gem_125]) # wrong param name
 
+            assert self._flatten_explanations(ability.get_middleware_data_explanations(action_name="middleware_wrapped_test_action"))
+
         assert ability.middleware_wrapped_callable1(use_gems=[gem_200]) # OK
         assert ability.middleware_wrapped_callable1(use_gems=[gem_125, gem_125]) # OK as long as not too many gems for the asset value
 
@@ -3205,7 +3204,6 @@ class TestActionMiddlewares(BaseGameTestCase):
         assert self.dm.get_event_count("INSIDE_NON_MIDDLEWARE_ACTION_CALLABLE") == 3
 
         self.dm.clear_all_event_stats()
-
 
 
 
@@ -3229,7 +3227,7 @@ class TestActionMiddlewares(BaseGameTestCase):
         assert self.dm.get_event_count("INSIDE_MIDDLEWARE_WRAPPED2") == 1
         assert self.dm.get_event_count("INSIDE_NON_MIDDLEWARE_ACTION_CALLABLE") == 2
 
-
+        assert self._flatten_explanations(ability.get_middleware_data_explanations(action_name="middleware_wrapped_test_action"))
 
 
     def test_count_limited_action_middleware(self):
@@ -3255,7 +3253,9 @@ class TestActionMiddlewares(BaseGameTestCase):
         with raises_with_content(NormalUsageError, "exceeded your quota"):
             ability.middleware_wrapped_callable1(2524)
 
-
+        assert self._flatten_explanations(ability.get_middleware_data_explanations(action_name="middleware_wrapped_test_action"))
+                                          
+                                          
         self._set_user("guy3") # important
         ability._perform_lazy_initializations() # normally done while treating HTTP request...
         ability.reset_test_data("middleware_wrapped_test_action", CountLimitedActionMiddleware, dict()) # will be filled lazily, on call
@@ -3276,7 +3276,8 @@ class TestActionMiddlewares(BaseGameTestCase):
 
         self.dm.clear_all_event_stats()
 
-
+        assert self._flatten_explanations(ability.get_middleware_data_explanations(action_name="middleware_wrapped_test_action"))
+                                          
 
         # only per-character quota
 
@@ -3298,7 +3299,8 @@ class TestActionMiddlewares(BaseGameTestCase):
         assert self.dm.get_event_count("INSIDE_NON_MIDDLEWARE_ACTION_CALLABLE") == 1
         self.dm.clear_all_event_stats()
 
-
+        assert self._flatten_explanations(ability.get_middleware_data_explanations(action_name="middleware_wrapped_test_action"))
+                                          
 
         # only global quota
 
@@ -3320,7 +3322,8 @@ class TestActionMiddlewares(BaseGameTestCase):
         assert self.dm.get_event_count("INSIDE_NON_MIDDLEWARE_ACTION_CALLABLE") == 1
         self.dm.clear_all_event_stats()
 
-
+        assert self._flatten_explanations(ability.get_middleware_data_explanations(action_name="middleware_wrapped_test_action"))
+                                          
 
         # no quota (or misconfiguration):
 
@@ -3356,7 +3359,8 @@ class TestActionMiddlewares(BaseGameTestCase):
         assert self.dm.get_event_count("INSIDE_MIDDLEWARE_WRAPPED2") == 0
         assert self.dm.get_event_count("INSIDE_NON_MIDDLEWARE_ACTION_CALLABLE") == 1
 
-
+        assert self._flatten_explanations(ability.get_middleware_data_explanations(action_name="middleware_wrapped_test_action"))
+                                          
 
     def test_time_limited_action_middleware(self):
 
@@ -3394,6 +3398,7 @@ class TestActionMiddlewares(BaseGameTestCase):
                                                            middleware_class=TimeLimitedActionMiddleware)
         assert len(private_data["last_use_times"]) == 2 * 23
 
+        assert self._flatten_explanations(ability.get_middleware_data_explanations(action_name="middleware_wrapped_test_action"))
 
 
         # normal case #
@@ -3422,6 +3427,8 @@ class TestActionMiddlewares(BaseGameTestCase):
                 ability.middleware_wrapped_callable1(False) # quota of 3 per period reached
             assert ability.non_middleware_action_callable(None)
 
+            assert self._flatten_explanations(ability.get_middleware_data_explanations(action_name="middleware_wrapped_test_action"))
+
             time.sleep(0.2)
 
 
@@ -3444,6 +3451,8 @@ class TestActionMiddlewares(BaseGameTestCase):
         with raises_with_content(NormalUsageError, "waiting period"):
             ability.middleware_wrapped_callable1(False) # quota of 3 per period reached if we hit immediateley
 
+        assert self._flatten_explanations(ability.get_middleware_data_explanations(action_name="middleware_wrapped_test_action"))
+
         time.sleep(0.5)
 
         old_last_use_times = ability.get_private_middleware_data("middleware_wrapped_test_action", TimeLimitedActionMiddleware)["last_use_times"]
@@ -3458,6 +3467,7 @@ class TestActionMiddlewares(BaseGameTestCase):
             ability.middleware_wrapped_callable2(False)
         assert ability.non_middleware_action_callable(None)
 
+        assert self._flatten_explanations(ability.get_middleware_data_explanations(action_name="middleware_wrapped_test_action"))
 
         assert self.dm.get_event_count("INSIDE_MIDDLEWARE_WRAPPED1") == 8
         assert self.dm.get_event_count("INSIDE_MIDDLEWARE_WRAPPED2") == 1
