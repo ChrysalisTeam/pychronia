@@ -285,6 +285,10 @@ def check_is_int(value):
     usage_assert(isinstance(value, (int, long)), value)
     return True
 
+def check_is_datetime(value):
+    usage_assert(isinstance(value, datetime), value)
+    return True
+
 def check_is_email(email):
     usage_assert(email_re.match(email))
     return True

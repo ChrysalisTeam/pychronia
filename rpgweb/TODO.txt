@@ -2,6 +2,7 @@
 {% comment %} !! Remember that these div ids can be used as url anchors : "/my/url/#1-fa4" ! {% endcomment %}
 
 
+- fix wong ordering of overrides in visible_by dict of _immediately_dispatch_message()
 
 - messaging reply/resend + templates + filtering?
 
