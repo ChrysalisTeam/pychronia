@@ -6,19 +6,19 @@
 abilities:
     chess_challenge:
         settings: {}
-      
-      
+
+
     artificial_intelligence:
-      
+
         settings:
 
             bots_answer_delays_ms: 1000
             bot_max_answers: 500
-            
+
             terminal_answers:
                 - "I'm fed up, please stop boring me."
                 - "I think we've talked enough for today."
-                          
+
             common_bot_properties:
                 version: "1.0"
                 brain: "genius"
@@ -42,6 +42,12 @@ abilities:
         settings:
             max_wiretapping_targets: 3
 
+            middlewares:
+                targets_form:
+                    CostlyActionMiddleware:
+                        money_price: 115
+                        gems_price: 234
+
 
     runic_translation:
         settings:
@@ -50,7 +56,7 @@ abilities:
                  monkey apocalypse blood sun spear shelter wrath goat son uncle priest drugs moon fire water salt
                  volcano law sacrifice bird squid camel
             references:
-          
+
                 sacred_chest:
                     decoding: >
                         su se | so sa | chi so #
@@ -82,22 +88,22 @@ abilities:
                 sacred_chest: "same, here stuffs about *sacred* chest"
                 # NO GEMS ATM HERE
                 #several_misc_gems: "analysis of several_misc_gems"
-                #several_misc_gems2: "analysis of several_misc_gems2"       
-    
+                #several_misc_gems2: "analysis of several_misc_gems2"
+
     world_scan:
         settings:
-            
-            result_delay: [4, 10]  
-     
+
+            result_delay: [4, 10]
+
             scanning_sets:
                 unique_artefacts_locations: []
                 varied_artefacts_locations: ["Alifir", "Baynon"]
-          
+
             item_locations:
                 statue: "unique_artefacts_locations"
                 sacred_chest: "varied_artefacts_locations"
                 baditem: "unique_artefacts_locations"
-                
+
 
 global_parameters:
 
@@ -111,7 +117,7 @@ global_parameters:
     master_password: ultimate
     master_email: master@administration.com
     master_real_life_email: dummy@gmail.com
-    
+
     opening_music: sample.mp3
 
     online_presence_timeout_s: 600
@@ -121,7 +127,7 @@ global_parameters:
     bank_name: bank
     bank_account: 100000 # let's take huge margins
     bank_gems: []
-    
+
     spy_cost_money: 180
     spy_cost_gems: 120
     mercenary_cost_money: 350
@@ -134,7 +140,7 @@ global_parameters:
 
     password_recovery_delays: [7, 10]
 
-    
+
 
     pangea_radio_frequency: "100.0" # string
 
@@ -173,17 +179,17 @@ global_parameters:
         Hello voici le résumé de l'histoire...
 
     encyclopedia_index_visible: false
-    
+
     friendship_minimum_duration_h: 1
-     
-     
+
+
 locations:
 
     Baynon:
         spy_message: "This city is famous for its jewelry industry and its huge archeological museum. It seems no Acharith has ever been so deep into the 'miscreant continent'."
     Alifir:
         spy_message: "People here are very healthy, but quite ignorant. They don't know anything about thye Great Atomic Chaos that took place in Midolia."
- 
+
 
 
 
@@ -198,7 +204,7 @@ game_items:
         title: "Antic Statue"
         comments: "An invaluable testimony to some great man of the past."
         image: statue.jpg
-        
+
     sacred_chest:
         auction: None
         is_gem: False
@@ -208,7 +214,7 @@ game_items:
         title: "Sacred Chest"
         comments:  "Only the most sacred acharith relics had a chance to be hosted by one of these divine chests."
         image: sacred_chest.jpg
-   
+
     several_misc_gems:
         auction: "3-D"
         is_gem: True
@@ -218,7 +224,7 @@ game_items:
         title: "Gems"
         comments:  "Beautiful."
         image: 7_misc_gems.jpg
-   
+
     several_misc_gems2:
         auction: "3-E"
         is_gem: True
@@ -247,7 +253,7 @@ item_3d_settings:
         autoreverse: False
         rotomatic: 150
         music: null
-  
+
 
 domains:
 
@@ -257,7 +263,7 @@ domains:
         prologue_music: sample.mp3
         instructions: |
             *Il n’est d'autre Bien que la volonté des Dieux.*
-            
+
     sciences:
         #request_for_report: request_for_report_masslavia
         victory: new_messages_1
@@ -297,13 +303,13 @@ character_properties:
         secret_answer: null
         external_contacts: ["academy@sciences.com"]
         new_messages_notification: new_messages_2
-        initial_cold_cash: 1000 
+        initial_cold_cash: 1000
         official_name: "Loyd Georges"
         real_life_identity: "John Doe"
         real_life_email: shalk@gmail.com
         description : "XXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXX XXXXXXXX"
         character_color : "#339933"
-        
+
     guy3:
         ## THIS ONE MUST HAVE NO MONEY AND GEMS
         domains: []
@@ -313,15 +319,15 @@ character_properties:
         secret_answer: "Fluffy"
         external_contacts: []
         new_messages_notification: new_messages_1
-        initial_cold_cash: 1000 
+        initial_cold_cash: 1000
         official_name: "Salar"
         real_life_identity: "John Doe"
         real_life_email: belez@gmail.com
         description : "XXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXX XXXXXXXX"
         character_color : "#CC3399"
         gems: []
-        
-        
+
+
     guy4:
         domains: []
         password: wads
@@ -330,14 +336,14 @@ character_properties:
         secret_answer: null
         external_contacts: []
         new_messages_notification: victory_acharis
-        initial_cold_cash: 1000 
+        initial_cold_cash: 1000
         official_name: "Kha"
         real_life_identity: "John Doe"
         real_life_email: belez2@gmail.com
         description : "XXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXX XXXXXXXX"
         character_color : "#00CCFF"
         gems: []
-        
+
 
 audio_messages:
 
@@ -355,23 +361,23 @@ audio_messages:
         title: "Tante Atalie"
         text: "Tante Atalie fait du vélo en short."
         file: "atalie.mp3"
-        
+
     victory_acharis:
         title: "Cat Sound"
         text: "Sound of a cat"
         file: andromaque.mp3
-        
+
     defeat_acharis:
         title: "Cicada Sound"
         text: "Sound of a cicada"
         file: "other.mp3"
- 
+
     info_spots_1:
         title: "News internationales"
         text: "ambassadors eviction + nalavut council begins + alcohol exhibition"
         file: "berce.mp3"
 
-  
+
 events_log:  #-> list of event dicts
     -  "time": -3 # mns
        "message": "All is allright, game started"
@@ -387,28 +393,28 @@ scheduled_actions: [] #-> list of scheduled action dicts
 
 
 messaging:
-     
+
     globally_registered_contacts:
-        
+
         authenticator@hightech.com: {}
-        
-     
-        judicators@acharis.com: 
+
+
+        judicators@acharis.com:
             avatar: "here.jpg"
             description: "the terrible judicators"
-        
+
         judicators1@acharis.com: {}
-        
+
         judicators2@acharis.com: {}
-      
+
         othercontact@anything.fr: {}
-        
+
         master@administration.com: {}
-        
+
         everyone@chars.com : {}
-        
+
     messages_dispatched:  #-> list of messages processed
-    
+
         - id: instructions_bewitcher
           sender_email: judicators1@acharis.com
           recipient_emails: guy1
@@ -419,8 +425,8 @@ messaging:
             Xanthares, votre maîtrise des drogues et envoûtements sera d’une aide inestimable pour cette mission.
             Vous vous présenterez chez Loyd Georges en tant que Simon Bladstaffulovza, négociant en matières premières
             pour les bijouteries béelmoniennes (inventez le reste du personnage de façon aussi crédible que possible).
-    
-    
+
+
         - id: instructions_oracle
           group_id: "A111"
           sender_email: judicators2@acharis.com
@@ -430,7 +436,7 @@ messaging:
           sent_at: -8000
           body: >
             Salazur, l’intimité médiumnique que vous avez développée avec le monde invisible va nous être plus que vitale.
-    
+
         - id: instructions_oracle_bis
           group_id: "A111"
           sender_email: judicators2@acharis.com
@@ -439,15 +445,15 @@ messaging:
           sent_at: -7000
           body: >
             Rien à ajouter...
-    
-    
-    
+
+
+
     messages_queued: [] #-> list of messages delayed for sending
-    
-    
-    
+
+
+
     manual_messages_templates:
-    
+
         mind_opening_instructions_oracle:
             group_id: "22"
             sender_email: djinn-master@djinn-city.com
@@ -455,7 +461,7 @@ messaging:
             subject: Reminder - mind opening operations
             body: >
                 Good Evening
-    
+
         mind_opening_operation_sciences:
             sender_email: djinn-master@djinn-city.com
             recipient_emails: ""
@@ -463,118 +469,118 @@ messaging:
             body: >
                 This is a dedicated member of the academy of sciences,
                 the goal of which has always been to seek always further the secrets of light and matter.
-    
-  
+
+
 
 
 
 
 
 static_pages:
-    
+
     uncategorized_stuff:
         content: "whatever"
-    
-    
+
+
     # STATIC SITE CONTENT
-    
+
     home_message:
         content: |
           Welcome to *Anthropia Networks*
-          
-          
+
+
     # HELP PAGES #
-    
+
     homepage:
         categories: "help_pages" # works
         content: |
           Well, I dunno what we could say about that page, akshully...
-          
+
           Formatting works *well*, and even **quite well**.
-          
+
           In that page you can:
-          
+
           - admire the background
           - admire the menus
           - admire whatever you want
-          
+
           Automatic encyclopedia links work too, for example if I write lokon...
-        
+
     view_encyclopedia:
         categories: ["help_pages"]
         content: |
           That encyclopedia is broken, that's a fact...
-    
+
     runic_translation:
         categories: ["help_pages"]
         content:  |
           This manual page requires advanced permissions...
-    
+
     unexisting_view_entry:
         categories: ["help_pages"]
         content:       |
           It doesn't raise errors, of course, but could be detected by game checking systems.
-    
-    
-    
+
+
+
     # ENCYCLOPEDIA PAGES #
 
-    lokon:    
+    lokon:
         categories: encyclopedia
         keywords: ["animals?", "lokons?"]
         content:   |
-    
+
             Titles don't appear currently!!!!
             =======================================
-            
+
             Here a paragraph on these cool animals
             with lots of descriptions etc etc.
-            
+
             Unicode characters are well handled: £ ¤ é à ù % µ
-            
+
             Here we might put images too.
-            
+
             Links towards other encyclopedia are now autogenerated, for example
             here I talk about my childhood gerbil.
-        
-    
+
+
     gerbil_species:
         categories: encyclopedia
         keywords: ["animals?", "gerbils?", "rodents?", "i<à"]
         content:   |
             Test to be translated here
             ===============================
-            
+
             Here tooo
-        
-    "wu\\gly_é":   
+
+    "wu\\gly_é":
         categories: encyclopedia
         keywords: ["ugly", "wu\\gly<_é", "éàk"]
         content:   |
             Just to ensure that this ugly slug gets well encoded in urls and regexes...
-    
 
-    
+
+
 
 nightmare_captchas:
-  
+
   enigma1:
     text: null
     image: "maths.png"
     answer: "35"
     explanation: "Because it's **so**!"
-    
+
   enigma2:
     text: "What is the *greatest* even number ?"
     image: null
-    answer: "None" 
- 
+    answer: "None"
+
   enigma3:
     text: "Decipher this!"
     image: "unreadable.jpg"
-    answer: "muwuwvuv" 
-  
-    
+    answer: "muwuwvuv"
+
+
 
 
 ...

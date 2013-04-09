@@ -89,13 +89,13 @@ logging.disable(logging.DEBUG) # to be commented if more output is wanted !!!
 
 
 class RequestMock(RequestFactory):
-    def request(self, **request):
+    def request(self, **request_args):
         """Constructs a generic request object, INCLUDING middleware modifications."""
 
         from django.core import urlresolvers
 
 
-        request = RequestFactory.request(self, **request)
+        request = RequestFactory.request(self, **request_args)
         ###pprint.pprint(request)
 
         handler = BaseHandler()

@@ -1346,6 +1346,8 @@ class TestDatamanager(BaseGameTestCase):
         self.dm.post_message(**record1)
         time.sleep(0.2)
 
+        self.dm.set_wiretapping_targets("guy4", ["guy4"]) # stupid but possible, and harmless actually
+
         self.dm.set_wiretapping_targets("guy1", ["guy2"])
         self.dm.set_wiretapping_targets("guy2", ["guy4"])
 
@@ -3070,6 +3072,57 @@ class TestGameViewSystem(BaseGameTestCase):
         assert view_character_permission.get_access_token(datamanager) == AccessResult.authentication_required # master must downgrade to character!!
         assert view_authenticated.get_access_token(datamanager) == AccessResult.available
         assert view_master.get_access_token(datamanager) == AccessResult.available
+
+
+    def test_action_processing_basics(self):
+
+        bank_name = self.dm.get_global_parameter("bank_name")
+        self.dm.transfer_money_between_characters(bank_name, "guy1", amount=1000)
+
+        # BEWARE - below we use another datamanager !!
+        view_url = reverse(views.wiretapping_management, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID))
+
+        # first a "direct action" html call
+        request = self.factory.post(view_url, data=dict(_action_="purchase_wiretapping_slot", qsdhqsdh="33"))
+        request.datamanager._set_user("guy1")
+        wiretapping = request.datamanager.instantiate_ability("wiretapping")
+        assert not request.datamanager.get_event_count("TRY_PROCESSING_FORMLESS_GAME_ACTION")
+        assert not request.datamanager.get_event_count("PROCESS_HTML_REQUEST")
+        response = wiretapping(request)
+        assert response.status_code == 200
+        assert wiretapping.get_wiretapping_slots_count() == 1
+        assert request.datamanager.get_event_count("TRY_PROCESSING_FORMLESS_GAME_ACTION") == 1
+        assert request.datamanager.get_event_count("PROCESS_HTML_REQUEST") == 1
+
+        # now in ajax
+        request = self.factory.post(view_url, data=dict(_action_="purchase_wiretapping_slot", vcv="33"), HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        request.datamanager._set_user("guy1")
+        wiretapping = request.datamanager.instantiate_ability("wiretapping")
+        assert not request.datamanager.get_event_count("TRY_PROCESSING_FORMLESS_GAME_ACTION")
+        assert not request.datamanager.get_event_count("PROCESS_AJAX_REQUEST")
+        response = wiretapping(request)
+        assert response.status_code == 200
+        assert wiretapping.get_wiretapping_slots_count() == 2
+        assert request.datamanager.get_event_count("TRY_PROCESSING_FORMLESS_GAME_ACTION") == 1
+        assert request.datamanager.get_event_count("PROCESS_AJAX_REQUEST") == 1
+
+        # now via the abstract form (+ middleware)
+        request = self.factory.post(view_url, data=dict(_ability_form="rpgweb.views.abilities.wiretapping_management_mod.WiretappingTargetsForm",
+                                                        target_0="guy3",
+                                                        fdfd="33"))
+        request.datamanager._set_user("guy1")
+        wiretapping = request.datamanager.instantiate_ability("wiretapping")
+        assert not request.datamanager.get_event_count("DO_PROCESS_FORM_SUBMISSION")
+        assert not request.datamanager.get_event_count("PROCESS_HTML_REQUEST")
+        assert not request.datamanager.get_event_count("EXECUTE_GAME_ACTION_WITH_MIDDLEWARES")
+        assert request.datamanager.get_wiretapping_targets() == []
+        response = wiretapping(request)
+        assert response.status_code == 200
+        assert wiretapping.get_wiretapping_slots_count() == 2 # unchanged
+        assert request.datamanager.get_wiretapping_targets() == ["guy3"]
+        assert request.datamanager.get_event_count("DO_PROCESS_FORM_SUBMISSION") == 1
+        assert request.datamanager.get_event_count("PROCESS_HTML_REQUEST") == 1
+        assert request.datamanager.get_event_count("EXECUTE_GAME_ACTION_WITH_MIDDLEWARES") == 1
 
 
 

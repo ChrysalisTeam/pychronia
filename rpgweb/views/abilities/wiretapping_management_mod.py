@@ -13,7 +13,7 @@ class WiretappingTargetsForm(AbstractGameForm):
         super(WiretappingTargetsForm, self).__init__(ability, *args, **kwargs)
         # dynamic fields here ...
 
-        names = ability.get_character_usernames()
+        names = ability.get_character_usernames(exclude_current=True)
         user_choices = ability.build_select_choices_from_usernames(names)
 
         num_slots = ability.get_wiretapping_slots_count()
@@ -56,9 +56,9 @@ class WiretappingAbility(AbstractAbility):
 
     TEMPLATE = "abilities/wiretapping_management.html"
 
-    ACCESS = UserAccess.authenticated
-    PERMISSIONS = ["wiretapping", "messaging"]
-    ALWAYS_AVAILABLE = False
+    ACCESS = UserAccess.character
+    #PERMISSIONS = ["wiretapping", "messaging"]
+    ALWAYS_AVAILABLE = True # FIXME
 
 
     @readonly_method

@@ -352,20 +352,21 @@ class AbstractGameView(object):
         Raises AbnormalUsageError if action is not determined,
         else returns its result (or raises an action exception).
         """
+        if __debug__: self.datamanager.notify_event("TRY_PROCESSING_FORMLESS_GAME_ACTION")
+
         data = utilities.sanitize_query_dict(data) # translates params to arrays, for example
 
         action_name = data.get(self._ACTION_FIELD)
         if not action_name or action_name not in self.GAME_ACTIONS:
             raise AbnormalUsageError(_("Abnormal action name: %s (available: %r)") % (action_name, self.GAME_ACTIONS.keys()))
 
-        callback_name = self.GAME_ACTIONS[action_name]["callback"]
-
-        res = self.execute_game_action_callback(action_name=action_name, callback_name=callback_name, unfiltered_params=data)
+        res = self.execute_game_action_callback(action_name=action_name, unfiltered_params=data)
 
         return res
 
 
     def _process_ajax_request(self):
+        if __debug__: self.datamanager.notify_event("PROCESS_AJAX_REQUEST")
         # we let exceptions flow upto upper level handlers
         res = self._try_processing_formless_game_action(self.request.POST)
         response = json.dumps(res)
@@ -373,6 +374,7 @@ class AbstractGameView(object):
 
 
     def _do_process_form_submission(self, action_registry, action_name, unfiltered_data, execution_processor):
+        if __debug__: self.datamanager.notify_event("DO_PROCESS_FORM_SUBMISSION")
         assert self.request.method == "POST"
 
         user = self.datamanager.user
@@ -388,7 +390,7 @@ class AbstractGameView(object):
 
         if bound_form.is_valid():
             with action_failure_handler(self.request, success_message=None): # only for unhandled exceptions
-                success_message = execution_processor(callback_name=callback_name,
+                success_message = execution_processor(action_name=action_name,
                                                       unfiltered_params=bound_form.get_normalized_values())
                 res["result"] = action_successful = True
                 if isinstance(success_message, basestring) and success_message:
@@ -451,7 +453,7 @@ class AbstractGameView(object):
 
 
     def _process_html_request(self):
-
+        if __debug__: self.datamanager.notify_event("PROCESS_HTML_REQUEST")
         if self.request.method == "POST":
             res = self._process_html_post_data()
             success = res["result"] # can be None also if nothing processed
@@ -577,7 +579,7 @@ class AbstractGameView(object):
                 res = dict(result=None,
                            form_data=None)
 
-            success = res["result"] # can be None also if nothing processed
+            success = res["result"] # UNUSED ATM - can be None also if nothing processed
             previous_form_data = res["form_data"]
 
             template_vars = self.compute_admin_template_variables(action_name=action_name, previous_form_data=previous_form_data)

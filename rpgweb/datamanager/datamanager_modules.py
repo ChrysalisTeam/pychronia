@@ -2272,7 +2272,7 @@ class TextMessagingInterception(BaseDataManager):
         username = self._resolve_username(username)
         target_names = sorted(list(set(target_names))) # renormalization, just in case
 
-        character_names = self.get_character_usernames()
+        character_names = self.get_character_usernames() # here we allow wiretapping oneself, even if it makes no sense
         for name in target_names:
             if name not in character_names:
                 raise AbnormalUsageError(_("Unknown target username %(target)s") % SDICT(target=name)) # we can show it

@@ -7,7 +7,7 @@
 <h2>{% trans "Your protections" %}</h2>
 
 {% if has_confidentiality_activated %}
-    <div><b>{% trans "Your messaging account is properly by the confidentiality system." %}</b></div>
+    <div><b>{% trans "Your messaging account is properly protected by the confidentiality system." %}</b></div>
 {% else %}
 
     <div align="center" class="scroll_yellow_flat center" style="text-align:center; width:300px;">
@@ -18,16 +18,18 @@
     </div>
 {% endif %}
 
+<br/>
+
+<h2>{% trans "Your wiretapping targets" %}</h2>
+
 
 {% if broken_wiretapping_targets %}
-    <p>{% trans "Something seems to prevent the proper interception of messages of these targets:" %}{{ broken_wiretapping_targets|join:", " }}</p>
-{% else %}
+    <p>{% trans "Something seems to prevent the proper interception of messages concerning these targets:" %}{{ broken_wiretapping_targets|join:", " }}.</p>
+{% elif current_targets %}
     <p>{% trans "Your wiretapping systems seem to work fine." %}</p>
 {% endif %}
 
 
-
-<h2>{% trans "Your wiretapping targets" %}</h2>
 
 <div align="center">
     <p>
