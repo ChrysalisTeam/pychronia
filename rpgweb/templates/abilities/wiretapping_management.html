@@ -4,6 +4,31 @@
 
 {% block content %}
 
+<h2>{% trans "Your protections" %}</h2>
+
+{% if has_confidentiality_activated %}
+    <div><b>{% trans "Your messaging account is properly by the confidentiality system." %}</b></div>
+{% else %}
+
+    <div align="center" class="scroll_yellow_flat center" style="text-align:center; width:300px;">
+        <form action="" method="post">
+            <input type="hidden" name="_action_" value="purchase_confidentiality_protection"/>
+            <input type="submit" name="purchase_confidentiality" value="{% trans "Buy confidentiality system" %}" onclick="return confirm('{% trans "Are you sure you want to purchase a confidentiality protection system ?" %}')" />
+        </form>
+    </div>
+{% endif %}
+
+
+{% if broken_wiretapping_targets %}
+    <p>{% trans "Something seems to prevent the proper interception of messages of these targets:" %}{{ broken_wiretapping_targets|join:", " }}</p>
+{% else %}
+    <p>{% trans "Your wiretapping systems seem to work fine." %}</p>
+{% endif %}
+
+
+
+<h2>{% trans "Your wiretapping targets" %}</h2>
+
 <div align="center">
     <p>
 	<strong>{% trans "Current target" %}{{ current_targets|pluralize }}:
@@ -14,9 +39,9 @@
 		{% endif %}
 	</strong>
     </p>
-</div>  
+</div>
 
-  
+
 {% if wiretapping_form %}
     <div align="center" class="scroll_yellow_flat center" style="text-align:center; width:300px;">
         <form action="{{ wiretapping_form.url }}" method="post">
@@ -32,8 +57,12 @@
 <div align="center" class="scroll_yellow_flat center" style="text-align:center; width:300px;">
     <form action="" method="post">
         <input type="hidden" name="_action_" value="purchase_wiretapping_slot"/>
-        <input type="submit" name="purchase" value="{% trans "Buy wiretapping slot" %}" onclick="return confirm('{% trans "Are you sure you want to purchase a spying slot ?" %}')" />
+        <input type="submit" name="purchase_slot" value="{% trans "Buy wiretapping slot" %}" onclick="return confirm('{% trans "Are you sure you want to purchase a spying slot ?" %}')" />
     </form>
 </div>
+
+
+
+
 
 {% endblock %}

@@ -45,11 +45,14 @@ class WiretappingAbility(AbstractAbility):
     NAME = "wiretapping"
 
     GAME_ACTIONS = dict(targets_form=dict(title=_lazy("Choose wiretapping targets"),
-                                              form_class=WiretappingTargetsForm,
-                                              callback="change_current_user_wiretapping_targets"),
+                                                  form_class=WiretappingTargetsForm,
+                                                  callback="change_current_user_wiretapping_targets"),
                         purchase_wiretapping_slot=dict(title=_lazy("Purchase wiretapping slot"),
-                                              form_class=None,
-                                              callback="purchase_wiretapping_slot"))
+                                                      form_class=None,
+                                                      callback="purchase_wiretapping_slot"),
+                        purchase_confidentiality_protection=dict(title=_lazy("Purchase confidentiality protection"),
+                                                      form_class=None,
+                                                      callback="purchase_confidentiality_protection"))
 
     TEMPLATE = "abilities/wiretapping_management.html"
 
@@ -82,6 +85,8 @@ class WiretappingAbility(AbstractAbility):
                  'page_title': _("Wiretapping Management"),
                  'current_targets': current_targets,
                  'wiretapping_form': targets_form,
+                 'has_confidentiality_activated': self.get_confidentiality_protection_status(),
+                 'broken_wiretapping_targets': self.determine_broken_wiretapping_data().keys(),
                 }
 
 
@@ -124,7 +129,12 @@ class WiretappingAbility(AbstractAbility):
         return _("Wiretapping successfully set up.")
 
 
-
+    @transaction_watcher
+    def purchase_confidentiality_protection(self):
+        if self.get_confidentiality_protection_status():
+            raise AbnormalUsageError(_("You already have confidentiality system activated"))
+        self.set_confidentiality_protection_status(has_confidentiality=True)
+        return _("Confidentiality system properly activated.")
 
 
     @classmethod
