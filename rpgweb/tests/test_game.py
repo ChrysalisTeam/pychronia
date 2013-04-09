@@ -1349,6 +1349,9 @@ class TestDatamanager(BaseGameTestCase):
         self.dm.set_wiretapping_targets("guy1", ["guy2"])
         self.dm.set_wiretapping_targets("guy2", ["guy4"])
 
+        self.dm.set_wiretapping_targets("guy3", ["guy1"]) # USELESS wiretapping, thanks to SSL/TLS
+        self.dm.set_confidentiality_protection_status("guy3", True)
+
         self.dm.post_message(**record2)
         time.sleep(0.2)
         self.dm.post_message(**record3)
@@ -1392,14 +1395,13 @@ class TestDatamanager(BaseGameTestCase):
         self.assertEqual(len(self.dm.get_received_messages("guy1")), 0)
 
         self.assertEqual(len(self.dm.get_sent_messages("guy2")), 2)
-
         self.assertEqual(len(self.dm.get_sent_messages("guy1")), 1)
         self.assertEqual(len(self.dm.get_sent_messages("guy3")), 0)
 
-        assert not self.dm.get_intercepted_messages("guy3")
+        assert not self.dm.get_intercepted_messages("guy3") # ineffective wiretapping
 
         res = self.dm.get_intercepted_messages("guy1")
-        self.assertEqual(len(res), 3)
+        self.assertEqual(len(res), 3) # wiretapping of user as sender AND recipient
         self.assertEqual(set([msg["subject"] for msg in res]), set(["hello everybody 1", "hello everybody 2", "hello everybody 4"]))
         assert all([msg["visible_by"]["guy1"] == VISIBILITY_REASONS.interceptor for msg in res])
 
@@ -1450,6 +1452,82 @@ class TestDatamanager(BaseGameTestCase):
         self.assertFalse(self.dm.get_all_dispatched_messages()[3]["has_read"])
         self.assertEqual(self.dm.get_unread_messages_count(self.dm.get_global_parameter("master_login")), 1)
 
+
+    def test_wiretapping_methods(self):
+
+
+        my_user1 = "guy2"
+        my_user2 = "guy3"
+        my_user3 = "guy4"
+        self._set_user(my_user1)
+
+        # standard target setup
+
+        self.dm.set_wiretapping_targets(my_user1, [my_user2])
+
+        assert self.dm.get_wiretapping_targets(my_user1) == [my_user2]
+        assert self.dm.get_wiretapping_targets(my_user2) == []
+        assert self.dm.get_wiretapping_targets(my_user3) == []
+
+        assert self.dm.get_listeners_for(my_user1) == []
+        assert self.dm.get_listeners_for(my_user2) == [my_user1]
+        assert self.dm.get_listeners_for(my_user3) == []
+
+        assert self.dm.determine_effective_wiretapping_traps(my_user1) == [my_user2]
+        assert self.dm.determine_effective_wiretapping_traps(my_user2) == []
+        assert self.dm.determine_effective_wiretapping_traps(my_user3) == []
+
+        assert self.dm.determine_broken_wiretapping_data(my_user1) == {}
+        assert self.dm.determine_broken_wiretapping_data(my_user2) == {}
+        assert self.dm.determine_broken_wiretapping_data(my_user3) == {}
+
+
+        # SSL/TLS protection enabled
+
+        self.dm.set_wiretapping_targets(my_user2, [my_user1])  # back link
+
+        assert not self.dm.get_confidentiality_protection_status(my_user1)
+        assert not self.dm.get_confidentiality_protection_status(my_user2)
+
+        start = datetime.utcnow()
+        self.dm.set_confidentiality_protection_status(my_user1, has_confidentiality=True) # my_user1 is PROTECTED against interceptions!!
+        end = datetime.utcnow()
+
+        activation_date = self.dm.get_confidentiality_protection_status(my_user1)
+        assert activation_date and (start <= activation_date <= end)
+        assert not self.dm.get_confidentiality_protection_status(my_user2)
+
+        assert self.dm.get_wiretapping_targets(my_user1) == [my_user2]
+        assert self.dm.get_wiretapping_targets(my_user2) == [my_user1] # well listed, even if ineffective
+        assert self.dm.get_wiretapping_targets(my_user3) == []
+
+        assert self.dm.get_listeners_for(my_user1) == [my_user2] # well listed, even if ineffective
+        assert self.dm.get_listeners_for(my_user2) == [my_user1]
+        assert self.dm.get_listeners_for(my_user3) == []
+
+        assert self.dm.determine_effective_wiretapping_traps(my_user1) == [my_user2]
+        assert self.dm.determine_effective_wiretapping_traps(my_user2) == [] # NOT EFFECTIVE
+        assert self.dm.determine_effective_wiretapping_traps(my_user3) == []
+
+        assert self.dm.determine_broken_wiretapping_data(my_user1) == {}
+        assert self.dm.determine_broken_wiretapping_data(my_user2) == {my_user1: activation_date}
+        assert self.dm.determine_broken_wiretapping_data(my_user3) == {}
+
+
+        # SSL/TLS protection disabled
+
+        self.dm.set_confidentiality_protection_status(has_confidentiality=False) # fallback to current user
+
+        assert not self.dm.get_confidentiality_protection_status(my_user1)
+        assert not self.dm.get_confidentiality_protection_status(my_user2)
+
+        assert self.dm.determine_effective_wiretapping_traps(my_user1) == [my_user2]
+        assert self.dm.determine_effective_wiretapping_traps(my_user2) == [my_user1]
+        assert self.dm.determine_effective_wiretapping_traps(my_user3) == []
+
+        assert self.dm.determine_broken_wiretapping_data(my_user1) == {}
+        assert self.dm.determine_broken_wiretapping_data(my_user2) == {}
+        assert self.dm.determine_broken_wiretapping_data(my_user3) == {}
 
 
 
@@ -3828,6 +3906,7 @@ class TestSpecialAbilities(BaseGameTestCase):
 
         self.assertEqual(set(wiretapping.get_wiretapping_targets()), set([char_names[0], char_names[1]])) # didn't change
         self.assertEqual(wiretapping.get_listeners_for(char_names[1]), ["guy1"])
+
 
 
     def test_world_scan(self):

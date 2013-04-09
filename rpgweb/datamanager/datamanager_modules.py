@@ -2238,6 +2238,13 @@ class TextMessagingInterception(BaseDataManager):
             if data["confidentiality_activation_datetime"] is not None:
                 utilities.check_is_datetime(data["confidentiality_activation_datetime"])
 
+            wiretapping_targets_full1 = self.get_wiretapping_targets(username=name)
+            wiretapping_targets_full2 = self.determine_broken_wiretapping_data(username=name).keys() + self.determine_effective_wiretapping_traps(username=name)
+            utilities.check_no_duplicates(wiretapping_targets_full1)
+            utilities.check_no_duplicates(wiretapping_targets_full2)
+            assert set(wiretapping_targets_full1) == set(wiretapping_targets_full2)
+
+
     @transaction_watcher
     def _immediately_dispatch_message(self, msg):
         assert not msg["visible_by"] # this is the outer-most module at the moment
@@ -2245,10 +2252,11 @@ class TextMessagingInterception(BaseDataManager):
             effective_wiretapping_targets_emails = [self.get_character_email(target)
                                                     for target in self.determine_effective_wiretapping_traps(username)] # EFFECTIVE, not mere wiretapping targets!!
             if (msg["sender_email"] in effective_wiretapping_targets_emails or
-                any((recipient in effective_wiretapping_targets_emails) for recipient in msg["recipient_emails"])):
+                    any((recipient in effective_wiretapping_targets_emails) for recipient in msg["recipient_emails"])):
                 msg["visible_by"][username] = VISIBILITY_REASONS.interceptor # might be overriden by more basic visibility (sender, recipient...), in parent methods
 
         super(TextMessagingInterception, self)._immediately_dispatch_message(msg)
+
 
     @readonly_method
     def get_intercepted_messages(self, username=CURRENT_USER): # for wiretapping
@@ -2290,10 +2298,28 @@ class TextMessagingInterception(BaseDataManager):
         return sorted(listeners) # list of character usernames
 
 
+    @transaction_watcher
+    def set_confidentiality_protection_status(self, username=CURRENT_USER, has_confidentiality=None):
+        """
+        Only for characters of course.
+        """
+        username = self._resolve_username(username)
+        data = self.get_character_properties(username)
+        data["confidentiality_activation_datetime"] = (datetime.utcnow() if has_confidentiality else None)
+
+    @readonly_method
+    def get_confidentiality_protection_status(self, username=CURRENT_USER):
+        """
+        Returns None, or the activation datetime.
+        """
+        username = self._resolve_username(username)
+        return self.get_character_properties(username)["confidentiality_activation_datetime"]
+
+
     @readonly_method # FIXME UNTESTED
     def determine_effective_wiretapping_traps(self, username=CURRENT_USER):
         """
-        Filter out wiretapping targets that have confidentiality layer enabled.
+        Filters out wiretapping targets that have confidentiality layer enabled.
         """
         username = self._resolve_username(username)
         targets = self.get_character_properties(username=username)["wiretapping_targets"]
@@ -2309,8 +2335,8 @@ class TextMessagingInterception(BaseDataManager):
         username = self._resolve_username(username)
         targets = self.get_character_properties(username=username)["wiretapping_targets"]
         targets_data = {target: self.get_character_properties(username=target)["confidentiality_activation_datetime"] for target in targets}
-        ineffective_targets = {key: value for (key, value) in targets_data if value is not None} # returns a dict {username: ssl_activation_datetime}
-        return ineffective_targets
+        ineffective_targets = {key: value for (key, value) in targets_data.items() if value is not None}
+        return ineffective_targets # returns a dict {username: ssl_activation_datetime}
 
 
 
