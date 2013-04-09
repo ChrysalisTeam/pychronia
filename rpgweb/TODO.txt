@@ -5,7 +5,7 @@
 - fix wong ordering of overrides in visible_by dict of _immediately_dispatch_message()
 
 - messaging reply/resend + templates + filtering?
-
+- add a way to disable sent messages by game master, in case of trouble
 - ability for users to transfer their objects to someone else
 - mobile version of site (-> refactor base_mobile to mimic base_web structure)
 - global page styles and messages for any "readonly mode"
@@ -40,6 +40,9 @@
 
 
 ====================
+
+
+Later: allow accumulation of visibility reasons, to have both sender and recipient together in msg for same user!!!
 
 Idea of captcha: play with colors illusions!!
 

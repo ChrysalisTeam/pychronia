@@ -1313,7 +1313,7 @@ class TestDatamanager(BaseGameTestCase):
 
         record2 = {
             "sender_email": "guy4@pangea.com",
-            "recipient_emails": ["secret-services@masslavia.com"],
+            "recipient_emails": ["secret-services@masslavia.com", "guy2@pangea.com"], # guy2 will both wiretap and receive here
             "subject": "hello everybody 2",
             "body": "Here is the body of this message lililili...",
             "attachment": "http://yowdlayhio",
@@ -1379,7 +1379,9 @@ class TestDatamanager(BaseGameTestCase):
         # here we can't do check messages of secret-services@masslavia.com since it's not a normal character
 
         self.assertTrue(self.dm.has_new_message_notification("guy2"))
-        self.assertEqual(len(self.dm.get_received_messages("guy2")), 1)
+        self.assertEqual(len(self.dm.get_received_messages("guy2")), 2)
+        assert not self.dm.get_intercepted_messages("guy2") # wiretapping is overridden by other visibility reasons
+
         self.assertTrue(self.dm.has_new_message_notification("guy2"))
         self.dm.set_new_message_notification(utilities.PersistentList(["guy1", "guy2"]), new_status=False)
         self.assertFalse(self.dm.has_new_message_notification("guy1"))
@@ -1390,14 +1392,15 @@ class TestDatamanager(BaseGameTestCase):
         self.assertEqual(len(self.dm.get_received_messages("guy1")), 0)
 
         self.assertEqual(len(self.dm.get_sent_messages("guy2")), 2)
+
         self.assertEqual(len(self.dm.get_sent_messages("guy1")), 1)
         self.assertEqual(len(self.dm.get_sent_messages("guy3")), 0)
 
         assert not self.dm.get_intercepted_messages("guy3")
 
         res = self.dm.get_intercepted_messages("guy1")
-        self.assertEqual(len(res), 2)
-        self.assertEqual(set([msg["subject"] for msg in res]), set(["hello everybody 1", "hello everybody 4"]))
+        self.assertEqual(len(res), 3)
+        self.assertEqual(set([msg["subject"] for msg in res]), set(["hello everybody 1", "hello everybody 2", "hello everybody 4"]))
         assert all([msg["visible_by"]["guy1"] == VISIBILITY_REASONS.interceptor for msg in res])
 
         res = self.dm.get_intercepted_messages(self.dm.master_login)
@@ -3054,7 +3057,7 @@ class TestActionMiddlewares(BaseGameTestCase):
 
 
     def test_get_game_actions_explanations(self):
-        
+
         self._set_user("guy4") # important
         bank_name = self.dm.get_global_parameter("bank_name")
         self.dm.transfer_money_between_characters(bank_name, "guy4", amount=1000)
@@ -3062,7 +3065,7 @@ class TestActionMiddlewares(BaseGameTestCase):
         view = self.dm.instantiate_game_view("characters_view")
         assert view.get_game_actions_explanations() == [] # has game actions, but no middlewares, because not an ability
         del view
-        
+
         ability = self.dm.instantiate_ability("dummy_ability")
         ability._perform_lazy_initializations() # normally done while treating HTTP request...
 
@@ -3300,8 +3303,8 @@ class TestActionMiddlewares(BaseGameTestCase):
             ability.middleware_wrapped_callable1(2524)
 
         assert self._flatten_explanations(ability.get_middleware_data_explanations(action_name="middleware_wrapped_test_action"))
-                                          
-                                          
+
+
         self._set_user("guy3") # important
         ability._perform_lazy_initializations() # normally done while treating HTTP request...
         ability.reset_test_data("middleware_wrapped_test_action", CountLimitedActionMiddleware, dict()) # will be filled lazily, on call
@@ -3323,7 +3326,7 @@ class TestActionMiddlewares(BaseGameTestCase):
         self.dm.clear_all_event_stats()
 
         assert self._flatten_explanations(ability.get_middleware_data_explanations(action_name="middleware_wrapped_test_action"))
-                                          
+
 
         # only per-character quota
 
@@ -3346,7 +3349,7 @@ class TestActionMiddlewares(BaseGameTestCase):
         self.dm.clear_all_event_stats()
 
         assert self._flatten_explanations(ability.get_middleware_data_explanations(action_name="middleware_wrapped_test_action"))
-                                          
+
 
         # only global quota
 
@@ -3369,7 +3372,7 @@ class TestActionMiddlewares(BaseGameTestCase):
         self.dm.clear_all_event_stats()
 
         assert self._flatten_explanations(ability.get_middleware_data_explanations(action_name="middleware_wrapped_test_action"))
-                                          
+
 
         # no quota (or misconfiguration):
 
@@ -3406,7 +3409,7 @@ class TestActionMiddlewares(BaseGameTestCase):
         assert self.dm.get_event_count("INSIDE_NON_MIDDLEWARE_ACTION_CALLABLE") == 1
 
         assert self._flatten_explanations(ability.get_middleware_data_explanations(action_name="middleware_wrapped_test_action"))
-                                          
+
 
     def test_time_limited_action_middleware(self):
 

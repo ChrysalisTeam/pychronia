@@ -1894,9 +1894,7 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
         return msg
 
     def _immediately_dispatch_message(self, msg):
-
-        msg["visible_by"].update(self._determine_basic_visibility(msg))
-
+        msg["visible_by"].update(self._determine_basic_visibility(msg)) # we shamelessly override more specialized visibilities
         super(TextMessagingForCharacters, self)._immediately_dispatch_message(msg)
 
     def _message_dispatching_post_hook(self, frozen_msg):
@@ -2242,14 +2240,13 @@ class TextMessagingInterception(BaseDataManager):
 
     @transaction_watcher
     def _immediately_dispatch_message(self, msg):
-
+        assert not msg["visible_by"] # this is the outer-most module at the moment
         for username in self.get_character_usernames():
             effective_wiretapping_targets_emails = [self.get_character_email(target)
                                                     for target in self.determine_effective_wiretapping_traps(username)] # EFFECTIVE, not mere wiretapping targets!!
             if (msg["sender_email"] in effective_wiretapping_targets_emails or
-               any((recipient in effective_wiretapping_targets_emails) for recipient in msg["recipient_emails"])):
-                if username not in msg["visible_by"]: # if already sender or recipient, we ignore redundant interception
-                    msg["visible_by"][username] = VISIBILITY_REASONS.interceptor # that character will see the message
+                any((recipient in effective_wiretapping_targets_emails) for recipient in msg["recipient_emails"])):
+                msg["visible_by"][username] = VISIBILITY_REASONS.interceptor # might be overriden by more basic visibility (sender, recipient...), in parent methods
 
         super(TextMessagingInterception, self)._immediately_dispatch_message(msg)
 
@@ -2301,7 +2298,7 @@ class TextMessagingInterception(BaseDataManager):
         username = self._resolve_username(username)
         targets = self.get_character_properties(username=username)["wiretapping_targets"]
         effective_targets = [target for target in targets \
-                             if self.get_character_properties(username=target)["confidentiality_activation_datetime"] is not None]
+                             if self.get_character_properties(username=target)["confidentiality_activation_datetime"] is None]
         return effective_targets
 
     @readonly_method # FIXME UNTESTED
