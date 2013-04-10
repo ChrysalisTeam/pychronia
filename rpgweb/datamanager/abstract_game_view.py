@@ -280,6 +280,8 @@ class AbstractGameView(object):
         *form_initializer* will be passed as 1st argument to the form. By default, it's the datamanager.
         
         Might raise UninstantiableFormError.
+        
+        Important: previous form is NOT necessarily of the same type than that of new_action_name.
         """
         form_options = form_options or {}
 
@@ -292,9 +294,11 @@ class AbstractGameView(object):
 
         NewFormClass = self.GAME_ACTIONS[new_action_name]["form_class"]
         assert NewFormClass, new_action_name # important, not all actions have form classes available
-        assert not previous_form_instance or previous_form_instance.__class__ == NewFormClass # let's be coherent, same form class used in both
+
         if __debug__:
-            form_data = (previous_action_name, previous_form_instance, (previous_action_successful is not None))
+            form_data = (previous_action_name, (previous_action_successful is not None))
+            # we CAN have previous_form_instance is None and previous_action_successful == False, if form not instantiable
+            if previous_action_successful: assert previous_form_instance
             assert all(form_data) or not any(form_data)
 
         if new_action_name == previous_action_name:
@@ -386,9 +390,12 @@ class AbstractGameView(object):
         assert FormClass.matches(unfiltered_data)
 
         action_successful = False
-        bound_form = FormClass(self.datamanager, data=unfiltered_data)
+        try:
+            bound_form = FormClass(self.datamanager, data=unfiltered_data)
+        except UninstantiableFormError:
+            bound_form = None # the form correponding to data can't even be cerated, so POST data is necessarily invalid
 
-        if bound_form.is_valid():
+        if bound_form and bound_form.is_valid():
             with action_failure_handler(self.request, success_message=None): # only for unhandled exceptions
                 success_message = execution_processor(action_name=action_name,
                                                       unfiltered_params=bound_form.get_normalized_values())
@@ -400,7 +407,7 @@ class AbstractGameView(object):
                     user.add_message(_("Operation successful")) # default msg
 
         else:
-            user.add_error(_("Submitted data is invalid"))
+            user.add_error(_("Submitted data is invalid")) # should be completed by form errors, if bound_form could be instantiated
         res["form_data"] = SubmittedGameForm(action_name=action_name, # same as action name, actually
                                                form_instance=bound_form,
                                                action_successful=action_successful)

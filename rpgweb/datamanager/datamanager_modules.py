@@ -329,13 +329,14 @@ class CharacterHandling(BaseDataManager): # TODO REFINE
             raise UsageError(_("Unknown username %s") % username)
 
     @readonly_method
-    def __get_fellow_usernames(self, username=CURRENT_USER):
+    def _______get_fellow_usernames(self, username=CURRENT_USER): # OBSOLETE FIXME
         # returns team mates only, doesn't work for game master
         username = self._resolve_username(username)
         domain = self.get_character_properties(username)["domain"]
         fellows = [name for (name, props) in self.get_character_sets().items() if
                    props["domain"] == domain and name != username]
         return fellows
+
 
     @readonly_method
     def get_other_character_usernames(self, username=CURRENT_USER):
@@ -3020,7 +3021,7 @@ class MoneyItemsOwnership(BaseDataManager):
         if item["is_gem"]:
             # check that all single gems of the pack are still owned
             gems = self._get_item_separate_gems(item_name)
-            remaining_gems = utilities.substract_lists(character["gems"], gems)
+            remaining_gems = utilities.substract_lists(character["gems"], gems) # gems are pairs (value, origin) here!
             if remaining_gems is None:
                 raise UsageError(_("Impossible to free item, some gems from this package have already been used"))
             character["gems"] = remaining_gems
@@ -3038,15 +3039,20 @@ class MoneyItemsOwnership(BaseDataManager):
 
 
     @transaction_watcher
-    def transfer_object_to_character(self, item_name, char_name):
+    def transfer_object_to_character(self, item_name, char_name, previous_owner=None):
         """
         Item might be free or not, and char_name may be a character 
         or None (i.e no more owner for the item).
+        
+        If previous_owner is set, we perform a check on it, to ensure it's
+        well the current owner who's transferring the object.
         """
         ## FIXME - make this a character-method too !!!
         item = self.get_item_properties(item_name)
         from_name = item["owner"] if item["owner"] else _("no one") # must be done IMMEDIATELY
-        to_name = char_name if char_name else _("no one") # must be done IMMEDIATELY
+
+        if previous_owner is not None and previous_owner != item["owner"]:
+            raise NormalUsageError(_("This object doesn't belong to %s") % previous_owner)
 
         if item["owner"] == char_name:
             raise NormalUsageError(_("Impossible to have same origin and destination for item transfer"))
@@ -3093,12 +3099,15 @@ class MoneyItemsOwnership(BaseDataManager):
 
     @readonly_method
     def get_available_items_for_user(self, username=CURRENT_USER):
+        """
+        Both items and artefacts.
+        """
         username = self._resolve_username(username)
         if self.is_master(username):
             available_items = self.get_all_items()
         else:
             assert self.is_character(username)
-            all_sharing_users = [username] # FIXME - which objects should we include?
+            all_sharing_users = [username] # FIXME - which users should we include?
             # user_domain = self.get_character_properties(username)["domain"]
             # all_domain_users = [name for (name, value) in self.get_character_sets().items() if
             #                    value["domain"] == user_domain]
@@ -3107,6 +3116,12 @@ class MoneyItemsOwnership(BaseDataManager):
                                               if value['owner'] in all_sharing_users])
         return available_items
 
+    @readonly_method
+    def get_user_artefacts(self, username=CURRENT_USER):
+        username = self._resolve_username(username)
+        return PersistentDict([(name, value) for (name, value)
+                                  in self.get_available_items_for_user(username=username).items()
+                                  if not value['is_gem']])
 
 
     @transaction_watcher

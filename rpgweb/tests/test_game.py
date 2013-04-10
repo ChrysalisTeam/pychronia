@@ -880,6 +880,8 @@ class TestDatamanager(BaseGameTestCase):
     def test_available_items_listing(self):
         self._reset_messages()
 
+        self._set_user("guy1")
+
         # print (">>>", self.dm.__class__.__mro__)
         all_items = self.dm.get_all_items()
         gems = self.dm.get_gem_items()
@@ -910,6 +912,10 @@ class TestDatamanager(BaseGameTestCase):
         self.assertEqual(set(self.dm.get_available_items_for_user("guy2").keys()), set([gem_name1, gem_name2]))
         self.assertEqual(set(self.dm.get_available_items_for_user("guy3").keys()), set([object_name]))
 
+        assert self.dm.get_user_artefacts() == {} # guy1
+        assert self.dm.get_user_artefacts("guy1") == {}
+        assert self.dm.get_user_artefacts("guy2") == {} # gems NOT included
+        assert self.dm.get_user_artefacts("guy3").keys() == [object_name]
 
 
     @for_core_module(PersonalFiles)

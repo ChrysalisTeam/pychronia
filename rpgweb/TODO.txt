@@ -1,15 +1,18 @@
 
 {% comment %} !! Remember that these div ids can be used as url anchors : "/my/url/#1-fa4" ! {% endcomment %}
 
-- separate tests for _try_processing_formless_game_action system
+- test transfer_object_to_character previous_owner feature
+- test UninstantiableFormError during html POST data processing!!
+- auto test all forms with also inspect.getsourcelines(object) etc.
 
-- fix wong ordering of overrides in visible_by dict of _immediately_dispatch_message()
+- admin-form to activate views
+- ability for users to transfer their objects to someone else
 
 - messaging reply/resend + templates + filtering?
 - add a way to disable sent messages by game master, in case of trouble
-- ability for users to transfer their objects to someone else
+
 - mobile version of site (-> refactor base_mobile to mimic base_web structure)
-- global page styles and messages for any "readonly mode"
+- global page styles and messages for "readonly mode"
 
 - Add captcha to some special static pages ?
 
@@ -18,18 +21,16 @@
 - interface to edit external contacts WIP
 - javascript-obfuscated-popuped "report bug" div in mini footer WIP
 
-- SSL protection to be added to wiretapping page
 
-- add auto-generation of ActionHandler help pages (via action middlewares)
+- add auto-generation of ActionHandler help pages (via action middlewares) WIP
 
-- admin-form to activate views
 - filling of headers with game info and notifications
 - adding novelty tags everywhere (menu, radio and help icons, events...)
 - adding of impersonation controls to site top WIP (needs JS code)
-- adding of impersonation to player menus (in generate...())
+- adding of impersonation to player menus (in generate..menu..())
 
 - check what happens when calling setlanguage flags from a "POST-access-only" page like private files ??
-- tweak access checking of gameviews, so that if impersonation we get no error and just get redirected to homepage of impersoinated user
+- tweak access checking of gameviews, so that if impersonation we get no error message, and just get redirected to homepage of impersonated user
 
 
 - interactive world map DONE
@@ -38,6 +39,9 @@
 - global management of ajax errors, with popups DONE
 - add protections to ensure that all file requests never leave GAME_FILES_ROOT - ALREADY OK
 - ACCESS CONTROL ON HELP PAGES -> ALREADY DONE
+- separate tests for try_processing_formless_game_action system DONE
+- fix wong ordering of overrides in visible_by dict of _immediately_dispatch_message() DONE
+- SSL protection to be added to wiretapping page DONE
 
 
 ====================

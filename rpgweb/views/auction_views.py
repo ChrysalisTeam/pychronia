@@ -7,7 +7,8 @@ from rpgweb.datamanager import AbstractGameView, register_view, transaction_watc
 from rpgweb import forms
 from django.http import Http404, HttpResponse
 import json
-from rpgweb.forms import MoneyTransferForm, GemsTransferForm, UninstantiableFormError
+from rpgweb.forms import MoneyTransferForm, GemsTransferForm, UninstantiableFormError, \
+    ArtefactTransferForm
 
 
 @register_view(access=UserAccess.anonymous, always_available=True)
@@ -42,7 +43,10 @@ class CharactersView(AbstractGameView):
                                                           callback="transfer_money"),
                         gems_transfer_form=dict(title=_lazy("Transfer gems"),
                                                           form_class=GemsTransferForm,
-                                                          callback="transfer_gems"))
+                                                          callback="transfer_gems"),
+                        transfer_artefact=dict(title=_lazy("Transfer artefact"),
+                                                          form_class=ArtefactTransferForm,
+                                                          callback="transfer_artefact"))
 
     TEMPLATE = "auction/view_characters.html"
 
@@ -53,9 +57,6 @@ class CharactersView(AbstractGameView):
 
 
     def get_template_vars(self, previous_form_data=None):
-        """In any way here we use new forms (not previous_form_data), because character settings may have changed !"""
-        user = self.datamanager.user
-
 
         # Preparing form for money transfer
         try:
@@ -75,6 +76,15 @@ class CharactersView(AbstractGameView):
             new_gems_form = None
             pass # TODO ADD MESSAGE
 
+        # preparing artefact transfer form
+        try:
+            new_artefact_form = self._instantiate_form(new_action_name="transfer_artefact",
+                                                             hide_on_success=False,
+                                                             previous_form_data=previous_form_data)
+        except UninstantiableFormError:
+            new_artefact_form = None
+            pass # TODO ADD MESSAGE
+
         # we display the list of available character accounts
 
         characters = self.datamanager.get_character_sets().items()
@@ -88,6 +98,7 @@ class CharactersView(AbstractGameView):
                  'pangea_domain':self.datamanager.get_global_parameter("pangea_network_domain"),
                  'money_form': new_money_form,
                  'gems_form': new_gems_form,
+                 'artefact_form': new_artefact_form,
                  'char_sets': [sorted_characters], # single set ATM
                  'character_item_details': character_item_details,
                }
@@ -118,6 +129,17 @@ class CharactersView(AbstractGameView):
                                                           to_name=recipient_name,
                                                           gems_choices=gems_choices)
         return _("Gems transfer successful.")
+
+
+    @transaction_watcher
+    def transfer_artefact(self, recipient_name, artefact_name):
+
+        self.datamanager.transfer_object_to_character(item_name=artefact_name,
+                                                      char_name=recipient_name,
+                                                      previous_owner=self.datamanager.username) # redundant check, since form already ensures ownership
+        return _("Artefact transfer successful.")
+
+
 
 view_characters = CharactersView.as_view
 

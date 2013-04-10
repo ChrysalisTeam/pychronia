@@ -1,12 +1,12 @@
 {% extends "base_one_giant_column.html" %}
 
-{% load i18n helpers %}  
+{% load i18n helpers %}
 
-{% block content %}  
+{% block content %}
 
 
 <table class="realtable">
-	
+
 	<thead>
 		<tr>
 			<th>{% trans "Identity" %}</th>
@@ -15,16 +15,16 @@
 			<th>{% trans "Gems owned" %}</th>
 		</tr>
 	</thead>
-	    
-	<tbody>
-	{% for char_set in char_sets %} 
-	   
-		{% for char_name, char_details in char_set %}   
-		
-		{% comment %} char_details is at least {'gems': [], 'items': [], 'domain': 'acharis.com', 'password': 'xxxx', 'account': 0} {% endcomment %}
-	    
 
-	    <tr class="{% cycle 'rowA' 'rowB' %}"  style="color:{{ char_details.character_color }};">	
+	<tbody>
+	{% for char_set in char_sets %}
+
+		{% for char_name, char_details in char_set %}
+
+		{% comment %} char_details is at least {'gems': [], 'items': [], 'domain': 'acharis.com', 'password': 'xxxx', 'account': 0} {% endcomment %}
+
+
+	    <tr class="{% cycle 'rowA' 'rowB' %}"  style="color:{{ char_details.character_color }};">
 
 		    	<td class="bigtext">
 		    		<strong {% if user.is_master %} title="{% trans "Password:" %} {{ char_details.password }}" {% endif %}>
@@ -35,11 +35,11 @@
 		    		    {% endif %}
 					</strong>
 		    	</td>
-	
+
 		    	<td class="bigtext">
 		    		{{ char_details.account }}
 		    	</td>
-		    	
+
 		    	<td class="bigtext">
 		    		{% for item in character_item_details|dict_get:char_name %}
 		    		    {{ item.title }} <br/>
@@ -47,15 +47,15 @@
 		    			{% trans "None" %}
 		    		{% endfor %}
 		    	</td>
-		    
+
 		    	<td class="bigtext">
-		    		{% if char_details.gems %} 
+		    		{% if char_details.gems %}
 		    			{{ char_details.gems|list_filter:0|join:", " }}
 		    		{% else %}
 		    			{% trans "None" %}
 		    		{% endif %}
-		    	</td>	    
-		
+		    	</td>
+
 	    </tr>
 	    {% endfor %}
 	{% endfor %}
@@ -66,8 +66,9 @@
 
 {% include "utilities/scroll_form.html" with title=_("Digital Money Transfer") form=money_form class="float_left" button_title=_("Transfer money") button_name="money_transfer" %}
 
-{% include "utilities/scroll_form.html" with title=_("Gems Transfer") form=gems_form class="float_right" button_title=_("Transfer gems") button_name="gems_transfer" %}
+{% include "utilities/scroll_form.html" with title=_("Gems Transfer") form=gems_form class="float_left" button_title=_("Transfer gems") button_name="gems_transfer" %}
 
+{% include "utilities/scroll_form.html" with title=_("Artefact Transfer") form=artefact_form class="float_left" button_title=_("Transfer artefact") button_name="artefact_transfer" %}
 
 
 {% endblock %}

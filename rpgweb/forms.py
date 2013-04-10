@@ -92,6 +92,30 @@ class GemsTransferForm(AbstractGameForm):
 
 
 
+class ArtefactTransferForm(AbstractGameForm):
+
+    artefact_name = forms.ChoiceField(label=_lazy("Artefact"), required=True)
+    recipient_name = forms.ChoiceField(label=_lazy("Recipient"), required=True)
+            
+    def __init__(self, datamanager, *args, **kwargs):
+        super(ArtefactTransferForm, self).__init__(datamanager, *args, **kwargs)
+        
+        artefacts = datamanager.get_user_artefacts() # dicts
+        artefacts_choices = [(name, value["title"]) for (name, value) in artefacts.items()]
+        self.fields["artefact_name"].choices = artefacts_choices
+
+        others = datamanager.get_other_character_usernames()
+        others_choices = datamanager.build_select_choices_from_usernames(others)
+        self.fields["recipient_name"].choices = others_choices
+
+        if not artefacts_choices or not others_choices:
+            raise UninstantiableFormError("No artefact or recipient available")
+
+        #others = datamanager.get_other_character_usernames()
+
+
+
+
 """ ???
 class DropdownMultiSelect(forms.SelectMultiple):
     
@@ -246,8 +270,7 @@ class ArtefactForm(AbstractGameForm):
     def __init__(self, ability, *args, **kwargs):
         super(ArtefactForm, self).__init__(ability, *args, **kwargs)
 
-        _user_items = ability.get_available_items_for_user()
-        _user_artefacts = {key: value for (key, value) in _user_items.items() if not value["is_gem"]}
+        _user_artefacts = ability.get_user_artefacts()
 
         if not _user_artefacts:
             raise UninstantiableFormError(_("No artefacts currently owned."))
