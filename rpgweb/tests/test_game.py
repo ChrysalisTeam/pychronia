@@ -3960,6 +3960,13 @@ class TestSpecialAbilities(BaseGameTestCase):
         self.assertEqual(set(wiretapping.get_wiretapping_targets()), set([char_names[0], char_names[1]])) # didn't change
         self.assertEqual(wiretapping.get_listeners_for(char_names[1]), ["guy1"])
 
+        # SSL/TLS protection purchase
+        assert not self.dm.get_confidentiality_protection_status()
+        wiretapping.purchase_confidentiality_protection()
+        assert self.dm.get_confidentiality_protection_status()
+        with pytest.raises(UsageError):
+            wiretapping.purchase_confidentiality_protection() # only possible once
+        assert self.dm.get_confidentiality_protection_status()
 
 
     def test_world_scan(self):
