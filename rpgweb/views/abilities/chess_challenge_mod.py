@@ -10,6 +10,7 @@ from rpgweb.datamanager import readonly_method, transaction_watcher, register_vi
 @register_view
 class ChessChallengeAbility(AbstractAbility):
 
+    TITLE = _lazy("Chess Challenge")
     NAME = "chess_challenge"
 
     GAME_ACTIONS = dict(notify_chess_player_victory=dict(title=_lazy("Notify victory of a chess player"),

@@ -63,6 +63,7 @@ class AbstractCaptchaProtectedView(AbstractGameView):
 @register_view
 class TestCaptcha(AbstractCaptchaProtectedView):
 
+    TITLE = _lazy("Security Captcha")
     NAME = "test_captcha"
     TEMPLATE = "utilities/view_media.html"
     ACCESS = UserAccess.anonymous

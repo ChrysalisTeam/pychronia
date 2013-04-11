@@ -28,7 +28,7 @@ radio_spots_editing = RadioSpotsEditing.as_view
 
 
 
-@register_view(access=UserAccess.master)
+@register_view(access=UserAccess.master, title=_lazy("Game Events"))
 def game_events(request, template_name='administration/game_events.html'):
 
     events = request.datamanager.get_game_events()
@@ -57,7 +57,7 @@ def game_events(request, template_name='administration/game_events.html'):
 
 
 
-@register_view(access=UserAccess.master)
+@register_view(access=UserAccess.master, title=_lazy("Manage Databases"))
 def manage_databases(request, template_name='administration/database_management.html'):
 
     if request.method == "POST":
@@ -83,7 +83,7 @@ def manage_databases(request, template_name='administration/database_management.
                     })
 
 
-@register_view(access=UserAccess.master)
+@register_view(access=UserAccess.master, title=_lazy("Manage Characters"))
 def manage_characters(request, template_name='administration/character_management.html'):
 
     domain_choices = request.datamanager.build_domain_select_choices()
@@ -144,7 +144,7 @@ def manage_characters(request, template_name='administration/character_managemen
 
 
 
-@register_view(access=UserAccess.master)
+@register_view(access=UserAccess.master, title=_lazy("Character Identities"))
 def CHARACTERS_IDENTITIES(request):
 
     user = request.datamanager.user
@@ -172,7 +172,7 @@ def CHARACTERS_IDENTITIES(request):
 
 
 
-@register_view(access=UserAccess.master)
+@register_view(access=UserAccess.master, title=_lazy("Database Operations"))
 def DATABASE_OPERATIONS(request):
 
     if not config.DEBUG:
@@ -190,7 +190,7 @@ def DATABASE_OPERATIONS(request):
         return Http404(_("Error : %r") % e)
 
 
-@register_view(access=UserAccess.master)
+@register_view(access=UserAccess.master, title=_lazy("Fail Test"))
 def FAIL_TEST(request):
 
     raise IOError("Dummy error to test email sending")
@@ -204,7 +204,7 @@ def FAIL_TEST(request):
 
 
 
-@register_view(access=UserAccess.master)
+@register_view(access=UserAccess.master, title=_lazy("Media Test"))
 def MEDIA_TEST(request):
 
     return render(request,

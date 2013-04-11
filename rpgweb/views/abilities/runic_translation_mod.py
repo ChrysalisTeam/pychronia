@@ -31,7 +31,7 @@ class TranslationForm(AbstractGameForm):
 @register_view
 class RunicTranslationAbility(AbstractAbility):
 
-
+    TITLE = _lazy("Runic Translation")
     NAME = "runic_translation"
 
     GAME_ACTIONS = dict(translation_form=dict(title=_lazy("Translate runes"),

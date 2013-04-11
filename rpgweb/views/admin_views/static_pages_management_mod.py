@@ -27,6 +27,7 @@ class StaticPageForm(DataTableForm):
 @register_view
 class StaticPagesManagement(AbstractDataTableManagement):
 
+    TITLE = _lazy("Static Pages Editing")
     NAME = "static_pages_management"
 
     GAME_ACTIONS = dict(submit_item=dict(title=_lazy("Submit a static page"),

@@ -76,7 +76,7 @@ def serve_game_file(request, hash="", path="", **kwargs):
 
 
 
-@register_view(access=UserAccess.anonymous, always_available=True)
+@register_view(access=UserAccess.anonymous, always_available=True, title=_lazy("Logo Animation"))
 def logo_animation(request, template_name='utilities/item_3d_viewer.html'):
     """
     These settings are heavily dependant on values hard-coded on templates (dimensions, colors...),
@@ -106,7 +106,7 @@ def logo_animation(request, template_name='utilities/item_3d_viewer.html'):
 
 
 
-@register_view(access=UserAccess.anonymous, always_available=True)
+@register_view(access=UserAccess.anonymous, always_available=True, title=_lazy("View Help Page"))
 def view_help_page(request, keyword, template_name='generic_operations/help_page.html'):
     """
     Access for targeted pages is checked here!
@@ -134,7 +134,7 @@ def view_help_page(request, keyword, template_name='generic_operations/help_page
                     })
 
 
-@register_view(access=UserAccess.anonymous, always_available=True)
+@register_view(access=UserAccess.anonymous, always_available=True, title=_lazy("Bug Report"))
 def bug_report_treatment(request):
     report_data = request.REQUEST.get("report_data", "[no report_data]")
     location = request.REQUEST.get("report_data", "[no location]")

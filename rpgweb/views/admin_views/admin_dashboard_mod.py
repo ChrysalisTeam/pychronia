@@ -3,21 +3,44 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from rpgweb.common import *
-from rpgweb.datamanager.abstract_ability import AbstractAbility
+from rpgweb.datamanager import AbstractGameForm, AbstractAbility, register_view, transaction_watcher
+
+from django import forms
 from django.http import Http404
-from rpgweb.datamanager.abstract_game_view import register_view
-from rpgweb.datamanager.datamanager_tools import transaction_watcher
+
+
+
+
+
+class GameViewActivationForm(AbstractGameForm):
+
+    activated_views = forms.MultipleChoiceField(label=_lazy("Game views"), required=False, widget=forms.SelectMultiple(attrs={"class": "multichecklist"}))
+
+    def __init__(self, datamanager, *args, **kwargs):
+        super(GameViewActivationForm, self).__init__(GameViewActivationForm, *args, **kwargs)
+
+        activable_views = datamanager.get_activable_views() # mapping view_name -> klass
+        activable_views_choices = [(view_name, view_klass.NAME) for (view_name, view_klass) in activable_views.items()]
+        self.fields['activated_views'].choices = activable_views_choices
+
+
 
 
 
 @register_view
 class AdminDashboardAbility(AbstractAbility):
 
+    TITLE = _lazy("Admin Dashboard")
     NAME = "admin_dashboard"
 
     GAME_ACTIONS = dict(save_admin_widgets_order=dict(title=_lazy("Save admin widgets' order"),
                                                           form_class=None,
                                                           callback="save_admin_widgets_order"))
+
+    # Place here dashboard forms that don't have their own containing view! #
+    ADMIN_ACTIONS = dict(choose_activated_views=dict(title=_lazy("Activate views"),
+                                                          form_class=GameViewActivationForm,
+                                                          callback="choose_activated_views"))
 
     TEMPLATE = "administration/admin_dashboard.html"
 
@@ -62,16 +85,14 @@ class AdminDashboardAbility(AbstractAbility):
         well_sorted_widget_ids = [id for id in theoretical_widget_ids if id in existing_widget_ids] # in case some widgets would have disappeared since then
         remaining_widget_ids = sorted(set(existing_widget_ids) - set(well_sorted_widget_ids))
 
-
         final_ids = well_sorted_widget_ids + remaining_widget_ids
         del existing_widget_ids, theoretical_widget_ids, well_sorted_widget_ids, remaining_widget_ids
 
-        # Here we might do some filtering !!
 
         widgets = []
         for widget_id in final_ids:
-            instance, action_name = self.datamanager.resolve_admin_widget_identifier(identifier=widget_id)
-            widget_vars = instance.compute_admin_template_variables(action_name, previous_form_data=None)
+            instance, action_name = self.datamanager.resolve_admin_widget_identifier(identifier=widget_id) # might instantiate THIS same gameview class, but not a problem
+            widget_vars = instance.compute_admin_template_variables(action_name, previous_form_data=previous_form_data) # dict for a single form
             widgets.append(widget_vars)
 
         #compute_admin_template_variables
@@ -99,6 +120,16 @@ class AdminDashboardAbility(AbstractAbility):
 
         if strict:
             pass
+
+
+    @transaction_watcher
+    def choose_activated_views(self):
+        pass
+
+
+
+
+
 
 
 

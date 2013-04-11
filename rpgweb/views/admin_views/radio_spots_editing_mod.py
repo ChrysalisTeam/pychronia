@@ -51,6 +51,7 @@ class RadioSpotForm(DataTableForm):
 @register_view
 class RadioSpotsEditing(AbstractDataTableManagement):
 
+    TITLE = _lazy("Radio Spots Editing")
     NAME = "radio_spots_editing"
 
     GAME_ACTIONS = dict(submit_item=dict(title=_lazy("Submit radio spot"),

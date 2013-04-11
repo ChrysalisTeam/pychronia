@@ -14,6 +14,7 @@ class HouseLockingAbility(AbstractAbility):
 
     #TITLE = _lazy("Manor Security")
 
+    TITLE = _lazy("Manor Security")
     NAME = "house_locking"
 
     GAME_ACTIONS = dict(lock=dict(title=_lazy("Lock house doors"),

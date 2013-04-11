@@ -201,7 +201,7 @@ def _determine_message_list_display_context(datamanager, messages, is_pending):
 
 
 
-@register_view(access=UserAccess.master)
+@register_view(access=UserAccess.master, title=_lazy("Dispatched Messages"))
 def all_dispatched_messages(request, template_name='messaging/messages.html'):
     messages = list(reversed(request.datamanager.get_all_dispatched_messages()))
     enriched_messages = _determine_message_list_display_context(request.datamanager, messages=messages, is_pending=False)
@@ -211,7 +211,7 @@ def all_dispatched_messages(request, template_name='messaging/messages.html'):
                        messages=enriched_messages))
 
 
-@register_view(access=UserAccess.master)
+@register_view(access=UserAccess.master, title=_lazy("Pending Messages"))
 def all_queued_messages(request, template_name='messaging/messages.html'):
     messages = list(reversed(request.datamanager.get_all_queued_messages()))
     enriched_messages = _determine_message_list_display_context(request.datamanager, messages=messages, is_pending=True)
@@ -220,7 +220,7 @@ def all_queued_messages(request, template_name='messaging/messages.html'):
                   dict(page_title=_("All Queued Messages"),
                        messages=enriched_messages))
 
-@register_view(attach_to=all_queued_messages)
+@register_view(attach_to=all_queued_messages, title=_lazy("Force Message Sending"))
 def ajax_force_email_sending(request):
     # to be used by AJAX
     msg_id = request.GET.get("id", None)
@@ -233,7 +233,7 @@ def ajax_force_email_sending(request):
 
 
 
-@register_view(access=UserAccess.master)
+@register_view(access=UserAccess.master, title=_lazy("Message Templates"))
 def messages_templates(request, template_name='messaging/messages.html'):
     templates = request.datamanager.get_messages_templates().items() # PAIRS (template_id, template_dict)
     templates.sort(key=lambda msg: msg[0])  # we sort by template name
@@ -244,7 +244,7 @@ def messages_templates(request, template_name='messaging/messages.html'):
                        messages=enriched_templates))
 
 
-@register_view(access=UserAccess.authenticated, always_available=True)
+@register_view(access=UserAccess.authenticated, always_available=True, title=_lazy("Conversations"))
 def conversation(request, template_name='messaging/conversation.html'):
     messages = request.datamanager.get_user_related_messages() # for current master or character
     grouped_messages = request.datamanager.sort_messages_by_conversations(messages)
@@ -254,7 +254,7 @@ def conversation(request, template_name='messaging/conversation.html'):
                   dict(page_title=_("Conversations"),
                        conversations=enriched_messages))
 
-@register_view(attach_to=conversation)
+@register_view(attach_to=conversation, title=_lazy("Set Message Read State"))
 def ajax_set_message_read_state(request):
 
     # to be used by AJAX
@@ -268,7 +268,7 @@ def ajax_set_message_read_state(request):
 
 
 
-@register_view(attach_to=conversation)
+@register_view(attach_to=conversation, title=_lazy("Compose Message"))
 def compose_message(request, template_name='messaging/compose.html'):
 
     user = request.datamanager.user
@@ -316,7 +316,7 @@ def compose_message(request, template_name='messaging/compose.html'):
 
 
 
-@register_view(access=UserAccess.authenticated)
+@register_view(access=UserAccess.authenticated, title=_lazy("ssss"))
 def ___inbox(request, template_name='messaging/messages.html'):
 
     user = request.datamanager.user
@@ -342,7 +342,7 @@ def ___inbox(request, template_name='messaging/messages.html'):
                     })
 
 
-@register_view(access=UserAccess.authenticated)
+@register_view(access=UserAccess.authenticated, title=_lazy("ddd"))
 def ___outbox(request, template_name='messaging/messages.html'):
 
     user = request.datamanager.user
@@ -367,7 +367,7 @@ def ___outbox(request, template_name='messaging/messages.html'):
                      'mode': "outbox"
                     })
 
-@register_view(access=UserAccess.master)
+@register_view(access=UserAccess.master, title=_lazy("View Single Message"))
 def view_single_message(request, msg_id, template_name='messaging/view_single_message.html'):
     """
     To be used only in event logging.
@@ -403,7 +403,7 @@ def view_single_message(request, msg_id, template_name='messaging/view_single_me
 
 
 
-@register_view(access=UserAccess.authenticated)
+@register_view(access=UserAccess.authenticated, title=_lazy("sssss"))
 def __intercepted_messages(request, template_name='messaging/messages.html'):
 
     messages = request.datamanager.get_intercepted_messages()

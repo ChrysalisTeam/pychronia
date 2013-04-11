@@ -3047,6 +3047,8 @@ class MoneyItemsOwnership(BaseDataManager):
         If previous_owner is set, we perform a check on it, to ensure it's
         well the current owner who's transferring the object.
         """
+        assert not previous_owner or previous_owner in self.get_available_logins()
+
         ## FIXME - make this a character-method too !!!
         item = self.get_item_properties(item_name)
         from_name = item["owner"] if item["owner"] else _("no one") # must be done IMMEDIATELY
@@ -3333,7 +3335,7 @@ class GameViews(BaseDataManager):
     def resolve_admin_widget_identifier(self, identifier):
         """
         Returns the (game_view_instance, action_name_string) tuple corresponding to that
-        admin widget token (and its instantiation pmarams), or None. 
+        admin widget token (and its instantiation params), or None. 
         """
         if identifier.count(".") == 1:
             klass_name, action_name = identifier.split(".")

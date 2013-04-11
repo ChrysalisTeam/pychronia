@@ -9,7 +9,7 @@ from django.http import HttpResponseRedirect
 from rpgweb import forms
 
 
-@register_view(access=UserAccess.anonymous, always_available=True)
+@register_view(access=UserAccess.anonymous, always_available=True, title=_lazy("Login"))
 def login(request, template_name='registration/login.html'):
 
     form = None
@@ -46,7 +46,7 @@ def login(request, template_name='registration/login.html'):
                     })
 
 
-@register_view(access=UserAccess.authenticated, always_available=True)
+@register_view(access=UserAccess.authenticated, always_available=True, title=_lazy("Logout"))
 def logout(request, template_name='registration/logout.html'):
 
     logout_session(request)
@@ -58,7 +58,7 @@ def logout(request, template_name='registration/logout.html'):
 
 
 
-@register_view(access=UserAccess.anonymous)
+@register_view(access=UserAccess.anonymous, title=_lazy("Password Recovery"))
 def secret_question(request, concerned_username, template_name='registration/secret_question.html'):
 
     secret_question = None
@@ -118,6 +118,7 @@ def secret_question(request, concerned_username, template_name='registration/sec
 @register_view
 class CharacterProfile(AbstractGameView):
 
+    TITLE = _lazy("Personal Profile")
     NAME = "character_profile"
     TEMPLATE = "registration/character_profile.html"
     ACCESS = UserAccess.character
@@ -166,7 +167,7 @@ character_profile = CharacterProfile.as_view
 @register_view
 class FriendshipManagementAbility(AbstractGameView):
 
-
+    TITLE = _lazy("Friendship Management")
     NAME = "friendship_management"
 
     GAME_ACTIONS = dict(do_propose_friendship=dict(title=_lazy("Propose friendship"),

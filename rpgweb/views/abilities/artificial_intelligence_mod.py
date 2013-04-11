@@ -25,6 +25,7 @@ class DjinnContactForm(AbstractGameForm):
 @register_view
 class ArtificialIntelligenceAbility(AbstractAbility):
 
+    TITLE = _lazy("Chat with Djinns")
     NAME = "artificial_intelligence"
 
     GAME_ACTIONS = dict(process_user_sentence=dict(title=_lazy("Respond to user input"),

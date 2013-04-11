@@ -9,7 +9,7 @@ from django.http import Http404, HttpResponseRedirect, HttpResponse
 
 from .info_views import view_encyclopedia
 
-@register_view(access=UserAccess.anonymous, always_available=True)
+@register_view(access=UserAccess.anonymous, always_available=True, title=_lazy("Homepage"))
 def homepage_mobile(request, template_name="mobile/homepage.html"):
     from django.core import urlresolvers
 
@@ -23,7 +23,7 @@ def homepage_mobile(request, template_name="mobile/homepage.html"):
 
 
 
-@register_view(access=UserAccess.anonymous, always_available=True)
+@register_view(access=UserAccess.anonymous, always_available=True, title=_lazy("Encyclopedia"))
 def encyclopedia_mobile(request, article_id=None, template_name='mobile/encyclopedia.html'):
     # FIXME THIS IS USELESS, JUST OVERRIDE template_name ARG!!
     template_response = view_encyclopedia(request, article_id=article_id)

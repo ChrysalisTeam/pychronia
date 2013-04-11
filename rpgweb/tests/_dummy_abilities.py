@@ -43,6 +43,7 @@ def with_enforced_action_middlewares(action_name):
 @register_view
 class DummyTestAbility(AbstractAbility):
 
+    TITLE = _lazy("Dummy Ability")
     NAME = "dummy_ability"
 
     # BEWARE - we cheat to test action middlewares, using with_enforced_action_middlewares() system

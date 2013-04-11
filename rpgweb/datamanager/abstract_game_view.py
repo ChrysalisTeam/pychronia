@@ -86,10 +86,11 @@ class GameViewMetaclass(type):
 
             if __debug__:
 
-                RESERVED_NAMES = AbstractGameView.__dict__.keys()
+                assert NewClass.TITLE
+                assert isinstance(NewClass.TITLE, Promise)
 
                 assert utilities.check_is_slug(NewClass.NAME)
-                #assert NewClass.NAME.lower() == NewClass.NAME - NOOO - some views are upper case atm...
+                # assert NewClass.NAME.lower() == NewClass.NAME # FIXME, NOT YET ATM !!!
 
                 assert NewClass.ACCESS in UserAccess.enum_values
                 assert isinstance(NewClass.PERMISSIONS, (list, tuple)) # not a string!!
@@ -108,10 +109,12 @@ class GameViewMetaclass(type):
                 if NewClass.TEMPLATE is not None:
                     assert loader.get_template(NewClass.TEMPLATE)
 
+
+                RESERVED_CALLBACK_NAMES = AbstractGameView.__dict__.keys()
                 def _check_callback(callback):
                     ###print ("CALLBACK", callback)
                     assert getattr(NewClass, callback, None), callback
-                    assert callback not in RESERVED_NAMES, (callback, RESERVED_NAMES)
+                    assert callback not in RESERVED_CALLBACK_NAMES, (callback, RESERVED_CALLBACK_NAMES)
                     assert not callback.startswith("_")
 
 
@@ -134,6 +137,9 @@ class GameViewMetaclass(type):
 
                 _check_action_registry(NewClass.GAME_ACTIONS, form_class_required=False) # can be directly called via ajax/custom forms
                 _check_action_registry(NewClass.ADMIN_ACTIONS, form_class_required=True) # must be auto-exposed via forms
+
+                game_form_classes = [props["form_class"] for props in NewClass.GAME_ACTIONS.values() if props["form_class"] is not None]
+                utilities.check_no_duplicates(game_form_classes) # at the moment, forms recognize themselves the action, so they can't be reused in same view
 
                 # FIXME RESTORE THIS ASAP assert not (set(NewClass.GAME_ACTIONS) | set(NewClass.ADMIN_ACTIONS)) # let's avoid ambiguities on action names
 
@@ -174,6 +180,8 @@ class AbstractGameView(object):
     But special subclasses might break that genericity by binding the instance to a particular request/datamanager.
     """
     __metaclass__ = GameViewMetaclass
+
+    TITLE = None # must be a _lazy() string
 
     NAME = None # slug to be overridden, used as primary identifier
 
@@ -292,7 +300,10 @@ class AbstractGameView(object):
         else:
             previous_action_name = previous_form_instance = previous_action_successful = None
 
-        NewFormClass = self.GAME_ACTIONS[new_action_name]["form_class"]
+        if new_action_name in self.GAME_ACTIONS:
+            NewFormClass = self.GAME_ACTIONS[new_action_name]["form_class"]
+        else:
+            NewFormClass = self.ADMIN_ACTIONS[new_action_name]["form_class"]
         assert NewFormClass, new_action_name # important, not all actions have form classes available
 
         if __debug__:
@@ -302,6 +313,8 @@ class AbstractGameView(object):
             assert all(form_data) or not any(form_data)
 
         if new_action_name == previous_action_name:
+            if previous_form_instance:  assert previous_form_instance.__class__.__name__ == NewFormClass.__name__ # an action always uses same form class
+
             # this particular form has just been submitted
             if previous_action_successful:
                 if hide_on_success:
@@ -653,17 +666,17 @@ def register_view(view_object=None,
                   access=_undefined,
                   permissions=_undefined,
                   always_available=_undefined,
-                  attach_to=_undefined):
+                  attach_to=_undefined,
+                  title=None):
     """
     Helper allowing with or without-arguments decorator usage for GameView.
     
     Returns a CLASS or a METHOD, depending on the type of the wrapped object.
     """
 
-
     def _build_final_view_callable(real_view_object):
 
-        local_attach_to = attach_to
+        local_attach_to = attach_to # tiny optimization
 
         if isinstance(real_view_object, type):
 
@@ -674,6 +687,7 @@ def register_view(view_object=None,
 
         else:
 
+            assert title and isinstance(title, Promise)
             assert inspect.isroutine(real_view_object) # not a class!
 
             if local_attach_to is not _undefined and not isinstance(local_attach_to, GameViewMetaclass):
@@ -688,6 +702,7 @@ def register_view(view_object=None,
                                                                        attach_to=local_attach_to)
 
             class_data = dict((key.upper(), value) for key, value in normalized_access_args.items())
+            class_data["TITLE"] = title
             class_data["NAME"] = real_view_object.__name__
             class_data["_process_standard_request"] = staticmethod(real_view_object) # we install the real request handler, not expecting a "self"
 

@@ -1,13 +1,15 @@
 
 {% comment %} !! Remember that these div ids can be used as url anchors : "/my/url/#1-fa4" ! {% endcomment %}
 
-- test transfer_object_to_character previous_owner feature
+
+- replace page_title by klass.TITLE in main template (or as fallback)
 - test UninstantiableFormError during html POST data processing!!
 - auto test all forms with also inspect.getsourcelines(object) etc.
 
 - admin-form to activate views
 - ability for users to transfer their objects to someone else
 
+- add preview of composed message in ajax frame
 - messaging reply/resend + templates + filtering?
 - add a way to disable sent messages by game master, in case of trouble
 

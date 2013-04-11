@@ -73,6 +73,7 @@ class AgentsHiringForm(GemPayementFormMixin):
 
 class MercenariesHiringAbility(AbstractAbility):
 
+    TITLE = _lazy("Mercenaries Hiring")
     NAME = "mercenaries_hiring"
 
     GAME_ACTIONS = dict(hiring_form=dict(title=_lazy("Hire mercenaries"),

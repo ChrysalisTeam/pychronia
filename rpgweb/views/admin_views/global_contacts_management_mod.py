@@ -43,6 +43,7 @@ class GlobalContactForm(DataTableForm):
 @register_view
 class GlobalContactsManagement(AbstractDataTableManagement):
 
+    TITLE = _lazy("Contacts Management")
     NAME = "global_contacts_management"
 
     GAME_ACTIONS = dict(submit_item=dict(title=_lazy("Submit a contact"),

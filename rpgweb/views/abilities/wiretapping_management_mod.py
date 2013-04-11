@@ -40,8 +40,7 @@ class WiretappingTargetsForm(AbstractGameForm):
 @register_view
 class WiretappingAbility(AbstractAbility):
 
-    TITLE = _lazy("Wiretapping") # FIXME, USELESS ???
-
+    TITLE = _lazy("Wiretapping")
     NAME = "wiretapping"
 
     GAME_ACTIONS = dict(targets_form=dict(title=_lazy("Choose wiretapping targets"),

@@ -11,7 +11,7 @@ from rpgweb.forms import MoneyTransferForm, GemsTransferForm, UninstantiableForm
     ArtefactTransferForm
 
 
-@register_view(access=UserAccess.anonymous, always_available=True)
+@register_view(access=UserAccess.anonymous, always_available=True, title=_lazy("Homepage"))
 def homepage(request, template_name='auction/homepage.html'):
 
     return render(request,
@@ -21,7 +21,7 @@ def homepage(request, template_name='auction/homepage.html'):
                     })
 
 
-@register_view(access=UserAccess.anonymous, always_available=True)
+@register_view(access=UserAccess.anonymous, always_available=True, title=_lazy("Opening"))
 def opening(request, template_name='auction/opening.html'): # NEEDS FIXING !!!!
 
     return render(request,
@@ -33,9 +33,10 @@ def opening(request, template_name='auction/opening.html'): # NEEDS FIXING !!!!
 
 
 
-
+@register_view
 class CharactersView(AbstractGameView):
 
+    TITLE = _lazy("Auction Attendees")
     NAME = "characters_view"
 
     GAME_ACTIONS = dict(money_transfer_form=dict(title=_lazy("Transfer money"),
@@ -140,7 +141,6 @@ class CharactersView(AbstractGameView):
         return _("Artefact transfer successful.")
 
 
-
 view_characters = CharactersView.as_view
 
 
@@ -149,7 +149,7 @@ view_characters = CharactersView.as_view
 
 
 
-@register_view(access=UserAccess.authenticated, always_available=True) # fixme ? always available ?
+@register_view(access=UserAccess.authenticated, always_available=True, title=_lazy("View Sales")) # fixme ? always available ?
 def view_sales(request, template_name='auction/view_sales.html'):
     # FIXME - needs a review ########
     user = request.datamanager.user
@@ -208,7 +208,7 @@ def view_sales(request, template_name='auction/view_sales.html'):
 
 
 
-@register_view(access=UserAccess.anonymous)
+@register_view(access=UserAccess.anonymous, title=_lazy("Auction Slideshow"))
 def auction_items_slideshow(request, template_name='auction/items_slideshow.html'):
     """
     Contains ALL auction items, WITHOUT 3D viewers.
@@ -227,7 +227,7 @@ def auction_items_slideshow(request, template_name='auction/items_slideshow.html
 
 
 
-@register_view(access=UserAccess.authenticated)
+@register_view(access=UserAccess.authenticated, title=_lazy("Personal Slideshow"))
 def personal_items_slideshow(request, template_name='auction/items_slideshow.html'):
     """
     Contains both auction and external items, all necessarily owned by user hismelf.
@@ -247,7 +247,7 @@ def personal_items_slideshow(request, template_name='auction/items_slideshow.htm
                     })
 
 
-@register_view(attach_to=personal_items_slideshow)
+@register_view(attach_to=personal_items_slideshow, title=_lazy("Item 3D View"))
 def item_3d_view(request, item, template_name='utilities/item_3d_viewer.html'):
 
     available_items = request.datamanager.get_available_items_for_user()
@@ -311,7 +311,7 @@ def _build_display_data_from_viewer_settings(viewer_settings):
 
 
 
-@register_view(access=UserAccess.authenticated)
+@register_view(access=UserAccess.authenticated, title=_lazy("Ajex Chat"))
 def ajax_chat(request):
 
     if request.method == "POST":
@@ -365,7 +365,7 @@ def ajax_chat(request):
 
 
 
-@register_view(access=UserAccess.authenticated)  # game master can view too
+@register_view(access=UserAccess.authenticated, title=_lazy("Chatroom"))  # game master can view too
 def chatroom(request, template_name='auction/chatroom.html'):
 
     return render(request,

@@ -836,6 +836,16 @@ class TestDatamanager(BaseGameTestCase):
         self.assertEqual(nw_new["account"], nw_old["account"] + 100)
 
 
+        # PREVIOUS OWNER CHECKING (it's currently guy3)
+        for previous_owner in (self.dm.master_login, self.dm.anonymous_login, "guy1", "guy2"):
+            with pytest.raises(UsageError):
+                self.dm.transfer_object_to_character(object_name, "guy2", previous_owner=previous_owner)
+        self.dm.transfer_object_to_character(object_name, "guy2", previous_owner="guy3")
+        assert self.dm.get_user_artefacts("guy2").keys() == [object_name]
+        assert self.dm.get_user_artefacts("guy3") == {}
+        self.dm.transfer_object_to_character(object_name, "guy3", previous_owner="guy2") # we undo just this
+
+
         # we test possible and impossible undo operations
 
         self.assertRaises(Exception, self.dm.transfer_object_to_character, gem_name2, None) # same ids - already free item
@@ -874,6 +884,9 @@ class TestDatamanager(BaseGameTestCase):
         self.assertEqual(self.dm.get_character_properties("guy3"), lg_old)
         self.assertEqual(self.dm.get_character_properties("guy1"), nw_old)
         self.assertEqual(self.dm.get_all_items(), items_old)
+
+
+
 
 
     @for_core_module(MoneyItemsOwnership)
@@ -916,6 +929,8 @@ class TestDatamanager(BaseGameTestCase):
         assert self.dm.get_user_artefacts("guy1") == {}
         assert self.dm.get_user_artefacts("guy2") == {} # gems NOT included
         assert self.dm.get_user_artefacts("guy3").keys() == [object_name]
+
+
 
 
     @for_core_module(PersonalFiles)
@@ -2385,6 +2400,7 @@ class TestDatamanager(BaseGameTestCase):
         @register_view
         class PrivateTestAbility(AbstractAbility):
 
+            TITLE = _lazy("Private dummy ability")
             NAME = "_private_dummy_ability"
             GAME_ACTIONS = {}
             TEMPLATE = "base_main.html" # must exist
@@ -2970,7 +2986,7 @@ class TestGameViewSystem(BaseGameTestCase):
         with pytest.raises(AssertionError):
             register_view(my_little_view, access=UserAccess.anonymous, permissions=["sss"])
 
-        klass = register_view(my_little_view, access=UserAccess.master,)
+        klass = register_view(my_little_view, access=UserAccess.master, title=_lazy("jjj"))
 
         assert issubclass(klass, AbstractGameView)
         assert klass.__name__ == "MyLittleView" # pascal case
@@ -2978,25 +2994,27 @@ class TestGameViewSystem(BaseGameTestCase):
         assert klass.NAME in self.dm.GAME_VIEWS_REGISTRY
 
         with pytest.raises(AssertionError):
-            register_view(my_little_view, access=UserAccess.master) # double registration impossible!
+            register_view(my_little_view, access=UserAccess.master, title=_lazy("ssss")) # double registration impossible!
 
 
         # case of class registration #
         class DummyViewNonGameView(object):
             ACCESS = "sqdqsjkdqskj"
         with pytest.raises(AssertionError):
-            register_view(DummyViewNonGameView) # must be a subclass of AbstractGameView
+            register_view(DummyViewNonGameView, title=_lazy("SSS")) # must be a subclass of AbstractGameView
 
 
         class DummyView(AbstractGameView):
+            TITLE = _lazy("DSDSF")
             NAME = "sdfsdf"
             ACCESS = UserAccess.anonymous
         klass = register_view(DummyView)
         assert isinstance(klass, type)
-        register_view(DummyView) # double registration possible, since it's class creation which actually registers it, not that decorator
+        register_view(DummyView, title=_lazy("DDD")) # double registration possible, since it's class creation which actually registers it, not that decorator
 
 
         class OtherDummyView(AbstractGameView):
+            TITLE = _lazy("LJKSG")
             NAME = "sdfsdzadsfsdff"
             ACCESS = UserAccess.anonymous
         with pytest.raises(AssertionError): # when a klass is given, all other arguments become forbidden
@@ -3004,7 +3022,7 @@ class TestGameViewSystem(BaseGameTestCase):
                 a, b, c, d = [random.choice([_undefined, False]) for i in range(4)]
                 if not all((a, b, c)):
                     break # at least one of them must NOT be _undefined
-            register_view(OtherDummyView, a, b, c, d)
+            register_view(OtherDummyView, a, b, c, d, title=_lazy("SSS"))
 
 
 
@@ -3015,23 +3033,23 @@ class TestGameViewSystem(BaseGameTestCase):
 
         def dummy_view_anonymous(request):
             pass
-        view_anonymous = register_view(dummy_view_anonymous, access=UserAccess.anonymous, always_available=False)
+        view_anonymous = register_view(dummy_view_anonymous, access=UserAccess.anonymous, always_available=False, title=_lazy("Hi"))
 
         def dummy_view_character(request):
             pass
-        view_character = register_view(dummy_view_character, access=UserAccess.character, always_available=False)
+        view_character = register_view(dummy_view_character, access=UserAccess.character, always_available=False, title=_lazy("Hi2"))
 
         def dummy_view_character_permission(request):
             pass
-        view_character_permission = register_view(dummy_view_character_permission, access=UserAccess.character, permissions=["runic_translation"], always_available=False)
+        view_character_permission = register_view(dummy_view_character_permission, access=UserAccess.character, permissions=["runic_translation"], always_available=False, title=_lazy("Hi3"))
 
         def dummy_view_authenticated(request):
             pass
-        view_authenticated = register_view(dummy_view_authenticated, access=UserAccess.authenticated, always_available=False)
+        view_authenticated = register_view(dummy_view_authenticated, access=UserAccess.authenticated, always_available=False, title=_lazy("Hisss"))
 
         def dummy_view_master(request):
             pass
-        view_master = register_view(dummy_view_master, access=UserAccess.master, always_available=True) # always_available is enforced to True for master views, actually
+        view_master = register_view(dummy_view_master, access=UserAccess.master, always_available=True, title=_lazy("QQQ")) # always_available is enforced to True for master views, actually
 
 
         # check global disabling of views by game master #

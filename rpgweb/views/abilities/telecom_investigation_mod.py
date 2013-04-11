@@ -13,7 +13,7 @@ from rpgweb.forms import OtherCharactersForm
 @register_view
 class TelecomInvestigationAbility(AbstractAbility):
 
-
+    TITLE = _lazy("Telecom Investigation")
     NAME = "telecom_investigation"
 
     GAME_ACTIONS = dict(investigation_form=dict(title=_lazy("Process telecom investigation"),
