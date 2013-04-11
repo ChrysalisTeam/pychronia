@@ -21,8 +21,12 @@ class GameViewActivationForm(AbstractGameForm):
 
         activable_views = datamanager.get_activable_views() # mapping view_name -> klass
         activable_views_choices = [(view_name, view_klass.NAME) for (view_name, view_klass) in activable_views.items()]
-        self.fields['activated_views'].choices = activable_views_choices
 
+        if not activable_views:
+            raise
+
+        self.fields['activated_views'].choices = activable_views_choices
+        self.fields['activated_views'].initial = datamanager.get_activated_game_views()
 
 
 
@@ -123,8 +127,8 @@ class AdminDashboardAbility(AbstractAbility):
 
 
     @transaction_watcher
-    def choose_activated_views(self):
-        pass
+    def choose_activated_views(self, activated_views):
+        self.set_activated_game_views(activated_views) # checked by form
 
 
 

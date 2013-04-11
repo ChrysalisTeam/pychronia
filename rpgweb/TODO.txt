@@ -1,7 +1,7 @@
 
 {% comment %} !! Remember that these div ids can be used as url anchors : "/my/url/#1-fa4" ! {% endcomment %}
 
-
+- fix admin dashboard: special widgets (like multicheckbox) and ajax callback on buttons must be included in HTML snippets exchanged!!
 - replace page_title by klass.TITLE in main template (or as fallback)
 - test UninstantiableFormError during html POST data processing!!
 - auto test all forms with also inspect.getsourcelines(object) etc.

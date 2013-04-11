@@ -553,6 +553,8 @@ class AbstractGameView(object):
     def compute_admin_template_variables(self, action_name, previous_form_data=None):
         """
         Can be used both in and out of request processing.
+        
+        # FIXME TODO HANDLE UninstantiableForm error
         """
         form = self._instantiate_form(new_action_name=action_name,
                                       hide_on_success=False,
