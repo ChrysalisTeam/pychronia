@@ -94,7 +94,7 @@ class MercenariesHiringAbility(AbstractAbility):
         total_gems_value = sum(gem[0] for gem in gems)
 
         # for now we don't exclude locations of already hired mercenaries
-        hiring_form = self._instantiate_form(new_action_name="hiring_form",
+        hiring_form = self._instantiate_game_form(new_action_name="hiring_form",
                                              hide_on_success=False,
                                              previous_form_data=previous_form_data)
 

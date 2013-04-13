@@ -37,7 +37,6 @@ class RunicTranslationAbility(AbstractAbility):
     GAME_ACTIONS = dict(translation_form=dict(title=_lazy("Translate runes"),
                                               form_class=TranslationForm,
                                               callback="process_translation"))
-    ADMIN_ACTIONS = GAME_ACTIONS.copy() # FIXME REMOVE THAT ASAP
 
     TEMPLATE = "abilities/runic_translation.html"
 
@@ -48,7 +47,7 @@ class RunicTranslationAbility(AbstractAbility):
 
     def get_template_vars(self, previous_form_data=None):
 
-        translation_form = self._instantiate_form(new_action_name="translation_form",
+        translation_form = self._instantiate_game_form(new_action_name="translation_form",
                                                   hide_on_success=False,
                                                   previous_form_data=previous_form_data)
 

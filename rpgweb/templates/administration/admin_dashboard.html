@@ -1,6 +1,6 @@
 {% extends "base_one_giant_column.html" %}
 
-{% load i18n helpers sekizai_tags %}  
+{% load i18n helpers sekizai_tags %}
 
 {% block sekizai_calls %}
 {{ block.super }}
@@ -11,15 +11,15 @@
        function save_widgets_order(){
            $.post("",
                    { _action_: "save_admin_widgets_order",
-                    ids_list: $('.admin_widgets').sortable('toArray')}, 
+                    ids_list: $('.admin_widgets').sortable('toArray')},
                    function(answer) {  }
-                 );            
+                 );
        }
-           
+
 {% endaddtoblock %}
- 
- 
- 
+
+
+
 {% addtoblock "onload_js" %}
 
            $( ".admin_widgets" ).sortable({
@@ -30,21 +30,23 @@
                     stop: function(event, ui) { save_widgets_order();}
                                                     //alert($('.admin_widgets').sortable('serialize', { expression: /(.+)=(.+)/ }));
            });
-           
-          
-               $("#test1").on("submit", "form",
+
+            /* BYPASSED AT THE MOMENT - form processing done normally, not via ajax
+            // fixme remove that
+               $("#my_admin_widgets").on("submit", "form",
                        function(event) {
                             console.log(event.target);
-                            $.post($(this).attr('action'), 
+                            $.post($(this).attr('action'),
                                $(this).serialize(),
                                  function(answer){
                                    //alert($(this).text());
                                     $(event.target).parent().replaceWith(answer);
                                  });
 
-                        return false;   
-                       }  
-               );        
+                        return false;
+                       }
+               );
+            */
 
 {% endaddtoblock %}
 
@@ -56,18 +58,18 @@
 
 
 
-{% block content %}  
+{% block content %}
 
 
 
 <div align="center">
-    
-    <ul id="test1" class="admin_widgets">
-	  
+
+    <ul id="my_admin_widgets" class="admin_widgets">
+
 	    {% for widget in widgets %}
-	        <li id="{{ widget.target_form_id }}">{% include "utilities/admin_form_widget.html" with target_form_id=widget.target_form_id form=widget.form only %}</li>
+	        <li id="{{ widget.target_form_id }}">{% include "utilities/admin_form_widget.html" with target_form_id=widget.target_form_id form=widget.form title=widget.title only %}</li>
 	    {% endfor %}
-    
+
     </ul>
 
 </div>

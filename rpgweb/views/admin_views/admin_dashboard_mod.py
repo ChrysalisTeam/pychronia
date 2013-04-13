@@ -14,7 +14,7 @@ from django.http import Http404
 
 class GameViewActivationForm(AbstractGameForm):
 
-    activated_views = forms.MultipleChoiceField(label=_lazy("Game views"), required=False, widget=forms.SelectMultiple(attrs={"class": "multichecklist"}))
+    activated_views = forms.MultipleChoiceField(label=_lazy("Game views"), required=False, widget=forms.CheckboxSelectMultiple)
 
     def __init__(self, datamanager, *args, **kwargs):
         super(GameViewActivationForm, self).__init__(GameViewActivationForm, *args, **kwargs)
@@ -59,15 +59,16 @@ class AdminDashboardAbility(AbstractAbility):
         #print(">>>>>>>>>", ids_list)
         self.settings["sorted_widget_ids"] = PersistentList(ids_list)
 
-    def _process_ajax_request(self):
+
+    def _process_html_post_data(self):
         """
         We override this to redirect some requests to GameView admin widgets.
         """
         request = self.request
-        admin_widget_identifier = request.GET.get("target_form_id")
+        admin_widget_identifier = request.POST.get("target_form_id")
 
         if not admin_widget_identifier:
-            return super(AdminDashboardAbility, self)._process_ajax_request() # UGLY, FIXME
+            return super(AdminDashboardAbility, self)._process_html_post_data() # UGLY, FIXME
         else:
             # special part: we execute a single admin widget handler, and return the HTML result.
 
@@ -76,8 +77,8 @@ class AdminDashboardAbility(AbstractAbility):
                 raise Http404
 
             instance, action_name = components
-            html_res = instance.process_admin_request(request, action_name)
-            return html_res
+            res = instance.process_admin_request(request, action_name)
+            return res
 
 
     def get_template_vars(self, previous_form_data=None):
@@ -129,7 +130,7 @@ class AdminDashboardAbility(AbstractAbility):
     @transaction_watcher
     def choose_activated_views(self, activated_views):
         self.set_activated_game_views(activated_views) # checked by form
-
+        return _("Views status well saved.")
 
 
 

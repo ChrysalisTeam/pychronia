@@ -141,7 +141,7 @@ class GameViewMetaclass(type):
                 game_form_classes = [props["form_class"] for props in NewClass.GAME_ACTIONS.values() if props["form_class"] is not None]
                 utilities.check_no_duplicates(game_form_classes) # at the moment, forms recognize themselves the action, so they can't be reused in same view
 
-                # FIXME RESTORE THIS ASAP assert not (set(NewClass.GAME_ACTIONS) | set(NewClass.ADMIN_ACTIONS)) # let's avoid ambiguities on action names
+                assert not (set(NewClass.GAME_ACTIONS) & set(NewClass.ADMIN_ACTIONS)), NewClass.__name__ # let's avoid ambiguities on action names: GAME or ADMIN only!
 
             GameDataManager.register_game_view(NewClass)
 
@@ -277,13 +277,14 @@ class AbstractGameView(object):
             raise AuthenticationRequiredError(_("Authentication required."))
 
 
-
-    def _instantiate_form(self,
-                          new_action_name, # id of the form to be potentially instantiated
-                          hide_on_success=False, # should we return None if this form has just been submitted successfully?
-                          previous_form_data=None, # data about previously submitted form, if any
-                          initial_data=None,
-                          **form_options):
+    @staticmethod
+    def _common_instantiate_form(new_action_name, # id of the form to be potentially instantiated
+                                  hide_on_success=False, # should we return None if this form has just been submitted successfully?
+                                  previous_form_data=None, # data about previously submitted form, if any
+                                  initial_data=None,
+                                  action_registry=None,
+                                  form_initializer=None,
+                                  **form_options):
         """
         *form_initializer* will be passed as 1st argument to the form. By default, it's the datamanager.
         
@@ -292,6 +293,8 @@ class AbstractGameView(object):
         Important: previous form is NOT necessarily of the same type than that of new_action_name.
         """
         form_options = form_options or {}
+        assert action_registry
+        assert form_initializer
 
         if previous_form_data:
             previous_action_name = previous_form_data.action_name
@@ -300,10 +303,7 @@ class AbstractGameView(object):
         else:
             previous_action_name = previous_form_instance = previous_action_successful = None
 
-        if new_action_name in self.GAME_ACTIONS:
-            NewFormClass = self.GAME_ACTIONS[new_action_name]["form_class"]
-        else:
-            NewFormClass = self.ADMIN_ACTIONS[new_action_name]["form_class"]
+        NewFormClass = action_registry[new_action_name]["form_class"]
         assert NewFormClass, new_action_name # important, not all actions have form classes available
 
         if __debug__:
@@ -327,10 +327,18 @@ class AbstractGameView(object):
         else:
             pass
 
-        form_initializer = self.datamanager # this property might be overridden by subclasses
-
         form = NewFormClass(form_initializer, initial=initial_data, **form_options) # might raise UninstantiableFormError
         return form
+
+
+
+    def _instantiate_game_form(self, *args, **all_params):
+        return self._common_instantiate_form(*args,
+                                             action_registry=self.GAME_ACTIONS,
+                                             form_initializer=self.datamanager, #  this property might be overridden by subclasses
+                                             ** all_params)
+
+
 
 
     def _try_coercing_arguments_to_func(self, data, func):
@@ -549,6 +557,14 @@ class AbstractGameView(object):
     ### Administration API ###
 
 
+    def _instantiate_admin_form(self, *args, **all_params):
+        return self._common_instantiate_form(*args,
+                                             action_registry=self.ADMIN_ACTIONS,
+                                             form_initializer=self.datamanager, # this property might be overridden by subclasses
+                                             ** all_params)
+
+
+
     @readonly_method
     def compute_admin_template_variables(self, action_name, previous_form_data=None):
         """
@@ -556,12 +572,13 @@ class AbstractGameView(object):
         
         # FIXME TODO HANDLE UninstantiableForm error
         """
-        form = self._instantiate_form(new_action_name=action_name,
-                                      hide_on_success=False,
-                                      previous_form_data=previous_form_data,
-                                      initial_data=None,)
+        form = self._instantiate_admin_form(new_action_name=action_name,
+                                              hide_on_success=False,
+                                              previous_form_data=previous_form_data,
+                                              initial_data=None,)
 
         template_vars = dict(target_form_id=self.datamanager.build_admin_widget_identifier(self.__class__, action_name),
+                             title=self.ADMIN_ACTIONS[action_name]["title"],
                              form=form)
         return template_vars
 
@@ -592,6 +609,7 @@ class AbstractGameView(object):
             data = request.POST
 
             if request.method == "POST":
+                # this might add messages to current user #
                 res = self._do_process_form_submission(action_registry=self.ADMIN_ACTIONS,
                                                        action_name=action_name,
                                                        unfiltered_data=data,
@@ -600,7 +618,7 @@ class AbstractGameView(object):
             else:
                 res = dict(result=None,
                            form_data=None)
-
+            """ ABORTED ATM - NO AJAX SUBMISSION
             success = res["result"] # UNUSED ATM - can be None also if nothing processed
             previous_form_data = res["form_data"]
 
@@ -609,7 +627,8 @@ class AbstractGameView(object):
             response = render(request,
                               self.ADMIN_TEMPLATE,
                               template_vars)
-            return response
+            """
+            return res
         finally:
             self._post_request()
 

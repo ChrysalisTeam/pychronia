@@ -214,14 +214,14 @@ class AbstractAbility(AbstractAbilityBasesAdapter):
 
 
     '''
-    def _instantiate_form(self,
+    def _instantiate_game_form(self,
                           new_action_name, 
                           hide_on_success=False,
                           previous_form_data=None, 
                           initial_data=None,
                           form_initializer=None):
         form_initializer = form_initializer if form_initializer else self # the ability behaves as an extended datamanager
-        return super(AbstractAbility, self)._instantiate_form(new_action_name=new_action_name, 
+        return super(AbstractAbility, self)._instantiate_game_form(new_action_name=new_action_name, 
                                                               hide_on_success=hide_on_success,
                                                               previous_form_data=previous_form_data,
                                                               initial_data=initial_data,

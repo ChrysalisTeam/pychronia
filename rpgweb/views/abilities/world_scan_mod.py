@@ -38,7 +38,7 @@ class WorldScanAbility(AbstractAbility):
     def get_template_vars(self, previous_form_data=None):
 
         try:
-            scan_form = self._instantiate_form(new_action_name="scan_form",
+            scan_form = self._instantiate_game_form(new_action_name="scan_form",
                                                       hide_on_success=True,
                                                       previous_form_data=previous_form_data)
             specific_message = None

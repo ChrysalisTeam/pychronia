@@ -2375,19 +2375,19 @@ class TestDatamanager(BaseGameTestCase):
 
 
         # test admin form tokens
-        assert "runic_translation.translation_form" in self.dm.get_admin_widget_identifiers()
+        assert "admin_dashboard.choose_activated_views" in self.dm.get_admin_widget_identifiers()
 
         assert self.dm.resolve_admin_widget_identifier("") is None
         assert self.dm.resolve_admin_widget_identifier("qsdqsd") is None
-        assert self.dm.resolve_admin_widget_identifier("qsdqsd.translation_form") is None
-        assert self.dm.resolve_admin_widget_identifier("runic_translation.") is None
-        assert self.dm.resolve_admin_widget_identifier("runic_translation.qsdqsd") is None
+        assert self.dm.resolve_admin_widget_identifier("qsdqsd.choose_activated_views") is None
+        assert self.dm.resolve_admin_widget_identifier("admin_dashboard.") is None
+        assert self.dm.resolve_admin_widget_identifier("admin_dashboard.qsdqsd") is None
 
-        from rpgweb.views.abilities import runic_translation
-        components = self.dm.resolve_admin_widget_identifier("runic_translation.translation_form")
+        from rpgweb.views import admin_dashboard
+        components = self.dm.resolve_admin_widget_identifier("admin_dashboard.choose_activated_views")
         assert len(components) == 2
-        assert isinstance(components[0], runic_translation.klass)
-        assert components[1] == "translation_form"
+        assert isinstance(components[0], admin_dashboard.klass)
+        assert components[1] == "choose_activated_views"
 
 
     @for_core_module(SpecialAbilities)
@@ -2877,7 +2877,11 @@ class TestGameViewSystem(BaseGameTestCase):
                 if not FormClass:
                     continue # action without predefined form class
 
-                form_inst = game_view._instantiate_form(action_name)
+                if action_name in game_view.GAME_ACTIONS:
+                    form_inst = game_view._instantiate_game_form(action_name)
+                else:
+                    assert action_name in game_view.ADMIN_ACTIONS
+                    form_inst = game_view._instantiate_admin_form(action_name)
 
                 callback_name = action_properties["callback"]
                 callback = getattr(game_view, callback_name)
