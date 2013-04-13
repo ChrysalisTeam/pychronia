@@ -45,7 +45,8 @@ def rpgweb_template_context(request):
             notification_type = levels[0]
 
         return {'game_instance_id': datamanager.game_instance_id,
-                'processed_view': request.processed_view, # view proxy object
+                
+                'fallback_title': request.processed_view.TITLE,
 
                 'user': datamanager.user,
                 'game_is_writable': writability_data["writable"],

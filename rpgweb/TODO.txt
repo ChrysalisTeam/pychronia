@@ -1,8 +1,8 @@
 
 {% comment %} !! Remember that these div ids can be used as url anchors : "/my/url/#1-fa4" ! {% endcomment %}
 
-- fix admin dashboard: special widgets (like multicheckbox) and ajax callback on buttons must be included in HTML snippets exchanged!!
-- replace page_title by klass.TITLE in main template (or as fallback)
+
+
 - test UninstantiableFormError during html POST data processing!!
 - auto test all forms with also inspect.getsourcelines(object) etc.
 
@@ -35,6 +35,7 @@
 - tweak access checking of gameviews, so that if impersonation we get no error message, and just get redirected to homepage of impersonated user
 
 
+
 - interactive world map DONE
 - drag&drop radio playlist management DONE
 - filling of footer with game info DONE
@@ -44,6 +45,9 @@
 - separate tests for try_processing_formless_game_action system DONE
 - fix wong ordering of overrides in visible_by dict of _immediately_dispatch_message() DONE
 - SSL protection to be added to wiretapping page DONE
+- fix admin dashboard: special widgets (like multicheckbox) and ajax callback on buttons must be included in HTML snippets exchanged!! DONE (no more ajax ATM)
+- replace page_title by klass.TITLE in main template (or as fallback) - DONE
+
 
 
 ====================

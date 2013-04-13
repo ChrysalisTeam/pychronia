@@ -6,40 +6,40 @@
 
 
 
-{% block panels %} 
+{% block panels %}
 
     {% usekwacro main_panel_start frame_class="medium_frame float_right" %}
 
-        {% if page_title %}<h1>{{ page_title }}</h1>{% endif %}
+        {% include "utilities/page_title.html" %}
 
-        {% block content %}  
+        {% block content %}
         {% endblock %}
-        
+
     {% usekwacro main_panel_end %}
 
 
     <div class="main_sidebar">
-    {% block sidebar %}  
+    {% block sidebar %}
         {% comment %} <!-- USE THIS TO CREATE SIDE PANELS -->
         {% usekwacro side_panel_start frame_class="mini_frame float_left" decos="1" %}
-            {% block sidebar_content %} 
+            {% block sidebar_content %}
             {% endblock %}
         {% usekwacro side_panel_end %}
         {% endcomment %}
     {% endblock %}
     </div>
-    
-    
-    {% block activate_floating_menu %} 
+
+
+    {% block activate_floating_menu %}
         {% addtoblock "onload_js" %}
-            $('.main_sidebar').hcSticky({ 
+            $('.main_sidebar').hcSticky({
                 top: 20, // The distance from the top of the Window at which to trigger hcSticky.
                 bottom: 0, // The distance from the bottom of the Window at which to glue hcSticky.
                 bottomEnd: 0, // The distance from the bottom of the referring element at which to stop hcSticky.
-                bottomLimiter: null, // jQuery selector that selects element and calculates bottomEnd value based on its offset top position. 
+                bottomLimiter: null, // jQuery selector that selects element and calculates bottomEnd value based on its offset top position.
                                      //It works only if noContainer is set to “true” and it has higher priority than BottomEnd.
                 innerTop: 0, // The distance from the top inside of the sticky content at which to trigger hcSticky.
-                innerSticker: null, // jQuery selector that selects element at which to trigger hcSticky instead of top of sticky container. 
+                innerSticker: null, // jQuery selector that selects element at which to trigger hcSticky instead of top of sticky container.
                                     //This has higher priority than innerTop option.
                 noContainer: false, // When set to “true”, hcSticky will be referred to the Document.
                 followScroll: false, // When set to “false”, sticky content will not move with the page if it is bigger that Window.
@@ -49,8 +49,8 @@
                 onStop: function(){} // Callback function on plugin Stop event (when the element stops floating and returns to its normal state)
             });
         {% endaddtoblock %}
-    {% endblock %} 
+    {% endblock %}
 
-     
+
  {% endblock %}
- 
+

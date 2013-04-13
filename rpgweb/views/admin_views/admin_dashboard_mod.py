@@ -101,7 +101,7 @@ class AdminDashboardAbility(AbstractAbility):
             widgets.append(widget_vars)
 
         #compute_admin_template_variables
-        return dict(page_title=_("Admin Dashboard"),
+        return dict(#page_title=_("Master Dashboard"),
                     widgets=widgets,)
 
 
