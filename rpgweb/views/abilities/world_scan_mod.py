@@ -40,7 +40,8 @@ class WorldScanAbility(AbstractAbility):
         try:
             scan_form = self._instantiate_game_form(new_action_name="scan_form",
                                                       hide_on_success=True,
-                                                      previous_form_data=previous_form_data)
+                                                      previous_form_data=previous_form_data,
+                                                      propagate_errors=True,)
             specific_message = None
         except UninstantiableFormError, e:
             scan_form = None
@@ -49,7 +50,7 @@ class WorldScanAbility(AbstractAbility):
         return {
                  'page_title': _("World Scan"),
                  'scan_form': scan_form,
-                 'specific_message': specific_message,
+                 'specific_message': specific_message,  # TODO FIXME DISPLAY THIS
                }
 
 

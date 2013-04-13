@@ -47,14 +47,17 @@ class MatterAnalysisAbility(AbstractAbility):
         try:
             item_form = self._instantiate_game_form(new_action_name="process_artefact",
                                                  hide_on_success=True,
-                                                 previous_form_data=previous_form_data)
+                                                 previous_form_data=previous_form_data,
+                                                 propagate_errors=True)
+            specific_message = None
         except UninstantiableFormError, e:
             item_form = None
-            pass # TODO ADD ERROR MSG
+            specific_message = unicode(e)
 
         return {
                  'page_title': _("Deep Matter Analysis"),
-                 'item_form': item_form
+                 'item_form': item_form,
+                 'specific_message': specific_message, # TODO FIXME DISPLAY THIS
                }
 
 

@@ -7,8 +7,9 @@ from rpgweb.datamanager import AbstractGameView, register_view, transaction_watc
 from rpgweb import forms
 from django.http import Http404, HttpResponse
 import json
-from rpgweb.forms import MoneyTransferForm, GemsTransferForm, UninstantiableFormError, \
-    ArtefactTransferForm
+from rpgweb.forms import (MoneyTransferForm, GemsTransferForm, ArtefactTransferForm)
+
+
 
 
 @register_view(access=UserAccess.anonymous, always_available=True, title=_lazy("Homepage"))
@@ -59,32 +60,21 @@ class CharactersView(AbstractGameView):
 
     def get_template_vars(self, previous_form_data=None):
 
+        ## All of these forms might be None ##
+
         # Preparing form for money transfer
-        try:
-            new_money_form = self._instantiate_game_form(new_action_name="money_transfer_form",
-                                                     hide_on_success=False,
+        new_money_form = self._instantiate_game_form(new_action_name="money_transfer_form",
                                                      previous_form_data=previous_form_data)
-        except UninstantiableFormError:
-            new_money_form = None
-            pass # TODO ADD MESSAGE
 
         # preparing gems transfer form
-        try:
-            new_gems_form = self._instantiate_game_form(new_action_name="gems_transfer_form",
-                                                     hide_on_success=False,
-                                                     previous_form_data=previous_form_data)
-        except UninstantiableFormError:
-            new_gems_form = None
-            pass # TODO ADD MESSAGE
+        new_gems_form = self._instantiate_game_form(new_action_name="gems_transfer_form",
+                                                    previous_form_data=previous_form_data)
+
 
         # preparing artefact transfer form
-        try:
-            new_artefact_form = self._instantiate_game_form(new_action_name="transfer_artefact",
-                                                             hide_on_success=False,
-                                                             previous_form_data=previous_form_data)
-        except UninstantiableFormError:
-            new_artefact_form = None
-            pass # TODO ADD MESSAGE
+        new_artefact_form = self._instantiate_game_form(new_action_name="transfer_artefact",
+                                                         previous_form_data=previous_form_data)
+
 
         # we display the list of available character accounts
 

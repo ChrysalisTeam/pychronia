@@ -71,14 +71,10 @@ class WiretappingAbility(AbstractAbility):
             else:
                 initial_data["target_%d" % i] = ""
 
-        try:
-            targets_form = self._instantiate_game_form(new_action_name="targets_form",
-                                                  hide_on_success=False,
-                                                  initial_data=initial_data,
-                                                  previous_form_data=previous_form_data,)
-        except UninstantiableFormError:
-            targets_form = None
-            pass # infos already displayed for that case
+        targets_form = self._instantiate_game_form(new_action_name="targets_form",
+                                              hide_on_success=False,
+                                              initial_data=initial_data,
+                                              previous_form_data=previous_form_data,)
 
         return {
                  'page_title': _("Wiretapping Management"),

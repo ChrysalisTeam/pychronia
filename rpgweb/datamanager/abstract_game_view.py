@@ -284,13 +284,14 @@ class AbstractGameView(object):
                                   initial_data=None,
                                   action_registry=None,
                                   form_initializer=None,
+                                  propagate_errors=False,
                                   **form_options):
         """
         *form_initializer* will be passed as 1st argument to the form. By default, it's the datamanager.
         
-        Might raise UninstantiableFormError.
+        Might raise UninstantiableFormError, if propagate_errors if True.
         
-        Important: previous form is NOT necessarily of the same type than that of new_action_name.
+        Important: previous form is NOT necessarily of the same type as that of new_action_name.
         """
         form_options = form_options or {}
         assert action_registry
@@ -327,7 +328,13 @@ class AbstractGameView(object):
         else:
             pass
 
-        form = NewFormClass(form_initializer, initial=initial_data, **form_options) # might raise UninstantiableFormError
+        try:
+            form = NewFormClass(form_initializer, initial=initial_data, **form_options)
+        except UninstantiableFormError:
+            if propagate_errors:
+                raise
+            form = None
+
         return form
 
 
@@ -579,7 +586,7 @@ class AbstractGameView(object):
 
         template_vars = dict(target_form_id=self.datamanager.build_admin_widget_identifier(self.__class__, action_name),
                              title=self.ADMIN_ACTIONS[action_name]["title"],
-                             form=form)
+                             form=form) # BEWARE - form might be NONE here!
         return template_vars
 
 

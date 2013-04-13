@@ -3,10 +3,8 @@
 
 
 
-- test UninstantiableFormError during html POST data processing!!
 - auto test all forms with also inspect.getsourcelines(object) etc.
 
-- admin-form to activate views
 - ability for users to transfer their objects to someone else
 
 - add preview of composed message in ajax frame
@@ -47,8 +45,8 @@
 - SSL protection to be added to wiretapping page DONE
 - fix admin dashboard: special widgets (like multicheckbox) and ajax callback on buttons must be included in HTML snippets exchanged!! DONE (no more ajax ATM)
 - replace page_title by klass.TITLE in main template (or as fallback) - DONE
-
-
+- admin-form to activate views DONE
+- swallow UninstantiableFormError by default in form instantiation
 
 ====================
 

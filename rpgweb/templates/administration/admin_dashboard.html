@@ -67,7 +67,11 @@
     <ul id="my_admin_widgets" class="admin_widgets">
 
 	    {% for widget in widgets %}
-	        <li id="{{ widget.target_form_id }}">{% include "utilities/admin_form_widget.html" with target_form_id=widget.target_form_id form=widget.form title=widget.title only %}</li>
+	       {% if widget.form  %} {# some admin forms might be non-instantiable #}
+	           <li id="{{ widget.target_form_id }}">
+	               {% include "utilities/admin_form_widget.html" with target_form_id=widget.target_form_id form=widget.form title=widget.title only %}
+	           </li>
+	       {% endif %}
 	    {% endfor %}
 
     </ul>
