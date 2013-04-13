@@ -1069,19 +1069,22 @@ body:after {
   display: table;
   width: 840px;
   margin: 0px auto 0px;
-  padding: 5px 10px;
+  padding: 5px 12px;
   table-layout: fixed;
-  vertical-align: center;
 }
-#full_header #full_header_background #notification_table div {
+#full_header #full_header_background #notification_table>div {
   display: table-cell;
-  height: 40px;
-  padding: 4px 10px;
+  vertical-align: middle;
+  height: 36px;
+  padding: 4px 12px;
 }
 #full_header #full_header_background #notification_table .carving {
   width: 163px;
   background-image: url(img/backgrounds/carving1.png);
   background-repeat: no-repeat;
+}
+#full_header #full_header_background #notification_table .carving .marquee {
+  overflow: hidden;
 }
 #full_menu {
   margin-top: -35px;

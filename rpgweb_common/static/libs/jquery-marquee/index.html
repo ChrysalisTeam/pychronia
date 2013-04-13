@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<link href='http://fonts.googleapis.com/css?family=Lato' rel='stylesheet' type='text/css'>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+		<script src="https://raw.github.com/tobia/Pause/master/jquery.pause.js"></script>
+
+		<script src="jquery.marquee.js"></script>
+		<script>
+			$(function(){
+				var $mwo = $('.marquee-with-options');
+				$('.marquee').marquee();
+				$('.marquee-with-options').marquee({
+					//speed in milliseconds of the marquee
+					speed: 5000,
+					//gap in pixels between the tickers
+					gap: 50,
+					//gap in pixels between the tickers
+					delayBeforeStart: 0,
+					//'left' or 'right'
+					direction: 'left',
+					//true or false - should the marquee be duplicated to show an effect of continues flow
+					duplicated: true,
+					//on hover pause the marquee - using jQuery plugin https://github.com/tobia/Pause
+					pauseOnHover: true
+				});
+
+				//pause and resume links
+				$('.pause').click(function(e){
+					e.preventDefault();
+					$mwo.trigger('pause');
+				});
+				$('.resume').click(function(e){
+					e.preventDefault();
+					$mwo.trigger('resume');
+				});
+				//toggle
+				$('.toggle').hover(function(e){
+					$mwo.trigger('pause');
+				},function(){
+					$mwo.trigger('resume');
+				})
+				.click(function(e){
+					e.preventDefault();
+				})
+			});
+		</script>
+		<style type="text/css">
+			body {
+			  margin: 10px;
+			  font-family: 'Lato', sans-serif;
+			}
+			small {
+				font-size: 14px;
+			}
+			h1 {
+				margin-bottom: 20px;
+				padding-bottom: 10px;
+				text-align: center;
+			}
+
+			h2 {
+				border-bottom: 1px dotted #ccc;
+				padding-bottom: 5px;
+				margin-bottom: 10px;
+			}
+
+			.marquee, .marquee-with-options {
+			  width: 300px;
+			  overflow: hidden;
+			  border:1px solid #ccc;
+			}
+		</style>
+	</head>
+	<body>
+		<div style="position:absolute; top: 10px; right: 10px;">
+			<a href="https://twitter.com/share" class="twitter-share-button" data-text="jQuery plugin to scroll the text like the old traditional marquee. " data-via="aamirafridi" data-size="large">Tweet</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+		</div>
+		<h1>jQuery Marquee<br><small><a href="http://aamirafridi.com/jquery/jquery-marquee-plugin">back to blog post</a> | <a href="https://github.com/aamirafridi/jQuery.Marquee" target="github">plugin on github</a> | <a href="https://github.com/aamirafridi/jQuery.Marquee/archive/master.zip">download</a></small></h1>
+		<h2>Events</h2>
+		<ul>
+			<li><b>beforeStarting:</b> Event will be fired on the element before animation starts.</li>
+			<li><b>finished:</b> Event will be fired on the element after the animation finishes.</li>
+			<li><b>pause:</b> Fire/trigger this event on the element when you want to pause the animation, for example when you click/hover a link.</li>
+			<li><b>paused:</b> Event will be fired on the element when the animation is paused.</li>
+			<li><b>resume:</b> Fire/trigger this event on the element when you want to resume, the paused animation.</li>
+			<li><b>resumed:</b> Event will be fired on the element when the animation is resumed.</li>
+		</ul>
+
+		<h2>Options</h2>
+		<ul>
+			<li><b>speed:</b> Speed in milliseconds in which you want your text to travel with width of your main container. Default is 10000.</li>
+			<li><b>gap:</b> Gap in pixels between the tickers. Default is 20</li>
+			<li><b>delayBeforeStart:</b> Time in milliseconds before the marquee starts animating. Default is 1000</li>
+			<li><b>direction:</b> Direction towards which the marquee will animate 'left' or 'right'. Default is 'left'</li>
+			<li><b>duplicated:</b> true or false - should the marquee be duplicated to show an effect of continues flow. Default is false</li>
+			<li><b>pauseOnHover:</b> on hover pause the marquee - using jQuery plugin https://github.com/tobia/Pause. Default is false</li>
+		</ul>
+
+		<h2>Demos</h2>
+		<h3>Default options</h3>
+		<div><strong>NOTE:</strong> Following 3 marquee has different length of text but the speed is same. Plugin will adjust the speed according to the length of your text. <i>(new feature)</i></div>
+		<div class='marquee'>Less text here</div>
+		<div class='marquee'>Longer text lorem ipsum dolor sit amet, consectetur adipiscing elit END.</div>
+		<div class='marquee'>Very very long text lorem ipsum dolor sit amet, lorem ipsum dolor sit amet lorem ipsum dolor sit amet consectetur adipiscing elit END.</div>
+		
+		<h3>Options as data attributes</h3>
+		<div data-speed="2000" data-gap="30" data-direction="right" class='marquee'>Lorem ipsum dolor sit amet, consectetur adipiscing elit END.</div>
+		
+		<h3>Overwrite the default options with following.</h3>
+<pre>
+$('.marquee-with-options').marquee({
+	speed: 5000,
+	gap: 50,
+	delayBeforeStart: 0,
+	direction: 'left',
+	duplicated: true,
+	<b>pauseOnHover: true</b>
+});
+</pre>
+		<div class='marquee-with-options'>Lorem ipsum dolor sit amet, consectetur adipiscing elit END.</div>
+
+		<a class='pause' href='#'>Pause the above animation</a> | <a class='resume' href='#'>Resume the paused animation</a> | <a class='toggle' href='#'>Pause on hover this link</a>
+		<br/><br/>
+	</body>
+</html>

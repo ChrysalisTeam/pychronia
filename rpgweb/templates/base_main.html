@@ -28,6 +28,8 @@
 
 {% addtoblock "js" %}
 
+    <script src="{{ STATIC_URL }}libs/jquery-marquee/jquery.marquee.js" type="text/javascript"></script>
+
     <script src="{{ STATIC_URL }}libs/jquery.ba-outside-events.js" type="text/javascript"></script>
     <script src="{{ STATIC_URL }}libs/jquery.mousewheel-3.0.6.pack.js" type="text/javascript"></script>
 
@@ -318,6 +320,19 @@
 
 
 
+		$('.marquee').marquee({
+		    //speed in milliseconds of the marquee
+		    speed: 6000,
+		    //gap in pixels between the tickers
+		    gap: 30,
+		    //time in milliseconds before the marquee will start animating
+		    delayBeforeStart: 1,
+		    //'left' or 'right'
+		    direction: 'left',
+		    //true or false - should the marquee be duplicated to show an effect of continues flow
+		    duplicated: true
+		});
+
 {% endaddtoblock %}
 
 
@@ -435,6 +450,15 @@
 
 
 
+{% block carving_left %}
+HI
+{% endblock %}
+
+{% block carving_right %}
+<div class="marquee">
+HOY ma guy
+</div>
+{% endblock %}
 
 
 {% block left_big_icon_panel %}

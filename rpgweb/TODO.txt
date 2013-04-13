@@ -1,11 +1,9 @@
 
 {% comment %} !! Remember that these div ids can be used as url anchors : "/my/url/#1-fa4" ! {% endcomment %}
 
-
+** NEW **
 
 - auto test all forms with also inspect.getsourcelines(object) etc.
-
-- ability for users to transfer their objects to someone else
 
 - add preview of composed message in ajax frame
 - messaging reply/resend + templates + filtering?
@@ -16,11 +14,7 @@
 
 - Add captcha to some special static pages ?
 
-- interface to edit static pages WIP
-- interface to edit radio spots WIP
-- interface to edit external contacts WIP
 - javascript-obfuscated-popuped "report bug" div in mini footer WIP
-
 
 - add auto-generation of ActionHandler help pages (via action middlewares) WIP
 
@@ -33,6 +27,14 @@
 - tweak access checking of gameviews, so that if impersonation we get no error message, and just get redirected to homepage of impersonated user
 
 
+** WIP, needs cosmetics **
+
+- interface to edit static pages WIP
+- interface to edit radio spots WIP
+- interface to edit external contacts WIP
+
+
+** DONE **
 
 - interactive world map DONE
 - drag&drop radio playlist management DONE
@@ -47,6 +49,8 @@
 - replace page_title by klass.TITLE in main template (or as fallback) - DONE
 - admin-form to activate views DONE
 - swallow UninstantiableFormError by default in form instantiation
+- ability for users to transfer their objects to someone else DONE
+
 
 ====================
 

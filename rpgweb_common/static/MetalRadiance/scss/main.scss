@@ -224,16 +224,21 @@ body {
             display: table;
             width: 840px;
             margin: 0px auto 0px;
-            padding: 5px 10px;
+            padding: 5px 12px;
             table-layout: fixed;
-            vertical-align: center;
 
-            div {
+
+            &>div {
                 display: table-cell;
-                height: 40px;
-                padding: 4px 10px;
+                vertical-align: middle;
+                height: 36px;
+                padding: 4px 12px;
             }
             .carving{
+
+                .marquee {
+                  overflow: hidden;
+                }
 
                 width: 163px;
 
