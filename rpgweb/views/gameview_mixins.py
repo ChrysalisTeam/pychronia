@@ -21,8 +21,17 @@ from rpgweb.datamanager.abstract_game_view import AbstractGameView, register_vie
 ## TODO - test and move to datamanager package ####
 
 class AbstractCaptchaProtectedView(AbstractGameView):
+    """
+    Protects a view with a captcha (atm no html post requests should be issues from that view, 
+    else it will interfere with the captcha system).
+    """
 
     CAPTCHA_TEMPLATE = "utilities/captcha_check.html"
+
+    def __init__(self, *args, **kwargs):
+        assert not self.GAME_ACTIONS # views protected by captch should not use POST requests, at the moment
+        return super(AbstractCaptchaProtectedView, self).__init__(*args, **kwargs)
+
 
     def _is_nightmare_captcha_successful(self):
 
@@ -42,6 +51,7 @@ class AbstractCaptchaProtectedView(AbstractGameView):
                 request.datamanager.user.add_error(_("Captcha check failed"))
         return False
 
+
     def _generate_captcha_page(self):
 
         captcha = self.request.datamanager.get_random_captcha()
@@ -52,6 +62,7 @@ class AbstractCaptchaProtectedView(AbstractGameView):
                              'page_title': _("Security Check"),
                              'captcha': captcha
                             })
+
 
     def _process_html_request(self):
         if self._is_nightmare_captcha_successful():
