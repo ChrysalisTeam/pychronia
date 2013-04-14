@@ -101,18 +101,31 @@ def _generate_encyclopedia_links(html_snippet, datamanager, excluded_link=None):
 
     keywords_mapping = datamanager.get_encyclopedia_keywords_mapping(excluded_link=excluded_link)
 
-    def link_attr_generator(match):
+    def encyclopedia_link_attr_generator(match):
         matched_str = match.group(0)
         # detecting here WHICH keyword triggered the match would be possible, but expensive... let's postpone that
         link = reverse("rpgweb.views.view_encyclopedia",
                        kwargs={"game_instance_id": datamanager.game_instance_id, })
         link += "?search=%s" % urllib.quote_plus(matched_str.encode("utf8"), safe=b"")
         return dict(href=link)
-
     regex = autolinker.join_regular_expressions_as_disjunction(keywords_mapping.keys(), as_words=True)
+    html_res = autolinker.generate_links(html_snippet, regex=regex, link_attr_generator=encyclopedia_link_attr_generator)
+    return html_res
 
-    res_html = autolinker.generate_links(html_snippet, regex=regex, link_attr_generator=link_attr_generator)
-    return res_html
+
+def _generate_messaging_links(html_snippet, datamanager):
+    """
+    ATM we also generate linkes for current user, but it's not a problem.
+    """
+    def email_link_attr_generator(match):
+        matched_str = match.group(0)
+        link = reverse("rpgweb.views.compose_message",
+                       kwargs={"game_instance_id": datamanager.game_instance_id, })
+        link += "?recipient=%s" % urllib.quote_plus(matched_str.encode("utf8"), safe=b"")
+        return dict(href=link)
+    regex = r"\b\w+@\w+\.\w+\b"
+    html_res = autolinker.generate_links(html_snippet, regex=regex, link_attr_generator=email_link_attr_generator)
+    return html_res
 
 
 
@@ -161,11 +174,15 @@ def advanced_restructuredtext(value,
 def _enriched_text(datamanager, content, initial_header_level=None, report_level=None, excluded_link=None):
     """
     Converts RST content to HTML and adds encyclopedia links.
+    
+    *excluded_link* is the enyclopedia article_id in which we currently are, if any.
     """
     html = advanced_restructuredtext(content, initial_header_level=initial_header_level, report_level=report_level)
     with exception_swallower():
-        return _generate_encyclopedia_links(html, datamanager, excluded_link=excluded_link) # on error
-    return ""
+        html = _generate_encyclopedia_links(html, datamanager, excluded_link=excluded_link) # on error
+    with exception_swallower():
+        html = _generate_messaging_links(html, datamanager) # on error
+    return html
 
 
 @register.simple_tag(takes_context=True)

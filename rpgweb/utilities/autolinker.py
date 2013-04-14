@@ -8,7 +8,8 @@ import re, functools
 clean_parser = functools.partial(BeautifulSoup, features="html.parser")
 del BeautifulSoup
 
-SKIPPED_TAGS = ["head", "a", "textarea", "pre", "code"]
+
+SKIPPED_TAGS = ["head", "a", "textarea", "pre", "code"] # IMPORTANT - thse tags must stay as-is
 
 
 

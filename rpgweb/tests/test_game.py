@@ -17,7 +17,7 @@ from rpgweb.datamanager.action_middlewares import CostlyActionMiddleware, \
 from rpgweb.common import _undefined, config, AbnormalUsageError, reverse, \
     UsageError, checked_game_file_path
 from rpgweb.templatetags.helpers import _generate_encyclopedia_links, \
-    advanced_restructuredtext
+    advanced_restructuredtext, _generate_messaging_links
 from rpgweb import views, utilities
 from rpgweb.utilities import fileservers, autolinker
 from django.test.client import RequestFactory
@@ -1331,6 +1331,14 @@ class TestDatamanager(BaseGameTestCase):
         assert self.dm.get_character_or_none_from_email("guy1@pangea.com") == "guy1"
         assert self.dm.get_character_or_none_from_email("guy1@wrongdomain.com") is None
         assert self.dm.get_character_or_none_from_email("master@pangea.com") is None
+
+
+        sample = u""" Hello hélloaaxsjjs@gmaïl.fr. please write to hérbèrt@hélénia."""
+        res = _generate_messaging_links(sample, self.dm)
+
+        # the full email is well linked, not the incomplete one
+        assert res == u' Hello <a href="/TeStiNg/messages/compose/?recipient=h%C3%A9lloaaxsjjs%40gma%C3%AFl.fr">h\xe9lloaaxsjjs@gma\xefl.fr</a>. please write to h\xe9rb\xe8rt@h\xe9l\xe9nia.'
+
 
 
     def test_text_messaging_workflow(self):

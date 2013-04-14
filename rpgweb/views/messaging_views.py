@@ -36,19 +36,21 @@ class MessageComposeForm(AbstractGameForm):
     def __init__(self, request, *args, **kwargs):
         super(MessageComposeForm, self).__init__(request.datamanager, *args, **kwargs)
 
-        # data to be determined
-        sender = None
-        recipients = None
-        subject = None
-        body = None
-        attachment = None
+        url_data = request.GET
+
+        # we initialize data with the querydict
+        sender = url_data.get("sender")
+        recipients = url_data.getlist("recipients") or url_data.get("recipient")
+        subject = url_data.get("subject")
+        body = url_data.get("body")
+        attachment = url_data.get("attachment")
 
         datamanager = request.datamanager
         user = request.datamanager.user
 
         # TODO - extract these decisions tables to a separate method and test it thoroughly #
 
-        parent_id = request.GET.get("parent_id", "")
+        parent_id = url_data.get("parent_id", "")
         if parent_id:
             # we transfer data from the parent email, to help user save time #
             try:
@@ -80,7 +82,7 @@ class MessageComposeForm(AbstractGameForm):
         self.fields["parent_id"] = forms.CharField(required=False, initial=parent_id, widget=forms.HiddenInput())
 
 
-        use_template = request.GET.get("use_template", "")
+        use_template = url_data.get("use_template", "")
         if user.is_master: # only master has templates ATM
 
             if use_template:
