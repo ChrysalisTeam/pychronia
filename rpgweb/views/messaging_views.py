@@ -7,6 +7,7 @@ from rpgweb.datamanager import AbstractGameView, register_view, VISIBILITY_REASO
 from django import forms
 from django.http import Http404, HttpResponseRedirect, HttpResponse
 from rpgweb.utilities.select2_extensions import Select2TagsField
+from rpgweb.templatetags.helpers import advanced_restructuredtext
 
 
 """
@@ -402,7 +403,14 @@ def view_single_message(request, msg_id, template_name='messaging/view_single_me
                     })
 
 
+@register_view(access=UserAccess.anonymous, always_available=True, title=_lazy("Message Preview"))
+def preview_message(request):
 
+    rst = request.REQUEST.get("content", _("No content submitted for display")) # we take from both GET and POST
+
+    html = advanced_restructuredtext(rst, initial_header_level=2, report_level=1) # we let ALL debug output here!!
+
+    return HttpResponse(html) # only a snippet of html, no html/head/body tags
 
 
 @register_view(access=UserAccess.authenticated, title=_lazy("sssss"))

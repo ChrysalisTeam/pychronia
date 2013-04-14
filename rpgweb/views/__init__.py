@@ -43,7 +43,7 @@ from .profile_views import login, logout, secret_question, character_profile, fr
 
 
 from .messaging_views import (ajax_set_message_read_state, ajax_force_email_sending,
-                              conversation, view_single_message, compose_message,
+                              conversation, view_single_message, compose_message, preview_message,
                               all_dispatched_messages, all_queued_messages, messages_templates)
 
 from .abilities import (house_locking, runic_translation, wiretapping_management, artificial_intelligence,

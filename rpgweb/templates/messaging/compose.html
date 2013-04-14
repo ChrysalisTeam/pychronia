@@ -1,6 +1,6 @@
 ﻿{% extends "messaging/base.html" %}
 
-{% load sekizai_tags i18n helpers %}  
+{% load sekizai_tags i18n helpers %}
 
 
 
@@ -20,6 +20,29 @@
 <script type="text/javascript" src="{{ STATIC_URL }}libs/markitup/jquery.markitup.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL }}libs/markitup/sets/rest/set.js"></script>
 <!--script type="text/javascript" src="{{ STATIC_URL }}libs/select2/select2.js"></script-->
+{% endaddtoblock %}
+
+
+preview_message
+{% addtoblock "definition_js" %}
+
+function display_preview() {}
+
+function preview_message() {
+	var rst = $("#id_default_body").val();
+	$.post("{% game_view_url "rpgweb.views.preview_message" %}",
+	       {content: rst},
+	       function(answer) {
+               $.fancybox({content: answer, // answer must be HTML here
+               	            //type: "inline",
+               	            autoDimensions: false,
+				            padding: "65px",
+				            width: "1000px",
+               	            });
+
+           });
+}
+
 {% endaddtoblock %}
 
 {% addtoblock "onload_js" %}
@@ -56,7 +79,7 @@ $("#id_default_body").markItUp(mySettings); // mySettings comes from /markitup/s
             {% endblocktrans %}
         </p>
 */
- 
+
 {% endaddtoblock %}
 
 
@@ -64,25 +87,26 @@ $("#id_default_body").markItUp(mySettings); // mySettings comes from /markitup/s
 
 
 
-{% block content %}  
+{% block content %}
 
-        
+
     {% if message_form %}
 
-        
+
         <form action="{% game_view_url "rpgweb.views.compose_message" %}" method="post">
         {{ message_form.as_p }}
-        
+
+        <p><input type="button" style="width: 200px" name="preview" value="{% trans "Preview" %}" onclick="preview_message(); return false;" /></p>
         <p><input type="submit" style="width: 200px" name="send_message" value="{% trans "Send Message" %}" /></p>
         </form>
-        
-       
+
+
     {% else %}
     <br/>
     <p>
         <b>{% blocktrans %}Sorry, the sending of digital messages is currently disabled for maintenance.{% endblocktrans %}</b>
-    </p>    
-    
+    </p>
+
     {% endif %}
 
 {% endblock %}

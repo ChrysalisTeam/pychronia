@@ -56,7 +56,7 @@ class TestUtilities(BaseGameTestCase):
 
         assert restructuredtext("""aaaa*aaa""") # star is ignored
 
-        # outputs stuffs on stderr, but doesn't break
+        # outputs errors on stderr, but doesn't break
         restructuredtext("""aaaaaaa*zezez
                               mytitle :xyz:`qqq`
                             ===
@@ -64,7 +64,7 @@ class TestUtilities(BaseGameTestCase):
 
         assert "title1" in restructuredtext("""title1\n=======\n\naaa""") # thx to our conf, title1 stays in html fragment
 
-        print("\n-_-\n", file=sys.stderr)
+        #print("\n-_-\n", file=sys.stderr)
 
         html = restructuredtext(dedent("""
                     title1
@@ -137,20 +137,33 @@ class TestUtilities(BaseGameTestCase):
 
 
         # now our settings overrides, do they work ?
-
-        html = restructuredtext(dedent("""
+        buggy_rst = dedent("""
         
                     mytitle
                     ========
                     
                     bad *text `here
                     
-                    """),
+                    :xyzizjzb:`qqq`
+                    
+                    """)
+
+
+        html = restructuredtext(buggy_rst,
                     initial_header_level=2,
-                    report_level="none")
+                    report_level=1)
         ## print (">>>>>>>>>>", html)
         assert "<h2" in html
-        assert "system-message" not in html # no additional error divs
+        assert "System Message" in html # specific error divs
+        assert 'class="problematic"' in html # spans around faulty strings
+
+
+        html = restructuredtext(buggy_rst,
+                    initial_header_level=2,
+                    report_level=4)
+        ## print (">>>>>>>>>>", html)
+        assert "<h2" in html
+        assert "System Message" not in html # no additional error divs
         assert 'class="problematic"' in html # spans remain though
 
 

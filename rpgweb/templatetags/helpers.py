@@ -2,7 +2,7 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
-import re, logging, random
+import sys, re, logging, random
 from datetime import datetime
 
 from rpgweb.utilities import (mediaplayers, autolinker,
@@ -145,13 +145,13 @@ def advanced_restructuredtext(value,
     report_level
         Report system messages at or higher than <level> - 
         "info" or "1", "warning"/"2" (default), "error"/"3",
-        "severe"/"4", "none"/"5"
+        "severe"/"4", "none"/"5" (ONLY INTEGERS WORK ATM).
     '''
     from django import template
     from django.conf import settings
     from django.utils.encoding import smart_str, force_unicode
     assert initial_header_level is None or isinstance(initial_header_level, (int, long))
-    assert report_level is None or isinstance(report_level, (int, long)) or report_level in "info warning error severe none".split()
+    assert report_level is None or isinstance(report_level, (int, long)) ### NO, TOO RECENT or report_level in "info warning error severe none".split()
     try:
         from docutils.core import publish_parts
     except ImportError:
@@ -164,6 +164,7 @@ def advanced_restructuredtext(value,
             docutils_settings.update(initial_header_level=initial_header_level)
         if report_level is not None:
             docutils_settings.update(report_level=report_level)
+        print(">><<", docutils_settings, file=sys.stderr)
         parts = publish_parts(source=smart_str(value), writer_name="html4css1", settings_overrides=docutils_settings)
         return mark_safe(force_unicode(parts["fragment"]))
 
@@ -191,7 +192,7 @@ def rich_text(context, content, initial_header_level=None, report_level=None, ex
     Converts to enriched html the restructuredtext content of the variable.
     """
     request = context.get('request')
-    report_level = report_level or "none" # by default we DO NOT display RST syntax errors!
+    report_level = report_level if report_level is not None else 5 # by default we DO NOT display RST syntax errors!
     return _enriched_text(request.datamanager, content, initial_header_level=initial_header_level, report_level=report_level, excluded_link=excluded_link)
 
 
