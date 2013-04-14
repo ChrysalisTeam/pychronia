@@ -118,10 +118,27 @@ def _generate_encyclopedia_links(html_snippet, datamanager, excluded_link=None):
 
 
 
-def advanced_restructuredtext(value, initial_header_level=None):
+def advanced_restructuredtext(value,
+                              initial_header_level=None,
+                              report_level=None): # report
+    '''
+    *value* is the text to parse as restructuredtext.
+    
+    initial-header-level
+        Specify the initial header level.  Default is 1 for
+        "<h1>".  Does not affect document title & subtitle
+        (see --no-doc-title).
+                        
+    report_level
+        Report system messages at or higher than <level> - 
+        "info" or "1", "warning"/"2" (default), "error"/"3",
+        "severe"/"4", "none"/"5"
+    '''
     from django import template
     from django.conf import settings
     from django.utils.encoding import smart_str, force_unicode
+    assert initial_header_level is None or isinstance(initial_header_level, (int, long))
+    assert report_level is None or isinstance(report_level, (int, long)) or report_level in "info warning error severe none".split()
     try:
         from docutils.core import publish_parts
     except ImportError:
@@ -131,7 +148,9 @@ def advanced_restructuredtext(value, initial_header_level=None):
     else:
         docutils_settings = getattr(settings, "RESTRUCTUREDTEXT_FILTER_SETTINGS", {})
         if initial_header_level is not None:
-            docutils_settings.udpate(initial_header_level=initial_header_level)
+            docutils_settings.update(initial_header_level=initial_header_level)
+        if report_level is not None:
+            docutils_settings.update(report_level=report_level)
         parts = publish_parts(source=smart_str(value), writer_name="html4css1", settings_overrides=docutils_settings)
         return mark_safe(force_unicode(parts["fragment"]))
 
@@ -139,23 +158,24 @@ def advanced_restructuredtext(value, initial_header_level=None):
 
 
 
-def _enrich_text(datamanager, content, initial_header_level=None, excluded_link=None):
+def _enriched_text(datamanager, content, initial_header_level=None, report_level=None, excluded_link=None):
     """
     Converts RST content to HTML and adds encyclopedia links.
     """
-    html = advanced_restructuredtext(content, initial_header_level=initial_header_level)
+    html = advanced_restructuredtext(content, initial_header_level=initial_header_level, report_level=report_level)
     with exception_swallower():
         return _generate_encyclopedia_links(html, datamanager, excluded_link=excluded_link) # on error
     return ""
 
 
 @register.simple_tag(takes_context=True)
-def rich_text(context, content, initial_header_level=None):
+def rich_text(context, content, initial_header_level=None, report_level=None, excluded_link=None):
     """
     Converts to enriched html the restructuredtext content of the variable.
     """
     request = context.get('request')
-    return _enrich_text(request.datamanager, content, initial_header_level=initial_header_level)
+    report_level = report_level or "none" # by default we DO NOT display RST syntax errors!
+    return _enriched_text(request.datamanager, content, initial_header_level=initial_header_level, report_level=report_level, excluded_link=excluded_link)
 
 
 @register.simple_tag(takes_context=True)
@@ -177,7 +197,7 @@ def static_page(context, article_name, initial_header_level=None):
     else:
         return "" # normal users see nothing here
 
-    return _enrich_text(request.datamanager, content, initial_header_level=initial_header_level, excluded_link=article_name)
+    return _enriched_text(request.datamanager, content, initial_header_level=initial_header_level, excluded_link=article_name)
 
 
 

@@ -16,7 +16,8 @@ from rpgweb.datamanager.action_middlewares import CostlyActionMiddleware, \
     CountLimitedActionMiddleware, TimeLimitedActionMiddleware
 from rpgweb.common import _undefined, config, AbnormalUsageError, reverse, \
     UsageError, checked_game_file_path
-from rpgweb.templatetags.helpers import _generate_encyclopedia_links
+from rpgweb.templatetags.helpers import _generate_encyclopedia_links, \
+    advanced_restructuredtext
 from rpgweb import views, utilities
 from rpgweb.utilities import fileservers, autolinker
 from django.test.client import RequestFactory
@@ -50,7 +51,8 @@ class TestUtilities(BaseGameTestCase):
         '''
     def test_restructuredtext_handling(self):
         from docutils.utils import SystemMessage
-        from django.contrib.markup.templatetags.markup import restructuredtext
+
+        restructuredtext = advanced_restructuredtext # we use our own version
 
         assert restructuredtext("""aaaa*aaa""") # star is ignored
 
@@ -131,6 +133,26 @@ class TestUtilities(BaseGameTestCase):
                     """))
         assert "System Message" in html and "directive disabled" in html
         assert "<script" not in html
+
+
+
+        # now our settings overrides, do they work ?
+
+        html = restructuredtext(dedent("""
+        
+                    mytitle
+                    ========
+                    
+                    bad *text `here
+                    
+                    """),
+                    initial_header_level=2,
+                    report_level="none")
+        ## print (">>>>>>>>>>", html)
+        assert "<h2" in html
+        assert "system-message" not in html # no additional error divs
+        assert 'class="problematic"' in html # spans remain though
+
 
 
 
