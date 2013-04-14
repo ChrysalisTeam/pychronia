@@ -2558,6 +2558,14 @@ class TestDatamanager(BaseGameTestCase):
                                                   u'qdq|sd': [u'master', u'guy1'],
                                                   u'dllll': [u'guy4']}
 
+        self.dm.reset_novelty_accesses('qdq|sd')
+        self.dm.reset_novelty_accesses('unexistingname') # ignored
+
+        assert self.dm.get_novelty_registry() == {u'qsdffsdf': [u'guy1', u'guy3', u'guy2'],
+                                                  u'dllll': [u'guy4']}
+        assert not self.dm.has_accessed_novelty("guy1", 'qdq|sd')
+        assert self.dm.has_accessed_novelty("guy1", 'qsdffsdf')
+
 
 class TestHttpRequests(BaseGameTestCase):
 

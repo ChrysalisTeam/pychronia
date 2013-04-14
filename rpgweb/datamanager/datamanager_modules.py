@@ -3801,7 +3801,11 @@ class NovaltyTracker(BaseDataManager):
     
     Useful for new help pages, new radio playlists, new menu entries...
     
-    Trocking objects are lazily created, only the first time a resource is accessed.
+    Tracking objects are lazily created, only the first time a resource is accessed.
+    
+    That registry can be used on a cumulative way (giving a new name to each different
+    version of a resource), or "limited" way, creating/deleting the same novelty token
+    when the underlying resource has new data for users.
     """
 
     def _load_initial_data(self, **kwargs):
@@ -3827,7 +3831,7 @@ class NovaltyTracker(BaseDataManager):
 
     @transaction_watcher
     def access_novelty(self, username=CURRENT_USER, item_key=None):
-        """Returns True iff the user access that resource for the first time."""
+        """Returns True iff the user has accessed that resource for the first time."""
         username = self._resolve_username(username)
         assert isinstance(item_key, basestring) and (" " not in item_key) and item_key
         assert username in (self.get_character_usernames() + [self.get_global_parameter("master_login")])
@@ -3848,6 +3852,13 @@ class NovaltyTracker(BaseDataManager):
         if item_key in tracker and username in tracker[item_key]:
             return True
         return False
+
+    @transaction_watcher
+    def reset_novelty_accesses(self, item_key):
+        assert isinstance(item_key, basestring) and (" " not in item_key) and item_key
+        tracker = self.data["novalty_tracker"]
+        if item_key in tracker:
+            del tracker[item_key]
 
 
 
