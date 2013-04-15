@@ -1634,10 +1634,19 @@ class TestDatamanager(BaseGameTestCase):
         # self.assertEqual(self.dm.get_audio_message_properties("request_for_report_teldorium")["new_messages_notification_for_user"], None)
 
         self.assertEqual(len(self.dm.get_all_next_audio_messages()), 0)
+        
+        assert self.dm.has_read_current_playlist("guy4") # empty playlist ALWAYS read
+        assert self.dm.has_read_current_playlist("guy3")
 
         self.dm.add_radio_message(audio_id)
         self.assertEqual(self.dm.get_next_audio_message(), audio_id)
         self.assertEqual(self.dm.get_next_audio_message(), audio_id) # no disappearance
+        assert not self.dm.has_read_current_playlist("guy4")
+
+        assert not self.dm.has_read_current_playlist("guy4") # RESET
+        self.dm.mark_current_playlist_read("guy4")
+        assert self.dm.has_read_current_playlist("guy4")
+        assert not self.dm.has_read_current_playlist("guy3")
 
         self.assertEqual(len(self.dm.get_all_next_audio_messages()), 1)
 
@@ -1676,10 +1685,28 @@ class TestDatamanager(BaseGameTestCase):
         self.assertEqual(self.dm.get_next_audio_message(), None)
         self.assertEqual(len(self.dm.get_all_next_audio_messages()), 0)
 
-        self.dm.set_radio_messages([audio_id_bis, audio_id_ter, audio_id_ter])
+        self.dm.set_radio_messages([audio_id_bis, audio_id_ter])
+
+        self.dm.mark_current_playlist_read("guy2")
+        assert self.dm.has_read_current_playlist("guy2")
+        assert not self.dm.has_read_current_playlist("guy3")
+
+        self.dm.set_radio_messages([audio_id_bis, audio_id_ter]) # UNCHANGED
+
+        assert self.dm.has_read_current_playlist("guy2") # UNCHANGED
+        assert not self.dm.has_read_current_playlist("guy3")
+
+        self.dm.add_radio_message(audio_id_ter) # UNCHANGED
+
+        assert self.dm.has_read_current_playlist("guy2") # UNCHANGED
+        assert not self.dm.has_read_current_playlist("guy3")
+
+        self.dm.set_radio_messages([audio_id_bis, audio_id_ter, audio_id_ter]) # finally changed
         assert self.dm.get_all_next_audio_messages() == [audio_id_bis, audio_id_ter, audio_id_ter]
         self.assertEqual(self.dm.get_next_audio_message(), audio_id_bis)
 
+        assert not self.dm.has_read_current_playlist("guy2") # RESET
+        assert not self.dm.has_read_current_playlist("guy3")
 
 
     def test_delayed_message_processing(self):
@@ -2568,6 +2595,8 @@ class TestDatamanager(BaseGameTestCase):
 
         assert self.dm.get_novelty_registry() == {}
 
+        assert self.dm.access_novelty("guest", "qdq|sd") is None
+
         assert self.dm.access_novelty("master", "qdq|sd")
         assert self.dm.access_novelty("guy1", "qdq|sd")
 
@@ -2579,6 +2608,9 @@ class TestDatamanager(BaseGameTestCase):
         assert self.dm.access_novelty("guy4", "dllll", category="mycat")
 
         #print (self.dm.get_novelty_registry())
+
+        assert self.dm.has_accessed_novelty("guest", "qdq|sd")
+        assert self.dm.has_accessed_novelty("guest", "OAUIATAUATUY") # ALWAYS for anonymous, no novelty display
 
         assert self.dm.has_accessed_novelty("master", "qdq|sd")
         assert self.dm.has_accessed_novelty("guy1", "qdq|sd")
@@ -2599,7 +2631,7 @@ class TestDatamanager(BaseGameTestCase):
 
         #print (self.dm.get_novelty_registry())
 
-        assert self.dm.get_novelty_registry() == {("default", u'qsdffsdf'): [u'guy1', u'guy3', u'guy2'],
+        assert self.dm.get_novelty_registry() == {("default", u'qsdffsdf'): [u'guy1', u'guy3', u'guy2'], # NO guest (anonymous) HERE (ignored)
                                                   ("default", u'qdq|sd'): [u'master', u'guy1'],
                                                   ("mycat", u'dllll'): [u'guy4']}
 

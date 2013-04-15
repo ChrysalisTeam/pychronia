@@ -290,9 +290,11 @@ class NovaltyTracker(BaseDataManager):
 
     @transaction_watcher
     def access_novelty(self, username=CURRENT_USER, item_key=None, category=_default_novelty_category):
-        """Returns True iff the user has accessed that resource for the first time."""
+        """Returns True iff the user has accessed that resource for the first time, None if anonymous."""
         username = self._resolve_username(username)
-        assert username in (self.get_character_usernames() + [self.get_global_parameter("master_login")])
+        assert username in self.get_available_logins() # anonymous too, let's be tolerant
+        if self.is_anonymous(username):
+            return None
         full_key = self._build_novelty_key(category, item_key)
         del category, item_key # security
         tracker = self.data["novalty_tracker"]
@@ -305,8 +307,11 @@ class NovaltyTracker(BaseDataManager):
 
     @readonly_method
     def has_accessed_novelty(self, username=CURRENT_USER, item_key=None, category=_default_novelty_category):
+        """Returns always True for anonymous users (non novelty tracking for them)."""
         username = self._resolve_username(username)
-        assert username in (self.get_character_usernames() + [self.get_global_parameter("master_login")])
+        assert username in self.get_available_logins() # anonymous too, let's be tolerant
+        if self.is_anonymous(username):
+            return True # beware
         full_key = self._build_novelty_key(category, item_key)
         del category, item_key # security
         tracker = self.data["novalty_tracker"]
@@ -2428,6 +2433,8 @@ class TextMessagingInterception(BaseDataManager):
 @register_module
 class RadioMessaging(BaseDataManager): # TODO REFINE
 
+    _radio_playlist_novelty_marker = "radio_playlist"
+
     def _load_initial_data(self, **kwargs):
         super(RadioMessaging, self)._load_initial_data(**kwargs)
         self.radio_spots._load_initial_data(**kwargs)
@@ -2444,7 +2451,6 @@ class RadioMessaging(BaseDataManager): # TODO REFINE
 
         utilities.check_is_slug(game_data["global_parameters"]["pangea_radio_frequency"])
         utilities.check_is_bool(game_data["global_parameters"]["radio_is_on"])
-
 
 
     class RadioSpotsManager(DataTableManager):
@@ -2519,6 +2525,7 @@ class RadioMessaging(BaseDataManager): # TODO REFINE
         queue = self.data["global_parameters"]["pending_radio_messages"]
         if audio_id not in queue:
             queue.append(audio_id)
+            self.reset_novelty_accesses(self._radio_playlist_novelty_marker)
 
     @transaction_watcher
     def set_radio_messages(self, audio_ids):
@@ -2526,7 +2533,21 @@ class RadioMessaging(BaseDataManager): # TODO REFINE
         Allows duplicate audio messages.
         """
         self._check_audio_ids(audio_ids)
-        self.data["global_parameters"]["pending_radio_messages"] = PersistentList(audio_ids)
+        new_list = PersistentList(audio_ids)
+        if self.data["global_parameters"]["pending_radio_messages"] != new_list:
+            self.data["global_parameters"]["pending_radio_messages"] = new_list
+            self.reset_novelty_accesses(self._radio_playlist_novelty_marker)
+
+    @transaction_watcher
+    def mark_current_playlist_read(self, username=CURRENT_USER):
+        username = self._resolve_username(username)
+        self.access_novelty(username=username, item_key=self._radio_playlist_novelty_marker)
+
+    @transaction_watcher
+    def has_read_current_playlist(self, username=CURRENT_USER):
+        username = self._resolve_username(username)
+        return (not self.get_all_next_audio_messages() or
+                self.has_accessed_novelty(username=username, item_key=self._radio_playlist_novelty_marker))
 
     @transaction_watcher
     def reset_audio_messages(self):
@@ -2534,7 +2555,7 @@ class RadioMessaging(BaseDataManager): # TODO REFINE
         self.data["global_parameters"]["pending_radio_messages"] = PersistentList()
 
     @readonly_method
-    def get_all_audio_messages(self):
+    def get_all_available_audio_messages(self):
         return self.radio_spots
 
     @readonly_method

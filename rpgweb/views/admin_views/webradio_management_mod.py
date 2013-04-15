@@ -37,7 +37,7 @@ class WebradioManagement(AbstractGameView):
         all_new_message_notifications = self.datamanager.get_all_new_message_notification_sounds()
 
         # we filter out numerous "new emails" messages, which can be summoned in batch anyway
-        all_audio_messages = self.datamanager.get_all_audio_messages().items()
+        all_audio_messages = self.datamanager.get_all_available_audio_messages().items()
         special_audio_messages = [msg for msg in all_audio_messages if msg[0] not in all_new_message_notifications]
 
         special_audio_messages.sort(key=lambda x: x[0])

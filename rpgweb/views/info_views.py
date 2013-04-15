@@ -145,6 +145,8 @@ def get_radio_xml_conf(request, template_name='info/web_radio_conf.xml'):
     audio_urls = "|".join([determine_asset_url(msg) for msg in current_audio_messages])  # we expect no "|" inside a single url
     audio_titles = "|".join([msg["title"].replace("|", "") for msg in current_audio_messages])  # here we can cleanup
 
+    dm.mark_current_playlist_read() # THAT view is symptomatic of actual listening of personal radio (in both popup and normal window)
+
     return render(request,
                   template_name,
                   dict(audio_urls=audio_urls,
