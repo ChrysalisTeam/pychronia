@@ -2543,7 +2543,7 @@ class RadioMessaging(BaseDataManager): # TODO REFINE
         username = self._resolve_username(username)
         self.access_novelty(username=username, item_key=self._radio_playlist_novelty_marker)
 
-    @transaction_watcher
+    @readonly_method
     def has_read_current_playlist(self, username=CURRENT_USER):
         username = self._resolve_username(username)
         return (not self.get_all_next_audio_messages() or
@@ -3414,7 +3414,6 @@ class GameViews(BaseDataManager):
         klass = self._resolve_view_klass(name_or_klass)
         token = klass.get_access_token(self) # class method!!
         return token
-
 
 
     @readonly_method

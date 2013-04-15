@@ -540,13 +540,18 @@ class AbstractGameView(object):
     @transform_usage_error
     @transaction_watcher
     def __call__(self, request, *args, **kwargs):
-
+        """
+        Do not override that method - too sensitive.
+        """
         self._pre_request(request, *args, **kwargs)
         try:
             self._check_writability() # crucial
             self._check_standard_access() # crucial
 
-            return self._process_standard_request(request, *args, **kwargs)
+            response = self._process_standard_request(request, *args, **kwargs)
+            self.mark_view_as_accessed(self.datamanager) # no errors -> we mark view as "read"
+            return response
+
         finally:
             self._post_request()
 
@@ -558,6 +563,21 @@ class AbstractGameView(object):
         where explanation is a list of (per-middleware) lists of strings.
         """
         return []
+
+
+
+    # Novelty tracking for gameviews #
+
+    _game_view_novelty_category = "gameview"
+
+    @classmethod
+    def mark_view_as_accessed(cls, datamanager):
+        return datamanager.access_novelty(item_key=cls.NAME, category=cls._game_view_novelty_category)
+
+    @classmethod
+    def has_user_accessed_view(cls, datamanager):
+        return datamanager.has_accessed_novelty(item_key=cls.NAME, category=cls._game_view_novelty_category)
+
 
 
 

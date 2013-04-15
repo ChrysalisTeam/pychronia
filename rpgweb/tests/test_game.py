@@ -3238,6 +3238,31 @@ class TestGameViewSystem(BaseGameTestCase):
         assert request.datamanager.get_event_count("PROCESS_HTML_REQUEST") == 1
         assert request.datamanager.get_event_count("EXECUTE_GAME_ACTION_WITH_MIDDLEWARES") == 1
 
+    
+    def test_gameview_novelty_tracking(self):
+        
+        view_url = reverse(views.runic_translation, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID)) # access == character only
+
+        # first a "direct action" html call
+        request = self.factory.post(view_url)
+
+        request.datamanager._set_user("master")
+
+        runic_translation = request.datamanager.instantiate_ability("runic_translation")
+        
+        res = runic_translation(request)
+        assert res.status_code == 302 # access not allowed
+        
+        assert not runic_translation.has_user_accessed_view(runic_translation.datamanager)
+
+        request.datamanager._set_user("guy1")
+        request.datamanager.set_activated_game_views([runic_translation.NAME]) # else no access
+
+        res = runic_translation(request)
+        assert res.status_code == 200 # access allowed
+
+        assert runic_translation.has_user_accessed_view(runic_translation.datamanager)
+
 
 
 class TestActionMiddlewares(BaseGameTestCase):
