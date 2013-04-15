@@ -2576,18 +2576,20 @@ class TestDatamanager(BaseGameTestCase):
         assert self.dm.access_novelty("guy3", "qsdffsdf")
         assert self.dm.access_novelty("guy2", "qsdffsdf")
 
-        assert self.dm.access_novelty("guy4", "dllll")
+        assert self.dm.access_novelty("guy4", "dllll", category="mycat")
 
         #print (self.dm.get_novelty_registry())
 
         assert self.dm.has_accessed_novelty("master", "qdq|sd")
         assert self.dm.has_accessed_novelty("guy1", "qdq|sd")
         assert self.dm.has_accessed_novelty("guy1", "qsdffsdf")
+        assert not self.dm.has_accessed_novelty("guy1", "qsdffsdf", category="whatever_else")
 
         assert not self.dm.has_accessed_novelty("guy1", "sdfdfsdkksdfksdkf")
-        assert not self.dm.has_accessed_novelty("guy1", "dllll")
-        assert self.dm.has_accessed_novelty("guy4", "dllll")
-        assert not self.dm.has_accessed_novelty("guy4", "dlllL") # case sensitive
+        assert not self.dm.has_accessed_novelty("guy1", "dllll", category="mycat")
+        assert self.dm.has_accessed_novelty("guy4", "dllll", category="mycat")
+        assert not self.dm.has_accessed_novelty("guy4", "dllll", category="myCat") # case sensitive category
+        assert not self.dm.has_accessed_novelty("guy4", "dlllL", category="mycat") # case sensitive key
 
         # this method's input is not checked by coherency routines, so let's ensure it's protected...
         with pytest.raises(AssertionError):
@@ -2597,17 +2599,18 @@ class TestDatamanager(BaseGameTestCase):
 
         #print (self.dm.get_novelty_registry())
 
-        assert self.dm.get_novelty_registry() == {u'qsdffsdf': [u'guy1', u'guy3', u'guy2'],
-                                                  u'qdq|sd': [u'master', u'guy1'],
-                                                  u'dllll': [u'guy4']}
+        assert self.dm.get_novelty_registry() == {("default", u'qsdffsdf'): [u'guy1', u'guy3', u'guy2'],
+                                                  ("default", u'qdq|sd'): [u'master', u'guy1'],
+                                                  ("mycat", u'dllll'): [u'guy4']}
 
         self.dm.reset_novelty_accesses('qdq|sd')
         self.dm.reset_novelty_accesses('unexistingname') # ignored
 
-        assert self.dm.get_novelty_registry() == {u'qsdffsdf': [u'guy1', u'guy3', u'guy2'],
-                                                  u'dllll': [u'guy4']}
+        assert self.dm.get_novelty_registry() == {("default", u'qsdffsdf'): [u'guy1', u'guy3', u'guy2'],
+                                                  ("mycat", u'dllll'): [u'guy4']}
         assert not self.dm.has_accessed_novelty("guy1", 'qdq|sd')
         assert self.dm.has_accessed_novelty("guy1", 'qsdffsdf')
+
 
 
 class TestHttpRequests(BaseGameTestCase):

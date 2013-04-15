@@ -243,6 +243,88 @@ class GameEvents(BaseDataManager): # TODO REFINE
 
 
 @register_module
+class NovaltyTracker(BaseDataManager):
+    """
+    Tracks the *resources* (references by a unique key) that each authenticated 
+    player (and the game master) has, or not, already "accessed".
+    
+    Useful for new help pages, new radio playlists, new menu entries...
+    
+    Tracking objects are lazily created, only the first time a resource is accessed.
+    
+    That registry can be used on a cumulative way (giving a new name to each different
+    version of a resource), or "limited" way, creating/deleting the same novelty token
+    when the underlying resource has new data for users.
+    """
+
+    _default_novelty_category = u"default"
+
+    def _load_initial_data(self, **kwargs):
+        super(NovaltyTracker, self)._load_initial_data(**kwargs)
+        game_data = self.data
+        game_data.setdefault("novalty_tracker", PersistentDict())
+
+
+    def _check_database_coherency(self, strict=False, **kwargs):
+        super(NovaltyTracker, self)._check_database_coherency(**kwargs)
+        game_data = self.data
+
+        allowed_usernames = self.get_character_usernames() + [self.get_global_parameter("master_login")]
+        for item_key, usernames in game_data["novalty_tracker"].items():
+            utilities.check_is_slug(item_key)
+            for username in usernames:
+                assert username in allowed_usernames
+
+    @readonly_method
+    def get_novelty_registry(self):
+        """For tests..."""
+        return copy.deepcopy(self.data["novalty_tracker"])
+
+
+    def _build_novelty_key(self, category, item_key):
+        assert isinstance(item_key, basestring) and (" " not in item_key) and item_key
+        assert isinstance(category, basestring) and (" " not in category) and category
+        full_key = (category, item_key)
+        return full_key
+
+
+    @transaction_watcher
+    def access_novelty(self, username=CURRENT_USER, item_key=None, category=_default_novelty_category):
+        """Returns True iff the user has accessed that resource for the first time."""
+        username = self._resolve_username(username)
+        assert username in (self.get_character_usernames() + [self.get_global_parameter("master_login")])
+        full_key = self._build_novelty_key(category, item_key)
+        del category, item_key # security
+        tracker = self.data["novalty_tracker"]
+        if full_key not in tracker:
+            tracker[full_key] = PersistentList()
+        if username not in tracker[full_key]:
+            tracker[full_key].append(username)
+            return True
+        return False
+
+    @readonly_method
+    def has_accessed_novelty(self, username=CURRENT_USER, item_key=None, category=_default_novelty_category):
+        username = self._resolve_username(username)
+        assert username in (self.get_character_usernames() + [self.get_global_parameter("master_login")])
+        full_key = self._build_novelty_key(category, item_key)
+        del category, item_key # security
+        tracker = self.data["novalty_tracker"]
+        if full_key in tracker and username in tracker[full_key]:
+            return True
+        return False
+
+    @transaction_watcher
+    def reset_novelty_accesses(self, item_key, category=_default_novelty_category):
+        full_key = self._build_novelty_key(category, item_key)
+        del category, item_key # security
+        tracker = self.data["novalty_tracker"]
+        if full_key in tracker:
+            del tracker[full_key]
+
+
+
+@register_module
 class CharacterHandling(BaseDataManager): # TODO REFINE
 
     CHARACTER_REAL_LIFE_ATTRIBUTES = ["real_life_identity", "real_life_email"]
@@ -3792,73 +3874,6 @@ class NightmareCaptchas(BaseDataManager):
 
 
 
-
-@register_module
-class NovaltyTracker(BaseDataManager):
-    """
-    Tracks the *resources* (references by a unique key) that each authenticated 
-    player (and the game master) has, or not, already "accessed".
-    
-    Useful for new help pages, new radio playlists, new menu entries...
-    
-    Tracking objects are lazily created, only the first time a resource is accessed.
-    
-    That registry can be used on a cumulative way (giving a new name to each different
-    version of a resource), or "limited" way, creating/deleting the same novelty token
-    when the underlying resource has new data for users.
-    """
-
-    def _load_initial_data(self, **kwargs):
-        super(NovaltyTracker, self)._load_initial_data(**kwargs)
-        game_data = self.data
-        game_data.setdefault("novalty_tracker", PersistentDict())
-
-
-    def _check_database_coherency(self, strict=False, **kwargs):
-        super(NovaltyTracker, self)._check_database_coherency(**kwargs)
-        game_data = self.data
-
-        allowed_usernames = self.get_character_usernames() + [self.get_global_parameter("master_login")]
-        for item_key, usernames in game_data["novalty_tracker"].items():
-            utilities.check_is_slug(item_key)
-            for username in usernames:
-                assert username in allowed_usernames
-
-    @readonly_method
-    def get_novelty_registry(self):
-        """For tests..."""
-        return copy.deepcopy(self.data["novalty_tracker"])
-
-    @transaction_watcher
-    def access_novelty(self, username=CURRENT_USER, item_key=None):
-        """Returns True iff the user has accessed that resource for the first time."""
-        username = self._resolve_username(username)
-        assert isinstance(item_key, basestring) and (" " not in item_key) and item_key
-        assert username in (self.get_character_usernames() + [self.get_global_parameter("master_login")])
-        tracker = self.data["novalty_tracker"]
-        if item_key not in tracker:
-            tracker[item_key] = PersistentList()
-        if username not in tracker[item_key]:
-            tracker[item_key].append(username)
-            return True
-        return False
-
-    @readonly_method
-    def has_accessed_novelty(self, username=CURRENT_USER, item_key=None):
-        assert isinstance(item_key, basestring) and (" " not in item_key) and item_key
-        assert username in (self.get_character_usernames() + [self.get_global_parameter("master_login")])
-        username = self._resolve_username(username)
-        tracker = self.data["novalty_tracker"]
-        if item_key in tracker and username in tracker[item_key]:
-            return True
-        return False
-
-    @transaction_watcher
-    def reset_novelty_accesses(self, item_key):
-        assert isinstance(item_key, basestring) and (" " not in item_key) and item_key
-        tracker = self.data["novalty_tracker"]
-        if item_key in tracker:
-            del tracker[item_key]
 
 
 
