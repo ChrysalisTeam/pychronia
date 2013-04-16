@@ -3802,8 +3802,12 @@ class TestSpecialAbilities(BaseGameTestCase):
 
         assert AbstractAbility.__call__ == AbstractGameView.__call__ # must not be overlaoded, since it's decorated to catch exceptions
 
-        # ability is half-view half-datamanager, so beware baout sessions...
-        assert AbstractAbility.__call__._is_under_transaction_watcher
+        assert AbstractAbility.__call__._is_under_readonly_method # NO transaction_watcher, must be available in readonly mode too
+
+        assert AbstractGameView._execute_game_action_callback._is_under_transaction_watcher
+
+        # ability is half-view half-datamanager, so beware about zodb sessions...
+        assert AbstractAbility._execute_game_action_callback._is_under_transaction_watcher
         assert AbstractAbility._perform_lazy_initializations._is_under_transaction_watcher # just for tests...
         assert AbstractAbility.process_admin_request._is_under_transaction_watcher
 

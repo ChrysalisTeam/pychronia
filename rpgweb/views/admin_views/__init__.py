@@ -3,15 +3,15 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from rpgweb.common import *
-from rpgweb.datamanager.abstract_game_view import AbstractGameView, register_view
+from rpgweb.datamanager.abstract_game_view import AbstractGameView, register_view, readonly_method
 from rpgweb import forms
 from django.http import Http404, HttpResponse
 from rpgweb.utilities import mediaplayers
-
 from django.core.mail import send_mail
 
 
 from .admin_dashboard_mod import AdminDashboardAbility
+
 admin_dashboard = AdminDashboardAbility.as_view
 
 from .webradio_management_mod import WebradioManagement
@@ -35,7 +35,7 @@ def game_events(request, template_name='administration/game_events.html'):
 
     trans_events = []
     for event in events:
-        trans_event = event.copy()
+        trans_event = copy.copy(event) # dont use dict.copy() else inner side effects
         if trans_event["substitutions"]:
             trans_event["trans_message"] = _(trans_event["message"]) % utilities.SDICT(**trans_event["substitutions"])
         else:

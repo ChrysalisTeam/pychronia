@@ -272,6 +272,7 @@ class AbstractGameView(object):
             self.logger.error("check_standard_access failed: %r", e)
             raise
 
+
     def _check_admin_access(self):
         if not self.datamanager.user.is_master:
             raise AuthenticationRequiredError(_("Authentication required."))
@@ -363,6 +364,7 @@ class AbstractGameView(object):
         relevant_args = self._try_coercing_arguments_to_func(data=unfiltered_params, func=callback) # might raise UsageError
         return (callback, relevant_args)
 
+    @transaction_watcher # IMPORTANT
     def _execute_game_action_callback(self, action_name, unfiltered_params):
         """
         Might raise any kind of exception.
@@ -376,7 +378,7 @@ class AbstractGameView(object):
     def execute_game_action_callback(self, action_name, unfiltered_params):
         """Public interface, just for transaction watching in tests atm..."""
         return self._execute_game_action_callback(action_name=action_name,
-                                                 unfiltered_params=unfiltered_params)
+                                                  unfiltered_params=unfiltered_params)
 
 
     def _try_processing_formless_game_action(self, data):
@@ -538,7 +540,7 @@ class AbstractGameView(object):
 
 
     @transform_usage_error
-    @transaction_watcher
+    @readonly_method # we ensure all "actions" were committed
     def __call__(self, request, *args, **kwargs):
         """
         Do not override that method - too sensitive.
@@ -589,7 +591,6 @@ class AbstractGameView(object):
                                              action_registry=self.ADMIN_ACTIONS,
                                              form_initializer=self.datamanager, # this property might be overridden by subclasses
                                              ** all_params)
-
 
 
     @readonly_method
