@@ -94,7 +94,7 @@ class AbstractAbility(AbstractAbilityBasesAdapter):
 
     def _process_standard_request(self, request, *args, **kwargs):
         # Access checks have already been done here, so we may initialize lazy data
-        self._perform_lazy_initializations()
+        self.perform_lazy_initializations()
         return super(AbstractAbility, self)._process_standard_request(request, *args, **kwargs)
 
 
@@ -173,8 +173,8 @@ class AbstractAbility(AbstractAbilityBasesAdapter):
         pass # to be overridden
 
 
-    @transaction_watcher(always_writable=True) # lazy setup authorized anytime
-    def _perform_lazy_initializations(self):
+    @transaction_watcher(always_writable=True) # lazy setup is authorized anytime
+    def perform_lazy_initializations(self):
         private_key = self._get_private_key()
         #print ("@@@@@@@@@@", self.ability_data)
         if not self.ability_data["data"].has_key(private_key):

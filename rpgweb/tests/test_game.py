@@ -2948,15 +2948,15 @@ class TestGameViewSystem(BaseGameTestCase):
         # all forms must be instantiable, so provided items etc. !
         self.dm.transfer_object_to_character("statue", "guy1")
         wiretapping = self.dm.instantiate_ability("wiretapping")
-        wiretapping._perform_lazy_initializations()
+        wiretapping.perform_lazy_initializations()
         wiretapping.purchase_wiretapping_slot()
 
         check_done = 0
         for game_view_class in self.dm.GAME_VIEWS_REGISTRY.values():
 
             game_view = self.dm.instantiate_game_view(game_view_class) # must work for abilities too!
-            if hasattr(game_view, "_perform_lazy_initializations"):
-                game_view._perform_lazy_initializations()
+            if hasattr(game_view, "perform_lazy_initializations"):
+                game_view.perform_lazy_initializations() # ability object
 
 
             for action_name, action_properties in game_view.GAME_ACTIONS.items() + game_view.ADMIN_ACTIONS.items():
@@ -3078,12 +3078,15 @@ class TestGameViewSystem(BaseGameTestCase):
         with pytest.raises(AssertionError):
             register_view(my_little_view, access=UserAccess.anonymous, permissions=["sss"])
 
-        klass = register_view(my_little_view, access=UserAccess.master, title=_lazy("jjj"))
+        klass = register_view(my_little_view, access=UserAccess.master, title=_lazy("jjj"), always_allow_post=True)
 
         assert issubclass(klass, AbstractGameView)
         assert klass.__name__ == "MyLittleView" # pascal case
         assert klass.NAME == "my_little_view" # snake case
         assert klass.NAME in self.dm.GAME_VIEWS_REGISTRY
+
+        assert klass.ALWAYS_ALLOW_POST == True
+        assert AbstractGameView.ALWAYS_ALLOW_POST == False
 
         with pytest.raises(AssertionError):
             register_view(my_little_view, access=UserAccess.master, title=_lazy("ssss")) # double registration impossible!
@@ -3297,7 +3300,7 @@ class TestActionMiddlewares(BaseGameTestCase):
         self.dm.transfer_money_between_characters(bank_name, "guy4", amount=1000)
 
         ability = self.dm.instantiate_ability("dummy_ability")
-        ability._perform_lazy_initializations() # normally done while treating HTTP request...
+        ability.perform_lazy_initializations() # normally done while treating HTTP request...
 
         assert not ability.has_action_middlewares_activated(action_name="middleware_wrapped_test_action")
 
@@ -3339,7 +3342,7 @@ class TestActionMiddlewares(BaseGameTestCase):
         del view
 
         ability = self.dm.instantiate_ability("dummy_ability")
-        ability._perform_lazy_initializations() # normally done while treating HTTP request...
+        ability.perform_lazy_initializations() # normally done while treating HTTP request...
 
 
         ability.reset_test_settings("middleware_wrapped_other_test_action", CostlyActionMiddleware, dict(money_price=203, gems_price=123))
@@ -3363,7 +3366,7 @@ class TestActionMiddlewares(BaseGameTestCase):
         self._set_user("guy4") # important
 
         ability = self.dm.instantiate_ability("dummy_ability")
-        ability._perform_lazy_initializations() # normally done while treating HTTP request...
+        ability.perform_lazy_initializations() # normally done while treating HTTP request...
 
         transactional_processor = ability.execute_game_action_callback # needs transaction watcher else test is buggy...
 
@@ -3408,7 +3411,7 @@ class TestActionMiddlewares(BaseGameTestCase):
         self._set_user("guy4") # important
 
         ability = self.dm.instantiate_ability("dummy_ability")
-        ability._perform_lazy_initializations() # normally done while treating HTTP request...
+        ability.perform_lazy_initializations() # normally done while treating HTTP request...
 
         assert isinstance(ability, DummyTestAbility)
         assert CostlyActionMiddleware
@@ -3424,6 +3427,7 @@ class TestActionMiddlewares(BaseGameTestCase):
             assert ability.middleware_wrapped_callable2(value)
             assert ability.non_middleware_action_callable(use_gems=[gem_125])
 
+        assert not self.dm.is_in_transaction()
         self.dm.check_no_pending_transaction()
 
         assert self.dm.get_event_count("INSIDE_MIDDLEWARE_WRAPPED1") == 4
@@ -3562,7 +3566,7 @@ class TestActionMiddlewares(BaseGameTestCase):
         ability.reset_test_settings("middleware_wrapped_test_action", CountLimitedActionMiddleware, dict(max_per_character=3, max_per_game=4))
 
         self._set_user("guy4") # important
-        ability._perform_lazy_initializations() # normally done while treating HTTP request...
+        ability.perform_lazy_initializations() # normally done while treating HTTP request...
         ability.reset_test_data("middleware_wrapped_test_action", CountLimitedActionMiddleware, dict()) # will be filled lazily, on call
 
 
@@ -3578,7 +3582,7 @@ class TestActionMiddlewares(BaseGameTestCase):
 
 
         self._set_user("guy3") # important
-        ability._perform_lazy_initializations() # normally done while treating HTTP request...
+        ability.perform_lazy_initializations() # normally done while treating HTTP request...
         ability.reset_test_data("middleware_wrapped_test_action", CountLimitedActionMiddleware, dict()) # will be filled lazily, on call
 
         assert ability.middleware_wrapped_callable2(None) # 1 use for guy3
@@ -3630,7 +3634,7 @@ class TestActionMiddlewares(BaseGameTestCase):
         assert ability.middleware_wrapped_callable1(None) # guy4 still
 
         self._set_user("guy2") # important
-        ability._perform_lazy_initializations()
+        ability.perform_lazy_initializations()
 
         for i in range(5):
             assert ability.middleware_wrapped_callable1(None)
@@ -3693,7 +3697,7 @@ class TestActionMiddlewares(BaseGameTestCase):
 
         ability = self.dm.instantiate_ability("dummy_ability")
         self._set_user("guy4") # important
-        ability._perform_lazy_initializations() # normally done while treating HTTP request...
+        ability.perform_lazy_initializations() # normally done while treating HTTP request...
 
 
         # misconfiguration case #
@@ -3729,7 +3733,7 @@ class TestActionMiddlewares(BaseGameTestCase):
 
         for username in ("guy2", "guy3"):
             self._set_user(username) # important
-            ability._perform_lazy_initializations() # normally done while treating HTTP request...
+            ability.perform_lazy_initializations() # normally done while treating HTTP request...
             ability.reset_test_data("middleware_wrapped_test_action", TimeLimitedActionMiddleware, dict()) # will be filled lazily, on call
 
             assert ability.middleware_wrapped_callable1(None)
@@ -3808,7 +3812,7 @@ class TestSpecialAbilities(BaseGameTestCase):
         assert AbstractAbility.__call__._is_under_readonly_method # NO transaction_watcher, must be available in readonly mode too
 
         assert AbstractAbility.execute_game_action_callback._is_under_transaction_watcher
-        assert AbstractAbility._perform_lazy_initializations._is_under_transaction_watcher # just for tests...
+        assert AbstractAbility.perform_lazy_initializations._is_under_transaction_watcher # just for tests...
         assert AbstractAbility.process_admin_request._is_under_transaction_watcher
 
 
@@ -4079,7 +4083,7 @@ class TestSpecialAbilities(BaseGameTestCase):
         char_names = self.dm.get_character_usernames()
 
         wiretapping = self.dm.instantiate_ability("wiretapping")
-        wiretapping._perform_lazy_initializations() # normally done during request processing
+        wiretapping.perform_lazy_initializations() # normally done during request processing
 
         assert wiretapping.get_wiretapping_slots_count() == 0
         for i in range(3):
@@ -4120,7 +4124,7 @@ class TestSpecialAbilities(BaseGameTestCase):
         self.dm.commit()
 
         scanner = self.dm.instantiate_ability("world_scan")
-        scanner._perform_lazy_initializations() # normally done during request processing
+        scanner.perform_lazy_initializations() # normally done during request processing
         self._set_user("guy1")
 
         res = scanner._compute_scanning_result("sacred_chest")
@@ -4182,7 +4186,7 @@ class TestSpecialAbilities(BaseGameTestCase):
         initial_length_sent_msgs = len(self.dm.get_all_dispatched_messages())
 
         ability = self.dm.instantiate_ability("telecom_investigation")
-        ability._perform_lazy_initializations() # normally done during request processing
+        ability.perform_lazy_initializations() # normally done during request processing
 
         """
         assert self.dm.data["abilities"] ["telecom_investigation"]["settings"]["result_delay"]
@@ -4191,7 +4195,7 @@ class TestSpecialAbilities(BaseGameTestCase):
         """
 
         scanner = self.dm.instantiate_ability("world_scan")
-        scanner._perform_lazy_initializations() # normally done during request processing
+        scanner.perform_lazy_initializations() # normally done during request processing
         self._set_user("guy1")
 
 
@@ -4264,7 +4268,7 @@ class TestSpecialAbilities(BaseGameTestCase):
         self.dm.commit()
 
         analyser = self.dm.instantiate_ability("matter_analysis")
-        analyser._perform_lazy_initializations() # normally done during request processing
+        analyser.perform_lazy_initializations() # normally done during request processing
         self._set_user("guy1")
         self.dm.transfer_object_to_character("sacred_chest", "guy1")
         self.dm.transfer_object_to_character("several_misc_gems", "guy1")
