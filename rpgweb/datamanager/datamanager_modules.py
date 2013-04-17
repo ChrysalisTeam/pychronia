@@ -69,6 +69,11 @@ class GameGlobalParameters(BaseDataManager):
             return dict(writable=False,
                         reason=_("Website currently in read-only mode, for maintenance."))
 
+    @readonly_method
+    def is_game_writable(self):
+        """Summary between the state of the game, and the permissions of current user!"""
+        return self.determine_actual_game_writability()["writable"]
+
 
 CURRENT_USER = object() # placeholder for use in method signatures
 
@@ -109,6 +114,7 @@ class CurrentUserHandling(BaseDataManager):
         if username == CURRENT_USER:
             return self.user.username
         return username
+
 
     @readonly_method
     def determine_actual_game_writability(self):

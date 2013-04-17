@@ -39,8 +39,8 @@ def view_encyclopedia(request, article_id=None, template_name='info/encyclopedia
     else:
         search_string = request.REQUEST.get("search")  # needn't appear in browser history, but GET needed for encyclopedia links
         if search_string:
-            if not dm.is_game_started():
-                dm.user.add_error(_("Sorry, the search engine of the encyclopedia is currently under repair"))
+            if not dm.is_game_writable():
+                dm.user.add_error(_("Sorry, you don't have access to search features at the moment."))
             else:
                 search_results = dm.get_encyclopedia_matches(search_string)
                 if not search_results:

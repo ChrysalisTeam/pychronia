@@ -2,7 +2,7 @@
 FIXME TODO
 BROKEN
 
-
+DEAD 
 # TODO - redo this as special ability
 @register_view(title=_lazy("Chat with Djinn"))  # (access=UserAccess.character)#(permission="contact_djinns")
 def chat_with_djinn(request, template_name='specific_operations/chat_with_djinn.html'):
@@ -11,7 +11,7 @@ def chat_with_djinn(request, template_name='specific_operations/chat_with_djinn.
 
     # TODO BAD - add security here !!!!!!!!!!
 
-    if not request.datamanager.is_game_started():
+    if not request.datamanager.is_game_staSSSSQrted():
         return HttpResponse(_("Game is not yet started"))
 
     if bot_name not in request.datamanager.get_bot_names():

@@ -95,6 +95,7 @@ class GameViewMetaclass(type):
                 assert NewClass.ACCESS in UserAccess.enum_values
                 assert isinstance(NewClass.PERMISSIONS, (list, tuple)) # not a string!!
                 assert NewClass.ALWAYS_AVAILABLE in (True, False)
+                assert NewClass.ALWAYS_ALLOW_POST in (True, False)
 
                 if NewClass.ACCESS == UserAccess.master:
                     assert not NewClass.PERMISSIONS
@@ -191,10 +192,10 @@ class AbstractGameView(object):
     TEMPLATE = None # HTML template name, required when using default request handler
     ADMIN_TEMPLATE = "utilities/admin_form_widget.html" # TODO - template to render a single admin form, with notifications
 
-
     ACCESS = None # UserAccess entry
     PERMISSIONS = [] # list of required permission names, only used for character access
     ALWAYS_AVAILABLE = False # True iff view can't be globally hidden by game master, for players
+    ALWAYS_ALLOW_POST = False # True if we can post data to this view even when game/user is in read-only mode (eg. auth-related view)
 
     _ACTION_FIELD = "_action_" # for ajax and no-form request
 
@@ -244,14 +245,13 @@ class AbstractGameView(object):
         return AccessResult.available
 
 
-
     def _check_writability(self):
 
         user = self.datamanager.user
-        if self.request.POST and not user.has_write_access:
+        if self.request.POST and not self.datamanager.is_game_writable() and not self.ALWAYS_ALLOW_POST:
             self.request.POST.clear() # thanks to our middleware that made it mutable...
             user.add_error(_("You are not allowed to submit changes to that page"))
-        assert user.has_write_access or not self.request.POST
+        assert (user.has_write_access and self.datamanager.is_game_started()) or self.ALWAYS_ALLOW_POST or not self.request.POST
 
 
     def _check_standard_access(self):
@@ -715,6 +715,7 @@ def register_view(view_object=None,
                   access=_undefined,
                   permissions=_undefined,
                   always_available=_undefined,
+                  always_allow_post=_undefined,
                   attach_to=_undefined,
                   title=None):
     """
@@ -753,6 +754,8 @@ def register_view(view_object=None,
             class_data = dict((key.upper(), value) for key, value in normalized_access_args.items())
             class_data["TITLE"] = title
             class_data["NAME"] = real_view_object.__name__
+            if always_allow_post is not _undefined:
+                class_data["ALWAYS_ALLOW_POST"] = always_allow_post # unaltered boolean
             class_data["_process_standard_request"] = staticmethod(real_view_object) # we install the real request handler, not expecting a "self"
 
             # we build new GameView subclass on the fly

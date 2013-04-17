@@ -9,7 +9,7 @@ from django.http import HttpResponseRedirect
 from rpgweb import forms
 
 
-@register_view(access=UserAccess.anonymous, always_available=True, title=_lazy("Login"))
+@register_view(access=UserAccess.anonymous, always_available=True, title=_lazy("Login"), always_allow_post=True)
 def login(request, template_name='registration/login.html'):
 
     form = None
@@ -46,7 +46,7 @@ def login(request, template_name='registration/login.html'):
                     })
 
 
-@register_view(access=UserAccess.authenticated, always_available=True, title=_lazy("Logout"))
+@register_view(access=UserAccess.authenticated, always_available=True, title=_lazy("Logout"), always_allow_post=True)
 def logout(request, template_name='registration/logout.html'):
 
     logout_session(request)

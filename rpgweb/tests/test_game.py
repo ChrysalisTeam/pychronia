@@ -2899,6 +2899,8 @@ class TestHttpRequests(BaseGameTestCase):
 
     def test_encyclopedia_behaviour(self):
 
+        self._reset_django_db()
+
         url_base = reverse(views.view_encyclopedia, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID))
 
         for login in ("master", "guy1", None):
@@ -2909,7 +2911,7 @@ class TestHttpRequests(BaseGameTestCase):
 
             response = self.client.get(url_base + "?search=animal")
             assert response.status_code == 200
-            assert "under repair" in response.content.decode("utf8") # no search results
+            assert "have access to" in response.content.decode("utf8") # no search results
 
             self.dm.set_game_state(True)
 
