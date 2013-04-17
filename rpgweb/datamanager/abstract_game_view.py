@@ -364,21 +364,21 @@ class AbstractGameView(object):
         relevant_args = self._try_coercing_arguments_to_func(data=unfiltered_params, func=callback) # might raise UsageError
         return (callback, relevant_args)
 
-    @transaction_watcher # IMPORTANT
     def _execute_game_action_callback(self, action_name, unfiltered_params):
         """
-        Might raise any kind of exception.
+        Might raise any kind of exception. 
+        
+        Method to be overriden.
         """
+        assert self.datamanager.is_in_transaction()
         callback_name = self.GAME_ACTIONS[action_name]["callback"]
         (callback, relevant_args) = self._resolve_callback_callargs(callback_name=callback_name, unfiltered_params=unfiltered_params)
         res = callback(**relevant_args) # might fail
         return res
 
-    @transaction_watcher
-    def execute_game_action_callback(self, action_name, unfiltered_params):
-        """Public interface, just for transaction watching in tests atm..."""
-        return self._execute_game_action_callback(action_name=action_name,
-                                                  unfiltered_params=unfiltered_params)
+
+    # for that base class, no special decorator is needed, but override this in subclasses #
+    execute_game_action_callback = _execute_game_action_callback
 
 
     def _try_processing_formless_game_action(self, data):

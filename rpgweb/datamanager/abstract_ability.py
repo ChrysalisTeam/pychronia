@@ -76,7 +76,7 @@ class AbstractAbility(AbstractAbilityBasesAdapter):
 
         return self.process_action_through_middlewares(action_name=action_name, method=flattened_method, params=params)
 
-    @transaction_watcher # IMPORTANT
+
     def _execute_game_action_callback(self, action_name, unfiltered_params):
         if not self.has_action_middlewares_activated(action_name=action_name):
             # slight optimization, we bypass all the middlewares chain
@@ -86,6 +86,10 @@ class AbstractAbility(AbstractAbilityBasesAdapter):
             callback_name = self.GAME_ACTIONS[action_name]["callback"]
             (callback, relevant_args) = self._resolve_callback_callargs(callback_name=callback_name, unfiltered_params=unfiltered_params)
             return self._execute_game_action_with_middlewares(action_name=action_name, method=callback, **relevant_args)
+
+    # We add transaction watching, since an ability is half-datamanager actually #
+    execute_game_action_callback = transaction_watcher(_execute_game_action_callback)
+
 
 
     def _process_standard_request(self, request, *args, **kwargs):

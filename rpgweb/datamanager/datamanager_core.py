@@ -36,6 +36,9 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
             transaction.abort() # top level
             self.check_no_pending_transaction() # AFTER REAL ROLLBACK
 
+    def is_in_transaction(self):
+        return self._in_transaction
+
     def check_no_pending_transaction(self):
         assert not self._in_transaction, self._in_transaction
         assert not self.connection._registered_objects, repr(self.connection._registered_objects)

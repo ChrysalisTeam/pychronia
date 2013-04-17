@@ -409,7 +409,7 @@ class TestDatamanager(BaseGameTestCase):
         # TODO FIXME - extend this check action methods of all ABILITIES !!! FIXME
 
         for attr in dir(GameDataManager):
-            if attr.startswith("_") or attr in "begin rollback commit close check_no_pending_transaction".split():
+            if attr.startswith("_") or attr in "begin rollback commit close check_no_pending_transaction is_in_transaction".split():
                 continue
 
             # we remove class/static methods, and some utilities that don't need decorators.
@@ -1634,7 +1634,7 @@ class TestDatamanager(BaseGameTestCase):
         # self.assertEqual(self.dm.get_audio_message_properties("request_for_report_teldorium")["new_messages_notification_for_user"], None)
 
         self.assertEqual(len(self.dm.get_all_next_audio_messages()), 0)
-        
+
         assert self.dm.has_read_current_playlist("guy4") # empty playlist ALWAYS read
         assert self.dm.has_read_current_playlist("guy3")
 
@@ -3240,9 +3240,9 @@ class TestGameViewSystem(BaseGameTestCase):
         assert request.datamanager.get_event_count("PROCESS_HTML_REQUEST") == 1
         assert request.datamanager.get_event_count("EXECUTE_GAME_ACTION_WITH_MIDDLEWARES") == 1
 
-    
+
     def test_gameview_novelty_tracking(self):
-        
+
         view_url = reverse(views.runic_translation, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID)) # access == character only
 
         # first a "direct action" html call
@@ -3251,10 +3251,10 @@ class TestGameViewSystem(BaseGameTestCase):
         request.datamanager._set_user("master")
 
         runic_translation = request.datamanager.instantiate_ability("runic_translation")
-        
+
         res = runic_translation(request)
         assert res.status_code == 302 # access not allowed
-        
+
         assert not runic_translation.has_user_accessed_view(runic_translation.datamanager)
 
         request.datamanager._set_user("guy1")
@@ -3801,20 +3801,15 @@ class TestActionMiddlewares(BaseGameTestCase):
 class TestSpecialAbilities(BaseGameTestCase):
 
     def test_generic_ability_features(self):
+        # ability is half-view half-datamanager, so beware about zodb sessions...
 
         assert AbstractAbility.__call__ == AbstractGameView.__call__ # must not be overlaoded, since it's decorated to catch exceptions
 
         assert AbstractAbility.__call__._is_under_readonly_method # NO transaction_watcher, must be available in readonly mode too
 
-        assert AbstractGameView._execute_game_action_callback._is_under_transaction_watcher
-
-        # ability is half-view half-datamanager, so beware about zodb sessions...
-        assert AbstractAbility._execute_game_action_callback._is_under_transaction_watcher
+        assert AbstractAbility.execute_game_action_callback._is_under_transaction_watcher
         assert AbstractAbility._perform_lazy_initializations._is_under_transaction_watcher # just for tests...
         assert AbstractAbility.process_admin_request._is_under_transaction_watcher
-
-
-
 
 
     @for_ability(runic_translation)
