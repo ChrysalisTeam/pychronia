@@ -54,25 +54,15 @@ class GameGlobalParameters(BaseDataManager):
 
     @readonly_method
     def is_game_started(self):
+        """
+        This is meant to block players, not master or other "back office" actors.
+        """
         return self.get_global_parameter("game_is_started")
 
     @transaction_watcher
     def set_game_state(self, started):
         self.data["global_parameters"]["game_is_started"] = started
 
-    @readonly_method # TODO FIXME TEST THIS UTIL!!
-    def determine_actual_game_writability(self):
-        if self.is_game_started():
-            return dict(writable=True,
-                        reason=None)
-        else:
-            return dict(writable=False,
-                        reason=_("Website currently in read-only mode, for maintenance."))
-
-    @readonly_method
-    def is_game_writable(self):
-        """Summary between the state of the game, and the permissions of current user!"""
-        return self.determine_actual_game_writability()["writable"]
 
 
 CURRENT_USER = object() # placeholder for use in method signatures
@@ -116,7 +106,7 @@ class CurrentUserHandling(BaseDataManager):
         return username
 
 
-    @readonly_method
+    @readonly_method # TODO FIXME TEST THIS UTIL!!
     def determine_actual_game_writability(self):
         if not self.user.has_write_access:
             if self.user.is_impersonation:
@@ -126,8 +116,20 @@ class CurrentUserHandling(BaseDataManager):
             return dict(writable=False,
                         reason=reason)
         else:
-            return super(CurrentUserHandling, self).determine_actual_game_writability()
+            if self.is_game_started() or self.is_master(): # master is NOT impacted by game state
+                return dict(writable=True,
+                            reason=None)
+            else:
+                return dict(writable=False,
+                            reason=_("Website currently in read-only mode, for maintenance."))
         assert False
+
+    @readonly_method
+    def is_game_writable(self):
+        """Summary between the state of the game, and the permissions of current user!"""
+        return self.determine_actual_game_writability()["writable"]
+
+
 
 @register_module
 class FlexibleTime(BaseDataManager): # TODO REFINE
