@@ -524,6 +524,38 @@ class TestDatamanager(BaseGameTestCase):
             self.assertTrue(now - timedelta(seconds=1) < now2 < now + timedelta(seconds=1))
 
 
+    @for_core_module(CurrentUserHandling)
+    def test_game_writability_summarizer(self):
+        
+        self._set_user("guy1")
+        res = self.dm.determine_actual_game_writability()
+        assert res == dict(writable=True,
+                            reason=None)
+
+        self.dm.propose_friendship("guy1", "guy2")
+        self.dm.propose_friendship("guy2", "guy1")
+        self._set_user(random.choice(("master", "guy2")), impersonation_target="guy1", impersonation_writability=False)
+        res = self.dm.determine_actual_game_writability()
+        assert not res["writable"]
+        assert res["reason"]
+        assert not self.dm.is_game_writable()
+
+        self.dm.set_game_state(False)
+
+        self._set_user("master")
+        res = self.dm.determine_actual_game_writability()
+        assert res["writable"]
+        assert not res["reason"]
+        assert self.dm.is_game_writable()
+
+        self._set_user("guy1")
+        res = self.dm.determine_actual_game_writability()
+        assert not res["writable"]
+        assert res["reason"]
+        assert not self.dm.is_game_writable()
+
+
+
 
     @for_core_module(CharacterHandling)
     def test_character_handling(self):
