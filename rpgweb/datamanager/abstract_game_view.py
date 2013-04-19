@@ -535,6 +535,8 @@ class AbstractGameView(object):
         self.args = args
         self.kwargs = kwargs
 
+        request.processed_view = self # needed for menu building and template context processor, later
+
     def _post_request(self):
         del self.request, self.args, self.kwargs # cleanup
 

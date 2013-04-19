@@ -52,7 +52,7 @@ class ZodbTransactionMiddleware(object):
 
         assert hasattr(request, 'session'), "The game authentication middleware requires session middleware to be installed. Edit your MIDDLEWARE_CLASSES setting to insert 'django.contrib.sessions.middleware.SessionMiddleware'."
 
-        request.processed_view = view_func # useful for computation of game menus
+        request.process_view = None # GameView instance will attache itself here on execution
 
         if view_kwargs.has_key("game_instance_id"):
             # TOFIX select the proper subtree of ZODB

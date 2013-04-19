@@ -28,7 +28,7 @@ def rpgweb_template_context(request):
         online_users = datamanager.get_online_users() # usernames are fine // to test: (datamanager.get_character_usernames() * 2)
         menus = menus_module.generate_filtered_menu(request)
 
-        view_name = request.processed_view.NAME # thanks to our middleware
+        view_name = request.processed_view.NAME # thanks to game view __call__()
         help_keyword = None ## FIXME
         ##if datamanager.get_help_page(view_name):
         ##    help_keyword = view_name

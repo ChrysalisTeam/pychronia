@@ -62,7 +62,7 @@ def _generate_web_menu(request, menu_entry_generator):
 
     # # Special additions to menu entries ##
 
-    processed_view = request.processed_view # thanks to our middleware
+    processed_view = getattr(request, "processed_view", None) # GameView instance set if said view was executed
 
     ''' FIXME - we must beware what messages are considered exactly
     if user.is_authenticated and processed_view != views.conversation:
@@ -73,7 +73,7 @@ def _generate_web_menu(request, menu_entry_generator):
         message_suffix = u""
     '''
 
-    if user.is_authenticated and processed_view is not views.chatroom:
+    if user.is_authenticated and processed_view.NAME != views.chatroom.NAME:
         # same for chatroom
         num_chatters = len(request.datamanager.get_chatting_users(exclude_current=True))
         chatroom_suffix = u"(%d)" % num_chatters
