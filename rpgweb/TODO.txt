@@ -5,7 +5,7 @@
 
 - auto test all forms with also inspect.getsourcelines(object) etc.
 
-- test determine_actual_game_writability() and such
+
 
 - messaging reply/resend + templates + filtering?
 - add a way to disable sent messages by game master, in case of trouble
@@ -53,6 +53,8 @@
 - ability for users to transfer their objects to someone else DONE
 - add autolinks for email addresses in rich texts
 - add preview of composed message in ajax frame DONE (but ugly css)
+- test determine_actual_game_writability() and such DONE
+
 
 ====================
 

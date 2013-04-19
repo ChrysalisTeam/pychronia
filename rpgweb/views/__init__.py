@@ -119,7 +119,7 @@ def view_help_page(request, keyword, template_name='generic_operations/help_page
         if keyword in datamanager.get_game_views():
             token = datamanager.get_game_view_access_token(keyword)
             if token == AccessResult.available: # IMPORTANT
-                entry = datamanager.get_help_page(keyword)
+                entry = datamanager.get_categorized_static_page(datamanager.HELP_CATEGORY, keyword)
                 if entry:
                     allowed_entry = entry
 

@@ -2543,17 +2543,26 @@ class TestDatamanager(BaseGameTestCase):
         del GameDataManager.GAME_VIEWS_REGISTRY["_private_dummy_ability"] # important cleanup!!!
 
 
-    @for_core_module(HelpPages)
-    def test_help_pages(self):
 
-        utilities.check_is_restructuredtext(self.dm.get_help_page(" view_EncyClopedia ")) # tolerant fetching
+    @for_core_module(StaticPages)
+    def test_static_pages(self):
 
-        assert self.dm.get_help_page("qskiqsjdqsid") is None
+        utilities.check_is_restructuredtext(self.dm.get_categorized_static_page(category="help_pages", name="view_encyclopedia"))
 
-        assert "homepage" in self.dm.get_help_page_names()
-        for entry in self.dm.get_help_page_names():
-            utilities.check_is_slug(entry)
-            assert entry.lower() == entry
+        assert self.dm.get_categorized_static_page(category="help_pages", name="qskiqsjdqsid") is None
+        assert self.dm.get_categorized_static_page(category="badcategory", name="view_encyclopedia") is None
+        
+        assert "homepage" in self.dm.get_static_page_names_for_category("help_pages")
+
+        assert "lokon" not in self.dm.get_static_page_names_for_category("help_pages")
+        assert "lokon" in self.dm.get_static_page_names_for_category("encyclopedia")
+
+        assert sorted(self.dm.get_static_pages_for_category("help_pages").keys()) == sorted(self.dm.get_static_page_names_for_category("help_pages")) # same "random" sorting
+        
+        for key, value in self.dm.get_static_pages_for_category("help_pages").items():
+            assert "help_pages" in value["categories"]
+            utilities.check_is_slug(key)
+            assert key.lower() == key
 
 
     @for_core_module(GameEvents)
@@ -2917,7 +2926,7 @@ class TestHttpRequests(BaseGameTestCase):
         response = self.client.get(url)
         assert response.status_code == 200
 
-        assert self.dm.get_help_page("runic_translation")
+        assert self.dm.get_categorized_static_page(self.dm.HELP_CATEGORY, "runic_translation")
         url = reverse(views.view_help_page, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID,
                                                         keyword="runic_translation"))
         response = self.client.get(url)

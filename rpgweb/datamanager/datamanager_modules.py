@@ -3577,6 +3577,33 @@ class StaticPages(BaseDataManager):
         self.static_pages._check_database_coherency(**kwargs)
 
 
+    # bunch of standard categories #
+    HELP_CATEGORY = "help_pages"
+    CONTENT_CATEGORY = "content"
+
+
+    @readonly_method
+    def get_categorized_static_page(self, category, name):
+        assert " " not in category
+        assert " " not in name and name.lower() == name
+        if name not in self.static_pages:
+            return None
+        value = self.static_pages[name]
+        if category in value["categories"]:
+            return value
+        else:
+            return None # no leaks
+        assert False
+
+    @readonly_method
+    def get_static_page_names_for_category(self, category):
+        return [key for (key, value) in self.static_pages.get_all_data().items() if category in value["categories"]] # UNSORTED
+
+    @readonly_method
+    def get_static_pages_for_category(self, category):
+        return {key: value for (key, value) in self.static_pages.get_all_data().items() if category in value["categories"]}
+
+
     class StaticPagesManager(DataTableManager):
 
         TRANSLATABLE_ITEM_NAME = _lazy("static pages")
@@ -3634,46 +3661,6 @@ class StaticPages(BaseDataManager):
 
 
 
-
-@register_module
-class HelpPages(BaseDataManager):
-    """
-    Help pages are static pagest that share their names with GameViews, 
-    and they are meant to be displayed as help popups in the 
-    template of each view.
-    """
-
-    HELP_CATEGORY = "help_pages"
-
-    @readonly_method
-    def get_help_page(self, name):
-        """
-        Returns the rst entry, or None.
-        Fetching is case-insensitive.
-        """
-        key = name.lower().strip()
-        if name not in self.static_pages:
-            return None
-        value = self.static_pages[key]
-        if self.HELP_CATEGORY in value["categories"]:
-            return value
-        else:
-            return None # no leaks
-        assert False
-
-
-    @readonly_method
-    def get_help_page_names(self):
-        """
-        Mainly for tests.
-        """
-        return [key for (key, value) in self.static_pages.get_all_data().items() if self.HELP_CATEGORY in value["categories"]]
-
-
-
-
-
-
 @register_module
 class Encyclopedia(BaseDataManager):
 
@@ -3699,7 +3686,7 @@ class Encyclopedia(BaseDataManager):
 
         all_keywords = []
 
-        for (key, value) in self._get_encyclopedia_dict().items():
+        for (key, value) in self.get_static_pages_for_category(self.ENCYCLOPEDIA_CATEGORY).items():
             assert key.lower() == key # of course, since these are static pages...
             utilities.check_is_slug(key)
 
@@ -3732,7 +3719,7 @@ class Encyclopedia(BaseDataManager):
         Fetching is case-insensitive.
         """
         key = article_id.lower().strip()
-        article = self._get_encyclopedia_dict().get(key)
+        article = self.get_categorized_static_page(category=self.ENCYCLOPEDIA_CATEGORY, name=key)
         return article["content"] if article else None
 
 
@@ -3757,13 +3744,9 @@ class Encyclopedia(BaseDataManager):
         return all_article_ids
 
 
-    def _get_encyclopedia_dict(self):
-        return {key: value for (key, value) in self.static_pages.get_all_data().items() if self.ENCYCLOPEDIA_CATEGORY in value["categories"]}
-
     @readonly_method
     def get_encyclopedia_article_ids(self):
-        return self._get_encyclopedia_dict().keys()
-
+        return self.get_static_page_names_for_category(self.ENCYCLOPEDIA_CATEGORY)
 
     @readonly_method
     def get_encyclopedia_keywords_mapping(self, excluded_link=None):
@@ -3772,7 +3755,7 @@ class Encyclopedia(BaseDataManager):
         of targeted article ids.
         """
         mapping = {}
-        for article_id, article in self._get_encyclopedia_dict().items():
+        for article_id, article in self.get_static_pages_for_category(self.ENCYCLOPEDIA_CATEGORY).items():
             if article_id == excluded_link:
                 continue # we skip links to the current article of course
             for keyword in article["keywords"]:

@@ -29,9 +29,9 @@ def rpgweb_template_context(request):
         menus = menus_module.generate_filtered_menu(request)
 
         view_name = request.processed_view.NAME # thanks to our middleware
-        help_keyword = None
-        if datamanager.get_help_page(view_name):
-            help_keyword = view_name
+        help_keyword = None ## FIXME
+        ##if datamanager.get_help_page(view_name):
+        ##    help_keyword = view_name
 
         impersonation_capabilities = datamanager.get_current_user_impersonation_capabilities()
         impersonation_capabilities.update(impersonation_target_post_variable=IMPERSONATION_TARGET_POST_VARIABLE,
@@ -44,6 +44,10 @@ def rpgweb_template_context(request):
         if len(levels) == 1:
             notification_type = levels[0]
 
+
+        # auto information
+        ## FIXME action_explanations = request.processed_view.klass(request.datamanager).get_game_actions_explanations() # we're forced to reinstantiate the view...
+
         return {'game_instance_id': datamanager.game_instance_id,
                 
                 'fallback_title': request.processed_view.TITLE,
@@ -51,6 +55,7 @@ def rpgweb_template_context(request):
                 'user': datamanager.user,
                 'game_is_writable': writability_data["writable"],
                 'is_mobile_page': request.is_mobile,
+
                 'online_users': online_users,
 
                 'menus': menus.submenus if menus else [],
