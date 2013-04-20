@@ -10,7 +10,6 @@ try:
 except ImportError:
     pass
 
-
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = None # TO OVERRIDE
 
@@ -114,7 +113,10 @@ INSTALLED_APPS = [
     'sekizai',
 
     'rpgweb_common', # common templates, tags, static files etc.
+    
+    'django_wsgiserver',
 ]
+ADMIN_MEDIA_PREFIX = "/admin/" # FIXME - temp compatibility with wsgi server
 
 
 AUTO_RENDER_SELECT2_STATICS = False

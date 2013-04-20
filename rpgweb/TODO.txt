@@ -3,6 +3,16 @@
 
 ** NEW **
 
+
+BUGLETS:
+- The requested content cannot be loaded. Please try again later. (if markitup empty sent to preview)
+- dataset.size not defined on first launch of world map
+- bad assert self.datamanager.is_in_transaction() in res = self.execute_game_action_callback(action_name=action_name, unfiltered_params=data)
+- bug report : Application error (please consider reporting that bug) - ReferenceError: False is not defined
+- wordd scan_form entry is dead : assert NewFormClass, new_action_name # important, not all actions have form classes available
+
+
+
 - auto test all forms with also inspect.getsourcelines(object) etc.
 
 - normalize all setup methods to make game file paths absolute inside GAME_FILES_ROOT
