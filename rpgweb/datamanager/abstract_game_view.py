@@ -563,8 +563,8 @@ class AbstractGameView(object):
     @readonly_method
     def get_game_actions_explanations(self):
         """
-        Must return a tuple (action_title, explanations) 
-        where explanation is a list of (per-middleware) lists of strings.
+        Must return a list of tuples (action_title, explanations) 
+        where explanations is a list of (per-middleware) lists of strings.
         """
         return []
 

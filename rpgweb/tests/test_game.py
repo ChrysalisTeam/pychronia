@@ -2552,7 +2552,7 @@ class TestDatamanager(BaseGameTestCase):
         assert self.dm.get_categorized_static_page(category="help_pages", name="qskiqsjdqsid") is None
         assert self.dm.get_categorized_static_page(category="badcategory", name="view_encyclopedia") is None
         
-        assert "homepage" in self.dm.get_static_page_names_for_category("help_pages")
+        assert "help-homepage" in self.dm.get_static_page_names_for_category("help_pages")
 
         assert "lokon" not in self.dm.get_static_page_names_for_category("help_pages")
         assert "lokon" in self.dm.get_static_page_names_for_category("encyclopedia")
@@ -2785,7 +2785,7 @@ class TestHttpRequests(BaseGameTestCase):
                         ROOT_GAME_URL + "/messages/view_single_message/instructions_bewitcher/": None,
                         ROOT_GAME_URL + "/secret_question/guy3/": dict(secret_answer="Fluffy", target_email="guy3@pangea.com"),
                         ROOT_GAME_URL + "/webradio_applet/": dict(frequency=self.dm.get_global_parameter("pangea_radio_frequency")),
-                        reverse(views.view_help_page, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID, keyword="homepage")): None,
+                        reverse(views.view_help_page, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID, keyword="help-homepage")): None,
                         }
 
         for url, value in special_urls.items():
@@ -2797,7 +2797,7 @@ class TestHttpRequests(BaseGameTestCase):
                 response = self.client.get(url)
 
             ##print ("WE TRY TO LOAD ", url, response.__dict__)
-            self.assertNotContains(response, 'class="error_notifications"', msg_prefix=response.content)
+            self.assertNotContains(response, 'class="error_notifications"', msg_prefix=response.content[0:300])
             self.assertEqual(response.status_code, 200, url + " | " + str(response.status_code))
 
 
@@ -2907,6 +2907,8 @@ class TestHttpRequests(BaseGameTestCase):
 
 
     def test_specific_help_pages_behaviour(self):
+
+        self._reset_django_db()
         self.dm.set_game_state(True)
 
         # TODO FIXME - use Http403 exceptions instead, when new django version is out !!
@@ -2922,18 +2924,18 @@ class TestHttpRequests(BaseGameTestCase):
         assert response.status_code == 404
 
         url = reverse(views.view_help_page, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID,
-                                                        keyword="homepage"))
+                                                        keyword="help-homepage"))
         response = self.client.get(url)
         assert response.status_code == 200
 
-        assert self.dm.get_categorized_static_page(self.dm.HELP_CATEGORY, "runic_translation")
+        assert self.dm.get_categorized_static_page(self.dm.HELP_CATEGORY, "help-runic_translation")
         url = reverse(views.view_help_page, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID,
-                                                        keyword="runic_translation"))
+                                                        keyword="help-runic_translation"))
         response = self.client.get(url)
         assert response.status_code == 404 # ACCESS FORBIDDEN
 
         url = reverse(views.view_help_page, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID,
-                                                        keyword="logo_animation"))
+                                                        keyword="help-logo_animation"))
         response = self.client.get(url)
         assert response.status_code == 404 # view always available, but no help text available for it
 

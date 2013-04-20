@@ -1,0 +1,3 @@
+{% if content_blocks.bottom_content.name %}
+    {% include "utilities/static_page_block.html" with article_name=content_blocks.bottom_content.name article_data=content_blocks.bottom_content.data %}
+{% endif %}

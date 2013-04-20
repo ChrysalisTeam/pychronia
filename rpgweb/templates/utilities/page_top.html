@@ -1,0 +1,20 @@
+{% load i18n %}
+
+{% if content_blocks.top_content.name %}
+    {% include "utilities/static_page_block.html" with article_name=content_blocks.top_content.name article_data=content_blocks.top_content.data %}
+{% endif %}
+
+{% if action_explanations %}
+    <h3>{% trans "Action conditions" %}</h3>
+    {% for action_name, explanations in action_explanations %}
+    <div>
+    	<em>{{ action_name }}</em>
+    	<ul>
+    		{% for strings_list in explanations %}
+    		<li>{{ strings_list|join:" " }}</li>
+    		{% endfor %}
+    	</ul>
+    </div>
+
+    {% endfor %}
+{% endif %}

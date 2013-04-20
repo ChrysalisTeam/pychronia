@@ -9,9 +9,12 @@
     {% usekwacro main_panel_start frame_class="big_frame" %}
 
         {% include "utilities/page_title.html" %}
+        {% include "utilities/page_top.html" %}
 
         {% block content %}
         {% endblock %}
+
+        {% include "utilities/page_bottom.html" %}
 
     {% usekwacro main_panel_end %}
 

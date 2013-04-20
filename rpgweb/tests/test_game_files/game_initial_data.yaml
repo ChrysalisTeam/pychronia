@@ -484,14 +484,15 @@ static_pages:
 
     # STATIC SITE CONTENT
 
-    home_message:
+    top-homepage:
+        categories: "content"
         content: |
           Welcome to *Anthropia Networks*
 
 
     # HELP PAGES #
 
-    homepage:
+    help-homepage:
         categories: "help_pages" # works
         content: |
           Well, I dunno what we could say about that page, akshully...
@@ -506,17 +507,17 @@ static_pages:
 
           Automatic encyclopedia links work too, for example if I write lokon...
 
-    view_encyclopedia:
+    help-view_encyclopedia:
         categories: ["help_pages"]
         content: |
           That encyclopedia is broken, that's a fact...
 
-    runic_translation:
+    help-runic_translation:
         categories: ["help_pages"]
         content:  |
           This manual page requires advanced permissions...
 
-    unexisting_view_entry:
+    help-unexisting_view_entry:
         categories: ["help_pages"]
         content:       |
           It doesn't raise errors, of course, but could be detected by game checking systems.

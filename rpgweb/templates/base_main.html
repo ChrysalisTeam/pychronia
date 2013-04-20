@@ -127,7 +127,10 @@
                     });
 
 
-        $('*[title]').qtip({ style: { name: 'cream', tip: true } }); // lots of options remain
+        $('*[title]').qtip({
+        	                 style: { name: 'cream', tip: true },
+                             hide: { when: 'mouseout', fixed: true, delay: 1000 }
+                           }); // lots of options remain
 
 
         zoomy_options = {
@@ -518,15 +521,16 @@ HOY ma guy
 
 
 {% block right_big_icon_panel %}
-{% if help_keyword %}
-<a href="{% game_view_url "rpgweb.views.view_help_page" keyword=help_keyword %}" class="fancybox fancybox.ajax" title="{{ page_title }}">
+{% if content_blocks.help_page.data %}
+<a href="{% game_view_url "rpgweb.views.view_help_page" keyword=content_blocks.help_page.name %}" class="fancybox fancybox.ajax" title="{{ page_title }}">
 <div class="big_icon_panel">
     <img src="{{ STATIC_URL }}MetalRadiance/img/icons/question_mark.png"/>
 </div>
 </a>
 {% else %}
 <div class="big_icon_panel">
-    <img src="{{ STATIC_URL }}MetalRadiance/img/icons/question_mark_disabled.png"/>
+    <img src="{{ STATIC_URL }}MetalRadiance/img/icons/question_mark_disabled.png"
+         {% if display_admin_tips %}title="{% trans "Unexisting help page:" %} '{{ content_blocks.help_page.name }}'"{% endif %}/>
 </div>
 {% endif %}
 {% endblock %}
@@ -535,14 +539,7 @@ HOY ma guy
 
 {% block panels %}
 
-    {% usekwacro main_panel_start frame_class="giant_frame" %}
-
-        {% include "utilities/page_title.html" %}
-
-        {% block content %}
-        {% endblock %}
-
-    {% usekwacro main_panel_end %}
+    {# TO BE OVERRIDDEN #}
 
 {% endblock %}
 

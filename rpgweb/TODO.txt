@@ -5,7 +5,7 @@
 
 - auto test all forms with also inspect.getsourcelines(object) etc.
 
-
+- normalize all setup methods to make game file paths absolute inside GAME_FILES_ROOT
 
 - messaging reply/resend + templates + filtering?
 - add a way to disable sent messages by game master, in case of trouble
@@ -17,7 +17,7 @@
 
 - javascript-obfuscated-popuped "report bug" div in mini footer WIP
 
-- add auto-generation of ActionHandler help pages (via action middlewares) WIP
+- refactoring of loggers, at top and DM level
 
 - filling of headers with game info and notifications
 - adding novelty tags everywhere (menu, radio and help icons, events...)
@@ -26,6 +26,7 @@
 
 - check what happens when calling setlanguage flags from a "POST-access-only" page like private files ??
 - tweak access checking of gameviews, so that if impersonation we get no error message, and just get redirected to homepage of impersonated user
+
 
 
 ** WIP, needs cosmetics **
@@ -54,6 +55,8 @@
 - add autolinks for email addresses in rich texts
 - add preview of composed message in ajax frame DONE (but ugly css)
 - test determine_actual_game_writability() and such DONE
+- add auto-generation of ActionHandler help pages (via action middlewares) DONE
+
 
 
 ====================

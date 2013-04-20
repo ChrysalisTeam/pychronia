@@ -16,24 +16,21 @@ def rpgweb_template_context(request):
 
     if hasattr(request, "datamanager") and request.datamanager:
 
-        datamanager = request.datamanager
+        dm = request.datamanager
 
-        ### datamanager.user.add_warning("THIS IZ A TEST")
+        ### dm.user.add_warning("THIS IZ A TEST")
 
         # WARNING - must be BEFORE messages retrieval!
-        writability_data = datamanager.determine_actual_game_writability()
+        writability_data = dm.determine_actual_game_writability()
         if writability_data["reason"]:
-            datamanager.user.add_warning(writability_data["reason"]) # a reason for no-writability most probably
+            dm.user.add_warning(writability_data["reason"]) # a reason for no-writability most probably
 
-        online_users = datamanager.get_online_users() # usernames are fine // to test: (datamanager.get_character_usernames() * 2)
+        online_users = dm.get_online_users() # usernames are fine // to test: (dm.get_character_usernames() * 2)
         menus = menus_module.generate_filtered_menu(request)
 
-        view_name = request.processed_view.NAME # thanks to game view __call__()
-        help_keyword = None ## FIXME
-        ##if datamanager.get_help_page(view_name):
-        ##    help_keyword = view_name
+        view_name = request.processed_view.NAME # set thanks to game view __call__()
 
-        impersonation_capabilities = datamanager.get_current_user_impersonation_capabilities()
+        impersonation_capabilities = dm.get_current_user_impersonation_capabilities()
         impersonation_capabilities.update(impersonation_target_post_variable=IMPERSONATION_TARGET_POST_VARIABLE,
                                           impersonation_writability_post_variable=IMPERSONATION_WRITABILITY_POST_VARIABLE)
 
@@ -45,28 +42,36 @@ def rpgweb_template_context(request):
             notification_type = levels[0]
 
 
-        # auto information
-        ## FIXME action_explanations = request.processed_view.klass(request.datamanager).get_game_actions_explanations() # we're forced to reinstantiate the view...
+        action_explanations = request.processed_view.get_game_actions_explanations()
 
-        return {'game_instance_id': datamanager.game_instance_id,
-                
+        return {'game_instance_id': dm.game_instance_id,
+
                 'fallback_title': request.processed_view.TITLE,
 
-                'user': datamanager.user,
+                'user': dm.user,
                 'game_is_writable': writability_data["writable"],
+                'display_admin_tips': dm.user.is_superuser or dm.is_master(dm.user.real_username), # tops also visible when impersonation!
+                
+                'impersonation_capabilities': impersonation_capabilities,
+
+                'menus': menus.submenus if menus else [],
+
                 'is_mobile_page': request.is_mobile,
 
                 'online_users': online_users,
 
-                'menus': menus.submenus if menus else [],
-
-                'help_keyword': help_keyword,
-
-                'impersonation_capabilities': impersonation_capabilities,
 
                 # replacement of django.contrib.messages middleware
                 'notification_type': notification_type,
                 'notifications': notifications,
+
+                'content_blocks': dict(help_page=dict(name="help-" + view_name,
+                                                      data=dm.get_categorized_static_page(dm.HELP_CATEGORY, "help-" + view_name)),
+                                       top_content=dict(name="top-" + view_name,
+                                                       data=dm.get_categorized_static_page(dm.CONTENT_CATEGORY, "top-" + view_name)),
+                                       bottom_content=dict(name="bottom-" + view_name,
+                                                           data=dm.get_categorized_static_page(dm.CONTENT_CATEGORY, "bottom-" + view_name))),
+                'action_explanations': action_explanations,
 
                 # useful constants
                 'None': None,

@@ -196,6 +196,7 @@ def rich_text(context, content, initial_header_level=None, report_level=None, ex
     return _enriched_text(request.datamanager, content, initial_header_level=initial_header_level, report_level=report_level, excluded_link=excluded_link)
 
 
+'''
 @register.simple_tag(takes_context=True)
 def static_page(context, article_name, initial_header_level=None):
     """
@@ -216,7 +217,7 @@ def static_page(context, article_name, initial_header_level=None):
         return "" # normal users see nothing here
 
     return _enriched_text(request.datamanager, content, initial_header_level=initial_header_level, excluded_link=article_name)
-
+'''
 
 
 
