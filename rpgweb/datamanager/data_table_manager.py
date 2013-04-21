@@ -84,7 +84,7 @@ class DataTableManager(object):
     @readonly_method
     def get_all_data(self, as_sorted_list=False):
         if not as_sorted_list:
-            return copy.copy(self._table) # shallow copy of dict
+            return dict(**self._table) # shallow copy of dict
         else:
             mylist = self._table.items()
             mylist.sort(key=self._sorting_key)
@@ -125,7 +125,7 @@ class DataTableManager(object):
 
     @readonly_method
     def copy(self):
-        return copy.copy(self._table) # thus no WRITE on dict
+        return dict(**self._table) # thus no WRITE on dict
 
     # transaction watching here would make no sense
     def __getattr__(self, name):
