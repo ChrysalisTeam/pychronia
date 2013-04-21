@@ -1,5 +1,5 @@
 /*
-* Zoomy 1.4.6 - jQuery plugin
+* Zoomy 2.0.0 - jQuery plugin
 * http://zoomy.me
 *
 * Copyright (c) 2012 Jacob Lowe (http://redeyeoperations.com)
@@ -41,7 +41,10 @@
       border      : '5px solid #999',
       zoomInit    : null,  //callback for when zoom initializes
       zoomStart   : null, // callback for when zoom starts
-      zoomStop    : null // callback for when the zoom ends
+      zoomStop    : null, // callback for when the zoom ends
+	    fixed       : false, // display Zoomy on a fixed position
+      fixedX      : 0, // coordinates for fixed Zoomy
+      fixedY      : 0
     },
       //Test for touch
       touch = (('ontouchstart' in window) || window.DocumentTouch && document instanceof DocumentTouch) ? true : false,
@@ -103,6 +106,11 @@
         css: function(a){
 
           if(typeof a !== 'undefined' && a.length > 0){
+		  
+			if (options.fixed) {
+				a[2] = options.fixedX;
+				a[3] = options.fixedY;
+          	}
 
             var translate = 'translate3d(' + a[2]+ 'px, ' + a[3] + 'px, 0)';
             var movement  = (cssTranforms) ? {
@@ -307,7 +315,7 @@
             .css({
               height          : options.zoomSize / 2,
               width           : options.zoomSize - 10,
-              margin          : ($.browser.msie && parseInt($.browser.version, 10) === 9) ? 0 : '5px auto',
+              margin          : '5px auto',
               'border-radius' : style.round(0)
           });
         },
@@ -372,20 +380,39 @@
           ZoomyS[id].css = css;
       
           if (!options.glare) {
-            zoom.children('span').css({
-              height  : options.zoomSize - 10,
-              width   : options.zoomSize - 10
-            });
+          	if (options.fixed) {
+              	zoom.children('span').css({
+	              height  : options.zoomSize - 10,              
+	              width   : options.zoomSize - 10
+	            });
+           } else {
+				zoom.children('span').css({
+				  height  : options.zoomSize - 10,
+				  width   : options.zoomSize - 10
+				});
+           }
+            
           }
 
-          zoom.css({
-            height          : options.zoomSize,
-            width           : options.zoomSize,
-            top             : 0,
-            left            : 0,
-            'border-radius' : style.round(undefined, border[1]),
-            border          : border[0]
-          });
+          if (options.fixed) {
+		  	zoom.css({
+	            height          : options.zoomSize,
+	            width           : options.zoomSize,
+	            top             : 0,
+	            left            : 0,
+	            'border-radius' : style.round(undefined, border[1]),
+	            border          : border[0]
+	        });
+		  } else {
+		  	zoom.css({
+	            height          : options.zoomSize,
+	            width           : options.zoomSize,
+	            top             : 0,
+	            left            : 0,
+	            'border-radius' : style.round(undefined, border[1]),
+	            border          : border[0]
+	        });
+		  }
 
           img.css('margin', '0px');
           img.one("load", function () {
@@ -397,7 +424,7 @@
             }
 
           }).each(function () {
-            if (this.complete || ($.browser.msie && parseInt($.browser.version, 10) === 6)) {
+            if (this.complete) {
               $(this).trigger("load");
             }
           });
@@ -444,7 +471,7 @@
               
             }).each(function () {
             
-              if (this.complete || ($.browser.msie && parseInt($.browser.version, 10) === 6)) {
+              if (this.complete) {
               
                 $(this).trigger("load");
                 
@@ -701,7 +728,7 @@
         
           }).each(function () {
       
-            if (this.complete || ($.browser.msie && parseInt($.browser.version, 10) === 6)) {
+            if (this.complete) {
         
               $(this).trigger("load");
           
