@@ -31,11 +31,11 @@ radio_spots_editing = RadioSpotsEditing.as_view
 @register_view(access=UserAccess.master, title=_lazy("Game Events"))
 def game_events(request, template_name='administration/game_events.html'):
 
-    events = request.datamanager.get_game_events()
+    events = request.datamanager.get_game_events() # NOT A COPY - beware
 
     trans_events = []
     for event in events:
-        trans_event = dict(**event) # dont use dict.copy() else inner side effects
+        trans_event = dict(**event) # dont use dict.copy() or copy.copy() else inner side effects
         if trans_event["substitutions"]:
             trans_event["trans_message"] = _(trans_event["message"]) % utilities.SDICT(**trans_event["substitutions"])
         else:

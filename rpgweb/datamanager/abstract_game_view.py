@@ -370,7 +370,6 @@ class AbstractGameView(object):
         
         Method to be overriden.
         """
-        assert self.datamanager.is_in_transaction()
         callback_name = self.GAME_ACTIONS[action_name]["callback"]
         (callback, relevant_args) = self._resolve_callback_callargs(callback_name=callback_name, unfiltered_params=unfiltered_params)
         res = callback(**relevant_args) # might fail
