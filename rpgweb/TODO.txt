@@ -5,7 +5,7 @@
 
 
 BUGLETS:
-- The requested content cannot be loaded. Please try again later. (if markitup empty sent to preview)
+
 - dataset.size not defined on first launch of world map
 - bad assert self.datamanager.is_in_transaction() in res = self.execute_game_action_callback(action_name=action_name, unfiltered_params=data)
 - bug report : Application error (please consider reporting that bug) - ReferenceError: False is not defined
@@ -66,7 +66,7 @@ BUGLETS:
 - add preview of composed message in ajax frame DONE (but ugly css)
 - test determine_actual_game_writability() and such DONE
 - add auto-generation of ActionHandler help pages (via action middlewares) DONE
-
+- BUG The requested content cannot be loaded. Please try again later. (if markitup empty sent to preview) DONE
 
 
 ====================
