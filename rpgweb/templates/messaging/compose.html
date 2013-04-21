@@ -29,18 +29,23 @@ preview_message
 function display_preview() {}
 
 function preview_message() {
-	var rst = $("#id_default_body").val();
-	$.post("{% game_view_url "rpgweb.views.preview_message" %}",
-	       {content: rst},
-	       function(answer) {
-               $.fancybox({content: answer, // answer must be HTML here
-               	            //type: "inline",
-               	            autoDimensions: false,
-				            padding: "65px",
-				            width: "1000px",
-               	            });
+	var rst = $("#id_default_body").val().trim();
+	if (rst != "") {
+		$.post("{% game_view_url "rpgweb.views.preview_message" %}",
+		       {content: rst},
+		       function(answer) {
+		       	   answer = answer.trim(); // shouldn't be empty, since input was not...
+	               $.fancybox({content: answer, // answer must be HTML here
+	               	            //type: "inline",
+	               	            autoDimensions: false,
+					            padding: "65px",
+					            width: "1000px",
+	               	            });
 
-           });
+	           });
+	} else {
+		$.jnotify("{% trans "Nothing to preview" %}", "warning")
+	}
 }
 
 {% endaddtoblock %}

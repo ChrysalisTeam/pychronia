@@ -408,9 +408,9 @@ def preview_message(request):
 
     rst = request.REQUEST.get("content", _("No content submitted for display")) # we take from both GET and POST
 
-    html = advanced_restructuredtext(rst, initial_header_level=2, report_level=1) # we let ALL debug output here!!
+    html = advanced_restructuredtext(rst, initial_header_level=2, report_level=1).strip() # we let ALL debug output here!!
 
-    return HttpResponse(html) # only a snippet of html, no html/head/body tags
+    return HttpResponse(html) # only a snippet of html, no html/head/body tags - might be EMPTY
 
 
 @register_view(access=UserAccess.authenticated, title=_lazy("sssss"))
