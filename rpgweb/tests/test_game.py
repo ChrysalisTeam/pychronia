@@ -526,7 +526,7 @@ class TestDatamanager(BaseGameTestCase):
 
     @for_core_module(CurrentUserHandling)
     def test_game_writability_summarizer(self):
-        
+
         self._set_user("guy1")
         res = self.dm.determine_actual_game_writability()
         assert res == dict(writable=True,
@@ -1741,7 +1741,7 @@ class TestDatamanager(BaseGameTestCase):
         assert not self.dm.has_read_current_playlist("guy3")
 
 
-    def test_delayed_message_processing(self):
+    def test_delayed_message_processing_and_message_deletion(self):
 
         WANTED_FACTOR = 2 # we only double durations below
         params = self.dm.get_global_parameters()
@@ -1805,6 +1805,7 @@ class TestDatamanager(BaseGameTestCase):
         # forced sending of queued messages
         myid1 = self.dm.post_message(email("guy3"), email("guy2"), "yowh2", "qhsdhqsdh", attachment=None, date_or_delay_mn=(1.0 / WANTED_FACTOR, 2.0 / WANTED_FACTOR)) # 3s delay range
         myid2 = self.dm.post_message(email("guy3"), email("guy2"), "yowh2", "qhsdhqsdh", attachment=None, date_or_delay_mn=(1.0 / WANTED_FACTOR, 2.0 / WANTED_FACTOR)) # 3s delay range
+        assert myid1 != myid2
         self.assertEqual(len(self.dm.get_all_queued_messages()), 2)
 
         self.assertFalse(self.dm.force_message_sending("dummyid"))
@@ -1814,6 +1815,18 @@ class TestDatamanager(BaseGameTestCase):
         self.assertEqual(self.dm.get_all_queued_messages()[0]["id"], myid2)
         self.assertTrue(self.dm.get_dispatched_message_by_id(myid1))
 
+
+        # message deletion #
+        assert not self.dm.permanently_delete_message("badid")
+
+        assert self.dm.permanently_delete_message(myid1) # DISPATCHED MESSAGE DELETED
+        assert not self.dm.permanently_delete_message(myid1)
+        with pytest.raises(UsageError):
+            self.dm.get_dispatched_message_by_id(myid1) # already deleted
+
+        assert self.dm.permanently_delete_message(myid2) # QUEUED MESSAGE DELETED
+        assert not self.dm.permanently_delete_message(myid2)
+        assert not self.dm.get_all_queued_messages()
 
 
 
@@ -2551,14 +2564,14 @@ class TestDatamanager(BaseGameTestCase):
 
         assert self.dm.get_categorized_static_page(category="help_pages", name="qskiqsjdqsid") is None
         assert self.dm.get_categorized_static_page(category="badcategory", name="view_encyclopedia") is None
-        
+
         assert "help-homepage" in self.dm.get_static_page_names_for_category("help_pages")
 
         assert "lokon" not in self.dm.get_static_page_names_for_category("help_pages")
         assert "lokon" in self.dm.get_static_page_names_for_category("encyclopedia")
 
         assert sorted(self.dm.get_static_pages_for_category("help_pages").keys()) == sorted(self.dm.get_static_page_names_for_category("help_pages")) # same "random" sorting
-        
+
         for key, value in self.dm.get_static_pages_for_category("help_pages").items():
             assert "help_pages" in value["categories"]
             utilities.check_is_slug(key)

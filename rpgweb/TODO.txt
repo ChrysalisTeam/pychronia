@@ -4,31 +4,24 @@
 ** NEW **
 
 
-BUGLETS:
-- world scan_form entry is dead : assert NewFormClass, new_action_name # important, not all actions have form classes available DONE BUT NEEDS TEST COVERAGE
-
-
-- auto test all forms with also inspect.getsourcelines(object) etc.
-
+FEATURES
 - normalize all setup methods to make game file paths absolute inside GAME_FILES_ROOT
-
 - messaging reply/resend + templates + filtering?
-- add a way to disable sent messages by game master, in case of trouble
-
 - mobile version of site (-> refactor base_mobile to mimic base_web structure)
 - global page styles and messages for "readonly mode"
-
 - Add captcha to some special static pages ?
-
-- javascript-obfuscated-popuped "report bug" div in mini footer WIP
-
 - refactoring of loggers, at top and DM level
-
 - filling of headers with game info and notifications
 - adding novelty tags everywhere (menu, radio and help icons, events...)
 - adding of impersonation controls to site top WIP (needs JS code)
 - adding of impersonation to player menus (in generate..menu..())
 
+BUGLETS:
+- world scan_form entry is dead : assert NewFormClass, new_action_name # important, not all actions have form classes available DONE BUT NEEDS TEST COVERAGE
+- use {{ _("hi")|escapejs }} in JS everywhere instead of trans tag
+- remove dumb escape() calls from $.get request arguments
+- auto test all forms with also inspect.getsourcelines(object) etc.
+- javascript-obfuscated-popuped "report bug" div in mini footer WIP
 - check what happens when calling setlanguage flags from a "POST-access-only" page like private files ??
 - tweak access checking of gameviews, so that if impersonation we get no error message, and just get redirected to homepage of impersonated user
 
@@ -65,6 +58,7 @@ BUGLETS:
 - dataset.size not defined on first launch of world map - Bug report filed, disabling jnotify reports is a workaround
 - bug report : Application error (please consider reporting that bug) - ReferenceError: False is not defined DONE
 - bad assert self.datamanager.is_in_transaction() in res = self.execute_game_action_callback(action_name=action_name, unfiltered_params=data) DONE
+- add a way to DESTROY sent messages by game master, in case of trouble DONE
 
 
 ====================

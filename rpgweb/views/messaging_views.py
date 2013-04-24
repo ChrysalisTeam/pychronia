@@ -165,6 +165,7 @@ def _determine_template_display_context(datamanager, template_id):
                 can_reply=False,
                 can_recontact=False,
                 can_force_sending=False,
+                can_permanently_delete=False,
                 )
 
 
@@ -184,6 +185,7 @@ def _determine_message_display_context(datamanager, msg, is_pending):
                 can_reply=(visibility_reason == VISIBILITY_REASONS.recipient) if not is_pending else None,
                 can_recontact=(visibility_reason == VISIBILITY_REASONS.sender) if not is_pending else None,
                 can_force_sending=is_pending,
+                can_permanently_delete=datamanager.is_master(),
                 )
 
 def _determine_message_list_display_context(datamanager, messages, is_pending):
@@ -226,7 +228,7 @@ def all_queued_messages(request, template_name='messaging/messages.html'):
 @register_view(attach_to=all_queued_messages, title=_lazy("Force Message Sending"))
 def ajax_force_email_sending(request):
     # to be used by AJAX
-    msg_id = request.GET.get("id", None)
+    msg_id = request.REQUEST.get("id", None)
 
     # this should never fail, even is msg doesn't exist or is already transferred
     request.datamanager.force_message_sending(msg_id)
@@ -259,12 +261,22 @@ def conversation(request, template_name='messaging/conversation.html'):
 
 @register_view(attach_to=conversation, title=_lazy("Set Message Read State"))
 def ajax_set_message_read_state(request):
-
     # to be used by AJAX
-    msg_id = request.GET.get("id", None)
-    is_read = request.GET.get("is_read", None) == "1"
+    msg_id = request.REQUEST.get("id", None)
+    is_read = request.REQUEST.get("is_read", None) == "1"
 
     request.datamanager.set_message_read_state(msg_id=msg_id, is_read=is_read)
+
+    return HttpResponse("OK")
+    # in case of error, a "500" code will be returned
+
+
+@register_view(access=UserAccess.master, always_available=True, title=_lazy("Delete Message"))
+def ajax_permanently_delete_message(request):
+    # to be used by AJAX
+    msg_id = request.REQUEST.get("id", None)
+
+    request.datamanager.permanently_delete_message(msg_id=msg_id) # should never fail
 
     return HttpResponse("OK")
     # in case of error, a "500" code will be returned

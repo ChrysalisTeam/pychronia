@@ -1,5 +1,5 @@
 
-{% load i18n helpers markup %}  
+{% load i18n helpers markup %}
 
 {# TEMPLATE MEANT FOR INCLUSION IN REAL WEBPAGE #}
 
@@ -8,54 +8,58 @@
 <div id="{{ message.id|default:ctx.template_id }}" class="{% if ctx.has_read %}email_read{% else %}email_unread{% endif %} {% if not is_first %}cover_previous{% endif %}">
 
     <span class="message_operations">
-         
+
         {% if ctx.has_read != None %}
-            <a {% if ctx.has_read %}style="display: none;"{% endif %} class="mark_read_tag" onclick="set_message_read_state('{{ message.id|escapejs }}', true); return false;" href="#">{% trans "Mark as read" %}</a>   
-            <a {% if not ctx.has_read %}style="display: none;"{% endif %} class="mark_unread_tag" onclick="set_message_read_state('{{ message.id|escapejs }}', false); return false;" href="#">{% trans "Mark as unread" %}</a>                  
-        {% endif %}
-        
-        {% if ctx.can_force_sending %} 
-            <a onclick="force_email_sending('{{ message.id|escapejs }}', true); return false;" href="#">{% trans "Force sending" %}</a> 
+            <a {% if ctx.has_read %}style="display: none;"{% endif %} class="mark_read_tag" onclick="set_message_read_state('{{ message.id|escapejs }}', true); return false;" href="#">{% trans "Mark as read" %}</a>
+            <a {% if not ctx.has_read %}style="display: none;"{% endif %} class="mark_unread_tag" onclick="set_message_read_state('{{ message.id|escapejs }}', false); return false;" href="#">{% trans "Mark as unread" %}</a>
         {% endif %}
 
-        {% if ctx.can_reply or ctx.can_recontact %} 
-            <a href="{% game_view_url "rpgweb.views.compose_message" %}?parent_id={{ message.id|urlencode }}">{% if ctx.can_reply %}{% trans "Reply" %}{% else %}{% trans "Recontact" %}{% endif %}</a>    
+        {% if ctx.can_force_sending %}
+            <a onclick="force_email_sending('{{ message.id|escapejs }}', true); return false;" href="#">{% trans "Force sending" %}</a>
         {% endif %}
-          
-        {% if ctx.template_id %}   
+
+        {% if ctx.can_reply or ctx.can_recontact %}
+            <a href="{% game_view_url "rpgweb.views.compose_message" %}?parent_id={{ message.id|urlencode }}">{% if ctx.can_reply %}{% trans "Reply" %}{% else %}{% trans "Recontact" %}{% endif %}</a>
+        {% endif %}
+
+        {% if ctx.template_id %}
             <a href="{% game_view_url "rpgweb.views.compose_message" %}?use_template={{ ctx.template_id|urlencode }}">{% trans "Use template" %}</a>
         {% endif %}
-            
-    </span>  
+
+        {% if ctx.can_permanently_delete %}
+            <a href="#" onclick="permanently_delete_message('{{ message.id|escapejs }}'); return false;" >{% trans "Delete" %}</a>
+        {% endif %}
+
+    </span>
 
 
     <table style="margin:2px 24px; font-size:0.9em; line-height:0.9em;">
-        
+
         <tr>
         <td><strong>{% trans "From:" %}</strong></td>
         <td style="color:{% usercolor message.sender_email %};">{{ message.sender_email }}</td>
-        </tr>  
-    
+        </tr>
+
         <tr>
         <td><strong>{% trans "To:" %}</strong></td>
         <td>{{ message.recipient_emails|join:"; " }}</td>
-        </tr>               
-        
+        </tr>
+
         <tr>
         <td><strong>Date:</strong></td>
         <td>{{ message.sent_at|utctolocal|date:"d N Y - H:i:s" }}</td>  {%comment %} IF NEEDED {% load humanize %}{{ event.time|utctolocal|naturalday:"d/N/Y" }}{% endcomment %}
-        </tr>  
-        
+        </tr>
+
     </table>
 
-    
+
     <p style="color:{% usercolor message.sender_email %};">
         <strong>
             {% if ctx.was_intercepted %}{% trans "[intercepted]" %}{% endif %}
             {{ message.subject }}
         </strong>
     </p>
-    
+
     <div style="color:{% usercolor message.sender_email %};">
         {{ message.body|restructuredtext }}
     </div>
@@ -70,5 +74,5 @@
         {% endif %}
     </div>
     {% endif %}
-                
+
 </div>

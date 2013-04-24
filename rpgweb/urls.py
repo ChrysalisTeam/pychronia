@@ -112,7 +112,7 @@ web_game_urlpatterns = patterns('rpgweb.views',
     url(r'^messages/ajax_mark_msg_read/$', 'ajax_set_message_read_state'),
     url(r'^messages/ajax_force_email_sending/$', 'ajax_force_email_sending'),
     url(r'^messages/view_single_message/(?P<msg_id>\w+)/$', 'view_single_message'),
-
+    url(r'^messages/ajax_permanently_delete_message/$', 'ajax_permanently_delete_message'),
 
     url(r'^ajax_get_next_audio_message/$', 'ajax_get_next_audio_message'),
     url(r'^ajax_notify_audio_success/$', 'ajax_notify_audio_message_finished'),

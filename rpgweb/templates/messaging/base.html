@@ -1,31 +1,31 @@
 ﻿{% extends "base_two_columns.html" %}
- 
+
 {% load sekizai_tags i18n helpers kwacros %}
 {% loadkwacros "metalradiance_kwacros.html" %}
- 
- 
- 
- 
+
+
+
+
 {% block sekizai_calls %}
 {{ block.super }}
 
 {% addtoblock "definition_js" %}
 
         function force_email_sending(msg_id) {
- 
-            $.get("{% game_view_url "rpgweb.views.ajax_force_email_sending" %}", 
-                    { id: escape(msg_id) },
+
+            $.post("{% game_view_url "rpgweb.views.ajax_force_email_sending" %}",
+                    { id: msg_id },
                     function(data){
                         $("#"+msg_id).css("display", "none");
-                        $.jnotify('{% trans "Queued message successfully dispatched" %}', "success"); 
+                        $.jnotify('{% trans "Queued message successfully dispatched" %}', "success");
                     });
-        }        
-       
-    
+        }
+
+
         function set_message_read_state(msg_id, is_read) {
 
-            $.get("{% game_view_url "rpgweb.views.ajax_set_message_read_state" %}", 
-                    { id: escape(msg_id), 
+            $.post("{% game_view_url "rpgweb.views.ajax_set_message_read_state" %}",
+                    { id: msg_id,
                       is_read: (is_read ? "1" : "0") },
                     function(data){
                         if (is_read) {
@@ -35,17 +35,31 @@
                             $("#"+msg_id +" .mark_unread_tag").css("display", "inline");
                         }
                         else {
-                            $("#"+msg_id).removeClass("email_read");   
-                            $("#"+msg_id).addClass("email_unread");  
+                            $("#"+msg_id).removeClass("email_read");
+                            $("#"+msg_id).addClass("email_unread");
                             $("#"+msg_id +" .mark_read_tag").css("display", "inline");
                             $("#"+msg_id +" .mark_unread_tag").css("display", "none");
-                        } 
-                  
+                        }
+
                     });
         }
-       
-       
-       $.fn.togglepanels = function(){   
+
+
+        function permanently_delete_message(msg_id) {
+        	if (confirm('{{ _("Are you sure you want to permamently delete this message ?")|escapejs }}')){
+        		if (confirm('{{ _("This action cannot be undone, do you confirm deletion ?")|escapejs }}')){
+		            $.post("{% game_view_url "rpgweb.views.ajax_permanently_delete_message" %}",
+		                    { id: escape(msg_id) },
+		                    function(data){
+		                    	$("#"+msg_id).remove();
+		                    	$.jnotify('{% trans "Message successfully deleted" %}', "success");
+		                    });
+        		}
+        	}
+        }
+
+
+        $.fn.togglepanels = function(){
             return this.each(function(){
                 $(this).addClass("ui-accordion ui-accordion-icons ui-widget ui-helper-reset")
               .find(".otherTitle")
@@ -62,14 +76,14 @@
                 $(this).find(".otherDiv").addClass("ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom").hide();
               });
             };
-    
+
 {% endaddtoblock %}
 
 
 {% addtoblock "onload_js" %}
 
     // NOT YET - NEEDS TESTING $(".notaccordion").togglepanels();
-    
+
 {% endaddtoblock %}
 
 {% endblock %}
@@ -89,19 +103,19 @@
         <li class="{% ifequal mode "inbox" %}highlight{% endifequal %}"><a href="{% game_view_url "rpgweb.views.conversation" %}">{% trans "Inbox" %}</a></li>
         <li class="{% ifequal mode "outbox" %}highlight{% endifequal %}"><a href="{% game_view_url "rpgweb.views.conversation" %}">{% trans "Outbox" %}</a></li>
         <li class="{% ifequal mode "conversation" %}highlight{% endifequal %}"><a href="{% game_view_url "rpgweb.views.conversation" %}">{% trans "Conversation" %}</a></li>
-    
+
         {% if user.is_master %}
             <li class="{% ifequal mode "all_sent_messages" %}highlight{% endifequal %}"><a href="{% game_view_url "rpgweb.views.all_dispatched_messages" %}">{% trans "All Transferred" %}</a></li>
         {% endif %}
-        
+
         {% if user.is_master %}
             <li class="{% ifequal mode "all_queued_messages" %}highlight{% endifequal %}"><a href="{% game_view_url "rpgweb.views.all_queued_messages" %}">{% trans "All Queued" %}</a></li>
         {% endif %}
-        
+
         {% if user|has_permission:"manage_wiretaps" %}
             <li class="{% ifequal mode "intercepted_messages" %}highlight{% endifequal %}"><a href="{% game_view_url "rpgweb.views.conversation" %}">{% trans "Intercepted" %}</a></li>
         {% endif %}
-        
+
         {% if user.is_master %}
             <li class="{% ifequal mode "messages_templates" %}highlight{% endifequal %}"><a href="{% game_view_url "rpgweb.views.messages_templates" %}">{% trans "Templates" %}</a></li>
         {% endif %}
@@ -116,5 +130,5 @@
 
 
 
-  
+
 

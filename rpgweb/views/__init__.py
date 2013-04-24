@@ -42,7 +42,7 @@ from .info_views import (instructions, view_encyclopedia,
 from .profile_views import login, logout, secret_question, character_profile, friendship_management
 
 
-from .messaging_views import (ajax_set_message_read_state, ajax_force_email_sending,
+from .messaging_views import (ajax_set_message_read_state, ajax_force_email_sending, ajax_permanently_delete_message,
                               conversation, view_single_message, compose_message, preview_message,
                               all_dispatched_messages, all_queued_messages, messages_templates)
 

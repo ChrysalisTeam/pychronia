@@ -1607,29 +1607,47 @@ class TextMessagingCore(BaseDataManager):
 
     @transaction_watcher
     def force_message_sending(self, msg_id):
-        # immediately sends a queued message
-
-        items = [item for item in enumerate(self.get_all_queued_messages()) if item[1]["id"] == msg_id]
-        assert len(items) <= 1
-
-        if not items:
+        """
+        Immediately sends a queued message, returns True if message was indeed in the "pending" queue, False else.
+        """
+        msg = self._remove_message_from_list(self.messaging_data["messages_queued"], msg_id=msg_id)
+        if not msg:
             return False
-
-        (index, msg) = items[0]
-
-        del self.messaging_data["messages_queued"][index] # we remove the msg from queued list
 
         msg["sent_at"] = datetime.utcnow() # we force the timestamp to UTCNOW
         self._immediately_dispatch_message(msg)
-
         return True
 
+    @staticmethod
+    def _remove_message_from_list(msg_list, msg_id):
+        """
+        Returns the removed (single) message, or None.
+        """
+        items = [item for item in enumerate(msg_list) if item[1]["id"] == msg_id]
+        assert len(items) <= 1
+        if items:
+            (index, msg) = items[0]
+            del msg_list[index]
+            return msg
+        return None
 
+    @transaction_watcher
+    def permanently_delete_message(self, msg_id):
+        """
+        Returns True if message id existed in queued or dispatched messages lists, False else.
+        
+        DANGEROUS method, only for game master basically.
+        """
+        msg = self._remove_message_from_list(self.messaging_data["messages_dispatched"], msg_id=msg_id)
+        if not msg:
+            msg = self._remove_message_from_list(self.messaging_data["messages_queued"], msg_id=msg_id)
+        return bool(msg)
 
     # manipulation of message lists #
 
     @staticmethod
     def _get_new_msg_id(index, content):
+        # index should always grow, except when messages got deleted
         md5 = hashlib.md5()
         md5.update(content.encode('ascii', 'ignore'))
         my_hash = md5.hexdigest()[0:4]
