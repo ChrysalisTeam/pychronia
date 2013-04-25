@@ -39,6 +39,7 @@ class GameUser(object):
 
         assert not impersonation_target or is_superuser or datamanager.can_impersonate(username, impersonation_target)
         assert not (is_superuser and username != _game_anonymous_login) # game authentication "hides" the superuser status
+        assert is_superuser or datamanager.is_master(username) or not impersonation_target or not impersonation_writability # atm only special user can take full control of other user
 
         self.is_superuser = is_superuser # REAL state of user, whatever impersonation is happening
         self._real_username = username

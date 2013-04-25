@@ -13,7 +13,6 @@ FEATURES
 - refactoring of loggers, at top and DM level
 - filling of headers with game info and notifications
 - adding novelty tags everywhere (menu, radio and help icons, events...)
-- adding of impersonation controls to site top WIP (needs JS code)
 - adding of impersonation to player menus (in generate..menu..())
 
 BUGLETS:
@@ -59,7 +58,7 @@ BUGLETS:
 - bug report : Application error (please consider reporting that bug) - ReferenceError: False is not defined DONE
 - bad assert self.datamanager.is_in_transaction() in res = self.execute_game_action_callback(action_name=action_name, unfiltered_params=data) DONE
 - add a way to DESTROY sent messages by game master, in case of trouble DONE
-
+- adding of impersonation controls to site top WIP (needs JS code) DONE
 
 ====================
 

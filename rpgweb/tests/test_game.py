@@ -2281,7 +2281,7 @@ class TestDatamanager(BaseGameTestCase):
                                              django_user=django_user)
             assert session_ticket == {'game_instance_id': TEST_GAME_INSTANCE_ID,
                                       'impersonation_target': None,
-                                      'impersonation_writability': writability, # MAINTAINED
+                                      'impersonation_writability': False, # RESET
                                       'game_username': master_login}
 
             assert self.dm.user.username == master_login
@@ -2289,7 +2289,7 @@ class TestDatamanager(BaseGameTestCase):
             assert not self.dm.user.is_superuser
             assert not self.dm.user.is_impersonation
             assert not self.dm.user.impersonation_target
-            assert self.dm.user.impersonation_writability == bool(writability) # well saved
+            assert self.dm.user.impersonation_writability == False # RESET
             assert self.dm.user.real_username == master_login
             assert not self.dm.user.has_notifications() # IMPORTANT - no error message
 

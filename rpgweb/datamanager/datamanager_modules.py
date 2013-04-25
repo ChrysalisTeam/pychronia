@@ -667,6 +667,7 @@ class PlayerAuthentication(BaseDataManager):
         # first, we compute the impersonation we actually want #
         if requested_impersonation_target == "": # special case "delete current impersonation target"
             requested_impersonation_target = None
+            requested_impersonation_writability = False # for security, we reset that too
         elif requested_impersonation_target is None: # means "use legacy one"
             requested_impersonation_target = session_ticket.get("impersonation_target", None)
         else:
