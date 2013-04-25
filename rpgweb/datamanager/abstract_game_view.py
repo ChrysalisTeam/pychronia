@@ -33,8 +33,8 @@ def transform_usage_error(caller, self, *args, **kwargs):
 
             if self.datamanager.user.is_impersonation:
                 # Will mainly happen when we switch between two impersonations with different access rights, on a restricted page
-                self.datamanager.user.add_error(_("Currently impersonated user can't access view %s") % self.NAME)
-                return HttpResponseRedirect(reverse("rpgweb.views.homepage"))
+                self.datamanager.user.add_warning(_("Currently impersonated user can't access view %s") % self.NAME)
+                return HttpResponseRedirect(reverse("rpgweb.views.homepage", kwargs=dict(game_instance_id=self.datamanager.game_instance_id)))
 
             if isinstance(e, AuthenticationRequiredError):
                 # uses HTTP code for TEMPORARY redirection

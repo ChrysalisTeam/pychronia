@@ -129,6 +129,7 @@
 
 
         $('*[title]').qtip({
+        	                 show: {delay: 500 },
         	                 style: { name: 'cream', tip: true },
                              hide: { when: 'mouseout', fixed: true, delay: 1000 }
                            }); // lots of options remain
@@ -389,13 +390,15 @@
     {{ block.super }}
 {% else %}
 	<div class="motto">
-		{% trans "Impersonation:" %}
-		<select name="{{ impersonation_capabilities.impersonation_target_post_variable }}">
-			<option value="">{% trans "Choose..." %}</option>
+		<form action="" method="POST" title="{% trans "Take the identity of another user." %}">
+        {% trans "Impersonation:" %}
+		<select name="{{ impersonation_capabilities.impersonation_target_post_variable }}" onchange="this.form.submit()">
+			<option value="">{% trans "None" %}</option>
 			{% for target in impersonation_capabilities.impersonation_targets %}
 		    <option value="{{ target }}" {% if impersonation_capabilities.current_impersonation_target == target %}selected{% endif %}>{{ target|capfirst }}</option>
 		    {% endfor %}
 		</select>
+		</form>
     </div>
 {% endif %}
 {% endblock %}
@@ -405,11 +408,13 @@
     {{ block.super }}
 {% else %}
 	<div class="motto">
+		<form action="" method="POST" title="{% trans "Whether or not you can modify the game during impersonations." %}">
 	    {% trans "Writability:" %}
-	    <select name="{{ impersonation_capabilities.impersonation_writability_post_variable }}">
+	    <select name="{{ impersonation_capabilities.impersonation_writability_post_variable }}" onchange="this.form.submit()" {%if not user.is_impersonation %}disabled{% endif %}>
 	      <option value="false">{% trans "Read-only" %}</option>
-	      <option value="true" {% if impersonation_capabilities.current_impersonation_writability == target %}selected{% endif %}>{% trans "Writable" %}</option>
+	      <option value="true" {% if impersonation_capabilities.current_impersonation_writability %}selected{% endif %}>{% trans "Writable" %}</option>
 	    </select>
+	    </form>
 	</div>
 {% endif %}
 {% endblock %}
