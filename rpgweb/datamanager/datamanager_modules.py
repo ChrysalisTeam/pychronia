@@ -267,7 +267,7 @@ class NovaltyTracker(BaseDataManager):
     def _load_initial_data(self, **kwargs):
         super(NovaltyTracker, self)._load_initial_data(**kwargs)
         game_data = self.data
-        game_data.setdefault("novalty_tracker", PersistentDict())
+        game_data.setdefault("novelty_tracker", PersistentDict())
 
 
     def _check_database_coherency(self, strict=False, **kwargs):
@@ -275,7 +275,7 @@ class NovaltyTracker(BaseDataManager):
         game_data = self.data
 
         allowed_usernames = self.get_character_usernames() + [self.get_global_parameter("master_login")]
-        for item_key, usernames in game_data["novalty_tracker"].items():
+        for item_key, usernames in game_data["novelty_tracker"].items():
             utilities.check_is_slug(item_key)
             for username in usernames:
                 assert username in allowed_usernames
@@ -283,7 +283,7 @@ class NovaltyTracker(BaseDataManager):
     @readonly_method
     def get_novelty_registry(self):
         """For tests..."""
-        return copy.deepcopy(self.data["novalty_tracker"])
+        return copy.deepcopy(self.data["novelty_tracker"])
 
 
     def _build_novelty_key(self, category, item_key):
@@ -302,7 +302,7 @@ class NovaltyTracker(BaseDataManager):
             return None
         full_key = self._build_novelty_key(category, item_key)
         del category, item_key # security
-        tracker = self.data["novalty_tracker"]
+        tracker = self.data["novelty_tracker"]
         if full_key not in tracker:
             tracker[full_key] = PersistentList()
         if username not in tracker[full_key]:
@@ -319,7 +319,7 @@ class NovaltyTracker(BaseDataManager):
             return True # beware!
         full_key = self._build_novelty_key(category, item_key)
         del category, item_key # security
-        tracker = self.data["novalty_tracker"]
+        tracker = self.data["novelty_tracker"]
         if full_key in tracker and username in tracker[full_key]:
             return True
         return False
@@ -328,7 +328,7 @@ class NovaltyTracker(BaseDataManager):
     def reset_novelty_accesses(self, item_key, category=_default_novelty_category):
         full_key = self._build_novelty_key(category, item_key)
         del category, item_key # security
-        tracker = self.data["novalty_tracker"]
+        tracker = self.data["novelty_tracker"]
         if full_key in tracker:
             del tracker[full_key]
 

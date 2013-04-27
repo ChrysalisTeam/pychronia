@@ -28,6 +28,8 @@ class MenuEntry:
         self.user_access = view.get_access_token(request.datamanager) if view else None
         self.forced_visibility = forced_visibility
         self.is_active = bool(self.url and (self.user_access == AccessResult.available)) # doesn't rely on submenus state
+        self.is_novelty = not view.has_user_accessed_view(request.datamanager) if view else False
+        ##print(title, "view is marked as novelty", self.is_novelty)
 
     @property
     def is_visible(self):
@@ -201,7 +203,7 @@ def filter_menu_tree(menu):
     recursed_submenus = [filter_menu_tree(submenu) for submenu in menu.submenus]
     menu.submenus = [submenu for submenu in recursed_submenus if submenu] # remove new 'None' entries
     if not menu.is_visible: # NOW only we can query the visibility state of this particular menu entry, since submenus have been updated
-        # print(">>>>>>>>>> returning none for", menu.title)
+        #print(">>>>>>>>>> returning none for", menu.title)
         return None
     return menu
 

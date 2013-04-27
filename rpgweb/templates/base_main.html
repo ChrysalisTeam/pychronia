@@ -488,32 +488,32 @@ HOY ma guy
 {% block main_menu %}
     {% for menu in menus %}
 
-         {% comment %} here we only handle 2-levels menus, at the moment... {% endcomment %}
+        {% comment %} here we only handle 2-levels menus, at the moment... {% endcomment %}
 
-         {% with page_transition="slide" %}
+        {% with page_transition="slide" %}
 
-         <li id="submenu" class="toplevel">
+        <li id="submenu" class="toplevel">
 
-             {% if menu.is_active %}
-                <a data-ftrans="{{ page_transition }}" href="{{ menu.url }}">{{ menu.title }}</a>
-             {% else %}
+            {% if menu.is_active %}
+                <a data-ftrans="{{ page_transition }}" href="{{ menu.url }}">{{ menu.title }}{% if menu.is_novelty %}$${% endif %}</a>
+            {% else %}
                 <span>{{ menu.title }}</span>
-             {% endif %}
+            {% endif %}
 
-             {% if menu.submenus %}
-                 <ul>
+
+            {% if menu.submenus %}
+                <ul>
                     {% for submenu in menu.submenus %}
                         <li>
-                             {% if submenu.is_active %}
-                                <a data-ftrans="{{ page_transition }}" href="{{ submenu.url }}" accesskey="{{ forloop.counter }}">{{ submenu.title }}</a>
-                             {% else %}
-                                <span>{{ submenu.title }}</span>
-                             {% endif %}
+						{% if submenu.is_active %}
+						    <a data-ftrans="{{ page_transition }}" href="{{ submenu.url }}" accesskey="{{ forloop.counter }}">{{ submenu.title }}{% if submenu.is_novelty %}$${% endif %}</a>
+						{% else %}
+						    <span>{{ submenu.title }}</span>
+						{% endif %}
 
-                            {% comment %}
-                                <a {% if user.is_master %} style="font-size: 0.6em; line-height: 0.5em;" {% endif %}
-                                    href="{{ item_url }}" >{{ item_name }}</a>
-                            {% endcomment %}
+						{% comment %}
+						    <a {% if user.is_master %} style="font-size: 0.6em; line-height: 0.5em;" {% endif %} href="{{ item_url }}" >{{ item_name }}</a>
+						{% endcomment %}
                         </li>
                     {% endfor %}
                  </ul>

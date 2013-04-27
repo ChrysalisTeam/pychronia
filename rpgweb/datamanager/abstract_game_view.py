@@ -551,9 +551,10 @@ class AbstractGameView(object):
             self._check_writability() # crucial
             self._check_standard_access() # crucial
 
-            response = self._process_standard_request(request, *args, **kwargs)
             if self.datamanager.is_game_writable():
-                self.mark_view_as_accessed(self.datamanager) # no errors -> we mark view as "read"
+                self.mark_view_as_accessed(self.datamanager) # must be BEFORE template processing
+
+            response = self._process_standard_request(request, *args, **kwargs)
             return response
 
         finally:

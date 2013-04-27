@@ -43,6 +43,16 @@ def rpgweb_template_context(request):
             notification_type = levels[0]
 
 
+        # we only check the 2 first levels of menu for "novelty" menu entries
+        signal_new_menu_entries = False
+        for entry in menus.submenus:
+            if entry.is_novelty:
+                signal_new_menu_entries = True
+            for subentry in entry.submenus:
+                if subentry.is_novelty:
+                    signal_new_menu_entries = True
+
+
         action_explanations = request.processed_view.get_game_actions_explanations()
 
         return {'game_instance_id': dm.game_instance_id,
@@ -55,7 +65,8 @@ def rpgweb_template_context(request):
                 
                 'impersonation_capabilities': impersonation_capabilities,
 
-                'menus': menus.submenus if menus else [],
+                'menus': menus.submenus if menus else [], # we ignore root entry
+                'signal_new_menu_entries': signal_new_menu_entries,
 
                 'is_mobile_page': request.is_mobile,
 
