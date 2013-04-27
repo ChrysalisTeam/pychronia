@@ -164,7 +164,7 @@ def advanced_restructuredtext(value,
             docutils_settings.update(initial_header_level=initial_header_level)
         if report_level is not None:
             docutils_settings.update(report_level=report_level)
-        print(">><<", docutils_settings, file=sys.stderr)
+        #print(">><<", docutils_settings, file=sys.stderr)
         parts = publish_parts(source=smart_str(value), writer_name="html4css1", settings_overrides=docutils_settings)
         return mark_safe(force_unicode(parts["fragment"]))
 

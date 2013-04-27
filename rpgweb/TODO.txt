@@ -8,13 +8,16 @@ FEATURES
 - normalize all setup methods to make game file paths absolute inside GAME_FILES_ROOT
 - messaging reply/resend + templates + filtering?
 - mobile version of site (-> refactor base_mobile to mimic base_web structure)
-- global page styles and messages for "readonly mode"
+
 - Add captcha to some special static pages ?
+
 - refactoring of loggers, at top and DM level
-- filling of headers with game info and notifications
+
+
 - adding novelty tags everywhere (menu, radio and help icons, events...)
 - adding of impersonation to player menus (in generate..menu..())
 - review all always_writable views!!!
+
 
 BUGLETS:
 - world scan_form entry is dead : assert NewFormClass, new_action_name # important, not all actions have form classes available DONE BUT NEEDS TEST COVERAGE
@@ -26,13 +29,12 @@ BUGLETS:
 - tweak access checking of gameviews, so that if impersonation we get no error message, and just get redirected to homepage of impersonated user
 
 
-
 ** WIP, needs cosmetics **
 
 - interface to edit static pages WIP
 - interface to edit radio spots WIP
 - interface to edit external contacts WIP
-
+- global page styles and messages for WIP
 
 ** DONE **
 
@@ -60,6 +62,9 @@ BUGLETS:
 - bad assert self.datamanager.is_in_transaction() in res = self.execute_game_action_callback(action_name=action_name, unfiltered_params=data) DONE
 - add a way to DESTROY sent messages by game master, in case of trouble DONE
 - adding of impersonation controls to site top WIP (needs JS code) DONE
+- filling of headers with game info and notifications DONE
+
+
 
 ====================
 

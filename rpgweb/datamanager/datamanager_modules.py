@@ -2196,7 +2196,7 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
             self.set_new_message_notification(concerned_characters=[username], new_status=False)
         return records
 
-    @transaction_watcher
+    @readonly_method
     def get_user_related_messages(self, username=CURRENT_USER):
         """
         For game master, actually returns all emails sent to external contacts.
@@ -2229,9 +2229,10 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
     @readonly_method
     def get_unread_messages_count(self, username=CURRENT_USER):
         """
-        Only considers RECEIVED messages.
+        Considers ALL user-related messages.
         """
-        unread_msgs = [msg for msg in self.get_received_messages(username=username)
+        username = self._resolve_username(username)
+        unread_msgs = [msg for msg in self.get_user_related_messages(username=username)
                            if username not in msg["has_read"]]
         return len(unread_msgs)
 

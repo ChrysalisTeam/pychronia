@@ -1468,7 +1468,7 @@ class TestDatamanager(BaseGameTestCase):
         print ("@>@>@>@>", self.dm.get_all_dispatched_messages())
         self.assertEqual(self.dm.get_unread_messages_count("guy3"), 3)
 
-        self.assertEqual(self.dm.get_unread_messages_count(self.dm.get_global_parameter("master_login")), 1)
+        self.assertEqual(self.dm.get_unread_messages_count(self.dm.get_global_parameter("master_login")), 2)
 
         self.assertEqual(len(self.dm.get_all_dispatched_messages()), 6)
 
@@ -1552,10 +1552,10 @@ class TestDatamanager(BaseGameTestCase):
         self.assertFalse(self.dm.get_all_dispatched_messages()[3]["has_read"])
         self.dm.set_message_read_state(MASTER, msg_id2, True)
         self.assertTrue(MASTER in self.dm.get_all_dispatched_messages()[3]["has_read"])
-        self.assertEqual(self.dm.get_unread_messages_count(self.dm.get_global_parameter("master_login")), 0)
+        self.assertEqual(self.dm.get_unread_messages_count(self.dm.get_global_parameter("master_login")), 1)
         self.dm.set_message_read_state(MASTER, msg_id2, False)
         self.assertFalse(self.dm.get_all_dispatched_messages()[3]["has_read"])
-        self.assertEqual(self.dm.get_unread_messages_count(self.dm.get_global_parameter("master_login")), 1)
+        self.assertEqual(self.dm.get_unread_messages_count(self.dm.get_global_parameter("master_login")), 2)
 
 
     def test_wiretapping_methods(self):
