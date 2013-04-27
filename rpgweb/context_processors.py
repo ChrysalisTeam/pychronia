@@ -55,6 +55,9 @@ def rpgweb_template_context(request):
 
         action_explanations = request.processed_view.get_game_actions_explanations()
 
+        help_page_key = "help-" + view_name
+        signal_new_help_page = not dm.has_user_accessed_static_page(help_page_key)
+
         return {'game_instance_id': dm.game_instance_id,
 
                 'fallback_title': request.processed_view.TITLE,
@@ -77,12 +80,14 @@ def rpgweb_template_context(request):
                 'notification_type': notification_type,
                 'notifications': notifications,
 
-                'content_blocks': dict(help_page=dict(name="help-" + view_name,
-                                                      data=dm.get_categorized_static_page(dm.HELP_CATEGORY, "help-" + view_name)),
+                'content_blocks': dict(help_page=dict(name=help_page_key,
+                                                      data=dm.get_categorized_static_page(dm.HELP_CATEGORY, help_page_key)),
                                        top_content=dict(name="top-" + view_name,
                                                        data=dm.get_categorized_static_page(dm.CONTENT_CATEGORY, "top-" + view_name)),
                                        bottom_content=dict(name="bottom-" + view_name,
                                                            data=dm.get_categorized_static_page(dm.CONTENT_CATEGORY, "bottom-" + view_name))),
+                'signal_new_help_page': signal_new_help_page,
+
                 'action_explanations': action_explanations,
 
                 # useful constants

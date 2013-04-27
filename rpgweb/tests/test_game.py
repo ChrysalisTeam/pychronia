@@ -2567,12 +2567,14 @@ class TestDatamanager(BaseGameTestCase):
     @for_core_module(StaticPages)
     def test_static_pages(self):
 
+        EXISTING_HELP_PAGE = "help-homepage"
+
         utilities.check_is_restructuredtext(self.dm.get_categorized_static_page(category="help_pages", name="view_encyclopedia"))
 
         assert self.dm.get_categorized_static_page(category="help_pages", name="qskiqsjdqsid") is None
         assert self.dm.get_categorized_static_page(category="badcategory", name="view_encyclopedia") is None
 
-        assert "help-homepage" in self.dm.get_static_page_names_for_category("help_pages")
+        assert EXISTING_HELP_PAGE in self.dm.get_static_page_names_for_category("help_pages")
 
         assert "lokon" not in self.dm.get_static_page_names_for_category("help_pages")
         assert "lokon" in self.dm.get_static_page_names_for_category("encyclopedia")
@@ -2583,6 +2585,14 @@ class TestDatamanager(BaseGameTestCase):
             assert "help_pages" in value["categories"]
             utilities.check_is_slug(key)
             assert key.lower() == key
+
+        self._set_user("guy1")
+        assert not self.dm.has_user_accessed_static_page(EXISTING_HELP_PAGE)
+        self.dm.mark_static_page_as_accessed(EXISTING_HELP_PAGE)
+        assert self.dm.has_user_accessed_static_page(EXISTING_HELP_PAGE)
+        self.dm.mark_static_page_as_accessed(EXISTING_HELP_PAGE)
+        assert self.dm.has_user_accessed_static_page(EXISTING_HELP_PAGE)
+
 
 
     @for_core_module(GameEvents)

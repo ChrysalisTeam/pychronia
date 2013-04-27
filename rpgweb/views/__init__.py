@@ -127,6 +127,9 @@ def view_help_page(request, keyword, template_name='generic_operations/help_page
     if not allowed_entry:
         raise Http404  # no corresponding help page found, or no access permissions
 
+    if datamanager.is_game_writable():
+        datamanager.mark_static_page_as_accessed(keyword)
+
     return render(request,
                   template_name,
                     {

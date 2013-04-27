@@ -474,7 +474,7 @@ HOY ma guy
 {% if 1 %}
 <a onclick="open_webradio_popup(); return false;" href="#">
 <div class="big_icon_panel">
-    <img src="{{ STATIC_URL }}MetalRadiance/img/icons/radio.png"/>{% if signal_new_radio_messages %}<b style="font-size:20px; color:white;">!!</b>{% endif %}
+    <img src="{{ STATIC_URL }}MetalRadiance/img/icons/radio.png"/>{% if signal_new_radio_messages %}<b style="font-size:20px; color:white;">$$</b>{% endif %}
 </div>
 </a>
 {% else %}
@@ -530,7 +530,7 @@ HOY ma guy
 {% if content_blocks.help_page.data %}
 <a href="{% game_view_url "rpgweb.views.view_help_page" keyword=content_blocks.help_page.name %}" class="fancybox fancybox.ajax" title="{{ page_title }}">
 <div class="big_icon_panel">
-    <img src="{{ STATIC_URL }}MetalRadiance/img/icons/question_mark.png"/>
+    <img src="{{ STATIC_URL }}MetalRadiance/img/icons/question_mark.png"/>{% if signal_new_help_page %}$${% endif %}
 </div>
 </a>
 {% else %}

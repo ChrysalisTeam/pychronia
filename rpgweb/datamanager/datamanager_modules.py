@@ -3679,6 +3679,17 @@ class StaticPages(BaseDataManager):
     static_pages = LazyInstantiationDescriptor(StaticPagesManager)
 
 
+    _static_page_novelty_category = "static_pages"
+
+    @transaction_watcher
+    def mark_static_page_as_accessed(self, item_key): # ONLY for current user
+        return self.access_novelty(item_key=item_key, category=self._static_page_novelty_category)
+
+    @readonly_method
+    def has_user_accessed_static_page(self, item_key): # ONLY for current user
+        return self.has_accessed_novelty(item_key=item_key, category=self._static_page_novelty_category)
+
+
 
 @register_module
 class Encyclopedia(BaseDataManager):

@@ -25,7 +25,9 @@ def view_world_map(request, template_name='info/world_map.html'):
 
 @register_view(access=UserAccess.anonymous, always_available=True, title=_lazy("Encyclopedia"))
 def view_encyclopedia(request, article_id=None, template_name='info/encyclopedia.html'):
-
+    """
+    No need for novelty management in here - normal "visited link" browser system will do it.
+    """
     dm = request.datamanager
 
     article_ids = None  # index of encyclopedia
