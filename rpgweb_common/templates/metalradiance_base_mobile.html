@@ -5,7 +5,7 @@
 <head>
 
     <title>{% block html_title %}Bienvenue{% endblock %}</title>
-   
+
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="width=320">
     {% render_block "meta" %}
@@ -13,9 +13,9 @@
     <link href="{{ STATIC_URL }}MetalRadiance/metalradiance_mobile.css" rel="stylesheet" type="text/css" />
     <link href="{{ STATIC_URL }}img/favicon_diamond.png" rel="shortcut icon" type="image/png" />
     {% render_block "css" %}
-    
+
     {% render_block "js" %}
-    
+
 </head>
 
 <body>
@@ -31,25 +31,25 @@
     <div id="menu-bar"></div>
 
     <div id="page">
-        
+
         {% block page_content %}
             <h1>Encyclopédie</h1>
             <img src="img/encyclopedie.jpg" />
-            
+
             <div align="center"><input type="text" class="chat" value="Rechercher dans l'encyclopédie"><input class="search" type="submit" value="Rechercher"></div>
-        
-        
+
+
             <div class="frame">
                 <p>Here is a border-image frame</p>
             </div>
         {% endblock %}
-    
+
         {% block bottom_links %}<a class="big-link" href="#">Modifier l'article</a>{% endblock %}
-        
+
         {% block footer_links %}<p class="footer">© Anthropia 2012 | <a href="#">Déconnexion</a> | <a href="#">Afficher la version classique</a></p>{% endblock %}
-    
+
     </div>
-    
+
 </body>
 
 </html>

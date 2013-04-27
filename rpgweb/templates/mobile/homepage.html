@@ -1,1 +1,44 @@
 {% extends "base_main_mobile.html" %}
+{% load i18n %}
+
+{% block page_content %}
+    <div class="frame">
+
+    <h2>{% trans "What's up on Anthropia?" %}</h2>
+
+
+    	<p>
+		{% if signal_new_menu_entries %}
+		    {% trans "New menu entries are available." %}
+		{% else %}
+		   {% trans "No new menu entries." %}
+		{% endif %}
+	    </p>
+	    <p>
+		{% if signal_new_text_message %}
+		    {% trans "You've got new message(s)." %}
+		{% else %}
+		    {% trans "No new text messages." %}
+		{% endif %}
+	    </p>
+	    <p>
+		{% if signal_new_radio_messages %}
+		    {% trans "New radio messages are available." %}
+		{% else %}
+		    {% trans "No new radio spots." %}
+		{% endif %}
+        </p>
+        <p>
+		{% if signal_chatting_users %}
+		    {% trans "There are users in the chatroom." %}
+		{% else %}
+		    {% trans "The chatroom is empty." %}
+		{% endif %}
+	    </p>
+
+    </div>
+{% endblock %}
+
+{% block bottom_links %}{% endblock %}
+
+{% block footer_links %}<p class="footer">Anthropia{% endblock %}

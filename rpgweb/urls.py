@@ -10,7 +10,7 @@ from .utilities import config
 mobile_game_urlpatterns = patterns('rpgweb.views',
 
     url(r'^$', 'homepage_mobile', name="rpgweb-homepage"),
-    url(r'^encyclopedia/$', 'encyclopedia_mobile'),
+    #url(r'^encyclopedia/$', 'encyclopedia_mobile'),
 )
 
 

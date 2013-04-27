@@ -2,10 +2,12 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
+from rpgweb.common import reverse, config
 from rpgweb import menus as menus_module
 from rpgweb.authentication import IMPERSONATION_TARGET_POST_VARIABLE, IMPERSONATION_WRITABILITY_POST_VARIABLE # TODO USE WRITABILITY
 from django.contrib.messages.api import get_messages
 from rpgweb.views.admin_views.webradio_management_mod import WebradioManagement
+from django.core.urlresolvers import reverse
 
 
 
@@ -27,7 +29,7 @@ def rpgweb_template_context(request):
             dm.user.add_warning(writability_data["reason"]) # a reason for no-writability most probably
 
         online_users = dm.get_online_users() # usernames are fine // to test: (dm.get_character_usernames() * 2)
-        menus = menus_module.generate_filtered_menu(request)
+        menus = menus_module.generate_filtered_menu(request) # might be None
 
         view_name = request.processed_view.NAME # set thanks to game view __call__()
 
@@ -45,12 +47,13 @@ def rpgweb_template_context(request):
 
         # we only check the 2 first levels of menu for "novelty" menu entries
         signal_new_menu_entries = False
-        for entry in menus.submenus:
-            if entry.is_novelty:
-                signal_new_menu_entries = True
-            for subentry in entry.submenus:
-                if subentry.is_novelty:
+        if menus:
+            for entry in menus.submenus:
+                if entry.is_novelty:
                     signal_new_menu_entries = True
+                for subentry in entry.submenus:
+                    if subentry.is_novelty:
+                        signal_new_menu_entries = True
 
 
         action_explanations = request.processed_view.get_game_actions_explanations()
@@ -94,6 +97,10 @@ def rpgweb_template_context(request):
                 'signal_new_help_page': signal_new_help_page,
 
                 'action_explanations': action_explanations,
+
+                # entry points
+                'mobile_site_entry_url': config.MOBILE_SITE_ENTRY_URL_TEMPLATE % dm.game_instance_id,
+                'web_site_entry_url': config.WEB_SITE_ENTRY_URL_TEMPLATE % dm.game_instance_id,
 
                 # useful constants
                 'None': None,

@@ -7,7 +7,7 @@
 FEATURES
 
 - messaging templates filtering by taxonomy ?
-- mobile version of site (-> refactor base_mobile to mimic base_web structure)
+- mobile version of site (-> refactor base_mobile to mimic base_web structure) NO SIMPLE SUMMARY PAGE
 - Add captcha to some special static pages - WHICH ??
 
 

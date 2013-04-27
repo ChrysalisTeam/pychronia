@@ -42,7 +42,7 @@ class MenuEntry:
 
 
 def _generate_mobile_menu(request, menu_entry_generator):
-
+    # UNUSED ATM
     menu_entry = menu_entry_generator
 
     full_menu_tree = menu_entry(_(u"Anthropia"), views.homepage_mobile,
@@ -50,7 +50,7 @@ def _generate_mobile_menu(request, menu_entry_generator):
             # encoding note : \xa0 <-> &nbsp <-> alt+0160;
 
             menu_entry(_(u"Home"), views.homepage_mobile),
-            menu_entry(_(u"Encyclopedia"), views.encyclopedia_mobile),
+            #menu_entry(_(u"Encyclopedia"), views.encyclopedia_mobile),
 
         ))
     return full_menu_tree
@@ -189,7 +189,7 @@ def generate_full_menu(request): # # game_menu_generator
 
 
     if request.is_mobile:
-        return _generate_mobile_menu(request=request, menu_entry_generator=menu_entry_generator)
+        return None # _generate_mobile_menu(request=request, menu_entry_generator=menu_entry_generator)
     else:
         return _generate_web_menu(request=request, menu_entry_generator=menu_entry_generator)
 
@@ -213,19 +213,23 @@ def generate_filtered_menu(request):
     that are invisible.
     """
     potential_menu_tree = generate_full_menu(request)
-    final_menu_tree = filter_menu_tree(potential_menu_tree)
+    if potential_menu_tree:
+        final_menu_tree = filter_menu_tree(potential_menu_tree)
+    else:
+        final_menu_tree = None
 
     if __debug__:
         # we only let VISIBLE entries, both active and inactive !
-        assert final_menu_tree.is_visible
-        final_menu_entries = final_menu_tree.submenus
-        for menu in final_menu_entries:
-            # print("*", menu.title, menu.is_active, menu.is_visible, menu.user_access)
-            assert menu.is_visible
-            if menu.submenus:
-                for submenu in menu.submenus:
-                    # print(">>>", submenu.title, submenu.is_active, submenu.is_visible, submenu.user_access)
-                    assert submenu.is_visible
+        if final_menu_tree:
+            assert final_menu_tree.is_visible
+            final_menu_entries = final_menu_tree.submenus
+            for menu in final_menu_entries:
+                # print("*", menu.title, menu.is_active, menu.is_visible, menu.user_access)
+                assert menu.is_visible
+                if menu.submenus:
+                    for submenu in menu.submenus:
+                        # print(">>>", submenu.title, submenu.is_active, submenu.is_visible, submenu.user_access)
+                        assert submenu.is_visible
 
     return final_menu_tree # might be None, in incredible cases...
 
