@@ -428,7 +428,7 @@ class TestDatamanager(BaseGameTestCase):
             if not getattr(obj, "_is_under_transaction_watcher", None) \
                 and not getattr(obj, "_is_under_readonly_method", None):
                 raise AssertionError("Undecorated public datamanager method: %s" % obj)
-        
+
 
         assert GameDataManager.process_secret_answer_attempt._is_always_writable == False # sensible DEFAULT
         assert GameDataManager.access_novelty._is_always_writable == False
@@ -2067,11 +2067,12 @@ class TestDatamanager(BaseGameTestCase):
             self.dm.user.discard_notifications()
 
             # ANONYMOUS CASE
-            expected_capabilities = dict(display_impersonation_shortcuts=False,
-                                        impersonation_targets=[],
-                                        has_writability_control=False,
-                                        current_impersonation_target=None,
-                                        current_impersonation_writability=False)
+            expected_capabilities = dict(display_impersonation_target_shortcut=False,
+                                         display_impersonation_writability_shortcut=False,
+                                         impersonation_targets=[],
+                                         has_writability_control=False,
+                                         current_impersonation_target=None,
+                                         current_impersonation_writability=False)
             assert self.dm.get_current_user_impersonation_capabilities() == expected_capabilities
 
             # then we look at impersonation by django super user #
@@ -2103,7 +2104,8 @@ class TestDatamanager(BaseGameTestCase):
             self.dm.user.discard_notifications()
 
             # SUPERUSER CASE
-            expected_capabilities = dict(display_impersonation_shortcuts=True,
+            expected_capabilities = dict(display_impersonation_target_shortcut=True,
+                                         display_impersonation_writability_shortcut=True,
                                         impersonation_targets=self.dm.get_available_logins(),
                                         has_writability_control=True,
                                         current_impersonation_target=requested_impersonation_target,
@@ -2237,11 +2239,12 @@ class TestDatamanager(BaseGameTestCase):
             assert not self.dm.user.has_notifications()
 
             # MASTER CASE
-            expected_capabilities = dict(display_impersonation_shortcuts=True,
-                                        impersonation_targets=[self.dm.anonymous_login] + self.dm.get_character_usernames(),
-                                        has_writability_control=True,
-                                        current_impersonation_target=anonymous_login,
-                                        current_impersonation_writability=bool(writability))
+            expected_capabilities = dict(display_impersonation_target_shortcut=True,
+                                         display_impersonation_writability_shortcut=True,
+                                         impersonation_targets=[self.dm.anonymous_login] + self.dm.get_character_usernames(),
+                                         has_writability_control=True,
+                                         current_impersonation_target=anonymous_login,
+                                         current_impersonation_writability=bool(writability))
             assert self.dm.get_current_user_impersonation_capabilities() == expected_capabilities
 
 
@@ -2265,9 +2268,9 @@ class TestDatamanager(BaseGameTestCase):
 
             # Back as anonymous
             self.dm.authenticate_with_session_data(session_ticket,
-                                             requested_impersonation_target=anonymous_login,
-                                             requested_impersonation_writability=writability,
-                                             django_user=django_user)
+                                                     requested_impersonation_target=anonymous_login,
+                                                     requested_impersonation_writability=writability,
+                                                     django_user=django_user)
             assert session_ticket == {'game_instance_id': TEST_GAME_INSTANCE_ID, 'impersonation_target': anonymous_login,
                                       'impersonation_writability': writability, 'game_username': master_login}
 
@@ -2337,7 +2340,8 @@ class TestDatamanager(BaseGameTestCase):
         assert not self.dm.user.impersonation_writability
         assert self.dm.user.real_username == player_name
 
-        expected_capabilities = dict(display_impersonation_shortcuts=False,
+        expected_capabilities = dict(display_impersonation_target_shortcut=False,
+                                     display_impersonation_writability_shortcut=False,
                                     impersonation_targets=[], # needs frienships
                                     has_writability_control=False,
                                     current_impersonation_target=None,
@@ -2372,7 +2376,8 @@ class TestDatamanager(BaseGameTestCase):
         assert self.dm.user.real_username == player_name # well kept
 
 
-        expected_capabilities = dict(display_impersonation_shortcuts=False,
+        expected_capabilities = dict(display_impersonation_target_shortcut=True, # NOW we display shortcut
+                                     display_impersonation_writability_shortcut=False, # NEVER
                                     impersonation_targets=[other_player],
                                     has_writability_control=False,
                                     current_impersonation_target=other_player,

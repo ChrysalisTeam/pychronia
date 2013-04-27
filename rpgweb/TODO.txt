@@ -6,17 +6,12 @@
 
 FEATURES
 - normalize all setup methods to make game file paths absolute inside GAME_FILES_ROOT
-- messaging reply/resend + templates + filtering?
+- messaging templates filtering by taxonomy ?
 - mobile version of site (-> refactor base_mobile to mimic base_web structure)
-
-- Add captcha to some special static pages ?
-
+- Add captcha to some special static pages - WHICH ??
 - refactoring of loggers, at top and DM level
-
-
-- adding novelty tags everywhere (menu, radio and help icons, events...)
-- adding of impersonation to player menus (in generate..menu..())
 - review all always_writable views!!!
+
 
 
 BUGLETS:
@@ -36,6 +31,7 @@ BUGLETS:
 - interface to edit external contacts WIP
 - global page styles and messages for WIP
 
+
 ** DONE **
 
 - interactive world map DONE
@@ -52,7 +48,7 @@ BUGLETS:
 - admin-form to activate views DONE
 - swallow UninstantiableFormError by default in form instantiation
 - ability for users to transfer their objects to someone else DONE
-- add autolinks for email addresses in rich texts
+- add autolinks for email addresses in rich texts DONE
 - add preview of composed message in ajax frame DONE (but ugly css)
 - test determine_actual_game_writability() and such DONE
 - add auto-generation of ActionHandler help pages (via action middlewares) DONE
@@ -63,8 +59,9 @@ BUGLETS:
 - add a way to DESTROY sent messages by game master, in case of trouble DONE
 - adding of impersonation controls to site top WIP (needs JS code) DONE
 - filling of headers with game info and notifications DONE
-
-
+- messaging reply/resend + templates DONE
+- adding novelty tags ALMOST everywhere (menu, radio and help icons...) DONE
+- adding of impersonation target widget for characters (but niot writability) DONE
 
 ====================
 

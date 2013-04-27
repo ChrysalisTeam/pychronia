@@ -386,9 +386,7 @@
 
 
 {% block top_left_motto %}
-{% if not impersonation_capabilities.display_impersonation_shortcuts %}
-    {{ block.super }}
-{% else %}
+{% if impersonation_capabilities.display_impersonation_target_shortcut %}
 	<div class="motto">
 		<form action="" method="POST" title="{% trans "Take the identity of another user." %}">
         {% trans "Impersonation:" %}
@@ -400,13 +398,16 @@
 		</select>
 		</form>
     </div>
+{% elif not impersonation_capabilities.display_impersonation_writability_shortcut %}
+    {{ block.super }}
+{% else %}
+    <div class="motto"></div>
 {% endif %}
 {% endblock %}
 
+
 {% block top_right_motto %}
-{% if not impersonation_capabilities.display_impersonation_shortcuts %}
-    {{ block.super }}
-{% else %}
+{% if impersonation_capabilities.display_impersonation_writability_shortcut %}
 	<div class="motto">
 		<form action="" method="POST" title="{% trans "Whether or not you can modify the game during impersonations." %}">
 	    {% trans "Writability:" %}
@@ -416,6 +417,10 @@
 	    </select>
 	    </form>
 	</div>
+{% elif not impersonation_capabilities.display_impersonation_target_shortcut %}
+    {{ block.super }}
+{% else %}
+    <div class="motto"></div>
 {% endif %}
 {% endblock %}
 

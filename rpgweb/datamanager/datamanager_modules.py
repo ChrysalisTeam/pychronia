@@ -623,14 +623,19 @@ class PlayerAuthentication(BaseDataManager):
 
     @readonly_method
     def get_current_user_impersonation_capabilities(self):
+        """
+        Beware, we consider REAL USER permissions here, not impersonated user's!
+        """
         # safe default values
-        display_impersonation_shortcuts = False
+        display_impersonation_target_shortcut = False
+        display_impersonation_writability_shortcut = False
         impersonation_targets = []
         has_writability_control = False
 
         real_username = self.user.real_username
         if self.user.is_superuser or self.is_master(real_username):
-            display_impersonation_shortcuts = True
+            display_impersonation_target_shortcut = True
+            display_impersonation_writability_shortcut = True
             impersonation_targets = self.get_available_logins() if self.user.is_superuser else self.get_impersonation_targets(real_username)
             has_writability_control = True
             if not self.user.is_superuser and self.user.is_master:
@@ -641,10 +646,14 @@ class PlayerAuthentication(BaseDataManager):
             # we don't care about current impersonation status of player here
             assert self.is_character(real_username) or self.is_anonymous(real_username)
             impersonation_targets = self.get_impersonation_targets(username=real_username) # INCLUDING ANONYMOUS, for fun
+            display_impersonation_target_shortcut = bool(impersonation_targets)
+            display_impersonation_writability_shortcut = False # ALWAYS
 
         assert not self.user.impersonation_target or self.user.impersonation_target in impersonation_targets
         assert has_writability_control or not self.user.impersonation_writability
-        return dict(display_impersonation_shortcuts=display_impersonation_shortcuts,
+        return dict(display_impersonation_target_shortcut=display_impersonation_target_shortcut,
+                    display_impersonation_writability_shortcut=display_impersonation_writability_shortcut,
+
                     impersonation_targets=impersonation_targets,
                     has_writability_control=has_writability_control, # TODO FIXME REMOVE THAT STUFF
 
@@ -695,15 +704,16 @@ class PlayerAuthentication(BaseDataManager):
                 pass # OK, impersonation granted
             else:
                 # here we don't erase the session data, but this stops impersonation completely
-                requested_impersonation_target = requested_impersonation_writability = None # TODO FIXME TEST THAT CURRENT GAME USERNAME REMAINS
                 self.user.add_error(_("Unauthorized user impersonation detected: %s") % requested_impersonation_target)
+                requested_impersonation_target = requested_impersonation_writability = None # TODO FIXME TEST THAT CURRENT GAME USERNAME REMAINS
+
 
         if requested_impersonation_writability is not None:
             if is_superuser or (game_username and self.is_master(game_username)):
                 pass # OK, writability control authorized
             else:
                 self.logger.critical("Attempt at controlling impersonation writability (%s) by non-privileged player %r", requested_impersonation_writability, game_username)
-                requested_impersonation_writability = None # we just ignore that flag for now, no exception raised
+                requested_impersonation_writability = None # we just reset that flag for now, no exception raised
 
         return dict(is_superuser=is_superuser,
                     game_username=game_username,
@@ -1016,7 +1026,7 @@ class FriendshipHandling(BaseDataManager):
 
         game_data = self.data
 
-        delay = self.get_global_parameter("friendship_minimum_duration_h")
+        delay = self.get_global_parameter("friendship_minimum_duration_mn")
         utilities.check_is_positive_int(delay, non_zero=True)
 
         character_names = self.get_character_usernames()
@@ -1195,8 +1205,8 @@ class FriendshipHandling(BaseDataManager):
 
     @readonly_method
     def is_friendship_too_young_to_be_terminated(self, friendship_data):
-        min_delay = self.get_global_parameter("friendship_minimum_duration_h")
-        return (friendship_data["acceptance_date"] > datetime.utcnow() - timedelta(hours=min_delay))
+        min_delay = self.get_global_parameter("friendship_minimum_duration_mn")
+        return (friendship_data["acceptance_date"] > datetime.utcnow() - timedelta(minutes=min_delay))
 
 
     @transaction_watcher

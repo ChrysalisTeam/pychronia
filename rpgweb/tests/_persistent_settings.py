@@ -51,4 +51,5 @@ def GAME_INITIAL_FIXTURE_SCRIPT(dm):
     dm.transfer_object_to_character("statue", "guy1")
     dm.transfer_object_to_character("several_misc_gems", "guy2")
 
-
+    dm.propose_friendship("guy1", "guy2")
+    dm.propose_friendship("guy2", "guy1") # accept friendship
