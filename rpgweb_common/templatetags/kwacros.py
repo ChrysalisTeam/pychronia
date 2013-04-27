@@ -103,7 +103,7 @@ def do_macro(parser, token):
         raise template.TemplateSyntaxError, m
     # TODO: could do some validations here,
     # for now, "blow your head clean off"
-    nodelist = parser.parse(('endkwacro', ))
+    nodelist = parser.parse(('endkwacro',))
     parser.delete_first_token()
 
     ## Metadata of each macro are stored in a new attribute

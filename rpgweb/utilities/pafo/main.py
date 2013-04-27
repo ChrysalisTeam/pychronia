@@ -163,7 +163,7 @@ def printListOrTuple(lst, curTab , minTab, width, step, minForceBreakable, openB
         # add comma
         res, curTab = appendFoldIfLong (res, ", ", curTab, newMinTab, width)
     if len(res) > 2:
-        # test for division is redundant 
+        # test for division is redundant
         res = res[:-2] + closeBrace[:2]
         closeBrace = closeBrace[2:]
         if closeBrace:

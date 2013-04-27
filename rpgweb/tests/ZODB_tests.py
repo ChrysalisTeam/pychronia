@@ -172,7 +172,7 @@ class TestZODB(TestCase):
 
         transaction.commit()
 
-        self.assertFalse(hasattr(root, "stuff")) # update lost  
+        self.assertFalse(hasattr(root, "stuff")) # update lost
 
 
 

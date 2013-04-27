@@ -11,7 +11,7 @@ setup(
     author_email='d.chmeluyk@gmail.com',
     url='http://github.com/chmeliuk/cmsplugin-simple-gallery/',
     packages=find_packages(),
-    provides=['cmsplugin_simple_gallery',],
+    provides=['cmsplugin_simple_gallery', ],
     classifiers=[
         'Development Status :: 4 - Beta',
         'Environment :: Web Environment',
@@ -22,5 +22,5 @@ setup(
         ],
     include_package_data=True,
     zip_safe=False,
-    install_requires = ['django-inline-ordering>=0.1.1', 'easy-thumbnails',]
+    install_requires=['django-inline-ordering>=0.1.1', 'easy-thumbnails', ]
 )

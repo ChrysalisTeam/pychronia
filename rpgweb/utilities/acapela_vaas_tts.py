@@ -78,15 +78,15 @@ class AcapelaClient(object):
                         voice,
                         text,
 
-                        comment=None, # the information to store concerning this operation (author, reason, ...) you can get it back 
+                        comment=None, # the information to store concerning this operation (author, reason, ...) you can get it back
                         response_type=None, # INFO(default, urlencoded params)/SOUND/STREAM
                         # INFO obj is like {'alt_sound_size': None, 'sound_size': u'6799', 'sound_time': u'805.75', 'sound_id': u'289917192_cffb883a5e363',
                         #                   'alt_sound_url': None, 'sound_url': u'http://vaas/3a5e363.mp3', 'warning': u'', 'get_count': 0}
 
                         sound_id=None, # you can enforce the id to use/replace for a new message (do not use the dot character (\'.\') inside and make sure it is unique!).
-                        volume=None, # min = 50, default = 32768, max = 65535 
-                        speed=None, # min = 60, default = 180, max = 360 
-                        shaping=None, # min = 50, default = 100, max = 150 
+                        volume=None, # min = 50, default = 32768, max = 65535
+                        speed=None, # min = 60, default = 180, max = 360
+                        shaping=None, # min = 50, default = 100, max = 150
 
                         # for each equalizer value, min = -100, default = 0, max = 100 - for frequences 275Hz, 2.2kHz, 5kHz and 8.3kHz, respectively
                         equalizer1=None,
@@ -114,7 +114,7 @@ class AcapelaClient(object):
                         retrieve_alternate_sound=None, # Set to "yes" if you wish to receive the alternative file as response.
                         errors_in_id3_tags=None, # Set to "yes" if you wish to receive errors this way whenever possible instead of returning an internal server error (500)
 
-                        # when choosing INFO response type 
+                        # when choosing INFO response type
                         request_echo=None, # ON to receive some of the message creation request fields in the response
                         redirection_url=None, # the url that the TTS server should POST-query with INFO params, to get a processed HTML result for the TTS request
                         ):

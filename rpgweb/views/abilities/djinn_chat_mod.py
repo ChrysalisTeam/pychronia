@@ -2,7 +2,7 @@
 FIXME TODO
 BROKEN
 
-DEAD 
+DEAD
 # TODO - redo this as special ability
 @register_view(title=_lazy("Chat with Djinn"))  # (access=UserAccess.character)#(permission="contact_djinns")
 def chat_with_djinn(request, template_name='specific_operations/chat_with_djinn.html'):

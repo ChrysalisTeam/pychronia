@@ -7,7 +7,7 @@ import easy_thumbnails.utils
 from settings import *
 
 class SimpleGallery(models.Model):
-    name = models.CharField(max_length=255,blank=False,null=False)
+    name = models.CharField(max_length=255, blank=False, null=False)
 
     def __unicode__(self):
         return self.name
@@ -26,7 +26,7 @@ class SimpleImage(Orderable):
     def get_thumbnail(self):
         thumbnailer = get_thumbnailer(self.src)
         thb = thumbnailer.get_thumbnail(CMS_SIMPLEGALLERY_THUMBNAIL_OPTIONS, save=True)
-        return thb.url 
+        return thb.url
         #return settings.MEDIA_URL + thumbnailer.get_thumbnail_name(CMS_SIMPLEGALLERY_THUMBNAIL_OPTIONS,
         #                                                            transparent=easy_thumbnails.utils.is_transparent(self.src))
 

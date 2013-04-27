@@ -2,11 +2,11 @@
 Pour les titres (Anthropia/Notifications etc...) la police s'appelle Augustus, dispo sur dafont :
 http://www.dafont.com/augustus.font
 
-Vous pouvez voir les effets donnés à ces textes dans les PSD. Voici la liste des effets appliqués au titre :
+Vous pouvez voir les effets donnï¿½s ï¿½ ces textes dans les PSD. Voici la liste des effets appliquï¿½s au titre :
 
-Ombre portée :
-   - opacité : 100%,
-   - angle : 96°
+Ombre portï¿½e :
+   - opacitï¿½ : 100%,
+   - angle : 96ï¿½
    - distance : 2px
    - taille : 5px
 
@@ -18,8 +18,8 @@ Incrustation couleur :
 
 Contour :
    - Taille : 2px
-   - Opacité : 100%
+   - Opacitï¿½ : 100%
    - Couleur : #31281e
 
 
-J'espère que c'est ce qu'il vous faut. Si besoin je reste à votre disposition !
+J'espï¿½re que c'est ce qu'il vous faut. Si besoin je reste ï¿½ votre disposition !

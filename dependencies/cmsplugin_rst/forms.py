@@ -13,6 +13,6 @@ class RstPluginForm(forms.ModelForm):
                 }),
                 help_text=help_text
             )
-    
+
     class Meta:
         model = RstPluginModel

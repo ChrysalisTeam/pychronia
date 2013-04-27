@@ -128,7 +128,7 @@ class CharacterProfile(AbstractGameView):
                                                           form_class=forms.PasswordChangeForm,
                                                           callback="process_password_change_form"))
 
-                                                          
+
     def get_template_vars(self, previous_form_data=None):
 
         character_properties = self.datamanager.get_character_properties()

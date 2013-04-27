@@ -21,7 +21,7 @@ aimlfiles += glob.glob(os.path.join(DIRECTORY, "common_aiml", "*", "*.aiml"))
 #aimlfiles += glob.glob(os.path.join(DIRECTORY, "handpicked_aiml", "*.aiml"))
 
 
-# TO DUMP AIML FILES EXCEPT DJINN-SPECIFIC ONES 
+# TO DUMP AIML FILES EXCEPT DJINN-SPECIFIC ONES
 kernel = aimllib.Kernel()
 kernel.bootstrap(brainFile=kernelfile, learnFiles=aimlfiles)
 kernel.saveBrain(BRAIN_FILE)
@@ -49,7 +49,7 @@ print "*** Welcome to the shrine of the Oracles, young zealot ! ***"
 
 print "\n"
 
-while True: 
+while True:
     q = raw_input("> ")
-    time.sleep(float(random.randint(1,3))/3)
+    time.sleep(float(random.randint(1, 3)) / 3)
     print kernel.respond(q)

@@ -113,7 +113,7 @@ INSTALLED_APPS = [
     'sekizai',
 
     'rpgweb_common', # common templates, tags, static files etc.
-    
+
     'django_wsgiserver',
 ]
 ADMIN_MEDIA_PREFIX = "/admin/" # FIXME - temp compatibility with wsgi server

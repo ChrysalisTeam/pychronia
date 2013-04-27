@@ -55,7 +55,7 @@ class AbstractGameForm(forms.Form):
     @classmethod
     def _get_dotted_class_name(cls):
         return "%s.%s" % (cls.__module__, cls.__name__)
-   
+
     @classmethod
     def matches(cls, post_data):
         if post_data.get(cls._ability_field_name, None) == cls._get_dotted_class_name():
@@ -72,7 +72,7 @@ class AbstractGameForm(forms.Form):
             if isinstance(self.cleaned_data[field], basestring):
                 cleaned_data[field] = cleaned_data[field].strip()
         return cleaned_data
-   
+
     def get_normalized_values(self):
         values = self.cleaned_data.copy()
         del values[self._ability_field_name]

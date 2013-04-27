@@ -23,11 +23,11 @@ class Command(NoArgsCommand):
         sessionprofile table used by the django-phpBB single sign-on code. 
         '''
         current_time = datetime.datetime.now()
-        
+
         # Delete the sessionprofile objects which correspond to an expired sessions
         SessionProfile.objects.filter(session__expire_date__lt=current_time).delete()
-        
+
         # Delete the session objects which correspond to an expired sessions
         Session.objects.filter(expire_date__lt=current_time).delete()
-        
+
         transaction.commit_unless_managed()

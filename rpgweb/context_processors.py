@@ -67,7 +67,7 @@ def rpgweb_template_context(request):
                 'user': dm.user,
                 'game_is_writable': writability_data["writable"],
                 'display_admin_tips': dm.user.is_superuser or dm.is_master(dm.user.real_username), # tops also visible when impersonation!
-                
+
                 'impersonation_capabilities': impersonation_capabilities,
 
                 'menus': menus.submenus if menus else [], # we ignore root entry
@@ -77,7 +77,7 @@ def rpgweb_template_context(request):
 
                 'online_users': online_users,
                 'signal_new_radio_messages': not dm.has_read_current_playlist() if not isinstance(request.processed_view, WebradioManagement) else False,
-                
+
                 'signal_new_text_message': signal_new_text_message,
                 'signal_chatting_users': bool(dm.get_chatting_users()),
 

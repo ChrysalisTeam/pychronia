@@ -13,7 +13,7 @@ class RstPlugin(CMSPluginBase):
     render_template = 'cms/content.html'
     model = RstPluginModel
     form = RstPluginForm
-    
+
     def render(self, context, instance, placeholder):
         context.update({'content': postprocess(restructuredtext(instance.body))})
         return context

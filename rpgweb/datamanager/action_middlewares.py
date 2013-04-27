@@ -233,9 +233,9 @@ class CostlyActionMiddleware(AbstractActionMiddleware):
         """
 
         other_instructions = super(CostlyActionMiddleware, self)._get_middleware_data_explanations(action_name)
-        
+
         if self.is_action_middleware_activated(action_name, CostlyActionMiddleware):
-            
+
             res = []
             middleware_settings = self.get_middleware_settings(action_name, CostlyActionMiddleware)
 
@@ -256,7 +256,7 @@ class CostlyActionMiddleware(AbstractActionMiddleware):
             return other_instructions
 
         assert False
-        
+
 
     def _process_action_through_middlewares(self, action_name, method, params):
 
@@ -510,7 +510,7 @@ class TimeLimitedActionMiddleware(AbstractActionMiddleware):
                     blocking_times = ()
             else:
                 blocking_times = ()
-                
+
             res.append(_("In this last period, you've done it %s time(s).") % len(blocking_times))
 
             assert res

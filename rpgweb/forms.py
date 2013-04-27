@@ -96,10 +96,10 @@ class ArtefactTransferForm(AbstractGameForm):
 
     artefact_name = forms.ChoiceField(label=_lazy("Artefact"), required=True)
     recipient_name = forms.ChoiceField(label=_lazy("Recipient"), required=True)
-            
+
     def __init__(self, datamanager, *args, **kwargs):
         super(ArtefactTransferForm, self).__init__(datamanager, *args, **kwargs)
-        
+
         artefacts = datamanager.get_user_artefacts() # dicts
         artefacts_choices = [(name, value["title"]) for (name, value) in artefacts.items()]
         self.fields["artefact_name"].choices = artefacts_choices
