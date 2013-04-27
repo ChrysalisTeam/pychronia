@@ -45,7 +45,7 @@ def readonly_method(obj):
     return new_func
 
 
-def transaction_watcher(object=None, always_writable=True):
+def transaction_watcher(object=None, always_writable=False):
     """
     Decorator for use on datamanager and ability methods.
     
@@ -73,7 +73,7 @@ def transaction_watcher(object=None, always_writable=True):
             if not always_writable:
                 # then, we assume that - NECESSARILY - data is in a coherent state
                 writability_data = datamanager.determine_actual_game_writability()
-                if not writability_data["writability"]: # abnormal, views should have blocked that feature
+                if not writability_data["writable"]: # abnormal, views should have blocked that feature
                     datamanager.logger.critical("Forbidden access to %s while having writability_data = %r", func.__name__, writability_data)
                     raise AbnormalUsageError(_("This feature is unavailable at the moment"))
 
@@ -101,6 +101,7 @@ def transaction_watcher(object=None, always_writable=True):
                 raise
         new_func = _transaction_watcher(obj)
         new_func._is_under_transaction_watcher = True
+        new_func._is_always_writable = always_writable
         return new_func
 
     return _decorate_and_sign(object) if object is not None else _decorate_and_sign

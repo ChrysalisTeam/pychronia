@@ -474,7 +474,7 @@ HOY ma guy
 {% if 1 %}
 <a onclick="open_webradio_popup(); return false;" href="#">
 <div class="big_icon_panel">
-    <img src="{{ STATIC_URL }}MetalRadiance/img/icons/radio.png"/>
+    <img src="{{ STATIC_URL }}MetalRadiance/img/icons/radio.png"/>{% if signal_new_radio_messages %}<b style="font-size:20px; color:white;">!!</b>{% endif %}
 </div>
 </a>
 {% else %}

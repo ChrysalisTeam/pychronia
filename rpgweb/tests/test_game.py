@@ -428,6 +428,13 @@ class TestDatamanager(BaseGameTestCase):
             if not getattr(obj, "_is_under_transaction_watcher", None) \
                 and not getattr(obj, "_is_under_readonly_method", None):
                 raise AssertionError("Undecorated public datamanager method: %s" % obj)
+        
+
+        assert GameDataManager.process_secret_answer_attempt._is_always_writable == False # sensible DEFAULT
+        assert GameDataManager.access_novelty._is_always_writable == False
+        assert GameDataManager.mark_current_playlist_read._is_always_writable == False
+        assert GameDataManager.sync_game_view_data._is_always_writable == True
+        assert GameDataManager.set_game_state._is_always_writable == True
 
 
 

@@ -12,7 +12,7 @@ class WebradioManagement(AbstractGameView):
 
     TITLE = _lazy("Webradio Management")
     NAME = "webradio_management"
-    
+
     GAME_ACTIONS = dict(save_radio_playlist=dict(title=_lazy("Save radio playlist"),
                                                           form_class=None,
                                                           callback="save_radio_playlist"))
@@ -94,7 +94,8 @@ class WebradioManagement(AbstractGameView):
                 form_data=None) # no form data unless with went through super()._process_html_request() above
 
 
-    def save_radio_playlist(self, audio_ids):
+    def save_radio_playlist(self, audio_ids=None):
+        audio_ids = audio_ids if audio_ids is not None else [] # ajax won't send any audio_ids if playlist is emptied
         self.datamanager.set_radio_messages(audio_ids) # breaks if not a proper list of audio ids
         return True
 

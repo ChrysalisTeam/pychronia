@@ -59,7 +59,7 @@ class GameGlobalParameters(BaseDataManager):
         """
         return self.get_global_parameter("game_is_started")
 
-    @transaction_watcher
+    @transaction_watcher(always_writable=True)
     def set_game_state(self, started):
         self.data["global_parameters"]["game_is_started"] = started
 
@@ -312,11 +312,11 @@ class NovaltyTracker(BaseDataManager):
 
     @readonly_method
     def has_accessed_novelty(self, username=CURRENT_USER, item_key=None, category=_default_novelty_category):
-        """Returns always True for anonymous users (non novelty tracking for them)."""
+        """Returns always True for anonymous users (no novelty tracking for them)."""
         username = self._resolve_username(username)
         assert username in self.get_available_logins() # anonymous too, let's be tolerant
         if self.is_anonymous(username):
-            return True # beware
+            return True # beware!
         full_key = self._build_novelty_key(category, item_key)
         del category, item_key # security
         tracker = self.data["novalty_tracker"]
@@ -3789,7 +3789,7 @@ class Encyclopedia(BaseDataManager):
         return self.get_character_properties(username)["known_article_ids"]
 
 
-    @transaction_watcher(always_writable=True) # automatic action - not harmful
+    @transaction_watcher
     def update_character_known_article_ids(self, username=CURRENT_USER, article_ids=None):
         username = self._resolve_username(username)
         assert article_ids is not None

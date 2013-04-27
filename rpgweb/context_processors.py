@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 from rpgweb import menus as menus_module
 from rpgweb.authentication import IMPERSONATION_TARGET_POST_VARIABLE, IMPERSONATION_WRITABILITY_POST_VARIABLE # TODO USE WRITABILITY
 from django.contrib.messages.api import get_messages
+from rpgweb.views.admin_views.webradio_management_mod import WebradioManagement
 
 
 
@@ -59,7 +60,7 @@ def rpgweb_template_context(request):
                 'is_mobile_page': request.is_mobile,
 
                 'online_users': online_users,
-
+                'signal_new_radio_messages': not dm.has_read_current_playlist() if not isinstance(request.processed_view, WebradioManagement) else False,
 
                 # replacement of django.contrib.messages middleware
                 'notification_type': notification_type,

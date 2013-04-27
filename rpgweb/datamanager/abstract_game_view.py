@@ -552,7 +552,8 @@ class AbstractGameView(object):
             self._check_standard_access() # crucial
 
             response = self._process_standard_request(request, *args, **kwargs)
-            self.mark_view_as_accessed(self.datamanager) # no errors -> we mark view as "read"
+            if self.datamanager.is_game_writable():
+                self.mark_view_as_accessed(self.datamanager) # no errors -> we mark view as "read"
             return response
 
         finally:

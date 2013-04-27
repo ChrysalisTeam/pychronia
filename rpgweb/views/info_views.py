@@ -46,7 +46,7 @@ def view_encyclopedia(request, article_id=None, template_name='info/encyclopedia
                 if not search_results:
                     dm.user.add_error(_("Sorry, no matching encyclopedia article has been found for '%s'") % search_string)
                 else:
-                    if dm.is_character():  # not for master or anonymous!!
+                    if dm.is_character() and dm.is_game_writable():  # not for master or anonymous!!
                         dm.update_character_known_article_ids(search_results)
                     if len(search_results) == 1:
                         dm.user.add_message(_("Your search has led to a single article, below."))
@@ -145,7 +145,8 @@ def get_radio_xml_conf(request, template_name='info/web_radio_conf.xml'):
     audio_urls = "|".join([determine_asset_url(msg) for msg in current_audio_messages])  # we expect no "|" inside a single url
     audio_titles = "|".join([msg["title"].replace("|", "") for msg in current_audio_messages])  # here we can cleanup
 
-    dm.mark_current_playlist_read() # THAT view is symptomatic of actual listening of personal radio (in both popup and normal window)
+    if dm.is_game_writable():
+        dm.mark_current_playlist_read() # THAT view is symptomatic of actual listening of personal radio (in both popup and normal window)
 
     return render(request,
                   template_name,
