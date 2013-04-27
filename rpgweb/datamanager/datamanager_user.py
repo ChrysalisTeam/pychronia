@@ -97,7 +97,7 @@ class GameUser(object):
 
     def _check_request_available(self):
         if not self.datamanager.request:
-            logger.critical("Unexisting request object looked up by GameUser", exc_info=True)
+            self.datamanager.logger.critical("Unexisting request object looked up by GameUser", exc_info=True)
             return False
         return True
 

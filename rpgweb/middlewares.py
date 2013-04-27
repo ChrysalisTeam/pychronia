@@ -4,7 +4,6 @@ from __future__ import unicode_literals
 
 
 from rpgweb.common import *
-
 from django.http import Http404
 import django.core.mail as mail
 from django.utils.cache import patch_vary_headers
@@ -16,6 +15,7 @@ from rpgweb.datamanager.datamanager_administrator import retrieve_game_instance
 settings = None
 del settings # use config instead
 
+assert logging
 
 class MobileHostMiddleware:
 
@@ -75,9 +75,13 @@ class ZodbTransactionMiddleware(object):
 
     def process_exception(self, request, exception):
         # on exception : normal 500 handling takes place
+        try:
+            logger = request.datamanager.logger
+        except Exception:
+            logger = logging
 
         if not isinstance(exception, Http404):
-            logging.critical("Exception occurred in view - %r" % exception, exc_info=True)
+            logger.critical("Exception occurred in view - %r" % exception, exc_info=True)
 
         # we let the exception propagate anyway
         pass
@@ -87,11 +91,16 @@ class ZodbTransactionMiddleware(object):
         # on exception : no response handling occurs, a simple traceback is output !
 
         try:
+            logger = request.datamanager.logger
+        except Exception:
+            logger = logging
+
+        try:
             if hasattr(request, "datamanager"):
                 request.datamanager.close()
         except Exception, e:
             # exception should NEVER flow out of response processing middlewares
-            logging.critical("Exception occurred in ZODB middleware process_response - %r" % e, exc_info=True)
+            logger.critical("Exception occurred in ZODB middleware process_response - %r" % e, exc_info=True)
 
         return response
 
@@ -138,7 +147,7 @@ class PeriodicProcessingMiddleware(object):
         except Exception, e:
             try:
                 msg = "PeriodicProcessingMiddleware error : %r" % e
-                logging.error(msg, exc_info=True)
+                datamanager.logger.error(msg, exc_info=True)
                 mail.mail_admins("Error", msg, config.SERVER_EMAIL)
             except:
                 pass

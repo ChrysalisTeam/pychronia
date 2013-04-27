@@ -17,7 +17,7 @@ class GameViewActivationForm(AbstractGameForm):
     activated_views = forms.MultipleChoiceField(label=_lazy("Game views"), required=False, widget=forms.CheckboxSelectMultiple)
 
     def __init__(self, datamanager, *args, **kwargs):
-        super(GameViewActivationForm, self).__init__(GameViewActivationForm, *args, **kwargs)
+        super(GameViewActivationForm, self).__init__(datamanager, *args, **kwargs)
 
         activable_views = datamanager.get_activable_views() # mapping view_name -> klass
         activable_views_choices = [(view_name, view_klass.NAME) for (view_name, view_klass) in activable_views.items()]

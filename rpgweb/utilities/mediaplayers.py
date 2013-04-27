@@ -225,7 +225,7 @@ def generate_image_viewer(imageurl, width=450, height=350, preset=None, **kwargs
                 try:
                     thumb = thumbnailer[preset]
                 except Exception, e:
-                    logging.critical("THUMNAILING FAILED 1", exc_info=True)# FIXME LOGGING HERE
+                    logging.critical("generate_image_viewer preset selection failed for %s/%s", imageurl, preset, exc_info=True)
                     pass
             if not thumb:
                 options = {
@@ -236,7 +236,7 @@ def generate_image_viewer(imageurl, width=450, height=350, preset=None, **kwargs
                 thumb = thumbnailer.get_thumbnail(options)
             thumburl = thumb.url
         except Exception, e:
-            logging.critical("THUMNAILING FAILED 2", exc_info=True)# FIXME LOGGING HERE
+            logging.critical("generate_image_viewer thumbnail generation failed %s/%s", imageurl, preset, exc_info=True)
             thumburl = imageurl # we give up thumbnailing...
 
     options = \

@@ -9,7 +9,7 @@ from . import datamanager_modules
 from .datamanager_tools import zodb_transaction
 from .datamanager_core import BaseDataManager
 
-
+assert logging
 
 AllBases = tuple(reversed(datamanager_modules.MODULES_REGISTRY)) # latest classes must be first in hierarchy
 GameDataManager = type(str('GameDataManager'), AllBases, {})
@@ -47,7 +47,7 @@ def check_zodb_structure():
     """
     root = _get_zodb_connection().root()
     if not root.has_key(GAME_INSTANCES_MOUNT_POINT):
-        logger.warning("Uninitialized ZODB root found - initializing...")
+        logging.warning("Uninitialized ZODB root found - initializing...")
         root[GAME_INSTANCES_MOUNT_POINT] = OOBTree()
         return False
     return True
@@ -86,7 +86,7 @@ def create_game_instance(game_instance_id, master_email, master_login, master_pa
         assert dm.is_initialized
         game_instances[game_instance_id] = game_root # NOW only we link data to ZODB
     except Exception, e:
-        logger.critical("Impossible to initialize game instance %r..." % game_instance_id, exc_info=True)
+        logging.critical("Impossible to initialize game instance %r..." % game_instance_id, exc_info=True)
         raise
 
 

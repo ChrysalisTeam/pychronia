@@ -390,7 +390,7 @@ def ___outbox(request, template_name='messaging/messages.html'):
 @register_view(access=UserAccess.master, title=_lazy("View Single Message"))
 def view_single_message(request, msg_id, template_name='messaging/view_single_message.html'):
     """
-    To be used only in event logging.
+    Meant to be used only in event logging.
     """
     user = request.datamanager.user
     message = None

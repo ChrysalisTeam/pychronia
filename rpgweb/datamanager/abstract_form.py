@@ -50,6 +50,7 @@ class AbstractGameForm(forms.Form):
         self.fields[self.__class__._ability_field_name] = forms.CharField(initial=self._get_dotted_class_name(), widget=forms.HiddenInput) # appended at the end
         self.target_url = ""  # by default we stay on the same page when submitting
 
+        self.logger = datamanager.logger # handy
 
     @classmethod
     def _get_dotted_class_name(cls):

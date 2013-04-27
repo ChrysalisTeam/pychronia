@@ -7,7 +7,6 @@ import os
 from datetime import datetime, timedelta
 import json
 import traceback
-import logging
 import collections
 import copy
 from contextlib import contextmanager
@@ -157,7 +156,7 @@ def bug_report_treatment(request):
                                 location=location,
                                 report_data=report_data)
 
-    logging.getLogger("django.request").critical(message) # will also send email with all necessary info
+    logging.getLogger("django.request").critical(message) # special handlers will send email with all necessary info
 
     return HttpResponse("OK - bug reported")
 

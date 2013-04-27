@@ -113,7 +113,7 @@ class TelecomInvestigationAbility(AbstractAbility):
                       "\n\n" + _("Subject: ") + instruction["subject"] + "\n\n"
             result += "\n" + self._corrupt_text_parts(instruction["body"], chunk_lengths, key_phrase)
         else:
-            logging.error("Player instructions message for %s not found !" % target_username, exc_info=True)
+            self.logger.error("Player instructions message for %s not found !" % target_username, exc_info=True)
 
         return result
 

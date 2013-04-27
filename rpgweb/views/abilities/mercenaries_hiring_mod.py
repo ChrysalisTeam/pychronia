@@ -41,7 +41,7 @@ class GemPayementFormMixin(AbstractGameForm):
         try:
             parameters["use_gems"] = self._decode_gems(parameters["gems_list"])
         except (TypeError, ValueError), e:
-            logger.critical("Wrong data submitted - %r", parameters["gems_list"], exc_info=True) # FIXME LOGGER MISSING
+            self.logger.critical("Wrong data submitted - %r", parameters["gems_list"], exc_info=True) # FIXME LOGGER MISSING
             raise AbnormalUsageError("Wrong data submitted")
 
         if ((parameters["pay_with_money"] and parameters["use_gems"]) or

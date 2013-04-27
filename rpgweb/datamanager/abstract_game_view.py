@@ -199,8 +199,6 @@ class AbstractGameView(object):
 
     _ACTION_FIELD = "_action_" # for ajax and no-form request
 
-    logger = logging.getLogger("views")
-
 
     ## request and view params, set ONLY during a request processing ##
     request = None
@@ -213,9 +211,14 @@ class AbstractGameView(object):
         self._inner_datamanager = datamanager
         # do NOT store datamanager.user, as it might change during execution!!!
 
+
     @property
     def datamanager(self):
         return self._inner_datamanager
+
+    @property
+    def logger(self):
+        return self._inner_datamanager.logger
 
     @classmethod
     def get_access_token(cls, datamanager):
@@ -478,7 +481,7 @@ class AbstractGameView(object):
                     break # IMPORTANT
             else:
                 user.add_error(_("Submitted form data hasn't been recognized"))
-                logging.error("Unexpected form data sent to %s - %r" % (self.NAME, self.request.POST))
+                self.logger.error("Unexpected form data sent to %s - %r" % (self.NAME, self.request.POST))
 
         assert set(res.keys()) == set("result form_data".split()), res
         return res

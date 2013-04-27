@@ -58,7 +58,6 @@ class AbstractAbility(AbstractAbilityBasesAdapter):
     def __init__(self, request, *args, **kwargs):
         super(AbstractAbility, self,).__init__(request, *args, **kwargs)
         self._ability_data = weakref.ref(self.datamanager.get_ability_data(self.NAME))
-        self.logger = self.datamanager.logger # local cache
 
 
     @property

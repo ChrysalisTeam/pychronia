@@ -1102,7 +1102,7 @@ class FriendshipHandling(BaseDataManager):
             friendship_proposals[(username, recipient)] = PersistentDict(proposal_date=current_date)
             res = False
 
-        # TODO - add game logging for both events
+        # TODO FIXME - add game events for both events
         return res
 
 
@@ -3240,7 +3240,6 @@ class MoneyItemsOwnership(BaseDataManager):
 
         self.data["game_items"][item_name]["owner"] = None # we reset the owner tag of the object
 
-        # todo - logging here ??
         '''
 
 

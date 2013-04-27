@@ -39,7 +39,7 @@ from .utilities.encryption import unicode_decrypt, unicode_encrypt, hash
 
 _undefined = object()
 
-logger = logging.getLogger()
+
 
 class UserAccess:
     """
@@ -119,6 +119,7 @@ class AbnormalUsageError(UsageError):
 @contextmanager
 def action_failure_handler(request, success_message=_lazy("Operation successful.")):
     user = request.datamanager.user
+    logger = request.datamanager.logger
 
     try:
         # nothing in __enter__()
@@ -127,14 +128,14 @@ def action_failure_handler(request, success_message=_lazy("Operation successful.
         #print (">YYYY", repr(e))
         user.add_error(unicode(e))
         if isinstance(e, AbnormalUsageError):
-            logging.critical(unicode(e), exc_info=True)
+            logger.critical(unicode(e), exc_info=True)
     except Exception, e:
         #print (">OOOOOOO", repr(e))
         #import traceback
         #traceback.print_exc()
         # we must locate this serious error, as often (eg. assertion errors) there is no specific message attached...
         msg = _("Unexpected exception caught in action_failure_handler - %r") % e
-        logging.critical(msg, exc_info=True)
+        logger.critical(msg, exc_info=True)
         if config.DEBUG:
             user.add_error(msg)
         else:

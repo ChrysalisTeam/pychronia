@@ -10,7 +10,6 @@ FEATURES
 - mobile version of site (-> refactor base_mobile to mimic base_web structure)
 - Add captcha to some special static pages - WHICH ??
 - refactoring of loggers, at top and DM level
-- review all always_writable views!!!
 
 
 
@@ -62,6 +61,9 @@ BUGLETS:
 - messaging reply/resend + templates DONE
 - adding novelty tags ALMOST everywhere (menu, radio and help icons...) DONE
 - adding of impersonation target widget for characters (but niot writability) DONE
+- review all always_writable views DONE
+
+
 
 ====================
 
