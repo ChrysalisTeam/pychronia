@@ -59,7 +59,7 @@ class GameGlobalParameters(BaseDataManager):
         """
         return self.get_global_parameter("game_is_started")
 
-    @transaction_watcher(always_writable=True)
+    @transaction_watcher(always_writable=True) # for testing mainly
     def set_game_state(self, started):
         self.data["global_parameters"]["game_is_started"] = started
 
@@ -92,8 +92,8 @@ class CurrentUserHandling(BaseDataManager):
                              impersonation_target=impersonation_target,
                              impersonation_writability=impersonation_writability,
                              is_superuser=is_superuser) # might raise UsageError
-
-        self._notify_user_change(username=username)
+        del username
+        self._notify_user_change(username=self.user.username) # might have been normalized, eg. None -> anonymous_login
 
         return self.user
 
@@ -1343,14 +1343,15 @@ class OnlinePresence(BaseDataManager):
 
     def _notify_user_change(self, username, **kwargs):
         super(OnlinePresence, self)._notify_user_change(username=username, **kwargs)
-        if username in self.data["character_properties"]: # TODO improve
-            self.set_online_status(username)
+        if self.is_character(username): # MUST BE FIRST, as a validation
+            if self.is_game_writable():
+                self.set_online_status(username)
 
 
     def _set_online_status(self, username): # no fallback system here
         self.data["character_properties"][username]["last_online_time"] = datetime.utcnow()
 
-    @transaction_watcher(always_writable=True)
+    @transaction_watcher
     def set_online_status(self, username=CURRENT_USER):
         username = self._resolve_username(username)
         self._set_online_status(username=username)
@@ -2027,6 +2028,8 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
         characters = set(self.get_character_usernames())
         target_characters = [username for username, reason in frozen_msg["visible_by"].items()
                                       if reason != VISIBILITY_REASONS.sender and username in characters] # thus we remove master_login and sender
+
+        assert self.is_game_writable() # we MUST be in writable game here
         self.set_new_message_notification(concerned_characters=target_characters, new_status=True)
 
     def _check_sender_email(self, sender_email):
@@ -2193,12 +2196,12 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
         res = self._get_messages_visible_for_reason(reason=VISIBILITY_REASONS.recipient, username=username)
         return res
 
-    @transaction_watcher(always_writable=True)
+    @transaction_watcher
     def pop_received_messages(self, username=CURRENT_USER):
         """
         Also resets the 'new message' notification of concerner character, if any.
         
-        NOT USED ANYMORE
+        BUGGY AND NOT USED ANYMORE
         """
         username = self._resolve_username(username)
         records = self.get_received_messages(username=username)
@@ -2328,7 +2331,7 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
         username = self._resolve_username(username)
         return self.data["character_properties"][username]["has_new_messages"] # boolean
 
-    @transaction_watcher(always_writable=True)
+    @transaction_watcher
     def set_new_message_notification(self, concerned_characters, new_status):
         """Only for CHARACTERS ATM"""
         for character in concerned_characters:
@@ -2708,7 +2711,7 @@ class Chatroom(BaseDataManager):
             previous_time = msg["time"]
             assert msg["username"] is None or msg["username"] in game_data["character_properties"].keys()
 
-    @transaction_watcher
+    @transaction_watcher # allows micro-transaction inside readonly method
     def _set_chatting_status(self, username=CURRENT_USER):
         username = self._resolve_username(username)
         self.data["character_properties"][username]["last_chatting_time"] = datetime.utcnow()
@@ -2745,7 +2748,7 @@ class Chatroom(BaseDataManager):
         self.data["chatroom_messages"].append(record)
 
 
-    @readonly_method
+    @readonly_method # inner mini-transactions might occur though
     def get_chatroom_messages(self, from_slice_index): # from_slice_index might be negative
 
         new_messages = self.data["chatroom_messages"][from_slice_index:]

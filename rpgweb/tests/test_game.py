@@ -433,8 +433,10 @@ class TestDatamanager(BaseGameTestCase):
         assert GameDataManager.process_secret_answer_attempt._is_always_writable == False # sensible DEFAULT
         assert GameDataManager.access_novelty._is_always_writable == False
         assert GameDataManager.mark_current_playlist_read._is_always_writable == False
+
+        assert GameDataManager.set_game_state._is_always_writable == True # even if master bypasses constraints here
         assert GameDataManager.sync_game_view_data._is_always_writable == True
-        assert GameDataManager.set_game_state._is_always_writable == True
+        assert GameDataManager.set_message_read_state._is_always_writable == True
 
 
 
@@ -2879,9 +2881,11 @@ class TestHttpRequests(BaseGameTestCase):
 
         old_state = self.dm.is_game_started()
 
+        self.dm.set_game_state(True)
+        self._set_user(None)
+
         # PLAYER SETUP
 
-        self.dm.set_game_state(True)
         username = "guy2"
         user_money = self.dm.get_character_properties(username)["account"]
         if user_money:
@@ -2922,7 +2926,7 @@ class TestHttpRequests(BaseGameTestCase):
 
         test_views(views)
 
-        self.assertEqual(self.dm.get_online_users(), [username])
+        self.assertEqual(self.dm.get_online_users(), [username] if old_state else []) # in paused game, even online users are not updated
         self.assertEqual(self.dm.get_chatting_users(), [])
 
         self._logout()
@@ -2983,16 +2987,16 @@ class TestHttpRequests(BaseGameTestCase):
 
         for login in ("master", "guy1", None):
 
-            self._set_user(login)
-
             self.dm.set_game_state(False)
 
+            self._set_user(login)
             response = self.client.get(url_base + "?search=animal")
             assert response.status_code == 200
             assert "have access to" in response.content.decode("utf8") # no search results
 
             self.dm.set_game_state(True)
 
+            self._set_user(login)
             response = self.client.get(url_base)
             assert response.status_code == 200
 
