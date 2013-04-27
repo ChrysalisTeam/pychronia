@@ -254,6 +254,11 @@ def conversation(request, template_name='messaging/conversation.html'):
     messages = request.datamanager.get_user_related_messages() # for current master or character
     grouped_messages = request.datamanager.sort_messages_by_conversations(messages)
     enriched_messages = _determine_message_list_display_context(request.datamanager, messages=grouped_messages, is_pending=False)
+
+    dm = request.datamanager
+    if dm.is_game_writable() and dm.is_character():
+        dm.set_new_message_notification(concerned_characters=[dm.username], new_status=False)
+
     return render(request,
                   template_name,
                   dict(page_title=_("Conversations"),

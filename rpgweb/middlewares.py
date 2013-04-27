@@ -133,7 +133,7 @@ class PeriodicProcessingMiddleware(object):
 
         # tasks that must be done BEFORE the user request is processed
         try:
-            if datamanager.get_global_parameter("game_is_started"): # prevents crash when game not launched
+            if datamanager.is_game_writable(): # important
                 datamanager.process_periodic_tasks() # eg. to send pending emails
         except Exception, e:
             try:

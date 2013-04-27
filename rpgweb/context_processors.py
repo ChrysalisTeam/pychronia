@@ -58,6 +58,8 @@ def rpgweb_template_context(request):
         help_page_key = "help-" + view_name
         signal_new_help_page = not dm.has_user_accessed_static_page(help_page_key)
 
+        signal_new_text_message = dm.is_character() and dm.has_new_message_notification() # only for characters atm
+
         return {'game_instance_id': dm.game_instance_id,
 
                 'fallback_title': request.processed_view.TITLE,
@@ -75,6 +77,9 @@ def rpgweb_template_context(request):
 
                 'online_users': online_users,
                 'signal_new_radio_messages': not dm.has_read_current_playlist() if not isinstance(request.processed_view, WebradioManagement) else False,
+                
+                'signal_new_text_message': signal_new_text_message,
+                'signal_chatting_users': bool(dm.get_chatting_users()),
 
                 # replacement of django.contrib.messages middleware
                 'notification_type': notification_type,

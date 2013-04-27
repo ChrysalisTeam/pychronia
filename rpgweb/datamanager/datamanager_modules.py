@@ -2187,6 +2187,8 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
     def pop_received_messages(self, username=CURRENT_USER):
         """
         Also resets the 'new message' notification of concerner character, if any.
+        
+        NOT USED ANYMORE
         """
         username = self._resolve_username(username)
         records = self.get_received_messages(username=username)
@@ -2311,11 +2313,13 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
 
     @readonly_method
     def has_new_message_notification(self, username=CURRENT_USER):
+        """Only for CHARACTERS ATM"""
         username = self._resolve_username(username)
         return self.data["character_properties"][username]["has_new_messages"] # boolean
 
     @transaction_watcher(always_writable=True)
     def set_new_message_notification(self, concerned_characters, new_status):
+        """Only for CHARACTERS ATM"""
         for character in concerned_characters:
             self.data["character_properties"][character]["has_new_messages"] = new_status
 
@@ -2745,7 +2749,7 @@ class Chatroom(BaseDataManager):
             except IndexError:
                 previous_msg_timestamp = None
 
-        if self.user.is_character:
+        if self.is_game_writable() and self.is_character():
             self._set_chatting_status() # just reading chats is an act of presence
 
         return (new_slice_index, previous_msg_timestamp, new_messages)
