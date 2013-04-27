@@ -3024,6 +3024,7 @@ class MoneyItemsOwnership(BaseDataManager):
             if properties["is_gem"] and not properties['owner']: # we dont recount gems appearing in character["gems"]
                 total_gems += [properties['unit_cost']] * properties["num_items"]
 
+            properties['image'] = utilities.complete_game_file_path(properties['image'], "sales")
 
         # We initialize some runtime checking parameters #
         game_data["global_parameters"]["total_digital_money"] = total_digital_money # integer
@@ -3069,7 +3070,7 @@ class MoneyItemsOwnership(BaseDataManager):
 
             assert isinstance(properties['title'], basestring) and properties['title']
             assert isinstance(properties['comments'], basestring) and properties['comments']
-            assert isinstance(properties['image'], basestring) and properties['image']
+            utilities.check_is_game_file(properties['image'])
 
             # item might be out of auction
             assert properties['auction'] is None or isinstance(properties['auction'], basestring) and properties['auction']
@@ -3847,7 +3848,8 @@ class NightmareCaptchas(BaseDataManager):
             value.setdefault("text", None)
             value.setdefault("image", None)
             value.setdefault("explanation", None)
-
+            if value["image"]:
+                value["image"] = utilities.complete_game_file_path(value["image"], "captchas")
 
     def _check_database_coherency(self, strict=False, **kwargs):
         super(NightmareCaptchas, self)._check_database_coherency(**kwargs)
@@ -3869,7 +3871,7 @@ class NightmareCaptchas(BaseDataManager):
             if value["text"]:
                 utilities.check_is_restructuredtext(value["text"])
             if value["image"]:
-                utilities.check_is_game_file("captchas", value["image"])
+                utilities.check_is_game_file(value["image"])
             if value["explanation"]:
                 utilities.check_is_restructuredtext(value["explanation"])
 
