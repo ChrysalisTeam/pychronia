@@ -722,6 +722,11 @@ class TestDatamanager(BaseGameTestCase):
 
         dm.reset_friendship_data()
 
+        full = self.dm.get_full_friendship_data()
+        assert isinstance(full, (dict, PersistentDict))
+        assert "sealed" in full and "proposed" in full
+
+
         assert self.dm.get_other_characters_friendship_statuses("guy1") == {u'guy2': None, 'guy3': None, 'guy4': None}
         assert self.dm.get_other_characters_friendship_statuses("guy2") == {u'guy1': None, 'guy3': None, 'guy4': None}
 
@@ -757,11 +762,11 @@ class TestDatamanager(BaseGameTestCase):
         with pytest.raises(AbnormalUsageError):
             dm.propose_friendship("guy2", "guy1") # duplicate proposal
 
-        assert dm.get_friendship_requests("guy3") == dict(proposed_to=[],
+        assert dm.get_friendship_requests_for_character("guy3") == dict(proposed_to=[],
                                                           requested_by=[])
-        assert dm.get_friendship_requests("guy1") == dict(proposed_to=[],
+        assert dm.get_friendship_requests_for_character("guy1") == dict(proposed_to=[],
                                                           requested_by=["guy2"])
-        assert dm.get_friendship_requests("guy2") == dict(proposed_to=["guy1"],
+        assert dm.get_friendship_requests_for_character("guy2") == dict(proposed_to=["guy1"],
                                                           requested_by=[])
         time.sleep(0.5)
         assert dm.propose_friendship("guy1", "guy2") # we seal friendship, here
@@ -807,9 +812,9 @@ class TestDatamanager(BaseGameTestCase):
 
         assert not dm.propose_friendship("guy2", "guy3") # proposed
         assert dm.propose_friendship("guy3", "guy2") # accepted
-        assert dm.get_friends("guy1") == dm.get_friends("guy3") == ["guy2"]
-        assert dm.get_friends("guy2") in (["guy1", "guy3"], ["guy3", "guy1"]) # order not enforced
-        assert dm.get_friends("guy4") == []
+        assert dm.get_friends_for_character("guy1") == dm.get_friends_for_character("guy3") == ["guy2"]
+        assert dm.get_friends_for_character("guy2") in (["guy1", "guy3"], ["guy3", "guy1"]) # order not enforced
+        assert dm.get_friends_for_character("guy4") == []
 
         assert self.dm.get_other_characters_friendship_statuses("guy1") == {u'guy2': 'recent_friend', 'guy3': None, 'guy4': None}
         assert self.dm.get_other_characters_friendship_statuses("guy2") == {u'guy1': 'recent_friend', 'guy3': 'recent_friend', 'guy4': None}
@@ -852,9 +857,9 @@ class TestDatamanager(BaseGameTestCase):
         dm.reset_friendship_data()
         assert not dm.data["friendships"]["proposed"]
         assert not dm.data["friendships"]["sealed"]
-        assert not dm.get_friends("guy1")
-        assert not dm.get_friends("guy2")
-        assert not dm.get_friends("guy3")
+        assert not dm.get_friends_for_character("guy1")
+        assert not dm.get_friends_for_character("guy2")
+        assert not dm.get_friends_for_character("guy3")
         assert not dm.are_friends("guy2", "guy1")
         assert not dm.are_friends("guy3", "guy2")
         assert not dm.are_friends("guy3", "guy4")

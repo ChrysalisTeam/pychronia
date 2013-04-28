@@ -30,6 +30,10 @@ def view_encyclopedia(request, article_id=None, template_name='info/encyclopedia
     """
     dm = request.datamanager
 
+    def _conditionally_update_known_article_ids(ids_list):
+        if dm.is_character() and dm.is_game_writable():  # not for master or anonymous!!
+            dm.update_character_known_article_ids(search_results)
+
     article_ids = None  # index of encyclopedia
     entry = None  # current article
     search_results = None  # list of matching article ids
@@ -38,6 +42,8 @@ def view_encyclopedia(request, article_id=None, template_name='info/encyclopedia
         entry = dm.get_encyclopedia_entry(article_id)
         if not entry:
             dm.user.add_error(_("Sorry, no encyclopedia article has been found for id '%s'") % article_id)
+        else:
+            _conditionally_update_known_article_ids([article_id])
     else:
         search_string = request.REQUEST.get("search")  # needn't appear in browser history, but GET needed for encyclopedia links
         if search_string:
@@ -48,12 +54,11 @@ def view_encyclopedia(request, article_id=None, template_name='info/encyclopedia
                 if not search_results:
                     dm.user.add_error(_("Sorry, no matching encyclopedia article has been found for '%s'") % search_string)
                 else:
-                    if dm.is_character() and dm.is_game_writable():  # not for master or anonymous!!
-                        dm.update_character_known_article_ids(search_results)
+                    _conditionally_update_known_article_ids([search_results])
                     if len(search_results) == 1:
                         dm.user.add_message(_("Your search has led to a single article, below."))
                         return HttpResponseRedirect(redirect_to=reverse(view_encyclopedia, kwargs=dict(game_instance_id=request.datamanager.game_instance_id,
-                                                                                                  article_id=search_results[0])))
+                                                                                                       article_id=search_results[0])))
 
     # NOW only retrieve article ids, since known article ids have been updated if necessary
     if request.datamanager.is_encyclopedia_index_visible() or dm.is_master():

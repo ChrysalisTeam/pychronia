@@ -8,8 +8,10 @@ FEATURES
 
 - messaging templates filtering by taxonomy ?
 - Add captcha to some special static pages - WHICH ??
-
 - refactor permission handling, add it to money/item viewing for example...
+- add admin form to enable or not encyclopedia index
+- add RST summary to all forms, especially admin ones ???
+
 
 BUGLETS:
 - world scan_form entry is dead : assert NewFormClass, new_action_name # important, not all actions have form classes available DONE BUT NEEDS TEST COVERAGE
@@ -64,7 +66,7 @@ BUGLETS:
 - mobile version of site (-> refactor base_mobile to mimic base_web structure) - NO, ATM SIMPLE SUMMARY PAGE - DONE
 - javascript-obfuscated-popuped "report bug" div in mini footer DONE
 - add inner site links to restructuredtext via special tag DONE
-
+- add summary of freindships to "character settings" page, for master DONE
 
 ====================
 

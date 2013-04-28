@@ -213,7 +213,7 @@ class FriendshipManagementAbility(AbstractGameView):
 
         return {
                  'page_title': _("Friendship Management"),
-                 'current_friends': self.datamanager.get_friends(),
+                 'current_friends': self.datamanager.get_friends_for_character(),
                  "friendship_actions": friendship_actions,
                }
 

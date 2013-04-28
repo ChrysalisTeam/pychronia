@@ -1049,7 +1049,8 @@ class FriendshipHandling(BaseDataManager):
         sealed_friendships = friendships["sealed"]
         utilities.check_no_duplicates(sealed_friendships)
         for (username1, username2), friendship_params in sealed_friendships.items():
-            assert (username2, username1) not in sealed_friendships # ensures both unicity and non-self-friendship
+            assert username1 != username2
+            assert (username2, username1) not in sealed_friendships # ensures both unicity and non-self-friendship, actually
             assert (username1, username2) not in proposed_friendships
             assert (username2, username1) not in proposed_friendships
             assert username1 in character_names
@@ -1061,8 +1062,11 @@ class FriendshipHandling(BaseDataManager):
             utilities.check_dictionary_with_template(friendship_params, template, strict=strict)
 
 
+    @readonly_method
+    def get_full_friendship_data(self):
+        return copy.deepcopy(self.data["friendships"])
 
-    @readonly_method # TODO TEST THAT OVERRIDE
+    @readonly_method
     def can_impersonate(self, username, impersonation):
         if (self.is_character(username) and self.is_character(impersonation) and
             self.are_friends(username, impersonation)):
@@ -1107,7 +1111,7 @@ class FriendshipHandling(BaseDataManager):
 
 
     @readonly_method
-    def get_friendship_requests(self, username=CURRENT_USER):
+    def get_friendship_requests_for_character(self, username=CURRENT_USER):
         """
         Returns a dict with entries "proposed_to" and "requested_by" (lists of character names).
         These entries are of course exclusive (if a frienship was wanted by both sides, it'd be already sealed).
@@ -1147,7 +1151,7 @@ class FriendshipHandling(BaseDataManager):
 
 
     @readonly_method
-    def get_friends(self, username=CURRENT_USER):
+    def get_friends_for_character(self, username=CURRENT_USER):
         username = self._resolve_username(username)
         assert self.is_character(username)
         friendships = self.data["friendships"]["sealed"]
@@ -1170,7 +1174,7 @@ class FriendshipHandling(BaseDataManager):
         where status is one of: (proposed_to, requested_by, recent_friend, old_friend).
         """
         username = self._resolve_username(username)
-        friends = self.get_friends(username)
+        friends = self.get_friends_for_character(username)
 
         recent_friend = []
         old_friend = []
@@ -1182,7 +1186,7 @@ class FriendshipHandling(BaseDataManager):
                 old_friend.append(friend)
 
 
-        friendship_requests = self.get_friendship_requests(username)
+        friendship_requests = self.get_friendship_requests_for_character(username)
 
         relation_groups = dict(proposed_to=friendship_requests["proposed_to"],
                                requested_by=friendship_requests["requested_by"],

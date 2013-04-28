@@ -134,10 +134,18 @@ def manage_characters(request, template_name='administration/character_managemen
                                     )
         character_forms.append(f)
 
+    friendship_data = request.datamanager.get_full_friendship_data()
+    sealed_friendships = sorted(friendship_data["sealed"].items())
+    proposed_friendships = sorted(friendship_data["proposed"].items())
+    del friendship_data
+
     return render(request,
                   template_name,
                     dict(page_title=_("Manage characters"),
-                         character_forms=character_forms))
+                         character_forms=character_forms,
+                         sealed_friendships=sealed_friendships,
+                         proposed_friendships=proposed_friendships,
+                         ))
 
 
 

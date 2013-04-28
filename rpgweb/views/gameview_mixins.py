@@ -29,7 +29,7 @@ class AbstractCaptchaProtectedView(AbstractGameView):
     CAPTCHA_TEMPLATE = "utilities/captcha_check.html"
 
     def __init__(self, *args, **kwargs):
-        assert not self.GAME_ACTIONS # views protected by captch should not use POST requests, at the moment
+        assert not self.GAME_ACTIONS # views protected by captchas should not use POST requests, at the moment
         return super(AbstractCaptchaProtectedView, self).__init__(*args, **kwargs)
 
 
