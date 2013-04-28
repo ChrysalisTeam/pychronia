@@ -12,7 +12,7 @@ from rpgweb.datamanager.abstract_form import AbstractGameForm
 from django import forms as django_forms
 
 
-@register_view(access=UserAccess.anonymous, always_available=True, title=_lazy("World Map"))
+@register_view(access=UserAccess.anonymous, always_activated=True, title=_lazy("World Map"))
 def view_world_map(request, template_name='info/world_map.html'):
 
     return render(request,
@@ -46,7 +46,7 @@ class EncyclopediaView(AbstractGameView):
 
     ACCESS = UserAccess.anonymous
     PERMISSIONS = []
-    ALWAYS_AVAILABLE = True
+    ALWAYS_ACTIVATED = True
 
 
 
@@ -125,7 +125,7 @@ view_encyclopedia = EncyclopediaView.as_view
 # we don't put any security there, at worst a pirate might play with this and prevent playing
 # some audio notifications, but it's neither critical nor discreet
 @register_view(access=UserAccess.anonymous, title=_lazy("Ajax Audio Message Finished"))
-def ajax_notify_audio_message_finished(request, always_available=True):
+def ajax_notify_audio_message_finished(request, always_activated=True):
 
     audio_id = request.GET.get("audio_id", None)
 
@@ -141,7 +141,7 @@ def ajax_notify_audio_message_finished(request, always_available=True):
 
 
 # we don't put any security there either
-@register_view(access=UserAccess.anonymous, always_available=True, title=_lazy("Ajax Next Audio Message"))
+@register_view(access=UserAccess.anonymous, always_activated=True, title=_lazy("Ajax Next Audio Message"))
 def ajax_get_next_audio_message(request):
     radio_is_on = request.datamanager.get_global_parameter("radio_is_on")
 
@@ -162,7 +162,7 @@ def ajax_get_next_audio_message(request):
 
 
 
-@register_view(access=UserAccess.anonymous, always_available=True, title=_lazy("Pangea Webradio"))
+@register_view(access=UserAccess.anonymous, always_activated=True, title=_lazy("Pangea Webradio"))
 def listen_to_webradio(request, template_name='info/web_radio_page.html'):
     return render(request,
                   template_name,
@@ -171,13 +171,13 @@ def listen_to_webradio(request, template_name='info/web_radio_page.html'):
                     })
 
 
-@register_view(access=UserAccess.anonymous, always_available=True, title=_lazy("Webradio Popup"))
+@register_view(access=UserAccess.anonymous, always_activated=True, title=_lazy("Webradio Popup"))
 def webradio_popup(request, template_name='info/web_radio_popup.html'):
     return render(request,
                   template_name)
 
 
-@register_view(access=UserAccess.anonymous, always_available=True, title=_lazy("Radio Conf"))
+@register_view(access=UserAccess.anonymous, always_activated=True, title=_lazy("Radio Conf"))
 def get_radio_xml_conf(request, template_name='info/web_radio_conf.xml'):
     dm = request.datamanager
     current_playlist = dm.get_all_next_audio_messages()
@@ -200,7 +200,7 @@ def get_radio_xml_conf(request, template_name='info/web_radio_conf.xml'):
 
 
 # FIXME CHANGE BAD NAMING OF THESE RADIO VIEWS
-@register_view(access=UserAccess.anonymous, always_available=True, title=_lazy("Radio Station"))
+@register_view(access=UserAccess.anonymous, always_activated=True, title=_lazy("Radio Station"))
 def listen_to_audio_messages(request, template_name='info/web_radio_applet.html'):
 
     access_authorized = False
@@ -237,7 +237,7 @@ def listen_to_audio_messages(request, template_name='info/web_radio_applet.html'
 
 
 
-@register_view(access=UserAccess.authenticated, always_available=True, title=_lazy("Personal Files"))
+@register_view(access=UserAccess.authenticated, always_activated=True, title=_lazy("Personal Files"))
 def personal_folder(request, template_name='info/personal_folder.html'):
 
     user = request.datamanager.user
@@ -267,7 +267,7 @@ def personal_folder(request, template_name='info/personal_folder.html'):
 
 
 # This page is meant for inclusion in pages offering all the required css/js files !
-@register_view(access=UserAccess.authenticated, always_available=True, title=_lazy("View Media"))
+@register_view(access=UserAccess.authenticated, always_activated=True, title=_lazy("View Media"))
 def view_media(request, template_name='utilities/view_media.html'):
 
     fileurl = request.REQUEST.get("url", None)
@@ -291,7 +291,7 @@ def view_media(request, template_name='utilities/view_media.html'):
 
 
 
-@register_view(access=UserAccess.anonymous, always_available=True, title=_lazy("Encrypted Folder"))  # anonymous because links in emails must NEVER be broken
+@register_view(access=UserAccess.anonymous, always_activated=True, title=_lazy("Encrypted Folder"))  # anonymous because links in emails must NEVER be broken
 def encrypted_folder(request, folder, entry_template_name="generic_operations/encryption_password.html", display_template_name='info/personal_folder.html'):
 
     if not request.datamanager.encrypted_folder_exists(folder):
@@ -342,7 +342,7 @@ def encrypted_folder(request, folder, entry_template_name="generic_operations/en
 
 
 
-@register_view(access=UserAccess.character, always_available=True, title=_lazy("Instructions"))
+@register_view(access=UserAccess.character, always_activated=True, title=_lazy("Instructions"))
 def instructions(request, template_name='generic_operations/instructions.html'): # TODO - remove that ?????
 
     user = request.datamanager.user

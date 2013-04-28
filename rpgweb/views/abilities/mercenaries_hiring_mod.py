@@ -84,7 +84,7 @@ class MercenariesHiringAbility(AbstractAbility):
 
     ACCESS = UserAccess.character
     PERMISSIONS = []  #["mercenaries_hiring"]
-    ALWAYS_AVAILABLE = True
+    ALWAYS_ACTIVATED = True
 
 
     def get_template_vars(self, previous_form_data=None):

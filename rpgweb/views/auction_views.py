@@ -12,7 +12,7 @@ from rpgweb.forms import (MoneyTransferForm, GemsTransferForm, ArtefactTransferF
 
 
 
-@register_view(access=UserAccess.anonymous, always_available=True, title=_lazy("Homepage"))
+@register_view(access=UserAccess.anonymous, always_activated=True, title=_lazy("Homepage"))
 def homepage(request, template_name='auction/homepage.html'):
 
     return render(request,
@@ -22,7 +22,7 @@ def homepage(request, template_name='auction/homepage.html'):
                     })
 
 
-@register_view(access=UserAccess.anonymous, always_available=True, title=_lazy("Opening"))
+@register_view(access=UserAccess.anonymous, always_activated=True, title=_lazy("Opening"))
 def opening(request, template_name='auction/opening.html'): # NEEDS FIXING !!!!
 
     return render(request,
@@ -54,7 +54,7 @@ class CharactersView(AbstractGameView):
 
     ACCESS = UserAccess.authenticated
     PERMISSIONS = []
-    ALWAYS_AVAILABLE = True
+    ALWAYS_ACTIVATED = True
 
 
 
@@ -139,7 +139,7 @@ view_characters = CharactersView.as_view
 
 
 
-@register_view(access=UserAccess.authenticated, always_available=True, title=_lazy("View Sales")) # fixme ? always available ?
+@register_view(access=UserAccess.authenticated, always_activated=True, title=_lazy("View Sales")) # fixme ? always available ?
 def view_sales(request, template_name='auction/view_sales.html'):
     # FIXME - needs a review ########
     user = request.datamanager.user

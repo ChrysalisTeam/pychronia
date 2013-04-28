@@ -9,7 +9,7 @@ from django.http import HttpResponseRedirect
 from rpgweb import forms
 
 
-@register_view(access=UserAccess.anonymous, always_available=True, title=_lazy("Login"), always_allow_post=True)
+@register_view(access=UserAccess.anonymous, always_activated=True, title=_lazy("Login"), always_allow_post=True)
 def login(request, template_name='registration/login.html'):
 
     form = None
@@ -46,7 +46,7 @@ def login(request, template_name='registration/login.html'):
                     })
 
 
-@register_view(access=UserAccess.authenticated, always_available=True, title=_lazy("Logout"), always_allow_post=True)
+@register_view(access=UserAccess.authenticated, always_activated=True, title=_lazy("Logout"), always_allow_post=True)
 def logout(request, template_name='registration/logout.html'):
 
     logout_session(request)
@@ -122,7 +122,7 @@ class CharacterProfile(AbstractGameView):
     NAME = "character_profile"
     TEMPLATE = "registration/character_profile.html"
     ACCESS = UserAccess.character
-    ALWAYS_AVAILABLE = True
+    ALWAYS_ACTIVATED = True
 
     GAME_ACTIONS = dict(password_change_form=dict(title=_lazy("Change password"),
                                                           form_class=forms.PasswordChangeForm,
@@ -187,7 +187,7 @@ class FriendshipManagementAbility(AbstractGameView):
 
     ACCESS = UserAccess.character
     PERMISSIONS = []
-    ALWAYS_AVAILABLE = True
+    ALWAYS_ACTIVATED = True
 
 
     def _relation_type_to_action(self, relation_type):

@@ -249,7 +249,7 @@ def messages_templates(request, template_name='messaging/messages.html'):
                        messages=enriched_templates))
 
 
-@register_view(access=UserAccess.authenticated, always_available=True, title=_lazy("Conversations"))
+@register_view(access=UserAccess.authenticated, always_activated=True, title=_lazy("Conversations"))
 def conversation(request, template_name='messaging/conversation.html'):
     messages = request.datamanager.get_user_related_messages() # for current master or character
     grouped_messages = request.datamanager.sort_messages_by_conversations(messages)
@@ -276,7 +276,7 @@ def ajax_set_message_read_state(request):
     # in case of error, a "500" code will be returned
 
 
-@register_view(access=UserAccess.master, always_available=True, title=_lazy("Delete Message"))
+@register_view(access=UserAccess.master, always_activated=True, title=_lazy("Delete Message"))
 def ajax_permanently_delete_message(request):
     # to be used by AJAX
     msg_id = request.REQUEST.get("id", None)
@@ -420,7 +420,7 @@ def view_single_message(request, msg_id, template_name='messaging/view_single_me
                     })
 
 
-@register_view(access=UserAccess.anonymous, always_available=True, title=_lazy("Message Preview"))
+@register_view(access=UserAccess.anonymous, always_activated=True, title=_lazy("Message Preview"))
 def preview_message(request):
 
     rst = request.REQUEST.get("content", _("No content submitted for display")) # we take from both GET and POST

@@ -57,7 +57,7 @@ class DummyTestAbility(AbstractAbility):
     TEMPLATE = "base_main.html" # must exist
     ACCESS = UserAccess.character
     PERMISSIONS = []
-    ALWAYS_AVAILABLE = False
+    ALWAYS_ACTIVATED = False
 
     #def __init__(self, *args, **kwargs):
     #    super(DummyTestAbility, self).__init__(*args, **kwargs)

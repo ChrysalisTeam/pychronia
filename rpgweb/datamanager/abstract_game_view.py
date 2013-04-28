@@ -94,12 +94,12 @@ class GameViewMetaclass(type):
 
                 assert NewClass.ACCESS in UserAccess.enum_values
                 assert isinstance(NewClass.PERMISSIONS, (list, tuple)) # not a string!!
-                assert NewClass.ALWAYS_AVAILABLE in (True, False)
+                assert NewClass.ALWAYS_ACTIVATED in (True, False)
                 assert NewClass.ALWAYS_ALLOW_POST in (True, False)
 
                 if NewClass.ACCESS == UserAccess.master:
                     assert not NewClass.PERMISSIONS
-                    assert NewClass.ALWAYS_AVAILABLE
+                    assert NewClass.ALWAYS_ACTIVATED
                 elif NewClass.ACCESS in (UserAccess.authenticated, UserAccess.character):
                     pass # all is allowed
                 elif NewClass.ACCESS == UserAccess.anonymous:
@@ -195,7 +195,7 @@ class AbstractGameView(object):
 
     ACCESS = None # UserAccess entry
     PERMISSIONS = [] # list of required permission names, only used for character access
-    ALWAYS_AVAILABLE = False # True iff view can't be globally hidden by game master, for players
+    ALWAYS_ACTIVATED = False # True iff view needn't be activated by game master (constraint for non-master only, i.e anonymous and character users))
     ALWAYS_ALLOW_POST = False # True if we can post data to this view even when game/user is in read-only mode (eg. auth-related view)
 
     _ACTION_FIELD = "_action_" # for ajax and no-form request
@@ -224,14 +224,12 @@ class AbstractGameView(object):
     @classmethod
     def get_access_token(cls, datamanager):
 
-        # TODO - check POST write permission too!!!
-
         user = datamanager.user
 
-        if not cls.ALWAYS_AVAILABLE:
+        if not user.is_master and not cls.ALWAYS_ACTIVATED:
             if not datamanager.is_game_view_activated(cls.NAME):
                 #print (">>>>>", cls.NAME, "-", datamanager.get_activated_game_views())
-                return AccessResult.globally_forbidden
+                return AccessResult.globally_forbidden # EVEN for game master ATM
 
         if ((cls.ACCESS == UserAccess.master and not user.is_master) or
             (cls.ACCESS == UserAccess.authenticated and not user.is_authenticated) or
@@ -675,7 +673,7 @@ class AbstractGameView(object):
 
 def _normalize_view_access_parameters(access=_undefined,
                                       permissions=_undefined,
-                                      always_available=_undefined,
+                                      always_activated=_undefined,
                                       attach_to=_undefined):
 
     """
@@ -685,7 +683,7 @@ def _normalize_view_access_parameters(access=_undefined,
     
     *permissions* only apply to users loged-in as characters, and asks them for specific permissions
     
-    *always_available* makes the view always available to user having proper permissions, i.e the game master 
+    *always_activated* makes the view always available to user having proper permissions, i.e the game master 
     can't globally enable/disable it.
     
     *attach_to* is exclusive of other arguments, and duplicates the permissions of the provided GameView.       
@@ -693,11 +691,11 @@ def _normalize_view_access_parameters(access=_undefined,
 
 
     if attach_to is not _undefined:
-        assert access is _undefined and permissions is _undefined and always_available is _undefined
+        assert access is _undefined and permissions is _undefined and always_activated is _undefined
         # other_game_view might itself be attached to another view, but it's OK
         access = attach_to.ACCESS
         permissions = attach_to.PERMISSIONS
-        always_available = attach_to.ALWAYS_AVAILABLE
+        always_activated = attach_to.ALWAYS_ACTIVATED
         # all checks have already been done on these values, theoretically
 
     else:
@@ -708,15 +706,15 @@ def _normalize_view_access_parameters(access=_undefined,
             permissions = [permissions]
         else:
             pass # OK
-        if always_available is _undefined:
+        if always_activated is _undefined:
             if access in UserAccess.master:
-                always_available = True
+                always_activated = True
             else:
-                always_available = False  # by default, non-master views must be deactivable, even anonymous ones
+                always_activated = False  # by default, non-master views must be deactivable, even anonymous ones
 
     return dict(access=access,
                 permissions=permissions,
-                always_available=always_available)
+                always_activated=always_activated)
 
 
 
@@ -724,7 +722,7 @@ def _normalize_view_access_parameters(access=_undefined,
 def register_view(view_object=None,
                   access=_undefined,
                   permissions=_undefined,
-                  always_available=_undefined,
+                  always_activated=_undefined,
                   always_allow_post=_undefined,
                   attach_to=_undefined,
                   title=None):
@@ -742,7 +740,7 @@ def register_view(view_object=None,
 
             assert issubclass(real_view_object, AbstractGameView)
             assert real_view_object.ACCESS
-            assert all((val == _undefined) for val in (access, permissions, always_available, local_attach_to)) # these params must already exist as class attrs
+            assert all((val == _undefined) for val in (access, permissions, always_activated, local_attach_to)) # these params must already exist as class attrs
             view_callable = real_view_object
 
         else:
@@ -758,7 +756,7 @@ def register_view(view_object=None,
 
             normalized_access_args = _normalize_view_access_parameters(access=access,
                                                                        permissions=permissions,
-                                                                       always_available=always_available,
+                                                                       always_activated=always_activated,
                                                                        attach_to=local_attach_to)
 
             class_data = dict((key.upper(), value) for key, value in normalized_access_args.items())

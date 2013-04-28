@@ -9,7 +9,6 @@ FEATURES
 - messaging templates filtering by taxonomy ?
 - Add captcha to some special static pages - WHICH ??
 - refactor permission handling, add it to money/item viewing for example...
-- add RST summary to all forms, especially admin ones ???
 
 
 BUGLETS:
@@ -72,6 +71,11 @@ BUGLETS:
 - world scan_form entry is dead : assert NewFormClass, new_action_name DONE
 
 
+
+
+** FUTUR ENHANCEMENTS **
+
+- add RST summary to all forms, especially admin ones ??? not need right ATM
 
 
 ====================

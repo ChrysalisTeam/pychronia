@@ -42,7 +42,7 @@ class RunicTranslationAbility(AbstractAbility):
 
     ACCESS = UserAccess.character # game master not welcome!
     PERMISSIONS = []
-    ALWAYS_AVAILABLE = False
+    ALWAYS_ACTIVATED = False
 
 
     def get_template_vars(self, previous_form_data=None):

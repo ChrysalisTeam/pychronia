@@ -12,7 +12,7 @@ class AbstractDataTableManagement(AbstractGameView):
 
     ACCESS = UserAccess.master
     PERMISSIONS = []
-    ALWAYS_AVAILABLE = True
+    ALWAYS_ACTIVATED = True
 
 
     def get_data_table_instance(self):

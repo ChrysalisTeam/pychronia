@@ -24,7 +24,7 @@ class TelecomInvestigationAbility(AbstractAbility):
 
     ACCESS = UserAccess.character
     PERMISSIONS = ["messaging"]
-    ALWAYS_AVAILABLE = False
+    ALWAYS_ACTIVATED = False
 
 
     @classmethod

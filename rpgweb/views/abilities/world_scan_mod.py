@@ -31,7 +31,7 @@ class WorldScanAbility(AbstractAbility):
 
     ACCESS = UserAccess.character
     PERMISSIONS = ["world_scan", "messaging"]
-    ALWAYS_AVAILABLE = True
+    ALWAYS_ACTIVATED = True
 
 
 

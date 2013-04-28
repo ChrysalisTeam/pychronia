@@ -78,7 +78,7 @@ class TestCaptcha(AbstractCaptchaProtectedView):
     NAME = "test_captcha"
     TEMPLATE = "utilities/view_media.html"
     ACCESS = UserAccess.anonymous
-    ALWAYS_AVAILABLE = True
+    ALWAYS_ACTIVATED = True
 
     def get_template_vars(self, previous_form_data=None):
         return {"media_player": "IT WORKS"}

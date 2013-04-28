@@ -57,7 +57,7 @@ class WiretappingAbility(AbstractAbility):
 
     ACCESS = UserAccess.character
     #PERMISSIONS = ["wiretapping", "messaging"]
-    ALWAYS_AVAILABLE = True # FIXME
+    ALWAYS_ACTIVATED = True # FIXME
 
 
     @readonly_method

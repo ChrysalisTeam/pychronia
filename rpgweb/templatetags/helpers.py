@@ -341,5 +341,5 @@ def preformat(value):
     return mark_safe(escape(value))
 force_escape = stringfilter(force_escape)
 force_escape.is_safe = True
-register.filter('has_permission', has_permission)
+register.filter('ddd', ddd)
 """
