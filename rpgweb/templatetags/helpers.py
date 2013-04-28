@@ -98,7 +98,7 @@ def usercolor(context, username_or_email):
 
 
 def _generate_encyclopedia_links(html_snippet, datamanager, excluded_link=None):
-
+    if __debug__: datamanager.notify_event("GENERATE_ENCYCLOPEDIA_LINKS")
     keywords_mapping = datamanager.get_encyclopedia_keywords_mapping(excluded_link=excluded_link)
 
     def encyclopedia_link_attr_generator(match):
@@ -117,6 +117,7 @@ def _generate_messaging_links(html_snippet, datamanager):
     """
     ATM we also generate links for current user, but it's not a problem.
     """
+    if __debug__: datamanager.notify_event("GENERATE_MESSAGING_LINKS")
     def email_link_attr_generator(match):
         matched_str = match.group(0)
         link = reverse("rpgweb.views.compose_message",
@@ -132,6 +133,7 @@ def _generate_site_links(html_snippet, datamanager):
     """
     Replacement for django's url template tag, in rst-generated text.
     """
+    if __debug__: datamanager.notify_event("GENERATE_SITE_LINKS")
     def site_link_attr_generator(match):
         matched_str = match.group("view")
         if "." not in matched_str:
@@ -176,7 +178,7 @@ def advanced_restructuredtext(value,
             raise template.TemplateSyntaxError("Error in 'restructuredtext' filter: The Python docutils library isn't installed.")
         return force_unicode(value)
     else:
-        docutils_settings = getattr(settings, "RESTRUCTUREDTEXT_FILTER_SETTINGS", {})
+        docutils_settings = getattr(settings, "RESTRUCTUREDTEXT_FILTER_SETTINGS", {}).copy() # VERY IMPORTANT - copy it!!!
         if initial_header_level is not None:
             docutils_settings.update(initial_header_level=initial_header_level)
         if report_level is not None:
@@ -193,8 +195,11 @@ def _enriched_text(datamanager, content, initial_header_level=None, report_level
     """
     Converts RST content to HTML and adds encyclopedia links.
     
-    *excluded_link* is the enyclopedia article_id in which we currently are, if any.
+    *excluded_link* is the ENCYCLOPEDIA article_id in which we currently are, if any.
     """
+
+    content = content.replace("[INSTANCE_ID]", datamanager.game_instance_id) # handy tyo build URLs manually
+
     html = advanced_restructuredtext(content, initial_header_level=initial_header_level, report_level=report_level)
     with exception_swallower():
         html = _generate_encyclopedia_links(html, datamanager, excluded_link=excluded_link) # on error

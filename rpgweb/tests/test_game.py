@@ -17,7 +17,8 @@ from rpgweb.datamanager.action_middlewares import CostlyActionMiddleware, \
 from rpgweb.common import _undefined, config, AbnormalUsageError, reverse, \
     UsageError, checked_game_file_path
 from rpgweb.templatetags.helpers import _generate_encyclopedia_links, \
-    advanced_restructuredtext, _generate_messaging_links, _generate_site_links
+    advanced_restructuredtext, _generate_messaging_links, _generate_site_links, \
+    _enriched_text
 from rpgweb import views, utilities
 from rpgweb.utilities import fileservers, autolinker
 from django.test.client import RequestFactory
@@ -373,6 +374,102 @@ class TestUtilities(BaseGameTestCase):
 
         assert checked_game_file_path("/bad/stuffs.mpg") is None
         assert checked_game_file_path(config.GAME_FILES_URL + "bad/stuffs.mpg") is None
+
+
+
+    def test_rst_site_links_generation(self):
+
+        # here we have: 1 bad view name, 2 good tags, and then an improperly formatted tag #
+        rst = dedent(r"""
+                    hi
+                    
+                    {% "hello" "kj.jjh" %}
+                    
+                    {% "good1" "rpgweb.views.homepage" %}
+                    
+                    {% "good2" "view_sales" %}
+                    
+                    {% "bad\"string" "view_sales" %}
+                    """)
+
+        html = _generate_site_links(rst, self.dm)
+
+        #print("------->", html)
+        assert html.strip() == dedent(r"""
+                                hi
+
+                                hello
+                                
+                                <a href="/TeStiNg/">good1</a>
+                                <a href="/TeStiNg/view_sales/">good2</a>
+                                
+                                {% "bad\"string" "view_sales" %}
+                                """).strip()
+
+
+    def test_enriched_text_behaviour(self):
+        """
+        We only test here that dependencies are well triggered, we don't test them precisely.
+        """
+
+        assert not self.dm.get_event_count("GENERATE_MESSAGING_LINKS")
+        assert not self.dm.get_event_count("GENERATE_ENCYCLOPEDIA_LINKS")
+        assert not self.dm.get_event_count("GENERATE_SITE_LINKS")
+
+        rst = dedent(r"""
+                    hi
+                    ---
+                    
+                    lokons
+                    
+                    gerbils
+                    
+                    [INSTANCE_ID]
+                    
+                    .. baddirective:: aaa
+                    
+                    """)
+        html = _enriched_text(self.dm, rst, initial_header_level=2, report_level=5, excluded_link="lokon")
+
+        assert self.dm.get_event_count("GENERATE_MESSAGING_LINKS") == 1
+        assert self.dm.get_event_count("GENERATE_ENCYCLOPEDIA_LINKS") == 1
+        assert self.dm.get_event_count("GENERATE_SITE_LINKS") == 1
+
+        #print("------->", html)
+        assert html.strip() == dedent("""
+                            <div class="section" id="hi">
+                            <h2>hi</h2>
+                            <p>lokons</p>
+                            <p><a href="/TeStiNg/encyclopedia/?search=gerbils">gerbils</a></p>
+                            <p>TeStiNg</p>
+                            </div>""").strip()
+
+
+        rst = dedent(r"""
+                    hello
+                    ======
+                    
+                    .. baddirective:: aaa
+                    
+                    """)
+        html = _enriched_text(self.dm, rst)  # we ensure NO PERSISTENCE of previously set options!!
+
+        #print("------->", html)
+
+        assert html.strip() == dedent("""
+                                    <div class="section" id="hello">
+                                    <h2>hello</h2>
+                                    <div class="system-message">
+                                    <p class="system-message-title">System Message: ERROR/3 (<tt class="docutils">&lt;string&gt;</tt>, line 5)</p>
+                                    <p>Unknown directive type &quot;baddirective&quot;.</p>
+                                    <pre class="literal-block">
+                                    .. baddirective:: aaa
+                                    
+                                    </pre>
+                                    </div>
+                                    </div>
+                                    """).strip()
+
 
 
 class TestMetaAdministration(unittest.TestCase): # no django setup required ATM
@@ -3017,37 +3114,6 @@ class TestHttpRequests(BaseGameTestCase):
 
 
 class TestGameViewSystem(BaseGameTestCase):
-
-
-    def test_rst_site_links_generation(self):
-
-        # here we have: 1 bad view name, 2 good tags, and then an improperly formatted tag #
-        rst = dedent(r"""
-                    hi
-                    
-                    {% "hello" "kj.jjh" %}
-                    
-                    {% "good1" "rpgweb.views.homepage" %}
-                    
-                    {% "good2" "view_sales" %}
-                    
-                    {% "bad\"string" "view_sales" %}
-                    """)
-
-        html = _generate_site_links(rst, self.dm)
-        
-        #print("------->", html)
-        assert html.strip() == dedent(r"""
-                                hi
-
-                                hello
-                                
-                                <a href="/TeStiNg/">good1</a>
-                                <a href="/TeStiNg/view_sales/">good2</a>
-                                
-                                {% "bad\"string" "view_sales" %}
-                                """).strip()
-
 
 
 

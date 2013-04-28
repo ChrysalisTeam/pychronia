@@ -8,7 +8,7 @@ FEATURES
 
 - messaging templates filtering by taxonomy ?
 - Add captcha to some special static pages - WHICH ??
-- add inner links to restructuredtext
+
 - refactor permission handling, add it to money/item viewing for example...
 
 BUGLETS:
@@ -63,6 +63,8 @@ BUGLETS:
 - normalize all setup methods to make game file paths absolute inside GAME_FILES_ROOT DONE
 - mobile version of site (-> refactor base_mobile to mimic base_web structure) - NO, ATM SIMPLE SUMMARY PAGE - DONE
 - javascript-obfuscated-popuped "report bug" div in mini footer DONE
+- add inner site links to restructuredtext via special tag DONE
+
 
 ====================
 
