@@ -35,7 +35,7 @@ class ArtificialIntelligenceAbility(AbstractAbility):
     TEMPLATE = "abilities/artificial_intelligence.html"
 
     ACCESS = UserAccess.character
-    PERMISSIONS = []
+    REQUIRES_CHARACTER_PERMISSION = False
     ALWAYS_ACTIVATED = True
 
 

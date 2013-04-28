@@ -20,7 +20,7 @@ class WebradioManagement(AbstractGameView):
     TEMPLATE = "administration/webradio_management.html"
 
     ACCESS = UserAccess.master
-    PERMISSIONS = []
+    REQUIRES_CHARACTER_PERMISSION = False
     ALWAYS_ACTIVATED = True
 
 

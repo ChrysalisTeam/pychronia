@@ -56,7 +56,7 @@ class WiretappingAbility(AbstractAbility):
     TEMPLATE = "abilities/wiretapping_management.html"
 
     ACCESS = UserAccess.character
-    #PERMISSIONS = ["wiretapping", "messaging"]
+    REQUIRES_CHARACTER_PERMISSION = False
     ALWAYS_ACTIVATED = True # FIXME
 
 

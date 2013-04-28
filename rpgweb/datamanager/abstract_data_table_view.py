@@ -11,7 +11,7 @@ from .abstract_game_view import AbstractGameView
 class AbstractDataTableManagement(AbstractGameView):
 
     ACCESS = UserAccess.master
-    PERMISSIONS = []
+    REQUIRES_CHARACTER_PERMISSION = False
     ALWAYS_ACTIVATED = True
 
 

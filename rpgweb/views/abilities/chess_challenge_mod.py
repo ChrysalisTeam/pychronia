@@ -20,7 +20,7 @@ class ChessChallengeAbility(AbstractAbility):
     TEMPLATE = "abilities/chess_challenge.html"
 
     ACCESS = UserAccess.character
-    PERMISSIONS = []
+    REQUIRES_CHARACTER_PERMISSION = False
     ALWAYS_ACTIVATED = True
 
 

@@ -93,17 +93,17 @@ class GameViewMetaclass(type):
                 # assert NewClass.NAME.lower() == NewClass.NAME # FIXME, NOT YET ATM !!!
 
                 assert NewClass.ACCESS in UserAccess.enum_values
-                assert isinstance(NewClass.PERMISSIONS, (list, tuple)) # not a string!!
+                assert NewClass.REQUIRES_CHARACTER_PERMISSION in (True, False)
                 assert NewClass.ALWAYS_ACTIVATED in (True, False)
                 assert NewClass.ALWAYS_ALLOW_POST in (True, False)
 
                 if NewClass.ACCESS == UserAccess.master:
-                    assert not NewClass.PERMISSIONS
+                    assert not NewClass.REQUIRES_CHARACTER_PERMISSION
                     assert NewClass.ALWAYS_ACTIVATED
                 elif NewClass.ACCESS in (UserAccess.authenticated, UserAccess.character):
                     pass # all is allowed
                 elif NewClass.ACCESS == UserAccess.anonymous:
-                    assert not NewClass.PERMISSIONS
+                    assert not NewClass.REQUIRES_CHARACTER_PERMISSION
                 else:
                     raise NotImplementedError("Missing UserAccess case in GameView setup")
 
@@ -194,8 +194,10 @@ class AbstractGameView(object):
     ADMIN_TEMPLATE = "utilities/admin_form_widget.html" # TODO - template to render a single admin form, with notifications
 
     ACCESS = None # UserAccess entry
-    PERMISSIONS = [] # list of required permission names, only used for character access
+    EXTRA_PERMISSIONS = [] # list of extra permissions used by the view
     ALWAYS_ACTIVATED = False # True iff view needn't be activated by game master (constraint for non-master only, i.e anonymous and character users))
+    REQUIRES_CHARACTER_PERMISSION = False # by default, a view is only globally switched on/off, with this character must ALSO be personally enabled by master
+
     ALWAYS_ALLOW_POST = False # True if we can post data to this view even when game/user is in read-only mode (eg. auth-related view)
 
     _ACTION_FIELD = "_action_" # for ajax and no-form request
@@ -222,6 +224,12 @@ class AbstractGameView(object):
         return self._inner_datamanager.logger
 
     @classmethod
+    def get_access_permission_name(cls):
+        assert cls.NAME
+        assert cls.REQUIRES_CHARACTER_PERMISSION
+        return "access_" + cls.NAME
+
+    @classmethod
     def get_access_token(cls, datamanager):
 
         user = datamanager.user
@@ -237,12 +245,11 @@ class AbstractGameView(object):
             #print(">>>>>>>>>>", cls.ACCESS, "|", user.is_master, user.is_authenticated, user.is_character, user.username)
             return AccessResult.authentication_required
 
-        if cls.PERMISSIONS:
+        if cls.REQUIRES_CHARACTER_PERMISSION:
             assert cls.ACCESS in (UserAccess.character, UserAccess.authenticated)
-            if user.is_character: # game master does what he wants
-                for permission in cls.PERMISSIONS:
-                    if not user.has_permission(permission):
-                        return AccessResult.permission_required
+            if not user.is_master: # game master does what he wants
+                if not user.has_permission(cls.get_access_permission_name()):
+                    return AccessResult.permission_required
 
         return AccessResult.available
 
@@ -672,7 +679,7 @@ class AbstractGameView(object):
 
 
 def _normalize_view_access_parameters(access=_undefined,
-                                      permissions=_undefined,
+                                      requires_character_permission=_undefined,
                                       always_activated=_undefined,
                                       attach_to=_undefined):
 
@@ -681,29 +688,26 @@ def _normalize_view_access_parameters(access=_undefined,
     
     *access* is a UserAccess value giving which kind of user has the right to access that view.
     
-    *permissions* only apply to users loged-in as characters, and asks them for specific permissions
+    *requires_character_permission* restricts access to specifically allowed users
     
-    *always_activated* makes the view always available to user having proper permissions, i.e the game master 
-    can't globally enable/disable it.
+    *always_activated*: if not True, the game master must globally enable the view
     
-    *attach_to* is exclusive of other arguments, and duplicates the permissions of the provided GameView.       
+    *attach_to* is exclusive of other arguments, and duplicates the access permissions of the provided GameView.       
     """
 
 
     if attach_to is not _undefined:
-        assert access is _undefined and permissions is _undefined and always_activated is _undefined
+        assert access is _undefined and requires_character_permission is _undefined and always_activated is _undefined
         # other_game_view might itself be attached to another view, but it's OK
         access = attach_to.ACCESS
-        permissions = attach_to.PERMISSIONS
+        requires_character_permission = attach_to.REQUIRES_CHARACTER_PERMISSION
         always_activated = attach_to.ALWAYS_ACTIVATED
         # all checks have already been done on these values, theoretically
 
     else:
         access = access if access is not _undefined else UserAccess.master
-        if permissions is _undefined:
-            permissions = []
-        elif isinstance(permissions, basestring):
-            permissions = [permissions]
+        if requires_character_permission is _undefined:
+            requires_character_permission = False
         else:
             pass # OK
         if always_activated is _undefined:
@@ -713,7 +717,7 @@ def _normalize_view_access_parameters(access=_undefined,
                 always_activated = False  # by default, non-master views must be deactivable, even anonymous ones
 
     return dict(access=access,
-                permissions=permissions,
+                requires_character_permission=requires_character_permission,
                 always_activated=always_activated)
 
 
@@ -721,7 +725,7 @@ def _normalize_view_access_parameters(access=_undefined,
 
 def register_view(view_object=None,
                   access=_undefined,
-                  permissions=_undefined,
+                  requires_character_permission=_undefined,
                   always_activated=_undefined,
                   always_allow_post=_undefined,
                   attach_to=_undefined,
@@ -740,7 +744,7 @@ def register_view(view_object=None,
 
             assert issubclass(real_view_object, AbstractGameView)
             assert real_view_object.ACCESS
-            assert all((val == _undefined) for val in (access, permissions, always_activated, local_attach_to)) # these params must already exist as class attrs
+            assert all((val == _undefined) for val in (access, requires_character_permission, always_activated, local_attach_to)) # these params must already exist as class attrs
             view_callable = real_view_object
 
         else:
@@ -755,11 +759,11 @@ def register_view(view_object=None,
 
 
             normalized_access_args = _normalize_view_access_parameters(access=access,
-                                                                       permissions=permissions,
+                                                                       requires_character_permission=requires_character_permission,
                                                                        always_activated=always_activated,
                                                                        attach_to=local_attach_to)
 
-            class_data = dict((key.upper(), value) for key, value in normalized_access_args.items())
+            class_data = dict((key.upper(), value) for key, value in normalized_access_args.items()) # auto build access attributes
             class_data["TITLE"] = title
             class_data["NAME"] = real_view_object.__name__
             if always_allow_post is not _undefined:

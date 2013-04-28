@@ -2636,7 +2636,7 @@ class TestDatamanager(BaseGameTestCase):
             GAME_ACTIONS = {}
             TEMPLATE = "base_main.html" # must exist
             ACCESS = UserAccess.anonymous
-            PERMISSIONS = []
+            REQUIRES_CHARACTER_PERMISSION = False
             ALWAYS_ACTIVATED = False
 
 
@@ -3196,48 +3196,48 @@ class TestGameViewSystem(BaseGameTestCase):
 
         res = _normalize_view_access_parameters()
         assert res == dict(access=UserAccess.master,
-                            permissions=[],
+                            requires_character_permission=False,
                             always_activated=True)
 
-        res = _normalize_view_access_parameters(UserAccess.anonymous, ["hi"], False)
+        res = _normalize_view_access_parameters(UserAccess.anonymous, True, False)
         assert res == dict(access=UserAccess.anonymous,
-                            permissions=["hi"], # would raise an issue later, in metaclass, because we're in anonymous access
+                            requires_character_permission=True, # would raise an issue later, in metaclass, because we're in anonymous access
                             always_activated=False)
 
         res = _normalize_view_access_parameters(UserAccess.anonymous)
         assert res == dict(access=UserAccess.anonymous,
-                            permissions=[],
+                            requires_character_permission=False,
                             always_activated=False) # even in anonymous access
 
         res = _normalize_view_access_parameters(UserAccess.character)
         assert res == dict(access=UserAccess.character,
-                            permissions=[],
+                            requires_character_permission=False,
                             always_activated=False)
 
         res = _normalize_view_access_parameters(UserAccess.authenticated)
         assert res == dict(access=UserAccess.authenticated,
-                            permissions=[],
+                            requires_character_permission=False,
                             always_activated=False)
 
         res = _normalize_view_access_parameters(UserAccess.master)
         assert res == dict(access=UserAccess.master,
-                            permissions=[],
+                            requires_character_permission=False,
                             always_activated=True) # logical
 
-        res = _normalize_view_access_parameters(UserAccess.character, permissions="sss")
+        res = _normalize_view_access_parameters(UserAccess.character, requires_character_permission=True)
         assert res == dict(access=UserAccess.character,
-                            permissions=["sss"], # proper autofix of basestring to list of single item
+                            requires_character_permission=True,
                             always_activated=False)
 
 
         class myview:
             ACCESS = UserAccess.authenticated
-            PERMISSIONS = ["stuff"]
+            REQUIRES_CHARACTER_PERMISSION = True
             ALWAYS_ACTIVATED = False
 
         res = _normalize_view_access_parameters(attach_to=myview)
         assert res == dict(access=UserAccess.authenticated,
-                            permissions=["stuff"],
+                            requires_character_permission=True,
                             always_activated=False)
 
         with pytest.raises(AssertionError):
@@ -3257,11 +3257,11 @@ class TestGameViewSystem(BaseGameTestCase):
 
         # stupid cases get rejected in debug mode
         with pytest.raises(AssertionError):
-            register_view(my_little_view, access=UserAccess.master, permissions=["sss"])
+            register_view(my_little_view, access=UserAccess.master, requires_character_permission=True)
         with pytest.raises(AssertionError):
             register_view(my_little_view, access=UserAccess.master, always_activated=False) # master must always access his views!
         with pytest.raises(AssertionError):
-            register_view(my_little_view, access=UserAccess.anonymous, permissions=["sss"])
+            register_view(my_little_view, access=UserAccess.anonymous, requires_character_permission=True)
 
         klass = register_view(my_little_view, access=UserAccess.master, title=_lazy("jjj"), always_allow_post=True)
 
@@ -3321,7 +3321,7 @@ class TestGameViewSystem(BaseGameTestCase):
 
         def dummy_view_character_permission(request):
             pass
-        view_character_permission = register_view(dummy_view_character_permission, access=UserAccess.character, permissions=["runic_translation"], always_activated=False, title=_lazy("Hi3"))
+        view_character_permission = register_view(dummy_view_character_permission, access=UserAccess.character, requires_character_permission=True, always_activated=False, title=_lazy("Hi3"))
 
         def dummy_view_authenticated(request):
             pass
@@ -3362,14 +3362,14 @@ class TestGameViewSystem(BaseGameTestCase):
         assert view_authenticated.get_access_token(datamanager) == AccessResult.authentication_required
         assert view_master.get_access_token(datamanager) == AccessResult.authentication_required
 
-        self._set_user("guy1") # has runic_translation permission
+        self._set_user("guy1") # has special "access_dummy_view_character_permission" permission
         assert view_anonymous.get_access_token(datamanager) == AccessResult.available
         assert view_character.get_access_token(datamanager) == AccessResult.available
         assert view_character_permission.get_access_token(datamanager) == AccessResult.available
         assert view_authenticated.get_access_token(datamanager) == AccessResult.available
         assert view_master.get_access_token(datamanager) == AccessResult.authentication_required
 
-        self._set_user("guy2") # has NO runic_translation permission
+        self._set_user("guy2") # has NO special "access_dummy_view_character_permission" permission
         assert view_anonymous.get_access_token(datamanager) == AccessResult.available
         assert view_character.get_access_token(datamanager) == AccessResult.available
         assert view_character_permission.get_access_token(datamanager) == AccessResult.permission_required # != authentication required

@@ -27,7 +27,7 @@ class HouseLockingAbility(AbstractAbility):
     TEMPLATE = "abilities/house_locking.html"
 
     ACCESS = UserAccess.anonymous
-    PERMISSIONS = []
+    REQUIRES_CHARACTER_PERMISSION = False
     ALWAYS_ACTIVATED = False
 
 

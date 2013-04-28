@@ -964,7 +964,7 @@ class PermissionsHandling(BaseDataManager): # TODO REFINE
 
         game_data = self.data
 
-        ''' NIO - what if we deactivate a module !!!
+        ''' NO - what if we deactivate a module !!!
         for (name, character) in game_data["character_properties"].items():
             for permission in character["permissions"]:
                 assert permission in self.PERMISSIONS_REGISTRY
@@ -3385,9 +3385,11 @@ class GameViews(BaseDataManager):
             assert view_class.NAME not in cls.ACTIVABLE_VIEWS_REGISTRY
             cls.ACTIVABLE_VIEWS_REGISTRY[view_class.NAME] = view_class
 
-        if view_class.PERMISSIONS:
+        if view_class.REQUIRES_CHARACTER_PERMISSION:
+            cls.register_permissions([view_class.get_access_permission_name()])
+        if view_class.EXTRA_PERMISSIONS:
             # auto registration of permission requirements brought by that view
-            cls.register_permissions(view_class.PERMISSIONS)
+            cls.register_permissions(view_class.EXTRA_PERMISSIONS)
 
 
     @transaction_watcher(always_writable=True)

@@ -37,7 +37,7 @@ class MatterAnalysisAbility(AbstractAbility):
     TEMPLATE = "abilities/matter_analysis.html"
 
     ACCESS = UserAccess.character
-    PERMISSIONS = []
+    REQUIRES_CHARACTER_PERMISSION = False
     ALWAYS_ACTIVATED = True
 
 

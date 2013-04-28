@@ -83,7 +83,7 @@ class MercenariesHiringAbility(AbstractAbility):
     TEMPLATE = "abilities/mercenaries_hiring.html"
 
     ACCESS = UserAccess.character
-    PERMISSIONS = []  #["mercenaries_hiring"]
+    REQUIRES_CHARACTER_PERMISSION = False
     ALWAYS_ACTIVATED = True
 
 

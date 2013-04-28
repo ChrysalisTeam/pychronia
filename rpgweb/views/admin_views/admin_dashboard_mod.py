@@ -49,7 +49,7 @@ class AdminDashboardAbility(AbstractAbility):
     TEMPLATE = "administration/admin_dashboard.html"
 
     ACCESS = UserAccess.master
-    PERMISSIONS = []
+    REQUIRES_CHARACTER_PERMISSION = False
     ALWAYS_ACTIVATED = True
 
 

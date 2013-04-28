@@ -186,7 +186,7 @@ class FriendshipManagementAbility(AbstractGameView):
     TEMPLATE = "generic_operations/friendship_management.html"
 
     ACCESS = UserAccess.character
-    PERMISSIONS = []
+    REQUIRES_CHARACTER_PERMISSION = False
     ALWAYS_ACTIVATED = True
 
 

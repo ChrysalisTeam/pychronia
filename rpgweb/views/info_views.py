@@ -45,7 +45,7 @@ class EncyclopediaView(AbstractGameView):
     TEMPLATE = "info/encyclopedia.html"
 
     ACCESS = UserAccess.anonymous
-    PERMISSIONS = []
+    REQUIRES_CHARACTER_PERMISSION = False
     ALWAYS_ACTIVATED = True
 
 

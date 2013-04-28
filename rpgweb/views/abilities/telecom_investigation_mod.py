@@ -23,7 +23,7 @@ class TelecomInvestigationAbility(AbstractAbility):
     TEMPLATE = "abilities/telecom_investigation.html"
 
     ACCESS = UserAccess.character
-    PERMISSIONS = ["messaging"]
+    REQUIRES_CHARACTER_PERMISSION = False
     ALWAYS_ACTIVATED = False
 
 

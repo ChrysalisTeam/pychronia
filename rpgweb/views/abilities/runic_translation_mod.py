@@ -41,7 +41,7 @@ class RunicTranslationAbility(AbstractAbility):
     TEMPLATE = "abilities/runic_translation.html"
 
     ACCESS = UserAccess.character # game master not welcome!
-    PERMISSIONS = []
+    REQUIRES_CHARACTER_PERMISSION = False
     ALWAYS_ACTIVATED = False
 
 

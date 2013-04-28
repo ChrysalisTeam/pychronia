@@ -53,7 +53,7 @@ class CharactersView(AbstractGameView):
     TEMPLATE = "auction/view_characters.html"
 
     ACCESS = UserAccess.authenticated
-    PERMISSIONS = []
+    REQUIRES_CHARACTER_PERMISSION = False
     ALWAYS_ACTIVATED = True
 
 
