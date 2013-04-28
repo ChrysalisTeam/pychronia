@@ -7,17 +7,15 @@
 FEATURES
 
 - messaging templates filtering by taxonomy ?
-- mobile version of site (-> refactor base_mobile to mimic base_web structure) NO SIMPLE SUMMARY PAGE
 - Add captcha to some special static pages - WHICH ??
-
-
+- add inner links to restructuredtext
+- refactor permission handling, add it to money/item viewing for example...
 
 BUGLETS:
 - world scan_form entry is dead : assert NewFormClass, new_action_name # important, not all actions have form classes available DONE BUT NEEDS TEST COVERAGE
 - use {{ _("hi")|escapejs }} in JS everywhere instead of trans tag
 - remove dumb escape() calls from $.get request arguments
 - auto test all forms with also inspect.getsourcelines(object) etc.
-- javascript-obfuscated-popuped "report bug" div in mini footer WIP
 - check what happens when calling setlanguage flags from a "POST-access-only" page like private files ??
 - tweak access checking of gameviews, so that if impersonation we get no error message, and just get redirected to homepage of impersonated user
 
@@ -63,7 +61,8 @@ BUGLETS:
 - review all always_writable views DONE
 - refactoring of loggers, at top and DM level DONE
 - normalize all setup methods to make game file paths absolute inside GAME_FILES_ROOT DONE
-
+- mobile version of site (-> refactor base_mobile to mimic base_web structure) - NO, ATM SIMPLE SUMMARY PAGE - DONE
+- javascript-obfuscated-popuped "report bug" div in mini footer DONE
 
 ====================
 

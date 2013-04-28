@@ -17,7 +17,7 @@ from rpgweb.datamanager.action_middlewares import CostlyActionMiddleware, \
 from rpgweb.common import _undefined, config, AbnormalUsageError, reverse, \
     UsageError, checked_game_file_path
 from rpgweb.templatetags.helpers import _generate_encyclopedia_links, \
-    advanced_restructuredtext, _generate_messaging_links
+    advanced_restructuredtext, _generate_messaging_links, _generate_site_links
 from rpgweb import views, utilities
 from rpgweb.utilities import fileservers, autolinker
 from django.test.client import RequestFactory
@@ -3017,6 +3017,38 @@ class TestHttpRequests(BaseGameTestCase):
 
 
 class TestGameViewSystem(BaseGameTestCase):
+
+
+    def test_rst_site_links_generation(self):
+
+        # here we have: 1 bad view name, 2 good tags, and then an improperly formatted tag #
+        rst = dedent(r"""
+                    hi
+                    
+                    {% "hello" "kj.jjh" %}
+                    
+                    {% "good1" "rpgweb.views.homepage" %}
+                    
+                    {% "good2" "view_sales" %}
+                    
+                    {% "bad\"string" "view_sales" %}
+                    """)
+
+        html = _generate_site_links(rst, self.dm)
+        
+        #print("------->", html)
+        assert html.strip() == dedent(r"""
+                                hi
+
+                                hello
+                                
+                                <a href="/TeStiNg/">good1</a>
+                                <a href="/TeStiNg/view_sales/">good2</a>
+                                
+                                {% "bad\"string" "view_sales" %}
+                                """).strip()
+
+
 
 
     def test_form_to_action_argspec_compatibility(self):

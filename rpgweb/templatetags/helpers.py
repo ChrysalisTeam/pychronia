@@ -2,7 +2,7 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
-import sys, re, logging, random
+import sys, re, logging, random, logging
 from datetime import datetime
 
 from rpgweb.utilities import (mediaplayers, autolinker,
@@ -105,7 +105,7 @@ def _generate_encyclopedia_links(html_snippet, datamanager, excluded_link=None):
         matched_str = match.group(0)
         # detecting here WHICH keyword triggered the match would be possible, but expensive... let's postpone that
         link = reverse("rpgweb.views.view_encyclopedia",
-                       kwargs={"game_instance_id": datamanager.game_instance_id, })
+                       kwargs={"game_instance_id": datamanager.game_instance_id})
         link += "?search=%s" % urllib.quote_plus(matched_str.encode("utf8"), safe=b"")
         return dict(href=link)
     regex = autolinker.join_regular_expressions_as_disjunction(keywords_mapping.keys(), as_words=True)
@@ -115,12 +115,12 @@ def _generate_encyclopedia_links(html_snippet, datamanager, excluded_link=None):
 
 def _generate_messaging_links(html_snippet, datamanager):
     """
-    ATM we also generate linkes for current user, but it's not a problem.
+    ATM we also generate links for current user, but it's not a problem.
     """
     def email_link_attr_generator(match):
         matched_str = match.group(0)
         link = reverse("rpgweb.views.compose_message",
-                       kwargs={"game_instance_id": datamanager.game_instance_id, })
+                       kwargs={"game_instance_id": datamanager.game_instance_id})
         link += "?recipient=%s" % urllib.quote_plus(matched_str.encode("utf8"), safe=b"")
         return dict(href=link)
     regex = r"\b\w+@\w+\.\w+\b"
@@ -128,6 +128,23 @@ def _generate_messaging_links(html_snippet, datamanager):
     return html_res
 
 
+def _generate_site_links(html_snippet, datamanager):
+    """
+    Replacement for django's url template tag, in rst-generated text.
+    """
+    def site_link_attr_generator(match):
+        matched_str = match.group("view")
+        if "." not in matched_str:
+            matched_str = "rpgweb.views." + matched_str
+        try:
+            link = reverse(matched_str, kwargs={"game_instance_id": datamanager.game_instance_id})
+            return dict(href=link)
+        except Exception:
+            logging.warning("Error in generate_site_links for match %r", matched_str, exc_info=True)
+            return None # abort link creation
+    regex = r"""\{% "(?P<content>[^"]+)" "(?P<view>[.\w]+)" %\}"""
+    html_res = autolinker.generate_links(html_snippet, regex=regex, link_attr_generator=site_link_attr_generator)
+    return html_res
 
 
 
@@ -183,6 +200,8 @@ def _enriched_text(datamanager, content, initial_header_level=None, report_level
         html = _generate_encyclopedia_links(html, datamanager, excluded_link=excluded_link) # on error
     with exception_swallower():
         html = _generate_messaging_links(html, datamanager) # on error
+    with exception_swallower():
+        html = _generate_site_links(html, datamanager) # on error
     return html
 
 

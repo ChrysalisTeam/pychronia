@@ -26,10 +26,20 @@ def generate_links(html_snippet, regex, link_attr_generator):
     soup = clean_parser(html_snippet) # that parser doesn't add <html> or <xml> tags
 
     def generate_link_str(match_obj):
+
+        try:
+            content = match_obj.group("content") # named subgroup
+        except LookupError:
+            content = match_obj.group(0) # the entire matched keyword
+
         attrs = link_attr_generator(match_obj)
-        tag = soup.new_tag("a", **attrs)
-        tag.string = match_obj.group(0) # the entire matched keyword
-        return unicode(tag)
+        if attrs:
+            tag = soup.new_tag("a", **attrs)
+            tag.string = content
+            return unicode(tag)
+        else:
+            return content
+
 
     def insert_links(string):
         new_string, occurences = re.subn(regex,
