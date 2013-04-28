@@ -8,7 +8,8 @@ from rpgweb import forms
 from django.http import Http404, HttpResponseRedirect, HttpResponse
 import json
 from rpgweb.utilities import mediaplayers
-
+from rpgweb.datamanager.abstract_form import AbstractGameForm
+from django import forms as django_forms
 
 
 @register_view(access=UserAccess.anonymous, always_available=True, title=_lazy("World Map"))
@@ -21,62 +22,99 @@ def view_world_map(request, template_name='info/world_map.html'):
                     })
 
 
+class EnyclopediaIndexVisibilityForm(AbstractGameForm):
+
+    is_index_visible = django_forms.BooleanField(label=_lazy("Full Index Visibility"), required=False)
+
+    def __init__(self, datamanager, *args, **kwargs):
+        super(EnyclopediaIndexVisibilityForm, self).__init__(datamanager, *args, **kwargs)
+        self.fields["is_index_visible"].initial = datamanager.is_encyclopedia_index_visible()
 
 
-@register_view(access=UserAccess.anonymous, always_available=True, title=_lazy("Encyclopedia"))
-def view_encyclopedia(request, article_id=None, template_name='info/encyclopedia.html'):
-    """
-    No need for novelty management in here - normal "visited link" browser system will do it.
-    """
-    dm = request.datamanager
+@register_view
+class EncyclopediaView(AbstractGameView):
 
-    def _conditionally_update_known_article_ids(ids_list):
-        if dm.is_character() and dm.is_game_writable():  # not for master or anonymous!!
-            dm.update_character_known_article_ids(search_results)
+    TITLE = _lazy("Encyclopedia")
+    NAME = "view_encyclopedia"
 
-    article_ids = None  # index of encyclopedia
-    entry = None  # current article
-    search_results = None  # list of matching article ids
+    # Place here dashboard forms that don't have their own containing view! #
+    ADMIN_ACTIONS = dict(set_encyclopedia_index_visibility=dict(title=_lazy("Set encyclopedia index visibility"),
+                                                      form_class=EnyclopediaIndexVisibilityForm,
+                                                      callback="set_encyclopedia_index_visibility"))
 
-    if article_id:
-        entry = dm.get_encyclopedia_entry(article_id)
-        if not entry:
-            dm.user.add_error(_("Sorry, no encyclopedia article has been found for id '%s'") % article_id)
-        else:
-            _conditionally_update_known_article_ids([article_id])
-    else:
-        search_string = request.REQUEST.get("search")  # needn't appear in browser history, but GET needed for encyclopedia links
-        if search_string:
-            if not dm.is_game_writable():
-                dm.user.add_error(_("Sorry, you don't have access to search features at the moment."))
+    TEMPLATE = "info/encyclopedia.html"
+
+    ACCESS = UserAccess.anonymous
+    PERMISSIONS = []
+    ALWAYS_AVAILABLE = True
+
+
+
+    def _process_standard_request(self, request, article_id=None):
+        """
+        We bypass standard GameView processing here.
+        """
+        ## set_encyclopedia_index_visibility
+
+        """
+        No need for novelty management in here - normal "visited link" browser system will do it.
+        """
+        dm = self.datamanager
+
+        def _conditionally_update_known_article_ids(ids_list):
+            if dm.is_character() and dm.is_game_writable():  # not for master or anonymous!!
+                dm.update_character_known_article_ids(search_results)
+
+        article_ids = None  # index of encyclopedia
+        entry = None  # current article
+        search_results = None  # list of matching article ids
+
+        if article_id:
+            entry = dm.get_encyclopedia_entry(article_id)
+            if not entry:
+                dm.user.add_error(_("Sorry, no encyclopedia article has been found for id '%s'") % article_id)
             else:
-                search_results = dm.get_encyclopedia_matches(search_string)
-                if not search_results:
-                    dm.user.add_error(_("Sorry, no matching encyclopedia article has been found for '%s'") % search_string)
+                _conditionally_update_known_article_ids([article_id])
+        else:
+            search_string = request.REQUEST.get("search")  # needn't appear in browser history, but GET needed for encyclopedia links
+            if search_string:
+                if not dm.is_game_writable():
+                    dm.user.add_error(_("Sorry, you don't have access to search features at the moment."))
                 else:
-                    _conditionally_update_known_article_ids([search_results])
-                    if len(search_results) == 1:
-                        dm.user.add_message(_("Your search has led to a single article, below."))
-                        return HttpResponseRedirect(redirect_to=reverse(view_encyclopedia, kwargs=dict(game_instance_id=request.datamanager.game_instance_id,
-                                                                                                       article_id=search_results[0])))
+                    search_results = dm.get_encyclopedia_matches(search_string)
+                    if not search_results:
+                        dm.user.add_error(_("Sorry, no matching encyclopedia article has been found for '%s'") % search_string)
+                    else:
+                        _conditionally_update_known_article_ids([search_results])
+                        if len(search_results) == 1:
+                            dm.user.add_message(_("Your search has led to a single article, below."))
+                            return HttpResponseRedirect(redirect_to=reverse("rpgweb.views.view_encyclopedia",
+                                                                            kwargs=dict(game_instance_id=dm.game_instance_id,
+                                                                                        article_id=search_results[0])))
 
-    # NOW only retrieve article ids, since known article ids have been updated if necessary
-    if request.datamanager.is_encyclopedia_index_visible() or dm.is_master():
-        article_ids = request.datamanager.get_encyclopedia_article_ids()
-    elif dm.is_character():
-        article_ids = dm.get_character_known_article_ids()
-    else:
-        assert dm.is_anonymous()  # we leave article_ids to None
+        # NOW only retrieve article ids, since known article ids have been updated if necessary
+        if dm.is_encyclopedia_index_visible() or dm.is_master():
+            article_ids = dm.get_encyclopedia_article_ids()
+        elif dm.is_character():
+            article_ids = dm.get_character_known_article_ids()
+        else:
+            assert dm.is_anonymous()  # we leave article_ids to None
 
-    return TemplateResponse(request=request,
-                            template=template_name,
-                            context={
-                             'page_title': _("Pangea Encyclopedia"),
-                             'article_ids': article_ids,
-                             'entry': entry,
-                             'search_results': search_results
-                            })
+        return TemplateResponse(request=request,
+                                template=self.TEMPLATE,
+                                context={
+                                         'page_title': _("Pangea Encyclopedia"),
+                                         'article_ids': article_ids,
+                                         'entry': entry,
+                                         'search_results': search_results
+                                })
 
+    def set_encyclopedia_index_visibility(self, is_index_visible):
+        assert is_index_visible in (True, False)
+        self.datamanager.set_encyclopedia_index_visibility(value=is_index_visible)
+        return _("Encyclopedia index visibility has now been set to %s") % int(is_index_visible)
+
+view_encyclopedia = EncyclopediaView.as_view
 
 
 

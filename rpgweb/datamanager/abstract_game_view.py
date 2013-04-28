@@ -158,13 +158,14 @@ class GameViewMetaclass(type):
 
 
 
-class SubmittedGameForm:
+class SubmittedGameForm(object):
     """
     Simple container class.
     """
-    def __init__(self, action_name, form_instance, action_successful):
+    def __init__(self, view_name, action_name, form_instance, action_successful):
         utilities.check_is_slug(action_name)
         assert action_successful in (True, False)
+        self.view_name = view_name # useful for multi-view systems like admin widgets
         self.action_name = action_name
         self.form_instance = form_instance
         self.action_successful = action_successful
@@ -281,8 +282,9 @@ class AbstractGameView(object):
             raise AuthenticationRequiredError(_("Authentication required."))
 
 
-    @staticmethod
-    def _common_instantiate_form(new_action_name, # id of the form to be potentially instantiated
+    @classmethod
+    def _common_instantiate_form(cls,
+                                  new_action_name, # id of the form to be potentially instantiated
                                   hide_on_success=False, # should we return None if this form has just been submitted successfully?
                                   previous_form_data=None, # data about previously submitted form, if any
                                   initial_data=None,
@@ -302,11 +304,12 @@ class AbstractGameView(object):
         assert form_initializer
 
         if previous_form_data:
+            preview_view_name = previous_form_data.view_name
             previous_action_name = previous_form_data.action_name
             previous_form_instance = previous_form_data.form_instance
             previous_action_successful = previous_form_data.action_successful
         else:
-            previous_action_name = previous_form_instance = previous_action_successful = None
+            preview_view_name = previous_action_name = previous_form_instance = previous_action_successful = None
 
         NewFormClass = action_registry[new_action_name]["form_class"]
         assert NewFormClass, new_action_name # important, not all actions have form classes available
@@ -317,7 +320,7 @@ class AbstractGameView(object):
             if previous_action_successful: assert previous_form_instance
             assert all(form_data) or not any(form_data)
 
-        if new_action_name == previous_action_name:
+        if preview_view_name == cls.NAME and new_action_name == previous_action_name: # beware of preview_view_name!!
             if previous_form_instance:  assert previous_form_instance.__class__.__name__ == NewFormClass.__name__ # an action always uses same form class
 
             # this particular form has just been submitted
@@ -440,9 +443,10 @@ class AbstractGameView(object):
 
         else:
             user.add_error(_("Submitted data is invalid")) # should be completed by form errors, if bound_form could be instantiated
-        res["form_data"] = SubmittedGameForm(action_name=action_name, # same as action name, actually
-                                               form_instance=bound_form,
-                                               action_successful=action_successful)
+        res["form_data"] = SubmittedGameForm(view_name=self.NAME,
+                                             action_name=action_name, # same as action name, actually
+                                             form_instance=bound_form,
+                                             action_successful=action_successful)
         return res
 
 

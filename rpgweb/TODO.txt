@@ -9,17 +9,18 @@ FEATURES
 - messaging templates filtering by taxonomy ?
 - Add captcha to some special static pages - WHICH ??
 - refactor permission handling, add it to money/item viewing for example...
-- add admin form to enable or not encyclopedia index
 - add RST summary to all forms, especially admin ones ???
 
 
 BUGLETS:
-- world scan_form entry is dead : assert NewFormClass, new_action_name # important, not all actions have form classes available DONE BUT NEEDS TEST COVERAGE
+
 - use {{ _("hi")|escapejs }} in JS everywhere instead of trans tag
 - remove dumb escape() calls from $.get request arguments
 - auto test all forms with also inspect.getsourcelines(object) etc.
 - check what happens when calling setlanguage flags from a "POST-access-only" page like private files ??
 - tweak access checking of gameviews, so that if impersonation we get no error message, and just get redirected to homepage of impersonated user
+- add tests for admin widget system, for misc. moduless, for gameform instantiation, for world scan_form...
+
 
 
 ** WIP, needs cosmetics **
@@ -53,7 +54,7 @@ BUGLETS:
 - BUG The requested content cannot be loaded. Please try again later. (if markitup empty sent to preview) DONE
 - dataset.size not defined on first launch of world map - Bug report filed, disabling jnotify reports is a workaround
 - bug report : Application error (please consider reporting that bug) - ReferenceError: False is not defined DONE
-- bad assert self.datamanager.is_in_transaction() in res = self.execute_game_action_callback(action_name=action_name, unfiltered_params=data) DONE
+- bad assert self.datamanager.is_in_transaction() in res = self.execute_game_action_callback(***) DONE
 - add a way to DESTROY sent messages by game master, in case of trouble DONE
 - adding of impersonation controls to site top WIP (needs JS code) DONE
 - filling of headers with game info and notifications DONE
@@ -67,6 +68,11 @@ BUGLETS:
 - javascript-obfuscated-popuped "report bug" div in mini footer DONE
 - add inner site links to restructuredtext via special tag DONE
 - add summary of freindships to "character settings" page, for master DONE
+- add admin form to enable or not encyclopedia index DONE
+- world scan_form entry is dead : assert NewFormClass, new_action_name DONE
+
+
+
 
 ====================
 
