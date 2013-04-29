@@ -121,7 +121,7 @@ class GameViewMetaclass(type):
                     assert not callback.startswith("_")
 
 
-                def _check_action_registry(action_registry, form_class_required):
+                def _check_action_registry(action_registry, form_class_required, allow_permission_requirement):
                     for (action_name, action_properties) in action_registry.items():
                         utilities.check_is_slug(action_name)
                         action_properties_reference = {
@@ -129,8 +129,19 @@ class GameViewMetaclass(type):
                             "form_class": (types.NoneType, types.TypeType),
                             "callback": basestring,
                         }
-                        utilities.check_dictionary_with_template(action_properties, action_properties_reference)
+                        utilities.check_dictionary_with_template(action_properties, action_properties_reference, strict=False)
                         _check_callback(action_properties["callback"])
+
+                        action_properties.setdefault("requires_permission", None) # we COMPLETE the dict here!!
+
+                        requires_permission = action_properties["requires_permission"]
+                        if allow_permission_requirement:
+                            if requires_permission:
+                                assert requires_permission in NewClass.EXTRA_PERMISSIONS or requires_permission in GameDataManager.PERMISSIONS_REGISTRY
+                            else:
+                                pass # None or not present
+                        else:
+                            assert requires_permission is None
 
                         FormClass = action_properties["form_class"]
                         if form_class_required:
@@ -138,8 +149,11 @@ class GameViewMetaclass(type):
                         if FormClass:
                             assert issubclass(FormClass, Form) # not necessarily AbstractGameForm - may be managed manually
 
-                _check_action_registry(NewClass.GAME_ACTIONS, form_class_required=False) # can be directly called via ajax/custom forms
-                _check_action_registry(NewClass.ADMIN_ACTIONS, form_class_required=True) # must be auto-exposed via forms
+                for_chars = (NewClass.ACCESS in (UserAccess.authenticated, UserAccess.character))
+                _check_action_registry(NewClass.GAME_ACTIONS, form_class_required=False, allow_permission_requirement=for_chars) # can be directly called via ajax/custom forms
+
+                _check_action_registry(NewClass.ADMIN_ACTIONS, form_class_required=True, allow_permission_requirement=False) # must be auto-exposed via forms
+
 
                 game_form_classes = [props["form_class"] for props in NewClass.GAME_ACTIONS.values() if props["form_class"] is not None]
                 utilities.check_no_duplicates(game_form_classes) # at the moment, forms recognize themselves the action, so they can't be reused in same view

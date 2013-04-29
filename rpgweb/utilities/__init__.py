@@ -403,7 +403,6 @@ def validate_value(value, validator):
 
 def check_dictionary_with_template(my_dict, template, strict=False):
     # checks that the keys and value types of a dictionary matches that of a template
-
     if strict:
         assert_sets_equal(my_dict.keys(), template.keys())
     else:

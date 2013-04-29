@@ -51,7 +51,8 @@ class WiretappingAbility(AbstractAbility):
                                                       callback="purchase_wiretapping_slot"),
                         purchase_confidentiality_protection=dict(title=_lazy("Purchase confidentiality protection"),
                                                                   form_class=None,
-                                                                  callback="purchase_confidentiality_protection"))
+                                                                  callback="purchase_confidentiality_protection",
+                                                                  requires_permission="purchase_confidentiality_protection"))
 
     TEMPLATE = "abilities/wiretapping_management.html"
 
