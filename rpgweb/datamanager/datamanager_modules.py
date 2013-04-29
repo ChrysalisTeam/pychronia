@@ -939,7 +939,7 @@ class PermissionsHandling(BaseDataManager): # TODO REFINE
 
     @classmethod
     def register_permissions(cls, names):
-        assert all((name.lower() == name and " " not in name) for name in names)
+        assert all((name and name.lower() == name and " " not in name) for name in names)
         cls.PERMISSIONS_REGISTRY.update(names) # SET operation, not dict
 
 
@@ -951,9 +951,9 @@ class PermissionsHandling(BaseDataManager): # TODO REFINE
         for (name, character) in game_data["character_properties"].items():
             character.setdefault("permissions", PersistentList())
 
+        # USELESS ATM
         for (name, domain) in game_data["domains"].items():
             domain.setdefault("permissions", PersistentList())
-
 
     def _check_database_coherency(self, **kwargs):
         super(PermissionsHandling, self)._check_database_coherency(**kwargs)
@@ -964,28 +964,34 @@ class PermissionsHandling(BaseDataManager): # TODO REFINE
 
         game_data = self.data
 
-        ''' NO - what if we deactivate a module !!!
+        """ BROKEN ATM because we use new views in tests
+
+        # BEWARE - if one day we change installed views, this will break
         for (name, character) in game_data["character_properties"].items():
             for permission in character["permissions"]:
                 assert permission in self.PERMISSIONS_REGISTRY
 
+        # USELESS ATM
         for (name, domain) in game_data["domains"].items():
             for permission in domain["permissions"]:
                 assert permission in self.PERMISSIONS_REGISTRY
-        '''
+        """
 
     @transaction_watcher
     def update_permissions(self, username=CURRENT_USER, permissions=None):
         username = self._resolve_username(username)
-        assert self.is_character(username) and permissions
+        assert self.is_character(username)
+        assert all(p in self.PERMISSIONS_REGISTRY for p in permissions) # permissions can be empty
 
         data = self.get_character_properties(username)
-        data["permissions"] = permissions
+        data["permissions"] = PersistentList(permissions)
 
 
     @readonly_method
     def has_permission(self, username=CURRENT_USER, permission=None):
         assert permission
+        assert permission in self.PERMISSIONS_REGISTRY # handy
+
         username = self._resolve_username(username)
 
         if not self.is_character(username):
@@ -3387,6 +3393,7 @@ class GameViews(BaseDataManager):
 
         if view_class.REQUIRES_CHARACTER_PERMISSION:
             cls.register_permissions([view_class.get_access_permission_name()])
+
         if view_class.EXTRA_PERMISSIONS:
             # auto registration of permission requirements brought by that view
             cls.register_permissions(view_class.EXTRA_PERMISSIONS)

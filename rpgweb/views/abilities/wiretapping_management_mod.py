@@ -50,14 +50,16 @@ class WiretappingAbility(AbstractAbility):
                                                       form_class=None,
                                                       callback="purchase_wiretapping_slot"),
                         purchase_confidentiality_protection=dict(title=_lazy("Purchase confidentiality protection"),
-                                                      form_class=None,
-                                                      callback="purchase_confidentiality_protection"))
+                                                                  form_class=None,
+                                                                  callback="purchase_confidentiality_protection"))
 
     TEMPLATE = "abilities/wiretapping_management.html"
 
     ACCESS = UserAccess.character
     REQUIRES_CHARACTER_PERMISSION = False
     ALWAYS_ACTIVATED = True # FIXME
+
+    EXTRA_PERMISSIONS = ["purchase_confidentiality_protection"] # NOT YET ACTIVATED
 
 
     @readonly_method

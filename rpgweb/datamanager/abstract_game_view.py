@@ -96,6 +96,8 @@ class GameViewMetaclass(type):
                 assert NewClass.REQUIRES_CHARACTER_PERMISSION in (True, False)
                 assert NewClass.ALWAYS_ACTIVATED in (True, False)
                 assert NewClass.ALWAYS_ALLOW_POST in (True, False)
+                for perm in NewClass.EXTRA_PERMISSIONS:
+                    assert perm and perm.lower() == perm and " " not in perm
 
                 if NewClass.ACCESS == UserAccess.master:
                     assert not NewClass.REQUIRES_CHARACTER_PERMISSION

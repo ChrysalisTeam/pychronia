@@ -273,6 +273,7 @@ domains:
             <i>Force, honneur et robustesse</i>
 
             Rapport d’activité
+        permissions: ["access_world_scan"]
 
 
 character_properties:
@@ -293,8 +294,9 @@ character_properties:
         real_life_email: dummy@hotmail.com
         description : "XXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXX XXXXXXXX"
         character_color : "#0033CC"
-        permissions: ["runic_translation", "wiretapping", "access_dummy_view_character_permission"]
+        permissions: ["access_dummy_view_character_permission"]
         gems: [[12, null], [200, "several_misc_gems"]]
+
     guy2:
         domains: ["acharis"]
         password: awesome

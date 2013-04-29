@@ -501,6 +501,7 @@ class TestMetaAdministration(unittest.TestCase): # no django setup required ATM
 
 class TestDatamanager(BaseGameTestCase):
 
+
     def test_public_method_wrapping(self):
 
         # TODO FIXME - extend this check action methods of all ABILITIES !!! FIXME
@@ -602,6 +603,37 @@ class TestDatamanager(BaseGameTestCase):
                 transaction.abort()
             assert castrated_dm.get_event_count("BASE_PROCESS_PERIODIC_TASK_CALLED") == 1
 
+
+    @for_core_module(FlexibleTime)
+    def test_permission_handling(self):
+
+        assert self.dm.build_permission_select_choices()
+        assert "purchase_confidentiality_protection" in self.dm.PERMISSIONS_REGISTRY # EXTRA_PERMISSIONS system
+
+        permission = "access_world_scan" # exists because REQUIRES_CHARACTER_PERMISSION=True
+        assert permission in self.dm.PERMISSIONS_REGISTRY
+
+        self._set_user("guy1")
+        assert not self.dm.has_permission(permission=permission)
+        self.dm.update_permissions(permissions=[permission])
+        assert self.dm.has_permission(permission=permission)
+        assert self.dm.user.has_permission(permission)
+        self.dm.update_permissions(permissions=[])
+        assert not self.dm.has_permission(username="guy1", permission=permission)
+        assert not self.dm.user.has_permission(permission)
+
+        self._set_user("guy3")
+        assert not self.dm.has_permission(permission=permission)
+        self.dm.update_allegiances(allegiances=["sciences"]) # has that "permission"
+        assert self.dm.has_permission(permission=permission)
+        self.dm.update_permissions(permissions=[permission])
+        assert self.dm.has_permission(permission=permission) # permission both personally and via allegiance
+        assert self.dm.user.has_permission(permission)
+        self.dm.update_allegiances(allegiances=[])
+        assert self.dm.has_permission(permission=permission) # still personally
+        self.dm.update_permissions(permissions=[])
+        assert not self.dm.has_permission(permission=permission)
+        assert not self.dm.user.has_permission(permission)
 
 
     @for_core_module(FlexibleTime)

@@ -112,7 +112,7 @@
             <li class="{% ifequal mode "all_queued_messages" %}highlight{% endifequal %}"><a href="{% game_view_url "rpgweb.views.all_queued_messages" %}">{% trans "All Queued" %}</a></li>
         {% endif %}
 
-        {% if user|has_permission:"manage_wiretaps" %}
+        {% if user.is_master %}
             <li class="{% ifequal mode "intercepted_messages" %}highlight{% endifequal %}"><a href="{% game_view_url "rpgweb.views.conversation" %}">{% trans "Intercepted" %}</a></li>
         {% endif %}
 

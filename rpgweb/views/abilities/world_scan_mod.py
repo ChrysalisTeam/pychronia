@@ -30,7 +30,7 @@ class WorldScanAbility(AbstractAbility):
     TEMPLATE = "abilities/world_scan.html"
 
     ACCESS = UserAccess.character
-    REQUIRES_CHARACTER_PERMISSION = False
+    REQUIRES_CHARACTER_PERMISSION = True
     ALWAYS_ACTIVATED = True
 
 
