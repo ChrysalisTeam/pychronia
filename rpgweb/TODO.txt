@@ -7,7 +7,8 @@
 FEATURES
 
 - Add captcha to some special static pages - WHICH ??
-- add form to control global conf: flexible time parameter...  game_theoretical_length_days game_is_started friendship_minimum_duration_mn
+
+
 
 BUGLETS:
 
@@ -68,7 +69,7 @@ BUGLETS:
 - add admin form to enable or not encyclopedia index DONE
 - world scan_form entry is dead : assert NewFormClass, new_action_name DONE
 - refactor permission handling, to be able to add it for money/item viewing for example. DONE
-
+- add form to control some global conf: game_theoretical_length_days, game_is_started, friendship_minimum_duration_mn DONE
 
 
 ** FUTUR ENHANCEMENTS **

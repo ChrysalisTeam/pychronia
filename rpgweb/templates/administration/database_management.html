@@ -1,31 +1,31 @@
 {% extends "base_one_giant_column.html" %}
 
-{% load i18n helpers %}  
+{% load i18n helpers %}
 
-{% block content %}  
-
-
+{% block content %}
 
 
+
+{% comment %}
 <form action="{% game_view_url "rpgweb.views.manage_databases" %}" method="post">
 <div align="center">
     <input type="hidden" name="new_game_state" value="{% if game_is_started %}0{% else %}1{% endif %}"/>
-    <input type="submit" style="width: 200px" name="switch_game_state" 
+    <input type="submit" style="width: 200px" name="switch_game_state"
         value="{% if game_is_started %}{% trans "Pause Game" %}{% else %}{% trans "Resume Game" %}{% endif %}" />
 </div>
 </form>
 <hr/>
-  
-  
-  
-  
+{% endcomment %}
+
+
+
 {% comment %}
-<!-- 
+<!--
     CSS STYLE if necessary
     overflow:hidden;
     overflow-x: auto;
     overflow-y: hidden;
-    overflow : -moz-scrollbars-horizontal; 
+    overflow : -moz-scrollbars-horizontal;
 -->
 {% endcomment %}
 

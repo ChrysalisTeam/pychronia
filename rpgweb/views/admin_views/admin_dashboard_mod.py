@@ -11,6 +11,13 @@ from rpgweb.datamanager import UninstantiableFormError
 
 
 
+class GamePauseForm(AbstractGameForm):
+
+    is_paused = forms.BooleanField(label=_lazy("Game is paused?"), required=False)
+
+    def __init__(self, datamanager, *args, **kwargs):
+        super(GamePauseForm, self).__init__(datamanager, *args, **kwargs)
+        self.fields['is_paused'].initial = not datamanager.is_game_started()
 
 
 class GameViewActivationForm(AbstractGameForm):
@@ -31,9 +38,9 @@ class GameViewActivationForm(AbstractGameForm):
 
 
 class GameDurationForm(AbstractGameForm):
-    
+
     num_days = forms.FloatField(label=_lazy("Set theoretical game duration in days"), max_value=365, min_value=1, required=True)
-    
+
     def __init__(self, datamanager, *args, **kwargs):
         super(GameDurationForm, self).__init__(datamanager, *args, **kwargs)
         self.fields['num_days'].initial = datamanager.get_global_parameter("game_theoretical_length_days")
@@ -56,14 +63,17 @@ class AdminDashboardAbility(AbstractAbility):
                                                     callback="choose_activated_views"),
                          set_theoretical_game_duration=dict(title=_lazy("Set game duration"),
                                                             form_class=GameDurationForm,
-                                                            callback="set_theoretical_game_duration"))
+                                                            callback="set_theoretical_game_duration"),
+                         set_game_pause_state=dict(title=_lazy("Set game pause state"),
+                                                                form_class=GamePauseForm,
+                                                                callback="set_game_pause_state"))
+
 
     TEMPLATE = "administration/admin_dashboard.html"
 
     ACCESS = UserAccess.master
     REQUIRES_CHARACTER_PERMISSION = False
     ALWAYS_ACTIVATED = True
-
 
 
     @transaction_watcher
@@ -150,6 +160,11 @@ class AdminDashboardAbility(AbstractAbility):
         self.set_global_parameter("game_theoretical_length_days", num_days) # checked by form
         return _("Game theoretical duration well saved.")
 
+
+    @transaction_watcher
+    def set_game_pause_state(self, is_paused):
+        self.datamanager.set_game_state(started=not is_paused) # checked by form
+        return _("Game state well saved.")
 
 
 

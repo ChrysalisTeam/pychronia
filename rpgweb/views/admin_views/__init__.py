@@ -56,30 +56,21 @@ def game_events(request, template_name='administration/game_events.html'):
 
 
 
-
 @register_view(access=UserAccess.master, title=_lazy("Manage Databases"))
 def manage_databases(request, template_name='administration/database_management.html'):
 
     if request.method == "POST":
-        if request.POST.has_key("switch_game_state"):
-            new_state = request.POST.get("new_game_state", None) == "1"
-            with action_failure_handler(request, _("Game state updated.")):
-                request.datamanager.set_game_state(new_state)
-
         if request.POST.has_key("pack_database"):
             with action_failure_handler(request, _("ZODB file packed.")):
                 request.datamanager.pack_database(days=1)  # safety measure - take at least one day of gap !
 
     formatted_data = request.datamanager.dump_zope_database(width=100)
 
-    game_is_started = request.datamanager.is_game_started()  # we refresh it now
-
     return render(request,
                   template_name,
                     {
                      'page_title': _("Database Content"),
                      'formatted_data': formatted_data,
-                     'game_is_started': game_is_started,
                     })
 
 
