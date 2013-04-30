@@ -6,10 +6,9 @@
 
 FEATURES
 
-- messaging templates filtering by taxonomy ?
 - Add captcha to some special static pages - WHICH ??
 - refactor permission handling, add it to money/item viewing for example...
-
+- add form to control global conf: flexible time parameter...
 
 BUGLETS:
 
@@ -76,7 +75,7 @@ BUGLETS:
 ** FUTUR ENHANCEMENTS **
 
 - add RST summary to all forms, especially admin ones ??? not need right ATM
-
+- messaging templates filtering by taxonomy ?
 
 ====================
 

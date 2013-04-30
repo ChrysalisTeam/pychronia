@@ -140,17 +140,17 @@ class AbstractActionMiddleware(object):
 
 
     def _process_action_through_middlewares(self, action_name, method, params):
+        """
+        The chain of middleware processing ends here, by normal execution of the
+        proper *method* callable (possibly a flattened version of thge original callback) 
+        with the dict of arguments *params*.
+        """
         if __debug__: self.notify_event("TOP_LEVEL_PROCESS_ACTION_THROUGH_MIDDLEWARES")
         assert action_name
         return method(**params)
 
 
     def process_action_through_middlewares(self, action_name, method, params):
-        """
-        The chain of middleware processing ends here, by normal execution of the
-        proper *method* callable (possibly a flattened version of thge original callback) 
-        with the dict of arguments *params*.
-        """
         self._lazy_setup_private_action_middleware_data(action_name=action_name)
         return self._process_action_through_middlewares(action_name=action_name, method=method, params=params)
 

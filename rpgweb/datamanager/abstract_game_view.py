@@ -303,6 +303,21 @@ class AbstractGameView(object):
             raise AuthenticationRequiredError(_("Authentication required."))
 
 
+    @staticmethod
+    def is_action_is_permitted_for_user(new_action_name, action_registry, user):
+        """
+        Currently, only checks personal permission for CHARACTERS in case
+        this action requires one.
+        """
+        requires_permission = action_registry[new_action_name]["requires_permission"]
+        if requires_permission:
+            if not user.is_master:
+                assert user.is_character() # only other case where requires_permission can be set
+                if not user.has_permission(requires_permission):
+                    return False
+                    # in any other case, we're good
+        return True
+    
     @classmethod
     def _common_instantiate_form(cls,
                                   new_action_name, # id of the form to be potentially instantiated
@@ -310,6 +325,7 @@ class AbstractGameView(object):
                                   previous_form_data=None, # data about previously submitted form, if any
                                   initial_data=None,
                                   action_registry=None,
+                                  user=None,
                                   form_initializer=None,
                                   propagate_errors=False,
                                   **form_options):
@@ -322,6 +338,7 @@ class AbstractGameView(object):
         """
         form_options = form_options or {}
         assert action_registry
+        assert user
         assert form_initializer
 
         if previous_form_data:
@@ -331,6 +348,13 @@ class AbstractGameView(object):
             previous_action_successful = previous_form_data.action_successful
         else:
             preview_view_name = previous_action_name = previous_form_instance = previous_action_successful = None
+
+        if not cls.is_action_is_permitted_for_user(new_action_name=new_action_name, action_registry=action_registry, user=user):
+            if propagate_errors:
+                raise UninstantiableFormError(_("This action requires personal permissions"))
+            else:
+                return None
+
 
         NewFormClass = action_registry[new_action_name]["form_class"]
         assert NewFormClass, new_action_name # important, not all actions have form classes available
@@ -371,6 +395,7 @@ class AbstractGameView(object):
         return self._common_instantiate_form(*args,
                                              action_registry=self.GAME_ACTIONS,
                                              form_initializer=self.datamanager, #  this property might be overridden by subclasses
+                                             user=self.datamanager.user,
                                              ** all_params)
 
 
@@ -403,8 +428,12 @@ class AbstractGameView(object):
         return res
 
 
-    # for that base class, no special decorator is needed, but override this in subclasses #
-    execute_game_action_callback = _execute_game_action_callback
+    @transaction_watcher # IMPORTANT, even for simple gameviews
+    def execute_game_action_callback(self, action_name, unfiltered_params):
+        if not self.is_action_is_permitted_for_user(new_action_name=action_name, action_registry=self.GAME_ACTIONS, user=self.datamanager.user):
+            raise AbnormalUsageError(_("Forbidden action %s called by unauthorized user") % action_name) # it means we improperly exposed form/widget to call this action
+        return self._execute_game_action_callback(action_name=action_name, unfiltered_params=unfiltered_params)
+        
 
 
     def _try_processing_formless_game_action(self, data):
@@ -449,7 +478,7 @@ class AbstractGameView(object):
         try:
             bound_form = FormClass(self.datamanager, data=unfiltered_data)
         except UninstantiableFormError:
-            bound_form = None # the form correponding to data can't even be cerated, so POST data is necessarily invalid
+            bound_form = None # the form correponding to data can't even be created, so POST data is necessarily invalid
 
         if bound_form and bound_form.is_valid():
             with action_failure_handler(self.request, success_message=None): # only for unhandled exceptions
@@ -621,6 +650,7 @@ class AbstractGameView(object):
         return self._common_instantiate_form(*args,
                                              action_registry=self.ADMIN_ACTIONS,
                                              form_initializer=self.datamanager, # this property might be overridden by subclasses
+                                             user=self.datamanager.user,
                                              ** all_params)
 
 
@@ -648,6 +678,7 @@ class AbstractGameView(object):
         
         Might raise any kind of exception.
         """
+        assert self.is_action_is_permitted_for_user(new_action_name=action_name, action_registry=self.ADMIN_ACTIONS, user=self.datamanager.user) # of course...
         callback_name = self.ADMIN_ACTIONS[action_name]["callback"]
         (callback, relevant_args) = self._resolve_callback_callargs(callback_name=callback_name, unfiltered_params=unfiltered_params)
         res = callback(**relevant_args) # might fail

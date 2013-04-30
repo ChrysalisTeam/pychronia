@@ -87,9 +87,6 @@ class AbstractAbility(AbstractAbilityBasesAdapter):
             (callback, relevant_args) = self._resolve_callback_callargs(callback_name=callback_name, unfiltered_params=unfiltered_params)
             return self._execute_game_action_with_middlewares(action_name=action_name, method=callback, **relevant_args)
 
-    # We add transaction watching, since an ability is half-datamanager actually #
-    execute_game_action_callback = transaction_watcher(_execute_game_action_callback)
-
 
 
     def _process_standard_request(self, request, *args, **kwargs):
