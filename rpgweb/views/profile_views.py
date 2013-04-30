@@ -3,10 +3,22 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from rpgweb.common import *
-from rpgweb.datamanager import AbstractGameView, register_view, AbstractGameForm
+from rpgweb.datamanager import AbstractGameView, register_view, AbstractGameForm, transaction_watcher
 from rpgweb.authentication import try_authenticating_with_credentials, logout_session
 from django.http import HttpResponseRedirect
 from rpgweb import forms
+from django import forms as django_forms
+
+
+ 
+class FriendshipMinDurationForm(AbstractGameForm):
+    
+    duration_mn = django_forms.IntegerField(label=_lazy("Set minimum friendship duration in minutes"), max_value=60 * 24 * 30, min_value=0, required=True)
+    
+    def __init__(self, datamanager, *args, **kwargs):
+        super(FriendshipMinDurationForm, self).__init__(datamanager, *args, **kwargs)
+        self.fields['duration_mn'].initial = datamanager.get_global_parameter("friendship_minimum_duration_mn")
+
 
 
 @register_view(access=UserAccess.anonymous, always_activated=True, title=_lazy("Login"), always_allow_post=True)
@@ -165,7 +177,7 @@ character_profile = CharacterProfile.as_view
 
 
 @register_view
-class FriendshipManagementAbility(AbstractGameView):
+class FriendshipManagementView(AbstractGameView):
 
     TITLE = _lazy("Friendship Management")
     NAME = "friendship_management"
@@ -183,11 +195,22 @@ class FriendshipManagementAbility(AbstractGameView):
                                                           form_class=None,
                                                           callback="do_cancel_friendship"))
 
+    ADMIN_ACTIONS = dict(set_friendship_minimum_duration=dict(title=_lazy("Set minimum friendship duration"),
+                                                    form_class=FriendshipMinDurationForm,
+                                                    callback="set_friendship_minimum_duration"),)
+
     TEMPLATE = "generic_operations/friendship_management.html"
 
     ACCESS = UserAccess.character
     REQUIRES_CHARACTER_PERMISSION = False
     ALWAYS_ACTIVATED = True
+
+
+    @transaction_watcher
+    def set_friendship_minimum_duration(self, duration_mn):
+        self.datamanager.set_global_parameter("friendship_minimum_duration_mn", duration_mn) # checked by form
+        return _("Minimum friendship duration well set.")
+
 
 
     def _relation_type_to_action(self, relation_type):
@@ -252,5 +275,5 @@ class FriendshipManagementAbility(AbstractGameView):
             return _("Your friendship proposal to user %s has been properly canceled.") % other_username  # weirdest case...
 
 
-friendship_management = FriendshipManagementAbility.as_view
+friendship_management = FriendshipManagementView.as_view
 
