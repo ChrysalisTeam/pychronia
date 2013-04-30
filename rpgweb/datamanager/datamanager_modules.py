@@ -52,6 +52,14 @@ class GameGlobalParameters(BaseDataManager):
     def get_global_parameter(self, name):
         return self.data["global_parameters"][name]
 
+    @transaction_watcher
+    def set_global_parameter(self, name, value):
+        assert self.is_master()
+        if name not in self.data["global_parameters"]:
+            raise AbnormalUsageError(_("Unexisting setting %s") % name)
+        self.data["global_parameters"][name] = value
+
+
     @readonly_method
     def is_game_started(self):
         """

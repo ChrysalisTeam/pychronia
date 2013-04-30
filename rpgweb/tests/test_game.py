@@ -961,7 +961,7 @@ class TestDatamanager(BaseGameTestCase):
 
 
     # todo - refactor this ?
-    def test_getters_setters(self):
+    def test_misc_getters_setters(self):
         self._reset_messages()
 
         self.assertEqual(self.dm.get_username_from_official_name(self.dm.get_official_name("guy2")), "guy2")
@@ -979,6 +979,15 @@ class TestDatamanager(BaseGameTestCase):
         self.assertEqual(self.dm.get_username_from_email("guy1@pangea.com"), "guy1")
 
 
+        self._set_user("master")
+
+
+        # we test global parameter handling here...
+        self.dm.set_global_parameter("game_theoretical_length_days", 22)
+        assert self.dm.get_global_parameter("game_theoretical_length_days") == 22
+
+        with pytest.raises(AbnormalUsageError):
+            self.dm.set_global_parameter("unexisting_param", 33)
 
 
 

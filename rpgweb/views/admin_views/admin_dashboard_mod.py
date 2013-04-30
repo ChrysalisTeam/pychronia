@@ -7,6 +7,7 @@ from rpgweb.datamanager import AbstractGameForm, AbstractAbility, register_view,
 
 from django import forms
 from django.http import Http404
+from rpgweb.datamanager import UninstantiableFormError
 
 
 
@@ -20,14 +21,22 @@ class GameViewActivationForm(AbstractGameForm):
         super(GameViewActivationForm, self).__init__(datamanager, *args, **kwargs)
 
         activable_views = datamanager.get_activable_views() # mapping view_name -> klass
-        activable_views_choices = [(view_name, view_klass.NAME) for (view_name, view_klass) in activable_views.items()]
 
         if not activable_views:
-            raise
+            raise UninstantiableFormError(_("No views to be activated"))
 
+        activable_views_choices = [(view_name, view_klass.NAME) for (view_name, view_klass) in activable_views.items()]
         self.fields['activated_views'].choices = activable_views_choices
         self.fields['activated_views'].initial = datamanager.get_activated_game_views()
 
+
+class GameDurationForm(AbstractGameForm):
+    
+    num_days = forms.FloatField(label=_lazy("Set theoretical game duration in days"), max_value=365, min_value=1, required=True)
+    
+    def __init__(self, datamanager, *args, **kwargs):
+        super(GameDurationForm, self).__init__(datamanager, *args, **kwargs)
+        self.fields['num_days'].initial = datamanager.get_global_parameter("game_theoretical_length_days")
 
 
 
@@ -43,8 +52,11 @@ class AdminDashboardAbility(AbstractAbility):
 
     # Place here dashboard forms that don't have their own containing view! #
     ADMIN_ACTIONS = dict(choose_activated_views=dict(title=_lazy("Activate views"),
-                                                          form_class=GameViewActivationForm,
-                                                          callback="choose_activated_views"))
+                                                    form_class=GameViewActivationForm,
+                                                    callback="choose_activated_views"),
+                         set_theoretical_game_duration=dict(title=_lazy("Set game duration"),
+                                                            form_class=GameDurationForm,
+                                                            callback="set_theoretical_game_duration"))
 
     TEMPLATE = "administration/admin_dashboard.html"
 
@@ -133,6 +145,10 @@ class AdminDashboardAbility(AbstractAbility):
         return _("Views status well saved.")
 
 
+    @transaction_watcher
+    def set_theoretical_game_duration(self, num_days):
+        self.set_global_parameter("game_theoretical_length_days", num_days) # checked by form
+        return _("Game theoretical duration well saved.")
 
 
 
