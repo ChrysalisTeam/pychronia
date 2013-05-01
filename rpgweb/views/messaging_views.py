@@ -326,6 +326,8 @@ def compose_message(request, template_name='messaging/compose.html'):
     else:
         form = MessageComposeForm(request)
 
+    user_contacts = request.datamanager.get_user_contacts()
+
     return render(request,
                   template_name,
                     {

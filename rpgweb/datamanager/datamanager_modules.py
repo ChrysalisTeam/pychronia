@@ -345,7 +345,7 @@ class NovaltyTracker(BaseDataManager):
 @register_module
 class CharacterHandling(BaseDataManager): # TODO REFINE
 
-    CHARACTER_REAL_LIFE_ATTRIBUTES = ["real_life_identity", "real_life_email"]
+    CHARACTER_REAL_LIFE_ATTRIBUTES = ["real_life_identity", "real_life_email"] # TODO??
 
     def _load_initial_data(self, **kwargs):
         super(CharacterHandling, self)._load_initial_data(**kwargs)
@@ -374,7 +374,7 @@ class CharacterHandling(BaseDataManager): # TODO REFINE
 
             identities = [char["official_name"].replace(" ", "").lower() for char in
                           game_data["character_properties"].values()]
-            utilities.check_no_duplicates(identities)
+            utilities.check_no_duplicates(identities) # each character stole the identity of someone different, on Pangea
 
 
     @readonly_method
@@ -1731,6 +1731,7 @@ class TextMessagingCore(BaseDataManager):
 
 
 
+
 @register_module
 class TextMessagingExternalContacts(BaseDataManager):
 
@@ -2003,11 +2004,12 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
                          for properties in self.data["character_properties"].values()]
         utilities.check_no_duplicates(all_msg_files) # users must NOT have the same new-message audio notifications
 
+        character_emails = self.get_character_emails()
         for character_set in self.data["character_properties"].values():
             utilities.check_no_duplicates(character_set["external_contacts"])
             for external_contact in character_set["external_contacts"]:
                 utilities.check_is_email(external_contact) # FIXME - check that it exists and is authorized, too ???
-
+                assert external_contact not in character_emails # REALLY external!
         assert not self._recompute_all_external_contacts_via_msgs() # we recompute external_contacts, and check everything is coherent
 
     """
@@ -2272,10 +2274,38 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
     @readonly_method
     def get_user_contacts(self, username=CURRENT_USER):
         username = self._resolve_username(username)
+        assert not self.is_anonymous(username)
         if self.is_master(username=username):
             return self.get_character_emails() + sorted(self.global_contacts.keys())
         else:
             return self.get_character_emails() + self.get_character_external_contacts(username=username) # including user himself
+
+    @readonly_method
+    def get_contacts_display_properties(self, email_contacts):
+        """
+        Returns info needed to display the contact and its attributes, 
+        for both characters and external contacts.
+        
+        Results are returned in the same order as input.
+        """
+        results = []
+        assert isinstance(email_contacts, list)
+        character_emails = set(self.get_character_emails())
+        for email in email_contacts:
+            if email in character_emails:
+                props = self.get_character_properties(self.get_character_or_none_from_email(email))
+            elif email in self.global_contacts:
+                props = self.global_contacts[email]
+            else:
+                props = dict(avatar=self.get_global_parameter("default_contact_avatar"),
+                             description=_("Unidentified contact"))
+
+            # as well characters as external contacts MUST have these fields in their properties
+            results.append(dict(address=email,
+                                avatar=props["avatar"],
+                                description=props["description"]))
+        return results
+
 
 
     @readonly_method
@@ -2296,7 +2326,6 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
 
     @transaction_watcher(always_writable=True)
     def _update_external_contacts(self, msg):
-
         new_contacts_added = False
 
         (concerned_characters, external_emails) = self._get_external_contacts_updates(msg)

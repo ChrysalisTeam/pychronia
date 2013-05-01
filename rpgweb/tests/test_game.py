@@ -1537,6 +1537,14 @@ class TestDatamanager(BaseGameTestCase):
         assert res == u' Hello <a href="/TeStiNg/messages/compose/?recipient=h%C3%A9lloaaxsjjs%40gma%C3%AFl.fr">h\xe9lloaaxsjjs@gma\xefl.fr</a>. please write to h\xe9rb\xe8rt@h\xe9l\xe9nia.'
 
 
+        assert self.dm.get_contacts_display_properties([]) == []
+        res = self.dm.get_contacts_display_properties(["guy1@pangea.com", "judicators@acharis.com", "unknown@mydomain.com"])
+        #print(">>", res)
+        assert res == [{'description': 'This is guy1', 'avatar': 'guy1.png', 'address': u'guy1@pangea.com'},
+                       {'description': 'the terrible judicators', 'avatar': 'here.jpg', 'address': u'judicators@acharis.com'},
+                       {'description': u'Unidentified contact', 'avatar': 'defaultavatar.jpg', 'address': u'unknown@mydomain.com'}]
+
+
 
     def test_text_messaging_workflow(self):
 
