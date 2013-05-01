@@ -74,7 +74,7 @@ class AbstractDataTableManagement(AbstractGameView):
     def get_template_vars(self, previous_form_data=None):
 
         table = self.get_data_table_instance()
-        table_items = table.get_all_data(as_sorted_list=True)
+        mutable_table_items = table.get_all_data(as_sorted_list=True, mutable_only=True) # MUTABLE ONLY - very important
 
         concerned_identifier = None
         if previous_form_data and not previous_form_data.action_successful:
@@ -82,7 +82,7 @@ class AbstractDataTableManagement(AbstractGameView):
 
         forms = [("", self.instantiate_table_form(previous_form_data=(previous_form_data if concerned_identifier == "" else None)))] # form for new table entry
 
-        for (table_key, table_value) in table_items:
+        for (table_key, table_value) in mutable_table_items:
 
             transfered_table_item = (table_key, table_value) # even if previous_form_data is set for that entry
             transfered_previous_form_data = previous_form_data if (concerned_identifier and concerned_identifier == table_key) else None

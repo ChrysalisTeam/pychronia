@@ -82,11 +82,15 @@ class DataTableManager(object):
             raise AbnormalUsageError(_("Items of type %s with key %s already exists") % (cls.TRANSLATABLE_ITEM_NAME, key))
 
     @readonly_method
-    def get_all_data(self, as_sorted_list=False):
+    def get_all_data(self, as_sorted_list=False, mutable_only=False):
+        items_gen = self._table.items()
+        if mutable_only:
+            items_gen = ((k, v) for (k, v) in items_gen if self._item_can_be_edited(k, v))
+
         if not as_sorted_list:
-            return dict(**self._table) # shallow copy of dict
+            return dict(items_gen)
         else:
-            mylist = self._table.items()
+            mylist = list(items_gen)
             mylist.sort(key=self._sorting_key)
             return mylist
 

@@ -1466,6 +1466,17 @@ class TestDatamanager(BaseGameTestCase):
             with pytest.raises(UsageError):
                 container[contact]
 
+
+            # mutability control
+            immutable_entry = "auction-list@pangea.com"
+            assert immutable_entry in container.get_all_data()
+            assert immutable_entry not in container.get_all_data(mutable_only=True)
+
+            assert immutable_entry in [k for k, v in container.get_all_data(as_sorted_list=True)]
+            assert immutable_entry not in [k for k, v in container.get_all_data(as_sorted_list=True, mutable_only=True)]
+
+
+
     '''        
     @for_core_module(TextMessagingCore)
     def __test_globally_registered_contacts_old(self):
