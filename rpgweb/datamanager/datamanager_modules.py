@@ -1966,8 +1966,6 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
 
         utilities.check_is_slug(game_data["global_parameters"]["pangea_network_domain"])
 
-        utilities.check_is_slug(game_data["global_parameters"]["global_email"]) # shortcut tag to send email to every character
-
         message_reference = {
                              "has_read": PersistentList,
                              "has_replied": PersistentList,
@@ -2011,6 +2009,13 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
                 utilities.check_is_email(external_contact) # FIXME - check that it exists and is authorized, too ???
                 assert external_contact not in character_emails # REALLY external!
         assert not self._recompute_all_external_contacts_via_msgs() # we recompute external_contacts, and check everything is coherent
+
+
+        # special mailing list
+        ml_address = self.get_global_parameter("all_characters_mailing_list")
+        ml_props = self.global_contacts[ml_address] # MUST exist
+        assert ml_props["immutable"]
+
 
     """
     @staticmethod
@@ -2062,23 +2067,29 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
             return # OK, sent by a character (player or not)
         super(TextMessagingForCharacters, self)._check_recipient_email(recipient_email=recipient_email, sender_email=sender_email)
 
+
     @readonly_method
     def _determine_basic_visibility(self, msg):
         """
         This method does NOT modify the message, it just returns a dict suitable as "visible_by" message field.
         """
         visibilities = {}
+        ml = self.get_global_parameter("all_characters_mailing_list")
 
         for recipient_email in msg["recipient_emails"]:
-            recipient_username = self.get_character_or_none_from_email(recipient_email)
-            if recipient_username:
-                visibilities[recipient_username] = VISIBILITY_REASONS.recipient
+            if recipient_email == ml:
+                for usr in self.get_character_usernames(): # ALL (playable or not) characters
+                    visibilities[usr] = VISIBILITY_REASONS.recipient
             else:
-                visibilities[self.master_login] = VISIBILITY_REASONS.recipient # might occur several times, we don't care
+                recipient_username = self.get_character_or_none_from_email(recipient_email)
+                if recipient_username:
+                    visibilities[recipient_username] = VISIBILITY_REASONS.recipient
+                else:
+                    visibilities[self.master_login] = VISIBILITY_REASONS.recipient # might occur several times, we don't care
 
         sender_username = self.get_character_or_none_from_email(msg["sender_email"])
         if sender_username:
-            visibilities[sender_username] = VISIBILITY_REASONS.sender # might override "recipient" status in case of self-mailing
+            visibilities[sender_username] = VISIBILITY_REASONS.sender # might override "recipient" status, in case of self-mailing
         else:
             visibilities[self.master_login] = VISIBILITY_REASONS.sender
 

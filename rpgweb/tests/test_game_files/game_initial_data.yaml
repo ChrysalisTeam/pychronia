@@ -109,7 +109,6 @@ global_parameters:
 
     game_is_started: True # used to forbid access to some features before the party itself
 
-    global_email: everyone@lg-auction.com # shortcut to email every user at once
     pangea_network_domain: pangea.com
 
     anonymous_login: guest
@@ -185,7 +184,7 @@ global_parameters:
 
     default_contact_avatar: "defaultavatar.jpg"
 
-    all_characters_mailing_list: "[AUCTION]"
+    all_characters_mailing_list: "auction-list@pangea.com"
 
 
 locations:
@@ -416,7 +415,6 @@ messaging:
 
         authenticator@hightech.com: {}
 
-
         judicators@acharis.com:
             avatar: "here.jpg"
             description: "the terrible judicators"
@@ -430,6 +428,9 @@ messaging:
         master@administration.com: {}
 
         everyone@chars.com : {}
+
+        "auction-list@pangea.com": {immutable: True}
+
 
     messages_dispatched:  #-> list of messages processed
 

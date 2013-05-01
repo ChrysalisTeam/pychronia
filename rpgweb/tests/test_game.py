@@ -1545,6 +1545,37 @@ class TestDatamanager(BaseGameTestCase):
                        {'description': u'Unidentified contact', 'avatar': 'defaultavatar.jpg', 'address': u'unknown@mydomain.com'}]
 
 
+    def test_mailing_list_special_case(self):
+
+        ml = self.dm.get_global_parameter("all_characters_mailing_list")
+
+        self.dm.post_message("guy2@pangea.com",
+                             recipient_emails=["secret-services@masslavia.com", "guy1@pangea.com", ml],
+                             subject="subj", body="qsdqsd") # this works too !
+
+        msg = self.dm.get_all_dispatched_messages()[-1]
+
+        assert msg["subject"] == "subj"
+        assert msg["visible_by"] == {'guy3': 'recipient',
+                                     'guy4': 'recipient',
+                                     'master': 'recipient',
+                                     'guy2': 'sender', # well set
+                                     'guy1': 'recipient'}
+
+        self.dm.post_message("secret-services@masslavia.com",
+                             recipient_emails=["guy1@pangea.com", ml],
+                             subject="subj2", body="qsdqsd") # this works too !
+
+        msg = self.dm.get_all_dispatched_messages()[-1]
+
+        assert msg["subject"] == "subj2"
+        assert msg["visible_by"] == {'guy3': 'recipient',
+                                     'guy4': 'recipient',
+                                     'master': 'sender',
+                                     'guy2': 'recipient',
+                                     'guy1': 'recipient'}
+
+
 
     def test_text_messaging_workflow(self):
 
