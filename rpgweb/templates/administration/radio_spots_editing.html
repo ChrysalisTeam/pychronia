@@ -1,6 +1,6 @@
 {% extends "base_two_columns.html" %}
 
-{% load sekizai_tags i18n helpers kwacros %}  
+{% load sekizai_tags i18n helpers kwacros %}
 {% loadkwacros "metalradiance_kwacros.html" %}
 
 
@@ -12,17 +12,17 @@
     function generate_tts_sample(target_id) {
         var text = $('#id_'+target_id+'_text').val().trim();
         if (text){
-            $('#id_'+target_id+'_sound_preview').html("{% trans "Generating sound..." %}");
+            $('#id_'+target_id+'_sound_preview').html("{{ _("Generating sound...")|escape|escapejs }}");
             $.post("",
                    { _action_: "generate_tts_sample", text: text},
                    function(answer){
-                       $('#id_'+target_id+'_sound_preview').html(answer.mediaplayer); 
-                       $('#id_'+target_id+'_url_or_file').val(answer.sound_url); 
+                       $('#id_'+target_id+'_sound_preview').html(answer.mediaplayer);
+                       $('#id_'+target_id+'_url_or_file').val(answer.sound_url);
                    },
                    'json'
-                 );  
+                 );
         } else {
-            $.jnotify("{% trans "Text field must be filled." %}", "warning");
+            $.jnotify("{{ _("Text field must be filled.")|escapejs }}", "warning");
         }
     }
 
@@ -37,7 +37,7 @@
 {% usekwacro side_panel_start frame_class="mini_frame float_left" decos="2" %}
 
     <h2>{% trans "Entries" %}</h2>
-    
+
     <div class="beige_paper">
     <ul>
         {% for identifier, form in forms %}
@@ -45,7 +45,7 @@
         {% endfor %}
     </ul>
     </div>
-    
+
 {% usekwacro side_panel_end %}
 
 {% endblock %}
@@ -53,12 +53,12 @@
 
 
 
-{% block content %}  
+{% block content %}
 
     {% for identifier, form in forms %}
     <div class="scroll_realistic_thin_ends center">
         {% usekwacro deletion_button identifier %}
-        
+
         <a name="entry-{{ identifier }}"><h2>{{ identifier|default:_("NEW ENTRY") }}</h2></a>
         <form id="update_form" action="" method="post">
             {{ form.as_p }}
@@ -68,7 +68,7 @@
         </form>
     </div>
     {% endfor %}
- 
+
 {% endblock %}
 
 

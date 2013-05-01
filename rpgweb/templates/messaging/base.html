@@ -49,7 +49,7 @@
         	if (confirm('{{ _("Are you sure you want to permamently delete this message ?")|escapejs }}')){
         		if (confirm('{{ _("This action cannot be undone, do you confirm deletion ?")|escapejs }}')){
 		            $.post("{% game_view_url "rpgweb.views.ajax_permanently_delete_message" %}",
-		                    { id: escape(msg_id) },
+		                    { id: msg_id },
 		                    function(data){
 		                    	$("#"+msg_id).remove();
 		                    	$.jnotify('{% trans "Message successfully deleted" %}', "success");

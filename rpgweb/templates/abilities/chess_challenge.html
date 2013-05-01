@@ -1,7 +1,7 @@
 
 {% extends "base_one_column.html" %}
 
-{% load sekizai_tags i18n helpers kwacros %}  
+{% load sekizai_tags i18n helpers kwacros %}
 
 {% block sekizai_calls %}
 {{ block.super }}
@@ -13,16 +13,16 @@ function notify_chess_player_victory() {
     $.post("",
             {
              _action_: "notify_chess_player_victory",
-             }, 
-            function(answer) {  
+             },
+            function(answer) {
                 $.jnotify("{% trans "Your victory has well been recorded!" %}", "success", true)
             },
             'json').fail(function() {
-                            // duplicate with default error handler $.jnotify("{% trans "Victory registration, retrying..." %}", "error", 2000)
+                            // duplicate with default error handler $.jnotify("{{ _("Victory registration, retrying...")|escapejs }}", "error", 2000)
                             window.setTimeout(notify_chess_player_victory, 2000);
-                            
-                        }); 
-    
+
+                        });
+
 }
 
 /* Monkey-patch move function of displayer */
@@ -34,7 +34,7 @@ P4wn_display.prototype.move = function(start, end, promotion){
         this.refresh();
         if ((move_result.flags & P4_MOVE_FLAG_MATE) && (move_result.flags & P4_MOVE_FLAG_CHECK)) {
             // checkmate situation
-            if (this.players[state.to_play] == 'computer') { 
+            if (this.players[state.to_play] == 'computer') {
                 // previous player is assumed to be human
                 //alert("HUMAN WON");
                 notify_chess_player_victory();
@@ -43,7 +43,7 @@ P4wn_display.prototype.move = function(start, end, promotion){
                 // DO NOTHING alert("COMPUTER WON");
             }
         }
-        
+
         if (! (move_result.flags & P4_MOVE_FLAG_MATE)){
             this.next_move_timeout = window.setTimeout(
                 function(p4d){
@@ -59,9 +59,9 @@ P4wn_display.prototype.move = function(start, end, promotion){
     for (var i = 0; i < this.move_listeners.length; i++){
         this.move_listeners[i](move_result);
     }
-    
+
     // p4_log(p4_state2fen(this.board_state)); -> dumps board state
-    
+
     return move_result.ok;
 };
 
@@ -115,9 +115,9 @@ p4wnify($("#chess_panel")).next_move();
         <input type="submit" class="" value="{% trans "New Game" %}"/>
     </form>
     </div>
-    
+
     <br/>
-    
+
     <div align="center">
 
        <div id="chess_panel"></div>

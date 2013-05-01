@@ -44,7 +44,7 @@ function preview_message() {
 
 	           });
 	} else {
-		$.jnotify("{% trans "Nothing to preview" %}", "warning")
+		$.jnotify("{{ _("Nothing to preview.")|escapejs }}", "warning")
 	}
 }
 

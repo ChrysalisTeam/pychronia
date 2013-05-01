@@ -118,7 +118,7 @@
         window.onerror = function(msg, url, linenumber){
              //alert("{0} ({1})".format(msg, url));
              //alert('Error message: '+msg+'\nURL: '+url+'\nLine Number: '+linenumber);
-             $.jnotify('{% trans "Application error (please consider reporting that bug)" %} - {0} - URL: {1}'.format(msg, url), "error", true);
+             $.jnotify('{{ _("Application error (please consider reporting that bug)")|escapejs }} - {0} - URL: {1}'.format(msg, url), "error", true);
         }
         {% endif %}
 

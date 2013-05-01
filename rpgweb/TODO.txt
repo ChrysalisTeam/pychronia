@@ -7,18 +7,14 @@
 FEATURES
 
 - Add captcha to some special static pages - WHICH ??
+- add "ALL USERS" group email and "tiers de confiance"
+- enrich choices of forms fields -> djangoselect2
 
 
+TESTS:
 
-BUGLETS:
-
-- use {{ _("hi")|escapejs }} in JS everywhere instead of trans tag
-- remove dumb escape() calls from $.get request arguments
-- auto test all forms with also inspect.getsourcelines(object) etc.
-- check what happens when calling setlanguage flags from a "POST-access-only" page like private files ??
-- tweak access checking of gameviews, so that if impersonation we get no error message, and just get redirected to homepage of impersonated user
-- add tests for admin widget system, for misc. moduless, for gameform instantiation, for world scan_form...
-
+- auto test all forms with also inspect.getsourcelines(object) (for UNINSTANTIABLEERROR) etc.
+- add tests for admin widget system, for misc. modules, for gameform instantiation, for world scan_form...
 
 
 ** WIP, needs cosmetics **
@@ -70,7 +66,10 @@ BUGLETS:
 - world scan_form entry is dead : assert NewFormClass, new_action_name DONE
 - refactor permission handling, to be able to add it for money/item viewing for example. DONE
 - add form to control some global conf: game_theoretical_length_days, game_is_started, friendship_minimum_duration_mn DONE
-
+- use {{ _("")|escapejs }} in JS everywhere instead of trans tag  DONE
+- remove dumb escape() calls from $.get request arguments DONE
+- tweak access checking of gameviews, so that if impersonation we get no error message - USELESS, good as is
+- check what happens when calling setlanguage flags from a "POST-access-only" page like private files - DONE all is OK
 
 ** FUTUR ENHANCEMENTS **
 
@@ -150,8 +149,6 @@ CHECK THAT NO PB WHEN GAME PAUSED, FOR PERIODIC PROCESSING !!!
 
 
 Add periodic retrieval of chatters in chat !! DONE
-
-TODO - check that no periodic task fails while game paused !!
 
 
 Add security to djinn chat - check authorizations - NO, knowing their NAME is the best protection!
