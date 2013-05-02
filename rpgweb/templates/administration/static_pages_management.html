@@ -1,15 +1,16 @@
 {% extends "base_two_columns.html" %}
 
-{% load i18n helpers kwacros %}  
+{% load i18n helpers kwacros %}
 {% loadkwacros "metalradiance_kwacros.html" %}
 
 
+{# ATM ALL STATIC PAGES ARE MUTABLE #}
 
 {% block sidebar %}
 
 {% usekwacro side_panel_start frame_class="mini_frame float_left" decos="2" %}
     <h2>{% trans "Entries" %}</h2>
-    
+
     <div class="beige_paper">
     <ul>
         {% for identifier, form in forms %}
@@ -17,7 +18,7 @@
         {% endfor %}
     </ul>
     </div>
-    
+
 {% usekwacro side_panel_end %}
 
 {% endblock %}
@@ -25,19 +26,19 @@
 
 
 
-{% block content %}  
+{% block content %}
 
     {% for identifier, form in forms %}
     <div class="scroll_realistic_thin_ends center">
-        
+
         {% usekwacro deletion_button identifier %}
-        
+
         <a name="entry-{{ identifier }}"><h2>{{ identifier|default:_("NEW ENTRY") }}</h2></a>
         <form id="update_form" action="" method="post">
             {{ form.as_p }}
             <input type="submit" name="submit" value="{% trans "Submit" %}"/>
         </form>
-        
+
     </div>
     {% endfor %}
 

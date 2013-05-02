@@ -1783,7 +1783,7 @@ class TextMessagingExternalContacts(BaseDataManager):
                 if details is None:
                     details = PersistentDict()
                     self._table[identifier] = details
-                details.setdefault("immutable", True)
+                details.setdefault("immutable", True) # contacts that are necessary to gameplay CANNOT be edited/deleted
                 details.setdefault("avatar", None)
                 details.setdefault("description", None)
                 details.setdefault("access_tokens", None) # PUBLIC contact

@@ -418,16 +418,17 @@ messaging:
         judicators@acharis.com:
             avatar: "here.jpg"
             description: "the terrible judicators"
+            access_tokens: ["guy1", "guy2"]
 
         judicators1@acharis.com: {}
 
         judicators2@acharis.com: {}
 
-        othercontact@anything.fr: {}
+        othercontact@anything.fr: {immutable: False}
 
         master@administration.com: {}
 
-        everyone@chars.com : {}
+        everyone@chars.com: {immutable: True}
 
         "auction-list@pangea.com": {immutable: True}
 

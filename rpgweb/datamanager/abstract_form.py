@@ -7,6 +7,7 @@ import json
 
 
 from rpgweb.common import *
+from django.core.exceptions import ValidationError
 
 
 
@@ -84,9 +85,10 @@ class AbstractGameForm(forms.Form):
 
 class DataTableForm(AbstractGameForm):
 
-    previous_identifier = forms.SlugField(label=_lazy("Initial identifier"), widget=forms.HiddenInput(), required=False)
-    identifier = forms.SlugField(label=_lazy("Identifier"), required=True)
+    previous_identifier = forms.CharField(label=_lazy("Initial identifier"), widget=forms.HiddenInput(), required=False)
+    identifier = forms.CharField(label=_lazy("Identifier"), required=True)
 
+    BAD_ID_MSG = _lazy("Identifier must contain no space")
 
     def __init__(self, datamanager, initial=None, **kwargs):
 
@@ -95,5 +97,21 @@ class DataTableForm(AbstractGameForm):
             initial["previous_identifier"] = initial["identifier"]
 
         super(DataTableForm, self).__init__(datamanager, initial=initial, **kwargs)
+
+
+    def clean_previous_identifier(self):
+        data = self.cleaned_data['previous_identifier']
+        if " " in data:
+            raise ValidationError(self.BAD_ID_MSG)
+        return data
+
+    def clean_identifier(self):
+        data = self.cleaned_data['identifier']
+        if " " in data:
+            raise ValidationError(self.BAD_ID_MSG)
+        return data
+
+
+
 
 

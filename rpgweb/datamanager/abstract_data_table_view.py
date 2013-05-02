@@ -6,6 +6,8 @@ from rpgweb.common import *
 
 from .abstract_form import AbstractGameForm
 from .abstract_game_view import AbstractGameView
+from .datamanager_tools import readonly_method
+
 
 
 class AbstractDataTableManagement(AbstractGameView):
@@ -71,10 +73,12 @@ class AbstractDataTableManagement(AbstractGameView):
         return _("Entry %r properly deleted") % deleted_item
 
 
+    @readonly_method
     def get_template_vars(self, previous_form_data=None):
 
         table = self.get_data_table_instance()
-        mutable_table_items = table.get_all_data(as_sorted_list=True, mutable_only=True) # MUTABLE ONLY - very important
+        mutable_table_items = table.get_all_data(as_sorted_list=True, mutability=True)
+        immutable_table_items = table.get_all_data(as_sorted_list=True, mutability=False)
 
         concerned_identifier = None
         if previous_form_data and not previous_form_data.action_successful:
@@ -90,6 +94,8 @@ class AbstractDataTableManagement(AbstractGameView):
             new_form = self.instantiate_table_form(table_item=transfered_table_item, previous_form_data=transfered_previous_form_data)
             forms.append((table_key, new_form))
 
-        return dict(page_title=_("TO DEFINE FIXME"),
+        return dict(immutable_table_items=immutable_table_items,
                     forms=forms)
+
+
 

@@ -1470,11 +1470,20 @@ class TestDatamanager(BaseGameTestCase):
             # mutability control
             immutable_entry = "auction-list@pangea.com"
             assert immutable_entry in container.get_all_data()
-            assert immutable_entry not in container.get_all_data(mutable_only=True)
-
+            assert immutable_entry in container.get_all_data(mutability=False)
+            assert immutable_entry not in container.get_all_data(mutability=True)
             assert immutable_entry in [k for k, v in container.get_all_data(as_sorted_list=True)]
-            assert immutable_entry not in [k for k, v in container.get_all_data(as_sorted_list=True, mutable_only=True)]
+            assert immutable_entry in [k for k, v in container.get_all_data(as_sorted_list=True, mutability=False)]
+            assert immutable_entry not in [k for k, v in container.get_all_data(as_sorted_list=True, mutability=True)]
 
+            mutable_entry = "othercontact@anything.fr"
+            assert mutable_entry in container.get_all_data()
+            assert mutable_entry in container.get_all_data(mutability=True)
+            assert mutable_entry not in container.get_all_data(mutability=False)
+            assert mutable_entry in [k for k, v in container.get_all_data(as_sorted_list=True)]
+            assert mutable_entry not in [k for k, v in container.get_all_data(as_sorted_list=True, mutability=False)]
+            assert mutable_entry in [k for k, v in container.get_all_data(as_sorted_list=True, mutability=True)]
+            assert mutable_entry not in [k for k, v in container.get_all_data(as_sorted_list=True, mutability=False)]
 
 
     '''        

@@ -28,9 +28,6 @@ class GlobalContactForm(DataTableForm):
         assert not self.fields["access_tokens"].choices
         self.fields["access_tokens"].choices = datamanager.build_select_choices_from_usernames(datamanager.get_character_usernames())
 
-
-
-
     def get_normalized_values(self):
         values = super(GlobalContactForm, self).get_normalized_values()
         if values["is_public"]:
@@ -38,7 +35,8 @@ class GlobalContactForm(DataTableForm):
         del values["is_public"]
         return values
 
-### TODO - DEAL WITH IMMUTABLES ???
+
+
 
 @register_view
 class GlobalContactsManagement(AbstractDataTableManagement):
