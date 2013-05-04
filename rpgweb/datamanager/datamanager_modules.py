@@ -9,6 +9,7 @@ from .datamanager_tools import *
 from .datamanager_user import GameUser
 from .datamanager_core import BaseDataManager
 from .data_table_manager import *
+from persistent.list import PersistentList
 
 PLACEHOLDER = object()
 
@@ -2300,7 +2301,7 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
         Results are returned in the same order as input.
         """
         results = []
-        assert isinstance(email_contacts, list)
+        assert isinstance(email_contacts, (PersistentList, list, tuple))
         character_emails = set(self.get_character_emails())
         for email in email_contacts:
             if email in character_emails:

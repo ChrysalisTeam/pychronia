@@ -327,13 +327,16 @@ def compose_message(request, template_name='messaging/compose.html'):
         form = MessageComposeForm(request)
 
     user_contacts = request.datamanager.get_user_contacts()
+    user_contacts.sort(key=lambda email: tuple(reversed(email.split("@")))) # sort by domain then username
+    contacts_display = request.datamanager.get_contacts_display_properties(user_contacts) # DICT FIELDS: address avatar description
 
     return render(request,
                   template_name,
                     {
                      'page_title': _("Compose Message"),
                      'message_form': form,
-                     'mode': "compose"
+                     'mode': "compose", # TODO DELETE THIS
+                     'contacts_display': contacts_display,
                     })
 
 

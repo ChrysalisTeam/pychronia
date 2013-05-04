@@ -1,7 +1,7 @@
 ﻿{% extends "messaging/base.html" %}
 
-{% load sekizai_tags i18n helpers %}
-
+{% load sekizai_tags i18n helpers kwacros %}
+{% loadkwacros "metalradiance_kwacros.html" %}
 
 
 {% block sekizai_calls %}
@@ -48,6 +48,19 @@ function preview_message() {
 	}
 }
 
+
+function add_recipient(address) {
+	var current = $("#id_default_recipients").select2("data");
+	var newentry = {id: address, text: address};
+	if ($.inArray(newentry, current) == -1) {
+		current.push(newentry);
+		$("#id_default_recipients").select2("data", current);
+	};
+	//console.log(current);
+}
+
+
+
 {% endaddtoblock %}
 
 {% addtoblock "onload_js" %}
@@ -89,6 +102,30 @@ $("#id_default_body").markItUp(mySettings); // mySettings comes from /markitup/s
 
 
 {% endblock %}
+
+
+
+
+
+
+
+
+
+{% block sidebar %}
+
+{% usekwacro side_panel_start frame_class="mini_frame float_left" decos="3" %}
+
+    <ul class="minimenu">
+    	{% for contact in contacts_display %}
+        <li {% if contact.description %}title="{{ contact.description }}"{% endif %} onclick="add_recipient('{{ contact.address|escapejs }}');">{{ contact.address }}</li>
+        {% endfor %}
+    </ul>
+
+{% usekwacro side_panel_end %}
+
+{% endblock %}
+<br />
+
 
 
 
