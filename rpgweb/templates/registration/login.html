@@ -1,35 +1,35 @@
 {% extends "base_one_column.html" %}
 
-{% load i18n helpers %}  
+{% load i18n helpers %}
 
-{% block content %}  
+{% block content %}
 
     <div class="scroll_yellow_flat center" style="width: 400px">
-    
-        <form action="{% game_view_url "rpgweb.views.login" %}" method="post" autocomplete="off">
+
+        <form action="{% game_view_url "rpgweb.views.login" %}?next={{ next_url|urlencode }}" method="post" autocomplete="off">
         <table class="center">
-        
+
         {{ login_form.as_table }}
         <tr>
-        
+
             <td>
                 <br/>
                 <input type="submit" id="login" name="login" value="{% trans "Log Me In !" %}" />
             </td>
-            
+
             <td>
                 <br/>
                 <input type="submit" name="password_forgotten" value="{% trans "Forgot password ?" %}" />
             </td>
-        
+
         </tr>
         </table>
         </form>
-        
+
         <script type="text/javascript">
             $("#login").focus();
         </script>
-        
+
     </div>
 
 

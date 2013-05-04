@@ -14,18 +14,19 @@ from .abstract_form import AbstractGameForm, UninstantiableFormError
 from .datamanager_tools import transaction_watcher, readonly_method
 from django.forms import Form
 from django.utils.functional import Promise
+import urllib
 
 
 
 @decorator
-def transform_usage_error(caller, self, *args, **kwargs):
+def transform_usage_error(caller, self, request, *args, **kwargs):
     """
     Can be used for both html and ajax requests, so only 'error' HTTP codes should be returned
     if an exception is encountered.
     """
     try:
 
-        return caller(self, *args, **kwargs)
+        return caller(self, request, *args, **kwargs)
 
     except AccessDeniedError, e:
 
@@ -39,7 +40,9 @@ def transform_usage_error(caller, self, *args, **kwargs):
             if isinstance(e, AuthenticationRequiredError):
                 # uses HTTP code for TEMPORARY redirection
                 self.datamanager.user.add_error(_("Access denied to page %s") % self.NAME)
-                return HttpResponseRedirect(reverse("rpgweb.views.login", kwargs=dict(game_instance_id=self.datamanager.game_instance_id)))
+                url = reverse("rpgweb.views.login", kwargs=dict(game_instance_id=self.datamanager.game_instance_id))
+                qs = urllib.urlencode(dict(next=request.build_absolute_uri()))
+                return HttpResponseRedirect("%s?%s" % (url, qs))
             else:
                 # even permission errors are treated like base class AccessDeniedError ATM
                 return HttpResponseForbidden(_("Access denied")) # TODO FIXME - provide a proper template and message !!
@@ -317,7 +320,7 @@ class AbstractGameView(object):
                     return False
                     # in any other case, we're good
         return True
-    
+
     @classmethod
     def _common_instantiate_form(cls,
                                   new_action_name, # id of the form to be potentially instantiated
@@ -433,7 +436,7 @@ class AbstractGameView(object):
         if not self.is_action_permitted_for_user(new_action_name=action_name, action_registry=self.GAME_ACTIONS, user=self.datamanager.user):
             raise AbnormalUsageError(_("Forbidden action %s called by unauthorized user") % action_name) # it means we improperly exposed form/widget to call this action
         return self._execute_game_action_callback(action_name=action_name, unfiltered_params=unfiltered_params)
-        
+
 
 
     def _try_processing_formless_game_action(self, data):

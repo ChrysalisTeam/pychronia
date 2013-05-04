@@ -9,7 +9,7 @@ FEATURES
 - Add captcha to some special static pages - WHICH ??
 - add "ALL USERS" group email and "tiers de confiance"
 - enrich choices of forms fields -> djangoselect2
-- add next argument to login page !!!!
+
 - add special logger, carrying the player name and gamer instance id !
 - add standard 404 and 500 templates, + custom 403 in latest django etc.
 - renamed webradio-related methods, that are a mess
@@ -116,6 +116,9 @@ TASKS DONE
 - make wiretapping and agent hiring per-player DONE
 - ajouter aide déroulante dans chaque section DONE
 - refaire carte en découpant mieux pays DONE
+- add "next" (url) argument to login page
+
+
 
 
 FUTUR ENHANCEMENTS

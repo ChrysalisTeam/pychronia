@@ -10,11 +10,11 @@ from rpgweb import forms
 from django import forms as django_forms
 
 
- 
+
 class FriendshipMinDurationForm(AbstractGameForm):
-    
+
     duration_mn = django_forms.IntegerField(label=_lazy("Set minimum friendship duration in minutes"), max_value=60 * 24 * 30, min_value=0, required=True)
-    
+
     def __init__(self, datamanager, *args, **kwargs):
         super(FriendshipMinDurationForm, self).__init__(datamanager, *args, **kwargs)
         self.fields['duration_mn'].initial = datamanager.get_global_parameter("friendship_minimum_duration_mn")
@@ -26,6 +26,7 @@ def login(request, template_name='registration/login.html'):
 
     form = None
     user = request.datamanager.user
+    next_url = request.REQUEST.get("next")
 
     if request.method == "POST":
         if not request.session.test_cookie_worked():
@@ -44,7 +45,11 @@ def login(request, template_name='registration/login.html'):
             else:  # normal authentication
                 with action_failure_handler(request, _("You've been successfully logged in.")):  # message won't be seen because of redirect...
                     try_authenticating_with_credentials(request, username, password)
-                    return HttpResponseRedirect(reverse("rpgweb-homepage", kwargs=dict(game_instance_id=request.datamanager.game_instance_id)))
+                    if next_url:
+                        _target_url = next_url
+                    else:
+                        _target_url = reverse("rpgweb-homepage", kwargs=dict(game_instance_id=request.datamanager.game_instance_id))
+                    return HttpResponseRedirect(_target_url) # handy
 
     else:
         request.session.set_test_cookie()
@@ -54,7 +59,8 @@ def login(request, template_name='registration/login.html'):
                   template_name,
                     {
                      'page_title': _("User Authentication"),
-                     'login_form': form
+                     'login_form': form,
+                     'next_url': next_url,
                     })
 
 
