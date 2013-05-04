@@ -44,6 +44,7 @@ class RunicTranslationAbility(AbstractAbility):
     REQUIRES_CHARACTER_PERMISSION = False
     ALWAYS_ACTIVATED = False
 
+    HAS_DEDICATED_EMAIL = True
 
     def get_template_vars(self, previous_form_data=None):
 
@@ -180,7 +181,7 @@ class RunicTranslationAbility(AbstractAbility):
 
 
         local_email = self.get_character_email()
-        remote_email = "translator-robot@hightech.com"  # dummy domain too
+        remote_email = self.dedicated_email
 
         # request email, to allow interception
 

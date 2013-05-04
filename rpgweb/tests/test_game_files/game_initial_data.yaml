@@ -51,6 +51,7 @@ abilities:
 
     runic_translation:
         settings:
+            dedicated_email: "translator-robot@hightech.com"
             result_delay: [4, 6] # minutes
             random_translation_words: >
                  monkey apocalypse blood sun spear shelter wrath goat son uncle priest drugs moon fire water salt
@@ -431,6 +432,9 @@ messaging:
         everyone@chars.com: {immutable: True}
 
         "auction-list@pangea.com": {immutable: True}
+
+        "translator-robot@hightech.com": {}
+
 
 
     messages_dispatched:  #-> list of messages processed

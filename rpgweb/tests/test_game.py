@@ -1677,7 +1677,7 @@ class TestDatamanager(BaseGameTestCase):
         self.assertEqual(len(self.dm.get_all_dispatched_messages()), 6)
 
         res = self.dm.get_user_related_messages(self.dm.master_login)
-        pprint.pprint(res)
+        #pprint.pprint(res)
         self.assertEqual(len(res), 3) # secret services masslavia + wrong newtorker email address + dummy-robot
 
         expected_notifications = {'guy2': "new_messages_2", 'guy3': "new_messages_1", 'guy1': 'info_spots_1'} # guy1 because of wiretapping, not guy4 because was only a sender
@@ -1760,6 +1760,24 @@ class TestDatamanager(BaseGameTestCase):
         self.dm.set_message_read_state(MASTER, msg_id2, False)
         self.assertFalse(self.dm.get_all_dispatched_messages()[3]["has_read"])
         self.assertEqual(self.dm.get_unread_messages_count(self.dm.get_global_parameter("master_login")), 2)
+
+
+
+    def test_messaging_address_restrictions(self):
+
+        target = "judicators@acharis.com"
+        assert self.dm.global_contacts[target]["access_tokens"] == ["guy1", "guy2"]
+
+        if random.choice((True, False)):
+            self._set_user("guy1") # WITHOUT IMPACT HERE
+
+        self.dm.post_message("guy1@pangea.com", [target], "hhh", "hello") # allowed
+        self.dm.post_message("othercontact@anything.fr", [target], "hhh", "hello") # allowed
+        self.dm.post_message(target, [target], "hhh", "hello") # allowed
+
+        with pytest.raises(UsageError):
+            self.dm.post_message("guy3@pangea.com", [target], "hhaah", "hssello") # NOT allowed, because character AND not in access tokens
+
 
 
     def test_wiretapping_methods(self):

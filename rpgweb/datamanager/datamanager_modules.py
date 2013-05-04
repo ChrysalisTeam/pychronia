@@ -1519,6 +1519,9 @@ class TextMessagingCore(BaseDataManager):
     def _build_new_message(self, sender_email, recipient_emails, subject, body, attachment=None,
                            date_or_delay_mn=None, is_read=False, is_certified=False,
                            parent_id=None, **kwargs):
+        """
+        TODO - is_certified is unused ATM.
+        """
         # TOP LEVEL HERE - no parent call #
         assert not hasattr(super(TextMessagingCore, self), "_build_new_message")
 
@@ -1823,6 +1826,13 @@ class TextMessagingExternalContacts(BaseDataManager):
 
     @transaction_watcher
     def grant_private_contact_access_to_character(self, username=CURRENT_USER, contact_id=None, avatar=None, description=None):
+        """
+        Contact MUST exist, and be a "restricted access" contact.
+        
+        Duplicate grants do not raise errors.
+        
+        UNUSED ATM
+        """
         username = self._resolve_username(username)
         assert contact_id and username in self.get_character_usernames()
         if contact_id not in self.global_contacts:
@@ -1834,12 +1844,17 @@ class TextMessagingExternalContacts(BaseDataManager):
             if data["access_tokens"] is None:
                 pass # let PUBLIC access remain as is
             elif username not in data["access_token"]:
-                data["access_tokens"].append(username) # will fail if it was a public contact, i.e "None"
+                data["access_tokens"].append(username)
             else:
                 pass # swallow "access already granted" error
 
     @transaction_watcher
     def revoke_private_contact_access_from_character(self, username=CURRENT_USER, contact_id=None):
+        """
+        Contact MUST exist, and be a "restricted access" contact.
+        
+        UNUSED ATM
+        """
         assert contact_id
         if contact_id in self.global_contacts:
             data = self.global_contacts[contact_id]

@@ -51,19 +51,27 @@ for _base in AbstractAbilityBases:
 class AbstractAbility(AbstractAbilityBasesAdapter):
 
     ### Uses AbstractAbilityBases metaclass ###
-    ### Inherites from both action middlewares and AbstractGameView ###
+    ### Inherits from action middlewares and AbstractGameView ###
 
     # NOT ATM - TITLE = None # menu title, use lazy gettext when setting
+
+
+    HAS_DEDICATED_EMAIL = False # set it to True to allow the use/check of self.dedicated_email
+
 
     def __init__(self, request, *args, **kwargs):
         super(AbstractAbility, self,).__init__(request, *args, **kwargs)
         self._ability_data = weakref.ref(self.datamanager.get_ability_data(self.NAME))
 
-
     @property
     def datamanager(self):
         return self # TRICK - abilities behaves as extensions of the datamanager!!
 
+    @property
+    def dedicated_email(self):
+        if not self.HAS_DEDICATED_EMAIL:
+            self.logger.critical("Wrong access to dedicated_email in page %s", self.NAME)
+        return self.get_ability_parameter("dedicated_email")
 
     def _execute_game_action_with_middlewares(self, action_name, method, *args, **kwargs):
         assert "_test_" in action_name or method.__name__ == self.GAME_ACTIONS[action_name]["callback"], (action_name, method) # only in tests it could be false
@@ -204,6 +212,12 @@ class AbstractAbility(AbstractAbilityBasesAdapter):
             for name, value in self.ability_data["data"].items():
                 assert name in available_logins
                 assert isinstance(value, collections.Mapping)
+
+        if self.HAS_DEDICATED_EMAIL:
+            email = self.dedicated_email
+            utilities.check_is_email(email)
+            contact = self.datamanager.global_contacts[email]
+            assert contact["immutable"] # else game master might break all
 
         self._check_action_middleware_data_sanity(strict=strict)
         self._check_data_sanity(strict=strict)
