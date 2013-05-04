@@ -50,10 +50,16 @@ web_game_urlpatterns = patterns('rpgweb.views',
     url(r'^item3dview/(?P<item>.*)/$', 'item_3d_view'), # Beware: slideshow URLs must not contain underscores, else 3D images are flashing !
 
 
-    url(r'^webradio_popup/$', 'webradio_popup'),
-    url(r'^webradio/$', 'listen_to_webradio'),
-    url(r'^webradio_conf/$', 'get_radio_xml_conf'),
-    url(r'^webradio_applet/$', 'listen_to_audio_messages'),
+
+    url(r'^ajax_get_next_audio_message/$', 'ajax_get_next_audio_message'),
+    url(r'^ajax_notify_audio_success/$', 'ajax_notify_audio_message_finished'),
+
+    url(r'^personal_webradio_popup/$', 'personal_webradio_popup'),
+    url(r'^personal_webradio_page/$', 'personal_webradio_page'),
+    url(r'^webradio_xml_conf/$', 'get_radio_xml_conf'),
+    url(r'^public_webradio/$', 'public_webradio'),
+
+
 
     url(r'^view_sales/$', 'view_sales'),
     url(r'^view_characters/$', 'view_characters'),
@@ -70,7 +76,6 @@ web_game_urlpatterns = patterns('rpgweb.views',
     url(r'^static_pages_management/$', 'static_pages_management'),
     url(r'^global_contacts_management/$', 'global_contacts_management'),
     url(r'^radio_spots_editing/$', 'radio_spots_editing'),
-
 
 
     url(r'^chatroom/$', 'chatroom'),
@@ -114,8 +119,6 @@ web_game_urlpatterns = patterns('rpgweb.views',
     url(r'^messages/view_single_message/(?P<msg_id>\w+)/$', 'view_single_message'),
     url(r'^messages/ajax_permanently_delete_message/$', 'ajax_permanently_delete_message'),
 
-    url(r'^ajax_get_next_audio_message/$', 'ajax_get_next_audio_message'),
-    url(r'^ajax_notify_audio_success/$', 'ajax_notify_audio_message_finished'),
 
 
     url(r'^ability/house_locking/$', 'house_locking'),

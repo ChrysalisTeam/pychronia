@@ -163,7 +163,7 @@ def ajax_get_next_audio_message(request):
 
 
 @register_view(access=UserAccess.anonymous, always_activated=True, title=_lazy("Pangea Webradio"))
-def listen_to_webradio(request, template_name='info/web_radio_page.html'):
+def personal_webradio_page(request, template_name='info/web_radio_page.html'):
     return render(request,
                   template_name,
                     {
@@ -172,7 +172,7 @@ def listen_to_webradio(request, template_name='info/web_radio_page.html'):
 
 
 @register_view(access=UserAccess.anonymous, always_activated=True, title=_lazy("Webradio Popup"))
-def webradio_popup(request, template_name='info/web_radio_popup.html'):
+def personal_webradio_popup(request, template_name='info/web_radio_popup.html'):
     return render(request,
                   template_name)
 
@@ -199,9 +199,9 @@ def get_radio_xml_conf(request, template_name='info/web_radio_conf.xml'):
                        audio_titles=audio_titles))
 
 
-# FIXME CHANGE BAD NAMING OF THESE RADIO VIEWS
+
 @register_view(access=UserAccess.anonymous, always_activated=True, title=_lazy("Radio Station"))
-def listen_to_audio_messages(request, template_name='info/web_radio_applet.html'):
+def public_webradio(request, template_name='info/web_radio_applet.html'):
 
     access_authorized = False
 

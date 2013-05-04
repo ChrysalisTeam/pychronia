@@ -103,8 +103,8 @@ def _generate_web_menu(request, menu_entry_generator):
                        (
                          menu_entry(_(u"Encyclopedia"), views.view_encyclopedia),
 
-                         menu_entry(_(u"Radio Applet"), views.listen_to_audio_messages, forced_visibility=(False if user.is_character else None)),
-                         menu_entry(_(u"Radio Player"), views.listen_to_webradio),
+                         menu_entry(_(u"Public Webradio"), views.public_webradio, forced_visibility=(False if user.is_character else None)),
+                         menu_entry(_(u"Personal Webradio"), views.personal_webradio_page),
 
                          menu_entry(_(u"__ENCRYPTED__"), views.encrypted_folder, view_kwargs=dict(folder="guy2_report")),
                          menu_entry(_(u"World Map"), views.view_world_map),

@@ -34,7 +34,7 @@ from .auction_views import (_build_display_data_from_viewer_settings, homepage, 
                             view_sales, auction_items_slideshow, personal_items_slideshow, item_3d_view, ajax_chat, chatroom)
 
 from .info_views import (instructions, view_encyclopedia,
-                         webradio_popup, listen_to_webradio, get_radio_xml_conf, listen_to_audio_messages,
+                         personal_webradio_popup, personal_webradio_page, get_radio_xml_conf, public_webradio,
                          ajax_get_next_audio_message, ajax_notify_audio_message_finished,
                          personal_folder, view_media, encrypted_folder, view_world_map)
 

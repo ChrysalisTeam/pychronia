@@ -3041,7 +3041,7 @@ class TestHttpRequests(BaseGameTestCase):
                         game_file_url("encrypted/guy2_report/evans/orb.jpg"): None,
                         ROOT_GAME_URL + "/messages/view_single_message/instructions_bewitcher/": None,
                         ROOT_GAME_URL + "/secret_question/guy3/": dict(secret_answer="Fluffy", target_email="guy3@pangea.com"),
-                        ROOT_GAME_URL + "/webradio_applet/": dict(frequency=self.dm.get_global_parameter("pangea_radio_frequency")),
+                        ROOT_GAME_URL + "/public_webradio/": dict(frequency=self.dm.get_global_parameter("pangea_radio_frequency")),
                         reverse(views.view_help_page, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID, keyword="help-homepage")): None,
                         }
 

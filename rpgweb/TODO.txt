@@ -7,7 +7,7 @@ FEATURES
 ------------
 
 
-- renamed webradio-related methods, that are a mess
+
 
 
 
@@ -112,6 +112,9 @@ TASKS DONE
 - add "ALL USERS" group email
 - enrich choices of messaging forms fields (djangoselect2) DONE
 - add special logger, carrying in context the game instance id etc.
+- rename messy webradio-related django views DONE
+
+
 
 FUTUR ENHANCEMENTS
 --------------------------
