@@ -206,6 +206,15 @@ def string_similarity(first, second):
     return distance_matrix[first_length - 1][second_length - 1]
 
 
+def remove_duplicates(seq):
+    res = []
+    seen = set()
+    for item in seq:
+        if item not in seen:
+            seen.add(item)
+            res.append(item)
+    return res
+
 def sanitize_query_dict(query_dict):
     """
     We remove terminal '[]' in request data keys and replace enforce their value to be a list

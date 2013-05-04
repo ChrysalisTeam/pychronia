@@ -278,6 +278,7 @@ class AbstractGameView(object):
         user = self.datamanager.user
         if self.request.POST and not self.datamanager.is_game_writable() and not self.ALWAYS_ALLOW_POST:
             self.request.POST.clear() # thanks to our middleware that made it mutable...
+            self.request.method = "GET" # whooo ugly
             user.add_error(_("You are not allowed to submit changes to that page"))
         assert (user.has_write_access and (user.is_master or self.datamanager.is_game_started())) or self.ALWAYS_ALLOW_POST or not self.request.POST
 

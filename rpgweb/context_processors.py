@@ -3,7 +3,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from rpgweb.common import reverse, config
-from rpgweb import menus as menus_module
+from rpgweb import menus as menus_module, utilities
 from rpgweb.authentication import IMPERSONATION_TARGET_POST_VARIABLE, IMPERSONATION_WRITABILITY_POST_VARIABLE # TODO USE WRITABILITY
 from django.contrib.messages.api import get_messages
 from rpgweb.views.admin_views.webradio_management_mod import WebradioManagement
@@ -38,12 +38,11 @@ def rpgweb_template_context(request):
                                           impersonation_writability_post_variable=IMPERSONATION_WRITABILITY_POST_VARIABLE)
 
         notifications = get_messages(request) # lazy 'messages' context variable.
-        notifications = list(set(notifications)) # order doesn't matter, and we don't want duplicates!
+        notifications = utilities.remove_duplicates(notifications) # order doesn't matter, and we don't want duplicates!
         notification_type = "mixed" # DEFAULT
         levels = list(set(msg.tags for msg in notifications))
         if len(levels) == 1:
             notification_type = levels[0]
-
 
         # we only check the 2 first levels of menu for "novelty" menu entries
         signal_new_menu_entries = False

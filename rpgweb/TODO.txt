@@ -6,36 +6,28 @@ TODO LIST CHRYSALIS
 FEATURES
 ------------
 
-- Add captcha to some special static pages - WHICH ??
-- add "ALL USERS" group email and "tiers de confiance"
-- enrich choices of forms fields -> djangoselect2
-
 - add special logger, carrying the player name and gamer instance id !
-- add standard 404 and 500 templates, + custom 403 in latest django etc.
 - renamed webradio-related methods, that are a mess
-- remove test constructions in utilities.AIML
-- TODO - FIX secure door locking in paused game mode !!!
-- ajouter <instructions> possibilité échange objets archéologiques et lots entiers de gemmes (gamemamster must be aware of that)!
 
 
 
 SCRIPT
 ----------
 
+- Add the captcha system to some special static pages - WHICH ??
 - compléter les djinns, valeurs par défaut si pas de réponses surtout !
 
 Faire page d'introduction
-- situation de l'univers
-- situation géopolitique
-- bestaire des ennemis ?
+	- situation de l'univers
+	- situation géopolitique
+	- bestaire des ennemis ?
 
 - ajouter des details cruciaux à TOUTES runes !
 - clarifier règles absolues : pas de vol d'argent, pas de triche, emails uniquement valables à l'intérieur du site
-
 - add description of partners in instruction page !
 - ajouter instructions ou systèmes pour éviter abus de mercenaires ?
 - LG donne reductions aux gens, qu'ils peuvent perdre s'ils sont démasqués
-
+- ajouter <instructions> possibilité échange objets archéologiques et lots entiers de gemmes (gamemamster must be aware of that)!
 
 
 
@@ -57,7 +49,7 @@ NEEDS COSMETICS
 - interface to edit radio spots WIP
 - interface to edit external contacts WIP
 - global page styles and messages for WIP
-
+- add standard 404 and 500 templates, + custom 403 in latest django etc.
 
 
 TASKS DONE
@@ -117,8 +109,8 @@ TASKS DONE
 - ajouter aide déroulante dans chaque section DONE
 - refaire carte en découpant mieux pays DONE
 - add "next" (url) argument to login page
-
-
+- add "ALL USERS" group email
+- enrich choices of messaging forms fields (djangoselect2) DONE
 
 
 FUTUR ENHANCEMENTS
