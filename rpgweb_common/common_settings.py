@@ -2,6 +2,8 @@
 
 import sys, os, tempfile, random, logging
 
+import rpgweb_common.logging_config
+
 ugettext = lambda s: s # dummy placeholder for makemessages
 
 try:

@@ -6,7 +6,7 @@ TODO LIST CHRYSALIS
 FEATURES
 ------------
 
-- add special logger, carrying the player name and gamer instance id !
+
 - renamed webradio-related methods, that are a mess
 
 
@@ -111,7 +111,7 @@ TASKS DONE
 - add "next" (url) argument to login page
 - add "ALL USERS" group email
 - enrich choices of messaging forms fields (djangoselect2) DONE
-
+- add special logger, carrying in context the game instance id etc.
 
 FUTUR ENHANCEMENTS
 --------------------------

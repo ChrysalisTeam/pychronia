@@ -63,7 +63,8 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
 
         self.game_instance_id = game_instance_id
 
-        self.logger = logging.getLogger("rpgweb.%s" % game_instance_id) #FIXME
+        self._inner_logger = logging.getLogger("rpgweb") #FIXME
+        self.logger = logging.LoggerAdapter(self._inner_logger, dict(game_instance_id=game_instance_id))
 
         self._request = weakref.ref(request) if request else None # if None, user notifications won't work
 

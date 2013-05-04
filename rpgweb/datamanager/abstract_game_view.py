@@ -29,31 +29,26 @@ def transform_usage_error(caller, self, request, *args, **kwargs):
         return caller(self, request, *args, **kwargs)
 
     except AccessDeniedError, e:
-
-            # TODO - test all these pages, in particular impersonation case !!!
-
-            if self.datamanager.user.is_impersonation:
-                # Will mainly happen when we switch between two impersonations with different access rights, on a restricted page
-                self.datamanager.user.add_warning(_("Currently impersonated user can't access view %s") % self.NAME)
-                return HttpResponseRedirect(reverse("rpgweb.views.homepage", kwargs=dict(game_instance_id=self.datamanager.game_instance_id)))
-
-            if isinstance(e, AuthenticationRequiredError):
-                # uses HTTP code for TEMPORARY redirection
-                self.datamanager.user.add_error(_("Access denied to page %s") % self.NAME)
-                url = reverse("rpgweb.views.login", kwargs=dict(game_instance_id=self.datamanager.game_instance_id))
-                qs = urllib.urlencode(dict(next=request.build_absolute_uri()))
-                return HttpResponseRedirect("%s?%s" % (url, qs))
-            else:
-                # even permission errors are treated like base class AccessDeniedError ATM
-                return HttpResponseForbidden(_("Access denied")) # TODO FIXME - provide a proper template and message !!
+        dm = request.datamanager
+        if request.datamanager.user.is_impersonation:
+            # Will mainly happen when we switch between two impersonations with different access rights, on a restricted page
+            dm.user.add_warning(_("Currently impersonated user can't access view %s") % self.NAME)
+            return HttpResponseRedirect(reverse("rpgweb.views.homepage", kwargs=dict(game_instance_id=dm.game_instance_id)))
+        else:
+            # uses HTTP code for TEMPORARY redirection
+            dm.user.add_error(_("Access denied to page %s") % self.NAME)
+            dm.logger.warning("Access denied to page %s" % self.NAME, exc_info=True)
+            url = reverse("rpgweb.views.login", kwargs=dict(game_instance_id=dm.game_instance_id))
+            qs = urllib.urlencode(dict(next=request.build_absolute_uri()))
+            return HttpResponseRedirect("%s?%s" % (url, qs))
+        assert False
 
     except GameError, e:
-        #print("|||||||||||||||||||", repr(e))
-        traceback.print_exc()
+        dm.logger.critical("Unexpected GameError in %s" % self.NAME, exc_info=True)
         return HttpResponseBadRequest(repr(e))
 
     except Exception:
-        raise # we let 500 handler take are of all other (very abnormal) exceptions (unhandled UsageError or others)
+        raise # we let 500 handler take are of all other (very abnormal) exceptions
 
 
 
