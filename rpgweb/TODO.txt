@@ -1,23 +1,57 @@
 
-{% comment %} !! Remember that these div ids can be used as url anchors : "/my/url/#1-fa4" ! {% endcomment %}
-
-** NEW **
+TODO LIST CHRYSALIS
+=========================
 
 
 FEATURES
+------------
 
 - Add captcha to some special static pages - WHICH ??
 - add "ALL USERS" group email and "tiers de confiance"
 - enrich choices of forms fields -> djangoselect2
+- add next argument to login page !!!!
+- add special logger, carrying the player name and gamer instance id !
+- add standard 404 and 500 templates, + custom 403 in latest django etc.
+- renamed webradio-related methods, that are a mess
+- remove test constructions in utilities.AIML
+- TODO - FIX secure door locking in paused game mode !!!
+- ajouter <instructions> possibilité échange objets archéologiques et lots entiers de gemmes (gamemamster must be aware of that)!
 
 
-TESTS:
+
+SCRIPT
+----------
+
+- compléter les djinns, valeurs par défaut si pas de réponses surtout !
+
+Faire page d'introduction
+- situation de l'univers
+- situation géopolitique
+- bestaire des ennemis ?
+
+- ajouter des details cruciaux à TOUTES runes !
+- clarifier règles absolues : pas de vol d'argent, pas de triche, emails uniquement valables à l'intérieur du site
+
+- add description of partners in instruction page !
+- ajouter instructions ou systèmes pour éviter abus de mercenaires ?
+- LG donne reductions aux gens, qu'ils peuvent perdre s'ils sont démasqués
+
+
+
+
+TESTS
+----------
 
 - auto test all forms with also inspect.getsourcelines(object) (for UNINSTANTIABLEERROR) etc.
 - add tests for admin widget system, for misc. modules, for gameform instantiation, for world scan_form...
+- test template helpers
+- launch pychecker or pylint on each file of rpgweb package
+- check that no pb when game paused, for periodic processing
 
 
-** WIP, needs cosmetics **
+
+NEEDS COSMETICS
+-----------------
 
 - interface to edit static pages WIP
 - interface to edit radio spots WIP
@@ -25,7 +59,9 @@ TESTS:
 - global page styles and messages for WIP
 
 
-** DONE **
+
+TASKS DONE
+---------------
 
 - interactive world map DONE
 - drag&drop radio playlist management DONE
@@ -70,76 +106,50 @@ TESTS:
 - remove dumb escape() calls from $.get request arguments DONE
 - tweak access checking of gameviews, so that if impersonation we get no error message - USELESS, good as is
 - check what happens when calling setlanguage flags from a "POST-access-only" page like private files - DONE all is OK
+- make access error msgs persist until login page, when redirecting DONE
+- html injection dans chat.js ? NOPE it's OK !
+- add colors specific to each chatter + "system" chatter DONE
+- add critical logging for some cases where no usage error should be raised !! (eg wiretapping) DONE
+- add periodic retrieval of chatters in chat !! DONE
+- recode in simple html the door unlocker ! DONE
+- add better management of ajax errors (read/unread mails, oracle answers...) DONE
+- make wiretapping and agent hiring per-player DONE
+- ajouter aide déroulante dans chaque section DONE
+- refaire carte en découpant mieux pays DONE
 
-** FUTUR ENHANCEMENTS **
+
+FUTUR ENHANCEMENTS
+--------------------------
 
 - add RST summary to all forms, especially admin ones ??? not need right ATM
 - messaging templates filtering by taxonomy ?
+- allow accumulation of visibility reasons, to have both sender and recipient together in msg for same user?
+- idea of captcha: play with colors illusions!!
+- include timezone handling
+- use UsageError in all getters of datamanager instead of keyerror?
+- include tiny webradio widget in div with same color, and make it bigger, to avoid zoom/dezoom problems.
+- internationalize personal documents (all in yaml ??)
+- switch to small JALICE bot?
+- other items needing to be editable:
+	- items, gems & artefacts ?
+	- nightmare captcha ?
+- make better use of titles, of '#' anchors (with id or name of tags)...
 
-====================
 
 
-Later: allow accumulation of visibility reasons, to have both sender and recipient together in msg for same user!!!
-
-Idea of captcha: play with colors illusions!!
 
 ELITE RPG:
-eclectic
+eclectic <-------- BEST
 enchanting -> bewitching, captivating, enthralling, entrancing, fascinating
 enrapturing
 enlightening/edifying
 
 
-ADD THIS AFTER SECURING IT:
-class WebFactionFixes(object):
-    """Sets 'REMOTE_ADDR' based on 'HTTP_X_FORWARDED_FOR', if the latter is
-    set.
-
-    Based on http://djangosnippets.org/snippets/1706/
-    """
-    def process_request(self, request):
-        if 'HTTP_X_FORWARDED_FOR' in request.META:
-            ip = request.META['HTTP_X_FORWARDED_FOR'].split(",")[0].strip()
-            request.META['REMOTE_ADDR'] = ip
 
 
-ITEMS NEEDING TO BE EDITABLE
-- radios spots OK
-- globally registered contacts OK
-- encyclopedia articles OK
-- items, gems & artefacts ? not for v1
-- nightmare captcha ? not for v1
+Home Site Structure
+-------------------------
 
-
-@register_view(access=UserAccess.authenticated) # not always available, so beware!! TODO FIXME ensure it's not displayed if not available!
-def item_3d_view(request, item, template_name='utilities/item_3d_viewer.html'):
-
-ADD standard 404 and 500 templates, + custom 403 in latest django etc.
-
-Make access error msgs persist until login page, when redirecting !! OK
-
-Add next argument to login page !!!!
-
-ADD unittests for template helpers !!!
-
-BUG html injection dans chat.js ? NOPE it's OK !
-
-- include timezone handling NOT ATM
-
-Add colors specific to each chatter + "system" chatter
-Launch pychecker or pylint of each file of rpgweb package
-
-Add special logger, carrying the player name and gamer instance id !
-
-Add critical logging for some cases where no usageerror should be raised !! (eg wiretapping)  #OK DONE
-
-use usageError in all getters of datamanager instead of keyerror
-
-Include webradio widget in div with same color, and make it bigger, to avoid zoom/dezoom problems.
-
-CHECK THAT NO PB WHEN GAME PAUSED, FOR PERIODIC PROCESSING !!!
-
-* Main Site Structure *
 - intro
 - features
 - license
@@ -148,65 +158,22 @@ CHECK THAT NO PB WHEN GAME PAUSED, FOR PERIODIC PROCESSING !!!
 - livre d'or
 
 
-Add periodic retrieval of chatters in chat !! DONE
-
-
-Add security to djinn chat - check authorizations - NO, knowing their NAME is the best protection!
-
-Big problem - how to ensure javascript functions are well called periodically ??? with .ajaxError() reset ??
-
-Add thread-local variable to ensure no transaction is committed twice by transaction watcher !! OSEF
-
-Remove also test constructions in utilities.AIML
-
-TODO - FIX secure door locking in paused game mode !!!
-
-Ajouter <instructions> possibilité échange objets archéologiques et lots entiers de gemmes (gamemamster must be aware of that)!
-
-Print description of partners in instruction page !
 
 
 
-Some bots can require archéological objects too ! NOT ATM
-
-Les achariths doivent avoir choix de trahir leur camp en milieu de partie plutôt !
-
-Ajouter interactions entre joueurs, chantages etc.
-
-Ajouter aide déroulante dans chaque section DONE
-
-- ajouter des details cruciaux à TOUTES runes !
-
-- clarifier règles absolues : pas de vol d'argent, pas de triche, emails uniquement valables à l'intérieur du site
-
-- compléter les djinns, valeurs par défaut si pas de réponses surtout !
-
-- ajouter instructions ou systèmes pour éviter abus de mercenaires ?
-
-- automatiquement notifier autres camps s'ils chopent objets archéologiques ???
-
-- LG donne reductions aux gens, qu'ils peuvent perdre s'ils sont démasqués
-
-- refaire carte en découpant mieux pays
 
 
-Faire page d'introduction
-- situation de l'univers
-- situation géopolitique
-- bestaire des ennemis ?
 
 
-- internationalize personal documents (all in yaml ??)
 
-- refactor CSS stylesheets ? DONE
 
-- recode in simple html the door unlocker ! DONE
 
-- add better management of ajax errors (read/unread mails, oracle answers...) DONE
 
-- switch to small JALICE bot !
 
-- make wiretapping and agent hiring per-player or per-domain ?? not useful... DONE
+
+
+
+
 
 
 
