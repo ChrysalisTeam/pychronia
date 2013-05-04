@@ -292,7 +292,9 @@ def ajax_permanently_delete_message(request):
 def compose_message(request, template_name='messaging/compose.html'):
 
     user = request.datamanager.user
+    message_sent = False
     form = None
+
     if request.method == "POST":
         form = MessageComposeForm(request, data=request.POST)
         if form.is_valid():
@@ -319,7 +321,7 @@ def compose_message(request, template_name='messaging/compose.html'):
                 # sender_email and one of the recipient_emails can be the same email, we don't care !
                 request.datamanager.post_message(sender_email, recipient_emails, subject, body, attachment, date_or_delay_mn=delay_mn,
                                                  parent_id=parent_id, use_template=use_template)
-
+                message_sent = True
                 form = MessageComposeForm(request)  # new empty form
         else:
             user.add_error(_("Errors in message fields."))
@@ -337,6 +339,7 @@ def compose_message(request, template_name='messaging/compose.html'):
                      'message_form': form,
                      'mode': "compose", # TODO DELETE THIS
                      'contacts_display': contacts_display,
+                     'message_sent': message_sent, # to destroy saved content
                     })
 
 

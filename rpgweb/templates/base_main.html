@@ -53,6 +53,8 @@
     <script src="{{ STATIC_URL }}libs/p4wn/engine.js" type="text/javascript"></script>
     <script src="{{ STATIC_URL }}libs/p4wn/display.js" type="text/javascript"></script>
 
+
+
     {% import_django_select2_js %}
 
 {% endaddtoblock %}
@@ -62,6 +64,10 @@
 
 
 {% addtoblock "definition_js" %}
+
+    function return_to_home(){
+    	window.location.replace("{% game_view_url "rpgweb.views.homepage" %}");
+    }
 
     {% game_view_url "rpgweb.views.webradio_popup" as player_view_url %}
     function open_webradio_popup(){

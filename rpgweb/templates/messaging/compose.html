@@ -23,7 +23,6 @@
 {% endaddtoblock %}
 
 
-preview_message
 {% addtoblock "definition_js" %}
 
 function display_preview() {}
@@ -61,12 +60,46 @@ function add_recipient(address) {
 
 
 
+var message_content_id = 'saved_message';
+var mylocalStorage = $.localStorage();
+
+function clear_saved_content() {
+    mylocalStorage.removeItem(message_content_id);
+    //console.log("DESTROYING", message_content_id);
+}
+
+function restore_saved_content() {
+    var saved_content = mylocalStorage.getItem(message_content_id); // may be null
+	if (saved_content) {
+	    $("#id_default_body").val(saved_content);
+	    $.jnotify("{{ _("Previously saved content has been restored")|escapejs }}", "warning")
+    }
+}
+
+function save_current_content() {
+    var content = $("#id_default_body").val().trim();
+    if (content.length > 15) { // we don't save ridiculous texts
+    	mylocalStorage.setItem(message_content_id, content);
+        //console.log("SAVING", content);
+    }
+}
+
+
 {% endaddtoblock %}
 
 {% addtoblock "onload_js" %}
+
+
 mySettings.markupSet = mySettings["markupSet"].slice(0, -3); // remove code and preview system ATM
 mySettings.resizeHandle = false; // we can't remove autohandle of browser though
 $("#id_default_body").markItUp(mySettings); // mySettings comes from /markitup/sets/rest/set.js
+
+{% if message_sent %}
+    clear_saved_content();
+{% elif not message_form.is_bound %}
+	restore_saved_content();
+{% endif %}
+window.setInterval(save_current_content, 10*1000);
 
 
 /*
@@ -138,8 +171,11 @@ $("#id_default_body").markItUp(mySettings); // mySettings comes from /markitup/s
         <form action="{% game_view_url "rpgweb.views.compose_message" %}" method="post">
         {{ message_form.as_p }}
 
-        <p><input type="button" style="width: 200px" name="preview" value="{% trans "Preview" %}" onclick="preview_message(); return false;" /></p>
-        <p><input type="submit" style="width: 200px" name="send_message" value="{% trans "Send Message" %}" /></p>
+        <p><input type="button" style="width: 200px" name="preview" value="{% trans "Preview" %}" onclick="preview_message();" /></p>
+        <p><input type="submit" style="width: 200px" name="send_message" value="{% trans "Send Message" %}" onclick="save_current_content(); return true;" /></p>
+        <p><input type="button" style="width: 200px" name="cancel_message" value="{% trans "Cancel message" %}"
+        	onclick="clear_saved_content(); return_to_home();" /></p>
+
         </form>
 
 
