@@ -6,6 +6,7 @@ from django.conf import settings
 admin.autodiscover()
 
 urlpatterns = patterns('',
+    (r'^admin/', include(admin.site.urls)),
 
     #{'document_root': settings.MEDIA_ROOT, 'show_indexes': False}),
 

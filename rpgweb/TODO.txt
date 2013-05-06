@@ -132,8 +132,7 @@ FUTUR ENHANCEMENTS
 	- items, gems & artefacts ?
 	- nightmare captcha ?
 - make better use of titles, of '#' anchors (with id or name of tags)...
-
-
+- moteur typographique
 
 
 ELITE RPG:

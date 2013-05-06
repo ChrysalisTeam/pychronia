@@ -3,7 +3,11 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from django.conf.urls.defaults import *
+from django.contrib import admin
 from .utilities import config
+
+
+admin.autodiscover()
 
 
 
@@ -143,7 +147,7 @@ support_urlpatterns = patterns('',
     # USELESS - NO MEDIA ATM : (r'^%s(?P<path>.*)$' % config.MEDIA_URL[1:], 'django.views.static.serve', {'document_root': config.MEDIA_ROOT, 'show_indexes': False}),
     (r'^i18n/', include('django.conf.urls.i18n')), # to set language
     (r'^jsi18n/$', 'django.views.i18n.javascript_catalog', {'packages': ('rpgweb',)}),
-
+    (r'^admin/', include(admin.site.urls)),
 )
 
 

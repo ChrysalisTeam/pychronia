@@ -60,6 +60,15 @@ def try_authenticating_with_session(request):
     instance_key = instance_session_key(datamanager.game_instance_id)
     session_ticket = request.session.get(instance_key, None)
 
+
+    if config.DEBUG:
+        enforced_login = request.REQUEST.get("enforced_login")
+        if enforced_login:
+            session_ticket = dict(game_instance_id=datamanager.game_instance_id,
+                                  game_username=enforced_login,
+                                  impersonation_target=None,
+                                  impersonation_writability=None)
+
     # beware, here we distinguish between empty string (stop impersonation) and None (use current settings)
     if IMPERSONATION_TARGET_POST_VARIABLE in request.POST or IMPERSONATION_WRITABILITY_POST_VARIABLE in request.POST:
 

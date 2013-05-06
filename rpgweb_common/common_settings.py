@@ -21,6 +21,7 @@ print "ROOT PATH:", ROOT_PATH
 TEMP_DIR = tempfile.mkdtemp()
 UNICITY_STRING = str(random.randint(100000, 1000000000))
 
+SITE_ID = 1
 
 SESSION_COOKIE_DOMAIN = None # TO BE OVERRIDDEN - eg. ".mydomain.net"
 SESSION_COOKIE_NAME = 'sessionid' # DO NOT CHANGE - needed for phpbb integration
