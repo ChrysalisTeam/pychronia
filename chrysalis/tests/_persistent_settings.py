@@ -5,6 +5,8 @@ from ._test_settings import *
 DEBUG = True
 
 
+RESTRUCTUREDTEXT_FILTER_SETTINGS["raw_enabled"] = True
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',

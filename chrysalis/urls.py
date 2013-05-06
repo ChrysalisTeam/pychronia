@@ -16,8 +16,6 @@ urlpatterns = patterns('',
 
     #(r'^admin/filebrowser/', include('filebrowser.urls')), # TO BE PUT BEFORE "admin/" !!
     # Uncomment the next line to enable the admin:
-    (r'^admin/', include(admin.site.urls)),
-
 
     #url(r'^weblog/', include('zinnia.urls')), TOO MUCH
     url(r'^weblog/categories/', include('zinnia.urls.categories')),

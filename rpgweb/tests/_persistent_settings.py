@@ -13,6 +13,7 @@ DATABASES = {
 }
 ZODB_FILE = os.path.join(TEST_DIR, "gamedata.fs")
 
+ACTIVATE_AIML_BOTS = True
 
 
 def GAME_INITIAL_FIXTURE_SCRIPT(dm):
