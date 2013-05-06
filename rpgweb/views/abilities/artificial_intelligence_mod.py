@@ -293,7 +293,7 @@ class DjinnProxy(object):
             self.bot_kernel = kernel
 
         else:
-            self.logger.debug("AI bots not initialized to preserve memory")
+            logging.debug("AI bots not initialized to preserve memory")
 
             """
             print ("INITIALIZED SESSION  for %s : " % name, self.data["AI_bots"]["bot_properties"][name]["bot_sessions"])
