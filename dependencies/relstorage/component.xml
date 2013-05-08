@@ -1,0 +1,190 @@
+<?xml version="1.0"?>
+
+<!-- RelStorage configuration via ZConfig -->
+
+<component prefix="relstorage.config">
+
+  <import package="ZODB"/>
+  <abstracttype name="relstorage.adapter"/>
+
+  <sectiontype name="relstorage" implements="ZODB.storage"
+      datatype=".RelStorageFactory">
+    <section type="relstorage.adapter" name="*" attribute="adapter"/>
+    <key name="name" datatype="string" required="no"/>
+    <key name="read-only" datatype="boolean" default="false">
+      <description>See the RelStorage README.txt file.</description>
+    </key>
+    <key name="blob-dir" required="no">
+      <description>See the RelStorage README.txt file.</description>
+    </key>
+    <key name="shared-blob-dir" datatype="boolean" default="true">
+      <description>See the RelStorage README.txt file.</description>
+    </key>
+    <key name="blob-cache-size" datatype="byte-size" required="no">
+      <description>See the RelStorage README.txt file.</description>
+    </key>
+    <key name="blob-cache-size-check" datatype="integer" required="no">
+      <description>See the RelStorage README.txt file.</description>
+    </key>
+    <key name="blob-chunk-size" datatype="byte-size" required="no">
+      <description>See the RelStorage README.txt file.</description>
+    </key>
+    <key name="keep-history" datatype="boolean" default="true">
+      <description>See the RelStorage README.txt file.</description>
+    </key>
+    <key name="replica-conf" datatype="string" required="no">
+      <description>See the RelStorage README.txt file.</description>
+    </key>
+    <key name="replica-timeout" datatype="float" default="600.0">
+      <description>See the RelStorage README.txt file.</description>
+    </key>
+    <key name="poll-interval" datatype="float" required="no">
+      <description>See the RelStorage README.txt file.</description>
+    </key>
+    <key name="pack-gc" datatype="boolean" default="true">
+      <description>See the RelStorage README.txt file.</description>
+    </key>
+    <key name="pack-prepack-only" datatype="boolean" default="false">
+      <description>See the RelStorage README.txt file.</description>
+    </key>
+    <key name="pack-skip-prepack" datatype="boolean" default="false">
+      <description>See the RelStorage README.txt file.</description>
+    </key>
+    <key name="pack-batch-timeout" datatype="float" required="no">
+      <description>See the RelStorage README.txt file.</description>
+    </key>
+    <key name="pack-commit-busy-delay" datatype="float" required="no">
+      <description>See the RelStorage README.txt file.</description>
+    </key>
+    <key name="cache-servers" datatype="string" required="no">
+      <description>See the RelStorage README.txt file.</description>
+    </key>
+    <key name="cache-module-name" datatype="string" required="no">
+      <description>See the RelStorage README.txt file.</description>
+    </key>
+    <key name="cache-prefix" datatype="string" required="no">
+      <description>See the RelStorage README.txt file.</description>
+    </key>
+    <key name="cache-local-mb" datatype="integer" required="no">
+      <description>See the RelStorage README.txt file.</description>
+    </key>
+    <key name="cache-delta-size-limit" datatype="integer" required="no">
+      <description>See the RelStorage README.txt file.</description>
+    </key>
+    <key name="commit-lock-timeout" datatype="integer" required="no">
+      <description>See the RelStorage README.txt file.</description>
+    </key>
+    <key name="commit-lock-id" datatype="integer" required="no">
+      <description>See the RelStorage README.txt file.</description>
+    </key>
+    <key name="create-schema" datatype="boolean" default="true">
+      <description>See the RelStorage README.txt file.</description>
+    </key>
+  </sectiontype>
+
+  <sectiontype name="postgresql" implements="relstorage.adapter"
+    datatype=".PostgreSQLAdapterFactory">
+    <key name="dsn" datatype="string" required="no" default="">
+      <description>
+        The PostgreSQL data source name.  For example:
+
+        dsn dbname='template1' user='user' host='localhost' password='pass'
+
+        If dsn is omitted, the adapter will connect to a local database with
+        no password.  Both the user and database name will match the
+        name of the owner of the current process.
+      </description>
+    </key>
+  </sectiontype>
+
+  <sectiontype name="oracle" implements="relstorage.adapter"
+    datatype=".OracleAdapterFactory">
+    <key name="user" datatype="string" required="yes">
+      <description>
+        The Oracle account name
+      </description>
+    </key>
+    <key name="password" datatype="string" required="yes">
+      <description>
+        The Oracle account password
+      </description>
+    </key>
+    <key name="dsn" datatype="string" required="yes">
+      <description>
+        The Oracle data source name.  The Oracle client library will
+        normally expect to find the DSN in /etc/oratab.
+      </description>
+    </key>
+  </sectiontype>
+
+  <sectiontype name="mysql" implements="relstorage.adapter"
+    datatype=".MySQLAdapterFactory">
+    <key name="host" datatype="string" required="no">
+      <description>
+        host to connect
+      </description>
+    </key>
+
+    <key name="user" datatype="string" required="no">
+      <description>
+        user to connect as
+      </description>
+    </key>
+
+    <key name="passwd" datatype="string" required="no">
+      <description>
+        password to use
+      </description>
+    </key>
+
+    <key name="db" datatype="string" required="no">
+      <description>
+        database to use
+      </description>
+    </key>
+
+    <key name="port" datatype="integer" required="no">
+      <description>
+        TCP/IP port to connect to
+      </description>
+    </key>
+
+    <key name="unix_socket" datatype="string" required="no">
+      <description>
+        location of unix_socket (UNIX-ish only)
+      </description>
+    </key>
+
+    <key name="connect_timeout" datatype="integer" required="no">
+      <description>
+        number of seconds to wait before the connection attempt fails.
+      </description>
+    </key>
+
+    <key name="compress" datatype="boolean" required="no">
+      <description>
+        if set, gzip compression is enabled
+      </description>
+    </key>
+
+    <key name="named_pipe" datatype="boolean" required="no">
+      <description>
+        if set, connect to server via named pipe (Windows only)
+      </description>
+    </key>
+
+    <key name="read_default_file" datatype="string" required="no">
+      <description>
+        see the MySQL documentation for mysql_options()
+      </description>
+    </key>
+
+    <key name="read_default_group" datatype="string" required="no">
+      <description>
+        see the MySQL documentation for mysql_options()
+      </description>
+    </key>
+
+  </sectiontype>
+
+</component>
