@@ -1,0 +1,152 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml' lang='en' xml:lang='en'>
+<head>
+<!-- Website Design By: www.happyworm.com -->
+<title>Demo (jPlayer 1.1.1) : Text Based player with progress bar</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js"></script>
+<script type="text/javascript" src="js/jquery.jplayer.min.js"></script>
+<script type="text/javascript">
+<!--
+$(document).ready(function(){
+
+	// Stores the value of percentage of track loaded
+	var global_lp = 0;
+
+	$("#jquery_jplayer").jPlayer({
+		ready: function () {
+			this.element.jPlayer("setFile", "http://www.miaowmusic.com/mp3/Miaow-05-The-separation.mp3").jPlayer("play");
+
+			// Draw the control bar
+
+			var ctrlBar = "";
+
+			for (i=0; i < 100; i++){
+ 				ctrlBar = ctrlBar + "<a href='#' id='lb-"+i+"'>|</a>";
+			}
+
+			$('#player_progress_ctrl_bar').html(ctrlBar);
+		},
+		customCssIds: true
+	})
+	.jPlayer("onProgressChange", function(lp,ppr,ppa,pt,tt) {
+ 		var lpInt = parseInt(lp);
+ 		var ppaInt = parseInt(ppa);
+
+ 		global_lp = lpInt;
+
+ 		var loadBar = "";
+ 		for (l=0; l < lpInt; l++){
+ 			loadBar = loadBar + "|";
+ 		}
+
+ 		var playBar = "";
+ 		for (i=0; i < ppaInt; i++){
+ 			playBar = playBar + "|";
+ 		}
+
+ 		$('#player_progress_play_bar').text(playBar);
+ 		$('#player_progress_load_bar').text(loadBar);
+	})
+	.jPlayer("onSoundComplete", function() {
+		this.element.jPlayer("play");
+	});
+
+	$("#player_play").click( function() {
+		$('#jquery_jplayer').jPlayer("play");
+		$(this).blur();
+		return false;
+	});
+
+	$("#player_pause").click( function() {
+		$('#jquery_jplayer').jPlayer("pause");
+		$(this).blur();
+		return false;
+	});
+
+	$("#player_stop").click( function() {
+		$('#jquery_jplayer').jPlayer("stop");
+		$(this).blur();
+		return false;
+	});
+
+	$("#player_volume_min").click( function() {
+		$('#jquery_jplayer').jPlayer("volume", 0);
+		$(this).blur();
+		return false;
+	});
+
+	$("#player_volume_max").click( function() {
+		$('#jquery_jplayer').jPlayer("volume", 100);
+		$(this).blur();
+		return false;
+	});
+
+	$("#player_progress_ctrl_bar a").live( "click", function() {
+		$("#jquery_jplayer").jPlayer("playHead", this.id.substring(3)*(100.0/global_lp));
+		$(this).blur();
+		return false;
+	});
+
+});
+-->
+</script>
+
+<style>
+<!--
+
+#player_container {
+	border: 1px solid #009BE3;
+	padding:0 20px;
+}
+
+#player_container p {
+	font-family: "Myriad Pro Regular","Trebuchet MS";
+	font-weight: normal;
+	line-height: 36px;
+}
+
+#player_container .blue {
+	color: #009BE3;
+}
+
+#player_container .magenta {
+	color: #CC0090;
+}
+
+#player_container .green {
+	color: #A0A600;
+}
+
+#player_container .darkblue {
+	color: #002869;
+}
+
+#player_progress_ctrl_bar,
+#player_progress_play_bar,
+#player_progress_load_bar {
+	font-size:0.8em;
+	height:1.2em;
+}
+
+-->
+</style>
+
+</head>
+<body>
+
+<div id="jquery_jplayer"></div>
+
+<div id="player_container">
+	<p><a href="#" id="player_play" title="play">play</a> | <a href="#" id="player_pause" title="pause">pause</a> | <a href="#" id="player_stop" title="stop">stop</a></p>
+	<div id="player_progress">
+		<div class="blue" id="player_progress_ctrl_bar"></div>
+		<div class="magenta" id="player_progress_play_bar"></div>
+		<div class="green" id="player_progress_load_bar"></div>
+	</div>
+	<p><a href="#" id="player_volume_min" title="min volume">min volume</a> | <a href="#" id="player_volume_max" title="max volume">max volume</a></p>
+</div>
+
+</body>
+</html>

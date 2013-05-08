@@ -1,0 +1,189 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml' lang='en' xml:lang='en'>
+<head>
+<!-- Website Design By: www.happyworm.com -->
+<title>Demo (jPlayer 1.1.1) : Text based player with track switching using custom code</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js"></script>
+<script type="text/javascript" src="js/jquery.jplayer.min.js"></script>
+<script type="text/javascript">
+<!--
+$(document).ready(function(){
+
+   $("#jquery_jplayer").jPlayer({
+		ready: function () {
+			playTrack("http://www.miaowmusic.com/mp3/Miaow-05-The-separation.mp3",$("#theseparation").text());
+		},
+		customCssIds: true
+	})
+	.jPlayer("onProgressChange", function(lp,ppr,ppa,pt,tt) {
+ 		$("#pcent").text(parseInt(ppa)+"%");
+	});
+
+
+	$("#pause").hide();
+
+	function showPauseBtn()
+	{
+		$("#play").fadeOut(function(){
+			$("#pause").fadeIn();
+		});
+	}
+
+	function showPlayBtn()
+	{
+		$("#pause").fadeOut(function(){
+			$("#play").fadeIn();
+		});
+	}
+
+	function playTrack(t,n)
+	{
+		$("#jquery_jplayer").jPlayer("setFile", t).jPlayer("play");
+
+		showPauseBtn();
+
+		$("#trackname").fadeOut(function(){
+			$("#trackname").text(n);
+			$("#trackname").fadeIn();
+		});
+
+		$("#pcent").fadeOut(function(){
+			$("#pcent").fadeIn();
+		});
+
+		return false;
+	}
+
+	$("#theseparation").click(function() {
+		$(this).blur();
+ 		return(playTrack("http://www.miaowmusic.com/mp3/Miaow-05-The-separation.mp3",$("#theseparation").text()));
+	});
+
+	$("#lismore").click(function() {
+		$(this).blur();
+		return(playTrack("http://www.miaowmusic.com/mp3/Miaow-04-Lismore.mp3",$("#lismore").text()));
+	});
+
+	$("#thinice").click(function() {
+		$(this).blur();
+		return(playTrack("http://www.miaowmusic.com/mp3/Miaow-10-Thin-ice.mp3",$("#thinice").text()));
+	});
+
+	$("#play").click(function() {
+		$("#jquery_jplayer").jPlayer("play");
+		showPauseBtn();
+		$(this).blur();
+		return false;
+	});
+
+	$("#pause").click(function() {
+		$("#jquery_jplayer").jPlayer("pause");
+		showPlayBtn();
+		$(this).blur();
+		return false;
+	});
+
+	$("#stop").click(function() {
+		$("#jquery_jplayer").jPlayer("stop");
+		showPlayBtn();
+		$(this).blur();
+		return false;
+	});
+
+	$("#vmax").click(function() {
+		$("#jquery_jplayer").jPlayer("volume", 100);
+		$(this).blur();
+		return false;
+	});
+
+	$("#vmute").click(function() {
+		$("#jquery_jplayer").jPlayer("volume", 0);
+		$(this).blur();
+		return false;
+	});
+
+	$("#vhalf").click(function() {
+		$("#jquery_jplayer").jPlayer("volume", 50);
+		$(this).blur();
+		return false;
+	});
+
+});
+-->
+</script>
+
+<style>
+<!--
+
+#demo {
+	border: 1px solid #009BE3;
+	padding:0 20px;
+	font-family: "Myriad Pro Regular","Trebuchet MS";
+}
+
+#demo a, #demo a:link, #demo a:visited, #demo a:hover, #demo a:focus, #demo a:active {
+	color: #009BE3;
+}
+
+#demo ul {
+	list-style-type:none;
+	padding:0;
+	margin:1em 0;
+	width:100%;
+	overflow:hidden;
+}
+
+#demo ul span {
+	color: #A0A600;
+}
+
+#demo li {
+	float:left;
+	padding-right:1em;
+}
+
+
+#demo p span {
+	color: #CC0090;
+}
+
+#demo .pcent {
+	color: #002869;
+}
+
+
+-->
+</style>
+
+</head>
+<body>
+
+<div id="jquery_jplayer"></div>
+
+<div id="demo">
+	<ul>
+		<li><span>Select a track : </span></li>
+		<li><a href="#" id="theseparation">The Separation</a></li>
+		<li> | </li>
+		<li><a href="#" id="lismore">Lismore</a></li>
+		<li> | </li>
+		<li><a href="#" id="thinice">Thin Ice</a></li>
+	</ul>
+	<p>Now playing : <span id="trackname">nothing</span> <span class="pcent" id="pcent"></span></p>
+	<ul>
+		<li><a id="play" href="#">Play</a></li>
+		<li><a id="pause" href="#">Pause</a></li>
+		<li><a id="stop" href="#">Stop</a></li>
+	</ul>
+	<ul>
+		<li>volume :</li>
+		<li><a id="vmute" href="#">Mute</a></li>
+		<li> <a id="vhalf" href="#">Half</a></li>
+		<li><a id="vmax" href="#">Max</a></li>
+	</ul>
+</div>
+
+</body>
+</html>

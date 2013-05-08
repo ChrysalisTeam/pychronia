@@ -76,7 +76,7 @@ INSTALLED_APPS += [
     'cmsplugin_filer_image',
     'cmsplugin_filer_teaser',
     'cmsplugin_filer_video',
-
+    'jplayer', # cmsplugin too
 
     'django.contrib.comments', # for blog
     'tagging',
@@ -113,4 +113,6 @@ CMSPLUGIN_ZINNIA_HIDE_ENTRY_MENU = True
 CMSPLUGIN_ZINNIA_TEMPLATES = []
 CMSPLUGIN_ZINNIA_APP_MENUS = []
 
+
+JPLAYER_BASE_PATH = "/static/resources/libs/jquery-jplayer-1.1.1/"
 

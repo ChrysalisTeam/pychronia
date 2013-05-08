@@ -1,0 +1,140 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml' lang='en' xml:lang='en'>
+<head>
+<!-- Website Design By: www.happyworm.com -->
+<title>Demo (jPlayer 1.1.1) : Multi instanced jPlayer</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+
+<link href="skin/jplayer.blue.monday.css" rel="stylesheet" type="text/css" />
+
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js"></script>
+<script type="text/javascript" src="js/jquery.jplayer.min.js"></script>
+<script type="text/javascript">
+<!--
+$(document).ready(function(){
+
+	// Local copy of jQuery selectors, for performance.
+	var jpPlayTime = $("#jplayer_play_time");
+	var jpTotalTime = $("#jplayer_total_time");
+	var jpPlayTime2 = $("#jplayer_play_time2");
+	var jpTotalTime2 = $("#jplayer_total_time2");
+
+	$("#jquery_jplayer").jPlayer({
+		ready: function () {
+			this.element.jPlayer("setFile", "http://www.miaowmusic.com/mp3/Miaow-08-Stirring-of-a-fool.mp3", "http://www.miaowmusic.com/ogg/Miaow-08-Stirring-of-a-fool.ogg").jPlayer("play");
+		},
+		oggSupport: true
+	})
+	.jPlayer("onProgressChange", function(loadPercent, playedPercentRelative, playedPercentAbsolute, playedTime, totalTime) {
+		jpPlayTime.text($.jPlayer.convertTime(playedTime));
+		jpTotalTime.text($.jPlayer.convertTime(totalTime));
+	})
+	.jPlayer("onSoundComplete", function() {
+		$("#jquery_jplayer2").jPlayer("playHead", 0); // Crossover the players here
+	});
+
+	$("#jquery_jplayer2").jPlayer({
+		ready: function () {
+			this.element.jPlayer("setFile", "http://www.miaowmusic.com/mp3/Miaow-02-Hidden.mp3");
+		},
+		nativeSupport: false,
+		customCssIds: true
+	})
+	.jPlayer("cssId", "play", "jplayer_play2")
+	.jPlayer("cssId", "pause", "jplayer_pause2")
+	.jPlayer("cssId", "stop", "jplayer_stop2")
+	.jPlayer("cssId", "loadBar", "jplayer_load_bar2")
+	.jPlayer("cssId", "playBar", "jplayer_play_bar2")
+	.jPlayer("cssId", "volumeMin", "jplayer_volume_min2")
+	.jPlayer("cssId", "volumeMax", "jplayer_volume_max2")
+	.jPlayer("cssId", "volumeBar", "jplayer_volume_bar2")
+	.jPlayer("cssId", "volumeBarValue", "jplayer_volume_bar_value2")
+	.jPlayer("onProgressChange", function(loadPercent, playedPercentRelative, playedPercentAbsolute, playedTime, totalTime) {
+		jpPlayTime2.text($.jPlayer.convertTime(playedTime));
+		jpTotalTime2.text($.jPlayer.convertTime(totalTime));
+	})
+	.jPlayer("onSoundComplete", function() {
+		$("#jquery_jplayer").jPlayer("playHead", 0); // Crossover the players here
+	});
+
+	// Add extra .click() event handlers to avoid both jPlayers playing together.
+
+	$("#jplayer_play").click( pausePlayer2 );
+	$("#jplayer_load_bar").click( pausePlayer2 );
+	$("#jplayer_play_bar").click( pausePlayer2 );
+
+	$("#jplayer_play2").click( pausePlayer1 );
+	$("#jplayer_load_bar2").click( pausePlayer1 );
+	$("#jplayer_play_bar2").click( pausePlayer1 );
+
+	function pausePlayer1(e) {
+		$("#jquery_jplayer").jPlayer("pause");
+	}
+	function pausePlayer2(e) {
+		$("#jquery_jplayer2").jPlayer("pause");
+	}
+});
+-->
+</script>
+</head>
+<body>
+
+<div id="jquery_jplayer"></div>
+<div id="jquery_jplayer2"></div>
+
+<div class="jp-single-player">
+	<div class="jp-interface">
+		<ul class="jp-controls">
+			<li><a href="#" id="jplayer_play" class="jp-play" tabindex="1">play</a></li>
+			<li><a href="#" id="jplayer_pause" class="jp-pause" tabindex="1">pause</a></li>
+			<li><a href="#" id="jplayer_stop" class="jp-stop" tabindex="1">stop</a></li>
+			<li><a href="#" id="jplayer_volume_min" class="jp-volume-min" tabindex="1">min volume</a></li>
+			<li><a href="#" id="jplayer_volume_max" class="jp-volume-max" tabindex="1">max volume</a></li>
+		</ul>
+		<div class="jp-progress">
+			<div id="jplayer_load_bar" class="jp-load-bar">
+				<div id="jplayer_play_bar" class="jp-play-bar"></div>
+			</div>
+		</div>
+		<div id="jplayer_volume_bar" class="jp-volume-bar">
+			<div id="jplayer_volume_bar_value" class="jp-volume-bar-value"></div>
+		</div>
+		<div id="jplayer_play_time" class="jp-play-time"></div>
+		<div id="jplayer_total_time" class="jp-total-time"></div>
+	</div>
+	<div id="jplayer_playlist" class="jp-playlist">
+		<ul>
+			<li>Stirring of a fool</li>
+		</ul>
+	</div>
+</div>
+
+<div class="jp-single-player">
+	<div class="jp-interface">
+		<ul class="jp-controls">
+			<li><a href="#" id="jplayer_play2" class="jp-play" tabindex="1">play</a></li>
+			<li><a href="#" id="jplayer_pause2" class="jp-pause" tabindex="1">pause</a></li>
+			<li><a href="#" id="jplayer_stop2" class="jp-stop" tabindex="1">stop</a></li>
+			<li><a href="#" id="jplayer_volume_min2" class="jp-volume-min" tabindex="1">min volume</a></li>
+			<li><a href="#" id="jplayer_volume_max2" class="jp-volume-max" tabindex="1">max volume</a></li>
+		</ul>
+		<div class="jp-progress">
+			<div id="jplayer_load_bar2" class="jp-load-bar">
+				<div id="jplayer_play_bar2" class="jp-play-bar"></div>
+			</div>
+		</div>
+		<div id="jplayer_volume_bar2" class="jp-volume-bar">
+			<div id="jplayer_volume_bar_value2" class="jp-volume-bar-value"></div>
+		</div>
+		<div id="jplayer_play_time2" class="jp-play-time"></div>
+		<div id="jplayer_total_time2" class="jp-total-time"></div>
+	</div>
+	<div id="jplayer_playlist2" class="jp-playlist">
+		<ul>
+			<li>Hidden</li>
+		</ul>
+	</div>
+</div>
+
+</body>
+</html>
