@@ -31,13 +31,13 @@ DEBUG = False
 TEMPLATE_DEBUG = False
 TEMPLATE_STRING_IF_INVALID = "" # or "<INVALID %s>" to debug
 
-
-MEDIA_URL = '/media/' # examples: "http://media.lawrence.com", "http://example.com/media/"
+ADMIN_MEDIA_PREFIX = '/static/resources/admin/' # deprecated but required by djangocms
+MEDIA_URL = '/static/media/' # examples: "http://media.lawrence.com", "http://example.com/media/"
 MEDIA_ROOT = None # TO OVERRIDE
 
 
-STATIC_URL = "/static/"
-#>>>> STATIC_ROOT = "" # where collectstatic cmd will place files
+STATIC_URL = "/static/resources/"
+STATIC_ROOT = os.path.join(ROOT_PATH, "_static_files") # where collectstatic cmd will place files
 STATICFILES_DIRS = ()
 
 LOCALE_PATHS = () # TODO use this instead of application "locale" dirs
@@ -111,6 +111,7 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'django.contrib.humanize',
     'django.contrib.markup',
+    'django.contrib.staticfiles',
 
     'south',
     'sekizai',
@@ -119,7 +120,6 @@ INSTALLED_APPS = [
 
     'django_wsgiserver',
 ]
-ADMIN_MEDIA_PREFIX = "/admin/" # FIXME - temp compatibility with wsgi server
 
 
 AUTO_RENDER_SELECT2_STATICS = False
@@ -195,7 +195,7 @@ LOCALE_INDEPENDENT_PATHS = (
 '''
 
 ## DJANGO CONTRIB RST CONF ##
-RESTRUCTUREDTEXT_FILTER_SETTINGS = {"initial_header_level": 2,
+RESTRUCTUREDTEXT_FILTER_SETTINGS = {"initial_header_level": 1,
                                     "doctitle_xform": False, # important, to have even lone titles stay in the html fragment
                                     "sectsubtitle_xform": False,
                                     'file_insertion_enabled': False,  # SECURITY MEASURE (file hacking)

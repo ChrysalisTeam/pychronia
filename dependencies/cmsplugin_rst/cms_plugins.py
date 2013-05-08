@@ -6,7 +6,7 @@ from cmsplugin_rst.models import RstPluginModel
 from cmsplugin_rst.utils import postprocess
 from django.contrib.markup.templatetags.markup import restructuredtext
 from django.utils.translation import ugettext_lazy as _
-
+from django.conf import settings
 
 class RstPlugin(CMSPluginBase):
     name = _('Restructured Text Plugin')
@@ -15,7 +15,10 @@ class RstPlugin(CMSPluginBase):
     form = RstPluginForm
 
     def render(self, context, instance, placeholder):
-        context.update({'content': postprocess(restructuredtext(instance.body))})
+        rst = instance.body
+        rst = rst.replace("{{ MEDIA_URL }}", settings.MEDIA_URL)
+        rst = rst.replace("{{ STATIC_URL }}", settings.STATIC_URL)
+        context.update({'content': postprocess(restructuredtext(rst))})
         return context
 
 plugin_pool.register_plugin(RstPlugin)

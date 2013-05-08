@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+
+import os
 from rpgweb_common.common_settings import *
 
 
@@ -15,10 +17,9 @@ SECRET_KEY = '=%f!!2^yh5gk982827p8QD725wsdfsdf2kz^$vbjyqalyYgSzvd'
 
 
 SITE_DOMAIN = "http://127.0.0.1" # NO trailing slash ! # USELESS ?? FIXME
-##### ADMIN_MEDIA_PREFIX = "/static/admin/" # deprecated but maybe needed by django-cms
 
 
-MEDIA_ROOT = os.path.join(ROOT_PATH, "chrysalis", "media")
+MEDIA_ROOT = os.path.join(ROOT_PATH, "chrysalis", "media") # useless
 
 
 ROOT_URLCONF = 'chrysalis.tests._test_urls'
