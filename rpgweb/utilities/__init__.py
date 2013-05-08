@@ -105,13 +105,17 @@ def monkey_patch_django_zodb_parser():
     django_zodb.config.parse_uri = fixed_parse_uri
 monkey_patch_django_zodb_parser()
 
+
+def open_zodb_url(zodb_url):
+    db = database.get_database_from_uris([zodb_url])
+    return db
+
 def open_zodb_file(zodb_file):
     #print ("RETRIEVING DB FROM FILE", zodb_file)
-    URI = "file://" + zodb_file.replace("\\", "/")
+    url = "file://" + zodb_file.replace("\\", "/")
+    return open_zodb_url(url)
     # .replace(":", "|") # or "mem://"    # we have problems with URIs in win32, so replace : with |
     #print (">>>>>>", URI)
-    db = database.get_database_from_uris([URI])
-    return db
 
 
 def convert_object_tree(tree, type_mapping):

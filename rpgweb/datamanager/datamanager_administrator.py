@@ -8,6 +8,7 @@ from rpgweb.common import *
 from . import datamanager_modules
 from .datamanager_tools import zodb_transaction
 from .datamanager_core import BaseDataManager
+import threading
 
 assert logging
 
@@ -16,22 +17,26 @@ GameDataManager = type(str('GameDataManager'), AllBases, {})
 assert GameDataManager.__mro__[-3:] == (BaseDataManager, utilities.TechnicalEventsMixin, object) # IMPORTANT - all modules must be BEFORE BaseDataManager
 
 
-
+PROCESS_LOCK = threading.Lock()
 ZODB_INSTANCE = None
 GAME_INSTANCES_MOUNT_POINT = "game_instances"
 
 def _ensure_zodb_open():
-    global ZODB_INSTANCE
-    if not ZODB_INSTANCE:
-        local_copy = utilities.open_zodb_file(config.ZODB_FILE)
-        ZODB_INSTANCE = local_copy
-        @atexit.register # it should work !
-        def _shutdown_db_pool():
-            try:
-                local_copy.close() # do NOT target global var ZODB_INSTANCE
-                time.sleep(0.5) # to help daemon threads stop cleanly, just in case
-            except Exception, e:
-                print("Problem when closing ZODB instance: %e" % e, file=sys.stderr) # logging might already have disappeared
+    global ZODB_INSTANCE, PROCESS_LOCK
+    with PROCESS_LOCK:
+        if not ZODB_INSTANCE:
+            if config.ZODB_URL:
+                local_copy = utilities.open_zodb_url(config.ZODB_URL)
+            else:
+                local_copy = utilities.open_zodb_file(config.ZODB_FILE)
+            ZODB_INSTANCE = local_copy
+            @atexit.register # it should work !
+            def _shutdown_db_pool():
+                try:
+                    local_copy.close() # do NOT target global var ZODB_INSTANCE
+                    time.sleep(0.5) # to help daemon threads stop cleanly, just in case
+                except Exception, e:
+                    print("Problem when closing ZODB instance: %e" % e, file=sys.stderr) # logging might already have disappeared
 
 
 def _get_zodb_connection():

@@ -12,6 +12,8 @@ DATABASES = {
     }
 }
 ZODB_FILE = os.path.join(TEST_DIR, "gamedata.fs")
+ZODB_URL = "mysql://pakal_anthropia:XX@localhost#pakal_anthropia"
+
 
 ACTIVATE_AIML_BOTS = True
 

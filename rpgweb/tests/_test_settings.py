@@ -25,6 +25,7 @@ MOBILE_SITE_ENTRY_URL_TEMPLATE = "http://127.0.0.1:8000/%s/"
 
 
 ZODB_FILE = os.path.join(TEMP_DIR, 'gamedata.fs.%s' % UNICITY_STRING)
+ZODB_URL = None
 
 GAME_ROOT = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 
