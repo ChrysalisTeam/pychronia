@@ -26,6 +26,12 @@
 {% endblock %}
 
 
+{% block carving_left %}{% endblock %}
+
+{% block carving_right %}HI {% if request.user and request.user.is_authenticated %}!!{{ request.user.username }}!!{% endif %}{% endblock %}
+
+
+
 {% block left_big_icon_panel %}
 {% endblock %}
 
@@ -44,7 +50,7 @@
 
         <h1>{% page_attribute "page_title" %}</h1>
 
-        {% headingcontext target_level=2 %}
+        {% headingcontext target_level=1 %}
             {% placeholder "content" %}
         {% endheadingcontext %}
 

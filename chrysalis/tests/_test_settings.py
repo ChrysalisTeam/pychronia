@@ -46,6 +46,8 @@ MIDDLEWARE_CLASSES = (
 
 
 INSTALLED_APPS += [
+    'registration',
+
     'chrysalis',
 
     'cms',
@@ -115,4 +117,15 @@ CMSPLUGIN_ZINNIA_APP_MENUS = []
 
 
 JPLAYER_BASE_PATH = STATIC_URL + "libs/jquery-jplayer-2.3.0/"
+
+
+ACCOUNT_ACTIVATION_DAYS = 7
+
+
+ABSOLUTE_URL_OVERRIDES = {
+    'auth.user': (lambda u: "/") # u.username
+}
+
+
+
 

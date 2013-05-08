@@ -1,0 +1,18 @@
+{% extends "base_home.html" %}
+{% load i18n %}
+
+{% block content %}
+
+HELLLOOO
+
+
+<form action="" method ="POST">
+<table>
+{{ form.as_table }}
+</table>
+<input type="submit" name="register", value="{% trans "submit" %}"/>
+</form>
+
+
+
+{% endblock %}

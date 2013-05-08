@@ -8,6 +8,10 @@ admin.autodiscover()
 urlpatterns = patterns('',
     (r'^admin/', include(admin.site.urls)),
 
+    ## (r'^accounts/', include('registration.backends.default.urls')), # two steps user registration with django-registration
+    (r'^accounts/', include('registration.backends.simple.urls')), # one-step registration
+
+
     #{'document_root': settings.MEDIA_ROOT, 'show_indexes': False}),
 
     # Uncomment the admin/doc line below and add 'django.contrib.admindocs'
