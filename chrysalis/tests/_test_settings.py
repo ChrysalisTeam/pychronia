@@ -114,5 +114,5 @@ CMSPLUGIN_ZINNIA_TEMPLATES = []
 CMSPLUGIN_ZINNIA_APP_MENUS = []
 
 
-JPLAYER_BASE_PATH = "/static/resources/libs/jquery-jplayer-1.1.1/"
+JPLAYER_BASE_PATH = STATIC_URL + "libs/jquery-jplayer-2.3.0/"
 
