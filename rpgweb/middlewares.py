@@ -21,7 +21,8 @@ assert logging
 
 
 class ReverseProxyFixer(object):
-    """Sets 'REMOTE_ADDR' based on 'HTTP_X_FORWARDED_FOR', if the latter is set.
+    """
+    Sets 'REMOTE_ADDR' based on 'HTTP_X_FORWARDED_FOR', if the latter is set.
 
     Based on http://djangosnippets.org/snippets/1706/
     """
@@ -85,7 +86,6 @@ class ZodbTransactionMiddleware(object):
                 raise RuntimeError("ZodbTransactionMiddleware - Game data isn't in initialized state")
 
             return None
-
 
 
     def process_exception(self, request, exception):

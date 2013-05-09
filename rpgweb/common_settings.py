@@ -8,6 +8,7 @@ TEMPLATE_CONTEXT_PROCESSORS = TEMPLATE_CONTEXT_PROCESSORS + ("rpgweb.context_pro
 
 
 # beware of ordering here
+# no need for CSRF in rpgweb, data is not sensitive
 MIDDLEWARE_CLASSES = (('rpgweb.middlewares.MobileHostMiddleware',) +
                      MIDDLEWARE_CLASSES +
                      ('rpgweb.middlewares.ZodbTransactionMiddleware',

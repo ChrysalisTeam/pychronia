@@ -43,6 +43,7 @@ ugettext = lambda s: s # dummy placeholder for makemessages
 
 ROOT_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) # base folder where rpgweb packages are stored
 
+INTERNAL_IPS = () # used by debug toolbar etc.
 
 SESSION_COOKIE_NAME = 'sessionid' # DO NOT CHANGE - needed for phpbb integration
 
@@ -93,7 +94,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 )
 
 
-
+# no need for CSRF by default
 MIDDLEWARE_CLASSES = (
 #'django.middleware.common.BrokenLinkEmailsMiddleware', ONLY SOON IN 1.5
 'sessionprofile.middleware.SessionProfileMiddleware',
@@ -161,9 +162,13 @@ MESSAGE_LEVEL = message_constants.DEBUG # minimum recorded level
 
 
 ## DJANGO DEBUG TOOLBAR CONF ##
+def custom_show_toolbar(request):
+    if request.user.is_superuser:
+        return True
+    return False
 DEBUG_TOOLBAR_CONFIG = {
     'INTERCEPT_REDIRECTS': False,
-    'SHOW_TOOLBAR_CALLBACK': lambda *args, **kwargs: True, # always, at the moment
+    'SHOW_TOOLBAR_CALLBACK': custom_show_toolbar, # only show toolbar to authenticated users
     'ENABLE_STACKTRACES' : True,
     'HIDE_DJANGO_SQL': True,
     'SHOW_TEMPLATE_CONTEXT': True,

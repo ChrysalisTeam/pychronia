@@ -106,7 +106,7 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
         This method might raise exceptions, and leave the datamanager uninitialized.
         """
 
-        if self.data and not config.DB_RESET_ALLOWED:
+        if self.data and not config.ZODB_RESET_ALLOWED:
             raise RuntimeError("Can't reset existing databases in this environment")
 
         #print "RESETTING DATABASE !"

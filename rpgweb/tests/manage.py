@@ -8,7 +8,7 @@ root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__
 sys.path.insert(0, root)
 sys.path.insert(0, os.path.join(root, "dependencies"))
 
-os.environ["DJANGO_SETTINGS_MODULE"] = settings_module = "rpgweb.tests._persistent_settings" # with DB not in temp dir
+os.environ["DJANGO_SETTINGS_MODULE"] = settings_module = "rpgweb.tests.persistent_mode_settings" # with DB not in temp dir
 
 from django.core.management import execute_from_command_line
 
