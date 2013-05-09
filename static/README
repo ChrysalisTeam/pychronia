@@ -1,0 +1,1 @@
+Here will be gathered all static (css, js, img...) files needed by the application, via django's collectstatic command.

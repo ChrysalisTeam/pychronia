@@ -364,7 +364,7 @@ class TestUtilities(BaseGameTestCase):
         hash = hash_url_path("whatever/shtiff/kk.mp3?sssj=33")
         assert len(hash) == 8
         for c in hash:
-            assert c in "abcdefghijklmnopqrstuvwxyz01234567"
+            assert c in "abcdefghijklmnopqrstuvwxyz0123456789"
 
         rel_path = checked_game_file_path(game_file_url("/my/file/path"))
         assert rel_path == "my/file/path"

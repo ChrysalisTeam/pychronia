@@ -6,6 +6,9 @@ from jplayer.utils import safe_json
 
 class JPlayer(models.Model):
 
+    class Meta:
+        verbose_name_plural = "Jplayers"
+
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=255, unique=True)
     songs = models.ManyToManyField('jplayer.Song', related_name='players')
@@ -59,6 +62,10 @@ class Artist(models.Model):
 
 
 class Credits(models.Model):
+
+    class Meta:
+        verbose_name_plural = "credits" # else ugly auto-plural...
+
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=255)
     url = models.URLField(blank=True)

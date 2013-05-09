@@ -34,8 +34,19 @@ rpgweb_logging_config = {
             'level': 'WARNING',
             'propagate': False
         },
+        'django.db.backends': {
+            'handlers': [],
+            'level': 'WARNING',
+            'propagate': False
+        },
+        'txn': { # ZODB transactions
+            'handlers': [],
+            'level': 'WARNING',
+            'propagate': False
+        },
     }
 }
 
 
 logging.config.dictConfig(rpgweb_logging_config)
+logging.disable(logging.WARNING) # global limit

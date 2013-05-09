@@ -9,6 +9,5 @@
 *.db
 *.fs*
 ~*
-/media
 
 thumbs/

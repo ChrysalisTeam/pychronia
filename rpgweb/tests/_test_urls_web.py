@@ -3,15 +3,13 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from ..urls import * # including OUR HTTPXXX handlers
-
+from django.contrib.staticfiles.urls import urlpatterns as staticfiles_urlpatterns
 
 # root urlpatterns of rpgweb application
 urlpatterns = patterns('',
-        ##url(r'^%s(?P<path>.*)$' % config.MEDIA_URL[1:], 'django.views.static.serve', {'document_root': config.MEDIA_ROOT, 'show_indexes': False}), # usless ??
         url(r'^', include(support_urlpatterns)),
-        url(r'^', include('django.contrib.staticfiles.urls')), # UNNEEDED WITH RUNSERVER, ACTUALLY
         url(r'^(?P<game_instance_id>\w+)/', include(web_game_urlpatterns)),
 )
 
-
-
+# static files are served automagically by django's runserver, but not by cherrypy etc.
+urlpatterns = staticfiles_urlpatterns + urlpatterns # works in DEBUG mode only

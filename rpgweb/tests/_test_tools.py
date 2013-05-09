@@ -8,7 +8,7 @@ import os, sys, pytest, unittest, traceback, pprint
 
 ## TEST CONFIGURATION ##
 
-os.environ["DJANGO_SETTINGS_MODULE"] = "rpgweb.tests._test_settings"
+os.environ["DJANGO_SETTINGS_MODULE"] = "rpgweb.tests.transient_mode_settings"
 
 
 from rpgweb.common import *
@@ -31,7 +31,7 @@ from django.test.client import Client, RequestFactory
 from django.core.handlers.base import BaseHandler
 import django.utils.translation
 
-if not config.DB_RESET_ALLOWED:
+if not config.ZODB_RESET_ALLOWED:
     raise RuntimeError("Can't launch tests - we must be in a production environment !!")
 
 

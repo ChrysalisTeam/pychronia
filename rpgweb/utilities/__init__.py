@@ -18,7 +18,7 @@ from persistent.list import PersistentList
 from django_zodb import database
 from django.core.validators import email_re
 from django.conf import settings as django_settings
-from .. import default_settings as game_default_settings
+from .. import default_game_settings
 
 
 class Conf(object):
@@ -29,7 +29,7 @@ class Conf(object):
         try:
             return getattr(django_settings, name)
         except AttributeError:
-            return getattr(game_default_settings, name)
+            return getattr(default_game_settings, name)
     def __setattr__(self, name, value):
         raise NotImplementedError("Game conf is currently readonly")
 

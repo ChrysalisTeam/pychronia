@@ -1,27 +1,35 @@
+# -*- coding: utf-8 -*-
+
+from rpgweb.common_settings import *
+
+from rpgweb_common.tests.persistent_mode_settings import * # simple overrides
+
+from rpgweb.tests.common_test_settings import * # simple overrides
 
 
-from ._test_settings import *
-from persistent.list import PersistentList
+ROOT_URLCONF = 'rpgweb.tests._test_urls_web'
 
+
+_curdir = os.path.dirname(os.path.realpath(__file__))
 
 # we override transient test DBs with persistent ones
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(TEST_DIR, "django.db")
+        'NAME': os.path.join(_curdir, "django.db")
     }
 }
-ZODB_FILE = os.path.join(TEST_DIR, "gamedata.fs")
-ZODB_URL = "mysql://pakal_anthropia:XX@localhost#pakal_anthropia"
 
+ZODB_FILE = os.path.join(_curdir, "gamedata.fs")
+ZODB_URL = None
 
-ACTIVATE_AIML_BOTS = True
 
 
 def GAME_INITIAL_FIXTURE_SCRIPT(dm):
     """
     Called just before conversion of initial data tree, and coherency check.
     """
+    from persistent.list import PersistentList
 
     # we activate ALL views
     activable_views = dm.ACTIVABLE_VIEWS_REGISTRY.keys()
@@ -56,3 +64,5 @@ def GAME_INITIAL_FIXTURE_SCRIPT(dm):
 
     dm.propose_friendship("guy1", "guy2")
     dm.propose_friendship("guy2", "guy1") # accept friendship
+
+

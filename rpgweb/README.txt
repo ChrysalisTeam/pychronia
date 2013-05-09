@@ -14,10 +14,10 @@ Tests are run with py.test against fake databases stored in temp directories::
 
 	py.test -vl rpgweb/tests/ZODB_tests.py
 	py.test -vl rpgweb/tests/test_game.py
-	
+
 	CF http://pytest.org/latest/usage.html#usage for more usage info
-	
-	
+
+
 Utilities and servers
 ========================
 
@@ -25,12 +25,12 @@ Use the runner.py script to reset test DBs, pack persistent ZODB, and run django
 located in the same directory::
 
 	py.test rpgweb/tests/runner.py --help
-	
+
 ..note::
 	A standard manage.py script, pointing to the "persistent test DB" configuration, is
 	also available to launch a dev server, or issue any other standard django command.
 
-	
+
 Sources Tree Overview
 ==========================
 
@@ -41,7 +41,7 @@ Most of the *rpgweb* package consists in standard django components, and other c
 - middlewares.py: django middlewares, for pre and post processing of request
 - context_processors.py: add common game info in template contexts
 - models.py: required by django, but empty here (we don't use django's SQL ORM for our data)
-- default_settings.py: mainly a good reminder of available rpgweb settings
+- default_game_settings.py: mainly a good reminder of available rpgweb settings
 - locale/: standard gettext files, for site translation
 - template/: standard django templates
 - templatetags/: custom django template tags and filters
@@ -80,7 +80,7 @@ Development tips
 - *register_view* can be used to register a GameView, but also to turn a standard django view into a GameView.
 
 
-- Django debug toolbar requires a fix in django core/handlers/base.py to work with custom urlconfs:: 
+- Django debug toolbar requires a fix in django core/handlers/base.py to work with custom urlconfs::
 
 	SEE https://code.djangoproject.com/ticket/19784#ticket
 

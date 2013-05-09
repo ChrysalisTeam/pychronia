@@ -57,7 +57,8 @@ def check_zodb_structure():
         return False
     return True
 
-if __debug__ and config.DEBUG:
+
+if __debug__ and config.DEBUG and config.ZODB_RESET_ALLOWED:
     @zodb_transaction
     def reset_zodb_structure():
         root = _get_zodb_connection().root()

@@ -1,46 +1,22 @@
 # -*- coding: utf-8 -*-
 
-import sys, os, tempfile, random, logging
-
-import rpgweb_common.logging_config
-
-ugettext = lambda s: s # dummy placeholder for makemessages
+import sys, os, tempfile, random, logging, re
 
 try:
-    import PIL.Image # that package has been exploded in several packages now
-    sys.modules['Image'] = PIL.Image # prevents AccessInit: hash collision: 3 for both 1 and 1
+    import PIL.Image # that monolithic package has been exploded in several packages now
+    sys.modules['Image'] = PIL.Image # WORKAROUND - prevents "AccessInit: hash collision: 3 for both 1 and 1"
 except ImportError:
     pass
 
-# Make this unique, and don't share it with anybody.
-SECRET_KEY = None # TO OVERRIDE
 
-ROOT_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-print "ROOT PATH:", ROOT_PATH
+import rpgweb_common.default_logging_config
 
-TEMP_DIR = tempfile.mkdtemp()
-UNICITY_STRING = str(random.randint(100000, 1000000000))
+##################### SETTINGS TO BE OVERRIDDEN BY DEPLOYMENT-SPECIFIC CONF FILE ####################
 
-SITE_ID = 1
+SITE_ID = None
+SECRET_KEY = None
 
-SESSION_COOKIE_DOMAIN = None # TO BE OVERRIDDEN - eg. ".mydomain.net"
-SESSION_COOKIE_NAME = 'sessionid' # DO NOT CHANGE - needed for phpbb integration
-
-
-DEBUG = False
-TEMPLATE_DEBUG = False
-TEMPLATE_STRING_IF_INVALID = "" # or "<INVALID %s>" to debug
-
-ADMIN_MEDIA_PREFIX = '/static/resources/admin/' # deprecated but required by djangocms
-MEDIA_URL = '/static/media/' # examples: "http://media.lawrence.com", "http://example.com/media/"
-MEDIA_ROOT = None # TO OVERRIDE
-
-
-STATIC_URL = "/static/resources/"
-STATIC_ROOT = os.path.join(ROOT_PATH, "_static_files") # where collectstatic cmd will place files
-STATICFILES_DIRS = ()
-
-LOCALE_PATHS = () # TODO use this instead of application "locale" dirs
+SESSION_COOKIE_DOMAIN = None # eg. ".mydomain.net"
 
 SERVER_EMAIL = DEFAULT_FROM_EMAIL = ""
 EMAIL_HOST = ""
@@ -51,14 +27,32 @@ EMAIL_SUBJECT_PREFIX = ""
 EMAIL_USE_TLS = False
 
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(TEMP_DIR, "django.db.%s" % UNICITY_STRING),
-        'TEST_NAME': os.path.join(TEMP_DIR, "djangotest.db.%s" % UNICITY_STRING),
-    }
-}
+ROOT_URLCONF = None
 
+DEBUG = False
+TEMPLATE_DEBUG = False
+
+SITE_DOMAIN = None # NO trailing slash, used to build absolute urls
+
+
+######################################################################################################
+
+
+ugettext = lambda s: s # dummy placeholder for makemessages
+
+
+ROOT_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) # base folder where rpgweb packages are stored
+
+
+SESSION_COOKIE_NAME = 'sessionid' # DO NOT CHANGE - needed for phpbb integration
+
+MEDIA_URL = '/static/media/' # examples: "http://media.lawrence.com", "http://example.com/media/"
+MEDIA_ROOT = os.path.join(ROOT_PATH, "media") # for uploaded files, generated docs etc.
+
+STATIC_URL = "/static/resources/"
+ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/' # deprecated but required by djangocms
+STATIC_ROOT = os.path.join(ROOT_PATH, "_static_files") # where collectstatic cmd will place files
+STATICFILES_DIRS = ()
 
 TIME_ZONE = 'Europe/Paris'
 USE_L10N = True
@@ -68,16 +62,24 @@ LANGUAGES = (
   ('fr', ugettext('French')),
   ('en', ugettext('English')),
 )
+LOCALE_PATHS = () # in addition to application-local "locale/" dirs
+
 
 APPEND_SLASH = True # so handy for mistyped urls...
+
+
+IGNORABLE_404_URLS = (# ONLY SOON IN 1.5
+    re.compile(r'\.(php|cgi)$'),
+)
+
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader',
 )
-TEMPLATE_DIRS = () # Don't forget to use absolute paths, not relative paths.
-
+TEMPLATE_DIRS = () # use absolute paths here, not relative paths.
+TEMPLATE_STRING_IF_INVALID = "" # or "<INVALID %s>" to debug
 
 TEMPLATE_CONTEXT_PROCESSORS = (
     "django.contrib.auth.context_processors.auth",
@@ -86,44 +88,57 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.media",
     "django.core.context_processors.request",
     "django.core.context_processors.static",
-    #"django.contrib.messages.context_processors.messages",
+    #"django.contrib.messages.context_processors.messages" - we use our own version
     "sekizai.context_processors.sekizai",
 )
 
 
-MIDDLEWARE_CLASSES = None # TO OVERRIDE
 
-ROOT_URLCONF = None # TO OVERRIDE
+MIDDLEWARE_CLASSES = (
+#'django.middleware.common.BrokenLinkEmailsMiddleware', ONLY SOON IN 1.5
+'sessionprofile.middleware.SessionProfileMiddleware',
+'django.contrib.sessions.middleware.SessionMiddleware',
+'django.contrib.messages.middleware.MessageMiddleware',
+
+# 'localeurl.middleware.LocaleURLMiddleware',
+# 'django.middleware.locale.LocaleMiddleware', replaced by LocaleURLMiddleware
+'django.middleware.common.CommonMiddleware',
+'django.contrib.auth.middleware.AuthenticationMiddleware',
+
+'debug_toolbar.middleware.DebugToolbarMiddleware',
+)
 
 
+
+
+# to be extended in specific settings #
 INSTALLED_APPS = [
-    'sessionprofile', # keeps track of sessions/users in DB table, for PHPBB integration
-    'templateaddons', # assing and headers
-    'django_select2', # advanced select box
-
-    'debug_toolbar',
 
     'django.contrib.auth',
     'django.contrib.admin',
     'django.contrib.contenttypes',
     'django.contrib.sessions', # only these sessions are scalable for "sharding"
-    'django.contrib.messages',
     'django.contrib.sites',
     'django.contrib.humanize',
     'django.contrib.markup',
     'django.contrib.staticfiles',
 
     'south',
+    'debug_toolbar',
     'sekizai',
+    'django_wsgiserver', # uses cherrypy
+
+    'sessionprofile', # keeps track of sessions/users in DB table, for PHPBB integration
+    'templateaddons', # assign and headers tags
+    'django_select2', # advanced select box
+    'easy_thumbnails',
 
     'rpgweb_common', # common templates, tags, static files etc.
 
-    'django_wsgiserver',
 ]
 
 
-AUTO_RENDER_SELECT2_STATICS = False
-
+## activate django-sentry if present ##
 try:
     import sentry.client
     INSTALLED_APPS.append('sentry.client')
@@ -132,40 +147,17 @@ except ImportError:
 
 
 
+############# DJANGO-APP CONFS ############
+
+
+## DJANGO-SELECT2 CONF ##
+AUTO_RENDER_SELECT2_STATICS = False
+
+
 ## DJANGO CONTRIB MESSAGES CONF ##
 from django.contrib.messages import constants as message_constants
-MESSAGE_LEVEL = message_constants.DEBUG # Set MESSAGE_TAGS setting to control corresponding CSS classes
-
-
-## DJANGO CMS CONF ##
-CMS_TEMPLATES = (
- #        ('stasis_main.html', ugettext('index')),
- #       ('templatemo_main.html', ugettext('emeraud')),
- ('cms_index.html', ugettext('Home')),
-)
-CMS_REDIRECTS = True # handy for "dummy" menu entries
-CMS_SOFTROOT = False # no need to cut the menu in sections
-CMS_PUBLIC_FOR = "all" # no restricted to "staff"
-CMS_PERMISSION = False # no fine grained restrictions ATM
-CMS_TEMPLATE_INHERITANCE = True
-CMS_LANGUAGE_FALLBACK = True
-CMS_MULTILINGUAL_PATCH_REVERSE = False
-CMS_PLACEHOLDER_CONF = {} # unused atm
-CMS_PLUGIN_CONTEXT_PROCESSORS = []
-CMS_PLUGIN_PROCESSORS = []
-PLACEHOLDER_FRONTEND_EDITING = True
-CMS_HIDE_UNTRANSLATED = False
-CMS_LANGUAGE_CONF = {} # fallbacks ordering
-CMS_LANGUAGES = (
-    ('fr', ugettext('French')),
-    ('en', ugettext('English')),
-)
-CMS_CACHE_DURATIONS = {
-    'menus': 60 * 60,
-    'content': 60,
-    'permissions': 60 * 60,
-}
-
+MESSAGE_LEVEL = message_constants.DEBUG # minimum recorded level
+# Set MESSAGE_TAGS setting if needed, to control corresponding CSS classes
 
 
 ## DJANGO DEBUG TOOLBAR CONF ##
@@ -178,26 +170,18 @@ DEBUG_TOOLBAR_CONFIG = {
 }
 
 
-## DJANGO LOCALEURL CONF ##
-'''
-LOCALE_INDEPENDENT_PATHS = ()
-LOCALE_INDEPENDENT_MEDIA_URL = True
-PREFIX_DEFAULT_LOCALE = True # whether we must enforce a locale in url even for default language
-USE_ACCEPT_LANGUAGE = True # use http headres to choose the right language
-LOCALE_INDEPENDENT_PATHS = (
-      '^/$',
-      '^/files/',
-      '^/admin/',
-      '^/media/',
-      '^/static/',
-      '^/i18n/', # TO BE REMOVED
-      )
-'''
-
 ## DJANGO CONTRIB RST CONF ##
-RESTRUCTUREDTEXT_FILTER_SETTINGS = {"initial_header_level": 2,
+RESTRUCTUREDTEXT_FILTER_SETTINGS = {"initial_header_level": 2, # minimum "h2" when rendered to html
                                     "doctitle_xform": False, # important, to have even lone titles stay in the html fragment
                                     "sectsubtitle_xform": False,
                                     'file_insertion_enabled': False,  # SECURITY MEASURE (file hacking)
                                     'raw_enabled': False, } # SECURITY MEASURE (script tag)
 
+## EASY-THUMBNAILS CONF ##
+THUMBNAIL_PROCESSORS = (
+    'easy_thumbnails.processors.colorspace',
+    'easy_thumbnails.processors.autocrop',
+    # 'easy_thumbnails.processors.scale_and_crop', # superseded by "scale_and_crop_with_subject_location"
+    'filer.thumbnail_processors.scale_and_crop_with_subject_location',
+    'easy_thumbnails.processors.filters',
+)
