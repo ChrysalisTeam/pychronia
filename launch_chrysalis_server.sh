@@ -1,0 +1,1 @@
+python manage.py runserver 0.0.0.0:23792 --settings=chrysalis_settings

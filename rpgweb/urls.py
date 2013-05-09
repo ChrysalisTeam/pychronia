@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 from django.conf.urls.defaults import *
 from django.contrib import admin
 from .utilities import config
+from django.http import HttpResponse
 
 
 admin.autodiscover()
@@ -140,6 +141,9 @@ web_game_urlpatterns = patterns('rpgweb.views',
 
 
 support_urlpatterns = patterns('',
+
+    (r'^robots\.txt$', lambda r: HttpResponse("User-agent: *\nDisallow: /", mimetype="text/plain")),
+
     (r'^admin/', include(admin.site.urls)),
 
     (r'^i18n/', include('django.conf.urls.i18n')), # to set language
