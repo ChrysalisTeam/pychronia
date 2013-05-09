@@ -52,7 +52,7 @@ MEDIA_ROOT = os.path.join(ROOT_PATH, "media") # for uploaded files, generated do
 
 STATIC_URL = "/static/resources/"
 ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/' # deprecated but required by djangocms
-STATIC_ROOT = os.path.join(ROOT_PATH, "_static_files") # where collectstatic cmd will place files
+STATIC_ROOT = os.path.join(ROOT_PATH, "static") # where collectstatic cmd will place files
 STATICFILES_DIRS = ()
 
 TIME_ZONE = 'Europe/Paris'
