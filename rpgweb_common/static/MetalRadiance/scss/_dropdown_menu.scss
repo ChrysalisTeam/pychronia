@@ -3,63 +3,63 @@
 
 ul.dropmenu {
 
-	margin: 0; 
-	padding: 0; 
+	margin: 0;
+	padding: 0;
 	height: 35px;
 	line-height: 31px;
   position: relative;
 
-      
+
     /* 		All items 			*/
-    
+
 
     & > li {
-      
-        display: inline; 
-        
+
+        display: inline;
+
         a, span { // every descendant, too
-            
+
             @include header_common;
-            
-            font-size: 29px; // MAX 31px, needs to be PRECISE, so no em. 
-            
+
+            font-size: 25px; // MAX 31px, needs to be PRECISE, so no em.
+
             margin: 0;
             padding: 2px 6px;
             color: $title_white;
-            
+
             list-style-type: none;
             list-style-image: none;
             text-decoration: none;
-            
+
         }
-        
-      
+
+
         /* all sublevels are in metal&glass tubes */
-   
+
         li a, li span {
-            font-size: 20pt; // needs to be PRECISE, so no em. 
+            font-size: 20pt; // needs to be PRECISE, so no em.
             border-style: solid;
-            border-width: 0px 32px 0px 33px; 
+            border-width: 0px 32px 0px 33px;
             border-image: url('#{$IMGS}backgrounds/tube_gold_small.png') 0 32 0 33 fill stretch;
-        }   
+        }
         li li a, li li span {
             border-image: url('#{$IMGS}backgrounds/tube_silver_small.png') 0 32 0 33 fill stretch;
         }
         li li li a, li li li span {
             border-image: url('#{$IMGS}backgrounds/tube_bronze_small.png') 0 32 0 33 fill stretch;
         }
-         
+
 
 	    /* specifically for top-level links */
-       
+
         & {
             border-width: 0;
-            border-right: 3px ridge $medium_yellow;     
+            border-right: 3px ridge $medium_yellow;
         }
-        
+
         &:last-child {
             border-width: 0;
-        }  
+        }
 
         /* TODO - marker for submenus
         a:after, span:after {
@@ -68,45 +68,45 @@ ul.dropmenu {
             display: inline-block;
             margin: 4px 4px;
         }*/
-        
 
-        a.hover, span.hover {	
-            color: $title_white_highlight;	
+
+        a.hover, span.hover {
+            color: $title_white_highlight;
             //outline: $medium_yellow solid 1px; // FAILED!!!!
         }
-        
+
         a.selected, span.selected {
             //todo
         }
-        
-        a.hover.selected, span.hover.selected { 	
+
+        a.hover.selected, span.hover.selected {
             //todo
         }
-    
-    
-        
+
+
+
         /*      Submenus            */
-        
+
         ul {
             // width: 250px; // optional but recommended
             display: none; // cosmetic
             margin: 0;
             padding: 0;
-            border-style: solid; 
+            border-style: solid;
             border-width: 4px 3px;
             border-image: url('#{$IMGS}backgrounds/dropdown_menu.png') 4 3 fill stretch;
         }
-        
-        
+
+
         /*		Subitems			*/
-        
-        li.descendant {	
-            
+
+        li.descendant {
+
             //line-height: 20px;
-            // border-bottom: 1px solid #DFBD99; 
-    
+            // border-bottom: 1px solid #DFBD99;
+
             /* special hover/selected states are atm inherited from above */
-        
+
         }
 
     }

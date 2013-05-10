@@ -11,14 +11,12 @@
     min-width: 200px;
     width: auto;
     max-width: 550px;
-    box-sizing: border-box;
-    
+
     .jnotify-notification {
         // margin-bottom: 5px;
     }
-  
+
     .jnotify-notification .jnotify-background {
-        box-sizing: border-box;
         border: 2px solid $dark_yellow;
         border-top-left-radius: 30px 10px;
         border-top-right-radius: 30px 10px;
@@ -27,17 +25,17 @@
         opacity: 0.97;
         background-image: url('#{$IMGS}backgrounds/metal_bump_semitransparent.png');
     }
-    
-    .jnotify-notification-warning .jnotify-close, 
+
+    .jnotify-notification-warning .jnotify-close,
     .jnotify-notification-warning .jnotify-message {
         color: #A9911C !important; // FIX - was unreadable before
     }
 
     /* notification type == "error" */
     .jnotify-notification-success .jnotify-background {
-      background-color: #50B14F; 
+      background-color: #50B14F;
     }
-    
+
     .jnotify-notification-success .jnotify-close,
     .jnotify-notification-success .jnotify-message {
       color: #008000 !important;
@@ -48,25 +46,24 @@
 }
 
 
+
 .fancybox-default {
     z-index: 100000 !important; // we must be in front of dropdown menus
     background-image: url('#{$IMGS}backgrounds/ricepaper-hue-orange.jpg');
-    margin: 10px;
-    
+
+
     .fancybox-outer {
         @extend .antique_large_decorated_frame;
         background-color: transparent;
         box-shadow: none !important; // doesn't work with transparent borders
     }
 
-    
     .fancybox-title-float-wrap .child {
         background: none;
         line-height: 28px;
         text-shadow: 0px 1px 0px black;
     }
-    
-    
+
     .fancybox-close {
         right: -18px;
         top: -18px;
@@ -81,20 +78,20 @@
         margin: auto;
         border: $medium_yellow ridge 2px;
     }
-    
+
     .markItUpContainer  {
         background-image: url('#{$IMGS}backgrounds/ricepaper-hue-orange.jpg');
     }
-    
+
     .markItUpHeader {
-      
+
     }
-    
+
     .markItUpEditor {
         width: 100%;
         height: 150px;
     }
-    
+
     .markItUpFooter {
         display: none;
     }
@@ -105,13 +102,13 @@
 /**    DOMSLIDES     **/
 
 #domslideshow {
-    
+
     position:relative;
     * {
         list-style-type: none;
-        list-style-image: none;   
+        list-style-image: none;
     }
-    
+
     div#loading_msg {
         width: 1em;
         color: #fff;
@@ -119,11 +116,11 @@
         font-weight: bold;
         text-align: center;
     }
-      
+
     .hide {
         display: none;
     }
-    
+
     img.slideshow_image {
         max-width: 500px;
         max-height: 375px;
@@ -131,8 +128,8 @@
         margin : 30px auto;
         border: solid 1px #DFBF99;
     }
-    
-    
+
+
     blockquote {
         width: 70%;
     }
@@ -146,17 +143,17 @@
         font-size: 1.3em;
         margin:5px 10px 5px 55px;
         padding:10px;
-        
+
         li{
             float:left;
             padding:0 1em 0 0;
             margin:0;
         }
     }
-    
-    
-    
-    
+
+
+
+
     #toclist {
         left:5px;
         top:0px;
@@ -165,7 +162,7 @@
         padding:10px;
         position:absolute;
     }
-    
+
     #toclist li{
         text-align:right;
         position:relative;
@@ -174,7 +171,7 @@
     #toclist li a{
         font-weight: bold;
     }
-    
+
     #toclist li ul li{
         list-style-type:none;
         font-size:0.6em;
@@ -197,7 +194,7 @@
         border-bottom:1px solid $medium_yellow;
         z-index:100;
     }
-    /* close TOC item */    
+    /* close TOC item */
     #toclist li ul li#closeToc{
         text-align:right;
         position:relative;
@@ -209,7 +206,7 @@
         background: #C5AE8F;
         line-height:1em;
     }
-    
+
 }
 
 
@@ -223,12 +220,12 @@
 
 .p4wn-board {
     float: none;
-    
+
     table * {
         line-height: 8px;
-        user-select: none;  
-    } 
-   
+        user-select: none;
+    }
+
 }
 
 .p4wn-log, .p4wn-messages {

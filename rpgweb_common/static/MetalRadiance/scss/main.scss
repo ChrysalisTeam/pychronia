@@ -17,6 +17,15 @@
 @import "_specific_styles.scss";
 
 
+* {
+    /* IMPORTANT - use better box model everywhere, by default */
+    -webkit-box-sizing: border-box; /* webkit */
+     -khtml-box-sizing: border-box; /* konqueror */
+       -moz-box-sizing: border-box; /* firefox */
+        -ms-box-sizing: border-box; /* ie */
+            box-sizing: border-box; /* css3 */
+   // possible values of box-sizing: content-box|border-box|inherit
+}
 
 html {
     /* just if we need to test higher or lower screen resolutions */
@@ -26,6 +35,7 @@ html {
 }
 
 img {
+  // global filtering, doesn't work well
     // filter: url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\'><filter id=\'grayscale\'><feColorMatrix type=\'matrix\' values=\'0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0 0 0 1 0\'/></filter></svg>#grayscale");
     /* Firefox 10+, Firefox on Android */
 
@@ -62,7 +72,7 @@ body {
     quotes: none; // or string string string string
     text-overflow: ellipsis; // or clip or string, not inherited
 
-    //box-sizing: border-box; // content-box|border-box|inherit - very useful, but has some quirks still
+
 
 
     &:after
@@ -107,7 +117,7 @@ body {
 
         #full_header_center {
             position: relative;
-            width: 1000px;
+            width: 1004px;
             margin: 0px auto 0px;
             padding: 13px 0 0;
 
@@ -125,7 +135,7 @@ body {
                 left: 50%;
 
                 text-align: center;
-                width: 496px;
+                width: 502px;
                 border: 3px groove $medium_yellow;
                 border-top: 0;
 
@@ -142,7 +152,7 @@ body {
                     }
                     opacity: 0.85;
                     display: block;
-                    width: 350px;
+                    width: 100%;
                     //height: 100%;
 
                     padding: 5px 73px 28px;
@@ -172,8 +182,8 @@ body {
                     left: 50%;
                     margin-left: -201px; // half of image size
                     padding: 120px 50px 50px;
-                    width: 301px;
-                    height: 129px;
+                    width: 401px;
+                    height: 299px;
                     background: {
                         image: url('#{$IMGS}backgrounds/flag_red.png');
                         repeat: no-repeat;
@@ -222,7 +232,7 @@ body {
 
         #notification_table {
             display: table;
-            width: 840px;
+            width: 864px;
             margin: 0px auto 0px;
             padding: 5px 12px;
             table-layout: fixed;
@@ -231,7 +241,7 @@ body {
             &>div {
                 display: table-cell;
                 vertical-align: middle;
-                height: 36px;
+                height: 44px; // a bit more than background carving, to lower text
                 padding: 4px 12px;
             }
             .carving{
@@ -240,7 +250,7 @@ body {
                   overflow: hidden;
                 }
 
-                width: 163px;
+                width: 183px;
 
                 background: {
                     image:url('#{$IMGS}backgrounds/carving1.png');
@@ -309,9 +319,8 @@ body {
 
                 min-width: 550px;
 
-               // TOTAL height must be 73px !
-                height: 35px;
-                padding: 2px 0;
+                height: 61px;
+                padding: 0 0;
 
                 border-style: solid;
                 border-width: 18px 52px 20px 55px;
@@ -327,7 +336,7 @@ body {
 
 #full_content {
 
-    width: 960px;
+    width: 980px;
     margin: -10px auto 2px;
     padding: 10px;
     overflow: visible;
@@ -382,17 +391,17 @@ body {
 
     .medium_frame { // meant to be floated left or right
         @include main_frame_common;
-        width: 630px;
+        width: 650px;
     }
 
     .big_frame {
         @include main_frame_common;
-        width: 720px;
+        width: 740px;
     }
 
     .giant_frame {
         @include main_frame_common;
-        width: 940px;
+        width: 960px;
     }
 
 
@@ -433,7 +442,7 @@ body {
         display: inline-block;
         vertical-align:top; // important to avoid mess with vertical alignment
         text-align: left;
-        height: 51px;
+        height: 131px;
         min-width: 40px;
         max-width: 300px;
         padding: 40px 0px 40px;
@@ -484,7 +493,6 @@ body {
     width: 100%;
     text-align: center;
 
-
     #low_footer_border {
 
         a {
@@ -499,7 +507,7 @@ body {
         position:relative;
         padding: 12px 4px 16px;
         min-width: 30px;
-        height: 30px;
+        height: 58px;
         display: inline-block;
         vertical-align:top;
         border-style: solid;

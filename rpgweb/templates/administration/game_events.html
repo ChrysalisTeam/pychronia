@@ -1,11 +1,11 @@
 {% extends "base_one_column.html" %}
 
-{% load i18n helpers %}  
+{% load i18n helpers %}
 
-{% block content %}  
+{% block content %}
 
 <p>
-{% blocktrans %} 
+{% blocktrans %}
 All important events which have occurred so far are logged below.
 Some events point to other pages, where more details can be found.
 {% endblocktrans %}
@@ -14,17 +14,19 @@ Some events point to other pages, where more details can be found.
 {% if events %}
 
     <table class="realtable">
-        <tbody>
-        
+
+
             <thead>
+            <tr>
                 <th>{% trans "Time" %}</th>
                 <th>{% trans "Message" %}</th>
+            </tr>
             </thead>
-        
-        
-            {% for event in events %} 
-            
-            <tr>    
+
+            <tbody>
+            {% for event in events %}
+
+            <tr>
                 <td style="width:70px">{{ event.time|utctolocal|date:"d/m/Y H:i:s" }}</td>   {%comment %}{% load humanize %}{{ event.time|utctolocal|naturalday:"d/N/Y" }}{% endcomment %}
                 <td style="text-align: left;">
                     {% if event.url %}
@@ -33,14 +35,14 @@ Some events point to other pages, where more details can be found.
                         <span style="color:{% usercolor event.username %};">[{{event.username}}] {{ event.trans_message }}</span>
                     {% if event.url %}
                         </a>
-                    {% endif %}            
+                    {% endif %}
                 </td>
-                
+
             </tr>
-           
+
             {% endfor %}
-    
-        </tbody>
+
+            </tbody>
     </table>
 
 {% else %}
