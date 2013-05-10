@@ -26,7 +26,7 @@ def login(request, template_name='registration/login.html'):
 
     form = None
     user = request.datamanager.user
-    next_url = request.REQUEST.get("next")
+    next_url = request.REQUEST.get("next", "")
 
     if request.method == "POST":
         if not request.session.test_cookie_worked():
@@ -55,6 +55,7 @@ def login(request, template_name='registration/login.html'):
         request.session.set_test_cookie()
         form = forms.AuthenticationForm()
 
+    assert isinstance(next_url, basestring) # not NONE, else pb when displaying it!
     return render(request,
                   template_name,
                     {
