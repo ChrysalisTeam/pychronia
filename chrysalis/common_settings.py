@@ -49,6 +49,7 @@ TEMPLATE_CONTEXT_PROCESSORS = TEMPLATE_CONTEXT_PROCESSORS + ("cms.context_proces
 
 
 MIDDLEWARE_CLASSES += (
+'django.middleware.clickjacking.XFrameOptionsMiddleware',
 'django.middleware.csrf.CsrfViewMiddleware',
 # #'cms.middleware.multilingual.MultilingualURLMiddleware',
 'cms.middleware.page.CurrentPageMiddleware',
