@@ -27,14 +27,14 @@
 .bg_red, .error {
   background-color: #ff0000;
 }
-.center {
+.center, @mixin center {
   margin-left: auto;
   margin-right: auto;
 }
-.inner_center {
+.inner_center, @mixin inner_center {
   text-align: center;
 }
-.inner_center > * {
+.inner_center > *, @mixin inner_center > * {
   margin-left: auto;
   margin-right: auto;
 }
@@ -76,62 +76,33 @@
   height: 0;
   clear: both;
 }
-.full_width {
+* html #full_content,
+* html #full_content .main_frame_border .main_frame_content,
+* html .clearfix {
+  height: 1px;
+}
+.full_width, @mixin full_width {
   width: 100% !important;
 }
-.half_width {
+.half_width, @mixin half_width {
   width: 100% !important;
 }
-.big_width {
+.big_width, @mixin big_width {
   width: 600px !important;
 }
-.medium_width {
+.medium_width, @mixin medium_width {
   width: 400px !important;
 }
-.small_width {
+.small_width, @mixin small_width {
   width: 250px !important;
 }
 .outlined {
-  max-width: 600px;
-  padding: 5px;
-  margin: 10px auto;
   outline: #9d8126 ridge 2px;
 }
-.admin-note, .missing-content, .post-it {
-  color: #000000;
-  font-size: 2em;
-  line-height: normal;
-  font-family: kingthings_calligraphica_light;
-  margin: 8px;
-  padding: 6px;
-  width: 50%;
+.marble_panel {
   border-style: solid;
-  border-width: 4px 4px 6px;
-  border-image: url(img/backgrounds/post-it.png) 4 4 6 fill stretch;
-}
-.section p.beautiful, .section p:first-child:not(.admin-note),
-.section p:first-child:not(.missing-content),
-.section p:first-child:not(.post-it),
-.section p:first-of-type:not(.admin-note),
-.section p:first-of-type:not(.missing-content),
-.section p:first-of-type:not(.post-it) {
-  text-indent: 0;
-}
-.section p.beautiful:first-letter,
-.section p:first-child:not(.admin-note):first-letter,
-.section p:first-child:not(.missing-content):first-letter,
-.section p:first-child:not(.post-it):first-letter,
-.section p:first-of-type:not(.admin-note):first-letter,
-.section p:first-of-type:not(.missing-content):first-letter,
-.section p:first-of-type:not(.post-it):first-letter {
-  font-family: rothenburg_decorative, serif;
-  color: #000000;
-  float: left;
-  font-size: 3em;
-  margin-right: 0.1em;
-}
-.admin-note, .missing-content {
-  color: #8e0d0d;
+  border-width: 7px 10px 10px;
+  border-image: url(img/backgrounds/marble_plate.png) 7 10 10 fill stretch;
 }
 .scroll_realistic {
   padding: 0 10px;
@@ -185,6 +156,34 @@
 }
 .rice_paper {
   background-image: url(img/backgrounds/seamless_paper_rose1.jpg);
+}
+.section p.beautiful, .section p:first-child:not(.admin-note),
+.section p:first-child:not(.missing-content),
+.section p:first-child:not(.post-it),
+.section p:first-of-type:not(.admin-note),
+.section p:first-of-type:not(.missing-content),
+.section p:first-of-type:not(.post-it) {
+  text-indent: 0;
+}
+.section p.beautiful:first-letter,
+.section p:first-child:not(.admin-note):first-letter,
+.section p:first-child:not(.missing-content):first-letter,
+.section p:first-child:not(.post-it):first-letter,
+.section p:first-of-type:not(.admin-note):first-letter,
+.section p:first-of-type:not(.missing-content):first-letter,
+.section p:first-of-type:not(.post-it):first-letter {
+  font-family: rothenburg_decorative, serif;
+  color: #000000;
+  float: left;
+  font-size: 3em;
+  margin-right: 0.1em;
+}
+.admin-note, .missing-content {
+  color: #8e0d0d;
+}
+.missing-content {
+  width: 90%;
+  clear: both;
 }
 table.realtable {
   border-collapse: collapse;
@@ -704,9 +703,6 @@ blockquote, cite, q {
   margin: 8px;
   padding: 6px;
   width: 50%;
-  border-style: solid;
-  border-width: 7px 10px 10px;
-  border-image: url(img/backgrounds/marble_plate.png) 7 10 10 fill stretch;
 }
 ul {
   padding-left: 32px;
@@ -719,9 +715,9 @@ ul ul {
 ul ul ul {
   list-style-image: url(img/icons/bullet_bronze_small.png);
 }
-.no_bullets {
-  list-style-type: none;
-  list-style-image: none;
+.no_bullets, .no_bullets * {
+  list-style-type: none !important;
+  list-style-image: none !important;
 }
 textarea {
   resize: vertical;

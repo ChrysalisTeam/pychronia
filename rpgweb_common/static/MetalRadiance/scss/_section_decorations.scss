@@ -5,34 +5,17 @@
 
 /*  Wrapping of text in scrolls and plates  */
 
+
+
 .outlined {
-    max-width: 600px;
-    padding: 5px;
-    margin: 10px auto;
     outline: $medium_yellow ridge 2px;
 }
 
 
-
-.post-it {
-    color: black;
-
-    font-size: 2em;
-    line-height: normal;
-
-    font-family: kingthings_calligraphica_light;
-    margin: 8px;
-    padding: 6px;
-    width: 50%;
+.marble_panel {
     border-style: solid;
-    border-width: 4px 4px 6px;
-    border-image: url('#{$IMGS}backgrounds/post-it.png') 4 4 6 fill stretch;
-}
-
-
-.admin-note, .missing-content {
-    @extend .post-it;
-    color: $dark_red;
+    border-width: 7px 10px 10px;
+    border-image: url('#{$IMGS}backgrounds/marble_plate.png') 7 10 10 fill stretch;
 }
 
 .scroll_realistic {

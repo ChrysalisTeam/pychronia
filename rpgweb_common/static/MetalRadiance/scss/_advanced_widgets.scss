@@ -4,6 +4,33 @@
 @import "_section_decorations.scss";
 
 
+/* widgets visible onl by admins and masters */
+
+
+
+/*
+    font-size: 2em;
+    line-height: normal;
+
+    font-family: kingthings_calligraphica_light;
+    margin: 8px;
+    padding: 6px;
+    width: 50%;
+*/
+.admin-note, .missing-content {
+    @extend .post-it;
+    color: $dark_red;
+}
+
+
+.missing-content {
+    width: 90%;
+    clear: both;
+}
+
+
+
+
 
 
 
