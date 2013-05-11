@@ -201,7 +201,7 @@ def get_radio_xml_conf(request, template_name='info/web_radio_conf.xml'):
 
 
 @register_view(access=UserAccess.anonymous, always_activated=True, title=_lazy("Radio Station"))
-def public_webradio(request, template_name='info/web_radio_applet.html'):
+def public_webradio(request, template_name='info/web_radio_public.html'):
 
     access_authorized = False
 

@@ -1,0 +1,9 @@
+
+
+             <p>
+                {% blocktrans %}
+                Pangea radio, the world's greatest broadcasting system, is pleased to provide its services in a totally open and free manner !
+                {% endblocktrans %}
+             </p>
+
+             <br/><br/>

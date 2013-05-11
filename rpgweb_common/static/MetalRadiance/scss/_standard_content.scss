@@ -6,7 +6,7 @@
 h1 {
 
     @include header_common;
-    font-size: 2.3em;
+    font-size: 2em;
     line-height: normal;
     color: $title_gold;
     margin-bottom: 20px;
@@ -31,7 +31,7 @@ h1 {
 h2 {
 
     @include header_common;
-    font-size: 1.8em;
+    font-size: 1.7em;
     line-height: normal;
     color: $title_white;
 
@@ -91,13 +91,15 @@ h2 {
 
 
 div, span, p {
-    margin: 8px 0 8px;
     background-color: transparent;
     border-color: transparent;
     overflow: visible;
 }
 
 
+p {
+    margin: 8px 0 8px;
+}
 
 
 
@@ -166,6 +168,11 @@ textarea {
 
 
 
+form {
+    input, button {
+        width: 100%;
+    }
+}
 
 
 

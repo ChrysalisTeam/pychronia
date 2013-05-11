@@ -28,15 +28,15 @@
   background-color: #ff0000;
 }
 .center {
-  margin-left: auto;
-  margin-right: auto;
+  margin-left: auto !important;
+  margin-right: auto !important;
 }
 .inner_center {
-  text-align: center;
+  text-align: center !important;
 }
 .inner_center > * {
-  margin-left: auto;
-  margin-right: auto;
+  margin-left: auto !important;
+  margin-right: auto !important;
 }
 .float-left, .float_left, .floatleft, .left {
   float: left;
@@ -45,10 +45,10 @@
   float: right;
 }
 .inner_left {
-  text-align: left;
+  text-align: left !important;
 }
 .inner_right {
-  text-align: right;
+  text-align: right !important;
 }
 .clear_both {
   clear: both;
@@ -90,10 +90,10 @@
 .big_width {
   width: 600px !important;
 }
-.medium_width {
+.form_scroll_medium, .medium_width {
   width: 400px !important;
 }
-.small_width {
+.form_scroll_thin, .small_width {
   width: 250px !important;
 }
 .outlined {
@@ -132,7 +132,7 @@
   background-size: 100% 100%;
   background-repeat: no-repeat;
 }
-.scroll_yellow_rolled {
+.form_scroll_medium, .form_scroll_thin, .scroll_yellow_rolled {
   margin: 10px;
   padding: 55px 30px;
   background: url(img/backgrounds/scroll_yellow_rolled.png);
@@ -199,9 +199,9 @@
   margin-right: 0.1em;
 }
 .missing-content {
-  margin-left: auto;
-  margin-right: auto;
-  text-align: center;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  text-align: center !important;
   margin-top: 10px;
   margin-bottom: 10px;
   clear: both;
@@ -212,8 +212,14 @@
   width: 95%;
 }
 .missing-content > * {
-  margin-left: auto;
-  margin-right: auto;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+.form_scroll_thin {
+  text-align: left;
+}
+.form_scroll_medium {
+  text-align: left;
 }
 table.realtable {
   border-collapse: collapse;
@@ -645,7 +651,7 @@ h1 {
   margin: 2px;
   text-align: center;
   letter-spacing: 0px;
-  font-size: 2.3em;
+  font-size: 2em;
   line-height: normal;
   color: #f8d85b;
   margin-bottom: 20px;
@@ -672,7 +678,7 @@ h2 {
   margin: 2px;
   text-align: center;
   letter-spacing: 0px;
-  font-size: 1.8em;
+  font-size: 1.7em;
   line-height: normal;
   color: #ffffff;
 }
@@ -703,10 +709,12 @@ h2:after {
   text-overflow: ellipsis;
 }
 div, p, span {
-  margin: 8px 0 8px;
   background-color: transparent;
   border-color: transparent;
   overflow: visible;
+}
+p {
+  margin: 8px 0 8px;
 }
 a:link {
   color: #0104a2;
@@ -753,6 +761,9 @@ ul ul ul {
 }
 textarea {
   resize: vertical;
+}
+form button, form input {
+  width: 100%;
 }
 .zoomable > img {
   border: 5px ridge #775f13;

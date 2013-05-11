@@ -117,20 +117,11 @@
 
 
 
-
-
 {% block content %}
 
-    <div align="center">
+         {% if access_authorized %}
+         <div align="center">
 
-        {% if access_authorized %}
-             <p>
-                {% blocktrans %}
-                Pangea radio, the world's greatest broadcasting system, is pleased to provide its services in a totally open and free manner !
-                {% endblocktrans %}
-             </p>
-
-             <br/><br/>
              <object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,0,0"
                      width="170" height="40" id="niftyPlayer1" align="">
                  <param name="movie" value="{{ STATIC_URL }}libs/webradio/niftyplayer.swf?file=&as=0" />
@@ -144,30 +135,25 @@
                         <!-- test : /files/<hash>/tests/betty.mp3 -->
                  </embed>
              </object>
-
+         </div>
          {% else %}
 
-            <p>
-            {% blocktrans %}
-                Please provide the frequency of your favorite radio station.
-            {% endblocktrans %}
-            </p>
+            <div class="form_scroll_thin center">
+                <p>
+                {% blocktrans %}
+                    Please provide the frequency of your favorite radio station.
+                {% endblocktrans %}
+                </p>
 
-            <form action="{% game_view_url "rpgweb.views.public_webradio" %}" method="post">
-            <table style="margin: 20px auto;width:400px;">
-            {{ form.as_table }}
-            <tr>
-                <td colspan="2">
-                    <br/>
-                    <input type="submit" style="width: 200px" name="listen_radio" value="{% trans "Listen to Radio" %}" />
-                </td>
-            </tr>
-            </table>
-            </form>
+                <form action="{% game_view_url "rpgweb.views.public_webradio" %}" method="post">
+                {{ form.as_p }}
+                <p><input type="submit" name="listen_radio" value="{% trans "Listen to Radio" %}" /></p>
+                </form>
+            </div>
 
          {% endif %}
 
-    </div>
+
 
         {% comment %}
 

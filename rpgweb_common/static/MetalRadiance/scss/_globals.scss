@@ -108,8 +108,8 @@ $error_color: red;
 
 
 @mixin center {
-    margin-left: auto;
-    margin-right: auto;
+    margin-left: auto !important;
+    margin-right: auto !important;
 }
 .center {
     @include center;
@@ -117,10 +117,10 @@ $error_color: red;
 
 
 @mixin inner_center {
-    text-align: center;
+    text-align: center !important;
     & > * {
-      margin-left: auto;
-      margin-right: auto;
+      margin-left: auto !important;
+      margin-right: auto !important;
     }
 }
 .inner_center {
@@ -137,11 +137,11 @@ $error_color: red;
 }
 
 .inner_left {
-    text-align: left;
+    text-align: left !important;
 }
 
 .inner_right {
-    text-align: right;
+    text-align: right !important;
 }
 
 

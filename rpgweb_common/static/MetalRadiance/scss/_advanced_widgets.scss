@@ -23,6 +23,7 @@
     // IMPORTANT - that class is used as selector by jquery-pulsate plugin
 }
 
+
 .missing-content {
     @extend .post-it;
     @include center;
@@ -44,6 +45,22 @@
 
 
 
+@mixin form_scroll_common {
+    text-align: left;
+}
+
+
+.form_scroll_thin {
+    @extend .scroll_yellow_rolled;
+    @extend .small_width;
+    @include form_scroll_common;
+}
+
+.form_scroll_medium {
+    @extend .scroll_yellow_rolled;
+    @extend .medium_width;
+    @include form_scroll_common;
+}
 
 
 
