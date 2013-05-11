@@ -87,7 +87,7 @@ class TestUtilities(BaseGameTestCase):
                
                     .. embed_image:: https://hisss.com/a&b.jpg
                         :alias: default
-                             
+                          
                     """))
 
         assert "title1" in html and "title2" in html
@@ -428,12 +428,15 @@ class TestUtilities(BaseGameTestCase):
                     
                     .. baddirective:: aaa
                     
+                    hi[BR]you
                     """)
         html = _enriched_text(self.dm, rst, initial_header_level=2, report_level=5, excluded_link="lokon")
 
         assert self.dm.get_event_count("GENERATE_MESSAGING_LINKS") == 1
         assert self.dm.get_event_count("GENERATE_ENCYCLOPEDIA_LINKS") == 1
         assert self.dm.get_event_count("GENERATE_SITE_LINKS") == 1
+        assert "hi<br />you" in html # handy
+
 
         #print("------->", html)
         assert html.strip() == dedent("""
@@ -442,6 +445,7 @@ class TestUtilities(BaseGameTestCase):
                             <p>lokons</p>
                             <p><a href="/TeStiNg/encyclopedia/?search=gerbils">gerbils</a></p>
                             <p>TeStiNg</p>
+                            <p>hi<br />you</p>
                             </div>""").strip()
 
 

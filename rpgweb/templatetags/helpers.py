@@ -198,7 +198,7 @@ def _enriched_text(datamanager, content, initial_header_level=None, report_level
     *excluded_link* is the ENCYCLOPEDIA article_id in which we currently are, if any.
     """
 
-    content = content.replace("[INSTANCE_ID]", datamanager.game_instance_id) # handy tyo build URLs manually
+    content = content.replace("[INSTANCE_ID]", datamanager.game_instance_id) # handy to build URLs manually
 
     html = advanced_restructuredtext(content, initial_header_level=initial_header_level, report_level=report_level)
     with exception_swallower():
@@ -207,6 +207,9 @@ def _enriched_text(datamanager, content, initial_header_level=None, report_level
         html = _generate_messaging_links(html, datamanager) # on error
     with exception_swallower():
         html = _generate_site_links(html, datamanager) # on error
+
+    html = html.replace("[BR]", "<br />") # handy for vertical spacing
+
     return html
 
 
