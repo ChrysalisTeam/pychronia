@@ -92,41 +92,43 @@
 
 
 
-{% block sidebar %}
 
-{% usekwacro side_panel_start frame_class="mini_frame float_left" decos="3" %}
+    {% block sidebar %}
 
-    <ul class="minimenu">
-        <li>Many stuffs here</li>
-        <!--
-        <li class="{% ifequal mode "compose" %}highlight{% endifequal %}"><a href="{% game_view_url "rpgweb.views.compose_message" %}">{% trans "Compose" %}</a></li>
-        <li class="{% ifequal mode "inbox" %}highlight{% endifequal %}"><a href="{% game_view_url "rpgweb.views.conversation" %}">{% trans "Inbox" %}</a></li>
-        <li class="{% ifequal mode "outbox" %}highlight{% endifequal %}"><a href="{% game_view_url "rpgweb.views.conversation" %}">{% trans "Outbox" %}</a></li>
-        <li class="{% ifequal mode "conversation" %}highlight{% endifequal %}"><a href="{% game_view_url "rpgweb.views.conversation" %}">{% trans "Conversation" %}</a></li>
+    {% usekwacro side_panel_start frame_class="mini_frame float_left" decos="3" %}
 
-        {% if user.is_master %}
-            <li class="{% ifequal mode "all_sent_messages" %}highlight{% endifequal %}"><a href="{% game_view_url "rpgweb.views.all_dispatched_messages" %}">{% trans "All Transferred" %}</a></li>
-        {% endif %}
+        <ul class="minimenu">
+            <li>Very many stuffs here</li>
+            <!--
+            <li class="{% ifequal mode "compose" %}highlight{% endifequal %}"><a href="{% game_view_url "rpgweb.views.compose_message" %}">{% trans "Compose" %}</a></li>
+            <li class="{% ifequal mode "inbox" %}highlight{% endifequal %}"><a href="{% game_view_url "rpgweb.views.conversation" %}">{% trans "Inbox" %}</a></li>
+            <li class="{% ifequal mode "outbox" %}highlight{% endifequal %}"><a href="{% game_view_url "rpgweb.views.conversation" %}">{% trans "Outbox" %}</a></li>
+            <li class="{% ifequal mode "conversation" %}highlight{% endifequal %}"><a href="{% game_view_url "rpgweb.views.conversation" %}">{% trans "Conversation" %}</a></li>
 
-        {% if user.is_master %}
-            <li class="{% ifequal mode "all_queued_messages" %}highlight{% endifequal %}"><a href="{% game_view_url "rpgweb.views.all_queued_messages" %}">{% trans "All Queued" %}</a></li>
-        {% endif %}
+            {% if user.is_master %}
+                <li class="{% ifequal mode "all_sent_messages" %}highlight{% endifequal %}"><a href="{% game_view_url "rpgweb.views.all_dispatched_messages" %}">{% trans "All Transferred" %}</a></li>
+            {% endif %}
 
-        {% if user.is_master %}
-            <li class="{% ifequal mode "intercepted_messages" %}highlight{% endifequal %}"><a href="{% game_view_url "rpgweb.views.conversation" %}">{% trans "Intercepted" %}</a></li>
-        {% endif %}
+            {% if user.is_master %}
+                <li class="{% ifequal mode "all_queued_messages" %}highlight{% endifequal %}"><a href="{% game_view_url "rpgweb.views.all_queued_messages" %}">{% trans "All Queued" %}</a></li>
+            {% endif %}
 
-        {% if user.is_master %}
-            <li class="{% ifequal mode "messages_templates" %}highlight{% endifequal %}"><a href="{% game_view_url "rpgweb.views.messages_templates" %}">{% trans "Templates" %}</a></li>
-        {% endif %}
-        -->
-    </ul>
+            {% if user.is_master %}
+                <li class="{% ifequal mode "intercepted_messages" %}highlight{% endifequal %}"><a href="{% game_view_url "rpgweb.views.conversation" %}">{% trans "Intercepted" %}</a></li>
+            {% endif %}
 
-{% usekwacro side_panel_end %}
+            {% if user.is_master %}
+                <li class="{% ifequal mode "messages_templates" %}highlight{% endifequal %}"><a href="{% game_view_url "rpgweb.views.messages_templates" %}">{% trans "Templates" %}</a></li>
+            {% endif %}
+            -->
+        </ul>
 
-{% endblock %}
+    {% usekwacro side_panel_end %}
 
+    {% endblock %}
 
+{% comment %}
+{% endcomment %}
 
 
 

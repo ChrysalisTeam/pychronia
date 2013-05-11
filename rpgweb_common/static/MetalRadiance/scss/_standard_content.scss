@@ -126,6 +126,11 @@ dd {
 }
 
 
+hr {
+    border-color: $medium_yellow;
+    border-width: 1px;
+    width: 80%;
+}
 
 blockquote, q, cite {
     font-size: 1.5em;
@@ -159,6 +164,11 @@ ul
     list-style-type: none !important;
     list-style-image: none !important;
 }
+ul.no_bullets, .no_bullets ul {
+    padding-left: 0 !important;
+}
+
+
 
 
 

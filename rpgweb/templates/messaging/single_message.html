@@ -42,7 +42,12 @@
 
         <tr>
         <td><strong>{% trans "To:" %}</strong></td>
-        <td>{{ message.recipient_emails|join:"; " }}</td>
+        <td>
+            {% for recipient_email in message.recipient_emails %}
+                {% if not forloop.first %}, {% endif %}
+                <span style="color:{% usercolor recipient_email %};">{{ recipient_email }}</span>
+            {% endfor %}
+        </td>
         </tr>
 
         <tr>
@@ -68,10 +73,9 @@
     {% if message.attachment %}
     <hr/>
     <div class="inner_center">
-        {% if message.attachment %}
-            <b>{{ message.attachment }}</b><br/>
-            {{ message.attachment|mediaplayer:"false" }}
-        {% endif %}
+        {% game_file_url message.attachment varname="attachment" %}
+        <div class="file_url_block">{{ attachment }}</div>
+        {{ attachment|mediaplayer:"false" }}
     </div>
     {% endif %}
 

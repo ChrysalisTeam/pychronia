@@ -2993,7 +2993,7 @@ class PersonalFiles(BaseDataManager):
 
         decrypted_folder = os.path.join(config.GAME_FILES_ROOT, "encrypted", folder,
                                         password.strip().lower()) # warning, password directory must always be lowercase !!
-        print(">>>>>> Trying get_encrypted_files on", decrypted_folder)
+        # print(">>>>>> Trying get_encrypted_files on", decrypted_folder)
         if not os.path.isdir(decrypted_folder):
             raise UsageError(_("Wrong password for this encrypted folder."))
 

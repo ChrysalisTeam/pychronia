@@ -18,6 +18,15 @@
     width: 50%;
 */
 
+.file_url_block
+{
+    font-weight: bold;
+    font-size:0.9em;
+    margin: 10px auto;
+    padding:3px;
+    border:solid 1px $medium_yellow;
+}
+
 
 .admin-note {
     // IMPORTANT - that class is used as selector by jquery-pulsate plugin

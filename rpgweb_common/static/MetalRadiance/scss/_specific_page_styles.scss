@@ -110,8 +110,11 @@ input.digit
 
 .message_operations {
     position: absolute;
-    top: -60px;
+    top: -66px;
     left: 5px;
+    a {
+        margin-right: 8px;
+    }
 }
 
 .cover_previous {

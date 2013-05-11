@@ -181,6 +181,13 @@
   background-image: url(img/backgrounds/seamless_paper_rose1.jpg);
   box-shadow: 2px 2px 3px #000000;
 }
+.file_url_block {
+  font-weight: bold;
+  font-size: 0.9em;
+  margin: 10px auto;
+  padding: 3px;
+  border: solid 1px #9d8126;
+}
 .section p.beautiful, .section p:first-child:not(.missing-content),
 .section p:first-child:not(.post-it),
 .section p:first-of-type:not(.missing-content),
@@ -733,6 +740,11 @@ h2 a:visited {
 dt {
   font-weight: bold;
 }
+hr {
+  border-color: #9d8126;
+  border-width: 1px;
+  width: 80%;
+}
 blockquote, cite, q {
   font-size: 1.5em;
   line-height: 1.2em;
@@ -758,6 +770,9 @@ ul ul ul {
 .no_bullets, .no_bullets * {
   list-style-type: none !important;
   list-style-image: none !important;
+}
+.no_bullets ul, ul.no_bullets {
+  padding-left: 0 !important;
 }
 textarea {
   resize: vertical;
@@ -988,8 +1003,11 @@ input.digit {
 }
 .message_operations {
   position: absolute;
-  top: -60px;
+  top: -66px;
   left: 5px;
+}
+.message_operations a {
+  margin-right: 8px;
 }
 .cover_previous {
   margin-top: -60px;
@@ -1281,7 +1299,7 @@ body:after {
 #full_content .mini_frame {
   position: relative;
   padding: 0px;
-  width: 280px;
+  width: 270px;
   margin: 7px 10px 10px;
   overflow: visible;
   background: transparent url(img/backgrounds/leather_derby_tiled_small.png) repeat center center;

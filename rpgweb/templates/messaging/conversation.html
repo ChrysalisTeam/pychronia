@@ -1,14 +1,34 @@
 {% extends "messaging/base.html" %}
 
-{% load sekizai_tags i18n helpers %}  
+{% load sekizai_tags i18n helpers kwacros %}
+{% loadkwacros "metalradiance_kwacros.html" %}
+
+
+{% block sidebar %}
+
+    {% usekwacro side_panel_start frame_class="mini_frame float_left" decos="3" %}
+    <h2>{% trans "Conversations" %}</h2>
+
+    <div class="scroll_yellow_flat full_width center no_bullets">
+        <ul>
+            {% for message_list in conversations %}
+            {% with message_list|last as last %}
+                <li><a href="#{{ last.1.id }}" >{{ last.1.subject }}</a></li>
+            {% endwith %}
+            {% endfor %}
+        </ul>
+    </div>
+    {% usekwacro side_panel_end %}
+
+{% endblock %}
 
 
 
 
-{% block content %}  
+{% block content %}
 
     {{ block.super }}
-    
+
 	{% if not conversations %}
     	<div style="text-align:center;">
         	<i>{% trans "No messages yet." %}</i>
@@ -16,28 +36,27 @@
 	{% else %}
 		{% for message_list in conversations %}
 			<div class="notaccordion">
-			    
+
 			    <!--h3 class="{% if forloop.first %}firstTitle{% else %}otherTitle{% endif %}"><a href="#">{{ message.subject }}</a></h-->
-			    
+
 				{% for ctx, message in message_list reversed %}
 
 					{% include "messaging/single_message.html" with ctx=ctx message=message is_first=forloop.first%}
-		            
+
 				{% endfor %}
-				
+
 			</div>
 		{% endfor %}
 	{% endif %}
 
 {% endblock %}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
+
+
+
+
