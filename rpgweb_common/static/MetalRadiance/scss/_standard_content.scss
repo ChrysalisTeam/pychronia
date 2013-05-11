@@ -55,7 +55,7 @@ h2 {
 
 .section {
 
-    p {
+    & > p {
         text-align: justify;
         overflow: hidden; // for drop caps
         text-decoration: none; // underline, overline, line-through, blink or inherit
@@ -71,7 +71,7 @@ h2 {
 
     }
 
-    p:first-child:not(.post-it), p:first-of-type:not(.post-it), p.beautiful { // class to be used with the "class" directive of rst
+    & > p:first-child:not(.post-it), & >p:first-of-type:not(.post-it), & > p.beautiful { // class to be used with the "class" directive of rst
 
         text-indent: 0;
 
@@ -179,9 +179,10 @@ textarea {
 
 
 form {
-    input, button {
-        width: 100%;
+    select, input, button, .select2-container, .markItUp {
+        width: 100% !important;
     }
+
 }
 
 

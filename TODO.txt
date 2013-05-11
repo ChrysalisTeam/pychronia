@@ -6,7 +6,7 @@ TODO LIST CHRYSALIS
 FEATURES
 ------------
 
-
+- Remove system error messages in RST renders, except in preview popup!
 
 
 

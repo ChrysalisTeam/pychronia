@@ -54,6 +54,7 @@ function add_recipient(address) {
 	if ($.inArray(newentry, current) == -1) {
 		current.push(newentry);
 		$("#id_default_recipients").select2("data", current);
+		$("#id_default_recipients").change(); //trigger("change");
 	};
 	//console.log(current);
 }
@@ -147,13 +148,15 @@ window.setInterval(save_current_content, 10*1000);
 {% block sidebar %}
 
 {% usekwacro side_panel_start frame_class="mini_frame float_left" decos="3" %}
+    <h2>{% trans "Contacts" %}</h2>
 
-    <ul class="minimenu">
+    <div class="rice_paper_rose full_width center no_bullets" style="line-height: 1.5em; cursor: pointer; font-size:0.9em; padding-left:10px;">
+    <ul>
     	{% for contact in contacts_display %}
         <li {% if contact.description %}title="{{ contact.description }}"{% endif %} onclick="add_recipient('{{ contact.address|escapejs }}');">{{ contact.address }}</li>
         {% endfor %}
     </ul>
-
+    </div>
 {% usekwacro side_panel_end %}
 
 {% endblock %}
@@ -167,14 +170,15 @@ window.setInterval(save_current_content, 10*1000);
 
     {% if message_form %}
 
-
         <form action="{% game_view_url "rpgweb.views.compose_message" %}" method="post">
+
+        <p><input type="button" style="width: 200px" name="cancel_message" value="{% trans "Cancel message" %}"
+            onclick="clear_saved_content(); return_to_home();" /></p>
+
         {{ message_form.as_p }}
 
-        <p><input type="button" style="width: 200px" name="preview" value="{% trans "Preview" %}" onclick="preview_message();" /></p>
+        <p><input type="button" style="width: 200px" name="preview" value="{% trans "Preview Message" %}" onclick="preview_message();" /></p>
         <p><input type="submit" style="width: 200px" name="send_message" value="{% trans "Send Message" %}" onclick="save_current_content(); return true;" /></p>
-        <p><input type="button" style="width: 200px" name="cancel_message" value="{% trans "Cancel message" %}"
-        	onclick="clear_saved_content(); return_to_home();" /></p>
 
         </form>
 

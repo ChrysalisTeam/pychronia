@@ -1,5 +1,17 @@
 
+
+@import "_globals.scss";
+
 @import "_standard_content.scss"
+
+
+
+
+.select2-container-multi .select2-choices .select2-search-field input {
+    padding: 0;
+    margin: 5px 0 5px 4px;
+}
+
 
 .zoomable > img {
     border: 5px ridge $dark_yellow;
@@ -96,6 +108,8 @@
         display: none;
     }
 }
+
+
 
 
 
@@ -207,9 +221,6 @@
     }
 
 }
-
-
-
 
 
 

@@ -33,7 +33,7 @@
     </span>
 
 
-    <table style="margin:2px 24px; font-size:0.9em; line-height:0.9em;">
+    <table style="margin:2px 2px; font-size:0.9em; line-height:0.9em;">
 
         <tr>
         <td><strong>{% trans "From:" %}</strong></td>
@@ -60,8 +60,10 @@
 
     <p style="color:{% usercolor message.sender_email %};">
         <strong>
+            <i>
             {% if ctx.was_intercepted %}{% trans "[intercepted]" %}{% endif %}
             {{ message.subject }}
+            </i>
         </strong>
     </p>
 
