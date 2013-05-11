@@ -27,14 +27,14 @@
 .bg_red, .error {
   background-color: #ff0000;
 }
-.center, @mixin center {
+.center {
   margin-left: auto;
   margin-right: auto;
 }
-.inner_center, @mixin inner_center {
+.inner_center {
   text-align: center;
 }
-.inner_center > *, @mixin inner_center > * {
+.inner_center > * {
   margin-left: auto;
   margin-right: auto;
 }
@@ -81,19 +81,19 @@
 * html .clearfix {
   height: 1px;
 }
-.full_width, @mixin full_width {
+.full_width {
   width: 100% !important;
 }
-.half_width, @mixin half_width {
+.half_width {
   width: 100% !important;
 }
-.big_width, @mixin big_width {
+.big_width {
   width: 600px !important;
 }
-.medium_width, @mixin medium_width {
+.medium_width {
   width: 400px !important;
 }
-.small_width, @mixin small_width {
+.small_width {
   width: 250px !important;
 }
 .outlined {
@@ -104,13 +104,21 @@
   border-width: 7px 10px 10px;
   border-image: url(img/backgrounds/marble_plate.png) 7 10 10 fill stretch;
 }
+.missing-content, .post-it {
+  padding: 4px;
+  border-style: solid;
+  border-width: 4px 4px 6px;
+  border-image: url(img/backgrounds/post-it.png) 4 4 6 fill stretch;
+}
 .scroll_realistic {
+  margin: 10px;
   padding: 0 10px;
   border-style: solid;
   border-width: 142px 63px 124px 71px;
   border-image: url(img/backgrounds/scroll_realistic.png) 142 63 124 71 fill stretch stretch;
 }
 .hentry, .scroll_realistic_thin_ends {
+  margin: 10px;
   min-width: 150px;
   padding: 0 10px;
   border-style: solid;
@@ -118,22 +126,24 @@
   border-image: url(img/backgrounds/scroll_realistic_thin_ends.png) 79 45 81 39 fill stretch stretch;
 }
 .scroll_yellow_flat {
+  margin: 10px;
   padding: 25px;
   background: url(img/backgrounds/scroll_yellow_flat.png);
   background-size: 100% 100%;
   background-repeat: no-repeat;
 }
 .scroll_yellow_rolled {
+  margin: 10px;
   padding: 55px 30px;
   background: url(img/backgrounds/scroll_yellow_rolled.png);
   background-size: 100% 100%;
   background-repeat: no-repeat;
 }
 .antique_marble_frame {
-  padding: 10px;
+  padding: 5px;
   border-style: solid;
-  border-width: 24px 24px 24px 24px;
-  border-image: url(img/backgrounds/antique_marble_frame2.png) 24 24 24 24 fill round;
+  border-width: 17px;
+  border-image: url(img/backgrounds/antique_marble_frame2.png) 17 fill round;
   margin: -5px;
 }
 .antique_large_decorated_frame, .fancybox-default .fancybox-outer {
@@ -149,27 +159,37 @@
   border-image: url(img/backgrounds/decorated_golden_frame.png) 25 27 25 fill stretch;
   margin: -5px;
 }
-.beige_paper {
+.carved_square_frame_gold, .item_display {
+  border-style: solid;
+  border-width: 90px;
+  border-image: none 125 125 127 117 stretch;
+  border-image-source: url(img/backgrounds/carved_square_frame_gold.png) !important;
+}
+.carved_square_frame_silver {
+  border-style: solid;
+  border-width: 90px;
+  border-image: none 125 125 127 117 stretch;
+  border-image-source: url(img/backgrounds/carved_square_frame_silver.png) !important;
+}
+.rice_paper_beige {
   padding: 5px 5px;
   background-image: url(img/backgrounds/seamless_paper_beige.jpg);
   box-shadow: 2px 2px 3px #000000;
 }
-.rice_paper {
+.rice_paper_rose {
+  padding: 5px 5px;
   background-image: url(img/backgrounds/seamless_paper_rose1.jpg);
+  box-shadow: 2px 2px 3px #000000;
 }
-.section p.beautiful, .section p:first-child:not(.admin-note),
-.section p:first-child:not(.missing-content),
+.section p.beautiful, .section p:first-child:not(.missing-content),
 .section p:first-child:not(.post-it),
-.section p:first-of-type:not(.admin-note),
 .section p:first-of-type:not(.missing-content),
 .section p:first-of-type:not(.post-it) {
   text-indent: 0;
 }
 .section p.beautiful:first-letter,
-.section p:first-child:not(.admin-note):first-letter,
 .section p:first-child:not(.missing-content):first-letter,
 .section p:first-child:not(.post-it):first-letter,
-.section p:first-of-type:not(.admin-note):first-letter,
 .section p:first-of-type:not(.missing-content):first-letter,
 .section p:first-of-type:not(.post-it):first-letter {
   font-family: rothenburg_decorative, serif;
@@ -178,12 +198,22 @@
   font-size: 3em;
   margin-right: 0.1em;
 }
-.admin-note, .missing-content {
-  color: #8e0d0d;
-}
 .missing-content {
-  width: 90%;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+  margin-top: 10px;
+  margin-bottom: 10px;
   clear: both;
+  color: #8e0d0d;
+  font-size: 1em;
+  font-style: italic;
+  line-height: normal;
+  width: 95%;
+}
+.missing-content > * {
+  margin-left: auto;
+  margin-right: auto;
 }
 table.realtable {
   border-collapse: collapse;
@@ -673,6 +703,7 @@ h2:after {
   text-overflow: ellipsis;
 }
 div, p, span {
+  margin: 8px 0 8px;
   background-color: transparent;
   border-color: transparent;
   overflow: visible;
@@ -705,6 +736,7 @@ blockquote, cite, q {
   width: 50%;
 }
 ul {
+  margin: 10px 0 10px;
   padding-left: 32px;
   list-style-position: outside;
   list-style-image: url(img/icons/bullet_gold_small.png);
@@ -801,11 +833,10 @@ textarea {
   display: none;
 }
 #domslideshow img.slideshow_image {
-  max-width: 500px;
-  max-height: 375px;
+  max-width: 700px;
+  max-height: 500px;
   display: block;
-  margin: 30px auto;
-  border: solid 1px #DFBF99;
+  margin: 0px;
 }
 #domslideshow blockquote {
   width: 70%;
@@ -882,6 +913,11 @@ textarea {
 .p4wn-log, .p4wn-messages {
   display: none;
 }
+.item_display {
+  padding: 0;
+  max-height: 555px;
+  max-width: 680px;
+}
 #password_display {
   display: table-cell;
   vertical-align: middle;
@@ -911,8 +947,8 @@ input.digit {
 }
 #chatwindow {
   margin: auto;
-  height: 350px;
-  width: 500px;
+  height: 400px;
+  width: 100%;
   padding: 5px;
   overflow: auto;
   background-color: transparent;
@@ -1246,7 +1282,7 @@ body:after {
   min-height: 45px;
   position: relative;
   margin: -5px;
-  padding: 1px 5px;
+  padding: 1px 1px;
   border-style: solid;
   border-width: 22px 22px;
   border-image: url(img/backgrounds/mini_frame4.png) 22 22 repeat;

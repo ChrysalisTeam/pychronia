@@ -91,6 +91,7 @@ h2 {
 
 
 div, span, p {
+    margin: 8px 0 8px;
     background-color: transparent;
     border-color: transparent;
     overflow: visible;
@@ -139,6 +140,7 @@ blockquote, q, cite {
 
 ul
 {
+    margin: 10px 0 10px;
     padding-left: 32px;
     list-style-position: outside;
     list-style-image: url('#{$IMGS}icons/bullet_gold_small.png');

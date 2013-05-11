@@ -107,17 +107,24 @@ $error_color: red;
 /* COMMON POSITIONING CLASSES */
 
 
-.center, @mixin center {
+@mixin center {
     margin-left: auto;
     margin-right: auto;
 }
+.center {
+    @include center;
+}
 
-.inner_center, @mixin inner_center {
+
+@mixin inner_center {
     text-align: center;
     & > * {
       margin-left: auto;
       margin-right: auto;
     }
+}
+.inner_center {
+    @include inner_center;
 }
 
 
@@ -177,23 +184,23 @@ $error_color: red;
 
 /* COMMON SIZING CLASSES, with both relative and absolute sizes */
 
-.full_width, @mixin full_width {
+.full_width {
     width: 100% !important;
 }
 
-.half_width, @mixin half_width {
+.half_width {
     width: 100% !important;
 }
 
-.big_width, @mixin big_width {
+.big_width {
     width: 600px !important;
 }
 
-.medium_width, @mixin medium_width {
+.medium_width {
     width: 400px !important;
 }
 
-.small_width, @mixin small_width {
+.small_width {
     width: 250px !important;
 }
 

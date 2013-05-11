@@ -17,15 +17,28 @@
     padding: 6px;
     width: 50%;
 */
-.admin-note, .missing-content {
-    @extend .post-it;
-    color: $dark_red;
+
+
+.admin-note {
+    // IMPORTANT - that class is used as selector by jquery-pulsate plugin
 }
 
-
 .missing-content {
-    width: 90%;
+    @extend .post-it;
+    @include center;
+    @include inner_center;
+
+    margin-top: 10px;
+    margin-bottom: 10px;
     clear: both;
+
+    color: $dark_red;
+    font-size: 1em;
+    font-style: italic;
+    line-height: normal;
+
+
+    width: 95%;
 }
 
 

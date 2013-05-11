@@ -1,7 +1,7 @@
 
 {% extends "base_two_columns.html" %}
 
-{% load sekizai_tags i18n helpers kwacros %}  
+{% load sekizai_tags i18n helpers kwacros %}
 {% loadkwacros "metalradiance_kwacros.html" %}
 
 
@@ -13,15 +13,15 @@
 {% addtoblock "definition_js" %}
 
     function load_media_frame(fileurl) {
-    
+
         //alert("{% game_view_url "rpgweb.views.view_media" %}?url=" + fileurl);
-        
+
         // DO NOT use escape(), as it's for latin1 encoding (blerh...)
-        
+
         $("#media_url").html('<a href="'+encodeURI(fileurl)+'">'+encodeURI(fileurl)+'</a>')
-        
-        $("#media_viewer").load("{% game_view_url "rpgweb.views.view_media" %}?autostart=true&url=" + encodeURIComponent(fileurl)); 
-    
+
+        $("#media_viewer").load("{% game_view_url "rpgweb.views.view_media" %}?autostart=true&url=" + encodeURIComponent(fileurl));
+
     }
 
 {% endaddtoblock %}
@@ -41,7 +41,7 @@
         <strong>{% trans "System Notification" %}</strong>
         <p style="font-size:11px;">
         {% blocktrans %}
-            Due to heavy maintenance operations on our front-end servers, 
+            Due to heavy maintenance operations on our front-end servers,
             the upload of files is disabled until next decade.
             We apologize for the inconvenience.
         {% endblocktrans %}
@@ -49,15 +49,15 @@
     </div>
     <br/>
     {% endif %}
-    
-    <div class="beige_paper">
+
+    <div class="rice_paper_rose">
     <ul>
         {% for filename, fileurl in files %}
             <li><a href="{{ fileurl }}" onclick="load_media_frame('{{ fileurl|escapejs }}'); return false;">{{ filename }}</a></li>
         {% endfor %}
     </ul>
     </div>
-    
+
 {% usekwacro side_panel_end %}
 
 {% endblock %}
@@ -65,7 +65,7 @@
 
 
 
-{% block content %}  
+{% block content %}
 
     <div align="center">
         <strong>
@@ -74,7 +74,7 @@
         </div>
         </strong>
     </div>
-    
+
     <div align="center" id="media_viewer"  style="min-height:200px;">&nbsp;</div>
 
 {% endblock %}

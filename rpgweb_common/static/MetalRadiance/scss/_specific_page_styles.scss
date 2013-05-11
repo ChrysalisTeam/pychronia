@@ -1,4 +1,24 @@
 
+@import "_globals.scss";
+
+@import "_section_decorations.scss";
+
+
+
+
+/* styles for items display */
+
+.item_display {
+    @extend .carved_square_frame_gold;
+    padding: 0;
+
+    /* fixes for iframe mess */
+    max-height: 555px;
+    max-width: 680px;
+}
+
+
+
 
 /* styles for door locking ability */
 
@@ -45,8 +65,8 @@ input.digit
 
 #chatwindow {
     margin: auto;
-    height: 350px;
-    width: 500px;
+    height: 400px;
+    width: 100%;
     padding: 5px;
     overflow: auto;
     background-color: transparent;
