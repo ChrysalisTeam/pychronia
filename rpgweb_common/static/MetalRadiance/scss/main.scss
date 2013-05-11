@@ -1,20 +1,27 @@
 @charset "UTF-8";
 
+
 @import "_globals.scss";
+
+@import "_advanced_widgets.scss";
 
 @import "_corner_decorations.scss";
 
-@import "_standard_content.scss";
-
-@import "_messaging.scss";
+@import "_django_customization.scss";
 
 @import "_docutils_customization.scss";
 
-@import "_zinnia_customization.scss";
-
 @import "_js_utils.scss";
 
-@import "_specific_styles.scss";
+@import "_section_decorations.scss";
+
+@import "_specific_page_styles.scss";
+
+@import "_standard_content.scss";
+
+@import "_zinnia_customization.scss";
+
+
 
 
 * {

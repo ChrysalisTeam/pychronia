@@ -1,0 +1,99 @@
+
+
+/* styles for door locking ability */
+
+#password_display
+{
+    display: table-cell;
+    vertical-align: middle;
+    margin: 20px;
+    font-weight: bold;
+    font-size: 35px;
+    width: 200px;
+    height: 60px;
+    background-color: $light_yellow;
+    border: solid 2px $dark_yellow;
+}
+
+input.digit
+{
+    width: 150px;
+    height: 50px;
+    margin: 7px;
+    font-size: 20px;
+    font-weight: bold;
+    background-color: $light_yellow;
+}
+
+
+
+/* styles for radio playlist management */
+
+#trashcan {
+  margin: 20px 10px 5px;
+  height:110px;
+  background: transparent center center no-repeat url('#{$IMGS}icons/trashbin.png');
+  * {
+    visibility: hidden;
+  }
+}
+
+
+
+
+/* styles for chatroom */
+
+#chatwindow {
+    margin: auto;
+    height: 350px;
+    width: 500px;
+    padding: 5px;
+    overflow: auto;
+    background-color: transparent;
+}
+
+
+.admin_widgets {
+    list-style-type: none;
+    list-style-image: none;
+    padding: 0;
+    margin: 10px auto;
+}
+
+
+
+
+
+
+/* styles for messaging pages */
+
+
+@mixin email_common {
+    position: relative; // to allow absolute stuffs inside
+    min-width: 150px;
+    padding: 0 10px;
+    border-style: solid;
+    border-width: 79px 45px 81px 39px;
+}
+
+.email_unread {
+    @include email_common;
+    border-image: url('#{$IMGS}backgrounds/scroll_realistic_thin_ends.png') 79 45 81 39 fill stretch stretch;
+}
+
+
+.email_read {
+    @include email_common;
+    border-image: url('#{$IMGS}backgrounds/scroll_realistic_thin_ends_disabled.png') 79 45 81 39 fill stretch stretch;
+}
+
+
+.message_operations {
+    position: absolute;
+    top: -60px;
+    left: 5px;
+}
+
+.cover_previous {
+  margin-top: -60px;
+}

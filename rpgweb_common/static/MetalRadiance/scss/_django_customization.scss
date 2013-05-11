@@ -1,0 +1,15 @@
+
+@import "_globals.scss";
+
+
+/* classes used by django standard modules like newforms */
+
+
+.errorlist {
+    list-style-type: none;
+    list-style-image: none;
+    color: $error_color;
+    margin: 0;
+    padding: 0;
+}
+

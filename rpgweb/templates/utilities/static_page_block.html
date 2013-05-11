@@ -2,5 +2,5 @@
 {% if article_data %}
     {% rich_text article_data.content %}
 {% elif article_name and display_admin_tips %}
-    <div class="missing-content">{% blocktrans %}Content block '{{ article_name }}' would appear here.{% endblocktrans %}</div>
+    <div class="admin-note missing-content">{% blocktrans %}Content block '{{ article_name }}' would appear here.{% endblocktrans %}</div>
 {% endif %}

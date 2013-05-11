@@ -76,6 +76,7 @@ h2 {
         text-indent: 0;
 
         &:first-letter {
+            /* ADDING DROP CAP */
             font-family: rothenburg_decorative, serif;
             color: $drop_cap;
             float: left;
@@ -95,18 +96,6 @@ div, span, p {
     overflow: visible;
 }
 
-
-.clearfix {
-   &:after {
-       /* quick fix for the dumb problem of "float collapsing - better than using overflow:hidden/auto */
-       content: ".";
-       visibility: hidden;
-       display: block;
-       width: 0;
-       height: 0;
-       clear: both;
-   }
-}
 
 
 
@@ -134,37 +123,6 @@ dd {
 }
 
 
-ul
-{
-    padding-left: 32px;
-    list-style-position: outside;
-    list-style-image: url('#{$IMGS}icons/bullet_gold_small.png');
-
-    ul {
-        list-style-image: url('#{$IMGS}icons/bullet_silver_small.png');
-
-        ul {
-            list-style-image: url('#{$IMGS}icons/bullet_bronze_small.png');
-        }
-    }
-}
-
-
-textarea { resize: vertical; }
-
-
-
-
-
-
-/*  Wrapping of text in scrolls and plates  */
-
-.outlined {
-    max-width: 600px;
-    padding: 5px;
-    margin: 10px auto;
-    outline: $medium_yellow ridge 2px;
-}
 
 blockquote, q, cite {
     font-size: 1.5em;
@@ -180,178 +138,35 @@ blockquote, q, cite {
     border-image: url('#{$IMGS}backgrounds/marble_plate.png') 7 10 10 fill stretch;
 }
 
-.post-it {
-    color: black;
 
-    font-size: 2em;
-    line-height: normal;
+ul
+{
+    padding-left: 32px;
+    list-style-position: outside;
+    list-style-image: url('#{$IMGS}icons/bullet_gold_small.png');
 
-    font-family: kingthings_calligraphica_light;
-    margin: 8px;
-    padding: 6px;
-    width: 50%;
-    border-style: solid;
-    border-width: 4px 4px 6px;
-    border-image: url('#{$IMGS}backgrounds/post-it.png') 4 4 6 fill stretch;
+    ul {
+        list-style-image: url('#{$IMGS}icons/bullet_silver_small.png');
+
+        ul {
+            list-style-image: url('#{$IMGS}icons/bullet_bronze_small.png');
+        }
+    }
 }
 
-
-.admin-note, .missing-content {
-    @extend .post-it;
-    color: $dark_red;
-}
-
-.scroll_realistic {
-    //width: 30%;
-    padding: 0 10px;
-    border-style: solid;
-    border-width: 142px 63px 124px 71px;
-    border-image: url('#{$IMGS}backgrounds/scroll_realistic.png') 142 63 124 71 fill stretch stretch;
-}
-
-.scroll_realistic_thin_ends {
-    //width: 30%;
-    min-width: 150px;
-    padding: 0 10px;
-    border-style: solid;
-    border-width: 79px 45px 81px 39px;
-    border-image: url('#{$IMGS}backgrounds/scroll_realistic_thin_ends.png') 79 45 81 39 fill stretch stretch;
-}
-
-.scroll_yellow_flat {
-    padding: 25px;
-    background: url('#{$IMGS}backgrounds/scroll_yellow_flat.png');
-    background-size: 100% 100%;
-    background-repeat: no-repeat;
-}
-
-.scroll_yellow_rolled {
-    padding: 55px 30px;
-    background: url('#{$IMGS}backgrounds/scroll_yellow_rolled.png');
-    background-size: 100% 100%;
-    background-repeat: no-repeat;
-}
-
-
-.antique_marble_frame {
-    padding: 10px;
-    border-style: solid;
-    border-width: 24px 24px 24px 24px;
-    border-image: url('#{$IMGS}backgrounds/antique_marble_frame2.png') 24 24 24 24 fill round;
-    margin: -5px;
-}
-
-.antique_large_decorated_frame {
-    padding: 10px;
-    border-style: solid;
-    border-width: 35px 40px 35px 40px; // only HALF of real border-image size here...
-    border-image: url('#{$IMGS}backgrounds/antique_large_decorated_frame.png') 70 80 70 80 fill stretch;
-    margin: -5px;
-}
-
-.decorated_golden_frame {
-    border-style: solid;
-    border-width: 25px 27px 25px;
-    border-image: url('#{$IMGS}backgrounds/decorated_golden_frame.png') 25 27 25 fill stretch;
-    margin: -5px;
-}
-
-.beige_paper {
-    padding: 5px 5px;
-    background-image: url('#{$IMGS}backgrounds/seamless_paper_beige.jpg');
-    box-shadow: 2px 2px 3px black;
-}
-
-.rice_paper {
-    background-image: url('#{$IMGS}backgrounds/seamless_paper_rose1.jpg');
-}
-
-/* Django classes */
-
-.errorlist {
+.no_bullets {
     list-style-type: none;
     list-style-image: none;
-    color: $error_color;
-    margin: 0;
-    padding: 0;
 }
 
 
-#chatwindow {
-    margin: auto;
-    height: 350px;
-    width: 500px;
-    padding: 5px;
-    overflow: auto;
-    background-color: transparent;
-}
 
-.admin_widgets {
-    list-style-type: none;
-    list-style-image: none;
-    padding: 0;
-    margin: 10px auto;
+textarea {
+    resize: vertical;
 }
 
 
-#trashcan {
-  margin: 20px 10px 5px;
-  height:110px;
-  background: transparent center center no-repeat url('#{$IMGS}icons/trashbin.png');
-  * {
-    visibility: hidden;
-  }
-}
 
 
-table.realtable {
-    border-collapse: collapse;
-	  margin: 15px 0;
-    padding:0px;
-	  width:100%;
-	  box-shadow: 5px 5px 3px #888888;
-	  border:1px solid #000000;
 
-    tr:nth-child(odd){ background-color:#eed892; }
-    tr:nth-child(even) { background-color:#f1d875; }
-
-    td {
-        vertical-align:middle;
-        border:1px solid #000000;
-        border-width:1px 1px 1px 1px;
-        text-align:center;
-        padding:7px;
-        font-size:1.2em;
-        font-family:Arial;
-        font-weight:normal;
-        line-height:1.2em;
-    }
-
-    tr:last-child td {
-    }
-    tr td:last-child {
-    }
-    tr:last-child td:last-child {
-    }
-
-    thead th {
-        background-color:#AF411C;
-        border:0px solid #000000;
-        text-align:center;
-        border-width:0px 0px 1px 1px;
-        font-size:1.3em;
-        line-height:1.3em;
-        font-family:Arial;
-        font-weight:bold;
-        color:#ffffff;
-    }
-
-    thead th:first-child {
-        border-width:0px 0px 1px 0px;
-    }
-
-    thead th:last-child {
-        border-width:0px 0px 1px 1px;
-    }
-}
 

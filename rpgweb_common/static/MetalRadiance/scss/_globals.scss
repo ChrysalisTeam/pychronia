@@ -1,5 +1,12 @@
 
-$IMGS: unquote("img/");
+
+/* COMMON UTILITY DEFINITIONS */
+
+$IMGS: unquote("img/"); // use for every path relative to css file
+
+
+
+/* COMMON COLOR DEFINITIONS */
 
 $main_brass_color = #AC8B28; // color applied to most decorations after desaturation
 
@@ -37,22 +44,26 @@ $notification_beige: #A89D97; # rather dark
 $success_color: green;
 $error_color: red;
 
- 
+
+
+/* COMMON FONT DEFINITIONS */
+
+
 @font-face
 {
     font-family: black_chancery;
     src: url('#{$IMGS}fonts/black_chancery.ttf');
-} 
+}
 @font-face
 {
     font-family: rothenburg_decorative;
     src: url('#{$IMGS}fonts/rothenburg_decorative.ttf');
-} 
+}
 @font-face
 {
     font-family: kingthings_calligraphica_light;
     src: url('#{$IMGS}fonts/kingthings_calligraphica_light.ttf');
-} 
+}
 
 
 @mixin text_shadow {
@@ -64,40 +75,15 @@ $error_color: red;
     @include text_shadow;
     color: #BF9635; //#f4ed62; //#ac8b28; // #cc9933;
     font-family: black_chancery, serif;
-    margin: 2px; 
+    margin: 2px;
     text-align: center;
     letter-spacing: 0px
 }
 
 
-.center {
-    margin-left: auto;
-    margin-right: auto;
-}
 
-.center_content {
-    text-align: center;
-    & > * {
-      margin-left: auto;
-      margin-right: auto;
-    }
-}
+/* COMMON BACKGROUND COLOR CLASSES */
 
-
-.left, .float_left, .float-left, .floatleft {
-    float: left;
-    clear: left; // so that they stack
-}
-
-.right, .float_right, .float-right, .floatright {
-    float: right;
-    clear: right; // so that they stack
-}
-
-
-.full_width {
-    width: 100% !important;
-}
 
 .bg_beige, .mixed {
     background-color: $notification_beige;
@@ -114,6 +100,104 @@ $error_color: red;
 .bg_red, .error {
     background-color: $notification_red;
 }
+
+
+
+
+/* COMMON POSITIONING CLASSES */
+
+
+.center {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.inner_center {
+    text-align: center;
+    & > * {
+      margin-left: auto;
+      margin-right: auto;
+    }
+}
+
+
+.left, .float_left, .float-left, .floatleft {
+    float: left;
+}
+
+.right, .float_right, .float-right, .floatright {
+    float: right;
+}
+
+.inner_left {
+    text-align: left;
+}
+
+.inner_right {
+    text-align: right;
+}
+
+
+.clear_both {
+    clear: both;
+}
+
+.clear_left {
+    clear: left;
+}
+
+.clear_right {
+    clear: right;
+}
+
+
+.stack_left {
+    float: left;
+    clear: left;
+}
+
+.stack_right {
+    float: right;
+    clear: right;
+}
+
+.clearfix {
+   &:after {
+       /* quick fix for the dumb problem of "float collapsing - better than using overflow:hidden/auto */
+       content: ".";
+       visibility: hidden;
+       display: block;
+       width: 0;
+       height: 0;
+       clear: both;
+   }
+}
+
+
+/* COMMON SIZING CLASSES, with both relative and absolute sizes */
+
+.full_width {
+    width: 100% !important;
+}
+
+.half_width {
+    width: 100% !important;
+}
+
+.big_width {
+    width: 600px !important;
+}
+
+.medium_width {
+    width: 400px !important;
+}
+
+.small_width {
+    width: 250px !important;
+}
+
+
+
 
 
 
