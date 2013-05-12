@@ -173,6 +173,7 @@ def _determine_message_display_context(datamanager, msg, is_pending):
     """
     Useful for both pending and dispatched messages.
     """
+    assert msg
     assert datamanager.is_authenticated()
     username = datamanager.user.username
     visibility_reason = msg["visible_by"].get(username, None) # one of VISIBILITY_REASONS, or None
@@ -417,13 +418,15 @@ def view_single_message(request, msg_id, template_name='messaging/view_single_me
             is_queued = True
         else:
             user.add_error(_("The requested message doesn't exist."))
+    
+    ctx = _determine_message_display_context(request.datamanager, message, is_pending=is_queued) if message else None
 
     return render(request,
                   template_name,
                     {
                      'page_title': _("Single Message"),
                      'is_queued': is_queued,
-                     'ctx': _determine_message_display_context(request.datamanager, message, is_pending=is_queued),
+                     'ctx': ctx,
                      'message': message
                     })
 

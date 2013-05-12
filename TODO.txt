@@ -10,6 +10,7 @@ FEATURES
 - investigate in messaging : [CRITICAL] root: utctolocal filter failed
   -> TypeError: cannot concatenate 'str' and 'datetime.timedelta' objects
 - fix compose trouble: attachments submitted must be full urls or WITHOUT special prefix !!!
+- test wrong msigid in view single message
 
 
 SCRIPT
