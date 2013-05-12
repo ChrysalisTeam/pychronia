@@ -93,6 +93,7 @@
 </head>
 <body bgcolor="black">
 
+
     {% block body_top %}{% endblock %}
 
 
@@ -267,5 +268,6 @@
        $(document).ready(INIT_JS); // only called on full page loading, not on ajax-based fast-transitions
     </script>
 
+    {% block body_bottom %}{% endblock %}
 </body>
 </html>

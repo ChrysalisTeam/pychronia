@@ -1123,6 +1123,11 @@ body:after {
   background-position: -2000000;
   display: inline;
 }
+.grey_layer {
+  margin: 0;
+  padding: 0;
+  background: url("img/backgrounds/oblic_grey_3x3.png") repeat scroll 0 0 transparent;
+}
 #full_header {
   width: 100%;
   position: relative;
@@ -1237,6 +1242,8 @@ body:after {
   padding: 4px 12px;
 }
 #full_header #full_header_background #notification_table .carving {
+  font-size: 1.1em;
+  color: #ffffff;
   width: 183px;
   background-image: url(img/backgrounds/carving1.png);
   background-repeat: no-repeat;
@@ -1277,7 +1284,6 @@ body:after {
   z-index: 0;
   padding-top: 12px;
   height: 73px;
-  cursor: pointer;
 }
 #full_menu #main_menu .marble_menu_container .marble_menu {
   min-width: 550px;
@@ -1313,6 +1319,10 @@ body:after {
   list-style-type: none;
   list-style-image: none;
   text-decoration: none;
+}
+#full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu > li span {
+  color: #000000 !important;
+  text-shadow: none !important;
 }
 #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu > li li a,
 #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu > li li span {

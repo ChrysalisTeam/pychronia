@@ -101,7 +101,11 @@ body {
     }
 }
 
-
+.grey_layer {
+    margin: 0;
+    padding: 0;
+    background: url("#{$IMGS}backgrounds/oblic_grey_3x3.png") repeat scroll 0 0 transparent;
+}
 
 
 
@@ -259,6 +263,9 @@ body {
             }
             .carving{
 
+                font-size: 1.1em;
+                color: $white_color;
+
                 .marquee {
                   overflow: hidden;
                 }
@@ -325,7 +332,6 @@ body {
             z-index: 0;
             padding-top: 12px;
             height: 73px;
-            cursor: pointer;
 
             .marble_menu {
 

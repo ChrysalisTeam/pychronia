@@ -376,32 +376,40 @@
 
 {% block body_top %}
 
-    {% comment %} FIX IMPERSONATION PANEL
-    ALSO : impersonation_writability_post_variable <---
-    {% if possible_impersonations %}
-    <div style="float:left;">
-        <div style="color: #FFF; font-size: 10px;">Write: {{ user.ssss }} <br/> Impersonation: {{ user.is_impersonation}}</div>
-        {% for impersonation in possible_impersonations %}
-        <form action="" method="POST">
-            <input type="hidden" name="{{ impersonation_target_post_variable }}" value="{{ impersonation }}"/>
-            <input type="submit" name="" value="{{ impersonation|capfirst }}">
-        </form>
-        {% endfor %}
-
-        {% if user.is_impersonation %}
-        <form action="" method="POST">
-            <input type="hidden" name="{{ impersonation_target_post_variable }}" value=""/>
-            <input type="submit" name="" value="STOP">
-        </form>
-        {% endif %}
-    </div>
+    {% if not game_is_writable %}
+        <div class="grey_layer">
     {% endif %}
+
+    {% comment %} FIX IMPERSONATION PANEL
+            ALSO : impersonation_writability_post_variable <---
+            {% if possible_impersonations %}
+            <div style="float:left;">
+                <div style="color: #FFF; font-size: 10px;">Write: {{ user.ssss }} <br/> Impersonation: {{ user.is_impersonation}}</div>
+                {% for impersonation in possible_impersonations %}
+                <form action="" method="POST">
+                    <input type="hidden" name="{{ impersonation_target_post_variable }}" value="{{ impersonation }}"/>
+                    <input type="submit" name="" value="{{ impersonation|capfirst }}">
+                </form>
+                {% endfor %}
+
+                {% if user.is_impersonation %}
+                <form action="" method="POST">
+                    <input type="hidden" name="{{ impersonation_target_post_variable }}" value=""/>
+                    <input type="submit" name="" value="STOP">
+                </form>
+                {% endif %}
+            </div>
+            {% endif %}
     {% endcomment %}
 
     {% include "utilities/bug_report.html" %}
 {% endblock %}
 
-
+{% block body_bottom %}
+    {% if not game_is_writable %}
+        </div> {# we close grey_layer #}
+    {% endif %}
+{% endblock %}
 
 {% block top_left_motto %}
 {% if impersonation_capabilities.display_impersonation_target_shortcut %}
@@ -484,20 +492,20 @@
 
 {% block carving_left %}
 	{% if signal_new_menu_entries %}
-	menu
+	Menu!
 	{% endif %}
 	{% if signal_new_text_message %}
-	msg
+	Msg!
 	{% endif %}
 	{% if signal_chatting_users %}
-	chat
+	Chat!
 	{% endif %}
 {% endblock %}
 
 
 {% block carving_right %}
 <div class="marquee">
-HOY ma guy
+{% trans "Welcome to Anthropia," %} {{ user.username }}!
 </div>
 {% endblock %}
 
