@@ -70,7 +70,7 @@ class AbstractDataTableManagement(AbstractGameView):
         if not deleted_item or deleted_item not in table:
             raise AbnormalUsageError(_("Entry %r not found") % deleted_item)
         del table[deleted_item]
-        return _("Entry %r properly deleted") % deleted_item
+        return _("Entry '%s' properly deleted") % deleted_item
 
 
     @readonly_method

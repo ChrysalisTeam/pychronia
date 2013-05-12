@@ -304,7 +304,7 @@ def utctolocal(value, arg=None): # FIXME - BUGGY CALLS
 register.filter('utctolocal', utctolocal)
 
 
-def mediaplayer(properties, autostart):
+def mediaplayer(properties, autostart=False):
 
     fileurl = determine_asset_url(properties)
 

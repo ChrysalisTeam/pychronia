@@ -249,10 +249,10 @@ table.realtable td {
   border-width: 1px 1px 1px 1px;
   text-align: center;
   padding: 7px;
-  font-size: 1.2em;
+  font-size: 1.1em;
   font-family: Arial;
   font-weight: normal;
-  line-height: 1.2em;
+  line-height: 1.1em;
 }
 table.realtable thead th {
   background-color: #AF411C;
@@ -704,6 +704,12 @@ h2:after {
   padding: 0;
   position: relative;
 }
+h3 {
+  color: #ffffff;
+  font-size: 1.3em;
+  text-shadow: 1px 1px 0px #000000;
+  margin: 14px 5px 7px;
+}
 .section > p {
   text-align: justify;
   overflow: hidden;
@@ -787,8 +793,10 @@ textarea {
   resize: vertical;
 }
 #full_content form .markItUp, #full_content form .select2-container,
-#full_content form button, #full_content form input[type=submit],
-#full_content form input[type=text], #full_content form select {
+#full_content form input[type=button],
+#full_content form input[type=submit],
+#full_content form input[type=text], #full_content form select,
+#full_content form textarea {
   width: 100% !important;
 }
 fieldset {
@@ -987,12 +995,16 @@ input.digit {
   background-color: #d3c469;
 }
 #trashcan {
+  cursor: pointer;
   margin: 20px 10px 5px;
   height: 110px;
   background: transparent center center no-repeat url(img/icons/trashbin.png);
 }
 #trashcan * {
   visibility: hidden;
+}
+.radio_spot {
+  cursor: pointer;
 }
 #chatwindow {
   margin: auto;

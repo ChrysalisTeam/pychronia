@@ -40,7 +40,7 @@
 
     <h2>{% trans "Entries" %}</h2>
 
-    <div class="rice_paper_rose">
+    <div class="rice_paper_rose tiny_bullets">
     <ul>
         {% for identifier, form in forms %}
             <li><a href="#entry-{{ identifier }}">{{ identifier|default:_("NEW ENTRY") }}</a></li>
@@ -64,7 +64,13 @@
         <a name="entry-{{ identifier }}"><h2>{{ identifier|default:_("NEW ENTRY") }}</h2></a>
         <form id="update_form" action="" method="post">
             {{ form.as_p }}
-            <div id="id_{{ identifier }}_sound_preview">PLACEHOLDER</div>
+            <div id="id_{{ identifier }}_sound_preview" align="center">
+                {% if form.url_or_file.value %}
+                    {{ form.url_or_file.value|mediaplayer }}
+                {% else %}
+                    &nbsp;
+                {% endif %}
+            </div>
             <input type="button" name="preview" value="{% trans "Generate Text to Speech" %}" onclick="generate_tts_sample('{{ identifier|escapejs }}'); return false;" />
             <input type="submit" name="submit" value="{% trans "Submit radio spot" %}"/>
         </form>

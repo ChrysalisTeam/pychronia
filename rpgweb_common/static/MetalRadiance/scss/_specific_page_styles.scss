@@ -5,7 +5,6 @@
 
 
 
-
 /* styles for items display */
 
 .item_display {
@@ -16,8 +15,6 @@
     max-height: 555px;
     max-width: 680px;
 }
-
-
 
 
 /* styles for door locking ability */
@@ -50,14 +47,18 @@ input.digit
 /* styles for radio playlist management */
 
 #trashcan {
-  margin: 20px 10px 5px;
-  height:110px;
-  background: transparent center center no-repeat url('#{$IMGS}icons/trashbin.png');
-  * {
-    visibility: hidden;
-  }
+    cursor: pointer;
+    margin: 20px 10px 5px;
+    height:110px;
+    background: transparent center center no-repeat url('#{$IMGS}icons/trashbin.png');
+    * {
+        visibility: hidden;
+    }
 }
 
+.radio_spot {
+    cursor: pointer;
+}
 
 
 

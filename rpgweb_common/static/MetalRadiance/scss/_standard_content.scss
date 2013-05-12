@@ -52,6 +52,13 @@ h2 {
 }
 
 
+h3 {
+    color: $title_white;
+    font-size: 1.3em;
+    text-shadow: 1px 1px 0px black;
+    margin: 14px 5px 7px;
+}
+
 
 .section {
 
@@ -184,9 +191,8 @@ textarea {
 }
 
 
-
 #full_content form {
-    select, input[type=text], input[type=submit], button, .select2-container, .markItUp {
+    textarea, select, input[type=text], input[type=submit], input[type=button], .select2-container, .markItUp {
         width: 100% !important;
     }
 

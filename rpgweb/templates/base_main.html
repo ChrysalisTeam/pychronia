@@ -115,6 +115,21 @@
         return s;
     };
 
+
+    function save_radio_playlist() {
+       $.post("",
+               { _action_: "save_radio_playlist",
+               audio_ids: $('#current_playlist').sortable('toArray', { attribute: "data-spotid" })},
+               function(answer) {  }
+             );
+    }
+
+
+    function clear_radio_playlist() {
+        $("#current_playlist").empty();
+        save_radio_playlist();
+    }
+
 {% endaddtoblock %}
 
 
@@ -233,13 +248,9 @@
 
 
 
-        function save_radio_playlist() {
-           $.post("",
-                   { _action_: "save_radio_playlist",
-                   audio_ids: $('#current_playlist').sortable('toArray', { attribute: "data-spotid" })},
-                   function(answer) {  }
-                 );
-        }
+
+
+
 
         $("#trashcan").droppable({
            drop: function(event, ui) {ui.draggable.remove();},

@@ -7,3 +7,12 @@
              </p>
 
              <br/><br/>
+
+
+
+<p>
+{% blocktrans %}
+All important events which have occurred so far are logged below.
+Some events point to other pages, where more details can be found.
+{% endblocktrans %}
+</p>

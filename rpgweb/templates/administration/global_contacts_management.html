@@ -11,7 +11,8 @@
 {% usekwacro side_panel_start frame_class="mini_frame float_left" decos="2" %}
     <h2>{% trans "Entries" %}</h2>
 
-    <div class="rice_paper_rose" style="font-size:0.8em;">
+    <h3>{% trans "Mutable" %}</h3>
+    <div class="rice_paper_rose tiny_bullets" style="font-size:0.8em;">
     <ul>
         {% for identifier, form in forms %}
             <li><a href="#entry-{{ identifier }}">{{ identifier|default:_("NEW ENTRY") }}</a></li>
@@ -19,8 +20,8 @@
     </ul>
     </div>
 
-
-    <div class="rice_paper_rose" style="font-size:0.8em;">
+    <h3>{% trans "Immutable" %}</h3>
+    <div class="rice_paper_rose tiny_bullets" style="font-size:0.8em;">
     <ul>
         {% for identifier, form in immutable_table_items %}
             <li><a href="#entry-{{ identifier }}">{{ identifier }}</a></li>
@@ -70,15 +71,19 @@
 	    {% for identifier, data in immutable_table_items %}
 	    <div id="entry-{{ identifier }}" class="scroll_realistic_thin_ends center">
 
-	        {{ data.avatar }}
+            <p><b>{{ identifier }}</b></p>
 
-	        {{ data.description }}
+	        <p>{% trans "Avatar" %}: {{ data.avatar }}</p>
 
+            <p>{% trans "Description" %}: {{ data.description }}</p>
+
+            <p>
 	        {% if data.access_tokens == None %}
 	            PUBLIC
 	        {% else %}
-	            {{ data.access_tokens }}
+	            {% trans "Allowed for" %}: {{ data.access_tokens|join:", "|default:_("No one") }}
 	        {% endif %}
+            </p>
 
 	    </div>
 	    {% endfor %}

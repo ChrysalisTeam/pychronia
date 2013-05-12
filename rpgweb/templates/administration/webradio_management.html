@@ -19,7 +19,7 @@
         </ul>
     </div>
 
-    <div id="trashcan">&nbsp;</div>
+    <div id="trashcan" onclick="clear_radio_playlist();">&nbsp;</div>
 {% usekwacro side_panel_end %}
 
 {% endblock %}
@@ -44,6 +44,8 @@
  </strong>
 </div>
 
+<br/>
+
 <div align="center">
 <form action="" method="POST">
 {% if radio_is_on %}
@@ -58,25 +60,30 @@
 </form>
 </div>
 
-
-<h3>{% trans "Current Playlist" %}</h3>
-<div align="center">
-
-{% if pending_audio_messages %}
+<br/>
 
 
+{% comment %}
+    <h3>{% trans "Current Playlist" %}</h3>
+    <div align="center">
 
-<form action="" method="POST">
-    <input type="submit" name="reset_playlist" value="Reset Playlist"/>
-</form>
+    {% if pending_audio_messages %}
 
-{% else %}
+    <form action="" method="POST">
+        <input type="submit" name="reset_playlist" value="Reset Playlist"/>
+    </form>
 
-    <span>{% blocktrans %}Web radio playlist is currently empty.{% endblocktrans %}</span>
+    {% else %}
 
-{% endif %}
+        <span>{% blocktrans %}Web radio playlist is currently empty.{% endblocktrans %}</span>
 
-</div>
+    {% endif %}
+
+    </div>
+{% endcomment %}
+
+
+
 
 
 <h3>{% trans "Auto Playlists" %}</h3>
@@ -93,6 +100,8 @@
 </div>
 
 
+<br/>
+
 <a name="anchor_playlist_building">
 <h3>{% trans "Manual Playlist Building" %}</h3>
 </a>
@@ -103,7 +112,7 @@
 
     {% for audio_id, audio_properties in special_audio_messages %}
         <ul>{% include "utilities/radio_spot_placeholder.html" with audio_id=audio_id audio_properties=audio_properties %}</ul>
-            {{ audio_properties|mediaplayer:"false" }}
+        <div align="center">{{ audio_properties|mediaplayer:"false" }}</div>
     {% endfor %}
 
 </div>
