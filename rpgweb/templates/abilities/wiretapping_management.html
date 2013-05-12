@@ -7,10 +7,10 @@
 <h2>{% trans "Your protections" %}</h2>
 
 {% if has_confidentiality_activated %}
-    <div><b>{% trans "Your messaging account is properly protected by the confidentiality system." %}</b></div>
+    <p><b>{% trans "Your messaging account is properly protected by the confidentiality system." %}</b></p>
 {% else %}
 
-    <div align="center" class="scroll_yellow_flat center" style="text-align:center; width:300px;">
+    <div align="center" class="form_scroll_thin center" style="text-align:center; width:300px;">
         <form action="" method="post">
             <input type="hidden" name="_action_" value="purchase_confidentiality_protection"/>
             <input type="submit" name="purchase_confidentiality" value="{% trans "Buy confidentiality system" %}" onclick="return confirm('{% trans "Are you sure you want to purchase a confidentiality protection system ?" %}')" />
@@ -33,7 +33,7 @@
 
 <div align="center">
     <p>
-	<strong>{% trans "Current target" %}{{ current_targets|pluralize }}:
+	<strong>{% trans "Current target(s)" %}:
 		{% if current_targets %}
 			{{ current_targets|join:", " }}
 		{% else %}
@@ -45,7 +45,7 @@
 
 
 {% if wiretapping_form %}
-    <div align="center" class="scroll_yellow_flat center" style="text-align:center; width:300px;">
+    <div align="center" class="form_scroll_thin center">
         <form action="{{ wiretapping_form.url }}" method="post">
         {{ wiretapping_form.as_p }}
         <input type="submit" name="wiretap" value="{% trans "Set Wiretaps" %}" />
@@ -56,7 +56,7 @@
 {% endif %}
 
 
-<div align="center" class="scroll_yellow_flat center" style="text-align:center; width:300px;">
+<div align="center" class="form_scroll_thin center">
     <form action="" method="post">
         <input type="hidden" name="_action_" value="purchase_wiretapping_slot"/>
         <input type="submit" name="purchase_slot" value="{% trans "Buy wiretapping slot" %}" onclick="return confirm('{% trans "Are you sure you want to purchase a spying slot ?" %}')" />

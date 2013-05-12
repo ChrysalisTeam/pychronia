@@ -1,7 +1,7 @@
 
 {% extends "base_one_column.html" %}
 
-{% load sekizai_tags i18n helpers kwacros %}  
+{% load sekizai_tags i18n helpers kwacros %}
 
 {% block sekizai_calls %}
 {{ block.super }}
@@ -30,25 +30,12 @@
 
         {% if are_doors_open %}
 
-            <p>
-                {% blocktrans %}
-                You may here activate the locking of the doors of the manor.
-                {% endblocktrans %}
-            </p><br/>
-
             <form id="locking_form" action="" method="post">
                 <input type="hidden" name="_action_" value="lock"/>
                 <input type="submit" class="digit" value="{% trans "Lock Doors" %}"/>
             </form>
 
-
         {% else %}
-
-            <p>
-                {% blocktrans %}
-                Please provide the proper password to unlock the doors of the manor.
-                {% endblocktrans %}
-            </p><br/>
 
 
              <div id="password_display"></div>

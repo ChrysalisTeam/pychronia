@@ -5,10 +5,10 @@
 {% endif %}
 
 {% if action_explanations %}
-    <h3>{% trans "Action conditions" %}</h3>
+    <h2>{% trans "Terms of Use" %}</h2>
     {% for action_name, explanations in action_explanations %}
     <div>
-    	<em>{{ action_name }}</em>
+    	<h3>{{ action_name }}</h3>
     	<ul>
     		{% for strings_list in explanations %}
     		<li>{{ strings_list|join:" " }}</li>

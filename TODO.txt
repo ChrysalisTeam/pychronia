@@ -37,7 +37,7 @@ TESTS
 ----------
 
 - auto test all forms with also inspect.getsourcelines(object) (for UNINSTANTIABLEERROR) etc.
-- add tests for admin widget system, for misc. modules, for gameform instantiation, for world scan_form...
+- add tests for admin widget system, for misc. modules, for gameform instantiation, for world scan_form, for is_action_permitted_for_user()...
 - test template helpers
 - launch pychecker or pylint on each file of rpgweb package
 - check that no pb when game paused, for periodic processing
@@ -136,6 +136,8 @@ FUTUR ENHANCEMENTS
 	- nightmare captcha ?
 - make better use of titles, of '#' anchors (with id or name of tags)...
 - moteur typographique
+- normalize is_character as both bool and method, in DM and User instances
+- improve wiretapping - must not be only on characters, but also external emails
 
 
 ELITE RPG:

@@ -311,7 +311,7 @@ class AbstractGameView(object):
         requires_permission = action_registry[new_action_name]["requires_permission"]
         if requires_permission:
             if not user.is_master:
-                assert user.is_character() # only other case where requires_permission can be set
+                assert user.is_character # only other case where requires_permission can be set
                 if not user.has_permission(requires_permission):
                     return False
                     # in any other case, we're good

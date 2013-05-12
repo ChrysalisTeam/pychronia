@@ -1,24 +1,13 @@
 {% extends "base_one_column.html" %}
 
-{% load i18n helpers %}  
+{% load i18n helpers %}
 
-{% block content %}  
+{% block content %}
+
     {% if translation_form %}
-    
-        <p>
-        {% blocktrans %}
-            Please provide below the phonetic transcription of antic runes, with spaces between each syllable (eg. "na tsu to ri").
-            Due to the complex rules of these ancient languages, the precise location of these runes is also required to get
-            a meaningful translation.
-            Translation processing might take between {{ min_delay_mn }} and {{ max_delay_mn }} minutes.
-        {% endblocktrans %}
-        </p>
-        
-        <br/>
-        
-        
+
         <form action="{{ translation_form.url }}" method="post">
-        <table style="margin:auto;width:250px;text-align:center;">
+        <table class="form_scroll_medium center">
         {{ translation_form.as_table }}
         <tr>
             <td colspan="2">
@@ -27,7 +16,7 @@
         </tr>
         </table>
         </form>
-         
+
     {% endif %}
 
 {% endblock %}

@@ -1,4 +1,14 @@
+            <p>
+                {% blocktrans %}
+                You may here activate the locking of the doors of the manor.
+                {% endblocktrans %}
+            </p><br/>
 
+            <p>
+                {% blocktrans %}
+                Please provide the proper password to unlock the doors of the manor.
+                {% endblocktrans %}
+            </p><br/>
 
              <p>
                 {% blocktrans %}
@@ -30,3 +40,15 @@ Some events point to other pages, where more details can be found.
         </p>
     <br/>
     <div align="center"><a href="{% game_view_url "rpgweb.views.login" %}">{% trans "Get back to login page" %}</a></div>
+
+
+        <p>
+        {% blocktrans %}
+            Please provide below the phonetic transcription of antic runes, with spaces between each syllable (eg. "na tsu to ri").
+            Due to the complex rules of these ancient languages, the precise location of these runes is also required to get
+            a meaningful translation.
+            Translation processing might take between {{ min_delay_mn }} and {{ max_delay_mn }} minutes.
+        {% endblocktrans %}
+        </p>
+
+        <br/>
