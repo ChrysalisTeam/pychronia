@@ -4055,7 +4055,7 @@ class TestActionMiddlewares(BaseGameTestCase):
             self.dm.commit() # data was touched, even if not really
 
             old_last_use_times = ability.get_private_middleware_data("middleware_wrapped_test_action", TimeLimitedActionMiddleware)["last_use_times"]
-            res = ability._computed_purge_old_use_times(middleware_settings=ability.get_middleware_settings("middleware_wrapped_test_action", TimeLimitedActionMiddleware),
+            res = ability._compute_purged_old_use_times(middleware_settings=ability.get_middleware_settings("middleware_wrapped_test_action", TimeLimitedActionMiddleware),
                                                              last_use_times=old_last_use_times[:])
             assert res == old_last_use_times # unchanged
             del res, old_last_use_times
@@ -4094,7 +4094,7 @@ class TestActionMiddlewares(BaseGameTestCase):
         time.sleep(0.5)
 
         old_last_use_times = ability.get_private_middleware_data("middleware_wrapped_test_action", TimeLimitedActionMiddleware)["last_use_times"]
-        res = ability._computed_purge_old_use_times(middleware_settings=ability.get_middleware_settings("middleware_wrapped_test_action", TimeLimitedActionMiddleware),
+        res = ability._compute_purged_old_use_times(middleware_settings=ability.get_middleware_settings("middleware_wrapped_test_action", TimeLimitedActionMiddleware),
                                                          last_use_times=old_last_use_times[:])
         assert set(res) < set(old_last_use_times) # purged
         del res, old_last_use_times

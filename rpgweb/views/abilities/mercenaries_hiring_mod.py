@@ -20,15 +20,21 @@ class GemPayementFormMixin(AbstractGameForm):
     def _decode_gems(self, gems):
         return [json.loads(gem) for gem in gems]
 
+    def _gem_display(self, gem):
+        if gem[1]:
+            return _("Gem of %d Kashes (%s)") % gem
+        else:
+            return _("Gem of %d Kashes (unknown origin)") % gem[0]
+
     def __init__(self, datamanager, *args, **kwargs):
         super(GemPayementFormMixin, self).__init__(datamanager, *args, **kwargs)
 
         _gems = datamanager.get_character_properties()["gems"]
-        _gems_choices = zip(self._encode_gems(_gems), [_("Gem of %d Kashes (%s)") % gem for gem in _gems]) # gem is (value, origin) here
+        _gems_choices = zip(self._encode_gems(_gems), [self._gem_display(gem) for gem in _gems]) # gem is (value, origin) here
 
         if _gems_choices:
             self.fields["pay_with_money"] = forms.BooleanField(label=_("Pay with money"), initial=False, required=False)
-            self.fields["gems_list"] = forms.MultipleChoiceField(required=False, label=_("Or pay with gems (press Ctrl key to select/deselect)"), choices=_gems_choices)
+            self.fields["gems_list"] = forms.MultipleChoiceField(required=False, label=_("Or pay with gems"), choices=_gems_choices, widget=forms.SelectMultiple(attrs={"class": "multichecklist"}))
         else:
             self.fields["pay_with_money"] = forms.BooleanField(initial=True, widget=forms.HiddenInput, required=True)
             self.fields["gems_list"] = forms.MultipleChoiceField(required=False, widget=forms.HiddenInput)

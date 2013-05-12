@@ -87,7 +87,7 @@
 .half_width {
   width: 100% !important;
 }
-.big_width {
+.big_width, .form_scroll_big {
   width: 600px !important;
 }
 .form_scroll_medium, .medium_width {
@@ -132,7 +132,8 @@
   background-size: 100% 100%;
   background-repeat: no-repeat;
 }
-.form_scroll_medium, .form_scroll_thin, .scroll_yellow_rolled {
+.form_scroll_big, .form_scroll_medium, .form_scroll_thin,
+.scroll_yellow_rolled {
   margin: 10px;
   padding: 55px 30px;
   background: url(img/backgrounds/scroll_yellow_rolled.png);
@@ -227,6 +228,9 @@
   text-align: left;
 }
 .form_scroll_medium {
+  text-align: left;
+}
+.form_scroll_big {
   text-align: left;
 }
 table.realtable {
@@ -1048,6 +1052,20 @@ input.digit {
 .cover_previous {
   margin-top: -60px;
 }
+#djinn_chat_wrapper {
+  margin: auto;
+  width: 500px;
+}
+#djinn_message_window {
+  margin: auto;
+  width: 500px;
+  height: 350px;
+  border: 2px solid #DFBF99;
+  background-color: #EFDCC2;
+  padding: 5px;
+  overflow: auto;
+  text-align: left;
+}
 .entry-body {
   overflow: visible;
 }
@@ -1184,7 +1202,7 @@ body:after {
   width: 225px;
   font-weight: bold;
   color: #ffffff;
-  text-shadow: 1px 1px 0px #000000;
+  text-shadow: 1px 1px 0px #000000, -1px -1px 0px #000000;
 }
 #full_header #full_header_background #full_header_center #title_table .motto.left_image {
   background-image: url(img/titles/ad_augusta.png);

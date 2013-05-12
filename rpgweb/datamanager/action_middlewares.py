@@ -505,7 +505,7 @@ class TimeLimitedActionMiddleware(AbstractActionMiddleware):
             if middleware_settings["waiting_period_mn"] and middleware_settings["max_uses_per_period"]: # in case of misconfiguration
                 try:
                     private_data = self.get_private_middleware_data(action_name, TimeLimitedActionMiddleware, create_if_unexisting=False) # important
-                    blocking_times = self._computed_purge_old_use_times(middleware_settings=middleware_settings, last_use_times=private_data["last_use_times"])
+                    blocking_times = self._compute_purged_old_use_times(middleware_settings=middleware_settings, last_use_times=private_data["last_use_times"])
                 except LookupError: # user has never used that action
                     blocking_times = ()
             else:
@@ -525,7 +525,7 @@ class TimeLimitedActionMiddleware(AbstractActionMiddleware):
 
 
 
-    def _computed_purge_old_use_times(self, middleware_settings, last_use_times):
+    def _compute_purged_old_use_times(self, middleware_settings, last_use_times):
         """
         Returns a copied list, with non-outdated last use dates.
         """
@@ -546,7 +546,7 @@ class TimeLimitedActionMiddleware(AbstractActionMiddleware):
 
             if middleware_settings["waiting_period_mn"] and middleware_settings["max_uses_per_period"]: # in case of misconfiguration
 
-                private_data["last_use_times"] = self._computed_purge_old_use_times(middleware_settings=middleware_settings, last_use_times=private_data["last_use_times"])
+                private_data["last_use_times"] = self._compute_purged_old_use_times(middleware_settings=middleware_settings, last_use_times=private_data["last_use_times"])
 
                 last_use_times = private_data["last_use_times"]
                 now = datetime.utcnow() # to debug

@@ -52,3 +52,100 @@ Some events point to other pages, where more details can be found.
         </p>
 
         <br/>
+
+
+
+
+
+<p>
+{% blocktrans %}
+    Use your funds carefully to cover the most interesting areas with your mercenaries.
+{% endblocktrans %}
+</p><br/>
+<h3>
+     {% trans "Agents Pricing" %}
+</h3>
+
+{% if employer_profile %}
+    <p>
+        {% blocktrans count user_profile.account as account%}
+            You currently own <strong>{{ account }} kash</strong> in your bank account,
+        {% plural %}
+            You currently own <strong>{{ account }} kashes</strong> in your bank account,
+        {% endblocktrans %}
+
+        {% blocktrans count user_profile.gems|length as gems_count %}
+            plus <strong> {{ gems_count }} gem </strong>,
+        {% plural %}
+            plus <strong> {{ gems_count }} gems </strong>,
+        {% endblocktrans %}
+
+        {% blocktrans count total_gems_value as total_gems_value %}
+            for a total gem value of <strong> {{ total_gems_value }} kash </strong>.
+        {% plural %}
+            for a total gem value of <strong> {{ total_gems_value }} kashes </strong>.
+        {% endblocktrans %}
+
+    </p>
+{% endif %}
+
+
+
+<table style="margin:auto;width:450px;border:1px solid #DFBF99;">
+<tr>
+    <th>&nbsp;</th>
+    <th>
+       THIS IS ALL WRONG
+        {% trans "Payment with money" %}
+    </th>
+    <th>
+        {% trans "Payment with gems" %}
+    </th>
+</tr>
+
+<tr>
+    <th>{% trans "Mercenaries" %}</th>
+    <td>THIS IS ALL WRONG
+        {{ settings.mercenary_cost_money }}
+    </td>
+    <td>
+        {{ settings.mercenary_cost_gems }}
+    </td>
+</tr>
+</table>
+
+
+ (press Ctrl key to select/deselect)
+
+
+    <p>
+    {% blocktrans %}
+        Our scanning system is ready to search the entire world for objects similar to the one you'll provide.
+        You may provide a detailed description of the item to analyse, or provide an object your team own
+        (a description isn't useful in the latter case).
+    {% endblocktrans %}
+    </p>
+
+
+    {% blocktrans %}
+        At the moment, your team still hasn't acquired any object which could help us find the orbs.
+    {% endblocktrans %}
+
+
+
+        <p>
+        {% blocktrans%}
+            HERE EXPLAIN DJINN LIMIT {{bot_max_answers }} LINES.
+        {% endblocktrans %}
+        </p><br />
+
+
+
+
+
+
+
+
+
+
+

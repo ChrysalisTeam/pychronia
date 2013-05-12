@@ -121,3 +121,23 @@ input.digit
 .cover_previous {
   margin-top: -60px;
 }
+
+
+
+/* styles for djinn chat */
+
+#djinn_chat_wrapper {
+  margin: auto;
+  width: 500px;
+}
+
+#djinn_message_window {
+    margin: auto;
+    width: 500px;
+    height: 350px;
+    border: 2px solid #DFBF99;
+    background-color: #EFDCC2;
+    padding: 5px;
+    overflow: auto;
+    text-align: left;
+}

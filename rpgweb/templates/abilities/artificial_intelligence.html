@@ -1,7 +1,7 @@
 
 {% extends "base_one_column.html" %}
 
-{% load sekizai_tags i18n helpers kwacros %}  
+{% load sekizai_tags i18n helpers kwacros %}
 
 {% block sekizai_calls %}
 {{ block.super }}
@@ -9,77 +9,77 @@
 {% addtoblock "definition_js" %}
 
        function scroll_window(){
-          elem = document.getElementById("messagewindow");
+          elem = document.getElementById("djinn_message_window");
           if (elem !== null){
-              elem.scrollTop = elem.scrollHeight;  
-          }  
-       } 
-  
-       function addMessages(answer, is_me) { 
-          
+              elem.scrollTop = elem.scrollHeight;
+          }
+       }
+
+       function addMessages(answer, is_me) {
+
           if (!answer){return;}
-           
+
           $("#errordiv").css("visibility", "hidden");
-           
+
           if (is_me){
             var text = answer+"<br/>";
           }
           else {
             var text = "<i>"+answer+"</i><br/>";
           }
-       
-        $("#messagewindow").append("- "+text);
+
+        $("#djinn_message_window").append("- "+text);
         scroll_window();
 
         /*
-         $("message",xml).each(function(id) {  
-           message = $("message",xml).get(id);  
-           $("#messagewindow").prepend("<b>"+$("author",message).text()+  
-                         "</b>: "+$("text",message).text()+  
-                         "<br />");  
-          });  
+         $("message",xml).each(function(id) {
+           message = $("message",xml).get(id);
+           $("#djinn_message_window").prepend("<b>"+$("author",message).text()+
+                         "</b>: "+$("text",message).text()+
+                         "<br />");
+          });
         */
-       }  
-       
-       function submit_question(){  
+       }
+
+       function submit_question(){
            var question = $.trim($("#msgbox").val());
-           $("#msgbox").val("");  
-           $("#msgbox").focus(); 
-           
+           $("#msgbox").val("");
+           $("#msgbox").focus();
+
            if (!question) {return false;}
-           
-           addMessages(question, true);  
-           
+
+           addMessages(question, true);
+
            $.post("",
                     {
                      _action_: "process_user_sentence",
                      message: question,
                      djinn_name: "{{ selected_djinn|escapejs }}"
-                     }, 
-                    function(answer) {  
-                        addMessages(answer.response, false);  
+                     },
+                    function(answer) {
+                        addMessages(answer.response, false);
                     },
-                    'json');  
-                    
-           return false;  
+                    'json');
+
+           return false;
          }
-     
+
 {% endaddtoblock %}
 
 
-  
+
 
 {% addtoblock "onload_js" %}
 
 
      scroll_window();
-    
-     $(document).ajaxError( 
-        function(e, xhr, settings, exception) { 
+
+     $(document).ajaxError(
+        function(e, xhr, settings, exception) {
             $("#errordiv").css("visibility", "visible");
         });
-        
-     $("form#chatform").submit(submit_question);  
+
+     $("form#chatform").submit(submit_question);
 
 
 {% endaddtoblock %}
@@ -98,49 +98,39 @@
 {% block content %}
 
     {% if selected_djinn %}
-    
-            
-        <p>
-            {% blocktrans %}You're currently in telepathic communication with djinn <strong>{{ selected_djinn|title }}</strong>.{% endblocktrans %}
-        </p>
-            
-         <div id="oracle_wrapper" align="center">  
-         
-            <p id="messagewindow">
+
+         <div id="djinn_chat_wrapper" align="center">
+
+            <p>
+                {% blocktrans %}You're currently in telepathic communication with djinn <strong>{{ selected_djinn }}</strong>.{% endblocktrans %}
+            </p>
+
+            <p id="djinn_message_window">
             {% for sentence in history %}
                - {% cycle "" "<i>" %} {{ sentence }} {% cycle "" "</i>" %} <br/>
             {% endfor %}
-            </p> 
-             
-             <form id="chatform">  
-                 <div><input type="text" id="msgbox" size="80" autocomplete="off" /></div>   
+            </p>
+
+             <form id="chatform">
+                 <div><input type="text" id="msgbox" size="80" autocomplete="off" /></div>
                  <!--div><input type="submit" value="{% trans "Send Message" %}" /></div-->
-             </form>  
-             
+             </form>
+
              <div id="errordiv" style="text-align:center; visibility:hidden; color:red">
                 {% trans "Interferences when chatting with djinn..." %}
              </div>
-             
-         </div>  
 
-    
-    
+         </div>
+
     {% else %}
-    
-    
-        <p>
-        {% blocktrans%}
-            HERE EXPLAIN DJINN LIMIT {{bot_max_answers }} LINES.
-        {% endblocktrans %}
-        </p><br />
-        
+
         <div align="center" class="scroll_yellow_flat center" style="text-align:center; width:300px;">
         <form action="" method="post">
             <p><input type="text" name="target_djinn_name" value="" /></p>
             <p><input type="submit" name="contact_djinn" value="{% trans "Contact Djinn" %}" /></p>
         </form>
         </div>
-        
+
     {% endif %}
 
 {% endblock %}

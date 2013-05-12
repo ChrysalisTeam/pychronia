@@ -107,12 +107,12 @@ p4wnify($("#chess_panel")).next_move();
 
     <div align="center">
     <form id="new_chess_game" action="" method="get">
-        <span>{% trans "Your colour:" %}</span>
-        <select name="player">
+        <span>{% trans "your new colour:" %}</span>
+        <select name="player" style="width: auto !important;">
             <option value="white">white</option>
             <option value="black">black</option>
         </select>
-        <input type="submit" class="" value="{% trans "New Game" %}"/>
+        <input type="submit" class="" value="{% trans "New Game" %}" style="width: auto !important;" />
     </form>
     </div>
 

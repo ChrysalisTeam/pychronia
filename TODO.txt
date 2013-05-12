@@ -11,7 +11,7 @@ FEATURES
   -> TypeError: cannot concatenate 'str' and 'datetime.timedelta' objects
 - fix compose trouble: attachments submitted must be full urls or WITHOUT special prefix !!!
 - test wrong msigid in view single message
-
+- fix _get_middleware_data_explanations for time limited -> must convert to flexible time!!
 
 SCRIPT
 ----------
@@ -41,7 +41,7 @@ TESTS
 - test template helpers
 - launch pychecker or pylint on each file of rpgweb package
 - check that no pb when game paused, for periodic processing
-
+- test good handling of flexible time in "time limiting action middleware"
 
 
 NEEDS COSMETICS
@@ -121,6 +121,7 @@ TASKS DONE
 FUTUR ENHANCEMENTS
 --------------------------
 
+- setup all select choises with a default empty choice
 - add RST summary to all forms, especially admin ones ??? not need right ATM
 - messaging templates filtering by taxonomy ?
 - put back accordeon toggles in messaging

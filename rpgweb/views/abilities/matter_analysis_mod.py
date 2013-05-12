@@ -88,7 +88,7 @@ class MatterAnalysisAbility(AbstractAbility):
 
         # answer from laboratory
 
-        subject = _("Deep Matter Analysis Report - %(item_title)s>") % SDICT(item_title=item_title)
+        subject = _("<Deep Matter Analysis Report - %(item_title)s>") % SDICT(item_title=item_title)
         body = self._compute_analysis_result(item_name)
 
         self.post_message(remote_email, local_email, subject, body=body, attachment=None,

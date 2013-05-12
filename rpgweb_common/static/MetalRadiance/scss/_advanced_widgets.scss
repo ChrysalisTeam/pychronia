@@ -71,6 +71,11 @@
     @include form_scroll_common;
 }
 
+.form_scroll_big {
+    @extend .scroll_yellow_rolled;
+    @extend .big_width;
+    @include form_scroll_common;
+}
 
 
 table.realtable {
