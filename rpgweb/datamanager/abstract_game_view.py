@@ -32,12 +32,12 @@ def transform_usage_error(caller, self, request, *args, **kwargs):
         dm = request.datamanager
         if request.datamanager.user.is_impersonation:
             # Will mainly happen when we switch between two impersonations with different access rights, on a restricted page
-            dm.user.add_warning(_("Currently impersonated user can't access view %s") % self.NAME)
+            dm.user.add_warning(_("Currently impersonated user can't access view %s") % self.TITLE)
             return HttpResponseRedirect(reverse("rpgweb.views.homepage", kwargs=dict(game_instance_id=dm.game_instance_id)))
         else:
             # uses HTTP code for TEMPORARY redirection
-            dm.user.add_error(_("Access denied to page %s") % self.NAME)
-            dm.logger.warning("Access denied to page %s" % self.NAME, exc_info=True)
+            dm.user.add_error(_("Access denied to page %s") % self.TITLE)
+            dm.logger.warning("Access denied to page %s" % self.TITLE, exc_info=True)
             url = reverse("rpgweb.views.login", kwargs=dict(game_instance_id=dm.game_instance_id))
             qs = urllib.urlencode(dict(next=request.build_absolute_uri()))
             return HttpResponseRedirect("%s?%s" % (url, qs))

@@ -1,14 +1,11 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-{% load sekizai_tags kwacros %}
+{% load sekizai_tags kwacros i18n %}
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-
-    <title>{% block html_title %}Bienvenue{% endblock %}</title>
-
+    <title>{% block html_title %}{% trans "Bienvenue" %}{% endblock %}</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     {% render_block "meta" %}
-
 
     <link href="{{ STATIC_URL }}img/favicon_diamond.png" rel="shortcut icon" type="image/png" />
     <link href="{{ STATIC_URL }}libs/fancybox/jquery.fancybox.css" rel="stylesheet" type="text/css" />
