@@ -33,12 +33,12 @@ from .mobile_views import homepage_mobile
 from .auction_views import (_build_display_data_from_viewer_settings, homepage, opening, view_characters,
                             view_sales, auction_items_slideshow, personal_items_slideshow, item_3d_view, ajax_chat, chatroom)
 
-from .info_views import (instructions, view_encyclopedia,
+from .info_views import (view_encyclopedia,
                          personal_webradio_popup, personal_webradio_page, get_radio_xml_conf, public_webradio,
                          ajax_get_next_audio_message, ajax_notify_audio_message_finished,
                          personal_folder, view_media, encrypted_folder, view_world_map)
 
-from .profile_views import login, logout, secret_question, character_profile, friendship_management
+from .profile_views import login, logout, secret_question, character_profile, friendship_management, instructions
 
 
 from .messaging_views import (ajax_set_message_read_state, ajax_force_email_sending, ajax_permanently_delete_message,
@@ -106,7 +106,7 @@ def logo_animation(request, template_name='utilities/item_3d_viewer.html'):
 
 
 @register_view(access=UserAccess.anonymous, always_activated=True, title=_lazy("View Help Page"))
-def view_help_page(request, keyword, template_name='generic_operations/help_page.html'):
+def view_help_page(request, keyword, template_name='utilities/help_page.html'):
     """
     Access for targeted pages is checked here!
     """

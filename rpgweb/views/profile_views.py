@@ -22,7 +22,7 @@ class FriendshipMinDurationForm(AbstractGameForm):
 
 
 @register_view(access=UserAccess.anonymous, always_activated=True, title=_lazy("Login"), always_allow_post=True)
-def login(request, template_name='registration/login.html'):
+def login(request, template_name='profile/login.html'):
 
     form = None
     user = request.datamanager.user
@@ -66,7 +66,7 @@ def login(request, template_name='registration/login.html'):
 
 
 @register_view(access=UserAccess.authenticated, always_activated=True, title=_lazy("Logout"), always_allow_post=True)
-def logout(request, template_name='registration/logout.html'):
+def logout(request):
 
     logout_session(request)
 
@@ -78,7 +78,7 @@ def logout(request, template_name='registration/logout.html'):
 
 
 @register_view(access=UserAccess.anonymous, title=_lazy("Password Recovery"))
-def secret_question(request, concerned_username, template_name='registration/secret_question.html'):
+def secret_question(request, concerned_username, template_name='profile/secret_question.html'):
 
     secret_question = None
     form = None
@@ -106,7 +106,6 @@ def secret_question(request, concerned_username, template_name='registration/sec
                 # success
                 secret_question = None
                 form = None
-
             except:
                 form = forms.SecretQuestionForm(concerned_username, data=request.POST)
                 form.full_clean()
@@ -139,7 +138,7 @@ class CharacterProfile(AbstractGameView):
 
     TITLE = _lazy("Personal Profile")
     NAME = "character_profile"
-    TEMPLATE = "registration/character_profile.html"
+    TEMPLATE = "profile/character_profile.html"
     ACCESS = UserAccess.character
     ALWAYS_ACTIVATED = True
 
@@ -206,7 +205,7 @@ class FriendshipManagementView(AbstractGameView):
                                                     form_class=FriendshipMinDurationForm,
                                                     callback="set_friendship_minimum_duration"),)
 
-    TEMPLATE = "generic_operations/friendship_management.html"
+    TEMPLATE = "profile/friendship_management.html"
 
     ACCESS = UserAccess.character
     REQUIRES_CHARACTER_PERMISSION = False
@@ -283,4 +282,23 @@ class FriendshipManagementView(AbstractGameView):
 
 
 friendship_management = FriendshipManagementView.as_view
+
+
+
+
+
+
+@register_view(access=UserAccess.character, always_activated=True, title=_lazy("Instructions"))
+def instructions(request, template_name='profile/instructions.html'): # TODO - remove that ?????
+
+    user = request.datamanager.user
+    intro_data = request.datamanager.get_game_instructions()
+
+    return render(request,
+                  template_name,
+                    {
+                     'page_title': _("Instructions"),
+                     'intro_data': intro_data,
+                    })
+
 

@@ -16,3 +16,17 @@ All important events which have occurred so far are logged below.
 Some events point to other pages, where more details can be found.
 {% endblocktrans %}
 </p>
+
+
+
+        <i>Here put note about why secret questions are being removed in new accounts.</i>
+
+          <br/>
+        <p class="outlined">
+        {% blocktrans %}
+            Please correctly answer the secret question below, and provide a valid backup email address,
+            so that we can send you the password you forgot.
+        {% endblocktrans %}
+        </p>
+    <br/>
+    <div align="center"><a href="{% game_view_url "rpgweb.views.login" %}">{% trans "Get back to login page" %}</a></div>

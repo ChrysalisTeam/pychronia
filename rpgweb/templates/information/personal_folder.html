@@ -21,7 +21,7 @@
         $("#media_url").html('<a href="'+encodeURI(fileurl)+'">'+encodeURI(fileurl)+'</a>')
 
         $("#media_viewer").load("{% game_view_url "rpgweb.views.view_media" %}?autostart=true&url=" + encodeURIComponent(fileurl));
-
+        $("#media_viewer").css('display', 'block');
     }
 
 {% endaddtoblock %}
@@ -37,7 +37,7 @@
 {% usekwacro side_panel_start frame_class="mini_frame float_left" decos="3" %}
     <h2>{% trans "Files" %}</h2>
     {% if display_maintenance_notice %}
-    <div class="post-it center" style="font-size:0.8em; width:85%;">
+    <div class="post-it center" style="font-size:0.8em; width:95%;">
         <strong>{% trans "System Notification" %}</strong>
         <p style="font-size:11px;">
         {% blocktrans %}
@@ -50,7 +50,7 @@
     <br/>
     {% endif %}
 
-    <div class="rice_paper_rose">
+    <div class="rice_paper_rose center tiny_bullets">
     <ul>
         {% for filename, fileurl in files %}
             <li><a href="{{ fileurl }}" onclick="load_media_frame('{{ fileurl|escapejs }}'); return false;">{{ filename }}</a></li>
@@ -75,7 +75,7 @@
         </strong>
     </div>
 
-    <div align="center" id="media_viewer"  style="min-height:200px;">&nbsp;</div>
+    <div align="center" id="media_viewer" style="display: none">&nbsp;</div>
 
 {% endblock %}
 

@@ -4,9 +4,9 @@
 
 {% block content %}
 
-    <div class="scroll_yellow_flat center" style="width: 400px">
+    <div class="scroll_yellow_flat center medium_width">
 
-        <form action="{% game_view_url "rpgweb.views.login" %}?next={{ next_url|urlencode }}" method="post" autocomplete="off">
+        <form action="{% game_view_url "rpgweb.views.login" %}?next={{ next_url|urlencode }}" method="post">
         <table class="center">
 
         {{ login_form.as_table }}

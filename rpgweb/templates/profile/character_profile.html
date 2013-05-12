@@ -1,14 +1,11 @@
 {% extends "base_one_column.html" %}
 
-{% load i18n helpers %}  
+{% load i18n helpers %}
 
-{% block content %}  
-    
-        
-        <i>Here put note about why secret questions are being removed in new accounts.</i>
-        
+{% block content %}
+
         <h2>{% trans "Password change" %}</strong></h2>
-        
+
         <form action="{{ password_change_form.url }}" method="post">
         <table style="margin:auto;width:400px;">
         {{ password_change_form.as_table }}
@@ -20,9 +17,6 @@
         </tr>
         </table>
         </form>
-        
-    
-
 
 {% endblock %}
 

@@ -167,7 +167,7 @@ class SimplePasswordForm(forms.Form):
 
 
 class AuthenticationForm(forms.Form):
-    secret_username = forms.CharField(label=_lazy("Username"), required=True, max_length=30, widget=forms.TextInput(attrs={'autocomplete':'off'}))
+    secret_username = forms.CharField(label=_lazy("Username"), required=True, max_length=30, widget=forms.TextInput(attrs={'autocomplete':'on'}))
     secret_password = forms.CharField(label=_lazy("Password"), required=False, max_length=30, widget=forms.PasswordInput(attrs={'autocomplete':'off'}))  # not required for "password forgotten" action
 
 

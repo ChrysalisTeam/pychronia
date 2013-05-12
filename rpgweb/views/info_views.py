@@ -13,7 +13,7 @@ from django import forms as django_forms
 
 
 @register_view(access=UserAccess.anonymous, always_activated=True, title=_lazy("World Map"))
-def view_world_map(request, template_name='info/world_map.html'):
+def view_world_map(request, template_name='information/world_map.html'):
 
     return render(request,
                   template_name,
@@ -42,7 +42,7 @@ class EncyclopediaView(AbstractGameView):
                                                       form_class=EnyclopediaIndexVisibilityForm,
                                                       callback="set_encyclopedia_index_visibility"))
 
-    TEMPLATE = "info/encyclopedia.html"
+    TEMPLATE = "information/encyclopedia.html"
 
     ACCESS = UserAccess.anonymous
     REQUIRES_CHARACTER_PERMISSION = False
@@ -163,7 +163,7 @@ def ajax_get_next_audio_message(request):
 
 
 @register_view(access=UserAccess.anonymous, always_activated=True, title=_lazy("Pangea Webradio"))
-def personal_webradio_page(request, template_name='info/web_radio_page.html'):
+def personal_webradio_page(request, template_name='information/web_radio_page.html'):
     return render(request,
                   template_name,
                     {
@@ -172,13 +172,13 @@ def personal_webradio_page(request, template_name='info/web_radio_page.html'):
 
 
 @register_view(access=UserAccess.anonymous, always_activated=True, title=_lazy("Webradio Popup"))
-def personal_webradio_popup(request, template_name='info/web_radio_popup.html'):
+def personal_webradio_popup(request, template_name='information/web_radio_popup.html'):
     return render(request,
                   template_name)
 
 
 @register_view(access=UserAccess.anonymous, always_activated=True, title=_lazy("Radio Conf"))
-def get_radio_xml_conf(request, template_name='info/web_radio_conf.xml'):
+def get_radio_xml_conf(request, template_name='information/web_radio_conf.xml'):
     dm = request.datamanager
     current_playlist = dm.get_all_next_audio_messages()
     current_audio_messages = [dm.get_audio_message_properties(audio_id) for audio_id in current_playlist]
@@ -201,7 +201,7 @@ def get_radio_xml_conf(request, template_name='info/web_radio_conf.xml'):
 
 
 @register_view(access=UserAccess.anonymous, always_activated=True, title=_lazy("Radio Station"))
-def public_webradio(request, template_name='info/web_radio_public.html'):
+def public_webradio(request, template_name='information/web_radio_public.html'):
 
     access_authorized = False
 
@@ -238,7 +238,7 @@ def public_webradio(request, template_name='info/web_radio_public.html'):
 
 
 @register_view(access=UserAccess.authenticated, always_activated=True, title=_lazy("Personal Files"))
-def personal_folder(request, template_name='info/personal_folder.html'):
+def personal_folder(request, template_name='information/personal_folder.html'):
 
     user = request.datamanager.user
 
@@ -292,7 +292,7 @@ def view_media(request, template_name='utilities/view_media.html'):
 
 
 @register_view(access=UserAccess.anonymous, always_activated=True, title=_lazy("Encrypted Folder"))  # anonymous because links in emails must NEVER be broken
-def encrypted_folder(request, folder, entry_template_name="generic_operations/encryption_password.html", display_template_name='info/personal_folder.html'):
+def encrypted_folder(request, folder, entry_template_name="generic_operations/encrypted_folder.html", display_template_name='information/personal_folder.html'):
 
     if not request.datamanager.encrypted_folder_exists(folder):
         raise Http404
@@ -339,21 +339,6 @@ def encrypted_folder(request, folder, entry_template_name="generic_operations/en
                             "files": files_to_display,
                             "display_maintenance_notice": False,  # upload disabled notification
                         })
-
-
-
-@register_view(access=UserAccess.character, always_activated=True, title=_lazy("Instructions"))
-def instructions(request, template_name='generic_operations/instructions.html'): # TODO - remove that ?????
-
-    user = request.datamanager.user
-    intro_data = request.datamanager.get_game_instructions()
-
-    return render(request,
-                  template_name,
-                    {
-                     'page_title': _("Instructions"),
-                     'intro_data': intro_data,
-                    })
 
 
 
