@@ -186,11 +186,14 @@ textarea {
 
 
 #full_content form {
-    select, input, button, .select2-container, .markItUp {
+    select, input[type=text], input[type=submit], button, .select2-container, .markItUp {
         width: 100% !important;
     }
 
 }
 
+fieldset {
+  border-color: $medium_yellow;
+}
 
 

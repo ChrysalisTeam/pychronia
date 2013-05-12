@@ -5,6 +5,8 @@
     * Copyright (c) 2008-2010 Adrian Tosca, Copyright (c) 2010-2011 Ittrium LLC
     * Dual licensed under the MIT (MIT-LICENSE.txt) OR GPL (GPL-LICENSE.txt) licenses.
     *
+    *
+    * PATCHED - removed "white-space: nowrap" and "overflow: hidden" on controls
 */
     // The dropdown check list jQuery plugin transforms a regular select html element into a dropdown check list.
     $.widget("ui.dropdownchecklist", {
@@ -13,7 +15,7 @@
     	// $.ui.dropdownchecklist.gIDCounter - simple counter to provide a unique ID as needed
         version: function() {
             alert('DropDownCheckList v1.4');
-        },    	
+        },
         // Creates the drop container that keeps the items and appends it to the document
         _appendDropContainer: function( controlItem ) {
             var wrapper = $("<div/>");
@@ -25,16 +27,16 @@
             // initially positioned way off screen to prevent it from displaying
             // NOTE absolute position to enable width/height calculation
             wrapper.css({ position: 'absolute', left: "-33000px", top: "-33000px"  });
-            
+
             var container = $("<div/>"); // the actual container
             container.addClass("ui-dropdownchecklist-dropcontainer ui-widget-content");
             container.css("overflow-y", "auto");
             wrapper.append(container);
-            
+
             // insert the dropdown after the master control to try to keep the tab order intact
             // if you just add it to the end, tabbing out of the drop down takes focus off the page
             // @todo 22Sept2010 - check if size calculation is thrown off if the parent of the
-            //		selector is hidden.  We may need to add it to the end of the document here, 
+            //		selector is hidden.  We may need to add it to the end of the document here,
             //		calculate the size, and then move it back into proper position???
 			//$(document.body).append(wrapper);
             wrapper.insertAfter(controlItem);
@@ -86,7 +88,7 @@
 				e.stopImmediatePropagation();
 				self._toggleDropContainer(false);
 				self.controlSelector.focus();
-			} else if (self.dropWrapper.isOpen 
+			} else if (self.dropWrapper.isOpen
 					&& (e.target.type == 'checkbox')
 					&& ((keyCode == $.ui.keyCode.DOWN) || (keyCode == $.ui.keyCode.UP)) ) {
 				// Up/Down to cycle throught the open items
@@ -122,7 +124,7 @@
            		// posting the blur, with a focus event cancelling it before the delay expires.
 				if ( e != null ) { e.stopImmediatePropagation(); }
 				self.controlSelector.removeClass("ui-state-hover");
-				self._toggleDropContainer( false );	        	
+				self._toggleDropContainer( false );
            	}
 		},
 		// Clear the pending change of focus, which keeps us 'in' the control
@@ -131,7 +133,7 @@
 			if (self.blurringItem != null) {
 				clearTimeout(self.blurringItem);
 				self.blurringItem = null;
-			} 
+			}
 		},
         // Creates the control that will replace the source select and appends it to the document
         // The control resembles a regular select with single selection
@@ -143,8 +145,8 @@
             var wrapper = $("<span/>");
             wrapper.addClass("ui-dropdownchecklist ui-dropdownchecklist-selector-wrapper ui-widget");
             wrapper.css( { display: "inline-block", cursor: "default", overflow: "hidden" } );
-            
-            // assign an ID 
+
+            // assign an ID
             var baseID = sourceSelect.attr("id");
             if ((baseID == null) || (baseID == "")) {
             	baseID = "ddcl-" + $.ui.dropdownchecklist.gIDCounter++;
@@ -152,12 +154,12 @@
             	baseID = "ddcl-" + baseID;
 			}
 			wrapper.attr("id",baseID);
-			
+
             // the actual control which you can style
             // inline-block needed to enable 'width' but has interesting problems cross browser
             var control = $("<span/>");
             control.addClass("ui-dropdownchecklist-selector ui-state-default");
-            control.css( { display: "inline-block", overflow: "hidden", 'white-space': 'nowrap'} );
+            control.css( { display: "inline-block"} );
             // Setting a tab index means we are interested in the tab sequence
             var tabIndex = sourceSelect.attr("tabIndex");
             if ( tabIndex == null ) {
@@ -187,7 +189,7 @@
             // inline-block needed to prevent long text from wrapping to next line when icon is active
             var textContainer = $("<span/>");
             textContainer.addClass("ui-dropdownchecklist-text");
-            textContainer.css( {  display: "inline-block", 'white-space': "nowrap", overflow: "hidden" } );
+            textContainer.css( {  display: "inline-block"} );
             control.append(textContainer);
 
             // add the hover styles to the control
@@ -218,7 +220,7 @@
                 	// Reopen yourself to get the position right
                     self._toggleDropContainer(true);
                 }
-            });       
+            });
             return wrapper;
         },
         // Creates a drop item that coresponds to an option element in the source select
@@ -228,15 +230,14 @@
             // the div
             var item = $("<div/>");
             item.addClass("ui-dropdownchecklist-item");
-            item.css({'white-space': "nowrap"});
             var checkedString = checked ? ' checked="checked"' : '';
 			var classString = disabled ? ' class="inactive"' : ' class="active"';
-			
+
 			// generated id must be a bit unique to keep from colliding
 			var idBase = controlWrapper.attr("id");
 			var id = idBase + '-i' + index;
             var checkBox;
-            
+
             // all items start out disabled to keep them out of the tab order
             if (self.isMultiple) { // the checkbox
                 checkBox = $('<input disabled type="checkbox" id="' + id + '"' + checkedString + classString + ' tabindex="' + tabIndex + '" />');
@@ -245,7 +246,7 @@
             }
             checkBox = checkBox.attr("index", index).val(value);
             item.append(checkBox);
-            
+
             // the text
             var label = $("<label for=" + id + "/>");
             label.addClass("ui-dropdownchecklist-text");
@@ -261,7 +262,7 @@
 			}
 	        label.click(function(e) {e.stopImmediatePropagation();});
             item.append(label);
-            
+
            	// active items display themselves with hover
             item.hover(
             	function(e) {
@@ -287,7 +288,7 @@
                         aCheckBox.prop("checked",!aCheckBox.prop("checked"));
 	                	self._syncSelected(aCheckBox);
                         return;
-                    } 
+                    }
 	                self._syncSelected(aCheckBox);
 	                self.sourceSelect.trigger("change", 'ddcl_internal');
 	                if (!self.isMultiple && options.closeRadioOnClick) {
@@ -307,16 +308,16 @@
 	        //				will close the drop down.
 	        //				I have no solution for blur processing at this time.
 /*********
-			var timerFunction = function(){ 
+			var timerFunction = function(){
 				// I had a hell of a time getting setTimeout to fire this, do not try to
 				// define it within the blur function
 				try { self._handleFocus(null,false,false); } catch(ex){ alert('timer failed: '+ex);}
 			};
-			checkBox.blur(function(e) { 
-				self.blurringItem = setTimeout( timerFunction, 200 ); 
+			checkBox.blur(function(e) {
+				self.blurringItem = setTimeout( timerFunction, 200 );
 			});
 			checkBox.focus(function(e) {self._cancelBlur();});
-**********/	
+**********/
 	        // check/uncheck the item on clicks on the entire item div
 	        item.click(function(e) {
 	        	var anItem = $(this);
@@ -326,7 +327,7 @@
 					var aCheckBox = anItem.find("input");
 	                var checked = aCheckBox.prop("checked");
 	                aCheckBox.prop("checked", !checked);
-	                
+
 	                var callback = self.options.onItemClick;
 	                if ($.isFunction(callback)) try {
                         callback.call(self,aCheckBox,sourceSelect.get(0));
@@ -335,7 +336,7 @@
                         aCheckBox.prop("checked",checked);
 	                	self._syncSelected(aCheckBox);
                         return;
-                    } 
+                    }
 	                self._syncSelected(aCheckBox);
 	                self.sourceSelect.trigger("change", 'ddcl_internal');
 	                if (!checked && !self.isMultiple && options.closeRadioOnClick) {
@@ -348,7 +349,7 @@
 				}
 	        });
 	        // do not let the focus wander around
-			item.focus(function(e) { 
+			item.focus(function(e) {
 	        	var anItem = $(this);
                 e.stopImmediatePropagation();
             });
@@ -362,14 +363,13 @@
 			if (disabled) {
 				group.addClass("ui-state-disabled");
 			}
-			group.css({'white-space': "nowrap"});
-			
+
             var label = $("<span/>");
             label.addClass("ui-dropdownchecklist-text");
             label.css( { cursor: "default" });
             label.text(text);
 			group.append(label);
-			
+
 			// anything interesting when you click the group???
 	        group.click(function(e) {
 	        	var aGroup= $(this);
@@ -379,7 +379,7 @@
                 self._cancelBlur();
             });
 	        // do not let the focus wander around
-			group.focus(function(e) { 
+			group.focus(function(e) {
 	        	var aGroup = $(this);
                 e.stopImmediatePropagation();
             });
@@ -389,14 +389,14 @@
 			var self = this;
 			var closeItem = $("<div />");
 			closeItem.addClass("ui-state-default ui-dropdownchecklist-close ui-dropdownchecklist-item");
-			closeItem.css({'white-space': 'nowrap', 'text-align': 'right'});
-			
+			closeItem.css({'text-align': 'right'});
+
             var label = $("<span/>");
             label.addClass("ui-dropdownchecklist-text");
             label.css( { cursor: "default" });
             label.html(text);
 			closeItem.append(label);
-			
+
 			// close the control on click
 	        closeItem.click(function(e) {
 	        	var aGroup= $(this);
@@ -410,7 +410,7 @@
             , 	function(e) { $(this).removeClass("ui-state-hover"); }
             );
 	        // do not let the focus wander around
-			closeItem.focus(function(e) { 
+			closeItem.focus(function(e) {
 	        	var aGroup = $(this);
                 e.stopImmediatePropagation();
             });
@@ -541,7 +541,7 @@
             });
             // update the text shown in the control
             self._updateControlText();
-        	
+
         	// Ensure the focus stays pointing where the user is working
         	if ( senderCheckbox != null) { senderCheckbox.focus(); }
         },
@@ -624,10 +624,10 @@
                     	anIcon.addClass( (config.icon.toOpen != null) ? config.icon.toOpen : "ui-icon-triangle-1-e");
                     }
                     $(document).unbind("click", hide);
-                    
+
                     // keep the items out of the tab order by disabling them
                     instance.dropWrapper.find("input.active").prop("disabled",true);
-                    
+
                     // the following blur just does not fire???  because it is hidden???  because it does not have focus???
 			  		//instance.sourceSelect.trigger("blur");
 			  		//instance.sourceSelect.triggerHandler("blur");
@@ -687,18 +687,18 @@
 	                var aControl = instance.controlSelector;
 	                aControl.addClass("ui-state-active");
 	                aControl.removeClass("ui-state-hover");
-	                
+
 	                var anIcon = instance.controlWrapper.find(".ui-icon");
 	                if ( anIcon.length > 0 ) {
 	                	anIcon.removeClass( (config.icon.toOpen != null) ? config.icon.toOpen : "ui-icon-triangle-1-e");
 	                	anIcon.addClass( (config.icon.toClose != null) ? config.icon.toClose : "ui-icon-triangle-1-s");
 	                }
 	                $(document).bind("click", function(e) {hide(instance);} );
-	                
+
                     // insert the items back into the tab order by enabling all active ones
                     var activeItems = instance.dropWrapper.find("input.active");
                     activeItems.prop("disabled",false);
-                    
+
                     // we want the focus on the first active input item
                     var firstActiveItem = activeItems.get(0);
                     if ( firstActiveItem != null ) {
@@ -730,7 +730,7 @@
             }
             var control = this.controlSelector;
             control.css({ width: controlWidth + "px" });
-            
+
             // if we size the text, then Firefox places icons to the right properly
             // and we do not wrap on long lines
             var controlText = control.find(".ui-dropdownchecklist-text");
@@ -743,13 +743,13 @@
             }
             // Account for padding, borders, etc
             controlWidth = controlWrapper.outerWidth();
-            
+
             // the drop container height can be set from options
             var maxDropHeight = (options.maxDropHeight != null)
             					? parseInt(options.maxDropHeight)
             					: -1;
             var dropHeight = ((maxDropHeight > 0) && (dropCalculatedSize.height > maxDropHeight))
-            					? maxDropHeight 
+            					? maxDropHeight
             					: dropCalculatedSize.height;
             // ensure the drop container is not less than the control width (would be ugly)
             var dropWidth = dropCalculatedSize.width < controlWidth ? controlWidth : dropCalculatedSize.width;
@@ -798,7 +798,7 @@
 
             // set the sizes of control and drop container
             self._setSize(dropCalculatedSize);
-            
+
             // look for possible auto-check needed on first item
 			if ( options.firstItemChecksAll ) {
 				self._syncSelected(null);
@@ -847,10 +847,10 @@
         // External command to refresh the ddcl from the underlying selector
         refresh: function() {
             var self = this, sourceSelect = this.sourceSelect, dropWrapper = this.dropWrapper;
-            
+
             var allCheckBoxes = dropWrapper.find("input");
             var allGroups = dropWrapper.find(".ui-dropdownchecklist-group");
-            
+
             var groupCount = 0;
             var optionCount = 0;
 			sourceSelect.children().each(function(index) {

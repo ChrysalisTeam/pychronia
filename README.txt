@@ -78,6 +78,7 @@ Development tips
 
 - Only *persistent* versions of mutable types should be stored into the ZODB (and this is enforced by rpgweb's checking system), so use Persistent\* types instead of standard lists/dicts/sets.
 - All public methods of the datamanager must have a decorator (readonly_method, transaction_watcher...) to take care of ZODB transactions, depending on whether it may modify content or not.
+- If webdesign gets broken, ensure you have well your {% extends %} tags at the TOP of your template
 - Gameviews offer a powerful API to process forms, and turn them into method calls - no need to manually validate forms anymore.
 - *register_view* can be used to to turn a standard django view into a GameView.
 - Django debug toolbar requires a fix in django core/handlers/base.py to work with custom urlconfs::
