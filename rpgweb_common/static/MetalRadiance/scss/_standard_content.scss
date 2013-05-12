@@ -88,6 +88,9 @@ h2 {
 }
 
 
+.small_text {
+   font-size: 0.9em !important;
+}
 
 
 div, span, p {
@@ -168,7 +171,11 @@ ul.no_bullets, .no_bullets ul {
     padding-left: 0 !important;
 }
 
-
+ul.tiny_bullets, .tiny_bullets ul {
+    padding-left: 14px !important;
+    list-style-image: none !important;
+    list-style-type: disc !important;
+}
 
 
 
@@ -178,7 +185,7 @@ textarea {
 
 
 
-form {
+#full_content form {
     select, input, button, .select2-container, .markItUp {
         width: 100% !important;
     }

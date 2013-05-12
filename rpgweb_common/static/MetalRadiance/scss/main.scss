@@ -210,6 +210,11 @@ body {
                 .motto{
                     @include top_labels;
                     width: 225px;
+
+                    font-weight: bold;
+                    color: $white_color;
+                    text-shadow: 1px 1px 0px $black_color;
+
                     &.left_image {
                         background: {
                             image: url('#{$IMGS}titles/ad_augusta.png');

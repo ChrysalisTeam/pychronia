@@ -7,8 +7,9 @@ FEATURES
 ------------
 
 - Remove system error messages in RST renders, except in preview popup!
-
-
+- investigate in messaging : [CRITICAL] root: utctolocal filter failed
+  -> TypeError: cannot concatenate 'str' and 'datetime.timedelta' objects
+- fix compose trouble: attachments submitted must be full urls or WITHOUT special prefix !!!
 
 
 SCRIPT
@@ -121,6 +122,7 @@ FUTUR ENHANCEMENTS
 
 - add RST summary to all forms, especially admin ones ??? not need right ATM
 - messaging templates filtering by taxonomy ?
+- put back accordeon toggles in messaging
 - allow accumulation of visibility reasons, to have both sender and recipient together in msg for same user?
 - idea of captcha: play with colors illusions!!
 - include timezone handling

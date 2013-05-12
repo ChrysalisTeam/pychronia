@@ -1,36 +1,60 @@
 {% extends "messaging/base.html" %}
 
-{% load i18n helpers markup %}  
+{% load i18n helpers markup kwacros %}
+{% loadkwacros "metalradiance_kwacros.html" %}
+
+
+
+{% block sidebar %}
+
+    {% usekwacro side_panel_start frame_class="mini_frame float_left" decos="2" %}
+    <h2>{% trans "Messages" %}</h2>
+
+    <div class="scroll_yellow_flat full_width center tiny_bullets small_text">
+        {% if messages %}
+        <ul>
+            {% for ctx, message in messages %}
+                <li><a href="#{{ message.id|default:ctx.template_id }}" >{{ message.subject }}</a></li>
+            {% endfor %}
+        </ul>
+        {% else %}
+            <p>{% trans "No messages yet." %}</p>
+        {% endif %}
+    </div>
+    {% usekwacro side_panel_end %}
+
+{% endblock %}
 
 
 
 
-{% block content %}  
+
+{% block content %}
 
     {{ block.super }}
 
     {% if not messages %}
-        
+
         <div style="text-align:center;">
             <i>{% trans "No messages yet." %}</i>
-            
+
         </div>
-    
+
     {% else %}
-        
+
         {% for ctx, message in messages %}
             {% include "messaging/single_message.html" with ctx=ctx message=message is_first=1 %}
         {% endfor %}
 
     {% endif %}
-    
+
 {% endblock %}
-    
-    
-    
-    
-    
-    
-    
+
+
+
+
+
+
+
 
 

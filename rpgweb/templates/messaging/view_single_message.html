@@ -1,12 +1,12 @@
 
 {% extends "messaging/base.html" %}
 
-{% load i18n helpers markup %}  
+{% load i18n helpers markup %}
 
 
+{# we have nothing to put in sidebar here... #}
 
-
-{% block content %}  
+{% block content %}
 
     {{ block.super }}
 
@@ -17,16 +17,16 @@
         {% trans "Message delivered to recipient." %}
     {% endif %}
     </strong></p>
-    
+
     {% include "messaging/single_message.html" with ctx=ctx message=message is_first=1 %}
 
 {% endblock %}
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
+
+
+
+
+
+
+
+

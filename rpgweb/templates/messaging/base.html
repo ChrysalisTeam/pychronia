@@ -11,12 +11,17 @@
 
 {% addtoblock "definition_js" %}
 
+        function remove_message_displays(msg_id) {
+            $("#"+msg_id).remove();
+            $("[href='#"+msg_id+"']").parent().remove(); // remove links pointing to it, maybe resulting in empty "li" tags (but it's ok)
+        }
+
         function force_email_sending(msg_id) {
 
             $.post("{% game_view_url "rpgweb.views.ajax_force_email_sending" %}",
                     { id: msg_id },
                     function(data){
-                        $("#"+msg_id).css("display", "none");
+                        remove_message_displays(msg_id);
                         $.jnotify('{% trans "Queued message successfully dispatched" %}', "success");
                     });
         }
@@ -51,14 +56,14 @@
 		            $.post("{% game_view_url "rpgweb.views.ajax_permanently_delete_message" %}",
 		                    { id: msg_id },
 		                    function(data){
-		                    	$("#"+msg_id).remove();
+		                    	remove_message_displays(msg_id);
 		                    	$.jnotify('{% trans "Message successfully deleted" %}', "success");
 		                    });
         		}
         	}
         }
 
-
+        /* UNUSED ATM */
         $.fn.togglepanels = function(){
             return this.each(function(){
                 $(this).addClass("ui-accordion ui-accordion-icons ui-widget ui-helper-reset")
@@ -97,31 +102,9 @@
 
     {% usekwacro side_panel_start frame_class="mini_frame float_left" decos="3" %}
 
-        <ul class="minimenu">
-            <li>Very many stuffs here</li>
-            <!--
-            <li class="{% ifequal mode "compose" %}highlight{% endifequal %}"><a href="{% game_view_url "rpgweb.views.compose_message" %}">{% trans "Compose" %}</a></li>
-            <li class="{% ifequal mode "inbox" %}highlight{% endifequal %}"><a href="{% game_view_url "rpgweb.views.conversation" %}">{% trans "Inbox" %}</a></li>
-            <li class="{% ifequal mode "outbox" %}highlight{% endifequal %}"><a href="{% game_view_url "rpgweb.views.conversation" %}">{% trans "Outbox" %}</a></li>
-            <li class="{% ifequal mode "conversation" %}highlight{% endifequal %}"><a href="{% game_view_url "rpgweb.views.conversation" %}">{% trans "Conversation" %}</a></li>
-
-            {% if user.is_master %}
-                <li class="{% ifequal mode "all_sent_messages" %}highlight{% endifequal %}"><a href="{% game_view_url "rpgweb.views.all_dispatched_messages" %}">{% trans "All Transferred" %}</a></li>
-            {% endif %}
-
-            {% if user.is_master %}
-                <li class="{% ifequal mode "all_queued_messages" %}highlight{% endifequal %}"><a href="{% game_view_url "rpgweb.views.all_queued_messages" %}">{% trans "All Queued" %}</a></li>
-            {% endif %}
-
-            {% if user.is_master %}
-                <li class="{% ifequal mode "intercepted_messages" %}highlight{% endifequal %}"><a href="{% game_view_url "rpgweb.views.conversation" %}">{% trans "Intercepted" %}</a></li>
-            {% endif %}
-
-            {% if user.is_master %}
-                <li class="{% ifequal mode "messages_templates" %}highlight{% endifequal %}"><a href="{% game_view_url "rpgweb.views.messages_templates" %}">{% trans "Templates" %}</a></li>
-            {% endif %}
-            -->
-        </ul>
+    <div class="scroll_yellow_flat full_width center">
+        <p>{% trans "Enjoy the power of Anthropia's integrated messaging system." %}</p>
+    </div>
 
     {% usekwacro side_panel_end %}
 

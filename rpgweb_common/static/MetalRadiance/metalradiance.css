@@ -716,6 +716,9 @@ h2:after {
   quotes: none;
   text-overflow: ellipsis;
 }
+.small_text {
+  font-size: 0.9em !important;
+}
 div, p, span {
   background-color: transparent;
   border-color: transparent;
@@ -775,11 +778,17 @@ ul ul ul {
 .no_bullets ul, ul.no_bullets {
   padding-left: 0 !important;
 }
+.tiny_bullets ul, ul.tiny_bullets {
+  padding-left: 14px !important;
+  list-style-image: none !important;
+  list-style-type: disc !important;
+}
 textarea {
   resize: vertical;
 }
-form .markItUp, form .select2-container, form button, form input,
-form select {
+#full_content form .markItUp, #full_content form .select2-container,
+#full_content form button, #full_content form input,
+#full_content form select {
   width: 100% !important;
 }
 .select2-container-multi .select2-choices .select2-search-field input {
@@ -1152,6 +1161,9 @@ body:after {
   vertical-align: middle;
   height: 44px;
   width: 225px;
+  font-weight: bold;
+  color: #ffffff;
+  text-shadow: 1px 1px 0px #000000;
 }
 #full_header #full_header_background #full_header_center #title_table .motto.left_image {
   background-image: url(img/titles/ad_augusta.png);

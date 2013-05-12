@@ -150,7 +150,7 @@ window.setInterval(save_current_content, 10*1000);
 {% usekwacro side_panel_start frame_class="mini_frame float_left" decos="3" %}
     <h2>{% trans "Contacts" %}</h2>
 
-    <div class="rice_paper_rose full_width center no_bullets" style="line-height: 1.5em; cursor: pointer; font-size:0.9em; padding-left:10px;">
+    <div class="rice_paper_rose full_width center tiny_bullets small_text" style="line-height: 1.5em; cursor: pointer;">
     <ul>
     	{% for contact in contacts_display %}
         <li {% if contact.description %}title="{{ contact.description }}"{% endif %} onclick="add_recipient('{{ contact.address|escapejs }}');">{{ contact.address }}</li>
@@ -177,7 +177,7 @@ window.setInterval(save_current_content, 10*1000);
 
         {{ message_form.as_p }}
 
-        <p><input type="button" style="width: 200px" name="preview" value="{% trans "Preview Message" %}" onclick="preview_message();" /></p>
+        <p><input type="button" style="width: 200px" name="preview" value="{% trans "Preview Message Body" %}" onclick="preview_message();" /></p>
         <p><input type="submit" style="width: 200px" name="send_message" value="{% trans "Send Message" %}" onclick="save_current_content(); return true;" /></p>
 
         </form>
