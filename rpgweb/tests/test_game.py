@@ -18,7 +18,7 @@ from rpgweb.common import _undefined, config, AbnormalUsageError, reverse, \
     UsageError, checked_game_file_path
 from rpgweb.templatetags.helpers import _generate_encyclopedia_links, \
     advanced_restructuredtext, _generate_messaging_links, _generate_site_links, \
-    _enriched_text
+    _enriched_text, _generate_game_file_links
 from rpgweb import views, utilities
 from rpgweb.utilities import fileservers, autolinker
 from django.test.client import RequestFactory
@@ -377,6 +377,36 @@ class TestUtilities(BaseGameTestCase):
 
 
 
+    def test_rst_game_file_url_tags_handling(self):
+
+        rst = dedent(r"""
+        
+                    [   GAME_FILE_URL 'myfile.jpg'    ] here
+                    
+                    .. image:: picture.jpeg [GAME_FILE_URL /a/cat/image.png]
+                
+                        [GAME_FILE_URL 'aa bb/cc']
+                        
+                        [GAME_FILE_URL "bad
+                        path.jpg]
+                    """)
+        
+        res = _generate_game_file_links(rst, self.dm)
+        #print("\n@@@@@@\n", res)
+
+        # WILL BREAK IF settings.SECRET_KEY IS CHANGED #
+        assert res.strip() == dedent("""
+                                /files/dfb1c549/myfile.jpg here
+
+                                .. image:: picture.jpeg /files/92572209/a/cat/image.png
+                                
+                                    /files/8112d6b3/aa bb/cc
+                                
+                                    [GAME_FILE_URL "bad
+                                    path.jpg]
+                                """).strip()
+
+
     def test_rst_site_links_generation(self):
 
         # here we have: 1 bad view name, 2 good tags, and then an improperly formatted tag #
@@ -415,6 +445,7 @@ class TestUtilities(BaseGameTestCase):
         assert not self.dm.get_event_count("GENERATE_MESSAGING_LINKS")
         assert not self.dm.get_event_count("GENERATE_ENCYCLOPEDIA_LINKS")
         assert not self.dm.get_event_count("GENERATE_SITE_LINKS")
+        assert not self.dm.get_event_count("GENERATE_GAME_FILE_LINKS")
 
         rst = dedent(r"""
                     hi
@@ -435,6 +466,8 @@ class TestUtilities(BaseGameTestCase):
         assert self.dm.get_event_count("GENERATE_MESSAGING_LINKS") == 1
         assert self.dm.get_event_count("GENERATE_ENCYCLOPEDIA_LINKS") == 1
         assert self.dm.get_event_count("GENERATE_SITE_LINKS") == 1
+        assert self.dm.get_event_count("GENERATE_GAME_FILE_LINKS") == 1
+
         assert "hi<br />you" in html # handy
 
 

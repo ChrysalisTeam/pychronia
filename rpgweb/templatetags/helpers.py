@@ -55,6 +55,7 @@ def game_file_url(context, a="", b="", c="", d="", e="", f="", varname=None):
     """
     Here "varname" is the varuiable under which to store the result, if any.
     """
+    assert not isinstance(context, basestring)
     rel_path = "".join((a, b, c, d, e, f))
     full_url = real_game_file_url(rel_path)
     if varname is not None:
@@ -95,6 +96,16 @@ def usercolor(context, username_or_email):
         color = request.datamanager.get_character_color_or_none(username)
     return color or "black" # default color
 
+
+
+def _generate_game_file_links(rst_content, datamanager):
+    if __debug__: datamanager.notify_event("GENERATE_GAME_FILE_LINKS")
+    regex = r"""\[\s*GAME_FILE_URL\s*('|")?(?P<path>.+?)('|")?\s*]"""
+    def _replacer(match_obj):
+        relpath = match_obj.group("path")
+        fullpath = real_game_file_url(relpath)
+        return fullpath
+    return re.sub(regex, _replacer, rst_content)
 
 
 def _generate_encyclopedia_links(html_snippet, datamanager, excluded_link=None):
@@ -200,13 +211,17 @@ def _enriched_text(datamanager, content, initial_header_level=None, report_level
 
     content = content.replace("[INSTANCE_ID]", datamanager.game_instance_id) # handy to build URLs manually
 
+    with exception_swallower():
+        content = _generate_game_file_links(content, datamanager) # BEFORE html
+
     html = advanced_restructuredtext(content, initial_header_level=initial_header_level, report_level=report_level)
+
     with exception_swallower():
-        html = _generate_encyclopedia_links(html, datamanager, excluded_link=excluded_link) # on error
+        html = _generate_encyclopedia_links(html, datamanager, excluded_link=excluded_link)
     with exception_swallower():
-        html = _generate_messaging_links(html, datamanager) # on error
+        html = _generate_messaging_links(html, datamanager)
     with exception_swallower():
-        html = _generate_site_links(html, datamanager) # on error
+        html = _generate_site_links(html, datamanager) # o
 
     html = html.replace("[BR]", "<br />") # handy for vertical spacing
 
