@@ -68,7 +68,8 @@ def rpgweb_template_context(request):
 
                 'user': dm.user,
                 'game_is_writable': writability_data["writable"],
-                'display_admin_tips': dm.user.is_superuser or dm.is_master(dm.user.real_username), # tops also visible when impersonation!
+                'disable_widgets': not writability_data["writable"] and not request.processed_view.ALWAYS_ALLOW_POST,
+                'display_admin_tips': dm.user.is_superuser or dm.is_master(dm.user.real_username), # tips also visible when impersonation!
 
                 'impersonation_capabilities': impersonation_capabilities,
 

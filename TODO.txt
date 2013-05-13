@@ -6,12 +6,14 @@ TODO LIST CHRYSALIS
 FEATURES
 ------------
 
+- add gameurl tag to rst of rpgweb
 - Remove system error messages in RST renders, except in preview popup!
 - investigate in messaging : [CRITICAL] root: utctolocal filter failed
   -> TypeError: cannot concatenate 'str' and 'datetime.timedelta' objects
 - fix compose trouble: attachments submitted must be full urls or WITHOUT special prefix !!!
 - test wrong msigid in view single message
 - fix _get_middleware_data_explanations for time limited -> must convert to flexible time!!
+
 
 SCRIPT
 ----------
@@ -139,6 +141,8 @@ FUTUR ENHANCEMENTS
 - moteur typographique
 - normalize is_character as both bool and method, in DM and User instances
 - improve wiretapping - must not be only on characters, but also external emails
+- add "transfer" functionality to messaging system
+- remove "logout" link when impersonation by super user ?
 
 
 ELITE RPG:

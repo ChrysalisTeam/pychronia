@@ -251,36 +251,36 @@
 
 
 
+        {% if game_is_writable %}
 
+            $("#trashcan").droppable({
+               drop: function(event, ui) {ui.draggable.remove();},
+               accept: "#current_playlist li",
+               tolerance: "pointer",
+            });
 
-        $("#trashcan").droppable({
-           drop: function(event, ui) {ui.draggable.remove();},
-           accept: "#current_playlist li",
-           tolerance: "pointer",
-        });
+            $("#current_playlist").sortable({
+                //connectWith: "#trashcan",
+                dropOnEmpty: true,
+                helper: "clone",
+                tolerance: "pointer",
+                scroll: false,
+                stop: function(event, ui) {
+                   save_radio_playlist();
+                }
+            })//.disableSelection();
 
-        $("#current_playlist").sortable({
-            //connectWith: "#trashcan",
-            dropOnEmpty: true,
-            helper: "clone",
-            tolerance: "pointer",
-            scroll: false,
-            stop: function(event, ui) {
-               save_radio_playlist();
-            }
-        })//.disableSelection();
+            $('#available_radio_spots .radio_spot').draggable( {
+                //containment: "#radiotracks",
+                cursor: "move",
+                helper: "clone",
+                dropOnEmpty: true,
+                revert: "invalid",
+                opacity: 0.7,
+                connectToSortable: "#current_playlist",
+              } );
 
-        $('#available_radio_spots .radio_spot').draggable( {
-            //containment: "#radiotracks",
-            cursor: "move",
-            helper: "clone",
-            dropOnEmpty: true,
-            revert: "invalid",
-            opacity: 0.7,
-            connectToSortable: "#current_playlist",
-          } );
-
-
+        {% endif %}
 
 
 
@@ -355,6 +355,13 @@
 		    //true or false - should the marquee be duplicated to show an effect of continues flow
 		    duplicated: true
 		});
+
+
+        {% if disable_widgets %}
+            $('input[type="button"]').attr('disabled', 'disabled');
+            $('input[type="submit"]').attr('disabled', 'disabled');
+            $('input.autosubmit').attr('disabled', 'disabled');
+        {% endif %}
 
 {% endaddtoblock %}
 

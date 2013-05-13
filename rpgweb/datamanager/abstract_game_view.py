@@ -24,12 +24,12 @@ def transform_usage_error(caller, self, request, *args, **kwargs):
     Can be used for both html and ajax requests, so only 'error' HTTP codes should be returned
     if an exception is encountered.
     """
+    dm = request.datamanager
     try:
 
         return caller(self, request, *args, **kwargs)
 
     except AccessDeniedError, e:
-        dm = request.datamanager
         if request.datamanager.user.is_impersonation:
             # Will mainly happen when we switch between two impersonations with different access rights, on a restricted page
             dm.user.add_warning(_("Currently impersonated user can't access view %s") % self.TITLE)
