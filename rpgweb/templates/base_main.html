@@ -514,7 +514,9 @@
 {% if 1 %}
 <a onclick="open_webradio_popup(); return false;" href="#">
 <div class="big_icon_panel">
-    <img src="{{ STATIC_URL }}MetalRadiance/img/icons/radio.png"/>{% if signal_new_radio_messages %}<b style="font-size:20px; color:white;">$$</b>{% endif %}
+    <div class="positioner">
+        <img src="{{ STATIC_URL }}MetalRadiance/img/icons/radio.png"/>{% if signal_new_radio_messages %}<span class="novelty_mark">!</span>{% endif %}
+    </div>
 </div>
 </a>
 {% else %}
@@ -535,7 +537,7 @@
         <li class="toplevel">
 
             {% if menu.is_active %}
-                <a data-ftrans="{{ page_transition }}" href="{{ menu.url }}">{{ menu.title }}{% if menu.is_novelty %}$${% endif %}</a>
+                <a data-ftrans="{{ page_transition }}" href="{{ menu.url }}">{{ menu.title }}{% if menu.is_novelty %} *{% endif %}</a>
             {% else %}
                 <span>{{ menu.title }}</span>
             {% endif %}
@@ -546,7 +548,7 @@
                     {% for submenu in menu.submenus %}
                         <li>
 						{% if submenu.is_active %}
-						    <a data-ftrans="{{ page_transition }}" href="{{ submenu.url }}" accesskey="{{ forloop.counter }}">{{ submenu.title }}{% if submenu.is_novelty %}$${% endif %}</a>
+						    <a data-ftrans="{{ page_transition }}" href="{{ submenu.url }}" accesskey="{{ forloop.counter }}">{{ submenu.title }}{% if submenu.is_novelty %} *{% endif %}</a>
 						{% else %}
 						    <span>{{ submenu.title }}</span>
 						{% endif %}
@@ -570,13 +572,17 @@
 {% if content_blocks.help_page.data %}
 <a href="{% game_view_url "rpgweb.views.view_help_page" keyword=content_blocks.help_page.name %}" class="fancybox fancybox.ajax" title="{{ page_title }}">
 <div class="big_icon_panel">
-    <img src="{{ STATIC_URL }}MetalRadiance/img/icons/question_mark.png"/>{% if signal_new_help_page %}$${% endif %}
+    <div class="positioner">
+        <img src="{{ STATIC_URL }}MetalRadiance/img/icons/question_mark.png"/>{% if signal_new_help_page %}<span class="novelty_mark">!</span>{% endif %}
+    </div>
 </div>
 </a>
 {% else %}
 <div class="big_icon_panel">
-    <img src="{{ STATIC_URL }}MetalRadiance/img/icons/question_mark_disabled.png"
-         {% if display_admin_tips %}title="{% trans "Unexisting help page:" %} '{{ content_blocks.help_page.name }}'"{% endif %}/>
+    <div class="positioner">
+        <img src="{{ STATIC_URL }}MetalRadiance/img/icons/question_mark_disabled.png"
+             {% if display_admin_tips %}title="{% trans "Unexisting help page:" %} '{{ content_blocks.help_page.name }}'"{% endif %}/>
+    </div>
 </div>
 {% endif %}
 {% endblock %}

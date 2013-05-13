@@ -8,19 +8,19 @@
 
     {% usekwacro side_panel_start frame_class="mini_frame float_left" decos="3" %}
     <h2>{% trans "Conversations" %}</h2>
-    {% if conversations %}
     <div class="scroll_yellow_flat full_width center tiny_bullets small_text">
-        <ul>
-            {% for message_list in conversations %}
-            {% with message_list|last as last %}
-                <li><a href="#{{ last.1.id }}" >{{ last.1.subject }}</a></li>
-            {% endwith %}
-            {% endfor %}
-        </ul>
+        {% if conversations %}
+            <ul>
+                {% for message_list in conversations %}
+                {% with message_list|last as last %}
+                    <li><a href="#{{ last.1.id }}" >{{ last.1.subject }}</a></li>
+                {% endwith %}
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>{% trans "No messages yet." %}</p>
+        {% endif %}
     </div>
-    {% else %}
-        <p>{% trans "No messages yet." %}</p>
-    {% endif %}
     {% usekwacro side_panel_end %}
 
 {% endblock %}

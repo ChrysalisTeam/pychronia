@@ -1276,6 +1276,25 @@ body:after {
   background-repeat: no-repeat;
   background-position: center;
 }
+#full_menu #main_menu .big_icon_panel .positioner {
+  display: block !important;
+  position: relative !important;
+}
+#full_menu #main_menu .big_icon_panel .positioner .novelty_mark {
+  display: block;
+  font-size: 40px;
+  color: #d3c469;
+  font-weight: bold;
+  font-style: italic;
+  text-shadow: 1px 1px 0 #ffffff, -1px -1px 0 #ffffff, -1px 1px 0 #ffffff,
+    1px -1px 0 #ffffff;
+  font-family: black_chancery,serif;
+  position: absolute;
+  right: 15px;
+  bottom: 4px;
+  text-decoration: blink;
+  border: none !important;
+}
 #full_menu #main_menu .big_icon_panel img {
   max-height: 100%;
   max-width: 100%;
