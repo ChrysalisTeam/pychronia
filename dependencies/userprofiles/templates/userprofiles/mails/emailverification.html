@@ -1,0 +1,5 @@
+{% load i18n %}{% load url from future %}{% url 'userprofiles_email_change_approve' verification.token verification.code as activation_url %}{% blocktrans with url=activation_url domain=site.domain %}Please click on the following link to change your email address:
+
+http://{{ domain }}{{ url }}
+
+Cheers!{% endblocktrans %}

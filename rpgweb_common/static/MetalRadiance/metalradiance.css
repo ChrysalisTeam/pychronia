@@ -806,6 +806,7 @@ textarea {
 }
 fieldset {
   border-color: #9d8126;
+  margin: 5px auto;
 }
 .ui-dropdownchecklist {
   background-color: #ffffff;

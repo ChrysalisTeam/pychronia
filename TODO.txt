@@ -6,7 +6,6 @@ TODO LIST CHRYSALIS
 FEATURES
 ------------
 
-- add gameurl tag to rst of rpgweb
 - Remove system error messages in RST renders, except in preview popup!
 - investigate in messaging : [CRITICAL] root: utctolocal filter failed
   -> TypeError: cannot concatenate 'str' and 'datetime.timedelta' objects
@@ -117,8 +116,8 @@ TASKS DONE
 - enrich choices of messaging forms fields (djangoselect2) DONE
 - add special logger, carrying in context the game instance id etc.
 - rename messy webradio-related django views DONE
-
-
+- add gameurl tag to rst of rpgweb DONE
+- freeze controls in readonly mode DONE
 
 FUTUR ENHANCEMENTS
 --------------------------

@@ -7,7 +7,8 @@ from rpgweb_common.common_settings import *
 INSTALLED_APPS += [
     'chrysalis',
 
-    'registration', # views for user registration
+    'userprofiles',
+    'userprofiles.contrib.profiles',
 
     'cms',
     'mptt',
@@ -134,6 +135,15 @@ JPLAYER_BASE_PATH = STATIC_URL + "libs/jquery-jplayer-2.3.0/" # for Jplayer SWF 
 
 ## DJANGO REGISTRATION CONF ##
 ACCOUNT_ACTIVATION_DAYS = 7
+
+
+
+## DJANGO USERPROFILES CONF ##
+AUTH_PROFILE_MODULE = "chrysalis.Profile"
+USERPROFILES_USE_ACCOUNT_VERIFICATION = False # default
+USERPROFILES_AUTO_LOGIN = True # Automatically log in the user upon registration
+USERPROFILES_USE_PROFILE = True
+USERPROFILES_PROFILE_ALLOW_EMAIL_CHANGE = True
 
 
 '''

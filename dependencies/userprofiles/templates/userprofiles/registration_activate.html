@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Registration" %}{% endblock %}
+
+{% block content %}
+    <h1>{% trans "Registration" %}</h1>
+
+    {% if account %}
+        <p>
+            {% blocktrans %}We activated your account. You are now able to log in. Have fun!{% endblocktrans %}
+        </p>
+    {% else %}
+        <p>
+            {% blocktrans %}The submitted activation code is invalid. Activation is not possible.{% endblocktrans %}
+        </p>
+    {% endif %}
+{% endblock %}

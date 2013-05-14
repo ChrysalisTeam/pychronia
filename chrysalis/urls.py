@@ -12,13 +12,13 @@ urlpatterns = patterns('',
     (r'^i18n/', include('django.conf.urls.i18n')), # to set language
 
     ## (r'^accounts/', include('registration.backends.default.urls')), # two steps user registration with django-registration
-    (r'^accounts/', include('registration.backends.simple.urls')), # one-step registration
+    (r'^accounts/', include('userprofiles.urls')), # one-step registration
 
     url(r'^weblog/', include('zinnia.urls')), # TOO MANY URLS, but required by cms menu integration
 
     #url(r'^comments/', include('django.contrib.comments.urls')), useless ATM ?
 
-    (r'^', include('cms.urls')), # this MUST end with '/' or be empty
+    (r'^aa/', include('cms.urls')), # this MUST end with '/' or be empty
 )
 
 

@@ -1,0 +1,21 @@
+{% extends "metalradiance_base.html" %}
+{% load sekizai_tags heading kwacros i18n %}
+{% loadkwacros "metalradiance_kwacros.html" %}
+
+{% block html_title %}
+     {% block title %}{% endblock %}
+{% endblock %}
+
+{% block panels %}
+
+    {% usekwacro main_panel_start frame_class="big_frame" %}
+
+
+
+        {% block content %}
+        {% endblock %}
+
+    {% usekwacro main_panel_end %}
+
+{% endblock %}
+
