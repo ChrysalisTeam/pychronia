@@ -26,14 +26,15 @@ class ProfileChangeView(LoginRequiredMixin, FormView):
 
     def get_form_kwargs(self):
         kwargs = super(ProfileChangeView, self).get_form_kwargs()
-        kwargs['instance'] = get_profile_model().objects.get(
+        kwargs['instance'], created = get_profile_model().objects.get_or_create(
             user=self.request.user)
+
+        kwargs['initial'].update({'email': self.request.user.email})
 
         if up_settings.REGISTRATION_FULLNAME:
             kwargs['initial'].update({
                 'first_name': self.request.user.first_name,
                 'last_name': self.request.user.last_name,
-                'email': self.request.user.email
             })
         return kwargs
 

@@ -1,5 +1,5 @@
 {% extends "metalradiance_base.html" %}
-{% load cms_tags menu_tags sekizai_tags heading kwacros %}
+{% load cms_tags menu_tags sekizai_tags heading kwacros i18n %}
 {% loadkwacros "metalradiance_kwacros.html" %}
 
 
@@ -41,6 +41,20 @@
 {% block main_menu %}
     {{ block.super }}
     {% show_menu 0 100 100 100 %}
+
+    <li class="toplevel">
+    {% if not user.is_authenticated %}
+        <a href="{% url auth_login %}">{% trans "Login" %}</a>
+    {% else %}
+        <a href="{% url userprofiles_profile_change %}">{% trans "Profile" %}</a>
+        <ul>
+            <li>
+                <a href="{% url auth_logout %}?next=/">{% trans "Logout" %}</a>
+            </li>
+        </ul>
+    {% endif %}
+    </li>
+
 {% endblock %}
 
 

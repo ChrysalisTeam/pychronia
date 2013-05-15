@@ -3,6 +3,9 @@
 from django.conf.urls.defaults import *
 from django.contrib import admin
 from django.conf import settings
+from cms.views import details
+from django.views.generic import RedirectView
+from django.core.urlresolvers import reverse_lazy
 
 admin.autodiscover()
 
@@ -18,7 +21,8 @@ urlpatterns = patterns('',
 
     #url(r'^comments/', include('django.contrib.comments.urls')), useless ATM ?
 
-    (r'^aa/', include('cms.urls')), # this MUST end with '/' or be empty
+    url(r'^$', RedirectView.as_view(url=reverse_lazy('pages-root'))), # REDIRECT TO CMS HOMEPAGE
+    (r'^cms/', include('cms.urls')), # this MUST end with '/' or be empty
 )
 
 
