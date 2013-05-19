@@ -1,16 +1,16 @@
 {% extends "base_one_column.html" %}
- 
-
-{% load i18n helpers markup %}  
 
 
-{% block content %}  
+{% load i18n helpers markup %}
+
+
+{% block content %}
     {{ block.super }}
-    
+
     {% if message %}
-        
+
         <div id="{{ message.id }}" class="email {% if user.username in message.has_read %}email_read{% else %}email_unread{% endif %}">
-            
+
             <p style="text-align:center;"><strong>
             {% if is_queued %}
                 {% trans "Message queued for delivery." %}
@@ -18,26 +18,26 @@
                 {% trans "Message delivered to recipient." %}
             {% endif %}
             </strong></p>
-            
+
             <table style="margin:2px 20px; line-height:0.6em;">
-            
+
             <tr>
             <td><strong>{% trans "From:" %}</strong></td>
             <td>{{ message.sender_email }}</td>
-            </tr>  
+            </tr>
 
             <tr>
             <td><strong>{% trans "To:" %}</strong></td>
             <td>{{ message.recipient_emails|join:"; " }}</td>
-            </tr>               
-            
+            </tr>
+
             <tr>
             <td><strong>{% trans "Date:" %}</strong></td>
             <td>{{ message.sent_at|utctolocal|date:"d N Y - H:i:s" }}</td>  {%comment %} IF NEEDED {% load humanize %}{{ event.time|utctolocal|naturalday:"d/N/Y" }}{% endcomment %}
-            </tr>  
+            </tr>
             </table>
-            
-   
+
+
             <p>
                 <strong>
                         {% if message.intercepted %}
@@ -46,21 +46,21 @@
                     {{ message.subject }}
                 </strong>
             </p>
-  
-  
+
+
             <p>
                 {{ message.body|restructuredtext }}
             </p>
-            
+
             {% if message.attachment %}
             <br/>{% game_file_url message.attachment %}<br/>
                 {% filter mediaplayer:"false" %}{% game_file_url message.attachment %}{% endfilter %}
             {% endif %}
-            
-        </div> 
+
+        </div>
 
     {% endif %}
-    
+
 {% endblock %}
 
 

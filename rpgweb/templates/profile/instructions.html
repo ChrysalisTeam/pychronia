@@ -1,26 +1,26 @@
 {% extends "base_one_column.html" %}
 
-{% load i18n helpers markup %}  
+{% load i18n helpers %}
 
-{% block content %}  
+{% block content %}
 
     {% if intro_data.prologue_music %}
-        <div style=""> 
+        <div style="">
         {{ intro_data.prologue_music|mediaplayer:"false" }}
         </div>
     {% endif %}
 
 
     <div class="intro">
-    {{ intro_data.global_introduction|restructuredtext }}
+    {% rich_text intro_data.global_introduction %}
     </div>
-    
+
     {% if intro_data.team_introduction %}
         <div class="intro">
-        {{ intro_data.team_introduction|restructuredtext }}
+        {% rich_text intro_data.team_introduction %}
         </div>
     {% endif %}
-    
+
     <div align="center">
     <strong>
         {% trans "Further information is available in your mailbox." %}
@@ -28,4 +28,4 @@
     </div>
     <br/>
 
-{% endblock %} 
+{% endblock %}

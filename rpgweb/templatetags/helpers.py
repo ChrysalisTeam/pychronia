@@ -309,9 +309,9 @@ register.filter('list_filter', list_filter)
 
 def utctolocal(value, arg=None): # FIXME - BUGGY CALLS
     # poor man's timezone system, base on current time offset
-    # all we want is to avoid dealing with the nightmare of TZ and DST...
+    # all we want ATM is to avoid dealing with the nightmare of TZ and DST...
     try:
-        timedelta = datetime.now() - datetime.utcnow()
+        timedelta = datetime.now() - datetime.utcnow() # both NAIVE datetimes
         return value + timedelta
     except:
         logging.critical("utctolocal filter failed", exc_info=True)

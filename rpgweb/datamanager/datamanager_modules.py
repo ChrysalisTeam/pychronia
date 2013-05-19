@@ -182,6 +182,7 @@ class FlexibleTime(BaseDataManager): # TODO REFINE
             # print "DELAY ADDED : %s s" % delay_s
             new_time += timedelta(seconds=delay_s) # delay_s can be a float
 
+        assert isinstance(new_time, datetime)
         return new_time
 
 
@@ -236,7 +237,7 @@ class GameEvents(BaseDataManager): # TODO REFINE
             assert "%(" not in message, "Message %s needs substitution arguments" % message
             pass
 
-        utcnow = datetime.utcnow()
+        utcnow = datetime.utcnow() # NAIVE datetime
 
         record = PersistentDict({
             "time": utcnow,
@@ -1547,14 +1548,13 @@ class TextMessagingCore(BaseDataManager):
             except UsageError, e:
                 self.logger.error(e, exc_info=True)
 
-
         new_id = self._get_new_msg_id(len(self.messaging_data["messages_dispatched"]) + len(self.messaging_data["messages_queued"]),
                                       subject + body) # unicity more than guaranteed
 
         if isinstance(date_or_delay_mn, datetime):
             sent_at = date_or_delay_mn # shall already have been computed with "flexible time" !
         else:
-            sent_at = self.compute_remote_datetime(date_or_delay_mn) # date_or_delay_mn is None or number
+            sent_at = self.compute_remote_datetime(date_or_delay_mn) # date_or_delay_mn is None or number or pair
 
         msg = PersistentDict({
                               "sender_email": sender_email,

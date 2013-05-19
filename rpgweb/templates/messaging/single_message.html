@@ -1,5 +1,5 @@
 
-{% load i18n helpers markup %}
+{% load i18n helpers %}
 
 {# TEMPLATE MEANT FOR INCLUSION IN REAL WEBPAGE #}
 
@@ -53,7 +53,8 @@
 
         <tr>
         <td><strong>Date:</strong></td>
-        <td>{{ message.sent_at|utctolocal|date:"d N Y - H:i:s" }}</td>  {%comment %} IF NEEDED {% load humanize %}{{ event.time|utctolocal|naturalday:"d/N/Y" }}{% endcomment %}
+        <td>{{ message.sent_at|utctolocal|date:"d N Y - H:i:s" }}</td>
+            {%comment %} IF NEEDED {% load humanize %}{{ message.sent_at|utctolocal|naturalday:"d/N/Y" }}{% endcomment %}
         </tr>
 
     </table>
@@ -69,7 +70,7 @@
     </p>
 
     <div style="color:{% usercolor message.sender_email %};">
-        {{ message.body|restructuredtext }}
+        {% rich_text message.body %}
     </div>
 
 
