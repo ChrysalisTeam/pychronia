@@ -679,12 +679,12 @@ class TestDatamanager(BaseGameTestCase):
         game_length = 45.3 # test fixture
         assert self.dm.get_global_parameter("game_theoretical_length_days") == game_length
 
-        self.assertRaises(Exception, self.dm.compute_remote_datetime, (3, 2))
+        self.assertRaises(Exception, self.dm.compute_effective_remote_datetime, (3, 2))
 
         for value in [0.025 / game_length, (0.02 / game_length, 0.03 / game_length)]: # beware of the rounding to integer seconds...
 
             now = datetime.utcnow()
-            dt = self.dm.compute_remote_datetime(value)
+            dt = self.dm.compute_effective_remote_datetime(value)
             assert now + timedelta(seconds=1) <= dt <= now + timedelta(seconds=2), (now, dt)
 
             self.assertEqual(utilities.is_past_datetime(dt), False)
@@ -3671,8 +3671,9 @@ class TestActionMiddlewares(BaseGameTestCase):
         explanations = self._flatten_explanations(explanations)
         assert "%s" not in explanations and "%r" not in explanations, explanations
 
-        for stuff in (203, 123, 23, 33, 87, 12, " 1 "):
+        for stuff in (203, 123, 23, 33, 12, " 1 "):
             assert str(stuff) in explanations
+        assert "3941" in explanations, explanations # floor of 45.3 days factor * 87 mn
 
         ##print(">>>>>|||>>>>>", explanations)
 

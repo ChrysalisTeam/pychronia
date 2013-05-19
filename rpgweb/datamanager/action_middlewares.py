@@ -475,7 +475,7 @@ class TimeLimitedActionMiddleware(AbstractActionMiddleware):
         for action_name, settings in self.get_all_middleware_settings(TimeLimitedActionMiddleware).items():
 
             # all these settings must be > 0 !!
-            utilities.check_is_positive_float(settings["waiting_period_mn"], non_zero=True)
+            utilities.check_is_positive_float(settings["waiting_period_mn"], non_zero=True) # beware, RELATIVE delay
             utilities.check_is_positive_float(settings["max_uses_per_period"], non_zero=True)
 
             for data in self.get_all_private_middleware_data(TimeLimitedActionMiddleware, filter_by_action_name=action_name):
@@ -499,8 +499,10 @@ class TimeLimitedActionMiddleware(AbstractActionMiddleware):
             res = []
             middleware_settings = self.get_middleware_settings(action_name, TimeLimitedActionMiddleware)
 
+            actual_delay_mn = int(self.compute_effective_delay_s(middleware_settings["waiting_period_mn"] or 0) / 60) # floor division, 0 is a redundant security for misconfiguration
+            max_uses_per_period = middleware_settings["max_uses_per_period"] or 0 # 0 for misconfiguration protection
             res.append(_("This action can be performed %s time(s) every %s minutes.") %
-                        (middleware_settings["max_uses_per_period"], middleware_settings["waiting_period_mn"]))
+                        (max_uses_per_period, actual_delay_mn))
 
             if middleware_settings["waiting_period_mn"] and middleware_settings["max_uses_per_period"]: # in case of misconfiguration
                 try:
@@ -523,13 +525,11 @@ class TimeLimitedActionMiddleware(AbstractActionMiddleware):
 
 
 
-
-
     def _compute_purged_old_use_times(self, middleware_settings, last_use_times):
         """
         Returns a copied list, with non-outdated last use dates.
         """
-        threshold = self.compute_remote_datetime(delay_mn= -middleware_settings["waiting_period_mn"]) # in the past
+        threshold = self.compute_effective_remote_datetime(delay_mn= -middleware_settings["waiting_period_mn"]) # FLEXIBLE TIME, but in the past here
         purged_old_use_times = [dt for dt in last_use_times if dt > threshold]
         return PersistentList(purged_old_use_times)
         #res = bool(len(purged_old_use_times) < len(last_use_times))

@@ -156,7 +156,31 @@ class FlexibleTime(BaseDataManager): # TODO REFINE
 
 
     @readonly_method
-    def compute_remote_datetime(self, delay_mn):
+    def compute_effective_delay_s(self, delay_mn):
+        """
+        Components of delay_mn can be negative or zero.
+        """
+        # IMPORTANT - we assume a standard game is actually 1 day long!
+        factor_to_s = self.get_global_parameter("game_theoretical_length_days") * 60
+
+        if not isinstance(delay_mn, (int, long, float)):
+            assert len(delay_mn) == 2
+
+            delay_s_min = int(delay_mn[0] * factor_to_s)
+            delay_s_max = int(delay_mn[1] * factor_to_s)
+            assert delay_s_min <= delay_s_max, "delay min must be < delay max - %s vs %s" % (delay_s_min, delay_s_max)
+
+            delay_s = random.randint(delay_s_min, delay_s_max) # time range in seconds
+
+        else:
+            assert isinstance(delay_mn, (float, int, long)) # can be negative or zero
+            delay_s = delay_mn * factor_to_s # no need to coerce to integer here
+
+        return delay_s
+
+
+    @readonly_method
+    def compute_effective_remote_datetime(self, delay_mn):
         # delay can be a number or a range (of type int or float)
         # we always work in UTC
 
@@ -164,23 +188,9 @@ class FlexibleTime(BaseDataManager): # TODO REFINE
         # print (">>>>>>>>>>>>>>>>>> DATETIME", new_time, "WITH DELAYS", delay_mn)
 
         if delay_mn:
-
-            factor = 60 * self.get_global_parameter("game_theoretical_length_days") # important - we scale relatively to the duration of the game
-
-            if not isinstance(delay_mn, (int, long, float)):
-                assert len(delay_mn) == 2
-
-                delay_s_min = int(delay_mn[0] * factor)
-                delay_s_max = int(delay_mn[1] * factor)
-                assert delay_s_min <= delay_s_max, "delay min must be < delay max - %s vs %s" % (delay_s_min, delay_s_max)
-
-                delay_s = random.randint(delay_s_min, delay_s_max) # time range in seconds
-
-            else:
-                delay_s = delay_mn * factor # no need to coerce to integer here
-
+            actual_delay_s = self.compute_effective_delay_s(delay_mn=delay_mn)
             # print "DELAY ADDED : %s s" % delay_s
-            new_time += timedelta(seconds=delay_s) # delay_s can be a float
+            new_time += timedelta(seconds=actual_delay_s) # delay_s can be a float
 
         assert isinstance(new_time, datetime)
         return new_time
@@ -199,7 +209,7 @@ class GameEvents(BaseDataManager): # TODO REFINE
         for evt in game_data["events_log"]:
             if isinstance(evt["time"], (long, int, float)): # NEGATIVE offset in minutes
                 assert evt["time"] <= 0
-                evt["time"] = self.compute_remote_datetime(delay_mn=evt["time"])
+                evt["time"] = self.compute_effective_remote_datetime(delay_mn=evt["time"])
         game_data["events_log"].sort(key=lambda evt: evt["time"])
 
 
@@ -1421,7 +1431,7 @@ class TextMessagingCore(BaseDataManager):
             msg["is_certified"] = msg.get("is_certified", False)
 
             if isinstance(msg["sent_at"], (long, int)): # offset in minutes
-                msg["sent_at"] = self.compute_remote_datetime(msg["sent_at"])
+                msg["sent_at"] = self.compute_effective_remote_datetime(msg["sent_at"])
 
             if not msg["id"]:
                 msg["id"] = self._get_new_msg_id(index, msg["subject"] + msg["body"])
@@ -1557,7 +1567,7 @@ class TextMessagingCore(BaseDataManager):
         if isinstance(date_or_delay_mn, datetime):
             sent_at = date_or_delay_mn # shall already have been computed with "flexible time" !
         else:
-            sent_at = self.compute_remote_datetime(date_or_delay_mn) # date_or_delay_mn is None or number or pair
+            sent_at = self.compute_effective_remote_datetime(date_or_delay_mn) # date_or_delay_mn is None or number or pair
 
         msg = PersistentDict({
                               "sender_email": sender_email,
@@ -2859,7 +2869,7 @@ class ActionScheduling(BaseDataManager):
 
         for evt in game_data["scheduled_actions"]:
             if isinstance(evt["execute_at"], (long, int)): # offset in minutes
-                evt["execute_at"] = self.compute_remote_datetime(evt["execute_at"])
+                evt["execute_at"] = self.compute_effective_remote_datetime(evt["execute_at"])
         game_data["scheduled_actions"].sort(key=lambda evt: evt["execute_at"])
 
 
@@ -2944,7 +2954,7 @@ class ActionScheduling(BaseDataManager):
         if isinstance(date_or_delay_mn, datetime):
             time = date_or_delay_mn
         else:
-            time = self.compute_remote_datetime(date_or_delay_mn)
+            time = self.compute_effective_remote_datetime(date_or_delay_mn)
 
         record = PersistentDict({
             "execute_at": time,

@@ -6,8 +6,7 @@ TODO LIST CHRYSALIS
 FEATURES
 ------------
 
-- test wrong msigid in view single message
-- fix _get_middleware_data_explanations for time limited -> must convert to flexible time!!
+- handle concurrency retries and errors on ZODB decorators
 
 
 SCRIPT
@@ -44,11 +43,7 @@ TESTS
 NEEDS COSMETICS
 -----------------
 
-- interface to edit static pages WIP
-- interface to edit radio spots WIP
-- interface to edit external contacts WIP
-- global page styles and messages for WIP
-- add standard 404 and 500 templates, + custom 403 in latest django etc.
+
 
 
 TASKS DONE
@@ -119,6 +114,12 @@ TASKS DONE
 - Remove system error messages in RST renders, except in preview popup! DONE
 - investigate in messaging : [CRITICAL] root: utctolocal filter failed adding str + datetime [COULDN'T REPRODUCE, not critical]
 - fix compose trouble: attachments submitted must be full urls,and displayed as is - DONE
+- handle wrong msigid in view single message DONE
+- interface to edit static pages DONE
+- interface to edit radio spots DONE
+- interface to edit external contacts DONE
+- global page styles and messages for readonly DONE
+- fix _get_middleware_data_explanations() for time limited -> must convert delays to flexible time DONE
 
 
 FUTUR ENHANCEMENTS
@@ -144,7 +145,7 @@ FUTUR ENHANCEMENTS
 - improve wiretapping - must not be only on characters, but also external emails
 - add "transfer" functionality to messaging system
 - remove "logout" link when impersonation by super user ?
-
+- add standard 404 and 500 templates, + custom 403 in latest django etc.
 
 ELITE RPG:
 eclectic <-------- BEST
