@@ -14,7 +14,7 @@
         {% if messages %}
         <ul>
             {% for ctx, message in messages %}
-                <li><a href="#{{ message.id|default:ctx.template_id }}" >{{ message.subject }}</a></li>
+                <li><a href="#{% first_non_empty message.id ctx.template_id %}" >{{ message.subject }}</a></li>
             {% endfor %}
         </ul>
         {% else %}

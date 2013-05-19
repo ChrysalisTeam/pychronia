@@ -365,13 +365,20 @@ def is_email(email):
 
 
 def complete_game_file_path(filename, *elements):
+    assert filename
     basename = os.path.basename(filename)
     if basename == filename:
         return os.path.join(*(elements + (filename,)))
     return filename # already contains dirs...
 
-
-
+def complete_game_file_url(fileurl):
+    assert fileurl
+    abs_prefixes = ["http://", "https://", "/"]
+    for pref in abs_prefixes:
+        if fileurl.startswith(pref):
+            return fileurl # URL SHALL NOT BE MODIFIED
+    from rpgweb.common import game_file_url
+    return game_file_url(fileurl) # url starting with / and containing security token
 
 def _make_elements_hashable(sequence):
     # mass conversion here, eg. for gems that are sequences of unhashable lists

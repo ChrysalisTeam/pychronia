@@ -1415,6 +1415,9 @@ class TextMessagingCore(BaseDataManager):
             msg["sender_email"], msg["recipient_emails"] = self._normalize_message_addresses(msg["sender_email"], msg["recipient_emails"])
 
             msg["attachment"] = msg.get("attachment", None)
+            if msg["attachment"]:
+                msg["attachment"] = utilities.complete_game_file_url(msg["attachment"])
+
             msg["is_certified"] = msg.get("is_certified", False)
 
             if isinstance(msg["sent_at"], (long, int)): # offset in minutes

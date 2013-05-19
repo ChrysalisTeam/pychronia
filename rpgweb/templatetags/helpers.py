@@ -28,6 +28,15 @@ from rpgweb.storage import protected_game_file_system_storage, \
 
 register = django.template.Library() # IMPORTANT, module-level object used by templates !
 
+
+@register.simple_tag(takes_context=False)
+def first_non_empty(*args):
+    for arg in args:
+        if arg:
+            return arg
+    return ""
+
+
 @register.simple_tag(takes_context=False)
 def random_id():
     """Tag to generate random ids in HTML tags, just to please javascript utilities."""

@@ -5,7 +5,7 @@ TODO LIST CHRYSALIS
 
 FEATURES
 ------------
-- fix compose trouble: attachments submitted must be full urls or WITHOUT special prefix !!!
+
 - test wrong msigid in view single message
 - fix _get_middleware_data_explanations for time limited -> must convert to flexible time!!
 
@@ -118,6 +118,8 @@ TASKS DONE
 - fix gerbil link of encyclopedia when impersonating guy1 DONE
 - Remove system error messages in RST renders, except in preview popup! DONE
 - investigate in messaging : [CRITICAL] root: utctolocal filter failed adding str + datetime [COULDN'T REPRODUCE, not critical]
+- fix compose trouble: attachments submitted must be full urls,and displayed as is - DONE
+
 
 FUTUR ENHANCEMENTS
 --------------------------

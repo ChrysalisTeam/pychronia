@@ -403,6 +403,7 @@ def view_single_message(request, msg_id, template_name='messaging/view_single_me
     """
     user = request.datamanager.user
     message = None
+    ctx = None
     is_queued = False
 
     messages = [msg for msg in request.datamanager.get_all_dispatched_messages() if msg["id"] == msg_id]
@@ -419,7 +420,8 @@ def view_single_message(request, msg_id, template_name='messaging/view_single_me
         else:
             user.add_error(_("The requested message doesn't exist."))
     
-    ctx = _determine_message_display_context(request.datamanager, message, is_pending=is_queued) if message else None
+    if message:
+        ctx = _determine_message_display_context(request.datamanager, message, is_pending=is_queued)
 
     return render(request,
                   template_name,
