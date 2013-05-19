@@ -118,6 +118,9 @@ TASKS DONE
 - rename messy webradio-related django views DONE
 - add gameurl tag to rst of rpgweb DONE
 - freeze controls in readonly mode DONE
+- fix buggy main menu DONE
+- fix gerbil link of encyclopedia when impersonating guy1 DONE
+
 
 FUTUR ENHANCEMENTS
 --------------------------

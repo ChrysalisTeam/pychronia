@@ -63,7 +63,7 @@ class EncyclopediaView(AbstractGameView):
 
         def _conditionally_update_known_article_ids(ids_list):
             if dm.is_character() and dm.is_game_writable():  # not for master or anonymous!!
-                dm.update_character_known_article_ids(search_results)
+                dm.update_character_known_article_ids(article_ids=ids_list)
 
         article_ids = None  # index of encyclopedia
         entry = None  # current article

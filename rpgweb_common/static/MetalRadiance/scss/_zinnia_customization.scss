@@ -1,18 +1,17 @@
 
 
-@import "_standard_content.scss"; 
+@import "_standard_content.scss";
 
 .entry-body {
-    overflow: visible;   
+    overflow: visible;
 }
 
 .hentry {
     @extend .scroll_realistic_thin_ends;
-    width: 85%;
     margin: auto;
 }
 
 
 .entry-image img {
-    margin: 1px 10px;   
+    margin: 1px 10px;
 }
