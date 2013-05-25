@@ -68,6 +68,7 @@
   clear: right;
 }
 #full_content .main_frame_border .main_frame_content:after,
+#full_content .mini_frame .mini_frame_content:after,
 #full_content:after, .clearfix:after {
   content: ".";
   visibility: hidden;
@@ -78,6 +79,7 @@
 }
 * html #full_content,
 * html #full_content .main_frame_border .main_frame_content,
+* html #full_content .mini_frame .mini_frame_content,
 * html .clearfix {
   height: 1px;
 }
@@ -1386,7 +1388,7 @@ body:after {
 #full_content .mini_frame {
   position: relative;
   padding: 0px;
-  width: 270px;
+  width: 280px;
   margin: 7px 10px 10px;
   overflow: visible;
   background: transparent url(img/backgrounds/leather_derby_tiled_small.png) repeat center center;
@@ -1403,6 +1405,9 @@ body:after {
   border-width: 22px 22px;
   border-image: url(img/backgrounds/mini_frame4.png) 22 22 repeat;
 }
+#full_content .mini_frame .mini_frame_content > p {
+  color: #ffffff;
+}
 #full_content .main_sidebar {
   padding: 10px;
   margin: 0px;
@@ -1414,7 +1419,7 @@ body:after {
 #full_content .medium_frame {
   position: relative;
   padding: 10px;
-  margin: 3px auto;
+  margin: 0px auto;
   background: transparent url(img/backgrounds/leather_bg.jpg) repeat center center;
   background-clip: content-box;
   width: 650px;
@@ -1422,7 +1427,7 @@ body:after {
 #full_content .big_frame {
   position: relative;
   padding: 10px;
-  margin: 3px auto;
+  margin: 0px auto;
   background: transparent url(img/backgrounds/leather_bg.jpg) repeat center center;
   background-clip: content-box;
   width: 740px;
@@ -1430,7 +1435,7 @@ body:after {
 #full_content .giant_frame {
   position: relative;
   padding: 10px;
-  margin: 3px auto;
+  margin: 0px auto;
   background: transparent url(img/backgrounds/leather_bg.jpg) repeat center center;
   background-clip: content-box;
   width: 960px;
