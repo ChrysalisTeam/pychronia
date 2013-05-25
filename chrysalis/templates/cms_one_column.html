@@ -1,0 +1,19 @@
+{% extends "cms_base.html" %}
+{% load cms_tags menu_tags sekizai_tags heading kwacros i18n %}
+{% loadkwacros "metalradiance_kwacros.html" %}
+
+
+
+{% block panels %}
+
+    {% usekwacro main_panel_start frame_class="giant_frame" %}
+
+        <h1>{% page_attribute "page_title" %}</h1>
+
+        {% headingcontext target_level=1 %}
+            {% placeholder "content" %}
+        {% endheadingcontext %}
+
+    {% usekwacro main_panel_end %}
+
+{% endblock %}

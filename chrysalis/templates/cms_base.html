@@ -10,7 +10,6 @@
 {% block body_top %}
     {% cms_toolbar %}
 
-
     {% if request.user.is_staff %}
         {# Hack to temporary fix issue: https://github.com/divio/django-cms/issues/1105 #}
         <script type="text/javascript">
@@ -24,6 +23,8 @@
     {% endif %}
 
 {% endblock %}
+
+
 
 
 {% block carving_left %}{% endblock %}
@@ -41,6 +42,7 @@
 
 {% block right_big_icon_panel %}
 {% endblock %}
+
 
 {% block main_menu %}
     {{ block.super }}
@@ -61,20 +63,6 @@
 
 {% endblock %}
 
-
-{% block panels %}
-
-    {% usekwacro main_panel_start frame_class="giant_frame" %}
-
-        <h1>{% page_attribute "page_title" %}</h1>
-
-        {% headingcontext target_level=1 %}
-            {% placeholder "content" %}
-        {% endheadingcontext %}
-
-    {% usekwacro main_panel_end %}
-
-{% endblock %}
 
 
 {% block up_footer %}

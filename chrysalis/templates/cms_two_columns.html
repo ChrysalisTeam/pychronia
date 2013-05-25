@@ -1,0 +1,46 @@
+{% extends "cms_base.html" %}
+{% load cms_tags menu_tags sekizai_tags heading kwacros i18n assign %}
+{% loadkwacros "metalradiance_kwacros.html" %}
+
+
+
+
+{% block panels %}
+
+    {% usekwacro main_panel_start frame_class="medium_frame float_right" %}
+
+        <h1>{% page_attribute "page_title" %}</h1>
+
+        {% headingcontext target_level=1 %}
+            {% placeholder "content" %}
+        {% endheadingcontext %}
+
+    {% usekwacro main_panel_end %}
+
+
+    {% assign name="sidebar1" %}{% placeholder "sidebar1" %}{% endassign %}
+    {% if sidebar1 %}
+    {% usekwacro side_panel_start frame_class="mini_frame float_left" decos="1" %}
+        {{ sidebar1 }}
+    {% usekwacro side_panel_end %}
+    {% endif %}
+
+    {% assign name="sidebar2" %}{% placeholder "sidebar2" %}{% endassign %}
+    {% if sidebar2 %}
+    {% usekwacro side_panel_start frame_class="mini_frame float_left" decos="2" %}
+        {{ sidebar2 }}
+    {% usekwacro side_panel_end %}
+    {% endif %}
+
+    {% assign name="sidebar3" %}{% placeholder "sidebar3" %}{% endassign %}
+    {% if sidebar3 %}
+    {% usekwacro side_panel_start frame_class="mini_frame float_left" decos="3" %}
+        {{ sidebar3 }}
+    {% usekwacro side_panel_end %}
+    {% endif %}
+
+
+{% endblock %}
+
+
+

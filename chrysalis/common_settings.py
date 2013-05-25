@@ -77,9 +77,8 @@ RESTRUCTUREDTEXT_FILTER_SETTINGS["raw_enabled"] = True
 
 ## DJANGO CMS CONF ##
 CMS_TEMPLATES = (
- #        ('stasis_main.html', ugettext('index')),
- #       ('templatemo_main.html', ugettext('emeraud')),
- ('cms_index.html', ugettext('Home')),
+   ('cms_one_column.html', ugettext('One column')),
+   ('cms_two_columns.html', ugettext('Two columns')),
 )
 CMS_REDIRECTS = True # handy for "dummy" menu entries
 CMS_SOFTROOT = False # no need to cut the menu in sections
