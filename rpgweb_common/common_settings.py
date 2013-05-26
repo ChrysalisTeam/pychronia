@@ -190,3 +190,14 @@ THUMBNAIL_PROCESSORS = (
     'filer.thumbnail_processors.scale_and_crop_with_subject_location',
     'easy_thumbnails.processors.filters',
 )
+
+
+# do not change THUMBNAIL_DEFAULT_STORAGE, THUMBNAIL_MEDIA_ROOT and THUMBNAIL_MEDIA_URL, by default
+THUMBNAIL_DEBUG = False # NOT used by custom game_file_img tag
+THUMBNAIL_QUALITY = 85
+THUMBNAIL_BASEDIR = 'thumbs' # prefix of relative path
+THUMBNAIL_PREFIX = "" # prefix subdirectory of image file itself
+THUMBNAIL_EXTENSION = "jpg"
+THUMBNAIL_TRANSPARENCY_EXTENSION = "png"
+THUMBNAIL_PRESERVE_EXTENSIONS = True # or a tuple like ('png',)
+THUMBNAIL_CHECK_CACHE_MISS = True # can regenerate SQL table from storage - unset it if everything works fine

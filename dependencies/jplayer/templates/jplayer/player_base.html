@@ -65,7 +65,7 @@
 		$(document).ready(function(){
 	        {% block javascript_library %}
 	        if (!document.cmsPlayerLoaded){
-	            $("head").append('<scr' + 'ipt type="text/javascript" src="{{ MEDIA_URL }}jplayer/js/cmsplayer.js"></scr' + 'ipt>');
+	            $("head").append('<scr' + 'ipt type="text/javascript" src="{{ STATIC_URL }}jplayer/js/cmsplayer.js"></scr' + 'ipt>');
 	        }
 	        {% endblock %}
 		    var player = $('#jquery_jplayer_{{ player.id }}');

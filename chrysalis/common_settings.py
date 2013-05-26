@@ -162,11 +162,11 @@ WYM_TOOLS = ",\n".join([
     "{'name': 'Redo', 'title': 'Redo', 'css': 'wym_tools_redo'}",
     "{'name': 'Paste', 'title': 'Paste_From_Word', 'css': 'wym_tools_paste'}",
     "{'name': 'ToggleHtml', 'title': 'HTML', 'css': 'wym_tools_html'}",
-    #"{'name': 'CreateLink', 'title': 'Link', 'css': 'wym_tools_link'}",
-    #"{'name': 'Unlink', 'title': 'Unlink', 'css': 'wym_tools_unlink'}",
-    #"{'name': 'InsertImage', 'title': 'Image', 'css': 'wym_tools_image'}",
-    #"{'name': 'InsertTable', 'title': 'Table', 'css': 'wym_tools_table'}",
-    #"{'name': 'Preview', 'title': 'Preview', 'css': 'wym_tools_preview'}",
+    ##"{'name': 'CreateLink', 'title': 'Link', 'css': 'wym_tools_link'}",
+    ##"{'name': 'Unlink', 'title': 'Unlink', 'css': 'wym_tools_unlink'}",
+    ##"{'name': 'InsertImage', 'title': 'Image', 'css': 'wym_tools_image'}",
+    "{'name': 'InsertTable', 'title': 'Table', 'css': 'wym_tools_table'}",
+    "{'name': 'Preview', 'title': 'Preview', 'css': 'wym_tools_preview'}",
 ])
 
 WYM_CONTAINERS = ",\n".join([
@@ -179,7 +179,7 @@ WYM_CONTAINERS = ",\n".join([
     "{'name': 'H6', 'title': 'Heading_6', 'css': 'wym_containers_h6'}",
     "{'name': 'PRE', 'title': 'Preformatted', 'css': 'wym_containers_pre'}",
     "{'name': 'BLOCKQUOTE', 'title': 'Blockquote', 'css': 'wym_containers_blockquote'}",
-    "{'name': 'TH', 'title': 'Table_Header', 'css': 'wym_containers_th'}",
+    ##"{'name': 'TH', 'title': 'Table_Header', 'css': 'wym_containers_th'}",
 ])
 
 WYM_CLASSES = ",\n".join([
