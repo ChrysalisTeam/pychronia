@@ -10,6 +10,7 @@ INSTALLED_APPS += [
     'userprofiles',
     'userprofiles.contrib.profiles',
 
+    'djangocms_text_ckeditor', # must be before CMS
     'cms',
     'mptt',
     'menus',
@@ -21,9 +22,9 @@ INSTALLED_APPS += [
     # 'cms.plugins.googlemap',
     'cms.plugins.link',
     'cms.plugins.snippet',
-    'cms.plugins.text',
+    #'cms.plugins.text',
 
-    ## too weak ##
+    ## too weak versions of plugins ##
     # 'cms.plugins.file',
     # 'cms.plugins.picture',
     # 'cms.plugins.teaser',
@@ -148,7 +149,7 @@ USERPROFILES_PROFILE_ALLOW_EMAIL_CHANGE = True
 
 
 ## WYMEDITOR CONF ##
-
+''' USELESS now that we have ckeditor
 WYM_TOOLS = ",\n".join([
     "{'name': 'Bold', 'title': 'Strong', 'css': 'wym_tools_strong'}",
     "{'name': 'Italic', 'title': 'Emphasis', 'css': 'wym_tools_emphasis'}",
@@ -191,9 +192,19 @@ WYM_STYLES = ",\n".join([
     "{'name': '.hidden-note', 'css': 'color: #999; border: 2px solid #ccc;'}",
     "{'name': '.date', 'css': 'background-color: #ff9; border: 2px solid #ee9;'}",
 ])
+'''
 
 
 
+## CKEDITOR SETTINGS ##
+# remember, when installing it over standard django-cms text plugins : launch python manage.py migrate djangocms_text_ckeditor 0001 --fake
+'''
+CKEDITOR_SETTINGS = {
+        'language': '{{ language }}',
+        'toolbar': 'CMS',
+        'skin': 'moono'
+    }
+'''
 
 
 '''
