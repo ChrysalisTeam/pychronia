@@ -7,9 +7,20 @@ from cms.views import details
 from django.views.generic import RedirectView
 from django.core.urlresolvers import reverse_lazy
 
+
 admin.autodiscover()
 
+
+
+def myview(request):
+    from django.http import HttpResponse
+    with open("/home/pakal/webapps/devs/CHRYSALIS/rpgweb_common/static/css/css3pie/PIE.htc", "rb") as f:
+        content = f.read()
+    return HttpResponse(content, mimetype="text/x-component")
+
 urlpatterns = patterns('',
+    (r'^pie.htc', myview),
+
     (r'^admin/', include(admin.site.urls)),
 
     (r'^i18n/', include('django.conf.urls.i18n')), # to set language
