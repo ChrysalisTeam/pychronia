@@ -78,6 +78,7 @@ IGNORABLE_404_URLS = (# ONLY SOON IN 1.5
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader',
+    'apptemplates.Loader', # allows the use of {% extends "admin:admin/base.html" %}
 )
 TEMPLATE_DIRS = () # use absolute paths here, not relative paths.
 TEMPLATE_STRING_IF_INVALID = "" # or "<INVALID %s>" to debug
@@ -114,6 +115,8 @@ MIDDLEWARE_CLASSES = (
 
 # to be extended in specific settings #
 INSTALLED_APPS = [
+    'rpgweb_common', # common templates, tags, static files etc. BEFORE OTHER APPS for overrides!
+
 
     'django.contrib.auth',
     'django.contrib.admin',
@@ -133,8 +136,6 @@ INSTALLED_APPS = [
     'templateaddons', # assign and headers tags
     'django_select2', # advanced select box
     'easy_thumbnails',
-
-    'rpgweb_common', # common templates, tags, static files etc.
 
 ]
 

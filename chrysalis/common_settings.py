@@ -198,13 +198,33 @@ WYM_STYLES = ",\n".join([
 
 ## CKEDITOR SETTINGS ##
 # remember, when installing it over standard django-cms text plugins : launch python manage.py migrate djangocms_text_ckeditor 0001 --fake
-'''
+#See http://docs.cksource.com/ckeditor_api/symbols/CKEDITOR.config.html for all settings
+
 CKEDITOR_SETTINGS = {
-        'language': '{{ language }}',
-        'toolbar': 'CMS',
-        'skin': 'moono'
-    }
-'''
+            'language': '{{ language }}',
+            'skin': 'moono',
+            'height': '320px',
+            'toolbar': 'CMS',
+            'toolbar_CMS': [
+                ['Undo', 'Redo'],
+                ['cmsplugins', '-', 'ShowBlocks'],
+                ['Font', 'FontSize', 'Format', 'Styles'],
+                ['TextColor', 'BGColor', '-', 'PasteText', 'PasteFromWord'],
+                ['Maximize', ''],
+                '/',
+                ['Bold', 'Italic', 'Underline', '-', 'Subscript', 'Superscript', '-', 'RemoveFormat'],
+                ['CreateDiv', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock'],
+                ['Link', 'Unlink'],
+                ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Table'],
+                ['Source']
+            ],
+            'toolbarCanCollapse': False,
+            'extraPlugins': 'cmsplugins'
+}
+
+
+
+
 
 
 '''
