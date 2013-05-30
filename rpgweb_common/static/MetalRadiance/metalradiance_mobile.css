@@ -31,8 +31,101 @@ blockquote:after, blockquote:before, q:after, q:before {
   content: ;
 }
 @font-face {
+  font-family: black_chancery;
+  src: url(img/fonts/black_chancery.ttf);
+}
+@font-face {
+  font-family: rothenburg_decorative;
+  src: url(img/fonts/rothenburg_decorative.ttf);
+}
+@font-face {
+  font-family: kingthings_calligraphica_light;
+  src: url(img/fonts/kingthings_calligraphica_light.ttf);
+}
+.bg_beige, .mixed {
+  background-color: #a89d97;
+}
+.bg_blue, .info {
+  background-color: #0000ff;
+}
+.bg_green, .success {
+  background-color: #008000;
+}
+.bg_orange, .warning {
+  background-color: #ffa500;
+}
+.bg_red, .error {
+  background-color: #ff0000;
+}
+.center {
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+.inner_center {
+  text-align: center !important;
+}
+.inner_center > * {
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+.float-left, .float_left, .floatleft, .left {
+  float: left;
+}
+.float-right, .float_right, .floatright, .right {
+  float: right;
+}
+.inner_left {
+  text-align: left !important;
+}
+.inner_right {
+  text-align: right !important;
+}
+.clear_both {
+  clear: both;
+}
+.clear_left {
+  clear: left;
+}
+.clear_right {
+  clear: right;
+}
+.stack_left {
+  float: left;
+  clear: left;
+}
+.stack_right {
+  float: right;
+  clear: right;
+}
+.clearfix:after {
+  content: ".";
+  visibility: hidden;
+  display: block;
+  width: 0;
+  height: 0;
+  clear: both;
+}
+* html .clearfix {
+  height: 1px;
+}
+.full_width {
+  width: 100% !important;
+}
+.half_width {
+  width: 100% !important;
+}
+.big_width {
+  width: 600px !important;
+}
+.medium_width {
+  width: 400px !important;
+}
+.small_width {
+  width: 250px !important;
+}
+@font-face {
   font-family: augustus;
-  src: url($IMGSfonts/augustus.ttf);
+  src: url(img/fonts/augustus.ttf);
 }
 body {
   background: #152421 url("img/backgrounds/mobile/body-bg.jpg") repeat-y top center;
@@ -77,7 +170,9 @@ table.frame {
   border-spacing: 0;
 }
 div.frame {
-  border-style: solid;
+  background-color: transparent;
+  border-color: #775f13;
+  border-style: ridge;
   border-width: 14px;
   border-image: url("img/backgrounds/mobile/frame.jpg") 14 fill repeat;
   margin: 4px 0;

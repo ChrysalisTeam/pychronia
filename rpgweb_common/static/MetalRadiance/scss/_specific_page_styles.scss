@@ -93,7 +93,9 @@ input.digit
     position: relative; // to allow absolute stuffs inside
     min-width: 150px;
     padding: 0 10px;
-    border-style: solid;
+    background-color: $border_image_yellow;
+    border-color: $border_image_yellow;
+    border-style: ridge;
     border-width: 79px 45px 81px 39px;
 }
 

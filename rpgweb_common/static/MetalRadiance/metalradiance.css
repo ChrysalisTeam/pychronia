@@ -102,12 +102,14 @@
   outline: #9d8126 ridge 2px;
 }
 .marble_panel {
+  border-color: transparent;
   border-style: solid;
   border-width: 7px 10px 10px;
   border-image: url(img/backgrounds/marble_plate.png) 7 10 10 fill stretch;
 }
 .missing-content, .post-it {
   padding: 4px;
+  border-color: transparent;
   border-style: solid;
   border-width: 4px 4px 6px;
   border-image: url(img/backgrounds/post-it.png) 4 4 6 fill stretch;
@@ -115,6 +117,7 @@
 .scroll_realistic {
   margin: 10px;
   padding: 0 10px;
+  border-color: transparent;
   border-style: solid;
   border-width: 142px 63px 124px 71px;
   border-image: url(img/backgrounds/scroll_realistic.png) 142 63 124 71 fill stretch stretch;
@@ -123,6 +126,7 @@
   margin: 10px;
   min-width: 150px;
   padding: 0 10px;
+  border-color: transparent;
   border-style: solid;
   border-width: 79px 45px 81px 39px;
   border-image: url(img/backgrounds/scroll_realistic_thin_ends.png) 79 45 81 39 fill stretch stretch;
@@ -130,6 +134,7 @@
 .scroll_yellow_flat {
   margin: 10px;
   padding: 25px;
+  border-color: transparent;
   background: url(img/backgrounds/scroll_yellow_flat.png);
   background-size: 100% 100%;
   background-repeat: no-repeat;
@@ -144,6 +149,7 @@
 }
 .antique_marble_frame {
   padding: 5px;
+  border-color: transparent;
   border-style: solid;
   border-width: 17px;
   border-image: url(img/backgrounds/antique_marble_frame2.png) 17 fill round;
@@ -151,24 +157,28 @@
 }
 .antique_large_decorated_frame, .fancybox-default .fancybox-outer {
   padding: 10px;
+  border-color: transparent;
   border-style: solid;
   border-width: 35px 40px 35px 40px;
   border-image: url(img/backgrounds/antique_large_decorated_frame.png) 70 80 70 80 fill stretch;
   margin: -5px;
 }
 .decorated_golden_frame {
+  border-color: transparent;
   border-style: solid;
   border-width: 25px 27px 25px;
   border-image: url(img/backgrounds/decorated_golden_frame.png) 25 27 25 fill stretch;
   margin: -5px;
 }
 .carved_square_frame_gold, .item_display {
+  border-color: transparent;
   border-style: solid;
   border-width: 90px;
   border-image: none 125 125 127 117 stretch;
   border-image-source: url(img/backgrounds/carved_square_frame_gold.png) !important;
 }
 .carved_square_frame_silver {
+  border-color: transparent;
   border-style: solid;
   border-width: 90px;
   border-image: none 125 125 127 117 stretch;
@@ -748,6 +758,9 @@ a:active, a:visited {
 a:hover {
   color: old_blue;
 }
+a img {
+  border-width: 0;
+}
 h1 a:hover, h1 a:link, h1 a:visited, h2 a:hover, h2 a:link,
 h2 a:visited {
   color: #ffffff;
@@ -776,6 +789,9 @@ ul {
   padding-left: 32px;
   list-style-position: outside;
   list-style-image: url(img/icons/bullet_gold_small.png);
+}
+ul li {
+  margin-top: 5px;
 }
 ul ul {
   list-style-image: url(img/icons/bullet_silver_small.png);
@@ -1032,7 +1048,9 @@ input.digit {
   position: relative;
   min-width: 150px;
   padding: 0 10px;
-  border-style: solid;
+  background-color: #775F13;
+  border-color: #775F13;
+  border-style: ridge;
   border-width: 79px 45px 81px 39px;
   border-image: url(img/backgrounds/scroll_realistic_thin_ends.png) 79 45 81 39 fill stretch stretch;
 }
@@ -1040,7 +1058,9 @@ input.digit {
   position: relative;
   min-width: 150px;
   padding: 0 10px;
-  border-style: solid;
+  background-color: #775F13;
+  border-color: #775F13;
+  border-style: ridge;
   border-width: 79px 45px 81px 39px;
   border-image: url(img/backgrounds/scroll_realistic_thin_ends_disabled.png) 79 45 81 39 fill stretch stretch;
 }
@@ -1310,7 +1330,9 @@ body:after {
   min-width: 550px;
   height: 61px;
   padding: 0 0;
-  border-style: solid;
+  background-color: #775f13;
+  border-color: #775f13;
+  border-style: ridge;
   border-width: 18px 52px 20px 55px;
   border-image: url(img/backgrounds/menu_border.png) 18 52 20 55 fill round stretch;
 }
@@ -1348,6 +1370,8 @@ body:after {
 #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu > li li a,
 #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu > li li span {
   font-size: 20pt;
+  background-color: #775f13;
+  border-color: #775f13;
   border-style: solid;
   border-width: 0px 32px 0px 33px;
   border-image: url(img/backgrounds/tube_gold_small.png) 0 32 0 33 fill stretch;
@@ -1375,6 +1399,7 @@ body:after {
   display: none;
   margin: 0;
   padding: 0;
+  border-color: transparent;
   border-style: solid;
   border-width: 4px 3px;
   border-image: url(img/backgrounds/dropdown_menu.png) 4 3 fill stretch;
@@ -1401,7 +1426,9 @@ body:after {
   position: relative;
   margin: -5px;
   padding: 1px 1px;
-  border-style: solid;
+  background-color: transparent;
+  border-color: #775f13;
+  border-style: ridge;
   border-width: 22px 22px;
   border-image: url(img/backgrounds/mini_frame4.png) 22 22 repeat;
 }
@@ -1444,7 +1471,9 @@ body:after {
   position: relative;
   margin: -15px;
   padding: 2px 6px;
-  border-style: solid;
+  background-color: transparent;
+  border-color: #775f13;
+  border-style: ridge;
   border-width: 41px 43px 43px 41px;
   border-image: url(img/backgrounds/big_frame.png) 41 43 43 41 fill round round;
 }
@@ -1478,6 +1507,7 @@ body:after {
   background-clip: padding-box;
   background-position: center top;
   position: relative;
+  background-color: transparent border-color: transparent;
   border-style: solid;
   border-width: 0px 0px 0px 121px;
   border-image: url(img/backgrounds/up_footer_left.png) 0 0 0 121 fill round stretch;
@@ -1499,6 +1529,7 @@ body:after {
   background-clip: padding-box;
   background-position: center top;
   position: relative;
+  background-color: transparent border-color: transparent;
   border-style: solid;
   border-width: 0px 121px 0px 0px;
   border-image: url(img/backgrounds/up_footer_right.png) 0 121 0 0 fill round stretch;
@@ -1520,6 +1551,8 @@ body:after {
   background-clip: padding-box;
   background-position: center top;
   position: relative;
+  background-color: transparent border-color: transparent;
+  border-style: solid;
   background-image: url(img/backgrounds/up_footer_center.png);
   width: 225px;
 }
@@ -1548,6 +1581,7 @@ body:after {
   height: 58px;
   display: inline-block;
   vertical-align: top;
+  background-color: transparent border-color: transparent;
   border-style: solid;
   border-width: 0px 300px 0px 304px;
   border-image: url(img/backgrounds/low_footer_border.png) 0 300 0 304 fill stretch;

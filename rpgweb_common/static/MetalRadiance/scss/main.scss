@@ -363,7 +363,9 @@ body {
                 height: 61px;
                 padding: 0 0;
 
-                border-style: solid;
+                background-color: $border_image_yellow;
+                border-color: $border_image_yellow;
+                border-style: ridge;
                 border-width: 18px 52px 20px 55px;
                 border-image: url('#{$IMGS}backgrounds/menu_border.png') 18 52 20 55 fill round stretch;
             }
@@ -403,7 +405,9 @@ body {
             position: relative;
             margin: -5px; // to cover the background
             padding: 1px 1px;
-            border-style: solid;
+            background-color: transparent;
+            border-color: $border_image_yellow;
+            border-style: ridge;
             border-width: 22px 22px;
             border-image: url('#{$IMGS}backgrounds/mini_frame4.png') 22 22 repeat;
 
@@ -456,7 +460,9 @@ body {
 
         margin: -15px; // to cover the background
         padding: 2px 6px;
-        border-style: solid;
+        background-color: transparent;
+        border-color: $border_image_yellow;
+        border-style: ridge;
         border-width: 41px 43px 43px 41px;
         border-image: url('#{$IMGS}backgrounds/big_frame.png') 41 43 43 41 fill round round;
 
@@ -498,6 +504,10 @@ body {
         background-position: center top;
         position: relative;
 
+        background-color: transparent
+        border-color: transparent;
+        border-style: solid;
+
         a {
           color: $alt_text_color !important;
         }
@@ -505,14 +515,12 @@ body {
 
     #up_footer_border_left {
         @include up_footer_common;
-        border-style: solid;
         border-width: 0px 0px 0px 121px;
         border-image: url('#{$IMGS}backgrounds/up_footer_left.png') 0 0 0 121 fill round stretch;
     }
 
     #up_footer_border_right {
         @include up_footer_common;
-        border-style: solid;
         border-width: 0px 121px 0px 0px;
         border-image: url('#{$IMGS}backgrounds/up_footer_right.png') 0 121 0 0 fill round stretch;
     }
@@ -556,6 +564,9 @@ body {
         height: 58px;
         display: inline-block;
         vertical-align:top;
+
+        background-color: transparent
+        border-color: transparent;
         border-style: solid;
         border-width: 0px 300px 0px 304px;
         border-image: url('#{$IMGS}backgrounds/low_footer_border.png') 0 300 0 304 fill stretch;

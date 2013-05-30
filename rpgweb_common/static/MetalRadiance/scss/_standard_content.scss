@@ -117,6 +117,10 @@ a {
     &:link { color: $light_blue; }
     &:visited, &:active { color: $dark_blue; }
     &:hover { color: old_blue; }
+
+    img {
+        border-width: 0;
+    }
 }
 
 h1, h2 {
@@ -158,6 +162,10 @@ blockquote, q, cite {
 
 ul
 {
+    li {
+        margin-top: 5px;
+    }
+
     margin: 10px 0 10px;
     padding-left: 32px;
     list-style-position: outside;

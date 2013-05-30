@@ -13,6 +13,7 @@
 
 
 .marble_panel {
+    border-color: transparent;
     border-style: solid;
     border-width: 7px 10px 10px;
     border-image: url('#{$IMGS}backgrounds/marble_plate.png') 7 10 10 fill stretch;
@@ -20,6 +21,7 @@
 
 .post-it {
     padding: 4px;
+    border-color: transparent;
     border-style: solid;
     border-width: 4px 4px 6px;
     border-image: url('#{$IMGS}backgrounds/post-it.png') 4 4 6 fill stretch;
@@ -29,6 +31,7 @@
 .scroll_realistic {
     margin: 10px;
     padding: 0 10px;
+    border-color: transparent;
     border-style: solid;
     border-width: 142px 63px 124px 71px;
     border-image: url('#{$IMGS}backgrounds/scroll_realistic.png') 142 63 124 71 fill stretch stretch;
@@ -38,6 +41,7 @@
     margin: 10px;
     min-width: 150px;
     padding: 0 10px;
+    border-color: transparent;
     border-style: solid;
     border-width: 79px 45px 81px 39px;
     border-image: url('#{$IMGS}backgrounds/scroll_realistic_thin_ends.png') 79 45 81 39 fill stretch stretch;
@@ -46,6 +50,7 @@
 .scroll_yellow_flat {
     margin: 10px;
     padding: 25px;
+    border-color: transparent;
     background: url('#{$IMGS}backgrounds/scroll_yellow_flat.png');
     background-size: 100% 100%;
     background-repeat: no-repeat;
@@ -62,6 +67,7 @@
 
 .antique_marble_frame {
     padding: 5px;
+    border-color: transparent;
     border-style: solid;
     border-width: 17px;
     border-image: url('#{$IMGS}backgrounds/antique_marble_frame2.png') 17 fill round;
@@ -70,6 +76,7 @@
 
 .antique_large_decorated_frame {
     padding: 10px;
+    border-color: transparent;
     border-style: solid;
     border-width: 35px 40px 35px 40px; // only HALF of real border-image size here...
     border-image: url('#{$IMGS}backgrounds/antique_large_decorated_frame.png') 70 80 70 80 fill stretch;
@@ -77,6 +84,7 @@
 }
 
 .decorated_golden_frame {
+    border-color: transparent;
     border-style: solid;
     border-width: 25px 27px 25px;
     border-image: url('#{$IMGS}backgrounds/decorated_golden_frame.png') 25 27 25 fill stretch;
@@ -85,6 +93,7 @@
 
 
 @mixin carved_square_frame {
+    border-color: transparent;
     border-style: solid;
     border-width: 90px;
     border-image: none 125 125 127 117 stretch;

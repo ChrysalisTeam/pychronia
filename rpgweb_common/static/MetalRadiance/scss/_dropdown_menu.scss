@@ -43,6 +43,8 @@ ul.dropmenu {
 
         li a, li span {
             font-size: 20pt; // needs to be PRECISE, so no em.
+            background-color: $border_image_yellow; // fallback
+            border-color: $border_image_yellow;
             border-style: solid;
             border-width: 0px 32px 0px 33px;
             border-image: url('#{$IMGS}backgrounds/tube_gold_small.png') 0 32 0 33 fill stretch;
@@ -97,6 +99,7 @@ ul.dropmenu {
             display: none; // cosmetic
             margin: 0;
             padding: 0;
+            border-color: transparent;
             border-style: solid;
             border-width: 4px 3px;
             border-image: url('#{$IMGS}backgrounds/dropdown_menu.png') 4 3 fill stretch;

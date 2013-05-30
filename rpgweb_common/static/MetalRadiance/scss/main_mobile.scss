@@ -2,6 +2,7 @@
 
 @import "_reset.scss";
 
+@import "_globals.scss";
 
 @font-face
 {
@@ -65,7 +66,9 @@ table.frame {
 }
 
 div.frame {
-  border-style: solid;
+  background-color: transparent;
+  border-color: $border_image_yellow;
+  border-style: ridge;
   border-width: 14px;
   border-image: url("img/backgrounds/mobile/frame.jpg") 14 fill repeat;
   margin: 4px 0;
