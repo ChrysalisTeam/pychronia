@@ -21,7 +21,7 @@
             {% for event in events %}
 
             <tr>
-                <td style="width:70px">{{ event.time|utctolocal|date:"d/m/Y H:i:s" }}</td>   {%comment %}{% load humanize %}{{ event.time|utctolocal|naturalday:"d/N/Y" }}{% endcomment %}
+                <td style="width:70px">{{ event.time|utctolocal|date:"SHORT_DATETIME_FORMAT" }}</td>   {%comment %}{% load humanize %}{{ event.time|utctolocal|naturalday:"d/N/Y" }}{% endcomment %}
                 <td style="text-align: left;">
                     {% if event.url %}
                         <a href="{{ event.url }}">

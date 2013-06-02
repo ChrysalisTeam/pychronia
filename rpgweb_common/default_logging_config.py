@@ -9,7 +9,7 @@ rpgweb_logging_config = {
         'standard': {
             'format': '%(asctime)s [%(levelname)s] %(name)s: %(message)s'
         },
-        'instance': {
+        'game_instance': {
             'format': '%(asctime)s [%(levelname)s] %(name)s[%(game_instance_id)s]: %(message)s'
         },
     },
@@ -18,9 +18,9 @@ rpgweb_logging_config = {
             'class':'logging.StreamHandler',
             'formatter': 'standard',
         },
-        'instance': {
+        'game_instance': {
             'class':'logging.StreamHandler',
-            'formatter': 'instance',
+            'formatter': 'game_instance',
         },
     },
     'loggers': {
@@ -30,7 +30,7 @@ rpgweb_logging_config = {
             'propagate': True
         },
         'rpgweb': {
-            'handlers': ['instance'],
+            'handlers': ['game_instance'],
             'level': 'WARNING',
             'propagate': False
         },
@@ -44,6 +44,7 @@ rpgweb_logging_config = {
             'level': 'WARNING',
             'propagate': False
         },
+        ## django.request is auto-configured to send admin emails when DEBUG=False ##
     }
 }
 

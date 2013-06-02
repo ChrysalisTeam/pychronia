@@ -42,7 +42,7 @@ TESTS
 
 NEEDS COSMETICS
 -----------------
-
+- SET LINE HEIGHT FOR DROP CAPS
 
 
 

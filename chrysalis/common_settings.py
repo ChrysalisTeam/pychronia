@@ -81,28 +81,37 @@ CMS_TEMPLATES = (
    ('cms_one_column.html', ugettext('One column')),
    ('cms_two_columns.html', ugettext('Two columns')),
 )
+CMS_URL_OVERWRITE = True
+CMS_MENU_TITLE_OVERWRITE = True
 CMS_REDIRECTS = True # handy for "dummy" menu entries
+CMS_SEO_FIELDS = True # page metadata etc.
+
 CMS_SOFTROOT = False # no need to cut the menu in sections
-CMS_PUBLIC_FOR = "all" # no restricted to "staff"
+CMS_PUBLIC_FOR = "all" # not restricted to "staff"
 CMS_PERMISSION = False # no fine grained restrictions ATM
 CMS_TEMPLATE_INHERITANCE = True
-CMS_LANGUAGE_FALLBACK = True
-CMS_MULTILINGUAL_PATCH_REVERSE = False
 CMS_PLACEHOLDER_CONF = {} # unused atm
 CMS_PLUGIN_CONTEXT_PROCESSORS = []
 CMS_PLUGIN_PROCESSORS = []
 PLACEHOLDER_FRONTEND_EDITING = True
-CMS_HIDE_UNTRANSLATED = False
+
+CMS_MULTILINGUAL_PATCH_REVERSE = False
 CMS_LANGUAGE_CONF = {} # fallbacks ordering
-CMS_LANGUAGES = (
+CMS_LANGUAGES = (# BEWARE - structure has changed in djangocms 1.5
     ('fr', ugettext('French')),
     ('en', ugettext('English')),
 )
+CMS_HIDE_UNTRANSLATED = False
+CMS_LANGUAGE_FALLBACK = True
+
+CMS_CACHE_PREFIX = "chryscms-" # useful if multiple CMS installations
 CMS_CACHE_DURATIONS = { # in seconds
     'menus': 60 * 60,
     'content': 60,
     'permissions': 60 * 60,
 }
+
+CMS_MAX_PAGE_PUBLISH_REVERSIONS = 25 # FIXME - for when we'll use DJANGO-REVERSION
 
 
 ## SIMPLEGALLERY CONF ##

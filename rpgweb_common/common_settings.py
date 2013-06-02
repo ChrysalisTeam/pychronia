@@ -9,7 +9,8 @@ except ImportError:
     pass
 
 
-import rpgweb_common.default_logging_config
+import rpgweb_common.default_logging_config # base handlers
+
 
 ##################### SETTINGS TO BE OVERRIDDEN BY DEPLOYMENT-SPECIFIC CONF FILE ####################
 
@@ -26,6 +27,7 @@ EMAIL_PORT = 25
 EMAIL_SUBJECT_PREFIX = ""
 EMAIL_USE_TLS = False
 
+ADMINS = MANAGERS = () # admins are for 50 errors, managers for 404 errors with BrokenLinkEmailsMiddleware  - format : (('John', 'john@example.com'),)
 
 ROOT_URLCONF = None
 
@@ -34,6 +36,7 @@ TEMPLATE_DEBUG = False
 
 SITE_DOMAIN = None # NO trailing slash, used to build absolute urls
 
+FORCE_SCRIPT_NAME = None # if not mounted at /
 
 ######################################################################################################
 
@@ -43,7 +46,7 @@ ugettext = lambda s: s # dummy placeholder for makemessages
 
 ROOT_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) # base folder where rpgweb packages are stored
 
-INTERNAL_IPS = () # used by debug toolbar etc.
+INTERNAL_IPS = () # used for debug output etc.
 
 SESSION_COOKIE_NAME = 'sessionid' # DO NOT CHANGE - needed for phpbb integration
 
@@ -55,10 +58,14 @@ ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/' # deprecated but required by djangocm
 STATIC_ROOT = os.path.join(ROOT_PATH, "static") # where collectstatic cmd will place files
 STATICFILES_DIRS = ()
 
-TIME_ZONE = 'Europe/Paris'
+USE_ETAGS = False # demandes heavy processing to compute response hashes
+
+# in templates, use DATE_FORMAT, DATETIME_FORMAT, SHORT_DATE_FORMAT or SHORT_DATETIME_FORMAT as date formats!
+USE_TZ = False # we use naive datetimes ATM...
+TIME_ZONE = 'UTC'
 USE_L10N = True
 USE_I18N = True
-LANGUAGE_CODE = 'fr'
+LANGUAGE_CODE = 'en'
 LANGUAGES = (
   ('fr', ugettext('French')),
   ('en', ugettext('English')),
@@ -72,6 +79,9 @@ APPEND_SLASH = True # so handy for mistyped urls...
 IGNORABLE_404_URLS = (# ONLY SOON IN 1.5
     re.compile(r'\.(php|cgi)$'),
 )
+
+# TEST_RUNNER = "" # override this to use another runner, eg. for pytest
+
 
 
 # List of callables that know how to import templates from various sources.
@@ -97,16 +107,15 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 
 # no need for CSRF by default
 MIDDLEWARE_CLASSES = (
-#'django.middleware.common.BrokenLinkEmailsMiddleware', ONLY SOON IN 1.5
-'sessionprofile.middleware.SessionProfileMiddleware',
+'django.middleware.gzip.GZipMiddleware',
+'django.middleware.http.ConditionalGetMiddleware', # checks E-tag and last-modification-time to avoid sending data
+#'django.middleware.common.BrokenLinkEmailsMiddleware', FIXME - ONLY SOON IN 1.5
+'sessionprofile.middleware.SessionProfileMiddleware', # to bridge auth with PHPBB
 'django.contrib.sessions.middleware.SessionMiddleware',
+'django.middleware.locale.LocaleMiddleware',
 'django.contrib.messages.middleware.MessageMiddleware',
-
-# 'localeurl.middleware.LocaleURLMiddleware',
-# 'django.middleware.locale.LocaleMiddleware', replaced by LocaleURLMiddleware
 'django.middleware.common.CommonMiddleware',
 'django.contrib.auth.middleware.AuthenticationMiddleware',
-
 'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
 
@@ -151,6 +160,13 @@ except ImportError:
 
 ############# DJANGO-APP CONFS ############
 
+
+## AUTHENTICATION CONF ##
+# left as default, ATM
+LOGIN_REDIRECT_URL = '/accounts/profile/'
+LOGIN_URL = '/accounts/login/'
+LOGOUT_URL = '/accounts/logout/'
+PASSWORD_RESET_TIMEOUT_DAYS = 3
 
 ## DJANGO-SELECT2 CONF ##
 AUTO_RENDER_SELECT2_STATICS = False

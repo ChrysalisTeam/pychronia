@@ -33,7 +33,7 @@
 
             <tr>
             <td><strong>{% trans "Date:" %}</strong></td>
-            <td>{{ message.sent_at|utctolocal|date:"d N Y - H:i:s" }}</td>  {%comment %} IF NEEDED {% load humanize %}{{ event.time|utctolocal|naturalday:"d/N/Y" }}{% endcomment %}
+            <td>{{ message.sent_at|utctolocal|date:"SHORT_DATETIME_FORMAT" }}</td>  {%comment %} IF NEEDED {% load humanize %}{{ event.time|utctolocal|naturalday:"d/N/Y" }}{% endcomment %}
             </tr>
             </table>
 

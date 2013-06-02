@@ -4,6 +4,8 @@
 <head>
     <title>{% block html_title %}{% trans "Bienvenue" %}{% endblock %}</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE9">{# emulate IE9 in quirks or normal mode #}
+
     {% render_block "meta" %}
 
     <link href="{{ STATIC_URL }}img/favicon_diamond.png" rel="shortcut icon" type="image/png" />

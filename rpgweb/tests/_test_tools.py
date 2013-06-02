@@ -131,7 +131,7 @@ class RequestMock(RequestFactory):
 def raises_with_content(klass, string):
     with pytest.raises(klass) as exc:
         yield exc
-    assert string.lower() in str(exc.value).lower()
+    assert string.lower() in unicode(exc.value).lower()
 
 
 
