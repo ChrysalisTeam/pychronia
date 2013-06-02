@@ -217,6 +217,7 @@
   color: #000000;
   float: left;
   font-size: 3em;
+  line-height: 1em;
   margin-right: 0.1em;
 }
 .missing-content {
@@ -1331,6 +1332,7 @@ body:after {
   height: 61px;
   padding: 0 0;
   background-color: #775f13;
+  background-clip: content-box;
   border-color: #775f13;
   border-style: ridge;
   border-width: 18px 52px 20px 55px;
@@ -1370,8 +1372,8 @@ body:after {
 #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu > li li a,
 #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu > li li span {
   font-size: 20pt;
-  background-color: #775f13;
-  border-color: #775f13;
+  background-color: transparent;
+  border-color: transparent;
   border-style: solid;
   border-width: 0px 32px 0px 33px;
   border-image: url(img/backgrounds/tube_gold_small.png) 0 32 0 33 fill stretch;
@@ -1399,6 +1401,8 @@ body:after {
   display: none;
   margin: 0;
   padding: 0;
+  background-color: #775f13;
+  background-clip: content-box;
   border-color: transparent;
   border-style: solid;
   border-width: 4px 3px;

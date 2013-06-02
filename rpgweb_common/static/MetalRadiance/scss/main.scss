@@ -364,6 +364,7 @@ body {
                 padding: 0 0;
 
                 background-color: $border_image_yellow;
+                background-clip: content-box;
                 border-color: $border_image_yellow;
                 border-style: ridge;
                 border-width: 18px 52px 20px 55px;
