@@ -111,6 +111,7 @@ $error_color: red;
 
 
 @mixin center {
+    display: block; // eg. for img tag
     margin-left: auto !important;
     margin-right: auto !important;
 }

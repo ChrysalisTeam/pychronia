@@ -28,6 +28,7 @@
   background-color: #ff0000;
 }
 .center {
+  display: block;
   margin-left: auto !important;
   margin-right: auto !important;
 }
@@ -221,6 +222,7 @@
   margin-right: 0.1em;
 }
 .missing-content {
+  display: block;
   margin-left: auto !important;
   margin-right: auto !important;
   text-align: center !important;
