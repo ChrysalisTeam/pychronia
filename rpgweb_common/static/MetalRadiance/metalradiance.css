@@ -827,6 +827,12 @@ fieldset {
   border-color: #9d8126;
   margin: 5px auto;
 }
+.jp-audio {
+  margin: 10px auto;
+}
+.jp-audio * {
+  box-sizing: content-box !important;
+}
 .ui-dropdownchecklist {
   background-color: #ffffff;
   padding: 1px 2px;

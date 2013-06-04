@@ -42,8 +42,7 @@ TESTS
 
 NEEDS COSMETICS
 -----------------
-- SET LINE HEIGHT FOR DROP CAPS
-
+- add centering for images in CMS
 
 
 TASKS DONE
@@ -120,6 +119,8 @@ TASKS DONE
 - interface to edit external contacts DONE
 - global page styles and messages for readonly DONE
 - fix _get_middleware_data_explanations() for time limited -> must convert delays to flexible time DONE
+- set line height on drop caps DONE
+- http://test.prolifik.net/cms/historique/?edit <- fancybox broken DONE
 
 
 FUTUR ENHANCEMENTS
