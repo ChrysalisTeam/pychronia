@@ -1,4 +1,4 @@
-{% extends "cms_index.html" %}
+{% extends "cms_one_column.html" %}
 {% load sekizai_tags heading kwacros i18n %}
 {% loadkwacros "metalradiance_kwacros.html" %}
 
@@ -12,7 +12,7 @@
 
 {% block panels %}
 
-    {% usekwacro main_panel_start frame_class="big_frame" %}
+    {% usekwacro main_panel_start frame_class="big_frame bare_forms" %}
 
         {% block content %}
         {% endblock %}

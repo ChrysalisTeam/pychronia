@@ -162,8 +162,7 @@ except ImportError:
 
 
 ## AUTHENTICATION CONF ##
-# left as default, ATM
-LOGIN_REDIRECT_URL = '/accounts/profile/'
+LOGIN_REDIRECT_URL = '/' # changed from /accounts/profile/
 LOGIN_URL = '/accounts/login/'
 LOGOUT_URL = '/accounts/logout/'
 PASSWORD_RESET_TIMEOUT_DAYS = 3

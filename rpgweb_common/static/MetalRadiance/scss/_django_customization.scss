@@ -2,9 +2,10 @@
 @import "_globals.scss";
 
 
-/* classes used by django standard modules like newforms */
+/* classes used by django standard or contrib modules like newforms, django-userprofiles... */
 
 
+/* django forms */
 .errorlist {
     list-style-type: none;
     list-style-image: none;
@@ -14,3 +15,8 @@
 }
 
 
+/* forms of django-userprofiles */
+.bare_forms form {
+    max-width: 400px;
+    margin:auto
+}
