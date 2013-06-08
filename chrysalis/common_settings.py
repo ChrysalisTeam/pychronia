@@ -1,10 +1,13 @@
 # -*- coding: utf-8 -*-
 
 
-# Bugfix, to prevent djangoscms.models.monkeypatch_reverse from breaking i18n_patterns standard system #
+# bugfix, to prevent djangoscms.models.monkeypatch_reverse from breaking i18n_patterns standard system #
 import django.core.urlresolvers
 django.core.urlresolvers.reverse.cms_monkeypatched = True
 
+# bugfix for missing language prefixes in urls #
+import menus.base
+menus.base.NavigationNode._remove_current_root = lambda self, url: url
 
 
 from rpgweb_common.common_settings import *
@@ -60,7 +63,7 @@ TEMPLATE_CONTEXT_PROCESSORS = TEMPLATE_CONTEXT_PROCESSORS + ("cms.context_proces
 MIDDLEWARE_CLASSES += (
 'django.middleware.clickjacking.XFrameOptionsMiddleware',
 'django.middleware.csrf.CsrfViewMiddleware',
-# #'cms.middleware.multilingual.MultilingualURLMiddleware',
+# #'cms.middleware.multilingual.MultilingualURLMiddleware', OBSOLETE
 'cms.middleware.page.CurrentPageMiddleware',
 'cms.middleware.user.CurrentUserMiddleware',
 'cms.middleware.toolbar.ToolbarMiddleware',
