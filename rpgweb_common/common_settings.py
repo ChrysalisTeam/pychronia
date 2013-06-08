@@ -108,7 +108,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 # no need for CSRF by default
 MIDDLEWARE_CLASSES = (
 'django.middleware.gzip.GZipMiddleware',
-'django.middleware.http.ConditionalGetMiddleware', # checks E-tag and last-modification-time to avoid sending data
+# TODO Later 'django.middleware.http.ConditionalGetMiddleware', # checks E-tag and last-modification-time to avoid sending data
 #'django.middleware.common.BrokenLinkEmailsMiddleware', FIXME - ONLY SOON IN 1.5
 'sessionprofile.middleware.SessionProfileMiddleware', # to bridge auth with PHPBB
 'django.contrib.sessions.middleware.SessionMiddleware',

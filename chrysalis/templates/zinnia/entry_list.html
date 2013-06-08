@@ -5,6 +5,9 @@
 {% load url from future %}
 
 
+{% block title %}{% if category %}{{ category }}{% endif %}{% if tag %}{{ tag }}{% endif %}{% if author %}{{ author }}{% endif %}{% if page_obj %}{% ifnotequal page_obj.number 1 %} {% trans "Page" %} {{ page_obj.number }}{% endifnotequal %}{% endif %}{% endblock %}
+
+
 {% block content %}
 
     {% headingcontext target_level=1 %}
@@ -26,9 +29,7 @@
 
 
 
-
 {% comment %}
-
 
 
 
@@ -52,7 +53,7 @@
   {% endif %}
 {% endblock %}
 
-{% block title %}{% trans "Latest entries" %} {% if category %}| {% trans "Category" %} {{ category }}{% endif %}{% if tag %}| {% trans "Tag" %} {{ tag }}{% endif %}{% if author %}| {% trans "Author" %} {{ author }}{% endif %}{% if page_obj %}{% ifnotequal page_obj.number 1 %} | {% trans "Page" %} {{ page_obj.number }}{% endifnotequal %}{% endif %}{% endblock %}
+
 
 {% block body-class %}entry-list{% if page_obj %} paginated page-{{ page_obj.number }}{% endif %}{% if category %} category category-{{ category.slug }}{% endif %}{% if tag %} tag tag-{{ tag|slugify }}{% endif %}{% if author %} author author-{{ author|slugify }}{% endif %}{% endblock %}
 

@@ -7,11 +7,29 @@
 }
 
 .hentry {
+    @extend .clearfix;
     @extend .scroll_realistic_thin_ends;
     margin: auto;
+
+    img.center {
+        margin-top: 15px;
+        margin-bottom: 15px;
+    }
 }
 
+ul.paginator {
+    list-style-image: none !important;
+    list-style-type: none  !important;
+    li {
+        display: inline !important;
+        margin: 0px 5px;
+    }
 
-.entry-image img {
-    margin: 1px 10px;
+    .index {
+        margin-right: 40px;
+    }
+}
+
+.mini_frame_content .scroll_yellow_flat {
+    margin: 0;
 }

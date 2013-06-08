@@ -138,7 +138,7 @@ CMS_SIMPLEGALLERY_THUMBNAIL_OPTIONS = {
 ## ORIGINAL ZINNIA CONF ##
 # note: if error "Unknown column 'zinnia_entry.content_placeholder_id' in 'field list" => python manage.py reset zinnia
 ZINNIA_ENTRY_BASE_MODEL = 'cmsplugin_zinnia.placeholder.EntryPlaceholder'
-ZINNIA_PAGINATION = 1
+ZINNIA_PAGINATION = 10
 ZINNIA_UPLOAD_TO = "uploads/zinnia"
 ZINNIA_PROTOCOL = "http"
 ZINNIA_COPYRIGHT = "ChrysalisGame"

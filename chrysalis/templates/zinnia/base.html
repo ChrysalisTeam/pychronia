@@ -16,6 +16,13 @@
         {% block content %}
         {% endblock %}
 
+
+        {% block content-pagination %}
+            {% if is_paginated %}
+              {% zinnia_pagination page_obj %}
+            {% endif %}
+        {% endblock %}
+
     {% usekwacro main_panel_end %}
 
 
