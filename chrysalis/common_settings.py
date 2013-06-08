@@ -1,8 +1,15 @@
 # -*- coding: utf-8 -*-
 
+
+# Bugfix, to prevent djangoscms.models.monkeypatch_reverse from breaking i18n_patterns standard system #
+import django.core.urlresolvers
+django.core.urlresolvers.reverse.cms_monkeypatched = True
+
+
+
 from rpgweb_common.common_settings import *
 
-
+LANGUAGE_CODE = 'fr' # for now, CMS content is french only so....
 
 INSTALLED_APPS += [
     'chrysalis',
@@ -96,7 +103,10 @@ CMS_PLUGIN_PROCESSORS = []
 PLACEHOLDER_FRONTEND_EDITING = True
 
 CMS_MULTILINGUAL_PATCH_REVERSE = False
-CMS_LANGUAGE_CONF = {} # fallbacks ordering
+CMS_LANGUAGE_CONF = { # fallbacks ordering
+    'fr': ['en'],
+    'en': ['fr'],
+}
 CMS_LANGUAGES = (# BEWARE - structure has changed in djangocms 1.5
     ('fr', ugettext('French')),
     ('en', ugettext('English')),

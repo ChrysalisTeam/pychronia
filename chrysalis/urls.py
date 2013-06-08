@@ -6,7 +6,7 @@ from django.conf import settings
 from cms.views import details
 from django.views.generic import RedirectView
 from django.core.urlresolvers import reverse_lazy
-
+from django.conf.urls.i18n import i18n_patterns
 
 admin.autodiscover()
 
@@ -24,8 +24,10 @@ urlpatterns = patterns('',
     (r'^admin/', include(admin.site.urls)),
 
     (r'^i18n/', include('django.conf.urls.i18n')), # to set language
+)
 
-    ## (r'^accounts/', include('registration.backends.default.urls')), # two steps user registration with django-registration
+urlpatterns += i18n_patterns('', 
+
     (r'^accounts/', include('userprofiles.urls')), # one-step registration
 
     url(r'^weblog/', include('zinnia.urls')), # TOO MANY URLS, but required by cms menu integration
