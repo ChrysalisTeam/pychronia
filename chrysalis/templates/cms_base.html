@@ -63,6 +63,9 @@
         <a href="{% url userprofiles_profile_change %}">{% trans "Profile" %}</a>
         <ul>
             <li>
+                <a href="{% url auth_password_change %}?next=/">{% trans "Change password" %}</a>
+            </li>
+            <li>
                 <a href="{% url auth_logout %}?next=/">{% trans "Logout" %}</a>
             </li>
         </ul>
