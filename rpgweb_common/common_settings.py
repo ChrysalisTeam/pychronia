@@ -108,6 +108,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 # no need for CSRF by default
 MIDDLEWARE_CLASSES = (
 'django.middleware.gzip.GZipMiddleware',
+'rpgweb_common.middlewares.ReverseProxyFixer',
 # TODO Later 'django.middleware.http.ConditionalGetMiddleware', # checks E-tag and last-modification-time to avoid sending data
 #'django.middleware.common.BrokenLinkEmailsMiddleware', FIXME - ONLY SOON IN 1.5
 'sessionprofile.middleware.SessionProfileMiddleware', # to bridge auth with PHPBB
@@ -167,6 +168,7 @@ LOGIN_URL = '/accounts/login/'
 LOGOUT_URL = '/accounts/logout/'
 PASSWORD_RESET_TIMEOUT_DAYS = 3
 
+
 ## DJANGO-SELECT2 CONF ##
 AUTO_RENDER_SELECT2_STATICS = False
 
@@ -197,6 +199,7 @@ RESTRUCTUREDTEXT_FILTER_SETTINGS = {"initial_header_level": 2, # minimum "h2" wh
                                     "sectsubtitle_xform": False,
                                     'file_insertion_enabled': False,  # SECURITY MEASURE (file hacking)
                                     'raw_enabled': False, } # SECURITY MEASURE (script tag)
+
 
 ## EASY-THUMBNAILS CONF ##
 THUMBNAIL_PROCESSORS = (

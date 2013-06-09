@@ -28,6 +28,7 @@ cmsplugin-filer==0.9.3
 django-sekizai==0.6.1
 django-tagging==0.3.1
 django-inline-ordering==1.0.2
+django-request==0.3
 
 # if trouble with "Unknown column 'zinnia_entry.content_placeholder_id' in 'field list" : python manage.py reset zinnia
 django-blog-zinnia==0.12

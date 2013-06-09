@@ -17,6 +17,8 @@ LANGUAGE_CODE = 'fr' # for now, CMS content is french only so....
 INSTALLED_APPS += [
     'chrysalis',
 
+    'request', # stats on HTTP requests
+
     'userprofiles',
     'userprofiles.contrib.profiles',
 
@@ -66,6 +68,7 @@ MIDDLEWARE_CLASSES += (
 # #'cms.middleware.multilingual.MultilingualURLMiddleware', OBSOLETE
 'cms.middleware.page.CurrentPageMiddleware',
 'cms.middleware.user.CurrentUserMiddleware',
+'request.middleware.RequestMiddleware',
 'cms.middleware.toolbar.ToolbarMiddleware',
 )
 
@@ -78,6 +81,17 @@ ABSOLUTE_URL_OVERRIDES = {
 
 ############# DJANGO-APP CONFS ############
 
+
+## DJANGO-REQUEST STATS CONF ##
+# most settings only work with dev version of module, as of 2013/06
+REQUEST_IGNORE_AJAX = True
+REQUEST_ANONYMOUS_IP = True
+REQUEST_LOG_USER = False
+REQUEST_IGNORE_PATHS = (
+    r'^admin/',
+    r'^static/',
+)
+REQUEST_ONLY_ERRORS = False
 
 
 ## DJANGO CONTRIB RST CONF ##
