@@ -9,7 +9,10 @@
 .hentry {
     @extend .clearfix;
     @extend .scroll_realistic_thin_ends;
-    margin: auto;
+
+  // we remove the excess of margin inside frame
+    margin-left: -30px;
+    margin-right: -30px;
 
     img.center {
         margin-top: 15px;

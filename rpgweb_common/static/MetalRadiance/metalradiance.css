@@ -1105,7 +1105,8 @@ input.digit {
   overflow: visible;
 }
 .hentry {
-  margin: auto;
+  margin-left: -30px;
+  margin-right: -30px;
 }
 .hentry img.center {
   margin-top: 15px;
