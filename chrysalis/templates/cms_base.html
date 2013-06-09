@@ -27,12 +27,20 @@
 
 
 
-{% block carving_left %}{% endblock %}
+{% block carving_left %}
+<span style="color: white; font-size: 1em">
+{% trans "Welcome" %}
+</span>
+{% endblock %}
 
 {% block carving_right %}
+<span style="color: white; font-size: 1em">
 {% if request.user and request.user.is_authenticated %}
-    <span style="color: white; font-size:1.2em">Hi, {{ request.user.username }}</span>
+    {{ request.user.username|capfirst }}
+{% else %}
+    {% trans "Visitor" %}
 {% endif %}
+</span>
 {% endblock %}
 
 
