@@ -52,7 +52,7 @@
     {% if not user.is_authenticated %}
         <a href="{% url auth_login %}">{% trans "Login" %}</a>
     {% else %}
-        <a href="{% url userprofiles_profile_change %}">{% trans "Profil" %}</a>
+        <a href="{% url userprofiles_profile_change %}">{% trans "Profile" %}</a>
         <ul>
             <li>
                 <a href="{% url auth_logout %}?next=/">{% trans "Logout" %}</a>

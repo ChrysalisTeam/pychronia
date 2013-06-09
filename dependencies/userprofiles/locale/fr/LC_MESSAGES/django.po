@@ -1,0 +1,359 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2011
+# This file is distributed under the same license as the django-userprofiles package.
+# Horst Gutmann <zerok@zerokspot.com>, 2012.
+# Prolifik <chambon.pascal@gmail.com>, 2013.
+msgid ""
+msgstr ""
+"Project-Id-Version: 0.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-03-11 17:26+0100\n"
+"PO-Revision-Date: 2013-06-09 13:40+0200\n"
+"Last-Translator: Prolifik <chambon.pascal@gmail.com>\n"
+"Language-Team: Chrysalis Team\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Generator: Virtaal 0.7.0\n"
+
+#: forms.py:12
+msgid "Username"
+msgstr "Nom d'utilisateur"
+
+#: forms.py:14
+msgid "This value may contain only letters, numbers and ./-/_ characters."
+msgstr ""
+"Cette valeur ne doit contenir que des lettres, nombres, et caractères ./-/_."
+
+#: forms.py:16 contrib/profiles/forms.py:12
+msgid "E-mail"
+msgstr "E-Mail"
+
+#: forms.py:17
+msgid "E-mail (repeat)"
+msgstr "E-Mail (à nouveau)"
+
+#: forms.py:19
+msgid "Password"
+msgstr "Mot de passe"
+
+#: forms.py:21
+msgid "Password (repeat)"
+msgstr "Mot de passe (à nouveau)"
+
+#: forms.py:24 contrib/profiles/forms.py:10
+msgid "First name"
+msgstr "Prénom"
+
+#: forms.py:25 contrib/profiles/forms.py:11
+msgid "Last name"
+msgstr "Nom"
+
+#: forms.py:66
+msgid "A user with that username already exists."
+msgstr "Un utilisateur avec ce surnom existe déjà."
+
+#: forms.py:86 contrib/emailverification/forms.py:24
+msgid ""
+"This email address is already in use. Please supply a different email "
+"address."
+msgstr "Cet email est déjà utilisé. Veuillez en utiliser un autre."
+
+#: forms.py:94
+msgid "The two email addresses do not match."
+msgstr "Les deux adresses email ne corespondent pas."
+
+#: forms.py:99
+msgid "You must type the same password each time."
+msgstr "Vous devez taper le même mot de passe à chaque fois."
+
+#: contrib/accountverification/models.py:78
+#: contrib/emailverification/models.py:21
+msgid "User"
+msgstr "Utilisateur"
+
+#: contrib/accountverification/models.py:79
+msgid "Activation key"
+msgstr "Code d'activation"
+
+#: contrib/accountverification/models.py:94
+msgid "Account verification"
+msgstr "Vérification de compte"
+
+#: contrib/accountverification/models.py:95
+msgid "Account verifications"
+msgstr "Vérifications de comptes"
+
+#: contrib/emailverification/forms.py:14
+#: contrib/emailverification/models.py:23
+msgid "New e-mail address"
+msgstr "Nouvelle adresse email"
+
+#: contrib/emailverification/models.py:22
+msgid "Old e-mail address"
+msgstr "Ancienne adresse email"
+
+#: contrib/emailverification/models.py:25
+msgid "Token"
+msgstr "Jeton"
+
+#: contrib/emailverification/models.py:26
+msgid "Code"
+msgstr "Code"
+
+#: contrib/emailverification/models.py:28
+msgid "Approved"
+msgstr "Approuvé"
+
+#: contrib/emailverification/models.py:29
+msgid "Expired"
+msgstr "Expiré"
+
+#: contrib/emailverification/models.py:31
+msgid "Expiration date"
+msgstr "Date d'expiration"
+
+#: contrib/emailverification/models.py:51
+msgid "E-mail verification"
+msgstr "Vérification d'email"
+
+#: contrib/emailverification/models.py:52
+msgid "E-mail verifications"
+msgstr "Vérifications d'emails"
+
+#: contrib/emailverification/views.py:47
+#, python-format
+msgid "E-mail address changed to %(email)s"
+msgstr "Adresse email changée pour %(email)s"
+
+#: contrib/emailverification/views.py:52
+msgid "Unable to change e-mail address. Confirmation link is invalid."
+msgstr ""
+"Impossible de changer l'adresse email. Le lien de confirmation est invalide."
+
+#: contrib/profiles/views.py:42
+msgid "Profile changed"
+msgstr "Profil modifié"
+
+#: templates/userprofiles/email_change.html:4
+#: templates/userprofiles/email_change.html:7
+#: templates/userprofiles/email_change.html:15
+#: templates/userprofiles/email_change_requested.html:4
+#: templates/userprofiles/email_change_requested.html:7
+msgid "Change e-mail address"
+msgstr "Changer l'adresse email"
+
+#: templates/userprofiles/email_change_requested.html:10
+msgid ""
+"We send you a e-mail including a link. Please click the link to\n"
+"        continue changing your e-mail address. Thank you!"
+msgstr ""
+"Nous vous avons envoyé un email incluant un lien. Veuillez cliquer sur ce "
+"lien pour continuer à changer d'adresse email. Merci!"
+
+#: templates/userprofiles/logged_out.html:4
+#: templates/userprofiles/logged_out.html:7
+msgid "Logged out"
+msgstr "Déconnecté"
+
+#: templates/userprofiles/login.html:5 templates/userprofiles/login.html:8
+#: templates/userprofiles/login.html:16
+msgid "Login"
+msgstr "Connexion"
+
+#: templates/userprofiles/login.html:18
+msgid "No account? Register here."
+msgstr "Pas de compte ? Inscrivez-vous ici."
+
+#: templates/userprofiles/login.html:19
+msgid "No Password? Reset your password here."
+msgstr "Pas de mot de passe ? Réinitialisez le ici."
+
+#: templates/userprofiles/password_change.html:4
+#: templates/userprofiles/password_change.html:7
+#: templates/userprofiles/password_change.html:15
+#: templates/userprofiles/password_change_done.html:4
+#: templates/userprofiles/password_change_done.html:7
+#: templates/userprofiles/password_reset_confirm.html:16
+msgid "Change password"
+msgstr "Changer le mot de passe"
+
+#: templates/userprofiles/password_change_done.html:10
+msgid "We successfully changed your password."
+msgstr "Votre mot de passe a bien été modifié."
+
+#: templates/userprofiles/password_reset.html:4
+#: templates/userprofiles/password_reset.html:7
+#: templates/userprofiles/password_reset.html:15
+#: templates/userprofiles/password_reset_complete.html:4
+#: templates/userprofiles/password_reset_complete.html:7
+#: templates/userprofiles/password_reset_confirm.html:4
+#: templates/userprofiles/password_reset_confirm.html:7
+#: templates/userprofiles/password_reset_done.html:4
+#: templates/userprofiles/password_reset_done.html:7
+msgid "Reset password"
+msgstr "Réinitialiser le mot de passe"
+
+#: templates/userprofiles/password_reset_complete.html:10
+msgid "We successfully resetted your password."
+msgstr "Nous avons bien réinitialisé votre mot de passe."
+
+#: templates/userprofiles/password_reset_confirm.html:21
+msgid "The reset link is invalid. Please double check the link."
+msgstr "Le lien de réinitialisation est invalid. Veuillez le vérifier."
+
+#: templates/userprofiles/password_reset_done.html:10
+msgid ""
+"We send you a e-mail including a link. Please click the\n"
+"        link to continue resetting your password. Thank you!"
+msgstr ""
+"Nous vous avons envoyé un email incluant un lien. Veuillez cliquer sur ce "
+"lien pour continuer à changer de mot de passe. Merci!"
+
+#: templates/userprofiles/profile.html:4 templates/userprofiles/profile.html:7
+msgid "Your profile"
+msgstr "Votre profil"
+
+#: templates/userprofiles/profile.html:10
+#, python-format
+msgid "Welcome back, %(user)s!"
+msgstr "Bienvenue à nouveau, %(user)s!"
+
+#: templates/userprofiles/profile_change.html:3
+#: templates/userprofiles/profile_change.html:6
+#: templates/userprofiles/profile_change.html:14
+msgid "Change profile"
+msgstr "Changer le profil"
+
+#: templates/userprofiles/registration.html:4
+#: templates/userprofiles/registration.html:7
+#: templates/userprofiles/registration_activate.html:4
+#: templates/userprofiles/registration_activate.html:7
+#: templates/userprofiles/registration_complete.html:4
+#: templates/userprofiles/registration_complete.html:7
+msgid "Registration"
+msgstr "Inscription"
+
+#: templates/userprofiles/registration.html:15
+msgid "Create account"
+msgstr "Créer un compte"
+
+#: templates/userprofiles/registration_activate.html:11
+msgid "We activated your account. You are now able to log in. Have fun!"
+msgstr ""
+"Nous avons activé votre compte. Vous pouvez maintenant vous connecter. "
+"Amusez-vous!"
+
+#: templates/userprofiles/registration_activate.html:15
+msgid "The submitted activation code is invalid. Activation is not possible."
+msgstr "Le code d'activation envoyé est invalide. Activation impossible."
+
+#: templates/userprofiles/registration_complete.html:11
+#, python-format
+msgid ""
+"Your registration was successful. We send you a e-mail including a link.<br /"
+">\n"
+"            Please click the link to activate your account. Thank you!<br /"
+">\n"
+"            <br />\n"
+"            The link is valid for %(expiration_days)s days."
+msgstr ""
+"Votre enregistrement est réussi. Nous vous envoyons un email incluant un "
+"lien.<br />\n"
+"           Veuillez cliquer sur le lien pour activer votre compte. Merci!<br "
+"/>\n"
+"            <br />\n"
+"            Le lien est valide pour %(expiration_days)s jours."
+
+#: templates/userprofiles/registration_complete.html:18
+msgid "Your registration was successful."
+msgstr "Votre inscription est réussie."
+
+#: templates/userprofiles/mails/activation_email.html:1
+#, python-format
+msgid ""
+"Thank you for creating an account.\n"
+"\n"
+"Please click on the following link to activate your account:\n"
+"\n"
+"http://%(domain)s%(url)s\n"
+"\n"
+"Cheers!"
+msgstr ""
+"Merci d'avoir créé un compte.\n"
+"\n"
+"Veuillez cliquer sur le lien suivant pour l'activer:\n"
+"\n"
+"http://%(domain)s%(url)s\n"
+"\n"
+"Merci!"
+
+#: templates/userprofiles/mails/activation_email_subject.html:1
+msgid "Account activation"
+msgstr "Activation de compte"
+
+#: templates/userprofiles/mails/emailverification.html:1
+#, python-format
+msgid ""
+"Please click on the following link to change your email address:\n"
+"\n"
+"http://%(domain)s%(url)s\n"
+"\n"
+"Cheers!"
+msgstr ""
+"Veuillez cliquer sur ce lien pour changer votre adresse email:\n"
+"\n"
+"http://%(domain)s%(url)s\n"
+"\n"
+"Merci!"
+
+#: templates/userprofiles/mails/emailverification_subject.html:1
+msgid "E-mail confirmation"
+msgstr "Confirmation d'adresse email"
+
+#: templates/userprofiles/mails/password_reset_email.html:1
+#, python-format
+msgid ""
+"Please click on the following link to reset your password:\n"
+"\n"
+"%(protocol)s://%(domain)s%(url)s\n"
+"\n"
+"Cheers!"
+msgstr ""
+"Veuillez cliquer sur ce lien pour changer votre adresse email:\n"
+"\n"
+"%(protocol)s://%(domain)s%(url)s\n"
+"\n"
+"Merci!"
+
+#~ msgid ""
+#~ "\n"
+#~ "        Welcome back, %(user)s!\n"
+#~ "        "
+#~ msgstr "Willkommen zurück, %(user)s!"
+
+#~ msgid "Change your password"
+#~ msgstr "Ändern Sie Ihr Passwort"
+
+#~ msgid "Reset your password"
+#~ msgstr "Setzen Sie Ihr Passwort zurück"
+
+#~ msgid "Profile: %(user)s"
+#~ msgstr "Profil: %(user)s"
+
+#~ msgid ""
+#~ "\n"
+#~ "                The link is valid for %(expiration_days)s day.\n"
+#~ "            "
+#~ msgid_plural ""
+#~ "\n"
+#~ "                The link is valid for %(expiration_days)s days.\n"
+#~ "            "
+#~ msgstr[0] ""
+#~ "\n"
+#~ "Der Link ist für einen Tag gültig."
+#~ msgstr[1] ""
+#~ "\n"
+#~ "Der Link ist für %(expiration_days)s Tage gültig."

@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% load i18n cms_tags %}
+
+{% block title %}{% trans "Registration" %}{% endblock %}
+
+{% block content %}
+    <h1>{% trans "Registration" %}</h1>
+
+    {% show_placeholder "content" "registration_notice" %}
+
+    <form action="." method="post">
+        {% csrf_token %}
+        <fieldset>
+            {{ form.as_p }}
+        </fieldset>
+        <fieldset class="submit-row">
+            <p><button type="submit">{% trans "Create account" %}</button></p>
+        </fieldset>
+    </form>
+{% endblock %}

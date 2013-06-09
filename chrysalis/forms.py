@@ -18,7 +18,7 @@ class RegistrationForm(DefaultRegistrationForm):
 
         antibot_check = self.cleaned_data['antibot_check'].strip().lower()
 
-        if antibot_check != "14" and antibot_check != "fifteen":
+        if antibot_check != "14" and antibot_check != "fourteen":
             raise forms.ValidationError(_(u'Improper answer to special question.'))
 
         return antibot_check
