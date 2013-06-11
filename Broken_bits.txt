@@ -39,7 +39,7 @@ Some events point to other pages, where more details can be found.
         {% endblocktrans %}
         </p>
     <br/>
-    <div align="center"><a href="{% game_view_url "rpgweb.views.login" %}">{% trans "Get back to login page" %}</a></div>
+    <div align="center"><a href="{% game_view_url "pychronia_game.views.login" %}">{% trans "Get back to login page" %}</a></div>
 
 
         <p>

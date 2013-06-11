@@ -1,0 +1,89 @@
+
+{% extends "base_one_column.html" %}
+
+{% load sekizai_tags i18n helpers %}
+
+
+
+{% block sekizai_calls %}
+{{ block.super }}
+
+{% addtoblock "js" %}
+<script src="{{ STATIC_URL }}libs/jqchat.js" type="text/javascript" ></script>
+{% endaddtoblock %}
+
+{% addtoblock "onload_js" %}
+    InitChatWindow("{% game_view_url "pychronia_game.views.ajax_chat" %}",
+                    {% if is_master %}false{% else %}true{% endif %},
+                    HandleChattersList);
+{% endaddtoblock %}
+
+{% endblock %}
+
+
+
+
+{% block content %}
+
+    <div class="rice_paper_rose" style="margin:15px; padding:0; box-shadow:none;">
+        <div class="antique_marble_frame">
+            <div id="chatwindow"><span id="loading">Loading...</span></div>
+        </div>
+    </div>
+
+    <div align="center">
+    {% if not game_is_writable %}
+        <b>{% trans "Chat messaging is currently disabled." %}</b>
+    {% else %}
+        {% if player.is_master %}
+            <br/><div><b>{% trans "The master cannot participate to the conversation." %}</b></div>
+        {% else %}
+
+                <form id="chatform">
+                    <input type="text" id="msg" class="autosubmit" size="80" autocomplete="off" />
+                    <!--input type="submit" value="Send message" /><br /-->
+                </form>
+
+
+            <script type="text/javascript">document.getElementById("msg").focus();</script>
+        {% endif %}
+
+        <div id="errordiv" style="text-align:center; visibility:hidden; color:red">
+            {% trans "Communication channel seems faulty..." %}
+        </div>
+    </div>
+
+    <div align="center">
+        <b>{% trans "Now chatting:" %}</b> <span id="chatting_users">---</span>
+    </div>
+    {% endif %}
+
+
+{% endblock %}
+
+
+
+{% comment %}
+
+        // material to test asynchronous system of javascript
+        // actually, all operations are serialized in a single javascript thread,
+        // even when using ajax callbacks
+
+        function sleep(milliSeconds){
+            var startTime = new Date().getTime(); // get the current time
+            while (new Date().getTime() < startTime + milliSeconds) {}; // hog cpu
+        }
+
+        $.get("http://www.google.fr/",
+            {
+            },
+            function(payload) {
+                             window.alert("interruption");
+                            }
+        );
+
+        sleep(10000);
+        window.alert("over");
+
+
+{% endcomment %}

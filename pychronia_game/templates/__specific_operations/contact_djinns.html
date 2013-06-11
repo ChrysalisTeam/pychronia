@@ -1,0 +1,74 @@
+{% extends "base_one_column.html" %}
+
+{% load i18n helpers %}  
+
+
+
+{% block content %}  
+
+
+<p>
+    {% trans "Welcome to the shrine of djinns." %} 
+</p>
+
+<p>  
+    {% blocktrans %}
+    Here you may enter in communication with some djinns, depending on the sacred objects you'll have retrieved for them.
+    By nature, djinns are somehow autistic, so if after about {{ bots_max_answers }} exchanges, they don't want to talk with you anymore, 
+    no need to take it personally - just let it be.
+    {% endblocktrans %}
+</p>
+
+{% if team_gems %}
+<p> 
+
+    {% trans "At the moment, you have retrieved" %} 
+    {% blocktrans count team_gems as team_gems %}
+            {{ team_gems }} gem.
+    {% plural %}
+            {{ team_gems }} gems.
+    {% endblocktrans %}
+    
+</p>
+{% endif %}
+
+<div style="width:90%;">
+<ul>
+{% for name, value in all_bots %}
+    <li>
+    {% blocktrans count value.gems_required as gems_required %}
+        Djinn <strong>{{ name }}</strong> compels your team to reclaim <strong>{{ gems_required }}</strong> 
+        gem before communicating with you.
+    {% plural%}
+        Djinn <strong>{{ name }}</strong> compels your team to reclaim a total of <strong>{{ gems_required }}</strong> 
+        gems before communicating with you.
+    {% endblocktrans %}
+    </li>
+{% endfor %}
+</ul>
+</div>
+
+
+{% if djinn_form %}
+
+    <h3>
+        {% trans "Contact specific djinn" %}
+    </h3>
+    <form action="{% game_view_url "pychronia_game.views.chat_with_djinn" %}" method="post">
+    <table style="margin:auto;width:200px;">
+        {{ djinn_form.as_table }}
+        <tr>
+            <td colspan="2">
+                <input type="submit" name="contact_djinn" value="{% trans "Contact Djinn" %}" />
+            </td>
+        </tr>
+    </table>
+    </form>
+
+{% else %}
+    
+    <p>{% blocktrans %}You currently can't communicate with any djinn, reclaim some gems first.{% endblocktrans %}</p>
+
+{% endif %}
+
+{% endblock %}

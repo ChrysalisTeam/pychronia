@@ -1,0 +1,373 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<head>
+
+<link rel="stylesheet" type="text/css" href="metalradiance.css"/>
+
+<script src="../libs/jquery-1.7.1.min.js" type="text/javascript"></script>
+<script src="../libs/jquery.dropmenu-1.1.4-edited.js" type="text/javascript"></script>
+<script src="../libs/jquery.css3finalize-v3.x.js" type="text/javascript"></script>
+
+
+<script language="javascript" type="text/javascript">
+
+    $(document).ready(function() {
+
+        $('#menulist').dropmenu(
+            {
+                effect          : "slide",       //  "slide", "fade", or "none"
+                speed           : "fast", //  "normal", "fast", "slow", 100, 1000, etc
+                timeout         : 400,
+                nbsp            : true,
+                maxWidth        : 0
+            }
+        );
+
+    });
+
+</script>
+
+</head>
+
+<body>
+
+    <div id="full_header">
+
+        <div id="full_header_background">
+
+            <div id="full_header_center">
+
+	            <div class="notification_panel bg_red">
+	                <div class="notification_panel_decorations">
+	                    <div class="notification_panel_content">
+	                        Here is a notification<br/> message <br/>well long etc.<br/>gogogogo<br/>leeee<br/>jjjj<br/>lll7
+	                    </div>
+	                </div>
+	            </div>
+	            <div id="title_table">
+	                <div class="notification_flag" style="display:none;">Here some text<br/>and there too</div>
+
+
+	                <div class="motto left_image"></div>
+	                <div id="site_title"><a href="/"><img src="img/titles/pychronia_cms.png"/></a></div>
+	                <div class="motto right_image"></div>
+	            </div>
+
+	            <div id="notification_table">
+	                <div class="carving"></div>
+	                <div class="separator"></div>
+	                <div class="carving"></div>
+	            </div>
+             </div>
+        </div>
+
+    </div>
+
+    <div id="full_menu">
+        <div id="main_menu">
+            <div class="big_icon_panel">
+                <img src="img/icons/speaker.png"/>
+            </div>
+            <div class="marble_menu_container">
+                <div class="marble_menu">
+                        <ul id="menulist" class="dropmenu" style="z-index: 100;">
+                                 <li class="toplevel">
+                                        <a href="/DEMO/">Bash</a>
+                                 </li>
+                                 <li class="toplevel">
+                                        <a href="/DEMO/">Presentation</a>
+                                 </li>
+                                 <li class="toplevel">
+                                        <span>Home</span>
+                                         <ul>
+                                                <li class="sublevel">
+                                                        <a href="/DEMO/">Here</a>
+
+                                                </li>
+                                                <li class="sublevel">
+                                                        <a href="/DEMO/opening/">Opening</a>
+                                                </li>
+                                                <li class="sublevel">
+                                                        <a href="/DEMO/opening/">Final</a>
+                                                        <ul>
+                                                            <li class="sublevel">
+                                                                    <a href="/DEMO/">Advanced 1</a>
+
+                                                            </li>
+                                                            <li class="sublevel">
+                                                                    <a href="/DEMO/opening/">Advanced 2</a>
+                                                            </li>
+                                                         </ul>
+                                                </li>
+                                         </ul>
+                                </li>
+                        </ul>
+                </div>
+            </div>
+            <div class="big_icon_panel">
+                <img src="img/icons/question_mark.png"/>
+            </div>
+        </div>
+    </div>
+
+    <div id="full_content">
+
+        <div class="medium_frame float_right">
+
+
+            <img class="big_stick_bottom_left" src="img/decorations/big_deco_bl.png"/>
+            <img class="icon_stick_bottom_left" src="img/icons/owl.png"/>
+
+            <img class="big_stick_bottom_right" src="img/decorations/big_deco_br.png"/>
+            <img class="icon_stick_bottom_right" src="img/icons/hexagon.png"/>
+
+            <img class="big_stick_top_left" src="img/decorations/big_deco_tl.png"/>
+            <img class="icon_stick_top_left" src="img/icons/skull.png"/>
+
+            <img class="big_stick_top_right" src="img/decorations/big_deco_tr.png"/>
+            <img class="icon_stick_top_right" src="img/icons/sun_moon.png"/>
+
+            <div class="main_frame_border">
+              <div class="main_frame_content">
+
+                <h1>Grand titre</h1>
+
+
+                <div class="section" id="bullet-lists">
+                <h2>Titre secondaire</h2>
+
+                <p class="post-it">
+                Here is a post-it paragraph, with much text and stuffs and stuffs to show wrapping.
+                </p>
+
+                <p class="beautiful">Paragraphs contain text and may contain inline markup: <em>emphasis</em>,
+                <strong>strong emphasis</strong>, <tt class="docutils literal">inline literals</tt>, standalone hyperlinks
+                (<a class="reference external" href="http://www.python.org">http://www.python.org</a>), external hyperlinks (<a href="#id15"><span class="problematic" id="id16">Python_</span></a>), external hyperlinks with embedded URIs
+                (<a class="reference external" href="http://www.python.org">Python web site</a>), footnote references
+                (manually numbered <a class="footnote-reference" href="#id6" id="id1">[1]</a>, anonymous auto-numbered <a class="footnote-reference" href="#id9" id="id2">[3]</a>, labeled
+                auto-numbered <a class="footnote-reference" href="#label" id="id3">[2]</a>, or symbolic <a class="footnote-reference" href="#id10" id="id4">[*]</a>), citation references
+                (<a href="#id19"><span class="problematic" id="id20"><span id="id5"></span>[CIT2002]_</span></a>), substitution references (<a href="#id13"><span class="problematic" id="id14">|example|</span></a>), and <span class="target" id="inline-hyperlink-targets">inline
+                hyperlink targets</span> (see <a href="#id21"><span class="problematic" id="id22">Targets_</span></a> below for a reference back to here).
+                Character-level inline markup is also possible (although exceedingly
+                ugly!) in <em>re</em><tt class="docutils literal">Structured</tt><em>Text</em>.</p>
+                <ul class="simple">
+                <li>A bullet list<ul>
+                <li>Nested bullet list.</li>
+                <li>Nested item 2.<ul>
+                <li>Renested item</li>
+                </ul></li>
+                </ul>
+                </li>
+                </ul>
+                <ol class="arabic">
+                <li><p class="first">Arabic numerals.</p></li>
+                </ol>
+                <ol class="loweralpha simple">
+                <li>(lower alpha)</li>
+                </ol>
+                <ol class="lowerroman simple">
+                <li>(lower roman)</li>
+                </ol>
+                <ol class="upperalpha simple">
+                <li>upper alpha.</li>
+                </ol>
+
+                <div class="scroll_yellow_rolled">
+                    Hi<br/>Hi<br/>Hi<br/>
+                    Hi<br/>Hi<br/>Hi<br/>
+                    Hi<br/>Hi<br/>Hi<br/>
+                    Hi<br/>Hi<br/>Hi<br/>
+                    Hi<br/>Hi<br/>Hi<br/>
+                    Hi<br/>Hi<br/>Hi<br/>
+                </div>
+
+                <dl class="docutils">
+                <dt>Term</dt>
+                <dd>Definition</dd>
+                <dt>Term <span class="classifier-delimiter">:</span> <span class="classifier">classifier</span></dt>
+                <dd><p class="first">Definition paragraph 1.</p>
+                <p class="last">Definition paragraph 2.</p>
+                </dd>
+                </dl>
+                <p>They can be indented:</p>
+                <pre class="literal-block">    Here is a literal block</pre>
+                <p>Block quotes consist of indented body elements:</p>
+
+
+                <blockquote>
+                My theory by A. Elk.  Brackets Miss, brackets.  This theory goes
+                as follows and begins now.  All brontosauruses are thin at one
+                end, much much thicker in the middle and then thin again at the
+                far end.  That is my theory, it is mine, and belongs to me and I
+                own it, and what it is too.
+                </blockquote>
+
+                <div class="antique_marble_frame float_right">
+                Here is some important text,<br/> well decorated by marble frame.
+                </div>
+
+                <div class="antique_large_decorated_frame float_left">
+                Here is some important text,<br/> well decorated by antique frame.
+                </div>
+
+                <table border="1" class="realtable">
+                <colgroup>
+                <col width="31%" />
+                <col width="31%" />
+                <col width="38%" />
+                </colgroup>
+                <thead valign="bottom">
+                <tr><th class="head" colspan="2">Inputs</th>
+                <th class="head">Output</th>
+                </tr>
+                <tr><th class="head">A</th>
+                <th class="head">B</th>
+                <th class="head">A or B</th>
+                </tr>
+                </thead>
+                <tbody valign="top">
+                <tr><td>False</td>
+                <td>False</td>
+                <td>False</td>
+                </tr>
+                <tr><td>True</td>
+                <td>False</td>
+                <td>True</td>
+                </tr>
+
+                </tbody>
+                </table>
+                </div>
+                <div class="section" id="footnotes">
+                <h1>Footnotes</h1>
+                <table class="docutils footnote" frame="void" id="id6" rules="none">
+                <colgroup><col class="label" /><col /></colgroup>
+                <tbody valign="top">
+                <tr><td class="label">[1]</td><td><em>(<a class="fn-backref" href="#id1">1</a>, <a class="fn-backref" href="#id7">2</a>)</em> <p>A footnote contains body elements, consistently indented by at
+                least 3 spaces.</p>
+                <p class="last">This is the footnote's second paragraph.</p>
+                </td></tr>
+                </tbody>
+                </table>
+                <table class="docutils footnote" frame="void" id="label" rules="none">
+                <colgroup><col class="label" /><col /></colgroup>
+                <tbody valign="top">
+                <tr><td class="label">[2]</td><td><em>(<a class="fn-backref" href="#id3">1</a>, <a class="fn-backref" href="#id8">2</a>)</em> Footnotes may be numbered, either manually (as in <a class="footnote-reference" href="#id6" id="id7">[1]</a>) or
+                automatically using a &quot;#&quot;-prefixed label.  This footnote has a
+                label so it can be referred to from multiple places, both as a
+                footnote reference (<a class="footnote-reference" href="#label" id="id8">[2]</a>) and as a hyperlink reference
+                (<a class="reference internal" href="#label">label</a>).</td></tr>
+                </tbody>
+                </table>
+                <table class="docutils footnote" frame="void" id="id9" rules="none">
+                <colgroup><col class="label" /><col /></colgroup>
+                <tbody valign="top">
+                <tr><td class="label"><a class="fn-backref" href="#id2">[3]</a></td><td>This footnote is numbered automatically and anonymously using a
+                label of &quot;#&quot; only.</td></tr>
+                </tbody>
+                </table>
+                <table class="docutils footnote" frame="void" id="id10" rules="none">
+                <colgroup><col class="label" /><col /></colgroup>
+                <tbody valign="top">
+                <tr><td class="label"><a class="fn-backref" href="#id4">[*]</a></td><td>Footnotes may also use symbols, specified with a &quot;*&quot; label.
+                Here's a reference to the next footnote: <a class="footnote-reference" href="#id12" id="id11">[�]</a>.</td></tr>
+                </tbody>
+                </table>
+                <table class="docutils footnote" frame="void" id="id12" rules="none">
+                <colgroup><col class="label" /><col /></colgroup>
+                <tbody valign="top">
+                <tr><td class="label"><a class="fn-backref" href="#id11">[�]</a></td><td>This footnote shows the next symbol in the sequence.</td></tr>
+                </tbody>
+                </table>
+
+                <div class="important">
+                <p class="first admonition-title">Important</p>
+                <ul class="last simple">
+                <li>Wash behind your ears.</li>
+                <li>Clean up your room.</li>
+                <li>Call your mother.</li>
+                <li>Back up your data.</li>
+                </ul>
+                </div>
+
+                <div class="note">
+                <p class="first admonition-title">Note</p>
+                <p class="last">This is a note.</p>
+                </div>
+
+                </div>
+
+
+
+
+
+
+             </div>
+           </div>
+
+
+        </div>
+
+        <div class="main_sidebar float_left">
+            <div class="mini_frame float_left">
+                <img class="stick_bottom_right" src="img/decorations/mini_deco_bottom_right_1.png"/>
+                <img class="stick_top_left" src="img/decorations/mini_deco_top_left_1.png"/>
+
+                <div class="mini_frame_content">
+                    <h2>Hello</h2>
+                    <div class="scroll_realistic_thin_ends">
+                        Hi<br/>Hi<br/>Hi<br/>
+                        Hi<br/>Hi<br/>Hi<br/>
+                        Hi<br/>Hi<br/>Hi<br/>
+                        Hi<br/>Hi<br/>Hi<br/>
+                        Hi<br/>Hi<br/>Hi<br/>
+                        Hi<br/>Hi<br/>Hi<br/>
+                    </div>
+               </div>
+            </div>
+
+            <div class="mini_frame float_left">
+                <img class="stick_bottom_right" src="img/decorations/mini_deco_bottom_right_2.png"/>
+                <img class="stick_top_left" src="img/decorations/mini_deco_top_left_2.png"/>
+
+                <div class="mini_frame_content">
+                    <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+               </div>
+            </div>
+
+            <div class="mini_frame float_left">
+                <img class="stick_bottom_right" src="img/decorations/mini_deco_bottom_right_3.png"/>
+                <img class="stick_top_left" src="img/decorations/mini_deco_top_left_3.png"/>
+
+                <div class="mini_frame_content">
+                    <br/><br/><br/><br/><br/>
+               </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="up_footer_wrapper">
+
+            <div id="up_footer_border_left">
+                <div>
+                sdsdsdsd sfdqsd sdf sdf <br/> qsdqsdqsd
+                </div>
+            </div><!-- NO SPACE HERE --><div id="up_footer_border_center"> dd&nbsp;
+                <img class="footer_center_img" src="img/icons/pegasus_medal.png"/>
+            </div><!-- NO SPACE HERE --><div id="up_footer_border_right">
+                sdsdsdsd sdfsdf sqd qd
+            </div>
+
+    </div>
+
+
+    <div id="low_footer_wrapper">
+        <div id="low_footer_border">
+            sdsdsdsd sdfs
+        </div>
+    </div>
+
+    <br/><br/><br/>
+</body>
+
+

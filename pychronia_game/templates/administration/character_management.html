@@ -1,0 +1,60 @@
+
+
+{% extends "base_one_column.html" %}
+
+{% load i18n helpers %}
+
+
+{% block content %}
+    <div id="content">
+
+    <h2>{% trans "Frienships sealed" %}</h2>
+
+    {% if sealed_friendships %}
+    <ul>
+    	{% for name_pair, data in sealed_friendships %}
+    	   <li>{{ name_pair|join:" <-> " }} ({% trans "proposed on" %} {{ data.proposal_date|date:"SHORT_DATE_FORMAT" }}, {% trans "accepted on" %} {{ data.acceptance_date|date:"SHORT_DATE_FORMAT" }})</li>
+    	{% endfor %}
+    </ul>
+    {% else %}
+        {% trans "None" %}
+    {% endif %}
+
+    <br/><br/>
+
+    <h2>{% trans "Frienship proposals" %}</h2>
+
+    {% if proposed_friendships %}
+    <ul>
+        {% for name_pair, data in proposed_friendships %}
+           <li>{{ name_pair|join:" -> " }} ({% trans "proposed on" %} {{ data.proposal_date|date:"SHORT_DATE_FORMAT" }})</li>
+        {% endfor %}
+    </ul>
+    {% else %}
+        {% trans "None" %}
+    {% endif %}
+
+    <br/><br/>
+
+    <h2>{% trans "Character settings" %}</h2>
+
+    {% for character_form in character_forms %}
+    	<form action="{% game_view_url "pychronia_game.views.manage_characters" %}" method="post">
+    	<fieldset>
+		<legend align=top>{{ character_form.target_username.value|capfirst }}</legend>
+			<table style="margin:auto;width:400px;">
+			{{ character_form.as_table }}
+			<tr>
+				<td colspan="2">
+					<input type="submit" name="update_character" value="{% trans "Update character" %}" />
+				</td>
+			</tr>
+			</table>
+		</fieldset>
+		</form>
+		<br/>
+    {% endfor %}
+
+    </div>
+
+{% endblock %}

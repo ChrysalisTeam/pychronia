@@ -35,7 +35,7 @@ TESTS
 - auto test all forms with also inspect.getsourcelines(object) (for UNINSTANTIABLEERROR) etc.
 - add tests for admin widget system, for misc. modules, for gameform instantiation, for world scan_form, for is_action_permitted_for_user()...
 - test template helpers
-- launch pychecker or pylint on each file of rpgweb package
+- launch pychecker or pylint on each file of pychronia_game package
 - check that no pb when game paused, for periodic processing
 - test good handling of flexible time in "time limiting action middleware"
 
@@ -106,7 +106,7 @@ TASKS DONE
 - enrich choices of messaging forms fields (djangoselect2) DONE
 - add special logger, carrying in context the game instance id etc.
 - rename messy webradio-related django views DONE
-- add gameurl tag to rst of rpgweb DONE
+- add gameurl tag to rst of pychronia_game DONE
 - freeze controls in readonly mode DONE
 - fix buggy main menu DONE
 - fix gerbil link of encyclopedia when impersonating guy1 DONE

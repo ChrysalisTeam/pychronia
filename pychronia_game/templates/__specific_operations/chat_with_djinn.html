@@ -1,0 +1,115 @@
+{% extends "base_one_column.html" %}
+
+{% load i18n helpers %}  
+
+
+
+{% block headers %}  
+    {{ block.super }}
+
+
+    
+    <script type="text/JavaScript">  
+    
+       $(document).ready(function(){    
+       
+         scroll_window();
+
+         $(document).ajaxError( 
+            function(e, xhr, settings, exception) { 
+                $("#errordiv").css("visibility", "visible");
+            }
+          );
+  
+       
+         $("form#chatform").submit(function(){  
+           var question = $.trim($("#msgbox").val());
+           $("#msgbox").val("");  
+           $("#msgbox").focus(); 
+           
+           if (!question) {return false;}
+           
+           addMessages(question, true);  
+           
+           $.post("{% game_view_url "pychronia_game.views.ajax_consult_djinns" %}",
+                    { message: question,
+                     djinn: "{{ bot_name|escapejs }}" }, 
+                    function(answer) {  
+                        addMessages(answer, false);  
+                    });  
+                    
+           return false;  
+         });  
+       });  
+  
+        
+       function scroll_window(){
+          elem = document.getElementById("messagewindow");
+          elem.scrollTop = elem.scrollHeight;      
+       } 
+  
+       function addMessages(answer, is_me) { 
+          
+          if (!answer){return;}
+           
+          $("#errordiv").css("visibility", "hidden");
+           
+          if (is_me){
+            var text = answer+"<br/>";
+          }
+          else {
+            var text = "<i>"+answer+"</i><br/>";
+          }
+       
+        $("#messagewindow").append("- "+text);
+        scroll_window();
+
+        /*
+         $("message",xml).each(function(id) {  
+           message = $("message",xml).get(id);  
+           $("#messagewindow").prepend("<b>"+$("author",message).text()+  
+                         "</b>: "+$("text",message).text()+  
+                         "<br />");  
+          });  
+        */
+       }  
+       
+     </script>  
+     
+  
+
+{% endblock %}
+
+
+
+
+
+{% block content %}  
+
+<p>
+    {% blocktrans %}You're currently in telepathic communication with djinn <strong>{{ bot_name }}</strong>.{% endblocktrans %}
+</p>
+    
+ <div id="oracle_wrapper" align="center">  
+ 
+    <p id="messagewindow">
+    {% for sentence in history %}
+       - {% cycle "" "<i>" %} {{ sentence }} {% cycle "" "</i>" %} <br/>
+    {% endfor %}
+    </p> 
+     
+     <form id="chatform">  
+         <div><input type="text" id="msgbox" size="80" autocomplete="off" /></div>   
+         <!--div><input type="submit" value="{% trans "Send Message" %}" /></div-->
+     </form>  
+     
+     <div id="errordiv" style="text-align:center; visibility:hidden; color:red">
+        {% trans "Interferences when chatting with djinn..." %}
+     </div>
+     
+ </div>  
+
+
+
+
+{% endblock %}

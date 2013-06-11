@@ -1,0 +1,195 @@
+﻿{% extends "messaging/base.html" %}
+
+{% load sekizai_tags i18n helpers kwacros %}
+{% loadkwacros "metalradiance_kwacros.html" %}
+
+
+{% block sekizai_calls %}
+{{ block.super }}
+
+
+{# TODO MOVE THIS TO TOP LEVEL ASAP #}
+
+{% addtoblock "css" %}
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}libs/markitup/skins/simple/style.css" />
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}libs/markitup/sets/rest/style.css" />
+<!--link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}libs/select2/select2.css" /-->
+{% endaddtoblock %}
+
+{% addtoblock "js" %}
+<script type="text/javascript" src="{{ STATIC_URL }}libs/markitup/jquery.markitup.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}libs/markitup/sets/rest/set.js"></script>
+<!--script type="text/javascript" src="{{ STATIC_URL }}libs/select2/select2.js"></script-->
+{% endaddtoblock %}
+
+
+{% addtoblock "definition_js" %}
+
+function display_preview() {}
+
+function preview_message() {
+	var rst = $("#id_default_body").val().trim();
+	if (rst != "") {
+		$.post("{% game_view_url "pychronia_game.views.preview_message" %}",
+		       {content: rst},
+		       function(answer) {
+		       	   answer = answer.trim(); // shouldn't be empty, since input was not...
+	               $.fancybox({content: answer, // answer must be HTML here
+	               	            //type: "inline",
+	               	            autoDimensions: false,
+					            padding: "65px",
+					            width: "1000px",
+	               	            });
+
+	           });
+	} else {
+		$.jnotify("{{ _("Nothing to preview.")|escapejs }}", "warning")
+	}
+}
+
+
+function add_recipient(address) {
+	var current = $("#id_default_recipients").select2("data");
+	var newentry = {id: address, text: address};
+	if ($.inArray(newentry, current) == -1) {
+		current.push(newentry);
+		$("#id_default_recipients").select2("data", current);
+		$("#id_default_recipients").change(); //trigger("change");
+	};
+	//console.log(current);
+}
+
+
+
+var message_content_id = 'saved_message';
+var mylocalStorage = $.localStorage();
+
+function clear_saved_content() {
+    mylocalStorage.removeItem(message_content_id);
+    //console.log("DESTROYING", message_content_id);
+}
+
+function restore_saved_content() {
+    var saved_content = mylocalStorage.getItem(message_content_id); // may be null
+	if (saved_content) {
+	    $("#id_default_body").val(saved_content);
+	    $.jnotify("{{ _("Previously saved content has been restored")|escapejs }}", "warning")
+    }
+}
+
+function save_current_content() {
+    var content = $("#id_default_body").val().trim();
+    if (content.length > 15) { // we don't save ridiculous texts
+    	mylocalStorage.setItem(message_content_id, content);
+        //console.log("SAVING", content);
+    }
+}
+
+
+{% endaddtoblock %}
+
+{% addtoblock "onload_js" %}
+
+
+mySettings.markupSet = mySettings["markupSet"].slice(0, -3); // remove code and preview system ATM
+mySettings.resizeHandle = false; // we can't remove autohandle of browser though
+$("#id_default_body").markItUp(mySettings); // mySettings comes from /markitup/sets/rest/set.js
+
+{% if message_sent %}
+    clear_saved_content();
+{% elif not message_form.is_bound %}
+	restore_saved_content();
+{% endif %}
+window.setInterval(save_current_content, 10*1000);
+
+
+/*
+ $("#jjj").select2({
+    //multiple: true,
+    //createSearchChoice: function(term) {return {id:}},
+    width: "90%", // off/element/copy/resolve/<value>
+    placeholder: "Select a State",
+    allowClear: true,
+    //minimumInputLength: 0,
+    //maximumSelectionSize: null,
+    //data:[{id:0,text:'enhancement'},{id:1,text:'bug'},{id:2,text:'duplicate'},{id:3,text:'invalid'},{id:4,text:'wontfix'}],
+    maximumInputLength: 80,
+    tags: ["hi", "how", "ji"],
+    tokenSeparators: [",", ";", " "]
+ });
+ <input type='hidden' id="jjj"/><br/>
+
+<select id="e1" >
+<option value="AL">Alabama</option>
+<option value="WY">Wyoming</option>
+</select>
+        <p>
+            {% blocktrans %}
+            The "recipients" field may contain a list of values separated with commas or semi-colons.
+            Each value may be a full email (of an user or an external entity), or the login of an existing user.
+            You may attach to your message one of your personal files, or any url.
+            {% endblocktrans %}
+        </p>
+*/
+
+{% endaddtoblock %}
+
+
+{% endblock %}
+
+
+
+
+
+
+
+
+
+{% block sidebar %}
+
+{% usekwacro side_panel_start frame_class="mini_frame float_left" decos="3" %}
+    <h2>{% trans "Contacts" %}</h2>
+
+    <div class="rice_paper_rose full_width center tiny_bullets small_text" style="line-height: 1.5em; cursor: pointer;">
+    <ul>
+    	{% for contact in contacts_display %}
+        <li {% if contact.description %}title="{{ contact.description }}"{% endif %} onclick="add_recipient('{{ contact.address|escapejs }}');">{{ contact.address }}</li>
+        {% endfor %}
+    </ul>
+    </div>
+{% usekwacro side_panel_end %}
+
+{% endblock %}
+<br />
+
+
+
+
+{% block content %}
+
+
+    {% if message_form %}
+
+        <form action="{% game_view_url "pychronia_game.views.compose_message" %}" method="post">
+
+        <p><input type="button" style="width: 200px" name="cancel_message" value="{% trans "Cancel message" %}"
+            onclick="clear_saved_content(); return_to_home();" /></p>
+
+        {{ message_form.as_p }}
+
+        <p><input type="button" style="width: 200px" name="preview" value="{% trans "Preview Message Body" %}" onclick="preview_message();" /></p>
+        <p><input type="submit" style="width: 200px" name="send_message" value="{% trans "Send Message" %}" onclick="save_current_content(); return true;" /></p>
+
+        </form>
+
+
+    {% else %}
+    <br/>
+    <p>
+        <b>{% blocktrans %}Sorry, the sending of digital messages is currently disabled for maintenance.{% endblocktrans %}</b>
+    </p>
+
+    {% endif %}
+
+{% endblock %}
+
