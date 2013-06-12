@@ -100,7 +100,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.media",
     "django.core.context_processors.request",
     "django.core.context_processors.static",
-    #"django.contrib.messages.context_processors.messages" - we use our own version
+    "django.contrib.messages.context_processors.messages", # we use our own version in pychronia-game!
     "sekizai.context_processors.sekizai",
 )
 
