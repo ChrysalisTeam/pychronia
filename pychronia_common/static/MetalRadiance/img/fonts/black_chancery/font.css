@@ -1,0 +1,15 @@
+@font-face {
+	font-family: 'BLKCHCRY';
+    
+    	src: url('http://fontsforweb.com/public/fonts/1064/BLKCHCRY.eot');
+	src: local('BLKCHCRY'), url('http://fontsforweb.com/public/fonts/1064/BLKCHCRY.ttf') format('truetype');
+    }
+body.cke_show_borders p {
+	font-family: 'BLKCHCRY';
+    font-size: 30px;
+}
+.fontsforweb_fontid_1064 {
+	font-family: 'BLKCHCRY' !important;
+}
+
+/* Font downloaded from FontsForWeb.com */

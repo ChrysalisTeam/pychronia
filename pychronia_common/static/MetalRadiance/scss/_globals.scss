@@ -52,21 +52,45 @@ $error_color: red;
 /* COMMON FONT DEFINITIONS */
 
 
-@font-face
-{
-    font-family: black_chancery;
-    src: url('#{$IMGS}fonts/black_chancery.ttf');
+.pyscss_bug_workaround {
+  display: none; // to fix the problem with weird "};" at start of generated css file
 }
-@font-face
-{
-    font-family: rothenburg_decorative;
-    src: url('#{$IMGS}fonts/rothenburg_decorative.ttf');
+
+
+@font-face {
+    font-family: 'rothenburg_decorative'; // or 'RothenburgDecorativeNormal';
+    src: url('#{$IMGS}fonts/rothenburg_decorative/rothenbg-webfont.ttf');
+    src: url('#{$IMGS}fonts/rothenburg_decorative/rothenbg-webfont.eot?#iefix') format('embedded-opentype'),
+         url('#{$IMGS}fonts/rothenburg_decorative/rothenbg-webfont.woff') format('woff'),
+         url('#{$IMGS}fonts/rothenburg_decorative/rothenbg-webfont.ttf') format('truetype'),
+         url('#{$IMGS}fonts/rothenburg_decorative/rothenbg-webfont.svg#RothenburgDecorativeNormal') format('svg');
+    font-weight: normal;
+    font-style: normal;
 }
-@font-face
-{
-    font-family: kingthings_calligraphica_light;
-    src: url('#{$IMGS}fonts/kingthings_calligraphica_light.ttf');
+
+
+@font-face {
+    font-family: 'kingthings_calligraphica_light'; // or 'KingthingsCalligraphicaLight'
+    src: url('#{$IMGS}fonts/kingthings_calligraphica/Kingthings_Calligraphica_Light-webfont.ttf');
+    src: url('#{$IMGS}fonts/kingthings_calligraphica/Kingthings_Calligraphica_Light-webfont.eot?#iefix') format('embedded-opentype'),
+         url('#{$IMGS}fonts/kingthings_calligraphica/Kingthings_Calligraphica_Light-webfont.woff') format('woff'),
+         url('#{$IMGS}fonts/kingthings_calligraphica/Kingthings_Calligraphica_Light-webfont.ttf') format('truetype'),
+         url('#{$IMGS}fonts/kingthings_calligraphica/Kingthings_Calligraphica_Light-webfont.svg#KingthingsCalligraphicaLight') format('svg');
+    font-weight: normal;
+    font-style: normal;
 }
+
+
+@font-face {
+    font-family: 'black_chancery';
+    src: url('#{$IMGS}fonts/black_chancery/BLKCHCRY.ttf');
+    src: url('#{$IMGS}fonts/black_chancery/BLKCHCRY.eot?#iefix') format('embedded-opentype'),
+         url('#{$IMGS}fonts/black_chancery/BLKCHCRY.woff') format('woff'),
+         url('#{$IMGS}fonts/black_chancery/BLKCHCRY.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
 
 
 @mixin text_shadow {

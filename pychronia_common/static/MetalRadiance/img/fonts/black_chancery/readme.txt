@@ -5,7 +5,7 @@ version of 11/19/91 by Earl Allen/Doug Miles
 
 Black Chancery is a calligraphic outline font based on the public domain bitmap font of the same name. It's a good looking and useful display font, lending itself well to many occasions.  And a suitable companion to Black Chancery Italic.
 
-Black Chancery began, several years ago, as a modification of Bill Hortonï¿½s lovely FancyChancery 24 point bitmap, which had random dots missing from within the letters to give the effect of snow falling in front of them. (Rather like his Palazzo Grey font, part of Casadyï¿½s bitmap Fluent Fonts). Doug Miles filled in the dots, did some restyling, made five additional large point sizes, and gave it a new name.
+Black Chancery began, several years ago, as a modification of Bill HortonÕs lovely FancyChancery 24 point bitmap, which had random dots missing from within the letters to give the effect of snow falling in front of them. (Rather like his Palazzo Grey font, part of CasadyÕs bitmap Fluent Fonts). Doug Miles filled in the dots, did some restyling, made five additional large point sizes, and gave it a new name.
 
 Earl Allen of Altsys Corp. used Fontographer 3.2 to autotrace the BlackChancery bitmaps to make PostScript Type 1 outlines, cleaned them up, adjusted character spacing and added kerning pairs. Doug Miles further cleaned-up the outlines, removing unneeded control points, adjusted the height and baseline positions of most characters, resized some of them, added accented letters and other option characters. He converted the numbers to "old style" figures, probably more appropriate for this font.
 
@@ -18,9 +18,9 @@ BlackChancery is great for headlines, letterheads, greeting cards. Wherever used
 
 11/19/91 Revisons:
 Replaced all accented characters with composites
-Changed ', ", ï¿½, a, d, g, q; f, ï¿½, ï¿½; ï¿½, ï¿½; reduced size of most accents by 15%.
+Changed ', ", ¾, a, d, g, q; f, Þ, ß; ¦, §; reduced size of most accents by 15%.
 Moved to right by 5 ems: p  (1250 ems to the em-square)
-Moved to right by 10 ems: i, ï¿½, l, t, u
+Moved to right by 10 ems: i, õ, l, t, u
 Moved to right by 15 ems: b, h, k, m, n, r
 Moved to left and narrowed by 30 ems: x
 Moved to left and narrowed by 70 ems: v, w, y

@@ -71,12 +71,11 @@ h3 {
         line-height: 1em;
         margin-left: 0.3em;
         margin-right: 0.1em;
-        text-indent: 0;
    }
    text-indent: 0 !important;
 }
 
-.drop_cap, .drop-cap {
+.drop_cap, .drop-cap, .dropcap {
     @include drop_cap_mixin;
 }
 
