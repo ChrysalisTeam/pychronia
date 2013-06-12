@@ -330,7 +330,7 @@ body {
                     font-weight: bold;
                     font-style: italic;
                     text-shadow: 1px 1px 0 $white_color, -1px -1px 0 $white_color, -1px 1px 0 $white_color, 1px -1px 0 $white_color;
-                    font-family: black_chancery,serif;
+                    font-family: black_chancery, serif;
                     position: absolute;
                     right: 15px;
                     bottom: 4px;
@@ -391,7 +391,7 @@ body {
         position: relative;
         padding: 0px;
 
-        width: 280px;
+        width: 270px;
         margin: 7px 10px 10px;
         overflow: visible;
 
@@ -420,10 +420,11 @@ body {
     }
 
     .main_sidebar { // container for miniframes
+        ///@extend .clearfix;
         padding: 10px;
-        margin: 0px;
-        overflow: hidden; // important to have a proper size with floats inside
-
+        margin: 0; //-3px 0px 0px;
+        overflow: hidden; // important, since jquery-sticky affects wrong widths because of box-sizing...
+        width: auto !important;
         .mini_frame {
             // mini-frames that are inside sidebar must beware of their margins!
             margin: 0 0 20px 0;
@@ -442,7 +443,7 @@ body {
 
     .medium_frame { // meant to be floated left or right
         @include main_frame_common;
-        width: 650px;
+        width: 660px;
     }
 
     .big_frame {

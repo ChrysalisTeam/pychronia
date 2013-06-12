@@ -1,16 +1,36 @@
 @charset "UTF-8";
 };
-@font-face {
-  font-family: black_chancery;
-  src: url(img/fonts/black_chancery.ttf);
+.pyscss_bug_workaround {
+  display: none;
 }
 @font-face {
   font-family: rothenburg_decorative;
-  src: url(img/fonts/rothenburg_decorative.ttf);
+  src: url(img/fonts/rothenburg_decorative/rothenbg-webfont.ttf);
+  src: url(img/fonts/rothenburg_decorative/rothenbg-webfont.eot?#iefix) format(embedded-opentype),
+    url(img/fonts/rothenburg_decorative/rothenbg-webfont.woff) format(woff),
+    url(img/fonts/rothenburg_decorative/rothenbg-webfont.ttf) format(truetype),
+    url(img/fonts/rothenburg_decorative/rothenbg-webfont.svg#RothenburgDecorativeNormal) format(svg);
+  font-weight: normal;
+  font-style: normal;
 }
 @font-face {
   font-family: kingthings_calligraphica_light;
-  src: url(img/fonts/kingthings_calligraphica_light.ttf);
+  src: url(img/fonts/kingthings_calligraphica/Kingthings_Calligraphica_Light-webfont.ttf);
+  src: url(img/fonts/kingthings_calligraphica/Kingthings_Calligraphica_Light-webfont.eot?#iefix) format(embedded-opentype),
+    url(img/fonts/kingthings_calligraphica/Kingthings_Calligraphica_Light-webfont.woff) format(woff),
+    url(img/fonts/kingthings_calligraphica/Kingthings_Calligraphica_Light-webfont.ttf) format(truetype),
+    url(img/fonts/kingthings_calligraphica/Kingthings_Calligraphica_Light-webfont.svg#KingthingsCalligraphicaLight) format(svg);
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: black_chancery;
+  src: url(img/fonts/black_chancery/BLKCHCRY.ttf);
+  src: url(img/fonts/black_chancery/BLKCHCRY.eot?#iefix) format(embedded-opentype),
+    url(img/fonts/black_chancery/BLKCHCRY.woff) format(woff),
+    url(img/fonts/black_chancery/BLKCHCRY.ttf) format(truetype);
+  font-weight: normal;
+  font-style: normal;
 }
 .bg_beige, .mixed {
   background-color: #a89d97;
@@ -715,10 +735,11 @@ h3 {
     -1px 1px 0 #000000;
   margin: 14px 5px 7px;
 }
-.drop-cap, .drop_cap {
+.drop-cap, .drop_cap, .dropcap {
   text-indent: 0 !important;
 }
-.drop-cap:first-letter, .drop_cap:first-letter {
+.drop-cap:first-letter, .drop_cap:first-letter,
+.dropcap:first-letter {
   font-family: rothenburg_decorative, serif;
   color: #775F13;
   float: left;
@@ -726,7 +747,6 @@ h3 {
   line-height: 1em;
   margin-left: 0.3em;
   margin-right: 0.1em;
-  text-indent: 0;
 }
 .justified p, .section p {
   text-align: justify;
@@ -1338,7 +1358,7 @@ body:after {
   font-style: italic;
   text-shadow: 1px 1px 0 #ffffff, -1px -1px 0 #ffffff, -1px 1px 0 #ffffff,
     1px -1px 0 #ffffff;
-  font-family: black_chancery,serif;
+  font-family: black_chancery, serif;
   position: absolute;
   right: 15px;
   bottom: 4px;
@@ -1444,7 +1464,7 @@ body:after {
 #full_content .mini_frame {
   position: relative;
   padding: 0px;
-  width: 280px;
+  width: 270px;
   margin: 7px 10px 10px;
   overflow: visible;
   background: transparent url(img/backgrounds/leather_derby_tiled_small.png) repeat center center;
@@ -1468,8 +1488,9 @@ body:after {
 }
 #full_content .main_sidebar {
   padding: 10px;
-  margin: 0px;
+  margin: 0;
   overflow: hidden;
+  width: auto !important;
 }
 #full_content .main_sidebar .mini_frame {
   margin: 0 0 20px 0;
@@ -1480,7 +1501,7 @@ body:after {
   margin: 0px auto;
   background: transparent url(img/backgrounds/leather_bg.jpg) repeat center center;
   background-clip: content-box;
-  width: 650px;
+  width: 660px;
 }
 #full_content .big_frame {
   position: relative;
