@@ -1605,6 +1605,7 @@ body:after {
   position: relative;
   background-color: transparent border-color: transparent;
   border-style: solid;
+  border-style: none;
   background-image: url(img/backgrounds/up_footer_center.png);
   width: 225px;
 }

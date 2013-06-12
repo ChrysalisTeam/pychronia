@@ -529,6 +529,7 @@ body {
 
     #up_footer_border_center {
         @include up_footer_common;
+        border-style: none; // important
         background-image: url('#{$IMGS}backgrounds/up_footer_center.png');
         width: 225px;
     }
