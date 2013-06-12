@@ -61,7 +61,7 @@ def try_authenticating_with_session(request):
     session_ticket = request.session.get(instance_key, None)
 
 
-    if config.DEBUG:
+    if config.GAME_ALLOW_ENFORCED_LOGIN:
         enforced_login = request.REQUEST.get("enforced_login")
         if enforced_login:
             session_ticket = dict(game_instance_id=datamanager.game_instance_id,
