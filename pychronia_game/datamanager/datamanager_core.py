@@ -74,10 +74,16 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
         self.is_initialized = bool(self.data) # empty or not
 
         if self.is_initialized:
-            self._init_from_db()
+            self.do_init_from_db()
 
+    @transaction_watcher(always_writable=True)
+    def do_init_from_db(self):
+        self._init_from_db()
 
     def _init_from_db(self):
+        """
+        To be overridden.
+        """
         self.notify_event("BASE_DATA_MANAGER_INIT_FROM_DB_CALLED")
 
     @property

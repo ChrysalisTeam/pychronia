@@ -740,10 +740,9 @@ h3 {
 }
 .drop-cap:first-letter, .drop_cap:first-letter,
 .dropcap:first-letter {
-  font-family: rothenburg_decorative, serif;
   color: #775F13;
   float: left;
-  font-size: 3em;
+  font-size: 30px;
   line-height: 1em;
   margin-left: 0.3em;
   margin-right: 0.1em;
