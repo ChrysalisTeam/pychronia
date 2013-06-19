@@ -80,9 +80,22 @@
 {% endblock %}
 
 
-
-{% block up_footer %}
+{% block up_footer_left_content %}
+<div style="font-size: 12px; line-height: 1em;">
+{% blocktrans %}
+This site is currently only tested with Firefox and Chrome, we apologies for glitches on other browsers.
+{% endblocktrans %}
+</div>
 {% endblock %}
+
+{% block up_footer_right_content %}
+<div style="font-size: 12px; line-height: 1em;">
+{% blocktrans %}
+Articles only available in french for now. Translations will arrive later.
+{% endblocktrans %}
+</div>
+{% endblock %}
+
 
 {% block low_footer_content %}
 <div style="font-size: 12px; line-height: 13px;">Webdesign "Metal Radiance" <br/>
