@@ -39,6 +39,10 @@ class AbstractActionMiddleware(object):
         """
         settings.setdefault("middlewares", PersistentDict()) # mapping action_name => dict of (middleware_name => data_dict) entries
 
+        for action_name, action_middlewares in settings["middlewares"].items():
+            for middleware_name, data_dict in action_middlewares.items():
+                data_dict.setdefault("is_active", True) # all middlewares ON by default
+
     def _setup_private_action_middleware_data(self, private_data):
         """
         These methods must call their parent.
@@ -49,9 +53,13 @@ class AbstractActionMiddleware(object):
         """
         These methods must call their parent.
         """
-        # we check that no unknown middleware is in settings or private data (could be a typo),
-        # and that activated middlewares are well compatible with current ability (security measure)
+        settings = self.settings
+        for action_name, action_middlewares in settings["middlewares"].items():
+            for middleware_name, data_dict in action_middlewares.items():
+                utilities.check_is_bool(data_dict["is_active"]) # common to all middleware confs
 
+        # we check below that no unknown middleware is in settings or private data (could be a typo),
+        # and that activated middlewares are well compatible with current ability (security measure)
         middleware_settings = self.settings["middlewares"].values()
         if "middlewares" in self.all_private_data:
             middleware_private_data_packs = self.all_private_data["middlewares"].values()
@@ -82,7 +90,6 @@ class AbstractActionMiddleware(object):
 
     def get_middleware_settings(self, action_name, middleware_class):
         assert action_name and middleware_class
-        assert self.is_action_middleware_activated(action_name, middleware_class)
         middleware_settings = self.settings["middlewares"][action_name][middleware_class.__name__]
         return middleware_settings
 
@@ -108,7 +115,6 @@ class AbstractActionMiddleware(object):
 
     def get_private_middleware_data(self, action_name, middleware_class, create_if_unexisting=False):
         assert action_name and middleware_class
-        assert self.is_action_middleware_activated(action_name, middleware_class)
         middleware_data = self.private_data["middlewares"]
         if create_if_unexisting:
             middleware_data.setdefault(action_name, PersistentDict())
@@ -116,19 +122,20 @@ class AbstractActionMiddleware(object):
         return middleware_data[action_name][middleware_class.__name__]
 
 
-    def has_action_middlewares_activated(self, action_name):
-        return (action_name in self.settings["middlewares"])
+    def has_action_middlewares_configured(self, action_name):
+        return (action_name in self.settings["middlewares"]) # middlewware could be disabled though!
 
 
     def is_action_middleware_activated(self, action_name, middleware_class):
         """
-        We assume a middleware is activated only if it has an entry in middleware settings 
-        for that action (even if that entry is None/empty).
+        We assume a middleware is activated if it has an entry in middleware settings 
+        for that action AND its is_active flag set to True.
         """
         assert action_name
         res = (action_name in self.settings["middlewares"] and
-                middleware_class.__name__ in self.settings["middlewares"][action_name])
-        print("is_action_middleware_activated", action_name, middleware_class, res, "---------", self.settings) # FIXME REMOVE
+                middleware_class.__name__ in self.settings["middlewares"][action_name] and
+                self.settings["middlewares"][action_name][middleware_class.__name__]["is_active"])
+        #print("is_action_middleware_activated", action_name, middleware_class, res, "---------", self.settings) # FIXME REMOVE
         return res
 
 
@@ -164,7 +171,7 @@ class AbstractActionMiddleware(object):
 
     @readonly_method
     def get_middleware_data_explanations(self, action_name):
-        if not self.has_action_middlewares_activated(action_name=action_name):
+        if not self.has_action_middlewares_configured(action_name=action_name):
             return []
         else:
             return self._get_middleware_data_explanations(action_name=action_name)

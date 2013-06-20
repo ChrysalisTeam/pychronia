@@ -3631,12 +3631,35 @@ class TestActionMiddlewares(BaseGameTestCase):
                 assert isinstance(s, basestring)
         return u"\n".join(u"".join(strs) for strs in list_of_lists_of_strings)
 
+
     def _check_full_action_explanations(self, full_list):
         for title, explanations in full_list:
             assert isinstance(title, Promise) and unicode(title)
             assert explanations # NO empty lists here
             assert self._flatten_explanations(explanations)
         return full_list # if caller wants to check non-emptiness
+
+
+    def test_basic_action_middleware_status(self):
+
+        self._set_user("guy4")
+
+        ability = self.dm.instantiate_ability("dummy_ability")
+        ability.perform_lazy_initializations() # normally done while treating HTTP request...
+
+        assert not ability.has_action_middlewares_configured(action_name="middleware_wrapped_test_action")
+        assert not ability.is_action_middleware_activated(action_name="middleware_wrapped_test_action", middleware_class=CostlyActionMiddleware)
+
+        ability.reset_test_settings("middleware_wrapped_test_action", CostlyActionMiddleware, dict(is_active=False, money_price=203, gems_price=123))
+
+        assert ability.has_action_middlewares_configured(action_name="middleware_wrapped_test_action")
+        assert not ability.is_action_middleware_activated(action_name="middleware_wrapped_test_action", middleware_class=CostlyActionMiddleware)
+
+        ability.reset_test_settings("middleware_wrapped_test_action", CostlyActionMiddleware, dict(is_active=True, money_price=203, gems_price=123))
+
+        assert ability.has_action_middlewares_configured(action_name="middleware_wrapped_test_action")
+        assert ability.is_action_middleware_activated(action_name="middleware_wrapped_test_action", middleware_class=CostlyActionMiddleware)
+
 
 
     def test_all_get_middleware_data_explanations(self):
@@ -3648,21 +3671,22 @@ class TestActionMiddlewares(BaseGameTestCase):
         ability = self.dm.instantiate_ability("dummy_ability")
         ability.perform_lazy_initializations() # normally done while treating HTTP request...
 
-        assert not ability.has_action_middlewares_activated(action_name="middleware_wrapped_test_action")
+        assert not ability.has_action_middlewares_configured(action_name="middleware_wrapped_test_action")
+        ability.reset_test_settings("middleware_wrapped_test_action", CostlyActionMiddleware, dict(is_active=False, money_price=203, gems_price=123))
 
         explanations = ability.get_middleware_data_explanations(action_name="middleware_wrapped_test_action")
-        assert explanations == [] # no middlewares activated
+        assert explanations == [] # no middlewares ACTIVATED
 
-        ability.reset_test_settings("middleware_wrapped_test_action", CostlyActionMiddleware, dict(money_price=203, gems_price=123))
-        assert ability.has_action_middlewares_activated(action_name="middleware_wrapped_test_action")
+        ability.reset_test_settings("middleware_wrapped_test_action", CostlyActionMiddleware, dict(is_active=True, money_price=203, gems_price=123))
+        assert ability.has_action_middlewares_configured(action_name="middleware_wrapped_test_action")
         assert ability.get_middleware_data_explanations(action_name="middleware_wrapped_test_action") # no pb with non-activated ones
 
         ability.reset_test_settings("middleware_wrapped_test_action", CountLimitedActionMiddleware, dict(max_per_character=23, max_per_game=33))
-        assert ability.has_action_middlewares_activated(action_name="middleware_wrapped_test_action")
+        assert ability.has_action_middlewares_configured(action_name="middleware_wrapped_test_action")
         assert ability.get_middleware_data_explanations(action_name="middleware_wrapped_test_action") # no pb with non-activated ones
 
         ability.reset_test_settings("middleware_wrapped_test_action", TimeLimitedActionMiddleware, dict(waiting_period_mn=87, max_uses_per_period=12))
-        assert ability.has_action_middlewares_activated(action_name="middleware_wrapped_test_action")
+        assert ability.has_action_middlewares_configured(action_name="middleware_wrapped_test_action")
         assert ability.get_middleware_data_explanations(action_name="middleware_wrapped_test_action") # no pb with non-activated ones
 
         assert 18277 == ability.middleware_wrapped_callable1(use_gems=None) # we perform action ONCE
