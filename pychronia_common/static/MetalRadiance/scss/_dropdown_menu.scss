@@ -6,7 +6,7 @@ ul.dropmenu {
 	margin: 0;
 	padding: 0;
 	height: 35px;
-	line-height: 31px;
+	line-height: 35px;
   position: relative;
 
 
@@ -15,7 +15,7 @@ ul.dropmenu {
 
     & > li {
 
-        display: inline;
+        display: block; list-style: none outside none; position: relative; margin: 0px; padding: 0px; float: left; // styles pushed by JS dropdown system
 
         a, span { // every descendant, too
 
@@ -24,7 +24,7 @@ ul.dropmenu {
             font-size: 25px; // MAX 31px, needs to be PRECISE, so no em.
 
             margin: 0;
-            padding: 2px 6px;
+            padding: 0px 6px;
             color: $title_white;
 
             list-style-type: none;
@@ -99,8 +99,12 @@ ul.dropmenu {
             display: none; // cosmetic
             margin: 0;
             padding: 0;
-            background-color: $border_image_yellow;
+
+            // fallback for border-image
+            background-image: url('#{$IMGS}backgrounds/dropdown_menu.png');
+            background-size: 100% 100%;
             background-clip: content-box;
+
             border-color: transparent;
             border-style: solid;
             border-width: 4px 3px;

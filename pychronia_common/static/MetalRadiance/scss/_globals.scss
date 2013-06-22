@@ -27,7 +27,10 @@ $light_yellow: #D3C469;
 $medium_yellow: #9D8126;
 $dark_yellow: #775F13;
 $old_yellow: #A79353;
+
 $border_image_yellow: #775F13;
+$border_image_yellow_light: #9D8126;
+
 
 $dark_red: #8E0D0D;
 
@@ -197,7 +200,7 @@ $error_color: red;
 }
 
 
-/* woraround for container not surrinding the floating panels they contain */
+/* workaround for containers not surrounding the floating panels they contain */
 
 @mixin clearfixer {
     visibility: hidden;
@@ -220,14 +223,19 @@ $error_color: red;
 }
 
 
+
 /* COMMON SIZING CLASSES, with both relative and absolute sizes */
 
 .full_width {
     width: 100% !important;
 }
 
+.almost_full_width {
+    width: 94% !important;
+}
+
 .half_width {
-    width: 100% !important;
+    width: 50% !important;
 }
 
 .big_width {

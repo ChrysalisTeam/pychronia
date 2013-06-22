@@ -12,7 +12,7 @@
     <h2>{% trans "Entries" %}</h2>
 
     <h3>{% trans "Mutable" %}</h3>
-    <div class="rice_paper_rose tiny_bullets" style="font-size:0.8em;">
+    <div class="rice_paper_rose tiny_bullets almost_full_width" style="font-size:0.8em;">
     <ul>
         {% for identifier, form in forms %}
             <li><a href="#entry-{{ identifier }}">{{ identifier|default:_("NEW ENTRY") }}</a></li>
@@ -21,7 +21,7 @@
     </div>
 
     <h3>{% trans "Immutable" %}</h3>
-    <div class="rice_paper_rose tiny_bullets" style="font-size:0.8em;">
+    <div class="rice_paper_rose tiny_bullets almost_full_width" style="font-size:0.8em;">
     <ul>
         {% for identifier, form in immutable_table_items %}
             <li><a href="#entry-{{ identifier }}">{{ identifier }}</a></li>

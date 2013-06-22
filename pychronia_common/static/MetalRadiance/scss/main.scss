@@ -356,17 +356,30 @@ body {
 
             .marble_menu {
 
+                /*
+                .marble_menu_inner_outline {
+                    box-sizing: border-box;
+                    display: block;
+                    width: 100%;
+                    height: 37px;
+                    border: 1px solid transparent; // $border_image_yellow_light
+                }*/
+
                 @import "_dropdown_menu.scss";
 
+                box-sizing: content-box !important; // for border-image fallback
                 min-width: 550px;
 
-                height: 61px;
+                height: 35px;
                 padding: 0 0;
 
-                background-color: $border_image_yellow;
-                background-clip: content-box;
-                border-color: $border_image_yellow;
-                border-style: ridge;
+                background-image: url('#{$IMGS}backgrounds/post-it.png');
+                background-clip: padding-box;
+                background-size: 100% 100%;
+
+
+                border-style: solid;
+                border-color:transparent;
                 border-width: 18px 52px 20px 55px;
                 border-image: url('#{$IMGS}backgrounds/menu_border.png') 18 52 20 55 fill round stretch;
             }
@@ -397,18 +410,24 @@ body {
 
         background: transparent url('#{$IMGS}backgrounds/leather_derby_tiled_small.png') repeat center center;
         background-origin: content-box; //padding-box|border-box
-        background-clip: content-box;
+        background-clip: padding-box;
         background-position: left top;
+
+        /* fallback for border-image of top level */
+        border-color: $border_image_yellow;
+        border-style: ridge;
+        border-width: 5px;
 
         .mini_frame_content {
             @extend .clearfix;
             min-height: 45px;
             position: relative;
-            margin: -5px; // to cover the background
-            padding: 1px 1px;
+            margin: -8px; // to cover the background
+            padding: 1px 1px 8px; // big bottom for graceful degrading if no border-image
             background-color: transparent;
-            border-color: $border_image_yellow;
-            border-style: ridge;
+
+            border-color: transparent;
+            border-style: solid;
             border-width: 22px 22px;
             border-image: url('#{$IMGS}backgrounds/mini_frame4.png') 22 22 repeat;
 
@@ -436,9 +455,14 @@ body {
         // inheritance is slightly buggy...
         position: relative;
         padding: 10px;
-        margin: 0px auto;
+        margin: 10px auto 0;
         background: transparent url('#{$IMGS}backgrounds/leather_bg.jpg') repeat center center;
-        background-clip: content-box;
+        background-clip: padding-box;
+
+        /* fallback for border-image of top level */
+        border-color: $border_image_yellow;
+        border-style: ridge;
+        border-width: 5px;
     }
 
     .medium_frame { // meant to be floated left or right
@@ -460,11 +484,12 @@ body {
     .main_frame_border {
         position: relative;
 
-        margin: -15px; // to cover the background
+        margin: -25px; // to cover the background
         padding: 2px 6px;
         background-color: transparent;
-        border-color: $border_image_yellow;
-        border-style: ridge;
+
+        border-color: transparent;
+        border-style: solid;
         border-width: 41px 43px 43px 41px;
         border-image: url('#{$IMGS}backgrounds/big_frame.png') 41 43 43 41 fill round round;
 
@@ -530,7 +555,8 @@ body {
     #up_footer_border_center {
         @include up_footer_common;
         border-style: none; // important
-        background-image: url('#{$IMGS}backgrounds/up_footer_center.png');
+        /////background-image: url('#{$IMGS}backgrounds/up_footer_center.png');
+        border-image: url('#{$IMGS}backgrounds/up_footer_center.png') 0 9 0 0 fill stretch stretch;
         width: 225px;
     }
 

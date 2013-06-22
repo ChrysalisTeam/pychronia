@@ -122,8 +122,11 @@
 .full_width {
   width: 100% !important;
 }
+.almost_full_width {
+  width: 94% !important;
+}
 .half_width {
-  width: 100% !important;
+  width: 50% !important;
 }
 .big_width, .form_scroll_big {
   width: 600px !important;
@@ -341,29 +344,29 @@ table.realtable thead th:last-child {
   pointer-events: none;
   position: absolute;
   z-index: 8;
-  bottom: -12px;
-  left: -12px;
+  bottom: -22px;
+  left: -22px;
 }
 .big_stick_bottom_right {
   pointer-events: none;
   position: absolute;
   z-index: 8;
-  bottom: -12px;
-  right: -19px;
+  bottom: -22px;
+  right: -29px;
 }
 .big_stick_top_left {
   pointer-events: none;
   position: absolute;
   z-index: 8;
-  top: -10px;
-  left: -10px;
+  top: -20px;
+  left: -20px;
 }
 .big_stick_top_right {
   pointer-events: none;
   position: absolute;
   z-index: 8;
-  top: -7px;
-  right: -15px;
+  top: -17px;
+  right: -25px;
 }
 .icon_stick_bottom_left {
   position: absolute;
@@ -1097,10 +1100,14 @@ input.digit {
   position: relative;
   min-width: 150px;
   padding: 0 10px;
-  background-color: #775F13;
-  border-color: #775F13;
-  border-style: ridge;
+  background-size: 98% 98%;
+  background-clip: border-box;
+  background-position: center center;
+  background-repeat: no-repeat;
   border-width: 79px 45px 81px 39px;
+  border-color: transparent;
+  border-style: solid;
+  background-image: url(img/backgrounds/scroll_yellow_rolled.png);
   border-image: url(img/backgrounds/scroll_realistic_thin_ends.png) 79 45 81 39 fill
     stretch stretch;
 }
@@ -1108,10 +1115,14 @@ input.digit {
   position: relative;
   min-width: 150px;
   padding: 0 10px;
-  background-color: #775F13;
-  border-color: #775F13;
-  border-style: ridge;
+  background-size: 98% 98%;
+  background-clip: border-box;
+  background-position: center center;
+  background-repeat: no-repeat;
   border-width: 79px 45px 81px 39px;
+  border-color: transparent;
+  border-style: solid;
+  background-image: url(img/backgrounds/scroll_yellow_flat.png);
   border-image: url(img/backgrounds/scroll_realistic_thin_ends_disabled.png) 79 45 81
     39 fill stretch stretch;
 }
@@ -1407,13 +1418,15 @@ body:after {
   height: 73px;
 }
 #full_menu #main_menu .marble_menu_container .marble_menu {
+  box-sizing: content-box !important;
   min-width: 550px;
-  height: 61px;
+  height: 35px;
   padding: 0 0;
-  background-color: #775f13;
-  background-clip: content-box;
-  border-color: #775f13;
-  border-style: ridge;
+  background-image: url(img/backgrounds/post-it.png);
+  background-clip: padding-box;
+  background-size: 100% 100%;
+  border-style: solid;
+  border-color: transparent;
   border-width: 18px 52px 20px 55px;
   border-image: url(img/backgrounds/menu_border.png) 18 52 20 55 fill round stretch;
 }
@@ -1422,12 +1435,17 @@ body:after {
   margin: 0;
   padding: 0;
   height: 35px;
-  line-height: 31px;
+  line-height: 35px;
   position: relative;
 }
 #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu
 > li {
-  display: inline;
+  display: block;
+  list-style: none outside none;
+  position: relative;
+  margin: 0px;
+  padding: 0px;
+  float: left;
 }
 #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu
 > li a, #full_menu #main_menu .marble_menu_container .marble_menu
@@ -1441,7 +1459,7 @@ ul.dropmenu > li span {
   letter-spacing: 0px;
   font-size: 25px;
   margin: 0;
-  padding: 2px 6px;
+  padding: 0px 6px;
   color: #ffffff;
   list-style-type: none;
   list-style-image: none;
@@ -1491,7 +1509,8 @@ ul.dropmenu > li li span {
   display: none;
   margin: 0;
   padding: 0;
-  background-color: #775f13;
+  background-image: url(img/backgrounds/dropdown_menu.png);
+  background-size: 100% 100%;
   background-clip: content-box;
   border-color: transparent;
   border-style: solid;
@@ -1513,17 +1532,20 @@ ul.dropmenu > li li span {
   background: transparent url(img/backgrounds/leather_derby_tiled_small.png) repeat
     center center;
   background-origin: content-box;
-  background-clip: content-box;
+  background-clip: padding-box;
   background-position: left top;
+  border-color: #775f13;
+  border-style: ridge;
+  border-width: 5px;
 }
 #full_content .mini_frame .mini_frame_content {
   min-height: 45px;
   position: relative;
-  margin: -5px;
-  padding: 1px 1px;
+  margin: -8px;
+  padding: 1px 1px 8px;
   background-color: transparent;
-  border-color: #775f13;
-  border-style: ridge;
+  border-color: transparent;
+  border-style: solid;
   border-width: 22px 22px;
   border-image: url(img/backgrounds/mini_frame4.png) 22 22 repeat;
 }
@@ -1542,34 +1564,43 @@ ul.dropmenu > li li span {
 #full_content .medium_frame {
   position: relative;
   padding: 10px;
-  margin: 0px auto;
+  margin: 10px auto 0;
   background: transparent url(img/backgrounds/leather_bg.jpg) repeat center center;
-  background-clip: content-box;
+  background-clip: padding-box;
+  border-color: #775F13;
+  border-style: ridge;
+  border-width: 5px;
   width: 660px;
 }
 #full_content .big_frame {
   position: relative;
   padding: 10px;
-  margin: 0px auto;
+  margin: 10px auto 0;
   background: transparent url(img/backgrounds/leather_bg.jpg) repeat center center;
-  background-clip: content-box;
+  background-clip: padding-box;
+  border-color: #775F13;
+  border-style: ridge;
+  border-width: 5px;
   width: 740px;
 }
 #full_content .giant_frame {
   position: relative;
   padding: 10px;
-  margin: 0px auto;
+  margin: 10px auto 0;
   background: transparent url(img/backgrounds/leather_bg.jpg) repeat center center;
-  background-clip: content-box;
+  background-clip: padding-box;
+  border-color: #775F13;
+  border-style: ridge;
+  border-width: 5px;
   width: 960px;
 }
 #full_content .main_frame_border {
   position: relative;
-  margin: -15px;
+  margin: -25px;
   padding: 2px 6px;
   background-color: transparent;
-  border-color: #775f13;
-  border-style: ridge;
+  border-color: transparent;
+  border-style: solid;
   border-width: 41px 43px 43px 41px;
   border-image: url(img/backgrounds/big_frame.png) 41 43 43 41 fill round round;
 }
@@ -1650,7 +1681,7 @@ ul.dropmenu > li li span {
   background-color: transparent border-color: transparent;
   border-style: solid;
   border-style: none;
-  background-image: url(img/backgrounds/up_footer_center.png);
+  border-image: url(img/backgrounds/up_footer_center.png) 0 9 0 0 fill stretch stretch;
   width: 225px;
 }
 #up_footer_wrapper #up_footer_border_center a {

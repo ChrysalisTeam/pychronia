@@ -44,23 +44,23 @@
 
 .big_stick_bottom_left {
     @include big_decorations;
-    bottom: -12px;
-    left: -12px;
+    bottom: -22px;
+    left: -22px;
 }
 .big_stick_bottom_right {
     @include big_decorations;
-    bottom: -12px;
-    right: -19px;
+    bottom: -22px;
+    right: -29px;
 }
 .big_stick_top_left {
     @include big_decorations;
-    top: -10px;
-    left: -10px;
+    top: -20px;
+    left: -20px;
 }
 .big_stick_top_right {
     @include big_decorations;
-    top: -7px;
-    right: -15px;
+    top: -17px;
+    right: -25px;
 }
 
 
@@ -76,24 +76,24 @@
     @include icon_decorations;
     bottom: 5px;
     left: 0px;
-} 
+}
 
 .icon_stick_bottom_right {
     @include icon_decorations;
     bottom: 10px;
     right: 8px;
-} 
+}
 
 .icon_stick_top_left {
     @include icon_decorations;
     top: 2px;
     left: 2px;
-} 
+}
 
 .icon_stick_top_right {
     @include icon_decorations;
     top: 10px;
     right: 10px;
-} 
+}
 
 

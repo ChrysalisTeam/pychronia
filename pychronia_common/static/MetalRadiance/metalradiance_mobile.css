@@ -148,8 +148,11 @@ blockquote:after, blockquote:before, q:after, q:before {
 .full_width {
   width: 100% !important;
 }
+.almost_full_width {
+  width: 94% !important;
+}
 .half_width {
-  width: 100% !important;
+  width: 50% !important;
 }
 .big_width {
   width: 600px !important;
