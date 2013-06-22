@@ -196,15 +196,25 @@ $error_color: red;
     clear: right;
 }
 
+
+/* woraround for container not surrinding the floating panels they contain */
+
+@mixin clearfixer {
+    visibility: hidden;
+    display: block;
+    width: 0;
+    height: 0;
+    clear: both;
+}
+.clearfixer {
+    @include clearfixer;
+}
+
 .clearfix {
    &:after {
-       /* quick fix for the dumb problem of "float collapsing - better than using overflow:hidden/auto */
-       content: ".";
-       visibility: hidden;
-       display: block;
-       width: 0;
-       height: 0;
-       clear: both;
+      /* quick fix for the dumb problem of "float collapsing - better than using overflow:hidden/auto */
+      content: ".";
+      @include clearfixer;
    }
    * html & { height: 1px }
 }
