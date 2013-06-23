@@ -2,14 +2,16 @@
 Pychronia "Leet RPG" Framework
 ####################################
 
+Official repository: https://gitorious.org/hysteresis/pychronia
+
 The code written for PyChronia is covered by the BSD license below. This means that you may freely use/modify/redistribute it, even for commercial purposes. 
 
 However, note that for commercial projects, you'll have to remove/replace dependencies whose license forbids such uses (some jquery libraries and web templates, especially), or get appropriate licenses from their owners.
-We added below a quick summary of the licenses of third-party included modules, to help you assess the impacts of license on your own usage.
+We added below a quick summary of the licenses of third-party included modules, to help you assess the impacts of licensing for your own usage.
 
 Other python packages, not included, are required to run that framework (see "pip_requirements.txt") ; refer to their respective websites for licensing information.
 
-By the way, nothing forces you to contribute back the bugfixes or features that you might add to the code, however we'd be very thankful if you gave back your own improvements to the community.
+By the way, nothing forces you to contribute back the bugfixes or features that you might add to the code, however we'd be very thankful if you gave back your own improvements to the community. ^^
 
 
 
@@ -22,9 +24,9 @@ All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
--Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
--Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
--Neither the name of Pychronia nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+- Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+- Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+- Neither the name of Pychronia nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
