@@ -12,15 +12,7 @@ admin.autodiscover()
 
 
 
-def css3pie_htc_view(request):
-    from django.http import HttpResponse
-    with open(settings.STATIC_URL + "libs/css3pie/PIE.htc", "rb") as f:
-        content = f.read()
-    return HttpResponse(content, mimetype="text/x-component") # beware of content type!
-
-
 urlpatterns = patterns('',
-    (r'^pie.htc', css3pie_htc_view),
 
     (r'^admin/', include(admin.site.urls)),
 

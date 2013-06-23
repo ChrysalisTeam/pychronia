@@ -8,17 +8,18 @@
 
     {% render_block "meta" %}
 
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE9">{# emulate IE9 in quirks or normal mode, to enable pie.htc behavior #}
+
     <link href="{{ STATIC_URL }}img/favicon_diamond.png" rel="shortcut icon" type="image/png" />
     <link href="{{ STATIC_URL }}libs/fancybox/jquery.fancybox.css" rel="stylesheet" type="text/css" />
     <link href="{{ STATIC_URL }}libs/fasw.transitions/transition.css" rel="stylesheet" type="text/css"/>
     <link href="{{ STATIC_URL }}libs/jquery-jplayer-2.3.0/blue.monday/jplayer.blue.monday.css" rel="stylesheet" type="text/css"/>
 
     <!--[if IE]>
-    {# we use Css3PIE to improve a little CSS3 support in IE #}
-    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE9">{# emulate IE9 in quirks or normal mode IE=Emulate #}
+    {# we use Css3PIE to improve a little CSS3 support in Internet Explorer #}
     <style>
         * {
-            behavior: url('/pie.htc');
+            behavior: url('{{ STATIC_URL }}libs/css3pie/PIE.htc');
         }
     </style>
     <![endif]-->
