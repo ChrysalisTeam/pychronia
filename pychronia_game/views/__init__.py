@@ -13,6 +13,8 @@ import fileservers
 
 from contextlib import contextmanager
 from django.conf import settings
+
+from django.core.mail import mail_admins
 from django.http import Http404, HttpResponseRedirect, HttpResponse, \
     HttpResponseForbidden
 from django.shortcuts import render
@@ -141,23 +143,24 @@ def view_help_page(request, keyword, template_name='utilities/help_page.html'):
 @register_view(access=UserAccess.anonymous, always_activated=True, title=_lazy("Bug Report"))
 def bug_report_treatment(request):
     report_data = request.REQUEST.get("report_data", "[no report_data]")
-    location = request.REQUEST.get("report_data", "[no location]")
+    location = request.build_absolute_uri()
     """
     from django.views import debug
     res = debug.technical_500_response(request, None, None, None)
     print (res.content)
     """
+
     message = dedent("""
-                    Bug report submitted by player %(username)r.
+                    Bug report submitted by player %(username)s.
                     
-                    URL: %(location)r
+                    URL: %(location)s
                     
-                    Message: %(report_data)r
+                    Message: %(report_data)s
                     """) % dict(username=request.datamanager.user.username,
                                 location=location,
                                 report_data=report_data)
 
-    logging.getLogger("django.request").critical(message) # special handlers will send email with all necessary info
+    mail_admins("Pychronia Bug Report", message=message, html_message=None)
 
     return HttpResponse("OK - bug reported")
 

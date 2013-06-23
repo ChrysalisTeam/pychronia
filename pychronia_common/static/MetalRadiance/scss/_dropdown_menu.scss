@@ -19,6 +19,8 @@ ul.dropmenu {
 
         a, span { // every descendant, too
 
+            display: block; white-space: nowrap; float: left;
+
             @include header_common;
 
             font-size: 25px; // MAX 31px, needs to be PRECISE, so no em.

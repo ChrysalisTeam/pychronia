@@ -90,8 +90,10 @@
          $.post("{% game_view_url "pychronia_game.views.bug_report_treatment" %}",
                    { report_data: report_data,
                      location: window.location.toString() },
-                   function(answer) {$('#bug_report_panel').css('display', 'none');}
-                   // FIXME - add jnotify call here!!!
+                   function(answer) {
+                       $('#bug_report_panel').css('display', 'none');
+                       $.jnotify('{{ _("Bug report properly sent.")|escapejs }}', "success");
+                   }
          );
          }
     }
