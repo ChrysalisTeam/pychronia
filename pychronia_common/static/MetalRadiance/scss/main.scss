@@ -455,7 +455,7 @@ body {
         // inheritance is slightly buggy...
         position: relative;
         padding: 10px;
-        margin: 10px auto 0;
+        margin: 7px auto 0;
         background: transparent url('#{$IMGS}backgrounds/leather_bg.jpg') repeat center center;
         background-clip: padding-box;
 
@@ -523,7 +523,7 @@ body {
         text-align: left;
         height: 131px;
         min-width: 40px;
-        max-width: 300px;
+        max-width: 360px;
         padding: 40px 0px 40px;
         overflow: visible; // idem...
         background-origin: padding-box; //padding-box|border-box
@@ -542,12 +542,14 @@ body {
 
     #up_footer_border_left {
         @include up_footer_common;
+        padding-right: 4px;
         border-width: 0px 0px 0px 121px;
         border-image: url('#{$IMGS}backgrounds/up_footer_left.png') 0 0 0 121 fill round stretch;
     }
 
     #up_footer_border_right {
         @include up_footer_common;
+        padding-left: 4px;
         border-width: 0px 121px 0px 0px;
         border-image: url('#{$IMGS}backgrounds/up_footer_right.png') 0 121 0 0 fill round stretch;
     }
@@ -557,7 +559,7 @@ body {
         border-width: 1px;
         border-style: solid; // important
         /////background-image: url('#{$IMGS}backgrounds/up_footer_center.png');
-        border-image: url('#{$IMGS}backgrounds/up_footer_center.png') 1 9 1 1 fill stretch stretch;
+        border-image: url('#{$IMGS}backgrounds/up_footer_center.png') 1 1 1 1 fill stretch stretch;
         width: 225px;
     }
 

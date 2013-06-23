@@ -69,7 +69,7 @@ h3 {
         float: left;
         font-size: 40px;
         line-height: 30px;
-        margin-top: 3px;
+        margin-top: 5px;
         // margin-left: 0em;
         // margin-right: 0em;
    }
@@ -115,7 +115,10 @@ p {
     margin: 8px 0 8px;
 }
 
-
+.announce {
+    font-size: 1.3em;
+    line-height: 1.1em;
+}
 
 a {
     &:link { color: $light_blue; }
