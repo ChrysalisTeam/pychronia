@@ -554,9 +554,10 @@ body {
 
     #up_footer_border_center {
         @include up_footer_common;
-        border-style: none; // important
+        border-width: 1px;
+        border-style: solid; // important
         /////background-image: url('#{$IMGS}backgrounds/up_footer_center.png');
-        border-image: url('#{$IMGS}backgrounds/up_footer_center.png') 0 9 0 0 fill stretch stretch;
+        border-image: url('#{$IMGS}backgrounds/up_footer_center.png') 1 9 1 1 fill stretch stretch;
         width: 225px;
     }
 

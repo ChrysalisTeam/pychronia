@@ -14,14 +14,14 @@ h1 {
     &:before {
         top: 12px;
         left: -14px;
-        content: url('#{$IMGS}decorations/primary_title_left_gradient.png');
+        content: url("#{$IMGS}decorations/primary_title_left_gradient.png");
         padding: 0;
         position: relative;
     }
     &:after {
         top: 12px;
         left: 14px;
-        content: url('#{$IMGS}decorations/primary_title_right_gradient.png');
+        content: url("#{$IMGS}decorations/primary_title_right_gradient.png");
         padding: 0;
         position: relative;
     }
@@ -38,14 +38,14 @@ h2 {
     &:before {
         top: 0px;
         left: -10px;
-        content: url('#{$IMGS}decorations/secondary_title_left.png');
+        content: url("#{$IMGS}decorations/secondary_title_left.png");
         padding: 0;
         position: relative;
     }
     &:after {
         top: 0px;
         left: 10px;
-        content: url('#{$IMGS}decorations/secondary_title_right.png');
+        content: url("#{$IMGS}decorations/secondary_title_right.png");
         padding: 0;
         position: relative;
     }
@@ -64,13 +64,14 @@ h3 {
 @mixin drop_cap_mixin {
     &:first-letter {
         /* ADDING DROP CAP */
-        //font-family: rothenburg_decorative, serif;
+        // NO, BUG WITH WEBKIT MAKES THE LETTER TRANSPARENT - font-family: "rothenburg_decorative", "black_chancery", serif;
         color: $drop_cap;
         float: left;
-        font-size: 30px;
-        line-height: 1em;
-        margin-left: 0.3em;
-        margin-right: 0.1em;
+        font-size: 40px;
+        line-height: 30px;
+        margin-top: 3px;
+        // margin-left: 0em;
+        // margin-right: 0em;
    }
    text-indent: 0 !important;
 }
@@ -176,13 +177,13 @@ ul
     margin: 10px 0 10px;
     padding-left: 26px;
     list-style-position: outside;
-    list-style-image: url('#{$IMGS}icons/bullet_gold_small.png');
+    list-style-image: url("#{$IMGS}icons/bullet_gold_small.png");
 
     ul {
-        list-style-image: url('#{$IMGS}icons/bullet_silver_small.png');
+        list-style-image: url("#{$IMGS}icons/bullet_silver_small.png");
 
         ul {
-            list-style-image: url('#{$IMGS}icons/bullet_bronze_small.png');
+            list-style-image: url("#{$IMGS}icons/bullet_bronze_small.png");
         }
     }
 }

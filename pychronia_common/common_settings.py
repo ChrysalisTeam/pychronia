@@ -53,7 +53,7 @@ SESSION_COOKIE_NAME = 'sessionid' # DO NOT CHANGE - needed for phpbb integration
 MEDIA_URL = '/static/media/' # examples: "http://media.lawrence.com", "http://example.com/media/"
 MEDIA_ROOT = os.path.join(ROOT_PATH, "media") # for uploaded files, generated docs etc.
 
-STATIC_URL = "http://chrysalis-game.com/static/resources/"
+STATIC_URL = "/static/resources/" #### or http://chrysalis-game.com/static/resources/ for proper mime-types
 ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/' # deprecated but required by djangocms
 STATIC_ROOT = os.path.join(ROOT_PATH, "static") # where collectstatic cmd will place files
 STATICFILES_DIRS = ()

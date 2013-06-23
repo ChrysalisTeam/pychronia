@@ -4,40 +4,38 @@
   display: none;
 }
 @font-face {
-  font-family: rothenburg_decorative;
-  src: url(img/fonts/rothenburg_decorative/rothenbg-webfont.ttf);
-  src: url(img/fonts/rothenburg_decorative/rothenbg-webfont.eot?#iefix)
-    format(embedded-opentype),
-    url(img/fonts/rothenburg_decorative/rothenbg-webfont.woff)
-    format(woff),
-    url(img/fonts/rothenburg_decorative/rothenbg-webfont.ttf)
-    format(truetype),
-    url(img/fonts/rothenburg_decorative/rothenbg-webfont.svg#RothenburgDecorativeNormal)
-    format(svg);
+  font-family: "rothenburg_decorative";
+  src: url("img/fonts/rothenburg_decorative/rothenbg-webfont.eot");
+  src: url("img/fonts/rothenburg_decorative/rothenbg-webfont.eot?#iefix")
+    format("embedded-opentype"),
+    url("img/fonts/rothenburg_decorative/rothenbg-webfont.woff")
+    format("woff"),
+    url("img/fonts/rothenburg_decorative/rothenbg-webfont.ttf")
+    format("truetype"),
+    url("img/fonts/rothenburg_decorative/rothenbg-webfont.svg#RothenburgDecorativeNormal")
+    format("svg");
   font-weight: normal;
   font-style: normal;
 }
 @font-face {
-  font-family: kingthings_calligraphica_light;
-  src: url(img/fonts/kingthings_calligraphica/Kingthings_Calligraphica_Light-webfont.ttf);
-  src: url(img/fonts/kingthings_calligraphica/Kingthings_Calligraphica_Light-webfont.eot?#iefix)
-    format(embedded-opentype),
-    url(img/fonts/kingthings_calligraphica/Kingthings_Calligraphica_Light-webfont.woff)
-    format(woff),
-    url(img/fonts/kingthings_calligraphica/Kingthings_Calligraphica_Light-webfont.ttf)
-    format(truetype),
-    url(img/fonts/kingthings_calligraphica/Kingthings_Calligraphica_Light-webfont.svg#KingthingsCalligraphicaLight)
-    format(svg);
+  font-family: "kingthings_calligraphica_light";
+  src: url("img/fonts/kingthings_calligraphica/Kingthings_Calligraphica_Light-webfont.eot");
+  src: url("img/fonts/kingthings_calligraphica/Kingthings_Calligraphica_Light-webfont.woff")
+    format("woff"),
+    url("img/fonts/kingthings_calligraphica/Kingthings_Calligraphica_Light-webfont.ttf")
+    format("truetype"),
+    url("img/fonts/kingthings_calligraphica/Kingthings_Calligraphica_Light-webfont.svg#KingthingsCalligraphicaLight")
+    format("svg");
   font-weight: normal;
   font-style: normal;
 }
 @font-face {
-  font-family: black_chancery;
-  src: url(img/fonts/black_chancery/BLKCHCRY.ttf);
-  src: url(img/fonts/black_chancery/BLKCHCRY.eot?#iefix)
-    format(embedded-opentype), url(img/fonts/black_chancery/BLKCHCRY.woff)
-    format(woff), url(img/fonts/black_chancery/BLKCHCRY.ttf)
-    format(truetype);
+  font-family: "black_chancery";
+  src: url("img/fonts/black_chancery/BLKCHCRY.eot");
+  src: url("img/fonts/black_chancery/BLKCHCRY.eot?#iefix")
+    format("embedded-opentype"),
+    url("img/fonts/black_chancery/BLKCHCRY.woff") format("woff"),
+    url("img/fonts/black_chancery/BLKCHCRY.ttf") format("truetype");
   font-weight: normal;
   font-style: normal;
 }
@@ -712,14 +710,14 @@ h1 {
 h1:before {
   top: 12px;
   left: -14px;
-  content: url(img/decorations/primary_title_left_gradient.png);
+  content: url("img/decorations/primary_title_left_gradient.png");
   padding: 0;
   position: relative;
 }
 h1:after {
   top: 12px;
   left: 14px;
-  content: url(img/decorations/primary_title_right_gradient.png);
+  content: url("img/decorations/primary_title_right_gradient.png");
   padding: 0;
   position: relative;
 }
@@ -738,14 +736,14 @@ h2 {
 h2:before {
   top: 0px;
   left: -10px;
-  content: url(img/decorations/secondary_title_left.png);
+  content: url("img/decorations/secondary_title_left.png");
   padding: 0;
   position: relative;
 }
 h2:after {
   top: 0px;
   left: 10px;
-  content: url(img/decorations/secondary_title_right.png);
+  content: url("img/decorations/secondary_title_right.png");
   padding: 0;
   position: relative;
 }
@@ -763,10 +761,9 @@ h3 {
 {
   color: #775F13;
   float: left;
-  font-size: 30px;
-  line-height: 1em;
-  margin-left: 0.3em;
-  margin-right: 0.1em;
+  font-size: 40px;
+  line-height: 30px;
+  margin-top: 3px;
 }
 .justified p, .section p {
   text-align: justify;
@@ -834,16 +831,16 @@ ul {
   margin: 10px 0 10px;
   padding-left: 26px;
   list-style-position: outside;
-  list-style-image: url(img/icons/bullet_gold_small.png);
+  list-style-image: url("img/icons/bullet_gold_small.png");
 }
 ul li {
   margin-top: 5px;
 }
 ul ul {
-  list-style-image: url(img/icons/bullet_silver_small.png);
+  list-style-image: url("img/icons/bullet_silver_small.png");
 }
 ul ul ul {
-  list-style-image: url(img/icons/bullet_bronze_small.png);
+  list-style-image: url("img/icons/bullet_bronze_small.png");
 }
 .no_bullets, .no_bullets * {
   list-style-type: none !important;
@@ -1680,8 +1677,9 @@ ul.dropmenu > li li span {
   position: relative;
   background-color: transparent border-color: transparent;
   border-style: solid;
-  border-style: none;
-  border-image: url(img/backgrounds/up_footer_center.png) 0 9 0 0 fill stretch stretch;
+  border-width: 1px;
+  border-style: solid;
+  border-image: url(img/backgrounds/up_footer_center.png) 1 9 1 1 fill stretch stretch;
   width: 225px;
 }
 #up_footer_wrapper #up_footer_border_center a {
