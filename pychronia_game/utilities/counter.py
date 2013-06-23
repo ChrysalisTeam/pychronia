@@ -2,6 +2,14 @@ from operator import itemgetter
 from heapq import nlargest
 from itertools import repeat, ifilter
 
+# Python 3.1 has a builtin Counter class.
+# This class mimics that functionality for Python 2.x
+#
+# Original code by Raymond Hettinger ()
+# Source http://code.activestate.com/recipes/576611/
+# Revision 11
+# MIT License
+
 class Counter(dict):
     '''Dict subclass for counting hashable objects.  Sometimes called a bag
     or multiset.  Elements are stored as dictionary keys and their counts

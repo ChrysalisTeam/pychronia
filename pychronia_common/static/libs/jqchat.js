@@ -1,3 +1,5 @@
+https://github.com/richardbarran/django-jqchat
+
 // Chat client code.
 
 
@@ -12,7 +14,7 @@ var url = null;
 var CallInterval = 3000;
 
 // Max delay of an ajax request attempt
-// Another ajax request might be sent in the meantime, 
+// Another ajax request might be sent in the meantime,
 // but it's not a problem thanks to request flags below
 var ajax_timeout_ms = 6000;
 
@@ -29,18 +31,18 @@ var get_request_in_progress = false;
 var post_request_in_progress = false;
 
 
-function PropagateChatError(jqXHR, extStatus, errorThrown){ 
-	$("#errordiv").css("visibility", "visible"); 
-	default_ajax_error_handler(jqXHR, extStatus, errorThrown); 
+function PropagateChatError(jqXHR, extStatus, errorThrown){
+	$("#errordiv").css("visibility", "visible");
+	default_ajax_error_handler(jqXHR, extStatus, errorThrown);
 }
 
 function callServer(){
 
 	// At each call to the server we pass data.
 	if (get_request_in_progress) return;
-	
+
 	get_request_in_progress = true;
-	
+
     $.ajax({
           url: url,
           type: "GET",
@@ -57,16 +59,16 @@ function callServer(){
 function processResponse(payload) {
 
     //if (!payload) return; // may only happen in buggy jquery 1.4.2
-    
+
     $("#errordiv").css("visibility", "hidden");
-    
+
 	// Get the slice index, store it in global variable to be passed to the server on next call.
 	slice_index = payload.slice_index;
-	
+
 	chatting_users = payload.chatting_users;
 	$("#chatting_users").html(chatting_users.join(",") || " --- ");
-	
-	
+
+
 	for(id in payload.messages) {
 		var message = payload.messages[id]["message"];
 		if (message) {
@@ -107,17 +109,17 @@ function InitChatWindow(ChatMessagesUrl, CanChat, ProcessResponseCallback){
 	// Read new messages from the server every X milliseconds.
 	IntervalID = setInterval(callServer, CallInterval);
 
-    
+
     if (CanChat){
     	// Process messages input by the user & send them to the server.
     	$("form#chatform").submit(function(){
-    		
+
     	   if (post_request_in_progress) return false;
-    
+
     		// If user clicks to send a message on a empty message box, then don't do anything.
     		msg = $.trim($("#msg").val())
     		if(msg == "") return false;
-    		
+
     		post_request_in_progress = true;
 
             $.ajax({
@@ -125,17 +127,17 @@ function InitChatWindow(ChatMessagesUrl, CanChat, ProcessResponseCallback){
               type: "POST",
               data: {message: msg},
               timeout: ajax_timeout_ms, // in ms
-              success: function(payload){ 
+              success: function(payload){
                                         //if (!payload) return; // may only happen in buggy jquery 1.4.2
                                         $("#msg").val(""); // clean out contents of input field.
                                         $("#errordiv").css("visibility", "hidden");
                                         },
               error: PropagateChatError,
               complete: function(){ post_request_in_progress = false; // always called
-                                    callServer(); } 
+                                    callServer(); }
               });
-        
-           	
+
+
     		return false;
     	});
     }

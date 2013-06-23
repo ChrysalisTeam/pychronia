@@ -1,0 +1,220 @@
+
+
+
+
+
+
+
+Included python modules
+====================================
+
+"Dependencies" folder
+------------------------
+
+Python-AIML
+    Attribution, no warranties (BSD style)
+    
+cmsplugin_filer_image
+    BSD license
+    
+cmsplugin_rst
+    Attribution, no warranties (BSD style)
+    
+cmsplugin_simple_gallery
+    No license information
+    
+django-jplayer
+    Attribution, no warranties (BSD style)
+    
+ZODB-relstorage
+    Zope Public License (ZPL) Version 2.1, GPL-compatible
+
+django-request
+    Attribution, no warranties (BSD style)
+    
+django-login-for-phpbb/sessionprofile
+    Attribution, no warranties (BSD style)
+    
+userprofiles
+    Attribution, no warranties (BSD style)
+    
+    
+"utilities" folder
+--------------------
+
+django-fileservers
+    Attribution, no warranties (BSD style)
+
+pafo
+    GPL V3 or later
+    
+counter
+    MIT License
+    
+
+
+Website graphics and media
+============================
+
+"Metal Radiance" web template
+    Creative Commons Attribution Non-Commercial 2.0 <=== NON COMMERCIAL
+
+"Burned" web template
+    Creative Commons Attribution 2.5
+
+"Projection152" web template
+    Freeware
+    
+"Stasis" web template
+    GPL V2
+
+free-vintage-social-icons pack
+    No license info
+
+Black Chancery Font
+    Free for commercial use
+ 
+Kingthings Calligraphica Font
+    Freeware
+    
+Rothenburg Decorative Font
+    Freeware
+
+Augustus Font
+    No license info
+
+    
+    
+Javascript/CSS/Flash libraries
+===================================
+
+audioplayer
+    Attribution, no warranties (BSD style)
+    
+canvas-fireworks
+    No license info
+    
+jquery-color-picker
+    Dual licensed under the MIT and GPL licenses.
+    
+css3pie
+    Apache license
+    
+domslides
+    Creative Commons Attribution 2.5
+ 
+Fancybox2
+    Creative Commons Attribution Non-Commercial 3.0 <=== NON COMMERCIAL
+    
+fasw.transitions
+    GNU General Public License, version 3
+    
+jquery-jnotify
+    Apache License
+    
+jquery-jplayer
+    MIT License
+
+jquery-marquee
+    No license information
+    
+jquery-storage
+    Attribution, no warranties (BSD style)
+
+jquery-ui
+    MIT License
+
+jquery-dropdownchecklist
+    Dual licensed under the MIT OR GPL licenses
+    
+jquery-markitup
+    Dual licensed under the MIT and GPL licenses
+
+P4WN
+    Creative Commons Zero
+ 
+jquery-qtip
+    Attribution, no warranties (BSD style)
+
+jquery-select2
+    Apache License 2.0 or GPL 2.0
+    
+AC_QuickTime.js
+    No warranties
+    
+silverlight.js
+    Microsoft Public License (attribution, no warranties)
+
+JW WMV Player
+    Free for non-commercial use, no specific license info <=== NON COMMERCIAL
+
+"AllVideos" Plugin for Joomla! (used as example code)
+    GNU/GPL license
+    
+NiftyPlayer 1.7
+    MIT License
+    
+jquery-zoomy
+    MIT License
+    
+django-jqchat.js
+    No license info
+    
+jquery-outside-events
+    Dual licensed under the MIT and GPL licenses
+    
+jquery-cookie
+    Dual licensed under the MIT or GPL Version 2 licenses
+    
+jquery-css3-finalize
+    Creative Commons Attribution Share-Alike V3
+
+jquery-dropmenu
+    MIT License
+
+jquery-globalstylesheet
+    Dual licensed under the MIT and GPL licenses
+     
+jquery-hcsticky
+    MIT License
+    
+jquery-mousewheel
+    MIT License
+    
+jquery-pulsate
+    Dual licensed under the MIT and GPL licenses
+     
+jquery framework core
+    MIT license
+    
+jquery-disabler
+    Dual licensed under the MIT and GPL licenses
+     
+jquery-migrate
+    MIT License
+    
+multi-mp3-player
+    Creative Commons Attribution Share-Alike V3 or Mozilla Public License
+     
+
+
+
+    
+     
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

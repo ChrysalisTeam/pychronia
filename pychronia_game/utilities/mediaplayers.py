@@ -13,8 +13,8 @@ LIB_DIR = config.STATIC_URL + "libs/"
 _media_player_templates = \
 {
     ("flv", "mp3"): """
-    <object type="application/x-shockwave-flash" class="mediaplayer" style="width:%(width)spx;height:%(height)spx;" data="%(lib_dir)svideoplayers/mediaplayer/player.swf" title="%(title)s">
-        <param name="movie" value="%(lib_dir)svideoplayers/mediaplayer/player.swf" />
+    <object type="application/x-shockwave-flash" class="mediaplayer" style="width:%(width)spx;height:%(height)spx;" data="%(lib_dir)svideoplayers/mediaplayer/simple_video_player.swf" title="%(title)s">
+        <param name="movie" value="%(lib_dir)svideoplayers/mediaplayer/simple_video_player.swf" />
         <param name="quality" value="high" />
         <param name="wmode" value="%(transparency)s" />
         <param name="bgcolor" value="%(background)s" />
