@@ -9,9 +9,10 @@ import json
 import traceback
 import collections
 import copy
+import fileservers
+
 from contextlib import contextmanager
 from django.conf import settings
-
 from django.http import Http404, HttpResponseRedirect, HttpResponse, \
     HttpResponseForbidden
 from django.shortcuts import render
@@ -23,7 +24,7 @@ from .. import forms  # AFTER common, to replace django.forms
 from pychronia_game.datamanager import AbstractGameView, register_view
 from ..authentication import try_authenticating_with_credentials, logout_session
 from .. import datamanager as dm_module
-from pychronia_game.utilities import mediaplayers, fileservers
+from pychronia_game.utilities import mediaplayers
 from pychronia_game.datamanager import GameDataManager
 
 

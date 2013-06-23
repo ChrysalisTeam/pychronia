@@ -1,15 +1,38 @@
 
+Pychronia "Leet RPG" Framework
+####################################
+
+The code written for PyChronia is covered by the BSD license below. This means that you may freely use/modify/redistribute it, even for commercial purposes. 
+
+However, note that for commercial projects, you'll have to remove/replace dependencies whose license forbids such uses (some jquery libraries and web templates, especially), or get appropriate licenses from their owners.
+We added below a quick summary of the licenses of third-party included modules, to help you assess the impacts of license on your own usage.
+
+Other python packages, not included, are required to run that framework (see "pip_requirements.txt") ; refer to their respective websites for licensing information.
+
+By the way, nothing forces you to contribute back the bugfixes or features that you might add to the code, however we'd be very thankful if you gave back your own improvements to the community.
 
 
 
 
+Pychronia Code License (BSD 3-Clause)
+======================================
+
+Copyright 2010-2013 Pascal Chambon, Katherine Heang, Lin Liu and other contributors from the Chrysalis RPG project (http://chrysalis-game.com/).
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+-Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+-Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+-Neither the name of Pychronia nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-Included python modules
-====================================
 
-"Dependencies" folder
-------------------------
+Licenses of included python modules
+======================================
+
 
 Python-AIML
     Attribution, no warranties (BSD style)
@@ -26,7 +49,7 @@ cmsplugin_simple_gallery
 django-jplayer
     Attribution, no warranties (BSD style)
     
-ZODB-relstorage
+relstorage (ZODB)
     Zope Public License (ZPL) Version 2.1, GPL-compatible
 
 django-request
@@ -38,10 +61,6 @@ django-login-for-phpbb/sessionprofile
 userprofiles
     Attribution, no warranties (BSD style)
     
-    
-"utilities" folder
---------------------
-
 django-fileservers
     Attribution, no warranties (BSD style)
 
@@ -53,8 +72,8 @@ counter
     
 
 
-Website graphics and media
-============================
+Licenses of website graphics and media
+=========================================
 
 "Metal Radiance" web template
     Creative Commons Attribution Non-Commercial 2.0 <=== NON COMMERCIAL
@@ -85,8 +104,8 @@ Augustus Font
 
     
     
-Javascript/CSS/Flash libraries
-===================================
+Licenses of Javascript/CSS/Flash libraries
+===============================================
 
 audioplayer
     Attribution, no warranties (BSD style)

@@ -13,7 +13,8 @@ from textwrap import dedent
 from urlparse import urlparse
 
 from odict import odict as OrderedDict
-from pychronia_game.utilities.pafo import printObject
+from pafo import printObject
+from counter import Counter
 
 import yaml, pyparsing
 
@@ -34,7 +35,6 @@ from django.template.defaultfilters import slugify
 
 from . import utilities
 from .utilities import config, SDICT, Enum
-from .utilities.counter import Counter
 from .utilities.encryption import unicode_decrypt, unicode_encrypt, hash
 
 _undefined = object()

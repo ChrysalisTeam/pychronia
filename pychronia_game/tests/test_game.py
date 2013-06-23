@@ -10,6 +10,7 @@ import shutil
 from ._test_tools import *
 from ._dummy_abilities import *
 
+import fileservers
 from django.utils import timezone
 from pychronia_game.datamanager.abstract_ability import AbstractAbility
 from pychronia_game.datamanager.action_middlewares import CostlyActionMiddleware, \
@@ -20,7 +21,7 @@ from pychronia_game.templatetags.helpers import _generate_encyclopedia_links, \
     advanced_restructuredtext, _generate_messaging_links, _generate_site_links, \
     _enriched_text, _generate_game_file_links
 from pychronia_game import views, utilities
-from pychronia_game.utilities import fileservers, autolinker
+from pychronia_game.utilities import autolinker
 from django.test.client import RequestFactory
 import pprint
 from pychronia_game.datamanager.datamanager_administrator import retrieve_game_instance, \
