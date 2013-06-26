@@ -19,7 +19,7 @@ ul.dropmenu {
 
         a, span { // every descendant, too
 
-            display: block; white-space: nowrap; float: left;
+            display: block; white-space: nowrap;
 
             @include header_common;
 

@@ -1412,7 +1412,7 @@ body:after {
 }
 #full_menu #main_menu .marble_menu_container .marble_menu {
   box-sizing: content-box !important;
-  min-width: 550px;
+  min-width: 350px;
   height: 35px;
   padding: 0 0;
   background-image: url(img/backgrounds/post-it.png);
@@ -1445,7 +1445,6 @@ body:after {
 ul.dropmenu > li span {
   display: block;
   white-space: nowrap;
-  float: left;
   text-shadow: 1px 1px 0 #000000, -1px -1px 0 #000000, 1px -1px 0 #000000, -1px 1px 0
     #000000;
   color: #BF9635;

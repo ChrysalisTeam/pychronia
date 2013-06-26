@@ -21,6 +21,7 @@ pycrypto==2.6  # no much used ATM
 pyparsing==1.5.6
 requests==1.2.0
 decorator==3.4.0
+python-memcached==1.53
 
 django-cms==2.3.5
 django-filer==0.9.3
