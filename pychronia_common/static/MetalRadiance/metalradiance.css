@@ -1101,14 +1101,10 @@ input.digit {
   position: relative;
   min-width: 150px;
   padding: 0 10px;
-  background-size: 98% 98%;
-  background-clip: border-box;
-  background-position: center center;
-  background-repeat: no-repeat;
   border-width: 79px 45px 81px 39px;
   border-color: transparent;
   border-style: solid;
-  background-image: url(img/backgrounds/scroll_yellow_rolled.png);
+  background-image: none;
   border-image: url(img/backgrounds/scroll_realistic_thin_ends.png) 79 45 81 39 fill
     stretch stretch;
 }
@@ -1116,14 +1112,10 @@ input.digit {
   position: relative;
   min-width: 150px;
   padding: 0 10px;
-  background-size: 98% 98%;
-  background-clip: border-box;
-  background-position: center center;
-  background-repeat: no-repeat;
   border-width: 79px 45px 81px 39px;
   border-color: transparent;
   border-style: solid;
-  background-image: url(img/backgrounds/scroll_yellow_flat.png);
+  background-image: none;
   border-image: url(img/backgrounds/scroll_realistic_thin_ends_disabled.png) 79 45 81
     39 fill stretch stretch;
 }
@@ -1451,6 +1443,9 @@ body:after {
 #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu
 > li a, #full_menu #main_menu .marble_menu_container .marble_menu
 ul.dropmenu > li span {
+  display: block;
+  white-space: nowrap;
+  float: left;
   text-shadow: 1px 1px 0 #000000, -1px -1px 0 #000000, 1px -1px 0 #000000, -1px 1px 0
     #000000;
   color: #BF9635;
@@ -1469,7 +1464,8 @@ ul.dropmenu > li span {
 #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu
 > li span {
   color: #000000 !important;
-  text-shadow: none !important;
+  text-shadow: 1px 1px 0 #ffffff, -1px -1px 0 #ffffff, 1px -1px 0 #ffffff, -1px 1px 0
+    #ffffff !important;
 }
 #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu
 > li li a, #full_menu #main_menu .marble_menu_container .marble_menu
@@ -1503,7 +1499,7 @@ ul.dropmenu > li li span {
 #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu
 > li a.hover, #full_menu #main_menu .marble_menu_container
 .marble_menu ul.dropmenu > li span.hover {
-  color: #cccccc;
+  color: #aaaaaa;
 }
 #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu
 > li ul {

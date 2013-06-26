@@ -38,7 +38,7 @@ ul.dropmenu {
         span {
           // INACTIVE menu entry
            color: $black_color !important;
-           text-shadow: none !important;
+           text-shadow: 1px 1px 0 white, -1px -1px 0 white, 1px -1px 0 white, -1px 1px 0 white  !important;
         }
 
         /* all sublevels are in metal&glass tubes */

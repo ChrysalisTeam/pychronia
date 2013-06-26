@@ -41,6 +41,9 @@
 			<div class="notaccordion">
 
 			    <!--h3 class="{% if forloop.first %}firstTitle{% else %}otherTitle{% endif %}"><a href="#">{{ message.subject }}</a></h-->
+                {% if not forloop.first %}
+                    <hr/>
+                {% endif %}
 
 				{% for ctx, message in message_list reversed %}
 

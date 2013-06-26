@@ -94,10 +94,12 @@ input.digit
     min-width: 150px;
     padding: 0 10px;
 
+    /* ugly
     background-size: 98% 98%;
     background-clip: border-box;
     background-position: center center;
     background-repeat: no-repeat;
+    */
 
     border-width: 79px 45px 81px 39px;
     border-color: transparent;
@@ -107,14 +109,14 @@ input.digit
 
 .email_unread {
     @include email_common;
-    background-image: url('#{$IMGS}backgrounds/scroll_yellow_rolled.png');
+    background-image: none; // would look ugly
     border-image: url('#{$IMGS}backgrounds/scroll_realistic_thin_ends.png') 79 45 81 39 fill stretch stretch;
 }
 
 
 .email_read {
     @include email_common;
-    background-image: url('#{$IMGS}backgrounds/scroll_yellow_flat.png');
+    background-image: none; // would look ugly
     border-image: url('#{$IMGS}backgrounds/scroll_realistic_thin_ends_disabled.png') 79 45 81 39 fill stretch stretch;
 }
 
