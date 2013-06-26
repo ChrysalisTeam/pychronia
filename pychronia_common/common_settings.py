@@ -194,6 +194,13 @@ DEBUG_TOOLBAR_CONFIG = {
 
 
 ## DJANGO CONTRIB RST CONF ##
+RESTRUCTUREDTEXT_INITIALIZER = """
+.. |br| raw:: html
+
+   <br />
+   
+"""
+
 RESTRUCTUREDTEXT_FILTER_SETTINGS = {"initial_header_level": 2, # minimum "h2" when rendered to html
                                     "doctitle_xform": False, # important, to have even lone titles stay in the html fragment
                                     "sectsubtitle_xform": False,

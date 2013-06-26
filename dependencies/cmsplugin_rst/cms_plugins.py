@@ -15,7 +15,8 @@ class RstPlugin(CMSPluginBase):
     form = RstPluginForm
 
     def render(self, context, instance, placeholder):
-        rst = instance.body
+        rst = getattr(settings, "RESTRUCTUREDTEXT_INITIALIZER", "") + "\n"
+        rst += instance.body
         rst = rst.replace("{{ MEDIA_URL }}", settings.MEDIA_URL)
         rst = rst.replace("{{ STATIC_URL }}", settings.STATIC_URL)
         context.update({'content': postprocess(restructuredtext(rst))})
