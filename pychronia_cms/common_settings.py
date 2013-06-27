@@ -101,6 +101,11 @@ REQUEST_ONLY_ERRORS = False
 RESTRUCTUREDTEXT_FILTER_SETTINGS["raw_enabled"] = True
 
 
+
+LANGUAGES = (
+  ('fr', ugettext('French')), # TODO REMOVE THIS LATER - override put only for CMS
+)
+
 ## DJANGO CMS CONF ##
 CMS_TEMPLATES = (
    ('cms_one_column.html', ugettext('One column')),
@@ -121,17 +126,19 @@ CMS_PLUGIN_PROCESSORS = []
 PLACEHOLDER_FRONTEND_EDITING = True
 
 CMS_MULTILINGUAL_PATCH_REVERSE = False
+'''
 CMS_LANGUAGE_CONF = { # fallbacks ordering
     'fr': ['en'],
     'en': ['fr'],
 }
+'''
 CMS_LANGUAGES = (# BEWARE - structure has changed in djangocms 1.5
     ('fr', ugettext('French')),
-    ('en', ugettext('English')),
+   # ('en', ugettext('English')),
 )
 CMS_HIDE_UNTRANSLATED = False
-CMS_LANGUAGE_FALLBACK = True
-
+CMS_LANGUAGE_FALLBACK = False
+CMS_FRONTEND_LANGUAGES = ("fr",)
 CMS_CACHE_PREFIX = "chryscms-" # useful if multiple CMS installations
 CMS_CACHE_DURATIONS = { # in seconds
     'menus': 60 * 60,
