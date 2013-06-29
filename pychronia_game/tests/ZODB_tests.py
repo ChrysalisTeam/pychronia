@@ -13,6 +13,8 @@ from pprint import pprint
 from unittest import TestCase
 import multiprocessing.pool
 import traceback
+from ZODB.POSException import ConflictError
+from transaction.interfaces import TransactionFailedError
 
 pool = multiprocessing.pool.ThreadPool(3)
 
@@ -153,8 +155,8 @@ class TestZODB(TestCase):
 
         root.dummy2 = 5
 
-        self.assertRaises(Exception, transaction.commit) # conflict !!
-        self.assertRaises(Exception, transaction.commit) # still !!
+        self.assertRaises(ConflictError, transaction.commit) # conflict !!
+        self.assertRaises(TransactionFailedError, transaction.commit) # transaction broken
 
         transaction.abort()
 
@@ -162,7 +164,7 @@ class TestZODB(TestCase):
 
 
 
-        # no conflict when a branch gets detached while leaf is updated#
+        # no conflict when a branch gets detached while leaf is updated
 
         container = root.stuff
 
