@@ -10,11 +10,13 @@ from .datamanager_tools import *
 class BaseDataManager(utilities.TechnicalEventsMixin):
 
 
+    # utilities for WRITING transactions (readonly ones are implicit) #
+
     def begin(self):
 
-        if not self._in_transaction:
+        if not self._in_writing_transaction:
             self.check_no_pending_transaction()
-            self._in_transaction = True
+            self._in_writing_transaction = True
             #transaction.begin() # not really needed
             return None # value indicating top level
         else:
@@ -24,7 +26,7 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
         if savepoint:
             pass # savepoint needn't be committed, in ZODB
         else:
-            self._in_transaction = False
+            self._in_writing_transaction = False
             transaction.commit() # top level
             self.check_no_pending_transaction() # AFTER REAL COMMIT
 
@@ -32,16 +34,34 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
         if savepoint:
             savepoint.rollback()
         else:
-            self._in_transaction = False
+            self._in_writing_transaction = False
             transaction.abort() # top level
             self.check_no_pending_transaction() # AFTER REAL ROLLBACK
 
-    def is_in_transaction(self):
-        return self._in_transaction
+    def is_in_writing_transaction(self):
+        return self._in_writing_transaction
 
     def check_no_pending_transaction(self):
-        assert not self._in_transaction, self._in_transaction
+        assert not self._in_writing_transaction, self._in_writing_transaction
         assert not self.connection._registered_objects, repr(self.connection._registered_objects)
+
+
+
+    # utilities for toplevel handling of transactions (writing or not) #
+
+    def begin_top_level_wrapping(self):
+        if self._in_top_level_handler:
+            raise RuntimeError("begin_top_level_wrapping() called twice in same transaction")
+        self._in_top_level_handler = True
+
+    def end_top_level_wrapping(self):
+        if not self._in_top_level_handler:
+            raise RuntimeError("end_top_level_wrapping() called out of workflow")
+        self._in_top_level_handler = False
+
+    def is_under_top_level_wrapping(self):
+        return self._in_top_level_handler
+
 
     # no transaction manager - special case
     def __init__(self, game_instance_id, game_root=None, request=None, **kwargs):
@@ -59,8 +79,9 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
 
         self.notify_event("BASE_DATA_MANAGER_INIT_CALLED")
 
-        self._in_transaction = False
-
+        self._in_writing_transaction = False # for WRITING transactions only
+        self._in_top_level_handler = False # for both readonly and writing transactions, top-level conflict handler 
+        
         self.game_instance_id = game_instance_id
 
         self._inner_logger = logging.getLogger("pychronia_game") #FIXME

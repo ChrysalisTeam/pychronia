@@ -85,7 +85,7 @@ class AbstractAbility(AbstractAbilityBasesAdapter):
 
 
     def _execute_game_action_callback(self, action_name, unfiltered_params):
-        assert self.is_in_transaction()
+        assert self.is_in_writing_transaction()
         if not self.has_action_middlewares_configured(action_name=action_name):
             # slight optimization, we bypass all the middlewares chain
             return super(AbstractAbility, self)._execute_game_action_callback(action_name=action_name,

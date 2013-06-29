@@ -9,12 +9,15 @@ from django.http import Http404, HttpResponseRedirect, HttpResponse, \
     HttpResponseForbidden, HttpResponseBadRequest
 from django.template import loader
 
+import urllib
+
 from ..datamanager import GameDataManager
 from .abstract_form import AbstractGameForm, UninstantiableFormError
 from .datamanager_tools import transaction_watcher, readonly_method
 from django.forms import Form
 from django.utils.functional import Promise
-import urllib
+
+from ZODB.POSException import POSError # parent of ConflictError
 
 
 
@@ -25,6 +28,7 @@ def transform_usage_error(caller, self, request, *args, **kwargs):
     if an exception is encountered.
     """
     dm = request.datamanager
+    return_to_home = HttpResponseRedirect(reverse("pychronia_game.views.homepage", kwargs=dict(game_instance_id=dm.game_instance_id)))
     try:
 
         return caller(self, request, *args, **kwargs)
@@ -33,7 +37,7 @@ def transform_usage_error(caller, self, request, *args, **kwargs):
         if request.datamanager.user.is_impersonation:
             # Will mainly happen when we switch between two impersonations with different access rights, on a restricted page
             dm.user.add_warning(_("Currently impersonated user can't access view %s") % self.TITLE)
-            return HttpResponseRedirect(reverse("pychronia_game.views.homepage", kwargs=dict(game_instance_id=dm.game_instance_id)))
+            return return_to_home
         else:
             # uses HTTP code for TEMPORARY redirection
             dm.user.add_error(_("Access denied to page %s") % self.TITLE)
@@ -43,12 +47,15 @@ def transform_usage_error(caller, self, request, *args, **kwargs):
             return HttpResponseRedirect("%s?%s" % (url, qs))
         assert False
 
-    except GameError, e:
-        dm.logger.critical("Unexpected GameError in %s" % self.NAME, exc_info=True)
-        return HttpResponseBadRequest(repr(e))
+    except (GameError, POSError), e:
+        dm.logger.critical("Unexpected game error in %s" % self.NAME, exc_info=True)
+        if not request.is_ajax():
+            dm.user.add_error(_("An unexpected server error occurred, please retry"))
+            return return_to_home
+        else:
+            return HttpResponseBadRequest(repr(e))
 
-    except Exception:
-        raise # we let 500 handler take are of all other (very abnormal) exceptions
+    # else; we let 500 handler take are of all other (very abnormal) exceptions
 
 
 

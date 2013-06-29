@@ -45,7 +45,6 @@ from django.utils.functional import Promise
 
 
 
-
 class TestUtilities(BaseGameTestCase):
     '''
     def __call__(self, *args, **kwds):
@@ -391,7 +390,7 @@ class TestUtilities(BaseGameTestCase):
                         [GAME_FILE_URL "bad
                         path.jpg]
                     """)
-        
+
         res = _generate_game_file_links(rst, self.dm)
         #print("\n@@@@@@\n", res)
 
@@ -544,8 +543,12 @@ class TestDatamanager(BaseGameTestCase):
 
         # TODO FIXME - extend this check action methods of all ABILITIES !!! FIXME
 
+
+        special_methods = """begin rollback commit close check_no_pending_transaction is_in_writing_transaction
+                             begin_top_level_wrapping end_top_level_wrapping is_under_top_level_wrapping""".split()
+
         for attr in dir(GameDataManager):
-            if attr.startswith("_") or attr in "begin rollback commit close check_no_pending_transaction is_in_transaction".split():
+            if attr.startswith("_") or attr in special_methods:
                 continue
 
             # we remove class/static methods, and some utilities that don't need decorators.
@@ -573,6 +576,33 @@ class TestDatamanager(BaseGameTestCase):
         assert GameDataManager.set_game_state._is_always_writable == True # even if master bypasses constraints here
         assert GameDataManager.sync_game_view_data._is_always_writable == True
         assert GameDataManager.set_message_read_state._is_always_writable == True
+
+
+    def test_zodb_conflict_retrier(self):
+        """
+        We ensure ZODB conflict errors lead to a retry.
+        """
+        ERROR_TYPE = ConflictError
+
+        def broken(*args, **kwargs):
+            self.dm.notify_event("BROKEN_DUMMY_FUNC_CALLED")
+            raise ERROR_TYPE("dummy error")
+
+        self.dm.get_character_properties = broken # INSTANCE attribute, no problem
+
+        for func in (self.dm.get_wiretapping_targets, self.dm.set_confidentiality_protection_status):
+            self.dm.clear_all_event_stats()
+            with pytest.raises(AbnormalUsageError) as exc_info:
+                func()
+                assert "Concurrent access" in str(exc_info.value)
+            assert self.dm.get_event_count("BROKEN_DUMMY_FUNC_CALLED") == 3 # 3 attempts max
+
+        for ERROR_TYPE in (UsageError, EnvironmentError, TypeError):
+            for func in (self.dm.get_wiretapping_targets, self.dm.set_confidentiality_protection_status):
+                self.dm.clear_all_event_stats()
+                with pytest.raises(ERROR_TYPE):
+                    func()
+                assert self.dm.get_event_count("BROKEN_DUMMY_FUNC_CALLED") == 1 # no retries in these cases
 
 
 
@@ -3799,7 +3829,7 @@ class TestActionMiddlewares(BaseGameTestCase):
             assert ability.middleware_wrapped_callable2(value)
             assert ability.non_middleware_action_callable(use_gems=[gem_125])
 
-        assert not self.dm.is_in_transaction()
+        assert not self.dm.is_in_writing_transaction()
         self.dm.check_no_pending_transaction()
 
         assert self.dm.get_event_count("INSIDE_MIDDLEWARE_WRAPPED1") == 4

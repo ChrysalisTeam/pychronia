@@ -12,22 +12,20 @@ import functools
 
 
 
-def _toplevel_zodb_conflict_solver(completed_func):
-    for i in range(3):
-        try:
-            return completed_func()
-        except ConflictError:
-            time.sleep(0.1)
-    raise AbnormalUsageError(_("Concurrent access conflict on the resource, please retry"))
+def _toplevel_zodb_conflict_solver(datamanager, completed_func):
 
-"""
+    datamanager.begin_top_level_wrapping()
+    try:
+        for i in range(3):
+            try:
+                return completed_func()
+            except ConflictError:
+                time.sleep(0.1)
+        raise AbnormalUsageError(_("Concurrent access conflict on the resource, please retry"))
+    finally:
+        datamanager.end_top_level_wrapping()
 
-    if hasattr(self, "_inner_datamanager"):
-        datamanager = self._inner_datamanager # for methods of ability or other kind of proxy
-    else:
-        datamanager = self # for datamanager methods
 
-"""
 
 
 def _call_checked_readonly_method(datamanager, func, args, kwargs):
@@ -71,9 +69,9 @@ def _call_with_transaction_watcher(datamanager, always_writable, func, args, kwa
             datamanager.logger.critical("Forbidden access to %s while having writability_data = %r", func.__name__, writability_data)
             raise AbnormalUsageError(_("This feature is unavailable at the moment"))
 
-    was_in_transaction = datamanager._in_transaction
+    was_in_transaction = datamanager._in_writing_transaction
     savepoint = datamanager.begin() # savepoint is None if it's top-level transaction
-    assert datamanager._in_transaction
+    assert datamanager._in_writing_transaction
     assert not was_in_transaction or savepoint, repr(savepoint)
 
     try:
@@ -108,12 +106,13 @@ def _build_wrapped_method(obj, secondary_wrapper, **extra_args):
         completed_func = functools.partial(secondary_wrapper,
                                            datamanager=datamanager, func=func, args=args, kwargs=kwargs,
                                            **extra_args)
-        already_in_transaction = datamanager._in_transaction
 
-        if already_in_transaction:
+        already_wrapped = datamanager.is_under_top_level_wrapping()
+
+        if already_wrapped:
             return completed_func()
         else:
-            return _toplevel_zodb_conflict_solver(completed_func)
+            return _toplevel_zodb_conflict_solver(datamanager=datamanager, completed_func=completed_func)
     return _build_method_wrapper(obj)
 
 
