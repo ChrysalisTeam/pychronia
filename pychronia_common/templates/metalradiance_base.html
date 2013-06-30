@@ -15,14 +15,21 @@
     <link href="{{ STATIC_URL }}libs/fasw.transitions/transition.css" rel="stylesheet" type="text/css"/>
     <link href="{{ STATIC_URL }}libs/jquery-jplayer-2.3.0/blue.monday/jplayer.blue.monday.css" rel="stylesheet" type="text/css"/>
 
-    <!--[if IE]>
-    {# we use Css3PIE to improve a little CSS3 support in Internet Explorer #}
+    <!--[if lte IE 9]>
+
     <style>
-        * {
-            behavior: url('{{ STATIC_URL }}libs/css3pie/PIE.htc');
+        {# force fallback for font colors when text shadows are not working well #}
+        ul.dropmenu span, ul.dropmenu a, h1, h2, h3 {
+            color: black !important;
         }
+
+        {# we may use Css3PIE to improve a little CSS3 support in Internet Explorer, but i's buggy it seems... #}
+        {# * { behavior: url('{{ STATIC_URL }}libs/css3pie/PIE.htc'); } #}
     </style>
+
     <![endif]-->
+
+
 
     {% render_block "css" %}
 
