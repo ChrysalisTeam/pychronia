@@ -9,6 +9,9 @@ FEATURES
 - handle concurrency retries and errors on ZODB decorators
 - make scripts for ZODB reset in integration (DEBUG=FALSE)
 - make tooltips slower to appear
+- make rune translator and telecom archive random but CONSTANT (with a seed)
+- add scale to map
+
 
 SCRIPT
 ----------

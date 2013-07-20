@@ -444,11 +444,19 @@ def load_yaml_file(yaml_file):
     return data
 
 
-YAML_EXTENSIONS = ["*.yaml", "*.yml"]
+def recursive_dict_sum(d1, d2):
+    """To be used later if needed"""
+    return dict((k, ((d1[k] if k in d1 else d2[k])
+                       if k not in d1 or k not in d2
+                      else (d1[k] + d2[k] if not isinstance(d1[k], dict)
+                                        else recursive_dict_sum(d1[k], d2[k]))))
+                for k in set(d1.keys() + d2.keys()))
+
+YAML_EXTENSIONS = ["*.yaml", "*.yml", "*/*.yaml", "*/*.yml"] # works on windows too
 def load_yaml_fixture(yaml_fixture):
     """
     Can load a single yaml file, or a directory containing y[a]ml files.
-    Each file must only contain a single yaml document.
+    Each file must only contain a single yaml document (which must be a mapping).
     """
 
     if not os.path.exists(yaml_fixture):
@@ -460,13 +468,21 @@ def load_yaml_fixture(yaml_fixture):
         data = {}
         yaml_files = [path for pattern in YAML_EXTENSIONS
                       for path in glob.glob(os.path.join(yaml_fixture, pattern))]
+
         del yaml_fixture # security
         for yaml_file in yaml_files:
             part = load_yaml_file(yaml_file)
-            if not isinstance(part, dict) or (set(part.keys()) & set(data.keys())):
+            '''
+            if not isinstance(part, dict): # or (set(part.keys()) & set(data.keys())):
                 raise ValueError("Improper or colliding content in %s" % yaml_file)
+            '''
             for key, value in part.items():
-                data.update(part)
+                if key not in data:
+                    data[key] = value
+                else:
+                    assert isinstance(data[key], dict)
+                    assert isinstance(value, dict)
+                    data[key].update(value) # we assume two dicts to be merged
     return data
 
 
