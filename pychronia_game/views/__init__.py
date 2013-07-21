@@ -97,7 +97,7 @@ def logo_animation(request, template_name='utilities/item_3d_viewer.html'):
                             y_coefficient=160,
                             autoreverse=True,
                             rotomatic=150,  # ms between rotations
-                            music=request.datamanager.get_global_parameter("opening_music"))
+                            music=None)
 
 
     return render(request,

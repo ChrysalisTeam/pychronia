@@ -108,17 +108,20 @@ abilities:
 
 global_parameters:
 
+
     game_is_started: True # used to forbid access to some features before the party itself
 
+    game_theoretical_length_days: 45.3
+
     pangea_network_domain: pangea.com
+    default_contact_avatar: "images/avatars/question_mark.png"
+    all_characters_mailing_list: "auction-list@pangea.com"
 
     anonymous_login: guest
     master_login: master
     master_password: ultimate
     master_email: master@administration.com
-    master_real_life_email: dummy@gmail.com
-
-    opening_music: sample.mp3
+    master_real_email: dummy@gmail.com
 
     online_presence_timeout_s: 600
     chatroom_presence_timeout_s: 30
@@ -128,64 +131,19 @@ global_parameters:
     bank_account: 100000 # let's take huge margins
     bank_gems: []
 
-    spy_cost_money: 180
-    spy_cost_gems: 120
-    mercenary_cost_money: 350
-    mercenary_cost_gems: 200
-
-    spy_report_delays: [4, 8]
-    mercenary_intervention_delays: [5, 10]
-
-#    max_wiretapping_targets: 2
-
-    password_recovery_delays: [7, 10]
-
-
 
     pangea_radio_frequency: "100.0" # string
-
-    # USELESS max_world_scans: 5
-
-
-    teldorian_teleportation_delays: [4, 8]
-    max_teldorian_teleportations: 4
-
-    acharith_attack_delays: [7, 12]
-
-    telecom_investigation_delays: [6, 7]
-    max_telecom_investigations: 3
-
     radio_is_on: False
     pending_radio_messages: []
 
-    corrupted_chunks_lengths: [7, 10] # min and max lengths of message parts retrieved by the investigator
-
-
-    bots_answer_delays_ms: [1000, 1500]
-    bots_max_answers: 10
-
-
-    # global parameters added at runtime: scanned_locations, total_gems_spent, total_digital_money_spent, total_gems_number,
-    # total_digital_money, teldorian_teleportations_done and telecom_investigations_done
-
-    game_theoretical_length_days: 45.3
-
-    global_introduction: |
-        Le *Dr Loyd Georges* est aux anges. Ce retraité sabarithe blablablah
-
-        .. note:: hello
-
-    history_summary: |
-        Hello voici le résumé de l'histoire...
 
     encyclopedia_index_visible: false
 
     friendship_minimum_duration_mn: 1
 
+    world_map_image: "world_map.jpg"
 
-    default_contact_avatar: "defaultavatar.jpg"
-
-    all_characters_mailing_list: "auction-list@pangea.com"
+    password_recovery_delay_mn: 10
 
 
 locations:
@@ -263,21 +221,10 @@ item_3d_settings:
 domains:
 
     acharis:
-        victory: victory_acharis
-        defeat: defeat_acharis
-        prologue_music: sample.mp3
-        instructions: |
-            *Il n’est d'autre Bien que la volonté des Dieux.*
+        national_anthem: sample.mp3
 
     sciences:
-        #request_for_report: request_for_report_masslavia
-        victory: new_messages_1
-        defeat: new_messages_2
-        prologue_music: sample.mp3
-        instructions: >
-            <i>Force, honneur et robustesse</i>
-
-            Rapport d’activité
+        national_anthem: sample.mp3
         permissions: ["access_world_scan"]
 
 
@@ -293,18 +240,17 @@ character_properties:
         secret_answer: null
         external_contacts: ["belasquez@acharis.com", "baazel@acharis.com"]
         new_messages_notification: info_spots_1
-        initial_cold_cash: 1000
         official_name: "Simon Bladstaffulovza"
+        official_role: "whatever"
         real_life_identity: "John Smith"
         real_life_email: dummy@hotmail.com
-        description : "XXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXX XXXXXXXX"
-        character_color : "#0033CC"
+        character_color: "#0033CC"
         permissions: ["access_dummy_view_character_permission"]
         gems: [[12, null], [200, "several_misc_gems"]]
-
         avatar: "guy1.png"
-        description: "This is guy1"
-
+        secret_identity: "SHA1"
+        secret_comments: "This is guy1"
+        is_npc: False
 
     guy2:
         domains: ["acharis"]
@@ -314,15 +260,15 @@ character_properties:
         secret_answer: null
         external_contacts: ["academy@sciences.com"]
         new_messages_notification: new_messages_2
-        initial_cold_cash: 1000
         official_name: "Loyd Georges"
+        official_role: "whatever"
         real_life_identity: "John Doe"
         real_life_email: shalk@gmail.com
-        description : "XXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXX XXXXXXXX"
         character_color : "#339933"
-
-        avatar: "guy2.png"
-        description: "This is guy2"
+        avatar: null
+        secret_identity: null
+        secret_comments: "This is guy2"
+        is_npc: False
 
     guy3:
         ## THIS ONE MUST HAVE NO MONEY AND GEMS
@@ -333,16 +279,16 @@ character_properties:
         secret_answer: "Fluffy"
         external_contacts: []
         new_messages_notification: new_messages_1
-        initial_cold_cash: 1000
         official_name: "Salar"
+        official_role: "whatever"
         real_life_identity: "John Doe"
         real_life_email: belez@gmail.com
-        description : "XXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXX XXXXXXXX"
         character_color : "#CC3399"
         gems: []
-
-        avatar: "guy3.png"
-        description: "This is guy3"
+        avatar: null
+        secret_identity: null
+        secret_comments: "This is guy3"
+        is_npc: False
 
     guy4:
         domains: []
@@ -352,16 +298,17 @@ character_properties:
         secret_answer: null
         external_contacts: []
         new_messages_notification: victory_acharis
-        initial_cold_cash: 1000
         official_name: "Kha"
+        official_role: "wanderer"
         real_life_identity: "John Doe"
         real_life_email: belez2@gmail.com
-        description : "XXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXX XXXXXXXX"
         character_color : "#00CCFF"
         gems: []
+        avatar: null
+        secret_identity: null
+        secret_comments: "This is guy4"
+        is_npc: True
 
-        avatar: "guy4.png"
-        description: "This is guy4"
 
 audio_messages:
 
@@ -417,7 +364,7 @@ messaging:
         authenticator@hightech.com: {}
 
         judicators@acharis.com:
-            avatar: "here.jpg"
+            avatar: "here.png"
             description: "the terrible judicators"
             access_tokens: ["guy1", "guy2"]
 

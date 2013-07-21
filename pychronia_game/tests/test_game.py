@@ -1035,8 +1035,7 @@ class TestDatamanager(BaseGameTestCase):
         self.assertEqual(self.dm.get_username_from_official_name(self.dm.get_official_name("guy2")), "guy2")
 
         # DEPRECATED self.assertEqual(self.dm.get_fellow_usernames("guy2"), ["guy1"])
-
-        self.assertEqual(len(self.dm.get_game_instructions("guy2")), 3)
+        ## self.assertEqual(len(self.dm.get_game_instructions("guy2")), 3)
 
         self.dm.set_game_state(started=False)
         self.assertEqual(self.dm.is_game_started(), False)
@@ -1222,6 +1221,7 @@ class TestDatamanager(BaseGameTestCase):
 
     @for_core_module(PersonalFiles)
     def test_personal_files(self):
+        self._reset_django_db()
         self._reset_messages()
 
         files1 = self.dm.get_personal_files("guy2", absolute_urls=True)
@@ -1459,7 +1459,7 @@ class TestDatamanager(BaseGameTestCase):
         contact1 = "SOME_EMAILS"
         contact2 = "phoenix@stash.com"
         contact_bad = "qsd qsdqsd"
-        good_content = dict(avatar="qsdqsd", description="here a description", access_tokens=None)
+        good_content = dict(avatar="images/avatars/question_mark.png", description="here a description", access_tokens=None)
 
         container = self.dm.global_contacts
 
@@ -1628,9 +1628,9 @@ class TestDatamanager(BaseGameTestCase):
         assert self.dm.get_contacts_display_properties([]) == []
         res = self.dm.get_contacts_display_properties(["guy1@pangea.com", "judicators@acharis.com", "unknown@mydomain.com"])
         #print(">>", res)
-        assert res == [{'description': 'This is guy1', 'avatar': 'guy1.png', 'address': u'guy1@pangea.com'},
-                       {'description': 'the terrible judicators', 'avatar': 'here.jpg', 'address': u'judicators@acharis.com'},
-                       {'description': u'Unidentified contact', 'avatar': 'defaultavatar.jpg', 'address': u'unknown@mydomain.com'}]
+        assert res == [{'description': 'whatever', 'avatar': 'images\\avatars\\guy1.png', 'address': u'guy1@pangea.com'},
+                       {'description': 'the terrible judicators', 'avatar': 'images\\avatars\\here.png', 'address': u'judicators@acharis.com'},
+                       {'description': u'Unidentified contact', 'avatar': 'images/avatars/question_mark.png', 'address': u'unknown@mydomain.com'}]
 
 
     def test_mailing_list_special_case(self):
@@ -3105,7 +3105,7 @@ class TestHttpRequests(BaseGameTestCase):
         special_urls = {ROOT_GAME_URL + "/item3dview/sacred_chest/": None,
                         # FIXME NOT YET READYROOT_GAME_URL + "/djinn/": {"djinn": "Pay Rhuss"},
                         ##### FIXME LATER config.MEDIA_URL + "Burned/default_styles.css": None,
-                        game_file_url("attachments/image1.png"): None,
+                        game_file_url("images/attachments/image1.png"): None,
                         game_file_url("encrypted/guy2_report/evans/orb.jpg"): None,
                         ROOT_GAME_URL + "/messages/view_single_message/instructions_bewitcher/": None,
                         ROOT_GAME_URL + "/secret_question/guy3/": dict(secret_answer="Fluffy", target_email="guy3@pangea.com"),

@@ -623,6 +623,8 @@ class PlayerAuthentication(BaseDataManager):
         utilities.check_is_slug(global_parameters["master_password"])
         utilities.check_is_slug(global_parameters["master_real_email"]) # to inform him if troubles
 
+        utilities.check_is_range_or_num(global_parameters["password_recovery_delay_mn"])
+
 
 
     @readonly_method
@@ -915,7 +917,7 @@ class PlayerAuthentication(BaseDataManager):
 
             msg_id = self.post_message(sender_email=sender_email, recipient_emails=target_email,
                                        subject=subject, body=body, attachment=attachment,
-                                       date_or_delay_mn=self.get_global_parameter("password_recovery_delays"))
+                                       date_or_delay_mn=self.get_global_parameter("password_recovery_delay_mn"))
 
             self.log_game_event(_noop("Password of %(username)s has been recovered by %(target_email)s."),
                                  PersistentDict(username=username, target_email=target_email),
@@ -1824,6 +1826,8 @@ class TextMessagingExternalContacts(BaseDataManager):
                     self._table[identifier] = details
                 details.setdefault("immutable", True) # contacts that are necessary to gameplay CANNOT be edited/deleted
                 details.setdefault("avatar", None)
+                if details["avatar"]:
+                    details["avatar"] = utilities.complete_game_file_path(details["avatar"], "images", "avatars")
                 details.setdefault("description", None)
                 details.setdefault("access_tokens", None) # PUBLIC contact
 
@@ -1845,7 +1849,7 @@ class TextMessagingExternalContacts(BaseDataManager):
             if value["description"]: # optional
                 utilities.check_is_string(value["description"], multiline=False)
             if value["avatar"]: # optional
-                utilities.check_is_slug(value["avatar"]) # FIXME improve that
+                utilities.check_is_game_file(value["avatar"]) # FIXME improve that
 
         def _sorting_key(self, item_pair):
             return item_pair[0] # we sort by email, simply...
@@ -2997,6 +3001,8 @@ class ActionScheduling(BaseDataManager):
 @register_module
 class PersonalFiles(BaseDataManager):
 
+    COMMON_FILES_DIRS = "_common_files_"
+
     def _load_initial_data(self, **kwargs):
         super(PersonalFiles, self)._load_initial_data(**kwargs)
 
@@ -3005,10 +3011,10 @@ class PersonalFiles(BaseDataManager):
         super(PersonalFiles, self)._check_database_coherency(**kwargs)
 
         # common and personal file folders
-        assert os.path.isdir(os.path.join(config.GAME_FILES_ROOT, "personal_files", "_common_files_"))
+        assert os.path.isdir(os.path.join(config.GAME_FILES_ROOT, "personal_files", self.COMMON_FILES_DIRS))
         for name in (self.data["character_properties"].keys() + [self.data["global_parameters"]["master_login"]]):
             assert os.path.isdir(os.path.join(config.GAME_FILES_ROOT, "personal_files", name)), name
-            assert name != "_common_files_" # reserved
+            assert name != self.COMMON_FILES_DIRS # reserved
 
     @readonly_method
     def encrypted_folder_exists(self, folder):
@@ -3073,8 +3079,8 @@ class PersonalFiles(BaseDataManager):
                                                             if filename and os.path.isfile(os.path.join(root_folder, folder, filename))]
             """
 
-        common_folder_path = os.path.join(config.GAME_FILES_ROOT, "personal_files", "_common_files_")
-        common_files = [game_file_url("common_files/" + filename) for filename in
+        common_folder_path = os.path.join(config.GAME_FILES_ROOT, "personal_files", self.COMMON_FILES_DIRS)
+        common_files = [game_file_url("personal_files/" + self.COMMON_FILES_DIRS + "/" + filename) for filename in
                         os.listdir(common_folder_path)
                         if os.path.isfile(os.path.join(common_folder_path, filename))
                            and not filename.startswith(".") and not filename.startswith("~")] # hidden files removed
