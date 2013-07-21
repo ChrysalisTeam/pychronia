@@ -69,7 +69,7 @@ if __debug__ and config.DEBUG and config.ZODB_RESET_ALLOWED:
 
 
 @zodb_transaction
-def create_game_instance(game_instance_id, master_email, master_login, master_password):
+def create_game_instance(game_instance_id, master_real_email, master_login, master_password):
     """
     Returns nothing. Raises ValueError if already existing game id.
     """
@@ -86,7 +86,7 @@ def create_game_instance(game_instance_id, master_email, master_login, master_pa
                              request=None) # no user messages possible here
         assert not dm.is_initialized
         dm.reset_game_data() # TODO here provide all necessary info
-        #dm.update_game_master_info(master_email=master_email,
+        #dm.update_game_master_info(master_real_email=master_real_email,
         #                           master_login=master_login,
         #                           master_password=master_password)
         assert dm.is_initialized

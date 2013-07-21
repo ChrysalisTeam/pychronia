@@ -18,6 +18,7 @@ def view_world_map(request, template_name='information/world_map.html'):
     return render(request,
                   template_name,
                     {
+                     'world_map_image': request.datamanager.get_global_parameter("world_map_image"),
                      'page_title': _("Strategic Map"),
                     })
 

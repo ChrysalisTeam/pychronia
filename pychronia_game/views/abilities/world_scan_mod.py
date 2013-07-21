@@ -82,9 +82,9 @@ class WorldScanAbility(AbstractAbility):
             utilities.check_is_slug(name)
             utilities.check_no_duplicates(scan_set)
             for location in scan_set:
-                assert location in all_locations
+                assert location in all_locations, location
 
-        assert  set(all_artefact_items) < set(settings["item_locations"].keys())  # more might be defined in this ability
+        assert  set(all_artefact_items) <= set(settings["item_locations"].keys()), set(all_artefact_items) - set(settings["item_locations"].keys())  # more might be defined in this ability
         for (item_name, scan_set_name) in settings["item_locations"].items():
             utilities.check_is_slug(item_name)  # in case it's NOT a valid item name, in unstrict mode...
             assert scan_set_name in settings["scanning_sets"].keys()

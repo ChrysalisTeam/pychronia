@@ -32,7 +32,7 @@ if __name__ == "__main__":
         import pychronia_game.models # initializes everything
         from pychronia_game.datamanager.datamanager_administrator import reset_zodb_structure, create_game_instance
         reset_zodb_structure()
-        create_game_instance(game_instance_id="DEMO", master_email="dummy@dummy.fr", master_login="master", master_password="ultimate")
+        create_game_instance(game_instance_id="DEMO", master_real_email="dummy@dummy.fr", master_login="master", master_password="ultimate")
 
 
     elif "reset_django" in arguments:

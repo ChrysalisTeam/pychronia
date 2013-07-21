@@ -25,10 +25,19 @@ ZODB_URL = None
 
 
 
+## FOR INTEGRATION ##
+GAME_FILES_ROOT = "P:\\Chrysalis Depot\\Chrysalis V1\\"
+GAME_INITIAL_DATA_PATH = r"P:\Chrysalis Depot\Chrysalis V1\script_fixtures"
+
+
+
+
+
 def GAME_INITIAL_FIXTURE_SCRIPT(dm):
     """
     Called just before conversion of initial data tree, and coherency check.
     """
+    return # TODO TEMPORARY
     from persistent.list import PersistentList
 
     # we activate ALL views
@@ -44,7 +53,7 @@ def GAME_INITIAL_FIXTURE_SCRIPT(dm):
     # we fill the messages
     email_guy1 = dm.get_character_email("guy1")
     email_guy2 = dm.get_character_email("guy2")
-    email_master = dm.data["global_parameters"]["master_email"]
+    email_master = "judicators@acharis.com"
 
     msg_id1 = dm.post_message(sender_email=email_guy1, recipient_emails=email_guy2, subject="message1", body="hello")
     msg1 = dm.get_dispatched_message_by_id(msg_id1)

@@ -10,6 +10,8 @@ from pychronia_game.datamanager.datamanager_tools import readonly_method, \
 from pychronia_game.forms import OtherCharactersForm
 
 
+BROKEN ATM 
+
 @register_view
 class TelecomInvestigationAbility(AbstractAbility):
 

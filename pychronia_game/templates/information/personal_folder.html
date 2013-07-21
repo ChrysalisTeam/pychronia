@@ -51,11 +51,15 @@
     {% endif %}
 
     <div class="rice_paper_rose center tiny_bullets almost_full_width">
+    {% if not files %}
+        <p>{% trans "No files available" %}</p>
+    {% else %}
     <ul>
         {% for filename, fileurl in files %}
             <li><a href="{{ fileurl }}" onclick="load_media_frame('{{ fileurl|escapejs }}'); return false;">{{ filename }}</a></li>
         {% endfor %}
     </ul>
+    {% endif %}
     </div>
 
 {% usekwacro side_panel_end %}

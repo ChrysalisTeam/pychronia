@@ -46,7 +46,12 @@ THUMBNAIL_ALIASES = { '': {
         'autocrop': True, # remove useless whitespace
         'size': (150, 0), # one of these can be 0
         #'crop': "scale", # True or <smart|scale|W,H>
-    }
+    },
+    'giant_width' : {
+        'autocrop': False, # remove useless whitespace
+        'size': (800, 0), # one of these can be 0
+        #'crop': "scale", # True or <smart|scale|W,H>
+    },
 }}
 
 

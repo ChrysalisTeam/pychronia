@@ -34,7 +34,6 @@ class GameGlobalParameters(BaseDataManager):
         super(GameGlobalParameters, self)._load_initial_data(**kwargs)
 
         game_data = self.data
-        game_data["global_parameters"]["opening_music"] = utilities.complete_game_file_path(game_data["global_parameters"]["opening_music"], "musics")
 
 
     def _check_database_coherency(self, **kwargs):
@@ -42,7 +41,8 @@ class GameGlobalParameters(BaseDataManager):
 
         game_data = self.data
         utilities.check_is_bool(game_data["global_parameters"]["game_is_started"])
-        utilities.check_is_game_file(game_data["global_parameters"]["opening_music"])
+
+        utilities.check_is_game_file(game_data["global_parameters"]["world_map_image"])
 
 
     @readonly_method
@@ -270,6 +270,9 @@ class GameEvents(BaseDataManager): # TODO REFINE
 @register_module
 class NovaltyTracker(BaseDataManager):
     """
+    
+    # Actually depends on CharacterHandling... #
+    
     Tracks the *resources* (references by a unique key) that each authenticated 
     player (and the game master) has, or not, already "accessed".
     
@@ -362,6 +365,11 @@ class CharacterHandling(BaseDataManager): # TODO REFINE
     def _load_initial_data(self, **kwargs):
         super(CharacterHandling, self)._load_initial_data(**kwargs)
 
+        game_data = self.data
+        for (name, character) in game_data["character_properties"].items():
+            if character["avatar"]:
+                character["avatar"] = utilities.complete_game_file_path(character["avatar"], "images", "avatars")
+
 
     def _check_database_coherency(self, **kwargs):
         super(CharacterHandling, self)._check_database_coherency(**kwargs)
@@ -378,15 +386,31 @@ class CharacterHandling(BaseDataManager): # TODO REFINE
             assert name not in reserved_names
             assert "@" not in name # let's not mess with email addresses...
 
-            utilities.check_is_string(character["description"])
-            utilities.check_is_string(character["official_name"])
-            utilities.check_is_string(character["real_life_identity"])
-            utilities.check_is_string(character["real_life_email"])
+            utilities.check_is_bool(character["is_npc"])
+
             utilities.check_is_slug(character["character_color"])
 
-            identities = [char["official_name"].replace(" ", "").lower() for char in
-                          game_data["character_properties"].values()]
-            utilities.check_no_duplicates(identities) # each character stole the identity of someone different, on Pangea
+            if character["avatar"]:
+                utilities.check_is_game_file(character["avatar"])
+
+
+            if character["secret_identity"]:
+                utilities.check_is_string(character["secret_identity"])
+
+            if character["secret_comments"]:
+                utilities.check_is_string(character["secret_comments"])
+
+            utilities.check_is_string(character["official_name"])
+            utilities.check_is_string(character["official_role"])
+
+            ##utilities.check_is_string(character["real_life_identity"])
+            ##utilities.check_is_string(character["real_life_email"])
+
+
+        stolen_identities = [char["official_name"].replace(" ", "").lower() for char in
+                             game_data["character_properties"].values()]
+        utilities.check_no_duplicates(stolen_identities) # each character stole the identity of someone different, on Pangea
+
 
 
     @readonly_method
@@ -494,7 +518,8 @@ class DomainHandling(BaseDataManager): # TODO REFINE
 
         game_data = self.data
         for (name, content) in game_data["domains"].items():
-            content["prologue_music"] = utilities.complete_game_file_path(content["prologue_music"], "musics")
+            if content["national_anthem"]:
+                content["national_anthem"] = utilities.complete_game_file_path(content["national_anthem"], "audio", "musics")
 
     def _check_database_coherency(self, **kwargs):
         super(DomainHandling, self)._check_database_coherency(**kwargs)
@@ -511,12 +536,8 @@ class DomainHandling(BaseDataManager): # TODO REFINE
 
             utilities.check_is_slug(name)
 
-            assert isinstance(content["victory"], basestring) and content["victory"] in game_data["audio_messages"]
-            assert isinstance(content["defeat"], basestring) and content["defeat"] in game_data["audio_messages"]
-
-            assert isinstance(content["prologue_music"], basestring)
-
-            utilities.check_is_game_file(content["prologue_music"])
+            if content["national_anthem"]:
+                utilities.check_is_game_file(content["national_anthem"])
 
 
     @readonly_method
@@ -567,6 +588,8 @@ class PlayerAuthentication(BaseDataManager):
         super(PlayerAuthentication, self)._load_initial_data(**kwargs)
 
         for character in self.get_character_sets().values():
+            character.setdefault("secret_question", None)
+            character.setdefault("secret_answer", None)
             character["secret_answer"] = character["secret_answer"] if not character["secret_answer"] else character["secret_answer"].strip().lower()
 
 
@@ -598,8 +621,7 @@ class PlayerAuthentication(BaseDataManager):
 
         utilities.check_is_slug(global_parameters["master_login"])
         utilities.check_is_slug(global_parameters["master_password"])
-        utilities.check_is_slug(global_parameters["master_email"])
-        utilities.check_is_slug(global_parameters["master_real_life_email"])
+        utilities.check_is_slug(global_parameters["master_real_email"]) # to inform him if troubles
 
 
 
@@ -984,7 +1006,7 @@ class PermissionsHandling(BaseDataManager): # TODO REFINE
 
         game_data = self.data
 
-        """ BROKEN ATM because we use new views in tests
+        """ BROKEN ATM because we use new views in tests # TODO FIXME LATER
 
         # BEWARE - if one day we change installed views, this will break
         for (name, character) in game_data["character_properties"].items():
@@ -1265,7 +1287,7 @@ class FriendshipHandling(BaseDataManager):
         self.data["friendships"]["sealed"].clear()
 
 
-
+"""WEIRD STUFF
 @register_module
 class GameInstructions(BaseDataManager):
 
@@ -1307,7 +1329,7 @@ class GameInstructions(BaseDataManager):
                               global_introduction=global_introduction,
                               team_introduction=team_introduction)
 
-
+"""
 
 
 
@@ -1322,8 +1344,7 @@ class LocationsHandling(BaseDataManager):
 
         game_data = self.data
         for (name, properties) in game_data["locations"].items():
-            properties.setdefault("spy_message", None)
-            properties.setdefault("spy_audio", False)
+            pass # NOTHING ATM
 
 
     def _check_database_coherency(self, **kwargs):
@@ -1335,11 +1356,12 @@ class LocationsHandling(BaseDataManager):
 
             utilities.check_is_slug(name)
 
+            ''' DEPRECATED
             if properties["spy_message"] is not None:
                 utilities.check_is_string(properties["spy_message"])
             if properties["spy_audio"]:
                 utilities.check_is_game_file(os.path.join("spy_reports", "spy_" + name.lower() + ".mp3"))
-
+            '''
 
     @readonly_method
     def get_locations(self):
@@ -1819,7 +1841,7 @@ class TextMessagingExternalContacts(BaseDataManager):
             if value["access_tokens"] is not None: # None means "public"
                 all_usernames = self._inner_datamanager.get_character_usernames()
                 for username in value["access_tokens"]:
-                    assert username in all_usernames # this check could be removed in the future, if other kinds of tokens are used!!
+                    assert username in all_usernames, username # this check could be removed in the future, if other kinds of tokens are used!!
             if value["description"]: # optional
                 utilities.check_is_string(value["description"], multiline=False)
             if value["avatar"]: # optional
@@ -1955,8 +1977,11 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
         game_data = self.data
         messaging = self.messaging_data
 
+        utilities.check_is_game_file(game_data["global_parameters"]["default_contact_avatar"])
+
         for (name, character) in game_data["character_properties"].items():
             character.setdefault("has_new_messages", False)
+            character.setdefault("new_messages_notification", None)
             character.setdefault("external_contacts", []) # just for memory - will be overridden below
 
         pangea_network = game_data["global_parameters"]["pangea_network_domain"]
@@ -2026,9 +2051,9 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
         _check_message_list(messaging["messages_dispatched"])
         _check_message_list(messaging["messages_queued"])
 
-        # new-message audio notification system
+        # new-message audio notification system (characters may have no dedicated notification)
         all_msg_files = [self.data["audio_messages"][properties["new_messages_notification"]]["file"]
-                         for properties in self.data["character_properties"].values()]
+                         for properties in self.data["character_properties"].values() if properties["new_messages_notification"]]
         utilities.check_no_duplicates(all_msg_files) # users must NOT have the same new-message audio notifications
 
         character_emails = self.get_character_emails()
@@ -2343,7 +2368,7 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
             # as well characters as external contacts MUST have these fields in their properties
             results.append(dict(address=email,
                                 avatar=props["avatar"],
-                                description=props["description"]))
+                                description=props["description"] if "description" in props else props["official_role"])) # global contact or character
         return results
 
 
@@ -2592,7 +2617,7 @@ class RadioMessaging(BaseDataManager): # TODO REFINE
                 details.setdefault("immutable", False) # we assume ANY radio spot is optional for the game, and can be edited/delete
                 details.setdefault("file", None) # LOCAL file
                 if details["file"]:
-                    details["file"] = utilities.complete_game_file_path(details["file"], "audio_messages")
+                    details["file"] = utilities.complete_game_file_path(details["file"], "audio", "radio_spots")
                 details.setdefault("url", None) # LOCAL file
 
             audiofiles = [value["file"] for value in self._table.values()]
@@ -2762,7 +2787,7 @@ class Chatroom(BaseDataManager):
         game_data = self.data
 
         for (name, character) in game_data["character_properties"].items():
-            character["last_chatting_time"] = character.get("last_chatting_time", None)
+            character.setdefault("last_chatting_time", None)
 
         game_data.setdefault("chatroom_messages", PersistentList())
 
@@ -2969,8 +2994,6 @@ class ActionScheduling(BaseDataManager):
 
 
 
-
-
 @register_module
 class PersonalFiles(BaseDataManager):
 
@@ -2982,10 +3005,10 @@ class PersonalFiles(BaseDataManager):
         super(PersonalFiles, self)._check_database_coherency(**kwargs)
 
         # common and personal file folders
-        assert os.path.isdir(os.path.join(config.GAME_FILES_ROOT, "common_files"))
+        assert os.path.isdir(os.path.join(config.GAME_FILES_ROOT, "personal_files", "_common_files_"))
         for name in (self.data["character_properties"].keys() + [self.data["global_parameters"]["master_login"]]):
             assert os.path.isdir(os.path.join(config.GAME_FILES_ROOT, "personal_files", name)), name
-
+            assert name != "_common_files_" # reserved
 
     @readonly_method
     def encrypted_folder_exists(self, folder):
@@ -3050,7 +3073,7 @@ class PersonalFiles(BaseDataManager):
                                                             if filename and os.path.isfile(os.path.join(root_folder, folder, filename))]
             """
 
-        common_folder_path = os.path.join(config.GAME_FILES_ROOT, "common_files")
+        common_folder_path = os.path.join(config.GAME_FILES_ROOT, "personal_files", "_common_files_")
         common_files = [game_file_url("common_files/" + filename) for filename in
                         os.listdir(common_folder_path)
                         if os.path.isfile(os.path.join(common_folder_path, filename))
@@ -3112,7 +3135,7 @@ class MoneyItemsOwnership(BaseDataManager):
             if properties["is_gem"] and not properties['owner']: # we dont recount gems appearing in character["gems"]
                 total_gems += [properties['unit_cost']] * properties["num_items"]
 
-            properties['image'] = utilities.complete_game_file_path(properties['image'], "sales")
+            properties['image'] = utilities.complete_game_file_path(properties['image'], "images", "sales")
 
         # We initialize some runtime checking parameters #
         game_data["global_parameters"]["total_digital_money"] = total_digital_money # integer
@@ -3940,7 +3963,7 @@ class NightmareCaptchas(BaseDataManager):
             value.setdefault("image", None)
             value.setdefault("explanation", None)
             if value["image"]:
-                value["image"] = utilities.complete_game_file_path(value["image"], "captchas")
+                value["image"] = utilities.complete_game_file_path(value["image"], "images", "captchas")
 
     def _check_database_coherency(self, strict=False, **kwargs):
         super(NightmareCaptchas, self)._check_database_coherency(**kwargs)

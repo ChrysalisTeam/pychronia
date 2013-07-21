@@ -11,7 +11,7 @@ FEATURES
 - make tooltips slower to appear
 - make rune translator and telecom archive random but CONSTANT (with a seed)
 - add scale to map
-
+- fix item_display's max_height, too small
 
 SCRIPT
 ----------

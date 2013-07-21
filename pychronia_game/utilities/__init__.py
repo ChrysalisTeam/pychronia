@@ -302,8 +302,8 @@ def check_is_datetime(value):
     usage_assert(isinstance(value, datetime), value)
     return True
 
-def check_is_email(email):
-    usage_assert(email_re.match(email))
+def check_is_email(value):
+    usage_assert(email_re.match(value), value)
     return True
 
 def check_is_slug(value):
@@ -357,7 +357,8 @@ def check_is_restructuredtext(value):
 
 def check_is_game_file(*paths_elements):
     assert all(not os.path.isabs(s) for s in paths_elements)
-    usage_assert(os.path.isfile(os.path.join(config.GAME_FILES_ROOT, *paths_elements)))
+    fullpath = os.path.join(config.GAME_FILES_ROOT, *paths_elements)
+    usage_assert(os.path.isfile(fullpath), fullpath)
     return True
 
 def is_email(email):
@@ -426,7 +427,7 @@ def check_dictionary_with_template(my_dict, template, strict=False):
     if strict:
         assert_sets_equal(my_dict.keys(), template.keys())
     else:
-        usage_assert(set(template.keys()) <= set(my_dict.keys()))
+        usage_assert(set(template.keys()) <= set(my_dict.keys()), comment=set(template.keys()) - set(my_dict.keys()))
 
     for key in template.keys():
         validate_value(my_dict[key], template[key])

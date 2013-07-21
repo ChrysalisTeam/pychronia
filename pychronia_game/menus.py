@@ -145,7 +145,7 @@ def _generate_web_menu(request, menu_entry_generator):
                         menu_entry(_(u"Runic Translations"), views.runic_translation),
                         menu_entry(_(u"Network Management"), views.mercenaries_hiring),
                         menu_entry(_(u"Matter Analysis"), views.matter_analysis),
-                        menu_entry(_(u"Telecom Investigation"), views.telecom_investigation),
+                        ##menu_entry(_(u"Telecom Investigation"), views.telecom_investigation),
                         menu_entry(_(u"World Scans"), views.world_scan),
                         menu_entry(_(u"Djinns"), views.artificial_intelligence),
                         menu_entry(_(u"Chess Challenge"), views.chess_challenge),
