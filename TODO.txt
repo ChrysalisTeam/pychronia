@@ -3,15 +3,18 @@ TODO LIST CHRYSALIS
 =========================
 
 
+
 FEATURES
 ------------
 
+- ability to transfer email !!!!!!!
 - handle concurrency retries and errors on ZODB decorators
 - make scripts for ZODB reset in integration (DEBUG=FALSE)
 - make tooltips slower to appear
 - make rune translator and telecom archive random but CONSTANT (with a seed)
 - add scale to map
 - fix item_display's max_height, too small
+
 
 SCRIPT
 ----------
@@ -53,6 +56,7 @@ NEEDS COSMETICS
 TASKS DONE
 ---------------
 
+- rune translation must work WITHOUT owning the object itself, by checking closest match DONE
 - interactive world map DONE
 - drag&drop radio playlist management DONE
 - filling of footer with game info DONE
@@ -131,6 +135,8 @@ TASKS DONE
 FUTUR ENHANCEMENTS
 --------------------------
 
+- rethink and repair telecom archive investigation
+- add to specific index any visualized document for "personal files"
 - setup all select choises with a default empty choice
 - add RST summary to all forms, especially admin ones ??? not need right ATM
 - messaging templates filtering by taxonomy ?

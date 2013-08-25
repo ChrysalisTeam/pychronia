@@ -35,6 +35,7 @@ class GameGlobalParameters(BaseDataManager):
 
         game_data = self.data
 
+        game_data["global_parameters"]["world_map_image"] = os.path.normpath(game_data["global_parameters"]["world_map_image"])
 
     def _check_database_coherency(self, **kwargs):
         super(GameGlobalParameters, self)._check_database_coherency(**kwargs)

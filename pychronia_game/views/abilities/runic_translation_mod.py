@@ -18,14 +18,17 @@ class TranslationForm(AbstractGameForm):
     def __init__(self, ability, *args, **kwargs):
         super(TranslationForm, self).__init__(ability, *args, **kwargs)
 
+        ''' No need to specify object anymore - auto detect!!
+        
         _translatable_items_ids = ability.get_translatable_items().keys()
         _translatable_items_pretty_names = [ability.get_all_items()[item_name]["title"] for item_name in _translatable_items_ids]
         _translatable_items_choices = zip(_translatable_items_ids, _translatable_items_pretty_names)
         _translatable_items_choices.sort(key=lambda double: double[1])
-
         # WARNING - we always put ALL runic items, even before they have been sold at auction - it's OK !
         self.fields["target_item"] = forms.ChoiceField(label=_("Object"), choices=_translatable_items_choices)
-        self.fields["transcription"] = forms.CharField(label=_("Transcription"), widget=forms.Textarea(attrs={'rows': '5', 'cols':'30'}))
+        '''
+
+        self.fields["transcription"] = forms.CharField(label=_("Transcription"), required=True, widget=forms.Textarea(attrs={'rows': '5', 'cols':'30'}))
 
 
 @register_view
@@ -152,10 +155,35 @@ class RunicTranslationAbility(AbstractAbility):
 
         return translated_tokens
 
+
+    def get_closest_item_name(self, decoding_attempt):
+        """
+        Used to determine object which is most likely to carry these runes,
+        for when user doesn't (or can't) explicitly select one (eg. he doesn't 
+        own the object).
+        
+        Returns an item name or None (if no object is translatable).
+        """
+        all_translation_settings = self.get_ability_parameter("references")
+
+        if not all_translation_settings:
+            return None
+
+        results = dict((utilities.string_similarity(decoding_attempt, translation_settings["decoding"]), item_name)
+                        for item_name, translation_settings in all_translation_settings.items())
+
+        best_score = min(results.keys())
+
+        return results[best_score] # positive integer, 0 <=> equality of compared strings
+
+
     @readonly_method
     def _translate_rune_message(self, item_name, rune_transcription):
 
-        if item_name not in self.get_ability_parameter("references").keys():
+        if not item_name:
+            item_name = self.get_closest_item_name(decoding_attempt=rune_transcription) # will always return non-None, unless no objects are translatable
+
+        if not item_name or item_name not in self.get_ability_parameter("references").keys():
             translator = {}  # we let random words translation deal with that
         else:
             translation_settings = self.get_ability_parameter("references")[item_name]
@@ -167,25 +195,17 @@ class RunicTranslationAbility(AbstractAbility):
 
         return " ".join(translated_tokens)
 
-    @transaction_watcher
-    def process_translation(self, target_item, transcription):
-
-        self._process_translation_submission(target_item,
-                                              transcription)
-
-        return _("Runic transcription successfully submitted, the result will be emailed to you.")  # TODO REMOVE THIS
-
 
     @transaction_watcher
-    def _process_translation_submission(self, item_name, rune_transcription):  # TODO remove username !!
-
+    def _process_translation_submission(self, item_name, rune_transcription):
+        assert rune_transcription # item_name can be None
 
         local_email = self.get_character_email()
         remote_email = self.dedicated_email
 
         # request email, to allow interception
 
-        subject = _('Translation Submission for item "%s"') % item_name
+        subject = _('Translation Submission for item %s') % (item_name if item_name else _("unknown"))
         body = _("Runes: ") + rune_transcription
         self.post_message(local_email, remote_email, subject, body, date_or_delay_mn=0, is_read=True)
 
@@ -194,8 +214,11 @@ class RunicTranslationAbility(AbstractAbility):
 
         translation_delay = self.get_ability_parameter("result_delay")
 
-        item_title = self.get_item_properties(item_name)["title"]
-        translation = self._translate_rune_message(item_name, rune_transcription)
+        try:
+            item_title = self.get_item_properties(item_name)["title"]
+        except UsageError:
+            item_title = _("unknown object")
+        translation = self._translate_rune_message(item_name=item_name, rune_transcription=rune_transcription)
 
 
         subject = "<Rune Translation Result - %(item)s>" % SDICT(item=item_title)
@@ -220,6 +243,17 @@ class RunicTranslationAbility(AbstractAbility):
 
         return msg_id  # id of the automated response
 
+
+    @transaction_watcher
+    def process_translation(self, target_item=None, transcription=None):
+        """
+        Parameter target_item may be None (auto detection).
+        """
+        assert transcription
+        self._process_translation_submission(target_item,
+                                              transcription)
+
+        return _("Runic transcription successfully submitted, the result will be emailed to you.")  # TODO REMOVE THIS
 
 
     @classmethod

@@ -68,6 +68,14 @@ abilities:
                         on a precious | divine tear #
                         will immediately endure | a dreadful death
 
+                statue:
+                    decoding: >
+                        di sa to | ta ka su
+                    translation: >
+                        hi there | how are you
+
+
+
     mercenaries_hiring:
         settings:
             mercenary_cost_money: 100

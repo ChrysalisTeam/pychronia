@@ -4281,8 +4281,17 @@ class TestSpecialAbilities(BaseGameTestCase):
         translation_result = runic_translation._translate_rune_message(rune_item, transcription_attempt)
         self.assertEqual(translation_result, expected_result)
 
+        translation_result = runic_translation._translate_rune_message(item_name=None, rune_transcription=transcription_attempt)
+        self.assertEqual(translation_result, expected_result) # auto detection of item as sacred chest
+
+        translation_result = runic_translation._translate_rune_message(item_name=None, rune_transcription=transcription_attempt)
+        self.assertNotEqual("su se", "the miscreant") # auto detection of item as sacred chest
+
+        assert runic_translation.get_closest_item_name("sa to | ta ka") == "statue" # not always sacred_chest, as we check
+
         self._set_user("guy1")
-        runic_translation._process_translation_submission(rune_item, transcription_attempt)
+        runic_translation.process_translation(random.choice((rune_item, None)), # auto detect is available at top level
+                                              transcription_attempt)
 
         msgs = self.dm.get_all_queued_messages()
         self.assertEqual(len(msgs), 1)
