@@ -55,11 +55,13 @@
         </td>
         </tr>
 
+        {% if not ctx.template_id %}
         <tr>
         <td><strong>Date:</strong></td>
         <td>{{ message.sent_at|utctolocal|date:"SHORT_DATETIME_FORMAT" }}</td>
             {%comment %} IF NEEDED {% load humanize %}{{ message.sent_at|utctolocal|naturalday:"d/N/Y" }}{% endcomment %}
         </tr>
+        {% endif %}
 
     </table>
 

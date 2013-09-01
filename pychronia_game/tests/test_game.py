@@ -1718,7 +1718,7 @@ class TestDatamanager(BaseGameTestCase):
         self.dm.get_user_related_messages(self.dm.master_login)[0]["has_read"] = utilities.PersistentList(
             self.dm.get_character_usernames() + [self.dm.get_global_parameter("master_login")]) # we hack this message not to break following assertions
 
-        self.dm.post_message(**record1)
+        id_msg_back = self.dm.post_message(**record1)
         time.sleep(0.2)
 
         self.dm.set_wiretapping_targets("guy4", ["guy4"]) # stupid but possible, and harmless actually
@@ -1729,7 +1729,7 @@ class TestDatamanager(BaseGameTestCase):
         self.dm.set_wiretapping_targets("guy3", ["guy1"]) # USELESS wiretapping, thanks to SSL/TLS
         self.dm.set_confidentiality_protection_status("guy3", True)
 
-        self.dm.post_message(**record2)
+        self.dm.post_message(transferred_mdg=id_msg_back, **record2)
         time.sleep(0.2)
         self.dm.post_message(**record3)
         time.sleep(0.2)
@@ -2059,7 +2059,8 @@ class TestDatamanager(BaseGameTestCase):
         # print datetime.utcnow(), " << ", queued_msgs[0]["sent_at"]
         self.assertTrue(datetime.utcnow() < queued_msgs[0]["sent_at"] < datetime.utcnow() + timedelta(minutes=0.22))
 
-        self.dm.post_message(email("guy3"), email("guy2"), "yowh2", "qhsdhqsdh", attachment=None, date_or_delay_mn=(0.04 / WANTED_FACTOR, 0.05 / WANTED_FACTOR)) # 3s delay range
+        self.dm.post_message(email("guy3"), email("guy2"), "yowh2", "qhsdhqsdh", attachment="/my/dummy/url", transferred_msg=queued_msgs[0]["id"],
+                             date_or_delay_mn=(0.04 / WANTED_FACTOR, 0.05 / WANTED_FACTOR)) # 3s delay range
         self.assertEqual(len(self.dm.get_all_dispatched_messages()), 0)
         queued_msgs = self.dm.get_all_queued_messages()
         self.assertEqual(len(queued_msgs), 2)
