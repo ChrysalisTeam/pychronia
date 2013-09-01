@@ -24,12 +24,12 @@ ZODB_FILE = os.path.join(_curdir, "gamedata.fs")
 ZODB_URL = None
 
 
-
+'''
 ## FOR INTEGRATION ##
 GAME_FILES_ROOT = "P:\\Chrysalis Depot\\Chrysalis V1\\"
 GAME_INITIAL_DATA_PATH = r"P:\Chrysalis Depot\Chrysalis V1\script_fixtures"
 
-
+'''
 
 
 

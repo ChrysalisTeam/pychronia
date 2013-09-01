@@ -45,6 +45,8 @@ class GameGlobalParameters(BaseDataManager):
 
         utilities.check_is_game_file(game_data["global_parameters"]["world_map_image"])
 
+        utilities.check_is_string("game_random_seed", multiline=False)
+
 
     @readonly_method
     def get_global_parameters(self):

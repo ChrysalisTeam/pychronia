@@ -10,8 +10,8 @@ FEATURES
 - ability to transfer email !!!!!!!
 - handle concurrency retries and errors on ZODB decorators
 - make scripts for ZODB reset in integration (DEBUG=FALSE)
-- make tooltips slower to appear
-- make rune translator and telecom archive random but CONSTANT (with a seed)
+
+
 - add scale to map
 - fix item_display's max_height, too small
 
@@ -56,6 +56,8 @@ NEEDS COSMETICS
 TASKS DONE
 ---------------
 
+- make rune translator CONSTANT (with a seed)
+- make tooltips slower to appear DONE
 - rune translation must work WITHOUT owning the object itself, by checking closest match DONE
 - interactive world map DONE
 - drag&drop radio playlist management DONE

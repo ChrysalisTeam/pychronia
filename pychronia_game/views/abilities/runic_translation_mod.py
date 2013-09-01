@@ -110,10 +110,16 @@ class RunicTranslationAbility(AbstractAbility):
         return translator
 
     @classmethod
-    def _try_translating_runes(cls, decoded_rune_string, translator, random_words):
-        # returns an array of guessed word groups
+    def _try_translating_runes(cls, decoded_rune_string, translator, random_words, random_seed=None):
+        """
+        Returns an array of guessed word groups.
+        
+        Parameter random_seed, if not None, is used to initialize the random generator.
+        """
 
         assert len(random_words) >= 5, random_words
+
+        my_random = random.Random(x=random_seed)
 
         # we remove characters that could interfere with the parsing
         punctuation_chars = list(".,?!;:|#")
@@ -151,7 +157,7 @@ class RunicTranslationAbility(AbstractAbility):
             if translator.has_key(token):
                 translated_tokens.append(translator[token])
             else:
-                translated_tokens.append(random.choice(random_words))
+                translated_tokens.append(my_random.choice(random_words))
 
         return translated_tokens
 
@@ -191,7 +197,8 @@ class RunicTranslationAbility(AbstractAbility):
                                                             translation_settings["translation"])
 
         random_words = self.get_ability_parameter("random_translation_words").split()
-        translated_tokens = self._try_translating_runes(rune_transcription, translator=translator, random_words=random_words)
+        translated_tokens = self._try_translating_runes(rune_transcription, translator=translator,
+                                                        random_words=random_words, random_seed=self.get_global_parameter("game_random_seed"))
 
         return " ".join(translated_tokens)
 

@@ -4264,12 +4264,23 @@ class TestSpecialAbilities(BaseGameTestCase):
         translator = {"na hu": "welcome",
                       "yo la tsu": "people"}
         random_words = "hoy ma mi mo mu me".split()
-        translated_tokens = runic_translation._try_translating_runes(decoded_rune_string, translator=translator, random_words=random_words)
+        translated_tokens = runic_translation._try_translating_runes(decoded_rune_string, translator=translator,
+                                                                     random_words=random_words, random_seed="hhh")
 
         self.assertEqual(len(translated_tokens), 4, translated_tokens)
         self.assertEqual(translated_tokens[0:2], ["welcome", "people"])
         for translated_token in translated_tokens[2:4]:
             self.assertTrue(translated_token in random_words)
+
+
+        translated_tokens_bis = runic_translation._try_translating_runes(decoded_rune_string, translator=translator,
+                                                                         random_words=random_words, random_seed="hhh")
+        assert translated_tokens_bis == translated_tokens # random generator is initialized with same seed!
+
+        translated_tokens_ter = runic_translation._try_translating_runes(decoded_rune_string, translator=translator,
+                                                                         random_words=random_words, random_seed="dfsdfsdf")
+        assert translated_tokens_ter != translated_tokens # random generator is initialized with different seed!
+
 
         # temporary solution to deal with currently untranslated runes... #FIXME
         available_translations = [(item_name, settings) for (item_name, settings) in runic_translation.get_ability_parameter("references").items()

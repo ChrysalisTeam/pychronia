@@ -119,6 +119,8 @@ global_parameters:
 
     game_is_started: True # used to forbid access to some features before the party itself
 
+    game_random_seed: "ahAUGAaguTAkOSy28686" # used to init random generators
+
     game_theoretical_length_days: 45.3
 
     pangea_network_domain: pangea.com
