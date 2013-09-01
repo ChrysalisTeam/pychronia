@@ -122,7 +122,6 @@ MIDDLEWARE_CLASSES = (
 
 
 
-
 # to be extended in specific settings #
 INSTALLED_APPS = [
     'pychronia_common', # common templates, tags, static files etc. BEFORE OTHER APPS for overrides!

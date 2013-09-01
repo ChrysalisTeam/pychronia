@@ -33,6 +33,11 @@ class MessageComposeForm(AbstractGameForm):
     attachment = Select2TagsField(label=_lazy("Attachment"), required=False)
 
 
+    transferred_msg = forms.CharField(required=False, widget=forms.HiddenInput())
+
+    parent_id = forms.CharField(required=False, widget=forms.HiddenInput())
+
+
 
     def __init__(self, request, *args, **kwargs):
         super(MessageComposeForm, self).__init__(request.datamanager, *args, **kwargs)
@@ -45,47 +50,18 @@ class MessageComposeForm(AbstractGameForm):
         subject = url_data.get("subject")
         body = url_data.get("body")
         attachment = url_data.get("attachment")
+        transferred_msg = url_data.get("transferred_msg", "")
+        parent_id = url_data.get("parent_id", "")
 
         datamanager = request.datamanager
         user = request.datamanager.user
 
         # TODO - extract these decisions tables to a separate method and test it thoroughly #
 
-        parent_id = url_data.get("parent_id", "")
-        if parent_id:
-            # we transfer data from the parent email, to help user save time #
-            try:
-                tpl = msg = request.datamanager.get_dispatched_message_by_id(parent_id)
-            except UsageError:
-                user.add_error(_("Parent message %s not found") % parent_id)
-            else:
 
-                visibility_reason = msg["visible_by"].get(user.username, None)
-
-                if visibility_reason == VISIBILITY_REASONS.sender: # we simply recontact recipients (even if we were one of the recipients too)
-                    sender = msg["sender_email"] # for master
-                    recipients = msg["recipient_emails"]
-                    subject = _("Bis: ") + msg["subject"]
-                    attachment = None # don't resend it
-
-                elif visibility_reason == VISIBILITY_REASONS.recipient: # we reply a message
-                    sender = msg["recipient_emails"][0] if len(msg["recipient_emails"]) == 1 else None # let the sender empty even for master, if we're not sure which recipient we represent
-                    recipients = [msg["sender_email"]]
-                    my_email = datamanager.get_character_email() if user.is_character else None
-                    recipients += [_email for _email in msg["recipient_emails"] if _email != my_email and _email != sender]  # works OK if my_email is None (i.e game master) or sender is None
-                    subject = _("Re: ") + msg["subject"]
-                    attachment = msg["attachment"]
-
-                else: # visibility reason is None, or another visibility case (eg. interception)
-                    self.logger.warning("Access to forbidden message parent_id %s was attempted", parent_id)
-                    user.add_error(_("Access to initial message forbidden."))
-                    parent_id = None
-        self.fields["parent_id"] = forms.CharField(required=False, initial=parent_id, widget=forms.HiddenInput())
-
-
-        use_template = url_data.get("use_template", "")
         if user.is_master: # only master has templates ATM
 
+            use_template = url_data.get("use_template", "")
             if use_template:
 
                 # non-empty template fields override parent message fields #
@@ -100,7 +76,47 @@ class MessageComposeForm(AbstractGameForm):
                     subject = tpl["subject"] or subject
                     body = tpl["body"] or body
                     attachment = tpl["attachment"] or attachment
-        self.fields["use_template"] = forms.CharField(required=False, initial=use_template, widget=forms.HiddenInput())
+                    transferred_msg = tpl["transferred_msg"] or transferred_msg
+                    parent_id = tpl["parent_id"] or parent_id
+                self.fields["use_template"] = forms.CharField(required=False, initial=use_template, widget=forms.HiddenInput())
+
+
+        if parent_id:
+            # we transfer data from the parent email, to help user save time #
+            try:
+                tpl = msg = request.datamanager.get_dispatched_message_by_id(parent_id)
+            except UsageError:
+                user.add_error(_("Parent message %s not found") % parent_id)
+            else:
+
+                visibility_reason = msg["visible_by"].get(user.username, None)
+
+                if visibility_reason == VISIBILITY_REASONS.sender: # we simply recontact recipients (even if we were one of the recipients too)
+                    sender = msg["sender_email"] # for master
+                    recipients = msg["recipient_emails"]
+                    subject = _("Bis: ") + msg["subject"]
+                    # don't resend attachment! #
+
+                elif visibility_reason == VISIBILITY_REASONS.recipient: # we reply to a message
+                    sender = msg["recipient_emails"][0] if len(msg["recipient_emails"]) == 1 else None # let the sender empty even for master, if we're not sure which recipient we represent
+                    recipients = [msg["sender_email"]]
+                    my_email = datamanager.get_character_email() if user.is_character else None
+                    recipients += [_email for _email in msg["recipient_emails"] if _email != my_email and _email != sender]  # works OK if my_email is None (i.e game master) or sender is None
+                    subject = _("Re: ") + msg["subject"]
+                    attachment = msg["attachment"]
+
+                else: # visibility reason is None, or another visibility case (eg. interception)
+                    self.logger.warning("Access to forbidden message parent_id %s was attempted", parent_id)
+                    user.add_error(_("Access to initial message forbidden."))
+                    parent_id = None
+
+
+        if transferred_msg:
+            try:
+                datamanager.get_dispatched_message_by_id(transferred_msg)
+            except UsageError:
+                datamanager.logger.warning("Unknown transferred_msg id %r encountered in url", transferred_msg)
+                transferred_msg = ""
 
 
         # we build dynamic fields from the data we gathered #
@@ -133,21 +149,31 @@ class MessageComposeForm(AbstractGameForm):
         self.fields["attachment"].choice_tags = datamanager.get_personal_files(absolute_urls=False)
         self.fields["attachment"].max_selection_size = 1
 
+        self.fields["parent_id"].initial = parent_id
+        self.fields["transferred_msg"].initial = transferred_msg
+
+
     def clean_sender(self):
         # called only for master
         data = self.cleaned_data['sender']
         return data[0] # MUST exist if we're here
+
 
     def clean_attachment(self):
         data = self.cleaned_data['attachment']
         return data[0] if data else None # MUST exist if we're here
 
 
-
-
-
-
-
+    def clean_transferred_msg(self):
+        transferred_msg = self.cleaned_data['transferred_msg']
+        if transferred_msg:
+            try:
+                self._datamanager.get_dispatched_message_by_id(msg_id=transferred_msg)
+            except UsageError:
+                # really abnormal, since __init__ should have filtered out that hidden fields value at the beginning of process
+                self._datamanager.logger.critical("Unknown transferred_msg id %r encountered in post data", transferred_msg)
+                transferred_msg = None
+        return transferred_msg or None
 
 
 
@@ -162,6 +188,7 @@ def _determine_template_display_context(datamanager, template_id):
                 has_read=None, # no buttons at all for that
                 visibility_reason=None,
                 was_intercepted=False,
+                can_transfer=False,
                 can_reply=False,
                 can_recontact=False,
                 can_force_sending=False,
@@ -187,6 +214,7 @@ def _determine_message_display_context(datamanager, msg, is_pending):
                 can_recontact=(visibility_reason == VISIBILITY_REASONS.sender) if not is_pending else None,
                 can_force_sending=is_pending,
                 can_permanently_delete=datamanager.is_master(),
+                can_transfer=True if not is_pending else None,
                 )
 
 def _determine_message_list_display_context(datamanager, messages, is_pending):
@@ -315,12 +343,15 @@ def compose_message(request, template_name='messaging/compose.html'):
                 subject = form.cleaned_data["subject"]
                 body = form.cleaned_data["body"]
                 attachment = form.cleaned_data["attachment"]
+                transferred_msg = form.cleaned_data["transferred_msg"]
 
                 parent_id = form.cleaned_data.get("parent_id", None)
                 use_template = form.cleaned_data.get("use_template", None)
 
                 # sender_email and one of the recipient_emails can be the same email, we don't care !
-                request.datamanager.post_message(sender_email, recipient_emails, subject, body, attachment, date_or_delay_mn=delay_mn,
+                request.datamanager.post_message(sender_email, recipient_emails, subject, body,
+                                                 attachment=attachment, transferred_msg=transferred_msg,
+                                                 date_or_delay_mn=delay_mn,
                                                  parent_id=parent_id, use_template=use_template)
                 message_sent = True
                 form = MessageComposeForm(request)  # new empty form
@@ -399,7 +430,9 @@ def ___outbox(request, template_name='messaging/messages.html'):
 @register_view(access=UserAccess.master, title=_lazy("View Single Message"))
 def view_single_message(request, msg_id, template_name='messaging/view_single_message.html'):
     """
-    Meant to be used only in event logging.
+    Meant to be used in event logging or for message transfer.
+    
+    On purpose, NO AUTHORIZATION CHECK is done here (msg_ids are random enough).
     """
     user = request.datamanager.user
     message = None
@@ -419,7 +452,7 @@ def view_single_message(request, msg_id, template_name='messaging/view_single_me
             is_queued = True
         else:
             user.add_error(_("The requested message doesn't exist."))
-    
+
     if message:
         ctx = _determine_message_display_context(request.datamanager, message, is_pending=is_queued)
 

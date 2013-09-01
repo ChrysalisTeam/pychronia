@@ -7,10 +7,13 @@ from pychronia_common.common_settings import *
 TEMPLATE_CONTEXT_PROCESSORS = TEMPLATE_CONTEXT_PROCESSORS + ("pychronia_game.context_processors.pychronia_template_context",)
 
 
+_old_middlewares = list(MIDDLEWARE_CLASSES)
+_old_middlewares.remove("debug_toolbar.middleware.DebugToolbarMiddleware") # we push it to the end of list
+
 # beware of ordering here
 # no need for CSRF in pychronia_game, data is not sensitive
 MIDDLEWARE_CLASSES = (('pychronia_game.middlewares.MobileHostMiddleware',) +
-                     MIDDLEWARE_CLASSES +
+                     tuple(_old_middlewares) +
                      ('pychronia_game.middlewares.ZodbTransactionMiddleware',
                      'pychronia_game.middlewares.AuthenticationMiddleware',
                      'pychronia_game.middlewares.PeriodicProcessingMiddleware',

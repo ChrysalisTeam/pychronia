@@ -1455,6 +1455,8 @@ class TextMessagingCore(BaseDataManager):
             if msg["attachment"]:
                 msg["attachment"] = utilities.complete_game_file_url(msg["attachment"])
 
+            msg["transferred_msg"] = msg.get("transferred_msg", None)
+
             msg["is_certified"] = msg.get("is_certified", False)
 
             if isinstance(msg["sent_at"], (long, int)): # offset in minutes
@@ -1470,6 +1472,8 @@ class TextMessagingCore(BaseDataManager):
         messaging["messages_queued"].sort(key=lambda msg: msg["sent_at"])
 
 
+
+
     def _check_database_coherency(self, strict=False, **kwargs):
         super(TextMessagingCore, self)._check_database_coherency(strict=strict, **kwargs)
 
@@ -1481,7 +1485,8 @@ class TextMessagingCore(BaseDataManager):
 
                              "subject": basestring,
                              "body": basestring,
-                             "attachment": (types.NoneType, basestring), # None or string
+                             "attachment": (types.NoneType, basestring), # a plainly functional URL, a personal document mostly
+                             "transferred_msg": (types.NoneType, basestring), # text message id
 
                              "sent_at": datetime,
                              "is_certified": bool, # for messages sent via automated processes
@@ -1505,6 +1510,12 @@ class TextMessagingCore(BaseDataManager):
                 utilities.check_is_email(msg["sender_email"])
                 for recipient in msg["recipient_emails"]:
                     utilities.check_is_email(recipient)
+
+                if msg["attachment"]:
+                    assert msg["attachment"].startswith("/") or msg["attachment"].startswith("http")
+
+                if msg["transferred_msg"]:
+                    assert self.get_dispatched_message_by_id(msg_id=msg["transferred_msg"])
 
             all_ids = [msg["id"] for msg in msg_list]
             utilities.check_no_duplicates(all_ids)
@@ -1557,7 +1568,8 @@ class TextMessagingCore(BaseDataManager):
         return msg["id"]
 
 
-    def _build_new_message(self, sender_email, recipient_emails, subject, body, attachment=None,
+    def _build_new_message(self, sender_email, recipient_emails, subject, body,
+                           attachment=None, transferred_msg=None,
                            date_or_delay_mn=None, is_read=False, is_certified=False,
                            parent_id=None, **kwargs):
         """
@@ -1601,11 +1613,12 @@ class TextMessagingCore(BaseDataManager):
                               "recipient_emails": recipient_emails,
                               "subject": subject,
                               "body": body,
-                              "attachment": attachment, # None or string
+                              "attachment": attachment, # None or string, a valid URL
+                              "transferred_msg": transferred_msg, # msg id or None
                               "sent_at": sent_at,
                               "is_certified": is_certified,
                               "id": new_id,
-                              "group_id": group_id if group_id else new_id,
+                              "group_id": group_id if group_id else new_id, # msg might start a new conversation
                               })
         return msg
 
@@ -1928,24 +1941,32 @@ class TextMessagingTemplates(BaseDataManager):
 
         def _complete_messages_templates(msg_list):
 
-            for msg in msg_list.values():
+            for msg in msg_list:
 
                 msg["sender_email"], msg["recipient_emails"] = self._normalize_message_addresses(msg.get("sender_email", ""), msg.get("recipient_emails", []))
 
                 msg["subject"] = msg.get("subject", "")
                 msg["body"] = msg.get("body", "")
                 msg["attachment"] = msg.get("attachment", None)
+                msg["transferred_msg"] = msg.get("transferred_msg", None)
                 msg["is_used"] = msg.get("is_used", False)
+                msg["parent_id"] = msg.get("parent_id", None)
 
         # complete_messages_templates(game_data["automated_messages_templates"], is_manual=False)
-        _complete_messages_templates(messaging["manual_messages_templates"])
+        _complete_messages_templates(messaging["manual_messages_templates"].values())
 
 
-    def _check_database_coherency(self, **kwargs):
+    def _check_database_coherency(self, strict=False, **kwargs):
         super(TextMessagingTemplates, self)._check_database_coherency(**kwargs)
 
         messaging = self.messaging_data
-        # FIXME - check templates here
+
+        template_fields = "sender_email recipient_emails subject body attachment transferred_msg is_used parent_id".split()
+
+        for tpl in messaging["manual_messages_templates"].values():
+            utilities.check_has_keys(tpl, keys=template_fields, strict=strict)
+
+        # FIXME - check templates more here #
 
 
     def _build_new_message(self, *args, **kwargs):

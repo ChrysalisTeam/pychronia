@@ -23,6 +23,10 @@
                 <a href="{% game_view_url "pychronia_game.views.compose_message" %}?parent_id={{ message.id|urlencode }}">{% if ctx.can_reply %}{% trans "Reply" %}{% else %}{% trans "Recontact" %}{% endif %}</a>
             {% endif %}
 
+            {% if ctx.can_transfer %}
+                <a href="{% game_view_url "pychronia_game.views.compose_message" %}?transferred_msg={{ message.id|urlencode }}">{% trans "Transfer" %}</a>
+            {% endif %}
+
             {% if ctx.template_id %}
                 <a href="{% game_view_url "pychronia_game.views.compose_message" %}?use_template={{ ctx.template_id|urlencode }}">{% trans "Use template" %}</a>
             {% endif %}
@@ -73,6 +77,11 @@
         {% rich_text message.body %}
     </div>
 
+    {% if message.transferred_msg %}
+        <a target="_blank" href="{% game_view_url "pychronia_game.views.view_single_message" msg_id=message.transferred_msg %}">
+            {% trans "MESSAGE TRANSFERRED: click to view." %}
+        </a>
+    {% endif %}
 
     {% if message.attachment %}
     <hr/>
@@ -81,5 +90,8 @@
         {{ message.attachment|mediaplayer:"false" }} {# ALREADY A COMPLETE URL #}
     </div>
     {% endif %}
+
+
+
 
 </div>
