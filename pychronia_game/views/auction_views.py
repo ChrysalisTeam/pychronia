@@ -320,10 +320,11 @@ def ajax_chat(request):
         threshold = request.datamanager.get_global_parameter("chatroom_timestamp_display_threshold_s")
         chatroom_timestamp_display_threshold = timedelta(seconds=threshold)
         text_lines = []
+        usernames = request.datamanager.get_character_usernames()
         for msg in new_messages:
             if not previous_msg_timestamp or (msg["time"] - previous_msg_timestamp) > chatroom_timestamp_display_threshold:
                 text_lines.append(msg["time"].strftime(time_format))
-            if msg["username"] in request.datamanager.get_character_usernames():
+            if msg["username"] in usernames:
                 official_name = request.datamanager.get_official_name(msg["username"])
                 color = request.datamanager.get_character_color_or_none(msg["username"])
             else:  # system message

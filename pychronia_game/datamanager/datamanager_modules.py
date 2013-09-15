@@ -435,7 +435,11 @@ class CharacterHandling(BaseDataManager): # TODO REFINE
 
     @readonly_method
     def get_character_usernames(self, exclude_current=False):
-        res = sorted(self.data["character_properties"].keys())
+        """
+        We sort "plays first, NPC second".
+        """
+        items = sorted(((k, v) for (k, v) in self.data["character_properties"].items()), key=lambda x: (x[1]["is_npc"], x[0]))
+        res = [item[0] for item in items]
         if exclude_current and self.user.username in res:
             res.remove(self.user.username)
         return res
