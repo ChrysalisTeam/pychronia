@@ -259,7 +259,7 @@ character_properties:
         gems: [[12, null], [200, "several_misc_gems"]]
         avatar: "guy1.png"
         secret_identity: "SHA1"
-        secret_comments: "This is guy1"
+        gamemaster_hints: "This is guy1"
         is_npc: False
 
     guy2:
@@ -277,7 +277,7 @@ character_properties:
         character_color : "#339933"
         avatar: null
         secret_identity: null
-        secret_comments: "This is guy2"
+        gamemaster_hints: "This is guy2"
         is_npc: False
 
     guy3:
@@ -297,7 +297,7 @@ character_properties:
         gems: []
         avatar: null
         secret_identity: null
-        secret_comments: "This is guy3"
+        gamemaster_hints: "This is guy3"
         is_npc: False
 
     guy4:
@@ -316,7 +316,7 @@ character_properties:
         gems: []
         avatar: null
         secret_identity: null
-        secret_comments: "This is guy4"
+        gamemaster_hints: "This is guy4"
         is_npc: True
 
 

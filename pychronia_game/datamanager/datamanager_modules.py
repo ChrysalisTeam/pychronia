@@ -363,7 +363,7 @@ class NovaltyTracker(BaseDataManager):
 @register_module
 class CharacterHandling(BaseDataManager): # TODO REFINE
 
-    CHARACTER_REAL_LIFE_ATTRIBUTES = ["real_life_identity", "real_life_email"] # TODO??
+    CHARACTER_REAL_LIFE_ATTRIBUTES = ["real_life_identity", "real_life_email"] # OPTIONAL DATA
 
     def _load_initial_data(self, **kwargs):
         super(CharacterHandling, self)._load_initial_data(**kwargs)
@@ -372,7 +372,8 @@ class CharacterHandling(BaseDataManager): # TODO REFINE
         for (name, character) in game_data["character_properties"].items():
             if character["avatar"]:
                 character["avatar"] = utilities.complete_game_file_path(character["avatar"], "images", "avatars")
-
+            character.setdefault("real_life_identity", None)
+            character.setdefault("real_life_email", None)
 
     def _check_database_coherency(self, **kwargs):
         super(CharacterHandling, self)._check_database_coherency(**kwargs)
@@ -400,14 +401,16 @@ class CharacterHandling(BaseDataManager): # TODO REFINE
             if character["secret_identity"]:
                 utilities.check_is_string(character["secret_identity"])
 
-            if character["secret_comments"]:
-                utilities.check_is_string(character["secret_comments"])
+            if character["gamemaster_hints"]:
+                utilities.check_is_string(character["gamemaster_hints"])
 
             utilities.check_is_string(character["official_name"])
             utilities.check_is_string(character["official_role"])
 
-            ##utilities.check_is_string(character["real_life_identity"])
-            ##utilities.check_is_string(character["real_life_email"])
+            if character["real_life_identity"]: # OPTIONAL
+                utilities.check_is_string(character["real_life_identity"])
+            if character["real_life_email"]: # OPTIONAL
+                utilities.check_is_email(character["real_life_email"])
 
 
         stolen_identities = [char["official_name"].replace(" ", "").lower() for char in
@@ -495,7 +498,7 @@ class CharacterHandling(BaseDataManager): # TODO REFINE
         return character_choices
 
     @transaction_watcher
-    def update_real_life_data(self, username=CURRENT_USER, real_life_identity=None, real_life_email=None):
+    def update_real_life_data(self, username=CURRENT_USER, real_life_email=None, real_life_identity=None):
         username = self._resolve_username(username)
         data = self.get_character_properties(username)
 

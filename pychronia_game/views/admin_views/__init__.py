@@ -91,8 +91,8 @@ def manage_characters(request, template_name='administration/character_managemen
             target_username = form.cleaned_data["target_username"]
             allegiances = form.cleaned_data["allegiances"]
             permissions = form.cleaned_data["permissions"]
-            real_life_identity = form.cleaned_data["real_life_identity"]
-            real_life_email = form.cleaned_data["real_life_email"]
+            real_life_identity = form.cleaned_data["real_life_identity"].strip() or None
+            real_life_email = form.cleaned_data["real_life_email"].strip() or None
 
             with action_failure_handler(request, _("Character %s successfully updated.") % target_username):
                 request.datamanager.update_allegiances(username=target_username,

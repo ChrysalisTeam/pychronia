@@ -76,13 +76,13 @@ class CharactersView(AbstractGameView):
                                                          previous_form_data=previous_form_data)
 
 
-        # we display the list of available character accounts
+        # we display the list of available PLAYER accounts
 
-        characters = self.datamanager.get_character_sets().items()
+        characters = [(k, v) for (k, v) in self.datamanager.get_character_sets().items() if not v["is_npc"]]
 
-        sorted_characters = sorted(characters, key=lambda (key, value): key)  # sort by character username
+        sorted_characters = sorted(characters, key=lambda (key, value): key)  # sort by type and then login
         character_item_details = {username: self.datamanager.get_available_items_for_user(username=username).values()
-                                for username, user_details in sorted_characters}
+                                  for username, user_details in sorted_characters}
 
         return {
                  'page_title': _("Account Management"),
