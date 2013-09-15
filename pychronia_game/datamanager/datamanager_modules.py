@@ -3136,7 +3136,9 @@ class MoneyItemsOwnership(BaseDataManager):
 
     def _compute_gems_unit_cost(self, total_cost, num_gems):
         return int(math.ceil(float(total_cost / num_gems)))
-
+    def _compute_gems_total_price(self, unit_cost, num_gems):
+        return unit_cost * num_gems # simpler
+    
     def _load_initial_data(self, **kwargs):
         super(MoneyItemsOwnership, self)._load_initial_data(**kwargs)
 
@@ -3205,6 +3207,8 @@ class MoneyItemsOwnership(BaseDataManager):
             assert utilities.check_is_positive_int(properties['num_items'])
             assert utilities.check_is_positive_int(properties['total_price'])
             assert utilities.check_is_positive_int(properties['unit_cost'])
+
+            # doesn't work the other way round, due to rounding of division
             assert properties['unit_cost'] == self._compute_gems_unit_cost(total_cost=properties['total_price'], num_gems=properties['num_items'])
 
             assert properties['owner'] is None or properties['owner'] in game_data["character_properties"].keys()

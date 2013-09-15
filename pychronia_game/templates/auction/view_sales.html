@@ -26,12 +26,9 @@ archeological objects at auction.
 		    <th style="width:40px;">{% trans "Id" %}</th>
 			<th>{% trans "Photo" %}</th>
 			<th>{% trans "Details" %}</th>
-			<th>{% trans "Total price" %}</th>
-			<th>{% trans "Unit cost" %}</th>
+		    <th>{% trans "Comments" %}</th>
 			{% if user.is_master %}
-			     <th colspan="2">{% trans "Transfer to character<br/>(payment by cold cash)" %}</th>
-			{% else %}
-			     <th>{% trans "Comments" %}</th>
+			     <th>{% trans "Transfer to character<br/>(payment by cold cash)" %}</th>
 			{% endif %}
 		</tr>
 	</thead>
@@ -54,29 +51,39 @@ archeological objects at auction.
 	    	</td>
 
 	    	<td style="width:160px">
-    		     <a href="{% game_file_url item_details.image %}">
-    		         <img class="thumbnail" title="{{ item_details.title }}" src="{% game_file_img "sales/" item_details.image alias="item_avatar" %}"/>
+    		     <a href="{% game_file_url item_details.image %}" class="fancybox">
+    		         <img class="thumbnail" title="{{ item_details.title }}" src="{% game_file_img item_details.image alias="item_avatar" %}"/>
     		     </a>
 	    	</td>
 
 
 	    	<td class="bigtext">
+
+	    	    <ul style="text-align: left; min-width: 150px;">
+
+	    	    <li>
 		    	{% if item_details.is_gem %}
 				    {{ item_details.num_items }} {% trans "gem" %}{{ item_details.num_items|pluralize }}
 				{% else %}
 				    {{ item_details.num_items }} {% trans "object" %}{{ item_details.num_items|pluralize }}
 				{% endif %}
+				</li>
+
+				<li>{% trans "Unit" %}: {{ item_details.unit_cost }} ¤</li>
+				<li>{% trans "Total" %}: {{ item_details.total_price }} ¤</li>
+				</ul>
+
+
 			</td>
 
-			<td class="bigtext">
-				{{ item_details.total_price }} {% trans "kash" %}{{ item_details.total_price|pluralize:"es" }}
-			</td>
-
-			<td class="bigtext">
-				{{ item_details.unit_cost }} {% trans "kash" %}{{ item_details.unit_cost|pluralize:"es" }}
-			</td>
 
 			{% if user.is_master %}
+
+                     <td>
+                         <p class="admin-note">
+                            {{ item_details.gamemaster_hints }}
+                         </p>
+                    </td>
 
         	    	{% if not item_details.owner %}
 
@@ -85,9 +92,7 @@ archeological objects at auction.
         	 				{% for username in usernames %}
         						<option value="{{ username }}">{{ username|capfirst }}</option>
         					{% endfor %}
-        					</select>
-        		 		</td>
-        		 		 <td>
+        					</select><br/>
         		 			<input type="submit" name="buy" value="{% trans "Transfer" %}"/>
         		 		</td>
 
@@ -95,9 +100,7 @@ archeological objects at auction.
 
         				<td>
         		 			<strong>{% trans "Buyer" %}: {{ item_details.owner }}</strong>
-        		 			<input type="hidden" name="username" value="{{ item_details.owner }}"/>
-        		 		</td>
-        		 		 <td>
+        		 			<input type="hidden" name="username" value="{{ item_details.owner }}"/><br/>
         		 			<input type="submit" name="unbuy" value="{% trans "Reset" %}"/>
         		 		</td>
 

@@ -53,7 +53,7 @@
 
 
                 <h2>
-                    {{ item_details.title }}
+                    {{ item_details.auction }} &nbsp; {{ item_details.title }}
                 </h2>
 
 
@@ -82,7 +82,13 @@
                         {{ item_details.comments}}
                         </p>
                         <p>
-                           Total Estimated Value : <b>{{ item_details.total_price }} {% trans "kashes" %}</b>
+                           {% trans "Count" %} : <b>{{ item_details.num_items }}</b>
+                        </p>
+                        <p>
+                           {% trans "Unit cost" %} : <b>{{ item_details.unit_cost }} {% trans "kashes" %}</b>
+                        </p>
+                        <p>
+                           {% trans "Total Estimated Value" %} : <b>{{ item_details.total_price }} {% trans "kashes" %}</b>
                         </p>
                     </blockquote>
 

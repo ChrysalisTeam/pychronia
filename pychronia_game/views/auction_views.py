@@ -202,7 +202,7 @@ def auction_items_slideshow(request, template_name='auction/items_slideshow.html
     """
     page_title = _("Auction Items")
     items = request.datamanager.get_auction_items()
-    sorted_items = list(sorted(items.items()))# pairs key/dict
+    sorted_items = list(sorted(items.items(), key=lambda x: x[1]["auction"]))# pairs key/dict
 
     return render(request,
                   template_name,
@@ -223,7 +223,7 @@ def personal_items_slideshow(request, template_name='auction/items_slideshow.htm
     items = request.datamanager.get_available_items_for_user()
     items_3D_settings = request.datamanager.get_items_3d_settings()
 
-    sorted_items = [(key, items[key]) for key in sorted(items.keys())]
+    sorted_items = [(key, value) for (key, value) in sorted(items.items(), key=lambda x: x[1]["title"])]
 
     return render(request,
                   template_name,
