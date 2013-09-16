@@ -23,7 +23,7 @@ def homepage(request, template_name='auction/homepage.html'):
 
 
 @register_view(access=UserAccess.anonymous, always_activated=True, title=_lazy("Opening"))
-def opening(request, template_name='auction/opening.html'): # NEEDS FIXING !!!!
+def ___opening(request, template_name='auction/opening.html'): # NEEDS FIXING !!!!
 
     return render(request,
                   template_name,

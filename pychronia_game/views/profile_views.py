@@ -289,7 +289,7 @@ friendship_management = FriendshipManagementView.as_view
 
 
 @register_view(access=UserAccess.character, always_activated=True, title=_lazy("Instructions"))
-def instructions(request, template_name='profile/instructions.html'): # TODO - remove that ?????
+def ___instructions(request, template_name='profile/instructions.html'): # TODO - remove that ?????
 
     user = request.datamanager.user
     intro_data = request.datamanager.get_game_instructions()

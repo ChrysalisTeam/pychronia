@@ -36,10 +36,10 @@ web_game_urlpatterns = patterns('pychronia_game.views',
     url(r'^$', 'homepage', name="pychronia_game-homepage"),
 
 
-    url(r'^opening/$', 'opening'),  # FIXME - deprecated ?
-    url('^openinglogo/$', 'logo_animation'),  # FIXME - deprecated ?
+    ##url(r'^opening/$', 'opening'),  # FIXME - deprecated ?
+    ###url('^openinglogo/$', 'logo_animation'),  # FIXME - deprecated ?
 
-    url(r'^instructions/$', 'instructions'), # FIXME - deprecated ?
+    ##url(r'^instructions/$', 'instructions'), # FIXME - deprecated ?
 
     url(r'^world_map/$', 'view_world_map'),
     #(r'^radio_messages/$', 'personal_radio_messages_listing'),

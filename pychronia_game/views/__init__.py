@@ -33,7 +33,7 @@ from pychronia_game.datamanager import GameDataManager
 from .mobile_views import homepage_mobile
 
 
-from .auction_views import (_build_display_data_from_viewer_settings, homepage, opening, view_characters,
+from .auction_views import (_build_display_data_from_viewer_settings, homepage, view_characters,
                             view_sales, auction_items_slideshow, personal_items_slideshow, item_3d_view, ajax_chat, chatroom)
 
 from .info_views import (view_encyclopedia,
@@ -41,7 +41,7 @@ from .info_views import (view_encyclopedia,
                          ajax_get_next_audio_message, ajax_notify_audio_message_finished,
                          personal_folder, view_media, encrypted_folder, view_world_map)
 
-from .profile_views import login, logout, secret_question, character_profile, friendship_management, instructions
+from .profile_views import login, logout, secret_question, character_profile, friendship_management
 
 
 from .messaging_views import (ajax_set_message_read_state, ajax_force_email_sending, ajax_permanently_delete_message,
@@ -79,7 +79,7 @@ def serve_game_file(request, hash="", path="", **kwargs):
 
 
 @register_view(access=UserAccess.anonymous, always_activated=True, title=_lazy("Logo Animation"))
-def logo_animation(request, template_name='utilities/item_3d_viewer.html'):
+def ___logo_animation(request, template_name='utilities/item_3d_viewer.html'):
     """
     These settings are heavily dependant on values hard-coded on templates (dimensions, colors...),
     so they needn't be exposed inside the YAML configuration file

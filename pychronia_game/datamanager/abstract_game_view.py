@@ -174,7 +174,9 @@ class GameViewMetaclass(type):
         To be used in django urls conf ; similar to standard class-based views of django,
         except that a separate instance is created for each request!
         """
-        return ClassInstantiationProxy(cls)
+        if not hasattr(cls, "_instantiation_proxy"):
+            cls._instantiation_proxy = ClassInstantiationProxy(cls)
+        return cls._instantiation_proxy # ALWAYS THE SAME RETURNED
 
 
 
@@ -217,7 +219,7 @@ class AbstractGameView(object):
     ACCESS = None # UserAccess entry
     EXTRA_PERMISSIONS = [] # list of extra permissions used by the view
     ALWAYS_ACTIVATED = False # True iff view needn't be activated by game master (constraint for non-master only, i.e anonymous and character users))
-    REQUIRES_CHARACTER_PERMISSION = False # by default, a view is only globally switched on/off, with this character must ALSO be personally enabled by master
+    REQUIRES_CHARACTER_PERMISSION = False # by default, a view is only globally switched on/off, with this, a character must ALSO be personally enabled by master
 
     ALWAYS_ALLOW_POST = False # True if we can post data to this view even when game/user is in read-only mode (eg. auth-related view)
 

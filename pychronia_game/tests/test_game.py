@@ -30,7 +30,7 @@ from pychronia_game.datamanager.datamanager_administrator import retrieve_game_i
 from pychronia_game.tests._test_tools import temp_datamanager
 import inspect
 from django.forms.fields import Field
-from django.core.urlresolvers import resolve
+from django.core.urlresolvers import resolve, NoReverseMatch
 from pychronia_game.views import friendship_management
 from pychronia_game.views.abilities import house_locking, \
     wiretapping_management, runic_translation
@@ -3157,6 +3157,75 @@ class TestHttpRequests(BaseGameTestCase):
         self._simple_master_get_requests()
 
 
+
+
+    SPECIAL_VIEWS = ("""CHARACTERS_IDENTITIES DATABASE_OPERATIONS FAIL_TEST MEDIA_TEST ___outbox ___inbox logout __intercepted_messages ___instructions ___logo_animation ___opening
+                        """.split() + # BROKEN VIEWS
+                     ["view_single_message", "item_3d_view", "encrypted_folder", "view_help_page", "secret_question", # NEEDS PARAMETERS
+                      "homepage_mobile"]) # MOBILE ONLY
+
+    def test_all_views_http_get(self):
+ 
+        skipped_views_lowercase = [n.lower() for n in self.SPECIAL_VIEWS]
+
+        def test_views(view_classes):
+            results = []
+            for view_class in view_classes:
+                name = view_class.NAME.lower()
+                if name in skipped_views_lowercase or "ajax" in name or "dummy" in name:
+                    results.append(0)
+                    continue
+                url = reverse(view_class.as_view, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID))
+                response = self.client.get(url)
+                # print response.content
+                self.assertEqual(response.status_code, 200, name + " | " + url + " | " + str(response.status_code))
+                results.append(1)
+            return results
+
+        self._reset_django_db()
+
+        # we activate ALL views
+        activable_views = self.dm.ACTIVABLE_VIEWS_REGISTRY.keys()
+        self.dm.set_activated_game_views(activable_views)
+        # we give guy1 access to everything
+        self.dm.update_permissions("guy1", PersistentList(self.dm.PERMISSIONS_REGISTRY))
+
+        all_views = self.dm.get_game_views().values() # these are actually view CLASSES
+
+        master_views = [v for v in all_views if v.ACCESS == UserAccess.master]
+        authenticated_views = [v for v in all_views if v.ACCESS == UserAccess.authenticated]
+        character_views = [v for v in all_views if v.ACCESS == UserAccess.character]
+        anonymous_views = [v for v in all_views if v.ACCESS == UserAccess.anonymous]
+
+        assert len(all_views) == len(master_views) + len(authenticated_views) + len(character_views) + len(anonymous_views)
+
+        self._master_auth()
+
+        res = test_views(view_classes=master_views)
+        assert sum(res) > 7
+
+        if random.choice((True, False)):
+            self._player_auth("guy1") # either master or guy1
+
+        res = test_views(view_classes=authenticated_views)
+        assert sum(res) > 7
+
+        self._player_auth("guy1") # has all permissions
+
+        res = test_views(view_classes=character_views)
+        assert sum(res) > 7
+
+        if random.choice((True, False)):
+            if random.choice((True, False)):
+                self._master_auth()
+            else:
+                self._logout()
+
+        res = test_views(view_classes=anonymous_views)
+        assert sum(res) > 7
+
+
+
     def _test_player_get_requests(self):
 
         # FIXME - currently not testing abilities
@@ -3263,7 +3332,7 @@ class TestHttpRequests(BaseGameTestCase):
         assert response.status_code == 404 # ACCESS FORBIDDEN
 
         url = reverse(views.view_help_page, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID,
-                                                        keyword="help-logo_animation"))
+                                                        keyword="help-chatroom"))
         response = self.client.get(url)
         assert response.status_code == 404 # view always available, but no help text available for it
 
@@ -3307,6 +3376,14 @@ class TestHttpRequests(BaseGameTestCase):
 
 class TestGameViewSystem(BaseGameTestCase):
 
+
+    def test_instantiation_proxy_singleton(self):
+
+        import pychronia_game.views.info_views
+        A = pychronia_game.views.view_encyclopedia
+        B = pychronia_game.views.info_views.EncyclopediaView.as_view
+        C = pychronia_game.views.info_views.EncyclopediaView._instantiation_proxy
+        assert A == B == C # SINGLETON system, else reverse() won't work
 
 
     def test_form_to_action_argspec_compatibility(self):
