@@ -38,7 +38,7 @@ from django.contrib.auth.models import User
 from pychronia_game.authentication import clear_all_sessions
 from pychronia_game.utilities.mediaplayers import generate_image_viewer
 from django.utils.functional import Promise
-
+from django.core.urlresolvers import RegexURLResolver
 
 
 
@@ -3064,8 +3064,7 @@ class TestHttpRequests(BaseGameTestCase):
         assert self.client.session.has_key(SESSION_TICKET_KEY)
 
 
-    def _simple_master_get_requests(self):
-        # FIXME - currently not testing abilities
+    def _test_special_pages(self):
         self._reset_django_db()
 
         self.dm.data["global_parameters"]["online_presence_timeout_s"] = 1
@@ -3074,33 +3073,6 @@ class TestHttpRequests(BaseGameTestCase):
         time.sleep(1.2) # online/chatting users list gets emptied
 
         self._master_auth() # equivalent to self._set_user(self.dm.get_global_parameter("master_login"))
-
-        from django.core.urlresolvers import RegexURLResolver
-        from pychronia_game.urls import web_game_urlpatterns # FIXME ADD MOBILE VIEWS
-
-        skipped_patterns = """ability instructions view_help_page profile
-                              DATABASE_OPERATIONS FAIL_TEST ajax item_3d_view chat_with_djinn static.serve encrypted_folder 
-                              view_single_message logout login secret_question
-                              friendship_management wiretapping_management
-                              mercenaries_hiring matter_analysis runic_translation 
-                              telecom_investigation world_scan artificial_intelligence
-                              chess_challenge""".split() # FIXME REMOVE THIS
-
-
-        views_names = [url._callback_str for url in web_game_urlpatterns
-                                   if not isinstance(url, RegexURLResolver) and
-                                      not [veto for veto in skipped_patterns if veto in url._callback_str]
-                                      and "__" not in url._callback_str] # skip disabled views
-        # print views_names
-
-
-        for view in views_names:
-            url = reverse(view, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID))
-            # print(" ====> ", url)
-            response = self.client.get(url)
-            # print(response._headers) #repr(response.content))
-            self.assertEqual(response.status_code, 200, view + " | " + url + " | " + str(response.status_code))
-
 
         # these urls and their post data might easily change, beware !
         special_urls = {ROOT_GAME_URL + "/item3dview/sacred_chest/": None,
@@ -3127,10 +3099,6 @@ class TestHttpRequests(BaseGameTestCase):
             self.assertEqual(response.status_code, 200, url + " | " + str(response.status_code))
 
 
-
-        ## UNEXISTING response = self.client.get("/media/")
-        ##self.assertEqual(response.status_code, 404)
-
         # no directory index, especially because of hash-protected file serving
         response = self.client.get("/files/") # because ValueError: Unexisting instance u'files'
         self.assertEqual(response.status_code, 404)
@@ -3148,25 +3116,25 @@ class TestHttpRequests(BaseGameTestCase):
         self._logout()
 
 
-    def test_master_game_started_page_displays(self):
+    def test_game_started_special_pages(self):
         self.dm.set_game_state(True)
-        self._simple_master_get_requests()
+        self._test_special_pages()
 
-    def test_master_game_paused_page_displays(self):
+    def test_game_paused_special_pages(self):
         self.dm.set_game_state(False)
-        self._simple_master_get_requests()
+        self._test_special_pages()
 
 
 
 
-    SPECIAL_VIEWS = ("""CHARACTERS_IDENTITIES DATABASE_OPERATIONS FAIL_TEST MEDIA_TEST ___outbox ___inbox logout __intercepted_messages ___instructions ___logo_animation ___opening
+    UNGETTABLE_SPECIAL_VIEWS = ("""CHARACTERS_IDENTITIES DATABASE_OPERATIONS FAIL_TEST MEDIA_TEST ___outbox ___inbox logout __intercepted_messages ___instructions ___logo_animation ___opening
                         """.split() + # BROKEN VIEWS
                      ["view_single_message", "item_3d_view", "encrypted_folder", "view_help_page", "secret_question", # NEEDS PARAMETERS
                       "homepage_mobile"]) # MOBILE ONLY
 
-    def test_all_views_http_get(self):
+    def _test_all_views_http_get(self):
  
-        skipped_views_lowercase = [n.lower() for n in self.SPECIAL_VIEWS]
+        skipped_views_lowercase = [n.lower() for n in self.UNGETTABLE_SPECIAL_VIEWS]
 
         def test_views(view_classes):
             results = []
@@ -3185,10 +3153,13 @@ class TestHttpRequests(BaseGameTestCase):
         self._reset_django_db()
 
         # we activate ALL views
+        old_state = self.dm.is_game_started()
+        self.dm.set_game_state(True)
         activable_views = self.dm.ACTIVABLE_VIEWS_REGISTRY.keys()
         self.dm.set_activated_game_views(activable_views)
         # we give guy1 access to everything
         self.dm.update_permissions("guy1", PersistentList(self.dm.PERMISSIONS_REGISTRY))
+        self.dm.set_game_state(old_state)
 
         all_views = self.dm.get_game_views().values() # these are actually view CLASSES
 
@@ -3225,8 +3196,17 @@ class TestHttpRequests(BaseGameTestCase):
         assert sum(res) > 7
 
 
+    def test_game_started_all_get_pages(self):
+        self.dm.set_game_state(True)
+        self._test_all_views_http_get()
 
-    def _test_player_get_requests(self):
+    def test_game_paused_all_get_pages(self):
+        self.dm.set_game_state(False)
+        self._test_all_views_http_get()
+
+
+
+    def _test_player_multistate_get_requests(self):
 
         # FIXME - currently not testing abilities
 
@@ -3242,8 +3222,8 @@ class TestHttpRequests(BaseGameTestCase):
         self.dm.set_game_state(True)
         self._set_user(None)
 
-        # PLAYER SETUP
 
+        # PLAYER SETUP
         username = "guy2"
         user_money = self.dm.get_character_properties(username)["account"]
         if user_money:
@@ -3256,9 +3236,9 @@ class TestHttpRequests(BaseGameTestCase):
 
         # VIEWS SELECTION
         from django.core.urlresolvers import RegexURLResolver
-        from pychronia_game.urls import web_game_urlpatterns  # FIXME ADD MOBILE VIEWS
-        # we test views for which there is a distinction between master and player
-        selected_patterns = """ compose_message view_sales personal_items_slideshow character_profile friendship_management""".split() # TODO LATER network_management contact_djinns
+        from pychronia_game.urls import web_game_urlpatterns  # only desktop views atm
+        # we test some views for which there is a distinction between master and player
+        selected_patterns = """ compose_message view_sales personal_items_slideshow character_profile friendship_management""".split()
         views = [url._callback_str for url in web_game_urlpatterns if not isinstance(url, RegexURLResolver) and [match for match in selected_patterns if match in url._callback_str]]
         assert len(views) == len(selected_patterns)
 
@@ -3290,17 +3270,13 @@ class TestHttpRequests(BaseGameTestCase):
         self._logout()
 
 
-    def test_player_game_started_page_displays(self):
+    def test_player_game_started_multistate_pages(self):
         self.dm.set_game_state(True)
-        # print "STARTING"
-        # import timeit
-        # timeit.Timer(self._test_player_get_requests).timeit()
-        self._test_player_get_requests()
-        # print "OVER"
+        self._test_player_multistate_get_requests()
 
-    def test_player_game_paused_page_displays(self):
+    def test_player_game_paused_multistate_pages(self):
         self.dm.set_game_state(False)
-        self._test_player_get_requests()
+        self._test_player_multistate_get_requests()
 
 
     def test_specific_help_pages_behaviour(self):
