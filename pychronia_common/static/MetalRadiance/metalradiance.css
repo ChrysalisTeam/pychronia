@@ -55,6 +55,10 @@
   background-color: #ff0000;
 }
 .center {
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+img.center {
   display: block;
   margin-left: auto !important;
   margin-right: auto !important;
@@ -242,7 +246,6 @@
   border: solid 1px #9d8126;
 }
 .missing-content {
-  display: block;
   margin-left: auto !important;
   margin-right: auto !important;
   text-align: center !important;

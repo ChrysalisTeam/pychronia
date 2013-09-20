@@ -138,14 +138,16 @@ $error_color: red;
 
 
 @mixin center {
-    display: block; // eg. for img tag
     margin-left: auto !important;
     margin-right: auto !important;
 }
 .center {
     @include center;
 }
-
+img.center {
+    display: block; // never use that on TABLES
+    @include center;
+}
 
 @mixin inner_center {
     text-align: center !important;

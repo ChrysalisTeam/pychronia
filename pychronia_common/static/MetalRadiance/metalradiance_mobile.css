@@ -85,6 +85,10 @@ blockquote:after, blockquote:before, q:after, q:before {
   background-color: #ff0000;
 }
 .center {
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+img.center {
   display: block;
   margin-left: auto !important;
   margin-right: auto !important;

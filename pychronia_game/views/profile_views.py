@@ -77,7 +77,7 @@ def logout(request):
 
 
 
-@register_view(access=UserAccess.anonymous, title=_lazy("Password Recovery"))
+@register_view(access=UserAccess.anonymous, always_activated=True, title=_lazy("Password Recovery"))
 def secret_question(request, concerned_username, template_name='profile/secret_question.html'):
 
     secret_question = None
