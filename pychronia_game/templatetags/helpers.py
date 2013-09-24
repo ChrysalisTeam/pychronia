@@ -123,13 +123,18 @@ def _generate_encyclopedia_links(html_snippet, datamanager, excluded_link=None):
 
     def encyclopedia_link_attr_generator(match):
         matched_str = match.group(0)
+        assert matched_str
         # detecting here WHICH keyword triggered the match would be possible, but expensive... let's postpone that
         link = reverse("pychronia_game.views.view_encyclopedia",
                        kwargs={"game_instance_id": datamanager.game_instance_id})
         link += "?search=%s" % urllib.quote_plus(matched_str.encode("utf8"), safe=b"")
         return dict(href=link)
     regex = autolinker.join_regular_expressions_as_disjunction(keywords_mapping.keys(), as_words=True)
-    html_res = autolinker.generate_links(html_snippet, regex=regex, link_attr_generator=encyclopedia_link_attr_generator)
+    ##print (">>>>>>>> REGEX", repr(regex))
+    if regex:
+        html_res = autolinker.generate_links(html_snippet, regex=regex, link_attr_generator=encyclopedia_link_attr_generator)
+    else:
+        html_res = html_snippet # no changes
     return html_res
 
 

@@ -3962,8 +3962,10 @@ class Encyclopedia(BaseDataManager):
             if article_id == excluded_link:
                 continue # we skip links to the current article of course
             for keyword in article["keywords"]:
+                assert keyword
                 mapping.setdefault(keyword, [])
                 mapping[keyword].append(article_id)
+        ###print (">>>>>>>>>>>", mapping)
         return mapping
 
 

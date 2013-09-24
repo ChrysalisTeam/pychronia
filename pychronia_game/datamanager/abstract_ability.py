@@ -167,6 +167,7 @@ class AbstractAbility(AbstractAbilityBasesAdapter):
     @classmethod
     def setup_main_ability_data(cls, ability_data):
         # no transaction handling here - it's all up to the caller of that classmethod
+        ##print("setup_main_ability_data", cls.NAME)
         settings = ability_data.setdefault("settings", PersistentDict())
         ability_data.setdefault("data", PersistentDict())
         cls._setup_ability_settings(settings=settings) # FIRST

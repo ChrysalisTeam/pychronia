@@ -472,6 +472,9 @@ def load_yaml_fixture(yaml_fixture):
 
         del yaml_fixture # security
         for yaml_file in yaml_files:
+            if os.path.basename(yaml_file).startswith("_"):
+                continue # skip deactivated yaml file
+            ##print("Loading yaml fixture %s" % yaml_file)
             part = load_yaml_file(yaml_file)
             '''
             if not isinstance(part, dict): # or (set(part.keys()) & set(data.keys())):
@@ -481,7 +484,7 @@ def load_yaml_fixture(yaml_fixture):
                 if key not in data:
                     data[key] = value
                 else:
-                    assert isinstance(data[key], dict)
+                    assert isinstance(data[key], dict), key
                     assert isinstance(value, dict)
                     data[key].update(value) # we assume two dicts to be merged
     return data
