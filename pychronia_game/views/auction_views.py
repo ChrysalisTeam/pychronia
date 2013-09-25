@@ -223,7 +223,7 @@ def personal_items_slideshow(request, template_name='auction/items_slideshow.htm
     items = request.datamanager.get_available_items_for_user()
     items_3D_settings = request.datamanager.get_items_3d_settings()
 
-    sorted_items = [(key, value) for (key, value) in sorted(items.items(), key=lambda x: x[1]["title"])]
+    sorted_items = [(key, value) for (key, value) in sorted(items.items(), key=lambda x: x[1]["auction"])]
 
     return render(request,
                   template_name,

@@ -146,7 +146,7 @@ img.center {
   border-color: transparent;
   border-style: solid;
   border-width: 7px 10px 10px;
-  border-image: url(img/backgrounds/marble_plate.png) 7 10 10 fill stretch;
+  border-image: url(img/backgrounds/marble_plate_dark.png) 7 10 10 fill stretch;
 }
 .missing-content, .post-it {
   padding: 4px;
@@ -892,7 +892,7 @@ fieldset {
   margin: 5px 0 5px 4px;
 }
 .zoomable > img {
-  border: 5px ridge #775f13;
+  border: none;
 }
 .jnotify-container {
   max-height: 400px;
@@ -927,6 +927,7 @@ fieldset {
 .fancybox-default .fancybox-outer {
   background-color: transparent;
   box-shadow: none !important;
+  border-width: 10px;
 }
 .fancybox-default .fancybox-title-float-wrap .child {
   background: none;
@@ -1025,7 +1026,7 @@ fieldset {
 #domslideshow #toclist li ul {
   background: #DCCBB5;
   padding: 10px;
-  width: 260px;
+  width: 300px;
   position: absolute;
   top: 1em;
   border-bottom: 1px solid #9d8126;
