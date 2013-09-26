@@ -28,7 +28,7 @@ class HouseLockingAbility(AbstractAbility):
 
     ACCESS = UserAccess.anonymous
     REQUIRES_CHARACTER_PERMISSION = False
-    ALWAYS_ACTIVATED = False
+    REQUIRES_GLOBAL_PERMISSION = True
 
 
 

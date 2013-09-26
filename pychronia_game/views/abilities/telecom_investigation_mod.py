@@ -29,7 +29,7 @@ class TelecomInvestigationAbility(AbstractAbility):
 
     ACCESS = UserAccess.character
     REQUIRES_CHARACTER_PERMISSION = False
-    ALWAYS_ACTIVATED = False
+    REQUIRES_GLOBAL_PERMISSION = True
 
 
     @classmethod

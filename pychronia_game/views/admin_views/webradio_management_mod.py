@@ -21,7 +21,7 @@ class WebradioManagement(AbstractGameView):
 
     ACCESS = UserAccess.master
     REQUIRES_CHARACTER_PERMISSION = False
-    ALWAYS_ACTIVATED = True
+    REQUIRES_GLOBAL_PERMISSION = False
 
 
     def get_template_vars(self, previous_form_data=None):

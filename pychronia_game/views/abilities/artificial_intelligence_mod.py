@@ -36,7 +36,7 @@ class ArtificialIntelligenceAbility(AbstractAbility):
 
     ACCESS = UserAccess.character
     REQUIRES_CHARACTER_PERMISSION = False
-    ALWAYS_ACTIVATED = True
+    REQUIRES_GLOBAL_PERMISSION = False
 
 
     @classmethod

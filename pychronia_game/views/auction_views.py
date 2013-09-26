@@ -12,7 +12,7 @@ from pychronia_game.forms import (MoneyTransferForm, GemsTransferForm, ArtefactT
 
 
 
-@register_view(access=UserAccess.anonymous, always_activated=True, title=_lazy("Homepage"))
+@register_view(access=UserAccess.anonymous, requires_global_permission=False, title=_lazy("Homepage"))
 def homepage(request, template_name='auction/homepage.html'):
 
     return render(request,
@@ -22,7 +22,7 @@ def homepage(request, template_name='auction/homepage.html'):
                     })
 
 
-@register_view(access=UserAccess.anonymous, always_activated=True, title=_lazy("Opening"))
+@register_view(access=UserAccess.anonymous, requires_global_permission=False, title=_lazy("Opening"))
 def ___opening(request, template_name='auction/opening.html'): # NEEDS FIXING !!!!
 
     return render(request,
@@ -54,7 +54,7 @@ class CharactersView(AbstractGameView):
 
     ACCESS = UserAccess.authenticated
     REQUIRES_CHARACTER_PERMISSION = False
-    ALWAYS_ACTIVATED = True
+    REQUIRES_GLOBAL_PERMISSION = False
 
 
 
@@ -139,7 +139,7 @@ view_characters = CharactersView.as_view
 
 
 
-@register_view(access=UserAccess.authenticated, always_activated=True, title=_lazy("View Sales")) # fixme ? always available ?
+@register_view(access=UserAccess.authenticated, title=_lazy("View Sales")) # fixme ? always available ?
 def view_sales(request, template_name='auction/view_sales.html'):
     # FIXME - needs a review ########
     user = request.datamanager.user
@@ -298,7 +298,7 @@ def _build_display_data_from_viewer_settings(viewer_settings):
 
 
 
-@register_view(access=UserAccess.authenticated, title=_lazy("Ajex Chat"))
+@register_view(access=UserAccess.authenticated, title=_lazy("Ajax Chat"))
 def ajax_chat(request):
 
     if request.method == "POST":

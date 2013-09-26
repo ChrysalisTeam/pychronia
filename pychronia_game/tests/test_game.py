@@ -2824,7 +2824,7 @@ class TestDatamanager(BaseGameTestCase):
             TEMPLATE = "base_main.html" # must exist
             ACCESS = UserAccess.anonymous
             REQUIRES_CHARACTER_PERMISSION = False
-            ALWAYS_ACTIVATED = False
+            REQUIRES_GLOBAL_PERMISSION = True
 
 
             def get_template_vars(self, previous_form_data=None):
@@ -3426,7 +3426,7 @@ class TestGameViewSystem(BaseGameTestCase):
 
         # let's not block the home url...
         assert views.homepage.ACCESS == UserAccess.anonymous
-        assert views.homepage.ALWAYS_ACTIVATED == True
+        assert views.homepage.REQUIRES_GLOBAL_PERMISSION == False
 
 
     def test_access_parameters_normalization(self):
@@ -3437,48 +3437,53 @@ class TestGameViewSystem(BaseGameTestCase):
         res = _normalize_view_access_parameters()
         assert res == dict(access=UserAccess.master,
                             requires_character_permission=False,
-                            always_activated=True)
+                            requires_global_permission=False)
 
         res = _normalize_view_access_parameters(UserAccess.anonymous, True, False)
         assert res == dict(access=UserAccess.anonymous,
                             requires_character_permission=True, # would raise an issue later, in metaclass, because we're in anonymous access
-                            always_activated=False)
+                            requires_global_permission=False)
+
+        res = _normalize_view_access_parameters(UserAccess.anonymous, False, True)
+        assert res == dict(access=UserAccess.anonymous,
+                            requires_character_permission=False,
+                            requires_global_permission=True)
 
         res = _normalize_view_access_parameters(UserAccess.anonymous)
         assert res == dict(access=UserAccess.anonymous,
                             requires_character_permission=False,
-                            always_activated=False) # even in anonymous access
+                            requires_global_permission=True) # even in anonymous access
 
         res = _normalize_view_access_parameters(UserAccess.character)
         assert res == dict(access=UserAccess.character,
                             requires_character_permission=False,
-                            always_activated=False)
+                            requires_global_permission=True)
 
         res = _normalize_view_access_parameters(UserAccess.authenticated)
         assert res == dict(access=UserAccess.authenticated,
                             requires_character_permission=False,
-                            always_activated=False)
+                            requires_global_permission=True)
 
         res = _normalize_view_access_parameters(UserAccess.master)
         assert res == dict(access=UserAccess.master,
                             requires_character_permission=False,
-                            always_activated=True) # logical
+                            requires_global_permission=False) # logical
 
         res = _normalize_view_access_parameters(UserAccess.character, requires_character_permission=True)
         assert res == dict(access=UserAccess.character,
                             requires_character_permission=True,
-                            always_activated=False)
+                            requires_global_permission=True)
 
 
         class myview:
             ACCESS = UserAccess.authenticated
             REQUIRES_CHARACTER_PERMISSION = True
-            ALWAYS_ACTIVATED = False
+            REQUIRES_GLOBAL_PERMISSION = True
 
         res = _normalize_view_access_parameters(attach_to=myview)
         assert res == dict(access=UserAccess.authenticated,
                             requires_character_permission=True,
-                            always_activated=False)
+                            requires_global_permission=True)
 
         with pytest.raises(AssertionError):
             while True:
@@ -3499,7 +3504,7 @@ class TestGameViewSystem(BaseGameTestCase):
         with pytest.raises(AssertionError):
             register_view(my_little_view, access=UserAccess.master, requires_character_permission=True)
         with pytest.raises(AssertionError):
-            register_view(my_little_view, access=UserAccess.master, always_activated=False) # master must always access his views!
+            register_view(my_little_view, access=UserAccess.master, requires_global_permission=True) # master must always access his views!
         with pytest.raises(AssertionError):
             register_view(my_little_view, access=UserAccess.anonymous, requires_character_permission=True)
 
@@ -3553,23 +3558,23 @@ class TestGameViewSystem(BaseGameTestCase):
 
         def dummy_view_anonymous(request):
             pass
-        view_anonymous = register_view(dummy_view_anonymous, access=UserAccess.anonymous, always_activated=False, title=_lazy("Hi"))
+        view_anonymous = register_view(dummy_view_anonymous, access=UserAccess.anonymous, requires_global_permission=True, title=_lazy("Hi"))
 
         def dummy_view_character(request):
             pass
-        view_character = register_view(dummy_view_character, access=UserAccess.character, always_activated=False, title=_lazy("Hi2"))
+        view_character = register_view(dummy_view_character, access=UserAccess.character, requires_global_permission=True, title=_lazy("Hi2"))
 
         def dummy_view_character_permission(request):
             pass
-        view_character_permission = register_view(dummy_view_character_permission, access=UserAccess.character, requires_character_permission=True, always_activated=False, title=_lazy("Hi3"))
+        view_character_permission = register_view(dummy_view_character_permission, access=UserAccess.character, requires_character_permission=True, requires_global_permission=True, title=_lazy("Hi3"))
 
         def dummy_view_authenticated(request):
             pass
-        view_authenticated = register_view(dummy_view_authenticated, access=UserAccess.authenticated, always_activated=False, title=_lazy("Hisss"))
+        view_authenticated = register_view(dummy_view_authenticated, access=UserAccess.authenticated, requires_global_permission=True, title=_lazy("Hisss"))
 
         def dummy_view_master(request):
             pass
-        view_master = register_view(dummy_view_master, access=UserAccess.master, always_activated=True, title=_lazy("QQQ")) # always_activated is enforced to True for master views, actually
+        view_master = register_view(dummy_view_master, access=UserAccess.master, requires_global_permission=False, title=_lazy("QQQ")) # requires_global_permission is enforced to True for master views, actually
 
 
         # check global disabling of views by game master #
@@ -3578,7 +3583,7 @@ class TestGameViewSystem(BaseGameTestCase):
 
             for my_view in (view_anonymous, view_character, view_character_permission, view_authenticated): # not view_master
 
-                my_view.klass.ALWAYS_ACTIVATED = False # view is DISABLED ATM
+                my_view.klass.REQUIRES_GLOBAL_PERMISSION = True # view is DISABLED ATM
                 if not self.dm.is_master():
                     expected = AccessResult.globally_forbidden
                 elif my_view.klass.ACCESS == UserAccess.character:
@@ -3586,10 +3591,10 @@ class TestGameViewSystem(BaseGameTestCase):
                 else:
                     expected = AccessResult.available # master bypasses activation check
                 assert my_view.get_access_token(datamanager) == expected
-                self.dm.set_activated_game_views([my_view.NAME]) # exists in ACTIVABLE_VIEWS_REGISTRY because we registered view with always_activated=True
+                self.dm.set_activated_game_views([my_view.NAME]) # exists in ACTIVABLE_VIEWS_REGISTRY because we registered view with requires_global_permission=True
                 assert my_view.get_access_token(datamanager) != AccessResult.globally_forbidden
 
-                my_view.klass.ALWAYS_ACTIVATED = True
+                my_view.klass.REQUIRES_GLOBAL_PERMISSION = False
                 assert my_view.get_access_token(datamanager) != AccessResult.globally_forbidden
                 self.dm.set_activated_game_views([]) # RESET
                 assert my_view.get_access_token(datamanager) != AccessResult.globally_forbidden

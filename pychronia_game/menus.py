@@ -307,7 +307,7 @@ make_instancemethod)
 
 
 def mark_always_available(func):
-    func.always_activated = True
+    func.requires_global_permission = False
     return func
 
 def _ensure_data_ok(datamanager):
@@ -352,7 +352,7 @@ def transaction_watcher(func, self, *args, **kwargs): #@NoSelf
         # some state-changing methods are allowed even before the game starts !
         #if func.__name__ not in ["set_message_read_state", "set_new_message_notification", "force_message_sending",
         #                         "set_online_status"]:
-        if not getattr(func, "always_activated", None):
+        if getattr(func, "requires_global_permission", True):
             raise UsageError(_("This feature is unavailable at the moment"))
 
     try:

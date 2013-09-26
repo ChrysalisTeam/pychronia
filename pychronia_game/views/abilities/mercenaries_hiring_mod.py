@@ -90,7 +90,7 @@ class MercenariesHiringAbility(AbstractAbility):
 
     ACCESS = UserAccess.character
     REQUIRES_CHARACTER_PERMISSION = False
-    ALWAYS_ACTIVATED = True
+    REQUIRES_GLOBAL_PERMISSION = True
 
 
     def get_template_vars(self, previous_form_data=None):

@@ -78,7 +78,7 @@ def serve_game_file(request, hash="", path="", **kwargs):
 
 
 
-@register_view(access=UserAccess.anonymous, always_activated=True, title=_lazy("Logo Animation"))
+@register_view(access=UserAccess.anonymous, requires_global_permission=False, title=_lazy("Logo Animation"))
 def ___logo_animation(request, template_name='utilities/item_3d_viewer.html'):
     """
     These settings are heavily dependant on values hard-coded on templates (dimensions, colors...),
@@ -108,7 +108,7 @@ def ___logo_animation(request, template_name='utilities/item_3d_viewer.html'):
 
 
 
-@register_view(access=UserAccess.anonymous, always_activated=True, title=_lazy("View Help Page"))
+@register_view(access=UserAccess.anonymous, requires_global_permission=False, title=_lazy("View Help Page"))
 def view_help_page(request, keyword, template_name='utilities/help_page.html'):
     """
     Access for targeted pages is checked here!
@@ -140,7 +140,7 @@ def view_help_page(request, keyword, template_name='utilities/help_page.html'):
                     })
 
 
-@register_view(access=UserAccess.anonymous, always_activated=True, title=_lazy("Bug Report"))
+@register_view(access=UserAccess.anonymous, requires_global_permission=False, title=_lazy("Bug Report"))
 def bug_report_treatment(request):
     report_data = request.REQUEST.get("report_data", "[no report_data]")
     location = request.build_absolute_uri()
@@ -216,7 +216,7 @@ def is_nightmare_captcha_successful(request):
 
 
 # no security authentication
-@register_view(access=UserAccess.anonymous, always_activated=True)
+@register_view(access=UserAccess.anonymous, requires_global_permission=False)
 def _______ajax_domotics_security(request):
 
     action = request.REQUEST.get("action", None)

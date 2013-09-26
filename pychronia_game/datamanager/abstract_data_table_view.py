@@ -14,7 +14,7 @@ class AbstractDataTableManagement(AbstractGameView):
 
     ACCESS = UserAccess.master
     REQUIRES_CHARACTER_PERMISSION = False
-    ALWAYS_ACTIVATED = True
+    REQUIRES_GLOBAL_PERMISSION = False
 
 
     def get_data_table_instance(self):

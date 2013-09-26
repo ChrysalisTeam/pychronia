@@ -21,7 +21,7 @@ class FriendshipMinDurationForm(AbstractGameForm):
 
 
 
-@register_view(access=UserAccess.anonymous, always_activated=True, title=_lazy("Login"), always_allow_post=True)
+@register_view(access=UserAccess.anonymous, requires_global_permission=False, title=_lazy("Login"), always_allow_post=True)
 def login(request, template_name='profile/login.html'):
 
     form = None
@@ -65,7 +65,7 @@ def login(request, template_name='profile/login.html'):
                     })
 
 
-@register_view(access=UserAccess.authenticated, always_activated=True, title=_lazy("Logout"), always_allow_post=True)
+@register_view(access=UserAccess.authenticated, requires_global_permission=False, title=_lazy("Logout"), always_allow_post=True)
 def logout(request):
 
     logout_session(request)
@@ -77,7 +77,7 @@ def logout(request):
 
 
 
-@register_view(access=UserAccess.anonymous, always_activated=True, title=_lazy("Password Recovery"))
+@register_view(access=UserAccess.anonymous, requires_global_permission=False, title=_lazy("Password Recovery"))
 def secret_question(request, concerned_username, template_name='profile/secret_question.html'):
 
     secret_question = None
@@ -140,7 +140,7 @@ class CharacterProfile(AbstractGameView):
     NAME = "character_profile"
     TEMPLATE = "profile/character_profile.html"
     ACCESS = UserAccess.character
-    ALWAYS_ACTIVATED = True
+    REQUIRES_GLOBAL_PERMISSION = False
 
     GAME_ACTIONS = dict(password_change_form=dict(title=_lazy("Change password"),
                                                           form_class=forms.PasswordChangeForm,
@@ -209,7 +209,7 @@ class FriendshipManagementView(AbstractGameView):
 
     ACCESS = UserAccess.character
     REQUIRES_CHARACTER_PERMISSION = False
-    ALWAYS_ACTIVATED = True
+    REQUIRES_GLOBAL_PERMISSION = False
 
 
     @transaction_watcher
@@ -288,7 +288,7 @@ friendship_management = FriendshipManagementView.as_view
 
 
 
-@register_view(access=UserAccess.character, always_activated=True, title=_lazy("Instructions"))
+@register_view(access=UserAccess.character, requires_global_permission=False, title=_lazy("Instructions"))
 def ___instructions(request, template_name='profile/instructions.html'): # TODO - remove that ?????
 
     user = request.datamanager.user

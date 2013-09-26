@@ -45,7 +45,7 @@ class RunicTranslationAbility(AbstractAbility):
 
     ACCESS = UserAccess.character # game master not welcome!
     REQUIRES_CHARACTER_PERMISSION = False
-    ALWAYS_ACTIVATED = False
+    REQUIRES_GLOBAL_PERMISSION = True
 
     HAS_DEDICATED_EMAIL = True
 

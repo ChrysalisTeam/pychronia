@@ -31,7 +31,7 @@ class WorldScanAbility(AbstractAbility):
 
     ACCESS = UserAccess.character
     REQUIRES_CHARACTER_PERMISSION = True
-    ALWAYS_ACTIVATED = True
+    REQUIRES_GLOBAL_PERMISSION = True
 
 
 
