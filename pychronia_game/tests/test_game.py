@@ -3127,7 +3127,7 @@ class TestHttpRequests(BaseGameTestCase):
 
 
 
-    UNGETTABLE_SPECIAL_VIEWS = ("""CHARACTERS_IDENTITIES DATABASE_OPERATIONS FAIL_TEST MEDIA_TEST ___outbox ___inbox logout __intercepted_messages ___instructions ___logo_animation ___opening
+    UNGETTABLE_SPECIAL_VIEWS = ("""CHARACTERS_IDENTITIES DATABASE_OPERATIONS FAIL_TEST MEDIA_TEST  logout ___instructions ___logo_animation ___opening
                         """.split() + # BROKEN VIEWS
                      ["view_single_message", "item_3d_view", "encrypted_folder", "view_help_page", "secret_question", # NEEDS PARAMETERS
                       "homepage_mobile"]) # MOBILE ONLY

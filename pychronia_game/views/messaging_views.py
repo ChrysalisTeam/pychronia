@@ -375,7 +375,7 @@ def compose_message(request, template_name='messaging/compose.html'):
                     })
 
 
-
+'''
 @register_view(access=UserAccess.authenticated, title=_lazy("ssss"))
 def ___inbox(request, template_name='messaging/messages.html'):
 
@@ -426,6 +426,8 @@ def ___outbox(request, template_name='messaging/messages.html'):
                      'remove_to': False,
                      'mode': "outbox"
                     })
+'''
+
 
 @register_view(access=UserAccess.master, title=_lazy("View Single Message"))
 def view_single_message(request, msg_id, template_name='messaging/view_single_message.html'):
@@ -475,9 +477,9 @@ def preview_message(request):
 
     return HttpResponse(html) # only a snippet of html, no html/head/body tags - might be EMPTY
 
-
+'''
 @register_view(access=UserAccess.authenticated, title=_lazy("sssss"))
-def __intercepted_messages(request, template_name='messaging/messages.html'):
+def ___intercepted_messages(request, template_name='messaging/messages.html'):
 
     messages = request.datamanager.get_intercepted_messages()
 
@@ -493,5 +495,5 @@ def __intercepted_messages(request, template_name='messaging/messages.html'):
                      'mode': "intercepted_messages"
                     })
 
-
+'''
 
