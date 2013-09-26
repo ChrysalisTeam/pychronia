@@ -125,7 +125,7 @@ view_encyclopedia = EncyclopediaView.as_view
 
 # we don't put any security there, at worst a pirate might play with this and prevent playing
 # some audio notifications, but it's neither critical nor discreet
-@register_view(access=UserAccess.anonymous, title=_lazy("Ajax Audio Message Finished"))
+@register_view(access=UserAccess.anonymous, requires_global_permission=False, title=_lazy("Ajax Audio Message Finished"))
 def ajax_notify_audio_message_finished(request, requires_global_permission=False):
 
     audio_id = request.GET.get("audio_id", None)

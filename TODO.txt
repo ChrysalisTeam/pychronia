@@ -136,6 +136,7 @@ TASKS DONE
 FUTUR ENHANCEMENTS
 --------------------------
 
+- make real "attach to" feature to delegate permissions (ex. for dependent ajax views)
 - rethink and repair telecom archive investigation
 - add to specific index any visualized document for "personal files"
 - setup all select choises with a default empty choice

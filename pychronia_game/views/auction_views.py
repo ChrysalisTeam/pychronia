@@ -234,7 +234,7 @@ def personal_items_slideshow(request, template_name='auction/items_slideshow.htm
                     })
 
 
-@register_view(attach_to=personal_items_slideshow, title=_lazy("Item 3D View"))
+@register_view(access=UserAccess.authenticated, requires_global_permission=False, title=_lazy("Item 3D View"))
 def item_3d_view(request, item, template_name='utilities/item_3d_viewer.html'):
 
     available_items = request.datamanager.get_available_items_for_user()
@@ -298,7 +298,7 @@ def _build_display_data_from_viewer_settings(viewer_settings):
 
 
 
-@register_view(access=UserAccess.authenticated, title=_lazy("Ajax Chat"))
+@register_view(access=UserAccess.authenticated, requires_global_permission=False, title=_lazy("Ajax Chat"))
 def ajax_chat(request):
 
     if request.method == "POST":

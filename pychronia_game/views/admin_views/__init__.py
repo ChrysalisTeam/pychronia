@@ -107,7 +107,7 @@ def manage_characters(request, template_name='administration/character_managemen
 
     character_forms = []
 
-    for (username, data) in sorted(request.datamanager.get_character_sets().items()):
+    for (username, data) in sorted(request.datamanager.get_character_sets().items(), key=lambda x: (x[1]["is_npc"], x[0])):
         # print ("AZZZZ", form["target_username"].value(), username)
         if form and form["target_username"].value() == username:
             #print (" REUSING FOR", username)
