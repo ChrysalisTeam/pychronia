@@ -42,7 +42,11 @@
 
         <tr>
         <td><strong>{% trans "From:" %}</strong></td>
-        <td style="color:{% usercolor message.sender_email %};">{{ message.sender_email }}</td>
+        <td>
+            <a target="_blank" href="{% game_view_url "pychronia_game.views.compose_message" %}?recipient={{ message.sender_email|urlencode }}">
+            <span style="color:{% usercolor message.sender_email %};">{{ message.sender_email }}</span>
+            </a>
+        </td>
         </tr>
 
         <tr>
@@ -50,7 +54,9 @@
         <td>
             {% for recipient_email in message.recipient_emails %}
                 {% if not forloop.first %}, {% endif %}
+                <a target="_blank" href="{% game_view_url "pychronia_game.views.compose_message" %}?recipient={{ recipient_email|urlencode }}">
                 <span style="color:{% usercolor recipient_email %};">{{ recipient_email }}</span>
+                </a>
             {% endfor %}
         </td>
         </tr>

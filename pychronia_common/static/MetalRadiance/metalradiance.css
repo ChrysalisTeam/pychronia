@@ -1104,10 +1104,14 @@ input.digit {
 .email_unread {
   position: relative;
   min-width: 150px;
-  padding: 0 10px;
+  padding: 0 2px;
+  margin-left: -20px;
+  margin-right: -20px;
   border-width: 79px 45px 81px 39px;
   border-color: transparent;
   border-style: solid;
+  text-align: justify;
+  text-indent: 10px;
   background-image: none;
   border-image: url(img/backgrounds/scroll_realistic_thin_ends.png) 79 45 81 39 fill
     stretch stretch;
@@ -1115,10 +1119,14 @@ input.digit {
 .email_read {
   position: relative;
   min-width: 150px;
-  padding: 0 10px;
+  padding: 0 2px;
+  margin-left: -20px;
+  margin-right: -20px;
   border-width: 79px 45px 81px 39px;
   border-color: transparent;
   border-style: solid;
+  text-align: justify;
+  text-indent: 10px;
   background-image: none;
   border-image: url(img/backgrounds/scroll_realistic_thin_ends_disabled.png) 79 45 81
     39 fill stretch stretch;

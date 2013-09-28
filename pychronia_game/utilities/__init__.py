@@ -261,6 +261,20 @@ def adapt_parameters_to_func(all_parameters, func):
     return relevant_args
 
 
+def load_multipart_rst(val):
+    if val is None or isinstance(val, basestring):
+        return val
+    assert isinstance(val, (list, tuple))
+    return u"\n\n".join(val) # we assume a sequence of strings dedicated to restructuredtext format!
+
+
+
+
+
+
+
+
+
 ## Tools for database sanity checks ##
 
 

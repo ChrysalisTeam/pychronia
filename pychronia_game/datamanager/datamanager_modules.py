@@ -1458,6 +1458,8 @@ class TextMessagingCore(BaseDataManager):
 
             msg["sender_email"], msg["recipient_emails"] = self._normalize_message_addresses(msg["sender_email"], msg["recipient_emails"])
 
+            msg ["body"] = utilities.load_multipart_rst(msg ["body"])
+
             msg["attachment"] = msg.get("attachment", None)
             if msg["attachment"]:
                 msg["attachment"] = utilities.complete_game_file_url(msg["attachment"])
@@ -1517,6 +1519,9 @@ class TextMessagingCore(BaseDataManager):
                 utilities.check_is_email(msg["sender_email"])
                 for recipient in msg["recipient_emails"]:
                     utilities.check_is_email(recipient)
+
+                if msg["body"]: # might be empty
+                    utilities.check_is_restructuredtext(msg["body"])
 
                 if msg["attachment"]:
                     assert msg["attachment"].startswith("/") or msg["attachment"].startswith("http")

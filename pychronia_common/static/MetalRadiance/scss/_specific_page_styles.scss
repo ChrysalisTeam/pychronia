@@ -92,7 +92,9 @@ input.digit
 @mixin email_common {
     position: relative; // to allow absolute stuffs inside
     min-width: 150px;
-    padding: 0 10px;
+    padding: 0 2px;
+    margin-left: -20px;
+    margin-right: -20px;
 
     /* ugly
     background-size: 98% 98%;
@@ -104,6 +106,9 @@ input.digit
     border-width: 79px 45px 81px 39px;
     border-color: transparent;
     border-style: solid;
+
+    text-align: justify;
+    text-indent: 10px;
 
 }
 
