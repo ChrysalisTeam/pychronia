@@ -5,6 +5,7 @@ from pychronia_game.common_settings import *
 from pychronia_common.tests.persistent_mode_settings import * # simple overrides
 
 from pychronia_game.tests.common_test_settings import * # simple overrides
+import random
 
 
 ROOT_URLCONF = 'pychronia_game.tests._test_urls_web'
@@ -30,6 +31,7 @@ GAME_FILES_ROOT = "P:\\Chrysalis Depot\\Chrysalis V1\\"
 GAME_INITIAL_DATA_PATH = r"P:\Chrysalis Depot\Chrysalis V1\script_fixtures"
 
 
+PASSWORDS_POOL = [str(random.randint(100, 1000)) for i in range(50)]
 
 
 

@@ -39,6 +39,10 @@
   font-weight: normal;
   font-style: normal;
 }
+.pretty_text {
+  text-align: justify;
+  text-indent: 15px;
+}
 .bg_beige, .mixed {
   background-color: #a89d97;
 }
@@ -176,7 +180,7 @@ img.center {
 }
 .scroll_yellow_flat {
   margin: 10px;
-  padding: 25px;
+  padding: 20px;
   border-color: transparent;
   background: url(img/backgrounds/scroll_yellow_flat.png);
   background-size: 100% 100%;
@@ -781,7 +785,7 @@ h3 {
   text-overflow: ellipsis;
 }
 .small_text {
-  font-size: 0.9em !important;
+  font-size: 0.8em !important;
 }
 div, p, span {
   background-color: transparent;
@@ -1110,8 +1114,6 @@ input.digit {
   border-width: 79px 45px 81px 39px;
   border-color: transparent;
   border-style: solid;
-  text-align: justify;
-  text-indent: 10px;
   background-image: none;
   border-image: url(img/backgrounds/scroll_realistic_thin_ends.png) 79 45 81 39 fill
     stretch stretch;
@@ -1125,8 +1127,6 @@ input.digit {
   border-width: 79px 45px 81px 39px;
   border-color: transparent;
   border-style: solid;
-  text-align: justify;
-  text-indent: 10px;
   background-image: none;
   border-image: url(img/backgrounds/scroll_realistic_thin_ends_disabled.png) 79 45 81
     39 fill stretch stretch;

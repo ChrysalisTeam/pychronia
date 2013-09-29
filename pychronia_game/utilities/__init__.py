@@ -49,7 +49,7 @@ allowed_zodb_types = (types.NoneType, int, long, float, basestring, tuple, datet
 def usage_assert(value, comment=None):
     from pychronia_game.common import UsageError
     if not value:
-        raise UsageError("Check failed: %s (comment: %s)" % (value, comment))
+        raise UsageError("Check failed: %r (comment: %s)" % (value, comment))
 
 
 class Enum(set):
@@ -366,6 +366,7 @@ def check_is_positive_int(value, non_zero=True):
 
 def check_is_restructuredtext(value):
     from django.contrib.markup.templatetags.markup import restructuredtext
+    #print("LOADING RST...", value[0:100])
     usage_assert(restructuredtext(value))
     return True
 
@@ -460,7 +461,7 @@ def load_yaml_file(yaml_file):
 
 
 def recursive_dict_sum(d1, d2):
-    """To be used later if needed"""
+    """Sums dictionaries recursively."""
     return dict((k, ((d1[k] if k in d1 else d2[k])
                        if k not in d1 or k not in d2
                       else (d1[k] + d2[k] if not isinstance(d1[k], dict)
@@ -488,19 +489,14 @@ def load_yaml_fixture(yaml_fixture):
         for yaml_file in yaml_files:
             if os.path.basename(yaml_file).startswith("_"):
                 continue # skip deactivated yaml file
-            ##print("Loading yaml fixture %s" % yaml_file)
+            print("Loading yaml fixture %s" % yaml_file)
             part = load_yaml_file(yaml_file)
-            '''
-            if not isinstance(part, dict): # or (set(part.keys()) & set(data.keys())):
-                raise ValueError("Improper or colliding content in %s" % yaml_file)
-            '''
-            for key, value in part.items():
-                if key not in data:
-                    data[key] = value
-                else:
-                    assert isinstance(data[key], dict), key
-                    assert isinstance(value, dict)
-                    data[key].update(value) # we assume two dicts to be merged
+
+            if not isinstance(part, dict):
+                raise ValueError("Improper content in %s" % yaml_file)
+
+            data = recursive_dict_sum(data, part)
+
     return data
 
 

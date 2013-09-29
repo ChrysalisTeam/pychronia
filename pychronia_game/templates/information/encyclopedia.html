@@ -59,8 +59,8 @@
 {% block content %}
 
         {% if entry %}
-        <div align="center">
-            {% rich_text entry %}
+        <div class="pretty_text">
+            {% rich_text entry excluded_link=current_article_id %}
         </div>
         {% endif %}
 

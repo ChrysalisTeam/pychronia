@@ -107,9 +107,7 @@ input.digit
     border-color: transparent;
     border-style: solid;
 
-    text-align: justify;
-    text-indent: 10px;
-
+    @include pretty_text;
 }
 
 .email_unread {

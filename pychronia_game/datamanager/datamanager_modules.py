@@ -1477,6 +1477,7 @@ class TextMessagingCore(BaseDataManager):
             if not msg.get("group_id"):
                 msg["group_id"] = msg["id"]
 
+        # important - initial sorting #
         messaging["messages_dispatched"].sort(key=lambda msg: msg["sent_at"])
         messaging["messages_queued"].sort(key=lambda msg: msg["sent_at"])
 
@@ -2044,6 +2045,7 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
 
         # initial coherency check
         all_emails = self.get_user_contacts(self.master_login) # ALL available
+        #print (">>>>>>>>###", all_emails)
         for msg in messaging["messages_dispatched"] + messaging["messages_queued"]:
             assert msg["sender_email"] in all_emails, msg["sender_email"]
             for recipient_email in msg["recipient_emails"]:

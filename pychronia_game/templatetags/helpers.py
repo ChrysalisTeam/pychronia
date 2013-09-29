@@ -324,7 +324,7 @@ register.filter('list_filter', list_filter)
 def utctolocal(value, arg=None): # FIXME - BUGGY CALLS
     # poor man's timezone system, base on current time offset
     # all we want ATM is to avoid dealing with the nightmare of TZ and DST...
-    print (">>>>>>>>>>>>>>>>", value)
+    ##print (">>>>>>>>>>>>>>>>", value)
     try:
         timedelta = datetime.now() - datetime.utcnow() # both NAIVE datetimes
         return value + timedelta

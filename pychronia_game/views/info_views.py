@@ -106,6 +106,7 @@ class EncyclopediaView(AbstractGameView):
                                 context={
                                          'page_title': _("Pangea Encyclopedia"),
                                          'article_ids': article_ids,
+                                         'current_article_id': article_id,
                                          'entry': entry,
                                          'search_results': search_results
                                 })

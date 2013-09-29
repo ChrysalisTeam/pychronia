@@ -69,6 +69,10 @@ blockquote:after, blockquote:before, q:after, q:before {
   font-weight: normal;
   font-style: normal;
 }
+.pretty_text {
+  text-align: justify;
+  text-indent: 15px;
+}
 .bg_beige, .mixed {
   background-color: #a89d97;
 }

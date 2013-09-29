@@ -64,7 +64,8 @@ class ArtificialIntelligenceAbility(AbstractAbility):
 
         for key, value in settings["common_bot_properties"].items():
             utilities.check_is_string(key)
-            utilities.check_is_string(value)
+            if value: # may be empty
+                utilities.check_is_string(value)
 
         for bot_name, bot_props in settings["specific_bot_properties"].items():
             utilities.check_is_string(bot_name)
