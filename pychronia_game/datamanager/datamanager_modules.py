@@ -1952,7 +1952,12 @@ class TextMessagingTemplates(BaseDataManager):
         messaging = self.messaging_data
         messaging.setdefault("manual_messages_templates", PersistentDict())
 
-        def _complete_messages_templates(msg_list):
+        if isinstance(messaging["manual_messages_templates"], list): # to simplify exchanges with dispatched emails, we allow list fixtures
+            for t in messaging["manual_messages_templates"]:
+                assert ("id" in t), t
+            messaging["manual_messages_templates"] = dict((t["id"], t) for t in messaging["manual_messages_templates"])
+
+        def _normalize_messages_templates(msg_list):
 
             for msg in msg_list:
 
@@ -1965,8 +1970,11 @@ class TextMessagingTemplates(BaseDataManager):
                 msg["is_used"] = msg.get("is_used", False)
                 msg["parent_id"] = msg.get("parent_id", None)
 
+                if "id" in msg:
+                    del msg["id"] # cleanup
+
         # complete_messages_templates(game_data["automated_messages_templates"], is_manual=False)
-        _complete_messages_templates(messaging["manual_messages_templates"].values())
+        _normalize_messages_templates(messaging["manual_messages_templates"].values())
 
 
     def _check_database_coherency(self, strict=False, **kwargs):
