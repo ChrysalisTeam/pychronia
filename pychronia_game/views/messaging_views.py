@@ -8,6 +8,7 @@ from django import forms
 from django.http import Http404, HttpResponseRedirect, HttpResponse
 from pychronia_game.utilities.select2_extensions import Select2TagsField
 from pychronia_game.templatetags.helpers import advanced_restructuredtext
+from django.core.exceptions import ValidationError
 
 
 """
@@ -46,7 +47,9 @@ class MessageComposeForm(AbstractGameForm):
 
         # we initialize data with the querydict
         sender = url_data.get("sender")
-        recipients = url_data.getlist("recipients") or [url_data.get("recipient")]
+
+        recipients = url_data.getlist("recipients") or (url_data["recipient"] if url_data.get("recipient") else [])
+
         subject = url_data.get("subject")
         body = url_data.get("body")
         attachment = url_data.get("attachment")
@@ -152,6 +155,20 @@ class MessageComposeForm(AbstractGameForm):
         self.fields["parent_id"].initial = parent_id
         self.fields["transferred_msg"].initial = transferred_msg
 
+
+    def _ensure_no_placeholder_left(self, value):
+        if re.search("{{\s*\w+\s*}}", value, re.IGNORECASE | re.UNICODE):
+            raise ValidationError(_("Placeholder remaining in text"))
+
+    def clean_subject(self):
+        data = self.cleaned_data['subject']
+        self._ensure_no_placeholder_left(data)
+        return data
+
+    def clean_body(self):
+        data = self.cleaned_data['body']
+        self._ensure_no_placeholder_left(data)
+        return data
 
     def clean_sender(self):
         # called only for master

@@ -169,7 +169,7 @@ def _generate_site_links(html_snippet, datamanager):
         except Exception:
             logging.warning("Error in generate_site_links for match %r", matched_str, exc_info=True)
             return None # abort link creation
-    regex = r"""\{% "(?P<content>[^"]+)" "(?P<view>[.\w]+)" %\}"""
+    regex = r"""\{% "(?P<content>[^"]+)" "(?P<view>[.\w]+)" %\}""" # content will be the text used as link
     html_res = autolinker.generate_links(html_snippet, regex=regex, link_attr_generator=site_link_attr_generator)
     return html_res
 
