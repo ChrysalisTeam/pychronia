@@ -136,11 +136,15 @@ TASKS DONE
 FUTUR ENHANCEMENTS
 --------------------------
 
+- convert "orbe" to masculine genre ; replace acharis by akharis
+- add automated "geoip localization" ability
+- memorize "real player authentications", to know who really hacks accounts
+- add gaùmemaster_hints to helpap ages etc.
 - make real "attach to" feature to delegate permissions (ex. for dependent ajax views)
 - rethink and repair telecom archive investigation
 - add to specific index any visualized document for "personal files"
-- setup all select choises with a default empty choice
-- add RST summary to all forms, especially admin ones ??? not need right ATM
+- setup all select choices with a default empty choice
+- add RST summary to all forms, especially admin ones ??? not need, right ATM
 - messaging templates filtering by taxonomy ?
 - put back accordeon toggles in messaging
 - allow accumulation of visibility reasons, to have both sender and recipient together in msg for same user?
