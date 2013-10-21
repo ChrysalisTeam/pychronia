@@ -1,23 +1,44 @@
 from types import NoneType
 from datetime import datetime, timedelta
-
+import collections
 
 
 """
 
 opcodes:
 
-add (paths, key) value
-replace (paths, key) value
-delete (paths, key) None
+add *paths value <- for sets
+insert *paths index_or_slice value <- for lists and dicts
+replace *paths index_or_slice value <- for lists and dicts
+delete *paths index_or_slice -> for everyone
 
 
-WARNING - ATM immutable types are not supported.
+WARNING - ATM mutable types are not supported.
 
 """
 
-ATOMIC_TYPES = (basestring, long, int, float, bool, set, tuple, NoneType, datetime, timedelta)
+ATOMIC_TYPES = (basestring, long, int, float, bool, tuple, set, NoneType, datetime, timedelta)
 LOOKUP_TYPES = (dict, list) # other are considered as instances, with editable attributes
+
+
+
+def my_sorted(myiter): # universal sorter, bypassing errors like comparing datetime and int
+    return sorted(myiter, key=lambda s: (type(s), s))
+
+def freeze_tree(tree):
+
+    try:
+        hash(tree)
+        return tree
+    except TypeError: # unhashable type
+        if isinstance(tree, collections.MutableMapping): # for DICTS
+            return tuple(my_sorted((k, freeze_tree(v)) for (k, v) in tree.items())) # keys always hashable
+        elif isinstance(tree, collections.Set): # for SETS
+            return tuple(my_sorted(v for v in tree)) # their elements are always hashable
+        elif isinstance(tree, collections.MutableSequence): # for LISTS
+            return tuple(my_sorted(freeze_tree(v) for v in tree)) # we could optimize out call h
+        else:
+            return tuple(my_sorted((k, freeze_tree(v)) for (k, v) in tree.__dict__items())) # for random objects, we consider the __dict__ only
 
 
 
@@ -177,6 +198,28 @@ if __name__ == "__main__":
 
     new_b = apply_tree_diff(a, opcodes)
     assert new_b == b
+
+
+
+
+    # we test freeze_tree()
+
+    initial = dict(a=3,
+                   b=[[True, u"hi", [8.6] ]],
+                   c=set([1, 2, datetime(2000, 10, 7)]),
+                   d=TestClass(k=None, m=22)
+                   )
+    final = freeze_tree(initial)
+
+    assert final == (('a', 3),
+                     ('b', ((u'hi', (8.6,), True),)),
+                     ('c', (1, 2, datetime(2000, 10, 7))),
+                     ('d', TestClass(k=None, m=22)))
+
+
+
+
+
 
     print ">> EVERYTHING OK <<"
 
