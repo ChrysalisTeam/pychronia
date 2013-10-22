@@ -73,7 +73,7 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
         self.connection.root()
 
         '''
-        assert game_root is not None
+        assert game_root is not None # it's actually game DATA, no METADATA is included here!
 
         super(BaseDataManager, self).__init__(**kwargs)
 

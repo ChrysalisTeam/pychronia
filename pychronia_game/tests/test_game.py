@@ -26,7 +26,8 @@ from django.test.client import RequestFactory
 import pprint
 from pychronia_game.datamanager.datamanager_administrator import retrieve_game_instance, \
     _get_zodb_connection, GameDataManager, get_all_instances_metadata, \
-    delete_game_instance, check_zodb_structure
+    delete_game_instance, check_zodb_structure, change_game_instance_status, \
+    GAME_STATUSES
 from pychronia_game.tests._test_tools import temp_datamanager
 import inspect
 from django.forms.fields import Field
@@ -515,22 +516,60 @@ class TestMetaAdministration(unittest.TestCase): # no django setup required ATM
 
     def test_game_instance_management_api(self):
 
-        check_zodb_structure()
+        reset_zodb_structure()
+
+        assert not get_all_instances_metadata()
 
         game_instance_id = "mystuff"
         assert not game_instance_exists(game_instance_id)
         create_game_instance(game_instance_id, "aaa@sc.com", "master", "pwd")
         assert game_instance_exists(game_instance_id)
 
+        all_res = get_all_instances_metadata()
+        assert len(all_res) == 1
+        res = all_res[0]
+        assert res["creation_time"] == res["last_acccess_time"] == res["last_status_change_time"]
+        assert res["accesses_count"] == 0
+        assert res["status"] == GAME_STATUSES.active == "active"
+
+        time.sleep(1)
+
         dm = retrieve_game_instance(game_instance_id)
         assert dm.is_initialized
         assert dm.data
 
+        with pytest.raises(ValueError):
+            retrieve_game_instance("sqdqsd")
+        dm = retrieve_game_instance(game_instance_id)
+
+        time.sleep(1)
+
+        with pytest.raises(ValueError):
+            delete_game_instance("sqdqsd")
+        with pytest.raises(ValueError):
+            delete_game_instance(game_instance_id) # must be OSBOLETE
+
+        with pytest.raises(ValueError):
+            change_game_instance_status("sqdqsd", GAME_STATUSES.obsolete)
+
+        change_game_instance_status(game_instance_id, GAME_STATUSES.aborted)
+        change_game_instance_status(game_instance_id, GAME_STATUSES.terminated)
+        change_game_instance_status(game_instance_id, GAME_STATUSES.active)
+        change_game_instance_status(game_instance_id, GAME_STATUSES.obsolete)
+
+        all_res = get_all_instances_metadata()
+        assert len(all_res) == 1
+        res = all_res[0]
+        assert res["creation_time"] < res["last_acccess_time"] < res["last_status_change_time"]
+        assert res["accesses_count"] == 2
+        assert res["status"] == GAME_STATUSES.obsolete == "obsolete"
+
         delete_game_instance(game_instance_id)
+
         assert not game_instance_exists(game_instance_id)
+        assert not get_all_instances_metadata()
         with pytest.raises(ValueError):
             retrieve_game_instance(game_instance_id)
-
 
 
 

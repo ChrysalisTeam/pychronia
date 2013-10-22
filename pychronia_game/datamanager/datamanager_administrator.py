@@ -21,7 +21,11 @@ PROCESS_LOCK = threading.Lock()
 ZODB_INSTANCE = None
 GAME_INSTANCES_MOUNT_POINT = "game_instances"
 
-def _ensure_zodb_open():
+
+GAME_STATUSES = Enum(("active", "terminated", "aborted", "obsolete"))
+
+
+def _ensure_zodb_is_open():
     global ZODB_INSTANCE, PROCESS_LOCK
     with PROCESS_LOCK:
         if not ZODB_INSTANCE:
@@ -40,7 +44,7 @@ def _ensure_zodb_open():
 
 
 def _get_zodb_connection():
-    _ensure_zodb_open()
+    _ensure_zodb_is_open()
     connection = ZODB_INSTANCE.open() # thread-local connection, by default
     return connection
 
@@ -67,6 +71,16 @@ if __debug__ and config.DEBUG and config.ZODB_RESET_ALLOWED:
 
 
 
+def _create_metadata_record(game_instance_id):
+    utcnow = datetime.utcnow()
+    game_metadata = PersistentDict(instance_id=game_instance_id,
+                                   creation_time=utcnow,
+                                   accesses_count=0,
+                                   last_acccess_time=utcnow,
+                                   last_status_change_time=utcnow,
+                                   status=GAME_STATUSES.active)
+    return game_metadata
+
 
 @zodb_transaction
 def create_game_instance(game_instance_id, master_real_email, master_login, master_password):
@@ -76,13 +90,18 @@ def create_game_instance(game_instance_id, master_real_email, master_login, mast
     connection = _get_zodb_connection()
     game_instances = connection.root()[GAME_INSTANCES_MOUNT_POINT]
 
-    if game_instances.get(game_instance_id): # must be resent and non-empty
+    if game_instances.get(game_instance_id): # must be present and non-empty
         raise ValueError(_("Already existing instance"))
 
     try:
-        game_root = PersistentDict()
+
+        game_metadata = _create_metadata_record(game_instance_id=game_instance_id)
+        game_data = PersistentDict()
+        game_root = PersistentDict(metadata=game_metadata,
+                                   data=game_data)
+
         dm = GameDataManager(game_instance_id=game_instance_id,
-                             game_root=game_root,
+                             game_root=game_data,
                              request=None) # no user messages possible here
         assert not dm.is_initialized
         dm.reset_game_data() # TODO here provide all necessary info
@@ -111,29 +130,61 @@ def delete_game_instance(game_instance_id):
     instances = connection.root()[GAME_INSTANCES_MOUNT_POINT]
     if game_instance_id not in instances:
         raise ValueError(_("Unexisting instance %r") % game_instance_id)
+    if instances[game_instance_id]["metadata"]["status"] != GAME_STATUSES.obsolete:
+        raise ValueError(_("Can't delete non-obsolete instance %r") % game_instance_id)
     del instances[game_instance_id]
 
 
-def retrieve_game_instance(game_instance_id, request=None):
+
+@zodb_transaction
+def _fetch_game_data(game_instance_id):
     connection = _get_zodb_connection()
     game_root = connection.root()[GAME_INSTANCES_MOUNT_POINT].get(game_instance_id)
 
     if not game_root:
         raise ValueError(_("Unexisting instance %r") % game_instance_id)
 
+    game_metadata = game_root["metadata"]
+    game_metadata["accesses_count"] += 1
+    game_metadata["last_acccess_time"] = datetime.utcnow()
+
+    game_data = game_root["data"] # we don't care about game STATUS, we fetch it anyway
+    return game_data
+
+
+# NO transaction management here!
+def retrieve_game_instance(game_instance_id, request=None):
+    game_data = _fetch_game_data(game_instance_id=game_instance_id)
     dm = GameDataManager(game_instance_id=game_instance_id,
-                         game_root=game_root,
+                         game_root=game_data,
                          request=request)
     return dm
 
 
+@zodb_transaction
+def change_game_instance_status(game_instance_id, new_status):
+    if new_status not in GAME_STATUSES:
+        raise ValueError(_("Wrong new game status %s for %r") % (new_status, game_instance_id))
+
+    connection = _get_zodb_connection()
+    game_root = connection.root()[GAME_INSTANCES_MOUNT_POINT].get(game_instance_id)
+
+    if not game_root:
+        raise ValueError(_("Unexisting instance %r") % game_instance_id)
+
+    game_metadata = game_root["metadata"]
+    game_metadata["status"] = new_status
+    game_metadata["last_status_change_time"] = datetime.utcnow()
+
+
+# NO transaction management here!
 def get_all_instances_metadata():
     """
     Returns a list of copies of metadata dicts.
     """
     connection = _get_zodb_connection()
     instances = connection.root()[GAME_INSTANCES_MOUNT_POINT].itervalues()
-    res = [inst["metadata"].copy() for inst in instances] # metadata contains game instance id
+    res = sorted((inst["metadata"].copy() for inst in instances), key=lambda x: x["creation_time"], reverse=True) # metadata contains instance id too
     return res
 
 
