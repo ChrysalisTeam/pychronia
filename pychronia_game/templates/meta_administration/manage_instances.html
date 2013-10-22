@@ -1,0 +1,32 @@
+{% extends "base_meta_administration.html" %}
+{% load sekizai_tags heading kwacros helpers i18n django_select2_tags %}
+{% loadkwacros "metalradiance_kwacros.html" %}
+
+
+{% block content %}
+
+	<h1>{% trans "Meta Administration" %}</h1>
+
+	<table class="realtable">
+
+		{% for meta in instances_metadata %}
+		<tr>
+			<td>
+			<a href="{% url pychronia_game.views.homepage game_instance_id=meta.instance_id %}" ><b>{{ meta.instance_id }}</b></a><br>
+			{% trans "Created" %} {{ meta.creation_time|utctolocal|date:"SHORT_DATE_FORMAT" }}
+			</td>
+			<td style="text-align: left;">
+				<ul>
+				    <li>{% trans "Status:" %} '{{ meta.status }}' ({% trans "last:" %} {{ meta.last_status_change_time|utctolocal|date:"SHORT_DATETIME_FORMAT" }})</li>
+					<li>{% trans "Accesses:" %} {{ meta.accesses_count }} ({% trans "last:" %} {{ meta.last_acccess_time|utctolocal|date:"SHORT_DATETIME_FORMAT" }})</li>
+				</ul>
+
+			</td>
+		</tr>
+		{% endfor %}
+
+	</table>
+
+{% endblock %}
+
+

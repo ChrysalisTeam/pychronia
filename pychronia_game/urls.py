@@ -152,8 +152,12 @@ support_urlpatterns = patterns('',
     # serving of game files is currently independent of ZODB data
     url(r'^%s(?P<hash>[^/]*)/(?P<path>.*)$' % config.GAME_FILES_URL[1:], 'pychronia_game.views.serve_game_file'), # NOT a gameview
 
-    ## no need to server MEDIA_URL in this site
+    ## no need to serve MEDIA_URL in this site
 )
 
+
+game_admin_urlpatterns = patterns('pychronia_game.meta_administration_views',
+    (r'^administration/', "manage_instances"),
+)
 
 

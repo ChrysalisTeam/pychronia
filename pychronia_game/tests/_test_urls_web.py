@@ -7,6 +7,7 @@ from django.contrib.staticfiles.urls import urlpatterns as staticfiles_urlpatter
 
 # root urlpatterns of pychronia_game application
 urlpatterns = patterns('',
+        url(r'^', include(game_admin_urlpatterns)),
         url(r'^', include(support_urlpatterns)),
         url(r'^(?P<game_instance_id>\w+)/', include(web_game_urlpatterns)),
 )

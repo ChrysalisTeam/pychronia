@@ -1,0 +1,16 @@
+{% extends "metalradiance_base.html" %}
+{% load sekizai_tags heading kwacros helpers i18n django_select2_tags %}
+{% loadkwacros "metalradiance_kwacros.html" %}
+
+
+{% block panels %}
+
+    {% usekwacro main_panel_start frame_class="giant_frame" %}
+
+        {% block content %}
+        {% endblock %}
+
+    {% usekwacro main_panel_end %}
+
+{% endblock %}
+
