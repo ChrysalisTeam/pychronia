@@ -87,6 +87,14 @@ class AccessDeniedError(GameError):
     """
     pass
 
+
+class GameMaintenanceError(AccessDeniedError):
+    """
+    Raised when the game instance has been locked for maintenance, eg. to manually edit the data tree.
+    """
+    pass
+
+
 class AuthenticationRequiredError(AccessDeniedError):
     """
     Raised if access if denied, but could be granted provided the user logs in.

@@ -531,6 +531,7 @@ class TestMetaAdministration(unittest.TestCase): # no django setup required ATM
         assert res["creation_time"] == res["last_acccess_time"] == res["last_status_change_time"]
         assert res["accesses_count"] == 0
         assert res["status"] == GAME_STATUSES.active == "active"
+        assert res["maintenance_until"] is None
 
         time.sleep(1)
 
@@ -547,22 +548,28 @@ class TestMetaAdministration(unittest.TestCase): # no django setup required ATM
         with pytest.raises(ValueError):
             delete_game_instance("sqdqsd")
         with pytest.raises(ValueError):
-            delete_game_instance(game_instance_id) # must be OSBOLETE
+            delete_game_instance(game_instance_id) # must be NOn-ACTIVE
 
         with pytest.raises(ValueError):
-            change_game_instance_status("sqdqsd", GAME_STATUSES.obsolete)
+            change_game_instance_status("sqdqsd", GAME_STATUSES.aborted)
 
-        change_game_instance_status(game_instance_id, GAME_STATUSES.aborted)
-        change_game_instance_status(game_instance_id, GAME_STATUSES.terminated)
+        change_game_instance_status(game_instance_id, GAME_STATUSES.aborted, maintenance_until=datetime.utcnow() + timedelta(seconds=1))
+        with pytest.raises(GameMaintenanceError):
+            retrieve_game_instance(game_instance_id)
+        time.sleep(1)
+        retrieve_game_instance(game_instance_id) # NOW works
+
         change_game_instance_status(game_instance_id, GAME_STATUSES.active)
-        change_game_instance_status(game_instance_id, GAME_STATUSES.obsolete)
+        change_game_instance_status(game_instance_id, GAME_STATUSES.terminated)
+        change_game_instance_status(game_instance_id, random.choice((GAME_STATUSES.terminated, GAME_STATUSES.aborted)))
 
         all_res = get_all_instances_metadata()
         assert len(all_res) == 1
         res = all_res[0]
         assert res["creation_time"] < res["last_acccess_time"] < res["last_status_change_time"]
-        assert res["accesses_count"] == 2
-        assert res["status"] == GAME_STATUSES.obsolete == "obsolete"
+        assert res["accesses_count"] == 3
+        assert res["status"] != GAME_STATUSES.active
+        assert res["maintenance_until"] is None # was set back to None
 
         delete_game_instance(game_instance_id)
 

@@ -22,7 +22,7 @@ ZODB_INSTANCE = None
 GAME_INSTANCES_MOUNT_POINT = "game_instances"
 
 
-GAME_STATUSES = Enum(("active", "terminated", "aborted", "obsolete"))
+GAME_STATUSES = Enum(("active", "terminated", "aborted"))
 
 
 def _ensure_zodb_is_open():
@@ -78,7 +78,8 @@ def _create_metadata_record(game_instance_id):
                                    accesses_count=0,
                                    last_acccess_time=utcnow,
                                    last_status_change_time=utcnow,
-                                   status=GAME_STATUSES.active)
+                                   status=GAME_STATUSES.active,
+                                   maintenance_until=None) # None or datetime here
     return game_metadata
 
 
@@ -130,14 +131,14 @@ def delete_game_instance(game_instance_id):
     instances = connection.root()[GAME_INSTANCES_MOUNT_POINT]
     if game_instance_id not in instances:
         raise ValueError(_("Unexisting instance %r") % game_instance_id)
-    if instances[game_instance_id]["metadata"]["status"] != GAME_STATUSES.obsolete:
-        raise ValueError(_("Can't delete non-obsolete instance %r") % game_instance_id)
+    if instances[game_instance_id]["metadata"]["status"] == GAME_STATUSES.active:
+        raise ValueError(_("Can't delete active instance %r") % game_instance_id)
     del instances[game_instance_id]
 
 
 
 @zodb_transaction
-def _fetch_game_data(game_instance_id):
+def _fetch_available_game_data(game_instance_id):
     connection = _get_zodb_connection()
     game_root = connection.root()[GAME_INSTANCES_MOUNT_POINT].get(game_instance_id)
 
@@ -145,6 +146,13 @@ def _fetch_game_data(game_instance_id):
         raise ValueError(_("Unexisting instance %r") % game_instance_id)
 
     game_metadata = game_root["metadata"]
+
+    if game_metadata["maintenance_until"]:
+        if game_metadata["maintenance_until"] > datetime.utcnow():
+            raise GameMaintenanceError(_("Instance %s is in maintenance") % game_instance_id)
+        else:
+            game_metadata["maintenance_until"] = None # cleanup
+
     game_metadata["accesses_count"] += 1
     game_metadata["last_acccess_time"] = datetime.utcnow()
 
@@ -154,7 +162,7 @@ def _fetch_game_data(game_instance_id):
 
 # NO transaction management here!
 def retrieve_game_instance(game_instance_id, request=None):
-    game_data = _fetch_game_data(game_instance_id=game_instance_id)
+    game_data = _fetch_available_game_data(game_instance_id=game_instance_id)
     dm = GameDataManager(game_instance_id=game_instance_id,
                          game_root=game_data,
                          request=request)
@@ -162,9 +170,8 @@ def retrieve_game_instance(game_instance_id, request=None):
 
 
 @zodb_transaction
-def change_game_instance_status(game_instance_id, new_status):
-    if new_status not in GAME_STATUSES:
-        raise ValueError(_("Wrong new game status %s for %r") % (new_status, game_instance_id))
+def change_game_instance_status(game_instance_id, new_status=None, maintenance_until=None):
+    assert new_status or maintenance_until
 
     connection = _get_zodb_connection()
     game_root = connection.root()[GAME_INSTANCES_MOUNT_POINT].get(game_instance_id)
@@ -173,7 +180,16 @@ def change_game_instance_status(game_instance_id, new_status):
         raise ValueError(_("Unexisting instance %r") % game_instance_id)
 
     game_metadata = game_root["metadata"]
-    game_metadata["status"] = new_status
+
+    if new_status:
+        if new_status not in GAME_STATUSES:
+            raise ValueError(_("Wrong new game status %s for %r") % (new_status, game_instance_id))
+        game_metadata["status"] = new_status
+
+    if maintenance_until:
+        assert maintenance_until >= datetime.utcnow()
+        game_metadata["maintenance_until"] = maintenance_until
+
     game_metadata["last_status_change_time"] = datetime.utcnow()
 
 

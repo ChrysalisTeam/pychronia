@@ -26,7 +26,7 @@ import math
 
 
 
-def create_new_instance(request):
+def create_new_instance(request):  # TODO FINISH LATER
 
     if request.method != "POST":
 
