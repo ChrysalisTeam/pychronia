@@ -80,8 +80,8 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
         self.notify_event("BASE_DATA_MANAGER_INIT_CALLED")
 
         self._in_writing_transaction = False # for WRITING transactions only
-        self._in_top_level_handler = False # for both readonly and writing transactions, top-level conflict handler 
-        
+        self._in_top_level_handler = False # for both readonly and writing transactions, top-level conflict handler
+
         self.game_instance_id = game_instance_id
 
         self._inner_logger = logging.getLogger("pychronia_game") #FIXME

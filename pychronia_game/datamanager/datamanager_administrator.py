@@ -116,6 +116,7 @@ def create_game_instance(game_instance_id, master_real_email, master_login, mast
         raise
 
 
+
 def game_instance_exists(game_instance_id):
     connection = _get_zodb_connection()
     res = connection.root()[GAME_INSTANCES_MOUNT_POINT].has_key(game_instance_id)
@@ -138,7 +139,7 @@ def delete_game_instance(game_instance_id):
 
 
 @zodb_transaction
-def _fetch_available_game_data(game_instance_id):
+def _fetch_available_game_data(game_instance_id, force):
     connection = _get_zodb_connection()
     game_root = connection.root()[GAME_INSTANCES_MOUNT_POINT].get(game_instance_id)
 
@@ -147,11 +148,12 @@ def _fetch_available_game_data(game_instance_id):
 
     game_metadata = game_root["metadata"]
 
-    if game_metadata["maintenance_until"]:
-        if game_metadata["maintenance_until"] > datetime.utcnow():
-            raise GameMaintenanceError(_("Instance %s is in maintenance") % game_instance_id)
-        else:
-            game_metadata["maintenance_until"] = None # cleanup
+    if not force:
+        if game_metadata["maintenance_until"]:
+            if game_metadata["maintenance_until"] > datetime.utcnow():
+                raise GameMaintenanceError(_("Instance %s is in maintenance") % game_instance_id)
+            else:
+                game_metadata["maintenance_until"] = None # cleanup
 
     game_metadata["accesses_count"] += 1
     game_metadata["last_acccess_time"] = datetime.utcnow()
@@ -161,8 +163,11 @@ def _fetch_available_game_data(game_instance_id):
 
 
 # NO transaction management here!
-def retrieve_game_instance(game_instance_id, request=None):
-    game_data = _fetch_available_game_data(game_instance_id=game_instance_id)
+def retrieve_game_instance(game_instance_id, request=None, force=False):
+    """
+    If force is True, checks on instance availability are skipped.
+    """
+    game_data = _fetch_available_game_data(game_instance_id=game_instance_id, force=force)
     dm = GameDataManager(game_instance_id=game_instance_id,
                          game_root=game_data,
                          request=request)

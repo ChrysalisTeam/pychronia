@@ -26,7 +26,10 @@ import math
 
 
 
-def create_new_instance(request):  # TODO FINISH LATER
+GAME_INSTANCE_MAINTENANCE_LOCKING_DELAY_MN = 15
+
+
+def ____create_new_instance(request):  # TODO FINISH LATER
 
     if request.method != "POST":
 
@@ -63,3 +66,32 @@ def manage_instances(request):
                     {
                      'instances_metadata': instances_metadata,
                     })
+
+
+'''
+def lock_and_edit_instance_db(request, game_instance_id):
+    
+    
+    if request.method=POST:
+        new_db_json = request.POSt.get(request
+                                       utilities.convert_object_tree(self.data[key], utilities.python_to_zodb_types)
+    
+    maintenance_until = datetime.utcnow() + timedelta(minutes=GAME_INSTANCE_MAINTENANCE_LOCKING_DELAY_MN)
+    
+    datamanager_administrator.change_game_instance_status(game_instance_id=game_instance_id, maintenance_until=maintenance_until)
+    
+    
+    
+    formatted_data = request.datamanager.dump_zope_database(width=100)
+    '''
+
+
+
+
+
+
+
+
+
+
+

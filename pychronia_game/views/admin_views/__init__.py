@@ -59,10 +59,12 @@ def game_events(request, template_name='administration/game_events.html'):
 @register_view(access=UserAccess.master, title=_lazy("Manage Databases"))
 def manage_databases(request, template_name='administration/database_management.html'):
 
+    ''' OBSOLETE
     if request.method == "POST":
         if request.POST.has_key("pack_database"):
             with action_failure_handler(request, _("ZODB file packed.")):
                 request.datamanager.pack_database(days=1)  # safety measure - take at least one day of gap !
+    '''
 
     formatted_data = request.datamanager.dump_zope_database(width=100)
 
