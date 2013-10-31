@@ -267,39 +267,35 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
     @readonly_method
     def dump_zope_database(self, **kwargs):
 
-        dump_args = dict(width=100, indent=4, # NO default_style nor canonical, else stuffs break
-                            default_flow_style=False, allow_unicode=True)
-        dump_args.update(kwargs)
+        data_tree = copy.deepcopy(dict(self.data)) # beware - memory-intensive call
 
-        data_dump = copy.deepcopy(dict(self.data)) # beware - memory-intensive call
-
+        """ TODO FIXME REPUT THAT ??
         # special, we remove info that is already well visible in messaging system and chatroom
-        for key in list(data_dump.keys()): # in case it'd be a "dict-view"
+        for key in list(data_tree.keys()): # in case it'd be a "dict-view"
             if "message" in key:
-                del data_dump[key]
+                del data_tree[key]
+        """
 
-        data_dump = utilities.convert_object_tree(data_dump, utilities.zodb_to_python_types)
-
-        '''
-        def coerce_to_ascii_if_possible(dumper, value):
-            try:
-                return dumper.represent_scalar(u'tag:yaml.org,2002:str', value.encode("ascii"))
-            except UnicodeError:
-                return dumper.represent_unicode(value)
-        '''
-        yaml.add_representer(unicode, lambda dumper, value: dumper.represent_scalar(u'tag:yaml.org,2002:str', value))
-
-        # FIXME yaml.add_representer(unicode, lambda dumper, value: dumper.represent_scalar(u'tag:yaml.org,2002:str', value))
-        string = yaml.dump(data_dump, **dump_args) # TODO fix safe_dump() to accept unicode in input!!
+        string = utilities.dump_data_tree_to_yaml(data_tree, **kwargs)
 
         return string
 
 
+    @transaction_watcher
+    def load_zope_database(self, string): # TODO UNTESTED
 
+        data_tree = utilities.load_data_tree_from_yaml(string)
+        assert isinstance(data_tree, PersistentDict)
 
+        try:
+            old_data = self.data
+            self.data = data_tree
+            self.check_database_coherency()
+        except Exception:
+            self.data = old_data # security about mishandlings
+            raise
 
-
-
+        return self.data
 
 
 '''

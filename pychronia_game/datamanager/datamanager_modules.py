@@ -302,7 +302,7 @@ class NovaltyTracker(BaseDataManager):
 
         allowed_usernames = self.get_character_usernames() + [self.get_global_parameter("master_login")]
         for item_key, usernames in game_data["novelty_tracker"].items():
-            utilities.check_is_slug(item_key)
+            assert isinstance(item_key, tuple) and len(item_key) == 2
             for username in usernames:
                 assert username in allowed_usernames
 

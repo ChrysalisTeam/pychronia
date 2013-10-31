@@ -30,6 +30,7 @@ from django.utils.translation import ungettext, ugettext as _, ugettext_lazy as 
 from django.template.response import SimpleTemplateResponse, TemplateResponse
 from django.shortcuts import render
 from django.core.urlresolvers import reverse
+from django.contrib.auth.decorators import user_passes_test
 ## from django.utils.text import slugify - FIXME - for 1.5 only
 from django.template.defaultfilters import slugify
 
@@ -37,7 +38,12 @@ from . import utilities
 from .utilities import config, SDICT, Enum
 from .utilities.encryption import unicode_decrypt, unicode_encrypt, hash
 
+
 _undefined = object()
+
+
+# decorator to be applied on views
+superuser_required = user_passes_test(lambda u: u.is_superuser)
 
 
 

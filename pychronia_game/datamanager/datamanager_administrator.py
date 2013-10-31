@@ -25,6 +25,10 @@ GAME_INSTANCES_MOUNT_POINT = "game_instances"
 GAME_STATUSES = Enum(("active", "terminated", "aborted"))
 
 
+_undefined = object()
+
+
+
 def _ensure_zodb_is_open():
     global ZODB_INSTANCE, PROCESS_LOCK
     with PROCESS_LOCK:
@@ -71,9 +75,13 @@ if __debug__ and config.DEBUG and config.ZODB_RESET_ALLOWED:
 
 
 
-def _create_metadata_record(game_instance_id):
+def _create_metadata_record(game_instance_id, creator_login):
+    utilities.check_is_slug(game_instance_id)
+    utilities.check_is_slug(creator_login)
+
     utcnow = datetime.utcnow()
     game_metadata = PersistentDict(instance_id=game_instance_id,
+                                   creator_login=creator_login,
                                    creation_time=utcnow,
                                    accesses_count=0,
                                    last_acccess_time=utcnow,
@@ -96,7 +104,8 @@ def create_game_instance(game_instance_id, master_real_email, master_login, mast
 
     try:
 
-        game_metadata = _create_metadata_record(game_instance_id=game_instance_id)
+        game_metadata = _create_metadata_record(game_instance_id=game_instance_id,
+                                                creator_login=master_login)
         game_data = PersistentDict()
         game_root = PersistentDict(metadata=game_metadata,
                                    data=game_data)
@@ -115,6 +124,18 @@ def create_game_instance(game_instance_id, master_real_email, master_login, mast
         logging.critical("Impossible to initialize game instance %r..." % game_instance_id, exc_info=True)
         raise
 
+
+@zodb_transaction # TODO UNTESTED
+def replace_game_instance_data(game_instance_id, new_data):
+    assert isinstance(new_data, PersistentDict)
+    connection = _get_zodb_connection()
+    game_instances = connection.root()[GAME_INSTANCES_MOUNT_POINT]
+
+    if game_instance_id not in game_instances:
+        raise ValueError(_("Unexisting instance %r") % game_instance_id)
+
+    assert game_instances[game_instance_id]["data"]
+    game_instances[game_instance_id]["data"] = new_data
 
 
 def game_instance_exists(game_instance_id):
@@ -173,10 +194,9 @@ def retrieve_game_instance(game_instance_id, request=None, force=False):
                          request=request)
     return dm
 
-
 @zodb_transaction
-def change_game_instance_status(game_instance_id, new_status=None, maintenance_until=None):
-    assert new_status or maintenance_until
+def change_game_instance_status(game_instance_id, new_status=None, maintenance_until=_undefined):
+    assert new_status or (maintenance_until is not _undefined)
 
     connection = _get_zodb_connection()
     game_root = connection.root()[GAME_INSTANCES_MOUNT_POINT].get(game_instance_id)
@@ -191,8 +211,8 @@ def change_game_instance_status(game_instance_id, new_status=None, maintenance_u
             raise ValueError(_("Wrong new game status %s for %r") % (new_status, game_instance_id))
         game_metadata["status"] = new_status
 
-    if maintenance_until:
-        assert maintenance_until >= datetime.utcnow()
+    if maintenance_until is not _undefined:
+        assert maintenance_until is None or maintenance_until >= datetime.utcnow()
         game_metadata["maintenance_until"] = maintenance_until
 
     game_metadata["last_status_change_time"] = datetime.utcnow()

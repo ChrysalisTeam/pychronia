@@ -1,0 +1,69 @@
+{% extends "base_meta_administration.html" %}
+{% load sekizai_tags heading kwacros helpers i18n django_select2_tags %}
+{% loadkwacros "metalradiance_kwacros.html" %}
+
+
+
+{# TODO MOVE THIS TO TOP LEVEL ASAP #}
+
+{% block sekizai_calls %}
+{{ block.super }}
+
+{% addtoblock "css" %}
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}libs/markitup/skins/simple/style.css" />
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}libs/markitup/sets/rest/style.css" />
+{% endaddtoblock %}
+
+{% addtoblock "js" %}
+<script type="text/javascript" src="{{ STATIC_URL }}libs/markitup/jquery.markitup.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}libs/markitup/sets/yaml/set.js"></script>
+{% endaddtoblock %}
+
+
+{% addtoblock "definition_js" %}
+
+mySettings.resizeHandle = false; // we can't remove autohandle of browser though
+$("#yaml_editor").markItUp(mySettings); // mySettings comes from /markitup/sets/yaml/set.js
+
+{% endaddtoblock %}
+
+
+{% endblock %}
+
+
+
+
+{% block content %}
+
+
+<h1>{% trans "Game Instance DB" %}</h1>
+
+
+{% if formatted_data %}
+
+    {% if editing_allowed %}
+
+        <form action="" method="post" class="meta_admin_button">
+            <input type="submit" value="{{ _("Replace game database")}}" />
+            <textarea id="yaml_editor" name="db_content" style="width:100%; height:1000px; margin: 5px 0; ">
+{{ formatted_data }}
+            </textarea>
+            <input type="submit" value="{{ _("Replace game database")}}" />
+        </form>
+
+    {% else %}
+
+    <p><b>{% trans "DB editing is now forbidden, please save your modifications elsewhere and begin the process again." %}</b></p>
+
+    <pre>
+{{ formatted_data }}
+    </pre>
+
+    {% endif %}
+
+{% endif %}
+
+
+{% endblock %}
+
+

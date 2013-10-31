@@ -150,14 +150,15 @@ support_urlpatterns = patterns('',
     (r'^jsi18n/$', 'django.views.i18n.javascript_catalog', {'packages': ('pychronia_game',)}),
 
     # serving of game files is currently independent of ZODB data
-    url(r'^%s(?P<hash>[^/]*)/(?P<path>.*)$' % config.GAME_FILES_URL[1:], 'pychronia_game.views.serve_game_file'), # NOT a gameview
+    url(r'^%s(?P<hash>[^/]+)/(?P<path>.+)$' % config.GAME_FILES_URL[1:], 'pychronia_game.views.serve_game_file'), # NOT a gameview
 
     ## no need to serve MEDIA_URL in this site
 )
 
 
 game_admin_urlpatterns = patterns('pychronia_game.meta_administration_views',
-    (r'^administration/', "manage_instances"),
+    (r'^administration/$', "manage_instances"),
+    (r'^administration/(?P<target_instance_id>[^/]+)/$', "edit_instance_db"), # NOT game_instance_id, else bug with middleware
 )
 
 

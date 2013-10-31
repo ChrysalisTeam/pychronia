@@ -12,14 +12,41 @@
 		{% for meta in instances_metadata %}
 		<tr>
 			<td>
-			<a href="{% url pychronia_game.views.homepage game_instance_id=meta.instance_id %}" ><b>{{ meta.instance_id }}</b></a><br>
-			{% trans "Created" %} {{ meta.creation_time|utctolocal|date:"SHORT_DATE_FORMAT" }}
+    			<a href="{% url pychronia_game.views.homepage game_instance_id=meta.instance_id %}" ><b>{{ meta.instance_id }}</b></a><br/>
+    			{% trans "Creator:" %} {{ meta.creator_login }}<br/>
+    			{% trans "Created:" %} {{ meta.creation_time|utctolocal|date:"SHORT_DATE_FORMAT" }}<br/>
 			</td>
 			<td style="text-align: left;">
+
+
+
 				<ul>
-				    <li>{% trans "Status:" %} '{{ meta.status }}' ({% trans "last:" %} {{ meta.last_status_change_time|utctolocal|date:"SHORT_DATETIME_FORMAT" }})</li>
-					<li>{% trans "Accesses:" %} {{ meta.accesses_count }} ({% trans "last:" %} {{ meta.last_acccess_time|utctolocal|date:"SHORT_DATETIME_FORMAT" }})</li>
-				</ul>
+				    <li>{% trans "Status:" %} '{{ meta.status }}' ({% trans "last change:" %} {{ meta.last_status_change_time|utctolocal|date:"SHORT_DATETIME_FORMAT" }})</li>
+
+					<li>{% trans "Accesses:" %} {{ meta.accesses_count }} ({% trans "last access:" %} {{ meta.last_acccess_time|utctolocal|date:"SHORT_DATETIME_FORMAT" }})</li>
+
+
+				{% if meta.maintenance_until and meta.maintenance_until > utc_now %}
+				    <li><b>{% trans "LOCKED until" %}</b> {{ meta.maintenance_until|utctolocal|date:"SHORT_DATETIME_FORMAT" }}</li>
+    		    </ul>
+    		        <form action="" method="post" class="meta_admin_button">
+    				    <input type="hidden" name="unlock_instance" value="{{ meta.instance_id }}"/>
+    				    <input type="submit" value="{{ _("Unlock game instance")}}" />
+    				</form>
+                    <form action="{% url pychronia_game.meta_administration_views.edit_instance_db target_instance_id=meta.instance_id %}" method="get" class="meta_admin_button">
+                        <input type="submit" value="{{ _("Edit game instance database")}}" />
+                    </form>
+                {% else %}
+                    <li>{% trans "Not locked" %}</li>
+                </ul>
+                    <form action="" method="post" class="meta_admin_button">
+                        <input type="hidden" name="lock_instance" value="{{ meta.instance_id }}"/>
+                        <input type="submit" value="{{ _("Lock")}}" />
+                    </form>
+                {% endif %}
+                </ul>
+
+
 
 			</td>
 		</tr>

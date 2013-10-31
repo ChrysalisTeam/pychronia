@@ -120,8 +120,10 @@ def open_zodb_file(zodb_file):
 
 def convert_object_tree(tree, type_mapping):
     """
-    Recursively transform a tree of objects (lists, dicts, instances...)
+    Recursively transforms a tree of objects (lists, dicts, instances...)
     into an equivalent structure with alternative types.
+    
+    Operations might occur IN PLACE.
     """
 
     for (A, B) in type_mapping.items():
@@ -269,10 +271,30 @@ def load_multipart_rst(val):
 
 
 
+def dump_data_tree_to_yaml(data_tree, convert=True, **kwargs):
+
+    if convert:
+        data_tree = convert_object_tree(data_tree, zodb_to_python_types)
+
+    dump_args = dict(width=100, indent=4, # NO default_style nor canonical, else stuffs break
+                        default_flow_style=False, allow_unicode=True)
+    dump_args.update(kwargs)
+
+    yaml.add_representer(unicode, lambda dumper, value: dumper.represent_scalar(u'tag:yaml.org,2002:str', value))
+
+    string = yaml.dump(data_tree, **dump_args) # TODO fix safe_dump() to accept unicode in input!!
+
+    return string
 
 
+def load_data_tree_from_yaml(string, convert=True):
 
+    data_tree = yaml.load(string)
 
+    if convert:
+        data_tree = convert_object_tree(data_tree, python_to_zodb_types)
+
+    return data_tree
 
 
 ## Tools for database sanity checks ##
