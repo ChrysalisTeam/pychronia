@@ -446,7 +446,7 @@ def ___outbox(request, template_name='messaging/messages.html'):
 '''
 
 
-@register_view(access=UserAccess.master, title=_lazy("View Single Message"))
+@register_view(access=UserAccess.anonymous, requires_global_permission=False, title=_lazy("View Single Message"))
 def view_single_message(request, msg_id, template_name='messaging/view_single_message.html'):
     """
     Meant to be used in event logging or for message transfer.

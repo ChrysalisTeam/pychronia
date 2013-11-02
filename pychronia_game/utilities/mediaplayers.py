@@ -236,7 +236,7 @@ def generate_image_viewer(imageurl, width=450, height=350, preset=None, **kwargs
                 thumb = thumbnailer.get_thumbnail(options)
             thumburl = thumb.url
         except Exception, e:
-            logging.critical("generate_image_viewer thumbnail generation failed %s/%s", imageurl, preset, exc_info=True)
+            logging.critical("generate_image_viewer thumbnail generation failed %s - %s", imageurl, preset, exc_info=True)
             thumburl = imageurl # we give up thumbnailing...
 
     options = \

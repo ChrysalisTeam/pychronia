@@ -1,5 +1,6 @@
 
-{% load i18n helpers %}
+{% load i18n helpers kwacros assign %}
+{% loadkwacros "metalradiance_kwacros.html" %}
 
 {# TEMPLATE MEANT FOR INCLUSION IN REAL WEBPAGE #}
 
@@ -39,6 +40,11 @@
     {% endif %}
 
     <table style="margin:2px 2px; font-size:0.9em; line-height:0.9em;">
+
+        {% if message.id %}
+            {% assign name="msg_link" %}{% game_view_url "pychronia_game.views.view_single_message" msg_id=message.id %}{% endassign %}
+            {% usekwacro shareable_link msg_link %}
+        {% endif %}
 
         <tr>
         <td><strong>{% trans "From:" %}</strong></td>

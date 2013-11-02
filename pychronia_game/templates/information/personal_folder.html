@@ -16,7 +16,7 @@
 
         //alert("{% game_view_url "pychronia_game.views.view_media" %}?url=" + fileurl);
 
-        // DO NOT use escape(), as it's for latin1 encoding (blerh...)
+        // DO NOT use escape(), since it's for latin1 encoding (blerh...)
 
         $("#media_url").html('<a href="'+encodeURI(fileurl)+'">'+encodeURI(fileurl)+'</a>')
 

@@ -4,6 +4,15 @@
 
 
 
+{% kwacro shareable_link link_url %}
+<span class="float-right">
+    <a href="#" onclick="window.prompt ('{% trans "Shareable link to copy/paste" %}', '{{link_url}}'); return false;">
+        <img src="{{ STATIC_URL }}MetalRadiance/img/icons/share_link.png">
+    </a>
+</span>
+{% endkwacro %}
+
+
 {% kwacro deletion_button del_id %}
     {% if del_id %}
     <form action="" method="post" class="form_deletion_button">

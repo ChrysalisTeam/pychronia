@@ -104,6 +104,7 @@ class ZodbTransactionMiddleware(object):
 
         try:
             if hasattr(request, "datamanager"):
+                request.datamanager.check_database_coherency() # DEBUGGING
                 request.datamanager.close()
         except Exception, e:
             # exception should NEVER flow out of response processing middlewares
