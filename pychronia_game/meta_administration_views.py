@@ -24,6 +24,7 @@ from django.contrib import messages
 from django.utils.translation import ugettext as _, ugettext_lazy as _lazy, ungettext
 from pychronia_game.common import *
 from pychronia_game.datamanager import datamanager_administrator
+from django.contrib.messages import get_messages
 
 
 
@@ -59,25 +60,26 @@ def ____create_new_instance(request):  # TODO FINISH LATER
 
 
 
-# TODO @superuser_required
+@superuser_required
 def manage_instances(request):
 
     try:
         if request.method == "POST":
 
             if request.POST.get("lock_instance"):
-                game_instance_id = request.POST.get("lock_instance")
+                game_instance_id = request.POST["lock_instance"]
                 maintenance_until = datetime.utcnow() + timedelta(minutes=GAME_INSTANCE_MAINTENANCE_LOCKING_DELAY_MN)
                 datamanager_administrator.change_game_instance_status(game_instance_id=game_instance_id, maintenance_until=maintenance_until)
+                messages.add_message(request, messages.INFO, _(u"Game instance successfully locked"))
             elif request.POST.get("unlock_instance"):
-                game_instance_id = request.POST.get("unlock_instance")
+                game_instance_id = request.POST["unlock_instance"]
                 datamanager_administrator.change_game_instance_status(game_instance_id=game_instance_id, maintenance_until=None) # removes maintenance
+                messages.add_message(request, messages.INFO, _(u"Game instance successfully unlocked"))
             else:
-                raise ValueError(_("Unknwon admin action"))
+                raise ValueError(_("Unknown admin action"))
 
     except Exception as e:
         messages.add_message(request, messages.ERROR, _(u"Unexpected error: %s") % e)
-        raise # FIXME REMOVE THIS
 
     instances_metadata = datamanager_administrator.get_all_instances_metadata()
 
@@ -86,43 +88,61 @@ def manage_instances(request):
                   "meta_administration/manage_instances.html",
                     {
                      'instances_metadata': instances_metadata,
-                     'utc_now': datetime.utcnow()
+                     'utc_now': datetime.utcnow(),
+                     'notifications': get_messages(request),
                     })
 
 
-# TODO @superuser_required
+@superuser_required
 def edit_instance_db(request, target_instance_id):
 
     ## FIXME - add check on game status = maintenance here!!!
 
-    
+    special_message = None
+    formatted_data = None
+    editing_allowed = True
 
-    if request.method == "POST" and request.POST.get("db_content"):
+    try:
 
-        yaml_input = request.POST["db_content"]
-        dm = datamanager_administrator.retrieve_game_instance(game_instance_id=target_instance_id, request=None, force=True)
+        if request.method == "POST" and request.POST.get("db_content"):
 
-        try:
-            data_tree = dm.load_zope_database(yaml_input) # checks data
-        except Exception as e:
-            messages.add_message(request, messages.ERROR, _(u"Data error: %s") % e)
-            raise # FIXME REMOVE THIS
-        else:
-            datamanager_administrator.replace_game_instance_data(target_instance_id, new_data=data_tree)
-            messages.add_message(request, messages.INFO, _(u"Game instance data was properly replaced."))
-            formatted_data = None
+            yaml_input = request.POST["db_content"]
+            formatted_data = yaml_input # by default, we redisplay buggy content
 
-    else:
+            dm = datamanager_administrator.retrieve_game_instance(game_instance_id=target_instance_id, request=None,
+                                                                  metadata_checker=datamanager_administrator.check_game_is_in_maintenance)
 
-        dm = datamanager_administrator.retrieve_game_instance(game_instance_id=target_instance_id, request=None, force=True)
+            try:
+                data_tree = dm.load_zope_database(yaml_input) # checks data
+            except Exception as e:
+                messages.add_message(request, messages.ERROR, _(u"Data check error, see details below.") % e)
+                special_message = traceback.format_exc()
+                formatted_data = None # we force refresh of data
+            else:
+                datamanager_administrator.replace_game_instance_data(target_instance_id, new_data=data_tree)
+                messages.add_message(request, messages.INFO, _(u"Game instance data was properly replaced."))
 
-        formatted_data = dm.dump_zope_database(width=90)
+        if not formatted_data: # even if success occurred
+            assert not special_message
+            special_message = _("Current DB content is displayed here for editing.")
+            dm = datamanager_administrator.retrieve_game_instance(game_instance_id=target_instance_id, request=None,
+                                                                  metadata_checker=datamanager_administrator.check_game_is_in_maintenance)
+            formatted_data = dm.dump_zope_database(width=90)
+
+    except GameMaintenanceError, e:
+        # formatted_data might remain as yaml_input
+        messages.add_message(request, messages.ERROR, unicode(e))
+        editing_allowed = False
+        special_message = _("DB modification is now forbidden, please stash your potential modifications elsewhere and begin the process again.")
 
     return render(request,
                   "meta_administration/edit_instance_db.html",
                     {
-                     'editing_allowed': True, # FIXME - make it dynamic
+                     'target_instance_id': target_instance_id,
+                     'special_message': special_message,
+                     'editing_allowed': editing_allowed, # FIXME - make it dynamic depending on context - MSG ""
                      'formatted_data': formatted_data,
+                     'notifications': get_messages(request),
                     })
 
 

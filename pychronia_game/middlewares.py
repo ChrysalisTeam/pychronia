@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 
 
 from pychronia_game.common import *
-from django.http import Http404
+from django.http import Http404, HttpResponse
 import django.core.mail as mail
 from django.utils.cache import patch_vary_headers
 from django.core.exceptions import MiddlewareNotUsed
@@ -65,7 +65,12 @@ class ZodbTransactionMiddleware(object):
             del view_kwargs["game_instance_id"]
 
             try:
+                # by default, checks that game is not in maintenance
                 request.datamanager = retrieve_game_instance(game_instance_id=game_instance_id, request=request)
+            except GameMaintenanceError, e:
+                # TODO - better handling of 503 code, with dedicated template #
+                return HttpResponse(content=unicode(e) + "<br/>" + _("Please come back later."),
+                                    status=503)
             except ValueError:
                 raise Http404
 

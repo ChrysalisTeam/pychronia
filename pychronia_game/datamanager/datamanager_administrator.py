@@ -160,7 +160,11 @@ def delete_game_instance(game_instance_id):
 
 
 @zodb_transaction
-def _fetch_available_game_data(game_instance_id, force):
+def _fetch_available_game_data(game_instance_id, metadata_checker):
+    """
+    The callable metadata_checker, if provided, is called with a copy of instance metadata, 
+    and may raise errors or return false to forbid creation of datamanager instance.
+    """
     connection = _get_zodb_connection()
     game_root = connection.root()[GAME_INSTANCES_MOUNT_POINT].get(game_instance_id)
 
@@ -169,12 +173,11 @@ def _fetch_available_game_data(game_instance_id, force):
 
     game_metadata = game_root["metadata"]
 
-    if not force:
-        if game_metadata["maintenance_until"]:
-            if game_metadata["maintenance_until"] > datetime.utcnow():
-                raise GameMaintenanceError(_("Instance %s is in maintenance") % game_instance_id)
-            else:
-                game_metadata["maintenance_until"] = None # cleanup
+    if metadata_checker:
+        res = metadata_checker(game_instance_id=game_instance_id, game_metadata=game_metadata.copy())
+        assert res is not None # programming error
+        if not res:
+            raise GameMaintenanceError(_("Metadata check didn't allow access to instance."))
 
     game_metadata["accesses_count"] += 1
     game_metadata["last_acccess_time"] = datetime.utcnow()
@@ -183,12 +186,27 @@ def _fetch_available_game_data(game_instance_id, force):
     return game_data
 
 
+
+def _game_is_maintenance(game_metadata):
+    return (game_metadata["maintenance_until"] and game_metadata["maintenance_until"] > datetime.utcnow())
+
+def check_game_not_in_maintenance(game_instance_id, game_metadata):
+    if _game_is_maintenance(game_metadata):
+        raise GameMaintenanceError(_("Instance %s is in maintenance.") % game_instance_id)
+    return True
+
+def check_game_is_in_maintenance(game_instance_id, game_metadata):
+    if not _game_is_maintenance(game_metadata):
+        raise GameMaintenanceError(_("Instance %s is NOT in maintenance.") % game_instance_id)
+    return True
+ 
+
 # NO transaction management here!
-def retrieve_game_instance(game_instance_id, request=None, force=False):
+def retrieve_game_instance(game_instance_id, request=None, metadata_checker=check_game_not_in_maintenance):
     """
     If force is True, checks on instance availability are skipped.
     """
-    game_data = _fetch_available_game_data(game_instance_id=game_instance_id, force=force)
+    game_data = _fetch_available_game_data(game_instance_id=game_instance_id, metadata_checker=metadata_checker)
     dm = GameDataManager(game_instance_id=game_instance_id,
                          game_root=game_data,
                          request=request)

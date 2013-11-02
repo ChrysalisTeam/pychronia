@@ -2871,7 +2871,7 @@ class Chatroom(BaseDataManager):
             if previous_time:
                 assert previous_time <= msg["time"] # chat messages are sorted by chronological order
             previous_time = msg["time"]
-            assert msg["username"] is None or msg["username"] in game_data["character_properties"].keys()
+            assert msg["username"] is None or msg["username"] == self.get_global_parameter("master_login") or msg["username"] in game_data["character_properties"].keys()
 
     @transaction_watcher # allows micro-transaction inside readonly method
     def _set_chatting_status(self, username=CURRENT_USER):

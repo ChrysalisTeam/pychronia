@@ -497,18 +497,18 @@ class TestUtilities(BaseGameTestCase):
         html = html.strip().replace("&quot;", '"') # not always entities, depending on software versions...
 
         assert html == dedent("""
-                                    <div class="section" id="hello">
-                                    <h2>hello</h2>
-                                    <div class="system-message">
-                                    <p class="system-message-title">System Message: ERROR/3 (<tt class="docutils">&lt;string&gt;</tt>, line 5)</p>
-                                    <p>Unknown directive type "baddirective".</p>
-                                    <pre class="literal-block">
-                                    .. baddirective:: aaa
-                                    
-                                    </pre>
-                                    </div>
-                                    </div>
-                                    """).strip()
+                                <div class="section" id="hello">
+                                <h2>hello</h2>
+                                <div class="system-message">
+                                <p class="system-message-title">System Message: ERROR/3 (<tt class="docutils">&lt;string&gt;</tt>, line 5)</p>
+                                <p>Unknown directive type "baddirective".</p>
+                                <pre class="literal-block">
+                                .. baddirective:: aaa
+                                
+                                </pre>
+                                </div>
+                                </div>
+                                """).strip()
 
 
 
@@ -528,6 +528,7 @@ class TestMetaAdministration(unittest.TestCase): # no django setup required ATM
         all_res = get_all_instances_metadata()
         assert len(all_res) == 1
         res = all_res[0]
+        assert res["creator_login"] == "master"
         assert res["creation_time"] == res["last_acccess_time"] == res["last_status_change_time"]
         assert res["accesses_count"] == 0
         assert res["status"] == GAME_STATUSES.active == "active"
@@ -556,7 +557,7 @@ class TestMetaAdministration(unittest.TestCase): # no django setup required ATM
         change_game_instance_status(game_instance_id, GAME_STATUSES.aborted, maintenance_until=datetime.utcnow() + timedelta(seconds=1))
         with pytest.raises(GameMaintenanceError):
             retrieve_game_instance(game_instance_id)
-        retrieve_game_instance(game_instance_id, force=True) # forced fetching
+        retrieve_game_instance(game_instance_id, metadata_checker=None) # disable maintenance check
         time.sleep(1)
         retrieve_game_instance(game_instance_id) # NOW works even without force=True
 
@@ -567,10 +568,11 @@ class TestMetaAdministration(unittest.TestCase): # no django setup required ATM
         all_res = get_all_instances_metadata()
         assert len(all_res) == 1
         res = all_res[0]
+        assert res["creator_login"] == "master"
         assert res["creation_time"] < res["last_acccess_time"] < res["last_status_change_time"]
         assert res["accesses_count"] == 4
         assert res["status"] != GAME_STATUSES.active
-        assert res["maintenance_until"] is None # was set back to None
+        assert res["maintenance_until"] is not None # was left as is
 
         delete_game_instance(game_instance_id)
 

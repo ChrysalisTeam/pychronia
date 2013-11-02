@@ -29,9 +29,12 @@
 
     <![endif]-->
 
-
+    <link href="{{ STATIC_URL }}libs/jnotify/css/jquery.jnotify-alt.css" rel="stylesheet" type="text/css" />
 
     {% render_block "css" %}
+
+
+
 
     <link href="{{ STATIC_URL }}MetalRadiance/metalradiance.css" rel="stylesheet" type="text/css" /><!-- MUST BE LAST -->
 
@@ -48,6 +51,8 @@
     <script src="{{ STATIC_URL }}libs/fasw.transitions/fasw.transitions.js" type="text/javascript"></script>
     <script src="{{ STATIC_URL }}libs/jquery-jplayer-2.3.0/jquery.jplayer.min.js" type="text/javascript"></script>
     <script src="{{ STATIC_URL }}libs/jquery-jplayer-2.3.0/add-on/jplayer.playlist.min.js" type="text/javascript"></script>
+    <script src="{{ STATIC_URL }}libs/jnotify/lib/jquery.jnotify.js" type="text/javascript"></script>
+
     {% render_block "js" %}
 
 
@@ -124,7 +129,19 @@
 
         	<div id="full_header_center">
 
-	            {% block notification_banners %}{% endblock %}
+	            {% block notification_banners %}
+	                {% if notifications %}
+                    <div class="notification_panel {{ notification_type|default:"mixed" }}">
+                        <div class="notification_panel_decorations">
+                            <div class="notification_panel_content">
+                               {% for message in notifications %}
+                                   <p>{{ message|linebreaksbr }}</p>
+                               {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                {% endblock %}
 
 	            <div id="title_table">
 	                {% block top_left_motto %}<div class="motto left_image"></div>{% endblock %}
@@ -147,13 +164,13 @@
     </div>
 
 
-
+    {% block full_main_container %}
     <div id="full_menu">
         <div id="main_menu">
             {% block left_big_icon_panel %}
             <div class="big_icon_panel">
                 {% block left_big_icon_img %}
-                <img src="{{ STATIC_URL }}MetalRadiance/img/icons/speaker.png"/>
+                <!--img src="{{ STATIC_URL }}MetalRadiance/img/icons/speaker.png"/-->
                 {% endblock %}
             </div>
             {% endblock %}
@@ -163,6 +180,43 @@
                     {# <div class="marble_menu_inner_outline"> #}
                         <ul id="menulist" class="dropmenu" style="z-index: 100;">
                             {% block main_menu %}
+                            {% for menu in menus %}
+
+                                {% comment %} here we only handle 2-levels menus, at the moment... {% endcomment %}
+
+                                {% with page_transition="slide" %}
+
+                                <li class="toplevel">
+
+                                    {% if menu.is_active %}
+                                        <a data-ftrans="{{ page_transition }}" href="{{ menu.url }}">{{ menu.title }}{% if menu.is_novelty %} *{% endif %}</a>
+                                    {% else %}
+                                        <span>{{ menu.title }}</span>
+                                    {% endif %}
+
+
+                                    {% if menu.submenus %}
+                                        <ul>
+                                            {% for submenu in menu.submenus %}
+                                                <li>
+                                                {% if submenu.is_active %}
+                                                    <a data-ftrans="{{ page_transition }}" href="{{ submenu.url }}" accesskey="{{ forloop.counter }}">{{ submenu.title }}{% if submenu.is_novelty %} *{% endif %}</a>
+                                                {% else %}
+                                                    <span>{{ submenu.title }}</span>
+                                                {% endif %}
+
+                                                {% comment %}
+                                                    <a {% if user.is_master %} style="font-size: 0.6em; line-height: 0.5em;" {% endif %} href="{{ item_url }}" >{{ item_name }}</a>
+                                                {% endcomment %}
+                                                </li>
+                                            {% endfor %}
+                                         </ul>
+                                     {% endif %}
+
+                                 </li>
+                                 {% endwith%}
+
+                            {% endfor %}
                             {% endblock %}
                         </ul>
                     {# </div> #}
@@ -172,13 +226,13 @@
             {% block right_big_icon_panel %}
             <div class="big_icon_panel">
                 {% block right_big_icon_img %}
-                <img src="{{ STATIC_URL }}MetalRadiance/img/icons/question_mark.png"/>
+                <!--img src="{{ STATIC_URL }}MetalRadiance/img/icons/question_mark.png"/-->
                 {% endblock %}
             </div>
             {% endblock %}
         </div>
     </div>
-
+    {% endblock %}
 
 
     <div id="full_content">
@@ -214,7 +268,7 @@
     <div id="low_footer_wrapper">
         <div id="low_footer_border">
             {% block low_footer_content %}
-                STUFF
+                &nbsp;
             {% endblock %}
         </div>
     </div>
@@ -230,13 +284,35 @@
 
     <script language="javascript" type="text/javascript">
 
+
+    function default_ajax_error_handler(jqXHR, extStatus, errorThrown) {
+        msg = "Server communication problem - " + extStatus
+        if (errorThrown) {
+            msg += " (" + errorThrown + ")";
+        }
+        $.jnotify(msg, "error", 2000);
+    }
+
+
+    String.prototype.format = String.prototype.f = function() {
+        var s = this,
+            i = arguments.length;
+
+        while (i--) {
+            s = s.replace(new RegExp('\\{' + i + '\\}', 'gm'), arguments[i]);
+        }
+        return s;
+    };
+
+
     {% render_block "definition_js" %}
 
 
 
 
 
-     INIT_JS = function() {
+
+    INIT_JS = function() {
 
             if (typeof my_fast_transitions == 'undefined' && 0) {  // JS PAGE TRANSITIONS DISABLED ATM
                 my_fast_transitions = new ft({ /* data-ftrans attr must be set to slide/slideup/slidedown/fade/flip/pop */
@@ -285,7 +361,76 @@
             });*/
 
 
-            {% render_block "onload_js" %}
+        // $.ajaxError(handler(event, jqXHR, ajaxSettings, thrownError)) - NO, we want it to be OVERRIDDEN by individual ajax settings
+        $.ajaxSetup({
+                    error: default_ajax_error_handler
+                    });
+
+
+        {% comment %}
+            jNotify Usage:
+            $.jnotify(message, [options]);
+            $.jnotify(message, delay);
+            $.jnotify(message, sticky);
+            $.jnotify(message, type, [delay/sticky]); // success/warning/error or nothing (grey)
+        {% endcomment %}
+
+         jnotify_options = {
+              // define core settings
+                type: ""                                  // if a type is specified, then an additional class of classNotification
+                                                          // + type is created for each notification
+              , delay: 3500                               // the default time to show each notification (in milliseconds)
+              , sticky: false                             // determines if the message should be considered "sticky" (user
+                                                          // must manually close notification)
+              , closeLabel: "&times;"                     // the HTML to use for the "Close" link
+              , showClose: true                           // determines if the "Close" link should be shown if notification is also sticky
+              , fadeSpeed: 1000                           // the speed to fade messages out (in milliseconds)
+              , slideSpeed: 250                           // the speed used to slide messages out (in milliseconds)
+
+              // define the class statements
+              , classContainer: "jnotify-container"       // className to use for the outer most container--this is where all the
+                                                          // notifications appear
+              , classNotification: "jnotify-notification" // className of the individual notification containers
+              , classBackground: "jnotify-background"     // className of the background layer for each notification container
+              , classClose: "jnotify-close"               // className to use for the "Close" link
+              , classMessage: "jnotify-message"           // className to use for the actual notification text container--this is
+                                                          // where the message is actually written
+
+              // event handlers
+              , init: null                                // callback that occurs when the main jnotify container is created
+              , create: null                              // callback that occurs when when the note is created (occurs just before
+                                                          // appearing in DOM)
+              , beforeRemove: null                        // callback that occurs when before the notification starts to fade away
+              , remove: null                              // callback that occurs when notification is removed
+              , transition: null                          // allows you to overwrite how the transitions between messages are handled
+                                                          // receives the following arguments:
+                                                          //   container - jQuery object containing the notification
+                                                          //   message   - jQuery object of the actual message
+                                                          //   count     - the number of items left in queue
+                                                          //   callback  - a function you must execute once your transition has executed
+                                                          //   options   - the options used for this jnotify instance
+        }
+        $.jnotify.setup(jnotify_options);
+
+        /*TESTS
+        $.jnotify("mehello", "success");
+        $.jnotify("mehello", "warning");
+        $.jnotify("mehello", "error");
+        $.jnotify("mehello", "");*/
+
+
+        $(".notification_panel").css( 'cursor', 'pointer' );
+        $(".notification_panel_content").css( 'cursor', 'auto' );
+        $(".notification_panel").click(function() {
+            $(this).slideUp();
+        });
+        $(".notification_panel_content").click(function(event) {
+            event.stopPropagation();
+        });
+
+
+
+        {% render_block "onload_js" %}
 
         }
 

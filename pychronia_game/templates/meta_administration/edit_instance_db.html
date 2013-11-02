@@ -36,7 +36,13 @@ $("#yaml_editor").markItUp(mySettings); // mySettings comes from /markitup/sets/
 {% block content %}
 
 
-<h1>{% trans "Game Instance DB" %}</h1>
+<h1>{% trans "Data for" %} '{{ target_instance_id }}'</h1>
+
+
+{% if special_message %}
+    <p><b>{{ special_message|linebreaksbr }}</b></p>
+{% endif %}
+
 
 
 {% if formatted_data %}
@@ -52,8 +58,6 @@ $("#yaml_editor").markItUp(mySettings); // mySettings comes from /markitup/sets/
         </form>
 
     {% else %}
-
-    <p><b>{% trans "DB editing is now forbidden, please save your modifications elsewhere and begin the process again." %}</b></p>
 
     <pre>
 {{ formatted_data }}

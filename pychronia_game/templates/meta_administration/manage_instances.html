@@ -27,17 +27,17 @@
 
 
 				{% if meta.maintenance_until and meta.maintenance_until > utc_now %}
-				    <li><b>{% trans "LOCKED until" %}</b> {{ meta.maintenance_until|utctolocal|date:"SHORT_DATETIME_FORMAT" }}</li>
+				    <li><b>{% trans "LOCKED for maintenance until" %} {{ meta.maintenance_until|utctolocal|date:"SHORT_DATETIME_FORMAT" }}</b></li>
     		    </ul>
     		        <form action="" method="post" class="meta_admin_button">
     				    <input type="hidden" name="unlock_instance" value="{{ meta.instance_id }}"/>
     				    <input type="submit" value="{{ _("Unlock game instance")}}" />
     				</form>
-                    <form action="{% url pychronia_game.meta_administration_views.edit_instance_db target_instance_id=meta.instance_id %}" method="get" class="meta_admin_button">
-                        <input type="submit" value="{{ _("Edit game instance database")}}" />
-                    </form>
+                    <a href="{% url pychronia_game.meta_administration_views.edit_instance_db target_instance_id=meta.instance_id %}">
+                        <br/><b>{% trans "Directly edit instance database (dangerous!)" %}<b/>
+                    </a>
                 {% else %}
-                    <li>{% trans "Not locked" %}</li>
+                    <li>{% trans "Not locked for maintenance" %}</li>
                 </ul>
                     <form action="" method="post" class="meta_admin_button">
                         <input type="hidden" name="lock_instance" value="{{ meta.instance_id }}"/>
