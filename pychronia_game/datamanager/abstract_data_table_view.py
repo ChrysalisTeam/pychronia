@@ -61,14 +61,14 @@ class AbstractDataTableManagement(AbstractGameView):
             else:
                 self.logger.critical("Wrong previous_identifier submitted in StaticPagesManagement: %r", previous_identifier)
 
-        return _("Entry %r properly submitted") % identifier
+        return _("Entry '%s' properly submitted") % identifier
 
 
     def delete_item(self, deleted_item):
         table = self.get_data_table_instance()
 
         if not deleted_item or deleted_item not in table:
-            raise AbnormalUsageError(_("Entry %r not found") % deleted_item)
+            raise AbnormalUsageError(_("Entry '%s' not found") % deleted_item)
         del table[deleted_item]
         return _("Entry '%s' properly deleted") % deleted_item
 

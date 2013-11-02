@@ -391,7 +391,7 @@ class CountLimitedActionMiddleware(AbstractActionMiddleware):
 
             if middleware_settings["max_per_game"] is not None:
                 res.append(_("Total units available: %s.") % middleware_settings["max_per_game"])
-                res.append(_("Tital units already used: %s.") % self._get_global_usage_count(action_name))
+                res.append(_("Total units already used: %s.") % self._get_global_usage_count(action_name))
 
             if middleware_settings["max_per_character"] is not None:
                 res.append(_("Units available per user: %s.") % middleware_settings["max_per_character"])

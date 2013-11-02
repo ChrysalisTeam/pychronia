@@ -4,20 +4,21 @@
 # Pakal, 2010.
 # Pakal, 2010.
 # Pakal <pythoniks@gmail.com>, 2010.
+# Pascal <chambon.pascal@gmail.com>, 2013.
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-11-02 21:08+0100\n"
-"PO-Revision-Date: 2010-06-15 21:17+0200\n"
-"Last-Translator: Pakal <pythoniks@gmail.com>\n"
-"Language-Team: GameMaster\n"
+"PO-Revision-Date: 2013-11-02 22:26+0200\n"
+"Last-Translator: Pascal <chambon.pascal@gmail.com>\n"
+"Language-Team: Nothing\n"
+"Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: fr\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"X-Generator: Virtaal 0.6.0\n"
+"X-Generator: Virtaal 0.7.1\n"
 
 #: .\common.py:152
 #, fuzzy, python-format
@@ -40,7 +41,7 @@ msgstr "L'enregistreur de l'avaleur d'exceptions est cassé !!!"
 
 #: .\forms.py:21
 msgid "Bank"
-msgstr ""
+msgstr "Banque"
 
 #: .\forms.py:24 .\forms.py:71
 msgid "Sender"
@@ -52,28 +53,28 @@ msgstr "Destinataire"
 
 #: .\forms.py:30
 msgid "No money available for transfer."
-msgstr ""
+msgstr "pas d'argent disponible pour transert."
 
 #: .\forms.py:35
 msgid "Amount"
-msgstr ""
+msgstr "Montant"
 
 #: .\forms.py:62
 msgid "External gems"
-msgstr ""
+msgstr "Gemmes externes"
 
 #: .\forms.py:63
 #, python-format
 msgid "Gem of %(gem_value)s Kashes (%(title)s)"
-msgstr ""
+msgstr "Gemmes à %(gem_value)s Kashes (%(title)s)"
 
 #: .\forms.py:78
 msgid "Gems (use Ctrl key)"
-msgstr ""
+msgstr "Gammes (utiliser la touche Ctrl)"
 
 #: .\forms.py:188 .\views\profile_views.py:170
 msgid "New passwords not matching"
-msgstr ""
+msgstr "Les nouveaux mots de passe ne correspondent pas."
 
 #: .\forms.py:222 .\forms.py:282 .\tests\_dummy_abilities.py:20
 msgid "Object"
@@ -106,19 +107,19 @@ msgstr "Nom"
 
 #: .\forms.py:276
 msgid "No artefacts currently owned."
-msgstr ""
+msgstr "Vous ne possédez pas d'artefacts."
 
 #: .\forms.py:281
 msgid "Select your artefact..."
-msgstr ""
+msgstr "Sélectionnez votre artefact."
 
 #: .\forms.py:294
 msgid "User"
-msgstr ""
+msgstr "Utilisateur"
 
 #: .\menus.py:48 .\menus.py:85 .\templates\base_main.html.py:293
 msgid "Anthropia"
-msgstr ""
+msgstr "Anthropia"
 
 #: .\menus.py:52 .\menus.py:89
 msgid "Home"
@@ -135,65 +136,58 @@ msgstr "Enchères"
 #: .\menus.py:96
 #, fuzzy
 msgid "Auction Items"
-msgstr "Enchères"
+msgstr "objets des enchères"
 
 #: .\menus.py:97
-#, fuzzy
 msgid "My Items"
-msgstr "Objets de l'Equipe"
+msgstr "Mes objets"
 
 #: .\menus.py:98
 msgid "Chatroom"
-msgstr ""
+msgstr "Chatroom"
 
 #: .\menus.py:102
-#, fuzzy
 msgid "Info"
-msgstr "Messages Reçus"
+msgstr "Info"
 
 #: .\menus.py:104
 msgid "Encyclopedia"
-msgstr ""
+msgstr "Encyclopédie"
 
 #: .\menus.py:106
 msgid "Public Webradio"
-msgstr ""
+msgstr "Webradio Publique"
 
 #: .\menus.py:107
 #, fuzzy
 msgid "Personal Webradio"
-msgstr "Messages Radio"
+msgstr "Webradio Personnelle"
 
 #: .\menus.py:109
 msgid "__ENCRYPTED__"
-msgstr ""
+msgstr "__ENCRYPTED__"
 
 #: .\menus.py:110
 msgid "World Map"
-msgstr ""
+msgstr "Carte du Monde"
 
 #: .\menus.py:113
-#, fuzzy
 msgid "Messaging"
-msgstr "Message"
+msgstr "Messagerie"
 
 #: .\menus.py:115
-#, fuzzy
 msgid "Dispatched messages"
-msgstr "Messages Interceptés"
+msgstr "Messages Echangés"
 
 #: .\menus.py:116
-#, fuzzy
 msgid "Pending messages"
-msgstr "Messages Radio"
+msgstr "Messages en attente"
 
 #: .\menus.py:117
-#, fuzzy
 msgid "My conversations"
-msgstr "Analyses Télécom"
+msgstr "Mes conversations"
 
 #: .\menus.py:118
-#, fuzzy
 msgid "Compose message"
 msgstr "Nouveau Message"
 
@@ -203,16 +197,16 @@ msgstr "Modèles"
 
 #: .\menus.py:123
 msgid "Admin"
-msgstr ""
+msgstr "Admin"
 
 #: .\menus.py:125
 msgid "Dashboard"
-msgstr ""
+msgstr "Tableau de bord"
 
 #: .\menus.py:126
 #, fuzzy
 msgid "Manage Characters"
-msgstr "Personnages"
+msgstr "Gérer les personnages"
 
 #: .\menus.py:128
 msgid "Game Events"
@@ -220,7 +214,7 @@ msgstr "Evènements"
 
 #: .\menus.py:129
 msgid "Manage Webradio"
-msgstr "Gérer la Radio"
+msgstr "Gérer la Webradio"
 
 #: .\menus.py:130
 msgid "Databases"
@@ -228,20 +222,20 @@ msgstr "Données"
 
 #: .\menus.py:132
 msgid "Static Pages"
-msgstr ""
+msgstr "Pages statiques"
 
 #: .\menus.py:133
 msgid "Global Contacts"
-msgstr ""
+msgstr "Contacts Globaux"
 
 #: .\menus.py:135 .\views\admin_views\radio_spots_editing_mod.py:76
 #, fuzzy
 msgid "Radio Spots"
-msgstr "Station Radio"
+msgstr "Spots Radio"
 
 #: .\menus.py:140
 msgid "Abilities"
-msgstr ""
+msgstr "Compétences"
 
 #: .\menus.py:143
 msgid "Wiretaps"
@@ -249,130 +243,129 @@ msgstr "Mises sur Ecoute"
 
 #: .\menus.py:144
 msgid "Doors Locking"
-msgstr ""
+msgstr "Verrouillage des Portes"
 
 #: .\menus.py:145
-#, fuzzy
 msgid "Runic Translations"
-msgstr "Traductions de runes"
+msgstr "Traductions Runiques"
 
 #: .\menus.py:146
 #, fuzzy
 msgid "Network Management"
-msgstr "Gestion des Agents"
+msgstr "Gestion du Réseau"
 
 #: .\menus.py:147
 msgid "Matter Analysis"
-msgstr ""
+msgstr "Analyse de Matière"
 
 #: .\menus.py:149
 msgid "World Scans"
-msgstr "Scan Mondial"
+msgstr "Scans Mondiaux"
 
 #: .\menus.py:150
 #, fuzzy
 msgid "Djinns"
-msgstr "Djinn"
+msgstr "Djinns"
 
 #: .\menus.py:151 .\views\abilities\chess_challenge_mod.py:40
 msgid "Chess Challenge"
-msgstr ""
+msgstr "Défi d'Echecs"
 
 #: .\menus.py:162 .\menus.py:164
 msgid "Profile"
-msgstr ""
+msgstr "Profil"
 
 #: .\menus.py:165
 msgid "Friendships"
-msgstr ""
+msgstr "Amitiés"
 
 #: .\menus.py:166
 msgid "Personal Folder"
-msgstr "Documents"
+msgstr "Documents Personnels"
 
 #: .\menus.py:167
 msgid "Logout"
 msgstr "Déconnexion"
 
 #: .\menus.py:170
-#, fuzzy
 msgid "Login"
-msgstr "Lieu"
+msgstr "Identifiant"
 
 #: .\meta_administration_views.py:73
-#, fuzzy
 msgid "Game instance successfully locked"
-msgstr "Message envoyé avec succès."
+msgstr "Partie verrouillée avec succès"
 
 #: .\meta_administration_views.py:77
 #, fuzzy
 msgid "Game instance successfully unlocked"
-msgstr "Attaque lancée avec succès sur %s."
+msgstr "Partie déverrouillée avec succès"
 
 #: .\meta_administration_views.py:79
 #, fuzzy
 msgid "Unknown admin action"
-msgstr "Fréquence radio inconnue"
+msgstr "Action d'administration inconnue"
 
 #: .\meta_administration_views.py:82
 #, python-format
 msgid "Unexpected error: %s"
-msgstr ""
+msgstr "Erreur inattendue : %s"
 
 #: .\meta_administration_views.py:118
 msgid "Data check error, see details below."
-msgstr ""
+msgstr "Erreur d'intégrité des données, CF détails ci-dessous."
 
 #: .\meta_administration_views.py:123
 msgid "Game instance data was properly replaced."
-msgstr ""
+msgstr "Les données de la partie ont été correctement remplacées."
 
 #: .\meta_administration_views.py:127
 msgid "Current DB content is displayed here for editing."
-msgstr ""
+msgstr "Le contenu actuel de la DB est affiché ici pour édition."
 
 #: .\meta_administration_views.py:136
 msgid ""
 "DB modification is now forbidden, please stash your potential modifications "
 "elsewhere and begin the process again."
 msgstr ""
+"La modification de la DB est maintenant interdite, veuillez récupérer vos "
+"modifications potentielles et recommencer le processus."
 
 #: .\middlewares.py:72
 msgid "Please come back later."
-msgstr ""
+msgstr "Veuillez revenir plus tard."
 
 #: .\datamanager\abstract_data_table_view.py:64
 #, python-format
 msgid "Entry %r properly submitted"
-msgstr ""
+msgstr "Entrée %r correctement soumise"
 
 #: .\datamanager\abstract_data_table_view.py:71
 #, python-format
 msgid "Entry %r not found"
-msgstr ""
+msgstr "Entrée %r introuvable"
 
 #: .\datamanager\abstract_data_table_view.py:73
 #, python-format
 msgid "Entry '%s' properly deleted"
-msgstr ""
+msgstr "Entrée '%s' correctement détruite"
 
 #: .\datamanager\abstract_game_view.py:42
 #, python-format
 msgid "Currently impersonated user can't access view %s"
-msgstr ""
+msgstr "L'utilisateur actuellement usurpé ne peut pas accéder à la vue %s"
 
 #: .\datamanager\abstract_game_view.py:46
 #, fuzzy, python-format
 msgid "Access denied to page %s"
-msgstr "Accès réservé aux membres autorisés."
+msgstr "Accès interdit à la page %s"
 
 #: .\datamanager\abstract_game_view.py:56
 msgid "An unexpected server error occurred, please retry"
-msgstr ""
+msgstr "Une erreur serveur inattendue est survenue, veuillez réessayer"
 
 #: .\datamanager\abstract_game_view.py:289
 msgid "You are not allowed to submit changes to that page"
-msgstr ""
+msgstr "Vous n'êtes pas autorisé à soumettre des changements à cette page"
 
 #: .\datamanager\abstract_game_view.py:300
 msgid "Access reserved to privileged members."
@@ -382,75 +375,75 @@ msgstr "Accès réservé aux membres autorisés."
 #: .\datamanager\abstract_game_view.py:314
 #, fuzzy
 msgid "Authentication required."
-msgstr "Authentification"
+msgstr "Authentification requise"
 
 #: .\datamanager\abstract_game_view.py:305
 #, fuzzy
 msgid "Access globally forbidden."
-msgstr "Accès interdit aux visiteurs."
+msgstr "Accès interdit à tous."
 
 #: .\datamanager\abstract_game_view.py:365
 msgid "This action requires personal permissions"
-msgstr ""
+msgstr "Cette action requiert des permissions particulières"
 
 #: .\datamanager\abstract_game_view.py:422
 #, python-format
 msgid "Wrong arguments when calling method %s"
-msgstr ""
+msgstr "Mauvais paramètres lors de l'appel à la méthode %s"
 
 #: .\datamanager\abstract_game_view.py:445
 #, python-format
 msgid "Forbidden action %s called by unauthorized user"
-msgstr ""
+msgstr "Action interdite %s appelée par un utilisateur non autorisé"
 
 #: .\datamanager\abstract_game_view.py:461
 #, python-format
 msgid "Abnormal action name: %(action_name)s (available: %(actions)r)"
-msgstr ""
+msgstr "Nom d'action anormal: %(action_name)s (disponibles: %(actions)r)"
 
 #: .\datamanager\abstract_game_view.py:503
 #, fuzzy
 msgid "Operation successful"
-msgstr "Opération de recrutement réussie."
+msgstr "Opération réussie"
 
 #: .\datamanager\abstract_game_view.py:506
 msgid "Submitted data is invalid"
-msgstr ""
+msgstr "Les données soumises sont invalides"
 
 #: .\datamanager\abstract_game_view.py:548
 msgid "Submitted form data hasn't been recognized"
-msgstr ""
+msgstr "Les données de formulaire n'ont pas été reconnues "
 
 #: .\datamanager\action_middlewares.py:250
 #, python-format
 msgid "Cost when paying with money: %s kashes."
-msgstr ""
+msgstr "Prix si paiement en argent: %s kashes."
 
 #: .\datamanager\action_middlewares.py:252
-#, fuzzy
 msgid "Can't be bought with money."
-msgstr "Paiement en liquide"
+msgstr "Ne peut être acheté avec de l'argent"
 
 #: .\datamanager\action_middlewares.py:255
 #, python-format
 msgid "Cost when paying with gems: %s kashes."
-msgstr ""
+msgstr "Prix si paiement en argent: %s kashes."
 
 #: .\datamanager\action_middlewares.py:257
 #, fuzzy
 msgid "Can't be bought with gems."
-msgstr "Paiement en gemmes"
+msgstr "Ne peut être acheté avec des gemmes."
 
 #: .\datamanager\action_middlewares.py:303
 #, fuzzy, python-format
 msgid "You need at least %(gems_price)s kashes of gems to buy this asset"
 msgstr ""
-"Vous avez besoin d'au moins %(price)s kashes en gemmes pour embaucher ces "
-"agents"
+"Vous avez besoin d'au moins %(price)s kashes en gemmes pour payer ce bien."
 
 #: .\datamanager\action_middlewares.py:307
 msgid "You provided too many gems for the value of that asset, please top off"
 msgstr ""
+"Vous avez donné trop de gemmes pour la valeur de ce bien, veuillez faire "
+"l'appoint"
 
 #: .\datamanager\action_middlewares.py:314
 #: .\datamanager\datamanager_modules.py:3456
@@ -461,40 +454,43 @@ msgstr "Vous ne possédez pas les gemmes requises"
 #, fuzzy, python-format
 msgid "You need at least %(price)s kashes in money to buy this asset"
 msgstr ""
-"Vous avez besoin d'au moins %(price)s kashes sur votre compte pour embaucher "
-"ces agents"
+"Vous avez besoin d'au moins %(price)s kashes sur votre compte pour payer ce "
+"bien"
 
 #: .\datamanager\action_middlewares.py:393
 #, python-format
 msgid "Total units available: %s."
-msgstr ""
+msgstr "Unités disponibles au total: %s."
 
 #: .\datamanager\action_middlewares.py:394
 #, python-format
 msgid "Tital units already used: %s."
-msgstr ""
+msgstr "Unités déjà utilisées au total: %s."
 
 #: .\datamanager\action_middlewares.py:397
 #, python-format
 msgid "Units available per user: %s."
-msgstr ""
+msgstr "Unités disponibles par utilisateur: %s."
 
 #: .\datamanager\action_middlewares.py:405
 #, python-format
 msgid "Units already consumed by yourself: %s."
-msgstr ""
+msgstr "Unités que vous avez déjà consommées: %s."
 
 #: .\datamanager\action_middlewares.py:432
 #, python-format
 msgid ""
 "You have exceeded the global quota (%(max_per_game)s uses) for that asset"
 msgstr ""
+"Vous avez dépassé le quota global (%(max_per_game)s utilisations) pour ce "
+"bien"
 
 #: .\datamanager\action_middlewares.py:436
 #, python-format
 msgid ""
 "You have exceeded your quota (%(max_per_character)s uses) for that asset"
 msgstr ""
+"Vous avez dépassé votre quota (%(max_per_game)s utilisations) pour ce bien"
 
 #: .\datamanager\action_middlewares.py:511
 #, python-format
@@ -502,39 +498,41 @@ msgid ""
 "This action can be performed %(max_uses_per_period)s time(s) every %"
 "(actual_delay_mn)s minutes."
 msgstr ""
+"Cette action peut être effectuée %(max_uses_per_period)s fois toutes les %"
+"(actual_delay_mn)s minutes."
 
 #: .\datamanager\action_middlewares.py:523
 #, python-format
 msgid "In this last period, you've done it %s time(s)."
-msgstr ""
+msgstr "Durant la dernière période, vous l'avez fait %s fois."
 
 #: .\datamanager\action_middlewares.py:561
 msgid "You must respect a waiting period to use that asset."
-msgstr ""
+msgstr "Vous devez respecter une période de jachère pour utiliser ce bien."
 
 #: .\datamanager\data_table_manager.py:77
 #, python-format
 msgid "Couldn't find %(type)s item with key %(key)s"
-msgstr ""
+msgstr "Impossible de trouver l'objet de type %(type)s avec la clef %(key)s"
 
 #: .\datamanager\data_table_manager.py:82
 #, python-format
 msgid "Items of type %(type)s with key %(key)s already exists"
-msgstr ""
+msgstr "L'objet de type %(type)s avec la clef %(key)s existe déjà"
 
 #: .\datamanager\data_table_manager.py:118
 #, python-format
 msgid "Can't modify %(type)s item with key %(key)s"
-msgstr ""
+msgstr "Impossible de modifier l'objet de type %(type)s avec la clef %(key)s"
 
 #: .\datamanager\data_table_manager.py:129
 #, python-format
 msgid "Can't delete %(type)s item with key %(key)s"
-msgstr ""
+msgstr "Impossible de détruire l'objet de type %(type)s avec la clef %(key)s"
 
 #: .\datamanager\datamanager_administrator.py:103
 msgid "Already existing instance"
-msgstr ""
+msgstr "Instance déjà existante"
 
 #: .\datamanager\datamanager_administrator.py:135
 #: .\datamanager\datamanager_administrator.py:155
@@ -542,60 +540,60 @@ msgstr ""
 #: .\datamanager\datamanager_administrator.py:223
 #, python-format
 msgid "Unexisting instance %r"
-msgstr ""
+msgstr "Instance inexistante %r"
 
 #: .\datamanager\datamanager_administrator.py:157
 #, python-format
 msgid "Can't delete active instance %r"
-msgstr ""
+msgstr "Impossible de détruire l'instance active %r"
 
 #: .\datamanager\datamanager_administrator.py:180
 msgid "Metadata check didn't allow access to instance."
-msgstr ""
+msgstr "Les vérifications de métadonnées ont interdit l'accès à l'instance."
 
 #: .\datamanager\datamanager_administrator.py:195
 #, python-format
 msgid "Instance %s is in maintenance."
-msgstr ""
+msgstr "L'instance %s est en maintenance."
 
 #: .\datamanager\datamanager_administrator.py:200
 #, python-format
 msgid "Instance %s is NOT in maintenance."
-msgstr ""
+msgstr "L'instance % n'est PAS en maintenance."
 
 #: .\datamanager\datamanager_administrator.py:229
 #, python-format
 msgid "Wrong new game status %(status)s for %(instance_id)r"
-msgstr ""
+msgstr "Mauvais nouveau statut %(status)s pour %(instance_id)r"
 
 #: .\datamanager\datamanager_modules.py:63
 #, python-format
 msgid "Unexisting setting %s"
-msgstr ""
+msgstr "Paramètre inexistant %s"
 
 #: .\datamanager\datamanager_modules.py:126
 #, fuzzy
 msgid "Your impersonation is in read-only mode."
-msgstr "Votre dossier personnel est introuvable."
+msgstr "Votre usurpation d'identité est en lecture seule."
 
 #: .\datamanager\datamanager_modules.py:133
 msgid "Website currently in read-only mode, for maintenance."
-msgstr ""
+msgstr "Site web actuellement en lecture seule, pour maintenance."
 
 #: .\datamanager\datamanager_modules.py:475
 #, fuzzy, python-format
 msgid "Unknown username %s"
-msgstr "Utilisateur inconnu %(target)s"
+msgstr "identifiant utilisateur inconnu : %s"
 
 #: .\datamanager\datamanager_modules.py:513
 #, python-format
 msgid "Wrong email %s"
-msgstr ""
+msgstr "Mauvais email %s"
 
 #: .\datamanager\datamanager_modules.py:570
 #, python-format
 msgid "Wrong domain name %s"
-msgstr ""
+msgstr "Mauvais nom de domaine %s"
 
 #: .\datamanager\datamanager_modules.py:746
 #, python-format

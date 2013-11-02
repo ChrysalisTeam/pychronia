@@ -8,11 +8,12 @@ FEATURES
 ------------
 
 - allow multi-instance staff impersonation ?
-- handle concurrency retries and errors on ZODB decorators
+- handle concurrency retries and errors on ZODB decorators!!! TEST THAT
 - make scripts for ZODB reset in integration (DEBUG=FALSE)
 - add scale to map
 - fix item_display's max_height, too small
 - add direct access links in static pages and emails ?
+
 
 SCRIPT
 ----------
