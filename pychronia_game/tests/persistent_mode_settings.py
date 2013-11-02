@@ -27,8 +27,8 @@ ZODB_URL = None
 
 
 ## FOR INTEGRATION ##
-GAME_FILES_ROOT = "P:\\Chrysalis Depot\\Chrysalis V1\\"
-GAME_INITIAL_DATA_PATH = r"P:\Chrysalis Depot\Chrysalis V1\script_fixtures"
+##GAME_FILES_ROOT = "P:\\Chrysalis Depot\\Chrysalis V1\\"
+##GAME_INITIAL_DATA_PATH = r"P:\Chrysalis Depot\Chrysalis V1\script_fixtures"
 
 
 PASSWORDS_POOL = [str(random.randint(100, 1000)) for i in range(50)]

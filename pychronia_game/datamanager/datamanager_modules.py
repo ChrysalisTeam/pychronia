@@ -1143,16 +1143,16 @@ class FriendshipHandling(BaseDataManager):
         assert recipient
         username = self._resolve_username(username)
         if not self.is_character(username) or not self.is_character(recipient):
-            raise AbnormalUsageError(_("Forbidden friendship proposal: %s -> %s"), username, recipient)
+            raise AbnormalUsageError(_("Forbidden friendship proposal: %(username)s -> %(recipient)s") % SDICT(username=username, recipient=recipient))
         if username == recipient:
             raise AbnormalUsageError(_("User %s can't be friend with himself") % username)
         if self.are_friends(username, recipient):
-            raise AbnormalUsageError(_("Already existing friendship between %s and %s") % (username, recipient))
+            raise AbnormalUsageError(_("Already existing friendship between %(username)s and %(recipient)s") % SDICT(username=username, recipient=recipient))
 
         friendship_proposals = self.data["friendships"]["proposed"]
         friendships = self.data["friendships"]["sealed"]
         if (username, recipient) in friendship_proposals:
-            raise AbnormalUsageError(_("%s has already requested the friendship of %s") % (username, recipient))
+            raise AbnormalUsageError(_("%(username)s has already requested the friendship of %(recipient)s") % SDICT(username=username, recipient=recipient))
 
         current_date = datetime.utcnow()
         if (recipient, username) in friendship_proposals:
@@ -1199,7 +1199,7 @@ class FriendshipHandling(BaseDataManager):
             try:
                 return (username2, username1), friendships[(username2, username1)]
             except KeyError:
-                raise AbnormalUsageError(_("Unexisting friendship: %s<->%s") % (username1, username2))
+                raise AbnormalUsageError(_("Unexisting friendship: %(username1)s<->%(username1)s") % SDICT(username1=username1, username2=username2))
 
 
     @readonly_method

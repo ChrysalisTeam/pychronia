@@ -226,7 +226,7 @@ def change_game_instance_status(game_instance_id, new_status=None, maintenance_u
 
     if new_status:
         if new_status not in GAME_STATUSES:
-            raise ValueError(_("Wrong new game status %s for %r") % (new_status, game_instance_id))
+            raise ValueError(_("Wrong new game status %(status)s for %(instance_id)r") % dict(status=new_status, instance_id=game_instance_id))
         game_metadata["status"] = new_status
 
     if maintenance_until is not _undefined:

@@ -60,7 +60,7 @@ class GemsTransferForm(AbstractGameForm):
                 title = datamanager.get_item_properties(gem_origin)["title"]
             else:
                 title = _("External gems")
-            full_title = _("Gem of %s Kashes (%s)") % (gem_value, title)
+            full_title = _("Gem of %(gem_value)s Kashes (%(title)s)") % SDICT(gem_value=gem_value, title=title)
             gems_choices.append((gem_id, full_title))
         if not gems_choices:
             raise UninstantiableFormError("no gems available")

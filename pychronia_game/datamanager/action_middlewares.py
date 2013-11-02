@@ -508,8 +508,8 @@ class TimeLimitedActionMiddleware(AbstractActionMiddleware):
 
             actual_delay_mn = int(self.compute_effective_delay_s(middleware_settings["waiting_period_mn"] or 0) / 60) # floor division, 0 is a redundant security for misconfiguration
             max_uses_per_period = middleware_settings["max_uses_per_period"] or 0 # 0 for misconfiguration protection
-            res.append(_("This action can be performed %s time(s) every %s minutes.") %
-                        (max_uses_per_period, actual_delay_mn))
+            res.append(_("This action can be performed %(max_uses_per_period)s time(s) every %(actual_delay_mn)s minutes.") %
+                        SDICT(max_uses_per_period=max_uses_per_period, actual_delay_mn=actual_delay_mn))
 
             if middleware_settings["waiting_period_mn"] and middleware_settings["max_uses_per_period"]: # in case of misconfiguration
                 try:

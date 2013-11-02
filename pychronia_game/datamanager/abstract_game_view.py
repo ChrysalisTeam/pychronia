@@ -458,7 +458,7 @@ class AbstractGameView(object):
 
         action_name = data.get(self._ACTION_FIELD)
         if not action_name or action_name not in self.GAME_ACTIONS:
-            raise AbnormalUsageError(_("Abnormal action name: %s (available: %r)") % (action_name, self.GAME_ACTIONS.keys()))
+            raise AbnormalUsageError(_("Abnormal action name: %(action_name)s (available: %(actions)r)") % SDICT(action_name=action_name, actions=self.GAME_ACTIONS.keys()))
 
         res = self.execute_game_action_callback(action_name=action_name, unfiltered_params=data)
 

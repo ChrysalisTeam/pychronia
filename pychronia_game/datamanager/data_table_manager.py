@@ -74,12 +74,12 @@ class DataTableManager(object):
     @classmethod
     def _check_item_is_in_table(cls, table, key):
         if key not in table:
-            raise AbnormalUsageError(_("Couldn't find %s item with key %s") % (cls.TRANSLATABLE_ITEM_NAME, key))
+            raise AbnormalUsageError(_("Couldn't find %(type)s item with key %(key)s") % SDICT(type=cls.TRANSLATABLE_ITEM_NAME, key=key))
 
     @classmethod
     def _check_item_is_not_in_table(cls, table, key):
         if key in table:
-            raise AbnormalUsageError(_("Items of type %s with key %s already exists") % (cls.TRANSLATABLE_ITEM_NAME, key))
+            raise AbnormalUsageError(_("Items of type %(type)s with key %(key)s already exists") % SDICT(type=cls.TRANSLATABLE_ITEM_NAME, key=key))
 
     @readonly_method
     def get_all_data(self, as_sorted_list=False, mutability=None):
@@ -115,7 +115,7 @@ class DataTableManager(object):
     def __setitem__(self, key, value):
         table = self._table
         if key in table and not self._item_can_be_edited(key, table[key]):
-            raise AbnormalUsageError(_("Can't modify %s item with key %s") % (self.TRANSLATABLE_ITEM_NAME, key))
+            raise AbnormalUsageError(_("Can't modify %(type)s item with key %(key)s") % SDICT(type=self.TRANSLATABLE_ITEM_NAME, key=key))
         ###value = {k: v for (k, v) in value.items() if k in self.INPUT_FIELDS} # we filter out useless values
         key, value = self._preprocess_new_item(key, value)
         self._check_item_validity(key, value)
@@ -126,7 +126,7 @@ class DataTableManager(object):
         table = self._table
         self._check_item_is_in_table(table, key)
         if not self._item_can_be_edited(key, table[key]):
-            raise AbnormalUsageError(_("Can't delete %s item with key %s") % (self.TRANSLATABLE_ITEM_NAME, key))
+            raise AbnormalUsageError(_("Can't delete %(type)s item with key %(key)s") % SDICT(type=self.TRANSLATABLE_ITEM_NAME, key=key))
         del table[key]
 
     @readonly_method

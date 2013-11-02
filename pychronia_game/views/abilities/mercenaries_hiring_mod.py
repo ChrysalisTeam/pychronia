@@ -22,7 +22,7 @@ class GemPayementFormMixin(AbstractGameForm):
 
     def _gem_display(self, gem):
         if gem[1]:
-            return _("Gem of %d Kashes (%s)") % gem
+            return _("Gem of %(cost)d Kashes (%(origin)s)") % SDICT(cost=gem[0], origin=gem[1])
         else:
             return _("Gem of %d Kashes (unknown origin)") % gem[0]
 
