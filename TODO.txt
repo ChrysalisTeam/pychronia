@@ -12,7 +12,7 @@ FEATURES
 - make scripts for ZODB reset in integration (DEBUG=FALSE)
 - add scale to map
 - fix item_display's max_height, too small
-- add direct access links in static pages and emails ?
+
 
 
 SCRIPT
@@ -31,7 +31,7 @@ Faire page d'introduction
 - add description of partners in instruction page !
 - ajouter instructions ou systèmes pour éviter abus de mercenaires ?
 - LG donne reductions aux gens, qu'ils peuvent perdre s'ils sont démasqués
-- ajouter <instructions> possibilité échange objets archéologiques et lots entiers de gemmes (gamemamster must be aware of that)!
+- ajouter <instructions> possibilité échange objets archéologiques et lots entiers de gemmes (gamemaster must be aware of that)!
 
 
 
@@ -55,6 +55,7 @@ NEEDS COSMETICS
 TASKS DONE
 ---------------
 
+- add direct access links in static pages and emails ? DONE
 - rudimentary ability of transferring emails DONE
 - make rune translator CONSTANT (with a seed) DONE
 - make tooltips slower to appear DONE
