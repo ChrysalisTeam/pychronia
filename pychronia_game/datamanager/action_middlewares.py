@@ -429,7 +429,7 @@ class CountLimitedActionMiddleware(AbstractActionMiddleware):
 
             if middleware_settings["max_per_game"]: # 0 <-> None
                 if self._get_global_usage_count(action_name) >= middleware_settings["max_per_game"]:
-                    raise NormalUsageError(_("You have exceeded the global quota (%(max_per_game)s uses) for that asset") % SDICT(max_per_game=middleware_settings["max_per_game"]))
+                    raise NormalUsageError(_("The global quota (%(max_per_game)s uses) for that asset has been exceeded") % SDICT(max_per_game=middleware_settings["max_per_game"]))
 
             if middleware_settings["max_per_character"]: # 0 <-> None
                 if private_data["private_usage_count"] >= middleware_settings["max_per_character"]:

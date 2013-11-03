@@ -38,7 +38,7 @@ class RadioSpotForm(DataTableForm):
                 try:
                     utilities.check_is_game_file(data)
                 except UsageError:
-                    raise forms.ValidationError(_("Invalid local file path or remote rl."))
+                    raise forms.ValidationError(_("Invalid local file path or remote url."))
                 cleaned_data["url"] = None # ERASED
                 cleaned_data["file"] = data
 

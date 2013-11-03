@@ -743,9 +743,9 @@ class PlayerAuthentication(BaseDataManager):
         # we reset session if session/request data is abnormal
         _available_logins = self.get_available_logins()
         if game_username and game_username not in _available_logins:
-            raise AbnormalUsageError(_("Invalid game_username: %s") % game_username)
+            raise AbnormalUsageError(_("Invalid instance username: %s") % game_username)
         if requested_impersonation_target and requested_impersonation_target not in _available_logins:
-            raise AbnormalUsageError(_("Invalid requested_impersonation_target: %s") % requested_impersonation_target)
+            raise AbnormalUsageError(_("Invalid requested impersonation target: %s") % requested_impersonation_target)
 
         is_superuser = False
         if not game_username: # instance-local authentication COMPLETELY HIDES the fact one is a django superuser

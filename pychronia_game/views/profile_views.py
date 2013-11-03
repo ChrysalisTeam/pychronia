@@ -266,7 +266,7 @@ class FriendshipManagementView(AbstractGameView):
 
         res = self.datamanager.terminate_friendship(rejected_user=other_username) # might raise exception if (rare) concurrent cancelation occurred
         if res:
-            return _("Your friendship with %s has been properly canceled, as he had accepted it concurrently.") % other_username
+            return _("Your friendship with %s has been properly canceled, since he had accepted it concurrently.") % other_username
         else:
 
             return _("Your friendship proposal to user %s has been properly canceled.") % other_username
