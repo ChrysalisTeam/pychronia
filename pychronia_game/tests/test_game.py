@@ -4099,12 +4099,12 @@ class TestActionMiddlewares(BaseGameTestCase):
 
         assert ability.middleware_wrapped_callable2(None) # 1 use for guy3
         assert ability.non_middleware_action_callable(use_gems=True) # no use
-        with raises_with_content(NormalUsageError, "exceeded the global quota"):
+        with raises_with_content(NormalUsageError, "global quota"):
             ability.middleware_wrapped_callable2(11)
 
 
         self._set_user("guy4") # important
-        with raises_with_content(NormalUsageError, "exceeded the global quota"): # this msg now takes precedence over "private quota" one
+        with raises_with_content(NormalUsageError, "global quota"): # this msg now takes precedence over "private quota" one
             ability.middleware_wrapped_callable1(222)
 
         assert self.dm.get_event_count("INSIDE_MIDDLEWARE_WRAPPED1") == 2
@@ -4150,7 +4150,7 @@ class TestActionMiddlewares(BaseGameTestCase):
 
         for i in range(5):
             assert ability.middleware_wrapped_callable1(None)
-        with raises_with_content(NormalUsageError, "exceeded the global quota"):
+        with raises_with_content(NormalUsageError, "global quota"):
             ability.middleware_wrapped_callable1(False)
         assert ability.non_middleware_action_callable(None)
 
@@ -4188,7 +4188,7 @@ class TestActionMiddlewares(BaseGameTestCase):
 
         self._set_user("guy2")
         assert ability.middleware_wrapped_callable1(None)
-        with raises_with_content(NormalUsageError, "exceeded the global quota"):
+        with raises_with_content(NormalUsageError, "global quota"):
             ability.middleware_wrapped_callable1(False) # quota of 75 reached
         assert ability.non_middleware_action_callable(None)
 
