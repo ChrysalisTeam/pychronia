@@ -38,6 +38,7 @@ Faire page d'introduction
 TESTS
 ----------
 
+- test AccessDenied errors, there was a nasty type error with httpresponse
 - IMPORTANT - test all views eg. encrypted folders!
 - auto test all forms with also inspect.getsourcelines(object) (for UNINSTANTIABLEERROR) etc.
 - add tests for admin widget system, for misc. modules, for gameform instantiation, for world scan_form, for is_action_permitted_for_user()...

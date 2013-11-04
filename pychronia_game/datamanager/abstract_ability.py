@@ -150,7 +150,6 @@ class AbstractAbility(AbstractAbilityBasesAdapter):
     @classmethod
     def get_menu_title(cls):
         return cls.TITLE
-    '''
 
     @readonly_method
     def get_ability_summary(self):
@@ -163,6 +162,7 @@ class AbstractAbility(AbstractAbilityBasesAdapter):
         Summary for super user ?
         """
         raise NotImplementedError
+    '''
 
     @classmethod
     def setup_main_ability_data(cls, ability_data):

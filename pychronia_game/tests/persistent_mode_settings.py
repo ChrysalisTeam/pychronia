@@ -39,7 +39,10 @@ def GAME_INITIAL_FIXTURE_SCRIPT(dm):
     """
     Called just before conversion of initial data tree, and coherency check.
     """
-    return # TODO TEMPORARY
+
+    logging.info("Loading special game fixture script...")
+
+    #return # TODO TEMPORARY
     from persistent.list import PersistentList
 
     # we activate ALL views
