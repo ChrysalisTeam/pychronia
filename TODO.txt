@@ -7,17 +7,17 @@ TODO LIST CHRYSALIS
 FEATURES
 ------------
 
-- allow multi-instance staff impersonation ?
-- handle concurrency retries and errors on ZODB decorators!!! TEST THAT
+- make bugreport address ("myeimai@sfr.com") properly configurable
+- add contact_email system in abilities, autochecked
 - make scripts for ZODB reset in integration (DEBUG=FALSE)
-- add scale to map
 - fix item_display's max_height, too small
-
+- fix menus, especially top-level entries
 
 
 SCRIPT
 ----------
 
+- add scale to map (in static comments!!)
 - Add the captcha system to some special static pages - WHICH ??
 - compléter les djinns, valeurs par défaut si pas de réponses surtout !
 
@@ -38,6 +38,7 @@ Faire page d'introduction
 TESTS
 ----------
 
+- handle concurrency retries and errors on ZODB decorators!!! TEST THAT
 - test AccessDenied errors, there was a nasty type error with httpresponse
 - IMPORTANT - test all views eg. encrypted folders!
 - auto test all forms with also inspect.getsourcelines(object) (for UNINSTANTIABLEERROR) etc.
@@ -56,6 +57,7 @@ NEEDS COSMETICS
 TASKS DONE
 ---------------
 
+- fix top notifications DONE
 - add direct access links in static pages and emails ? DONE
 - rudimentary ability of transferring emails DONE
 - make rune translator CONSTANT (with a seed) DONE
@@ -139,6 +141,7 @@ TASKS DONE
 FUTUR ENHANCEMENTS
 --------------------------
 
+- allow multi-instance staff impersonation, so that superuser can remain logged everywhere
 - better menus for meta admin pages
 - better handling of 503 (maintenance) state on both cms and instance
 - convert "orbe" to masculine genre ; replace acharis by akharis

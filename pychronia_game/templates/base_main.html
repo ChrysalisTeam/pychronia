@@ -130,7 +130,7 @@
         $('*[title]').qtip({
         	                 show: { delay: 1200 },
         	                 style: { name: 'cream', tip: true },
-                             hide: { when: 'mouseout', fixed: true, delay: 1000 }
+                             hide: { when: 'mouseout', fixed: true, delay: 800 }
                            }); // lots of options remain
 
 
@@ -397,16 +397,15 @@
     {% endcomment %}
 
 
-
 {% block carving_left %}
 	{% if signal_new_menu_entries %}
-	Menu!
+        <img title="{% trans "New menu entries are available for you!" %}" onclick="$(this).qtip('show');" style="cursor:pointer" src="{{ STATIC_URL }}MetalRadiance/img/icons/share_link_tiny4.png"/>
 	{% endif %}
 	{% if signal_new_text_message %}
-	Msg!
+	   <img title="{% trans "New text messages are available for you!" %}" onclick="$(this).qtip('show');" style="cursor:pointer" src="{{ STATIC_URL }}MetalRadiance/img/icons/rolled_parchment_tiny.png"/>
 	{% endif %}
 	{% if signal_chatting_users %}
-	Chat!
+       <img title="{% trans "There are people in the live chat room!" %}" onclick="$(this).qtip('show');" style="cursor:pointer" src="{{ STATIC_URL }}MetalRadiance/img/icons/speech_bubble_tiny.png"/>
 	{% endif %}
 {% endblock %}
 
