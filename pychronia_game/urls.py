@@ -136,6 +136,9 @@ web_game_urlpatterns = patterns('pychronia_game.views',
     url(r'^ability/world_scan/$', 'world_scan'),
     url(r'^ability/artificial_intelligence/$', 'artificial_intelligence'),
     url(r'^ability/chess_challenge/$', 'chess_challenge'),
+    url(r'^ability/geoip_location/$', 'geoip_location'),
+    url(r'^ability/business_escrow/$', 'business_escrow'),
+    url(r'^ability/black_market/$', 'black_market'),
 
 )
 

@@ -49,7 +49,8 @@ from .messaging_views import (ajax_set_message_read_state, ajax_force_email_send
                               all_dispatched_messages, all_queued_messages, messages_templates)
 
 from .abilities import (house_locking, runic_translation, wiretapping_management, artificial_intelligence,
-                        mercenaries_hiring, matter_analysis, world_scan, chess_challenge) # telecom_investigation
+                        mercenaries_hiring, matter_analysis, world_scan, chess_challenge, geoip_location,
+                        business_escrow, black_market) # telecom_investigation
 
 from .admin_views import (admin_dashboard, game_events, webradio_management,
                           manage_databases, static_pages_management, global_contacts_management,

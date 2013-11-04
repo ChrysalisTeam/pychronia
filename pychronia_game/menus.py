@@ -67,14 +67,14 @@ def _generate_web_menu(request, menu_entry_generator):
     processed_view = getattr(request, "processed_view", None) # GameView instance set if said view was executed
 
 
-    if user.is_authenticated and processed_view.NAME != views.conversation.NAME:
+    if user.is_authenticated and (not processed_view or processed_view.NAME != views.conversation.NAME):
         unread_msgs_count = datamanager.get_unread_messages_count()
         conversation_suffix = u"(%d)" % unread_msgs_count
     else:
         conversation_suffix = u""
 
 
-    if user.is_authenticated and processed_view.NAME != views.chatroom.NAME:
+    if user.is_authenticated and (not processed_view or processed_view.NAME != views.chatroom.NAME):
         # same for chatroom
         num_chatters = len(request.datamanager.get_chatting_users(exclude_current=True))
         chatroom_suffix = u"(%d)" % num_chatters
@@ -149,7 +149,9 @@ def _generate_web_menu(request, menu_entry_generator):
                         menu_entry(_(u"World Scans"), views.world_scan),
                         menu_entry(_(u"Djinns"), views.artificial_intelligence),
                         menu_entry(_(u"Chess Challenge"), views.chess_challenge),
-
+                        menu_entry(_(u"Web Geolocation"), views.geoip_location),
+                        menu_entry(_(u"Business Escrow"), views.business_escrow),
+                        menu_entry(_(u"Black Market"), views.black_market),
                         # menu_entry(_(u"Agents Hiring"), views.network_management),
                         # menu_entry(_(u"Oracles"), views.contact_djinns),
                         # menu_entry(_(u"Mercenary Commandos"), views.mercenary_commandos),
