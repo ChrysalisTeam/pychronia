@@ -129,7 +129,7 @@
 
         $('*[title]').qtip({
         	                 show: { delay: 1200 },
-        	                 style: { name: 'cream', tip: true },
+        	                 style: { name: 'cream', tip: false },
                              hide: { when: 'mouseout', fixed: true, delay: 800 }
                            }); // lots of options remain
 
@@ -289,11 +289,9 @@
 
 
 {% block html_title %}
-
     {% if page_title %}{% trans "Anthropia" %} - {{ page_title}}
     {% else %}{% trans "Welcome to Anthropia" %}
     {% endif %}
-
 {% endblock %}
 
 
@@ -411,8 +409,8 @@
 
 
 {% block carving_right %}
-<div class="marquee">
-{% trans "Welcome to Anthropia," %} {{ user.username }}!
+<div title="{% trans "Your current user login." %}">{# Use class="marquee" to make it scroll! #}
+{{ user.username|capfirst }}
 </div>
 {% endblock %}
 
@@ -420,14 +418,14 @@
 {% block left_big_icon_panel %}
 {% if 1 %}
 <a onclick="open_webradio_popup(); return false;" href="#">
-<div class="big_icon_panel">
+<div title="{% trans "Pangea webradio is currently ONLINE" %}" class="big_icon_panel">
     <div class="positioner">
         <img src="{{ STATIC_URL }}MetalRadiance/img/icons/radio.png"/>{% if signal_new_radio_messages %}<span class="novelty_mark">!</span>{% endif %}
     </div>
 </div>
 </a>
 {% else %}
-<div class="big_icon_panel">
+<div title="{% trans "Pangea webradio is currently OFFLINE" %}" class="big_icon_panel">
     <img src="{{ STATIC_URL }}MetalRadiance/img/icons/radio_disabled.png"/>
 </div>
 {% endif %}
@@ -446,10 +444,11 @@
 </div>
 </a>
 {% else %}
-<div class="big_icon_panel">
+<div {% if display_admin_tips %}title="{% trans "Unexisting help page:" %} '{{ content_blocks.help_page.name }}'"
+     {% else %}title="{% trans "Unfortunately, no additional information about the current webpage is available" %}"{% endif %}
+     class="big_icon_panel">
     <div class="positioner">
-        <img src="{{ STATIC_URL }}MetalRadiance/img/icons/question_mark_disabled.png"
-             {% if display_admin_tips %}title="{% trans "Unexisting help page:" %} '{{ content_blocks.help_page.name }}'"{% endif %}/>
+        <img src="{{ STATIC_URL }}MetalRadiance/img/icons/question_mark_disabled.png"/>
     </div>
 </div>
 {% endif %}
