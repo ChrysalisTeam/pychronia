@@ -20,6 +20,15 @@ class EmptyAbilityMixin(object):
 
 
 
+class AbilityIntroduction(EmptyAbilityMixin, AbstractAbility):
+
+    TITLE = _lazy("Extra Plugins")
+    NAME = "ability_introduction"
+
+    ACCESS = UserAccess.authenticated
+    REQUIRES_CHARACTER_PERMISSION = False
+    REQUIRES_GLOBAL_PERMISSION = False # let's not risk to forget it
+
 
 class GeoipLocationAbility(EmptyAbilityMixin, AbstractAbility):
 

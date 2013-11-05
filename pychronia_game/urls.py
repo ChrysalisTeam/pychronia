@@ -126,6 +126,7 @@ web_game_urlpatterns = patterns('pychronia_game.views',
 
 
 
+    url(r'^ability/abilities/$', 'ability_introduction'),
     url(r'^ability/house_locking/$', 'house_locking'),
     url(r'^ability/runic_translation/$', 'runic_translation'),
     url(r'^ability/wiretapping_management/$', 'wiretapping_management'),

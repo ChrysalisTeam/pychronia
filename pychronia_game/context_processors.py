@@ -62,7 +62,7 @@ def pychronia_template_context(request):
 
         signal_new_text_message = dm.is_character() and dm.has_new_message_notification() # only for characters atm
 
-        return {'game_instance_id': dm.game_instance_id,
+        res = {'game_instance_id': dm.game_instance_id,
 
                 'fallback_title': request.processed_view.TITLE,
 
@@ -108,6 +108,7 @@ def pychronia_template_context(request):
                 'True': True,
                 'False': False,
                 }
+        return res
 
     else:
         return {} # not in valid game instance

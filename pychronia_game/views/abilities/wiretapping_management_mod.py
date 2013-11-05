@@ -153,12 +153,14 @@ class WiretappingAbility(AbstractAbility):
                                   )
         utilities.check_dictionary_with_template(settings, _settings_reference, strict=strict)
 
-        for data in self.all_private_data.values():
-
-            assert len(data["wiretapping_targets"]) <= settings["max_wiretapping_targets"]
+        for username, data in self.all_private_data.items():
+            assert len(self.get_wiretapping_targets(username=username)) <= data["max_wiretapping_targets"]
 
             '''
             character_names = self.datamanager.get_character_usernames()
             for char_name in data["wiretapping_targets"]:
                 assert char_name in character_names
             '''
+
+
+

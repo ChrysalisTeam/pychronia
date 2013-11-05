@@ -7,7 +7,7 @@ TODO LIST CHRYSALIS
 FEATURES
 ------------
 
-- make bugreport address ("myeimai@sfr.com") properly configurable
+- fix djinn bots critical errors
 - add contact_email system in abilities, autochecked
 - make scripts for ZODB reset in integration (DEBUG=FALSE)
 - fix item_display's max_height, too small
@@ -57,6 +57,7 @@ NEEDS COSMETICS
 TASKS DONE
 ---------------
 
+- make bugreport address ("myeimai@sfr.com") properly configurable DONE
 - fix top notifications DONE
 - add direct access links in static pages and emails ? DONE
 - rudimentary ability of transferring emails DONE

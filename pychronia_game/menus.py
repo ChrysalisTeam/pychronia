@@ -86,72 +86,58 @@ def _generate_web_menu(request, menu_entry_generator):
         (
             # encoding note : \xa0 <-> &nbsp <-> alt+0160;
 
-            menu_entry(_(u"Home"), views.homepage,
+            menu_entry(_(u"Auction"), views.homepage,
                         (
                            ###menu_entry(_(u"Home"), views.homepage),
                            ###menu_entry(_(u"Opening"), views.opening),
                            ###menu_entry(_(u"Instructions"), views.instructions),
-                           menu_entry(_(u"Characters"), views.view_characters),
-                           menu_entry(_(u"Auction"), views.view_sales),
-                           menu_entry(_(u"Auction Items"), views.auction_items_slideshow),
-                           menu_entry(_(u"My Items"), views.personal_items_slideshow),
+                           menu_entry(_(u"Bidders"), views.view_characters),
+                           menu_entry(_(u"Summary"), views.view_sales),
+                           menu_entry(_(u"Details"), views.auction_items_slideshow),
                            menu_entry(_(u"Chatroom") + chatroom_suffix, views.chatroom),
                            # menu_entry(_(u"Radio Messages"), views.personal_radio_messages_listing), # TODO INTEGRATE TO INFO PAGES ???
                        )),
 
-            menu_entry(_(u"Info"), views.homepage, # FIXME
+            menu_entry(_(u"Media"), views.view_encyclopedia,
                        (
                          menu_entry(_(u"Encyclopedia"), views.view_encyclopedia),
 
-                         menu_entry(_(u"Public Webradio"), views.public_webradio, forced_visibility=(False if user.is_character else None)),
-                         menu_entry(_(u"Personal Webradio"), views.personal_webradio_page),
-
-                         menu_entry(_(u"__ENCRYPTED__"), views.encrypted_folder, view_kwargs=dict(folder="guy2_report")),
+                         menu_entry(_(u"Webradio"), views.personal_webradio_page),
                          menu_entry(_(u"World Map"), views.view_world_map),
+
+                         menu_entry(_(u"__EncryptedFolder__"), views.encrypted_folder, view_kwargs=dict(folder="guy2_report"), forced_visibility=(False if not user.is_master else None)), # TODO REMOVE ME
+                         menu_entry(_(u"__PublicWebradio__"), views.public_webradio, forced_visibility=(False if not user.is_master else None)), # TODO REMOVE ME
+
                       )),
 
-            menu_entry(_(u"Messaging"), views.homepage, # FIXME
+            menu_entry(_(u"Messaging"), (views.all_dispatched_messages if user.is_master else views.conversation),
                       (
-                         menu_entry(_(u"Dispatched messages"), views.all_dispatched_messages),
-                         menu_entry(_(u"Pending messages"), views.all_queued_messages),
+                         menu_entry(_(u"Dispatched messages"), views.all_dispatched_messages), # master only
+                         menu_entry(_(u"Pending messages"), views.all_queued_messages), # master only
                          menu_entry(_(u"My conversations") + conversation_suffix, views.conversation),
+                         menu_entry(_(u"Templates"), views.messages_templates), # master only
                          menu_entry(_(u"Compose message"), views.compose_message),
-                         menu_entry(_(u"Templates"), views.messages_templates),
-
                       )),
 
-            menu_entry(_(u"Admin"), None, # FIXME
-                       (
-                         menu_entry(_(u"Dashboard"), views.admin_dashboard),
-                         menu_entry(_(u"Manage Characters"), views.manage_characters),
-
-                         menu_entry(_(u"Game Events"), views.game_events),
-                         menu_entry(_(u"Manage Webradio"), views.webradio_management),
-                         menu_entry(_(u"Databases"), views.manage_databases),
-
-                         menu_entry(_(u"Static Pages"), views.static_pages_management),
-                         menu_entry(_(u"Global Contacts"), views.global_contacts_management),
-
-                         menu_entry(_(u"Radio Spots"), views.radio_spots_editing),
-
-                      )),
-
-
-            menu_entry(_(u"Abilities"), views.homepage, # FIXME
+            menu_entry(_(u"Abilities"), views.ability_introduction, # FIXME
                        (
 
-                        menu_entry(_(u"Wiretaps"), views.wiretapping_management),
-                        menu_entry(_(u"Doors Locking"), views.house_locking),
-                        menu_entry(_(u"Runic Translations"), views.runic_translation),
+                        menu_entry(_(u"Wiretapping"), views.wiretapping_management),
                         menu_entry(_(u"Network Management"), views.mercenaries_hiring),
-                        menu_entry(_(u"Matter Analysis"), views.matter_analysis),
-                        ##menu_entry(_(u"Telecom Investigation"), views.telecom_investigation),
-                        menu_entry(_(u"World Scans"), views.world_scan),
-                        menu_entry(_(u"Djinns"), views.artificial_intelligence),
+                        menu_entry(_(u"Manor Security"), views.house_locking),
+
+                        menu_entry(_(u"Runic Translations"), views.runic_translation),
+                        menu_entry(_(u"Biophysical Analysis"), views.matter_analysis),
                         menu_entry(_(u"Chess Challenge"), views.chess_challenge),
                         menu_entry(_(u"Web Geolocation"), views.geoip_location),
+                        menu_entry(_(u"World Scans"), views.world_scan),
+
+                        menu_entry(_(u"Djinns"), views.artificial_intelligence),
+
                         menu_entry(_(u"Business Escrow"), views.business_escrow),
                         menu_entry(_(u"Black Market"), views.black_market),
+
+                        ##menu_entry(_(u"Telecom Investigation"), views.telecom_investigation),
                         # menu_entry(_(u"Agents Hiring"), views.network_management),
                         # menu_entry(_(u"Oracles"), views.contact_djinns),
                         # menu_entry(_(u"Mercenary Commandos"), views.mercenary_commandos),
@@ -161,11 +147,27 @@ def _generate_web_menu(request, menu_entry_generator):
                         # menu_entry(_(u"World Scans"), views.scanning_management),
                       )),
 
-            menu_entry(_(u"Profile"), None, # FIXME
+            menu_entry(_(u"Admin"), views.game_events,
                        (
-                        menu_entry(_(u"Profile"), views.character_profile, forced_visibility=(True if user.is_character else False)),
-                        menu_entry(_(u"Friendships"), views.friendship_management, forced_visibility=(True if user.is_character else False)),
+                         menu_entry(_(u"Game Events"), views.game_events),
+                         menu_entry(_(u"Dashboard"), views.admin_dashboard),
+                         menu_entry(_(u"Manage Characters"), views.manage_characters),
+                         menu_entry(_(u"Manage Webradio Playlist"), views.webradio_management),
+
+                         menu_entry(_(u"Edit Static Pages"), views.static_pages_management),
+                         menu_entry(_(u"Edit Email Contacts"), views.global_contacts_management),
+                         menu_entry(_(u"Edit Radio Spots"), views.radio_spots_editing),
+
+                         menu_entry(_(u"View Database"), views.manage_databases),
+
+                      )),
+
+            menu_entry(_(u"Profile"), (views.character_profile if user.is_character else views.personal_folder),
+                       (
+                        menu_entry(_(u"Profile"), views.character_profile, forced_visibility=(True if user.is_character else False)), # character only
+                        menu_entry(_(u"Friendships"), views.friendship_management, forced_visibility=(True if user.is_character else False)), # character only
                         menu_entry(_(u"Personal Folder"), views.personal_folder),
+                        menu_entry(_(u"My Items"), views.personal_items_slideshow),
                         menu_entry(_(u"Logout"), views.logout),
                         ), forced_visibility=(False if not user.is_authenticated else True)),
 

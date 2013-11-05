@@ -50,7 +50,7 @@ from .messaging_views import (ajax_set_message_read_state, ajax_force_email_send
 
 from .abilities import (house_locking, runic_translation, wiretapping_management, artificial_intelligence,
                         mercenaries_hiring, matter_analysis, world_scan, chess_challenge, geoip_location,
-                        business_escrow, black_market) # telecom_investigation
+                        business_escrow, black_market, ability_introduction) # telecom_investigation
 
 from .admin_views import (admin_dashboard, game_events, webradio_management,
                           manage_databases, static_pages_management, global_contacts_management,

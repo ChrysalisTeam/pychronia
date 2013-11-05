@@ -26,7 +26,7 @@ class PersonalItemForm(AbstractGameForm):
 
 class MatterAnalysisAbility(AbstractAbility):
 
-    TITLE = _lazy("Matter Analysis")
+    TITLE = _lazy("Biophysical Analysis")
     NAME = "matter_analysis"
 
     GAME_ACTIONS = dict(process_artefact=dict(title=_lazy("Process artefact analysis"),

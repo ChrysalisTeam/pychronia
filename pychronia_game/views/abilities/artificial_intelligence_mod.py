@@ -47,14 +47,13 @@ class ArtificialIntelligenceAbility(AbstractAbility):
         settings = self.settings
 
         for bot_name in settings["specific_bot_properties"].keys():
-            bot_session = private_data.setdefault(bot_name, {})
-            bot_session.setdefault("_inputStack", []) # always empty between bot requests !
-            bot_session.setdefault("_inputHistory", [])
-            bot_session.setdefault("_outputHistory", [])
+            bot_session = private_data.setdefault(bot_name, PersistentDict())
+            bot_session.setdefault("_inputStack", PersistentList()) # always empty between bot requests !
+            bot_session.setdefault("_inputHistory", PersistentList())
+            bot_session.setdefault("_outputHistory", PersistentList())
 
     def _check_data_sanity(self, strict=False):
         settings = self.settings
-
 
         utilities.check_is_range_or_num(settings["bots_answer_delays_ms"])
         utilities.check_is_int(settings["bot_max_answers"])
@@ -168,7 +167,9 @@ class ArtificialIntelligenceAbility(AbstractAbility):
             outputs.append(res)
         else:
             res = djinn_proxy.respond(input)
-            self.private_data.update(djinn_proxy.getSessionData()) # we save current session
+            data = djinn_proxy.getSessionData()
+            data = utilities.convert_object_tree(data, utilities.python_to_zodb_types) # FIXME, is it really useful ??
+            self.private_data.update(data) # we save current session in ZODB
 
         # we simulate answer delay
         delay_ms = self.settings["bots_answer_delays_ms"]

@@ -32,7 +32,8 @@ artificial_intelligence = ArtificialIntelligenceAbility.as_view
 from .chess_challenge_mod import ChessChallengeAbility
 chess_challenge = ChessChallengeAbility.as_view
 
-from ._empty_abilities import GeoipLocationAbility, BusinessEscrowAbility, BlackMarketAbility
+from ._empty_abilities import GeoipLocationAbility, BusinessEscrowAbility, BlackMarketAbility, AbilityIntroduction
+ability_introduction = AbilityIntroduction.as_view
 geoip_location = GeoipLocationAbility.as_view
 business_escrow = BusinessEscrowAbility.as_view
 black_market = BlackMarketAbility.as_view

@@ -177,6 +177,7 @@ game_items:
         title: "Antic Statue"
         comments: "An invaluable testimony to some great man of the past."
         image: statue.jpg
+        gamemaster_hints: "very precious"
 
     sacred_chest:
         auction: None
@@ -187,6 +188,7 @@ game_items:
         title: "Sacred Chest"
         comments:  "Only the most sacred acharith relics had a chance to be hosted by one of these divine chests."
         image: sacred_chest.jpg
+        gamemaster_hints: "used to: xxxx"
 
     several_misc_gems:
         auction: "3-D"
@@ -197,6 +199,7 @@ game_items:
         title: "Gems"
         comments:  "Beautiful."
         image: 7_misc_gems.jpg
+        gamemaster_hints: "nothing to say"
 
     several_misc_gems2:
         auction: "3-E"
@@ -207,6 +210,7 @@ game_items:
         title: "Gems again"
         comments:  "Beautiful again."
         image: 8_named_gems.jpg
+        gamemaster_hints: null
 
 
 item_3d_settings:
@@ -217,7 +221,7 @@ item_3d_settings:
         index_steps: 1
         index_offset: 1
         start_level: 1
-        file_template: "sales/chest/simpler_chest%04d.jpg"
+        file_template: "images/sales/chest/simpler_chest%04d.jpg"
         image_width: 500
         image_height: 375
         mode: "camera"

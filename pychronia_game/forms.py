@@ -60,7 +60,7 @@ class GemsTransferForm(AbstractGameForm):
                 title = datamanager.get_item_properties(gem_origin)["title"]
             else:
                 title = _("External gems")
-            full_title = _("Gem of %(gem_value)s Kashes (%(title)s)") % SDICT(gem_value=gem_value, title=title)
+            full_title = _("%(gem_value)s¤ (%(title)s)") % SDICT(gem_value=gem_value, title=title)
             gems_choices.append((gem_id, full_title))
         if not gems_choices:
             raise UninstantiableFormError("no gems available")
@@ -75,7 +75,7 @@ class GemsTransferForm(AbstractGameForm):
             others_choices = datamanager.build_select_choices_from_usernames(others)
             self.fields.insert(1, "recipient_name", forms.ChoiceField(label=_("Recipient"), choices=others_choices))
 
-        self.fields.insert(2, "gems_choices", forms.MultipleChoiceField(required=False, label=_("Gems (use Ctrl key)"), choices=gems_choices))
+        self.fields.insert(2, "gems_choices", forms.MultipleChoiceField(required=False, label=_("Gems"), choices=gems_choices))
 
 
     def clean(self):

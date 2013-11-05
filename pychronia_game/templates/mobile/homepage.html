@@ -6,7 +6,8 @@
 
     <h2>{% trans "What's up on Anthropia?" %}</h2>
 
-
+        {% comment %}
+        CANT WORK - MENU GENERATOR IS NOT THE SAME ON MOBILE PAGE
     	<p>
 		{% if signal_new_menu_entries %}
 		    {% trans "New menu entries are available." %}
@@ -14,6 +15,8 @@
 		   {% trans "No new menu entries." %}
 		{% endif %}
 	    </p>
+	    {% endcomment %}
+
 	    <p>
 		{% if signal_new_text_message %}
 		    {% trans "You've got new message(s)." %}

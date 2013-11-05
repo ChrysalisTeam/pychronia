@@ -195,7 +195,7 @@ def view_sales(request, template_name='auction/view_sales.html'):
 
 
 
-@register_view(access=UserAccess.anonymous, title=_lazy("Auction Slideshow"))
+@register_view(access=UserAccess.authenticated, title=_lazy("Auction Slideshow"))
 def auction_items_slideshow(request, template_name='auction/items_slideshow.html'):
     """
     Contains ALL auction items, WITHOUT 3D viewers.
@@ -325,7 +325,7 @@ def ajax_chat(request):
             if not previous_msg_timestamp or (msg["time"] - previous_msg_timestamp) > chatroom_timestamp_display_threshold:
                 text_lines.append(msg["time"].strftime(time_format))
             if msg["username"] in usernames:
-                official_name = request.datamanager.get_official_name(msg["username"])
+                official_name = msg["username"]
                 color = request.datamanager.get_character_color_or_none(msg["username"])
             else:  # system message
                 official_name = _("system")

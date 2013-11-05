@@ -28,7 +28,7 @@ archeological objects at auction.
 			<th>{% trans "Details" %}</th>
 		    <th>{% trans "Comments" %}</th>
 			{% if user.is_master %}
-			     <th>{% trans "Transfer to character<br/>(payment by cold cash)" %}</th>
+			     <th>{% trans "Sale" %}</th>
 			{% endif %}
 		</tr>
 	</thead>
@@ -80,9 +80,13 @@ archeological objects at auction.
 			{% if user.is_master %}
 
                      <td>
+                         {% if item_details.gamemaster_hints %}
                          <p class="admin-note">
                             {{ item_details.gamemaster_hints }}
                          </p>
+                         {% else %}
+                         &nbsp;
+                         {% endif %}
                     </td>
 
         	    	{% if not item_details.owner %}
