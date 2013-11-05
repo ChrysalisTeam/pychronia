@@ -10,12 +10,15 @@
         Please use this form to describe the bug you've encountered on our portal.
         {% endblocktrans %}
         </p>
+
+        {% if bug_report_email %}
         <p>
         {% blocktrans %}
         If this form doesn't work, then please directly send a real email to the following address:
         {% endblocktrans %}
-        <b>{{ "myeimai@sfr.com"|corrupt_string }}</b>
+        <b>{{ bug_report_email|corrupt_string }}</b>
         </p>
+        {% endif %}
 
         <textarea id="bug_report_textarea" rows="8" cols="60"></textarea>
 

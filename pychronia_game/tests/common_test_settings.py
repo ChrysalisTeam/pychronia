@@ -21,4 +21,4 @@ ROOT_URLCONF_MOBILE = "pychronia_game.tests._test_urls_mobile" # thus if we use 
 WEB_SITE_ENTRY_URL_TEMPLATE = "http://localhost:8000/%s/"
 MOBILE_SITE_ENTRY_URL_TEMPLATE = "http://127.0.0.1:8000/%s/"
 
-
+BUG_REPORT_EMAIL = "bugreport@example.com"

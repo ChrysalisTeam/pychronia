@@ -102,6 +102,7 @@ def pychronia_template_context(request):
                 'mobile_site_entry_url': config.MOBILE_SITE_ENTRY_URL_TEMPLATE % dm.game_instance_id,
                 'web_site_entry_url': config.WEB_SITE_ENTRY_URL_TEMPLATE % dm.game_instance_id,
 
+                'bug_report_email': config.BUG_REPORT_EMAIL, # might be None
                 # useful constants
                 'None': None,
                 'True': True,
