@@ -365,7 +365,7 @@ def check_has_keys(value, keys, strict=False):
     if strict:
         usage_assert(len(actual_keys) == len(keys))
     for key in keys:
-        usage_assert(key in actual_keys)
+        usage_assert(key in actual_keys, (key, actual_keys))
 
 
 def check_num_keys(value, num):

@@ -72,8 +72,10 @@ class ArtificialIntelligenceAbility(AbstractAbility):
             utilities.check_is_dict(bot_props) # nothing precise about what's here ATM
 
 
-        for bot_session in self.all_private_data.values():
-            utilities.check_has_keys(bot_session, ["_inputStack", "_inputHistory", "_outputHistory"], strict=False) # other session values may exist
+        for data in self.all_private_data.values():
+            for bot_name in settings["specific_bot_properties"].keys():
+                bot_session = data[bot_name]
+                utilities.check_has_keys(bot_session, ["_inputStack", "_inputHistory", "_outputHistory"], strict=False) # other session values may exist
 
 
     def _process_html_post_data(self):
@@ -143,6 +145,9 @@ class ArtificialIntelligenceAbility(AbstractAbility):
 
         djinn_proxy = DJINN_PROXY # SINGLETON instance ATM
 
+        if not djinn_proxy:
+            return _("[DJINN IS OFFLINE]")
+            
         bot_session = self.get_bot_session(bot_name) # we load previous session
         djinn_proxy.setSessionData(bot_session)
 
@@ -276,32 +281,26 @@ class DjinnProxy(object):
         # we do not use session IDs, so that we keep an unique history for all chats with a specific bot !
         self.bot_kernel = None
 
-        if config.ACTIVATE_AIML_BOTS: # in prod we shall NOT use bots, too memory-consuming !
+        import aiml # lazily loaded
 
-            import aiml
+        # MONKEY PATCHING #
+        def setSessionData(self, data, sessionID="_global"):
+            self._sessions[sessionID] = data
+        aiml.Kernel.setSessionData = setSessionData
 
-            # MONKEY PATCHING #
-            def setSessionData(self, data, sessionID="_global"):
-                self._sessions[sessionID] = data
-            aiml.Kernel.setSessionData = setSessionData
+        kernel = aiml.Kernel()
+        kernel.verbose(False) # DEBUG OUTPUT
+        kernel.bootstrap(
+            brainFile=os.path.join(config.GAME_FILES_ROOT, "AI", "botbrain.brn"),
+            learnFiles=glob.glob(os.path.join(config.GAME_FILES_ROOT, "AI", "djinn_specific_aiml", "*.aiml"))
+        )
+        self.bot_kernel = kernel
 
-
-            kernel = aiml.Kernel()
-            kernel.verbose(False) # DEBUG OUTPUT
-            kernel.bootstrap(
-                brainFile=os.path.join(config.GAME_FILES_ROOT, "AI", "botbrain.brn"),
-                learnFiles=glob.glob(os.path.join(config.GAME_FILES_ROOT, "AI", "djinn_specific_aiml", "*.aiml"))
-            )
-            self.bot_kernel = kernel
-
-        else:
-            logging.debug("AI bots not initialized to preserve memory")
-
-            """
-            print ("INITIALIZED SESSION  for %s : " % name, self.data["AI_bots"]["bot_properties"][name]["bot_sessions"])
-            props["bot_sessions"] = kernel.getSessionData() # IMPORTANT - initialized values, with I/O history etc.
-            print ("COMMITTING DATA for %s :" % name, self.data["AI_bots"]["bot_properties"][name])
-            """
+        """
+        print ("INITIALIZED SESSION  for %s : " % name, self.data["AI_bots"]["bot_properties"][name]["bot_sessions"])
+        props["bot_sessions"] = kernel.getSessionData() # IMPORTANT - initialized values, with I/O history etc.
+        print ("COMMITTING DATA for %s :" % name, self.data["AI_bots"]["bot_properties"][name])
+        """
 
     def respond(self, input):
         return self.bot_kernel.respond(input)
@@ -325,8 +324,11 @@ class DjinnProxy(object):
         return self.bot_kernel.getPredicate(key)
 
 
-# singleton
-DJINN_PROXY = DjinnProxy()
-
+# singleton instance #
+if config.ACTIVATE_AIML_BOTS:
+    DJINN_PROXY = DjinnProxy() # beware in prod, memory-consuming !
+else:
+    DJINN_PROXY = None
+    logging.warning("AI bots not initialized, so as to preserve memory")
 
 

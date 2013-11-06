@@ -27,6 +27,7 @@ ZODB_URL = None
 
 
 ## FOR INTEGRATION ##
+ACTIVATE_AIML_BOTS = True
 ##GAME_FILES_ROOT = "P:\\Chrysalis Depot\\Chrysalis V1\\"
 ##GAME_INITIAL_DATA_PATH = r"P:\Chrysalis Depot\Chrysalis V1\script_fixtures"
 
