@@ -9,14 +9,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-11-02 21:08+0100\n"
-"PO-Revision-Date: 2013-11-03 16:05+0200\n"
+"POT-Creation-Date: 2013-11-06 20:59+0100\n"
+"PO-Revision-Date: 2013-11-06 20:52+0200\n"
 "Last-Translator: Pascal <chambon.pascal@gmail.com>\n"
 "Language-Team: Nothing\n"
-"Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: fr\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Generator: Virtaal 0.7.1\n"
 
@@ -64,13 +64,13 @@ msgid "External gems"
 msgstr "Gemmes externes"
 
 #: .\forms.py:63
-#, python-format
-msgid "Gem of %(gem_value)s Kashes (%(title)s)"
+#, fuzzy, python-format
+msgid "%(gem_value)s¤ (%(title)s)"
 msgstr "Gemmes à %(gem_value)s Kashes (%(title)s)"
 
 #: .\forms.py:78
-msgid "Gems (use Ctrl key)"
-msgstr "Gammes (utiliser la touche Ctrl)"
+msgid "Gems"
+msgstr "Gemmes"
 
 #: .\forms.py:188 .\views\profile_views.py:170
 msgid "New passwords not matching"
@@ -117,59 +117,59 @@ msgstr "Sélectionnez votre artefact."
 msgid "User"
 msgstr "Utilisateur"
 
-#: .\menus.py:48 .\menus.py:85 .\templates\base_main.html.py:293
+#: .\menus.py:48 .\menus.py:85 .\templates\base_main.html.py:292
 msgid "Anthropia"
 msgstr "Anthropia"
 
-#: .\menus.py:52 .\menus.py:89
+#: .\menus.py:52
 msgid "Home"
 msgstr "Accueil"
 
-#: .\menus.py:94
-msgid "Characters"
-msgstr "Personnages"
-
-#: .\menus.py:95 .\views\auction_views.py:186
+#: .\menus.py:89 .\views\auction_views.py:186
 msgid "Auction"
 msgstr "Enchères"
 
-#: .\menus.py:96
-#, fuzzy
-msgid "Auction Items"
-msgstr "objets des enchères"
+#: .\menus.py:94
+msgid "Bidders"
+msgstr "Enchérisseurs"
+
+#: .\menus.py:95
+msgid "Summary"
+msgstr "Résumé"
+
+#: .\menus.py:96 .\templates\auction\view_sales.html.py:28
+msgid "Details"
+msgstr "Détails"
 
 #: .\menus.py:97
-msgid "My Items"
-msgstr "Mes objets"
-
-#: .\menus.py:98
 msgid "Chatroom"
 msgstr "Chatroom"
 
-#: .\menus.py:102
-msgid "Info"
-msgstr "Info"
+#: .\menus.py:101
+msgid "Media"
+msgstr "Média"
 
-#: .\menus.py:104
+#: .\menus.py:103
 msgid "Encyclopedia"
 msgstr "Encyclopédie"
 
-#: .\menus.py:106
-msgid "Public Webradio"
+#: .\menus.py:105
+#, fuzzy
+msgid "Webradio"
 msgstr "Webradio Publique"
 
-#: .\menus.py:107
-#, fuzzy
-msgid "Personal Webradio"
-msgstr "Webradio Personnelle"
-
-#: .\menus.py:109
-msgid "__ENCRYPTED__"
-msgstr "__ENCRYPTED__"
-
-#: .\menus.py:110
+#: .\menus.py:106
 msgid "World Map"
 msgstr "Carte du Monde"
+
+#: .\menus.py:108
+msgid "__EncryptedFolder__"
+msgstr ""
+
+#: .\menus.py:109
+#, fuzzy
+msgid "__PublicWebradio__"
+msgstr "Webradio Publique"
 
 #: .\menus.py:113
 msgid "Messaging"
@@ -188,106 +188,128 @@ msgid "My conversations"
 msgstr "Mes conversations"
 
 #: .\menus.py:118
-msgid "Compose message"
-msgstr "Nouveau Message"
-
-#: .\menus.py:119
 msgid "Templates"
 msgstr "Modèles"
 
-#: .\menus.py:123
-msgid "Admin"
-msgstr "Admin"
+#: .\menus.py:119
+msgid "Compose message"
+msgstr "Nouveau Message"
 
-#: .\menus.py:125
-msgid "Dashboard"
-msgstr "Tableau de bord"
-
-#: .\menus.py:126
-#, fuzzy
-msgid "Manage Characters"
-msgstr "Gérer les personnages"
-
-#: .\menus.py:128
-msgid "Game Events"
-msgstr "Evènements"
-
-#: .\menus.py:129
-msgid "Manage Webradio"
-msgstr "Gérer la Webradio"
-
-#: .\menus.py:130
-msgid "Databases"
-msgstr "Données"
-
-#: .\menus.py:132
-msgid "Static Pages"
-msgstr "Pages statiques"
-
-#: .\menus.py:133
-msgid "Global Contacts"
-msgstr "Contacts Globaux"
-
-#: .\menus.py:135 .\views\admin_views\radio_spots_editing_mod.py:76
-#, fuzzy
-msgid "Radio Spots"
-msgstr "Spots Radio"
-
-#: .\menus.py:140
+#: .\menus.py:122
 msgid "Abilities"
 msgstr "Compétences"
 
-#: .\menus.py:143
-msgid "Wiretaps"
+#: .\menus.py:125
+#, fuzzy
+msgid "Wiretapping"
 msgstr "Mises sur Ecoute"
 
-#: .\menus.py:144
-msgid "Doors Locking"
-msgstr "Verrouillage des Portes"
-
-#: .\menus.py:145
-msgid "Runic Translations"
-msgstr "Traductions Runiques"
-
-#: .\menus.py:146
+#: .\menus.py:126
 #, fuzzy
 msgid "Network Management"
 msgstr "Gestion du Réseau"
 
-#: .\menus.py:147
-msgid "Matter Analysis"
-msgstr "Analyse de Matière"
+#: .\menus.py:127
+msgid "Manor Security"
+msgstr "Sécurité du Manoir"
 
-#: .\menus.py:149
+#: .\menus.py:129
+msgid "Runic Translations"
+msgstr "Traductions Runiques"
+
+#: .\menus.py:130
+msgid "Biophysical Analysis"
+msgstr "Analyse Biophysique"
+
+#: .\menus.py:131 .\views\abilities\chess_challenge_mod.py:40
+msgid "Chess Challenge"
+msgstr "Défi d'Echecs"
+
+#: .\menus.py:132
+#, fuzzy
+msgid "Web Geolocation"
+msgstr "Lieu"
+
+#: .\menus.py:133
 msgid "World Scans"
 msgstr "Scans Mondiaux"
 
-#: .\menus.py:150
+#: .\menus.py:135
 #, fuzzy
 msgid "Djinns"
 msgstr "Djinns"
 
-#: .\menus.py:151 .\views\abilities\chess_challenge_mod.py:40
-msgid "Chess Challenge"
-msgstr "Défi d'Echecs"
+#: .\menus.py:137
+msgid "Business Escrow"
+msgstr "Tiers de Confiance"
 
-#: .\menus.py:162 .\menus.py:164
+#: .\menus.py:138
+msgid "Black Market"
+msgstr "Marché Noir"
+
+#: .\menus.py:150
+msgid "Admin"
+msgstr "Admin"
+
+#: .\menus.py:152
+msgid "Game Events"
+msgstr "Evènements"
+
+#: .\menus.py:153
+msgid "Dashboard"
+msgstr "Tableau de bord"
+
+#: .\menus.py:154
+#, fuzzy
+msgid "Manage Characters"
+msgstr "Gérer les personnages"
+
+#: .\menus.py:155
+#, fuzzy
+msgid "Manage Webradio Playlist"
+msgstr "Gérer la Webradio"
+
+#: .\menus.py:157
+#, fuzzy
+msgid "Edit Static Pages"
+msgstr "Pages statiques"
+
+#: .\menus.py:158
+#, fuzzy
+msgid "Edit Email Contacts"
+msgstr "Contacts modifiables"
+
+#: .\menus.py:159
+#, fuzzy
+msgid "Edit Radio Spots"
+msgstr "Spots Radio"
+
+#: .\menus.py:161
+#, fuzzy
+msgid "View Database"
+msgstr "Données"
+
+#: .\menus.py:165 .\menus.py:167
 msgid "Profile"
 msgstr "Profil"
 
-#: .\menus.py:165
+#: .\menus.py:168
 msgid "Friendships"
 msgstr "Amitiés"
 
-#: .\menus.py:166
+#: .\menus.py:169
 msgid "Personal Folder"
 msgstr "Documents Personnels"
 
-#: .\menus.py:167
+#: .\menus.py:170
+msgid "My Items"
+msgstr "Mes objets"
+
+#: .\menus.py:171
 msgid "Logout"
 msgstr "Déconnexion"
 
-#: .\menus.py:170
+#: .\menus.py:174
 msgid "Login"
 msgstr "Identifiant"
 
@@ -335,13 +357,13 @@ msgid "Please come back later."
 msgstr "Veuillez revenir plus tard."
 
 #: .\datamanager\abstract_data_table_view.py:64
-#, python-format
-msgid "Entry %r properly submitted"
+#, fuzzy, python-format
+msgid "Entry '%s' properly submitted"
 msgstr "Entrée %r correctement soumise"
 
 #: .\datamanager\abstract_data_table_view.py:71
-#, python-format
-msgid "Entry %r not found"
+#, fuzzy, python-format
+msgid "Entry '%s' not found"
 msgstr "Entrée %r introuvable"
 
 #: .\datamanager\abstract_data_table_view.py:73
@@ -349,68 +371,68 @@ msgstr "Entrée %r introuvable"
 msgid "Entry '%s' properly deleted"
 msgstr "Entrée '%s' correctement détruite"
 
-#: .\datamanager\abstract_game_view.py:42
-#, python-format
-msgid "Currently impersonated user can't access view %s"
+#: .\datamanager\abstract_game_view.py:43
+#, fuzzy, python-format
+msgid "Currently impersonated user can't access view '%s'"
 msgstr "L'utilisateur actuellement usurpé ne peut pas accéder à la vue %s"
 
-#: .\datamanager\abstract_game_view.py:46
+#: .\datamanager\abstract_game_view.py:47
 #, fuzzy, python-format
 msgid "Access denied to page %s"
 msgstr "Accès interdit à la page %s"
 
-#: .\datamanager\abstract_game_view.py:56
+#: .\datamanager\abstract_game_view.py:57
 msgid "An unexpected server error occurred, please retry"
 msgstr "Une erreur serveur inattendue est survenue, veuillez réessayer"
 
-#: .\datamanager\abstract_game_view.py:289
+#: .\datamanager\abstract_game_view.py:290
 msgid "You are not allowed to submit changes to that page"
 msgstr "Vous n'êtes pas autorisé à soumettre des changements à cette page"
 
-#: .\datamanager\abstract_game_view.py:300
+#: .\datamanager\abstract_game_view.py:301
 msgid "Access reserved to privileged members."
 msgstr "Accès réservé aux membres autorisés."
 
-#: .\datamanager\abstract_game_view.py:302
-#: .\datamanager\abstract_game_view.py:314
+#: .\datamanager\abstract_game_view.py:303
+#: .\datamanager\abstract_game_view.py:315
 #, fuzzy
 msgid "Authentication required."
 msgstr "Authentification requise"
 
-#: .\datamanager\abstract_game_view.py:305
+#: .\datamanager\abstract_game_view.py:306
 #, fuzzy
 msgid "Access globally forbidden."
 msgstr "Accès interdit à tous."
 
-#: .\datamanager\abstract_game_view.py:365
+#: .\datamanager\abstract_game_view.py:366
 msgid "This action requires personal permissions"
 msgstr "Cette action requiert des permissions particulières"
 
-#: .\datamanager\abstract_game_view.py:422
+#: .\datamanager\abstract_game_view.py:423
 #, python-format
 msgid "Wrong arguments when calling method %s"
 msgstr "Mauvais paramètres lors de l'appel à la méthode %s"
 
-#: .\datamanager\abstract_game_view.py:445
+#: .\datamanager\abstract_game_view.py:446
 #, python-format
 msgid "Forbidden action %s called by unauthorized user"
 msgstr "Action interdite %s appelée par un utilisateur non autorisé"
 
-#: .\datamanager\abstract_game_view.py:461
+#: .\datamanager\abstract_game_view.py:462
 #, python-format
 msgid "Abnormal action name: %(action_name)s (available: %(actions)r)"
 msgstr "Nom d'action anormal: %(action_name)s (disponibles: %(actions)r)"
 
-#: .\datamanager\abstract_game_view.py:503
+#: .\datamanager\abstract_game_view.py:504
 #, fuzzy
 msgid "Operation successful"
 msgstr "Opération réussie"
 
-#: .\datamanager\abstract_game_view.py:506
+#: .\datamanager\abstract_game_view.py:507
 msgid "Submitted data is invalid"
 msgstr "Les données soumises sont invalides"
 
-#: .\datamanager\abstract_game_view.py:548
+#: .\datamanager\abstract_game_view.py:549
 msgid "Submitted form data hasn't been recognized"
 msgstr "Les données de formulaire n'ont pas été reconnues "
 
@@ -463,8 +485,8 @@ msgid "Total units available: %s."
 msgstr "Unités disponibles au total: %s."
 
 #: .\datamanager\action_middlewares.py:394
-#, python-format
-msgid "Tital units already used: %s."
+#, fuzzy, python-format
+msgid "Total units already used: %s."
 msgstr "Unités déjà utilisées au total: %s."
 
 #: .\datamanager\action_middlewares.py:397
@@ -478,9 +500,9 @@ msgid "Units already consumed by yourself: %s."
 msgstr "Unités que vous avez déjà consommées: %s."
 
 #: .\datamanager\action_middlewares.py:432
-#, python-format
+#, fuzzy, python-format
 msgid ""
-"You have exceeded the global quota (%(max_per_game)s uses) for that asset"
+"The global quota (%(max_per_game)s uses) for that asset has been exceeded"
 msgstr ""
 "Vous avez dépassé le quota global (%(max_per_game)s utilisations) pour ce "
 "bien"
@@ -490,7 +512,8 @@ msgstr ""
 msgid ""
 "You have exceeded your quota (%(max_per_character)s uses) for that asset"
 msgstr ""
-"Vous avez dépassé votre quota (%(max_per_game)s utilisations) pour ce bien"
+"Vous avez dépassé votre quota (%(max_per_character)s utilisations) pour ce "
+"bien"
 
 #: .\datamanager\action_middlewares.py:511
 #, python-format
@@ -559,7 +582,7 @@ msgstr "L'instance %s est en maintenance."
 #: .\datamanager\datamanager_administrator.py:200
 #, python-format
 msgid "Instance %s is NOT in maintenance."
-msgstr "L'instance % n'est PAS en maintenance."
+msgstr "L'instance %s n'est PAS en maintenance."
 
 #: .\datamanager\datamanager_administrator.py:229
 #, python-format
@@ -596,13 +619,13 @@ msgid "Wrong domain name %s"
 msgstr "Mauvais nom de domaine %s"
 
 #: .\datamanager\datamanager_modules.py:746
-#, python-format
-msgid "Invalid game_username: %s"
+#, fuzzy, python-format
+msgid "Invalid instance username: %s"
 msgstr "Identifiant utilisateur invalide dans l'instance: %s"
 
 #: .\datamanager\datamanager_modules.py:748
-#, python-format
-msgid "Invalid requested_impersonation_target: %s"
+#, fuzzy, python-format
+msgid "Invalid requested impersonation target: %s"
 msgstr "Cible d'usurpation demandée invalide: %s"
 
 #: .\datamanager\datamanager_modules.py:761
@@ -632,8 +655,7 @@ msgstr "Mauvais mot de passe actuel soumis"
 #: .\datamanager\datamanager_modules.py:888
 msgid "Game master can't recover his password through a secret question."
 msgstr ""
-"Le Maître du jeu ne peut récupérer son mot de passe via une question "
-"secrète."
+"Le Maître du jeu ne peut récupérer son mot de passe via une question secrète."
 
 #: .\datamanager\datamanager_modules.py:890
 msgid "Invalid username."
@@ -843,20 +865,20 @@ msgstr "Rapport d'erreur correctement envoyé."
 msgid "Application error (please consider reporting that bug)"
 msgstr "Erreur applicative (veuillez considérer signaler ce bogue)"
 
-#: .\templates\base_main.html.py:294
+#: .\templates\base_main.html.py:293
 #, fuzzy
 msgid "Welcome to Anthropia"
 msgstr "Bienvenue sur Anthropia"
 
-#: .\templates\base_main.html.py:341
+#: .\templates\base_main.html.py:339
 msgid "Take the identity of another user."
 msgstr "Prendre l'identité d'un autre utilisateur"
 
-#: .\templates\base_main.html.py:342
+#: .\templates\base_main.html.py:340
 msgid "Impersonation:"
 msgstr "Usurpation:"
 
-#: .\templates\base_main.html.py:344
+#: .\templates\base_main.html.py:342
 #: .\templates\abilities\mercenaries_hiring.html.py:14
 #: .\templates\abilities\wiretapping_management.html.py:40
 #: .\templates\administration\character_management.html.py:20
@@ -868,32 +890,70 @@ msgstr "Usurpation:"
 msgid "None"
 msgstr "Aucun(e)"
 
-#: .\templates\base_main.html.py:362
+#: .\templates\base_main.html.py:360
 msgid "Whether or not you can modify the game during impersonations."
 msgstr "Si vous pouvez ou non modifier le jeu durant l'usurpation d'identité."
 
-#: .\templates\base_main.html.py:363
+#: .\templates\base_main.html.py:361
 msgid "Writability:"
 msgstr "Modifiabilité:"
 
-#: .\templates\base_main.html.py:365
+#: .\templates\base_main.html.py:363
 msgid "Read-only"
 msgstr "Lecture-seule"
 
-#: .\templates\base_main.html.py:366
+#: .\templates\base_main.html.py:364
 msgid "Writable"
 msgstr "Modifiable"
 
-#: .\templates\base_main.html.py:418
+#: .\templates\base_main.html.py:404
 #, fuzzy
-msgid "Welcome to Anthropia,"
-msgstr "Bienvenue à Anthropia,"
+msgid "No Notifications"
+msgstr "Notification Système"
 
-#: .\templates\base_main.html.py:455
+#: .\templates\base_main.html.py:408
+#, fuzzy
+msgid "New menu entries are available for you!"
+msgstr "Nouvelles entrées de menu disponibles."
+
+#: .\templates\base_main.html.py:411
+#, fuzzy
+msgid "New text messages are available for you!"
+msgstr "De nouveaux messages radio sont disponibles."
+
+#: .\templates\base_main.html.py:414
+#, fuzzy
+msgid "There are people in the live chat room!"
+msgstr "Il y a des utilisateurs dans le salon de discussion."
+
+#: .\templates\base_main.html.py:422
+#, fuzzy
+msgid "Your current user login."
+msgstr "Pas d'utilisateurs actuellement en ligne."
+
+#: .\templates\base_main.html.py:431
+#, fuzzy
+msgid "Pangea webradio is currently ONLINE"
+msgstr "Radio Pangéa est actuellement Allumée."
+
+#: .\templates\base_main.html.py:438
+#, fuzzy
+msgid "Pangea webradio is currently OFFLINE"
+msgstr "Radio Pangée est actuellement éteinte."
+
+#: .\templates\base_main.html.py:457
 msgid "Unexisting help page:"
 msgstr "Page d'aide inexistante:"
 
-#: .\templates\base_main.html.py:475
+#: .\templates\base_main.html.py:458
+msgid ""
+"Unfortunately, no additional information about the current webpage is "
+"available"
+msgstr ""
+"Malheureusement, aucune information supplémentaire n'est disponible pour la "
+"page web actuelle"
+
+#: .\templates\base_main.html.py:481
 #, fuzzy
 msgid ""
 "\n"
@@ -911,20 +971,20 @@ msgstr[1] ""
 "\n"
 "                En ligne:              "
 
-#: .\templates\base_main.html.py:482
+#: .\templates\base_main.html.py:488
 msgid "No users currently online."
 msgstr "Pas d'utilisateurs actuellement en ligne."
 
-#: .\templates\base_main.html.py:492
+#: .\templates\base_main.html.py:498
 #, fuzzy
 msgid "Interface : "
 msgstr "Interface : "
 
-#: .\templates\base_main.html.py:504
-msgid "Mobile Version"
-msgstr "Version Mobile"
+#: .\templates\base_main.html.py:510
+msgid "MOBILE TEST"
+msgstr ""
 
-#: .\templates\base_main.html.py:509
+#: .\templates\base_main.html.py:515
 msgid "Report Bug"
 msgstr "Rapporter un bogue"
 
@@ -942,12 +1002,8 @@ msgstr "Lancer l'opération"
 
 #: .\templates\__specific_operations\chat_with_djinn.html.py:90
 #, python-format
-msgid ""
-"You're currently in telepathic communication with djinn <strong>%(bot_name)"
-"s</strong>."
+msgid "You're cunn <strong>%(bot_name)s</strong>."
 msgstr ""
-"Vous êtes actuellement en communication télépathique avec le djinn <strong>%"
-"(bot_name)s</strong>."
 
 #: .\templates\__specific_operations\chat_with_djinn.html.py:103
 #: .\templates\abilities\artificial_intelligence.html.py:116
@@ -1109,7 +1165,7 @@ msgid ""
 "(selected_djinn)s</strong>."
 msgstr ""
 "Vous êtes actuellement en communication télépathique avec le djinn <strong>%"
-"(bot_name)s</strong>."
+"(selected_djinn)s</strong>."
 
 #: .\templates\abilities\chess_challenge.html.py:18
 msgid "Your victory has well been recorded!"
@@ -1133,13 +1189,14 @@ msgid "Lock Doors"
 msgstr "Verrouillage des Portes"
 
 #: .\templates\abilities\house_locking.html.py:62
-#: .\templates\auction\view_sales.html.py:105
+#: .\templates\auction\view_sales.html.py:109
 msgid "Reset"
 msgstr "Réinitialiser"
 
 #: .\templates\abilities\house_locking.html.py:63
 #: .\templates\administration\global_contacts_management.html.py:52
 #: .\templates\administration\static_pages_management.html.py:39
+#: .\templates\utilities\bug_report.html.py:26
 msgid "Submit"
 msgstr "Soumettre"
 
@@ -1406,7 +1463,8 @@ msgid "Now chatting:"
 msgstr "Présents :"
 
 #: .\templates\auction\items_slideshow.html.py:36
-msgid "No objects to be shown."
+#, fuzzy
+msgid "No objects to be shown"
 msgstr "Pas d'objets à montrer."
 
 #: .\templates\auction\items_slideshow.html.py:43
@@ -1489,17 +1547,13 @@ msgstr "Id"
 msgid "Photo"
 msgstr "Photo"
 
-#: .\templates\auction\view_sales.html.py:28
-msgid "Details"
-msgstr "Détails"
-
 #: .\templates\auction\view_sales.html.py:29
 msgid "Comments"
 msgstr "Commentaires"
 
 #: .\templates\auction\view_sales.html.py:31
-msgid "Transfer to character<br/>(payment by cold cash)"
-msgstr "Transférer au personnage<br/>(paiement en liquide)"
+msgid "Sale"
+msgstr "Vente"
 
 #: .\templates\auction\view_sales.html.py:67
 msgid "gem"
@@ -1518,12 +1572,12 @@ msgstr "Unité"
 msgid "Total"
 msgstr "Total"
 
-#: .\templates\auction\view_sales.html.py:97
+#: .\templates\auction\view_sales.html.py:101
 #: .\templates\messaging\single_message.html.py:28
 msgid "Transfer"
 msgstr "Transférer"
 
-#: .\templates\auction\view_sales.html.py:103
+#: .\templates\auction\view_sales.html.py:107
 msgid "Buyer"
 msgstr "Acheteur"
 
@@ -1711,7 +1765,8 @@ msgid "Queued message successfully dispatched"
 msgstr "Message en attente envoyé avec succès"
 
 #: .\templates\messaging\base.html.py:54
-msgid "Are you sure you want to permamently delete this message ?"
+#, fuzzy
+msgid "Are you sure you want to permanently delete this message ?"
 msgstr "Voulez-vous vraiment supprimer définitivement ce message ?"
 
 #: .\templates\messaging\base.html.py:55
@@ -1864,36 +1919,28 @@ msgstr "Verrouiller"
 msgid "What's up on Anthropia?"
 msgstr "Quoi de neuf sur Anthropia ?"
 
-#: .\templates\mobile\homepage.html.py:12
-msgid "New menu entries are available."
-msgstr "Nouvelles entrées de menu disponibles."
-
-#: .\templates\mobile\homepage.html.py:14
-msgid "No new menu entries."
-msgstr "Pas de nouvelles entrées de menu."
-
-#: .\templates\mobile\homepage.html.py:19
+#: .\templates\mobile\homepage.html.py:23
 msgid "You've got new message(s)."
 msgstr "Vous avez de nouveaux messages."
 
-#: .\templates\mobile\homepage.html.py:21
+#: .\templates\mobile\homepage.html.py:25
 #, fuzzy
 msgid "No new text messages."
 msgstr "Aucun nouveau message textuel."
 
-#: .\templates\mobile\homepage.html.py:26
+#: .\templates\mobile\homepage.html.py:30
 msgid "New radio messages are available."
 msgstr "De nouveaux messages radio sont disponibles."
 
-#: .\templates\mobile\homepage.html.py:28
+#: .\templates\mobile\homepage.html.py:32
 msgid "No new radio spots."
 msgstr "Pas de nouveaux spots radio."
 
-#: .\templates\mobile\homepage.html.py:33
+#: .\templates\mobile\homepage.html.py:37
 msgid "There are users in the chatroom."
 msgstr "Il y a des utilisateurs dans le salon de discussion."
 
-#: .\templates\mobile\homepage.html.py:35
+#: .\templates\mobile\homepage.html.py:39
 msgid "The chatroom is empty."
 msgstr "Le salon de discussion est vide."
 
@@ -1950,7 +1997,7 @@ msgstr ""
 "        Veuillez utiliser ce formulaire pour décrire le bogue rencontré sur "
 "notre portail."
 
-#: .\templates\utilities\bug_report.html.py:14
+#: .\templates\utilities\bug_report.html.py:16
 msgid ""
 "\n"
 "        If this form doesn't work, then please directly send a real email to "
@@ -1961,21 +2008,15 @@ msgstr ""
 "        Si ce formulaire ne marche pas, veuillez SVP directement envoyer un "
 "email réel à l'adresse suivante :"
 
-#: .\templates\utilities\bug_report.html.py:23
-msgid "Annuler"
-msgstr "Annuler"
+#: .\templates\utilities\bug_report.html.py:27
+#, fuzzy
+msgid "Cancel"
+msgstr "Annuler le message"
 
-#: .\templates\utilities\bug_report.html.py:24
-msgid "Envoyer"
-msgstr "Envoyer"
-
-#: .\templates\utilities\captcha_check.html.py:10
-msgid ""
-"\n"
-"    Sorry, we need to check your that you're neither a robot, nor a zombie.\n"
-msgstr ""
-"\n"
-"    Désolé, nous devons vérifier que vous n'êtes ni un robot, ni un zombie."
+#: .\templates\utilities\captcha_check.html.py:11
+#, fuzzy
+msgid "Sorry, we need to check your that you're neither a robot, nor a zombie."
+msgstr "Désolé, nous devons vérifier que vous n'êtes ni un robot, ni un zombie."
 
 #: .\templates\utilities\page_top.html.py:8
 msgid "Terms of Use"
@@ -1998,7 +2039,7 @@ msgstr "Accéder au fichier"
 msgid "here"
 msgstr "ici"
 
-#: .\views\__init__.py:138
+#: .\views\__init__.py:139
 msgid "Manual Page"
 msgstr "Pages de Manuel"
 
@@ -2294,7 +2335,8 @@ msgstr ""
 "briser l'amitié pour l'instant)"
 
 #: .\views\profile_views.py:230
-msgid "Abort friendship proposal"
+#, fuzzy
+msgid "Abort friendship"
 msgstr "Annuler la proposition d'amitié"
 
 #: .\views\profile_views.py:230
@@ -2342,9 +2384,9 @@ msgstr ""
 "a annulé sa propre proposition d'amitié dans le même temps."
 
 #: .\views\profile_views.py:269
-#, python-format
+#, fuzzy, python-format
 msgid ""
-"Your friendship with %s has been properly canceled, as he had accepted it "
+"Your friendship with %s has been properly canceled, since he had accepted it "
 "concurrently."
 msgstr ""
 "Votre amitié avec %s a été correctement annulée, car il avait accepté votre "
@@ -2410,20 +2452,24 @@ msgstr "<Intervention de mercenaires à %(city_name)s>"
 msgid "Djinn"
 msgstr "Djinn"
 
-#: .\views\abilities\artificial_intelligence_mod.py:89
+#: .\views\abilities\artificial_intelligence_mod.py:90
 #, fuzzy
 msgid "Djinns' Temple"
 msgstr "Temple des Djinns"
 
-#: .\views\abilities\artificial_intelligence_mod.py:105
+#: .\views\abilities\artificial_intelligence_mod.py:106
 #, python-format
 msgid "%s's Shrine"
 msgstr "Sanctuaire de %s"
 
-#: .\views\abilities\artificial_intelligence_mod.py:118
+#: .\views\abilities\artificial_intelligence_mod.py:119
 #, python-format
 msgid "Unknown djinn name '%s'"
 msgstr "Nom de djinn inconnu '%s'"
+
+#: .\views\abilities\artificial_intelligence_mod.py:149
+msgid "[DJINN IS OFFLINE]"
+msgstr "[LE DJINN EST HORS-LIGNE]"
 
 #: .\views\abilities\djinn_chat_mod.py:15
 msgid "Game is not yet started"
@@ -2471,7 +2517,8 @@ msgstr "Analyse profonde de Matière"
 
 #: .\views\abilities\matter_analysis_mod.py:85
 msgid "Please analyse the physical and biological properties of this item."
-msgstr "Veuillez analyser les propriétés physiques et biologiques de cet objet."
+msgstr ""
+"Veuillez analyser les propriétés physiques et biologiques de cet objet."
 
 #: .\views\abilities\matter_analysis_mod.py:91
 #, python-format
@@ -2700,8 +2747,14 @@ msgid "Game state well saved."
 msgstr "État du jeu bien sauvegardé."
 
 #: .\views\admin_views\radio_spots_editing_mod.py:41
-msgid "Invalid local file path or remote rl."
+#, fuzzy
+msgid "Invalid local file path or remote url."
 msgstr "Chemin de fichier local ou url invalide."
+
+#: .\views\admin_views\radio_spots_editing_mod.py:76
+#, fuzzy
+msgid "Radio Spots"
+msgstr "Spots Radio"
 
 #: .\views\admin_views\webradio_management_mod.py:46
 msgid "Web Radio Management"
@@ -2723,6 +2776,54 @@ msgstr "La liste de lecture a été vidée."
 #: .\views\admin_views\webradio_management_mod.py:85
 msgid "Player notifications have been enqueued."
 msgstr "Les notifications aux joueurs ont été mises en liste de lecture."
+
+#~ msgid "Gems (use Ctrl key)"
+#~ msgstr "Gammes (utiliser la touche Ctrl)"
+
+#~ msgid "Characters"
+#~ msgstr "Personnages"
+
+#, fuzzy
+#~ msgid "Auction Items"
+#~ msgstr "objets des enchères"
+
+#~ msgid "Info"
+#~ msgstr "Info"
+
+#, fuzzy
+#~ msgid "Personal Webradio"
+#~ msgstr "Webradio Personnelle"
+
+#~ msgid "__ENCRYPTED__"
+#~ msgstr "__ENCRYPTED__"
+
+#~ msgid "Global Contacts"
+#~ msgstr "Contacts Globaux"
+
+#~ msgid "Doors Locking"
+#~ msgstr "Verrouillage des Portes"
+
+#~ msgid "Matter Analysis"
+#~ msgstr "Analyse de Matière"
+
+#, fuzzy
+#~ msgid "Welcome to Anthropia,"
+#~ msgstr "Bienvenue à Anthropia,"
+
+#~ msgid "Mobile Version"
+#~ msgstr "Version Mobile"
+
+#~ msgid "Transfer to character<br/>(payment by cold cash)"
+#~ msgstr "Transférer au personnage<br/>(paiement en liquide)"
+
+#~ msgid "No new menu entries."
+#~ msgstr "Pas de nouvelles entrées de menu."
+
+#~ msgid "Annuler"
+#~ msgstr "Annuler"
+
+#~ msgid "Envoyer"
+#~ msgstr "Envoyer"
 
 #~ msgid "French"
 #~ msgstr "Français"
