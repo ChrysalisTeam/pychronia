@@ -142,6 +142,7 @@ TASKS DONE
 FUTUR ENHANCEMENTS
 --------------------------
 
+- IMPORTANT - hide explicit message ids visible by players!!
 - add "stop impersonation" link in menu ?
 - allow multi-instance staff impersonation, so that superuser can remain logged everywhere
 - better menus for meta admin pages
