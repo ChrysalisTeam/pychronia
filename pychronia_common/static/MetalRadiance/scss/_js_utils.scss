@@ -6,7 +6,8 @@
 
 
 .jp-audio {
-   * { box-sizing: content-box !important;
+   * {
+     box-sizing: content-box !important;
    }
     margin: 10px auto;
 }
@@ -63,9 +64,6 @@
     .jnotify-notification-success .jnotify-message {
       color: #008000 !important;
     }
-}
-
-
 }
 
 
