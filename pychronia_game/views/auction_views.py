@@ -76,16 +76,24 @@ class CharactersView(AbstractGameView):
                                                          previous_form_data=previous_form_data)
 
 
-        # we display the list of available PLAYER accounts
+        # we display the list of available character accounts
 
-        characters = [(k, v) for (k, v) in self.datamanager.get_character_sets().items() if not v["is_npc"]]
+        if self.datamanager.is_master():
+            characters = self.datamanager.get_character_sets().items()
+            auction_only = False
+        else:
+            characters = [(k, v) for (k, v) in self.datamanager.get_character_sets().items() if not v["is_npc"]]
+            auction_only = True
 
-        sorted_characters = sorted(characters, key=lambda (key, value): key)  # sort by type and then login
-        character_item_details = {username: self.datamanager.get_available_items_for_user(username=username).values()
-                                  for username, user_details in sorted_characters}
+        sorted_characters = sorted(characters, key=lambda (key, value): (value["is_npc"], key))  # sort by type and then login
+
+        print (">>>>", list(sorted_characters))
+
+        character_item_details = {username: sorted(self.datamanager.get_available_items_for_user(username=username, auction_only=auction_only).values(), key=lambda x:x["title"])
+                                  for username, _user_details in sorted_characters}
 
         return {
-                 'page_title': _("Account Management"),
+                 'page_title': _("Bidders"),
                  'pangea_domain':self.datamanager.get_global_parameter("pangea_network_domain"),
                  'money_form': new_money_form,
                  'gems_form': new_gems_form,
@@ -124,17 +132,18 @@ class CharactersView(AbstractGameView):
 
     @transaction_watcher
     def transfer_artefact(self, recipient_name, artefact_name):
-
+        previous_owner = self.datamanager.username if not self.datamanager.is_master() else None
         self.datamanager.transfer_object_to_character(item_name=artefact_name,
                                                       char_name=recipient_name,
-                                                      previous_owner=self.datamanager.username) # redundant check, since form already ensures ownership
+                                                      previous_owner=previous_owner) # redundant check, since form already ensures ownership
         return _("Artefact transfer successful.")
 
 
 view_characters = CharactersView.as_view
 
 
-
+def _sorted_game_items(items_list): # items_list is a list of pairs from dict items()
+    return sorted(items_list, key=lambda x: (x[1]['auction'] if x[1]['auction'] else "ZZZZZ", x[0]))
 
 
 
@@ -156,7 +165,13 @@ def view_sales(request, template_name='auction/view_sales.html'):
 
 
     # IMPORTANT - we copy, so that we can modify the object without changing DBs !
-    items_for_sales = copy.deepcopy(request.datamanager.get_auction_items())
+    if user.is_master:
+        concerned_items = request.datamanager.get_all_items()
+    else:
+        # only AUCTION stuffs!
+        concerned_items = request.datamanager.get_auction_items()
+
+    items_for_sales = copy.deepcopy(concerned_items)
 
     ''' Useless
     # we inject the official name of object owner
@@ -168,7 +183,7 @@ def view_sales(request, template_name='auction/view_sales.html'):
     '''
 
     sorted_items_for_sale = items_for_sales.items()
-    sorted_items_for_sale.sort(key=lambda x: x[1]['auction'])
+    sorted_items_for_sale = _sorted_game_items(sorted_items_for_sale) # we push non-auction items to the end of list
 
     if user.is_master:
         total_items_price = sum(item["total_price"] for item in items_for_sales.values())
@@ -201,8 +216,8 @@ def auction_items_slideshow(request, template_name='auction/items_slideshow.html
     Contains ALL auction items, WITHOUT 3D viewers.
     """
     page_title = _("Auction Items")
-    items = request.datamanager.get_auction_items()
-    sorted_items = list(sorted(items.items(), key=lambda x: x[1]["auction"]))# pairs key/dict
+    items = request.datamanager.get_auction_items() if not request.datamanager.is_master() else request.datamanager.get_all_items() # master can see EVERYTHING
+    sorted_items = _sorted_game_items(items.items())
 
     return render(request,
                   template_name,
@@ -223,7 +238,7 @@ def personal_items_slideshow(request, template_name='auction/items_slideshow.htm
     items = request.datamanager.get_available_items_for_user()
     items_3D_settings = request.datamanager.get_items_3d_settings()
 
-    sorted_items = [(key, value) for (key, value) in sorted(items.items(), key=lambda x: x[1]["auction"])]
+    sorted_items = _sorted_game_items(items.items())
 
     return render(request,
                   template_name,

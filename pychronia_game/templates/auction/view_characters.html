@@ -11,7 +11,7 @@
 		<tr>
 			<th>{% trans "Identity" %}</th>
 			<th>{% trans "Bank account" %}</th>
-			<th>{% trans "Items bought" %}</th>
+			<th>{% trans "Items owned" %}</th>
 			<th>{% trans "Gems owned" %}</th>
 		</tr>
 	</thead>
@@ -42,11 +42,13 @@
 		    	</td>
 
 		    	<td class="bigtext">
+		    	    <ul>
 		    		{% for item in character_item_details|dict_get:char_name %}
-		    		    {{ item.title }} <br/>
+		    		    <li>{{ item.title }}</li>
 		    		{% empty %}
-		    			{% trans "None" %}
+		    			<li>{% trans "None" %}</li>
 		    		{% endfor %}
+		    		<ul>
 		    	</td>
 
 		    	<td class="bigtext">

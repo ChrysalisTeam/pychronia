@@ -50,7 +50,7 @@ archeological objects at auction.
 	    	{{ item_details.auction }}
 	    	</td>
 
-	    	<td style="width:160px">
+	    	<td style="width:160px; background-color: white;">
     		     <a href="{% game_file_url item_details.image %}" class="fancybox">
     		         <img class="thumbnail" title="{{ item_details.title }}" src="{% game_file_img item_details.image alias="item_avatar" %}"/>
     		     </a>
@@ -87,6 +87,8 @@ archeological objects at auction.
                          {% else %}
                          &nbsp;
                          {% endif %}
+
+                         <p>{{ item_details.comments }}</p>
                     </td>
 
         	    	{% if not item_details.owner %}
@@ -103,7 +105,7 @@ archeological objects at auction.
         			{% else %}
 
         				<td>
-        		 			<strong>{% trans "Buyer" %}: {{ item_details.owner }}</strong>
+        		 			<strong>{% trans "Owner" %}: {{ item_details.owner }}</strong>
         		 			<input type="hidden" name="username" value="{{ item_details.owner }}"/><br/>
         		 			<input type="submit" name="unbuy" value="{% trans "Reset" %}"/>
         		 		</td>
@@ -115,7 +117,7 @@ archeological objects at auction.
     		{% else %}
 
                      <td>
-                        {{ item_details.comments }}
+                        <p>{{ item_details.comments }}</p>
                     </td>
 
     		{% endif %}
