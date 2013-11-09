@@ -46,7 +46,7 @@ img {
     /* Firefox 10+, Firefox on Android */
 
     // filter: gray; /* IE6-9 */
-    -webkit-filter: grayscale(1);
+    /*-webkit-filter: grayscale(1); NO THIS BREAKS z-index and stuffs on Chrome*/
     //-webkit-filter: grayscale(0.5) blur(10px);
 }
 
@@ -300,7 +300,7 @@ body {
 
         margin: auto;
         display: table;
-        max-width: 960px;
+        max-width: 1020px;
 
         div {
             display: table-cell;

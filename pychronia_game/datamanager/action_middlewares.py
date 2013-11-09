@@ -23,9 +23,6 @@ def register_action_middleware(klass):
     return klass
 
 
-def with_action_middlewares(action_name):
-    # OBSOLETE DEPRECATED
-    return lambda a: a
 
 
 class AbstractActionMiddleware(object):

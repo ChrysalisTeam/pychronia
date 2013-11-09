@@ -6,55 +6,11 @@ import json
 from django import forms
 
 from pychronia_game.common import *
-from pychronia_game.datamanager import AbstractAbility, with_action_middlewares
-
-from pychronia_game.forms import AbstractGameForm
+from pychronia_game.forms import AbstractGameForm, GemPayementFormMixin
 from pychronia_game.datamanager.datamanager_tools import transaction_watcher
+from pychronia_game.datamanager.abstract_ability import AbstractAbility
 
 
-class GemPayementFormMixin(AbstractGameForm):
-
-    def _encode_gems(self, gems):
-        return [json.dumps(gem) for gem in gems]
-
-    def _decode_gems(self, gems):
-        return [json.loads(gem) for gem in gems]
-
-    def _gem_display(self, gem):
-        if gem[1]:
-            return _("Gem of %(cost)d Kashes (%(origin)s)") % SDICT(cost=gem[0], origin=gem[1])
-        else:
-            return _("Gem of %d Kashes (unknown origin)") % gem[0]
-
-    def __init__(self, datamanager, *args, **kwargs):
-        super(GemPayementFormMixin, self).__init__(datamanager, *args, **kwargs)
-
-        _gems = datamanager.get_character_properties()["gems"]
-        _gems_choices = zip(self._encode_gems(_gems), [self._gem_display(gem) for gem in _gems]) # gem is (value, origin) here
-
-        if _gems_choices:
-            self.fields["pay_with_money"] = forms.BooleanField(label=_("Pay with money"), initial=False, required=False)
-            self.fields["gems_list"] = forms.MultipleChoiceField(required=False, label=_("Or pay with gems"), choices=_gems_choices, widget=forms.SelectMultiple(attrs={"class": "multichecklist"}))
-        else:
-            self.fields["pay_with_money"] = forms.BooleanField(initial=True, widget=forms.HiddenInput, required=True)
-            self.fields["gems_list"] = forms.MultipleChoiceField(required=False, widget=forms.HiddenInput)
-
-
-    def get_normalized_values(self):
-
-        parameters = super(GemPayementFormMixin, self).get_normalized_values()
-
-        try:
-            parameters["use_gems"] = self._decode_gems(parameters["gems_list"])
-        except (TypeError, ValueError), e:
-            self.logger.critical("Wrong data submitted - %r", parameters["gems_list"], exc_info=True) # FIXME LOGGER MISSING
-            raise AbnormalUsageError("Wrong data submitted")
-
-        if ((parameters["pay_with_money"] and parameters["use_gems"]) or
-           not (parameters["pay_with_money"] or parameters["use_gems"])):
-            raise AbnormalUsageError("You must choose between money and gems, for payment.")
-
-        return parameters
 
 
 
@@ -119,9 +75,8 @@ class MercenariesHiringAbility(AbstractAbility):
 
 
     @transaction_watcher
-    @with_action_middlewares("hire_remote_agent")
     def hire_remote_agent(self, location,
-                          use_gems=()): # intercepted by action middlewares
+                                use_gems=()): # intercepted by action middlewares
 
         private_data = self.private_data
 
@@ -169,7 +124,7 @@ class MercenariesHiringAbility(AbstractAbility):
             utilities.check_no_duplicates(data["mercenaries_locations"])
 
             all_locations = self.datamanager.get_locations().keys()
-            assert set(data["mercenaries_locations"]) <= all_locations, data["mercenaries_locations"]
+            assert set(data["mercenaries_locations"]) <= set(all_locations), data["mercenaries_locations"]
 
 
 

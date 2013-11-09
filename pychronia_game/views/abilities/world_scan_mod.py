@@ -147,7 +147,7 @@ class WorldScanAbility(AbstractAbility):
                 Below is the result of the scanning operation which has been performed according to the documents you sent.
                 Please note that these results might be incomplete or erroneous, depending on the accuracy of the information available.
 
-                Potential locations of similar items: "%(locations_found)s"
+                Potential locations of similar items: %(locations_found)s
                 """) % SDICT(locations_found=locations_found)
 
         attachment = None

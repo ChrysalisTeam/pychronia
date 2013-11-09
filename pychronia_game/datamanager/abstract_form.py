@@ -84,6 +84,52 @@ class AbstractGameForm(forms.Form):
 
 
 
+class GemPayementFormMixin(AbstractGameForm):
+
+    def _encode_gems(self, gems): # gems are TUPLES
+        return [json.dumps([idx] + list(gem)) for idx, gem in enumerate(gems)] # add index to make all values different
+
+    def _decode_gems(self, gems):
+        return [tuple(json.loads(gem)[1:]) for gem in gems] # back to hashable TUPLES
+
+    def _gem_display(self, gem):
+        if gem[1]:
+            return _("Gem of %(cost)d Kashes (%(origin)s)") % SDICT(cost=gem[0], origin=gem[1].replace("_", " "))
+        else:
+            return _("Gem of %d Kashes (unknown origin)") % gem[0]
+
+    def __init__(self, datamanager, *args, **kwargs):
+        super(GemPayementFormMixin, self).__init__(datamanager, *args, **kwargs)
+
+        _gems = datamanager.get_character_properties()["gems"]
+        _gems_choices = zip(self._encode_gems(_gems), [self._gem_display(gem) for gem in _gems]) # gem is (value, origin) here
+
+        if _gems_choices:
+            self.fields["pay_with_money"] = forms.BooleanField(label=_("Pay with money"), initial=False, required=False)
+            self.fields["gems_list"] = forms.MultipleChoiceField(required=False, label=_("Or pay with gems"), choices=_gems_choices) #, widget=forms.SelectMultiple(attrs={"class": "multichecklist"}))
+        else:
+            self.fields["pay_with_money"] = forms.BooleanField(initial=True, widget=forms.HiddenInput, required=True)
+            self.fields["gems_list"] = forms.MultipleChoiceField(required=False, widget=forms.HiddenInput)
+
+
+    def get_normalized_values(self):
+
+        parameters = super(GemPayementFormMixin, self).get_normalized_values()
+
+        try:
+            parameters["use_gems"] = self._decode_gems(parameters["gems_list"])
+        except (TypeError, ValueError), e:
+            self.logger.critical("Wrong data submitted - %r", parameters["gems_list"], exc_info=True) # FIXME LOGGER MISSING
+            raise AbnormalUsageError("Wrong data submitted")
+
+        if ((parameters["pay_with_money"] and parameters["use_gems"]) or
+           not (parameters["pay_with_money"] or parameters["use_gems"])):
+            raise AbnormalUsageError("You must choose between money and gems, for payment.")
+
+        return parameters
+
+
+
 class DataTableForm(AbstractGameForm):
 
     previous_identifier = forms.CharField(label=_lazy("Initial identifier"), widget=forms.HiddenInput(), required=False)

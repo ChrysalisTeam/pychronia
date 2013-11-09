@@ -45,7 +45,7 @@ class GameGlobalParameters(BaseDataManager):
 
         utilities.check_is_game_file(game_data["global_parameters"]["world_map_image"])
 
-        utilities.check_is_string("game_random_seed", multiline=False)
+        utilities.check_is_string(game_data["global_parameters"]["game_random_seed"], multiline=False)
 
 
     @readonly_method
@@ -3160,7 +3160,7 @@ class MoneyItemsOwnership(BaseDataManager):
         return int(math.ceil(float(total_cost / num_gems)))
     def _compute_gems_total_price(self, unit_cost, num_gems):
         return unit_cost * num_gems # simpler
-    
+
     def _load_initial_data(self, **kwargs):
         super(MoneyItemsOwnership, self)._load_initial_data(**kwargs)
 
@@ -3247,7 +3247,7 @@ class MoneyItemsOwnership(BaseDataManager):
                 # (">>>>>>>>>>", name, total_gems.count(500))
 
         old_total_gems = game_data["global_parameters"]["total_gems"]
-        assert Counter(old_total_gems) == Counter(total_gems)
+        assert Counter(old_total_gems) == Counter(total_gems), (old_total_gems, total_gems)
         assert old_total_gems == sorted(total_gems), "%s != %s" % (old_total_gems, total_gems)
 
         old_total_digital_money = game_data["global_parameters"]["total_digital_money"]
@@ -3417,12 +3417,12 @@ class MoneyItemsOwnership(BaseDataManager):
         Both items and artefacts.
         """
         username = self._resolve_username(username)
-        
+
         if auction_only:
             my_getter = self.get_auction_items
         else:
             my_getter = self.get_all_items
-        
+
         if self.is_master(username):
             available_items = my_getter()
         else:

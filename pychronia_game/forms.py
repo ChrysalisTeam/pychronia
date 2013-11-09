@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 
 from pychronia_game.common import *
 from django import forms
-from pychronia_game.datamanager.abstract_form import AbstractGameForm, UninstantiableFormError, form_field_jsonify, form_field_unjsonify
+from pychronia_game.datamanager.abstract_form import AbstractGameForm, UninstantiableFormError, form_field_jsonify, form_field_unjsonify, GemPayementFormMixin
 
 
 

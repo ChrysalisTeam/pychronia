@@ -6,9 +6,6 @@
   -ms-box-sizing: border-box;
   box-sizing: border-box;
 }
-img {
-  -webkit-filter: grayscale(1);
-}
 body {
   margin: 0;
   padding: 0;
@@ -184,7 +181,7 @@ body:after {
 #full_menu #main_menu {
   margin: auto;
   display: table;
-  max-width: 960px;
+  max-width: 990px;
 }
 #full_menu #main_menu div {
   display: table-cell;
