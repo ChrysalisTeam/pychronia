@@ -87,8 +87,6 @@ class CharactersView(AbstractGameView):
 
         sorted_characters = sorted(characters, key=lambda (key, value): (value["is_npc"], key))  # sort by type and then login
 
-        print (">>>>", list(sorted_characters))
-
         character_item_details = {username: sorted(self.datamanager.get_available_items_for_user(username=username, auction_only=auction_only).values(), key=lambda x:x["title"])
                                   for username, _user_details in sorted_characters}
 

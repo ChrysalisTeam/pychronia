@@ -61,7 +61,7 @@ function add_recipient(address) {
 
 
 
-var message_content_id = 'saved_message';
+var message_content_id = 'anthropia_saved_message';
 var mylocalStorage = $.localStorage();
 
 function clear_saved_content() {
@@ -178,7 +178,7 @@ window.setInterval(save_current_content, 10*1000);
         <p>
             {% if message_form.transferred_msg.value %}
                 <a class="message_transfer_link" target="_blank" href="{% game_view_url "pychronia_game.views.view_single_message" msg_id=message_form.transferred_msg.value %}">
-                    {% trans "MESSAGE TRANSFERRED: click to view." %}
+                    <b>{% trans "MESSAGE TRANSFERRED: click to view in other window." %}</b>
                 </a>
             {% endif %}
         </p>

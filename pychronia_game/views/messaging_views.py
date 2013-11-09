@@ -48,7 +48,8 @@ class MessageComposeForm(AbstractGameForm):
         # we initialize data with the querydict
         sender = url_data.get("sender")
 
-        recipients = url_data.getlist("recipients") or (url_data["recipient"] if url_data.get("recipient") else [])
+        recipients = url_data.getlist("recipients") or ([url_data["recipient"]] if url_data.get("recipient") else [])
+        assert isinstance(recipients, list)
 
         subject = url_data.get("subject")
         body = url_data.get("body")
