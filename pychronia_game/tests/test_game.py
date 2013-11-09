@@ -786,8 +786,8 @@ class TestDatamanager(BaseGameTestCase):
 
         self._set_user("guy1")
         res = self.dm.determine_actual_game_writability()
-        assert res == dict(writable=True,
-                            reason=None)
+        assert res["writable"]
+        assert res["reason"] # especially here, we warn user
 
         self.dm.propose_friendship("guy1", "guy2")
         self.dm.propose_friendship("guy2", "guy1")

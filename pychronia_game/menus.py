@@ -168,10 +168,10 @@ def _generate_web_menu(request, menu_entry_generator):
                         menu_entry(_(u"Friendships"), views.friendship_management, forced_visibility=(True if user.is_character else False)), # character only
                         menu_entry(_(u"Personal Folder"), views.personal_folder),
                         menu_entry(_(u"My Items"), views.personal_items_slideshow),
-                        menu_entry(_(u"Log Out"), views.logout),
+                        menu_entry(_(u"Log Out"), views.logout, forced_visibility=not user.is_impersonation),
                         ), forced_visibility=(False if not user.is_authenticated else True)),
 
-           menu_entry(_(u"Log Out"), views.login, forced_visibility=(False if user.is_authenticated else True)),
+           menu_entry(_(u"Log In"), views.login, forced_visibility=(False if user.is_authenticated else True)),
 
         ))
 
