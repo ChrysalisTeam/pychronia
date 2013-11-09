@@ -802,7 +802,7 @@ class TestDatamanager(BaseGameTestCase):
         self._set_user("master")
         res = self.dm.determine_actual_game_writability()
         assert res["writable"]
-        assert not res["reason"]
+        assert res["reason"] # especially here, we warn user
         assert self.dm.is_game_writable()
 
         self._set_user("guy1")
@@ -1241,32 +1241,42 @@ class TestDatamanager(BaseGameTestCase):
         assert not (set(gems.keys()) & set(artefacts.keys()))
 
         auctions = self.dm.get_auction_items()
+        assert auctions
         for it in auctions.values():
             assert it["auction"]
 
         items_old = copy.deepcopy(self.dm.get_all_items())
         gem_names = [key for key, value in items_old.items() if value["is_gem"] and value["num_items"] >= 3] # we only take numerous groups
-        object_names = [key for key, value in items_old.items() if not value["is_gem"]]
+        auction_object_names = [key for key, value in items_old.items() if not value["is_gem"] and value["auction"]]
+        no_auction_object_names = [key for key, value in items_old.items() if not value["is_gem"] and not value["auction"]]
 
         gem_name1 = gem_names[0]
         gem_name2 = gem_names[1]
-        object_name = object_names[0]
+        object_name_auction = auction_object_names[0]
+        object_name_no_auction = no_auction_object_names[0]
 
         self.dm.transfer_object_to_character(gem_name1, "guy2")
         self.dm.transfer_object_to_character(gem_name2, "guy2")
-        self.dm.transfer_object_to_character(object_name, "guy3")
+        self.dm.transfer_object_to_character(object_name_auction, "guy3")
+        self.dm.transfer_object_to_character(object_name_no_auction, "guy4")
 
         self.assertEqual(self.dm.get_available_items_for_user("master"), self.dm.get_all_items())
+        self.assertEqual(self.dm.get_available_items_for_user("master", auction_only=False), self.dm.get_all_items())
+        self.assertEqual(self.dm.get_available_items_for_user("master", auction_only=True), self.dm.get_auction_items())
+
         self.assertEqual(set(self.dm.get_available_items_for_user("guy1").keys()), set([]))
-        self.assertNotEqual(self.dm.get_available_items_for_user("guy2"), self.dm.get_available_items_for_user("guy1")) # no sharing of objects, even shared allegiance
+        self.assertNotEqual(self.dm.get_available_items_for_user("guy2", auction_only=False), self.dm.get_available_items_for_user("guy1")) # no sharing of objects, even shared allegiance
         self.assertEqual(set(self.dm.get_available_items_for_user("guy2").keys()), set([gem_name1, gem_name2]))
-        self.assertEqual(set(self.dm.get_available_items_for_user("guy3").keys()), set([object_name]))
+        self.assertEqual(set(self.dm.get_available_items_for_user("guy3").keys()), set([object_name_auction]))
+        self.assertEqual(set(self.dm.get_available_items_for_user("guy3", auction_only=True).keys()), set([object_name_auction]))
+        self.assertEqual(set(self.dm.get_available_items_for_user("guy4", auction_only=False).keys()), set([object_name_no_auction]))
+        self.assertEqual(set(self.dm.get_available_items_for_user("guy4", auction_only=True).keys()), set([])) # filtered out
 
         assert self.dm.get_user_artefacts() == {} # guy1
         assert self.dm.get_user_artefacts("guy1") == {}
         assert self.dm.get_user_artefacts("guy2") == {} # gems NOT included
-        assert self.dm.get_user_artefacts("guy3").keys() == [object_name]
-
+        assert self.dm.get_user_artefacts("guy3").keys() == [object_name_auction]
+        assert self.dm.get_user_artefacts("guy4").keys() == [object_name_no_auction]
 
 
 

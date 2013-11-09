@@ -180,7 +180,7 @@ game_items:
         gamemaster_hints: "very precious"
 
     sacred_chest:
-        auction: None
+        auction: null
         is_gem: False
         num_items: 1
         total_price: 1000

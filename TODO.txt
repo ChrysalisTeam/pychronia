@@ -142,6 +142,7 @@ TASKS DONE
 FUTUR ENHANCEMENTS
 --------------------------
 
+- add "stop impersonation" link in menu ?
 - allow multi-instance staff impersonation, so that superuser can remain logged everywhere
 - better menus for meta admin pages
 - better handling of 503 (maintenance) state on both cms and instance

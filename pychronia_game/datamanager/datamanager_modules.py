@@ -127,7 +127,7 @@ class CurrentUserHandling(BaseDataManager):
         else:
             if self.is_game_started() or self.is_master(): # master is NOT impacted by game state
                 return dict(writable=True,
-                            reason=None)
+                            reason=_("Beware, your impersonation is in writable mode."))
             else:
                 return dict(writable=False,
                             reason=_("Website currently in read-only mode, for maintenance."))
@@ -3412,13 +3412,19 @@ class MoneyItemsOwnership(BaseDataManager):
 
 
     @readonly_method
-    def get_available_items_for_user(self, username=CURRENT_USER):
+    def get_available_items_for_user(self, username=CURRENT_USER, auction_only=False):
         """
         Both items and artefacts.
         """
         username = self._resolve_username(username)
+        
+        if auction_only:
+            my_getter = self.get_auction_items
+        else:
+            my_getter = self.get_all_items
+        
         if self.is_master(username):
-            available_items = self.get_all_items()
+            available_items = my_getter()
         else:
             assert self.is_character(username)
             all_sharing_users = [username] # FIXME - which users should we include?
@@ -3426,7 +3432,7 @@ class MoneyItemsOwnership(BaseDataManager):
             # all_domain_users = [name for (name, value) in self.get_character_sets().items() if
             #                    value["domain"] == user_domain]
             available_items = PersistentDict([(name, value) for (name, value)
-                                              in self.get_all_items().items()
+                                              in my_getter().items()
                                               if value['owner'] in all_sharing_users])
         return available_items
 
