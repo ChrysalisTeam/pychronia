@@ -22,6 +22,11 @@
 @import "_zinnia_customization.scss";
 
 
+/* just to neutralize the weird }; put by pyscss at beginning of output file */
+.pyscssfix {
+    color: black;
+}
+
 
 
 * {

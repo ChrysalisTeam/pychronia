@@ -1,7 +1,8 @@
-/* 57 selectors generated from 'main.scss' add up to a total of 57 selectors accumulated */
 @charset "UTF-8";
 };
-@media -sass-debug-info{filename{font-family:file\:\/\/main\.scss}line{font-family:\0000327}}
+.pyscssfix {
+  color: black;
+}
 * {
   -webkit-box-sizing: border-box;
   -khtml-box-sizing: border-box;
@@ -9,11 +10,9 @@
   -ms-box-sizing: border-box;
   box-sizing: border-box;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/main\.scss}line{font-family:\0000344}}
 img {
   -webkit-filter: grayscale(1);
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/main\.scss}line{font-family:\0000354}}
 body {
   margin: 0;
   padding: 0;
@@ -36,7 +35,6 @@ body {
   quotes: none;
   text-overflow: ellipsis;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/main\.scss}line{font-family:\0000385}}
 body:after {
   content: " ";
   background: url('img/backgrounds/tube_gold_small.png'),
@@ -52,19 +50,16 @@ body:after {
   background-position: -2000000;
   display: inline;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/main\.scss}line{font-family:\00003104}}
 .grey_layer {
   margin: 0;
   padding: 0;
   background: url("img/backgrounds/oblic_grey_3x3.png") repeat scroll 0 0 transparent;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/main\.scss}line{font-family:\00003112}}
 #full_header {
   width: 100%;
   position: relative;
   z-index: 3000;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/main\.scss}line{font-family:\00003117}}
 #full_header #full_header_background {
   margin: auto;
   height: 167px;
@@ -73,14 +68,12 @@ body:after {
   background-repeat: no-repeat;
   background-position: center;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/main\.scss}line{font-family:\00003129}}
 #full_header #full_header_background #full_header_center {
   position: relative;
   width: 1004px;
   margin: 0px auto 0px;
   padding: 13px 0 0;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/main\.scss}line{font-family:\00003137}}
 #full_header #full_header_background #full_header_center .notification_panel {
   padding: 0;
   margin: 0;
@@ -97,7 +90,6 @@ body:after {
   font-weight: bold;
   color: white;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/main\.scss}line{font-family:\00003156}}
 #full_header #full_header_background #full_header_center .notification_panel .notification_panel_decorations {
   background-image: url('img/backgrounds/notification_panel_decorations.png');
   background-repeat: no-repeat;
@@ -109,20 +101,17 @@ body:after {
   width: 100%;
   padding: 5px 73px 28px;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/main\.scss}line{font-family:\00003170}}
 #full_header #full_header_background #full_header_center .notification_panel .notification_panel_decorations .notification_panel_content {
   opacity: 1;
   max-height: 120px;
   overflow: visible;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/main\.scss}line{font-family:\00003181}}
 #full_header #full_header_background #full_header_center #title_table {
   display: table;
   table-layout: fixed;
   width: 1000px;
   margin: 0px auto 0px;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/main\.scss}line{font-family:\00003188}}
 #full_header #full_header_background #full_header_center #title_table .notification_flag {
   display: block;
   position: absolute;
@@ -138,7 +127,6 @@ body:after {
   background-clip: padding-box;
   background-size: cover;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/main\.scss}line{font-family:\00003214}}
 #full_header #full_header_background #full_header_center #title_table .motto {
   display: table-cell;
   vertical-align: middle;
@@ -149,30 +137,25 @@ body:after {
   color: white;
   text-shadow: 1px 1px 0px black, -1px -1px 0px black;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/main\.scss}line{font-family:\00003224}}
 #full_header #full_header_background #full_header_center #title_table .motto.left_image {
   background-image: url('img/titles/ad_augusta.png');
   background-repeat: no-repeat;
   background-position: center center;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/main\.scss}line{font-family:\00003231}}
 #full_header #full_header_background #full_header_center #title_table .motto.right_image {
   background-image: url('img/titles/per_angusta.png');
   background-repeat: no-repeat;
   background-position: center center;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/main\.scss}line{font-family:\00003240}}
 #full_header #full_header_background #full_header_center #title_table #site_title {
   display: table-cell;
   vertical-align: middle;
   height: 44px;
   text-align: center;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/main\.scss}line{font-family:\00003243}}
 #full_header #full_header_background #full_header_center #title_table #site_title img {
   vertical-align: center;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/main\.scss}line{font-family:\00003251}}
 #full_header #full_header_background #notification_table {
   display: table;
   width: 864px;
@@ -180,14 +163,12 @@ body:after {
   padding: 5px 12px;
   table-layout: fixed;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/main\.scss}line{font-family:\00003259}}
 #full_header #full_header_background #notification_table > div {
   display: table-cell;
   vertical-align: middle;
   height: 44px;
   padding: 4px 12px;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/main\.scss}line{font-family:\00003265}}
 #full_header #full_header_background #notification_table .carving {
   font-size: 1.1em;
   color: white;
@@ -195,29 +176,24 @@ body:after {
   background-image: url('img/backgrounds/carving1.png');
   background-repeat: no-repeat;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/main\.scss}line{font-family:\00003270}}
 #full_header #full_header_background #notification_table .carving .marquee {
   overflow: hidden;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/main\.scss}line{font-family:\00003292}}
 #full_menu {
   margin-top: -35px;
   width: 100%;
   position: relative;
   z-index: 2000;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/main\.scss}line{font-family:\00003300}}
 #full_menu #main_menu {
   margin: auto;
   display: table;
   max-width: 960px;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/main\.scss}line{font-family:\00003306}}
 #full_menu #main_menu div {
   display: table-cell;
   padding: 0px;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/main\.scss}line{font-family:\00003311}}
 #full_menu #main_menu .big_icon_panel {
   position: relative;
   text-align: center;
@@ -228,12 +204,10 @@ body:after {
   background-repeat: no-repeat;
   background-position: center;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/main\.scss}line{font-family:\00003323}}
 #full_menu #main_menu .big_icon_panel .positioner {
   display: block !important;
   position: relative !important;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/main\.scss}line{font-family:\00003327}}
 #full_menu #main_menu .big_icon_panel .positioner .novelty_mark {
   display: block;
   font-size: 40px;
@@ -248,18 +222,15 @@ body:after {
   text-decoration: blink;
   border: none !important;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/main\.scss}line{font-family:\00003343}}
 #full_menu #main_menu .big_icon_panel img {
   max-height: 100%;
   max-width: 100%;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/main\.scss}line{font-family:\00003353}}
 #full_menu #main_menu .marble_menu_container {
   z-index: 0;
   padding-top: 12px;
   height: 73px;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/main\.scss}line{font-family:\00003358}}
 #full_menu #main_menu .marble_menu_container .marble_menu {
   box-sizing: content-box !important;
   min-width: 350px;
@@ -273,14 +244,12 @@ body:after {
   border-width: 18px 52px 20px 55px;
   border-image: url('img/backgrounds/menu_border.png') 18 52 20 55 fill round stretch;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/main\.scss}line{font-family:\00003395}}
 #full_content {
   width: 980px;
   margin: -10px auto 2px;
   padding: 10px;
   overflow: visible;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/main\.scss}line{font-family:\00003403}}
 #full_content .mini_frame {
   position: relative;
   padding: 0px;
@@ -295,7 +264,6 @@ body:after {
   border-style: ridge;
   border-width: 5px;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/main\.scss}line{font-family:\00003422}}
 #full_content .mini_frame .mini_frame_content {
   min-height: 45px;
   position: relative;
@@ -307,22 +275,18 @@ body:after {
   border-width: 22px 22px;
   border-image: url('img/backgrounds/mini_frame4.png') 22 22 repeat;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/main\.scss}line{font-family:\00003435}}
 #full_content .mini_frame .mini_frame_content > p {
   color: white;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/main\.scss}line{font-family:\00003442}}
 #full_content .main_sidebar {
   padding: 10px;
   margin: 0;
   overflow: hidden;
   width: auto !important;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/main\.scss}line{font-family:\00003448}}
 #full_content .main_sidebar .mini_frame {
   margin: 0 0 20px 0;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/main\.scss}line{font-family:\00003469}}
 #full_content .medium_frame {
   position: relative;
   padding: 10px;
@@ -334,7 +298,6 @@ body:after {
   border-width: 5px;
   width: 660px;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/main\.scss}line{font-family:\00003474}}
 #full_content .big_frame {
   position: relative;
   padding: 10px;
@@ -346,7 +309,6 @@ body:after {
   border-width: 5px;
   width: 740px;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/main\.scss}line{font-family:\00003479}}
 #full_content .giant_frame {
   position: relative;
   padding: 10px;
@@ -358,7 +320,6 @@ body:after {
   border-width: 5px;
   width: 960px;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/main\.scss}line{font-family:\00003485}}
 #full_content .main_frame_border {
   position: relative;
   margin: -25px;
@@ -369,7 +330,6 @@ body:after {
   border-width: 41px 43px 43px 41px;
   border-image: url('img/backgrounds/big_frame.png') 41 43 43 41 fill round round;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/main\.scss}line{font-family:\00003497}}
 #full_content .main_frame_border .main_frame_content {
   min-width: 200px;
   min-height: 150px;
@@ -379,7 +339,6 @@ body:after {
   position: relative;
   z-index: 30;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/main\.scss}line{font-family:\00003512}}
 #up_footer_wrapper {
   clear: both;
   width: 100%;
@@ -387,7 +346,6 @@ body:after {
   vertical-align: top;
   color: white;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/main\.scss}line{font-family:\00003544}}
 #up_footer_wrapper #up_footer_border_left {
   margin: 0;
   display: inline-block;
@@ -409,11 +367,9 @@ border-color: transparent;
   border-width: 0px 0px 0px 121px;
   border-image: url('img/backgrounds/up_footer_left.png') 0 0 0 121 fill round stretch;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/main\.scss}line{font-family:\00003539}}
 #up_footer_wrapper #up_footer_border_left a {
   color: white !important;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/main\.scss}line{font-family:\00003551}}
 #up_footer_wrapper #up_footer_border_right {
   margin: 0;
   display: inline-block;
@@ -435,11 +391,9 @@ border-color: transparent;
   border-width: 0px 121px 0px 0px;
   border-image: url('img/backgrounds/up_footer_right.png') 0 121 0 0 fill round stretch;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/main\.scss}line{font-family:\00003539}}
 #up_footer_wrapper #up_footer_border_right a {
   color: white !important;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/main\.scss}line{font-family:\00003558}}
 #up_footer_wrapper #up_footer_border_center {
   margin: 0;
   display: inline-block;
@@ -462,25 +416,21 @@ border-color: transparent;
   border-image: url('img/backgrounds/up_footer_center.png') 1 1 1 1 fill stretch stretch;
   width: 225px;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/main\.scss}line{font-family:\00003539}}
 #up_footer_wrapper #up_footer_border_center a {
   color: white !important;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/main\.scss}line{font-family:\00003567}}
 #up_footer_wrapper .footer_center_img {
   display: block;
   position: absolute;
   left: 9px;
   top: 10px;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/main\.scss}line{font-family:\00003576}}
 #low_footer_wrapper {
   position: relative;
   clear: both;
   width: 100%;
   text-align: center;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/main\.scss}line{font-family:\00003583}}
 #low_footer_wrapper #low_footer_border {
   color: white;
   font-size: 22px;
@@ -498,12 +448,10 @@ border-color: transparent;
   border-image: url('img/backgrounds/low_footer_border.png') 0 300 0 304 fill stretch;
   overflow: visible;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/main\.scss}line{font-family:\00003585}}
 #low_footer_wrapper #low_footer_border a {
   color: white !important;
   text-decoration: none;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/main\.scss}line{font-family:\00003608}}
 #low_footer_wrapper #low_footer_border:before {
   top: -6px;
   left: -60px;
@@ -511,7 +459,6 @@ border-color: transparent;
   padding: 0;
   position: absolute;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/main\.scss}line{font-family:\00003615}}
 #low_footer_wrapper #low_footer_border:after {
   top: -9px;
   right: -56px;
@@ -519,7 +466,6 @@ border-color: transparent;
   padding: 0;
   position: absolute;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/main\.scss}line{font-family:\00003629}}
 #bug_report_panel {
   z-index: 10000;
   position: fixed;
@@ -530,17 +476,13 @@ border-color: transparent;
   background-image: url('img/backgrounds/ricepaper-hue-gold.jpg');
   color: black;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/main\.scss}line{font-family:\00003640}}
 #bug_report_panel .bug_report_panel_content {
   min-height: 200px;
   padding: 5px 20px 20px;
 }
-/* 30 selectors generated from 'P:\Websites\Chrysalis\pychronia_common\static\MetalRadiance\scss\_globals.scss' add up to a total of 87 selectors accumulated */
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_globals\.scss}line{font-family:\0000355}}
 .pyscss_bug_workaround {
   display: none;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_globals\.scss}line{font-family:\0000363}}
 @font-face {
   font-family: "rothenburg_decorative";
   src: url("img/fonts/rothenburg_decorative/rothenbg-webfont.eot");
@@ -551,7 +493,6 @@ border-color: transparent;
   font-weight: normal;
   font-style: normal;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_globals\.scss}line{font-family:\0000375}}
 @font-face {
   font-family: "kingthings_calligraphica_light";
   src: url("img/fonts/kingthings_calligraphica/Kingthings_Calligraphica_Light-webfont.eot");
@@ -561,7 +502,6 @@ border-color: transparent;
   font-weight: normal;
   font-style: normal;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_globals\.scss}line{font-family:\0000387}}
 @font-face {
   font-family: "black_chancery";
   src: url("img/fonts/black_chancery/BLKCHCRY.eot");
@@ -571,90 +511,70 @@ border-color: transparent;
   font-weight: normal;
   font-style: normal;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_globals\.scss}line{font-family:\00003119}}
 .pretty_text {
   text-align: justify;
   text-indent: 15px;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_globals\.scss}line{font-family:\00003124}}
 .bg_beige, .mixed {
   background-color: #A89D97;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_globals\.scss}line{font-family:\00003130}}
 .bg_blue, .info {
   background-color: blue;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_globals\.scss}line{font-family:\00003133}}
 .bg_green, .success {
   background-color: green;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_globals\.scss}line{font-family:\00003136}}
 .bg_orange, .warning {
   background-color: orange;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_globals\.scss}line{font-family:\00003139}}
 .bg_red, .error {
   background-color: red;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_globals\.scss}line{font-family:\00003153}}
 .center {
   margin-left: auto !important;
   margin-right: auto !important;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_globals\.scss}line{font-family:\00003156}}
 img.center {
   display: block;
   margin-left: auto !important;
   margin-right: auto !important;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_globals\.scss}line{font-family:\00003168}}
 .inner_center {
   text-align: center !important;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_globals\.scss}line{font-family:\00003163}}
 .inner_center > * {
   margin-left: auto !important;
   margin-right: auto !important;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_globals\.scss}line{font-family:\00003173}}
 .left, .float_left, .float-left, .floatleft {
   float: left;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_globals\.scss}line{font-family:\00003177}}
 .right, .float_right, .float-right, .floatright {
   float: right;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_globals\.scss}line{font-family:\00003181}}
 .inner_left {
   text-align: left !important;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_globals\.scss}line{font-family:\00003185}}
 .inner_right {
   text-align: right !important;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_globals\.scss}line{font-family:\00003190}}
 .clear_both {
   clear: both;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_globals\.scss}line{font-family:\00003194}}
 .clear_left {
   clear: left;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_globals\.scss}line{font-family:\00003198}}
 .clear_right {
   clear: right;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_globals\.scss}line{font-family:\00003203}}
 .stack_left {
   float: left;
   clear: left;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_globals\.scss}line{font-family:\00003208}}
 .stack_right {
   float: right;
   clear: right;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_globals\.scss}line{font-family:\00003223}}
 .clearfixer {
   visibility: hidden;
   display: block;
@@ -662,7 +582,6 @@ img.center {
   height: 0;
   clear: both;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_globals\.scss}line{font-family:\00003228}}
 .clearfix:after, :after.hentry, #full_content:after,
 #full_content .mini_frame :after.mini_frame_content,
 #full_content .main_frame_border :after.main_frame_content {
@@ -673,7 +592,6 @@ img.center {
   height: 0;
   clear: both;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_globals\.scss}line{font-family:\00003233}}
 * html .clearfix, * html .hentry, * html #full_content,
 * html #full_content .mini_frame .mini_frame_content,
 #full_content .mini_frame * html .mini_frame_content,
@@ -681,48 +599,37 @@ img.center {
 #full_content .main_frame_border * html .main_frame_content {
   height: 1px;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_globals\.scss}line{font-family:\00003238}}
 .full_width {
   width: 100% !important;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_globals\.scss}line{font-family:\00003244}}
 .almost_full_width {
   width: 94% !important;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_globals\.scss}line{font-family:\00003248}}
 .half_width {
   width: 50% !important;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_globals\.scss}line{font-family:\00003252}}
 .big_width, .form_scroll_big {
   width: 600px !important;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_globals\.scss}line{font-family:\00003256}}
 .medium_width, .form_scroll_medium {
   width: 400px !important;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_globals\.scss}line{font-family:\00003260}}
 .small_width, .form_scroll_thin {
   width: 250px !important;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_globals\.scss}line{font-family:\00003163}}
 .missing-content > * {
   margin-left: auto !important;
   margin-right: auto !important;
 }
-/* 14 selectors generated from 'P:\Websites\Chrysalis\pychronia_common\static\MetalRadiance\scss\_section_decorations.scss' add up to a total of 101 selectors accumulated */
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_section_decorations\.scss}line{font-family:\000036}}
 .outlined {
   outline: #9D8126 ridge 2px;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_section_decorations\.scss}line{font-family:\0000315}}
 .marble_panel {
   border-color: transparent;
   border-style: solid;
   border-width: 7px 10px 10px;
   border-image: url('img/backgrounds/marble_plate_dark.png') 7 10 10 fill stretch;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_section_decorations\.scss}line{font-family:\0000322}}
 .post-it, .missing-content {
   padding: 4px;
   border-color: transparent;
@@ -730,7 +637,6 @@ img.center {
   border-width: 4px 4px 6px;
   border-image: url('img/backgrounds/post-it.png') 4 4 6 fill stretch;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_section_decorations\.scss}line{font-family:\0000331}}
 .scroll_realistic {
   margin: 10px;
   padding: 0 10px;
@@ -739,7 +645,6 @@ img.center {
   border-width: 142px 63px 124px 71px;
   border-image: url('img/backgrounds/scroll_realistic.png') 142 63 124 71 fill stretch stretch;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_section_decorations\.scss}line{font-family:\0000340}}
 .scroll_realistic_thin_ends, .hentry {
   margin: 10px;
   min-width: 150px;
@@ -749,7 +654,6 @@ img.center {
   border-width: 79px 45px 81px 39px;
   border-image: url('img/backgrounds/scroll_realistic_thin_ends.png') 79 45 81 39 fill stretch stretch;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_section_decorations\.scss}line{font-family:\0000350}}
 .scroll_yellow_flat {
   margin: 10px;
   padding: 20px;
@@ -758,7 +662,6 @@ img.center {
   background-size: 100% 100%;
   background-repeat: no-repeat;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_section_decorations\.scss}line{font-family:\0000359}}
 .scroll_yellow_rolled, .form_scroll_thin, .form_scroll_medium, .form_scroll_big {
   margin: 10px;
   padding: 55px 30px;
@@ -766,7 +669,6 @@ img.center {
   background-size: 100% 100%;
   background-repeat: no-repeat;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_section_decorations\.scss}line{font-family:\0000368}}
 .antique_marble_frame {
   padding: 5px;
   border-color: transparent;
@@ -775,7 +677,6 @@ img.center {
   border-image: url('img/backgrounds/antique_marble_frame2.png') 17 fill round;
   margin: -5px;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_section_decorations\.scss}line{font-family:\0000377}}
 .antique_large_decorated_frame, .fancybox-default .fancybox-outer {
   padding: 10px;
   border-color: transparent;
@@ -784,7 +685,6 @@ img.center {
   border-image: url('img/backgrounds/antique_large_decorated_frame.png') 70 80 70 80 fill stretch;
   margin: -5px;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_section_decorations\.scss}line{font-family:\0000386}}
 .decorated_golden_frame {
   border-color: transparent;
   border-style: solid;
@@ -792,7 +692,6 @@ img.center {
   border-image: url('img/backgrounds/decorated_golden_frame.png') 25 27 25 fill stretch;
   margin: -5px;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_section_decorations\.scss}line{font-family:\00003101}}
 .carved_square_frame_gold, .item_display {
   border-color: transparent;
   border-style: solid;
@@ -800,7 +699,6 @@ img.center {
   border-image: none 125 125 127 117 stretch;
   border-image-source: url('img/backgrounds/carved_square_frame_gold.png') !important;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_section_decorations\.scss}line{font-family:\00003105}}
 .carved_square_frame_silver {
   border-color: transparent;
   border-style: solid;
@@ -808,20 +706,16 @@ img.center {
   border-image: none 125 125 127 117 stretch;
   border-image-source: url('img/backgrounds/carved_square_frame_silver.png') !important;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_section_decorations\.scss}line{font-family:\00003111}}
 .rice_paper_beige {
   padding: 5px 5px;
   background-image: url('img/backgrounds/seamless_paper_beige.jpg');
   box-shadow: 2px 2px 3px black;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_section_decorations\.scss}line{font-family:\00003117}}
 .rice_paper_rose {
   padding: 5px 5px;
   background-image: url('img/backgrounds/seamless_paper_rose1.jpg');
   box-shadow: 2px 2px 3px black;
 }
-/* 12 selectors generated from 'P:\Websites\Chrysalis\pychronia_common\static\MetalRadiance\scss\_advanced_widgets.scss' add up to a total of 113 selectors accumulated */
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_advanced_widgets\.scss}line{font-family:\000037}}
 .file_url_block {
   font-weight: bold;
   font-size: 0.9em;
@@ -829,7 +723,6 @@ img.center {
   padding: 3px;
   border: solid 1px #9D8126;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_advanced_widgets\.scss}line{font-family:\0000336}}
 .missing-content {
   margin-left: auto !important;
   margin-right: auto !important;
@@ -843,19 +736,15 @@ img.center {
   line-height: normal;
   width: 95%;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_advanced_widgets\.scss}line{font-family:\0000362}}
 .form_scroll_thin {
   text-align: left;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_advanced_widgets\.scss}line{font-family:\0000368}}
 .form_scroll_medium {
   text-align: left;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_advanced_widgets\.scss}line{font-family:\0000374}}
 .form_scroll_big {
   text-align: left;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_advanced_widgets\.scss}line{font-family:\0000381}}
 table.realtable {
   border-collapse: collapse;
   margin: 15px 0;
@@ -864,15 +753,12 @@ table.realtable {
   box-shadow: 5px 5px 3px #888888;
   border: 1px solid #000000;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_advanced_widgets\.scss}line{font-family:\0000389}}
 table.realtable tr:nth-child(odd) {
   background-color: #eed892;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_advanced_widgets\.scss}line{font-family:\0000390}}
 table.realtable tr:nth-child(even) {
   background-color: #f1d875;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_advanced_widgets\.scss}line{font-family:\0000392}}
 table.realtable td {
   vertical-align: middle;
   border: 1px solid #000000;
@@ -884,7 +770,6 @@ table.realtable td {
   font-weight: normal;
   line-height: 1.1em;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_advanced_widgets\.scss}line{font-family:\00003111}}
 table.realtable thead th {
   background-color: #AF411C;
   border: 0px solid #000000;
@@ -896,16 +781,12 @@ table.realtable thead th {
   font-weight: bold;
   color: #ffffff;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_advanced_widgets\.scss}line{font-family:\00003123}}
 table.realtable thead th:first-child {
   border-width: 0px 0px 1px 0px;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_advanced_widgets\.scss}line{font-family:\00003127}}
 table.realtable thead th:last-child {
   border-width: 0px 0px 1px 1px;
 }
-/* 12 selectors generated from 'P:\Websites\Chrysalis\pychronia_common\static\MetalRadiance\scss\_corner_decorations.scss' add up to a total of 125 selectors accumulated */
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_corner_decorations\.scss}line{font-family:\0000314}}
 .stick_bottom_left {
   pointer-events: none;
   position: absolute;
@@ -913,7 +794,6 @@ table.realtable thead th:last-child {
   bottom: 0;
   left: 0;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_corner_decorations\.scss}line{font-family:\0000319}}
 .stick_bottom_right {
   pointer-events: none;
   position: absolute;
@@ -921,7 +801,6 @@ table.realtable thead th:last-child {
   bottom: 0;
   right: 0;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_corner_decorations\.scss}line{font-family:\0000324}}
 .stick_top_left {
   pointer-events: none;
   position: absolute;
@@ -929,7 +808,6 @@ table.realtable thead th:last-child {
   top: 0;
   left: 0;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_corner_decorations\.scss}line{font-family:\0000329}}
 .stick_top_right {
   pointer-events: none;
   position: absolute;
@@ -937,7 +815,6 @@ table.realtable thead th:last-child {
   top: 0;
   right: 0;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_corner_decorations\.scss}line{font-family:\0000345}}
 .big_stick_bottom_left {
   pointer-events: none;
   position: absolute;
@@ -945,7 +822,6 @@ table.realtable thead th:last-child {
   bottom: -22px;
   left: -22px;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_corner_decorations\.scss}line{font-family:\0000350}}
 .big_stick_bottom_right {
   pointer-events: none;
   position: absolute;
@@ -953,7 +829,6 @@ table.realtable thead th:last-child {
   bottom: -22px;
   right: -29px;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_corner_decorations\.scss}line{font-family:\0000355}}
 .big_stick_top_left {
   pointer-events: none;
   position: absolute;
@@ -961,7 +836,6 @@ table.realtable thead th:last-child {
   top: -20px;
   left: -20px;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_corner_decorations\.scss}line{font-family:\0000360}}
 .big_stick_top_right {
   pointer-events: none;
   position: absolute;
@@ -969,36 +843,30 @@ table.realtable thead th:last-child {
   top: -17px;
   right: -25px;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_corner_decorations\.scss}line{font-family:\0000375}}
 .icon_stick_bottom_left {
   position: absolute;
   z-index: 10;
   bottom: 5px;
   left: 0px;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_corner_decorations\.scss}line{font-family:\0000381}}
 .icon_stick_bottom_right {
   position: absolute;
   z-index: 10;
   bottom: 10px;
   right: 8px;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_corner_decorations\.scss}line{font-family:\0000387}}
 .icon_stick_top_left {
   position: absolute;
   z-index: 10;
   top: 2px;
   left: 2px;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_corner_decorations\.scss}line{font-family:\0000393}}
 .icon_stick_top_right {
   position: absolute;
   z-index: 10;
   top: 10px;
   right: 10px;
 }
-/* 2 selectors generated from 'P:\Websites\Chrysalis\pychronia_common\static\MetalRadiance\scss\_django_customization.scss' add up to a total of 127 selectors accumulated */
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_django_customization\.scss}line{font-family:\000035}}
 .errorlist {
   list-style-type: none;
   list-style-image: none;
@@ -1006,73 +874,57 @@ table.realtable thead th:last-child {
   margin: 0;
   padding: 0;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_django_customization\.scss}line{font-family:\0000318}}
 .bare_forms form {
   max-width: 400px;
   margin: auto;
 }
-/* 69 selectors generated from 'P:\Websites\Chrysalis\pychronia_common\static\MetalRadiance\scss\_rst_html4css1.scss' add up to a total of 196 selectors accumulated */
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_rst_html4css1\.scss}line{font-family:\000032}}
 .borderless, table.borderless td, table.borderless th {
   border: 0;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_rst_html4css1\.scss}line{font-family:\0000317}}
 table.borderless td, table.borderless th {
   padding: 0 0.5em 0 0 ! important;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_rst_html4css1\.scss}line{font-family:\0000322}}
 .first {
   margin-top: 0 ! important;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_rst_html4css1\.scss}line{font-family:\0000326}}
 .last, .with-subtitle {
   margin-bottom: 0 ! important;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_rst_html4css1\.scss}line{font-family:\0000329}}
 .hidden {
   display: none;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_rst_html4css1\.scss}line{font-family:\0000332}}
 a.toc-backref {
   text-decoration: none;
   color: black;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_rst_html4css1\.scss}line{font-family:\0000336}}
 blockquote.epigraph {
   margin: 2em 5em;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_rst_html4css1\.scss}line{font-family:\0000339}}
 dl.docutils dd {
   margin-bottom: 0.8em;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_rst_html4css1\.scss}line{font-family:\0000342}}
 object[type="image/svg+xml"], object[type="application/x-shockwave-flash"] {
   overflow: hidden;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_rst_html4css1\.scss}line{font-family:\0000346}}
 div.abstract {
   margin: 2em 5em;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_rst_html4css1\.scss}line{font-family:\0000354}}
 div.abstract p.topic-title {
   font-weight: bold;
   text-align: center;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_rst_html4css1\.scss}line{font-family:\0000358}}
 div.admonition, div.attention, div.caution, div.danger, div.error, div.hint,
 div.important, div.note, div.tip, div.warning {
   margin: 2em;
   border: medium outset;
   padding: 1em;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_rst_html4css1\.scss}line{font-family:\0000364}}
 div.admonition p.admonition-title, div.hint p.admonition-title,
 div.important p.admonition-title, div.note p.admonition-title,
 div.tip p.admonition-title {
   font-weight: bold;
   font-family: sans-serif;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_rst_html4css1\.scss}line{font-family:\0000370}}
 div.attention p.admonition-title, div.caution p.admonition-title,
 div.danger p.admonition-title, div.error p.admonition-title,
 div.warning p.admonition-title {
@@ -1080,40 +932,33 @@ div.warning p.admonition-title {
   font-weight: bold;
   font-family: sans-serif;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_rst_html4css1\.scss}line{font-family:\0000377}}
 div.dedication {
   margin: 2em 5em;
   text-align: center;
   font-style: italic;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_rst_html4css1\.scss}line{font-family:\0000391}}
 div.dedication p.topic-title {
   font-weight: bold;
   font-style: normal;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_rst_html4css1\.scss}line{font-family:\0000395}}
 div.figure {
   margin-left: 2em;
   margin-right: 2em;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_rst_html4css1\.scss}line{font-family:\0000399}}
 div.footer, div.header {
   clear: both;
   font-size: smaller;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_rst_html4css1\.scss}line{font-family:\00003103}}
 div.line-block {
   display: block;
   margin-top: 1em;
   margin-bottom: 1em;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_rst_html4css1\.scss}line{font-family:\00003108}}
 div.line-block div.line-block {
   margin-top: 0;
   margin-bottom: 0;
   margin-left: 1.5em;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_rst_html4css1\.scss}line{font-family:\00003113}}
 div.sidebar {
   margin: 0 0 0.5em 1em;
   border: medium outset;
@@ -1123,264 +968,207 @@ div.sidebar {
   float: right;
   clear: right;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_rst_html4css1\.scss}line{font-family:\00003122}}
 div.sidebar p.rubric {
   font-family: sans-serif;
   font-size: medium;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_rst_html4css1\.scss}line{font-family:\00003126}}
 div.system-messages {
   margin: 5em;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_rst_html4css1\.scss}line{font-family:\00003129}}
 div.system-messages h1 {
   color: red;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_rst_html4css1\.scss}line{font-family:\00003132}}
 div.system-message {
   border: medium outset;
   padding: 1em;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_rst_html4css1\.scss}line{font-family:\00003136}}
 div.system-message p.system-message-title {
   color: red;
   font-weight: bold;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_rst_html4css1\.scss}line{font-family:\00003140}}
 div.topic {
   margin: 2em;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_rst_html4css1\.scss}line{font-family:\00003143}}
 h1.section-subtitle, h2.section-subtitle, h3.section-subtitle, h4.section-subtitle,
 h5.section-subtitle, h6.section-subtitle {
   margin-top: 0.4em;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_rst_html4css1\.scss}line{font-family:\00003147}}
 h1.title {
   text-align: center;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_rst_html4css1\.scss}line{font-family:\00003150}}
 h2.subtitle {
   text-align: center;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_rst_html4css1\.scss}line{font-family:\00003153}}
 hr.docutils {
   width: 75%;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_rst_html4css1\.scss}line{font-family:\00003156}}
 img.align-left, .figure.align-left, object.align-left {
   clear: left;
   float: left;
   margin-right: 1em;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_rst_html4css1\.scss}line{font-family:\00003161}}
 img.align-right, .figure.align-right, object.align-right {
   clear: right;
   float: right;
   margin-left: 1em;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_rst_html4css1\.scss}line{font-family:\00003166}}
 img.align-center, .figure.align-center, object.align-center {
   display: block;
   margin-left: auto;
   margin-right: auto;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_rst_html4css1\.scss}line{font-family:\00003172}}
 .align-left {
   text-align: left;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_rst_html4css1\.scss}line{font-family:\00003175}}
 .align-center {
   clear: both;
   text-align: center;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_rst_html4css1\.scss}line{font-family:\00003179}}
 .align-right {
   text-align: right;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_rst_html4css1\.scss}line{font-family:\00003182}}
 div.align-right {
   text-align: inherit;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_rst_html4css1\.scss}line{font-family:\00003186}}
 ol.simple, ul.simple {
   margin-bottom: 1em;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_rst_html4css1\.scss}line{font-family:\00003192}}
 ol.arabic {
   list-style: decimal;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_rst_html4css1\.scss}line{font-family:\00003195}}
 ol.loweralpha {
   list-style: lower-alpha;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_rst_html4css1\.scss}line{font-family:\00003198}}
 ol.upperalpha {
   list-style: upper-alpha;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_rst_html4css1\.scss}line{font-family:\00003201}}
 ol.lowerroman {
   list-style: lower-roman;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_rst_html4css1\.scss}line{font-family:\00003204}}
 ol.upperroman {
   list-style: upper-roman;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_rst_html4css1\.scss}line{font-family:\00003207}}
 p.attribution {
   text-align: right;
   margin-left: 50%;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_rst_html4css1\.scss}line{font-family:\00003211}}
 p.caption {
   font-style: italic;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_rst_html4css1\.scss}line{font-family:\00003214}}
 p.credits {
   font-style: italic;
   font-size: smaller;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_rst_html4css1\.scss}line{font-family:\00003218}}
 p.label {
   white-space: nowrap;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_rst_html4css1\.scss}line{font-family:\00003221}}
 p.rubric {
   font-weight: bold;
   font-size: larger;
   color: maroon;
   text-align: center;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_rst_html4css1\.scss}line{font-family:\00003227}}
 p.sidebar-title {
   font-family: sans-serif;
   font-weight: bold;
   font-size: larger;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_rst_html4css1\.scss}line{font-family:\00003232}}
 p.sidebar-subtitle {
   font-family: sans-serif;
   font-weight: bold;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_rst_html4css1\.scss}line{font-family:\00003236}}
 p.topic-title {
   font-weight: bold;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_rst_html4css1\.scss}line{font-family:\00003239}}
 pre.address {
   margin-bottom: 0;
   margin-top: 0;
   font: inherit;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_rst_html4css1\.scss}line{font-family:\00003244}}
 pre.literal-block, pre.doctest-block, pre.math {
   margin-left: 2em;
   margin-right: 2em;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_rst_html4css1\.scss}line{font-family:\00003248}}
 span.classifier {
   font-family: sans-serif;
   font-style: oblique;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_rst_html4css1\.scss}line{font-family:\00003252}}
 span.classifier-delimiter {
   font-family: sans-serif;
   font-weight: bold;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_rst_html4css1\.scss}line{font-family:\00003256}}
 span.interpreted {
   font-family: sans-serif;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_rst_html4css1\.scss}line{font-family:\00003259}}
 span.option {
   white-space: nowrap;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_rst_html4css1\.scss}line{font-family:\00003262}}
 span.pre {
   white-space: pre;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_rst_html4css1\.scss}line{font-family:\00003265}}
 span.problematic {
   color: red;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_rst_html4css1\.scss}line{font-family:\00003268}}
 span.section-subtitle {
   font-size: 80%;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_rst_html4css1\.scss}line{font-family:\00003272}}
 table.citation {
   border-left: solid 1px gray;
   margin-left: 1px;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_rst_html4css1\.scss}line{font-family:\00003276}}
 table.docinfo {
   margin: 2em 4em;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_rst_html4css1\.scss}line{font-family:\00003279}}
 table.docutils {
   margin-top: 0.5em;
   margin-bottom: 0.5em;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_rst_html4css1\.scss}line{font-family:\00003283}}
 table.footnote {
   border-left: solid 1px black;
   margin-left: 1px;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_rst_html4css1\.scss}line{font-family:\00003287}}
 table.docutils td, table.docutils th, table.docinfo td, table.docinfo th {
   padding-left: 0.5em;
   padding-right: 0.5em;
   vertical-align: top;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_rst_html4css1\.scss}line{font-family:\00003293}}
 table.docutils th.field-name, table.docinfo th.docinfo-name {
   font-weight: bold;
   text-align: left;
   white-space: nowrap;
   padding-left: 0;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_rst_html4css1\.scss}line{font-family:\00003299}}
 h1 tt.docutils, h2 tt.docutils, h3 tt.docutils, h4 tt.docutils, h5 tt.docutils,
 h6 tt.docutils {
   font-size: 100%;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_rst_html4css1\.scss}line{font-family:\00003303}}
 ul.auto-toc {
   list-style-type: none;
 }
-/* 6 selectors generated from 'P:\Websites\Chrysalis\pychronia_common\static\MetalRadiance\scss\_docutils_customization.scss' add up to a total of 202 selectors accumulated */
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_docutils_customization\.scss}line{font-family:\000039}}
 div .attention, div .caution, div .danger, div .error, div .important,
 div .warning {
   border: medium ridge;
   border-color: #B89215;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_docutils_customization\.scss}line{font-family:\0000310}}
 div .attention p.admonition-title, div .caution p.admonition-title,
 div .danger p.admonition-title, div .error p.admonition-title,
 div .important p.admonition-title, div .warning p.admonition-title {
   color: #8E0D0D;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_docutils_customization\.scss}line{font-family:\0000317}}
 div .hint, div .note, div .tip, div .admonition {
   border: medium ridge;
   border-color: #B89215;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_docutils_customization\.scss}line{font-family:\0000318}}
 div .hint p.admonition-title, div .note p.admonition-title,
 div .tip p.admonition-title, div .admonition p.admonition-title {
   color: #386D2C;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_docutils_customization\.scss}line{font-family:\0000330}}
 .section h1, .section h2 {
   margin-top: 40px;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_docutils_customization\.scss}line{font-family:\0000337}}
 table.footnote {
   border-color: #9D8126;
 }
-/* 33 selectors generated from 'P:\Websites\Chrysalis\pychronia_common\static\MetalRadiance\scss\_standard_content.scss' add up to a total of 235 selectors accumulated */
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_standard_content\.scss}line{font-family:\000036}}
 h1 {
   text-shadow: 1px 1px 0 black, -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black;
   color: #BF9635;
@@ -1393,7 +1181,6 @@ h1 {
   color: #F8D85B;
   margin-bottom: 20px;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_standard_content\.scss}line{font-family:\0000314}}
 h1:before {
   top: 12px;
   left: -14px;
@@ -1401,7 +1188,6 @@ h1:before {
   padding: 0;
   position: relative;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_standard_content\.scss}line{font-family:\0000321}}
 h1:after {
   top: 12px;
   left: 14px;
@@ -1409,7 +1195,6 @@ h1:after {
   padding: 0;
   position: relative;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_standard_content\.scss}line{font-family:\0000331}}
 h2 {
   text-shadow: 1px 1px 0 black, -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black;
   color: #BF9635;
@@ -1421,7 +1206,6 @@ h2 {
   line-height: normal;
   color: white;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_standard_content\.scss}line{font-family:\0000338}}
 h2:before {
   top: 0px;
   left: -10px;
@@ -1429,7 +1213,6 @@ h2:before {
   padding: 0;
   position: relative;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_standard_content\.scss}line{font-family:\0000345}}
 h2:after {
   top: 0px;
   left: 10px;
@@ -1437,18 +1220,15 @@ h2:after {
   padding: 0;
   position: relative;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_standard_content\.scss}line{font-family:\0000355}}
 h3 {
   color: white;
   font-size: 1.3em;
   text-shadow: 1px 1px 0px black, -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black;
   margin: 14px 5px 7px;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_standard_content\.scss}line{font-family:\0000379}}
 .drop_cap, .drop-cap, .dropcap {
   text-indent: 0 !important;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_standard_content\.scss}line{font-family:\0000365}}
 .drop_cap:first-letter, .drop-cap:first-letter, .dropcap:first-letter {
   color: #775F13;
   float: left;
@@ -1456,7 +1236,6 @@ h3 {
   line-height: 30px;
   margin-top: 5px;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_standard_content\.scss}line{font-family:\0000384}}
 .justified p, .section p {
   text-align: justify;
   overflow: hidden;
@@ -1469,62 +1248,49 @@ h3 {
   quotes: none;
   text-overflow: ellipsis;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_standard_content\.scss}line{font-family:\00003102}}
 .small_text {
   font-size: 0.8em !important;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_standard_content\.scss}line{font-family:\00003107}}
 div, span, p {
   background-color: transparent;
   border-color: transparent;
   overflow: visible;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_standard_content\.scss}line{font-family:\00003114}}
 p {
   margin: 8px 0 8px;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_standard_content\.scss}line{font-family:\00003118}}
 .announce {
   font-size: 1.3em;
   line-height: 1.1em;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_standard_content\.scss}line{font-family:\00003124}}
 a:link {
   color: #0104A2;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_standard_content\.scss}line{font-family:\00003125}}
 a:visited, a:active {
   color: #0B0D6C;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_standard_content\.scss}line{font-family:\00003126}}
 a:hover {
   color: old_blue;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_standard_content\.scss}line{font-family:\00003128}}
 a img {
   border-width: 0;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_standard_content\.scss}line{font-family:\00003134}}
 h1 a:link, h1 a:visited, h1 a:hover, h2 a:link, h2 a:visited, h2 a:hover {
   color: white;
   text-decoration: none;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_standard_content\.scss}line{font-family:\00003141}}
 dl {
   text-indent: 0;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_standard_content\.scss}line{font-family:\00003145}}
 dt {
   font-weight: bold;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_standard_content\.scss}line{font-family:\00003154}}
 hr {
   border-color: #9D8126;
   border-width: 1px;
   width: 80%;
   margin: 20px auto;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_standard_content\.scss}line{font-family:\00003161}}
 blockquote, q, cite {
   font-size: 1.5em;
   line-height: 1.2em;
@@ -1535,88 +1301,70 @@ blockquote, q, cite {
   padding: 6px;
   width: 50%;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_standard_content\.scss}line{font-family:\00003174}}
 ul {
   margin: 10px 0 10px;
   padding-left: 26px;
   list-style-position: outside;
   list-style-image: url("img/icons/bullet_gold_small.png");
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_standard_content\.scss}line{font-family:\00003176}}
 ul li {
   margin-top: 5px;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_standard_content\.scss}line{font-family:\00003185}}
 ul ul {
   list-style-image: url("img/icons/bullet_silver_small.png");
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_standard_content\.scss}line{font-family:\00003188}}
 ul ul ul {
   list-style-image: url("img/icons/bullet_bronze_small.png");
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_standard_content\.scss}line{font-family:\00003193}}
 .no_bullets, .no_bullets * {
   list-style-type: none !important;
   list-style-image: none !important;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_standard_content\.scss}line{font-family:\00003197}}
 ul.no_bullets, .no_bullets ul {
   padding-left: 0 !important;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_standard_content\.scss}line{font-family:\00003201}}
 ul.tiny_bullets, .tiny_bullets ul {
   padding-left: 14px !important;
   list-style-image: none !important;
   list-style-type: disc !important;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_standard_content\.scss}line{font-family:\00003209}}
 textarea {
   resize: vertical;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_standard_content\.scss}line{font-family:\00003215}}
 #full_content form textarea, #full_content form select,
 #full_content form input[type=text], #full_content form input[type=password],
 #full_content form input[type=submit], #full_content form input[type=button],
 #full_content form .select2-container, #full_content form .markItUp {
   width: 100% !important;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_standard_content\.scss}line{font-family:\00003221}}
 fieldset {
   border-color: #9D8126;
   margin: 5px auto;
 }
-/* 37 selectors generated from 'P:\Websites\Chrysalis\pychronia_common\static\MetalRadiance\scss\_js_utils.scss' add up to a total of 272 selectors accumulated */
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_js_utils\.scss}line{font-family:\000038}}
 .jp-audio {
   margin: 10px auto;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_js_utils\.scss}line{font-family:\000039}}
 .jp-audio * {
   box-sizing: content-box !important;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_js_utils\.scss}line{font-family:\0000314}}
 .ui-dropdownchecklist {
   background-color: white;
   padding: 1px 2px;
   font-size: 0.9em;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_js_utils\.scss}line{font-family:\0000321}}
 .select2-container-multi .select2-choices .select2-search-field input {
   padding: 0;
   margin: 5px 0 5px 4px;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_js_utils\.scss}line{font-family:\0000327}}
 .zoomable > img {
   border: none;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_js_utils\.scss}line{font-family:\0000332}}
 .jnotify-container {
   max-height: 400px;
   min-width: 200px;
   width: auto;
   max-width: 550px;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_js_utils\.scss}line{font-family:\0000342}}
 .jnotify-container .jnotify-notification .jnotify-background {
   border: 2px solid #775F13;
   border-top-left-radius: 30px 10px;
@@ -1626,71 +1374,57 @@ fieldset {
   opacity: 0.97;
   background-image: url('img/backgrounds/metal_bump_semitransparent.png');
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_js_utils\.scss}line{font-family:\0000352}}
 .jnotify-container .jnotify-notification-warning .jnotify-close,
 .jnotify-container .jnotify-notification-warning .jnotify-message {
   color: #A9911C !important;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_js_utils\.scss}line{font-family:\0000357}}
 .jnotify-container .jnotify-notification-success .jnotify-background {
   background-color: #50B14F;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_js_utils\.scss}line{font-family:\0000362}}
 .jnotify-container .jnotify-notification-success .jnotify-close,
 .jnotify-container .jnotify-notification-success .jnotify-message {
   color: #008000 !important;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_js_utils\.scss}line{font-family:\0000373}}
 .fancybox-default {
   z-index: 100000 !important;
   background-image: url('img/backgrounds/ricepaper-hue-orange.jpg');
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_js_utils\.scss}line{font-family:\0000378}}
 .fancybox-default .fancybox-outer {
   background-color: transparent;
   box-shadow: none !important;
   border-width: 10px;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_js_utils\.scss}line{font-family:\0000390}}
 .fancybox-default .fancybox-title-float-wrap .child {
   background: none;
   line-height: 28px;
   text-shadow: 0px 1px 0px black;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_js_utils\.scss}line{font-family:\0000396}}
 .fancybox-default .fancybox-close {
   right: -18px;
   top: -18px;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_js_utils\.scss}line{font-family:\00003105}}
 .main_frame_border .markItUp {
   width: 95%;
   margin: auto;
   border: #9D8126 ridge 2px;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_js_utils\.scss}line{font-family:\00003111}}
 .main_frame_border .markItUpContainer {
   background-image: url('img/backgrounds/ricepaper-hue-orange.jpg');
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_js_utils\.scss}line{font-family:\00003119}}
 .main_frame_border .markItUpEditor {
   width: 100%;
   height: 150px;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_js_utils\.scss}line{font-family:\00003124}}
 .main_frame_border .markItUpFooter {
   display: none;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_js_utils\.scss}line{font-family:\00003133}}
 #domslideshow {
   position: relative;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_js_utils\.scss}line{font-family:\00003138}}
 #domslideshow * {
   list-style-type: none;
   list-style-image: none;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_js_utils\.scss}line{font-family:\00003143}}
 #domslideshow div#loading_msg {
   width: 1em;
   color: #fff;
@@ -1698,22 +1432,18 @@ fieldset {
   font-weight: bold;
   text-align: center;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_js_utils\.scss}line{font-family:\00003151}}
 #domslideshow .hide {
   display: none;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_js_utils\.scss}line{font-family:\00003155}}
 #domslideshow img.slideshow_image {
   max-width: 600px;
   max-height: 700px;
   display: block;
   margin: 0px;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_js_utils\.scss}line{font-family:\00003163}}
 #domslideshow blockquote {
   width: 70%;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_js_utils\.scss}line{font-family:\00003167}}
 #domslideshow .counter {
   display: block;
   position: absolute;
@@ -1724,13 +1454,11 @@ fieldset {
   margin: 5px 10px 5px 55px;
   padding: 10px;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_js_utils\.scss}line{font-family:\00003177}}
 #domslideshow .counter li {
   float: left;
   padding: 0 1em 0 0;
   margin: 0;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_js_utils\.scss}line{font-family:\00003187}}
 #domslideshow #toclist {
   left: 5px;
   top: 0px;
@@ -1739,33 +1467,27 @@ fieldset {
   padding: 10px;
   position: absolute;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_js_utils\.scss}line{font-family:\00003196}}
 #domslideshow #toclist li {
   text-align: right;
   position: relative;
   font-size: 1em;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_js_utils\.scss}line{font-family:\00003201}}
 #domslideshow #toclist li a {
   font-weight: bold;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_js_utils\.scss}line{font-family:\00003205}}
 #domslideshow #toclist li ul li {
   list-style-type: none;
   font-size: 0.6em;
   text-align: left;
   position: relative;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_js_utils\.scss}line{font-family:\00003211}}
 #domslideshow #toclist li li a {
   line-height: 1em;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_js_utils\.scss}line{font-family:\00003214}}
 #domslideshow #toclist li li a:hover {
   line-height: 0.7em;
   background: #fff;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_js_utils\.scss}line{font-family:\00003218}}
 #domslideshow #toclist li ul {
   background: #DCCBB5;
   padding: 10px;
@@ -1775,7 +1497,6 @@ fieldset {
   border-bottom: 1px solid #9D8126;
   z-index: 100;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_js_utils\.scss}line{font-family:\00003227}}
 #domslideshow #toclist li ul li#closeToc {
   text-align: right;
   position: relative;
@@ -1785,27 +1506,21 @@ fieldset {
   background: #C5AE8F;
   line-height: 1em;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_js_utils\.scss}line{font-family:\00003246}}
 .p4wn-board {
   float: none;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_js_utils\.scss}line{font-family:\00003251}}
 .p4wn-board table * {
   line-height: 8px;
   user-select: none;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_js_utils\.scss}line{font-family:\00003258}}
 .p4wn-log, .p4wn-messages {
   display: none;
 }
-/* 15 selectors generated from 'P:\Websites\Chrysalis\pychronia_common\static\MetalRadiance\scss\_specific_page_styles.scss' add up to a total of 287 selectors accumulated */
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_specific_page_styles\.scss}line{font-family:\000038}}
 .item_display {
   padding: 0;
   max-height: 555px;
   max-width: 680px;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_specific_page_styles\.scss}line{font-family:\0000320}}
 #password_display {
   display: table-cell;
   vertical-align: middle;
@@ -1817,7 +1532,6 @@ fieldset {
   background-color: #D3C469;
   border: solid 2px #775F13;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_specific_page_styles\.scss}line{font-family:\0000335}}
 input.digit {
   width: 150px;
   height: 50px;
@@ -1826,22 +1540,18 @@ input.digit {
   font-weight: bold;
   background-color: #D3C469;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_specific_page_styles\.scss}line{font-family:\0000347}}
 #trashcan {
   cursor: pointer;
   margin: 20px 10px 5px;
   height: 110px;
   background: transparent center center no-repeat url('img/icons/trashbin.png');
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_specific_page_styles\.scss}line{font-family:\0000354}}
 #trashcan * {
   visibility: hidden;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_specific_page_styles\.scss}line{font-family:\0000359}}
 .radio_spot {
   cursor: pointer;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_specific_page_styles\.scss}line{font-family:\0000365}}
 #chatwindow {
   margin: auto;
   height: 400px;
@@ -1850,14 +1560,12 @@ input.digit {
   overflow: auto;
   background-color: transparent;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_specific_page_styles\.scss}line{font-family:\0000377}}
 .admin_widgets {
   list-style-type: none;
   list-style-image: none;
   padding: 0;
   margin: 10px auto;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_specific_page_styles\.scss}line{font-family:\00003113}}
 .email_unread {
   position: relative;
   min-width: 150px;
@@ -1872,7 +1580,6 @@ input.digit {
   background-image: none;
   border-image: url('img/backgrounds/scroll_realistic_thin_ends.png') 79 45 81 39 fill stretch stretch;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_specific_page_styles\.scss}line{font-family:\00003120}}
 .email_read {
   position: relative;
   min-width: 150px;
@@ -1887,26 +1594,21 @@ input.digit {
   background-image: none;
   border-image: url('img/backgrounds/scroll_realistic_thin_ends_disabled.png') 79 45 81 39 fill stretch stretch;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_specific_page_styles\.scss}line{font-family:\00003127}}
 .message_operations {
   position: absolute;
   top: -66px;
   left: 5px;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_specific_page_styles\.scss}line{font-family:\00003131}}
 .message_operations a {
   margin-right: 8px;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_specific_page_styles\.scss}line{font-family:\00003136}}
 .cover_previous {
   margin-top: -60px;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_specific_page_styles\.scss}line{font-family:\00003142}}
 #djinn_chat_wrapper {
   margin: auto;
   width: 500px;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_specific_page_styles\.scss}line{font-family:\00003149}}
 #djinn_message_window {
   margin: auto;
   width: 500px;
@@ -1917,41 +1619,31 @@ input.digit {
   overflow: auto;
   text-align: left;
 }
-/* 7 selectors generated from 'P:\Websites\Chrysalis\pychronia_common\static\MetalRadiance\scss\_zinnia_customization.scss' add up to a total of 294 selectors accumulated */
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_zinnia_customization\.scss}line{font-family:\000035}}
 .entry-body {
   overflow: visible;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_zinnia_customization\.scss}line{font-family:\000039}}
 .hentry {
   margin-left: -30px;
   margin-right: -30px;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_zinnia_customization\.scss}line{font-family:\0000317}}
 .hentry img.center {
   margin-top: 15px;
   margin-bottom: 15px;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_zinnia_customization\.scss}line{font-family:\0000323}}
 ul.paginator {
   list-style-image: none !important;
   list-style-type: none !important;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_zinnia_customization\.scss}line{font-family:\0000326}}
 ul.paginator li {
   display: inline !important;
   margin: 0px 5px;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_zinnia_customization\.scss}line{font-family:\0000331}}
 ul.paginator .index {
   margin-right: 40px;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_zinnia_customization\.scss}line{font-family:\0000336}}
 .mini_frame_content .scroll_yellow_flat {
   margin: 0;
 }
-/* 11 selectors generated from 'P:\Websites\Chrysalis\pychronia_common\static\MetalRadiance\scss\_dropdown_menu.scss' add up to a total of 305 selectors accumulated */
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_dropdown_menu\.scss}line{font-family:\000034}}
 #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu {
   margin: 0;
   padding: 0;
@@ -1959,7 +1651,6 @@ ul.paginator .index {
   line-height: 35px;
   position: relative;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_dropdown_menu\.scss}line{font-family:\0000313}}
 #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu > li {
   display: block;
   list-style: none outside none;
@@ -1968,7 +1659,6 @@ ul.paginator .index {
   padding: 0px;
   float: left;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_dropdown_menu\.scss}line{font-family:\0000320}}
 #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu > li a,
 #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu > li span {
   display: block;
@@ -1987,12 +1677,10 @@ ul.paginator .index {
   list-style-image: none;
   text-decoration: none;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_dropdown_menu\.scss}line{font-family:\0000338}}
 #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu > li span {
   color: black !important;
   text-shadow: 1px 1px 0 white, -1px -1px 0 white, 1px -1px 0 white, -1px 1px 0 white !important;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_dropdown_menu\.scss}line{font-family:\0000344}}
 #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu > li li a,
 #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu > li li span {
   font-size: 20pt;
@@ -2002,31 +1690,25 @@ ul.paginator .index {
   border-width: 0px 32px 0px 33px;
   border-image: url('img/backgrounds/tube_gold_small.png') 0 32 0 33 fill stretch;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_dropdown_menu\.scss}line{font-family:\0000354}}
 #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu > li li li a,
 #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu > li li li span {
   border-image: url('img/backgrounds/tube_silver_small.png') 0 32 0 33 fill stretch;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_dropdown_menu\.scss}line{font-family:\0000357}}
 #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu > li li li li a,
 #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu > li li li li span {
   border-image: url('img/backgrounds/tube_bronze_small.png') 0 32 0 33 fill stretch;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_dropdown_menu\.scss}line{font-family:\0000362}}
 #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu > li {
   border-width: 0;
   border-right: 3px ridge #9D8126;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_dropdown_menu\.scss}line{font-family:\0000369}}
 #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu > li:last-child {
   border-width: 0;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_dropdown_menu\.scss}line{font-family:\0000373}}
 #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu > li a.hover,
 #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu > li span.hover {
   color: #AAA;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/P\:\\Websites\\Chrysalis\\pychronia_common\\static\\MetalRadiance\\scss\\_dropdown_menu\.scss}line{font-family:\0000397}}
 #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu > li ul {
   display: none;
   margin: 0;
