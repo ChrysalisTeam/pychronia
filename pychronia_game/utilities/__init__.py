@@ -471,6 +471,7 @@ def check_dictionary_with_template(my_dict, template, strict=False):
 
 
 def load_yaml_file(yaml_file):
+    logging.info("Loading yaml fixture %s" % yaml_file)
     with open(yaml_file, "U") as f:
         raw_data = f.read()
 
