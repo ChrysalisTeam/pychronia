@@ -1,8 +1,8 @@
 :loop
 
-python -m scss scss/main.scss -o metalradiance.css -I scss -C 
+python -m scss scss/main.scss -o metalradiance.css -I scss -C --debug-info
 
-python -m scss scss/main_mobile.scss -o metalradiance_mobile.css -I scss -C 
+python -m scss scss/main_mobile.scss -o metalradiance_mobile.css -I scss -C --debug-info
 
 rem python -m scss -r -C -I scss -w .\scss -o . --debug-info
 
