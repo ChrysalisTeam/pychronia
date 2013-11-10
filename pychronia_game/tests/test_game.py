@@ -3468,14 +3468,14 @@ class TestGameViewSystem(BaseGameTestCase):
                 if varargs:
                     args = args[:-1]
                 if defaults:
-                    args = args[:-len(defaults)] # WRONG if defaults == ()
+                    args = args[:-len(defaults)] # beware, wrong if defaults == ()
 
                 for arg_name in args: # remaining ones are mandatory
-                    if arg_name in COMPUTED_VALUES:
+                    if arg_name in COMPUTED_VALUES: # values not in form.fields, but created dynamically at instantiation
                         continue
                     fields = form_inst.fields
-                    print(fields)
-                    assert arg_name in fields # might have been created dynamically at instantiation
+                    # print(fields)
+                    assert arg_name in fields
 
                 check_done += 1
 

@@ -156,7 +156,7 @@ class GameViewMetaclass(type):
                         if form_class_required:
                             assert FormClass
                         if FormClass:
-                            assert issubclass(FormClass, Form) # not necessarily AbstractGameForm - may be managed manually
+                            assert issubclass(FormClass, Form), FormClass.__mro__ # not necessarily AbstractGameForm - may be managed manually
 
                 for_chars = (NewClass.ACCESS in (UserAccess.authenticated, UserAccess.character))
                 _check_action_registry(NewClass.GAME_ACTIONS, form_class_required=False, allow_permission_requirement=for_chars) # can be directly called via ajax/custom forms

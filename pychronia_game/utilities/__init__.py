@@ -245,9 +245,8 @@ def adapt_parameters_to_func(all_parameters, func):
     Returns a dict of relevant parameters, or raises common signature exceptions.
     """
 
-
-    (args, varargs, keywords, defaults) = inspect.getargspec(func)
-    print("########>>>", func, all_parameters, args)
+    (args, _varargs, keywords, _defaults) = inspect.getargspec(func)
+    ##print("########>>>", func, all_parameters, args)
 
     if keywords is not None:
         relevant_args = all_parameters # exceeding args will be handled properly
@@ -258,7 +257,7 @@ def adapt_parameters_to_func(all_parameters, func):
         #print("#<<<<<<<", func, relevant_args)
         inspect.getcallargs(func, **relevant_args)
     except (TypeError, ValueError), e:
-        raise
+        raise # signature problem, probably
 
     return relevant_args
 

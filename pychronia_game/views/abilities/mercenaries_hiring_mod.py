@@ -6,7 +6,7 @@ import json
 from django import forms
 
 from pychronia_game.common import *
-from pychronia_game.forms import AbstractGameForm, GemPayementFormMixin
+from pychronia_game.forms import AbstractGameForm
 from pychronia_game.datamanager.datamanager_tools import transaction_watcher
 from pychronia_game.datamanager.abstract_ability import AbstractAbility
 
@@ -14,7 +14,7 @@ from pychronia_game.datamanager.abstract_ability import AbstractAbility
 
 
 
-class AgentsHiringForm(GemPayementFormMixin):
+class AgentsHiringForm(AbstractGameForm):
 
     def __init__(self, datamanager, *args, **kwargs):
         super(AgentsHiringForm, self).__init__(datamanager, *args, **kwargs)
@@ -23,9 +23,6 @@ class AgentsHiringForm(GemPayementFormMixin):
         _location_choices = zip(_locations, _locations)
 
         self.fields["location"] = forms.ChoiceField(label=_lazy(u"Location"), choices=_location_choices)
-
-        assert self.fields.keyOrder
-        self.fields.keyOrder = ['_ability_form', 'location', 'pay_with_money', 'gems_list']
 
 
 

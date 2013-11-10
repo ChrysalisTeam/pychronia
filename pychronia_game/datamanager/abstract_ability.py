@@ -73,6 +73,22 @@ class AbstractAbility(AbstractAbilityBasesAdapter):
             self.logger.critical("Wrong access to dedicated_email in page %s", self.NAME)
         return self.get_ability_parameter("dedicated_email")
 
+
+    # can't be a classmethod anymore because we need action middleware settings
+    def _common_instantiate_form(self,
+                                  new_action_name,
+                                  form_options=None,
+                                  **kwargs):
+        final_form_options = self.get_game_form_extra_params(action_name=new_action_name)
+        if form_options:
+            final_form_options.update(form_options)
+        del form_options
+        return super(AbstractAbility, self)._common_instantiate_form(new_action_name=new_action_name, 
+                                                                     form_options=final_form_options,
+                                                                     **kwargs)
+        
+        
+        
     def _execute_game_action_with_middlewares(self, action_name, method, *args, **kwargs):
         assert "_test_" in action_name or method.__name__ == self.GAME_ACTIONS[action_name]["callback"], (action_name, method) # only in tests it could be false
         if __debug__: self.notify_event("EXECUTE_GAME_ACTION_WITH_MIDDLEWARES")

@@ -30,7 +30,7 @@ def form_field_unjsonify(value):
 
 
 
-class AbstractGameForm(forms.Form):
+class BaseAbstractGameForm(forms.Form):
     """
     Base class for forms, able to recognize their data, by adding some hidden fields.
     """
@@ -46,7 +46,7 @@ class AbstractGameForm(forms.Form):
         kwargs.setdefault("auto_id", "id_default_%s") # in multi-form case, this one will be used for unique "bound" form
         kwargs.setdefault("label_suffix", ":") # no <br/>, not always a better presentation
 
-        super(AbstractGameForm, self).__init__(**kwargs)
+        super(BaseAbstractGameForm, self).__init__(**kwargs)
 
         self.fields[self.__class__._ability_field_name] = forms.CharField(initial=self._get_dotted_class_name(), widget=forms.HiddenInput) # appended at the end
         self.target_url = ""  # by default we stay on the same page when submitting
@@ -68,7 +68,7 @@ class AbstractGameForm(forms.Form):
         """
         We never need fields with leading/trailing spaces in that game, so we strip everything...
         """
-        cleaned_data = super(AbstractGameForm, self).clean()
+        cleaned_data = super(BaseAbstractGameForm, self).clean()
 
         for field in cleaned_data:
             if isinstance(self.cleaned_data[field], basestring):
@@ -76,6 +76,7 @@ class AbstractGameForm(forms.Form):
         return cleaned_data
 
     def get_normalized_values(self):
+        assert self.is_valid()
         values = self.cleaned_data.copy()
         del values[self._ability_field_name]
         return values
@@ -84,7 +85,7 @@ class AbstractGameForm(forms.Form):
 
 
 
-class GemPayementFormMixin(AbstractGameForm):
+class GemPayementFormMixin(object):
 
     def _encode_gems(self, gems): # gems are TUPLES
         return [json.dumps([idx] + list(gem)) for idx, gem in enumerate(gems)] # add index to make all values different
@@ -99,35 +100,67 @@ class GemPayementFormMixin(AbstractGameForm):
             return _("Gem of %d Kashes (unknown origin)") % gem[0]
 
     def __init__(self, datamanager, *args, **kwargs):
+
+        # remove and analyze specific payment parameters (which could be missing)
+        payment_by_gems = kwargs.pop("payment_by_gems", False)
+        payment_by_money = kwargs.pop("payment_by_money", False)
+
+
         super(GemPayementFormMixin, self).__init__(datamanager, *args, **kwargs)
 
-        _gems = datamanager.get_character_properties()["gems"]
-        _gems_choices = zip(self._encode_gems(_gems), [self._gem_display(gem) for gem in _gems]) # gem is (value, origin) here
 
-        if _gems_choices:
-            self.fields["pay_with_money"] = forms.BooleanField(label=_("Pay with money"), initial=False, required=False)
-            self.fields["gems_list"] = forms.MultipleChoiceField(required=False, label=_("Or pay with gems"), choices=_gems_choices) #, widget=forms.SelectMultiple(attrs={"class": "multichecklist"}))
-        else:
-            self.fields["pay_with_money"] = forms.BooleanField(initial=True, widget=forms.HiddenInput, required=True)
-            self.fields["gems_list"] = forms.MultipleChoiceField(required=False, widget=forms.HiddenInput)
+        if payment_by_money:
+            if payment_by_gems:
+                self.fields["pay_with_money"] = forms.BooleanField(label=_("Pay with money"), initial=False, required=False)
+            else:
+                self.fields["pay_with_money"] = forms.BooleanField(initial=True, widget=forms.HiddenInput, required=True)
+
+            assert "pay_with_money" in self.fields
+
+
+        if payment_by_gems:
+
+            _gems = datamanager.get_character_properties()["gems"]
+            _gems_choices = zip(self._encode_gems(_gems), [self._gem_display(gem) for gem in _gems]) # gem is (value, origin) here
+
+            if _gems_choices:
+                self.fields["gems_list"] = forms.MultipleChoiceField(required=False, label=_("Or pay with gems"), choices=_gems_choices) #, widget=forms.SelectMultiple(attrs={"class": "multichecklist"}))
+            else:
+                self.fields["gems_list"] = forms.MultipleChoiceField(required=False, widget=forms.HiddenInput) # we could just
+
+            assert "gems_list" in self.fields
+
 
 
     def get_normalized_values(self):
 
         parameters = super(GemPayementFormMixin, self).get_normalized_values()
 
-        try:
-            parameters["use_gems"] = self._decode_gems(parameters["gems_list"])
-        except (TypeError, ValueError), e:
-            self.logger.critical("Wrong data submitted - %r", parameters["gems_list"], exc_info=True) # FIXME LOGGER MISSING
-            raise AbnormalUsageError("Wrong data submitted")
+        if "gems_list" in parameters:
+            try:
+                parameters["use_gems"] = self._decode_gems(parameters["gems_list"])
+            except (TypeError, ValueError), e:
+                self.logger.critical("Wrong data submitted - %r", parameters["gems_list"], exc_info=True) # FIXME LOGGER MISSING
+                raise AbnormalUsageError("Wrong data submitted")
+        else:
+            parameters["use_gems"] = ()
 
-        if ((parameters["pay_with_money"] and parameters["use_gems"]) or
-           not (parameters["pay_with_money"] or parameters["use_gems"])):
-            raise AbnormalUsageError("You must choose between money and gems, for payment.")
+        if "pay_with_money" in parameters and "use_gems" in parameters:
+            # only if we have a choice between several means of payment
+            if ((parameters["pay_with_money"] and parameters["use_gems"]) or
+               not (parameters["pay_with_money"] or parameters["use_gems"])):
+                raise AbnormalUsageError("You must choose between money and gems, for payment.")
 
         return parameters
 
+
+
+
+# REAL abstract base class for the game forms
+# Adds both auto-recognition of form class, and additional fields like payment controls
+AbstractGameForm = type("AbstractGameForm".encode("ascii"), # can't be unicode
+                        (GemPayementFormMixin, BaseAbstractGameForm), {})
+assert issubclass(AbstractGameForm, forms.Form)
 
 
 class DataTableForm(AbstractGameForm):
