@@ -109,26 +109,28 @@ class GemPayementFormMixin(object):
         super(GemPayementFormMixin, self).__init__(datamanager, *args, **kwargs)
 
 
-        _gems = datamanager.get_character_properties()["gems"]
-        _gems_choices = zip(self._encode_gems(_gems), [self._gem_display(gem) for gem in _gems]) # gem is (value, origin) here
+        if datamanager.is_character():
 
-        if payment_by_money:
-            if payment_by_gems and _gems_choices:
-                self.fields["pay_with_money"] = forms.BooleanField(label=_("Pay with money"), initial=False, required=False)
-            else:
-                self.fields["pay_with_money"] = forms.BooleanField(initial=True, widget=forms.HiddenInput, required=True)
+            _gems = datamanager.get_character_properties()["gems"]
+            _gems_choices = zip(self._encode_gems(_gems), [self._gem_display(gem) for gem in _gems]) # gem is (value, origin) here
 
-            assert "pay_with_money" in self.fields
+            if payment_by_money:
+                if payment_by_gems and _gems_choices:
+                    self.fields["pay_with_money"] = forms.BooleanField(label=_("Pay with money"), initial=False, required=False)
+                else:
+                    self.fields["pay_with_money"] = forms.BooleanField(initial=True, widget=forms.HiddenInput, required=True)
+
+                assert "pay_with_money" in self.fields
 
 
-        if payment_by_gems:
+            if payment_by_gems:
 
-            if _gems_choices:
-                self.fields["gems_list"] = forms.MultipleChoiceField(required=False, label=_("Or pay with gems"), choices=_gems_choices) #, widget=forms.SelectMultiple(attrs={"class": "multichecklist"}))
-            else:
-                self.fields["gems_list"] = forms.MultipleChoiceField(required=False, widget=forms.HiddenInput) # we could just
+                if _gems_choices:
+                    self.fields["gems_list"] = forms.MultipleChoiceField(required=False, label=_("Or pay with gems"), choices=_gems_choices) #, widget=forms.SelectMultiple(attrs={"class": "multichecklist"}))
+                else:
+                    self.fields["gems_list"] = forms.MultipleChoiceField(required=False, widget=forms.HiddenInput) # we could just
 
-            assert "gems_list" in self.fields
+                assert "gems_list" in self.fields
 
 
 
