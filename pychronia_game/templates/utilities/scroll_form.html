@@ -3,21 +3,9 @@
 {% if form %}
 <div class="scroll_yellow_rolled {{ class }}">
     <form id="{% random_id %}" action="{{ form.target_url }}" method="post">
-    <table style="margin:auto;width:300px;">
-    <tr>
-        <td colspan="2">
-            <h3>{{ title }}</h3>
-        </td>
-    </tr>
-
-    {{ form.as_table }}
-
-    <tr>
-        <td colspan="2">
-            <input type="submit" name="{{ button_name }}" value="{{ button_title }}" />
-        </td>
-    </tr>
-    </table>
+    <h3>{{ title }}</h3>
+    {{ form.as_p }}
+    <input type="submit" name="{{ button_name }}" value="{{ button_title }}" />
     </form>
 </div>
 {% endif %}

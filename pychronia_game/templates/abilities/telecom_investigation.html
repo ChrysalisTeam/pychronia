@@ -1,28 +1,19 @@
 {% extends "base_one_column.html" %}
 
-{% load i18n helpers %}  
+{% load i18n helpers %}
 
-{% block content %}  
+{% block content %}
 
 
 {% if investigation_form %}
-    <div align="center" class="scroll_yellow_flat center" style="text-align:center; width:300px;">
+    <div align="center" class="scroll_yellow_flat center inner_center" style="text-align:center; width:300px;">
         <form action="{{ investigation_form.url }}" method="post">
-        <div align="center">
-        <table>
-        {{ investigation_form.as_table }}
-        <tr>
-            <td colspan="2">
-                <br/>
-                <input type="submit" style="width: 200px" name="investigation" value="{% trans "Launch Investigation" %}" />
-            </td>
-        </tr>
-        </table>
-        </div>
+        {{ investigation_form.as_p }}
+        <input type="submit" name="investigation" value="{% trans "Launch Investigation" %}" />
         </form>
     </div>
 {% else %}
-    {# add stuffs here #} 
+    {% trans "No telecom investigation possible at the moment." %}
 {% endif %}
 
 

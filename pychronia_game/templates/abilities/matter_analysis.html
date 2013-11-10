@@ -15,16 +15,9 @@
     </h2>
 
     <div class="form_scroll_medium center inner_center" >
-
     <form action="{{ item_form.url }}" method="post">
-    <table class="full_width center">
-    {{ item_form.as_table }}
-    <tr>
-        <td colspan="2" style="text-align:center;">
-            <input type="submit" name="submit_item" value="{% trans "Submit item" %}" />
-        </td>
-    </tr>
-    </table>
+    {{ item_form.as_p }}
+    <input type="submit" name="submit_item" value="{% trans "Submit item" %}" />
     </form>
 
     </div>

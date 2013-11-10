@@ -11,17 +11,10 @@
 
 
     {% if scan_form %}
-    <div class="form_scroll_medium center">
+    <div class="form_scroll_medium center inner_center">
     <form action="{{ scan_form.url }}" method="post">
-    <table class="center full_width">
-    {{ scan_form.as_table }}
-    <tr>
-        <td colspan="2">
-            <br/>
-            <input type="submit" name="scan" value="{% trans "Submit Scan Request" %}" />
-        </td>
-    </tr>
-    </table>
+    {{ scan_form.as_p }}
+    <input type="submit" name="scan" value="{% trans "Submit Scan Request" %}" />
     </form>
     </div>
     {% endif %}
