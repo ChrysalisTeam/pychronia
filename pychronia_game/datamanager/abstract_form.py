@@ -109,8 +109,11 @@ class GemPayementFormMixin(object):
         super(GemPayementFormMixin, self).__init__(datamanager, *args, **kwargs)
 
 
+        _gems = datamanager.get_character_properties()["gems"]
+        _gems_choices = zip(self._encode_gems(_gems), [self._gem_display(gem) for gem in _gems]) # gem is (value, origin) here
+
         if payment_by_money:
-            if payment_by_gems:
+            if payment_by_gems and _gems_choices:
                 self.fields["pay_with_money"] = forms.BooleanField(label=_("Pay with money"), initial=False, required=False)
             else:
                 self.fields["pay_with_money"] = forms.BooleanField(initial=True, widget=forms.HiddenInput, required=True)
@@ -119,9 +122,6 @@ class GemPayementFormMixin(object):
 
 
         if payment_by_gems:
-
-            _gems = datamanager.get_character_properties()["gems"]
-            _gems_choices = zip(self._encode_gems(_gems), [self._gem_display(gem) for gem in _gems]) # gem is (value, origin) here
 
             if _gems_choices:
                 self.fields["gems_list"] = forms.MultipleChoiceField(required=False, label=_("Or pay with gems"), choices=_gems_choices) #, widget=forms.SelectMultiple(attrs={"class": "multichecklist"}))
