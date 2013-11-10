@@ -12,7 +12,7 @@
 
     <div align="center" class="form_scroll_thin center" style="text-align:center; width:300px;">
         <form action="" method="post">
-            <input type="hidden" name="_action_" value="purchase_confidentiality_protection"/>
+            {{ confidentiality_form.as_p }}
             <input type="submit" name="purchase_confidentiality" value="{% trans "Buy confidentiality system" %}" onclick="return confirm('{% trans "Are you sure you want to purchase a confidentiality protection system ?" %}')" />
         </form>
     </div>
@@ -44,10 +44,10 @@
 </div>
 
 
-{% if wiretapping_form %}
+{% if wiretapping_targets_form %}
     <div align="center" class="form_scroll_thin center">
         <form action="{{ wiretapping_form.url }}" method="post">
-        {{ wiretapping_form.as_p }}
+        {{ wiretapping_targets_form.as_p }}
         <input type="submit" name="wiretap" value="{% trans "Set Wiretaps" %}" />
         </form>
     </div>
@@ -56,13 +56,14 @@
 {% endif %}
 
 
+{% if slots_purchase_form %}
 <div align="center" class="form_scroll_thin center">
     <form action="" method="post">
-        <input type="hidden" name="_action_" value="purchase_wiretapping_slot"/>
+        {{ slots_purchase_form.as_p }}
         <input type="submit" name="purchase_slot" value="{% trans "Buy wiretapping slot" %}" onclick="return confirm('{% trans "Are you sure you want to purchase a spying slot ?" %}')" />
     </form>
 </div>
-
+{% endif %}
 
 
 

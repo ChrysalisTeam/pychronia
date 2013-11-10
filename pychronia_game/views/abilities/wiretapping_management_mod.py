@@ -36,6 +36,13 @@ class WiretappingTargetsForm(AbstractGameForm):
 
 
 
+class WiretappingSlotsPurchaseForm(AbstractGameForm):
+    pass
+
+class WiretappingConfidentialityForm(AbstractGameForm):
+    pass
+
+
 
 @register_view
 class WiretappingAbility(AbstractAbility):
@@ -47,10 +54,10 @@ class WiretappingAbility(AbstractAbility):
                                                   form_class=WiretappingTargetsForm,
                                                   callback="change_current_user_wiretapping_targets"),
                         purchase_wiretapping_slot=dict(title=_lazy("Purchase wiretapping slot"),
-                                                      form_class=None,
+                                                      form_class=WiretappingSlotsPurchaseForm,
                                                       callback="purchase_wiretapping_slot"),
                         purchase_confidentiality_protection=dict(title=_lazy("Purchase confidentiality protection"),
-                                                                  form_class=None,
+                                                                  form_class=WiretappingConfidentialityForm,
                                                                   callback="purchase_confidentiality_protection",
                                                                   requires_permission="purchase_confidentiality_protection"))
 
@@ -82,7 +89,9 @@ class WiretappingAbility(AbstractAbility):
         return {
                  'page_title': _("Wiretapping Management"),
                  'current_targets': current_targets,
-                 'wiretapping_form': targets_form,
+                 'confidentiality_form': self._instantiate_game_form(new_action_name="purchase_confidentiality_protection"),
+                 'wiretapping_targets_form': targets_form,
+                 'slots_purchase_form': self._instantiate_game_form(new_action_name="purchase_wiretapping_slot"),
                  'has_confidentiality_activated': self.get_confidentiality_protection_status(),
                  'broken_wiretapping_targets': self.determine_broken_wiretapping_data().keys(),
                 }
