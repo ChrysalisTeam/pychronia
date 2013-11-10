@@ -3805,11 +3805,19 @@ class TestActionMiddlewares(BaseGameTestCase):
 
         assert ability.has_action_middlewares_configured(action_name="middleware_wrapped_test_action")
         assert not ability.is_action_middleware_activated(action_name="middleware_wrapped_test_action", middleware_class=CostlyActionMiddleware)
+        with pytest.raises(RuntimeError):
+            assert ability.get_middleware_settings("middleware_wrapped_test_action", CostlyActionMiddleware)
+        with pytest.raises(RuntimeError):
+            assert ability.get_middleware_settings("middleware_wrapped_test_action", CostlyActionMiddleware, ensure_active=True)
+        assert ability.get_middleware_settings("middleware_wrapped_test_action", CostlyActionMiddleware, ensure_active=False)
 
         ability.reset_test_settings("middleware_wrapped_test_action", CostlyActionMiddleware, dict(is_active=True, money_price=203, gems_price=123))
 
         assert ability.has_action_middlewares_configured(action_name="middleware_wrapped_test_action")
         assert ability.is_action_middleware_activated(action_name="middleware_wrapped_test_action", middleware_class=CostlyActionMiddleware)
+        assert ability.get_middleware_settings("middleware_wrapped_test_action", CostlyActionMiddleware)
+        assert ability.get_middleware_settings("middleware_wrapped_test_action", CostlyActionMiddleware, ensure_active=True)
+        assert ability.get_middleware_settings("middleware_wrapped_test_action", CostlyActionMiddleware, ensure_active=False)
 
 
 
@@ -3827,18 +3835,22 @@ class TestActionMiddlewares(BaseGameTestCase):
 
         explanations = ability.get_middleware_data_explanations(action_name="middleware_wrapped_test_action")
         assert explanations == [] # no middlewares ACTIVATED
+        assert ability.get_game_form_extra_params(action_name="middleware_wrapped_test_action") == {}
 
         ability.reset_test_settings("middleware_wrapped_test_action", CostlyActionMiddleware, dict(is_active=True, money_price=203, gems_price=123))
         assert ability.has_action_middlewares_configured(action_name="middleware_wrapped_test_action")
         assert ability.get_middleware_data_explanations(action_name="middleware_wrapped_test_action") # no pb with non-activated ones
+        assert ability.get_game_form_extra_params(action_name="middleware_wrapped_test_action") == dict(payment_by_money=True, payment_by_gems=True)
 
         ability.reset_test_settings("middleware_wrapped_test_action", CountLimitedActionMiddleware, dict(max_per_character=23, max_per_game=33))
         assert ability.has_action_middlewares_configured(action_name="middleware_wrapped_test_action")
         assert ability.get_middleware_data_explanations(action_name="middleware_wrapped_test_action") # no pb with non-activated ones
+        assert ability.get_game_form_extra_params(action_name="middleware_wrapped_test_action") == dict(payment_by_money=True, payment_by_gems=True)
 
         ability.reset_test_settings("middleware_wrapped_test_action", TimeLimitedActionMiddleware, dict(waiting_period_mn=87, max_uses_per_period=12))
         assert ability.has_action_middlewares_configured(action_name="middleware_wrapped_test_action")
         assert ability.get_middleware_data_explanations(action_name="middleware_wrapped_test_action") # no pb with non-activated ones
+        assert ability.get_game_form_extra_params(action_name="middleware_wrapped_test_action") == dict(payment_by_money=True, payment_by_gems=True)
 
         assert 18277 == ability.middleware_wrapped_callable1(use_gems=None) # we perform action ONCE
 
@@ -3944,6 +3956,8 @@ class TestActionMiddlewares(BaseGameTestCase):
 
         ability.reset_test_settings("middleware_wrapped_test_action", CostlyActionMiddleware, dict(money_price=None, gems_price=None))
 
+        assert ability.get_game_form_extra_params(action_name="middleware_wrapped_test_action") == dict()
+
         for value in (None, [], [gem_125], [gem_200, gem_125]):
             assert ability.middleware_wrapped_callable1(use_gems=value) # no limit is set at all
             assert ability.middleware_wrapped_callable2(value)
@@ -3966,6 +3980,10 @@ class TestActionMiddlewares(BaseGameTestCase):
 
             ability.reset_test_settings("middleware_wrapped_test_action", CostlyActionMiddleware, dict(money_price=15, gems_price=gems_price))
             ability.reset_test_data("middleware_wrapped_test_action", CostlyActionMiddleware, dict()) # useless actually for that middleware
+
+            res = ability.get_game_form_extra_params(action_name="middleware_wrapped_test_action")
+            assert res.get("payment_by_money") == True
+            assert bool(res.get("payment_by_gems")) == bool(gems_price is not None)
 
             # payments OK
             assert 18277 == ability.middleware_wrapped_callable1(use_gems=random.choice((None, []))) # triggers payment by money
@@ -4008,6 +4026,10 @@ class TestActionMiddlewares(BaseGameTestCase):
 
             ability.reset_test_settings("middleware_wrapped_test_action", CostlyActionMiddleware, dict(money_price=money_price, gems_price=150))
             ability.reset_test_data("middleware_wrapped_test_action", CostlyActionMiddleware, dict()) # useless actually for that middleware
+
+            res = ability.get_game_form_extra_params(action_name="middleware_wrapped_test_action")
+            assert res.get("payment_by_gems") == True
+            assert bool(res.get("payment_by_money")) == bool(money_price is not None)
 
             # payments OK
             assert ability.middleware_wrapped_callable1(use_gems=[gem_200]) # triggers payment by gems

@@ -85,9 +85,12 @@ class AbstractActionMiddleware(object):
         return action_settings_dicts
 
 
-    def get_middleware_settings(self, action_name, middleware_class):
+    def get_middleware_settings(self, action_name, middleware_class, ensure_active=True):
         assert action_name and middleware_class
         middleware_settings = self.settings["middlewares"][action_name][middleware_class.__name__]
+        if ensure_active and not middleware_settings["is_active"]:
+            # most of the time we we should not deal with inactive middlewares
+            raise RuntimeError(_("Inactive middleware lookup in get_middleware_settings() of %s") % self.__class__.__name__)
         return middleware_settings
 
 
@@ -188,6 +191,21 @@ class AbstractActionMiddleware(object):
 
 
 
+    def _get_game_form_extra_params(self, action_name):
+        return {}
+
+
+    @readonly_method
+    def get_game_form_extra_params(self, action_name):
+        """
+        Useful to auto-add utility controls in forms, 
+        like for money/gems payments.
+        """
+        assert isinstance(action_name, basestring)
+        return self._get_game_form_extra_params(action_name=action_name)
+
+
+
 
 @register_action_middleware
 class CostlyActionMiddleware(AbstractActionMiddleware):
@@ -269,6 +287,7 @@ class CostlyActionMiddleware(AbstractActionMiddleware):
             middleware_settings = self.get_middleware_settings(action_name, CostlyActionMiddleware)
 
             if not middleware_settings["gems_price"] and not middleware_settings["money_price"]:
+                self.logger.critical("Nasty costly action middleware misconfiguration for %s/%s", action_name, method.__name__)
                 pass # too bad misconfiguration, we let full action to that ability...
             else:
                 use_gems = params.get("use_gems", ())
@@ -324,6 +343,24 @@ class CostlyActionMiddleware(AbstractActionMiddleware):
 
         character_properties["account"] -= money_price
         self.data["global_parameters"]["bank_account"] += money_price
+
+
+    def _get_game_form_extra_params(self, action_name):
+
+        extra_params = super(CostlyActionMiddleware, self)._get_game_form_extra_params(action_name=action_name)
+
+        if self.is_action_middleware_activated(action_name, CostlyActionMiddleware):
+
+            middleware_settings = self.get_middleware_settings(action_name, CostlyActionMiddleware)
+
+            if middleware_settings["money_price"] is not None:
+                assert "payment_by_money" not in extra_params
+                extra_params["payment_by_money"] = True
+            if middleware_settings["gems_price"] is not None:
+                assert "payment_by_gems" not in extra_params
+                extra_params["payment_by_gems"] = True
+
+        return extra_params
 
 
 
@@ -438,7 +475,7 @@ class CountLimitedActionMiddleware(AbstractActionMiddleware):
 
 
 
-
+    # No need for def _get_game_form_extra_params(self, action_name) here ATM #
 
 
 
@@ -562,6 +599,7 @@ class TimeLimitedActionMiddleware(AbstractActionMiddleware):
         return super(TimeLimitedActionMiddleware, self)._process_action_through_middlewares(action_name=action_name, method=method, params=params)
 
 
+    # No need for def _get_game_form_extra_params(self, action_name) here ATM #
 
 
 
