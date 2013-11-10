@@ -102,7 +102,7 @@ class CharactersView(AbstractGameView):
 
 
     @transaction_watcher
-    def transfer_money(self, recipient_name, amount, sender_name=None):
+    def transfer_money(self, recipient_name, amount, sender_name=None, use_gems=()):
         assert amount > 0 # enforced by form system
         user = self.datamanager.user
         if not user.is_master:
@@ -116,7 +116,7 @@ class CharactersView(AbstractGameView):
 
 
     @transaction_watcher
-    def transfer_gems(self, recipient_name, gems_choices, sender_name=None):
+    def transfer_gems(self, recipient_name, gems_choices, sender_name=None, use_gems=()):
         user = self.datamanager.user
         if not user.is_master:
             assert not sender_name, sender_name
@@ -129,7 +129,7 @@ class CharactersView(AbstractGameView):
 
 
     @transaction_watcher
-    def transfer_artefact(self, recipient_name, artefact_name):
+    def transfer_artefact(self, recipient_name, artefact_name, use_gems=()):
         previous_owner = self.datamanager.username if not self.datamanager.is_master() else None
         self.datamanager.transfer_object_to_character(item_name=artefact_name,
                                                       char_name=recipient_name,

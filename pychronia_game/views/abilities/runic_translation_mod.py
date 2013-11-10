@@ -252,7 +252,7 @@ class RunicTranslationAbility(AbstractAbility):
 
 
     @transaction_watcher
-    def process_translation(self, target_item=None, transcription=None):
+    def process_translation(self, target_item=None, transcription=None, use_gems=()):
         """
         Parameter target_item may be None (auto detection).
         """

@@ -89,7 +89,7 @@ class WiretappingAbility(AbstractAbility):
 
 
     @transaction_watcher
-    def purchase_wiretapping_slot(self):
+    def purchase_wiretapping_slot(self, use_gems=()):
         # supposed to be paying, of course...
         self.private_data["max_wiretapping_targets"] += 1
 
@@ -98,7 +98,7 @@ class WiretappingAbility(AbstractAbility):
 
 
     @transaction_watcher
-    def change_current_user_wiretapping_targets(self, target_names):
+    def change_current_user_wiretapping_targets(self, target_names, use_gems=()):
 
         target_names = sorted(list(set(target_names))) # renormalization, just in case
 
@@ -128,7 +128,7 @@ class WiretappingAbility(AbstractAbility):
 
 
     @transaction_watcher
-    def purchase_confidentiality_protection(self):
+    def purchase_confidentiality_protection(self, use_gems=()):
         if self.get_confidentiality_protection_status():
             raise AbnormalUsageError(_("You already have confidentiality system activated"))
         self.set_confidentiality_protection_status(has_confidentiality=True)

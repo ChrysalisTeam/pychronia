@@ -185,7 +185,7 @@ class ArtificialIntelligenceAbility(AbstractAbility):
         return res
 
 
-    def process_user_sentence(self, djinn_name, message):
+    def process_user_sentence(self, djinn_name, message, use_gems=()):
 
         if djinn_name not in self.get_bot_names():
             raise Http404 # pathological

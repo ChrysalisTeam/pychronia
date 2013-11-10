@@ -45,7 +45,7 @@ class HouseLockingAbility(AbstractAbility):
 
 
     @transaction_watcher
-    def lock_house_doors(self):
+    def lock_house_doors(self, use_gems=()):
         if self.are_house_doors_open():
             self.settings["house_doors_are_open"] = False
             self.user.add_message(_("House doors successfully locked."))
@@ -59,7 +59,7 @@ class HouseLockingAbility(AbstractAbility):
 
 
     @transaction_watcher
-    def try_unlocking_house_doors(self, password):
+    def try_unlocking_house_doors(self, password, use_gems=()):
 
         expected_password = self.get_ability_parameter("house_doors_password")
 

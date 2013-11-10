@@ -124,7 +124,7 @@ class TelecomInvestigationAbility(AbstractAbility):
 
 
     @transaction_watcher
-    def process_telecom_investigation(self, target_username):
+    def process_telecom_investigation(self, target_username, use_gems=()):
 
         username = self.datamanager.user.username
         target_official_name = self.get_official_name(target_username)

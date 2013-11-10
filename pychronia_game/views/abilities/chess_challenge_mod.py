@@ -41,5 +41,5 @@ class ChessChallengeAbility(AbstractAbility):
                }
 
     @transaction_watcher
-    def notify_chess_player_victory(self):
+    def notify_chess_player_victory(self, use_gems=()):
         self.log_game_event(_noop("Chess AI has been defeated by user.")) # username auto-logged

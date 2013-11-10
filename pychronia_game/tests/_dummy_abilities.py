@@ -109,13 +109,13 @@ class DummyTestAbility(AbstractAbility):
 
     @transaction_watcher # must be on the OUTSIDE
     @with_enforced_action_middlewares("middleware_wrapped_test_action") # SHARED MIDDELWARE CONFIG, possible in tests only
-    def middleware_wrapped_callable2(self, my_arg):
+    def middleware_wrapped_callable2(self, my_arg, use_gems=()):
         self.notify_event("INSIDE_MIDDLEWARE_WRAPPED2")
         return True
 
     @transaction_watcher # must be on the OUTSIDE
     @with_enforced_action_middlewares("middleware_wrapped_other_test_action")
-    def middleware_wrapped_other_test_action(self, my_arg):
+    def middleware_wrapped_other_test_action(self, my_arg, use_gems=()):
         self.notify_event("INSIDE_MIDDLEWARE_WRAPPED_OTHER_ACTION")
         return True
 

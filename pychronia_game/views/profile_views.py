@@ -162,7 +162,7 @@ class CharacterProfile(AbstractGameView):
                }
 
 
-    def process_password_change_form(self, old_password, new_password1, new_password2):
+    def process_password_change_form(self, old_password, new_password1, new_password2, use_gems=()):
         assert old_password and new_password1 and new_password2
         assert self.datamanager.user.is_character
 

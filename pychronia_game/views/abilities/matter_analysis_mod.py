@@ -70,7 +70,7 @@ class MatterAnalysisAbility(AbstractAbility):
 
 
     @transaction_watcher
-    def process_artefact_analysis(self, item_name):
+    def process_artefact_analysis(self, item_name, use_gems=()):
 
         assert item_name in self.datamanager.get_available_items_for_user(), item_name
 
