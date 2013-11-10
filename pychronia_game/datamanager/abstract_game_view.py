@@ -340,7 +340,7 @@ class AbstractGameView(object):
                                   user=None,
                                   form_initializer=None,
                                   propagate_errors=False,
-                                  **form_options):
+                                  form_options=None):
         """
         *form_initializer* will be passed as 1st argument to the form. By default, it's the datamanager.
         

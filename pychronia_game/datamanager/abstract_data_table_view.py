@@ -38,7 +38,7 @@ class AbstractDataTableManagement(AbstractGameView):
         res = self._instantiate_game_form(new_action_name="submit_item",
                                      previous_form_data=previous_form_data,
                                      initial_data=initial_data,
-                                     auto_id="id_%s_%%s" % slugify(idx)) # needed by select2 to wrap fields
+                                     form_options=dict(auto_id="id_%s_%%s" % slugify(idx))) # needed by select2 to wrap fields
 
         return res
 
