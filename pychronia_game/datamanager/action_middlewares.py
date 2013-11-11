@@ -26,6 +26,9 @@ def register_action_middleware(klass):
 
 
 class AbstractActionMiddleware(object):
+    """
+    Action middlewares are meant to be active ONLY for characters, not anonymous/master!
+    """
 
     COMPATIBLE_ACCESSES = None # must be overriden as a list of UserAccess entries, for which that middleware can be activated
 
@@ -87,6 +90,7 @@ class AbstractActionMiddleware(object):
 
     def get_middleware_settings(self, action_name, middleware_class, ensure_active=True):
         assert action_name and middleware_class
+        assert not ensure_active or self.user.is_character
         middleware_settings = self.settings["middlewares"][action_name][middleware_class.__name__]
         if ensure_active and not middleware_settings["is_active"]:
             # most of the time we we should not deal with inactive middlewares
@@ -115,6 +119,7 @@ class AbstractActionMiddleware(object):
 
     def get_private_middleware_data(self, action_name, middleware_class, create_if_unexisting=False):
         assert action_name and middleware_class
+        assert self.user.is_character
         middleware_data = self.private_data["middlewares"]
         if create_if_unexisting:
             middleware_data.setdefault(action_name, PersistentDict())
@@ -132,7 +137,8 @@ class AbstractActionMiddleware(object):
         for that action AND its is_active flag set to True.
         """
         assert action_name
-        res = (action_name in self.settings["middlewares"] and
+        res = (self.user.is_character and
+               action_name in self.settings["middlewares"] and
                 middleware_class.__name__ in self.settings["middlewares"][action_name] and
                 self.settings["middlewares"][action_name][middleware_class.__name__]["is_active"])
         #print("is_action_middleware_activated", action_name, middleware_class, res, "---------", self.settings) # FIXME REMOVE

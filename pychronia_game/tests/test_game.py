@@ -3194,7 +3194,7 @@ class TestHttpRequests(BaseGameTestCase):
                       "homepage_mobile"]) # MOBILE ONLY
 
     def _test_all_views_http_get(self):
- 
+
         skipped_views_lowercase = [n.lower() for n in self.UNGETTABLE_SPECIAL_VIEWS]
 
         def test_views(view_classes):
@@ -3809,6 +3809,13 @@ class TestActionMiddlewares(BaseGameTestCase):
 
         assert ability.has_action_middlewares_configured(action_name="middleware_wrapped_test_action")
         assert not ability.is_action_middleware_activated(action_name="middleware_wrapped_test_action", middleware_class=CostlyActionMiddleware)
+        self._set_user("master")
+        assert not ability.is_action_middleware_activated(action_name="middleware_wrapped_test_action", middleware_class=CostlyActionMiddleware)
+        self._set_user(None)
+        assert not ability.is_action_middleware_activated(action_name="middleware_wrapped_test_action", middleware_class=CostlyActionMiddleware)
+
+        self._set_user("guy4")
+
         with pytest.raises(RuntimeError):
             assert ability.get_middleware_settings("middleware_wrapped_test_action", CostlyActionMiddleware)
         with pytest.raises(RuntimeError):
@@ -3819,6 +3826,13 @@ class TestActionMiddlewares(BaseGameTestCase):
 
         assert ability.has_action_middlewares_configured(action_name="middleware_wrapped_test_action")
         assert ability.is_action_middleware_activated(action_name="middleware_wrapped_test_action", middleware_class=CostlyActionMiddleware)
+        self._set_user("master")
+        assert not ability.is_action_middleware_activated(action_name="middleware_wrapped_test_action", middleware_class=CostlyActionMiddleware)
+        self._set_user(None)
+        assert not ability.is_action_middleware_activated(action_name="middleware_wrapped_test_action", middleware_class=CostlyActionMiddleware)
+
+        self._set_user("guy4")
+
         assert ability.get_middleware_settings("middleware_wrapped_test_action", CostlyActionMiddleware)
         assert ability.get_middleware_settings("middleware_wrapped_test_action", CostlyActionMiddleware, ensure_active=True)
         assert ability.get_middleware_settings("middleware_wrapped_test_action", CostlyActionMiddleware, ensure_active=False)
