@@ -60,9 +60,9 @@
 
 
 
-{% kwacro side_panel_start frame_class="mini_frame float_left" decos="1" %}
+{% kwacro side_panel_start frame_class="mini_frame float_left clear_left" decos="1" %}
 
-    <div class="mini_frame float_left clear_left">
+    <div class="{{ frame_class }}">
 
         {% if decos %}
             <img class="stick_top_left" src="{{ STATIC_URL }}MetalRadiance/img/decorations/mini_deco_top_left_{{ decos }}.png"/>

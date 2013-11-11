@@ -181,7 +181,7 @@ body:after {
 #full_menu #main_menu {
   margin: auto;
   display: table;
-  max-width: 990px;
+  max-width: 1020px;
 }
 #full_menu #main_menu div {
   display: table-cell;
@@ -1295,6 +1295,7 @@ blockquote, q, cite {
   width: 50%;
 }
 ul {
+  text-align: left;
   margin: 10px 0 10px;
   padding-left: 26px;
   list-style-position: outside;

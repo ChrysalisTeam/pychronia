@@ -8,11 +8,11 @@
 
 {% block sidebar %}
 
-{% usekwacro side_panel_start frame_class="mini_frame float_left" decos="2" %}
+{% usekwacro side_panel_start frame_class="mini_frame float_left clear_left" decos="2" %}
     <h2>{% trans "Playlist" %}</h2>
 
     <div class="rice_paper_rose almost_full_width">
-        <ul id="current_playlist" style="min-height:30px;">
+        <ul id="current_playlist" style="min-height:30px; font-size:0.8em;">
         {% for audio_id, audio_properties in pending_audio_messages %}
              {% include "utilities/radio_spot_placeholder.html" with audio_id=audio_id audio_properties=audio_properties %}
         {% endfor %}
@@ -29,17 +29,17 @@
 
 
 
-
 {% block content %}
 
 
-<h3>{% trans "Web Radio Control" %}</h3>
+<h3>{% trans "Public Radio Control" %}</h3>
+<p>{% trans "This only concern the \"public\" webradio player, which \"consumes\" the samples it broadcasts, not each player's webradio page." %}</p>
 <div align="center">
 <strong>
  {% if radio_is_on %}
-    {% blocktrans %}Pangea radio is currently ON.{% endblocktrans %}
+    {% blocktrans %}Public radio is currently ON.{% endblocktrans %}
  {%else %}
-    {% blocktrans %}Pangea radio is currently OFF.{% endblocktrans %}
+    {% blocktrans %}Public radio is currently OFF.{% endblocktrans %}
  {% endif %}
  </strong>
 </div>

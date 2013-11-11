@@ -51,7 +51,7 @@
 		    		<ul>
 		    	</td>
 
-		    	<td class="bigtext">
+		    	<td class="bigtext" title="{% trans "Value, in kashes, of each gem" %}"">
 		    		{% if char_details.gems %}
 		    			{{ char_details.gems|list_filter:0|join:", " }}
 		    		{% else %}
