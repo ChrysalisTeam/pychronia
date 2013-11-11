@@ -87,10 +87,12 @@ class BaseAbstractGameForm(forms.Form):
 
 class GemPayementFormMixin(object):
 
-    def _encode_gems(self, gems): # gems are TUPLES
+    @staticmethod
+    def _encode_gems(gems): # gems are TUPLES
         return [json.dumps([idx] + list(gem)) for idx, gem in enumerate(gems)] # add index to make all values different
 
-    def _decode_gems(self, gems):
+    @staticmethod
+    def _decode_gems(gems):
         return [tuple(json.loads(gem)[1:]) for gem in gems] # back to hashable TUPLES
 
     def _gem_display(self, gem):
@@ -141,17 +143,18 @@ class GemPayementFormMixin(object):
         if "gems_list" in parameters:
             try:
                 parameters["use_gems"] = self._decode_gems(parameters["gems_list"])
+                del parameters["gems_list"]
             except (TypeError, ValueError), e:
                 self.logger.critical("Wrong data submitted - %r", parameters["gems_list"], exc_info=True) # FIXME LOGGER MISSING
                 raise AbnormalUsageError("Wrong data submitted")
-        else:
-            parameters["use_gems"] = ()
 
-        if "pay_with_money" in parameters and "use_gems" in parameters:
-            # only if we have a choice between several means of payment
-            if ((parameters["pay_with_money"] and parameters["use_gems"]) or
-               not (parameters["pay_with_money"] or parameters["use_gems"])):
-                raise AbnormalUsageError("You must choose between money and gems, for payment.")
+        if "pay_with_money" in parameters:
+            if "use_gems" in parameters:
+                # only if we have a choice between several means of payment
+                if ((parameters["pay_with_money"] and parameters["use_gems"]) or
+                   not (parameters["pay_with_money"] or parameters["use_gems"])):
+                    raise NormalUsageError("You must choose between money and gems, for payment.")
+            del parameters["pay_with_money"]
 
         return parameters
 

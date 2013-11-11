@@ -40,6 +40,8 @@ from pychronia_game.authentication import clear_all_sessions
 from pychronia_game.utilities.mediaplayers import generate_image_viewer
 from django.utils.functional import Promise
 from django.core.urlresolvers import RegexURLResolver
+from pychronia_game.datamanager.abstract_form import AbstractGameForm, \
+    GemPayementFormMixin
 
 
 
@@ -3423,6 +3425,83 @@ class TestGameViewSystem(BaseGameTestCase):
         assert A == B == C # SINGLETON system, else reverse() won't work
 
 
+    def test_game_forms_payment_fields_setup(self):
+
+        class MyGameDummyForm(AbstractGameForm):
+            pass
+
+        character = random.choice(("guy1", "guy4"))
+        self._set_user(character) # one has gems, the other not, but in any case we put a (hidden or not) form field
+        assert bool(self.dm.get_character_properties()["gems"]) == bool(character == "guy1")
+
+        form = MyGameDummyForm(self.dm)
+        assert form.fields.keys() == ["_ability_form"]
+
+        form = MyGameDummyForm(self.dm, payment_by_money=True)
+        assert form.fields.keys() == ["_ability_form", "pay_with_money"]
+
+        form = MyGameDummyForm(self.dm, payment_by_gems=True)
+        assert form.fields.keys() == ["_ability_form", "gems_list"]
+
+        form = MyGameDummyForm(self.dm, payment_by_gems=True)
+        assert form.fields.keys() == ["_ability_form", "gems_list"]
+
+        form = MyGameDummyForm(self.dm, payment_by_gems=True, payment_by_money=True)
+        assert form.fields.keys() == ["_ability_form", "pay_with_money", "gems_list"]
+
+        for username in (None, "master"):
+            self._set_user(username)
+            form = MyGameDummyForm(self.dm, payment_by_gems=random.choice((True, False)), payment_by_money=random.choice((True, False)))
+            assert form.fields.keys() == ["_ability_form"] # never add payment controls, for master or guests
+
+
+
+        # Now check that we get cleaned data properly #
+
+        self._set_user("guy1")
+        gems_list = self.dm.get_character_properties()["gems"][0:1]
+        gems_list_serialized = GemPayementFormMixin._encode_gems(gems_list)
+
+        # here with useless exceeding data fields, IGNORED
+        form = MyGameDummyForm(self.dm, data=dict(_ability_form=form._get_dotted_class_name(), pay_with_money=True, gems_list=gems_list_serialized))
+        assert form.is_valid()
+        assert form.get_normalized_values() == {}
+        #print (form.as_p())
+
+        form = MyGameDummyForm(self.dm, data=dict(_ability_form=form._get_dotted_class_name(), pay_with_money=True, gems_list=gems_list_serialized),
+                               payment_by_money=True, payment_by_gems=True)
+        assert form.is_valid()
+        with pytest.raises(NormalUsageError):
+            form.get_normalized_values() # we must choose between money and gems (not BOTH)
+
+        form = MyGameDummyForm(self.dm, data=dict(_ability_form=form._get_dotted_class_name(), pay_with_money=False, gems_list=()),
+                               payment_by_money=True, payment_by_gems=True)
+        assert form.is_valid()
+        with pytest.raises(NormalUsageError):
+            form.get_normalized_values() # we must choose between money and gems (not NONE)
+
+        form = MyGameDummyForm(self.dm, data=dict(_ability_form=form._get_dotted_class_name(), pay_with_money=True, gems_list=()),
+                               payment_by_money=True, payment_by_gems=True)
+        assert form.is_valid()
+        assert form.get_normalized_values() == dict(use_gems=[]) # we might actually remove pay_with_money from cleaned data...
+
+        form = MyGameDummyForm(self.dm, data=dict(_ability_form=form._get_dotted_class_name(), pay_with_money=random.choice((False, None)), gems_list=gems_list_serialized),
+                               payment_by_money=True, payment_by_gems=True)
+        assert form.is_valid()
+        assert form.get_normalized_values() == dict(use_gems=gems_list)
+
+
+        for username in (None, "master"):
+            self._set_user(username)
+            form = MyGameDummyForm(self.dm, data=dict(_ability_form=form._get_dotted_class_name(),
+                                                      pay_with_money=random.choice((True, False, None)),
+                                                      gems_list=random.choice(([], gems_list_serialized))),
+                                   payment_by_money=True, payment_by_gems=True)
+            assert form.is_valid()
+            assert form.get_normalized_values() == {} # no payment data at all
+
+
+
     def test_game_forms_to_action_signature_compatibility(self):
         """
         Forms attached to actions must define AT LEAST the fields mandatory in the action callback.
@@ -3768,6 +3847,8 @@ class TestGameViewSystem(BaseGameTestCase):
         assert res.status_code == 200 # access allowed
 
         assert runic_translation.has_user_accessed_view(runic_translation.datamanager)
+
+
 
 
 
