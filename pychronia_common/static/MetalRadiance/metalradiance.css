@@ -272,6 +272,7 @@ body:after {
   color: white;
 }
 #full_content .main_sidebar {
+  line-height: 15px;
   padding: 10px;
   margin: 0;
   overflow: hidden;

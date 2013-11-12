@@ -150,7 +150,7 @@ window.setInterval(save_current_content, 10*1000);
 {% usekwacro side_panel_start frame_class="mini_frame float_left" decos="3" %}
     <h2>{% trans "Contacts" %}</h2>
 
-    <div class="rice_paper_rose almost_full_width center tiny_bullets small_text" style="line-height: 1.5em; cursor: pointer;">
+    <div class="rice_paper_rose full_width center tiny_bullets small_text" style="line-height: 1.5em; cursor: pointer;">
     <ul>
     	{% for contact in contacts_display %}
         <li {% if contact.description %}title="{{ contact.description }}"{% endif %} onclick="add_recipient('{{ contact.address|escapejs }}');">{{ contact.address }}</li>

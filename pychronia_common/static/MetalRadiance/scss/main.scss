@@ -440,6 +440,7 @@ body {
 
     .main_sidebar { // container for miniframes
         ///@extend .clearfix;
+        line-height: 15px;
         padding: 10px;
         margin: 0; //-3px 0px 0px;
         overflow: hidden; // important, since jquery-sticky affects wrong widths because of box-sizing...
