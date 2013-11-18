@@ -2567,7 +2567,7 @@ class TextMessagingInterception(BaseDataManager):
         character_names = self.get_character_usernames() # here we allow wiretapping oneself, even if it makes no sense
         for name in target_names:
             if name not in character_names:
-                raise AbnormalUsageError(_("Unknown target username %(target)s") % SDICT(target=name)) # we can show it
+                raise AbnormalUsageError(_("Unknown target username '%(target)s'") % SDICT(target=name)) # we can show it
 
         data = self.get_character_properties(username)
         data["wiretapping_targets"] = PersistentList(target_names)

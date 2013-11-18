@@ -134,11 +134,14 @@ class GemPayementFormMixin(object):
 
                 assert "gems_list" in self.fields
 
+        #print(">>>>>>>>> GemPayementFormMixin", self.__class__.__name__, self.fields.keys())
 
 
     def get_normalized_values(self):
 
         parameters = super(GemPayementFormMixin, self).get_normalized_values()
+
+        #print(">>>>>>>>> get_normalized_values", self.__class__.__name__, parameters)
 
         if "gems_list" in parameters:
             try:
@@ -195,8 +198,6 @@ class DataTableForm(AbstractGameForm):
         if " " in data:
             raise ValidationError(self.BAD_ID_MSG)
         return data
-
-
 
 
 

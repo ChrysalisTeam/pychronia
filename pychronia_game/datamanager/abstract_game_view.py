@@ -336,6 +336,7 @@ class AbstractGameView(object):
                                   hide_on_success=False, # should we return None if this form has just been submitted successfully?
                                   previous_form_data=None, # data about previously submitted form, if any
                                   initial_data=None,
+                                  data=None, # submitted, bound data
                                   action_registry=None,
                                   user=None,
                                   form_initializer=None,
@@ -393,7 +394,7 @@ class AbstractGameView(object):
             pass
 
         try:
-            form = NewFormClass(form_initializer, initial=initial_data, **form_options)
+            form = NewFormClass(form_initializer, data=data, initial=initial_data, **form_options)
         except UninstantiableFormError:
             if propagate_errors:
                 raise
@@ -488,7 +489,13 @@ class AbstractGameView(object):
 
         action_successful = False
         try:
-            bound_form = FormClass(self.datamanager, data=unfiltered_data)
+            bound_form = self._common_instantiate_form(new_action_name=action_name, 
+                                                       previous_form_data=None, 
+                                                       data=unfiltered_data,
+                                                       action_registry=action_registry, 
+                                                       form_initializer=self.datamanager, 
+                                                       user=self.datamanager.user,
+                                                       propagate_errors=True)
         except UninstantiableFormError:
             bound_form = None # the form correponding to data can't even be created, so POST data is necessarily invalid
 

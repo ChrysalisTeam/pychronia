@@ -39,6 +39,7 @@ Faire page d'introduction
 TESTS
 ----------
 
+- ensure that submitted forms goes through __common_instant... in GameView
 - handle concurrency retries and errors on ZODB decorators!!! TEST THAT
 - test AccessDenied errors, there was a nasty type error with httpresponse
 - IMPORTANT - test all views eg. encrypted folders!
