@@ -6,6 +6,8 @@ from pychronia_game.common import *
 from pychronia_game.datamanager import UninstantiableFormError, AbstractAbility, register_view, readonly_method, transaction_watcher
 from pychronia_game.forms import AbstractGameForm
 from django import forms
+from django.forms.fields import ChoiceField
+from django.core.exceptions import ValidationError
 
 
 class WiretappingTargetsForm(AbstractGameForm):
@@ -13,15 +15,40 @@ class WiretappingTargetsForm(AbstractGameForm):
         super(WiretappingTargetsForm, self).__init__(ability, *args, **kwargs)
         # dynamic fields here ...
 
-        names = ability.get_character_usernames(exclude_current=True)
-        user_choices = ability.build_select_choices_from_usernames(names)
+        self._usernames = ability.get_character_usernames(exclude_current=True)
+        #user_choices = ability.build_select_choices_from_usernames(names)
 
         num_slots = ability.get_wiretapping_slots_count()
-
         if not num_slots:
             raise UninstantiableFormError(_("No wiretapping slots available."))
         for i in range(num_slots):
-            self.fields["target_%d" % i] = forms.ChoiceField(label=_("Target %d") % i, required=False, choices=[("", "")] + user_choices)
+            ''' PROBLEM WITH CASE SENISITIVITY
+            self.fields["target_%d" % i] = forms.ChoiceField(label=_("Target %d") % i,
+                                                             required=False,
+                                                             choices=[("", "")] + user_choices,
+                                                             widget=forms.TextInput) # IMPORTANT - HIDE possible choices
+            '''
+            self.fields["target_%d" % i] = forms.CharField(label=_("Target %d") % i, required=False)
+
+
+    def clean(self):
+        cleaned_data = super(WiretappingTargetsForm, self).clean()
+
+        for (key, value) in cleaned_data.items():
+            if key.startswith("target_"):
+                value = value.strip().lower()
+                if value:
+                    for real_username in self._usernames:
+                        if value == real_username.lower():
+                            cleaned_data[key] = real_username # we restore the case of userame
+                            break
+                    else:
+                        raise ValidationError(ChoiceField.default_error_messages['invalid_choice'] % {'value': value})
+                else:
+                    cleaned_data[key] = ""
+
+        return cleaned_data
+
 
     def get_normalized_values(self):
         parameters = super(WiretappingTargetsForm, self).get_normalized_values()
@@ -30,6 +57,7 @@ class WiretappingTargetsForm(AbstractGameForm):
         for (key, value) in parameters.items():
             if key.startswith("target_") and value:
                 targets.add(value) # no need to delete the "target_%d" field
+
         parameters["target_names"] = sorted(list(targets))
 
         return parameters
@@ -75,11 +103,13 @@ class WiretappingAbility(AbstractAbility):
 
         current_targets = self.get_wiretapping_targets()
         initial_data = {}
-        for i in range(self.get_ability_parameter("max_wiretapping_targets")):
+        for i in range(self.get_wiretapping_slots_count()):
             if i < len(current_targets):
                 initial_data["target_%d" % i] = current_targets[i]
             else:
                 initial_data["target_%d" % i] = ""
+
+        #print (">>>initial_data targets", initial_data)
 
         targets_form = self._instantiate_game_form(new_action_name="targets_form",
                                               hide_on_success=False,
@@ -101,6 +131,8 @@ class WiretappingAbility(AbstractAbility):
     def purchase_wiretapping_slot(self, use_gems=()):
         # supposed to be paying, of course...
         self.private_data["max_wiretapping_targets"] += 1
+        return _("Wiretapping slot properly purchased.")
+
 
     def get_wiretapping_slots_count(self):
         return self.private_data["max_wiretapping_targets"]

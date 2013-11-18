@@ -3808,6 +3808,7 @@ class TestGameViewSystem(BaseGameTestCase):
         # now via the abstract form (+ middleware)
         request = self.factory.post(view_url, data=dict(_ability_form="pychronia_game.views.abilities.wiretapping_management_mod.WiretappingTargetsForm",
                                                         target_0="guy3",
+                                                        pay_with_money=True,
                                                         fdfd="33"))
         request.datamanager._set_user("guy1")
         wiretapping = request.datamanager.instantiate_ability("wiretapping")
