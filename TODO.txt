@@ -39,7 +39,6 @@ Faire page d'introduction
 TESTS
 ----------
 
-- ensure that submitted forms goes through __common_instant... in GameView
 - handle concurrency retries and errors on ZODB decorators!!! TEST THAT
 - test AccessDenied errors, there was a nasty type error with httpresponse
 - IMPORTANT - test all views eg. encrypted folders!
@@ -48,7 +47,6 @@ TESTS
 - test template helpers
 - launch pychecker or pylint on each file of pychronia_game package
 - check that no pb when game paused, for periodic processing
-- test good handling of flexible time in "time limiting action middleware"
 
 
 NEEDS COSMETICS
@@ -59,6 +57,8 @@ NEEDS COSMETICS
 TASKS DONE
 ---------------
 
+- test good handling of flexible time in "time limiting action middleware"ALREADY DONE
+- ensure that submitted forms goes through __common_instant... in GameView DONE
 - make bugreport address ("myeimai@sfr.com") properly configurable DONE
 - fix top notifications DONE
 - add direct access links in static pages and emails ? DONE

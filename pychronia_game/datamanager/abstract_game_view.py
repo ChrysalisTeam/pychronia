@@ -59,7 +59,7 @@ def transform_usage_error(caller, self, request, *args, **kwargs):
         else:
             return HttpResponseBadRequest(repr(e))
 
-    # else; we let 500 handler take are of all other (very abnormal) exceptions
+    # else, we let 500 handler take are of all other (very abnormal) exceptions
 
 
 
