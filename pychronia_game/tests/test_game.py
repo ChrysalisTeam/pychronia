@@ -3805,10 +3805,32 @@ class TestGameViewSystem(BaseGameTestCase):
         assert request.datamanager.get_event_count("TRY_PROCESSING_FORMLESS_GAME_ACTION") == 1
         assert request.datamanager.get_event_count("PROCESS_AJAX_REQUEST") == 1
 
-        # now via the abstract form (+ middleware)
+
+
+        # now via the abstract form (+ middleware), failure because no payment means is chosen (CostlyActionMiddleware ON)
         request = self.factory.post(view_url, data=dict(_ability_form="pychronia_game.views.abilities.wiretapping_management_mod.WiretappingTargetsForm",
                                                         target_0="guy3",
-                                                        pay_with_money=True,
+                                                        fdfd="33"))
+        request.datamanager._set_user("guy1")
+        wiretapping = request.datamanager.instantiate_ability("wiretapping")
+        assert not request.datamanager.get_event_count("DO_PROCESS_FORM_SUBMISSION")
+        assert not request.datamanager.get_event_count("PROCESS_HTML_REQUEST")
+        assert not request.datamanager.get_event_count("EXECUTE_GAME_ACTION_WITH_MIDDLEWARES")
+        assert request.datamanager.get_wiretapping_targets() == []
+        response = wiretapping(request)
+        assert response.status_code == 200
+        assert wiretapping.get_wiretapping_slots_count() == 2 # unchanged
+        assert request.datamanager.get_wiretapping_targets() == [] # unchanged
+        assert request.datamanager.get_event_count("DO_PROCESS_FORM_SUBMISSION") == 1
+        assert request.datamanager.get_event_count("PROCESS_HTML_REQUEST") == 1
+        assert request.datamanager.get_event_count("EXECUTE_GAME_ACTION_WITH_MIDDLEWARES") == 0 # NOPE
+
+        request.datamanager.clear_all_event_stats()
+
+        # now via the abstract form (+ middleware), now successful
+        request = self.factory.post(view_url, data=dict(_ability_form="pychronia_game.views.abilities.wiretapping_management_mod.WiretappingTargetsForm",
+                                                        target_0="guy3",
+                                                        pay_with_money=True, # now we choose
                                                         fdfd="33"))
         request.datamanager._set_user("guy1")
         wiretapping = request.datamanager.instantiate_ability("wiretapping")
@@ -3823,6 +3845,7 @@ class TestGameViewSystem(BaseGameTestCase):
         assert request.datamanager.get_event_count("DO_PROCESS_FORM_SUBMISSION") == 1
         assert request.datamanager.get_event_count("PROCESS_HTML_REQUEST") == 1
         assert request.datamanager.get_event_count("EXECUTE_GAME_ACTION_WITH_MIDDLEWARES") == 1
+
 
 
     def test_gameview_novelty_tracking(self):
