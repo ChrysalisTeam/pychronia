@@ -243,6 +243,7 @@ class BaseGameTestCase(TestCase): # one day, use pytest-django module to make it
 
             self.dm.set_game_state(True)
             self.dm.set_activated_game_views(self.dm.get_activable_views().keys()) # QUICK ACCESS FIXTURE
+
             self.dm.clear_all_event_stats()
 
             #self.default_player = self.dm.get_character_usernames()[0]
@@ -254,10 +255,14 @@ class BaseGameTestCase(TestCase): # one day, use pytest-django module to make it
             # comment this to have eclipse's autocompletion to work for datamanager anyway
             self.dm = AutoCheckingDM(self.dm) # protection against uncommitted, pending changes
 
+            # NO NEED TO COMMIT - transaction watcher should do it all #
+
         except Exception, e:
             print(">>>>>>>>>", repr(e))
             self.tearDown(check=False) # cleanup of connection
             raise
+
+        assert object.__getattribute__(self.dm, "_real_dm") == self.request.datamanager # WRAPPED
 
 
     def tearDown(self, check=True):

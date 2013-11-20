@@ -50,7 +50,7 @@ def usage_assert(value, comment=None):
     from pychronia_game.common import UsageError
     if not value:
         raise UsageError("Check failed: %r (comment: %s)" % (value, comment))
-
+    return True
 
 class Enum(set):
     """
@@ -443,6 +443,11 @@ def assert_sets_equal(set1, set2):
     set1 = set(_make_elements_hashable(set1))
     set2 = set(_make_elements_hashable(set2))
     return _compare_container(set1, set2)
+
+def assert_set_smaller_or_equal(set1, set2):
+    set1 = set(_make_elements_hashable(set1))
+    set2 = set(_make_elements_hashable(set2))
+    return usage_assert(set1 <= set2, set1 - set2)
 
 
 def validate_value(value, validator):

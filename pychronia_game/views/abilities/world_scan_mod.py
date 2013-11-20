@@ -84,7 +84,7 @@ class WorldScanAbility(AbstractAbility):
             for location in scan_set:
                 assert location in all_locations, location
 
-        assert  set(all_artefact_items) <= set(settings["item_locations"].keys()), set(all_artefact_items) - set(settings["item_locations"].keys())  # more might be defined in this ability
+        assert utilities.assert_set_smaller_or_equal(settings["item_locations"].keys(), all_artefact_items) # some items might have no scanning locations
         for (item_name, scan_set_name) in settings["item_locations"].items():
             utilities.check_is_slug(item_name)  # in case it's NOT a valid item name, in unstrict mode...
             assert scan_set_name in settings["scanning_sets"].keys()
@@ -101,8 +101,10 @@ class WorldScanAbility(AbstractAbility):
     def _compute_scanning_result(self, item_name):
         assert not self.get_item_properties(item_name)["is_gem"], item_name
         # Potential evolution - in the future, it might be possible to remove some locations depending on hints provided !
-        scanning_set_name = self.settings["item_locations"][item_name]
-        locations = self.settings["scanning_sets"][scanning_set_name]
+        scanning_set_name = self.settings["item_locations"].get(item_name, None)
+        if scanning_set_name is None:
+            raise NormalUsageError(_("Unfortunately this item can't be analyzed for a world scan.")) # any payment will be aborted too
+        locations = self.settings["scanning_sets"][scanning_set_name] # MUST exist
         return locations  # list of city names
 
     '''
@@ -136,7 +138,7 @@ class WorldScanAbility(AbstractAbility):
 
         scanning_delay = self.settings["result_delay"]
 
-        locations = self._compute_scanning_result(item_name)
+        locations = self._compute_scanning_result(item_name) # might raise if item is not analysable
 
         locations_found = ", ".join(locations) if locations else _("None")
 

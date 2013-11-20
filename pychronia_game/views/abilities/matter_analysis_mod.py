@@ -65,7 +65,9 @@ class MatterAnalysisAbility(AbstractAbility):
     @readonly_method
     def _compute_analysis_result(self, item_name):
         assert not self.get_item_properties(item_name)["is_gem"], item_name
-        report = self.settings["reports"][item_name]
+        report = self.settings["reports"].get(item_name, None)
+        if report is None:
+            raise NormalUsageError(_("Unfortunately this item can't be analyzed by our biophysical lab.")) # any payment will be aborted too
         return report
 
 
@@ -115,7 +117,7 @@ class MatterAnalysisAbility(AbstractAbility):
         settings = self.settings
 
         def reports_checker(reports):
-            utilities.assert_sets_equal(reports.keys(), self.get_non_gem_items().keys())
+            utilities.assert_set_smaller_or_equal(reports.keys(), self.get_non_gem_items().keys()) # some items might have no analysis data
             for body in reports.values():
                 utilities.check_is_restructuredtext(body)
             return True

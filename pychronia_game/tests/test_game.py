@@ -16,7 +16,7 @@ from pychronia_game.datamanager.abstract_ability import AbstractAbility
 from pychronia_game.datamanager.action_middlewares import CostlyActionMiddleware, \
     CountLimitedActionMiddleware, TimeLimitedActionMiddleware
 from pychronia_game.common import _undefined, config, AbnormalUsageError, reverse, \
-    UsageError, checked_game_file_path
+    UsageError, checked_game_file_path, NormalUsageError
 from pychronia_game.templatetags.helpers import _generate_encyclopedia_links, \
     advanced_restructuredtext, _generate_messaging_links, _generate_site_links, \
     _enriched_text, _generate_game_file_links
@@ -2250,10 +2250,9 @@ class TestDatamanager(BaseGameTestCase):
         anonymous_login = self.dm.get_global_parameter("anonymous_login")
 
 
-        # build complete request
+        # build complete request (without auto-checking DM)
         request = self.factory.post(home_url)
         request.datamanager = self.dm
-
         # we let different states of the session ticket be there, at the beginning
         if random.choice((0, 1)):
             request.session[SESSION_TICKET_KEY] = random.choice((None, {}))
@@ -4467,6 +4466,40 @@ class TestActionMiddlewares(BaseGameTestCase):
         self.dm.clear_all_event_stats()
 
 
+    def test_action_middleware_rollback_on_error(self):
+
+        self.dm.update_permissions("guy1", PersistentList(self.dm.PERMISSIONS_REGISTRY))
+
+        view_url = reverse(views.world_scan, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID))
+
+        request = self.factory.post(view_url, data=dict(_action_="scan_form", item_name="statue")) # has no scanning settings
+        request.datamanager._set_user("guy1")
+
+        world_scan = request.datamanager.instantiate_ability("world_scan")
+
+        old_account = request.datamanager.get_character_properties("guy1")["account"]
+
+
+        res = world_scan(request)
+        assert res.status_code == 200
+        #print(res.content.decode("utf8"))
+        assert u"this item can&#39;t be analyzed" in res.content.decode("utf8")
+        assert request.datamanager.get_character_properties("guy1")["account"] == old_account
+
+
+        # now success case just to be sure
+        request = self.factory.post(view_url, data=dict(_action_="scan_form", item_name="sacred_chest"))
+        request.datamanager._set_user("guy1")
+        world_scan = request.datamanager.instantiate_ability("world_scan")
+
+        res = world_scan(request)
+        assert res.status_code == 200
+        print(res.content.decode("utf8"))
+        assert u"World scan submission in progress" in res.content.decode("utf8")
+
+        assert request.datamanager.get_character_properties("guy1")["account"] < old_account
+
+
 
 
 class TestSpecialAbilities(BaseGameTestCase):
@@ -4814,6 +4847,10 @@ class TestSpecialAbilities(BaseGameTestCase):
         scanner.perform_lazy_initializations() # normally done during request processing
         self._set_user("guy1")
 
+        assert "statue" in self.dm.get_all_items()
+        with pytest.raises(NormalUsageError):
+            scanner._compute_scanning_result("statue") # not analyzable
+
         res = scanner._compute_scanning_result("sacred_chest")
         self.assertEqual(res, ["Alifir", "Baynon"])
 
@@ -4861,6 +4898,8 @@ class TestSpecialAbilities(BaseGameTestCase):
         # ##self.assertTrue("Alifir" in scanned_locations, scanned_locations)
 
 
+        url = reverse(views.world_scan, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID))
+        response = self.client.get(url)
 
 
     def __test_telecom_investigations(self):
@@ -4959,6 +4998,10 @@ class TestSpecialAbilities(BaseGameTestCase):
         self._set_user("guy1")
         self.dm.transfer_object_to_character("sacred_chest", "guy1")
         self.dm.transfer_object_to_character("several_misc_gems", "guy1")
+
+        assert "statue" in self.dm.get_all_items()
+        with pytest.raises(NormalUsageError):
+            analyser._compute_analysis_result("statue") # not analyzable
 
         res = analyser._compute_analysis_result("sacred_chest")
         self.assertEqual(res, "same, here stuffs about *sacred* chest")

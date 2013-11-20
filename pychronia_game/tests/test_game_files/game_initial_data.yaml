@@ -93,7 +93,6 @@ abilities:
             sender_email: "physicslab@alifir-academy.com"
             result_delay: [2, 3]
             reports:
-                statue: "this is an analysis of the statue"
                 sacred_chest: "same, here stuffs about *sacred* chest"
                 # NO GEMS ATM HERE
                 #several_misc_gems: "analysis of several_misc_gems"
@@ -102,6 +101,12 @@ abilities:
     world_scan:
         settings:
 
+            middlewares:
+                scan_form:
+                    CostlyActionMiddleware:
+                        money_price: 115
+                        gems_price: 234
+
             result_delay: [4, 10]
 
             scanning_sets:
@@ -109,9 +114,7 @@ abilities:
                 varied_artefacts_locations: ["Alifir", "Baynon"]
 
             item_locations:
-                statue: "unique_artefacts_locations"
                 sacred_chest: "varied_artefacts_locations"
-                baditem: "unique_artefacts_locations"
 
 
 global_parameters:

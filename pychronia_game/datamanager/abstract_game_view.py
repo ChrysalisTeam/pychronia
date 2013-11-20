@@ -478,6 +478,7 @@ class AbstractGameView(object):
     def _do_process_form_submission(self, action_registry, action_name, unfiltered_data, execution_processor):
         if __debug__: self.datamanager.notify_event("DO_PROCESS_FORM_SUBMISSION")
         assert self.request.method == "POST"
+        assert execution_processor._is_under_transaction_watcher
 
         user = self.datamanager.user
         res = dict(result=False, # by default
