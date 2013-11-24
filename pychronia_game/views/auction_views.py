@@ -146,7 +146,7 @@ def _sorted_game_items(items_list): # items_list is a list of pairs from dict it
 
 
 
-@register_view(access=UserAccess.authenticated, title=_lazy("View Sales")) # fixme ? always available ?
+@register_view(access=UserAccess.authenticated, title=_lazy("View Sales"), title_for_master=_lazy("View Items")) # fixme ? always available ?
 def view_sales(request, template_name='auction/view_sales.html'):
     # FIXME - needs a review ########
     user = request.datamanager.user

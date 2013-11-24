@@ -3424,6 +3424,22 @@ class TestGameViewSystem(BaseGameTestCase):
         assert A == B == C # SINGLETON system, else reverse() won't work
 
 
+    def test_relevant_title(self):
+        
+        same_titles = self.dm.instantiate_game_view("view_encyclopedia")
+        different_titles = self.dm.instantiate_game_view("view_sales")
+        
+        self._set_user(random.choice(("guy1", None)))
+        
+        assert same_titles.relevant_title() == same_titles.TITLE and same_titles.TITLE
+        assert different_titles.relevant_title() == different_titles.TITLE and different_titles.TITLE
+
+        self._set_user("master")
+
+        assert same_titles.relevant_title() == same_titles.TITLE and same_titles.TITLE
+        assert different_titles.relevant_title() == different_titles.TITLE_FOR_MASTER and different_titles.TITLE_FOR_MASTER
+
+
     def test_game_forms_payment_fields_setup(self):
 
         class MyGameDummyForm(AbstractGameForm):

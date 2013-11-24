@@ -97,6 +97,10 @@ class GameViewMetaclass(type):
 
                 assert NewClass.TITLE
                 assert isinstance(NewClass.TITLE, Promise)
+                if NewClass.ACCESS == UserAccess.authenticated:
+                    assert NewClass.TITLE_FOR_MASTER is None or isinstance(NewClass.TITLE_FOR_MASTER, Promise)
+                else:
+                    assert NewClass.TITLE_FOR_MASTER is None # makes no sense if view for characters or for master only
 
                 assert utilities.check_is_slug(NewClass.NAME)
                 # assert NewClass.NAME.lower() == NewClass.NAME # FIXME, NOT YET ATM !!!
@@ -211,6 +215,7 @@ class AbstractGameView(object):
     __metaclass__ = GameViewMetaclass
 
     TITLE = None # must be a _lazy() string
+    TITLE_FOR_MASTER = None # must be a _lazy() string or None
 
     NAME = None # slug to be overridden, used as primary identifier
 
@@ -280,6 +285,10 @@ class AbstractGameView(object):
 
         return AccessResult.available
 
+    def relevant_title(self):
+        if self.TITLE_FOR_MASTER and self.datamanager.is_master():
+            return self.TITLE_FOR_MASTER
+        return self.TITLE
 
     def _check_writability(self):
 
@@ -796,7 +805,8 @@ def register_view(view_object=None,
                   requires_global_permission=_undefined,
                   always_allow_post=_undefined,
                   attach_to=_undefined,
-                  title=None):
+                  title=None,
+                  title_for_master=None):
     """
     Helper allowing with or without-arguments decorator usage for GameView.
     
@@ -832,6 +842,7 @@ def register_view(view_object=None,
 
             class_data = dict((key.upper(), value) for key, value in normalized_access_args.items()) # auto build access attributes
             class_data["TITLE"] = title
+            class_data["TITLE_FOR_MASTER"] = title_for_master
             class_data["NAME"] = real_view_object.__name__
             if always_allow_post is not _undefined:
                 class_data["ALWAYS_ALLOW_POST"] = always_allow_post # unaltered boolean

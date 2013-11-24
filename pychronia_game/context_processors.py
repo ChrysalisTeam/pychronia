@@ -64,7 +64,7 @@ def pychronia_template_context(request):
 
         res = {'game_instance_id': dm.game_instance_id,
 
-                'fallback_title': request.processed_view.TITLE,
+                'fallback_title': request.processed_view.relevant_title(),
 
                 'user': dm.user,
                 'game_is_writable': writability_data["writable"],
