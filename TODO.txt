@@ -7,8 +7,8 @@ TODO LIST CHRYSALIS
 FEATURES
 ------------
 
+- implement use of passwords_pool for characters whose password is None on startup ??
 - fix djinn bots critical errors
-- add contact_email system in abilities, autochecked
 - make scripts for ZODB reset in integration (DEBUG=FALSE)
 - fix item_display's max_height, too small
 - fix menus, especially top-level entries
@@ -56,6 +56,7 @@ NEEDS COSMETICS
 TASKS DONE
 ---------------
 
+- add contact_email system in abilities, autochecked DONE
 - IMPORTANT, add auro gems form controls EVERYWHERE DONE
 - test good handling of flexible time in "time limiting action middleware"ALREADY DONE
 - ensure that submitted forms goes through __common_instant... in GameView DONE

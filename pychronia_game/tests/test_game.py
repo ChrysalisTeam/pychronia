@@ -524,7 +524,7 @@ class TestMetaAdministration(unittest.TestCase): # no django setup required ATM
 
         game_instance_id = "mystuff"
         assert not game_instance_exists(game_instance_id)
-        create_game_instance(game_instance_id, "aaa@sc.com", "master", "pwd")
+        create_game_instance(game_instance_id, "ze_creator_test", "aaa@sc.com", "master", "pwd")
         assert game_instance_exists(game_instance_id)
 
         all_res = get_all_instances_metadata()
@@ -647,7 +647,7 @@ class TestDatamanager(BaseGameTestCase):
             self.dm.clear_all_event_stats()
             with pytest.raises(AbnormalUsageError) as exc_info:
                 func()
-                assert "Concurrent access" in str(exc_info.value)
+            assert "Concurrent access" in str(exc_info.value)
             assert self.dm.get_event_count("BROKEN_DUMMY_FUNC_CALLED") == 3 # 3 attempts max
 
         for ERROR_TYPE in (UsageError, EnvironmentError, TypeError):
@@ -2739,6 +2739,26 @@ class TestDatamanager(BaseGameTestCase):
 
 
 
+    @for_core_module(PlayerAuthentication)
+    def test_master_credentials_reset(self):
+
+        self.dm.authenticate_with_credentials("master", "ultimate")
+        self._set_user(None)
+        assert not self.dm.user.is_master
+
+        master_real_email = random.choice(("abc@mail.com", None))
+        self.dm.override_master_credentials(master_login="othermaster", master_password="mypsgh", master_real_email=None)
+
+        with pytest.raises(UsageError): # "unrecognized character name" error
+            self.dm.authenticate_with_credentials("master", "ultimate")
+
+        assert not self.dm.user.is_master
+
+        self.dm.authenticate_with_credentials("othermaster", "mypsgh")
+
+        assert self.dm.user.is_master
+
+        assert self.dm.get_global_parameter("master_real_email") == master_real_email
 
 
 
@@ -2802,6 +2822,12 @@ class TestDatamanager(BaseGameTestCase):
         with pytest.raises(NormalUsageError):
             self.dm.authenticate_with_credentials("guy1", "elixir")
         self.dm.authenticate_with_credentials("guy1", "newpwd")
+
+        assert self.dm.get_character_properties("guy4")["password"] is None
+        with pytest.raises(AttributeError):
+            self.dm.authenticate_with_credentials("guy4", None) # value can't be "stripped"
+        with pytest.raises(NormalUsageError):
+            self.dm.authenticate_with_credentials("guy4", "")
 
 
 

@@ -12,6 +12,10 @@ os.environ["DJANGO_SETTINGS_MODULE"] = settings_module = "pychronia_game.tests.p
 from django.core.management import execute_from_command_line
 from django.conf import settings
 
+""" COULD BE USEFUL
+from django.core.management import call_command
+call_command('my_command', 'foo', bar='baz')
+"""
 
 
 if __name__ == "__main__":
@@ -32,7 +36,8 @@ if __name__ == "__main__":
         import pychronia_game.models # initializes everything
         from pychronia_game.datamanager.datamanager_administrator import reset_zodb_structure, create_game_instance
         reset_zodb_structure()
-        create_game_instance(game_instance_id="DEMO", master_real_email="dummy@dummy.fr", master_login="master", master_password="ultimate")
+        create_game_instance(game_instance_id="DEMO", creator_login="ze_creator",
+                             master_real_email="dummy@dummy.fr", master_login="master", master_password="ultimate")
 
 
     elif "reset_django" in arguments:

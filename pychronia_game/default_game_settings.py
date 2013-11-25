@@ -19,3 +19,5 @@ ZODB_FILE = None
 ZODB_URL = None
 
 BUG_REPORT_EMAIL = None
+
+PASSWORDS_POOL = None # must be a list of strings

@@ -50,6 +50,7 @@ def ____create_new_instance(request):  # TODO FINISH LATER
             creator_portal_login = data_dict["creator_portal_login"] # FIXME put into metadata
 
             datamanager_administrator.create_game_instance(game_instance_id=game_instance_id,
+                                                           creator_login="??????",
                                                            master_real_email="?????",
                                                            master_login="????",
                                                            master_password="????????")

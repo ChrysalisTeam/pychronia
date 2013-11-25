@@ -133,10 +133,10 @@ global_parameters:
     all_characters_mailing_list: "auction-list@pangea.com"
 
     anonymous_login: guest
-    master_login: master
-    master_password: ultimate
-    master_email: master@administration.com
-    master_real_email: dummy@gmail.com
+
+    master_login: master # will be reset anyway
+    master_password: jsfhsdfsjkdf # will be reset anyway
+    master_real_email: master@administration.com # will be reset anyway
 
     online_presence_timeout_s: 600
     chatroom_presence_timeout_s: 30
@@ -311,7 +311,7 @@ character_properties:
 
     guy4:
         domains: []
-        password: wads
+        password: null # disabled
         account: 0
         secret_question: null
         secret_answer: null

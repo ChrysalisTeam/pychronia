@@ -3,7 +3,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from pychronia_game.common import *
-from pychronia_game.common import _, _lazy, _noop # just to shut up the static checker...
+from pychronia_game.common import _, _lazy, _noop, _undefined # mainly to shut up the static checker...
 
 from .datamanager_tools import *
 from .datamanager_user import GameUser
@@ -608,13 +608,9 @@ class PlayerAuthentication(BaseDataManager):
 
         game_data = self.data
 
-        assert self.get_global_parameter("anonymous_login") is None or \
-               utilities.check_is_slug(self.get_global_parameter("anonymous_login"))
-        utilities.check_is_slug(self.get_global_parameter("master_login"))
-        utilities.check_is_slug(self.get_global_parameter("master_password"))
-
         for character in self.get_character_sets().values():
-            utilities.check_is_slug(character["password"])
+            if character["password"]: # might be None==disabled
+                utilities.check_is_slug(character["password"])
             if not character["secret_question"]:
                 assert not character["secret_answer"]
             else:
@@ -631,10 +627,21 @@ class PlayerAuthentication(BaseDataManager):
 
         utilities.check_is_slug(global_parameters["master_login"])
         utilities.check_is_slug(global_parameters["master_password"])
-        utilities.check_is_slug(global_parameters["master_real_email"]) # to inform him if troubles
+        if global_parameters["master_real_email"]:
+            utilities.check_is_slug(global_parameters["master_real_email"])
 
         utilities.check_is_range_or_num(global_parameters["password_recovery_delay_mn"])
 
+
+    @transaction_watcher(always_writable=True)
+    def override_master_credentials(self, master_login, master_password, master_real_email=_undefined):
+        if not master_login or not master_password:
+            raise NormalUsageError(_("Both master login and password must be provided for reset"))
+        global_parameters = self.data["global_parameters"]
+        global_parameters["master_login"] = master_login
+        global_parameters["master_password"] = master_password
+        if master_real_email is not _undefined:
+            global_parameters["master_real_email"] = master_real_email # might be overridden with "None"
 
 
     @readonly_method
@@ -851,7 +858,7 @@ class PlayerAuthentication(BaseDataManager):
             data = self.get_character_properties(username) # might raise UsageError
             wanted_pwd = data["password"]
 
-        if password and password == wanted_pwd:
+        if password and wanted_pwd and password == wanted_pwd: # BEWARE - ensure accounts have not been disabled via password=None
             # when using credentials, it's always a real user, with writability (and django user status is hidden)
             self._set_user(username, impersonation_target=None, impersonation_writability=False, is_superuser=False)
             session_ticket = dict(game_instance_id=self.game_instance_id,

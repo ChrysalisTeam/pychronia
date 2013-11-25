@@ -92,7 +92,8 @@ def _create_metadata_record(game_instance_id, creator_login):
 
 
 @zodb_transaction
-def create_game_instance(game_instance_id, master_real_email, master_login, master_password):
+def create_game_instance(game_instance_id, creator_login,
+                         master_real_email, master_login, master_password):
     """
     Returns nothing. Raises ValueError if already existing game id.
     """
@@ -115,11 +116,12 @@ def create_game_instance(game_instance_id, master_real_email, master_login, mast
                              request=None) # no user messages possible here
         assert not dm.is_initialized
         dm.reset_game_data() # TODO here provide all necessary info
-        #dm.update_game_master_info(master_real_email=master_real_email,
-        #                           master_login=master_login,
-        #                           master_password=master_password)
+        dm.override_master_credentials(master_real_email=master_real_email,
+                                       master_login=master_login,
+                                       master_password=master_password)
         assert dm.is_initialized
         game_instances[game_instance_id] = game_root # NOW only we link data to ZODB
+
     except Exception, e:
         logging.critical("Impossible to initialize game instance %r..." % game_instance_id, exc_info=True)
         raise
@@ -199,7 +201,7 @@ def check_game_is_in_maintenance(game_instance_id, game_metadata):
     if not _game_is_maintenance(game_metadata):
         raise GameMaintenanceError(_("Instance %s is NOT in maintenance.") % game_instance_id)
     return True
- 
+
 
 # NO transaction management here!
 def retrieve_game_instance(game_instance_id, request=None, metadata_checker=check_game_not_in_maintenance):
