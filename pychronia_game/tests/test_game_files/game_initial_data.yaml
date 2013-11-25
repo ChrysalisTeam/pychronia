@@ -90,7 +90,7 @@ abilities:
 
     matter_analysis:
         settings:
-            sender_email: "physicslab@alifir-academy.com"
+            dedicated_email: "physicslab@alifir-academy.com"
             result_delay: [2, 3]
             reports:
                 sacred_chest: "same, here stuffs about *sacred* chest"
@@ -106,6 +106,8 @@ abilities:
                     CostlyActionMiddleware:
                         money_price: 115
                         gems_price: 234
+
+            dedicated_email: "scanner@hightech.com"
 
             result_delay: [4, 10]
 
@@ -399,6 +401,9 @@ messaging:
 
         "translator-robot@hightech.com": {}
 
+        "scanner@hightech.com": {}
+
+        "physicslab@alifir-academy.com": {}
 
 
     messages_dispatched:  #-> list of messages processed

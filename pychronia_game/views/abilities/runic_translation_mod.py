@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 from django import forms
 
 from pychronia_game.common import *
-from pychronia_game.datamanager.abstract_ability import AbstractAbility
+from pychronia_game.datamanager.abstract_ability import AbstractPartnershipAbility
 from pychronia_game.datamanager import readonly_method, \
     transaction_watcher
 from pychronia_game.datamanager import readonly_method, \
@@ -32,7 +32,7 @@ class TranslationForm(AbstractGameForm):
 
 
 @register_view
-class RunicTranslationAbility(AbstractAbility):
+class RunicTranslationAbility(AbstractPartnershipAbility):
 
     TITLE = _lazy("Runic Translation")
     NAME = "runic_translation"
@@ -46,8 +46,6 @@ class RunicTranslationAbility(AbstractAbility):
     ACCESS = UserAccess.character # game master not welcome!
     REQUIRES_CHARACTER_PERMISSION = False
     REQUIRES_GLOBAL_PERMISSION = True
-
-    HAS_DEDICATED_EMAIL = True
 
     def get_template_vars(self, previous_form_data=None):
 

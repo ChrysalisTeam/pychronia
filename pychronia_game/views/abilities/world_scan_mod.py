@@ -3,7 +3,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from pychronia_game.common import *
-from pychronia_game.datamanager.abstract_ability import AbstractAbility
+from pychronia_game.datamanager.abstract_ability import AbstractPartnershipAbility
 import functools
 from pychronia_game import utilities
 from pychronia_game.forms import ArtefactForm, UninstantiableFormError
@@ -17,7 +17,7 @@ from pychronia_game.datamanager.abstract_game_view import register_view
 
 
 @register_view
-class WorldScanAbility(AbstractAbility):
+class WorldScanAbility(AbstractPartnershipAbility):
 
     TITLE = _lazy("World Scan")
 
@@ -124,7 +124,7 @@ class WorldScanAbility(AbstractAbility):
 
         item_title = self.get_item_properties(item_name)["title"]
 
-        remote_email = "scanner-robot@hightech.com"  # dummy domain too
+        remote_email = self.dedicated_email
         local_email = self.get_character_email()
 
         # dummy request email, to allow wiretapping

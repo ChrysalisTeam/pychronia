@@ -55,10 +55,6 @@ class AbstractAbility(AbstractAbilityBasesAdapter):
 
     # NOT ATM - TITLE = None # menu title, use lazy gettext when setting
 
-
-    HAS_DEDICATED_EMAIL = False # set it to True to allow the use/check of self.dedicated_email
-
-
     def __init__(self, request, *args, **kwargs):
         super(AbstractAbility, self,).__init__(request, *args, **kwargs)
         self._ability_data = weakref.ref(self.datamanager.get_ability_data(self.NAME))
@@ -67,11 +63,6 @@ class AbstractAbility(AbstractAbilityBasesAdapter):
     def datamanager(self):
         return self # TRICK - abilities behaves as extensions of the datamanager!!
 
-    @property
-    def dedicated_email(self):
-        if not self.HAS_DEDICATED_EMAIL:
-            self.logger.critical("Wrong access to dedicated_email in page %s", self.NAME)
-        return self.get_ability_parameter("dedicated_email")
 
 
     # can't be a classmethod anymore because we need action middleware settings
@@ -83,12 +74,12 @@ class AbstractAbility(AbstractAbilityBasesAdapter):
         if form_options:
             final_form_options.update(form_options)
         del form_options
-        return super(AbstractAbility, self)._common_instantiate_form(new_action_name=new_action_name, 
+        return super(AbstractAbility, self)._common_instantiate_form(new_action_name=new_action_name,
                                                                      form_options=final_form_options,
                                                                      **kwargs)
-        
-        
-        
+
+
+
     def _execute_game_action_with_middlewares(self, action_name, method, *args, **kwargs):
         assert "_test_" in action_name or method.__name__ == self.GAME_ACTIONS[action_name]["callback"], (action_name, method) # only in tests it could be false
         if __debug__: self.notify_event("EXECUTE_GAME_ACTION_WITH_MIDDLEWARES")
@@ -159,8 +150,11 @@ class AbstractAbility(AbstractAbilityBasesAdapter):
 
 
     def get_ability_parameter(self, name):
-        return self.settings[name]
-
+        try:
+            return self.settings[name]
+        except KeyError:
+            msg = "Missing %s setting in view %s" % (name, self.NAME)
+            raise RuntimeError(msg)
 
     '''
     @classmethod
@@ -224,17 +218,10 @@ class AbstractAbility(AbstractAbilityBasesAdapter):
 
         if strict:
             assert len(self.ability_data.keys()) == 2 # prevents misconfigurations
-
             available_logins = self._inner_datamanager.get_available_logins()
             for name, value in self.ability_data["data"].items():
                 assert name in available_logins
                 assert isinstance(value, collections.Mapping)
-
-        if self.HAS_DEDICATED_EMAIL:
-            email = self.dedicated_email
-            utilities.check_is_email(email)
-            contact = self.datamanager.global_contacts[email]
-            assert contact["immutable"] # else game master might break all
 
         self._check_action_middleware_data_sanity(strict=strict)
         self._check_data_sanity(strict=strict)
@@ -245,7 +232,35 @@ class AbstractAbility(AbstractAbilityBasesAdapter):
 
 
 
-    '''
+
+
+class AbstractPartnershipAbility(AbstractAbility):
+    """
+    An abstract ability offering some notion of "remote contact" (with automated email exchanges).
+    """
+
+    @property
+    def dedicated_email(self):
+        """
+        if not self.HAS_DEDICATED_EMAIL:
+            msg = "Wrong access to dedicated_email in page %s", self.NAME
+            self.logger.critical(msg)
+            raise RuntimeError(msg)
+        """
+        return self.get_ability_parameter("dedicated_email")
+
+
+    @readonly_method
+    def check_data_sanity(self, strict=False):
+        super(AbstractPartnershipAbility, self).check_data_sanity(strict=strict)
+
+        email = self.dedicated_email
+        utilities.check_is_email(email)
+        contact = self.datamanager.global_contacts[email]
+        assert contact["immutable"] # else game master might break all
+
+
+'''
     def _instantiate_game_form(self,
                           new_action_name, 
                           hide_on_success=False,

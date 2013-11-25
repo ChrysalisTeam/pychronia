@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 
 from pychronia_game.common import *
 
-from pychronia_game.datamanager.abstract_ability import AbstractAbility
+from pychronia_game.datamanager.abstract_ability import AbstractPartnershipAbility
 from pychronia_game.forms import ArtefactForm, UninstantiableFormError
 from pychronia_game.datamanager import readonly_method, \
     transaction_watcher
@@ -24,7 +24,7 @@ class PersonalItemForm(AbstractGameForm):
 '''
 
 
-class MatterAnalysisAbility(AbstractAbility):
+class MatterAnalysisAbility(AbstractPartnershipAbility):
 
     TITLE = _lazy("Biophysical Analysis")
     NAME = "matter_analysis"
@@ -78,7 +78,7 @@ class MatterAnalysisAbility(AbstractAbility):
 
         item_title = self.get_item_properties(item_name)["title"]
 
-        remote_email = self.settings["sender_email"]
+        remote_email = self.dedicated_email
         local_email = self.get_character_email()
 
         # dummy request email, to allow wiretapping
@@ -123,10 +123,9 @@ class MatterAnalysisAbility(AbstractAbility):
             return True
 
         _reference = dict(
-                            sender_email=utilities.check_is_email,
                             result_delay=utilities.check_is_range_or_num,
                             reports=reports_checker,
                          )
-        utilities.check_dictionary_with_template(settings, _reference, strict=strict)
+        utilities.check_dictionary_with_template(settings, _reference, strict=False)
 
 
