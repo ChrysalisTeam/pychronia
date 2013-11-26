@@ -27,7 +27,6 @@ ZODB_URL = None
 
 
 
-PASSWORDS_POOL = [str(random.randint(100, 1000)) for i in range(50)]
 
 
 def GAME_INITIAL_FIXTURE_SCRIPT(dm):

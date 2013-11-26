@@ -292,7 +292,7 @@ character_properties:
     guy3:
         ## THIS ONE MUST HAVE NO MONEY AND GEMS
         domains: []
-        password: awesome
+        password: awesome2
         account: 2000
         secret_question: "The name of my first pet ?"
         secret_answer: "Fluffy"
@@ -326,6 +326,25 @@ character_properties:
         avatar: null
         secret_identity: null
         gamemaster_hints: "This is guy4"
+        is_npc: False
+
+    my_npc:
+        domains: []
+        password: something
+        account: 1000
+        secret_question: null
+        secret_answer: null
+        external_contacts: []
+        new_messages_notification: defeat_acharis
+        official_name: "cxcv"
+        official_role: "xcvxcv"
+        real_life_identity: "Jxcvxcve"
+        real_life_email: xcvxcv@gmail.com
+        character_color : "#01CCFF"
+        gems: []
+        avatar: null
+        secret_identity: null
+        gamemaster_hints: "This is my_npc"
         is_npc: True
 
 

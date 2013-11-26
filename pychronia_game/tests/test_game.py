@@ -522,9 +522,11 @@ class TestMetaAdministration(unittest.TestCase): # no django setup required ATM
 
         assert not get_all_instances_metadata()
 
+        skip_randomizations = random.choice((True, False))
+
         game_instance_id = "mystuff"
         assert not game_instance_exists(game_instance_id)
-        create_game_instance(game_instance_id, "ze_creator_test", "aaa@sc.com", "master", "pwd")
+        create_game_instance(game_instance_id, "ze_creator_test", "aaa@sc.com", "master", "pwd", skip_randomizations=skip_randomizations)
         assert game_instance_exists(game_instance_id)
 
         all_res = get_all_instances_metadata()
@@ -541,6 +543,8 @@ class TestMetaAdministration(unittest.TestCase): # no django setup required ATM
         dm = retrieve_game_instance(game_instance_id)
         assert dm.is_initialized
         assert dm.data
+
+        assert bool(dm.get_character_properties("guy1") == u"elixir") == skip_randomizations # conditional reset of player passwords
 
         with pytest.raises(ValueError):
             retrieve_game_instance("sqdqsd")
@@ -880,8 +884,8 @@ class TestDatamanager(BaseGameTestCase):
         assert "sealed" in full and "proposed" in full
 
 
-        assert self.dm.get_other_characters_friendship_statuses("guy1") == {u'guy2': None, 'guy3': None, 'guy4': None}
-        assert self.dm.get_other_characters_friendship_statuses("guy2") == {u'guy1': None, 'guy3': None, 'guy4': None}
+        assert self.dm.get_other_characters_friendship_statuses("guy1") == {u'guy2': None, 'guy3': None, 'guy4': None, 'my_npc': None}
+        assert self.dm.get_other_characters_friendship_statuses("guy2") == {u'guy1': None, 'guy3': None, 'guy4': None, 'my_npc': None}
 
         assert not dm.data["friendships"]["proposed"]
         assert not dm.data["friendships"]["sealed"]
@@ -898,8 +902,8 @@ class TestDatamanager(BaseGameTestCase):
         assert not dm.are_friends("guy2", "guy1")
         assert not dm.are_friends("guy1", "guy3")
 
-        assert self.dm.get_other_characters_friendship_statuses("guy1") == {u'guy2': 'requested_by', 'guy3': None, 'guy4': None}
-        assert self.dm.get_other_characters_friendship_statuses("guy2") == {u'guy1': 'proposed_to', 'guy3': None, 'guy4': None}
+        assert self.dm.get_other_characters_friendship_statuses("guy1") == {u'guy2': 'requested_by', 'guy3': None, 'guy4': None, 'my_npc': None}
+        assert self.dm.get_other_characters_friendship_statuses("guy2") == {u'guy1': 'proposed_to', 'guy3': None, 'guy4': None, 'my_npc': None}
 
         # friendship proposals don't impact impersonation
         assert not self.dm.can_impersonate("guy1", "guy3")
@@ -929,8 +933,8 @@ class TestDatamanager(BaseGameTestCase):
         assert self.dm.can_impersonate("guy1", "guy2")
         assert self.dm.can_impersonate("guy2", "guy1")
 
-        assert self.dm.get_other_characters_friendship_statuses("guy1") == {u'guy2': 'recent_friend', 'guy3': None, 'guy4': None}
-        assert self.dm.get_other_characters_friendship_statuses("guy2") == {u'guy1': 'recent_friend', 'guy3': None, 'guy4': None}
+        assert self.dm.get_other_characters_friendship_statuses("guy1") == {u'guy2': 'recent_friend', 'guy3': None, 'guy4': None, 'my_npc': None}
+        assert self.dm.get_other_characters_friendship_statuses("guy2") == {u'guy1': 'recent_friend', 'guy3': None, 'guy4': None, 'my_npc': None}
 
         with pytest.raises(AbnormalUsageError):
             dm.propose_friendship("guy2", "guy1") # already friends
@@ -969,8 +973,8 @@ class TestDatamanager(BaseGameTestCase):
         assert dm.get_friends_for_character("guy2") in (["guy1", "guy3"], ["guy3", "guy1"]) # order not enforced
         assert dm.get_friends_for_character("guy4") == []
 
-        assert self.dm.get_other_characters_friendship_statuses("guy1") == {u'guy2': 'recent_friend', 'guy3': None, 'guy4': None}
-        assert self.dm.get_other_characters_friendship_statuses("guy2") == {u'guy1': 'recent_friend', 'guy3': 'recent_friend', 'guy4': None}
+        assert self.dm.get_other_characters_friendship_statuses("guy1") == {u'guy2': 'recent_friend', 'guy3': None, 'guy4': None, 'my_npc': None}
+        assert self.dm.get_other_characters_friendship_statuses("guy2") == {u'guy1': 'recent_friend', 'guy3': 'recent_friend', 'guy4': None, 'my_npc': None}
 
         with pytest.raises(AbnormalUsageError):
             dm.terminate_friendship("guy3", "guy4") # unexisting friendship
@@ -987,8 +991,8 @@ class TestDatamanager(BaseGameTestCase):
                 params["acceptance_date"] -= timedelta(hours=30) # delay should be 24h in dev
                 dm.commit()
 
-        assert self.dm.get_other_characters_friendship_statuses("guy1") == {u'guy2': 'old_friend', 'guy3': None, 'guy4': None}
-        assert self.dm.get_other_characters_friendship_statuses("guy2") == {u'guy1': 'old_friend', 'guy3': 'recent_friend', 'guy4': None}
+        assert self.dm.get_other_characters_friendship_statuses("guy1") == {u'guy2': 'old_friend', 'guy3': None, 'guy4': None, 'my_npc': None}
+        assert self.dm.get_other_characters_friendship_statuses("guy2") == {u'guy1': 'old_friend', 'guy3': 'recent_friend', 'guy4': None, 'my_npc': None}
 
         assert dm.terminate_friendship("guy1", "guy2") # success
 
@@ -1002,10 +1006,10 @@ class TestDatamanager(BaseGameTestCase):
             dm.get_friendship_params("guy1", "guy2")
         assert dm.are_friends("guy2", "guy3") # untouched
 
-        assert self.dm.get_other_characters_friendship_statuses("guy1") == {u'guy2': None, 'guy3': None, 'guy4': None}
-        assert self.dm.get_other_characters_friendship_statuses("guy2") == {u'guy1': None, 'guy3': 'recent_friend', 'guy4': None}
-        assert self.dm.get_other_characters_friendship_statuses("guy3") == {u'guy1': None, 'guy2': 'recent_friend', 'guy4': None}
-        assert self.dm.get_other_characters_friendship_statuses("guy4") == {u'guy1': None, 'guy2': None, 'guy3': None}
+        assert self.dm.get_other_characters_friendship_statuses("guy1") == {u'guy2': None, 'guy3': None, 'guy4': None, 'my_npc': None}
+        assert self.dm.get_other_characters_friendship_statuses("guy2") == {u'guy1': None, 'guy3': 'recent_friend', 'guy4': None, 'my_npc': None}
+        assert self.dm.get_other_characters_friendship_statuses("guy3") == {u'guy1': None, 'guy2': 'recent_friend', 'guy4': None, 'my_npc': None}
+        assert self.dm.get_other_characters_friendship_statuses("guy4") == {u'guy1': None, 'guy2': None, 'guy3': None, 'my_npc': None}
 
         dm.reset_friendship_data()
         assert not dm.data["friendships"]["proposed"]
@@ -1711,7 +1715,8 @@ class TestDatamanager(BaseGameTestCase):
                                      'guy4': 'recipient',
                                      'master': 'recipient',
                                      'guy2': 'sender', # well set
-                                     'guy1': 'recipient'}
+                                     'guy1': 'recipient',
+                                     'my_npc': 'recipient'}
 
         self.dm.post_message("secret-services@masslavia.com",
                              recipient_emails=["guy1@pangea.com", ml],
@@ -1724,7 +1729,8 @@ class TestDatamanager(BaseGameTestCase):
                                      'guy4': 'recipient',
                                      'master': 'sender',
                                      'guy2': 'recipient',
-                                     'guy1': 'recipient'}
+                                     'guy1': 'recipient',
+                                     'my_npc': 'recipient'}
 
 
 
@@ -2747,7 +2753,7 @@ class TestDatamanager(BaseGameTestCase):
         assert not self.dm.user.is_master
 
         master_real_email = random.choice(("abc@mail.com", None))
-        self.dm.override_master_credentials(master_login="othermaster", master_password="mypsgh", master_real_email=None)
+        self.dm.override_master_credentials(master_login="othermaster", master_password="mypsgh", master_real_email=master_real_email)
 
         with pytest.raises(UsageError): # "unrecognized character name" error
             self.dm.authenticate_with_credentials("master", "ultimate")
@@ -2759,6 +2765,33 @@ class TestDatamanager(BaseGameTestCase):
         assert self.dm.user.is_master
 
         assert self.dm.get_global_parameter("master_real_email") == master_real_email
+
+
+    @for_core_module(PlayerAuthentication)
+    def test_players_passwords_randomization(self):
+
+        old_master_pwd = self.dm.get_global_parameter("master_password")
+
+        assert self.dm.get_character_properties("my_npc")["is_npc"]
+        old_npc_password = self.dm.get_character_properties("my_npc")["password"]
+        assert old_npc_password
+
+        assert not self.dm.get_character_properties("guy4")["is_npc"]
+        old_empty_password = self.dm.get_character_properties("guy4")["password"]
+        assert not old_empty_password
+
+        for data in self.dm.get_character_sets().values():
+            assert data["password"] not in config.PASSWORDS_POOL # initial passwords come from yaml fixtures
+
+        self.dm.randomize_passwords_for_players() # RANDOMIZE
+
+        assert self.dm.get_global_parameter("master_password") == old_master_pwd # untouched
+
+        for username, data in self.dm.get_character_sets().items():
+            if username not in ("guy4", "my_npc"):
+                assert data["password"] in config.PASSWORDS_POOL # well changed
+        assert self.dm.get_character_properties("my_npc")["password"] == old_npc_password
+        assert self.dm.get_character_properties("guy4")["password"] == old_empty_password
 
 
 
@@ -2788,7 +2821,7 @@ class TestDatamanager(BaseGameTestCase):
 
         self.assertEqual(len(self.dm.get_all_queued_messages()), 0)
         res = self.dm.process_secret_answer_attempt("guy3", "FluFFy", "guy3@pangea.com")
-        self.assertEqual(res, "awesome") # password
+        self.assertEqual(res, "awesome2") # password
 
         msgs = self.dm.get_all_queued_messages()
         self.assertEqual(len(msgs), 1)
@@ -3451,12 +3484,12 @@ class TestGameViewSystem(BaseGameTestCase):
 
 
     def test_relevant_title(self):
-        
+
         same_titles = self.dm.instantiate_game_view("view_encyclopedia")
         different_titles = self.dm.instantiate_game_view("view_sales")
-        
+
         self._set_user(random.choice(("guy1", None)))
-        
+
         assert same_titles.relevant_title() == same_titles.TITLE and same_titles.TITLE
         assert different_titles.relevant_title() == different_titles.TITLE and different_titles.TITLE
 

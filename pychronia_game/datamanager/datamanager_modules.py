@@ -618,6 +618,7 @@ class PlayerAuthentication(BaseDataManager):
                 utilities.check_is_slug(character["secret_answer"])
                 assert character["secret_answer"] == character["secret_answer"].lower()
 
+        utilities.check_no_duplicates([c["password"] for c in self.get_character_sets().values() if c["password"]])
 
         # MASTER and ANONYMOUS cases
 
@@ -642,6 +643,18 @@ class PlayerAuthentication(BaseDataManager):
         global_parameters["master_password"] = master_password
         if master_real_email is not _undefined:
             global_parameters["master_real_email"] = master_real_email # might be overridden with "None"
+
+
+    @transaction_watcher(always_writable=True)
+    def randomize_passwords_for_players(self):
+        """
+        Does NOT touch passwords of NPCs, or of disabled accounts.
+        """
+        choices = config.PASSWORDS_POOL[:]
+        for character in self.get_character_sets().values():
+            if not character["is_npc"] and character["password"]: # might be None==disabled
+                character["password"] = random.choice(choices)
+                choices.remove(character["password"]) # to avoid that, by miracle, two people get the same one...
 
 
     @readonly_method

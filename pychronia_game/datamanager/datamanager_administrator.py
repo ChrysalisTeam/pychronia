@@ -93,7 +93,8 @@ def _create_metadata_record(game_instance_id, creator_login):
 
 @zodb_transaction
 def create_game_instance(game_instance_id, creator_login,
-                         master_real_email, master_login, master_password):
+                         master_real_email, master_login, master_password,
+                         skip_randomizations=False):
     """
     Returns nothing. Raises ValueError if already existing game id.
     """
@@ -119,6 +120,8 @@ def create_game_instance(game_instance_id, creator_login,
         dm.override_master_credentials(master_real_email=master_real_email,
                                        master_login=master_login,
                                        master_password=master_password)
+        if not skip_randomizations:
+            dm.randomize_passwords_for_players() # basic security
         assert dm.is_initialized
         game_instances[game_instance_id] = game_root # NOW only we link data to ZODB
 
