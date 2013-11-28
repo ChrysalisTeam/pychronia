@@ -7,11 +7,8 @@ TODO LIST CHRYSALIS
 FEATURES
 ------------
 
-- implement use of passwords_pool for characters whose password is None on startup ??
-- fix djinn bots critical errors
-- make scripts for ZODB reset in integration (DEBUG=FALSE)
-- fix item_display's max_height, too small
-- fix menus, especially top-level entries
+-add enough content for game startup
+
 
 
 SCRIPT
@@ -42,7 +39,8 @@ TESTS
 - test AccessDenied errors, there was a nasty type error with httpresponse
 - IMPORTANT - test all views eg. encrypted folders!
 - auto test all forms with also inspect.getsourcelines(object) (for UNINSTANTIABLEERROR) etc.
-- add tests for admin widget system, for misc. modules, for gameform instantiation, for world scan_form, for is_action_permitted_for_user()...
+- add tests for admin widget system, for misc. modules, for gameform instantiation, for world scan_form
+- add tests for advanced permissions, eg. is_action_permitted_for_user(), EXTRA_PERMISSIONS...
 - test template helpers
 - launch pychecker or pylint on each file of pychronia_game package
 - check that no pb when game paused, for periodic processing
@@ -56,6 +54,11 @@ NEEDS COSMETICS
 TASKS DONE
 ---------------
 
+- fix djinn bots critical errors
+- fix menus, especially top-level entries DONE
+- fix item_display's max_height, too small DONE
+- make scripts for ZODB reset in integration (DEBUG=FALSE) - DONE with runner.py already
+- implement reset of players passwords when asked for DONE
 - add contact_email system in abilities, autochecked DONE
 - IMPORTANT, add auro gems form controls EVERYWHERE DONE
 - test good handling of flexible time in "time limiting action middleware"ALREADY DONE

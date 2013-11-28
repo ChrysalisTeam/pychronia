@@ -544,7 +544,7 @@ class TestMetaAdministration(unittest.TestCase): # no django setup required ATM
         assert dm.is_initialized
         assert dm.data
 
-        assert bool(dm.get_character_properties("guy1") == u"elixir") == skip_randomizations # conditional reset of player passwords
+        assert bool(dm.get_character_properties("guy1")["password"] == u"elixir") == skip_randomizations # conditional reset of player passwords
 
         with pytest.raises(ValueError):
             retrieve_game_instance("sqdqsd")
