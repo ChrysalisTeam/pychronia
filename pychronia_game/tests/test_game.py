@@ -3868,7 +3868,7 @@ class TestGameViewSystem(BaseGameTestCase):
         assert request.datamanager.get_event_count("PROCESS_HTML_REQUEST") == 1
 
         # now in ajax
-        request = self.factory.post(view_url, data=dict(_action_="purchase_wiretapping_slot", vcv="33"), HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        request = self.factory.post(view_url, data=dict(_action_="purchase_wiretapping_slot", vcv="33"), **AJAX_HEADERS)
         request.datamanager._set_user("guy1")
         wiretapping = request.datamanager.instantiate_ability("wiretapping")
         assert not request.datamanager.get_event_count("TRY_PROCESSING_FORMLESS_GAME_ACTION")
