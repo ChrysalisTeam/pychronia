@@ -38,6 +38,10 @@ def transform_usage_error(caller, self, request, *args, **kwargs):
         return caller(self, request, *args, **kwargs)
 
     except AccessDeniedError, e:
+
+        if request.is_ajax():
+            return HttpResponseForbidden(repr(e))
+
         if request.datamanager.user.is_impersonation:
             # Will mainly happen when we switch between two impersonations with different access rights, on a restricted page
             dm.user.add_warning(_("Currently impersonated user can't access view '%s'") % self.TITLE)
@@ -52,14 +56,18 @@ def transform_usage_error(caller, self, request, *args, **kwargs):
         assert False
 
     except (GameError, POSError), e:
-        dm.logger.critical("Unexpected game error in %s" % self.NAME, exc_info=True)
-        if not request.is_ajax():
-            dm.user.add_error(_("An unexpected server error occurred, please retry"))
-            return return_to_home
-        else:
+
+        if request.is_ajax():
             return HttpResponseBadRequest(repr(e))
 
+        dm.logger.critical("Unexpected game error in %s" % self.NAME, exc_info=True)
+        dm.user.add_error(_("An unexpected server error occurred, please retry"))
+        return return_to_home
+
     # else, we let 500 handler take are of all other (very abnormal) exceptions
+
+    assert False
+
 
 
 
