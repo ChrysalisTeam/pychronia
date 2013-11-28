@@ -95,41 +95,42 @@ class GameUser(object):
 
     ## Persistent user messages, using django.contrib.messages ##
 
-    def _check_request_available(self):
+    def _check_request_available_for_messaging(self):
         if not self.datamanager.request:
             self.datamanager.logger.critical("Unexisting request object looked up by GameUser", exc_info=True)
             return False
+        assert not self.datamanager.request.is_ajax() # NO MESSAGES FOR AJAX
         return True
 
     def add_message(self, message):
-        if self._check_request_available():
+        if self._check_request_available_for_messaging():
             messages.success(self.datamanager.request, message) # shared between all game instances...
 
     def add_warning(self, message):
-        if self._check_request_available():
+        if self._check_request_available_for_messaging():
             messages.warning(self.datamanager.request, message) # shared between all game instances...
 
     def add_error(self, error):
-        if self._check_request_available():
+        if self._check_request_available_for_messaging():
             messages.error(self.datamanager.request, error) # shared between all game instances...
 
     def get_notifications(self):
         """
         Messages will only be deleted after being iterated upon.
         """
-        if self._check_request_available():
+        if self._check_request_available_for_messaging():
             return messages.get_messages(self.datamanager.request)
         else:
             return []
 
     def has_notifications(self):
-        if self._check_request_available():
+        if self._check_request_available_for_messaging():
             return bool(len(messages.get_messages(self.datamanager.request)))
         return False
 
     def discard_notifications(self):
         from django.contrib.messages.storage import default_storage
-        if self._check_request_available():
+        if self._check_request_available_for_messaging():
             self.datamanager.request._messages = default_storage(self.datamanager.request) # big hack
 
 
