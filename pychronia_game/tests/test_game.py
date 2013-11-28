@@ -3471,6 +3471,38 @@ class TestHttpRequests(BaseGameTestCase):
             assert reverse(views.view_encyclopedia, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID, article_id="gerbil_species")) in response['Location']
 
 
+    def test_usage_error_transformation(self):
+
+        self._reset_django_db()
+
+        self._player_auth("guy1")
+
+        url = reverse(views.wiretapping_management, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID))
+
+        self.dm.set_activated_game_views([])
+        assert not self.dm.is_game_view_activated("wiretapping")
+
+        # AJAX ACCESS DENIED #
+        response = self.client.get(url, **AJAX_HEADERS)
+        assert response.status_code == 403
+
+        # HTML ACCESS DENIED #
+        response = self.client.get(url)
+        self.assertRedirects(response, expected_url=u"http://testserver/TeStiNg/login/?next=http%3A%2F%2Ftestserver%2FTeStiNg%2Fability%2Fwiretapping_management%2F")
+
+        # ACCESS OK, ajax or not #
+        self.dm.set_activated_game_views(["wiretapping"])
+        headers = random.choice((AJAX_HEADERS, {}))
+        response = self.client.get(url, **headers)
+        assert response.status_code == 200
+
+
+        # FIXME - continue and finish testing GAMEERROR or impersonation cases #
+
+
+
+
+
 class TestGameViewSystem(BaseGameTestCase):
 
 

@@ -3612,6 +3612,7 @@ class GameViews(BaseDataManager):
 
     @readonly_method
     def is_game_view_activated(self, view_name):
+        # DO NOT CHECK that view_name is in self.ACTIVABLE_VIEWS_REGISTRY, could happen in rare cases
         return (view_name in self.data["views"]["activated_views"])
 
 
