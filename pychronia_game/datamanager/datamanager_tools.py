@@ -12,7 +12,7 @@ import functools
 
 
 
-def _toplevel_zodb_conflict_solver(datamanager, completed_func):
+def _execute_under_toplevel_zodb_conflict_solver(datamanager, completed_func):
 
     datamanager.begin_top_level_wrapping()
     try:
@@ -112,7 +112,7 @@ def _build_wrapped_method(obj, secondary_wrapper, **extra_args):
         if already_wrapped:
             return completed_func()
         else:
-            return _toplevel_zodb_conflict_solver(datamanager=datamanager, completed_func=completed_func)
+            return _execute_under_toplevel_zodb_conflict_solver(datamanager=datamanager, completed_func=completed_func)
     return _build_method_wrapper(obj)
 
 
@@ -132,7 +132,7 @@ def readonly_method(obj):
         if already_in_transaction:
             return completed_func()
         else:
-            return _toplevel_zodb_conflict_solver(completed_func)
+            return _execute_under_toplevel_zodb_conflict_solver(completed_func)
         '''
     new_func = _build_wrapped_method(obj, secondary_wrapper=_call_checked_readonly_method)
     new_func._is_under_readonly_method = True

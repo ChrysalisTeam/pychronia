@@ -7,7 +7,8 @@ TODO LIST CHRYSALIS
 FEATURES
 ------------
 
--add enough content for game startup
+- wrap empty abilities with nightmare captaachs
+- add enough content for game startup
 
 
 
@@ -36,7 +37,6 @@ TESTS
 ----------
 
 - handle concurrency retries and errors on ZODB decorators!!! TEST THAT
-- test AccessDenied errors, there was a nasty type error with httpresponse
 - IMPORTANT - test all views eg. encrypted folders!
 - auto test all forms with also inspect.getsourcelines(object) (for UNINSTANTIABLEERROR) etc.
 - add tests for admin widget system, for misc. modules, for gameform instantiation, for world scan_form
@@ -54,6 +54,7 @@ NEEDS COSMETICS
 TASKS DONE
 ---------------
 
+- test AccessDenied errors etc., there was a nasty type error with httpresponse DONE
 - fix djinn bots critical errors
 - fix menus, especially top-level entries DONE
 - fix item_display's max_height, too small DONE
