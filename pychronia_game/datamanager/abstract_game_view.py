@@ -61,7 +61,7 @@ def transform_usage_error(caller, self, request, *args, **kwargs):
             return HttpResponseBadRequest(repr(e))
 
         dm.logger.critical("Unexpected game error in %s" % self.NAME, exc_info=True)
-        dm.user.add_error(_("An unexpected server error occurred, please retry"))
+        dm.user.add_error(_("An unexpected server error occurred, please retry (%s)") % (e if dm.is_master() else _(u"contact webmaster if it persists")))
         return return_to_home
 
     # else, we let 500 handler take are of all other (very abnormal) exceptions
@@ -305,6 +305,8 @@ class AbstractGameView(object):
             self.request.POST.clear() # thanks to our middleware that made it mutable...
             self.request.method = "GET" # whooo ugly
             user.add_error(_("You are not allowed to submit changes to that page"))
+            if self.request.is_ajax():
+                self.logger.critical("Forbidden ajax POST request on non-writable game at url %s", self.request.get_full_path)
         assert (user.has_write_access and (user.is_master or self.datamanager.is_game_started())) or self.ALWAYS_ALLOW_POST or not self.request.POST
 
 

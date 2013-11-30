@@ -194,7 +194,7 @@ class AbstractAbility(AbstractAbilityBasesAdapter):
         private_key = self._get_private_key()
         #print ("@@@@@@@@@@", self.ability_data)
         if not self.ability_data["data"].has_key(private_key):
-            self.logger.warning("Setting up private data %s", private_key)
+            self.logger.warning("Setting up private data for '%s'", private_key)
             private_data = self.ability_data["data"].setdefault(private_key, PersistentDict())
             self._setup_private_ability_data(private_data=private_data) # FIRST
             self._setup_private_action_middleware_data(private_data=private_data) # SECOND

@@ -95,42 +95,48 @@ class GameUser(object):
 
     ## Persistent user messages, using django.contrib.messages ##
 
-    def _check_request_available_for_messaging(self):
+    def _is_user_messaging_possible(self):
+
         if not self.datamanager.request:
             self.datamanager.logger.critical("Unexisting request object looked up by GameUser", exc_info=True)
             return False
-        assert not self.datamanager.request.is_ajax() # NO MESSAGES FOR AJAX
+
+        assert self.datamanager.request
+        if self.datamanager.request.is_ajax():
+            self.datamanager.logger.critical("Ajax request may not add user message (url=%s)", self.datamanager.request.get_full_path(), exc_info=True)
+            return False
+
         return True
 
     def add_message(self, message):
-        if self._check_request_available_for_messaging():
+        if self._is_user_messaging_possible():
             messages.success(self.datamanager.request, message) # shared between all game instances...
 
     def add_warning(self, message):
-        if self._check_request_available_for_messaging():
+        if self._is_user_messaging_possible():
             messages.warning(self.datamanager.request, message) # shared between all game instances...
 
     def add_error(self, error):
-        if self._check_request_available_for_messaging():
+        if self._is_user_messaging_possible():
             messages.error(self.datamanager.request, error) # shared between all game instances...
 
     def get_notifications(self):
         """
         Messages will only be deleted after being iterated upon.
         """
-        if self._check_request_available_for_messaging():
+        if self._is_user_messaging_possible():
             return messages.get_messages(self.datamanager.request)
         else:
             return []
 
     def has_notifications(self):
-        if self._check_request_available_for_messaging():
+        if self._is_user_messaging_possible():
             return bool(len(messages.get_messages(self.datamanager.request)))
         return False
 
     def discard_notifications(self):
         from django.contrib.messages.storage import default_storage
-        if self._check_request_available_for_messaging():
+        if self._is_user_messaging_possible():
             self.datamanager.request._messages = default_storage(self.datamanager.request) # big hack
 
 

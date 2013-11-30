@@ -42,6 +42,7 @@ from django.utils.functional import Promise
 from django.core.urlresolvers import RegexURLResolver
 from pychronia_game.datamanager.abstract_form import AbstractGameForm, \
     GemPayementFormMixin
+from ZODB.POSException import POSError
 
 
 
@@ -667,11 +668,32 @@ class TestDatamanager(BaseGameTestCase):
     def test_requestless_datamanager(self):
 
         assert self.dm.request
+        assert not self.dm.request.is_ajax()
+
+        user = self.dm.user
+        assert user._is_user_messaging_possible()
+
+        self.dm.request.is_ajax = lambda: True
+        assert self.dm.request.is_ajax()
+
+        # user notifications get swallowed because AJAX MODE
+
+        assert not user._is_user_messaging_possible()
+        user.add_message("sqdqsd sss")
+        user.add_error("fsdfsdf")
+        assert user.get_notifications() == []
+        assert not user.has_notifications()
+        user.discard_notifications()
+
+        del self.dm.request.is_ajax
+        assert not self.dm.request.is_ajax()
+
         self.dm._request = None
         assert self.dm.request is None # property
 
-        # user notifications get swallowed
+        # user notifications get swallowed because NO REQUEST
         user = self.dm.user
+        assert not user._is_user_messaging_possible()
         user.add_message("sqdqsd sss")
         user.add_error("fsdfsdf")
         assert user.get_notifications() == []
@@ -3475,7 +3497,10 @@ class TestHttpRequests(BaseGameTestCase):
 
         self._reset_django_db()
 
+
         self._player_auth("guy1")
+
+        url_home = reverse("pychronia_game-homepage", kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID))
 
         url = reverse(views.wiretapping_management, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID))
 
@@ -3483,23 +3508,80 @@ class TestHttpRequests(BaseGameTestCase):
         assert not self.dm.is_game_view_activated("wiretapping")
 
         # AJAX ACCESS DENIED #
-        response = self.client.get(url, **AJAX_HEADERS)
+        response = self.client.post(url, data=dict(_action_="purchase_wiretapping_slot"), **AJAX_HEADERS)
         assert response.status_code == 403
 
         # HTML ACCESS DENIED #
         response = self.client.get(url)
         self.assertRedirects(response, expected_url=u"http://testserver/TeStiNg/login/?next=http%3A%2F%2Ftestserver%2FTeStiNg%2Fability%2Fwiretapping_management%2F")
 
-        # ACCESS OK, ajax or not #
+        # ACCESS OK, in ajax or not #
         self.dm.set_activated_game_views(["wiretapping"])
-        headers = random.choice((AJAX_HEADERS, {}))
-        response = self.client.get(url, **headers)
+
+        response = self.client.get(url)
+        assert response.status_code == 200
+
+        response = self.client.post(url, data=dict(_action_="purchase_wiretapping_slot"), **AJAX_HEADERS)
         assert response.status_code == 200
 
 
-        # FIXME - continue and finish testing GAMEERROR or impersonation cases #
+
+        self.dm.set_activated_game_views([])
+        assert not self.dm.is_game_view_activated("wiretapping")
+
+        # impersonate guy1 while being logged as master #
+        self._master_auth()
+        response = self.client.post(url_home, data={IMPERSONATION_TARGET_POST_VARIABLE: "guy1", IMPERSONATION_WRITABILITY_POST_VARIABLE: "true"})
+        #print(response.content)
+        assert "Guy1" in response.content.decode("utf8")
+        assert response.status_code == 200
 
 
+        # AJAX ACCESS DENIED #
+        response = self.client.post(url, data=dict(_action_="purchase_wiretapping_slot"), **AJAX_HEADERS)
+        #print("@@@@@@", response.content)
+        assert response.status_code == 403 # still FORBIDDEN code
+
+        # HTML ACCESS DENIED #
+        response = self.client.get(url)
+        self.assertRedirects(response, expected_url=url_home)
+
+
+
+        # whatever authentication
+        if random.choice((True, False)):
+            self._player_auth("guy1")
+        self.dm.set_activated_game_views(["wiretapping"])
+
+
+
+        def _broken_func(*args, **kwargs):
+            raise EXCEPTION("TESTINNNG")
+
+        oldie = AbstractGameView._process_standard_request
+        AbstractGameView._process_standard_request = _broken_func
+        try:
+
+            EXCEPTION = random.choice((AbnormalUsageError, POSError))
+
+            response = self.client.post(url, data=dict(_action_="purchase_wiretapping_slot"), **AJAX_HEADERS)
+            #print("@@@@@@", response.content)
+            assert response.status_code == 400 # HttpResponseBadRequest
+
+            response = self.client.get(url)
+            self.assertRedirects(response, expected_url=url_home) # redirect with user error message
+
+
+            EXCEPTION = random.choice((ValueError, RuntimeError))
+
+            with pytest.raises(EXCEPTION): # would become http 500 error
+                self.client.post(url, data=dict(_action_="purchase_wiretapping_slot"), **AJAX_HEADERS)
+
+            with pytest.raises(EXCEPTION): # would become http 500 error
+                response = self.client.get(url)
+
+        finally:
+            AbstractGameView._process_standard_request = oldie
 
 
 
