@@ -129,6 +129,7 @@ class CurrentUserHandling(BaseDataManager):
                 return dict(writable=True,
                             reason=_("Beware, your impersonation is in writable mode."))
             else:
+                assert not self.is_master()
                 return dict(writable=False,
                             reason=_("Website currently in read-only mode, for maintenance."))
         assert False

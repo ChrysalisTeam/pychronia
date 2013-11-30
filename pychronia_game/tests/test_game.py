@@ -4868,9 +4868,30 @@ class TestSpecialAbilities(BaseGameTestCase):
         self.assertEqual(house_locking.are_house_doors_open(), True)
 
 
+    def test_mercenaries_hiring(self):
+
+        self._set_user("guy1")
+        mercenaries_hiring = self.dm.instantiate_ability("mercenaries_hiring")
+        mercenaries_hiring.perform_lazy_initializations() # normally done during request processing
+
+        self._reset_messages()
+
+        assert not mercenaries_hiring.has_remote_agent("Baynon")
+
+        mercenaries_hiring.hire_remote_agent("Baynon")
+
+        assert mercenaries_hiring.has_remote_agent("Baynon")
+
+        with pytest.raises(UsageError):
+            mercenaries_hiring.hire_remote_agent("Baynon")
+
+        assert mercenaries_hiring.has_remote_agent("Baynon")
+
+        assert not self.dm.get_all_queued_messages()
+        assert not self.dm.get_all_dispatched_messages()
 
 
-    def ___test_agent_hiring(self):
+    def ___test_deprecated_agent_hiring(self):
         FIXME
         self._reset_messages()
 

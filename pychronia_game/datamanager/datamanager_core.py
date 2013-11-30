@@ -255,6 +255,7 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
         
         Note that none of these tasks should rely on current user, which could be anything...
         """
+        assert self.is_game_writable()
         report = PersistentDict()
         self._process_periodic_tasks(report)
         return report

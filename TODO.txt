@@ -40,10 +40,9 @@ TESTS
 - auto test all forms with also inspect.getsourcelines(object) (for UNINSTANTIABLEERROR) etc.
 - add tests for admin widget system, for misc. modules, for gameform instantiation, for world scan_form
 
-- add tests for advanced permissions, eg. is_action_permitted_for_user(), EXTRA_PERMISSIONS...
-- test template helpers
 - launch pychecker or pylint on each file of pychronia_game package
 - check that no pb when game paused, for periodic processing
+
 
 
 NEEDS COSMETICS
@@ -54,6 +53,8 @@ NEEDS COSMETICS
 TASKS DONE
 ---------------
 
+- test template helpers DONE
+- add tests for advanced permissions, eg. is_action_permitted_for_user() and EXTRA_PERMISSIONS - DONE
 - handle concurrency retries and errors on ZODB decorators DONE
 - test AccessDenied errors etc., there was a nasty type error with httpresponse DONE
 - fix djinn bots critical errors
@@ -150,6 +151,7 @@ TASKS DONE
 FUTUR ENHANCEMENTS
 --------------------------
 
+- grant/revoke private_contact_access_to_character (ex. mercenaries)
 - securize "_action_" form-less system, since it bypasses input data validation
 - IMPORTANT - hide explicit message ids visible by players!!
 - add "stop impersonation" link in menu ?

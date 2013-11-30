@@ -7,7 +7,8 @@ from django import forms
 
 from pychronia_game.common import *
 from pychronia_game.forms import AbstractGameForm
-from pychronia_game.datamanager.datamanager_tools import transaction_watcher
+from pychronia_game.datamanager.datamanager_tools import transaction_watcher, \
+    readonly_method
 from pychronia_game.datamanager.abstract_ability import AbstractAbility
 
 
@@ -70,17 +71,21 @@ class MercenariesHiringAbility(AbstractAbility):
                }
 
 
+    @readonly_method
+    def has_remote_agent(self, location):
+        assert location in self.datamanager.get_locations()
+        return location in self.private_data["mercenaries_locations"]
+
 
     @transaction_watcher
     def hire_remote_agent(self, location,
                                 use_gems=()): # intercepted by action middlewares
+        assert location in self.datamanager.get_locations()
 
-        private_data = self.private_data
-
-        if location in private_data["mercenaries_locations"]:
+        if self.has_remote_agent(location):
             raise UsageError(_("You already control mercenaries in this location"))
 
-        private_data["mercenaries_locations"].append(location)
+        self.private_data["mercenaries_locations"].append(location)
 
         ### self._process_spy_activation(location) # USELESS ?
 
