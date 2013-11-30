@@ -3961,6 +3961,48 @@ class TestGameViewSystem(BaseGameTestCase):
         assert view_master.get_access_token(datamanager) == AccessResult.available
 
 
+    def test_per_action_user_permissions(self):
+
+        view_url = reverse(views.wiretapping_management, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID))
+
+        # ACTIONS that require personal permissions
+        request1 = self.factory.post(view_url, data=dict(_action_="purchase_confidentiality_protection")) # direct call
+        request2 = self.factory.post(view_url, data=dict(_ability_form="pychronia_game.views.abilities.wiretapping_management_mod.WiretappingConfidentialityForm")) # form call
+
+        for (username, request, error_msg) in [("guy1", request1, "by unauthorized user"),
+                                               ("guy2", request2, "Submitted data is invalid")]:
+
+            request.datamanager._set_user(username)
+
+            wiretapping = request.datamanager.instantiate_ability("wiretapping")
+
+            assert wiretapping.datamanager.user is request.datamanager.user
+            wiretapping.datamanager.user.discard_notifications() # ugly stuffs might be left around
+            assert not wiretapping._is_action_permitted_for_user("purchase_confidentiality_protection", wiretapping.GAME_ACTIONS, wiretapping.datamanager.user)
+            assert wiretapping._instantiate_game_form(new_action_name="purchase_confidentiality_protection") is None
+
+            # FAILURE #
+            response = wiretapping(request)
+            print(">>>>>>>>>", response.content)
+            assert response.status_code == 200
+            assert error_msg in response.content.decode("utf8")
+            assert not wiretapping.datamanager.get_confidentiality_protection_status() # NOT ACQUIRED BY USER
+
+            request.datamanager.update_permissions(permissions=["purchase_confidentiality_protection"])  # has same name as action, here
+            assert wiretapping.datamanager.has_permission(permission="purchase_confidentiality_protection")
+            assert wiretapping._is_action_permitted_for_user("purchase_confidentiality_protection", wiretapping.GAME_ACTIONS, wiretapping.datamanager.user)
+            assert wiretapping._instantiate_game_form(new_action_name="purchase_confidentiality_protection")
+
+            # SUCCESS #
+            wiretapping.datamanager.user.discard_notifications() # ugly stuffs might be left around
+            response = wiretapping(request)
+            #print(response.content)
+            assert response.status_code == 200
+            assert error_msg not in response.content.decode("utf8")
+            assert wiretapping.datamanager.get_confidentiality_protection_status() # ACQUIRED
+
+
+
     def test_action_processing_basics(self):
 
         bank_name = self.dm.get_global_parameter("bank_name")
@@ -4987,7 +5029,7 @@ class TestSpecialAbilities(BaseGameTestCase):
 
         self._reset_messages()
 
-        self._set_user("guy1") # has all permissions
+        self._set_user("guy1")
 
         char_names = self.dm.get_character_usernames()
 
@@ -5020,6 +5062,9 @@ class TestSpecialAbilities(BaseGameTestCase):
         with pytest.raises(UsageError):
             wiretapping.purchase_confidentiality_protection() # only possible once
         assert self.dm.get_confidentiality_protection_status()
+
+        self._set_user("guy1") # has all permissions
+
 
 
     def test_world_scan(self):

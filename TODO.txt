@@ -36,10 +36,10 @@ Faire page d'introduction
 TESTS
 ----------
 
-- handle concurrency retries and errors on ZODB decorators!!! TEST THAT
 - IMPORTANT - test all views eg. encrypted folders!
 - auto test all forms with also inspect.getsourcelines(object) (for UNINSTANTIABLEERROR) etc.
 - add tests for admin widget system, for misc. modules, for gameform instantiation, for world scan_form
+
 - add tests for advanced permissions, eg. is_action_permitted_for_user(), EXTRA_PERMISSIONS...
 - test template helpers
 - launch pychecker or pylint on each file of pychronia_game package
@@ -54,6 +54,7 @@ NEEDS COSMETICS
 TASKS DONE
 ---------------
 
+- handle concurrency retries and errors on ZODB decorators DONE
 - test AccessDenied errors etc., there was a nasty type error with httpresponse DONE
 - fix djinn bots critical errors
 - fix menus, especially top-level entries DONE
