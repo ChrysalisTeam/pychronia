@@ -120,6 +120,61 @@
 <body bgcolor="black">
 
 
+    <div id="parallax_back" class="parallax back"></div>
+    <div id="parallax_front" class="parallax front"></div>
+
+    <script language="javascript" type="text/javascript">
+
+        // used to determine max height of parallax divs, to transition properly into black background
+        var parallax_height_to_width_ratio = 1.95;
+
+        var parallax_settings = [
+            {
+             "tag_id": "parallax_front",
+             "posY": 0,
+             "speedY": 0.3,
+            },
+            {
+             "tag_id": "parallax_back",
+             "posY": 0,                  // variable pour la position en Y
+             "speedY": 0.8,                // vitesse de défiliment exprimée en décimales
+            }
+        ];
+
+        function parallax_get_new_pos_y(tracking_speed) {
+            return ($(document).scrollTop() * tracking_speed);
+        }
+
+        function parallax_handle_scrolling() {
+            for (var i = 0; i < parallax_settings.length; i++) {
+                var conf = parallax_settings[i];
+                //console.log(conf);
+                $("#"+conf.tag_id).css({ "background-position": "center " + parallax_get_new_pos_y(conf.speedY) + "px" });
+            }
+        }
+
+        function parallax_handle_resizing() {
+
+            // we look for the current bottom of the FRONT background
+            var new_max_height = $(document).width() * parallax_height_to_width_ratio + parallax_get_new_pos_y(parallax_settings[0].speedY);
+
+            for (var i = 0; i < parallax_settings.length; i++) {
+                var conf = parallax_settings[i];
+                //console.log(conf);
+                $("#"+conf.tag_id).css({ "max-height": new_max_height+"px" });
+            }
+        }
+
+        $(parallax_handle_scrolling);
+        $(window).scroll(parallax_handle_scrolling);
+        $(window).scroll(parallax_handle_resizing); // for height of divs
+        $(parallax_handle_resizing);
+        $(window).resize();
+
+    </script>
+
+
+
     {% block body_top %}{% endblock %}
 
 
