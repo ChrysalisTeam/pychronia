@@ -7,14 +7,18 @@ TODO LIST CHRYSALIS
 FEATURES
 ------------
 
-- wrap empty abilities with nightmare captaachs
-- add enough content for game startup
-
+- add "all messages" button to conversation (else display only 30 last ones)
+- wrap empty abilities with nightmare captchas
+- add break_left and break_right to encyclopedia article page !!! BUG
+- obfuscate message ids in initial fixtures
+- fix UsageError: Check failed: False (comment: ['awesomeness', 'lightspeed', 'lightspeed2', '811', '318', '305', '318', '82
+2', 'antic', '480'])
 
 
 SCRIPT
 ----------
 
+- add enough content for game startup
 - add scale to map (in static comments!!)
 - Add the captcha system to some special static pages - WHICH ??
 - compléter les djinns, valeurs par défaut si pas de réponses surtout !
@@ -151,6 +155,7 @@ TASKS DONE
 FUTUR ENHANCEMENTS
 --------------------------
 
+- add money and gems to page top headers
 - grant/revoke private_contact_access_to_character (ex. mercenaries)
 - securize "_action_" form-less system, since it bypasses input data validation
 - IMPORTANT - hide explicit message ids visible by players!!

@@ -657,7 +657,6 @@ class PlayerAuthentication(BaseDataManager):
                 character["password"] = random.choice(choices)
                 choices.remove(character["password"]) # to avoid that, by miracle, two people get the same one...
 
-
     @readonly_method
     def get_available_logins(self):
         return ([self.get_global_parameter("anonymous_login")] +

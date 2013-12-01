@@ -23,4 +23,5 @@ MOBILE_SITE_ENTRY_URL_TEMPLATE = "http://127.0.0.1:8000/%s/"
 
 BUG_REPORT_EMAIL = "bugreport@example.com"
 
-PASSWORDS_POOL = [str(random.randint(100, 1000)) for i in range(50)]
+PASSWORDS_POOL = [str(random.randint(100, 1000000000)) for i in range(50)]
+assert len(set(PASSWORDS_POOL)) == len(PASSWORDS_POOL)
