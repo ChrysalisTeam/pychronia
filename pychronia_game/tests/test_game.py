@@ -815,28 +815,49 @@ class TestDatamanager(BaseGameTestCase):
         self._set_user("guy1")
         res = self.dm.determine_actual_game_writability()
         assert res["writable"]
-        assert res["reason"] # especially here, we warn user
+        assert not res["reason"]
+
 
         self.dm.propose_friendship("guy1", "guy2")
         self.dm.propose_friendship("guy2", "guy1")
+
         self._set_user(random.choice(("master", "guy2")), impersonation_target="guy1", impersonation_writability=False)
         res = self.dm.determine_actual_game_writability()
         assert not res["writable"]
-        assert res["reason"]
+        assert res["reason"] # IMPERSONATION
         assert not self.dm.is_game_writable()
 
-        self.dm.set_game_state(False)
+        self._set_user(None, impersonation_target="master", impersonation_writability=False, is_superuser=True)
+        res = self.dm.determine_actual_game_writability()
+        assert not res["writable"]
+        assert res["reason"] # IMPERSONATION
+        assert not self.dm.is_game_writable()
+
+        self._set_user(random.choice(("master", "guy2")), impersonation_target="guy1", impersonation_writability=True)
+        res = self.dm.determine_actual_game_writability()
+        assert res["writable"]
+        assert res["reason"] # IMPERSONATION
+        assert self.dm.is_game_writable()
+
+        self._set_user(None, impersonation_target="master", impersonation_writability=True, is_superuser=True)
+        res = self.dm.determine_actual_game_writability()
+        assert res["writable"]
+        assert res["reason"] # IMPERSONATION
+        assert self.dm.is_game_writable()
+
+
+        self.dm.set_game_state(False) # PAUSE GAME #
 
         self._set_user("master")
         res = self.dm.determine_actual_game_writability()
         assert res["writable"]
-        assert res["reason"] # especially here, we warn user
+        assert not res["reason"] # no impersonation, and we don't care about game pause because we're master
         assert self.dm.is_game_writable()
 
         self._set_user("guy1")
         res = self.dm.determine_actual_game_writability()
         assert not res["writable"]
-        assert res["reason"]
+        assert res["reason"] # game is paused
         assert not self.dm.is_game_writable()
 
 

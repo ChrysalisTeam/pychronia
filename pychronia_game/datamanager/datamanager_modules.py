@@ -125,9 +125,9 @@ class CurrentUserHandling(BaseDataManager):
             return dict(writable=False,
                         reason=_("Your impersonation is in read-only mode."))
         else:
-            if self.is_game_started() or self.is_master(): # master is NOT impacted by game state
+            if self.is_master() or self.is_game_started(): # master is NOT impacted by game state
                 return dict(writable=True,
-                            reason=_("Beware, your impersonation is in writable mode."))
+                            reason=_("Beware, your impersonation is in writable mode.") if self.user.is_impersonation else None)
             else:
                 assert not self.is_master()
                 return dict(writable=False,
