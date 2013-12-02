@@ -10,6 +10,12 @@
     <h2>{% trans "Conversations" %}</h2>
     <div class="scroll_yellow_flat full_width center tiny_bullets small_text">
         {% if conversations %}
+
+
+            {% if not display_all_conversations %}
+            <div align="center"><b><a href="?display_all=1">{% trans "Display All Conversations" %}</a></b></div>
+            {% endif %}
+
             <ul>
                 {% for message_list in conversations %}
                 {% with message_list|last as last %}
@@ -17,9 +23,15 @@
                 {% endwith %}
                 {% endfor %}
             </ul>
+
+            {% if not display_all_conversations %}
+            <div align="center" style="font-size: 2em"><b>...</b></div>
+            {% endif %}
+
         {% else %}
             <p>{% trans "No messages yet." %}</p>
         {% endif %}
+
     </div>
     {% usekwacro side_panel_end %}
 

@@ -298,9 +298,15 @@ def messages_templates(request, template_name='messaging/messages.html'):
 
 @register_view(access=UserAccess.authenticated, requires_global_permission=False, title=_lazy("Conversations"))
 def conversation(request, template_name='messaging/conversation.html'):
+
+    display_all_conversations = bool(request.GET.get("display_all", None) == "1")
+
     messages = request.datamanager.get_user_related_messages() # for current master or character
     grouped_messages = request.datamanager.sort_messages_by_conversations(messages)
     enriched_messages = _determine_message_list_display_context(request.datamanager, messages=grouped_messages, is_pending=False)
+
+    if not display_all_conversations:
+        enriched_messages = enriched_messages[0:15] # we arbitrarily limit to 15 recent conversations
 
     dm = request.datamanager
     if dm.is_game_writable() and dm.is_character():
@@ -308,8 +314,10 @@ def conversation(request, template_name='messaging/conversation.html'):
 
     return render(request,
                   template_name,
-                  dict(page_title=_("Conversations"),
+                  dict(page_title=_("All Conversations") if display_all_conversations else _("Recent Conversations"),
+                       display_all_conversations=display_all_conversations,
                        conversations=enriched_messages))
+
 
 @register_view(attach_to=conversation, title=_lazy("Set Message Read State"))
 def ajax_set_message_read_state(request):
