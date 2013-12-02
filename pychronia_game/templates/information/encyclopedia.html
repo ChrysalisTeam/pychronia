@@ -7,7 +7,7 @@
 
 {% block sidebar %}
 
-    {% usekwacro side_panel_start frame_class="mini_frame float_left" decos="3" %}
+    {% usekwacro side_panel_start frame_class="mini_frame float_left clear_left" decos="3" %}
 
         <div class="post-it full_width" style="font-size:0.8em;">
             <strong>{% trans "System Notification" %}</strong>
@@ -40,7 +40,7 @@
 
 
     {% if article_ids %}
-        {% usekwacro side_panel_start frame_class="mini_frame float_left" decos="1" %}
+        {% usekwacro side_panel_start frame_class="mini_frame float_left clear_left" decos="1" %}
         <div class="rice_paper_rose full_width">
             <h2>{% trans "Index" %}</h2>
             <ul>
