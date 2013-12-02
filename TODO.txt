@@ -7,17 +7,14 @@ TODO LIST CHRYSALIS
 FEATURES
 ------------
 
-- add "all messages" button to conversation (else display only 30 last ones)
 - wrap empty abilities with nightmare captchas
-- add break_left and break_right to encyclopedia article page !!! BUG
-- obfuscate message ids in initial fixtures
-- fix UsageError: Check failed: False (comment: ['awesomeness', 'lightspeed', 'lightspeed2', '811', '318', '305', '318', '82
-2', 'antic', '480'])
+
 
 
 SCRIPT
 ----------
 
+- comment that "new message" sounds are not enqueuable manually, in help page
 - add enough content for game startup
 - add scale to map (in static comments!!)
 - Add the captcha system to some special static pages - WHICH ??
@@ -42,7 +39,8 @@ TESTS
 
 - IMPORTANT - test all views eg. encrypted folders!
 - auto test all forms with also inspect.getsourcelines(object) (for UNINSTANTIABLEERROR) etc.
-- add tests for admin widget system, for misc. modules, for gameform instantiation, for world scan_form
+- add tests for admin widget system !!! WAS BUGGY
+- add tests for gameform instantiation, for world scan_form
 
 - launch pychecker or pylint on each file of pychronia_game package
 - check that no pb when game paused, for periodic processing
@@ -57,6 +55,9 @@ NEEDS COSMETICS
 TASKS DONE
 ---------------
 
+- obfuscate message ids and groups ids and transferred ids in initial fixtures DONE
+- add "all messages" button to conversations page (else, by default, display only 15 last ones) DONE
+- add break_left and break_right to encyclopedia article page !!! DONE
 - test template helpers DONE
 - add tests for advanced permissions, eg. is_action_permitted_for_user() and EXTRA_PERMISSIONS - DONE
 - handle concurrency retries and errors on ZODB decorators DONE
