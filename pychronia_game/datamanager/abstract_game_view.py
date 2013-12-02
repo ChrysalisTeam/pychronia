@@ -711,6 +711,7 @@ class AbstractGameView(object):
         return template_vars
 
 
+    @transaction_watcher(always_writable=True)
     def _execute_admin_action_callback(self, action_name, unfiltered_params):
         """
         No action middlewares involved here, at the moment.
