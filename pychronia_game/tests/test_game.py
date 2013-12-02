@@ -833,7 +833,7 @@ class TestDatamanager(BaseGameTestCase):
         assert res["reason"] # IMPERSONATION
         assert not self.dm.is_game_writable()
 
-        self._set_user(random.choice(("master", "guy2")), impersonation_target="guy1", impersonation_writability=True)
+        self._set_user("master", impersonation_target="guy1", impersonation_writability=True)
         res = self.dm.determine_actual_game_writability()
         assert res["writable"]
         assert res["reason"] # IMPERSONATION
