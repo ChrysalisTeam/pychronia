@@ -3238,13 +3238,18 @@ class TestHttpRequests(BaseGameTestCase):
 
         self._master_auth() # equivalent to self._set_user(self.dm.get_global_parameter("master_login"))
 
+        initial_msg_id = "instructions_bewitcher"
+        msg_id = self.dm._obfuscate_initial_id(initial_msg_id)
+        assert msg_id != initial_msg_id
+        assert len(msg_id) == len(initial_msg_id) # simple translation
+
         # these urls and their post data might easily change, beware !
         special_urls = {ROOT_GAME_URL + "/item3dview/sacred_chest/": None,
                         # FIXME NOT YET READYROOT_GAME_URL + "/djinn/": {"djinn": "Pay Rhuss"},
                         ##### FIXME LATER config.MEDIA_URL + "Burned/default_styles.css": None,
                         game_file_url("images/attachments/image1.png"): None,
                         game_file_url("encrypted/guy2_report/evans/orb.jpg"): None,
-                        ROOT_GAME_URL + "/messages/view_single_message/instructions_bewitcher/": None,
+                        ROOT_GAME_URL + "/messages/view_single_message/%s/" % msg_id: None,
                         ROOT_GAME_URL + "/secret_question/guy3/": dict(secret_answer="Fluffy", target_email="guy3@pangea.com"),
                         ROOT_GAME_URL + "/public_webradio/": dict(frequency=self.dm.get_global_parameter("pangea_radio_frequency")),
                         reverse(views.view_help_page, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID, keyword="help-homepage")): None,

@@ -2,6 +2,7 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import string
 from pychronia_game.common import *
 from pychronia_game.common import _, _lazy, _noop, _undefined # mainly to shut up the static checker...
 
@@ -1462,6 +1463,17 @@ class TextMessagingCore(BaseDataManager):
     def messaging_data(self):
         return self.data["messaging"] # base mount point for all messaging-related features
 
+    _alternate = list(string.ascii_letters)
+    random.shuffle(_alternate)
+    _alternate = u"".join(_alternate)
+    OBFUSCATOR_TRANSTABLE = string.maketrans(string.ascii_letters, _alternate)
+    del _alternate
+
+    @classmethod
+    def _obfuscate_initial_id(cls, my_id):
+        """Beware, only works with ascii strings atm..."""
+        my_id = my_id.encode("ascii") # required by string.translate()
+        return unicode(string.translate(my_id, cls.OBFUSCATOR_TRANSTABLE))
 
     def _load_initial_data(self, **kwargs):
         super(TextMessagingCore, self)._load_initial_data(**kwargs)
@@ -1484,17 +1496,24 @@ class TextMessagingCore(BaseDataManager):
             if msg["attachment"]:
                 msg["attachment"] = utilities.complete_game_file_url(msg["attachment"])
 
-            msg["transferred_msg"] = msg.get("transferred_msg", None)
-
             msg["is_certified"] = msg.get("is_certified", False)
 
             if isinstance(msg["sent_at"], (long, int)): # offset in minutes
                 msg["sent_at"] = self.compute_effective_remote_datetime(msg["sent_at"])
 
-            if not msg["id"]:
+
+            msg["transferred_msg"] = msg.get("transferred_msg", None)
+            if msg["transferred_msg"]:
+                msg["transferred_msg"] = self._obfuscate_initial_id(msg["transferred_msg"]) # ANTI LEAK
+
+            if msg["id"]:
+                msg["id"] = self._obfuscate_initial_id(msg["id"]) # ANTI LEAK
+            else:
                 msg["id"] = self._get_new_msg_id(index, msg["subject"] + msg["body"])
 
-            if not msg.get("group_id"):
+            if msg.get("group_id"):
+                msg["group_id"] = self._obfuscate_initial_id(msg["group_id"]) # ANTI LEAK
+            else:
                 msg["group_id"] = msg["id"]
 
         # important - initial sorting #
@@ -1528,6 +1547,12 @@ class TextMessagingCore(BaseDataManager):
         def _check_message_list(msg_list):
             previous_sent_at = None
             for msg in msg_list:
+
+                # let's keep these IDs simple for now: ASCII...
+                msg["id"].encode("ascii")
+                msg["group_id"].encode("ascii")
+                if msg["transferred_msg"]:
+                    msg["transferred_msg"].encode("ascii")
 
                 assert msg["subject"] # body can be empty, after all...
 
@@ -1793,7 +1818,7 @@ class TextMessagingCore(BaseDataManager):
         msgs = [message for message in self.messaging_data["messages_dispatched"] if message["id"] == msg_id]
         assert len(msgs) <= 1, "len(msgs) must be < 1"
         if not msgs:
-            raise UsageError(_("Unknown message id"))
+            raise UsageError(_("Unknown message id '%s'" % msg_id))
         return msgs[0]
 
     ''' DEPRECATED
