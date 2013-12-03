@@ -133,10 +133,13 @@ class MessageComposeForm(AbstractGameForm):
             sender.max_selection_size = 1
             self.fields.insert(0, "sender", sender)
 
+            ''' OBSOLETE CHOCIE FIELD
             _delay_values_minutes = [unicode(value) for value in [0, 5, 10, 15, 30, 45, 60, 120, 720, 1440]]
             _delay_values_minutes_labels = [_("%s minutes") % value for value in _delay_values_minutes]
             _delay_values_minutes_choices = zip(_delay_values_minutes, _delay_values_minutes_labels)
             self.fields.insert(2, "delay_mn", forms.ChoiceField(label=_("Sending delay"), choices=_delay_values_minutes_choices, initial="0"))
+            '''
+            self.fields.insert(2, "delay_h", forms.FloatField(label=_("Sending delay in hours (may be a float with a dot)"), initial=0))
 
         else:
             pass # no sender or delay_mn fields!
@@ -358,10 +361,14 @@ def compose_message(request, template_name='messaging/compose.html'):
 
                 if user.is_master:
                     sender_email = form.cleaned_data["sender"]
-                    delay_mn = int(form.cleaned_data["delay_mn"])
+                    delay_h = form.cleaned_data["delay_h"]
+                    assert isinstance(delay_h, float)
                 else:
                     sender_email = request.datamanager.get_character_email()
-                    delay_mn = 0
+                    delay_h = 0
+                sending_date = datetime.utcnow() + timedelta(hours=delay_h)
+                assert isinstance(sending_date, datetime)
+                del delay_h
 
                 # we parse the list of emails
                 recipient_emails = form.cleaned_data["recipients"]
@@ -377,7 +384,7 @@ def compose_message(request, template_name='messaging/compose.html'):
                 # sender_email and one of the recipient_emails can be the same email, we don't care !
                 request.datamanager.post_message(sender_email, recipient_emails, subject, body,
                                                  attachment=attachment, transferred_msg=transferred_msg,
-                                                 date_or_delay_mn=delay_mn,
+                                                 date_or_delay_mn=sending_date,
                                                  parent_id=parent_id, use_template=use_template)
                 message_sent = True
                 form = MessageComposeForm(request)  # new empty form

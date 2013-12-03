@@ -163,7 +163,7 @@ class FlexibleTime(BaseDataManager): # TODO REFINE
     @readonly_method
     def compute_effective_delay_s(self, delay_mn):
         """
-        Components of delay_mn can be negative or zero.
+        Components of delay_mn can be negative or zero, too.
         """
         # IMPORTANT - we assume a standard game is actually 1 day long!
         factor_to_s = self.get_global_parameter("game_theoretical_length_days") * 60
@@ -186,8 +186,11 @@ class FlexibleTime(BaseDataManager): # TODO REFINE
 
     @readonly_method
     def compute_effective_remote_datetime(self, delay_mn):
-        # delay can be a number or a range (of type int or float)
-        # we always work in UTC
+        """"
+        delay_mn can be a number or a range (of type int or float, positive or negative)
+        
+        We always work in UTC
+        """
 
         new_time = datetime.utcnow()
         # print (">>>>>>>>>>>>>>>>>> DATETIME", new_time, "WITH DELAYS", delay_mn)
@@ -1631,6 +1634,8 @@ class TextMessagingCore(BaseDataManager):
                            date_or_delay_mn=None, is_read=False, is_certified=False,
                            parent_id=None, **kwargs):
         """
+        Beware, if a delay, date_or_delay_mn is treated as FLEXIBLE TIME.
+        
         TODO - is_certified is unused ATM.
         """
         # TOP LEVEL HERE - no parent call #
@@ -1664,7 +1669,7 @@ class TextMessagingCore(BaseDataManager):
         if isinstance(date_or_delay_mn, datetime):
             sent_at = date_or_delay_mn # shall already have been computed with "flexible time" !
         else:
-            sent_at = self.compute_effective_remote_datetime(date_or_delay_mn) # date_or_delay_mn is None or number or pair
+            sent_at = self.compute_effective_remote_datetime(date_or_delay_mn) # date_or_delay_mn is None or (negative/positive) number or pair
 
         msg = PersistentDict({
                               "sender_email": sender_email,

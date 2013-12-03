@@ -808,6 +808,11 @@ class TestDatamanager(BaseGameTestCase):
             now2 = utilities.utc_to_local(utc)
             self.assertTrue(now - timedelta(seconds=1) < now2 < now + timedelta(seconds=1))
 
+        dt = self.dm.compute_effective_remote_datetime(delay_mn=(-10, 10))
+        dt2 = self.dm.compute_effective_remote_datetime(delay_mn=(12, 20))
+        dt3 = self.dm.compute_effective_remote_datetime(delay_mn= -12)
+        assert dt3 < dt < dt2
+
 
     @for_core_module(CurrentUserHandling)
     def test_game_writability_summarizer(self):
@@ -1466,7 +1471,7 @@ class TestDatamanager(BaseGameTestCase):
         self.assertFalse(msg["has_read"])
 
         # no strict checks on sender/recipient of original message, when using parent_id feature
-        msg_id2 = self.dm.post_message(email("guy2"), email("guy1"), subject="ssd", body="qsdqsd", parent_id=msg_id)
+        msg_id2 = self.dm.post_message(email("guy2"), email("guy1"), subject="ssd", body="qsdqsd", parent_id=msg_id, delay_mn= -2)
         msg_id3 = self.dm.post_message(email("guy3"), email("guy2"), subject="ssd", body="qsdqsd", parent_id=msg_id)
 
         msg = self.dm.get_dispatched_message_by_id(msg_id2) # new message isn't impacted by parent_id
@@ -1941,6 +1946,56 @@ class TestDatamanager(BaseGameTestCase):
         self.assertFalse(self.dm.get_all_dispatched_messages()[3]["has_read"])
         self.assertEqual(self.dm.get_unread_messages_count(self.dm.get_global_parameter("master_login")), 2)
 
+
+
+    def test_time_shifts_on_message_posting(self):
+
+        self._reset_messages()
+
+        game_length_days = self.dm.get_global_parameter("game_theoretical_length_days")
+        assert game_length_days == 45.3
+
+        utcnow = datetime.utcnow()
+
+        fixed_dt_past = utcnow.replace(microsecond=0) + timedelta(hours=random.randint(-1000, -100))
+        fixed_dt_future = utcnow.replace(microsecond=0) + timedelta(hours=random.randint(100, 1000))
+
+        record = {
+            "sender_email": "guy4@pangea.com",
+            "recipient_emails": ["secret-services@masslavia.com", "guy2@pangea.com"],
+            "subject": "hello everybody 1",
+            "body": "Here is the body of this message lililili...",
+            "attachment": "http://yowdlayhio",
+            "date_or_delay_mn": 0
+        }
+        self.dm.post_message(**record) # IMMEDIATE
+
+        record["date_or_delay_mn"] = -29.8 # will be interpreted as a flexible time delay
+        self.dm.post_message(**record)
+
+        record["date_or_delay_mn"] = fixed_dt_past
+        self.dm.post_message(**record)
+
+        record["date_or_delay_mn"] = (10, 30) # will be interpreted as a flexible time delay
+        self.dm.post_message(**record)
+
+        record["date_or_delay_mn"] = fixed_dt_future
+        self.dm.post_message(**record)
+
+        # DISPATCHED MESSAGES
+        dispatched = self.dm.get_all_dispatched_messages()
+        assert len(dispatched) == 3 # only 3 of the 5 where set in the past
+        assert dispatched[0]["sent_at"] == fixed_dt_past # NO FLEXIBLE TIME HERE
+        assert utcnow - timedelta(minutes=1450) < dispatched[1]["sent_at"] < utcnow - timedelta(minutes=1250)
+        assert utcnow - timedelta(seconds=10) < dispatched[2]["sent_at"] <= utcnow + timedelta(seconds=10)
+        del dispatched
+
+        # QUEUED MESSAGES
+        queued = self.dm.get_all_queued_messages()
+        assert len(queued) == 2 # only 2 of the 5 where set in the future
+        assert utcnow + timedelta(minutes=450) < queued[0]["sent_at"] < utcnow + timedelta(minutes=1600)
+        assert queued[1]["sent_at"] == fixed_dt_future # NO FLEXIBLE TIME HERE
+        del queued
 
 
     def test_messaging_address_restrictions(self):
