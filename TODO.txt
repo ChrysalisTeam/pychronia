@@ -37,24 +37,25 @@ Faire page d'introduction
 TESTS
 ----------
 
-- IMPORTANT - test all views eg. encrypted folders!
-- auto test all forms with also inspect.getsourcelines(object) (for UNINSTANTIABLEERROR) etc.
-- add tests for admin widget system !!! WAS BUGGY
-- add tests for gameform instantiation, for world scan_form
-
+- test all views eg. encrypted folders!
+- auto test all forms with also inspect.getsourcelines(object) (for UNINSTANTIABLE_ERROR) etc.
+- add tests for gameform instantiation
+- add tests for each ADMIN_ACTION available
 - launch pychecker or pylint on each file of pychronia_game package
 - check that no pb when game paused, for periodic processing
 
 
-
 NEEDS COSMETICS
 -----------------
-- add centering for images in CMS
+- add "centering" for images in DJANGOCMS
+
+
 
 
 TASKS DONE
 ---------------
 
+- add rough tests for admin dahsboard system (was buggy)
 - obfuscate message ids and groups ids and transferred ids in initial fixtures DONE
 - add "all messages" button to conversations page (else, by default, display only 15 last ones) DONE
 - add break_left and break_right to encyclopedia article page !!! DONE
