@@ -5678,3 +5678,72 @@ class TestGameViews(BaseGameTestCase):
         self.dm.commit()
     """
 
+
+
+
+
+class TestAdminActions(BaseGameTestCase):
+
+    def test_admin_dashboard_interface(self):
+
+        dashboard_url = reverse(views.admin_dashboard, kwargs={"game_instance_id": TEST_GAME_INSTANCE_ID})
+        def gen_request():
+            return self.factory.post(dashboard_url, dict(target_form_id="admin_dashboard.set_game_pause_state",
+                                                        is_paused="1",
+                                                        _ability_form="pychronia_game.views.admin_views.admin_dashboard_mod.GamePauseForm"))
+        
+
+        # build complete request (without auto-checking DM)
+        request = gen_request()
+        dashboard = request.datamanager.instantiate_ability("admin_dashboard")
+
+        assert request.datamanager.get_event_count("DO_PROCESS_FORM_SUBMISSION") == 0
+        assert request.datamanager.is_game_started()
+
+        request.datamanager._set_user(None) # anonymous
+        response = dashboard(request)
+        assert response.status_code == 302 # redirect
+        assert request.datamanager.get_event_count("DO_PROCESS_FORM_SUBMISSION") == 0
+        assert request.datamanager.is_game_started()
+
+        request.datamanager._set_user(None, impersonation_target="master", impersonation_writability=False, is_superuser=True) # non-writable impersonated master
+        response = dashboard(request)
+        assert response.status_code == 200 # form data is just discarded
+        assert u"not allowed to submit changes" in response.content.decode("utf8")
+        assert request.datamanager.get_event_count("DO_PROCESS_FORM_SUBMISSION") == 0
+        assert request.datamanager.is_game_started()
+        assert request.method == "GET" # reinterpreted
+        assert not request.POST
+
+
+        # NOW SUCCESSFULL ATTEMPT #
+
+        request = gen_request()
+        dashboard = request.datamanager.instantiate_ability("admin_dashboard")
+
+        assert request.datamanager.get_event_count("DO_PROCESS_FORM_SUBMISSION") == 0
+        assert request.datamanager.is_game_started()
+
+        choice = random.choice((True, False))
+        if choice:
+            request.datamanager._set_user("master")
+        else:
+            request.datamanager._set_user(None, impersonation_target="master", impersonation_writability=True, is_superuser=True) # writable impersonated master
+        assert request.datamanager.is_master()
+        request.datamanager.user.discard_notifications()
+        response = dashboard(request)
+        assert response.status_code == 200
+        #print (response.content.decode("utf8"))
+
+        assert request.datamanager.get_event_count("DO_PROCESS_FORM_SUBMISSION") == 1
+        assert not request.datamanager.is_game_started() # well applied
+
+
+
+
+
+
+
+
+
+

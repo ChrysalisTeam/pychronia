@@ -644,8 +644,9 @@ class AbstractGameView(object):
         """
         self._pre_request(request, *args, **kwargs)
         try:
-            self._check_writability() # crucial
+
             self._check_standard_access() # crucial
+            self._check_writability() # crucial
 
             if self.datamanager.is_game_writable():
                 self.mark_view_as_accessed(self.datamanager) # must be BEFORE template processing
@@ -733,8 +734,9 @@ class AbstractGameView(object):
 
         self._pre_request(request)
         try:
-            self._check_writability() # crucial
+
             self._check_admin_access() # crucial
+            self._check_writability() # crucial
 
             data = request.POST
 
