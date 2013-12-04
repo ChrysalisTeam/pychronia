@@ -396,30 +396,30 @@
 
 
 {% block carving_left %}
-    <span>
-
-    {% if not signal_new_menu_entries and not signal_new_text_message and not signal_chatting_users %}
-    {% trans "No Notifications" %}
-    {% endif %}
-
-	{% if signal_new_menu_entries %}
-        <img title="{% trans "New menu entries are available for you!" %}" onclick="$(this).qtip('show');" style="cursor:pointer" src="{{ STATIC_URL }}MetalRadiance/img/icons/share_link_tiny4.png"/>
-	{% endif %}
-	{% if signal_new_text_message %}
-	   <img title="{% trans "New text messages are available for you!" %}" onclick="$(this).qtip('show');" style="cursor:pointer" src="{{ STATIC_URL }}MetalRadiance/img/icons/rolled_parchment_tiny.png"/>
-	{% endif %}
-	{% if signal_chatting_users %}
-       <img title="{% trans "There are people in the live chat room!" %}" onclick="$(this).qtip('show');" style="cursor:pointer" src="{{ STATIC_URL }}MetalRadiance/img/icons/speech_bubble_tiny.png"/>
-	{% endif %}
-
-	</span>
+<div title="{% trans "Your current user login." %}">{# Use class="marquee" to make it scroll! #}
+{{ user.username|capfirst }}
+</div>
 {% endblock %}
 
 
 {% block carving_right %}
-<div title="{% trans "Your current user login." %}">{# Use class="marquee" to make it scroll! #}
-{{ user.username|capfirst }}
-</div>
+<span>
+
+    {% if not signal_new_menu_entries and not signal_new_text_message and not signal_chatting_users %}
+    <span title="">{% trans "No Notifications" %}</span>
+    {% endif %}
+
+    {% if signal_new_menu_entries %}
+        <img title="{% trans "New menu entries are available for you!" %}" onclick="$(this).qtip('show');" style="cursor:pointer" src="{{ STATIC_URL }}MetalRadiance/img/icons/share_link_tiny4.png"/>
+    {% endif %}
+    {% if signal_new_text_message %}
+       <img title="{% trans "New text messages are available for you!" %}" onclick="$(this).qtip('show');" style="cursor:pointer" src="{{ STATIC_URL }}MetalRadiance/img/icons/rolled_parchment_tiny.png"/>
+    {% endif %}
+    {% if signal_chatting_users %}
+       <img title="{% trans "There are people in the live chat room!" %}" onclick="$(this).qtip('show');" style="cursor:pointer" src="{{ STATIC_URL }}MetalRadiance/img/icons/speech_bubble_tiny.png"/>
+    {% endif %}
+
+</span>
 {% endblock %}
 
 
