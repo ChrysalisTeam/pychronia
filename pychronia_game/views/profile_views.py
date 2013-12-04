@@ -155,9 +155,14 @@ class CharacterProfile(AbstractGameView):
                                                       hide_on_success=False,
                                                       previous_form_data=previous_form_data)
 
+        user_gems = [x[0] for x in character_properties["gems"]] or [_("None")]
+        user_artefacts = [value["title"] for (key, value) in self.datamanager.get_user_artefacts().items()] or [_("None")]
+
         return {
                  'page_title': _("User Profile"),
-                 "character_properties": character_properties,
+                 'character_properties': character_properties,
+                 'user_gems': user_gems,
+                 'user_artefacts': user_artefacts,
                  'password_change_form': password_change_form,
                }
 

@@ -4,6 +4,16 @@
 
 {% block content %}
 
+        <h2>{% trans "Summary of your belongings" %}</strong></h2>
+
+        <b>
+        <ul>
+            <li>{% trans "Money:" %} {{ character_properties.account }} ¤</li>
+            <li>{% trans "Gems (values in ¤):" %} {{ user_gems|join:", " }}</li>
+            <li>{% trans "Objects:" %} {{ user_artefacts|join:", " }}</li>
+        </ul>
+        </b>
+
         <h2>{% trans "Password change" %}</strong></h2>
 
         <form action="{{ password_change_form.url }}" method="post">
