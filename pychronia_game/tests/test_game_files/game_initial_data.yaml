@@ -78,8 +78,8 @@ abilities:
 
     mercenaries_hiring:
         settings:
-            mercenary_cost_money: 100
-            mercenary_cost_gems: 200
+
+            dedicated_email: "mercenaries@brotherhood.pg"
 
             middlewares:
                 hire_remote_agent:
@@ -423,6 +423,8 @@ messaging:
         "scanner@hightech.com": {}
 
         "physicslab@alifir-academy.com": {}
+
+        "mercenaries@brotherhood.pg": {}
 
 
     messages_dispatched:  #-> list of messages processed

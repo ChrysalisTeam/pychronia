@@ -5,13 +5,21 @@
 {% block content %}
 
 
-
 <h2>
-	{% trans "Cities where you have mercenaries" %}
+	{% trans "Your mercenaries" %}
 </h2>
 
 <p class="inner_center">
-	<b>{% if mercenaries_locations %} {{ mercenaries_locations|join:", " }} {% else %} {% trans "None" %} {% endif %}</b>
+	{% trans "Cities:" %}
+    {% if mercenaries_locations %}
+       <b>{{ mercenaries_locations|join:", " }}</b> {% else %} {% trans "None" %}
+    {% endif %}
+
+	<br/><br/>
+
+	{% if mercenaries_locations %}
+        {% trans "Email contact:" %} <b>{{ dedicated_email }}</b>
+    {% endif %}
 </p>
 
 

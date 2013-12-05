@@ -9,7 +9,7 @@ from pychronia_game.common import *
 from pychronia_game.forms import AbstractGameForm
 from pychronia_game.datamanager.datamanager_tools import transaction_watcher, \
     readonly_method
-from pychronia_game.datamanager.abstract_ability import AbstractAbility
+from pychronia_game.datamanager.abstract_ability import AbstractPartnershipAbility
 
 
 
@@ -31,7 +31,7 @@ class AgentsHiringForm(AbstractGameForm):
 
 
 
-class MercenariesHiringAbility(AbstractAbility):
+class MercenariesHiringAbility(AbstractPartnershipAbility):
 
     TITLE = _lazy("Mercenaries Hiring")
     NAME = "mercenaries_hiring"
@@ -49,9 +49,9 @@ class MercenariesHiringAbility(AbstractAbility):
 
     def get_template_vars(self, previous_form_data=None):
 
-        user_profile = self.get_character_properties()
-        gems = user_profile["gems"]
-        total_gems_value = sum(gem[0] for gem in gems)
+        #_user_profile = self.get_character_properties()
+        #gems = _user_profile["gems"]
+        #total_gems_value = sum(gem[0] for gem in gems)
 
         # for now we don't exclude locations of already hired mercenaries
         hiring_form = self._instantiate_game_form(new_action_name="hiring_form",
@@ -65,9 +65,8 @@ class MercenariesHiringAbility(AbstractAbility):
                  'page_title': _("Mercenaries Management"),
                  'settings': self.settings,
                  'mercenaries_locations': mercenaries_locations,
-                 'user_profile': user_profile,
-                 'total_gems_value': total_gems_value,
-                 'hiring_form': hiring_form
+                 'hiring_form': hiring_form,
+                 'dedicated_email': self.dedicated_email,
                }
 
 
