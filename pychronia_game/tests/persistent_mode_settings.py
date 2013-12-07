@@ -8,7 +8,6 @@ from pychronia_game.tests.common_test_settings import * # simple overrides
 import random
 
 
-ROOT_URLCONF = 'pychronia_game.tests._test_urls_web'
 
 
 _curdir = os.path.dirname(os.path.realpath(__file__))
