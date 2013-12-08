@@ -90,9 +90,10 @@ P4WN_IMAGE_DIR = '{{ STATIC_URL }}libs/p4wn/images';
 P4WN_PROMOTION_STRINGS = ['queen', 'rook', 'knight', 'bishop'];
 P4WN_PROMOTION_INTS = [P4_QUEEN, P4_ROOK, P4_KNIGHT, P4_BISHOP];
 
-//P4WN_CONTROLS.splice(0, 3); // remove player choices
-//P4WN_CONTROLS.splice(2, 1); // remove computer level choice
-
+{% comment %}
+P4WN_CONTROLS.splice(0, 3); // remove player choices
+P4WN_CONTROLS.splice(2, 1); // remove computer level choice
+{% endcomment %}
 
 p4wnify($("#chess_panel")).next_move();
 

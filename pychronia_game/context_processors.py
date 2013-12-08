@@ -76,7 +76,7 @@ def pychronia_template_context(request):
                 'menus': menus.submenus if menus else [], # we ignore root entry
                 'signal_new_menu_entries': signal_new_menu_entries,
 
-                'is_mobile_page': request.is_mobile,
+                'is_mobile_page': getattr(request, "is_mobile", None), # middleware might be disabled
 
                 'online_users': online_users,
                 'signal_new_radio_messages': not dm.has_read_current_playlist() if not isinstance(request.processed_view, WebradioManagement) else False,

@@ -44,7 +44,7 @@ FORCE_SCRIPT_NAME = None # if not mounted at /
 ugettext = lambda s: s # dummy placeholder for makemessages
 
 
-ROOT_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) # base folder where pychronia_game packages are stored
+ROOT_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) # base folder where pychronia packages are stored
 
 INTERNAL_IPS = () # used for debug output etc.
 
