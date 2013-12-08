@@ -55,6 +55,7 @@ NEEDS COSMETICS
 TASKS DONE
 ---------------
 
+- fix parallax scrolling under chrome and IE DONE
 - add rough tests for admin dahsboard system (was buggy)
 - obfuscate message ids and groups ids and transferred ids in initial fixtures DONE
 - add "all messages" button to conversations page (else, by default, display only 15 last ones) DONE
