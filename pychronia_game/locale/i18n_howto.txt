@@ -1,5 +1,5 @@
 
-python manage.py makemessages -l fr
+python ..\manage.py makemessages -l fr
 
 
 
