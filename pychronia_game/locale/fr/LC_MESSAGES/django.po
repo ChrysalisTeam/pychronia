@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-12-11 21:36+0100\n"
-"PO-Revision-Date: 2013-12-11 21:52+0200\n"
+"POT-Creation-Date: 2013-12-11 21:53+0100\n"
+"PO-Revision-Date: 2013-12-11 21:56+0200\n"
 "Last-Translator: Pascal <chambon.pascal@gmail.com>\n"
 "Language-Team: Nothing\n"
 "Language: fr\n"
@@ -294,12 +294,10 @@ msgid "My Items"
 msgstr "Mes objets"
 
 #: .\menus.py:171
-#, fuzzy
 msgid "Log Out"
 msgstr "Fermer la session"
 
 #: .\menus.py:174
-#, fuzzy
 msgid "Log In"
 msgstr "Se connecter"
 
@@ -388,7 +386,7 @@ msgid "Access denied to page %s"
 msgstr "Accès interdit à la page %s"
 
 #: .\datamanager\abstract_game_view.py:64
-#, fuzzy, python-format
+#, python-format
 msgid "An unexpected server error occurred, please retry (%s)"
 msgstr "Une erreur serveur inattendue est survenue, veuillez réessayer (%s)"
 
@@ -423,7 +421,7 @@ msgid "Wrong arguments when calling method %s"
 msgstr "Mauvais paramètres lors de l'appel à la méthode %s"
 
 #: .\datamanager\abstract_game_view.py:466
-#, fuzzy, python-format
+#, python-format
 msgid "Forbidden action '%s' called by unauthorized user"
 msgstr "Action interdite '%s' appelée par un utilisateur non autorisé"
 
@@ -612,7 +610,6 @@ msgid "Your impersonation is in read-only mode."
 msgstr "Votre usurpation d'identité est en lecture seule."
 
 #: .\datamanager\datamanager_modules.py:131
-#, fuzzy
 msgid "Beware, your impersonation is in writable mode."
 msgstr "Attention, votre usurpation d'identité est en lecture seule."
 
@@ -734,7 +731,7 @@ msgid "Sender, recipient, and subject of the message mustn't be empty"
 msgstr "L'émetteur, destinataire et sujet du message ne doivent pas être vides"
 
 #: .\datamanager\datamanager_modules.py:1826
-#, fuzzy, python-format
+#, python-format
 msgid "Unknown message id '%s'"
 msgstr "Identifiant de message inconnu '%s'"
 
@@ -753,7 +750,7 @@ msgid "Unidentified contact"
 msgstr "Contact non identifié"
 
 #: .\datamanager\datamanager_modules.py:2620
-#, fuzzy, python-format
+#, python-format
 msgid "Unknown target username '%(target)s'"
 msgstr "Utilisateur cible inconnu '%(target)s'"
 
@@ -1219,7 +1216,6 @@ msgid "Submit item"
 msgstr "Soumettre l'objet"
 
 #: .\templates\abilities\mercenaries_hiring.html.py:9
-#, fuzzy
 msgid "Your mercenaries"
 msgstr "Vos mercenaires"
 
@@ -1228,7 +1224,6 @@ msgid "Cities:"
 msgstr "Villes:"
 
 #: .\templates\abilities\mercenaries_hiring.html.py:21
-#, fuzzy
 msgid "Email contact:"
 msgstr "Contact email:"
 
@@ -1420,21 +1415,22 @@ msgid "Playlist"
 msgstr "Liste de lecture"
 
 #: .\templates\administration\webradio_management.html.py:35
-#, fuzzy
 msgid "Public Radio Control"
 msgstr "Gestion de la Radio Publique"
 
 #: .\templates\administration\webradio_management.html.py:36
-msgid "This only concern the \\"
+msgid ""
+"This only concerns the public webradio player, which consumes the samples it "
+"broadcasts, not each player's webradio page."
 msgstr ""
+"Cela concerne seulement le lecteur radio public, qui consomme les morceaux "
+"qu'il diffuse, pas le lecteur personnel de chaque joueur."
 
 #: .\templates\administration\webradio_management.html.py:40
-#, fuzzy
 msgid "Public radio is currently ON."
 msgstr "La radio publique est actuellement Allumée."
 
 #: .\templates\administration\webradio_management.html.py:42
-#, fuzzy
 msgid "Public radio is currently OFF."
 msgstr "La radio publique est actuellement éteinte."
 
@@ -1520,7 +1516,6 @@ msgid "Bank account"
 msgstr "Compte bancaire"
 
 #: .\templates\auction\view_characters.html.py:14
-#, fuzzy
 msgid "Items owned"
 msgstr "Objets possédés"
 
@@ -1545,7 +1540,6 @@ msgid "Transfer money"
 msgstr "Transférer l'argent"
 
 #: .\templates\auction\view_characters.html.py:74
-#, fuzzy
 msgid "Gems Transfer"
 msgstr "Transfert de Gemmes"
 
@@ -1804,18 +1798,6 @@ msgstr "Rien à prévisualiser."
 msgid "Previously saved content has been restored"
 msgstr "Le contenu précédemment sauvé a été restauré"
 
-#: .\templates\messaging\compose.html.py:127
-msgid ""
-"\n"
-"            The \"recipients\" field may contain a list of values separated "
-"with commas or semi-colons.\n"
-"            Each value may be a full email (of an user or an external "
-"entity), or the login of an existing user.\n"
-"            You may attach to your message one of your personal files, or "
-"any url.\n"
-"            "
-msgstr ""
-
 #: .\templates\messaging\compose.html.py:151
 msgid "Contacts"
 msgstr "Contacts"
@@ -1825,7 +1807,6 @@ msgid "Cancel message"
 msgstr "Annuler le message"
 
 #: .\templates\messaging\compose.html.py:181
-#, fuzzy
 msgid "MESSAGE TRANSFERRED: click to view in other window."
 msgstr "MESSAGE TRANSFÉRÉ: cliquer pour le voir dans une autre fenêtre."
 
@@ -1845,7 +1826,6 @@ msgid "Conversations"
 msgstr "Conversations"
 
 #: .\templates\messaging\conversation.html.py:16
-#, fuzzy
 msgid "Display All Conversations"
 msgstr "Toutes Les Conversations"
 
@@ -1971,7 +1951,6 @@ msgid "Gems (values in ¤):"
 msgstr "Gemmes (valeurs en ¤) :"
 
 #: .\templates\profile\character_profile.html.py:13
-#, fuzzy
 msgid "Objects:"
 msgstr "Objets :"
 
@@ -2251,12 +2230,10 @@ msgid "Message Templates"
 msgstr "Modèles de message"
 
 #: .\views\messaging_views.py:320
-#, fuzzy
 msgid "All Conversations"
 msgstr "Toutes Les Conversations"
 
 #: .\views\messaging_views.py:320
-#, fuzzy
 msgid "Recent Conversations"
 msgstr "Conversations Récentes"
 
@@ -2305,7 +2282,6 @@ msgid "You've been successfully logged out."
 msgstr "Vous avez bien été déconnecté."
 
 #: .\views\profile_views.py:89
-#, fuzzy
 msgid "You must provide a valid username to recover your password"
 msgstr ""
 "Vous devez fournir un nom d'utilisateur valide pour récupérer votre mot de "
