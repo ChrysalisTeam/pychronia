@@ -293,10 +293,11 @@ class AbstractGameView(object):
 
         return AccessResult.available
 
-    def relevant_title(self):
-        if self.TITLE_FOR_MASTER and self.datamanager.is_master():
-            return self.TITLE_FOR_MASTER
-        return self.TITLE
+    @classmethod
+    def relevant_title(cls, datamanager):
+        if datamanager.is_master() and cls.TITLE_FOR_MASTER:
+            return cls.TITLE_FOR_MASTER
+        return cls.TITLE
 
     def _check_writability(self):
 
@@ -509,11 +510,11 @@ class AbstractGameView(object):
 
         action_successful = False
         try:
-            bound_form = self._common_instantiate_form(new_action_name=action_name, 
-                                                       previous_form_data=None, 
+            bound_form = self._common_instantiate_form(new_action_name=action_name,
+                                                       previous_form_data=None,
                                                        data=unfiltered_data,
-                                                       action_registry=action_registry, 
-                                                       form_initializer=self.datamanager, 
+                                                       action_registry=action_registry,
+                                                       form_initializer=self.datamanager,
                                                        user=self.datamanager.user,
                                                        propagate_errors=True)
         except UninstantiableFormError:

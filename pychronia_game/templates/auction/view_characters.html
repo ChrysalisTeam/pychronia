@@ -29,7 +29,8 @@
 		    	<td class="bigtext">
 		    		<strong {% if user.is_master %} title="{% trans "Password:" %} {{ char_details.password }}" {% endif %}>
 
-		    		    <a href="{% game_view_url "pychronia_game.views.compose_message" %}?recipient={{ char_name }}@{{ pangea_domain }}">
+		    		    <a href="{% game_view_url "pychronia_game.views.compose_message" %}?recipient={{ char_name }}@{{ pangea_domain }}"
+		    		        style="color:{{ char_details.character_color }};"style="color:{{ char_details.character_color }};">
 		    		        {{ char_name }}@{{ pangea_domain }}
 		    		    </a> <br/>
 

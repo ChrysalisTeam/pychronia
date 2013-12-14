@@ -72,7 +72,7 @@ def pychronia_template_context(request):
 
                 'use_parallax': True, # might be enabled only for some browsers..
 
-                'fallback_title': request.processed_view.relevant_title(),
+                'fallback_title': request.processed_view.relevant_title(dm),
 
                 'user': dm.user,
                 'impersonation_capabilities': impersonation_capabilities,
