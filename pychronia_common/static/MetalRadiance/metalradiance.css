@@ -44,6 +44,13 @@ body {
   quotes: none;
   text-overflow: ellipsis;
 }
+body.full_background {
+  background-image: url('img/backgrounds/nazur_temple_75.jpg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: scroll;
+  background-position: center top;
+}
 body:after {
   content: " ";
   background: url('img/backgrounds/tube_gold_small.png'),

@@ -1,0 +1,114 @@
+
+
+{# HERE are the divs actually containing background images #}
+<div id="parallax_back" class="parallax back" style=""></div>
+<div id="parallax_front" class="parallax front" style=""></div>
+
+
+<script language="javascript" type="text/javascript">
+
+    // used to determine max height of parallax divs, to transition properly into black background
+    var parallax_height_to_width_ratio = 2.5 ; //1.95;
+
+    var parallax_settings = [
+        {
+         "tag_id": "parallax_front",
+         "posY": 0,
+         "speedY": 0.8,
+        },
+        {
+         "tag_id": "parallax_back",
+         "posY": 0,
+         "speedY": 0.2,
+        }
+    ];
+
+    function parallax_get_new_pos_y(tracking_speed) {
+        return -Math.round($(document).scrollTop() * tracking_speed);
+    }
+
+    function parallax_handle_scrolling() {
+        for (var i = 0; i < parallax_settings.length; i++) {
+            var conf = parallax_settings[i];
+            //console.log(conf);
+             $("#"+conf.tag_id).css({ "background-position": "center " + parallax_get_new_pos_y(conf.speedY) + "px" });
+        }
+    }
+
+    function parallax_handle_resizing() {
+
+        // we look for the current bottom of the FRONT background
+        var new_max_height = Math.round(($(document).width() * parallax_height_to_width_ratio) + parallax_get_new_pos_y(1 - parallax_settings[0].speedY));
+
+
+        for (var i = 0; i < parallax_settings.length; i++) {
+            var conf = parallax_settings[i];
+            //console.log(conf);
+            $("#"+conf.tag_id).css({ "max-height": new_max_height+"px" });
+        }
+    }
+
+    $(parallax_handle_scrolling);
+    $(window).scroll(parallax_handle_scrolling);
+    $(window).scroll(parallax_handle_resizing); // for height of divs
+    $(parallax_handle_resizing);
+    $(window).resize();
+
+</script>
+
+
+
+<script type="text/javascript">
+
+    /* FIXER - necessary to smooth scrolling on Chrome and IE, not Firefox */
+
+    if (window.addEventListener) window.addEventListener('DOMMouseScroll', wheel, false);
+    window.onmousewheel = document.onmousewheel = wheel;
+
+
+    var time = 300;
+    var distance = 300;
+
+
+    function wheel(event) {
+        if (event.wheelDelta) delta = event.wheelDelta / 120;
+        else if (event.detail) delta = -event.detail / 3;
+
+
+        handle();
+        if (event.preventDefault) event.preventDefault();
+        event.returnValue = false;
+    }
+
+
+    function handle() {
+
+
+        $('html, body').stop().animate({
+            scrollTop: $(window).scrollTop() - (distance * delta)
+        }, time);
+    }
+
+
+    $(document).keydown(function (e) {
+
+
+        switch (e.which) {
+            //up
+            case 38:
+                $('html, body').stop().animate({
+                    scrollTop: $(window).scrollTop() - distance
+                }, time);
+                break;
+
+
+                //down
+            case 40:
+                $('html, body').stop().animate({
+                    scrollTop: $(window).scrollTop() + distance
+                }, time);
+                break;
+        }
+    });
+
+</script>

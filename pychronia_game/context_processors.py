@@ -62,27 +62,32 @@ def pychronia_template_context(request):
 
         signal_new_text_message = dm.is_character() and dm.has_new_message_notification() # only for characters atm
 
-        res = {'game_instance_id': dm.game_instance_id,
+        is_mobile_page = getattr(request, "is_mobile", None) # middleware might be disabled
+
+
+        res = {
+                'game_instance_id': dm.game_instance_id,
+
+                'is_mobile_page': is_mobile_page,
+
+                'use_parallax': True, # might be enabled only for some browsers..
 
                 'fallback_title': request.processed_view.relevant_title(),
 
                 'user': dm.user,
+                'impersonation_capabilities': impersonation_capabilities,
                 'game_is_writable': writability_data["writable"],
                 'disable_widgets': not writability_data["writable"] and not request.processed_view.ALWAYS_ALLOW_POST,
                 'display_admin_tips': dm.user.is_superuser or dm.is_master(dm.user.real_username), # tips also visible when impersonation!
-
-                'impersonation_capabilities': impersonation_capabilities,
-
                 'menus': menus.submenus if menus else [], # we ignore root entry
-                'signal_new_menu_entries': signal_new_menu_entries,
 
-                'is_mobile_page': getattr(request, "is_mobile", None), # middleware might be disabled
 
                 'online_users': online_users,
                 'signal_new_radio_messages': not dm.has_read_current_playlist() if not isinstance(request.processed_view, WebradioManagement) else False,
-
+                'signal_new_help_page': signal_new_help_page,
                 'signal_new_text_message': signal_new_text_message,
                 'signal_chatting_users': bool(dm.get_chatting_users()),
+                'signal_new_menu_entries': signal_new_menu_entries,
 
                 # replacement of django.contrib.messages middleware
                 'notification_type': notification_type,
@@ -94,20 +99,19 @@ def pychronia_template_context(request):
                                                        data=dm.get_categorized_static_page(dm.CONTENT_CATEGORY, "top-" + view_name)),
                                        bottom_content=dict(name="bottom-" + view_name,
                                                            data=dm.get_categorized_static_page(dm.CONTENT_CATEGORY, "bottom-" + view_name))),
-                'signal_new_help_page': signal_new_help_page,
 
                 'action_explanations': action_explanations,
 
                 # entry points
                 'mobile_site_entry_url': config.MOBILE_SITE_ENTRY_URL_TEMPLATE % dm.game_instance_id,
                 'web_site_entry_url': config.WEB_SITE_ENTRY_URL_TEMPLATE % dm.game_instance_id,
-
                 'bug_report_email': config.BUG_REPORT_EMAIL, # might be None
+
                 # useful constants
                 'None': None,
                 'True': True,
                 'False': False,
-                }
+            }
         return res
 
     else:

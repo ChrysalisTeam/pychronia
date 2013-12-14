@@ -96,13 +96,7 @@ body {
     line-height: 20px;
     font-family: Arial, Helvetica, sans-serif;
 
-
     background-color: black;
-    /*background-image: url('#{$IMGS}backgrounds/nazur_temple_75.jpg');
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-attachment: scroll;
-    background-position: center top;*/
 
     /* useful and little known properties */
     word-spacing: normal; // or length measure
@@ -112,7 +106,13 @@ body {
     quotes: none; // or string string string string
     text-overflow: ellipsis; // or clip or string, not inherited
 
-
+    &.full_background {
+        background-image: url('#{$IMGS}backgrounds/nazur_temple_75.jpg');
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-attachment: scroll;
+        background-position: center top;
+    }
 
 
     &:after
