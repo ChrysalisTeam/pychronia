@@ -497,9 +497,11 @@ class CharacterHandling(BaseDataManager): # TODO REFINE
         return others
 
     @readonly_method
-    def build_select_choices_from_usernames(self, usernames):
+    def build_select_choices_from_usernames(self, usernames, add_empty=False):
         visible_names = [username.capitalize() for username in usernames] # no need for real official names here
         character_choices = zip(usernames, visible_names)
+        if add_empty:
+            character_choices = [("", _("None"))] + character_choices # by default, None selected
         return character_choices
 
     @transaction_watcher

@@ -138,6 +138,7 @@ body {
     margin: 0;
     padding: 0;
     background: url("#{$IMGS}backgrounds/oblic_grey_3x3.png") repeat scroll 0 0 transparent;
+    position: relative; // important to appear in front of absolutely positioned parallax divs
 }
 
 

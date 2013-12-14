@@ -8,6 +8,8 @@ FEATURES
 ------------
 
 - wrap empty abilities with nightmare captchas
+- fix initial data of GemsTransferForm, duplicated gems are selected... like in GemPayementFormMixin
+- use relevant_title property in menu generation !!!
 
 
 

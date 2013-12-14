@@ -70,6 +70,7 @@ body:after {
   margin: 0;
   padding: 0;
   background: url("img/backgrounds/oblic_grey_3x3.png") repeat scroll 0 0 transparent;
+  position: relative;
 }
 #full_header {
   width: 100%;

@@ -28,9 +28,14 @@
 
 		    	<td class="bigtext">
 		    		<strong {% if user.is_master %} title="{% trans "Password:" %} {{ char_details.password }}" {% endif %}>
-		    		    {{ char_name }}@{{ pangea_domain }} <br/>
-		    		    {{ char_details.official_name }} <br/>
-		    		    {{ char_details.official_role }}
+
+		    		    <a href="{% game_view_url "pychronia_game.views.compose_message" %}?recipient={{ char_name }}@{{ pangea_domain }}">
+		    		        {{ char_name }}@{{ pangea_domain }}
+		    		    </a> <br/>
+
+                        {{ char_details.official_name }} <br/>
+                        {{ char_details.official_role }} <br/>
+
 		    		    {% if user.is_master %}
 		    		        <p class="admin-note"><i>{{ char_details.gamemaster_hints }}</i></p>
 		    		    {% endif %}

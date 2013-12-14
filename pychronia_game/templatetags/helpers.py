@@ -230,7 +230,7 @@ def _enriched_text(datamanager, content, initial_header_level=None, report_level
 
     html = advanced_restructuredtext(content, initial_header_level=initial_header_level, report_level=report_level)
 
-    print(">>>_enriched_text>>>>>", html)
+    #print(">>>_enriched_text>>>>>", html)
     with exception_swallower():
         html = _generate_encyclopedia_links(html, datamanager, excluded_link=excluded_link)
     with exception_swallower():

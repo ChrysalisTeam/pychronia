@@ -37,7 +37,9 @@ def ___opening(request, template_name='auction/opening.html'): # NEEDS FIXING !!
 @register_view
 class CharactersView(AbstractGameView):
 
-    TITLE = _lazy("Auction Attendees")
+    TITLE = _lazy("Bidders")
+    TITLE_FOR_MASTER = _lazy("Characters")
+
     NAME = "characters_view"
 
     GAME_ACTIONS = dict(money_transfer_form=dict(title=_lazy("Transfer money"),
@@ -91,7 +93,6 @@ class CharactersView(AbstractGameView):
                                   for username, _user_details in sorted_characters}
 
         return {
-                 'page_title': _("Bidders"),
                  'pangea_domain':self.datamanager.get_global_parameter("pangea_network_domain"),
                  'money_form': new_money_form,
                  'gems_form': new_gems_form,

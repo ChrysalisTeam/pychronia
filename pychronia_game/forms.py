@@ -22,14 +22,13 @@ class MoneyTransferForm(AbstractGameForm):
                                             datamanager.build_select_choices_from_usernames(datamanager.get_character_usernames())
 
             self.fields.insert(0, "sender_name", forms.ChoiceField(label=_("Sender"), choices=_money_all_character_choices))
-            self.fields.insert(1, "recipient_name", forms.ChoiceField(label=_("Recipient"),
-                               initial=_money_all_character_choices[min(1, len(_money_all_character_choices) - 1)][0], choices=_money_all_character_choices))
+            self.fields.insert(1, "recipient_name", forms.ChoiceField(label=_("Recipient"), choices=_money_all_character_choices))
         else:
             # for standard characters
             if datamanager.get_character_properties()["account"] <= 0:
                 raise UninstantiableFormError(_("No money available for transfer."))
             others = datamanager.get_other_character_usernames()
-            others_choices = datamanager.build_select_choices_from_usernames(others)
+            others_choices = datamanager.build_select_choices_from_usernames(others, add_empty=True)
             self.fields.insert(0, "recipient_name", forms.ChoiceField(label=_("Recipient"), choices=others_choices))
 
     amount = forms.IntegerField(label=_("Amount"), widget=forms.TextInput(attrs={'size':'8', 'style':'text-align:center;'}),
@@ -43,7 +42,6 @@ class GemsTransferForm(AbstractGameForm):
     def __init__(self, datamanager, *args, **kwargs):
         super(GemsTransferForm, self).__init__(datamanager, *args, **kwargs)
         user = datamanager.user
-
 
         if user.is_master:
             available_gems = []
@@ -67,12 +65,12 @@ class GemsTransferForm(AbstractGameForm):
 
         # dynamic fields here ...
         if user.is_master:
-            _character_choices = datamanager.build_select_choices_from_usernames(datamanager.get_character_usernames())
+            _character_choices = datamanager.build_select_choices_from_usernames(datamanager.get_character_usernames(), add_empty=True)
             self.fields.insert(0, "sender_name", forms.ChoiceField(label=_("Sender"), choices=_character_choices))
-            self.fields.insert(1, "recipient_name", forms.ChoiceField(label=_("Recipient"), initial=_character_choices[min(1, len(_character_choices) - 1)][0], choices=_character_choices))
+            self.fields.insert(1, "recipient_name", forms.ChoiceField(label=_("Recipient"), choices=_character_choices))
         else:
             others = datamanager.get_other_character_usernames()
-            others_choices = datamanager.build_select_choices_from_usernames(others)
+            others_choices = datamanager.build_select_choices_from_usernames(others, add_empty=True)
             self.fields.insert(1, "recipient_name", forms.ChoiceField(label=_("Recipient"), choices=others_choices))
 
         self.fields.insert(2, "gems_choices", forms.MultipleChoiceField(required=False, label=_("Gems"), choices=gems_choices))
@@ -102,10 +100,10 @@ class ArtefactTransferForm(AbstractGameForm):
 
         artefacts = datamanager.get_user_artefacts() # dicts
         artefacts_choices = [(name, value["title"]) for (name, value) in artefacts.items()]
-        self.fields["artefact_name"].choices = artefacts_choices
+        self.fields["artefact_name"].choices = [("", _("None"))] + artefacts_choices
 
         others = datamanager.get_other_character_usernames()
-        others_choices = datamanager.build_select_choices_from_usernames(others)
+        others_choices = datamanager.build_select_choices_from_usernames(others, add_empty=True)
         self.fields["recipient_name"].choices = others_choices
 
         if not artefacts_choices or not others_choices:
