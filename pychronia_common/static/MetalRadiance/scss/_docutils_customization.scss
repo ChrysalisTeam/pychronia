@@ -1,11 +1,11 @@
 
 
-@import "_rst_html4css1.scss";  
+@import "_rst_html4css1.scss";
 
 
 div {
-    
-    
+
+
     .attention, .caution, .danger, .error, .important, .warning {
         p.admonition-title {
             color: $dark_red;
@@ -25,12 +25,18 @@ div {
 }
 
 
-.section {  
-    
+.section {
+
     h1, h2 {
         margin-top: 40px;
     }
-  
+
+}
+
+.fancybox-default .section {
+    h1, h2 {
+        margin-top: 0px;
+    }
 }
 
 

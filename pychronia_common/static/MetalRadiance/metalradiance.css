@@ -1183,6 +1183,9 @@ div .tip p.admonition-title, div .admonition p.admonition-title {
 .section h1, .section h2 {
   margin-top: 40px;
 }
+.fancybox-default .section h1, .fancybox-default .section h2 {
+  margin-top: 0px;
+}
 table.footnote {
   border-color: #9D8126;
 }

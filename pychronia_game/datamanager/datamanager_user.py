@@ -64,6 +64,7 @@ class GameUser(object):
 
         self._datamanager = weakref.ref(datamanager)
 
+        assert self._effective_username
         assert self._real_username
 
 

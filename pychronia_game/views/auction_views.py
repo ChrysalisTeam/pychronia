@@ -18,7 +18,7 @@ def homepage(request, template_name='auction/homepage.html'):
     return render(request,
                   template_name,
                     {
-                     'page_title': _("Welcome to Anthropia, %s") % request.datamanager.username,
+                     'page_title': _("Welcome to Anthropia, %s") % request.datamanager.username.capitalize(),
                     })
 
 

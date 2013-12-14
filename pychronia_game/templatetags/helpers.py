@@ -149,7 +149,7 @@ def _generate_messaging_links(html_snippet, datamanager):
                        kwargs={"game_instance_id": datamanager.game_instance_id})
         link += "?recipient=%s" % urllib.quote_plus(matched_str.encode("utf8"), safe=b"")
         return dict(href=link)
-    regex = r"\b\w+@\w+\.\w+\b"
+    regex = r"\b[\w.]+@\w+\.\w+\b"
     html_res = autolinker.generate_links(html_snippet, regex=regex, link_attr_generator=email_link_attr_generator)
     return html_res
 
@@ -230,6 +230,7 @@ def _enriched_text(datamanager, content, initial_header_level=None, report_level
 
     html = advanced_restructuredtext(content, initial_header_level=initial_header_level, report_level=report_level)
 
+    print(">>>_enriched_text>>>>>", html)
     with exception_swallower():
         html = _generate_encyclopedia_links(html, datamanager, excluded_link=excluded_link)
     with exception_swallower():

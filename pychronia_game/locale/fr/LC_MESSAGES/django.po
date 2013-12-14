@@ -611,7 +611,7 @@ msgstr "Votre usurpation d'identité est en lecture seule."
 
 #: .\datamanager\datamanager_modules.py:131
 msgid "Beware, your impersonation is in writable mode."
-msgstr "Attention, votre usurpation d'identité est en lecture seule."
+msgstr "Attention, votre usurpation d'identité est en mode écriture."
 
 #: .\datamanager\datamanager_modules.py:135
 msgid "Website currently in read-only mode, for maintenance."
@@ -994,7 +994,7 @@ msgid "MOBILE TEST"
 msgstr "MOBILE TEST"
 
 #: .\templates\base_main.html.py:515
-msgid "Report Bug"
+msgid "Bug Report"
 msgstr "Rapporter un bogue"
 
 #: .\templates\base_main_mobile.html.py:6
