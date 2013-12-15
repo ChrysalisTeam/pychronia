@@ -48,8 +48,8 @@ def GAME_INITIAL_FIXTURE_SCRIPT(dm):
     assert not dm.get_character_properties(player_name)["is_npc"]
     dm.update_permissions(player_name, PersistentList(dm.PERMISSIONS_REGISTRY))
 
-    # we can see all articles
-    dm.set_encyclopedia_index_visibility(True)
+    # we can (or not) see all articles
+    dm.set_encyclopedia_index_visibility(False)
 
     # we fill the messages
     email_guy1 = dm.get_character_email(player_name)

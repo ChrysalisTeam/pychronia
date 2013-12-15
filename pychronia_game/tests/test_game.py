@@ -1476,7 +1476,7 @@ class TestDatamanager(BaseGameTestCase):
 
         msg = self.dm.get_dispatched_message_by_id(msg_id)
         self.assertFalse(msg["has_replied"])
-        self.assertFalse(msg["has_read"])
+        self.assertEqual(msg["has_read"], ["guy1"]) # SENDER auto registered
 
         # no strict checks on sender/recipient of original message, when using parent_id feature
         msg_id2 = self.dm.post_message(email("guy2"), email("guy1"), subject="ssd", body="qsdqsd", parent_id=msg_id, delay_mn= -2)
@@ -1484,13 +1484,13 @@ class TestDatamanager(BaseGameTestCase):
 
         msg = self.dm.get_dispatched_message_by_id(msg_id2) # new message isn't impacted by parent_id
         self.assertFalse(msg["has_replied"])
-        self.assertFalse(msg["has_read"])
+        self.assertEqual(msg["has_read"], ["guy2"]) # SENDER auto registered
 
         msg = self.dm.get_dispatched_message_by_id(msg_id) # replied-to message impacted
         self.assertEqual(len(msg["has_replied"]), 2)
         self.assertTrue("guy2" in msg["has_replied"])
         self.assertTrue("guy3" in msg["has_replied"])
-        self.assertEqual(len(msg["has_read"]), 0) # read state of parent messages do NOT autochange
+        self.assertEqual(msg["has_read"], ["guy1"]) # read state of parent messages do NOT autochange, still only sender is in here
 
         ######
 
@@ -1501,7 +1501,7 @@ class TestDatamanager(BaseGameTestCase):
 
         msg = self.dm.get_dispatched_message_by_id(msg_id4) # new message isn't impacted
         self.assertFalse(msg["has_replied"])
-        self.assertFalse(msg["has_read"])
+        self.assertEqual(msg["has_read"], ["guy3"])
 
         tpl = self.dm.get_message_template(tpl_id)
         self.assertEqual(tpl["is_used"], True) # template properly marked as used
@@ -1862,10 +1862,10 @@ class TestDatamanager(BaseGameTestCase):
         time.sleep(0.2)
         self.dm.post_message(**record1) # this message will get back to the 2nd place of list !
 
-        print ("@>@>@>@>", self.dm.get_all_dispatched_messages())
+        #print ("@>@>@>@>", self.dm.get_all_dispatched_messages())
         self.assertEqual(self.dm.get_unread_messages_count("guy3"), 3)
 
-        self.assertEqual(self.dm.get_unread_messages_count(self.dm.get_global_parameter("master_login")), 2)
+        self.assertEqual(self.dm.get_unread_messages_count(self.dm.get_global_parameter("master_login")), 1) # message sent BY master is already marked as read
 
         self.assertEqual(len(self.dm.get_all_dispatched_messages()), 6)
 
@@ -1933,7 +1933,7 @@ class TestDatamanager(BaseGameTestCase):
         # self.assertEqual(self.dm.get_all_dispatched_messages()[4]["no_reply"], True)# msg from robot
 
         self.assertEqual(self.dm.get_all_dispatched_messages()[0]["is_certified"], False)
-        self.assertFalse(self.dm.get_all_dispatched_messages()[0]["has_read"])
+        self.assertEqual(self.dm.get_all_dispatched_messages()[0]["has_read"], ["guy2"])
         self.dm.set_message_read_state("guy3", msg_id1, True)
         self.dm.set_message_read_state("guy2", msg_id1, True)
 
@@ -1946,13 +1946,13 @@ class TestDatamanager(BaseGameTestCase):
         self.assertEqual(self.dm.get_all_dispatched_messages()[0]["has_read"], ["guy2"])
         self.assertEqual(self.dm.get_unread_messages_count("guy3"), 3)
 
-        self.assertFalse(self.dm.get_all_dispatched_messages()[3]["has_read"])
+        self.assertEqual(self.dm.get_all_dispatched_messages()[3]["has_read"], ["guy4"])
         self.dm.set_message_read_state(MASTER, msg_id2, True)
         self.assertTrue(MASTER in self.dm.get_all_dispatched_messages()[3]["has_read"])
-        self.assertEqual(self.dm.get_unread_messages_count(self.dm.get_global_parameter("master_login")), 1)
+        self.assertEqual(self.dm.get_unread_messages_count(self.dm.get_global_parameter("master_login")), 0)
         self.dm.set_message_read_state(MASTER, msg_id2, False)
-        self.assertFalse(self.dm.get_all_dispatched_messages()[3]["has_read"])
-        self.assertEqual(self.dm.get_unread_messages_count(self.dm.get_global_parameter("master_login")), 2)
+        self.assertEqual(self.dm.get_all_dispatched_messages()[3]["has_read"], ["guy4"])
+        self.assertEqual(self.dm.get_unread_messages_count(self.dm.get_global_parameter("master_login")), 1)
 
 
 

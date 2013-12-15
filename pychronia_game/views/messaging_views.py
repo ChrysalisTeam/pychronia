@@ -295,21 +295,26 @@ def messages_templates(request, template_name='messaging/messages.html'):
     enriched_templates = [(_determine_template_display_context(request.datamanager, template_id=tpl[0]), tpl[1]) for tpl in templates]
     return render(request,
                   template_name,
-                  dict(page_title=_("Message Templates"),
-                       messages=enriched_templates))
+                  dict(messages=enriched_templates))
 
 
 @register_view(access=UserAccess.authenticated, requires_global_permission=False, title=_lazy("Conversations"))
 def conversation(request, template_name='messaging/conversation.html'):
+    
+    CONVERSATIONS_LIMIT = 15
 
     display_all_conversations = bool(request.GET.get("display_all", None) == "1")
 
     messages = request.datamanager.get_user_related_messages() # for current master or character
-    grouped_messages = request.datamanager.sort_messages_by_conversations(messages)
-    enriched_messages = _determine_message_list_display_context(request.datamanager, messages=grouped_messages, is_pending=False)
+    _grouped_messages = request.datamanager.sort_messages_by_conversations(messages)
+    enriched_messages = _determine_message_list_display_context(request.datamanager, messages=_grouped_messages, is_pending=False)
+    del _grouped_messages
+    
+    if len(enriched_messages) <= CONVERSATIONS_LIMIT:
+        display_all_conversations = True # it makes no sense to "limit" then...
 
     if not display_all_conversations:
-        enriched_messages = enriched_messages[0:15] # we arbitrarily limit to 15 recent conversations
+        enriched_messages = enriched_messages[0:CONVERSATIONS_LIMIT] # we arbitrarily limit to 15 recent conversations
 
     dm = request.datamanager
     if dm.is_game_writable() and dm.is_character():
