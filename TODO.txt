@@ -13,6 +13,7 @@ FEATURES
 - fix width-100% and br in forms.as_p
 - nasty bug in chatroom, concurrency error between ajax calls and writability setting enforcement (need lock ??)
 - in chatroom, communication problem when leavbing page
+- translate pychroni_common stuffs too
 
 
 SCRIPT

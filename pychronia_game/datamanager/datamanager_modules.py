@@ -2203,6 +2203,9 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
 
     def _immediately_dispatch_message(self, msg):
         msg["visible_by"].update(self._determine_basic_visibility(msg)) # we shamelessly override more specialized visibilities
+        for (k, v) in msg["visible_by"].items():
+            if (v == VISIBILITY_REASONS.sender) and (k not in msg["has_read"]):
+                msg["has_read"].append(k) # of course everyone knows his own sent messages...
         super(TextMessagingForCharacters, self)._immediately_dispatch_message(msg)
 
     def _message_dispatching_post_hook(self, frozen_msg):
