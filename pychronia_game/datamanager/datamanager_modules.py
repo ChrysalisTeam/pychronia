@@ -4057,6 +4057,7 @@ class Encyclopedia(BaseDataManager):
         username = self._resolve_username(username)
         assert article_ids is not None
         known_article_ids = self.get_character_properties(username)["known_article_ids"]
+        assert isinstance(known_article_ids, PersistentList), known_article_ids
         for article_id in article_ids:
             if article_id not in known_article_ids:
                 known_article_ids.append(article_id)
@@ -4064,6 +4065,9 @@ class Encyclopedia(BaseDataManager):
 
     @transaction_watcher
     def reset_character_known_article_ids(self, username=CURRENT_USER):
+        """
+        Mainly for testing...
+        """
         username = self._resolve_username(username)
         known_article_ids = self.get_character_properties(username)["known_article_ids"]
         del known_article_ids[:]

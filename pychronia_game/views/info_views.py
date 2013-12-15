@@ -63,6 +63,8 @@ class EncyclopediaView(AbstractGameView):
         dm = self.datamanager
 
         def _conditionally_update_known_article_ids(ids_list):
+            assert isinstance(ids_list, list)
+            assert all(isinstance(i, basestring) for i in ids_list)
             if dm.is_character() and dm.is_game_writable():  # not for master or anonymous!!
                 dm.update_character_known_article_ids(article_ids=ids_list)
 
@@ -86,7 +88,7 @@ class EncyclopediaView(AbstractGameView):
                     if not search_results:
                         dm.user.add_error(_("Sorry, no matching encyclopedia article has been found for '%s'") % search_string)
                     else:
-                        _conditionally_update_known_article_ids([search_results])
+                        _conditionally_update_known_article_ids(search_results) # already a list
                         if len(search_results) == 1:
                             dm.user.add_message(_("Your search has led to a single article, below."))
                             return HttpResponseRedirect(redirect_to=reverse("pychronia_game.views.view_encyclopedia",
