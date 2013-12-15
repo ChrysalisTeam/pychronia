@@ -648,12 +648,17 @@ class TestDatamanager(BaseGameTestCase):
 
         self.dm.get_character_properties = broken # INSTANCE attribute, no problem
 
-        for func in (self.dm.get_wiretapping_targets, self.dm.set_confidentiality_protection_status):
+        for func in (self.dm.get_wiretapping_targets, # READONLY
+                     self.dm.set_confidentiality_protection_status): # WRITABLE
             self.dm.clear_all_event_stats()
             with pytest.raises(AbnormalUsageError) as exc_info:
                 func()
             assert "Concurrent access" in str(exc_info.value)
             assert self.dm.get_event_count("BROKEN_DUMMY_FUNC_CALLED") == 3 # 3 attempts max
+
+        del self.dm.get_character_properties
+        self.dm.check_database_coherency()
+        self.dm.get_character_properties = broken # INSTANCE attribute, no problem
 
         for ERROR_TYPE in (UsageError, EnvironmentError, TypeError):
             for func in (self.dm.get_wiretapping_targets, self.dm.set_confidentiality_protection_status):
@@ -661,6 +666,9 @@ class TestDatamanager(BaseGameTestCase):
                 with pytest.raises(ERROR_TYPE):
                     func()
                 assert self.dm.get_event_count("BROKEN_DUMMY_FUNC_CALLED") == 1 # no retries in these cases
+
+        del self.dm.get_character_properties
+        self.dm.check_database_coherency()
 
 
 
@@ -2864,6 +2872,8 @@ class TestDatamanager(BaseGameTestCase):
 
         assert self.dm.get_global_parameter("master_real_email") == master_real_email
 
+        self.dm.override_master_credentials(master_login="master", master_password="ultimate", master_real_email=master_real_email) # to please coherency
+
 
     @for_core_module(PlayerAuthentication)
     def test_players_passwords_randomization(self):
@@ -4387,6 +4397,8 @@ class TestActionMiddlewares(BaseGameTestCase):
         assert CostlyActionMiddleware
         self.dm.commit()
 
+        self.dm.check_database_coherency() # SECURITY
+
 
         # misconfiguration case #
 
@@ -4409,6 +4421,7 @@ class TestActionMiddlewares(BaseGameTestCase):
         self.dm.clear_all_event_stats()
 
         assert self._flatten_explanations(ability.get_middleware_data_explanations(action_name="middleware_wrapped_test_action"))
+
 
         # payment with money #
 
@@ -4454,6 +4467,9 @@ class TestActionMiddlewares(BaseGameTestCase):
         self.dm.clear_all_event_stats()
 
         assert self._flatten_explanations(ability.get_middleware_data_explanations(action_name="middleware_wrapped_test_action"))
+
+
+        self.dm.check_database_coherency() # SECURITY
 
 
         # payment with gems #
@@ -4511,6 +4527,8 @@ class TestActionMiddlewares(BaseGameTestCase):
         self.dm.clear_all_event_stats()
 
 
+        self.dm.check_database_coherency() # SECURITY
+
 
         # payment with both is possible #
 
@@ -4533,6 +4551,7 @@ class TestActionMiddlewares(BaseGameTestCase):
         assert self.dm.get_event_count("INSIDE_NON_MIDDLEWARE_ACTION_CALLABLE") == 2
 
         assert self._flatten_explanations(ability.get_middleware_data_explanations(action_name="middleware_wrapped_test_action"))
+
 
 
     def test_count_limited_action_middleware(self):
@@ -4778,6 +4797,10 @@ class TestActionMiddlewares(BaseGameTestCase):
         assert self.dm.get_event_count("INSIDE_MIDDLEWARE_WRAPPED2") == 1
         assert self.dm.get_event_count("INSIDE_NON_MIDDLEWARE_ACTION_CALLABLE") == 1
         self.dm.clear_all_event_stats()
+
+        ability.reset_test_settings("middleware_wrapped_test_action", TimeLimitedActionMiddleware,
+                                    dict(waiting_period_mn=3, max_uses_per_period=50)) # to please coherency checking, after our rough changes
+
 
 
     def test_action_middleware_rollback_on_error(self):
@@ -5693,7 +5716,7 @@ class TestAdminActions(BaseGameTestCase):
             return self.factory.post(dashboard_url, dict(target_form_id="admin_dashboard.set_game_pause_state",
                                                         is_paused="1",
                                                         _ability_form="pychronia_game.views.admin_views.admin_dashboard_mod.GamePauseForm"))
-        
+
 
         # build complete request (without auto-checking DM)
         request = gen_request()

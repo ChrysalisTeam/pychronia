@@ -239,6 +239,8 @@ class GameEvents(BaseDataManager): # TODO REFINE
             previous_time = event["time"]
             utilities.check_dictionary_with_template(event, event_reference)
             username = event["username"]
+
+            # test is a little brutal, if we reset master login it might fail...
             assert username in self.get_character_usernames() or \
                     username == self.get_global_parameter("master_login") or \
                     username == self.get_global_parameter("anonymous_login")
@@ -2128,7 +2130,7 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
                              "is_certified": bool, # for messages sent via automated processes
                              }
 
-        def _check_message_list(msg_list):
+        def _check_message_list(msg_list, is_queued):
 
             for msg in msg_list:
 
@@ -2144,14 +2146,16 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
                     assert username in potential_viewers
                     utilities.check_is_slug(reason)
                     assert reason in VISIBILITY_REASONS, reason
-                # later, special script events might make it normal that even senders or recipients do NOT see the message anymore, but NOT NOW
-                assert set(self._determine_basic_visibility(msg).keys()) <= set(msg["visible_by"].keys())
+
+                if not is_queued: # queued message don't have basic visibility ysettings yet
+                    # later, special script events might make it normal that even senders or recipients do NOT see the message anymore, but NOT NOW
+                    assert set(self._determine_basic_visibility(msg).keys()) <= set(msg["visible_by"].keys()), [self._determine_basic_visibility(msg).keys(), msg]
 
 
         # WARNING - we must check the two lists separately, because little incoherencies can appear at their junction due to the workflow
         # (the first queued messages might actually be younger than the last ones of the sent messages list)
-        _check_message_list(messaging["messages_dispatched"])
-        _check_message_list(messaging["messages_queued"])
+        _check_message_list(messaging["messages_dispatched"], is_queued=False)
+        _check_message_list(messaging["messages_queued"], is_queued=True)
 
         # new-message audio notification system (characters may have no dedicated notification)
         all_msg_files = [self.data["audio_messages"][properties["new_messages_notification"]]["file"]
@@ -3270,7 +3274,7 @@ class MoneyItemsOwnership(BaseDataManager):
                 if gem_origin is not None:
                     assert gem_origin in game_data["game_items"]
                     assert game_data["game_items"][gem_origin]["is_gem"]
-                total_gems.append(gem_value)
+                total_gems.append(gem_value) # only value in kashes, not gem origin
             # print ("---------", name, total_gems.count(500))
 
         assert game_data["game_items"]

@@ -178,6 +178,9 @@ class AutoCheckingDM(object):
     def __setattr__(self, name, value):
         return object.__getattribute__(self, "_real_dm").__setattr__(name, value)
 
+    def __delattr__(self, name):
+        return object.__getattribute__(self, "_real_dm").__delattr__(name)
+
 
 @contextlib.contextmanager
 def temp_datamanager(game_instance_id, request=None):
@@ -273,7 +276,7 @@ class BaseGameTestCase(TestCase): # one day, use pytest-django module to make it
     def tearDown(self, check=True):
         if hasattr(self, "dm"):
             if check:
-                pass### self.dm.check_database_coherency()
+                self.dm.check_database_coherency()
             self.dm.close()
             self.dm = None
 

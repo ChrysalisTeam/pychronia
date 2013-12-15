@@ -336,7 +336,7 @@ class CostlyActionMiddleware(AbstractActionMiddleware):
             raise AbnormalUsageError(_("You don't possess the gems required")) # shouldn't happen since we use a form
         else:
             character_properties["gems"] = PersistentList(remaining_gems)
-            self.data["global_parameters"]["spent_gems"] += gems_list
+            self.data["global_parameters"]["spent_gems"] += [x[0] for x in gems_list] # only value in kashes, not origin
 
 
     def _pay_with_money(self, character_properties, middleware_settings):
