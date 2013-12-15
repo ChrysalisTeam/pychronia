@@ -94,7 +94,7 @@ def _generate_web_menu(request, menu_entry_generator):
                            menu_entry(view=views.view_characters),
                            menu_entry(view=views.view_sales),
                            menu_entry(view=views.auction_items_slideshow),
-                           menu_entry(_(u"Chatroom") + chatroom_suffix, view=views.chatroom),
+                           menu_entry(_(u"Auction Chatroom") + chatroom_suffix, view=views.chatroom),
                            # menu_entry(_(u"Radio Messages"), views.personal_radio_messages_listing), # TODO INTEGRATE TO INFO PAGES ???
                        )),
 

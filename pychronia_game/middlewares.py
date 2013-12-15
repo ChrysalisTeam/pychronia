@@ -102,13 +102,14 @@ class ZodbTransactionMiddleware(object):
         except Exception:
             logger = logging
 
-        try:
-            if hasattr(request, "datamanager"):
-                request.datamanager.check_database_coherency() # DEBUGGING
-                request.datamanager.close()
-        except Exception, e:
-            # exception should NEVER flow out of response processing middlewares
-            logger.critical("Exception occurred in ZODB middleware process_response - %r" % e, exc_info=True)
+        if __debug__:
+            try:
+                if hasattr(request, "datamanager"):
+                    request.datamanager.check_database_coherency() # DEBUGGING
+                    request.datamanager.close()
+            except Exception, e:
+                # exception should NEVER flow out of response processing middlewares
+                logger.critical("Exception occurred in ZODB middleware process_response - %r" % e, exc_info=True)
 
         return response
 

@@ -37,7 +37,7 @@ def ___opening(request, template_name='auction/opening.html'): # NEEDS FIXING !!
 @register_view
 class CharactersView(AbstractGameView):
 
-    TITLE = _lazy("Bidders")
+    TITLE = _lazy("Auction Bidders")
     TITLE_FOR_MASTER = _lazy("Characters")
 
     NAME = "characters_view"
@@ -147,7 +147,7 @@ def _sorted_game_items(items_list): # items_list is a list of pairs from dict it
 
 
 
-@register_view(access=UserAccess.authenticated, title=_lazy("View Sales"), title_for_master=_lazy("View Items")) # fixme ? always available ?
+@register_view(access=UserAccess.authenticated, title=_lazy("Auction Items"), title_for_master=_lazy("All Items")) # fixme ? always available ?
 def view_sales(request, template_name='auction/view_sales.html'):
     # FIXME - needs a review ########
     user = request.datamanager.user
@@ -156,10 +156,12 @@ def view_sales(request, template_name='auction/view_sales.html'):
         # we process sale management operations - BEWARE, input checking is LOW here!
         params = request.POST
         if "buy" in params and "username" in params and "object" in params:
-            with action_failure_handler(request, _("Object successfully transferred to %s.") % params["username"].capitalize()):
+            with action_failure_handler(request, _("Object successfully transferred to '%s'.") % params["username"].capitalize()):
+                if not params["username"]:
+                    raise UsageError(_("Improper recipient"))
                 request.datamanager.transfer_object_to_character(params["object"], char_name=params["username"])
         elif "unbuy" in params and "username" in params and "object" in params:
-            with action_failure_handler(request, _("Sale successfully canceled for %s.") % params["username"].capitalize()):
+            with action_failure_handler(request, _("Sale successfully canceled for '%s'.") % params["username"].capitalize()):
                 request.datamanager.transfer_object_to_character(params["object"], char_name=None)
 
 
@@ -197,7 +199,6 @@ def view_sales(request, template_name='auction/view_sales.html'):
     return render(request,
                   template_name,
                     {
-                     'page_title': _("Auction"),
                      'items_for_sale': sorted_items_for_sale,
                      'usernames':  request.datamanager.get_character_usernames(),
                      #'character_names': request.datamanager.get_character_official_names(),
@@ -209,19 +210,19 @@ def view_sales(request, template_name='auction/view_sales.html'):
 
 
 
-@register_view(access=UserAccess.authenticated, title=_lazy("Auction Slideshow"))
+@register_view(access=UserAccess.authenticated, title=_lazy("Auction Slideshow"), title_for_master=_lazy("Items Slideshow"))
 def auction_items_slideshow(request, template_name='auction/items_slideshow.html'):
     """
     Contains ALL auction items, WITHOUT 3D viewers.
     """
-    page_title = _("Auction Items")
-    items = request.datamanager.get_auction_items() if not request.datamanager.is_master() else request.datamanager.get_all_items() # master can see EVERYTHING
+    items = (request.datamanager.get_auction_items()
+             if not request.datamanager.is_master()
+             else request.datamanager.get_all_items()) # master can see EVERYTHING, but without 3D
     sorted_items = _sorted_game_items(items.items())
 
     return render(request,
                   template_name,
                     {
-                     'page_title': page_title,
                      'items': sorted_items,
                      'items_3D_settings': None
                     })
@@ -367,12 +368,11 @@ def ajax_chat(request):
 
 
 
-@register_view(access=UserAccess.authenticated, title=_lazy("Chatroom"))  # game master can view too
+@register_view(access=UserAccess.authenticated, title=_lazy("Auction Chatroom"))  # game master can view too
 def chatroom(request, template_name='auction/chatroom.html'):
 
     return render(request,
                   template_name,
                     {
-                     'page_title': _("Common Chatroom"),
                     })
 

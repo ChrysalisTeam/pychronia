@@ -1532,8 +1532,8 @@ msgid "Value, in kashes, of each gem"
 msgstr "Valeur, en kashes, de chaque gemme"
 
 #: .\templates\auction\view_characters.html.py:72
-msgid "Digital Money Transfer"
-msgstr "Transfert Numérique d'Argent"
+msgid "Money Transfer"
+msgstr "Transfert d'Argent"
 
 #: .\templates\auction\view_characters.html.py:72
 msgid "Transfer money"

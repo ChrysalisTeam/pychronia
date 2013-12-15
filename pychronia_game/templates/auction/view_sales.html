@@ -13,8 +13,9 @@ while the total value of proposed items is <strong>{{ total_items_price }}</stro
 {% endif %}
 
 <p>
-There are altogether <strong>{{ total_gems_number }}</strong> gems and <strong>{{ total_archaeological_objects_number }}</strong>
-archeological objects at auction.
+{% blocktrans %}
+There are altogether <strong>{{ total_gems_number }}</strong> gems and <strong>{{ total_archaeological_objects_number }}</strong> archeological objects at auction.
+{% endblocktrans %}
 </p><br/>
 
 
@@ -95,6 +96,7 @@ archeological objects at auction.
 
         		 		<td>
         		 			<select name="username">
+        		 			    <option value="">&nbsp;</option>
         	 				{% for username in usernames %}
         						<option value="{{ username }}">{{ username|capfirst }}</option>
         					{% endfor %}

@@ -10,7 +10,9 @@ FEATURES
 - wrap empty abilities with nightmare captchas
 - fix initial data of GemsTransferForm, duplicated gems are selected... like in GemPayementFormMixin
 - use relevant_title property in menu generation !!!
-
+- fix width-100% and br in forms.as_p
+- nasty bug in chatroom, concurrency error between ajax calls and writability setting enforcement (need lock ??)
+- in chatroom, communication problem when leavbing page
 
 
 SCRIPT

@@ -3414,6 +3414,9 @@ class MoneyItemsOwnership(BaseDataManager):
         """
         assert not previous_owner or previous_owner in self.get_available_logins()
 
+        if char_name is not None and char_name not in self.get_character_usernames():
+            raise NormalUsageError(_("Unknown user name '%s'") % char_name)
+
         ## FIXME - make this a character-method too !!!
         item = self.get_item_properties(item_name)
         from_name = item["owner"] if item["owner"] else _("no one") # must be done IMMEDIATELY

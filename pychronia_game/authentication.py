@@ -89,6 +89,7 @@ def try_authenticating_with_session(request):
                                                            requested_impersonation_target=requested_impersonation_target,
                                                            requested_impersonation_writability=requested_impersonation_writability,
                                                            django_user=request.user) # can be anonymous
+        #print("NEW AUTHENTICATION DATA IN SESSION", res)
         request.session[instance_key] = res # this refreshes expiry time, and ensures we properly modify session
 
     except UsageError, e:
