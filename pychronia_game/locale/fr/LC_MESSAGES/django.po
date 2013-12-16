@@ -1788,7 +1788,7 @@ msgstr "Message supprimé avec succès"
 
 #: .\templates\messaging\base.html.py:106
 msgid "Enjoy the power of Anthropia's integrated messaging system."
-msgstr "Profitez de la puissance du système de messagerie intégré à Anthropia"
+msgstr "Profitez de la puissance du système de messagerie intégré d'Anthropia"
 
 #: .\templates\messaging\compose.html.py:46
 msgid "Nothing to preview."

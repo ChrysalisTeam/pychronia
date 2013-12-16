@@ -7,6 +7,7 @@ TODO LIST CHRYSALIS
 FEATURES
 ------------
 
+- hide other's objects by default and buy ability of seeing them
 - wrap empty abilities with nightmare captchas
 - fix initial data of GemsTransferForm, duplicated gems are selected... like in GemPayementFormMixin
 - use relevant_title property in menu generation !!!
