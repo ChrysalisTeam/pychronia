@@ -17,21 +17,18 @@
 	</thead>
 
 	<tbody>
-	{% for char_set in char_sets %}
+	{% for character_group in character_groups %}
 
-		{% for char_name, char_details in char_set %}
-
-		{% comment %} char_details is at least {'gems': [], 'items': [], 'domain': 'acharis.com', 'password': 'xxxx', 'account': 0} {% endcomment %}
-
+		{% for char_details in character_group %}
 
 	    <tr class="{% cycle 'rowA' 'rowB' %}"  style="color:{{ char_details.character_color }};">
 
 		    	<td class="bigtext">
 		    		<strong {% if user.is_master %} title="{% trans "Password:" %} {{ char_details.password }}" {% endif %}>
 
-		    		    <a href="{% game_view_url "pychronia_game.views.compose_message" %}?recipient={{ char_name }}@{{ pangea_domain }}"
+		    		    <a href="{% game_view_url "pychronia_game.views.compose_message" %}?recipient={{ char_details.email_address }}"
 		    		        style="color:{{ char_details.character_color }};"style="color:{{ char_details.character_color }};">
-		    		        {{ char_name }}@{{ pangea_domain }}
+		    		        {{ char_details.email_address }}
 		    		    </a> <br/>
 
                         {{ char_details.official_name }} <br/>
@@ -43,27 +40,36 @@
 					</strong>
 		    	</td>
 
-		    	<td class="bigtext">
-		    		{{ char_details.account }}
-		    	</td>
 
-		    	<td class="bigtext">
-		    	    <ul>
-		    		{% for item in character_item_details|dict_get:char_name %}
-		    		    <li>{{ item.title }}</li>
-		    		{% empty %}
-		    			<li>{% trans "None" %}</li>
-		    		{% endfor %}
-		    		<ul>
-		    	</td>
+		    	{% if user.username == char_details.username or show_others_belongings %}
 
-		    	<td class="bigtext" title="{% trans "Value, in kashes, of each gem" %}"">
-		    		{% if char_details.gems %}
-		    			{{ char_details.gems|list_filter:0|join:", " }}
-		    		{% else %}
-		    			{% trans "None" %}
-		    		{% endif %}
-		    	</td>
+    		    	<td class="bigtext">
+    		    		 {{ char_details.account }}
+    		    	</td>
+
+    		    	<td class="bigtext">
+        	    	    <ul>
+        	    		{% for item in char_details.user_items %}
+        	    		    <li>{{ item.title }}</li>
+        	    		{% empty %}
+        	    			<li>{% trans "None" %}</li>
+        	    		{% endfor %}
+        	    		<ul>
+    		    	</td>
+
+    		    	<td class="bigtext" title="{% trans "Value, in kashes, of each gem" %}"">
+    		    		{% if char_details.gems %}
+    		    			{{ char_details.gems|list_filter:0|join:", " }}
+    		    		{% else %}
+    		    			{% trans "None" %}
+    		    		{% endif %}
+    		    	</td>
+
+                {% else %}
+                    <td class="bigtext"><i>{% trans "Undefined" %}</i></td>
+                    <td class="bigtext"><i>{% trans "Undefined" %}</i></td>
+                    <td class="bigtext"><i>{% trans "Undefined" %}</i></td>
+                {% endif %}
 
 	    </tr>
 	    {% endfor %}

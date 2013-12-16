@@ -1072,7 +1072,7 @@ class PermissionsHandling(BaseDataManager): # TODO REFINE
     @readonly_method
     def has_permission(self, username=CURRENT_USER, permission=None):
         assert permission
-        assert permission in self.PERMISSIONS_REGISTRY # handy
+        assert permission in self.PERMISSIONS_REGISTRY # handy check
 
         username = self._resolve_username(username)
 

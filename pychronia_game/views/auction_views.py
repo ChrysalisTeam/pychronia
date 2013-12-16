@@ -58,6 +58,7 @@ class CharactersView(AbstractGameView):
     REQUIRES_CHARACTER_PERMISSION = False
     REQUIRES_GLOBAL_PERMISSION = False
 
+    EXTRA_PERMISSIONS = ["view_others_belongings"]
 
 
     def get_template_vars(self, previous_form_data=None):
@@ -82,23 +83,34 @@ class CharactersView(AbstractGameView):
 
         if self.datamanager.is_master():
             characters = self.datamanager.get_character_sets().items()
-            auction_only = False
         else:
             characters = [(k, v) for (k, v) in self.datamanager.get_character_sets().items() if not v["is_npc"]]
-            auction_only = True
 
-        sorted_characters = sorted(characters, key=lambda (key, value): (value["is_npc"], key))  # sort by type and then login
+        characters = copy.deepcopy(characters) # we ensure we don't touch real DB data
 
-        character_item_details = {username: sorted(self.datamanager.get_available_items_for_user(username=username, auction_only=auction_only).values(), key=lambda x:x["title"])
-                                  for username, _user_details in sorted_characters}
+        show_others_belongings = self.datamanager.is_master() or self.datamanager.has_permission(permission="view_others_belongings")
 
+        
+
+        for username, user_data in characters:
+            user_data["username"] = username
+            user_data["email_address"] = self.datamanager.get_character_email(username=username)
+            if username == self.datamanager.user.username or show_others_belongings:
+                user_data["user_items"] =  sorted(self.datamanager.get_available_items_for_user(username=username, auction_only=False).values(),  
+                                                  key=lambda x:x["title"]) # it's all or nothing, we don't discriminate by auction
+            else:
+                del user_data["account"] # security
+                
+        characters = sorted((v for (k, v) in characters), # now all is in user data dict
+                            key=lambda value: (value["is_npc"], value["username"])) # sort by type and then login
+        
+        # NOW WRONG {% comment %} character is at least {'gems': [], 'items': [], 'domain': 'acharis.com', 'password': 'xxxx', 'account': 0} {% endcomment %}
         return {
-                 'pangea_domain':self.datamanager.get_global_parameter("pangea_network_domain"),
+                 'show_others_belongings': show_others_belongings,
+                 'character_groups': [characters], # single set ATM
                  'money_form': new_money_form,
                  'gems_form': new_gems_form,
                  'artefact_form': new_artefact_form,
-                 'char_sets': [sorted_characters], # single set ATM
-                 'character_item_details': character_item_details,
                }
 
 

@@ -15,6 +15,7 @@ FEATURES
 - nasty bug in chatroom, concurrency error between ajax calls and writability setting enforcement (need lock ??)
 - in chatroom, communication problem when leavbing page
 - translate pychroni_common stuffs too
+- test proper hiding (or not) of characters belongings depending on permissions, in characters page
 
 
 SCRIPT
