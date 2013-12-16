@@ -3,7 +3,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from pychronia_game.common import *
-
+from django.db.utils import DatabaseError
 
 SESSION_TICKET_KEY_TEMPLATE = 'pychronia_session_ticket_%s'
 IMPERSONATION_TARGET_POST_VARIABLE = "_set_impersonation_target_"
@@ -96,9 +96,12 @@ def try_authenticating_with_session(request):
         # invalid session data, or request vars...
         logging.critical("Error in try_authenticating_with_session with locals %r" % repr(locals()), exc_info=True)
         request.session[instance_key] = None # important cleanup!
+        pass # thus, if error, we let the anonymous user be...
 
-    # anyway, if error, we let the anonymous user be...
-
+    try:
+        request.session.save() # force IMMEDIATE saving, to avoid lost updates between web and ajax (eg. chatroom) requests
+    except DatabaseError, e:
+        logging.warning("Immediate saving of django session failed (%r), it's expected during unit-tests when DB is not setup...", e)
 
 
 
