@@ -7,8 +7,10 @@ TODO LIST CHRYSALIS
 FEATURES
 ------------
 
-- hide other's objects by default and buy ability of seeing them
-- wrap empty abilities with nightmare captchas
+- exclude NPC from all_characters_ml (renamed to all_auction...)
+- IMPORTANT : improve auto file path completion to deal with GLOBs
+- hide other's objects by default and allow to buy the ability of seeing them
+- wrap empty abilities with nightmare captchas (of different subtypes)
 - fix initial data of GemsTransferForm, duplicated gems are selected... like in GemPayementFormMixin
 - use relevant_title property in menu generation !!!
 - fix width-100% and br in forms.as_p
