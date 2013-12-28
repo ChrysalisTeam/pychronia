@@ -400,8 +400,42 @@ def check_is_game_file(*paths_elements):
 def is_email(email):
     return email_re.match(email)
 
+    
+def find_game_file(filename, *rel_path_glob, game_files_root=config.GAME_FILES_ROOT): 
+    """
+    Returns the SINGLE file called filename, in 
+    """
+    assert os.path.basename(filename) == filename
+    if not rel_path_glob:
+        search_trees = [game_files_root]
+    else:
+        rel_path_glob = os.path.join(*rel_path_glob)
+        # we hope that game_files_root contains no special chars...
+        search_trees = glob.glob(os.path.join(game_files_root, rel_path_glob)) 
+    assert search_trees
+    
+    result_folders = []
+    for search_tree in search_trees:
+        for root, dirs, files in os.walk(search_tree):
+            if filename in files:
+                result_folders.append(root) 
+                pass # for robustness, we keep searching
+    if not result_folders:
+        raise RuntimeError("Game file %r not found in %r", filename, search_trees)
+    elif len(result_folders) > 1:
+        raise RuntimeError("Multiple game files with name %r found: %r", filename, result_folders)
+    assert len(result_folders)
+    full_file_path = os.path.join(result_folders[0], filename)
+    assert full_file_path.startswith(game_files_root)
+    rel_file_path = os.path.relpath(full_file_path, start=game_files_root)
+    assert os.path.isabs(rel_file_path)
+    return rel_file_path
+        
 
-def complete_game_file_path(filename, *elements):
+def ___complete_game_file_path(filename, *elements):
+    """
+    Now SUPERSEDED by find_game_file().
+    """
     assert filename
     basename = os.path.basename(filename)
     if basename == filename:

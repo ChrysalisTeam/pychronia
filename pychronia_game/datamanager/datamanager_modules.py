@@ -378,7 +378,7 @@ class CharacterHandling(BaseDataManager): # TODO REFINE
         game_data = self.data
         for (name, character) in game_data["character_properties"].items():
             if character["avatar"]:
-                character["avatar"] = utilities.complete_game_file_path(character["avatar"], "images", "avatars")
+                character["avatar"] = utilities.find_game_file(character["avatar"], "images")
             character.setdefault("real_life_identity", None)
             character.setdefault("real_life_email", None)
 
@@ -538,7 +538,7 @@ class DomainHandling(BaseDataManager): # TODO REFINE
         game_data = self.data
         for (name, content) in game_data["domains"].items():
             if content["national_anthem"]:
-                content["national_anthem"] = utilities.complete_game_file_path(content["national_anthem"], "audio", "musics")
+                content["national_anthem"] = utilities.find_game_file(content["national_anthem"], "audio")
 
     def _check_database_coherency(self, **kwargs):
         super(DomainHandling, self)._check_database_coherency(**kwargs)
@@ -1910,7 +1910,7 @@ class TextMessagingExternalContacts(BaseDataManager):
                 details.setdefault("immutable", True) # contacts that are necessary to gameplay CANNOT be edited/deleted
                 details.setdefault("avatar", None)
                 if details["avatar"]:
-                    details["avatar"] = utilities.complete_game_file_path(details["avatar"], "images", "avatars")
+                    details["avatar"] = utilities.find_game_file(details["avatar"], "images")
                 details.setdefault("description", None)
                 details.setdefault("access_tokens", None) # PUBLIC contact
 
@@ -2726,7 +2726,7 @@ class RadioMessaging(BaseDataManager): # TODO REFINE
                 details.setdefault("immutable", False) # we assume ANY radio spot is optional for the game, and can be edited/delete
                 details.setdefault("file", None) # LOCAL file
                 if details["file"]:
-                    details["file"] = utilities.complete_game_file_path(details["file"], "audio", "radio_spots")
+                    details["file"] = utilities.find_game_file(details["file"], "audio", "radio_spots")
                 details.setdefault("url", None) # LOCAL file
 
             audiofiles = [value["file"] for value in self._table.values()]
@@ -3248,7 +3248,7 @@ class MoneyItemsOwnership(BaseDataManager):
             if properties["is_gem"] and not properties['owner']: # we dont recount gems appearing in character["gems"]
                 total_gems += [properties['unit_cost']] * properties["num_items"]
 
-            properties['image'] = utilities.complete_game_file_path(properties['image'], "images", "sales")
+            properties['image'] = utilities.find_game_file(properties['image'], "images")
 
         # We initialize some runtime checking parameters #
         game_data["global_parameters"]["total_digital_money"] = total_digital_money # integer
@@ -4094,7 +4094,7 @@ class NightmareCaptchas(BaseDataManager):
             value.setdefault("image", None)
             value.setdefault("explanation", None)
             if value["image"]:
-                value["image"] = utilities.complete_game_file_path(value["image"], "images", "captchas")
+                value["image"] = utilities.find_game_file(value["image"], "images", "captchas")
 
     def _check_database_coherency(self, strict=False, **kwargs):
         super(NightmareCaptchas, self)._check_database_coherency(**kwargs)
