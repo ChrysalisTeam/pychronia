@@ -1114,7 +1114,7 @@ class FriendshipHandling(BaseDataManager):
 
         game_data = self.data
 
-        delay = self.get_global_parameter("friendship_minimum_duration_mn")
+        delay = self.get_global_parameter("friendship_minimum_duration_mn_abs") # NOT a flexible delay!!
         utilities.check_is_positive_int(delay, non_zero=True)
 
         character_names = self.get_character_usernames()
@@ -1297,7 +1297,7 @@ class FriendshipHandling(BaseDataManager):
 
     @readonly_method
     def is_friendship_too_young_to_be_terminated(self, friendship_data):
-        min_delay = self.get_global_parameter("friendship_minimum_duration_mn")
+        min_delay = self.get_global_parameter("friendship_minimum_duration_mn_abs")
         return (friendship_data["acceptance_date"] > datetime.utcnow() - timedelta(minutes=min_delay))
 
 

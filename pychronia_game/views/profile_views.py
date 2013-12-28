@@ -17,7 +17,7 @@ class FriendshipMinDurationForm(AbstractGameForm):
 
     def __init__(self, datamanager, *args, **kwargs):
         super(FriendshipMinDurationForm, self).__init__(datamanager, *args, **kwargs)
-        self.fields['duration_mn'].initial = datamanager.get_global_parameter("friendship_minimum_duration_mn")
+        self.fields['duration_mn'].initial = datamanager.get_global_parameter("friendship_minimum_duration_mn_abs")
 
 
 
@@ -219,7 +219,7 @@ class FriendshipManagementView(AbstractGameView):
 
     @transaction_watcher
     def set_friendship_minimum_duration(self, duration_mn):
-        self.datamanager.set_global_parameter("friendship_minimum_duration_mn", duration_mn) # checked by form
+        self.datamanager.set_global_parameter("friendship_minimum_duration_mn_abs", duration_mn) # checked by form
         return _("Minimum friendship duration well set.")
 
 

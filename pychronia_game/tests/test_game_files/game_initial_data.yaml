@@ -154,7 +154,7 @@ global_parameters:
 
     encyclopedia_index_visible: false
 
-    friendship_minimum_duration_mn: 1
+    friendship_minimum_duration_mn_abs: 1
 
     world_map_image: "world_map.jpg"
 
