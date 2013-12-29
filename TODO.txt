@@ -11,16 +11,15 @@ FEATURES
 - update djinns data
 - update abilities settings
 - add main missing items
-- refactor game master manual's hirerachy
+- refactor game master manual's hierarchy
 - add smart avatar display in messaging
 
 - add black&white version of world map for download
 - exclude NPC from all_characters_ml (renamed to all_auction...)
-- IMPORTANT : improve auto file path completion to deal with GLOBs
+- IMPORTANT : improve auto file path completion to deal with GLOBs - SHOULD BE OK
 
 - wrap empty abilities with nightmare captchas (of different subtypes)
 - fix initial data of GemsTransferForm, duplicated gems are selected... like in GemPayementFormMixin
-- use relevant_title property in menu generation !!! SHOULD BE FIXED
 - fix width-100% and br in forms.as_p
 - nasty bug in chatroom, concurrency error between ajax calls and writability setting enforcement (need lock ??) SHOULD BE FIXED
 - in chatroom, communication problem when leaving page
@@ -72,6 +71,7 @@ TASKS DONE
 ---------------
 
 
+- use relevant_title property in menu generation - DONE
 - hide other's objects by default and allow to buy the ability of seeing them DONE
 - fix parallax scrolling under chrome and IE DONE
 - add rough tests for admin dahsboard system (was buggy) DONE

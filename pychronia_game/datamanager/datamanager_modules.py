@@ -1572,7 +1572,8 @@ class TextMessagingCore(BaseDataManager):
                 utilities.check_is_email(msg["sender_email"])
                 for recipient in msg["recipient_emails"]:
                     utilities.check_is_email(recipient)
-
+                utilities.check_no_duplicates(msg["recipient_emails"])   
+                
                 if msg["body"]: # might be empty
                     utilities.check_is_restructuredtext(msg["body"])
 
@@ -1709,7 +1710,7 @@ class TextMessagingCore(BaseDataManager):
             recipient_emails = recipient_emails.replace(",", ";")
             recipient_emails = recipient_emails.split(";")
         recipient_emails = [_complete_domain(stripped) for stripped in (email.strip() for email in recipient_emails) if stripped]
-        recipient_emails = PersistentList(set(recipient_emails)) # remove duplicates
+        recipient_emails = PersistentList(set(recipient_emails)) # we thus remove duplicates
 
         return sender_email, recipient_emails
 
@@ -2172,7 +2173,7 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
 
 
         # special mailing list
-        ml_address = self.get_global_parameter("all_characters_mailing_list")
+        ml_address = self.get_global_parameter("all_players_mailing_list")
         ml_props = self.global_contacts[ml_address] # MUST exist
         assert ml_props["immutable"]
 
@@ -2237,11 +2238,12 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
         This method does NOT modify the message, it just returns a dict suitable as "visible_by" message field.
         """
         visibilities = {}
-        ml = self.get_global_parameter("all_characters_mailing_list")
+        ml = self.get_global_parameter("all_players_mailing_list")
 
+        assert utilities.check_no_duplicates(msg["recipient_emails"]) # already normalized
         for recipient_email in msg["recipient_emails"]:
             if recipient_email == ml:
-                for usr in self.get_character_usernames(): # ALL (playable or not) characters
+                for usr in (username for (username, data) in self.get_character_sets().items() if not data["is_npc"]): # only PLAYER characters
                     visibilities[usr] = VISIBILITY_REASONS.recipient
             else:
                 recipient_username = self.get_character_or_none_from_email(recipient_email)

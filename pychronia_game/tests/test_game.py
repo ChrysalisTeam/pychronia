@@ -1758,7 +1758,7 @@ class TestDatamanager(BaseGameTestCase):
 
     def test_mailing_list_special_case(self):
 
-        ml = self.dm.get_global_parameter("all_characters_mailing_list")
+        ml = self.dm.get_global_parameter("all_players_mailing_list")
 
         self.dm.post_message("guy2@pangea.com",
                              recipient_emails=["secret-services@masslavia.com", "guy1@pangea.com", ml],
