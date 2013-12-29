@@ -1476,7 +1476,7 @@ msgstr "Le canal de communication semble défectueux..."
 
 #: .\templates\auction\chatroom.html.py:57
 msgid "Now chatting:"
-msgstr "Présents :"
+msgstr "Participants :"
 
 #: .\templates\auction\items_slideshow.html.py:36
 msgid "No objects to be shown"

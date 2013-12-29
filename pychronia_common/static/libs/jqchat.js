@@ -30,10 +30,17 @@ var prCallback = null;
 var get_request_in_progress = false;
 var post_request_in_progress = false;
 
+// to display error message only after several ajax errors
+var consecutive_errors = 0;
+
 
 function PropagateChatError(jqXHR, extStatus, errorThrown){
-	$("#errordiv").css("visibility", "visible");
-	default_ajax_error_handler(jqXHR, extStatus, errorThrown);
+    consecutive_errors += 1;
+
+    if (consecutive_errors >= 3) {
+    	$("#errordiv").css("visibility", "visible");
+    	default_ajax_error_handler(jqXHR, extStatus, errorThrown);
+    }
 }
 
 function callServer(){
@@ -60,13 +67,15 @@ function processResponse(payload) {
 
     //if (!payload) return; // may only happen in buggy jquery 1.4.2
 
+    consecutive_errors = 0; // RESET
+
     $("#errordiv").css("visibility", "hidden");
 
 	// Get the slice index, store it in global variable to be passed to the server on next call.
 	slice_index = payload.slice_index;
 
 	chatting_users = payload.chatting_users;
-	$("#chatting_users").html(chatting_users.join(",") || " --- ");
+	$("#chatting_users").html(chatting_users.join(", ") || " --- ");
 
 
 	for(id in payload.messages) {

@@ -55,7 +55,9 @@ class ZodbTransactionMiddleware(object):
 
         assert hasattr(request, 'session'), "The game authentication middleware requires session middleware to be installed. Edit your MIDDLEWARE_CLASSES setting to insert 'django.contrib.sessions.middleware.SessionMiddleware'."
 
-        request.process_view = None # GameView instance will attache itself here on execution
+        request.process_view = None # GameView instance will attach itself here on execution
+
+        if __debug__: request.start_time = time.time()
 
         if view_kwargs.has_key("game_instance_id"):
             # TOFIX select the proper subtree of ZODB
@@ -97,12 +99,16 @@ class ZodbTransactionMiddleware(object):
     def process_response(self, request, response):
         # on exception : no response handling occurs, a simple traceback is output !
 
-        try:
-            logger = request.datamanager.logger
-        except Exception:
-            logger = logging
-
         if __debug__:
+            try:
+                logger = request.datamanager.logger
+            except Exception:
+                logger = logging
+
+            url = request.get_full_path()
+            delay = time.time() - request.start_time
+            print("Pychronia request took %.3f seconds for url %r" % (delay, url))
+
             try:
                 if hasattr(request, "datamanager"):
                     request.datamanager.check_database_coherency() # DEBUGGING

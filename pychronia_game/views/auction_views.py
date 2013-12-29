@@ -90,20 +90,20 @@ class CharactersView(AbstractGameView):
 
         show_others_belongings = self.datamanager.is_master() or self.datamanager.has_permission(permission="view_others_belongings")
 
-        
+
 
         for username, user_data in characters:
             user_data["username"] = username
             user_data["email_address"] = self.datamanager.get_character_email(username=username)
             if username == self.datamanager.user.username or show_others_belongings:
-                user_data["user_items"] =  sorted(self.datamanager.get_available_items_for_user(username=username, auction_only=False).values(),  
+                user_data["user_items"] = sorted(self.datamanager.get_available_items_for_user(username=username, auction_only=False).values(),
                                                   key=lambda x:x["title"]) # it's all or nothing, we don't discriminate by auction
             else:
                 del user_data["account"] # security
-                
+
         characters = sorted((v for (k, v) in characters), # now all is in user data dict
                             key=lambda value: (value["is_npc"], value["username"])) # sort by type and then login
-        
+
         # NOW WRONG {% comment %} character is at least {'gems': [], 'items': [], 'domain': 'acharis.com', 'password': 'xxxx', 'account': 0} {% endcomment %}
         return {
                  'show_others_belongings': show_others_belongings,
@@ -371,8 +371,6 @@ def ajax_chat(request):
         response = HttpResponse(json.dumps(all_data))
         response['Content-Type'] = 'text/plain; charset=utf-8'
         response['Cache-Control'] = 'no-cache'
-
-        #  -> n
 
         return response
 

@@ -97,7 +97,7 @@ class GameUser(object):
 
     ## Persistent user messages, using django.contrib.messages ##
 
-    def _is_user_messaging_possible(self):
+    def _is_user_messaging_possible(self, context=None):
 
         if not self.datamanager.request:
             self.datamanager.logger.critical("Unexisting request object looked up by GameUser", exc_info=True)
@@ -111,34 +111,34 @@ class GameUser(object):
         return True
 
     def add_message(self, message):
-        if self._is_user_messaging_possible():
+        if self._is_user_messaging_possible(context=message):
             messages.success(self.datamanager.request, message) # shared between all game instances...
 
     def add_warning(self, message):
-        if self._is_user_messaging_possible():
+        if self._is_user_messaging_possible(context=message):
             messages.warning(self.datamanager.request, message) # shared between all game instances...
 
-    def add_error(self, error):
-        if self._is_user_messaging_possible():
-            messages.error(self.datamanager.request, error) # shared between all game instances...
+    def add_error(self, message):
+        if self._is_user_messaging_possible(context=message):
+            messages.error(self.datamanager.request, message) # shared between all game instances...
 
     def get_notifications(self):
         """
         Messages will only be deleted after being iterated upon.
         """
-        if self._is_user_messaging_possible():
+        if self._is_user_messaging_possible(context="<get_notifications>"):
             return messages.get_messages(self.datamanager.request)
         else:
             return []
 
     def has_notifications(self):
-        if self._is_user_messaging_possible():
+        if self._is_user_messaging_possible(context="<has_notifications>"):
             return bool(len(messages.get_messages(self.datamanager.request)))
         return False
 
     def discard_notifications(self):
         from django.contrib.messages.storage import default_storage
-        if self._is_user_messaging_possible():
+        if self._is_user_messaging_possible(context="<discard_notifications>"):
             self.datamanager.request._messages = default_storage(self.datamanager.request) # big hack
 
 

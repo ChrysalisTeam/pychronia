@@ -14,17 +14,12 @@ FEATURES
 - refactor game master manual's hierarchy
 - add smart avatar display in messaging
 
-- add black&white version of world map for download
-
 - IMPORTANT : improve auto file path completion to deal with GLOBs - SHOULD BE OK
 
 - wrap empty abilities with nightmare captchas (of different subtypes)
+
 - fix initial data of GemsTransferForm, duplicated gems are selected... like in GemPayementFormMixin
-- fix width-100% and br in forms.as_p
-- nasty bug in chatroom, concurrency error between ajax calls and writability setting enforcement (need lock ??) SHOULD BE FIXED
-- in chatroom, communication problem when leaving page
 - translate pychronia_common stuffs too
-- test proper hiding (or not) of characters' belongings depending on permissions, in characters page
 
 
 SCRIPT
@@ -53,6 +48,7 @@ Faire page d'introduction
 TESTS
 ----------
 
+- test proper hiding (or not) of characters' belongings depending on permissions, in characters page
 - test all views eg. encrypted folders!
 - auto test all forms with also inspect.getsourcelines(object) (for UNINSTANTIABLE_ERROR) etc.
 - add tests for gameform instantiation
@@ -66,11 +62,12 @@ NEEDS COSMETICS
 - add "centering" for images in DJANGOCMS
 
 
-
-
 TASKS DONE
 ---------------
 
+- nasty bug in chatroom, concurrency error between ajax calls and writability setting enforcement DONE
+- in chatroom, "communication problems" message when leaving page, we need some tolerance DONE
+- add black&white version of world map for download DONE
 - exclude NPC from all_characters_ml (renamed to all_auction...) DONE
 - use relevant_title property in menu generation - DONE
 - hide other's objects by default and allow to buy the ability of seeing them DONE
@@ -177,6 +174,7 @@ TASKS DONE
 FUTUR ENHANCEMENTS
 --------------------------
 
+- fix width-100% and br in forms.as_p (makes SELECT widgets buggy)
 - add money and gems to page top headers
 - grant/revoke private_contact_access_to_character (ex. mercenaries)
 - securize "_action_" form-less system, since it bypasses input data validation

@@ -552,6 +552,10 @@ body {
     vertical-align: top;
     color: $alt_text_color;
 
+    font-size: 12px;
+    line-height: 14px;
+
+
     @mixin up_footer_common {
         margin: 0;
         display: inline-block;

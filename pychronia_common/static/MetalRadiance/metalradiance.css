@@ -363,6 +363,8 @@ body:after {
   text-align: center;
   vertical-align: top;
   color: white;
+  font-size: 12px;
+  line-height: 14px;
 }
 #up_footer_wrapper #up_footer_border_left {
   margin: 0;
