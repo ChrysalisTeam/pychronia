@@ -1990,10 +1990,6 @@ msgstr "Revenir à la page d'authentification"
 msgid "SUBMIT TEXT"
 msgstr "SOUMETTRE LE TEXTE"
 
-#: .\templates\utilities\bug_report.html.py:6
-msgid "Bug Report"
-msgstr "Rapport de Bogue"
-
 #: .\templates\utilities\bug_report.html.py:9
 msgid ""
 "\n"

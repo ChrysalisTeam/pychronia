@@ -7,7 +7,6 @@ TODO LIST CHRYSALIS
 FEATURES
 ------------
 
-- add basic file logging config
 - update djinns data
 - update abilities settings
 - add main missing items
@@ -61,6 +60,7 @@ NEEDS COSMETICS
 TASKS DONE
 ---------------
 
+- add basic file logging config DONE
 - connect and test VAAS prod account DONE
 - fix initial data of GemsTransferForm, duplicated gems are selected... like in GemPayementFormMixin - DONE
 - improve auto file path completion to deal with GLOBs - DONE
