@@ -1,7 +1,6 @@
 import logging.config
 
 
-
 pychronia_logging_config = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -50,4 +49,4 @@ pychronia_logging_config = {
 
 
 logging.config.dictConfig(pychronia_logging_config)
-logging.disable(logging.WARNING) # global limit
+logging.disable(logging.INFO) # global limit

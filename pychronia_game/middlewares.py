@@ -99,23 +99,24 @@ class ZodbTransactionMiddleware(object):
     def process_response(self, request, response):
         # on exception : no response handling occurs, a simple traceback is output !
 
-        if __debug__:
-            try:
-                logger = request.datamanager.logger
-            except Exception:
-                logger = logging
+        try:
+            logger = request.datamanager.logger
+        except Exception:
+            logger = logging
 
+        if __debug__:
             url = request.get_full_path()
             delay = time.time() - request.start_time
-            print("Pychronia request took %.3f seconds for url %r" % (delay, url))
+            logger.info("Pychronia request took %.3f seconds for url %r" % (delay, url))
 
-            try:
-                if hasattr(request, "datamanager"):
-                    request.datamanager.check_database_coherency() # DEBUGGING
-                    request.datamanager.close()
-            except Exception, e:
-                # exception should NEVER flow out of response processing middlewares
-                logger.critical("Exception occurred in ZODB middleware process_response - %r" % e, exc_info=True)
+        try:
+            if hasattr(request, "datamanager"):
+                if config.DEBUG:
+                    request.datamanager.check_database_coherency() # checking after each request, then
+                request.datamanager.close()
+        except Exception, e:
+            # exception should NEVER flow out of response processing middlewares
+            logger.critical("Exception occurred in ZODB middleware process_response - %r" % e, exc_info=True)
 
         return response
 
