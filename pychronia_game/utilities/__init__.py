@@ -401,10 +401,12 @@ def is_email(email):
     return email_re.match(email)
 
     
-def find_game_file(filename, *rel_path_glob, game_files_root=config.GAME_FILES_ROOT): 
+def find_game_file(filename, *rel_path_glob):
     """
     Returns the SINGLE file called filename, in 
     """
+    game_files_root = config.GAME_FILES_ROOT
+
     assert os.path.basename(filename) == filename
     if not rel_path_glob:
         search_trees = [game_files_root]
@@ -428,7 +430,7 @@ def find_game_file(filename, *rel_path_glob, game_files_root=config.GAME_FILES_R
     full_file_path = os.path.join(result_folders[0], filename)
     assert full_file_path.startswith(game_files_root)
     rel_file_path = os.path.relpath(full_file_path, start=game_files_root)
-    assert os.path.isabs(rel_file_path)
+    assert not os.path.isabs(rel_file_path)
     return rel_file_path
         
 

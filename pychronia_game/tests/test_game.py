@@ -1771,8 +1771,8 @@ class TestDatamanager(BaseGameTestCase):
                                      'guy4': 'recipient',
                                      'master': 'recipient',
                                      'guy2': 'sender', # well set
-                                     'guy1': 'recipient',
-                                     'my_npc': 'recipient'}
+                                     'guy1': 'recipient'}
+        assert self.dm.get_character_properties("my_npc") # EXISTS, but not included since it's not a player
 
         self.dm.post_message("secret-services@masslavia.com",
                              recipient_emails=["guy1@pangea.com", ml],
@@ -1785,9 +1785,19 @@ class TestDatamanager(BaseGameTestCase):
                                      'guy4': 'recipient',
                                      'master': 'sender',
                                      'guy2': 'recipient',
-                                     'guy1': 'recipient',
-                                     'my_npc': 'recipient'}
+                                     'guy1': 'recipient'}
 
+        self.dm.post_message("guy2@pangea.com",
+                             recipient_emails=[ml],
+                             subject="subj2", body="qsdqsd") # this works too !
+
+        msg = self.dm.get_all_dispatched_messages()[-1]
+
+        assert msg["subject"] == "subj2"
+        assert msg["visible_by"] == {'guy3': 'recipient',
+                                     'guy4': 'recipient',
+                                     'guy2': 'sender', # "sender" STRONGER than "recipient" status
+                                     'guy1': 'recipient'}
 
 
     def test_text_messaging_workflow(self):
