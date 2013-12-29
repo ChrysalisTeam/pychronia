@@ -37,6 +37,7 @@ class GameGlobalParameters(BaseDataManager):
         game_data = self.data
 
         game_data["global_parameters"]["world_map_image"] = os.path.normpath(game_data["global_parameters"]["world_map_image"])
+        game_data["global_parameters"]["world_map_image_bw"] = os.path.normpath(game_data["global_parameters"]["world_map_image_bw"])
 
     def _check_database_coherency(self, **kwargs):
         super(GameGlobalParameters, self)._check_database_coherency(**kwargs)
@@ -45,6 +46,8 @@ class GameGlobalParameters(BaseDataManager):
         utilities.check_is_bool(game_data["global_parameters"]["game_is_started"])
 
         utilities.check_is_game_file(game_data["global_parameters"]["world_map_image"])
+        utilities.check_is_game_file(game_data["global_parameters"]["world_map_image_bw"])
+        assert game_data["global_parameters"]["world_map_image"] != game_data["global_parameters"]["world_map_image_bw"]
 
         utilities.check_is_string(game_data["global_parameters"]["game_random_seed"], multiline=False)
 
@@ -4122,8 +4125,9 @@ class NightmareCaptchas(BaseDataManager):
             if value["explanation"]:
                 utilities.check_is_restructuredtext(value["explanation"])
 
-            utilities.check_is_slug(value["answer"])
-            assert "\n" not in value["answer"]
+            if value["answer"] is not None: # None means "no answers" (sadistic)
+                utilities.check_is_slug(value["answer"])
+                assert "\n" not in value["answer"]
 
 
     def _get_captcha_data(self, captcha_id):
@@ -4165,6 +4169,9 @@ class NightmareCaptchas(BaseDataManager):
         if captcha_id not in captchas:
             raise AbnormalUsageError(_("Unknown captcha id %s") % captcha_id)
         value = self.data["nightmare_captchas"][captcha_id]
+
+        if not value["answer"]:
+            raise NormalUsageError(_("Nope, it looked like this captcha had no known answer..."))
 
         normalized_attempt = attempt.strip().lower()
         normalized_answer = value["answer"].lower() # necessarily slug, but not always lowercase

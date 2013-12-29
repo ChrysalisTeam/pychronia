@@ -15,7 +15,7 @@ FEATURES
 - add smart avatar display in messaging
 
 - add black&white version of world map for download
-- exclude NPC from all_characters_ml (renamed to all_auction...)
+
 - IMPORTANT : improve auto file path completion to deal with GLOBs - SHOULD BE OK
 
 - wrap empty abilities with nightmare captchas (of different subtypes)
@@ -25,6 +25,7 @@ FEATURES
 - in chatroom, communication problem when leaving page
 - translate pychronia_common stuffs too
 - test proper hiding (or not) of characters' belongings depending on permissions, in characters page
+
 
 SCRIPT
 ----------
@@ -70,7 +71,7 @@ NEEDS COSMETICS
 TASKS DONE
 ---------------
 
-
+- exclude NPC from all_characters_ml (renamed to all_auction...) DONE
 - use relevant_title property in menu generation - DONE
 - hide other's objects by default and allow to buy the ability of seeing them DONE
 - fix parallax scrolling under chrome and IE DONE

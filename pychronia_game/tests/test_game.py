@@ -3182,6 +3182,8 @@ class TestDatamanager(BaseGameTestCase):
         with pytest.raises(AbnormalUsageError):
             self.dm.check_captcha_answer_attempt(captcha_id="unexisting_id", attempt="whatever")
 
+        real_test_done = False
+
         for captcha in (random_captchas + [captcha1, captcha2]):
             assert set(captcha.keys()) == set("id text image".split()) # no spoiler of answer elements here
             assert self.dm.get_selected_captcha(captcha["id"]) == captcha
@@ -3191,9 +3193,23 @@ class TestDatamanager(BaseGameTestCase):
                 self.dm.check_captcha_answer_attempt(captcha["id"], "random stuff ")
 
             _full_captch_data = self.dm.data["nightmare_captchas"][captcha["id"]]
+            if _full_captch_data["answer"] is None:
+                continue
+
             answer = "  " + _full_captch_data["answer"].upper() + " " # case and spaces are not important
             res = self.dm.check_captcha_answer_attempt(captcha["id"], answer)
-            assert res == _full_captch_data["explanation"] # sucess
+            assert res == _full_captch_data["explanation"] # success
+            real_test_done = True
+
+        assert real_test_done # we must test "normal" case too
+
+        impossible_catcha = "enigma2"
+        assert self.dm.data["nightmare_captchas"][impossible_catcha]["answer"] is None
+        for answer_attempt in ("None", "whatever"):
+            with pytest.raises(NormalUsageError):
+                self.dm.check_captcha_answer_attempt(impossible_catcha, answer_attempt)
+        with pytest.raises(AssertionError):
+            self.dm.check_captcha_answer_attempt(impossible_catcha, None) # can't happen
 
 
     @for_core_module(NovaltyTracker)

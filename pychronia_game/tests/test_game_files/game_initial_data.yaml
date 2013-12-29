@@ -157,6 +157,7 @@ global_parameters:
     friendship_minimum_duration_mn_abs: 1
 
     world_map_image: "world_map.jpg"
+    world_map_image_bw: "world_map_bw.jpg"
 
     password_recovery_delay_mn: 10
 
@@ -589,7 +590,7 @@ nightmare_captchas:
   enigma2:
     text: "What is the *greatest* even number ?"
     image: null
-    answer: "None"
+    answer: null
 
   enigma3:
     text: "Decipher this!"

@@ -407,7 +407,12 @@ def find_game_file(filename, *rel_path_glob):
     """
     game_files_root = config.GAME_FILES_ROOT
 
-    assert os.path.basename(filename) == filename
+    if os.path.basename(filename) != filename: # we already get a relative game file path
+        full_file_path = os.path.join(game_files_root, filename) # we then ignore rel_path_glob
+        if not os.path.exists(full_file_path):
+            raise RuntimeError("Unexisting game file detected: %r", full_file_path)
+        return filename
+
     if not rel_path_glob:
         search_trees = [game_files_root]
     else:
