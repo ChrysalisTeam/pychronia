@@ -12,7 +12,7 @@ FEATURES
 - add main missing items
 - refactor game master manual's hierarchy
 - add smart avatar display in messaging
-- translate pychronia_common stuffs too
+
 
 
 SCRIPT
@@ -60,6 +60,7 @@ NEEDS COSMETICS
 TASKS DONE
 ---------------
 
+- translate pychronia_common and pychronia_cms stuffs too DONE
 - add basic file logging config DONE
 - connect and test VAAS prod account DONE
 - fix initial data of GemsTransferForm, duplicated gems are selected... like in GemPayementFormMixin - DONE
