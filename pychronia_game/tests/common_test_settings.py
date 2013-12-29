@@ -29,3 +29,5 @@ BUG_REPORT_EMAIL = "bugreport@example.com"
 
 PASSWORDS_POOL = [str(random.randint(100, 1000000000)) for i in range(50)]
 assert len(set(PASSWORDS_POOL)) == len(PASSWORDS_POOL)
+
+ACAPELA_CLIENT_ARGS = None
