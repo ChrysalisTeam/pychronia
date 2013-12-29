@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 
 from pychronia_game.common import *
 from pychronia_game.datamanager.abstract_ability import AbstractAbility
-
+from pychronia_game.views.gameview_mixins import AbstractCaptchaProtectedView
 
 class EmptyAbilityMixin(object):
 
@@ -40,7 +40,7 @@ class GeoipLocationAbility(EmptyAbilityMixin, AbstractAbility):
     REQUIRES_GLOBAL_PERMISSION = True
 
 
-class BusinessEscrowAbility(EmptyAbilityMixin, AbstractAbility):
+class BusinessEscrowAbility(EmptyAbilityMixin, AbstractCaptchaProtectedView): # actually a simple GAMEVIEW, but captcha-protected
 
     TITLE = _lazy("Business Escrow")
     NAME = "business_escrow"
@@ -50,7 +50,7 @@ class BusinessEscrowAbility(EmptyAbilityMixin, AbstractAbility):
     REQUIRES_GLOBAL_PERMISSION = True
 
 
-class BlackMarketAbility(EmptyAbilityMixin, AbstractAbility):
+class BlackMarketAbility(EmptyAbilityMixin, AbstractCaptchaProtectedView): # actually a simple GAMEVIEW, but captcha-protected
 
     TITLE = _lazy("Black Market")
     NAME = "black_market"

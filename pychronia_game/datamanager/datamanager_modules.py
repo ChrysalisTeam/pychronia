@@ -1575,8 +1575,8 @@ class TextMessagingCore(BaseDataManager):
                 utilities.check_is_email(msg["sender_email"])
                 for recipient in msg["recipient_emails"]:
                     utilities.check_is_email(recipient)
-                utilities.check_no_duplicates(msg["recipient_emails"])   
-                
+                utilities.check_no_duplicates(msg["recipient_emails"])
+
                 if msg["body"]: # might be empty
                     utilities.check_is_restructuredtext(msg["body"])
 
@@ -4173,7 +4173,7 @@ class NightmareCaptchas(BaseDataManager):
         if not value["answer"]:
             raise NormalUsageError(_("Nope, it looked like this captcha had no known answer..."))
 
-        normalized_attempt = attempt.strip().lower()
+        normalized_attempt = attempt.strip().lower().replace(" ", "")
         normalized_answer = value["answer"].lower() # necessarily slug, but not always lowercase
 
         if normalized_attempt != normalized_answer:

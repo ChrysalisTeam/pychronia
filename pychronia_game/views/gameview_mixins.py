@@ -44,11 +44,11 @@ class AbstractCaptchaProtectedView(AbstractGameView):
             try:
                 #print (">>>>>>>>", captcha_id, attempt)
                 explanation = request.datamanager.check_captcha_answer_attempt(captcha_id=captcha_id, attempt=attempt)
-                del explanation # how can we display it, actually ?
-                request.datamanager.user.add_message(_("Captcha check successful"))
+                request.datamanager.user.add_message(_("Captcha check successful."))
+                request.datamanager.user.add_message(explanation) # to please users...
                 return True
             except UsageError:
-                request.datamanager.user.add_error(_("Captcha check failed"))
+                request.datamanager.user.add_error(_("Captcha check failed."))
         return False
 
 
@@ -66,6 +66,7 @@ class AbstractCaptchaProtectedView(AbstractGameView):
 
     def _process_html_request(self):
         if self._is_nightmare_captcha_successful():
+            self.request.method = "GET" # dirty hack
             return super(AbstractCaptchaProtectedView, self)._process_html_request()
         else:
             return self._generate_captcha_page()
