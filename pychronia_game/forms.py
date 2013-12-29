@@ -2,9 +2,10 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import json
 from pychronia_game.common import *
 from django import forms
-from pychronia_game.datamanager.abstract_form import AbstractGameForm, UninstantiableFormError, form_field_jsonify, form_field_unjsonify
+from pychronia_game.datamanager.abstract_form import AbstractGameForm, UninstantiableFormError, GemHandlingFormUtils
 
 
 
@@ -37,7 +38,9 @@ class MoneyTransferForm(AbstractGameForm):
 
 
 
-class GemsTransferForm(AbstractGameForm):
+class GemsTransferForm(AbstractGameForm, GemHandlingFormUtils):
+
+
 
     def __init__(self, datamanager, *args, **kwargs):
         super(GemsTransferForm, self).__init__(datamanager, *args, **kwargs)
@@ -51,15 +54,7 @@ class GemsTransferForm(AbstractGameForm):
             available_gems = datamanager.get_character_properties()["gems"]
 
         # we prepare the choice sets for gems
-        gems_choices = []
-        for gem_value, gem_origin in available_gems:
-            gem_id = form_field_jsonify((gem_value, gem_origin))
-            if gem_origin:
-                title = datamanager.get_item_properties(gem_origin)["title"]
-            else:
-                title = _("External gems")
-            full_title = _("%(gem_value)s¤ (%(title)s)") % SDICT(gem_value=gem_value, title=title)
-            gems_choices.append((gem_id, full_title))
+        gems_choices = zip(self._encode_gems(available_gems), [self._gem_display(gem) for gem in available_gems])
         if not gems_choices:
             raise UninstantiableFormError("no gems available")
 
@@ -83,8 +78,7 @@ class GemsTransferForm(AbstractGameForm):
         raw_gems_choices = cleaned_data.get("gems_choices") # might be None, if errors
 
         if raw_gems_choices:
-            gems_choices = [tuple(form_field_unjsonify(value)) for value in raw_gems_choices] # strings -> tuples (price, origin)
-            cleaned_data["gems_choices"] = gems_choices
+            cleaned_data["gems_choices"] = self._decode_gems(raw_gems_choices)
 
         return cleaned_data
 

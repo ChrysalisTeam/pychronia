@@ -13,12 +13,6 @@ FEATURES
 - add main missing items
 - refactor game master manual's hierarchy
 - add smart avatar display in messaging
-
-- IMPORTANT : improve auto file path completion to deal with GLOBs - SHOULD BE OK
-
-- wrap empty abilities with nightmare captchas (of different subtypes)
-
-- fix initial data of GemsTransferForm, duplicated gems are selected... like in GemPayementFormMixin
 - translate pychronia_common stuffs too
 
 
@@ -62,9 +56,14 @@ NEEDS COSMETICS
 - add "centering" for images in DJANGOCMS
 
 
+
+
 TASKS DONE
 ---------------
 
+- fix initial data of GemsTransferForm, duplicated gems are selected... like in GemPayementFormMixin - DONE
+- improve auto file path completion to deal with GLOBs - DONE
+- wrap empty abilities with nightmare captchas DONE
 - nasty bug in chatroom, concurrency error between ajax calls and writability setting enforcement DONE
 - in chatroom, "communication problems" message when leaving page, we need some tolerance DONE
 - add black&white version of world map for download DONE
@@ -174,6 +173,7 @@ TASKS DONE
 FUTUR ENHANCEMENTS
 --------------------------
 
+- fix up/down keys when a "select" field is selected (must not scroll page)
 - fix width-100% and br in forms.as_p (makes SELECT widgets buggy)
 - add money and gems to page top headers
 - grant/revoke private_contact_access_to_character (ex. mercenaries)

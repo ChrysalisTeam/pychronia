@@ -84,8 +84,7 @@ class BaseAbstractGameForm(forms.Form):
 
 
 
-
-class GemPayementFormMixin(object):
+class GemHandlingFormUtils(object):
 
     @staticmethod
     def _encode_gems(gems): # gems are TUPLES
@@ -100,6 +99,10 @@ class GemPayementFormMixin(object):
             return _("Gem of %(cost)d Kashes (%(origin)s)") % SDICT(cost=gem[0], origin=gem[1].replace("_", " "))
         else:
             return _("Gem of %d Kashes (unknown origin)") % gem[0]
+
+
+
+class GemPayementFormMixin(GemHandlingFormUtils):
 
     def __init__(self, datamanager, *args, **kwargs):
 
