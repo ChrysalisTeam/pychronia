@@ -3220,9 +3220,13 @@ class MoneyItemsOwnership(BaseDataManager):
 
     # FIXME - fix forms containing gems, now (value, origin) tuples
 
-    def _compute_gems_unit_cost(self, total_cost, num_gems):
+    def _compute_items_unit_cost(self, total_cost, num_gems):
+        if not total_cost:
+            return None
         return int(math.ceil(float(total_cost / num_gems)))
-    def _compute_gems_total_price(self, unit_cost, num_gems):
+    def _compute_items_total_price(self, unit_cost, num_gems):
+        if not unit_cost:
+            return None
         return unit_cost * num_gems # simpler
 
     def _load_initial_data(self, **kwargs):
@@ -3246,7 +3250,7 @@ class MoneyItemsOwnership(BaseDataManager):
             total_digital_money += character["account"]
 
         for (name, properties) in game_data["game_items"].items():
-            properties['unit_cost'] = self._compute_gems_unit_cost(total_cost=properties['total_price'], num_gems=properties['num_items'])
+            properties['unit_cost'] = self._compute_items_unit_cost(total_cost=properties['total_price'], num_gems=properties['num_items']) # works with NONE too
             properties['owner'] = properties.get('owner', None)
             properties["auction"] = properties.get('auction', None)
 
@@ -3290,12 +3294,16 @@ class MoneyItemsOwnership(BaseDataManager):
 
             utilities.check_is_slug(name)
             assert isinstance(properties['is_gem'], bool)
-            assert utilities.check_is_positive_int(properties['num_items'])
-            assert utilities.check_is_positive_int(properties['total_price'])
-            assert utilities.check_is_positive_int(properties['unit_cost'])
+            assert utilities.check_is_positive_int(properties['num_items'], non_zero=True)
+            if properties['total_price']:
+                assert utilities.check_is_positive_int(properties['total_price'], non_zero=True)
+                assert utilities.check_is_positive_int(properties['unit_cost'], non_zero=True)
+            else:
+                assert properties['total_price'] is None
+                assert properties['unit_cost'] is None
 
-            # doesn't work the other way round, due to rounding of division
-            assert properties['unit_cost'] == self._compute_gems_unit_cost(total_cost=properties['total_price'], num_gems=properties['num_items'])
+            # OK for NONE values too ; doesn't work the other way round, due to rounding of division
+            assert properties['unit_cost'] == self._compute_items_unit_cost(total_cost=properties['total_price'], num_gems=properties['num_items'])
 
             assert properties['owner'] is None or properties['owner'] in game_data["character_properties"].keys()
 
@@ -3386,7 +3394,7 @@ class MoneyItemsOwnership(BaseDataManager):
     def _get_item_separate_gems(self, item_name):
         item = self.get_item_properties(item_name)
         assert item["is_gem"]
-        return [(item["unit_cost"], item_name)] * item["num_items"] # tuples!
+        return [(item["unit_cost"] or 0, item_name)] * item["num_items"] # tuples!
 
 
     def _free_item_from_character(self, item_name, item):
@@ -3423,6 +3431,8 @@ class MoneyItemsOwnership(BaseDataManager):
         
         If previous_owner is set, we perform a check on it, to ensure it's
         well the current owner who's transferring the object.
+        
+        No payment is automatically done.
         """
         assert not previous_owner or previous_owner in self.get_available_logins()
 

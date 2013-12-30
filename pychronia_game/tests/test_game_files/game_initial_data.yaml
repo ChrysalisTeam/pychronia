@@ -189,7 +189,7 @@ game_items:
         auction: null
         is_gem: False
         num_items: 1
-        total_price: 1000
+        total_price: null # no problem
         locations: banal_gems_locations
         title: "Sacred Chest"
         comments:  "Only the most sacred acharith relics had a chance to be hosted by one of these divine chests."

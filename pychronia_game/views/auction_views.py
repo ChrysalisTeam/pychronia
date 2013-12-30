@@ -153,10 +153,17 @@ class CharactersView(AbstractGameView):
 view_characters = CharactersView.as_view
 
 
-def _sorted_game_items(items_list): # items_list is a list of pairs from dict items()
-    return sorted(items_list, key=lambda x: (x[1]['auction'] if x[1]['auction'] else "ZZZZZ", x[0]))
-
-
+def _sorted_game_items(items_dict):
+    """
+    items_dict must map item id to item data
+    
+    A modified COPY of item data is returned, as a list of (k, v) pairs.
+    """
+    items_list = copy.deepcopy(items_dict.items())
+    res = sorted(items_list, key=lambda x: (x[1]['auction'] if x[1]['auction'] else "ZZZZZZZ", x[0]))
+    for k, v in res:
+        v["gamemaster_hint"] = "[BUG]" # security
+    return res
 
 
 @register_view(access=UserAccess.authenticated, title=_lazy("Auction Items"), title_for_master=_lazy("All Items")) # fixme ? always available ?
@@ -179,12 +186,10 @@ def view_sales(request, template_name='auction/view_sales.html'):
 
     # IMPORTANT - we copy, so that we can modify the object without changing DBs !
     if user.is_master:
-        concerned_items = request.datamanager.get_all_items()
+        items_for_sales = request.datamanager.get_all_items()
     else:
         # only AUCTION stuffs!
-        concerned_items = request.datamanager.get_auction_items()
-
-    items_for_sales = copy.deepcopy(concerned_items)
+        items_for_sales = request.datamanager.get_auction_items()
 
     ''' Useless
     # we inject the official name of object owner
@@ -195,11 +200,10 @@ def view_sales(request, template_name='auction/view_sales.html'):
             item["owner_official_name"] = None
     '''
 
-    sorted_items_for_sale = items_for_sales.items()
-    sorted_items_for_sale = _sorted_game_items(sorted_items_for_sale) # we push non-auction items to the end of list
+    sorted_items_for_sale = _sorted_game_items(items_for_sales) # we push non-auction items to the end of list
 
     if user.is_master:
-        total_items_price = sum(item["total_price"] for item in items_for_sales.values())
+        total_items_price = sum((item["total_price"] or 0) for item in items_for_sales.values())
         total_bank_account_available = sum(character["account"] for character in request.datamanager.get_character_sets().values())
     else:
         total_items_price = None
@@ -230,7 +234,7 @@ def auction_items_slideshow(request, template_name='auction/items_slideshow.html
     items = (request.datamanager.get_auction_items()
              if not request.datamanager.is_master()
              else request.datamanager.get_all_items()) # master can see EVERYTHING, but without 3D
-    sorted_items = _sorted_game_items(items.items())
+    sorted_items = _sorted_game_items(items)
 
     return render(request,
                   template_name,
@@ -250,7 +254,7 @@ def personal_items_slideshow(request, template_name='auction/items_slideshow.htm
     items = request.datamanager.get_available_items_for_user()
     items_3D_settings = request.datamanager.get_items_3d_settings()
 
-    sorted_items = _sorted_game_items(items.items())
+    sorted_items = _sorted_game_items(items)
 
     return render(request,
                   template_name,

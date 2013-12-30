@@ -7,6 +7,8 @@ TODO LIST CHRYSALIS
 FEATURES
 ------------
 
+- adjust display of game items "auction", "hints" etc.
+- add avatar files
 - update djinns data
 - update abilities settings
 - add main missing items
@@ -18,6 +20,7 @@ FEATURES
 SCRIPT
 ----------
 
+- mark in manual that prices are "for information only"
 - comment that "new message" sounds are not enqueuable manually, in help page
 - add enough content for game startup
 - add scale to map (in static comments!!)

@@ -4,6 +4,13 @@
 
 {% block content %}
 
+
+<p>
+{% blocktrans %}
+There are altogether <strong>{{ total_gems_number }}</strong> gems and <strong>{{ total_archaeological_objects_number }}</strong> archeological objects at auction.
+{% endblocktrans %}
+</p>
+
 {% if user.is_master %}
 <p class="admin-note">
 Players begin the game with a total of
@@ -12,14 +19,7 @@ while the total value of proposed items is <strong>{{ total_items_price }}</stro
 </p>
 {% endif %}
 
-<p>
-{% blocktrans %}
-There are altogether <strong>{{ total_gems_number }}</strong> gems and <strong>{{ total_archaeological_objects_number }}</strong> archeological objects at auction.
-{% endblocktrans %}
-</p><br/>
-
-
-
+<br/>
 
 <table class="realtable">
 	<thead>
@@ -29,7 +29,7 @@ There are altogether <strong>{{ total_gems_number }}</strong> gems and <strong>{
 			<th>{% trans "Details" %}</th>
 		    <th>{% trans "Comments" %}</th>
 			{% if user.is_master %}
-			     <th>{% trans "Sale" %}</th>
+			     <th>{% trans "Transfer" %}</th>
 			{% endif %}
 		</tr>
 	</thead>
@@ -48,7 +48,7 @@ There are altogether <strong>{{ total_gems_number }}</strong> gems and <strong>{
 
 
 	    	<td>
-	    	{{ item_details.auction }}
+	    	{{ item_details.auction|default:"X" }}
 	    	</td>
 
 	    	<td style="width:160px; background-color: white;">
@@ -62,17 +62,24 @@ There are altogether <strong>{{ total_gems_number }}</strong> gems and <strong>{
 
 	    	    <ul style="text-align: left; min-width: 150px;">
 
+                {% if item_details.num_items > 1 %}
 	    	    <li>
-		    	{% if item_details.is_gem %}
-				    {{ item_details.num_items }} {% trans "gem" %}{{ item_details.num_items|pluralize }}
-				{% else %}
-				    {{ item_details.num_items }} {% trans "object" %}{{ item_details.num_items|pluralize }}
-				{% endif %}
+    		    	{% if item_details.is_gem %}
+    				    {{ item_details.num_items }} {% trans "gem" %}{{ item_details.num_items|pluralize }}
+    				{% else %}
+    				    {{ item_details.num_items }} {% trans "object" %}{{ item_details.num_items|pluralize }}
+    				{% endif %}
 				</li>
+				{% endif %}
 
+                {% if item_details.num_items > 1 and item_details.unit_cost %}
 				<li>{% trans "Unit" %}: {{ item_details.unit_cost }} ¤</li>
+				{% endif %}
+
+                {% if item_details.total_price %}
 				<li>{% trans "Total" %}: {{ item_details.total_price }} ¤</li>
 				</ul>
+				{% endif %}
 
 
 			</td>
@@ -81,6 +88,11 @@ There are altogether <strong>{{ total_gems_number }}</strong> gems and <strong>{
 			{% if user.is_master %}
 
                      <td>
+
+                         <p><b>{{ item_details.title }}</b></p>
+
+                         <p>{{ item_details.comments }}</p>
+
                          {% if item_details.gamemaster_hints %}
                          <p class="admin-note">
                             {{ item_details.gamemaster_hints }}
@@ -89,7 +101,7 @@ There are altogether <strong>{{ total_gems_number }}</strong> gems and <strong>{
                          &nbsp;
                          {% endif %}
 
-                         <p>{{ item_details.comments }}</p>
+
                     </td>
 
         	    	{% if not item_details.owner %}
@@ -118,7 +130,8 @@ There are altogether <strong>{{ total_gems_number }}</strong> gems and <strong>{
 
     		{% else %}
 
-                     <td>
+                    <td>
+                        <p><b>{{ item_details.title }}</b></p>
                         <p>{{ item_details.comments }}</p>
                     </td>
 

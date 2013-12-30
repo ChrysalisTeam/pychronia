@@ -1177,6 +1177,10 @@ class TestDatamanager(BaseGameTestCase):
     def test_item_transfers(self):
         self._reset_messages()
 
+        # small check - NULL PRICE IS NOT A PROBLEM
+        chest = self.dm.get_item_properties("sacred_chest")
+        assert chest["unit_cost"] is chest["total_price"] is None # NOT A PROBLEM
+
         lg_old = copy.deepcopy(self.dm.get_character_properties("guy3"))
         nw_old = copy.deepcopy(self.dm.get_character_properties("guy1"))
         items_old = copy.deepcopy(self.dm.get_all_items())

@@ -53,7 +53,7 @@
 
 
                 <h2>
-                    {{ item_details.auction }} &nbsp; {{ item_details.title }}
+                    {{ item_details.auction|default:"X" }} &nbsp; {{ item_details.title }}
                 </h2>
 
 
@@ -72,7 +72,7 @@
                         </div>
 
                     {% else %}
-                        <img class="item_display slideshow_image" title="{{ item_details.title }}" src="{% game_file_url item_details.image %}"/>
+                        <img class="item_display slideshow_image" src="{% game_file_url item_details.image %}"/>
                     {% endif %}
 
                   {% endwith %}
@@ -83,18 +83,32 @@
                         {% assign name="img_link" %}{% game_file_url item_details.image %}{% endassign %}
                         {% usekwacro shareable_link img_link %}
 
+                        {% if item_details.num_items > 1 %}
+                        <p>
+                            {% trans "Count" %} : <b>{{ item_details.num_items }}</b>
+                        </p>
+                        {% endif %}
+                        {% if item_details.num_items > 1 and item_details.unit_cost %}
+                        <p>
+                            {% trans "Unit cost" %} : <b>{{ item_details.unit_cost }} {% trans "kashes" %}</b>
+                        </p>
+                        {% endif %}
+                        {% if item_details.total_price %}
+                        <p>
+                            {% trans "Total Estimated Value" %} : <b>{{ item_details.total_price }} {% trans "kashes" %}</b>
+                        </p>
+                        {% endif %}
+
                         <p>
                         {{ item_details.comments}}
                         </p>
-                        <p>
-                           {% trans "Count" %} : <b>{{ item_details.num_items }}</b>
+
+                        {% if user.is_master and item_details.gamemaster_hints %}
+                        <p class="admin-note">
+                            {{ item_details.gamemaster_hints }}
                         </p>
-                        <p>
-                           {% trans "Unit cost" %} : <b>{{ item_details.unit_cost }} {% trans "kashes" %}</b>
-                        </p>
-                        <p>
-                           {% trans "Total Estimated Value" %} : <b>{{ item_details.total_price }} {% trans "kashes" %}</b>
-                        </p>
+                        {% endif %}
+
                     </blockquote>
 
                 </div>
