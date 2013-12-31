@@ -82,7 +82,7 @@ class MessageComposeForm(AbstractGameForm):
                     attachment = tpl["attachment"] or attachment
                     transferred_msg = tpl["transferred_msg"] or transferred_msg
                     parent_id = tpl["parent_id"] or parent_id
-                self.fields["use_template"] = forms.CharField(required=False, initial=use_template, widget=forms.HiddenInput())
+            self.fields["use_template"] = forms.CharField(required=False, initial=(use_template or None), widget=forms.HiddenInput())
 
 
         if parent_id:
@@ -139,7 +139,7 @@ class MessageComposeForm(AbstractGameForm):
             _delay_values_minutes_choices = zip(_delay_values_minutes, _delay_values_minutes_labels)
             self.fields.insert(2, "delay_mn", forms.ChoiceField(label=_("Sending delay"), choices=_delay_values_minutes_choices, initial="0"))
             '''
-            self.fields.insert(2, "delay_h", forms.FloatField(label=_("Sending delay in hours (may be a float with a dot)"), initial=0))
+            self.fields.insert(2, "delay_h", forms.FloatField(label=_("Sending delay in hours (eg. 2.4)"), initial=0))
 
         else:
             pass # no sender or delay_mn fields!
@@ -152,7 +152,7 @@ class MessageComposeForm(AbstractGameForm):
         self.fields["subject"].initial = subject
         self.fields["body"].initial = body
 
-        self.fields["attachment"].initial = attachment
+        self.fields["attachment"].initial = [attachment] if attachment else None # BEWARE HERE, a list!!
         self.fields["attachment"].choice_tags = datamanager.get_personal_files(absolute_urls=False)
         self.fields["attachment"].max_selection_size = 1
 
@@ -262,7 +262,7 @@ def all_dispatched_messages(request, template_name='messaging/messages.html'):
     enriched_messages = _determine_message_list_display_context(request.datamanager, messages=messages, is_pending=False)
     return render(request,
                   template_name,
-                  dict(page_title=_("All Transferred Messages"),
+                  dict(page_title=_("All Dispatched Messages"),
                        messages=enriched_messages))
 
 

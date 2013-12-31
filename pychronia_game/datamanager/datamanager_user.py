@@ -100,12 +100,12 @@ class GameUser(object):
     def _is_user_messaging_possible(self, context=None):
 
         if not self.datamanager.request:
-            self.datamanager.logger.critical("Unexisting request object looked up by GameUser", exc_info=True)
+            self.datamanager.logger.critical("Unexisting request object looked up by GameUser")
             return False
 
         assert self.datamanager.request
         if self.datamanager.request.is_ajax():
-            self.datamanager.logger.critical("Ajax request may not add user message (url=%s)", self.datamanager.request.get_full_path(), exc_info=True)
+            self.datamanager.logger.critical("Ajax request may not add user message %r (url=%s)", context, self.datamanager.request.get_full_path())
             return False
 
         return True

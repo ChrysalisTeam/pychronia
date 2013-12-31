@@ -7,14 +7,19 @@ TODO LIST CHRYSALIS
 FEATURES
 ------------
 
-- adjust display of game items "auction", "hints" etc.
-- add avatar files
-- update djinns data
-- update abilities settings
-- add main missing items
-- refactor game master manual's hierarchy
-- add smart avatar display in messaging
+- add avatar files LATER
+- add smart avatar display in messaging LATER
 
+
+- add main missing items (WIP)
+
+- update abilities settings
+
+- fix TOC pagebreak pb in game master manual (or remove blank page with pdftkall ?)
+- refactor game master manual's hierarchy
+- use light jpegs for game master manual background
+
+- mark USED templates as so, in displayed view
 
 
 SCRIPT
@@ -44,6 +49,7 @@ Faire page d'introduction
 TESTS
 ----------
 
+- test message compsoe form and attachments, it's VERY sensitive
 - test proper hiding (or not) of characters' belongings depending on permissions, in characters page
 - test all views eg. encrypted folders!
 - auto test all forms with also inspect.getsourcelines(object) (for UNINSTANTIABLE_ERROR) etc.
@@ -63,6 +69,9 @@ NEEDS COSMETICS
 TASKS DONE
 ---------------
 
+- merge help_pages and content (all are the same...)
+- remove djinns for now (will come back later)
+- adjust display of game items' fields "auction", "hints" etc. DONE
 - translate pychronia_common and pychronia_cms stuffs too DONE
 - add basic file logging config DONE
 - connect and test VAAS prod account DONE

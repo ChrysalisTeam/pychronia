@@ -2206,16 +2206,16 @@ msgid "Access to initial message forbidden."
 msgstr "Accès au message initial interdit."
 
 #: .\views\messaging_views.py:142
-msgid "Sending delay in hours (may be a float with a dot)"
-msgstr "Délai d'envoi en heures (peut être un nombre avec un point)"
+msgid "Sending delay in hours (eg. 2.4)"
+msgstr "Délai d'envoi en heures (ex. 2.4)"
 
 #: .\views\messaging_views.py:165
 msgid "Placeholder remaining in text"
 msgstr "Marqueur de substitution restant dans le texte"
 
 #: .\views\messaging_views.py:265
-msgid "All Transferred Messages"
-msgstr "Messages Transférés"
+msgid "All Dispatched Messages"
+msgstr "Messages Transmis"
 
 #: .\views\messaging_views.py:275
 msgid "All Queued Messages"
