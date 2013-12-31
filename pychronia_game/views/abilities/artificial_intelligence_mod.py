@@ -17,6 +17,7 @@ class DjinnContactForm(AbstractGameForm):
 
 """
 
+DISABLED ATM
 
 class DjinnContactForm(AbstractGameForm):
     djinn_name = forms.CharField(label=_("Djinn"), required=True)

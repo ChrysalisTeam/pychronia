@@ -26,8 +26,10 @@ from .telecom_investigation_mod import TelecomInvestigationAbility
 telecom_investigation = TelecomInvestigationAbility.as_view
 '''
 
+'''
 from .artificial_intelligence_mod import ArtificialIntelligenceAbility
 artificial_intelligence = ArtificialIntelligenceAbility.as_view
+'''
 
 from .chess_challenge_mod import ChessChallengeAbility
 chess_challenge = ChessChallengeAbility.as_view
