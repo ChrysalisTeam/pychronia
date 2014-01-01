@@ -505,7 +505,7 @@
         <a href="javascript:document.getElementById('change_language_en').submit()"><img src="{{ STATIC_URL }}img/flags/UK.jpg" style="vertical-align: middle"/></a>
         </form>    <br/>
 
-        {% if user.is_master %}<b><a href="{{ mobile_site_entry_url }}">{% trans "MOBILE TEST" %}</a></b>{% endif %}
+        {% comment %}{% if user.is_master %}<b><a href="{{ mobile_site_entry_url }}">{% trans "MOBILE TEST" %}</a></b>{% endif %}{% endcomment %}
 {% endblock %}
 
 

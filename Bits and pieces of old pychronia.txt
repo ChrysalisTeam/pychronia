@@ -1,0 +1,384 @@
+        normalized_emails = set() # unicity !
+        for (index, chunk) in enumerate(recipient_emails):
+            if "@" in chunk:
+                values = [chunk]
+            elif chunk == data["global_parameters"]["global_email"]:
+                values = [chunk]
+            elif chunk == data["global_parameters"]["master_login"]:
+                values = [data["global_parameters"]["master_email"]]
+            elif chunk in data["character_properties"].keys():
+                values = [chunk + "@" + pangea_domain] # we allow short usernames
+            else:
+                # print("%%%", data["character_properties"].keys())
+                raise UsageError(_("Unknown user login '%s' in recipients list") % chunk) # surely an input error of user!
+            normalized_emails.update(values)
+            
+        data = self.data
+
+        pangea_domain = data["global_parameters"]["pangea_network_domain"]
+
+		
+
+				
+    def _build_new_message(self, sender_email, recipient_emails, subject, body, attachment=None,
+                           date_or_delay_mn=None, is_read=False, is_certified=False,
+                           parent_id=None, **kwargs):
+        # TOP LEVEL HERE - no parent call #
+		
+
+		
+    def _determine_visibility_list(self, msg):
+        """
+        Default : reject.
+        
+        To be overridden.
+        """	
+		
+
+		
+	MOVE TO TEXT FOR CHARS :
+    @transaction_watcher
+    def _immediately_send_message(self, msg):
+
+        self._update_external_contacts(msg)
+        self.set_new_message_notification(msg["recipient_emails"], new_status=True)
+
+		
+		=========> _recompute_all_external_contacts_via_msgs ??
+		
+		
+
+        # wiretapping - FIXME MOVE TO OWN MODULE
+
+
+        # audio_notification = self.get_global_parameter("message_intercepted_audio_id")
+        # NO NOTIFICATION - self.add_radio_message(audio_notification)
+		
+		
+    def _check_sender_email(self, sender_email):
+        if self.global_contacts.contains_item(sender_email):
+            return
+        super(TextMessagingContacts, self)._check_sender_email(sender_email=sender_email)
+
+    def _check_recipient_email(self, recipient_email, sender_email):
+	
+	
+		
+            
+
+
+    @transaction_watcher
+    def _immediately_send_message(self, msg):
+
+        for username in self.get_character_usernames():
+            wiretapping_targets_emails = [self.get_character_email(target)
+                                          for target in self.get_wiretapping_targets(username)]
+            if (msg["sender_email"] in wiretapping_targets_emails or
+               any(True for recipient in msg["recipient_emails"] if recipient in wiretapping_targets_emails)):
+                msg["visible_by"][username] = VISIBILITY_REASONS.interceptor # that character will see the message
+
+        super(TextMessagingInterception, self)._immediately_send_message(msg)
+	
+    
+    
+    
+    
+    
+    
+    """
+def _ensure_data_ok(datamanager):
+    if not datamanager.is_initialized:
+        raise AbnormalUsageError(_("Game databases haven't yet been initialized !"))
+"""
+
+"""
+# HACK TO ALLOW THE PICKLING OF INSTANCE METHODS #
+# WOULD REQUIRE PICKLABILITY OF DATAMANAGER #
+import copy_reg
+import new
+def make_instancemethod(inst, methodname):
+    return getattr(inst, methodname)
+def pickle_instancemethod(method):
+    return make_instancemethod, (method.klass, method.im_func.__name__)
+copy_reg.pickle(new.instancemethod, pickle_instancemethod,
+make_instancemethod)
+
+def mark_always_available(func):
+    func.always_available = True
+    return func
+
+"""
+
+
+"""
+import traceback
+print "\n------------"
+print "importing datamanager ! "
+traceback.print_stack()
+"""
+
+###DEFAULT_YAML_FILE = os.path.join(os.path.dirname(os.path.dirname(__file__)), "game_initial_data.yaml")
+
+
+
+
+<div id="widget-categories" class="widget">
+  <h3>{% trans "Categories" %}</h3>
+  {% get_categories %}
+</div>
+<div id="widget-archives" class="widget">
+  <h3>{% trans "Archives" %}</h3>
+  {% get_archives_entries_tree %}
+</div>
+
+
+                <h1>{% page_attribute "page_title" %}</h1>
+                        
+                {% block main_content %}  
+                {% endblock %}
+                 
+
+
+    {% headingcontext target_level=2 %}
+
+    {% for object in object_list %}
+      {% include "zinnia/_entry_detail.html" with object_content=object.html_content|truncatewords_html:100|safe continue_reading=1 %}
+    {% empty %}
+      <p class="info">
+        <a href="{% url 'admin:zinnia_entry_add' %}">{% trans "No entries yet." %}</a>
+      </p>
+    {% endfor %}
+
+    {% endheadingcontext %}
+
+
+
+                <h2>Hello</h2>
+                <div class="scroll_realistic_thin_ends">
+                    Hi<br/>Hi<br/>Hi<br/>
+                    Hi<br/>Hi<br/>Hi<br/>
+                </div>
+ 
+        
+        <!-- // USE DJANGO INCLUDE HERE // -->
+    
+    <p width="90%" style="text-align:center;">
+        <i><b>
+        {% blocktrans with player.username|capfirst as player_name %}
+            Welcome to your private information technology system, {{player_name }}.<br/>
+            May it help you during the dark events that Pangea is about to encounter.
+        {% endblocktrans %}
+        </b></i>
+        
+        
+    </p>
+
+    <br/>
+    
+    <img src="{% game_file_url "attachments/logo_rpgweb.png" %}"/>
+
+    
+            {% if help_keyword %}    TODO CHANGE THIS
+        <a href="{% gameurl rpgweb.views.view_help_page keyword=help_keyword %}" class="fancybox fancybox.ajax" title="{{ page_title }}">
+            <img style="width 50px; height: 50px; float: right;" src="{{ MEDIA_URL }}images/question_mark.png"/>
+        </a>
+        {% endif %}
+        
+        
+        
+        {% if messages %}
+           <ul class="messages">
+               {% for message in messages %}
+               <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message|linebreaksbr }}</li>
+               {% endfor %}
+           </ul>
+        {% endif %}
+    
+    
+                    <div class="notification_panel bg_red" style="display:none;">
+                    <div class="notification_panel_decorations">
+                        <div class="notification_panel_content">
+                            Here is a notification<br/> message <br/>well long etc.<br/>gogogogo<br/>leeee<br/>jjjj<br/>lll7
+                        </div>
+                    </div>
+                </div>
+                
+                
+    http://localhost:8000/DEMO/messages/view_single_message/12_22d4/
+
+
+{% addtoblock "meta" %}
+    <meta name="ROBOTS" content="NOINDEX,NOFOLLOW" />
+{% endaddtoblock %}
+
+
+=============
+
+P4WN NOTES
+
+var mover = this.board_state.to_play;
+    if (this.players[mover] == 'computer' &&
+
+cf display.js
+
+Callback : in p4_move
+
+USE user-select to disable cell selection !!!
+
+
+
+
+
+
+
+            <p>
+                {% blocktrans %}
+                You may here activate the locking of the doors of the manor.
+                {% endblocktrans %}
+            </p><br/>
+
+            <p>
+                {% blocktrans %}
+                Please provide the proper password to unlock the doors of the manor.
+                {% endblocktrans %}
+            </p><br/>
+
+             <p>
+                {% blocktrans %}
+                Pangea radio, the world's greatest broadcasting system, is pleased to provide its services in a totally open and free manner !
+                {% endblocktrans %}
+             </p>
+
+             <br/><br/>
+
+
+
+<p>
+{% blocktrans %}
+All important events which have occurred so far are logged below.
+Some events point to other pages, where more details can be found.
+{% endblocktrans %}
+</p>
+
+
+
+        <i>Here put note about why secret questions are being removed in new accounts.</i>
+
+          <br/>
+        <p class="outlined">
+        {% blocktrans %}
+            Please correctly answer the secret question below, and provide a valid backup email address,
+            so that we can send you the password you forgot.
+        {% endblocktrans %}
+        </p>
+    <br/>
+    <div align="center"><a href="{% game_view_url "pychronia_game.views.login" %}">{% trans "Get back to login page" %}</a></div>
+
+
+        <p>
+        {% blocktrans %}
+            Please provide below the phonetic transcription of antic runes, with spaces between each syllable (eg. "na tsu to ri").
+            Due to the complex rules of these ancient languages, the precise location of these runes is also required to get
+            a meaningful translation.
+            Translation processing might take between {{ min_delay_mn }} and {{ max_delay_mn }} minutes.
+        {% endblocktrans %}
+        </p>
+
+        <br/>
+
+
+
+
+
+<p>
+{% blocktrans %}
+    Use your funds carefully to cover the most interesting areas with your mercenaries.
+{% endblocktrans %}
+</p><br/>
+<h3>
+     {% trans "Agents Pricing" %}
+</h3>
+
+{% if employer_profile %}
+    <p>
+        {% blocktrans count user_profile.account as account%}
+            You currently own <strong>{{ account }} kash</strong> in your bank account,
+        {% plural %}
+            You currently own <strong>{{ account }} kashes</strong> in your bank account,
+        {% endblocktrans %}
+
+        {% blocktrans count user_profile.gems|length as gems_count %}
+            plus <strong> {{ gems_count }} gem </strong>,
+        {% plural %}
+            plus <strong> {{ gems_count }} gems </strong>,
+        {% endblocktrans %}
+
+        {% blocktrans count total_gems_value as total_gems_value %}
+            for a total gem value of <strong> {{ total_gems_value }} kash </strong>.
+        {% plural %}
+            for a total gem value of <strong> {{ total_gems_value }} kashes </strong>.
+        {% endblocktrans %}
+
+    </p>
+{% endif %}
+
+
+
+<table style="margin:auto;width:450px;border:1px solid #DFBF99;">
+<tr>
+    <th>&nbsp;</th>
+    <th>
+       THIS IS ALL WRONG
+        {% trans "Payment with money" %}
+    </th>
+    <th>
+        {% trans "Payment with gems" %}
+    </th>
+</tr>
+
+<tr>
+    <th>{% trans "Mercenaries" %}</th>
+    <td>THIS IS ALL WRONG
+        {{ settings.mercenary_cost_money }}
+    </td>
+    <td>
+        {{ settings.mercenary_cost_gems }}
+    </td>
+</tr>
+</table>
+
+
+ (press Ctrl key to select/deselect)
+
+
+    <p>
+    {% blocktrans %}
+        Our scanning system is ready to search the entire world for objects similar to the one you'll provide.
+        You may provide a detailed description of the item to analyse, or provide an object your team own
+        (a description isn't useful in the latter case).
+    {% endblocktrans %}
+    </p>
+
+
+    {% blocktrans %}
+        At the moment, your team still hasn't acquired any object which could help us find the orbs.
+    {% endblocktrans %}
+
+
+
+        <p>
+        {% blocktrans%}
+            HERE EXPLAIN DJINN LIMIT {{bot_max_answers }} LINES.
+        {% endblocktrans %}
+        </p><br />
+
+
+
+
+
+
+
+
+
+
+

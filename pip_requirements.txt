@@ -6,29 +6,31 @@ PyYAML==3.10
 BeautifulSoup==3.2.1
 beautifulsoup4==4.1.3
 
-Django==1.4.3
-Django-Select2==4.0.0
+Django==1.5.5
+Django-Select2==4.2.2
 django-zodb==0.3dev
 django-templateaddons==0.1
-South==0.7.6
+South==0.8.4
+django-wsgiserver==0.6.10
+django-debug-toolbar==0.9.4
 
-Sphinx==1.1.3
-docutils==0.10
-rst2pdf==0.93
-easy-thumbnails==1.1
+Sphinx==1.2
+docutils==0.11
+
+easy-thumbnails==1.4
 odict==1.5.1
-pycrypto==2.6  # no much used ATM
-pyparsing==1.5.6
-requests==1.2.0
+pycrypto==2.6.1  # no much used ATM
+pyparsing==1.5.7 # now v2 available
+requests==1.2.3 # now v2 available
 decorator==3.4.0
 python-memcached==1.53
 
 django-cms==2.3.5
 django-filer==0.9.3
 cmsplugin-filer==0.9.3
-django-sekizai==0.6.1
+
 django-tagging==0.3.1
-django-inline-ordering==1.0.2
+
 
 django-apptemplates==0.0.1
 djangocms-text-ckeditor==1.0.9
@@ -42,9 +44,8 @@ cmsplugin-zinnia==0.4
 
 # DEV tools only
 pytest==2.3.4
-django-debug-toolbar==0.9.4
-django-wsgiserver==0.6.10
 pyScss==1.2.0.post3
+rst2pdf==0.93
 
 #django-sentry==1.8.6.2 # might be useful
 

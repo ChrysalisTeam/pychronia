@@ -5,7 +5,6 @@ from pychronia_game.common_settings import *
 from pychronia_common.tests.persistent_mode_settings import * # simple overrides
 
 from pychronia_game.tests.common_test_settings import * # simple overrides
-import random
 
 
 

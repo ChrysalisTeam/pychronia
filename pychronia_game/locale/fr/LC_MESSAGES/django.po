@@ -938,7 +938,7 @@ msgstr "Nouvelles entrées de menu disponibles !"
 
 #: .\templates\base_main.html.py:418
 msgid "New text messages are available for you!"
-msgstr "De nouveaux messages radio sont disponibles !"
+msgstr "De nouveaux messages email sont disponibles !"
 
 #: .\templates\base_main.html.py:421
 msgid "There are people in the live chat room!"

@@ -7,9 +7,12 @@ TODO LIST CHRYSALIS
 FEATURES
 ------------
 
+- chess challenge doesn't respect "writability" of game
+
 - add avatar files LATER
 - add smart avatar display in messaging LATER
 
+- fix captcha - static blocks must NOT appear when captcha is WIP
 
 - add main missing items (WIP)
 
@@ -20,6 +23,10 @@ FEATURES
 - use light jpegs for game master manual background
 
 - mark USED templates as so, in displayed view
+
+- fix unfound translatable strings (ugettext_lazy as _lazy, ugettext_noop as _noop)
+
+- encyclopedia index MUST be visible always for game master
 
 
 SCRIPT

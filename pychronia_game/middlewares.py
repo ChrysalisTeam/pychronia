@@ -104,7 +104,7 @@ class ZodbTransactionMiddleware(object):
         except Exception:
             logger = logging
 
-        if __debug__:
+        if __debug__ and hasattr(request, "start_time"):
             url = request.get_full_path()
             delay = time.time() - request.start_time
             logger.info("Pychronia request took %.3f seconds for url %r" % (delay, url))

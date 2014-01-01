@@ -21,3 +21,5 @@ ZODB_URL = None
 BUG_REPORT_EMAIL = None
 
 PASSWORDS_POOL = None # must be a list of strings
+
+ACAPELA_CLIENT_ARGS = None # must be filled to use TTS

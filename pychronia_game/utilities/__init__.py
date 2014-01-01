@@ -566,7 +566,7 @@ def load_yaml_fixture(yaml_fixture):
         for yaml_file in yaml_files:
             if os.path.basename(yaml_file).startswith("_"):
                 continue # skip deactivated yaml file
-            print("Loading yaml fixture %s" % yaml_file)
+            ##print("Loading yaml fixture %s" % yaml_file)
             part = load_yaml_file(yaml_file)
 
             if not isinstance(part, dict):
