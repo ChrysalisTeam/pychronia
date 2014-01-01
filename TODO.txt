@@ -28,10 +28,16 @@ FEATURES
 
 - encyclopedia index MUST be visible always for game master
 
+- CMS : stop float pbs when EDIT=ON, on main frames
+
+- journée de rame en aval de ENDROIT_PRECIS_XXXX??. <TODO>
+
+
 
 SCRIPT
 ----------
 
+- talk about encrypted folders in manual
 - mark in manual that prices are "for information only"
 - comment that "new message" sounds are not enqueuable manually, in help page
 - add enough content for game startup
@@ -56,7 +62,7 @@ Faire page d'introduction
 TESTS
 ----------
 
-- test message compsoe form and attachments, it's VERY sensitive
+- test message compose form and attachments, it's VERY sensitive
 - test proper hiding (or not) of characters' belongings depending on permissions, in characters page
 - test all views eg. encrypted folders!
 - auto test all forms with also inspect.getsourcelines(object) (for UNINSTANTIABLE_ERROR) etc.

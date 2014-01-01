@@ -77,9 +77,8 @@ msgid ""
 "glitches.\n"
 msgstr ""
 "\n"
-"Ce site requiert un navigateur pleinement compatible CSS3 comme Firefox, "
-"Chrome ou Safari. Les utilisateurs d'Internet Explorer peuvent rencontrer "
-"des petits bogues graphiques.\n"
+"Ce site est prévu pour fonctionner avec un navigateur fortement compatible CSS3 comme Firefox, "
+"Chrome ou Safari.\n"
 
 #: .\templates\cms_base.html.py:93
 msgid ""
