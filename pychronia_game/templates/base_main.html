@@ -495,12 +495,12 @@
 
         {% trans "Interface : " %}
 
-        <form id="change_language_fr" style="display:inline;" method="POST" action="{% url django.views.i18n.set_language %}">
+        <form id="change_language_fr" style="display:inline;" method="POST" action="{% url 'django.views.i18n.set_language' %}">
         <input type="hidden" name="language" value="fr"/>
         <a href="javascript:document.getElementById('change_language_fr').submit()"><img src="{{ STATIC_URL }}img/flags/France.jpg" style="vertical-align: middle"/></a>
         </form>
 
-        <form id="change_language_en" style="display:inline;" method="POST" action="{% url django.views.i18n.set_language %}">
+        <form id="change_language_en" style="display:inline;" method="POST" action="{% url 'django.views.i18n.set_language' %}">
         <input type="hidden" name="language" value="en"/>
         <a href="javascript:document.getElementById('change_language_en').submit()"><img src="{{ STATIC_URL }}img/flags/UK.jpg" style="vertical-align: middle"/></a>
         </form>    <br/>

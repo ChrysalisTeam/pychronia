@@ -3359,7 +3359,12 @@ class TestHttpRequests(BaseGameTestCase):
                 response = self.client.get(url)
 
             ##print ("WE TRY TO LOAD ", url, response.__dict__)
-            self.assertNotContains(response, 'class="error_notifications"', msg_prefix=response.content[0:300])
+            try:
+                msg_prefix = response.content[0:300].decode("utf8")
+            except UnicodeError:
+                pass # must be a binary file
+            else:
+                self.assertNotContains(response, 'class="error_notifications"', msg_prefix=msg_prefix)
             self.assertEqual(response.status_code, 200, url + " | " + str(response.status_code))
 
 

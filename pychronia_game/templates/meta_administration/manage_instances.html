@@ -12,7 +12,7 @@
 		{% for meta in instances_metadata %}
 		<tr>
 			<td>
-    			<a href="{% url pychronia_game.views.homepage game_instance_id=meta.instance_id %}" ><b>{{ meta.instance_id }}</b></a><br/>
+    			<a href="{% url 'pychronia_game.views.homepage game'_instance_id=meta.instance_id %}" ><b>{{ meta.instance_id }}</b></a><br/>
     			{% trans "Creator:" %} {{ meta.creator_login }}<br/>
     			{% trans "Created:" %} {{ meta.creation_time|utctolocal|date:"SHORT_DATE_FORMAT" }}<br/>
 			</td>
@@ -33,7 +33,7 @@
     				    <input type="hidden" name="unlock_instance" value="{{ meta.instance_id }}"/>
     				    <input type="submit" value="{{ _("Unlock game instance")}}" />
     				</form>
-                    <a href="{% url pychronia_game.meta_administration_views.edit_instance_db target_instance_id=meta.instance_id %}">
+                    <a href="{% url 'pychronia_game.meta_administration_views.edit_instance_db' target_instance_id=meta.instance_id %}">
                         <br/><b>{% trans "Directly edit instance database (dangerous!)" %}<b/>
                     </a>
                 {% else %}
