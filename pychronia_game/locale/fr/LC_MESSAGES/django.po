@@ -1260,7 +1260,7 @@ msgstr ""
 
 #: .\templates\abilities\wiretapping_management.html.py:16
 msgid "Buy confidentiality system"
-msgstr "Acheter système de confidentialité"
+msgstr "Acheter confidentialité"
 
 #: .\templates\abilities\wiretapping_management.html.py:16
 msgid "Are you sure you want to purchase a confidentiality protection system ?"
@@ -1298,7 +1298,7 @@ msgstr "Vous n'avez pas de système de mise sur écoute disponible."
 
 #: .\templates\abilities\wiretapping_management.html.py:63
 msgid "Buy wiretapping slot"
-msgstr "Acheter un système de mise sur écoute"
+msgstr "Acheter espionneur"
 
 #: .\templates\abilities\wiretapping_management.html.py:63
 msgid "Are you sure you want to purchase a spying slot ?"

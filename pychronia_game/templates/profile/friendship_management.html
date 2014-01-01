@@ -20,6 +20,9 @@
 <br />
 
 {% for other_username, action_params in friendship_actions %}
+
+    <p>
+
     <b>{{ other_username|capfirst }}: {{ action_params.2 }} </b>
 
     {% if action_params.0 %}
@@ -30,7 +33,7 @@
     </form>
     {% endif %}
 
-
+    </p>
     <br/>
 {% endfor %}
 
