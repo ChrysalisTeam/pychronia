@@ -3505,7 +3505,7 @@ class TestHttpRequests(BaseGameTestCase):
 
         # VIEWS SELECTION
         from django.core.urlresolvers import RegexURLResolver
-        from pychronia_game.urls import web_game_urlpatterns  # only desktop views atm
+        from pychronia_game.all_urls import web_game_urlpatterns  # only desktop views atm
         # we test some views for which there is a distinction between master and player
         selected_patterns = """ compose_message view_sales personal_items_slideshow character_profile friendship_management""".split()
         views = [url._callback_str for url in web_game_urlpatterns if not isinstance(url, RegexURLResolver) and [match for match in selected_patterns if match in url._callback_str]]

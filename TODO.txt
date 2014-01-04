@@ -18,9 +18,9 @@ FEATURES
 
 - update abilities settings
 
-- fix TOC pagebreak pb in game master manual (or remove blank page with pdftkall ?)
+
 - refactor game master manual's hierarchy
-- use light jpegs for game master manual background
+
 
 - mark USED templates as so, in displayed view
 
@@ -82,6 +82,8 @@ NEEDS COSMETICS
 TASKS DONE
 ---------------
 
+- fix TOC pagebreak pb in game master manual (remove blank page with pdftkall) DONE
+- use light jpegs for game master manual background DONE
 - merge help_pages and content (all are the same...)
 - remove djinns for now (will come back later)
 - adjust display of game items' fields "auction", "hints" etc. DONE
