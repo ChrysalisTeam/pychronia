@@ -22,12 +22,6 @@ class AbilityMetaclass(GameViewMetaclass, type):
         super(AbilityMetaclass, NewClass).__init__(name, bases, new_dict)
 
         if not NewClass.__name__.startswith("Abstract"):
-
-            if __debug__:
-                pass
-                #RESERVED_NAMES = AbstractAbility.__dict__.keys()
-                ##assert utilities.check_is_lazy_object(NewClass.TITLE) # NO - unused atm !! delayed translation
-
             GameDataManager.register_ability(NewClass)
 
 

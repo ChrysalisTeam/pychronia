@@ -161,7 +161,7 @@ class WiretappingAbility(AbstractAbility):
         self.private_data["wiretapping_targets"] = PersistentList(target_names)
         '''
 
-        self.datamanager.log_game_event(ugettext_noop("Wiretapping targets set to (%(targets)s)."),
+        self.datamanager.log_game_event(_("Wiretapping targets set to (%(targets)s)."),
                              PersistentDict(targets=", ".join(target_names)),
                              url=None)
 

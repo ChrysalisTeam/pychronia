@@ -22,7 +22,7 @@ from __future__ import unicode_literals
                                    is_certified=True)
 
         self.log_game_event(
-            ugettext_noop("Acharith attack launched by %(username)s on %(city_name)s, terminating at %(time)s."),
+            _("Acharith attack launched by %(username)s on %(city_name)s, terminating at %(time)s."),
             PersistentDict(username=username, city_name=city_name, time=local_finish_time_str),
             url=self.get_message_viewer_url(msg_id))
 
@@ -57,7 +57,7 @@ from __future__ import unicode_literals
         self.data["global_parameters"]["teldorian_teleportations_done"] += 1 # IMPORTANT
 
         self.log_game_event(
-            ugettext_noop("Teldorian teleportation launched by %(username)s on %(city_name)s, terminating at %(time)s."),
+            _("Teldorian teleportation launched by %(username)s on %(city_name)s, terminating at %(time)s."),
             PersistentDict(username=username, city_name=city_name, time=local_finish_time_str),
             url=self.get_message_viewer_url(msg_id))
 
@@ -83,7 +83,7 @@ from __future__ import unicode_literals
                                    is_certified=True)
 
         self.log_game_event(
-            ugettext_noop("Mercenary intervention launched by %(username)s on %(city_name)s, terminating at %(time)s."),
+            _("Mercenary intervention launched by %(username)s on %(city_name)s, terminating at %(time)s."),
             PersistentDict(username=username, city_name=city_name, time=local_finish_time_str),
             url=self.get_message_viewer_url(msg_id))
 

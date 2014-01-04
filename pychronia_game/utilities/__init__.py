@@ -324,8 +324,9 @@ def check_is_range_or_num(value):
         usage_assert(value[0] <= value[1], value)
     return True
 
-def check_is_lazy_object(value):
-    usage_assert(value.__class__.__name__ == "__proxy__", type(value))
+def check_is_lazy_translation(value):
+    from django.utils.functional import Promise
+    usage_assert(isinstance(value, Promise), type(value))
     return True
 
 def check_is_string(value, multiline=True):

@@ -15,10 +15,11 @@ from ..datamanager import GameDataManager
 from .abstract_form import AbstractGameForm, UninstantiableFormError
 from .datamanager_tools import transaction_watcher, readonly_method
 from django.forms import Form
-from django.utils.functional import Promise
+
 
 from ZODB.POSException import POSError # parent of ConflictError
 from django.core import urlresolvers
+from django.utils.functional import Promise # used eg. for lazy-translated strings
 
 
 
@@ -104,9 +105,9 @@ class GameViewMetaclass(type):
             if __debug__:
 
                 assert NewClass.TITLE
-                assert isinstance(NewClass.TITLE, Promise)
+                utilities.check_is_lazy_translation(NewClass.TITLE)
                 if NewClass.ACCESS == UserAccess.authenticated:
-                    assert NewClass.TITLE_FOR_MASTER is None or isinstance(NewClass.TITLE_FOR_MASTER, Promise)
+                    assert NewClass.TITLE_FOR_MASTER is None or utilities.check_is_lazy_translation(NewClass.TITLE_FOR_MASTER)
                 else:
                     assert NewClass.TITLE_FOR_MASTER is None # makes no sense if view for characters or for master only
 
@@ -840,7 +841,7 @@ def register_view(view_object=None,
 
         else:
 
-            assert title and isinstance(title, Promise)
+            assert title and utilities.check_is_lazy_translation(title)
             assert inspect.isroutine(real_view_object) # not a class!
 
             if local_attach_to is not _undefined and not isinstance(local_attach_to, GameViewMetaclass):

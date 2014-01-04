@@ -38,10 +38,8 @@ from pychronia_game.views.abilities import house_locking, \
 from django.contrib.auth.models import User
 from pychronia_game.authentication import clear_all_sessions
 from pychronia_game.utilities.mediaplayers import generate_image_viewer
-from django.utils.functional import Promise
 from django.core.urlresolvers import RegexURLResolver
-from pychronia_game.datamanager.abstract_form import AbstractGameForm, \
-    GemPayementFormMixin
+from pychronia_game.datamanager.abstract_form import AbstractGameForm, GemPayementFormMixin
 from ZODB.POSException import POSError
 
 
@@ -4252,7 +4250,8 @@ class TestActionMiddlewares(BaseGameTestCase):
 
     def _check_full_action_explanations(self, full_list):
         for title, explanations in full_list:
-            assert isinstance(title, Promise) and unicode(title)
+            utilities.check_is_lazy_translation(title)
+            assert unicode(title)
             assert explanations # NO empty lists here
             assert self._flatten_explanations(explanations)
         return full_list # if caller wants to check non-emptiness

@@ -49,7 +49,7 @@ class HouseLockingAbility(AbstractAbility):
         if self.are_house_doors_open():
             self.settings["house_doors_are_open"] = False
             self.user.add_message(_("House doors successfully locked."))
-            self.log_game_event(ugettext_noop("House doors have been locked by security client."))
+            self.log_game_event(_("House doors have been locked by security client."))
             return True
         else:
             self.user.add_error(_("Doors are already locked."))
@@ -67,7 +67,7 @@ class HouseLockingAbility(AbstractAbility):
             if password.strip() == expected_password.strip():
                 self.settings["house_doors_are_open"] = True
                 self.user.add_message(_("House doors successfully unlocked."))
-                self.log_game_event(ugettext_noop("House doors have been successfully unlocked with password."))
+                self.log_game_event(_("House doors have been successfully unlocked with password."))
                 return True
             else:
                 self.user.add_error(_("Wrong password."))

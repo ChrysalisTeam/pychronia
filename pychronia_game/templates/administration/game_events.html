@@ -26,7 +26,7 @@
                     {% if event.url %}
                         <a href="{{ event.url }}">
                     {% endif %}
-                        <span style="color:{% usercolor event.username %};">[{{event.username}}] {{ event.trans_message }}</span>
+                        <span style="color:{% usercolor event.username %};">[{{event.username}}] {{ event.final_message }}</span>
                     {% if event.url %}
                         </a>
                     {% endif %}

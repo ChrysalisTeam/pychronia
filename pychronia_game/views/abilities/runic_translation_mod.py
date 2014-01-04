@@ -242,7 +242,7 @@ class RunicTranslationAbility(AbstractPartnershipAbility):
 
         msg_id = self.post_message(remote_email, local_email, subject, body, attachment=attachment, date_or_delay_mn=translation_delay)
 
-        self.log_game_event(ugettext_noop("Translation request sent for item '%(item_title)s'."),
+        self.log_game_event(_("Translation request sent for item '%(item_title)s'."),
                               PersistentDict(item_title=item_title),
                               url=self.get_message_viewer_url(msg_id))
 

@@ -96,7 +96,7 @@ class MatterAnalysisAbility(AbstractPartnershipAbility):
         self.post_message(remote_email, local_email, subject, body=body, attachment=None,
                           date_or_delay_mn=self.settings["result_delay"])
 
-        self.log_game_event(ugettext_noop("Item '%(item_title)s' sent for deep matter analysis."),
+        self.log_game_event(_("Item '%(item_title)s' sent for deep matter analysis."),
                              PersistentDict(item_title=item_title),
                              url=None)
 
