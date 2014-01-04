@@ -96,7 +96,7 @@ class EncyclopediaView(AbstractGameView):
                                                                                         article_id=search_results[0])))
 
         # NOW only retrieve article ids, since known article ids have been updated if necessary
-        if dm.is_encyclopedia_index_visible() or dm.is_master():
+        if dm.is_encyclopedia_index_visible() or dm.is_master(): # master ALWAYS sees everything
             article_ids = dm.get_encyclopedia_article_ids()
         elif dm.is_character():
             article_ids = dm.get_character_known_article_ids()

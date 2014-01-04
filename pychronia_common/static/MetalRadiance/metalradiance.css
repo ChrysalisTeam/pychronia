@@ -1540,6 +1540,9 @@ fieldset {
 .p4wn-log, .p4wn-messages {
   display: none;
 }
+.p4wn-controls {
+  margin-top: 20px;
+}
 .item_display {
   padding: 0;
   max-height: 555px;

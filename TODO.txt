@@ -18,21 +18,16 @@ FEATURES
 
 - update abilities settings
 
-
 - refactor game master manual's hierarchy
 
-
-- mark USED templates as so, in displayed view
-
-- fix unfound translatable strings (ugettext_lazy as ugettext_lazy, ugettext_noop as ugettext_noop)
-
-- encyclopedia index MUST be visible always for game master
+- fix unfound translatable strings ((WIP, they must be translated now)
 
 - CMS : stop float pbs when EDIT=ON, on main frames
 
 - journée de rame en aval de ENDROIT_PRECIS_XXXX??. <TODO>
 
 
+- remove dm.user.add_error(_("Access denied to page %s") % self.TITLE) -> must go to HOMEPAGE ALWAYS!!! else master gets login page
 
 SCRIPT
 ----------
@@ -82,6 +77,9 @@ NEEDS COSMETICS
 TASKS DONE
 ---------------
 
+
+- encyclopedia index MUST be visible always for game master - ALREADY THE CASE
+- mark USED templates as so, in displayed view DONE
 - fix TOC pagebreak pb in game master manual (remove blank page with pdftkall) DONE
 - use light jpegs for game master manual background DONE
 - merge help_pages and content (all are the same...)

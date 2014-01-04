@@ -37,10 +37,12 @@ P4wn_display.prototype.move = function(start, end, promotion){
             if (this.players[state.to_play] == 'computer') {
                 // previous player is assumed to be human
                 //alert("HUMAN WON");
+                $.jnotify("{% trans "You won this game! Sending data to server..." %}", "success");
                 notify_chess_player_victory();
             }
             else {
                 // DO NOTHING alert("COMPUTER WON");
+                $.jnotify("{% trans "You lost this game!" %}");
             }
         }
 
@@ -90,12 +92,14 @@ P4WN_IMAGE_DIR = '{{ STATIC_URL }}libs/p4wn/images';
 P4WN_PROMOTION_STRINGS = ['queen', 'rook', 'knight', 'bishop'];
 P4WN_PROMOTION_INTS = [P4_QUEEN, P4_ROOK, P4_KNIGHT, P4_BISHOP];
 
-{% comment %}
-P4WN_CONTROLS.splice(0, 3); // remove player choices
-P4WN_CONTROLS.splice(2, 1); // remove computer level choice
-{% endcomment %}
+{% if not user.is_master %}
+    P4WN_CONTROLS.splice(0, 4); // remove player choices and undo
+    P4WN_CONTROLS.splice(1, 1); // remove computer level choice
+{% endif %}
 
-p4wnify($("#chess_panel")).next_move();
+{% if game_is_writable %}
+    p4wnify($("#chess_panel")).next_move();
+{% endif %}
 
 
 {% endaddtoblock %}
@@ -108,22 +112,23 @@ p4wnify($("#chess_panel")).next_move();
 
     <div align="center">
     <form id="new_chess_game" action="" method="get">
-        <span>{% trans "your new colour:" %}</span>
+        <span>{% trans "Your new colour:" %}</span>
         <select name="player" style="width: auto !important;">
             <option value="white">white</option>
             <option value="black">black</option>
         </select>
-        <input type="submit" class="" value="{% trans "New Game" %}" style="width: auto !important;" />
+        <input type="submit" class="" onclick="return confirm('{{ _("This will reset your current game, are you sure?")|escapejs }}')"
+               value="{% trans "Create New Game" %}" style="width: auto !important;" />
     </form>
     </div>
 
-    <br/>
+    <br/><br/>
 
+    {% if game_is_writable %}
     <div align="center">
-
        <div id="chess_panel"></div>
-
     </div>
+    {% endif %}
 
 {% endblock %}
 

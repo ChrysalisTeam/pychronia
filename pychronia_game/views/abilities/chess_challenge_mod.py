@@ -19,7 +19,7 @@ class ChessChallengeAbility(AbstractAbility):
 
     TEMPLATE = "abilities/chess_challenge.html"
 
-    ACCESS = UserAccess.character
+    ACCESS = UserAccess.authenticated
     REQUIRES_CHARACTER_PERMISSION = False
     REQUIRES_GLOBAL_PERMISSION = False
 
@@ -42,4 +42,8 @@ class ChessChallengeAbility(AbstractAbility):
 
     @transaction_watcher
     def notify_chess_player_victory(self, use_gems=()):
-        self.log_game_event(ugettext_noop("Chess AI has been defeated by user.")) # username auto-logged
+        if self.is_master():
+            self.user.add_message(_("Master, your chess victory has well been detected and ignored by the server."))
+        else:
+            self.log_game_event(ugettext_noop("Chess AI has been defeated by user '%(winner)s'.",
+                                              PersistentDict(winner=self.user.username)))
