@@ -11,13 +11,13 @@ from django import forms
 class StaticPageForm(DataTableForm):
 
 
-    categories = Select2TagsField(label=_lazy("Categories"), required=False)
-    keywords = Select2TagsField(label=_lazy("Keywords"), required=False)
+    categories = Select2TagsField(label=ugettext_lazy("Categories"), required=False)
+    keywords = Select2TagsField(label=ugettext_lazy("Keywords"), required=False)
 
-    description = forms.CharField(label=_lazy("Hidden description"), widget=forms.Textarea(attrs={'rows': '2', 'cols':'40'}), required=False)
-    content = forms.CharField(label=_lazy("Content"), widget=forms.Textarea(attrs={'rows': '8', 'cols':'40'}), required=True)
+    description = forms.CharField(label=ugettext_lazy("Hidden description"), widget=forms.Textarea(attrs={'rows': '2', 'cols':'40'}), required=False)
+    content = forms.CharField(label=ugettext_lazy("Content"), widget=forms.Textarea(attrs={'rows': '8', 'cols':'40'}), required=True)
 
-    ###test = Select2TagsField(label=_lazy("TESTING"), choice_tags=["kkk", "lll"])
+    ###test = Select2TagsField(label=ugettext_lazy("TESTING"), choice_tags=["kkk", "lll"])
 
 
 
@@ -27,13 +27,13 @@ class StaticPageForm(DataTableForm):
 @register_view
 class StaticPagesManagement(AbstractDataTableManagement):
 
-    TITLE = _lazy("Static Pages Editing")
+    TITLE = ugettext_lazy("Static Pages Editing")
     NAME = "static_pages_management"
 
-    GAME_ACTIONS = dict(submit_item=dict(title=_lazy("Submit a static page"),
+    GAME_ACTIONS = dict(submit_item=dict(title=ugettext_lazy("Submit a static page"),
                                                           form_class=StaticPageForm,
                                                           callback="submit_item"),
-                        delete_item=dict(title=_lazy("Delete a static page"),
+                        delete_item=dict(title=ugettext_lazy("Delete a static page"),
                                                           form_class=None,
                                                           callback="delete_item"))
 

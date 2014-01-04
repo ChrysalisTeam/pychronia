@@ -13,7 +13,7 @@ from pychronia_game.datamanager import UninstantiableFormError
 
 class GamePauseForm(AbstractGameForm):
 
-    is_paused = forms.BooleanField(label=_lazy("Game is paused?"), required=False)
+    is_paused = forms.BooleanField(label=ugettext_lazy("Game is paused?"), required=False)
 
     def __init__(self, datamanager, *args, **kwargs):
         super(GamePauseForm, self).__init__(datamanager, *args, **kwargs)
@@ -22,7 +22,7 @@ class GamePauseForm(AbstractGameForm):
 
 class GameViewActivationForm(AbstractGameForm):
 
-    activated_views = forms.MultipleChoiceField(label=_lazy("Game views"), required=False, widget=forms.CheckboxSelectMultiple)
+    activated_views = forms.MultipleChoiceField(label=ugettext_lazy("Game views"), required=False, widget=forms.CheckboxSelectMultiple)
 
     def __init__(self, datamanager, *args, **kwargs):
         super(GameViewActivationForm, self).__init__(datamanager, *args, **kwargs)
@@ -40,7 +40,7 @@ class GameViewActivationForm(AbstractGameForm):
 
 class GameDurationForm(AbstractGameForm):
 
-    num_days = forms.FloatField(label=_lazy("Set theoretical game duration in days"), max_value=365, min_value=1, required=True)
+    num_days = forms.FloatField(label=ugettext_lazy("Set theoretical game duration in days"), max_value=365, min_value=1, required=True)
 
     def __init__(self, datamanager, *args, **kwargs):
         super(GameDurationForm, self).__init__(datamanager, *args, **kwargs)
@@ -51,21 +51,21 @@ class GameDurationForm(AbstractGameForm):
 @register_view
 class AdminDashboardAbility(AbstractAbility):
 
-    TITLE = _lazy("Admin Dashboard")
+    TITLE = ugettext_lazy("Admin Dashboard")
     NAME = "admin_dashboard"
 
-    GAME_ACTIONS = dict(save_admin_widgets_order=dict(title=_lazy("Save admin widgets' order"),
+    GAME_ACTIONS = dict(save_admin_widgets_order=dict(title=ugettext_lazy("Save admin widgets' order"),
                                                           form_class=None,
                                                           callback="save_admin_widgets_order"))
 
     # Place here dashboard forms that don't have their own containing view! #
-    ADMIN_ACTIONS = dict(choose_activated_views=dict(title=_lazy("Activate views"),
+    ADMIN_ACTIONS = dict(choose_activated_views=dict(title=ugettext_lazy("Activate views"),
                                                     form_class=GameViewActivationForm,
                                                     callback="choose_activated_views"),
-                         set_theoretical_game_duration=dict(title=_lazy("Set game duration"),
+                         set_theoretical_game_duration=dict(title=ugettext_lazy("Set game duration"),
                                                             form_class=GameDurationForm,
                                                             callback="set_theoretical_game_duration"),
-                         set_game_pause_state=dict(title=_lazy("Set game pause state"),
+                         set_game_pause_state=dict(title=ugettext_lazy("Set game pause state"),
                                                                 form_class=GamePauseForm,
                                                                 callback="set_game_pause_state"))
 

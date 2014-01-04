@@ -19,11 +19,11 @@ from pychronia_game.datamanager.abstract_game_view import register_view
 @register_view
 class WorldScanAbility(AbstractPartnershipAbility):
 
-    TITLE = _lazy("World Scan")
+    TITLE = ugettext_lazy("World Scan")
 
     NAME = "world_scan"
 
-    GAME_ACTIONS = dict(scan_form=dict(title=_lazy("Choose scanned item targets"),
+    GAME_ACTIONS = dict(scan_form=dict(title=ugettext_lazy("Choose scanned item targets"),
                                               form_class=ArtefactForm,
                                               callback="process_world_scan_submission"))
 
@@ -159,7 +159,7 @@ class WorldScanAbility(AbstractPartnershipAbility):
         msg_id = self.post_message(remote_email, local_email, subject, body, attachment=attachment,
                                    date_or_delay_mn=scanning_delay)
 
-        self.log_game_event(_noop("Automated scanning request sent for item '%(item_title)s'."),
+        self.log_game_event(ugettext_noop("Automated scanning request sent for item '%(item_title)s'."),
                              PersistentDict(item_title=item_title),
                              url=self.get_message_viewer_url(msg_id))
 
@@ -173,7 +173,7 @@ class WorldScanAbility(AbstractPartnershipAbility):
             msg_id = self.post_message(local_email, remote_email, subject, body, date_or_delay_mn=0, is_read=False,
                                        is_certified=True)
     
-            self.log_game_event(_noop("Manual scanning request sent by %(username)s with description."),
+            self.log_game_event(ugettext_noop("Manual scanning request sent by %(username)s with description."),
                                  PersistentDict(username=username),
                                  url=self.get_message_viewer_url(msg_id)))
     

@@ -13,10 +13,10 @@ from pychronia_game.utilities import mediaplayers
 
 class RadioSpotForm(DataTableForm):
 
-    title = forms.CharField(label=_lazy("Title"), required=True)
-    text = forms.CharField(label=_lazy("Content"), widget=forms.Textarea(attrs={'rows': '2', 'cols':'40'}), required=True)
+    title = forms.CharField(label=ugettext_lazy("Title"), required=True)
+    text = forms.CharField(label=ugettext_lazy("Content"), widget=forms.Textarea(attrs={'rows': '2', 'cols':'40'}), required=True)
 
-    url_or_file = forms.CharField(label=_lazy("Url or local file"), required=True)
+    url_or_file = forms.CharField(label=ugettext_lazy("Url or local file"), required=True)
 
     def __init__(self, datamanager, initial=None, **kwargs):
         """
@@ -52,16 +52,16 @@ class RadioSpotForm(DataTableForm):
 @register_view
 class RadioSpotsEditing(AbstractDataTableManagement):
 
-    TITLE = _lazy("Radio Spots Editing")
+    TITLE = ugettext_lazy("Radio Spots Editing")
     NAME = "radio_spots_editing"
 
-    GAME_ACTIONS = dict(submit_item=dict(title=_lazy("Submit radio spot"),
+    GAME_ACTIONS = dict(submit_item=dict(title=ugettext_lazy("Submit radio spot"),
                                                           form_class=RadioSpotForm,
                                                           callback="submit_item"),
-                        delete_item=dict(title=_lazy("Delete radio spot"),
+                        delete_item=dict(title=ugettext_lazy("Delete radio spot"),
                                                           form_class=None,
                                                           callback="delete_item"),
-                        generate_tts_sample=dict(title=_lazy("Generate text-to-speech sample"),
+                        generate_tts_sample=dict(title=ugettext_lazy("Generate text-to-speech sample"),
                                                           form_class=None,
                                                           callback="generate_tts_sample"))
     TEMPLATE = "administration/radio_spots_editing.html"

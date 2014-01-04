@@ -26,7 +26,7 @@ from persistent.list import PersistentList
 
 from django.conf import settings
 from django.utils.html import escape
-from django.utils.translation import ungettext, ugettext as _, ugettext_lazy as _lazy, ugettext_noop as _noop
+from django.utils.translation import ungettext, ugettext as _, ugettext_lazy, ugettext_noop
 from django.template.response import SimpleTemplateResponse, TemplateResponse
 from django.shortcuts import render
 from django.core.urlresolvers import reverse
@@ -132,7 +132,7 @@ class AbnormalUsageError(UsageError):
 
 
 @contextmanager
-def action_failure_handler(request, success_message=_lazy("Operation successful.")):
+def action_failure_handler(request, success_message=ugettext_lazy("Operation successful.")):
     user = request.datamanager.user
     logger = request.datamanager.logger
 
@@ -243,7 +243,7 @@ def determine_asset_url(properties):
     return fileurl
 
 __all__ = [key for key in globals().copy() if not key.startswith("_")]
-__all__ += ["_", "_lazy", "_noop", "_undefined"] # we add translation shortcuts and _undefined placeholder for default function args
+__all__ += ["_", "ugettext_lazy", "ugettext_noop", "_undefined"] # we add translation shortcuts and _undefined placeholder for default function args
 
 
 

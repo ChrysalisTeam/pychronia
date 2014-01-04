@@ -10,10 +10,10 @@ from pychronia_game.datamanager import readonly_method, transaction_watcher, reg
 @register_view
 class ChessChallengeAbility(AbstractAbility):
 
-    TITLE = _lazy("Chess Challenge")
+    TITLE = ugettext_lazy("Chess Challenge")
     NAME = "chess_challenge"
 
-    GAME_ACTIONS = dict(notify_chess_player_victory=dict(title=_lazy("Notify victory of a chess player"),
+    GAME_ACTIONS = dict(notify_chess_player_victory=dict(title=ugettext_lazy("Notify victory of a chess player"),
                                                           form_class=None,
                                                           callback="notify_chess_player_victory"))
 
@@ -42,4 +42,4 @@ class ChessChallengeAbility(AbstractAbility):
 
     @transaction_watcher
     def notify_chess_player_victory(self, use_gems=()):
-        self.log_game_event(_noop("Chess AI has been defeated by user.")) # username auto-logged
+        self.log_game_event(ugettext_noop("Chess AI has been defeated by user.")) # username auto-logged

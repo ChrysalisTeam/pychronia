@@ -34,10 +34,10 @@ class TranslationForm(AbstractGameForm):
 @register_view
 class RunicTranslationAbility(AbstractPartnershipAbility):
 
-    TITLE = _lazy("Runic Translation")
+    TITLE = ugettext_lazy("Runic Translation")
     NAME = "runic_translation"
 
-    GAME_ACTIONS = dict(translation_form=dict(title=_lazy("Translate runes"),
+    GAME_ACTIONS = dict(translation_form=dict(title=ugettext_lazy("Translate runes"),
                                               form_class=TranslationForm,
                                               callback="process_translation"))
 
@@ -242,7 +242,7 @@ class RunicTranslationAbility(AbstractPartnershipAbility):
 
         msg_id = self.post_message(remote_email, local_email, subject, body, attachment=attachment, date_or_delay_mn=translation_delay)
 
-        self.log_game_event(_noop("Translation request sent for item '%(item_title)s'."),
+        self.log_game_event(ugettext_noop("Translation request sent for item '%(item_title)s'."),
                               PersistentDict(item_title=item_title),
                               url=self.get_message_viewer_url(msg_id))
 

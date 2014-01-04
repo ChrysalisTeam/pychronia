@@ -176,10 +176,10 @@ assert issubclass(AbstractGameForm, forms.Form)
 
 class DataTableForm(AbstractGameForm):
 
-    previous_identifier = forms.CharField(label=_lazy("Initial identifier"), widget=forms.HiddenInput(), required=False)
-    identifier = forms.CharField(label=_lazy("Identifier"), required=True)
+    previous_identifier = forms.CharField(label=ugettext_lazy("Initial identifier"), widget=forms.HiddenInput(), required=False)
+    identifier = forms.CharField(label=ugettext_lazy("Identifier"), required=True)
 
-    BAD_ID_MSG = _lazy("Identifier must contain no space")
+    BAD_ID_MSG = ugettext_lazy("Identifier must contain no space")
 
     def __init__(self, datamanager, initial=None, **kwargs):
 

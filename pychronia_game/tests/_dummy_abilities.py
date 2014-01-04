@@ -43,14 +43,14 @@ def with_enforced_action_middlewares(action_name):
 @register_view
 class DummyTestAbility(AbstractAbility):
 
-    TITLE = _lazy("Dummy Ability")
+    TITLE = ugettext_lazy("Dummy Ability")
     NAME = "dummy_ability"
 
     # BEWARE - we cheat to test action middlewares, using with_enforced_action_middlewares() system
-    GAME_ACTIONS = dict(non_middleware_action_callable=dict(title=_lazy("my test title 1"),
+    GAME_ACTIONS = dict(non_middleware_action_callable=dict(title=ugettext_lazy("my test title 1"),
                                                               form_class=None,
                                                               callback="non_middleware_action_callable"),
-                        middleware_wrapped_other_test_action=dict(title=_lazy("my test title 2"),
+                        middleware_wrapped_other_test_action=dict(title=ugettext_lazy("my test title 2"),
                                                               form_class=DummyFormOther,
                                                               callback="middleware_wrapped_other_test_action"))
 

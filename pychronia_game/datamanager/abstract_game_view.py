@@ -222,8 +222,8 @@ class AbstractGameView(object):
     """
     __metaclass__ = GameViewMetaclass
 
-    TITLE = None # must be a _lazy() string
-    TITLE_FOR_MASTER = None # must be a _lazy() string or None
+    TITLE = None # must be a ugettext_lazy() string
+    TITLE_FOR_MASTER = None # must be a ugettext_lazy() string or None
 
     NAME = None # slug to be overridden, used as primary identifier
 

@@ -23,7 +23,7 @@ class AgentsHiringForm(AbstractGameForm):
         _locations = sorted(datamanager.get_locations().keys())
         _location_choices = zip(_locations, _locations)
 
-        self.fields["location"] = forms.ChoiceField(label=_lazy(u"Location"), choices=_location_choices)
+        self.fields["location"] = forms.ChoiceField(label=ugettext_lazy(u"Location"), choices=_location_choices)
 
 
 
@@ -33,10 +33,10 @@ class AgentsHiringForm(AbstractGameForm):
 
 class MercenariesHiringAbility(AbstractPartnershipAbility):
 
-    TITLE = _lazy("Mercenaries Hiring")
+    TITLE = ugettext_lazy("Mercenaries Hiring")
     NAME = "mercenaries_hiring"
 
-    GAME_ACTIONS = dict(hiring_form=dict(title=_lazy("Hire mercenaries"),
+    GAME_ACTIONS = dict(hiring_form=dict(title=ugettext_lazy("Hire mercenaries"),
                                                       form_class=AgentsHiringForm,
                                                       callback="hire_remote_agent"))
 
@@ -88,7 +88,7 @@ class MercenariesHiringAbility(AbstractPartnershipAbility):
 
         ### self._process_spy_activation(location) # USELESS ?
 
-        self.log_game_event(_noop("Mercenary hired in %(location)s"),
+        self.log_game_event(ugettext_noop("Mercenary hired in %(location)s"),
                              PersistentDict(location=location),
                              url=None)
 

@@ -86,8 +86,8 @@ class GemsTransferForm(AbstractGameForm, GemHandlingFormUtils):
 
 class ArtefactTransferForm(AbstractGameForm):
 
-    artefact_name = forms.ChoiceField(label=_lazy("Artefact"), required=True)
-    recipient_name = forms.ChoiceField(label=_lazy("Recipient"), required=True)
+    artefact_name = forms.ChoiceField(label=ugettext_lazy("Artefact"), required=True)
+    recipient_name = forms.ChoiceField(label=ugettext_lazy("Recipient"), required=True)
 
     def __init__(self, datamanager, *args, **kwargs):
         super(ArtefactTransferForm, self).__init__(datamanager, *args, **kwargs)
@@ -141,11 +141,11 @@ class DropdownMultiSelect(forms.SelectMultiple):
 class CharacterProfileForm(forms.Form):
     target_username = forms.CharField(widget=forms.HiddenInput())
 
-    real_life_identity = forms.CharField(label=_lazy("Real identity"), required=False, max_length=100)
-    real_life_email = forms.EmailField(label=_lazy("Real email"), required=False)
+    real_life_identity = forms.CharField(label=ugettext_lazy("Real identity"), required=False, max_length=100)
+    real_life_email = forms.EmailField(label=ugettext_lazy("Real email"), required=False)
 
-    allegiances = forms.MultipleChoiceField(label=_lazy("Allegiances"), required=False, widget=forms.SelectMultiple(attrs={"class": "multichecklist"}))
-    permissions = forms.MultipleChoiceField(label=_lazy("Permissions"), required=False, widget=forms.SelectMultiple(attrs={"class": "multichecklist"}))
+    allegiances = forms.MultipleChoiceField(label=ugettext_lazy("Allegiances"), required=False, widget=forms.SelectMultiple(attrs={"class": "multichecklist"}))
+    permissions = forms.MultipleChoiceField(label=ugettext_lazy("Permissions"), required=False, widget=forms.SelectMultiple(attrs={"class": "multichecklist"}))
 
 
     def __init__(self, allegiances_choices, permissions_choices, *args, **kwargs):
@@ -155,20 +155,20 @@ class CharacterProfileForm(forms.Form):
 
 
 class SimplePasswordForm(forms.Form):
-    simple_password = forms.CharField(label=_lazy("Password"), required=True, widget=forms.PasswordInput)
+    simple_password = forms.CharField(label=ugettext_lazy("Password"), required=True, widget=forms.PasswordInput)
 
 
 class AuthenticationForm(forms.Form):
-    secret_username = forms.CharField(label=_lazy("Username"), required=True, max_length=30, widget=forms.TextInput(attrs={'autocomplete':'on'}))
-    secret_password = forms.CharField(label=_lazy("Password"), required=False, max_length=30, widget=forms.PasswordInput(attrs={'autocomplete':'off'}))  # not required for "password forgotten" action
+    secret_username = forms.CharField(label=ugettext_lazy("Username"), required=True, max_length=30, widget=forms.TextInput(attrs={'autocomplete':'on'}))
+    secret_password = forms.CharField(label=ugettext_lazy("Password"), required=False, max_length=30, widget=forms.PasswordInput(attrs={'autocomplete':'off'}))  # not required for "password forgotten" action
 
 
 
 class PasswordChangeForm(AbstractGameForm):
 
-    old_password = forms.CharField(label=_lazy("Current password"), required=True, widget=forms.PasswordInput)
-    new_password1 = forms.CharField(label=_lazy("New password"), required=True, widget=forms.PasswordInput)
-    new_password2 = forms.CharField(label=_lazy("New password (again)"), required=True, widget=forms.PasswordInput)
+    old_password = forms.CharField(label=ugettext_lazy("Current password"), required=True, widget=forms.PasswordInput)
+    new_password1 = forms.CharField(label=ugettext_lazy("New password"), required=True, widget=forms.PasswordInput)
+    new_password2 = forms.CharField(label=ugettext_lazy("New password (again)"), required=True, widget=forms.PasswordInput)
 
     def clean(self):
         cleaned_data = super(PasswordChangeForm, self).clean()
@@ -186,8 +186,8 @@ class PasswordChangeForm(AbstractGameForm):
 
 class SecretQuestionForm(forms.Form):
     secret_username = forms.CharField(widget=forms.HiddenInput())
-    secret_answer = forms.CharField(label=_lazy("Answer"), max_length=50, widget=forms.TextInput(attrs={'autocomplete':'off'}))
-    target_email = forms.EmailField(label=_lazy("Email"), max_length=50)
+    secret_answer = forms.CharField(label=ugettext_lazy("Answer"), max_length=50, widget=forms.TextInput(attrs={'autocomplete':'off'}))
+    target_email = forms.EmailField(label=ugettext_lazy("Email"), max_length=50)
 
     def __init__(self, username, *args, **kwargs):
         super(SecretQuestionForm, self).__init__(*args, **kwargs)
@@ -195,7 +195,7 @@ class SecretQuestionForm(forms.Form):
 
 
 class RadioFrequencyForm(forms.Form):
-    frequency = forms.CharField(label=_lazy(u"Radio Frequency"), widget=forms.TextInput(attrs={'autocomplete':'off'}))
+    frequency = forms.CharField(label=ugettext_lazy(u"Radio Frequency"), widget=forms.TextInput(attrs={'autocomplete':'off'}))
 
 
 
@@ -234,7 +234,7 @@ class ScanningForm(forms.Form):
 
 class ArmedInterventionForm(forms.Form):
 
-    message = forms.CharField(label=_lazy("Message"),
+    message = forms.CharField(label=ugettext_lazy("Message"),
                               widget=forms.Textarea(attrs={'rows': '8', 'cols':'35'}))
 
     def __init__(self, available_locations, *args, **kwargs):

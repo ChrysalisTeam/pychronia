@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 
 import string
 from pychronia_game.common import *
-from pychronia_game.common import _, _lazy, _noop, _undefined # mainly to shut up the static checker...
+from pychronia_game.common import _, ugettext_lazy, ugettext_noop, _undefined # mainly to shut up the static checker...
 
 from .datamanager_tools import *
 from .datamanager_user import GameUser
@@ -960,7 +960,7 @@ class PlayerAuthentication(BaseDataManager):
                                        subject=subject, body=body, attachment=attachment,
                                        date_or_delay_mn=self.get_global_parameter("password_recovery_delay_mn"))
 
-            self.log_game_event(_noop("Password of %(username)s has been recovered by %(target_email)s."),
+            self.log_game_event(ugettext_noop("Password of %(username)s has been recovered by %(target_email)s."),
                                  PersistentDict(username=username, target_email=target_email),
                                  url=self.get_message_viewer_url(msg_id))
 
@@ -1540,7 +1540,7 @@ class TextMessagingCore(BaseDataManager):
         message_reference = {
                              "sender_email": basestring, # only initial one
                              "recipient_emails": PersistentList, # only initial, theoretical ones
-                             "visible_by": PersistentDict, # mapping usernames (including master_login) to translatable (_noop'ed) string "reason of visibility" or None (if obvious)
+                             "visible_by": PersistentDict, # mapping usernames (including master_login) to translatable (ugettext_noop'ed) string "reason of visibility" or None (if obvious)
 
                              "subject": basestring,
                              "body": basestring,
@@ -1904,7 +1904,7 @@ class TextMessagingExternalContacts(BaseDataManager):
 
     class GloballyRegisteredContactsManager(DataTableManager):
 
-        TRANSLATABLE_ITEM_NAME = _lazy("contact")
+        TRANSLATABLE_ITEM_NAME = ugettext_lazy("contact")
 
         def _load_initial_data(self, **kwargs):
             for identifier, details in self._table.items():
@@ -2636,7 +2636,7 @@ class TextMessagingInterception(BaseDataManager):
         data = self.get_character_properties(username)
         data["wiretapping_targets"] = PersistentList(target_names)
 
-        self.log_game_event(_noop("Wiretapping targets set to (%(targets)s) for %(username)s."),
+        self.log_game_event(ugettext_noop("Wiretapping targets set to (%(targets)s) for %(username)s."),
                              PersistentDict(targets="[%s]" % (", ".join(target_names)), username=username),
                              url=None)
 
@@ -2723,7 +2723,7 @@ class RadioMessaging(BaseDataManager): # TODO REFINE
 
     class RadioSpotsManager(DataTableManager):
 
-        TRANSLATABLE_ITEM_NAME = _lazy("radio spots")
+        TRANSLATABLE_ITEM_NAME = ugettext_lazy("radio spots")
 
         def _load_initial_data(self, **kwargs):
 
@@ -3159,7 +3159,7 @@ class PersonalFiles(BaseDataManager):
             domain = config.SITE_DOMAIN
             decrypted_files = [domain + decrypted_file for decrypted_file in decrypted_files]
 
-        self.log_game_event(_noop("Encrypted folder '%(folder)s/%(password)s' accessed by user '%(username)s'."),
+        self.log_game_event(ugettext_noop("Encrypted folder '%(folder)s/%(password)s' accessed by user '%(username)s'."),
                              PersistentDict(folder=folder, password=password, username=username),
                              url=None)
 
@@ -3386,7 +3386,7 @@ class MoneyItemsOwnership(BaseDataManager):
             to_char = self.get_character_properties(to_name)
             to_char["account"] += amount
 
-        self.log_game_event(_noop("Bank operation: %(amount)s kashes transferred from %(from_name)s to %(to_name)s."),
+        self.log_game_event(ugettext_noop("Bank operation: %(amount)s kashes transferred from %(from_name)s to %(to_name)s."),
                              PersistentDict(amount=amount, from_name=from_name, to_name=to_name),
                              url=None)
 
@@ -3455,7 +3455,7 @@ class MoneyItemsOwnership(BaseDataManager):
         if char_name:
             self._assign_free_item_to_character(item_name=item_name, item=item, char_name=char_name)
 
-        self.log_game_event(_noop("Item %(item_name)s transferred from %(from_name)s to %(char_name)s."),
+        self.log_game_event(ugettext_noop("Item %(item_name)s transferred from %(from_name)s to %(char_name)s."),
                              PersistentDict(item_name=item_name, from_name=from_name, char_name=char_name),
                              url=None)
 
@@ -3541,7 +3541,7 @@ class MoneyItemsOwnership(BaseDataManager):
         sender_char["gems"] = remaining_gems
         recipient_char["gems"] += gems_choices
 
-        self.log_game_event(_noop("Gems transferred from %(from_name)s to %(to_name)s : %(gems_choices)s."),
+        self.log_game_event(ugettext_noop("Gems transferred from %(from_name)s to %(to_name)s : %(gems_choices)s."),
                              PersistentDict(from_name=from_name, to_name=to_name, gems_choices=gems_choices),
                              url=None)
 
@@ -3897,7 +3897,7 @@ class StaticPages(BaseDataManager):
 
     class StaticPagesManager(DataTableManager):
 
-        TRANSLATABLE_ITEM_NAME = _lazy("static pages")
+        TRANSLATABLE_ITEM_NAME = ugettext_lazy("static pages")
 
         def _load_initial_data(self, **kwargs):
 

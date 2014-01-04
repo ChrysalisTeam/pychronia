@@ -13,7 +13,7 @@ from django import forms as django_forms
 
 class FriendshipMinDurationForm(AbstractGameForm):
 
-    duration_mn = django_forms.IntegerField(label=_lazy("Set minimum friendship duration in minutes"), max_value=60 * 24 * 30, min_value=0, required=True)
+    duration_mn = django_forms.IntegerField(label=ugettext_lazy("Set minimum friendship duration in minutes"), max_value=60 * 24 * 30, min_value=0, required=True)
 
     def __init__(self, datamanager, *args, **kwargs):
         super(FriendshipMinDurationForm, self).__init__(datamanager, *args, **kwargs)
@@ -21,7 +21,7 @@ class FriendshipMinDurationForm(AbstractGameForm):
 
 
 
-@register_view(access=UserAccess.anonymous, requires_global_permission=False, title=_lazy("Login"), always_allow_post=True)
+@register_view(access=UserAccess.anonymous, requires_global_permission=False, title=ugettext_lazy("Login"), always_allow_post=True)
 def login(request, template_name='profile/login.html'):
 
     form = None
@@ -65,7 +65,7 @@ def login(request, template_name='profile/login.html'):
                     })
 
 
-@register_view(access=UserAccess.authenticated, requires_global_permission=False, title=_lazy("Logout"), always_allow_post=True)
+@register_view(access=UserAccess.authenticated, requires_global_permission=False, title=ugettext_lazy("Logout"), always_allow_post=True)
 def logout(request):
 
     logout_session(request)
@@ -77,7 +77,7 @@ def logout(request):
 
 
 
-@register_view(access=UserAccess.anonymous, requires_global_permission=False, title=_lazy("Password Recovery"))
+@register_view(access=UserAccess.anonymous, requires_global_permission=False, title=ugettext_lazy("Password Recovery"))
 def secret_question(request, concerned_username, template_name='profile/secret_question.html'):
 
     secret_question = None
@@ -136,13 +136,13 @@ def secret_question(request, concerned_username, template_name='profile/secret_q
 @register_view
 class CharacterProfile(AbstractGameView):
 
-    TITLE = _lazy("Personal Profile")
+    TITLE = ugettext_lazy("Personal Profile")
     NAME = "character_profile"
     TEMPLATE = "profile/character_profile.html"
     ACCESS = UserAccess.character
     REQUIRES_GLOBAL_PERMISSION = False
 
-    GAME_ACTIONS = dict(password_change_form=dict(title=_lazy("Change password"),
+    GAME_ACTIONS = dict(password_change_form=dict(title=ugettext_lazy("Change password"),
                                                           form_class=forms.PasswordChangeForm,
                                                           callback="process_password_change_form"))
 
@@ -190,23 +190,23 @@ character_profile = CharacterProfile.as_view
 @register_view
 class FriendshipManagementView(AbstractGameView):
 
-    TITLE = _lazy("Friendship Management")
+    TITLE = ugettext_lazy("Friendship Management")
     NAME = "friendship_management"
 
-    GAME_ACTIONS = dict(do_propose_friendship=dict(title=_lazy("Propose friendship"),
+    GAME_ACTIONS = dict(do_propose_friendship=dict(title=ugettext_lazy("Propose friendship"),
                                                           form_class=None,
                                                           callback="do_propose_friendship"),
-                        do_accept_friendship=dict(title=_lazy("Accept friendship"),
+                        do_accept_friendship=dict(title=ugettext_lazy("Accept friendship"),
                                                           form_class=None,
                                                           callback="do_accept_friendship"),
-                        do_cancel_proposal=dict(title=_lazy("Cancel friendship proposal"),
+                        do_cancel_proposal=dict(title=ugettext_lazy("Cancel friendship proposal"),
                                                           form_class=None,
                                                           callback="do_cancel_proposal"),
-                        do_cancel_friendship=dict(title=_lazy("Cancel friendship"),
+                        do_cancel_friendship=dict(title=ugettext_lazy("Cancel friendship"),
                                                           form_class=None,
                                                           callback="do_cancel_friendship"))
 
-    ADMIN_ACTIONS = dict(set_friendship_minimum_duration=dict(title=_lazy("Set minimum friendship duration"),
+    ADMIN_ACTIONS = dict(set_friendship_minimum_duration=dict(title=ugettext_lazy("Set minimum friendship duration"),
                                                     form_class=FriendshipMinDurationForm,
                                                     callback="set_friendship_minimum_duration"),)
 
@@ -293,7 +293,7 @@ friendship_management = FriendshipManagementView.as_view
 
 
 
-@register_view(access=UserAccess.character, requires_global_permission=False, title=_lazy("Instructions"))
+@register_view(access=UserAccess.character, requires_global_permission=False, title=ugettext_lazy("Instructions"))
 def ___instructions(request, template_name='profile/instructions.html'): # TODO - remove that ?????
 
     user = request.datamanager.user

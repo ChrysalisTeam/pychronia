@@ -18,7 +18,7 @@ class PersonalItemForm(AbstractGameForm):
         _objects = datamanager.get_available_items_for_user()
         _objects_choices = [("", _("Choose..."))] + [(item_name, _objects[item_name]["title"]) for item_name in sorted(_objects.keys())]
 
-        self.fields["item_name"] = forms.ChoiceField(label=_lazy(u"Item"), choices=_objects_choices)
+        self.fields["item_name"] = forms.ChoiceField(label=ugettext_lazy(u"Item"), choices=_objects_choices)
 
         assert self.fields.keyOrder # if reordering needed
 '''
@@ -26,10 +26,10 @@ class PersonalItemForm(AbstractGameForm):
 
 class MatterAnalysisAbility(AbstractPartnershipAbility):
 
-    TITLE = _lazy("Biophysical Analysis")
+    TITLE = ugettext_lazy("Biophysical Analysis")
     NAME = "matter_analysis"
 
-    GAME_ACTIONS = dict(process_artefact=dict(title=_lazy("Process artefact analysis"),
+    GAME_ACTIONS = dict(process_artefact=dict(title=ugettext_lazy("Process artefact analysis"),
                                                       form_class=ArtefactForm,
                                                       callback="process_artefact_analysis"))
 
@@ -96,7 +96,7 @@ class MatterAnalysisAbility(AbstractPartnershipAbility):
         self.post_message(remote_email, local_email, subject, body=body, attachment=None,
                           date_or_delay_mn=self.settings["result_delay"])
 
-        self.log_game_event(_noop("Item '%(item_title)s' sent for deep matter analysis."),
+        self.log_game_event(ugettext_noop("Item '%(item_title)s' sent for deep matter analysis."),
                              PersistentDict(item_title=item_title),
                              url=None)
 

@@ -20,7 +20,7 @@ from django.http import Http404, HttpResponseRedirect, HttpResponse, \
 from django.shortcuts import render
 from django.template import RequestContext
 from django.utils.html import escape
-from django.utils.translation import ugettext as _, ugettext_lazy as _lazy, ungettext
+from django.utils.translation import ugettext as _, ugettext_lazy, ungettext
 from pychronia_game.common import *
 from .. import forms  # AFTER common, to replace django.forms
 from pychronia_game.datamanager import AbstractGameView, register_view
@@ -79,7 +79,7 @@ def serve_game_file(request, hash="", path="", **kwargs):
 
 
 
-@register_view(access=UserAccess.anonymous, requires_global_permission=False, title=_lazy("Logo Animation"))
+@register_view(access=UserAccess.anonymous, requires_global_permission=False, title=ugettext_lazy("Logo Animation"))
 def ___logo_animation(request, template_name='utilities/item_3d_viewer.html'):
     """
     These settings are heavily dependant on values hard-coded on templates (dimensions, colors...),
@@ -109,7 +109,7 @@ def ___logo_animation(request, template_name='utilities/item_3d_viewer.html'):
 
 
 
-@register_view(access=UserAccess.anonymous, requires_global_permission=False, title=_lazy("View Help Page"))
+@register_view(access=UserAccess.anonymous, requires_global_permission=False, title=ugettext_lazy("View Help Page"))
 def view_help_page(request, keyword, template_name='utilities/help_page.html'):
     """
     Access for targeted pages is checked here!
@@ -141,7 +141,7 @@ def view_help_page(request, keyword, template_name='utilities/help_page.html'):
                     })
 
 
-@register_view(access=UserAccess.anonymous, requires_global_permission=False, title=_lazy("Bug Report"))
+@register_view(access=UserAccess.anonymous, requires_global_permission=False, title=ugettext_lazy("Bug Report"))
 def bug_report_treatment(request):
     report_data = request.REQUEST.get("report_data", "[no report_data]")
     location = request.build_absolute_uri()

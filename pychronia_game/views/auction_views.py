@@ -12,7 +12,7 @@ from pychronia_game.forms import (MoneyTransferForm, GemsTransferForm, ArtefactT
 
 
 
-@register_view(access=UserAccess.anonymous, requires_global_permission=False, title=_lazy("Homepage"))
+@register_view(access=UserAccess.anonymous, requires_global_permission=False, title=ugettext_lazy("Homepage"))
 def homepage(request, template_name='auction/homepage.html'):
 
     return render(request,
@@ -22,7 +22,7 @@ def homepage(request, template_name='auction/homepage.html'):
                     })
 
 
-@register_view(access=UserAccess.anonymous, requires_global_permission=False, title=_lazy("Opening"))
+@register_view(access=UserAccess.anonymous, requires_global_permission=False, title=ugettext_lazy("Opening"))
 def ___opening(request, template_name='auction/opening.html'): # NEEDS FIXING !!!!
 
     return render(request,
@@ -37,18 +37,18 @@ def ___opening(request, template_name='auction/opening.html'): # NEEDS FIXING !!
 @register_view
 class CharactersView(AbstractGameView):
 
-    TITLE = _lazy("Auction Bidders")
-    TITLE_FOR_MASTER = _lazy("Characters")
+    TITLE = ugettext_lazy("Auction Bidders")
+    TITLE_FOR_MASTER = ugettext_lazy("Characters")
 
     NAME = "characters_view"
 
-    GAME_ACTIONS = dict(money_transfer_form=dict(title=_lazy("Transfer money"),
+    GAME_ACTIONS = dict(money_transfer_form=dict(title=ugettext_lazy("Transfer money"),
                                                           form_class=MoneyTransferForm,
                                                           callback="transfer_money"),
-                        gems_transfer_form=dict(title=_lazy("Transfer gems"),
+                        gems_transfer_form=dict(title=ugettext_lazy("Transfer gems"),
                                                           form_class=GemsTransferForm,
                                                           callback="transfer_gems"),
-                        transfer_artefact=dict(title=_lazy("Transfer artefact"),
+                        transfer_artefact=dict(title=ugettext_lazy("Transfer artefact"),
                                                           form_class=ArtefactTransferForm,
                                                           callback="transfer_artefact"))
 
@@ -166,7 +166,7 @@ def _sorted_game_items(items_dict):
     return res
 
 
-@register_view(access=UserAccess.authenticated, title=_lazy("Auction Items"), title_for_master=_lazy("All Items")) # fixme ? always available ?
+@register_view(access=UserAccess.authenticated, title=ugettext_lazy("Auction Items"), title_for_master=ugettext_lazy("All Items")) # fixme ? always available ?
 def view_sales(request, template_name='auction/view_sales.html'):
     # FIXME - needs a review ########
     user = request.datamanager.user
@@ -226,7 +226,7 @@ def view_sales(request, template_name='auction/view_sales.html'):
 
 
 
-@register_view(access=UserAccess.authenticated, title=_lazy("Auction Slideshow"), title_for_master=_lazy("Items Slideshow"))
+@register_view(access=UserAccess.authenticated, title=ugettext_lazy("Auction Slideshow"), title_for_master=ugettext_lazy("Items Slideshow"))
 def auction_items_slideshow(request, template_name='auction/items_slideshow.html'):
     """
     Contains ALL auction items, WITHOUT 3D viewers.
@@ -245,7 +245,7 @@ def auction_items_slideshow(request, template_name='auction/items_slideshow.html
 
 
 
-@register_view(access=UserAccess.authenticated, title=_lazy("Personal Slideshow"))
+@register_view(access=UserAccess.authenticated, title=ugettext_lazy("Personal Slideshow"))
 def personal_items_slideshow(request, template_name='auction/items_slideshow.html'):
     """
     Contains both auction and external items, all necessarily owned by user hismelf.
@@ -265,7 +265,7 @@ def personal_items_slideshow(request, template_name='auction/items_slideshow.htm
                     })
 
 
-@register_view(access=UserAccess.authenticated, requires_global_permission=False, title=_lazy("Item 3D View"))
+@register_view(access=UserAccess.authenticated, requires_global_permission=False, title=ugettext_lazy("Item 3D View"))
 def item_3d_view(request, item, template_name='utilities/item_3d_viewer.html'):
 
     available_items = request.datamanager.get_available_items_for_user()
@@ -329,7 +329,7 @@ def _build_display_data_from_viewer_settings(viewer_settings):
 
 
 
-@register_view(access=UserAccess.authenticated, requires_global_permission=False, title=_lazy("Ajax Chat"))
+@register_view(access=UserAccess.authenticated, requires_global_permission=False, title=ugettext_lazy("Ajax Chat"))
 def ajax_chat(request):
 
     if request.method == "POST":
@@ -382,7 +382,7 @@ def ajax_chat(request):
 
 
 
-@register_view(access=UserAccess.authenticated, title=_lazy("Auction Chatroom"))  # game master can view too
+@register_view(access=UserAccess.authenticated, title=ugettext_lazy("Auction Chatroom"))  # game master can view too
 def chatroom(request, template_name='auction/chatroom.html'):
 
     return render(request,

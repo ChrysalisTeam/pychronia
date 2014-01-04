@@ -10,15 +10,15 @@ from django import forms
 
 class GlobalContactForm(DataTableForm):
 
-    avatar = forms.CharField(label=_lazy("Avatar"), required=False)
+    avatar = forms.CharField(label=ugettext_lazy("Avatar"), required=False)
 
-    description = forms.CharField(label=_lazy("Description"), widget=forms.Textarea(attrs={'rows': '2', 'cols':'40'}), required=False)
+    description = forms.CharField(label=ugettext_lazy("Description"), widget=forms.Textarea(attrs={'rows': '2', 'cols':'40'}), required=False)
 
-    is_public = forms.BooleanField(label=_lazy("Public contact"), required=False, initial=True) # public by default
+    is_public = forms.BooleanField(label=ugettext_lazy("Public contact"), required=False, initial=True) # public by default
 
-    access_tokens = Select2MultipleChoiceField(label=_lazy("Or restricted to"), required=False)
+    access_tokens = Select2MultipleChoiceField(label=ugettext_lazy("Or restricted to"), required=False)
 
-    ###test = Select2TagsField(label=_lazy("TESTING"), choice_tags=["kkk", "lll"])
+    ###test = Select2TagsField(label=ugettext_lazy("TESTING"), choice_tags=["kkk", "lll"])
 
     def __init__(self, datamanager, **kwargs):
         initial = kwargs.get("initial")
@@ -41,13 +41,13 @@ class GlobalContactForm(DataTableForm):
 @register_view
 class GlobalContactsManagement(AbstractDataTableManagement):
 
-    TITLE = _lazy("Contacts Management")
+    TITLE = ugettext_lazy("Contacts Management")
     NAME = "global_contacts_management"
 
-    GAME_ACTIONS = dict(submit_item=dict(title=_lazy("Submit a contact"),
+    GAME_ACTIONS = dict(submit_item=dict(title=ugettext_lazy("Submit a contact"),
                                                           form_class=GlobalContactForm,
                                                           callback="submit_item"),
-                        delete_item=dict(title=_lazy("Delete a contact"),
+                        delete_item=dict(title=ugettext_lazy("Delete a contact"),
                                                           form_class=None,
                                                           callback="delete_item"))
 

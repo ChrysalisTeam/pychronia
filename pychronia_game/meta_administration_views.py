@@ -20,7 +20,7 @@ from django.shortcuts import render
 from django.template import RequestContext
 from django.utils.html import escape
 from django.contrib import messages
-from django.utils.translation import ugettext as _, ugettext_lazy as _lazy, ungettext
+from django.utils.translation import ugettext as _, ugettext_lazy, ungettext
 from pychronia_game.common import *
 from pychronia_game.datamanager import datamanager_administrator
 from django.contrib.messages import get_messages

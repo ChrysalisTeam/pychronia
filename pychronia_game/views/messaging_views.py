@@ -12,8 +12,8 @@ from django.core.exceptions import ValidationError
 
 
 """
-    categories = Select2TagsField(label=_lazy("Categories"), required=False)
-    keywords = Select2TagsField(label=_lazy("Keywords"), required=False)
+    categories = Select2TagsField(label=ugettext_lazy("Categories"), required=False)
+    keywords = Select2TagsField(label=ugettext_lazy("Keywords"), required=False)
 
 """
 
@@ -25,13 +25,13 @@ class MessageComposeForm(AbstractGameForm):
     # origin = forms.CharField(required=False, widget=forms.HiddenInput) # the id of the message to which we replay, if any
 
 
-    recipients = Select2TagsField(label=_lazy("Recipients"), required=True)
+    recipients = Select2TagsField(label=ugettext_lazy("Recipients"), required=True)
 
-    subject = forms.CharField(label=_lazy("Subject"), widget=forms.TextInput(attrs={'size':'35'}), required=True)
+    subject = forms.CharField(label=ugettext_lazy("Subject"), widget=forms.TextInput(attrs={'size':'35'}), required=True)
 
-    body = forms.CharField(label=_lazy("Body"), widget=forms.Textarea(attrs={'rows': '8', 'cols':'35'}), required=False)
+    body = forms.CharField(label=ugettext_lazy("Body"), widget=forms.Textarea(attrs={'rows': '8', 'cols':'35'}), required=False)
 
-    attachment = Select2TagsField(label=_lazy("Attachment"), required=False)
+    attachment = Select2TagsField(label=ugettext_lazy("Attachment"), required=False)
 
 
     transferred_msg = forms.CharField(required=False, widget=forms.HiddenInput())
@@ -127,7 +127,7 @@ class MessageComposeForm(AbstractGameForm):
 
         if user.is_master:
 
-            sender = Select2TagsField(label=_lazy("Sender"), required=True, initial=([sender] if sender else [])) # initial MUST be a 1-item list!
+            sender = Select2TagsField(label=ugettext_lazy("Sender"), required=True, initial=([sender] if sender else [])) # initial MUST be a 1-item list!
             sender.choice_tags = datamanager.global_contacts.keys()
             assert sender.max_selection_size is not None
             sender.max_selection_size = 1
@@ -256,7 +256,7 @@ def _determine_message_list_display_context(datamanager, messages, is_pending):
 
 
 
-@register_view(access=UserAccess.master, title=_lazy("Dispatched Messages"))
+@register_view(access=UserAccess.master, title=ugettext_lazy("Dispatched Messages"))
 def all_dispatched_messages(request, template_name='messaging/messages.html'):
     messages = list(reversed(request.datamanager.get_all_dispatched_messages()))
     enriched_messages = _determine_message_list_display_context(request.datamanager, messages=messages, is_pending=False)
@@ -266,7 +266,7 @@ def all_dispatched_messages(request, template_name='messaging/messages.html'):
                        messages=enriched_messages))
 
 
-@register_view(access=UserAccess.master, title=_lazy("Pending Messages"))
+@register_view(access=UserAccess.master, title=ugettext_lazy("Pending Messages"))
 def all_queued_messages(request, template_name='messaging/messages.html'):
     messages = list(reversed(request.datamanager.get_all_queued_messages()))
     enriched_messages = _determine_message_list_display_context(request.datamanager, messages=messages, is_pending=True)
@@ -275,7 +275,7 @@ def all_queued_messages(request, template_name='messaging/messages.html'):
                   dict(page_title=_("All Queued Messages"),
                        messages=enriched_messages))
 
-@register_view(attach_to=all_queued_messages, title=_lazy("Force Message Sending"))
+@register_view(attach_to=all_queued_messages, title=ugettext_lazy("Force Message Sending"))
 def ajax_force_email_sending(request):
     # to be used by AJAX
     msg_id = request.REQUEST.get("id", None)
@@ -288,7 +288,7 @@ def ajax_force_email_sending(request):
 
 
 
-@register_view(access=UserAccess.master, title=_lazy("Message Templates"))
+@register_view(access=UserAccess.master, title=ugettext_lazy("Message Templates"))
 def messages_templates(request, template_name='messaging/messages.html'):
     templates = request.datamanager.get_messages_templates().items() # PAIRS (template_id, template_dict)
     templates.sort(key=lambda msg: msg[0])  # we sort by template name
@@ -298,7 +298,7 @@ def messages_templates(request, template_name='messaging/messages.html'):
                   dict(messages=enriched_templates))
 
 
-@register_view(access=UserAccess.authenticated, requires_global_permission=False, title=_lazy("Conversations"))
+@register_view(access=UserAccess.authenticated, requires_global_permission=False, title=ugettext_lazy("Conversations"))
 def conversation(request, template_name='messaging/conversation.html'):
     
     CONVERSATIONS_LIMIT = 15
@@ -327,7 +327,7 @@ def conversation(request, template_name='messaging/conversation.html'):
                        conversations=enriched_messages))
 
 
-@register_view(attach_to=conversation, title=_lazy("Set Message Read State"))
+@register_view(attach_to=conversation, title=ugettext_lazy("Set Message Read State"))
 def ajax_set_message_read_state(request):
     # to be used by AJAX
     msg_id = request.REQUEST.get("id", None)
@@ -339,7 +339,7 @@ def ajax_set_message_read_state(request):
     # in case of error, a "500" code will be returned
 
 
-@register_view(access=UserAccess.master, requires_global_permission=False, title=_lazy("Delete Message"))
+@register_view(access=UserAccess.master, requires_global_permission=False, title=ugettext_lazy("Delete Message"))
 def ajax_permanently_delete_message(request):
     # to be used by AJAX
     msg_id = request.REQUEST.get("id", None)
@@ -351,7 +351,7 @@ def ajax_permanently_delete_message(request):
 
 
 
-@register_view(attach_to=conversation, title=_lazy("Compose Message"))
+@register_view(attach_to=conversation, title=ugettext_lazy("Compose Message"))
 def compose_message(request, template_name='messaging/compose.html'):
 
     user = request.datamanager.user
@@ -414,7 +414,7 @@ def compose_message(request, template_name='messaging/compose.html'):
 
 
 '''
-@register_view(access=UserAccess.authenticated, title=_lazy("ssss"))
+@register_view(access=UserAccess.authenticated, title=ugettext_lazy("ssss"))
 def ___inbox(request, template_name='messaging/messages.html'):
 
     user = request.datamanager.user
@@ -440,7 +440,7 @@ def ___inbox(request, template_name='messaging/messages.html'):
                     })
 
 
-@register_view(access=UserAccess.authenticated, title=_lazy("ddd"))
+@register_view(access=UserAccess.authenticated, title=ugettext_lazy("ddd"))
 def ___outbox(request, template_name='messaging/messages.html'):
 
     user = request.datamanager.user
@@ -467,7 +467,7 @@ def ___outbox(request, template_name='messaging/messages.html'):
 '''
 
 
-@register_view(access=UserAccess.anonymous, requires_global_permission=False, title=_lazy("View Single Message"))
+@register_view(access=UserAccess.anonymous, requires_global_permission=False, title=ugettext_lazy("View Single Message"))
 def view_single_message(request, msg_id, template_name='messaging/view_single_message.html'):
     """
     Meant to be used in event logging or for message transfer.
@@ -506,7 +506,7 @@ def view_single_message(request, msg_id, template_name='messaging/view_single_me
                     })
 
 
-@register_view(access=UserAccess.anonymous, requires_global_permission=False, title=_lazy("Message Preview"))
+@register_view(access=UserAccess.anonymous, requires_global_permission=False, title=ugettext_lazy("Message Preview"))
 def preview_message(request):
 
     rst = request.REQUEST.get("content", _("No content submitted for display")) # we take from both GET and POST
@@ -516,7 +516,7 @@ def preview_message(request):
     return HttpResponse(html) # only a snippet of html, no html/head/body tags - might be EMPTY
 
 '''
-@register_view(access=UserAccess.authenticated, title=_lazy("sssss"))
+@register_view(access=UserAccess.authenticated, title=ugettext_lazy("sssss"))
 def ___intercepted_messages(request, template_name='messaging/messages.html'):
 
     messages = request.datamanager.get_intercepted_messages()

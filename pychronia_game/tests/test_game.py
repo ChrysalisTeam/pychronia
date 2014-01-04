@@ -3061,7 +3061,7 @@ class TestDatamanager(BaseGameTestCase):
         @register_view
         class PrivateTestAbility(AbstractAbility):
 
-            TITLE = _lazy("Private dummy ability")
+            TITLE = ugettext_lazy("Private dummy ability")
             NAME = "_private_dummy_ability"
             GAME_ACTIONS = {}
             TEMPLATE = "base_main.html" # must exist
@@ -3968,7 +3968,7 @@ class TestGameViewSystem(BaseGameTestCase):
         with pytest.raises(AssertionError):
             register_view(my_little_view, access=UserAccess.anonymous, requires_character_permission=True)
 
-        klass = register_view(my_little_view, access=UserAccess.master, title=_lazy("jjj"), always_allow_post=True)
+        klass = register_view(my_little_view, access=UserAccess.master, title=ugettext_lazy("jjj"), always_allow_post=True)
 
         assert issubclass(klass, AbstractGameView)
         assert klass.__name__ == "MyLittleView" # pascal case
@@ -3979,27 +3979,27 @@ class TestGameViewSystem(BaseGameTestCase):
         assert AbstractGameView.ALWAYS_ALLOW_POST == False
 
         with pytest.raises(AssertionError):
-            register_view(my_little_view, access=UserAccess.master, title=_lazy("ssss")) # double registration impossible!
+            register_view(my_little_view, access=UserAccess.master, title=ugettext_lazy("ssss")) # double registration impossible!
 
 
         # case of class registration #
         class DummyViewNonGameView(object):
             ACCESS = "sqdqsjkdqskj"
         with pytest.raises(AssertionError):
-            register_view(DummyViewNonGameView, title=_lazy("SSS")) # must be a subclass of AbstractGameView
+            register_view(DummyViewNonGameView, title=ugettext_lazy("SSS")) # must be a subclass of AbstractGameView
 
 
         class DummyView(AbstractGameView):
-            TITLE = _lazy("DSDSF")
+            TITLE = ugettext_lazy("DSDSF")
             NAME = "sdfsdf"
             ACCESS = UserAccess.anonymous
         klass = register_view(DummyView)
         assert isinstance(klass, type)
-        register_view(DummyView, title=_lazy("DDD")) # double registration possible, since it's class creation which actually registers it, not that decorator
+        register_view(DummyView, title=ugettext_lazy("DDD")) # double registration possible, since it's class creation which actually registers it, not that decorator
 
 
         class OtherDummyView(AbstractGameView):
-            TITLE = _lazy("LJKSG")
+            TITLE = ugettext_lazy("LJKSG")
             NAME = "sdfsdzadsfsdff"
             ACCESS = UserAccess.anonymous
         with pytest.raises(AssertionError): # when a klass is given, all other arguments become forbidden
@@ -4007,7 +4007,7 @@ class TestGameViewSystem(BaseGameTestCase):
                 a, b, c, d = [random.choice([_undefined, False]) for i in range(4)]
                 if not all((a, b, c)):
                     break # at least one of them must NOT be _undefined
-            register_view(OtherDummyView, a, b, c, d, title=_lazy("SSS"))
+            register_view(OtherDummyView, a, b, c, d, title=ugettext_lazy("SSS"))
 
 
 
@@ -4018,23 +4018,23 @@ class TestGameViewSystem(BaseGameTestCase):
 
         def dummy_view_anonymous(request):
             pass
-        view_anonymous = register_view(dummy_view_anonymous, access=UserAccess.anonymous, requires_global_permission=True, title=_lazy("Hi"))
+        view_anonymous = register_view(dummy_view_anonymous, access=UserAccess.anonymous, requires_global_permission=True, title=ugettext_lazy("Hi"))
 
         def dummy_view_character(request):
             pass
-        view_character = register_view(dummy_view_character, access=UserAccess.character, requires_global_permission=True, title=_lazy("Hi2"))
+        view_character = register_view(dummy_view_character, access=UserAccess.character, requires_global_permission=True, title=ugettext_lazy("Hi2"))
 
         def dummy_view_character_permission(request):
             pass
-        view_character_permission = register_view(dummy_view_character_permission, access=UserAccess.character, requires_character_permission=True, requires_global_permission=True, title=_lazy("Hi3"))
+        view_character_permission = register_view(dummy_view_character_permission, access=UserAccess.character, requires_character_permission=True, requires_global_permission=True, title=ugettext_lazy("Hi3"))
 
         def dummy_view_authenticated(request):
             pass
-        view_authenticated = register_view(dummy_view_authenticated, access=UserAccess.authenticated, requires_global_permission=True, title=_lazy("Hisss"))
+        view_authenticated = register_view(dummy_view_authenticated, access=UserAccess.authenticated, requires_global_permission=True, title=ugettext_lazy("Hisss"))
 
         def dummy_view_master(request):
             pass
-        view_master = register_view(dummy_view_master, access=UserAccess.master, requires_global_permission=False, title=_lazy("QQQ")) # requires_global_permission is enforced to True for master views, actually
+        view_master = register_view(dummy_view_master, access=UserAccess.master, requires_global_permission=False, title=ugettext_lazy("QQQ")) # requires_global_permission is enforced to True for master views, actually
 
 
         # check global disabling of views by game master #
