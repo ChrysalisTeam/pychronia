@@ -1,9 +1,0 @@
-
-python ..\manage.py makemessages -l fr
-
-
-# then use virtaal to translate messages efficiently
-
-
-python ..\manage.py compilemessages
-

@@ -1,4 +1,4 @@
-Creative Commons </>
+﻿Creative Commons </>
 
 Creative Commons Legal Code
 
@@ -240,4 +240,4 @@ available upon request from time to time.
 Creative Commons may be contacted at http://creativecommons.org/
 <http://creativecommons.org>.
 
-� Back to Commons Deed <./>
+« Back to Commons Deed <./>
