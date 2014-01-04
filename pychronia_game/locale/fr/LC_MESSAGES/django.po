@@ -2459,12 +2459,12 @@ msgid "Parent message %s not found"
 msgstr "Message parent %s non trouvé"
 
 #: .\views\messaging_views.py:101
-msgid "Bis: "
-msgstr "Bis :"
+msgid "Bis:"
+msgstr "Bis:"
 
 #: .\views\messaging_views.py:109
-msgid "Re: "
-msgstr "Re : "
+msgid "Re:"
+msgstr "Re:"
 
 #: .\views\messaging_views.py:114
 msgid "Access to initial message forbidden."

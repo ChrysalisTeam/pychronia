@@ -98,7 +98,7 @@ class MessageComposeForm(AbstractGameForm):
                 if visibility_reason == VISIBILITY_REASONS.sender: # we simply recontact recipients (even if we were one of the recipients too)
                     sender = msg["sender_email"] # for master
                     recipients = msg["recipient_emails"]
-                    subject = _("Bis: ") + msg["subject"]
+                    subject = _("Bis:") + " " + msg["subject"]
                     # don't resend attachment! #
 
                 elif visibility_reason == VISIBILITY_REASONS.recipient: # we reply to a message
@@ -106,7 +106,7 @@ class MessageComposeForm(AbstractGameForm):
                     recipients = [msg["sender_email"]]
                     my_email = datamanager.get_character_email() if user.is_character else None
                     recipients += [_email for _email in msg["recipient_emails"] if _email != my_email and _email != sender]  # works OK if my_email is None (i.e game master) or sender is None
-                    subject = _("Re: ") + msg["subject"]
+                    subject = _("Re:") + " " + msg["subject"]
                     attachment = msg["attachment"]
 
                 else: # visibility reason is None, or another visibility case (eg. interception)
@@ -302,7 +302,7 @@ def messages_templates(request, template_name='messaging/messages.html'):
 
 @register_view(access=UserAccess.authenticated, requires_global_permission=False, title=ugettext_lazy("Conversations"))
 def conversation(request, template_name='messaging/conversation.html'):
-    
+
     CONVERSATIONS_LIMIT = 15
 
     display_all_conversations = bool(request.GET.get("display_all", None) == "1")
@@ -311,7 +311,7 @@ def conversation(request, template_name='messaging/conversation.html'):
     _grouped_messages = request.datamanager.sort_messages_by_conversations(messages)
     enriched_messages = _determine_message_list_display_context(request.datamanager, messages=_grouped_messages, is_pending=False)
     del _grouped_messages
-    
+
     if len(enriched_messages) <= CONVERSATIONS_LIMIT:
         display_all_conversations = True # it makes no sense to "limit" then...
 

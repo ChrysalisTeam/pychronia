@@ -173,13 +173,20 @@ window.setInterval(save_current_content, 10*1000);
         <p><input type="button" style="width: 200px" name="cancel_message" value="{% trans "Cancel message" %}"
             onclick="clear_saved_content(); return_to_home();" /></p>
 
+        {% if message_form.use_template.value %}
         <p>
-            {% if message_form.transferred_msg.value %}
-                <a class="message_transfer_link" target="_blank" href="{% game_view_url "pychronia_game.views.view_single_message" msg_id=message_form.transferred_msg.value %}">
-                    <b>{% trans "MESSAGE TRANSFERRED: click to view in other window." %}</b>
-                </a>
-            {% endif %}
+            <b>{% trans "Message template used:" %} {{ message_form.use_template.value }}</b>
         </p>
+        {% endif %}
+
+        {% if message_form.transferred_msg.value %}
+        <p>
+            <a class="message_transfer_link" target="_blank" href="{% game_view_url "pychronia_game.views.view_single_message" msg_id=message_form.transferred_msg.value %}">
+                <b>{% trans "MESSAGE TRANSFERRED: click to view in other window." %}</b>
+            </a>
+        </p>
+        {% endif %}
+
 
         {{ message_form.as_p }}
 
