@@ -202,6 +202,7 @@ TASKS DONE
 FUTUR ENHANCEMENTS
 --------------------------
 
+- ensure game logs are translated to OFFICIAL game language!!!
 - fix up/down keys when a "select" field is selected (must not scroll page)
 - fix width-100% and br in forms.as_p (makes SELECT widgets buggy)
 - add money and gems to page top headers

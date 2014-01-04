@@ -252,8 +252,13 @@ class GameEvents(BaseDataManager): # TODO REFINE
 
     @transaction_watcher
     def log_game_event(self, message, substitutions=None, url=None):
+        """
+        Message must be an UNTRANSLATED string, since we handle translation directly in this class.
+        """
         assert message, "log message must not be empty"
-        utilities.check_is_string(message) # no LAZY translatable strings here
+        utilities.check_is_string(message) # no lazy objects
+
+        message = _(message) # TODO - force language to "official game language", not "user interface language"
 
         if substitutions:
             assert isinstance(substitutions, PersistentDict), (message, substitutions)
@@ -963,7 +968,7 @@ class PlayerAuthentication(BaseDataManager):
                                        subject=subject, body=body, attachment=attachment,
                                        date_or_delay_mn=self.get_global_parameter("password_recovery_delay_mn"))
 
-            self.log_game_event(_("Password of %(username)s has been recovered by %(target_email)s."),
+            self.log_game_event(ugettext_noop("Password of %(username)s has been recovered by %(target_email)s."),
                                  PersistentDict(username=username, target_email=target_email),
                                  url=self.get_message_viewer_url(msg_id))
 
@@ -1543,7 +1548,7 @@ class TextMessagingCore(BaseDataManager):
         message_reference = {
                              "sender_email": basestring, # only initial one
                              "recipient_emails": PersistentList, # only initial, theoretical ones
-                             "visible_by": PersistentDict, # mapping usernames (including master_login) to ugettext_noop'ed strings from VISIBILITY_REASONS
+                             "visible_by": PersistentDict, # mapping usernames (including master_login) to translatable (ugettext_noop'ed) string "reason of visibility" or None (if obvious)
 
                              "subject": basestring,
                              "body": basestring,
@@ -2639,7 +2644,7 @@ class TextMessagingInterception(BaseDataManager):
         data = self.get_character_properties(username)
         data["wiretapping_targets"] = PersistentList(target_names)
 
-        self.log_game_event(_("Wiretapping targets set to (%(targets)s) for %(username)s."),
+        self.log_game_event(ugettext_noop("Wiretapping targets set to (%(targets)s) for %(username)s."),
                              PersistentDict(targets="[%s]" % (", ".join(target_names)), username=username),
                              url=None)
 
@@ -3162,7 +3167,7 @@ class PersonalFiles(BaseDataManager):
             domain = config.SITE_DOMAIN
             decrypted_files = [domain + decrypted_file for decrypted_file in decrypted_files]
 
-        self.log_game_event(_("Encrypted folder '%(folder)s/%(password)s' accessed by user '%(username)s'."),
+        self.log_game_event(ugettext_noop("Encrypted folder '%(folder)s/%(password)s' accessed by user '%(username)s'."),
                              PersistentDict(folder=folder, password=password, username=username),
                              url=None)
 
@@ -3389,7 +3394,7 @@ class MoneyItemsOwnership(BaseDataManager):
             to_char = self.get_character_properties(to_name)
             to_char["account"] += amount
 
-        self.log_game_event(_("Bank operation: %(amount)s kashes transferred from %(from_name)s to %(to_name)s."),
+        self.log_game_event(ugettext_noop("Bank operation: %(amount)s kashes transferred from %(from_name)s to %(to_name)s."),
                              PersistentDict(amount=amount, from_name=from_name, to_name=to_name),
                              url=None)
 
@@ -3444,7 +3449,7 @@ class MoneyItemsOwnership(BaseDataManager):
 
         ## FIXME - make this a character-method too !!!
         item = self.get_item_properties(item_name)
-        from_name = item["owner"] if item["owner"] else _("no one") # must be done IMMEDIATELY
+        from_name = item["owner"] if item["owner"] else ugettext_noop("no one") # must be done IMMEDIATELY
 
         if previous_owner is not None and previous_owner != item["owner"]:
             raise NormalUsageError(_("This object doesn't belong to %s") % previous_owner)
@@ -3458,7 +3463,7 @@ class MoneyItemsOwnership(BaseDataManager):
         if char_name:
             self._assign_free_item_to_character(item_name=item_name, item=item, char_name=char_name)
 
-        self.log_game_event(_("Item %(item_name)s transferred from %(from_name)s to %(char_name)s."),
+        self.log_game_event(ugettext_noop("Item %(item_name)s transferred from %(from_name)s to %(char_name)s."),
                              PersistentDict(item_name=item_name, from_name=from_name, char_name=char_name),
                              url=None)
 
@@ -3544,7 +3549,7 @@ class MoneyItemsOwnership(BaseDataManager):
         sender_char["gems"] = remaining_gems
         recipient_char["gems"] += gems_choices
 
-        self.log_game_event(_("Gems transferred from %(from_name)s to %(to_name)s : %(gems_choices)s."),
+        self.log_game_event(ugettext_noop("Gems transferred from %(from_name)s to %(to_name)s : %(gems_choices)s."),
                              PersistentDict(from_name=from_name, to_name=to_name, gems_choices=gems_choices),
                              url=None)
 

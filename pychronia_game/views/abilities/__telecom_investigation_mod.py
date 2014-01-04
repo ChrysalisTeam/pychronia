@@ -156,7 +156,7 @@ class TelecomInvestigationAbility(AbstractAbility):
         msg_id = self.post_message(remote_email, local_email, subject, body, attachment,
                                    date_or_delay_mn=self.get_global_parameter("telecom_investigation_delays"))
 
-        self.log_game_event(_('Character inquiry opened into %(target_official_name)s'),
+        self.log_game_event(ugettext_noop('Character inquiry opened into %(target_official_name)s'),
                              PersistentDict(target_official_name=target_official_name),
                              url=self.get_message_viewer_url(msg_id))
 
