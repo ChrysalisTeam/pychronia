@@ -199,13 +199,14 @@ class MessageComposeForm(AbstractGameForm):
 
 
 
-def _determine_template_display_context(datamanager, template_id):
+def _determine_template_display_context(datamanager, template_id, template):
     """
     Only used for message templates, not real ones.
     """
     assert datamanager.is_master()
     return dict(
                 template_id=template_id, # allow use as template
+                is_used=template["is_used"],
                 has_read=None, # no buttons at all for that
                 visibility_reason=None,
                 was_intercepted=False,
@@ -228,6 +229,7 @@ def _determine_message_display_context(datamanager, msg, is_pending):
 
     return dict(
                 template_id=None,
+                is_used=None, # for templates only
                 has_read=(username in msg["has_read"]) if not is_pending else None,
                 visibility_reason=visibility_reason,
                 was_intercepted=(datamanager.is_master() and VISIBILITY_REASONS.interceptor in msg["visible_by"].values()),
@@ -292,7 +294,7 @@ def ajax_force_email_sending(request):
 def messages_templates(request, template_name='messaging/messages.html'):
     templates = request.datamanager.get_messages_templates().items() # PAIRS (template_id, template_dict)
     templates.sort(key=lambda msg: msg[0])  # we sort by template name
-    enriched_templates = [(_determine_template_display_context(request.datamanager, template_id=tpl[0]), tpl[1]) for tpl in templates]
+    enriched_templates = [(_determine_template_display_context(request.datamanager, template_id=tpl[0], template=tpl[1]), tpl[1]) for tpl in templates]
     return render(request,
                   template_name,
                   dict(messages=enriched_templates))

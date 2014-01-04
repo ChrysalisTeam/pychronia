@@ -1506,7 +1506,7 @@ class TestDatamanager(BaseGameTestCase):
         self.assertEqual(msg["has_read"], ["guy3"])
 
         tpl = self.dm.get_message_template(tpl_id)
-        self.assertEqual(tpl["is_used"], True) # template properly marked as used
+        self.assertEqual(tpl["is_used"], True) # template properly marked as used (even if message sending - when delay>0 - is eventually canceled)
 
 
 

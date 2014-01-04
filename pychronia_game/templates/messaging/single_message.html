@@ -6,7 +6,7 @@
 
 
 
-<div id="{% first_non_empty message.id ctx.template_id %}" class="{% if ctx.has_read %}email_read{% else %}email_unread{% endif %} {% if not is_first %}cover_previous{% endif %}">
+<div id="{% first_non_empty message.id ctx.template_id %}" class="{% if ctx.has_read or ctx.is_used %}email_read{% else %}email_unread{% endif %} {% if not is_first %}cover_previous{% endif %}">
 
     {% if game_is_writable %}
         <span class="message_operations">
