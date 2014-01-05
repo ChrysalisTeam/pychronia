@@ -23,7 +23,7 @@ class WorldScanAbility(AbstractPartnershipAbility):
 
     NAME = "world_scan"
 
-    GAME_ACTIONS = dict(scan_form=dict(title=ugettext_lazy("Choose scanned item targets"),
+    GAME_ACTIONS = dict(scan_form=dict(title=ugettext_lazy("Choose world scan model"),
                                               form_class=ArtefactForm,
                                               callback="process_world_scan_submission"))
 

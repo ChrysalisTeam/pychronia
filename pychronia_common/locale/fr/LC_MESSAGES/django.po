@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-01-04 21:00+0100\n"
+"POT-Creation-Date: 2014-01-05 14:42+0100\n"
 "PO-Revision-Date: 2013-12-29 21:29+0200\n"
 "Last-Translator: Pascal <chambon.pascal@gmail.com>\n"
 "Language-Team: Nothing\n"
@@ -38,5 +38,6 @@ msgid "Delete"
 msgstr "Supprimer"
 
 #: .\templates\metalradiance_kwacros.html.py:21
-msgid "Are you sure you want to delete this entry ?"
+#, fuzzy
+msgid "Are you sure you want to delete this entry?"
 msgstr "Voulez-vous vraiment supprimer cette entrée ?"

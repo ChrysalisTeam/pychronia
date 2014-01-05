@@ -5414,15 +5414,15 @@ class TestSpecialAbilities(BaseGameTestCase):
         self.assertEqual(res, "same, here stuffs about *sacred* chest")
 
         with pytest.raises(AssertionError):
-            analyser.process_artefact_analysis("several_misc_gems") # no gems allowed here
+            analyser.process_object_analysis("several_misc_gems") # no gems allowed here
         with pytest.raises(AssertionError):
-            analyser.process_artefact_analysis("statue") # item must be owned by current user
+            analyser.process_object_analysis("statue") # item must be owned by current user
 
         self.assertEqual(len(self.dm.get_all_dispatched_messages()), 0)
         self.assertEqual(len(self.dm.get_all_queued_messages()), 0)
 
         # AUTOMATED SCAN #
-        analyser.process_artefact_analysis("sacred_chest")
+        analyser.process_object_analysis("sacred_chest")
 
 
         msgs = self.dm.get_all_queued_messages()

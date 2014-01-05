@@ -56,7 +56,7 @@ def game_events(request, template_name='administration/game_events.html'):
 
 
 
-@register_view(access=UserAccess.master, title=ugettext_lazy("Manage Databases"))
+@register_view(access=UserAccess.master, title=ugettext_lazy("View Database"))
 def manage_databases(request, template_name='administration/database_management.html'):
 
     ''' OBSOLETE

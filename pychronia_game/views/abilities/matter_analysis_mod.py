@@ -29,9 +29,9 @@ class MatterAnalysisAbility(AbstractPartnershipAbility):
     TITLE = ugettext_lazy("Biophysical Analysis")
     NAME = "matter_analysis"
 
-    GAME_ACTIONS = dict(process_artefact=dict(title=ugettext_lazy("Process artefact analysis"),
+    GAME_ACTIONS = dict(process_artefact=dict(title=ugettext_lazy("Process object analysis"),
                                                       form_class=ArtefactForm,
-                                                      callback="process_artefact_analysis"))
+                                                      callback="process_object_analysis"))
 
 
     TEMPLATE = "abilities/matter_analysis.html"
@@ -72,7 +72,7 @@ class MatterAnalysisAbility(AbstractPartnershipAbility):
 
 
     @transaction_watcher
-    def process_artefact_analysis(self, item_name, use_gems=()):
+    def process_object_analysis(self, item_name, use_gems=()):
 
         assert item_name in self.datamanager.get_available_items_for_user(), item_name
 
