@@ -7,31 +7,21 @@ TODO LIST CHRYSALIS
 FEATURES
 ------------
 
-- chess challenge doesn't respect "writability" of game
-
 - add avatar files LATER
 - add smart avatar display in messaging LATER
 
-- fix captcha - static blocks must NOT appear when captcha is WIP
-
-- add main missing items (WIP)
 
 - update abilities settings
 
-- refactor game master manual's hierarchy
-
 - fix unfound translatable strings ((WIP, they must be translated now)
 
-- CMS : stop float pbs when EDIT=ON, on main frames
-
-- journée de rame en aval de ENDROIT_PRECIS_XXXX??. <TODO>
-
-
-- remove dm.user.add_error(_("Access denied to page %s") % self.TITLE) -> must go to HOMEPAGE ALWAYS!!! else master gets login page
 
 SCRIPT
 ----------
 
+- refactor game master manual's hierarchy
+- add main missing items (WIP)
+- journée de rame en aval de ENDROIT_PRECIS_XXXX??. <TODO>
 - talk about encrypted folders in manual
 - mark in manual that prices are "for information only"
 - comment that "new message" sounds are not enqueuable manually, in help page
@@ -57,6 +47,7 @@ Faire page d'introduction
 TESTS
 ----------
 
+- test DISPLAY_STATIC_CONTENT handling
 - test message compose form and attachments, it's VERY sensitive
 - test proper hiding (or not) of characters' belongings depending on permissions, in characters page
 - test all views eg. encrypted folders!
@@ -77,7 +68,9 @@ NEEDS COSMETICS
 TASKS DONE
 ---------------
 
-
+- "Access denied to page" must redirect to HOMEPAGE, else master gets "login page" when stopping impersonation - DONE
+- fix captcha, static blocks must NOT appear when captcha is WIP - DONE
+- chess challenge didn't respect "writability" of game DONE
 - encyclopedia index MUST be visible always for game master - ALREADY THE CASE
 - mark USED templates as so, in displayed view DONE
 - fix TOC pagebreak pb in game master manual (remove blank page with pdftkall) DONE
@@ -200,6 +193,7 @@ TASKS DONE
 FUTUR ENHANCEMENTS
 --------------------------
 
+- CMS : stop float pbs when EDIT=ON, on main frames (use clearfix) - should be OK actually
 - ensure game logs are translated to OFFICIAL game language!!!
 - fix up/down keys when a "select" field is selected (must not scroll page)
 - fix width-100% and br in forms.as_p (makes SELECT widgets buggy)
