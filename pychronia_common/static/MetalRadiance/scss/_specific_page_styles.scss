@@ -106,8 +106,6 @@ input.digit
     border-width: 79px 45px 81px 39px;
     border-color: transparent;
     border-style: solid;
-
-    @include pretty_text;
 }
 
 .email_unread {
@@ -134,7 +132,27 @@ input.digit
 }
 
 .cover_previous {
-  margin-top: -60px;
+    margin-top: -60px;
+}
+
+
+.contact_display {
+    margin: 2px 1px;
+    border: solid 1px $medium_yellow;
+
+    img {
+        display: inline-block;
+        vertical-align: middle;
+        width: 60px;
+    }
+    span {
+        vertical-align: middle;
+        text-align: center;
+        display: inline-block;
+        width: 152px;
+        max-width: 152px;
+        font-weight: bold;
+    }
 }
 
 

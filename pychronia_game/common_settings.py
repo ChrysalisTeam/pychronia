@@ -50,6 +50,11 @@ THUMBNAIL_ALIASES = { '': {
         'size': (150, 220), # one of these can be 0
         #'crop': "smart", # True or <smart|scale|W,H>
     },
+    'contact_avatar' : {
+        'autocrop': False, # remove useless whitespace
+        'size': (60, 60), # one of these can be 0
+        #'crop': "smart", # True or <smart|scale|W,H>
+    },
     'giant_width' : {
         'autocrop': False, # remove useless whitespace
         'size': (800, 0), # one of these can be 0

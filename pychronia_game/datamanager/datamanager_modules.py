@@ -2460,12 +2460,25 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
 
     @readonly_method
     def get_user_contacts(self, username=CURRENT_USER):
+        
+        def _sorter(emails_list):
+            return sorted(emails_list, key=lambda email: tuple(reversed(email.split("@")))) # sort by domain then username
+        
         username = self._resolve_username(username)
         assert not self.is_anonymous(username)
         if self.is_master(username=username):
-            return self.get_character_emails() + sorted(self.global_contacts.keys())
+            res = _sorter(self.get_character_emails()) + _sorter(self.global_contacts.keys())
         else:
-            return self.get_character_emails() + self.get_character_external_contacts(username=username) # including user himself
+            res = _sorter(self.get_character_emails()) + _sorter(self.get_character_external_contacts(username=username)) # including user himself
+
+        # if available, enforce all-players mailing-list at the START of list #
+        ml = self.get_global_parameter("all_players_mailing_list")
+        if ml in res:
+            res.remove(ml)
+            res.insert(0, ml)
+            
+        return res
+                                           
 
     @readonly_method
     def get_contacts_display_properties(self, email_contacts):
@@ -2499,7 +2512,7 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
     def get_character_external_contacts(self, username=CURRENT_USER):
         username = self._resolve_username(username)
         props = self.get_character_properties(username)
-        return props["external_contacts"]
+        return props["external_contacts"] # not sorted
 
 
     def _recompute_all_external_contacts_via_msgs(self):

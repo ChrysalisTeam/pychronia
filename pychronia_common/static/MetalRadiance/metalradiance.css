@@ -1378,7 +1378,7 @@ fieldset {
 }
 .select2-container-multi .select2-choices .select2-search-field input {
   padding: 0;
-  margin: 5px 0 5px 4px;
+  margin: 4px 0 3px 3px;
 }
 .zoomable > img {
   border: none;
@@ -1602,8 +1602,6 @@ input.digit {
   border-width: 79px 45px 81px 39px;
   border-color: transparent;
   border-style: solid;
-  text-align: justify;
-  text-indent: 15px;
   background-image: none;
   border-image: url('img/backgrounds/scroll_realistic_thin_ends.png') 79 45 81 39 fill stretch stretch;
 }
@@ -1616,8 +1614,6 @@ input.digit {
   border-width: 79px 45px 81px 39px;
   border-color: transparent;
   border-style: solid;
-  text-align: justify;
-  text-indent: 15px;
   background-image: none;
   border-image: url('img/backgrounds/scroll_realistic_thin_ends_disabled.png') 79 45 81 39 fill stretch stretch;
 }
@@ -1631,6 +1627,23 @@ input.digit {
 }
 .cover_previous {
   margin-top: -60px;
+}
+.contact_display {
+  margin: 2px 1px;
+  border: solid 1px #9D8126;
+}
+.contact_display img {
+  display: inline-block;
+  vertical-align: middle;
+  width: 60px;
+}
+.contact_display span {
+  vertical-align: middle;
+  text-align: center;
+  display: inline-block;
+  width: 152px;
+  max-width: 152px;
+  font-weight: bold;
 }
 #djinn_chat_wrapper {
   margin: auto;

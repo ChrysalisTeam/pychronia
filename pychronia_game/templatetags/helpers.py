@@ -356,6 +356,9 @@ def has_permission(user, permission):
         return False
 register.filter('has_permission', has_permission)
 
+def split(var, sep):
+    return var.split(sep)
+register.filter('split', split)
 
 def jsonify(object):
     if isinstance(object, QuerySet):

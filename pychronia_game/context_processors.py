@@ -92,7 +92,6 @@ def pychronia_template_context(request):
                 'display_admin_tips': dm.user.is_superuser or dm.is_master(dm.user.real_username), # tips also visible when impersonation!
                 'menus': menus.submenus if menus else [], # we ignore root entry
 
-
                 'online_users': online_users,
                 'signal_new_radio_messages': not dm.has_read_current_playlist() if not isinstance(request.processed_view, WebradioManagement) else False,
                 'signal_new_help_page': signal_new_help_page,
@@ -106,6 +105,7 @@ def pychronia_template_context(request):
 
                 'content_blocks': content_blocks,
                 'action_explanations': action_explanations,
+                'default_contact_avatar': request.datamanager.get_global_parameter("default_contact_avatar"),
 
                 # entry points
                 'mobile_site_entry_url': config.MOBILE_SITE_ENTRY_URL_TEMPLATE % dm.game_instance_id,

@@ -149,11 +149,11 @@ window.setInterval(save_current_content, 10*1000);
     <h2>{% trans "Contacts" %}</h2>
 
     <div class="rice_paper_rose full_width center tiny_bullets small_text" style="line-height: 1.5em; cursor: pointer;">
-    <ul>
     	{% for contact in contacts_display %}
-        <li {% if contact.description %}title="{{ contact.description }}"{% endif %} onclick="add_recipient('{{ contact.address|escapejs }}');">{{ contact.address }}</li>
+	   <div onclick="add_recipient('{{ contact.address|escapejs }}');">
+	       {% include "utilities/contact_display.html" with contact=contact %}
+	   </div>
         {% endfor %}
-    </ul>
     </div>
 {% usekwacro side_panel_end %}
 

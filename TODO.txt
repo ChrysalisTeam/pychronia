@@ -7,9 +7,9 @@ TODO LIST CHRYSALIS
 FEATURES
 ------------
 
-- add avatar files LATER
-- add smart avatar display in messaging LATER
+- FIX incoherency!!! users mustnt have ALL characters in their contacts, only non-NPCs!
 
+- add smart avatar display in messaging WIP
 
 - update abilities settings
 
@@ -19,6 +19,7 @@ FEATURES
 SCRIPT
 ----------
 
+- add all avatar images
 - refactor game master manual's hierarchy
 - add main missing items (WIP)
 - journée de rame en aval de ENDROIT_PRECIS_XXXX??. <TODO>
