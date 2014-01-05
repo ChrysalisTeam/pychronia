@@ -5,6 +5,13 @@
 {% load url from future %}
 {% loadkwacros "metalradiance_kwacros.html" %}
 
+{% comment USELESS?? %}
+{% block sekizai_calls %}
+{% addtoblock "js" %}
+    <script src="{{ STATIC_URL }}cms/js/libs/swfobject.min.js" type="text/javascript"></script> {# necessary for flash in zinnia! #}
+{% endaddtoblock %}
+{% endblock %}
+{% endcomment %}
 
 
 {% block panels %}

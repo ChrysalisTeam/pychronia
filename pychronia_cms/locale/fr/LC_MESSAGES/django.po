@@ -55,7 +55,7 @@ msgstr "Visiteur"
 #: .\templates\userprofiles\login.html.py:17
 #: .\templates\zinnia\original_templates\login.html.py:34
 msgid "Login"
-msgstr "Identifiant"
+msgstr "Connexion"
 
 #: .\templates\cms_base.html.py:68
 msgid "Profile"
