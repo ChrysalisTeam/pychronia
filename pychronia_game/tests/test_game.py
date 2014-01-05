@@ -3637,7 +3637,8 @@ class TestHttpRequests(BaseGameTestCase):
 
         # HTML ACCESS DENIED #
         response = self.client.get(url)
-        self.assertRedirects(response, expected_url=u"http://testserver/TeStiNg/login/?next=http%3A%2F%2Ftestserver%2FTeStiNg%2Fability%2Fwiretapping_management%2F")
+        # Nope - no login page anymore - self.assertRedirects(response, expected_url=u"http://testserver/TeStiNg/login/?next=http%3A%2F%2Ftestserver%2FTeStiNg%2Fability%2Fwiretapping_management%2F")
+        self.assertRedirects(response, expected_url=url_home)
 
         # ACCESS OK, in ajax or not #
         self.dm.set_activated_game_views(["wiretapping"])

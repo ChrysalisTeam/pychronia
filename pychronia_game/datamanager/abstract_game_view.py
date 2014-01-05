@@ -21,7 +21,12 @@ from ZODB.POSException import POSError # parent of ConflictError
 from django.core import urlresolvers
 from django.utils.functional import Promise # used eg. for lazy-translated strings
 
-
+'''
+REDIRECTION TO LOGIN PAGE - not used ATM
+            url = reverse("pychronia_game.views.login", kwargs=dict(game_instance_id=dm.game_instance_id))
+            qs = urllib.urlencode(dict(next=request.build_absolute_uri()))
+            return HttpResponseRedirect("%s?%s" % (url, qs))
+'''
 
 @decorator
 def transform_usage_error(caller, self, request, *args, **kwargs):
@@ -31,7 +36,7 @@ def transform_usage_error(caller, self, request, *args, **kwargs):
     """
     dm = request.datamanager
     return_to_home_url = reverse("pychronia_game-homepage", kwargs=dict(game_instance_id=request.datamanager.game_instance_id)) # works for both web and mobile
-    return_to_home = HttpResponseRedirect(return_to_home_url)
+    return_to_home = HttpResponseRedirect(return_to_home_url) # TEMPORARY
     # HttpResponseRedirect(reverse("pychronia_game.views.homepage", kwargs=dict(game_instance_id=dm.game_instance_id))) - FAILS on mobile
     assert urlresolvers.resolve(return_to_home_url) # url works BOTH for mobile and web domains!
     try:
@@ -46,15 +51,10 @@ def transform_usage_error(caller, self, request, *args, **kwargs):
         if request.datamanager.user.is_impersonation:
             # Will mainly happen when we switch between two impersonations with different access rights, on a restricted page
             dm.user.add_warning(_("Currently impersonated user can't access view '%s'") % self.TITLE)
-            return return_to_home
         else:
-            # uses HTTP code for TEMPORARY redirection
             dm.user.add_error(_("Access denied to page %s") % self.TITLE)
             dm.logger.warning("Access denied to page %s" % self.TITLE, exc_info=True)
-            url = reverse("pychronia_game.views.login", kwargs=dict(game_instance_id=dm.game_instance_id))
-            qs = urllib.urlencode(dict(next=request.build_absolute_uri()))
-            return HttpResponseRedirect("%s?%s" % (url, qs))
-        assert False
+        return return_to_home     
 
     except (GameError, POSError), e:
 
