@@ -241,6 +241,8 @@ class AbstractGameView(object):
 
     ALWAYS_ALLOW_POST = False # True if we can post data to this view even when game/user is in read-only mode (eg. auth-related view)
 
+    DISPLAY_STATIC_CONTENT = True # meant to be overridden per-instance (eg. for captchas)
+
     _ACTION_FIELD = "_action_" # for ajax and no-form request
 
 

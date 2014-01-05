@@ -65,6 +65,17 @@ def pychronia_template_context(request):
         is_mobile_page = getattr(request, "is_mobile", None) # middleware might be disabled
 
 
+        if request.processed_view.DISPLAY_STATIC_CONTENT:
+            content_blocks = dict(help_page=dict(name=help_page_key,
+                                                      data=dm.get_categorized_static_page(dm.HELP_CATEGORY, help_page_key)),
+                                   top_content=dict(name="top-" + view_name,
+                                                   data=dm.get_categorized_static_page(dm.CONTENT_CATEGORY, "top-" + view_name)),
+                                   bottom_content=dict(name="bottom-" + view_name,
+                                                       data=dm.get_categorized_static_page(dm.CONTENT_CATEGORY, "bottom-" + view_name)))
+        else:
+            content_blocks = {}
+
+
         res = {
                 'game_instance_id': dm.game_instance_id,
 
@@ -93,13 +104,7 @@ def pychronia_template_context(request):
                 'notification_type': notification_type,
                 'notifications': notifications,
 
-                'content_blocks': dict(help_page=dict(name=help_page_key,
-                                                      data=dm.get_categorized_static_page(dm.HELP_CATEGORY, help_page_key)),
-                                       top_content=dict(name="top-" + view_name,
-                                                       data=dm.get_categorized_static_page(dm.CONTENT_CATEGORY, "top-" + view_name)),
-                                       bottom_content=dict(name="bottom-" + view_name,
-                                                           data=dm.get_categorized_static_page(dm.CONTENT_CATEGORY, "bottom-" + view_name))),
-
+                'content_blocks': content_blocks,
                 'action_explanations': action_explanations,
 
                 # entry points

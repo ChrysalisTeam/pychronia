@@ -54,6 +54,8 @@ class AbstractCaptchaProtectedView(AbstractGameView):
 
     def _generate_captcha_page(self):
 
+        self.DISPLAY_STATIC_CONTENT = False # IMPORTANT - hide explanations etc.
+
         captcha = self.request.datamanager.get_random_captcha()
 
         return render(self.request,
