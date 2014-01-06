@@ -7,13 +7,15 @@ TODO LIST CHRYSALIS
 FEATURES
 ------------
 
+
+- add "compose" links to conact displays, conditionnally, as well as user colors!
+
 - FIX incoherency!!! users mustnt have ALL characters in their contacts, only non-NPCs!
 
 - add smart avatar display in messaging WIP
 
 - update abilities settings
 
-- fix unfound translatable strings ((WIP, they must be translated now)
 
 
 SCRIPT
@@ -65,10 +67,10 @@ NEEDS COSMETICS
 
 
 
-
 TASKS DONE
 ---------------
 
+- fix unfound translatable strings (_lazy and _noop) DONE
 - "Access denied to page" must redirect to HOMEPAGE, else master gets "login page" when stopping impersonation - DONE
 - fix captcha, static blocks must NOT appear when captcha is WIP - DONE
 - chess challenge didn't respect "writability" of game DONE

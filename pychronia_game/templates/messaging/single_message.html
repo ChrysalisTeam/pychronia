@@ -39,19 +39,34 @@
         </span>
     {% endif %}
 
-    <table style="margin:2px 2px; font-size:0.9em; line-height:0.9em;">
 
         {% if message.id %}
-            {% assign name="msg_link" %}{% game_view_url "pychronia_game.views.view_single_message" msg_id=message.id %}{% endassign %}
-            {% usekwacro shareable_link msg_link %}
+            <div style="position: absolute; width: 100%; top: 0"> {# we put that OFF the stream, so that contact displays are not blocked in width #}
+                {% assign name="msg_link" %}{% game_view_url "pychronia_game.views.view_single_message" msg_id=message.id %}{% endassign %}
+                {% usekwacro shareable_link msg_link %}
+            </div>
+        {% endif %}
+
+
+    <table style="margin:2px 2px; font-size:0.9em; line-height:0.9em;">
+
+        {% if not ctx.template_id %}
+        <tr>
+        <td><strong>{% trans "Date:" %}</strong></td>
+        <td><strong>{{ message.sent_at|utctolocal|date:"SHORT_DATETIME_FORMAT" }}</strong></td>
+            {%comment %} IF NEEDED {% load humanize %}{{ message.sent_at|utctolocal|naturalday:"d/N/Y" }}{% endcomment %}
+        </tr>
         {% endif %}
 
         <tr>
         <td><strong>{% trans "From:" %}</strong></td>
         <td>
-            <a href="{% game_view_url "pychronia_game.views.compose_message" %}?recipient={{ message.sender_email|urlencode }}">
+            {% with contact=contact_cache|dict_get:message.sender_email %}
+                {% include "utilities/contact_display.html" with contact=contact %}
+            {% endwith %}
+            <!--a href="{% game_view_url "pychronia_game.views.compose_message" %}?recipient={{ message.sender_email|urlencode }}">
             <span style="color:{% usercolor message.sender_email %};">{{ message.sender_email }}</span>
-            </a>
+            </a-->
         </td>
         </tr>
 
@@ -59,21 +74,16 @@
         <td><strong>{% trans "To:" %}</strong></td>
         <td>
             {% for recipient_email in message.recipient_emails %}
-                {% if not forloop.first %}, {% endif %}
+                {% with contact=contact_cache|dict_get:recipient_email %}
+                    {% include "utilities/contact_display.html" with contact=contact %}
+                {% endwith %}
+                <!--{% if not forloop.first %}, {% endif %}
                 <a href="{% game_view_url "pychronia_game.views.compose_message" %}?recipient={{ recipient_email|urlencode }}">
-                <span style="color:{% usercolor recipient_email %};">{{ recipient_email }}</span>
+                <span style="color:{% usercolor recipient_email %};">{{ recipient_email }}</span>-->
                 </a>
             {% endfor %}
         </td>
         </tr>
-
-        {% if not ctx.template_id %}
-        <tr>
-        <td><strong>Date:</strong></td>
-        <td>{{ message.sent_at|utctolocal|date:"SHORT_DATETIME_FORMAT" }}</td>
-            {%comment %} IF NEEDED {% load humanize %}{{ message.sent_at|utctolocal|naturalday:"d/N/Y" }}{% endcomment %}
-        </tr>
-        {% endif %}
 
     </table>
 

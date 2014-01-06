@@ -1559,6 +1559,8 @@ class TestDatamanager(BaseGameTestCase):
 
         master_contacts = set(self.dm.get_user_contacts(self.dm.master_login))
 
+        assert master_contacts == set(self.dm.get_all_contacts_unsorted()) # get_all_contacts_unsorted is just an optimized method
+
         char_emails = set(self.dm.get_character_emails())
         assert master_contacts & char_emails == char_emails # all chars are in
         assert len(master_contacts) > len(char_emails) + 4
@@ -1576,6 +1578,8 @@ class TestDatamanager(BaseGameTestCase):
         self.assertEqual(len(emails), len(self.dm.get_character_usernames()), emails)
         emails = self.dm.get_character_external_contacts("guy3")
         self.assertEqual(len(emails), 0, emails)
+
+
 
 
     @for_core_module(TextMessagingCore)
@@ -1749,13 +1753,20 @@ class TestDatamanager(BaseGameTestCase):
         # the full email is well linked, not the incomplete one
         assert res == u' Hello <a href="/TeStiNg/messages/compose/?recipient=h%C3%A9lloaaxsjjs%40gma%C3%AFl.fr">h\xe9lloaaxsjjs@gma\xefl.fr</a>. please write to h\xe9rb\xe8rt@h\xe9l\xe9nia.'
 
+        
+        expected_res = [{'description': 'whatever', 'avatar': 'images\\avatars\\guy1.png', 'address': u'guy1@pangea.com'},
+                       {'description': 'the terrible judicators', 'avatar': 'images\\avatars\\here.png', 'address': u'judicators@acharis.com'},
+                       {'description': u'Unidentified contact', 'avatar': 'images/avatars/question_mark.png', 'address': u'unknown@mydomain.com'}]
 
         assert self.dm.get_contacts_display_properties([]) == []
         res = self.dm.get_contacts_display_properties(["guy1@pangea.com", "judicators@acharis.com", "unknown@mydomain.com"])
         #print(">>", res)
-        assert res == [{'description': 'whatever', 'avatar': 'images\\avatars\\guy1.png', 'address': u'guy1@pangea.com'},
-                       {'description': 'the terrible judicators', 'avatar': 'images\\avatars\\here.png', 'address': u'judicators@acharis.com'},
-                       {'description': u'Unidentified contact', 'avatar': 'images/avatars/question_mark.png', 'address': u'unknown@mydomain.com'}]
+        assert res == expected_res
+
+        res = self.dm.get_contacts_display_properties(["guy1@pangea.com", "judicators@acharis.com", "unknown@mydomain.com"], as_dict=True)
+        assert set(res.keys()) == set(["guy1@pangea.com", "judicators@acharis.com", "unknown@mydomain.com"])
+        assert sorted(res.values(), key=lambda x: x["address"]) == expected_res # values are the same as above...
+
 
 
     def test_mailing_list_special_case(self):

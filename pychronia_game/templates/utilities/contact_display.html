@@ -3,8 +3,8 @@
 <div class="contact_display" {% if contact.description %}title="{{ contact.description }}"{% endif %}>
 <img src="{% game_file_img contact.avatar|default:default_contact_avatar alias="contact_avatar" %}"/>
 <span>{% with contact.address|split:"@" as address_parts %}
-    {{ address_parts.0 }}<br/>
-    {{ address_parts.1 }}
+{{ address_parts.0 }}@<br/>
+{{ address_parts.1 }}
 </span>
 {% endwith %}
 </div>

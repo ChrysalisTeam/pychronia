@@ -137,8 +137,10 @@ input.digit
 
 
 .contact_display {
-    margin: 2px 1px;
+    margin: 1px 1px;
     border: solid 1px $medium_yellow;
+    width: 214px;
+    display: inline-block;
 
     img {
         display: inline-block;
@@ -149,8 +151,8 @@ input.digit
         vertical-align: middle;
         text-align: center;
         display: inline-block;
-        width: 152px;
-        max-width: 152px;
+        width: 148px;
+        max-width: 148px;
         font-weight: bold;
     }
 }

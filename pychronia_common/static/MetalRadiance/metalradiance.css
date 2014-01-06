@@ -1629,8 +1629,10 @@ input.digit {
   margin-top: -60px;
 }
 .contact_display {
-  margin: 2px 1px;
+  margin: 1px 1px;
   border: solid 1px #9D8126;
+  width: 214px;
+  display: inline-block;
 }
 .contact_display img {
   display: inline-block;
@@ -1641,8 +1643,8 @@ input.digit {
   vertical-align: middle;
   text-align: center;
   display: inline-block;
-  width: 152px;
-  max-width: 152px;
+  width: 148px;
+  max-width: 148px;
   font-weight: bold;
 }
 #djinn_chat_wrapper {

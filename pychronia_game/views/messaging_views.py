@@ -253,8 +253,9 @@ def _determine_message_list_display_context(datamanager, messages, is_pending):
     return res
 
 
-
-
+def _build_contact_display_cache(datamanager):
+    all_contacts = datamanager.get_all_contacts_unsorted()
+    return datamanager.get_contacts_display_properties(all_contacts, as_dict=True)
 
 
 
@@ -265,7 +266,8 @@ def all_dispatched_messages(request, template_name='messaging/messages.html'):
     return render(request,
                   template_name,
                   dict(page_title=_("All Dispatched Messages"),
-                       messages=enriched_messages))
+                       messages=enriched_messages,
+                       contact_cache=_build_contact_display_cache(request.datamanager)))
 
 
 @register_view(access=UserAccess.master, title=ugettext_lazy("Pending Messages"))
@@ -275,7 +277,8 @@ def all_queued_messages(request, template_name='messaging/messages.html'):
     return render(request,
                   template_name,
                   dict(page_title=_("All Queued Messages"),
-                       messages=enriched_messages))
+                       messages=enriched_messages,
+                       contact_cache=_build_contact_display_cache(request.datamanager)))
 
 @register_view(attach_to=all_queued_messages, title=ugettext_lazy("Force Message Sending"))
 def ajax_force_email_sending(request):
@@ -297,7 +300,8 @@ def messages_templates(request, template_name='messaging/messages.html'):
     enriched_templates = [(_determine_template_display_context(request.datamanager, template_id=tpl[0], template=tpl[1]), tpl[1]) for tpl in templates]
     return render(request,
                   template_name,
-                  dict(messages=enriched_templates))
+                  dict(messages=enriched_templates,
+                       contact_cache=_build_contact_display_cache(request.datamanager)))
 
 
 @register_view(access=UserAccess.authenticated, requires_global_permission=False, title=ugettext_lazy("Conversations"))
@@ -326,7 +330,9 @@ def conversation(request, template_name='messaging/conversation.html'):
                   template_name,
                   dict(page_title=_("All Conversations") if display_all_conversations else _("Recent Conversations"),
                        display_all_conversations=display_all_conversations,
-                       conversations=enriched_messages))
+                       conversations=enriched_messages,
+                       contact_cache=_build_contact_display_cache(request.datamanager)))
+                       
 
 
 @register_view(attach_to=conversation, title=ugettext_lazy("Set Message Read State"))
@@ -400,8 +406,7 @@ def compose_message(request, template_name='messaging/compose.html'):
     else:
         form = MessageComposeForm(request)
 
-    user_contacts = request.datamanager.get_user_contacts()
-    ### ALREADY DONE user_contacts.sort(key=lambda email: tuple(reversed(email.split("@")))) # sort by domain then username
+    user_contacts = request.datamanager.get_user_contacts() # properly SORTED list
     contacts_display = request.datamanager.get_contacts_display_properties(user_contacts) # DICT FIELDS: address avatar description
 
     return render(request,

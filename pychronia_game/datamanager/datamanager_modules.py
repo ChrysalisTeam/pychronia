@@ -2457,6 +2457,10 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
         return len(unread_msgs)
 
 
+    @readonly_method
+    def get_all_contacts_unsorted(self):
+        return self.get_character_emails() + self.global_contacts.keys()
+                                  
 
     @readonly_method
     def get_user_contacts(self, username=CURRENT_USER):
@@ -2481,14 +2485,17 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
                                            
 
     @readonly_method
-    def get_contacts_display_properties(self, email_contacts):
+    def get_contacts_display_properties(self, email_contacts, as_dict=False):
         """
         Returns info needed to display the contact and its attributes, 
         for both characters and external contacts.
         
-        Results are returned in the same order as input.
+        Results are returned as a sequence in the same order as input, 
+        unless as_dict is True (results are in this case indexed by email adressed).
         """
         results = []
+        results_dict = {}
+
         assert isinstance(email_contacts, (PersistentList, list, tuple))
         character_emails = set(self.get_character_emails())
         for email in email_contacts:
@@ -2501,10 +2508,16 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
                              description=_("Unidentified contact"))
 
             # as well characters as external contacts MUST have these fields in their properties
-            results.append(dict(address=email,
-                                avatar=props["avatar"],
-                                description=props["description"] if "description" in props else props["official_role"])) # global contact or character
-        return results
+            data = dict(address=email,
+                        avatar=props["avatar"],
+                        description=props["description"] if "description" in props else props["official_role"])
+
+            if as_dict:
+                results_dict[email] = data
+            else:
+                results.append(data)
+
+        return results_dict if as_dict else results
 
 
 
