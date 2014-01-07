@@ -7,6 +7,7 @@
 {% block content %}
 <h1>{% trans "Login" %}</h1>
 
+    {% show_placeholder "content" "registration_notice_top" %}
 
     <form action="." method="post">
         {% csrf_token %}
@@ -22,6 +23,6 @@
         </fieldset>
     </form>
 
-    {% show_placeholder "content" "registration_notice" %}
+    {% show_placeholder "content" "registration_notice_bottom" %}
 
 {% endblock %}
