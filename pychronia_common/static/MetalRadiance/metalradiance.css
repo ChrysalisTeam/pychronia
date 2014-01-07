@@ -1361,6 +1361,9 @@ textarea {
 #full_content form .select2-container, #full_content form .markItUp {
   width: 100% !important;
 }
+#full_content form label {
+  display: block;
+}
 fieldset {
   border-color: #9D8126;
   margin: 5px auto;
