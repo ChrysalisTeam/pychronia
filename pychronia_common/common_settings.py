@@ -204,7 +204,9 @@ RESTRUCTUREDTEXT_FILTER_SETTINGS = {"initial_header_level": 2, # minimum "h2" wh
                                     "doctitle_xform": False, # important, to have even lone titles stay in the html fragment
                                     "sectsubtitle_xform": False,
                                     'file_insertion_enabled': False,  # SECURITY MEASURE (file hacking)
-                                    'raw_enabled': False, } # SECURITY MEASURE (script tag)
+                                    'raw_enabled': False, # SECURITY MEASURE (script tag)
+                                    'smart_quotes': "alt"}
+                                    #"'language_code': "fr" ## SEEMS BROKEN!
 
 
 ## EASY-THUMBNAILS CONF ##

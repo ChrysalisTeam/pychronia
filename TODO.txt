@@ -9,11 +9,8 @@ FEATURES
 
 - add gamemaster_hints to help pages etc.
 - expose every gamemaster hints into game views
-- put proper locale date formatting
 
 - update abilities settings
-
-- todo fixed buggy page of contacts management
 
 
 SCRIPT
@@ -48,6 +45,7 @@ Faire page d'introduction
 TESTS
 ----------
 
+- check proper locale for date formatting and check "utctolocal" presence - DONE
 - test DISPLAY_STATIC_CONTENT handling
 - test message compose form and attachments, it's VERY sensitive
 - test proper hiding (or not) of characters' belongings depending on permissions, in characters page
@@ -69,6 +67,8 @@ NEEDS COSMETICS
 TASKS DONE
 ---------------
 
+- add avatar display to immutable blocks in contacts management
+- add slight typography via docutils/RST - DONE
 - remove "logout" link when impersonation by super user DONE
 - add "transfer" functionality to messaging system DONE
 - fix width-100% and br in forms.as_p, thanks to labels with display:"block" - DONE
@@ -205,7 +205,7 @@ FUTUR ENHANCEMENTS
 - add forms to administrator page (change game state, delete game etc.)
 - reorganize top headers of game (motto left=real, motto right=impersonation, carvings= GAME DATA)
 - CMS : stop float pbs when EDIT=ON, on main frames (use clearfix) - should be OK actually
-- ensure game logs are translated to OFFICIAL game language!!!
+- ensure game events logs are translated to OFFICIAL game language!!!
 - fix up/down keys when a "select" field is selected (must not scroll page)
 - add money and gems to page top headers
 - grant/revoke private_contact_access_to_character (ex. mercenaries)
@@ -235,7 +235,6 @@ FUTUR ENHANCEMENTS
 	- items, gems & artefacts ?
 	- nightmare captcha ?
 - make better use of titles, of '#' anchors (with id or name of tags)...
-- add typography engine
 - normalize is_character as both bool and method, in DM and User instances
 - improve wiretapping - must not be only on characters, but also external emails
 - add standard 404 and 500 templates, + custom 403 in latest django etc.

@@ -241,7 +241,7 @@ class GameEvents(BaseDataManager): # TODO REFINE
             assert event["message"]
             if previous_time:
                 assert previous_time <= event["time"] # event lists are sorted by chronological order
-            previous_time = event["time"]
+            previous_time = event["time"] # UTC time
             utilities.check_dictionary_with_template(event, event_reference)
             username = event["username"]
 
@@ -268,7 +268,7 @@ class GameEvents(BaseDataManager): # TODO REFINE
             assert "%(" not in message, "Message %s needs substitution arguments" % message
             pass
 
-        utcnow = datetime.utcnow() # NAIVE datetime
+        utcnow = datetime.utcnow() # NAIVE UTC datetime
 
         record = PersistentDict({
             "time": utcnow,

@@ -497,12 +497,13 @@ class TestUtilities(BaseGameTestCase):
 
         html = html.strip().replace("&quot;", '"') # not always entities, depending on software versions...
 
+        # beware, there are smart quotes in the results!
         assert html == dedent("""
                                 <div class="section" id="hello">
                                 <h2>hello</h2>
                                 <div class="system-message">
                                 <p class="system-message-title">System Message: ERROR/3 (<tt class="docutils">&lt;string&gt;</tt>, line 5)</p>
-                                <p>Unknown directive type "baddirective".</p>
+                                <p>Unknown directive type \u201cbaddirective\u201d.</p>
                                 <pre class="literal-block">
                                 .. baddirective:: aaa
                                 
