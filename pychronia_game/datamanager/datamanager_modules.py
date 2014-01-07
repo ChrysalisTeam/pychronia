@@ -947,7 +947,7 @@ class PlayerAuthentication(BaseDataManager):
 
         # WARNING - if by bug, no answer is actually expected, attempts must ALWAYS fail
         if expected_answer and (secret_answer_attempt == expected_answer):
-            if target_email not in self.get_user_contacts(self.get_global_parameter("master_login")): # all emails available
+            if target_email not in self.get_sorted_user_contacts(self.get_global_parameter("master_login")): # all emails available
                 raise UsageError(_("Right answer, but invalid email address %s." % target_email))
             # success !
 
@@ -2097,7 +2097,9 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
         for (name, character) in game_data["character_properties"].items():
             character.setdefault("has_new_messages", False)
             character.setdefault("new_messages_notification", None)
-            character.setdefault("external_contacts", []) # just for memory - will be overridden below
+
+            # ADDRESS BOOK may contain any email, including characters' and "self" #
+            character.setdefault("address_book", []) # just for memory - will be overridden below
 
         pangea_network = game_data["global_parameters"]["pangea_network_domain"]
 
@@ -2113,12 +2115,12 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
             msg["visible_by"] = msg.get("visible_by", PersistentDict())
             msg["visible_by"].update(self._determine_basic_visibility(msg)) # we might override here
 
-        # we compute automatic external_contacts for the first time
-        self._recompute_all_external_contacts_via_msgs()
-        assert not self._recompute_all_external_contacts_via_msgs()
+        # we compute automatic address_book for the first time
+        self._recompute_all_address_book_via_msgs()
+        assert not self._recompute_all_address_book_via_msgs()
 
         # initial coherency check
-        all_emails = self.get_user_contacts(self.master_login) # ALL available
+        all_emails = self.get_sorted_user_contacts(self.master_login) # ALL available
         #print (">>>>>>>>###", all_emails)
         for msg in messaging["messages_dispatched"] + messaging["messages_queued"]:
             assert msg["sender_email"] in all_emails, msg["sender_email"]
@@ -2174,12 +2176,11 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
                          for properties in self.data["character_properties"].values() if properties["new_messages_notification"]]
         utilities.check_no_duplicates(all_msg_files) # users must NOT have the same new-message audio notifications
 
-        character_emails = self.get_character_emails()
         for character_set in self.data["character_properties"].values():
-            utilities.check_no_duplicates(character_set["external_contacts"])
-            for external_contact in character_set["external_contacts"]: # MIGHT BE A CHARACTER CONTACT!!
+            utilities.check_no_duplicates(character_set["address_book"])
+            for external_contact in character_set["address_book"]: # MIGHT BE A CHARACTER CONTACT!!
                 utilities.check_is_email(external_contact) # FIXME - check that it exists and is authorized, too ???
-        assert not self._recompute_all_external_contacts_via_msgs() # we recompute external_contacts, and check everything is coherent
+        assert not self._recompute_all_address_book_via_msgs() # we recompute address_book, and check everything is coherent
 
 
         # special mailing list
@@ -2222,7 +2223,7 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
     def _message_dispatching_post_hook(self, frozen_msg):
         super(TextMessagingForCharacters, self)._message_dispatching_post_hook(frozen_msg)
 
-        self._update_external_contacts(msg=frozen_msg)
+        self._update_address_book(msg=frozen_msg)
         #print (">>>>>>>>>>>", frozen_msg["visible_by"])
         characters = set(self.get_character_usernames())
         target_characters = [username for username, reason in frozen_msg["visible_by"].items()
@@ -2326,15 +2327,15 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
         if self.is_master(username):
             char_sets = self.get_character_sets()
             all_contacts = [contact for (name, character) in char_sets.items()
-                                         for contact in character["external_contacts"]]
+                                         for contact in character["address_book"]]
             return sorted(set(all_contacts))
         else:
             character = self.get_character_properties(username)
-            return character["external_contacts"]
+            return character["address_book"]
     
 
     @readonly_method
-    def get_user_contacts(self, username=CURRENT_USER):
+    def get_sorted_user_contacts(self, username=CURRENT_USER):
         # should NOT be called for anonymous users
         username = self._resolve_username(username)
         return self.get_characters_email() + self.get_external_emails(username)
@@ -2501,10 +2502,11 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
         return results_dict if as_dict else results
 
 
-
     @readonly_method
-    def get_user_contacts(self, username=CURRENT_USER):
-
+    def get_sorted_user_contacts(self, username=CURRENT_USER):
+        """
+        For both master and characters.
+        """
         def _sorter(emails_list):
             return sorted(emails_list, key=lambda email: tuple(reversed(email.split("@")))) # sort by domain then username
 
@@ -2513,7 +2515,7 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
         if self.is_master(username=username):
             res = _sorter(self.get_character_emails()) + _sorter(self.global_contacts.keys())
         else:
-            res = _sorter(self.get_character_external_contacts(username=username)) # including user himself
+            res = _sorter(self.get_character_address_book(username=username)) # including user himself
 
         # if available, enforce all-players mailing-list at the START of list #
         ml = self.get_global_parameter("all_players_mailing_list")
@@ -2525,46 +2527,46 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
 
 
     @readonly_method
-    def get_character_external_contacts(self, username=CURRENT_USER):
+    def get_character_address_book(self, username=CURRENT_USER):
         username = self._resolve_username(username)
         props = self.get_character_properties(username)
-        return props["external_contacts"] # not sorted
+        return props["address_book"] # not sorted
 
 
-    def _recompute_all_external_contacts_via_msgs(self):
-        external_contacts_changed = False
+    def _recompute_all_address_book_via_msgs(self):
+        address_book_changed = False
         for msg in self.messaging_data["messages_dispatched"]:
-            new_contacts_added = self._update_external_contacts(msg)
+            new_contacts_added = self._update_address_book(msg)
             if new_contacts_added:
                 #print("new_contacts_added", msg["subject"], new_contacts_added)
-                external_contacts_changed = True
-        return external_contacts_changed
+                address_book_changed = True
+        return address_book_changed
 
 
     @transaction_watcher(always_writable=True)
-    def _update_external_contacts(self, msg):
+    def _update_address_book(self, msg):
         new_contacts_added = False
 
-        (concerned_characters, all_msg_emails) = self._get_external_contacts_updates(msg)
+        (concerned_characters, all_msg_emails) = self._get_address_book_updates(msg)
 
         for username in concerned_characters:
             props = self.get_character_properties(username)
-            old_external_contacts = set(props["external_contacts"])
-            new_external_contacts = old_external_contacts | all_msg_emails
-            assert set(props["external_contacts"]) <= new_external_contacts # that list can only grow - of course
-            props["external_contacts"] = PersistentList(new_external_contacts) # no particular sorting here, but unicity is ensured
+            old_address_book = set(props["address_book"])
+            new_address_book = old_address_book | all_msg_emails
+            assert set(props["address_book"]) <= new_address_book # that list can only grow - of course
+            props["address_book"] = PersistentList(new_address_book) # no particular sorting here, but unicity is ensured
 
-            new_contacts_added = new_contacts_added or (new_external_contacts != old_external_contacts) # SETS comparison
+            new_contacts_added = new_contacts_added or (new_address_book != old_address_book) # SETS comparison
 
         return new_contacts_added
 
 
     @readonly_method
-    def _get_external_contacts_updates(self, msg):
+    def _get_address_book_updates(self, msg):
         """
         OBSOLETE 
         
-        Retrieve info needed to update the *external_contacts* fields of character accounts,
+        Retrieve info needed to update the *address_book* fields of character accounts,
         when they send/receive this single message.
         """
         ###all_characters_emails = set(self.get_character_emails())

@@ -145,7 +145,7 @@ class MessageComposeForm(AbstractGameForm):
             pass # no sender or delay_mn fields!
 
 
-        available_recipients = datamanager.get_user_contacts()  # current username should not be "anonymous", since it's used only in member areas !
+        available_recipients = datamanager.get_sorted_user_contacts()  # current username should not be "anonymous", since it's used only in member areas !
         self.fields["recipients"].initial = recipients
         self.fields["recipients"].choice_tags = available_recipients
 
@@ -406,7 +406,7 @@ def compose_message(request, template_name='messaging/compose.html'):
     else:
         form = MessageComposeForm(request)
 
-    user_contacts = request.datamanager.get_user_contacts() # properly SORTED list
+    user_contacts = request.datamanager.get_sorted_user_contacts() # properly SORTED list
     contacts_display = request.datamanager.get_contacts_display_properties(user_contacts) # DICT FIELDS: address avatar description
 
     return render(request,
@@ -453,8 +453,8 @@ def ___outbox(request, template_name='messaging/messages.html'):
     user = request.datamanager.user
     if user.is_master:
         all_messages = request.datamanager.get_all_dispatched_messages()
-        external_contacts = request.datamanager.get_external_emails()  # we list only messages sent by external contacts, not robots
-        messages = [message for message in all_messages if message["sender_email"] in external_contacts]
+        address_book = request.datamanager.get_external_emails()  # we list only messages sent by external contacts, not robots
+        messages = [message for message in all_messages if message["sender_email"] in address_book]
         remove_from = False
     else:
         messages = request.datamanager.get_sent_messages(request.datamanager.get_character_email())

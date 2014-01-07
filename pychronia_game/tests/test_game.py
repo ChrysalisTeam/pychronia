@@ -1555,7 +1555,7 @@ class TestDatamanager(BaseGameTestCase):
 
 
 
-    def test_external_contacts(self):
+    def test_address_book(self):
 
         self.dm.post_message("guy2@pangea.com",
                              recipient_emails=["guy1@pangea.com"],
@@ -1563,7 +1563,7 @@ class TestDatamanager(BaseGameTestCase):
 
         ml = self.dm.get_global_parameter("all_players_mailing_list")
 
-        master_contacts = self.dm.get_user_contacts(self.dm.master_login)
+        master_contacts = self.dm.get_sorted_user_contacts(self.dm.master_login)
         assert master_contacts[0] == ml
         master_contacts = set(master_contacts)
         assert master_contacts == set(self.dm.get_all_contacts_unsorted()) # get_all_contacts_unsorted is just an optimized method
@@ -1573,7 +1573,7 @@ class TestDatamanager(BaseGameTestCase):
         assert len(master_contacts) > len(char_emails) + 4
         assert "judicators2@acharis.com" in master_contacts
 
-        emails = self.dm.get_user_contacts("guy2")
+        emails = self.dm.get_sorted_user_contacts("guy2")
         emails = set(emails)
         assert ml not in emails # not ALWAYS
         assert (char_emails - emails) # guy2 has not ALL character emails
@@ -1582,24 +1582,24 @@ class TestDatamanager(BaseGameTestCase):
         assert "guy1@pangea.com" in emails
         assert "judicators2@acharis.com" in emails
 
-        emails = self.dm.get_character_external_contacts("guy2")
+        emails = self.dm.get_character_address_book("guy2")
         assert "guy1@pangea.com" in emails
         assert "judicators2@acharis.com" in emails
         assert ml not in emails # not yet concerned by this one yet
 
-        emails = self.dm.get_user_contacts("guy3")
+        emails = self.dm.get_sorted_user_contacts("guy3")
         assert emails == [] # not even ml
-        emails = self.dm.get_character_external_contacts("guy3")
+        emails = self.dm.get_character_address_book("guy3")
         assert emails == [] # not even ml
 
         self.dm.post_message("guy3@pangea.com",
                              recipient_emails=[ml, "judicators2@acharis.com"],
                              subject="fffff", body="ffff")
 
-        emails = self.dm.get_user_contacts("guy3")
+        emails = self.dm.get_sorted_user_contacts("guy3")
         assert emails[0] == ml
         assert set(emails) == set([ml, "judicators2@acharis.com", "guy3@pangea.com"])
-        emails = self.dm.get_character_external_contacts("guy3")
+        emails = self.dm.get_character_address_book("guy3")
         assert set(emails) == set([ml, "judicators2@acharis.com", "guy3@pangea.com"])
 
 
@@ -5747,7 +5747,7 @@ class TestGameViews(BaseGameTestCase):
                         domains=[self.TEST_DOMAIN],
                         permissions=[],
 
-                        external_contacts=[],
+                        address_book=[],
                         new_messages_notification="new_messages_guy1",
 
                         account=1000,

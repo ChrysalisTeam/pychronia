@@ -258,7 +258,7 @@ character_properties:
         account: 1000
         secret_question: null
         secret_answer: null
-        external_contacts: ["belasquez@acharis.com", "baazel@acharis.com"]
+        address_book: ["belasquez@acharis.com", "baazel@acharis.com"]
         new_messages_notification: info_spots_1
         official_name: "Simon Bladstaffulovza"
         official_role: "whatever"
@@ -278,7 +278,7 @@ character_properties:
         account: 1000
         secret_question: null
         secret_answer: null
-        external_contacts: ["academy@sciences.com"]
+        address_book: ["academy@sciences.com"]
         new_messages_notification: new_messages_2
         official_name: "Loyd Georges"
         official_role: "whatever"
@@ -297,7 +297,7 @@ character_properties:
         account: 2000
         secret_question: "The name of my first pet ?"
         secret_answer: "Fluffy"
-        external_contacts: []
+        address_book: []
         new_messages_notification: new_messages_1
         official_name: "Salar"
         official_role: "whatever"
@@ -316,7 +316,7 @@ character_properties:
         account: 0
         secret_question: null
         secret_answer: null
-        external_contacts: []
+        address_book: []
         new_messages_notification: victory_acharis
         official_name: "Kha"
         official_role: "wanderer"
@@ -335,7 +335,7 @@ character_properties:
         account: 1000
         secret_question: null
         secret_answer: null
-        external_contacts: []
+        address_book: []
         new_messages_notification: defeat_acharis
         official_name: "cxcv"
         official_role: "xcvxcv"
