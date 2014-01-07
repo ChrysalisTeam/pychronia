@@ -73,9 +73,16 @@
 
             <p><b>{{ identifier }}</b></p>
 
-	        <p>{% trans "Avatar" %}: {{ data.avatar }}</p>
+	        <p>
+	            {% trans "Avatar:" %}
+	            {% if data.avatar %}
+	               <img style="vertical-align: middle" src="{% game_file_img data.avatar alias="contact_avatar" %}"/>
+	            {% else %}
+	               {% trans "None" %}
+	            {% endif %}
+	            </p>
 
-            <p>{% trans "Description" %}: {{ data.description }}</p>
+            <p>{% trans "Description" %}: {{ data.description|default:_("None") }}</p>
 
             <p>
 	        {% if data.access_tokens == None %}
