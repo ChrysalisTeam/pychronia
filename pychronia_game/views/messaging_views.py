@@ -509,7 +509,8 @@ def view_single_message(request, msg_id, template_name='messaging/view_single_me
                      'page_title': _("Single Message"),
                      'is_queued': is_queued,
                      'ctx': ctx,
-                     'message': message
+                     'message': message,
+                     'contact_cache': _build_contact_display_cache(request.datamanager),
                     })
 
 

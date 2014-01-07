@@ -2496,20 +2496,24 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
         results = []
         results_dict = {}
 
+        default_avatar = self.get_global_parameter("default_contact_avatar")
+
         assert isinstance(email_contacts, (PersistentList, list, tuple))
         character_emails = set(self.get_character_emails())
         for email in email_contacts:
             if email in character_emails:
                 props = self.get_character_properties(self.get_character_or_none_from_email(email))
+                assert "character_color" in props
             elif email in self.global_contacts:
                 props = self.global_contacts[email]
             else:
-                props = dict(avatar=self.get_global_parameter("default_contact_avatar"),
+                props = dict(avatar=default_avatar,
                              description=_("Unidentified contact"))
 
             # as well characters as external contacts MUST have these fields in their properties
             data = dict(address=email,
                         avatar=props["avatar"],
+                        color=props.get("character_color", None), # only present for characters
                         description=props["description"] if "description" in props else props["official_role"])
 
             if as_dict:
@@ -2941,7 +2945,6 @@ class Chatroom(BaseDataManager):
 
         game_data["global_parameters"].setdefault("chatroom_presence_timeout_s", 20)
         game_data["global_parameters"].setdefault("chatroom_timestamp_display_threshold_s", 120)
-        game_data.setdefault("user_color", PersistentDict())
 
     def _check_database_coherency(self, **kwargs):
         super(Chatroom, self)._check_database_coherency(**kwargs)

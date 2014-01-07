@@ -41,7 +41,7 @@
 
 
         {% if message.id %}
-            <div style="position: absolute; width: 100%; top: 0"> {# we put that OFF the stream, so that contact displays are not blocked in width #}
+            <div style="position: absolute; width: 100px; top: 0; right:0;"> {# we put that OFF the stream, so that contact displays are not blocked in width #}
                 {% assign name="msg_link" %}{% game_view_url "pychronia_game.views.view_single_message" msg_id=message.id %}{% endassign %}
                 {% usekwacro shareable_link msg_link %}
             </div>
@@ -62,7 +62,7 @@
         <td><strong>{% trans "From:" %}</strong></td>
         <td>
             {% with contact=contact_cache|dict_get:message.sender_email %}
-                {% include "utilities/contact_display.html" with contact=contact %}
+                {% include "utilities/contact_display.html" with contact=contact compose_link=True %}
             {% endwith %}
             <!--a href="{% game_view_url "pychronia_game.views.compose_message" %}?recipient={{ message.sender_email|urlencode }}">
             <span style="color:{% usercolor message.sender_email %};">{{ message.sender_email }}</span>
@@ -75,7 +75,7 @@
         <td>
             {% for recipient_email in message.recipient_emails %}
                 {% with contact=contact_cache|dict_get:recipient_email %}
-                    {% include "utilities/contact_display.html" with contact=contact %}
+                    {% include "utilities/contact_display.html" with contact=contact compose_link=True %}
                 {% endwith %}
                 <!--{% if not forloop.first %}, {% endif %}
                 <a href="{% game_view_url "pychronia_game.views.compose_message" %}?recipient={{ recipient_email|urlencode }}">
