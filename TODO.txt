@@ -7,15 +7,13 @@ TODO LIST CHRYSALIS
 FEATURES
 ------------
 
-
-- add "compose" links to conact displays, conditionnally, as well as user colors!
-
-- FIX incoherency!!! users mustnt have ALL characters in their contacts, only non-NPCs!
-
-- add smart avatar display in messaging WIP
+- add gamemaster_hints to help pages etc.
+- expose every gamemaster hints into game views
+- put proper locale date formatting
 
 - update abilities settings
 
+- todo fixed buggy page of contacts management
 
 
 SCRIPT
@@ -63,6 +61,7 @@ TESTS
 
 NEEDS COSMETICS
 -----------------
+
 - add "centering" for images in DJANGOCMS
 
 
@@ -70,6 +69,13 @@ NEEDS COSMETICS
 TASKS DONE
 ---------------
 
+- remove "logout" link when impersonation by super user DONE
+- add "transfer" functionality to messaging system DONE
+- fix width-100% and br in forms.as_p, thanks to labels with display:"block" - DONE
+- IMPORTANT - hide explicit message ids visible by players thanks to _obfuscate_initial_id - DONE
+- add "compose" links to contact displays, conditionnally, as well as user colors DONE
+- add smart avatar display in messaging DONE
+- users mustnt have all characters in their contacts by default, only real contacts - DONE
 - fix unfound translatable strings (_lazy and _noop) DONE
 - "Access denied to page" must redirect to HOMEPAGE, else master gets "login page" when stopping impersonation - DONE
 - fix captcha, static blocks must NOT appear when captcha is WIP - DONE
@@ -196,14 +202,13 @@ TASKS DONE
 FUTUR ENHANCEMENTS
 --------------------------
 
+
 - CMS : stop float pbs when EDIT=ON, on main frames (use clearfix) - should be OK actually
 - ensure game logs are translated to OFFICIAL game language!!!
 - fix up/down keys when a "select" field is selected (must not scroll page)
-- fix width-100% and br in forms.as_p (makes SELECT widgets buggy)
 - add money and gems to page top headers
 - grant/revoke private_contact_access_to_character (ex. mercenaries)
 - securize "_action_" form-less system, since it bypasses input data validation
-- IMPORTANT - hide explicit message ids visible by players!!
 - add "stop impersonation" link in menu ?
 - allow multi-instance staff impersonation, so that superuser can remain logged everywhere
 - better menus for meta admin pages
@@ -211,52 +216,35 @@ FUTUR ENHANCEMENTS
 - convert "orbe" to masculine genre ; replace acharis by akharis
 - add automated "geoip localization" ability
 - memorize "real player authentications", to know who really hacks accounts
-- add gaùmemaster_hints to helpap ages etc.
 - make real "attach to" feature to delegate permissions (ex. for dependent ajax views)
 - rethink and repair telecom archive investigation
-- add to specific index any visualized document for "personal files"
+- add to specific index any (external) visualized document in "personal files"
 - setup all select choices with a default empty choice
-- add RST summary to all forms, especially admin ones ??? not need, right ATM
+- add RST summary to all forms, especially admin ones ??? not needed right ATM
 - messaging templates filtering by taxonomy ?
 - put back accordeon toggles in messaging
-- allow accumulation of visibility reasons, to have both sender and recipient together in msg for same user?
+- allow accumulation of visibility reasons, to have both sender and recipient together in msg for same user? useless I guess...
 - idea of captcha: play with colors illusions!!
 - include timezone handling
 - use UsageError in all getters of datamanager instead of keyerror?
 - include tiny webradio widget in div with same color, and make it bigger, to avoid zoom/dezoom problems.
 - internationalize personal documents (all in yaml ??)
-- switch to small JALICE bot?
+- switch to small JALICE bot? humz
 - other items needing to be editable:
 	- items, gems & artefacts ?
 	- nightmare captcha ?
 - make better use of titles, of '#' anchors (with id or name of tags)...
-- moteur typographique
+- add typography engine
 - normalize is_character as both bool and method, in DM and User instances
 - improve wiretapping - must not be only on characters, but also external emails
-- add "transfer" functionality to messaging system
-- remove "logout" link when impersonation by super user ?
 - add standard 404 and 500 templates, + custom 403 in latest django etc.
+
 
 ELITE RPG:
 eclectic <-------- BEST
 enchanting -> bewitching, captivating, enthralling, entrancing, fascinating
 enrapturing
 enlightening/edifying
-
-
-
-
-Home Site Structure
--------------------------
-
-- intro
-- features
-- license
-- demo
-- create game
-- livre d'or
-
-
 
 
 
