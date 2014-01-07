@@ -172,7 +172,7 @@ def _generate_web_menu(request, menu_entry_generator):
                         ),
                        forced_visibility=(False if not user.is_authenticated else True)),
 
-           menu_entry(_(u"Log In"), views.login, forced_visibility=(False if user.is_authenticated else True)),
+           menu_entry(_(u"Log In"), views.login, forced_visibility=(False if (user.is_authenticated or user.is_impersonation) else True)),
 
         ))
 

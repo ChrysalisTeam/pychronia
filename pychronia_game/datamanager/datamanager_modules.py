@@ -1901,7 +1901,7 @@ class TextMessagingExternalContacts(BaseDataManager):
                 if data["access_tokens"] is None:
                     return # OK, it's a public address
                 elif sending_character in data["access_tokens"]:
-                        return # character has the permission to contact that external mailbox
+                    return # character has the permission to contact that external mailbox
                 else:
                     raise UsageError(_("Mailbox %s has rejected your email") % recipient_email)
         else:

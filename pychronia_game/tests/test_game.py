@@ -2064,7 +2064,7 @@ class TestDatamanager(BaseGameTestCase):
         self.dm.post_message(target, [target], "hhh", "hello") # allowed
 
         with pytest.raises(UsageError):
-            self.dm.post_message("guy3@pangea.com", [target], "hhaah", "hssello") # NOT allowed, because character AND not in access tokens
+            self.dm.post_message("guy3@pangea.com", [target], "hhaah", "hssello") # NOT allowed, because sender is character AND not in access tokens
 
 
 
