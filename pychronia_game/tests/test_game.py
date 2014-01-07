@@ -1557,8 +1557,15 @@ class TestDatamanager(BaseGameTestCase):
 
     def test_external_contacts(self):
 
-        master_contacts = set(self.dm.get_user_contacts(self.dm.master_login))
+        self.dm.post_message("guy2@pangea.com",
+                             recipient_emails=["guy1@pangea.com"],
+                             subject="subj22323", body="qsdqsd")
 
+        ml = self.dm.get_global_parameter("all_players_mailing_list")
+
+        master_contacts = self.dm.get_user_contacts(self.dm.master_login)
+        assert master_contacts[0] == ml
+        master_contacts = set(master_contacts)
         assert master_contacts == set(self.dm.get_all_contacts_unsorted()) # get_all_contacts_unsorted is just an optimized method
 
         char_emails = set(self.dm.get_character_emails())
@@ -1566,19 +1573,34 @@ class TestDatamanager(BaseGameTestCase):
         assert len(master_contacts) > len(char_emails) + 4
         assert "judicators2@acharis.com" in master_contacts
 
-        emails = set(self.dm.get_user_contacts("guy2"))
-        assert self.dm.get_character_email("guy2") in emails # self-emailing OK
-        assert "guy3@pangea.com" in emails
+        emails = self.dm.get_user_contacts("guy2")
+        emails = set(emails)
+        assert ml not in emails # not ALWAYS
+        assert (char_emails - emails) # guy2 has not ALL character emails
+        assert (char_emails & emails) # has SOME character emails
+        assert self.dm.get_character_email("guy2") in emails # has self as contact due to any dispatched email
+        assert "guy1@pangea.com" in emails
         assert "judicators2@acharis.com" in emails
+
         emails = self.dm.get_character_external_contacts("guy2")
-        assert "guy3@pangea.com" not in emails
+        assert "guy1@pangea.com" in emails
         assert "judicators2@acharis.com" in emails
+        assert ml not in emails # not yet concerned by this one yet
 
         emails = self.dm.get_user_contacts("guy3")
-        self.assertEqual(len(emails), len(self.dm.get_character_usernames()), emails)
+        assert emails == [] # not even ml
         emails = self.dm.get_character_external_contacts("guy3")
-        self.assertEqual(len(emails), 0, emails)
+        assert emails == [] # not even ml
 
+        self.dm.post_message("guy3@pangea.com",
+                             recipient_emails=[ml, "judicators2@acharis.com"],
+                             subject="fffff", body="ffff")
+
+        emails = self.dm.get_user_contacts("guy3")
+        assert emails[0] == ml
+        assert set(emails) == set([ml, "judicators2@acharis.com", "guy3@pangea.com"])
+        emails = self.dm.get_character_external_contacts("guy3")
+        assert set(emails) == set([ml, "judicators2@acharis.com", "guy3@pangea.com"])
 
 
 
@@ -1753,10 +1775,10 @@ class TestDatamanager(BaseGameTestCase):
         # the full email is well linked, not the incomplete one
         assert res == u' Hello <a href="/TeStiNg/messages/compose/?recipient=h%C3%A9lloaaxsjjs%40gma%C3%AFl.fr">h\xe9lloaaxsjjs@gma\xefl.fr</a>. please write to h\xe9rb\xe8rt@h\xe9l\xe9nia.'
 
-        
-        expected_res = [{'description': 'whatever', 'avatar': 'images\\avatars\\guy1.png', 'address': u'guy1@pangea.com'},
-                       {'description': 'the terrible judicators', 'avatar': 'images\\avatars\\here.png', 'address': u'judicators@acharis.com'},
-                       {'description': u'Unidentified contact', 'avatar': 'images/avatars/question_mark.png', 'address': u'unknown@mydomain.com'}]
+
+        expected_res = [{'description': 'whatever', 'avatar': 'images\\avatars\\guy1.png', 'address': u'guy1@pangea.com', 'color': '#0033CC'},
+                       {'description': 'the terrible judicators', 'avatar': 'images\\avatars\\here.png', 'address': u'judicators@acharis.com', 'color': None},
+                       {'description': u'Unidentified contact', 'avatar': 'images/avatars/question_mark.png', 'address': u'unknown@mydomain.com', 'color': None}]
 
         assert self.dm.get_contacts_display_properties([]) == []
         res = self.dm.get_contacts_display_properties(["guy1@pangea.com", "judicators@acharis.com", "unknown@mydomain.com"])
