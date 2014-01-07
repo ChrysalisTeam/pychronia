@@ -202,7 +202,8 @@ TASKS DONE
 FUTUR ENHANCEMENTS
 --------------------------
 
-
+- add forms to administrator page (change game state, delete game etc.)
+- reorganize top headers of game (motto left=real, motto right=impersonation, carvings= GAME DATA)
 - CMS : stop float pbs when EDIT=ON, on main frames (use clearfix) - should be OK actually
 - ensure game logs are translated to OFFICIAL game language!!!
 - fix up/down keys when a "select" field is selected (must not scroll page)
