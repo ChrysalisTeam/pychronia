@@ -4066,7 +4066,7 @@ class Encyclopedia(BaseDataManager):
         """
         key = article_id.lower().strip()
         article = self.get_categorized_static_page(category=self.ENCYCLOPEDIA_CATEGORY, name=key)
-        return article["content"] if article else None
+        return article if article else None
 
 
     @readonly_method

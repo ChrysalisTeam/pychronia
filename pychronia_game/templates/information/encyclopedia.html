@@ -60,7 +60,7 @@
 
         {% if entry %}
         <div class="pretty_text">
-            {% rich_text entry excluded_link=current_article_id %}
+            {% include "utilities/static_page_block.html" with article_name=None article_data=entry excluded_link=current_article_id initial_header_level=2 %}
         </div>
         {% endif %}
 

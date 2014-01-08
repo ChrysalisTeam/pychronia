@@ -9,8 +9,6 @@ FEATURES
 
 - add smooth scroll
 
-- add gamemaster_hints to help pages etc.
-
 - update abilities settings
 
 
@@ -68,7 +66,8 @@ NEEDS COSMETICS
 TASKS DONE
 ---------------
 
-- mmerge "help_pages" and "content" static page categories into same category DONE
+- add gamemaster_hints to all the kinds of static blocks DONE
+- merge "help_pages" and "content" static page categories into same category DONE
 - check that character and item gamemaster_hints are well displayed and protected DONE
 - add avatars to characters view DONE
 - add avatar display to immutable blocks in contacts management

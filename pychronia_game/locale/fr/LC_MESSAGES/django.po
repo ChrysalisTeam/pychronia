@@ -1582,8 +1582,8 @@ msgid "Password:"
 msgstr "Mot de passe :"
 
 #: .\templates\auction\view_characters.html.py:60
-msgid "Value, in kashes, of each gem"
-msgstr "Valeur, en kashes, de chaque gemme"
+msgid "Values, in kashes, of each gem"
+msgstr "Valeurs, en kashes, de chaque gemme"
 
 #: .\templates\auction\view_characters.html.py:69
 #: .\templates\auction\view_characters.html.py:70

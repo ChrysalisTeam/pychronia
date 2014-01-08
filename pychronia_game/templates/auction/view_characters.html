@@ -55,7 +55,7 @@
                             <b>{% trans "Bank:" %}</b> {{ char_details.account }}
                         </span>
 
-    		    		<span title="{% trans "Value, in kashes, of each gem" %}"">
+    		    		<span title="{% trans "Values, in kashes, of each gem" %}"">
     		    		    <b>{% trans "Gemmes:" %}</b>
                             {% if char_details.gems %}
                                 {{ char_details.gems|list_filter:0|join:", " }}

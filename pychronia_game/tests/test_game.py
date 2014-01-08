@@ -1403,7 +1403,7 @@ class TestDatamanager(BaseGameTestCase):
     @for_core_module(Encyclopedia)
     def test_encyclopedia(self):
 
-        utilities.check_is_restructuredtext(self.dm.get_encyclopedia_entry(" gerbiL_speCies ")) # tolerant fetching
+        utilities.check_is_restructuredtext(self.dm.get_encyclopedia_entry(" gerbiL_speCies ")["content"])# tolerant fetching
         assert self.dm.get_encyclopedia_entry("qskiqsjdqsid") is None
         assert "gerbil_species" in self.dm.get_encyclopedia_article_ids()
 
