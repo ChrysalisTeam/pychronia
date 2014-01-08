@@ -7,6 +7,9 @@ TODO LIST CHRYSALIS
 FEATURES
 ------------
 
+- add smooth scroll
+- add avatars to characters view
+
 - add gamemaster_hints to help pages etc.
 - expose every gamemaster hints into game views
 

@@ -8,11 +8,10 @@
 <table class="realtable">
 
 	<thead>
-		<tr>
+		<tr><th>&nbsp;</th>
 			<th>{% trans "Identity" %}</th>
-			<th>{% trans "Bank account" %}</th>
+			<th>{% trans "Currencies" %}</th>
 			<th>{% trans "Items owned" %}</th>
-			<th>{% trans "Gems owned" %}</th>
 		</tr>
 	</thead>
 
@@ -24,6 +23,11 @@
 	    <tr class="{% cycle 'rowA' 'rowB' %}"  style="color:{{ char_details.character_color }};">
 
 		    	<td class="bigtext">
+		    	    <img style="vertical-align: middle" src="{% game_file_img char_details.avatar|default:default_contact_avatar alias="character_avatar" %}"/>
+                </td>
+
+
+                <td class="bigtext">
 		    		<strong {% if user.is_master %} title="{% trans "Password:" %} {{ char_details.password }}" {% endif %}>
 
 		    		    <a href="{% game_view_url "pychronia_game.views.compose_message" %}?recipient={{ char_details.email_address }}"
@@ -41,10 +45,25 @@
 		    	</td>
 
 
+
+
 		    	{% if user.username == char_details.username or show_others_belongings %}
 
-    		    	<td class="bigtext">
-    		    		 {{ char_details.account }}
+    		    	<td class="bigtext" style="text-align: left">
+
+                        <span title="{% trans "Money available in the bank account" %}">
+                            <b>{% trans "Bank:" %}</b> {{ char_details.account }}
+                        </span>
+
+    		    		<span title="{% trans "Value, in kashes, of each gem" %}"">
+    		    		    <b>{% trans "Gemmes:" %}</b>
+                            {% if char_details.gems %}
+                                {{ char_details.gems|list_filter:0|join:", " }}
+                            {% else %}
+                                {% trans "None" %}
+                            {% endif %}
+                        </span>
+
     		    	</td>
 
     		    	<td class="bigtext">
@@ -57,16 +76,9 @@
         	    		<ul>
     		    	</td>
 
-    		    	<td class="bigtext" title="{% trans "Value, in kashes, of each gem" %}"">
-    		    		{% if char_details.gems %}
-    		    			{{ char_details.gems|list_filter:0|join:", " }}
-    		    		{% else %}
-    		    			{% trans "None" %}
-    		    		{% endif %}
-    		    	</td>
+
 
                 {% else %}
-                    <td class="bigtext"><i>{% trans "Undefined" %}</i></td>
                     <td class="bigtext"><i>{% trans "Undefined" %}</i></td>
                     <td class="bigtext"><i>{% trans "Undefined" %}</i></td>
                 {% endif %}

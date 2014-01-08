@@ -76,7 +76,7 @@
 	        <p>
 	            {% trans "Avatar:" %}
 	            {% if data.avatar %}
-	               <img style="vertical-align: middle" src="{% game_file_img data.avatar alias="contact_avatar" %}"/>
+	               <img style="vertical-align: middle" src="{% game_file_img data.avatar|default:default_contact_avatar alias="contact_avatar" %}"/>
 	            {% else %}
 	               {% trans "None" %}
 	            {% endif %}
