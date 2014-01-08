@@ -8,10 +8,8 @@ FEATURES
 ------------
 
 - add smooth scroll
-- add avatars to characters view
 
 - add gamemaster_hints to help pages etc.
-- expose every gamemaster hints into game views
 
 - update abilities settings
 
@@ -70,6 +68,8 @@ NEEDS COSMETICS
 TASKS DONE
 ---------------
 
+- chekc that character and item gamemaster_hints are well displayed and protected DONE
+- add avatars to characters view DONE
 - add avatar display to immutable blocks in contacts management
 - add slight typography via docutils/RST - DONE
 - remove "logout" link when impersonation by super user DONE

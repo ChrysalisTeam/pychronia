@@ -96,9 +96,9 @@ class GemHandlingFormUtils(object):
 
     def _gem_display(self, gem):
         if gem[1]:
-            return _("Gem of %(cost)d Kashes (%(origin)s)") % SDICT(cost=gem[0], origin=gem[1].replace("_", " "))
+            return _("Gem of %(cost)d¤ (%(origin)s)") % SDICT(cost=gem[0], origin=gem[1].replace("_", " "))
         else:
-            return _("Gem of %d Kashes (unknown origin)") % gem[0]
+            return _("Gem of %d¤ (unknown origin)") % gem[0]
 
 
 
