@@ -2,7 +2,21 @@
 <html>
 <body>
     {% load i18n helpers markup %}
-    {% rich_text entry.content initial_header_level=1 %}
+    {% include "utilities/static_page_block.html" with article_name=None article_data=entry initial_header_level=1 %}
+
+
+    <script language="javascript" type="text/javascript">
+    /* sign that parts of the page are for admins only */
+           $(".admin-note").pulsate({
+                              color: "#9D8126",                       // set the color of the pulse
+                              reach: 4,                              // how far the pulse goes in px
+                              speed: 1000,                            // how long one pulse takes in ms
+                              pause: 500,                               // how long the pause between pulses is in ms
+                              glow: true,                             // if the glow should be shown too
+                              repeat: true,                           // will repeat forever if true, if given a number will repeat for that many times
+                              onHover: false                          // if true only pulsate if user hovers over the element
+                            });
+     </script>
 </body>
 </html>
 

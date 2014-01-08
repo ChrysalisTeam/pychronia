@@ -68,7 +68,8 @@ NEEDS COSMETICS
 TASKS DONE
 ---------------
 
-- chekc that character and item gamemaster_hints are well displayed and protected DONE
+- mmerge "help_pages" and "content" static page categories into same category DONE
+- check that character and item gamemaster_hints are well displayed and protected DONE
 - add avatars to characters view DONE
 - add avatar display to immutable blocks in contacts management
 - add slight typography via docutils/RST - DONE
@@ -205,6 +206,8 @@ TASKS DONE
 FUTUR ENHANCEMENTS
 --------------------------
 
+- fix shaky forms when floated left in number
+- improve compatibility with IE 10+ (menus are buggy)
 - add forms to administrator page (change game state, delete game etc.)
 - reorganize top headers of game (motto left=real, motto right=impersonation, carvings= GAME DATA)
 - CMS : stop float pbs when EDIT=ON, on main frames (use clearfix) - should be OK actually

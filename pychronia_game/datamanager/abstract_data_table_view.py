@@ -43,16 +43,12 @@ class AbstractDataTableManagement(AbstractGameView):
         return res
 
 
-    def submit_item(self, previous_identifier, identifier, **data): ####, previous_identifier, identifier, categories, keywords, description, content):
+    def submit_item(self, previous_identifier, identifier, **data):
 
         table = self.get_data_table_instance()
 
         # insertion and update are the same
         table[identifier] = data
-        '''dict(categories=categories,
-                                   keywords=keywords,
-                                   description=description,
-                                   content=content)'''
 
         # cleanup in case of renaming
         if previous_identifier and previous_identifier != identifier:

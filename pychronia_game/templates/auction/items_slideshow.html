@@ -103,7 +103,7 @@
                         {{ item_details.comments}}
                         </p>
 
-                        {% if user.is_master and item_details.gamemaster_hints %}
+                        {% if display_admin_tips and item_details.gamemaster_hints %}
                         <p class="admin-note">
                             {{ item_details.gamemaster_hints }}
                         </p>

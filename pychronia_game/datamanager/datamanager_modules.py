@@ -3910,8 +3910,8 @@ class StaticPages(BaseDataManager):
 
 
     # bunch of standard categories #
-    HELP_CATEGORY = "help_pages"
     CONTENT_CATEGORY = "content"
+    HELP_CATEGORY = "content" # SAME CATEGORY, because same security settings actually...
 
 
     @readonly_method
@@ -3951,8 +3951,9 @@ class StaticPages(BaseDataManager):
                 details.setdefault("keywords", []) # useful for encyclopedia articles mainly
                 details["keywords"] = [details["keywords"]] if isinstance(details["keywords"], basestring) else details["keywords"]
 
-                details.setdefault("description", "") # for gamemaster only
-                details["description"] = details["description"].strip()
+                details.setdefault("gamemaster_hints", "") # for gamemaster only
+                details["gamemaster_hints"] = details["gamemaster_hints"].strip()
+
 
         def _preprocess_new_item(self, key, value):
             assert "immutable" not in value
@@ -3964,9 +3965,10 @@ class StaticPages(BaseDataManager):
             utilities.check_is_slug(key)
             assert key.lower() == key # handy
 
-            utilities.check_has_keys(value, ["immutable", "categories", "content", "description", "keywords"], strict=strict)
+            utilities.check_has_keys(value, ["immutable", "categories", "content", "gamemaster_hints", "keywords"], strict=strict)
 
             utilities.check_is_bool(value["immutable"],)
+
             utilities.check_is_restructuredtext(value["content"])
 
             utilities.check_is_list(value["categories"])
@@ -3977,8 +3979,9 @@ class StaticPages(BaseDataManager):
             for keyword in (value["keywords"]):
                 utilities.check_is_slug(keyword)
 
-            if value["description"]: # optional
-                utilities.check_is_string(value["description"], multiline=False)
+            if value["gamemaster_hints"]: # optional
+                utilities.check_is_restructuredtext(value["gamemaster_hints"])
+
 
         def _sorting_key(self, item_pair):
             return item_pair[0] # we sort by key, simply...

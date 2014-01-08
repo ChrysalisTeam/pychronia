@@ -3140,20 +3140,20 @@ class TestDatamanager(BaseGameTestCase):
 
         EXISTING_HELP_PAGE = "help-homepage"
 
-        utilities.check_is_restructuredtext(self.dm.get_categorized_static_page(category="help_pages", name="view_encyclopedia"))
+        utilities.check_is_restructuredtext(self.dm.get_categorized_static_page(category="content", name="view_encyclopedia"))
 
-        assert self.dm.get_categorized_static_page(category="help_pages", name="qskiqsjdqsid") is None
+        assert self.dm.get_categorized_static_page(category="content", name="qskiqsjdqsid") is None
         assert self.dm.get_categorized_static_page(category="badcategory", name="view_encyclopedia") is None
 
-        assert EXISTING_HELP_PAGE in self.dm.get_static_page_names_for_category("help_pages")
+        assert EXISTING_HELP_PAGE in self.dm.get_static_page_names_for_category("content")
 
-        assert "lokon" not in self.dm.get_static_page_names_for_category("help_pages")
+        assert "lokon" not in self.dm.get_static_page_names_for_category("content")
         assert "lokon" in self.dm.get_static_page_names_for_category("encyclopedia")
 
-        assert sorted(self.dm.get_static_pages_for_category("help_pages").keys()) == sorted(self.dm.get_static_page_names_for_category("help_pages")) # same "random" sorting
+        assert sorted(self.dm.get_static_pages_for_category("content").keys()) == sorted(self.dm.get_static_page_names_for_category("content")) # same "random" sorting
 
-        for key, value in self.dm.get_static_pages_for_category("help_pages").items():
-            assert "help_pages" in value["categories"]
+        for key, value in self.dm.get_static_pages_for_category("content").items():
+            assert "content" in value["categories"]
             utilities.check_is_slug(key)
             assert key.lower() == key
 

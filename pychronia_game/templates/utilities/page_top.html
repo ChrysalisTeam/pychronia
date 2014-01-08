@@ -1,7 +1,7 @@
 {% load i18n %}
 
 {% if content_blocks.top_content.name %}
-    {% include "utilities/static_page_block.html" with article_name=content_blocks.top_content.name article_data=content_blocks.top_content.data %}
+    {% include "utilities/static_page_block.html" with article_name=content_blocks.top_content.name article_data=content_blocks.top_content.data initial_header_level=2 %}
 {% endif %}
 
 {% if action_explanations %}

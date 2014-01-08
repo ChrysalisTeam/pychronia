@@ -11,12 +11,12 @@ There are altogether <strong>{{ total_gems_number }}</strong> gems and <strong>{
 {% endblocktrans %}
 </p>
 
-{% if user.is_master %}
-<p class="admin-note">
-Players begin the game with a total of
-<strong>{{ total_bank_account_available }}</strong> kashes in their bank accounts,
-while the total value of proposed items is <strong>{{ total_items_price }}</strong> kashes.
-</p>
+{% if display_admin_tips %}
+    <p class="admin-note">
+    Players begin the game with a total of
+    <strong>{{ total_bank_account_available }}</strong> kashes in their bank accounts,
+    while the total value of proposed items is <strong>{{ total_items_price }}</strong> kashes.
+    </p>
 {% endif %}
 
 <br/>

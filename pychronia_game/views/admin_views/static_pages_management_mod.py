@@ -10,15 +10,12 @@ from django import forms
 
 class StaticPageForm(DataTableForm):
 
-
     categories = Select2TagsField(label=ugettext_lazy("Categories"), required=False)
     keywords = Select2TagsField(label=ugettext_lazy("Keywords"), required=False)
 
-    description = forms.CharField(label=ugettext_lazy("Hidden description"), widget=forms.Textarea(attrs={'rows': '2', 'cols':'40'}), required=False)
     content = forms.CharField(label=ugettext_lazy("Content"), widget=forms.Textarea(attrs={'rows': '8', 'cols':'40'}), required=True)
 
-    ###test = Select2TagsField(label=ugettext_lazy("TESTING"), choice_tags=["kkk", "lll"])
-
+    gamemaster_hints = forms.CharField(label=ugettext_lazy("Hints for Game Master"), widget=forms.Textarea(attrs={'rows': '2', 'cols':'40'}), required=False)
 
 
 ### TODO - DEAL WITH IMMUTABLES ???

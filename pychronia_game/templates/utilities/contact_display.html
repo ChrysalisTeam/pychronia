@@ -1,5 +1,4 @@
 {% load i18n helpers%}
-{# PREVIOUSLY <li {% if contact.description %}title="{{ contact.description }}"{% endif %} onclick="add_recipient('{{ contact.address|escapejs }}');">{{ contact.address }}</li> #}
 <div class="contact_display" {% if contact.description %}title="{{ contact.description }}"{% endif %}>
 <img src="{% game_file_img contact.avatar|default:default_contact_avatar alias="contact_avatar" %}"/>
 

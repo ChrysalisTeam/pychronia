@@ -743,6 +743,9 @@ img.center {
   padding: 3px;
   border: solid 1px #9D8126;
 }
+.admin-note {
+  margin: 4px;
+}
 .missing-content {
   margin-left: auto !important;
   margin-right: auto !important;
