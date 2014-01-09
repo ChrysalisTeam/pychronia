@@ -7,7 +7,7 @@ TODO LIST CHRYSALIS
 FEATURES
 ------------
 
-- add smooth scroll
+- add smooth scroll (jquery plugins don't work, fixed manually in own script)
 
 - update abilities settings
 

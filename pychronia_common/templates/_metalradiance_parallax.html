@@ -62,6 +62,14 @@
 
     /* FIXER - necessary to smooth scrolling on Chrome and IE, not Firefox */
 
+    var platform = navigator.userAgent .toLowerCase();
+    if (platform.indexOf('firefox') != -1) {
+        console.log("NOT INSTALLING SMOOTH SCROLL")  ;
+    } else {
+        console.log("INSTALLING SMOOTH SCROLL")  ;
+    }
+
+
     if (window.addEventListener) window.addEventListener('DOMMouseScroll', wheel, false);
     window.onmousewheel = document.onmousewheel = wheel;
 
@@ -71,6 +79,11 @@
 
 
     function wheel(event) {
+
+        if (event.ctrlKey) {
+            return; // don't intercept zooming!!!
+        }
+
         if (event.wheelDelta) delta = event.wheelDelta / 120;
         else if (event.detail) delta = -event.detail / 3;
 
@@ -92,10 +105,25 @@
 
     $(document).keydown(function (e) {
 
+        getTarget = function(e) {
+              if (!e) return false;
+              if (e.target) return e.target;
+              if (e.srcElement) return e.srcElement;
+              return false;
+            };
+
+          // don't scroll when on a control with up/down handling
+          e = (e) ? e : window.e;
+          var tg = getTarget(e);
+          if (tg&&/INPUT|TEXTAREA|SELECT|OPTION/.test(tg.nodeName)) {
+            var tp = tg.getAttribute('type')||tg.type||false;
+            if ((!tp)||!(/submit|button|cancel/i.tp)) return true;
+          }
 
         switch (e.which) {
             //up
             case 38:
+            case 63233: //safari
                 $('html, body').stop().animate({
                     scrollTop: $(window).scrollTop() - distance
                 }, time);
@@ -104,6 +132,7 @@
 
                 //down
             case 40:
+            case 63235: //safari
                 $('html, body').stop().animate({
                     scrollTop: $(window).scrollTop() + distance
                 }, time);
