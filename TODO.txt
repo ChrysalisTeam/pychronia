@@ -7,8 +7,6 @@ TODO LIST CHRYSALIS
 FEATURES
 ------------
 
-- add smooth scroll (jquery plugins don't work, fixed manually in own script)
-
 - update abilities settings
 
 
@@ -66,6 +64,7 @@ NEEDS COSMETICS
 TASKS DONE
 ---------------
 
+- add smooth scroll for non-forefox browsers (jquery plugins don't work, fixed manually in own script) DONE
 - add gamemaster_hints to all the kinds of static blocks DONE
 - merge "help_pages" and "content" static page categories into same category DONE
 - check that character and item gamemaster_hints are well displayed and protected DONE

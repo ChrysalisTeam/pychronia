@@ -60,13 +60,15 @@
 
 <script type="text/javascript">
 
-    /* FIXER - necessary to smooth scrolling on Chrome and IE, not Firefox */
+$(function(){
 
+    /* FIXER - necessary to smooth scrolling on Chrome and IE, not Firefox */
     var platform = navigator.userAgent .toLowerCase();
     if (platform.indexOf('firefox') != -1) {
-        console.log("NOT INSTALLING SMOOTH SCROLL")  ;
+        /// console.log("NOT INSTALLING SMOOTH SCROLL");
+        return;
     } else {
-        console.log("INSTALLING SMOOTH SCROLL")  ;
+        /// console.log("INSTALLING SMOOTH SCROLL");
     }
 
 
@@ -139,5 +141,5 @@
                 break;
         }
     });
-
+});
 </script>
