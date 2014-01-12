@@ -7,11 +7,55 @@ TODO LIST CHRYSALIS
 FEATURES
 ------------
 
+- add auto-title to help pages ??
+
+- remobe block display for labels, breaks checkboxes...
+- add possibility to change fake official name in manage_characters
+
+- display admin tips with UserAccess and all kinds of permissions required
+- add COLON marker to django templates
+- add typographhy fixer like in https://code.google.com/p/markdown-typografix/source/browse/mdx_typografix/__init__.py
+
 - update abilities settings
+
+
+- Todo  info bulle too - todo todo put stars atound them??!!!
+- Todo playlist management  add simple click!
+
+- todo add field gamemaster_hints to static management of pages
+- todo put full lengh url in shareable links, with site-url
+
+CONTACTS
+Todo verifier valeurs par défaut de public
+todo est ce que restriction est vraiment respectee, sur emetteur, sur destinataire
+todo pas email persos dans compose-message du master!!
+
+.. todo:: talk about faction-inherited permission later
+
+Todo disable public/private control for global contacts form.
+Todo add ?/compose link in contacts management blocks
+Todo remove all immutable:true, in all management pages
+
+
+Todo - noter que pas lg dans auction list ???
+todo - add brackets around mailing list adresses!
+
+
+INPUT:not([type="radio"]):not([type="checkbox"]) ~ LABEL {
+  width: 100px;
+}
+INPUT:not([type="radio"]):not([type="checkbox"]) {
+  width: 200px;
+}
+LABEL { display: inline-block; }
+
+
 
 
 SCRIPT
 ----------
+
+- manual for TTS acapela !!
 
 - add all avatar images
 - refactor game master manual's hierarchy

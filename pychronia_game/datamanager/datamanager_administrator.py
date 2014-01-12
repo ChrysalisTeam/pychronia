@@ -94,7 +94,8 @@ def _create_metadata_record(game_instance_id, creator_login):
 @zodb_transaction
 def create_game_instance(game_instance_id, creator_login,
                          master_real_email, master_login, master_password,
-                         skip_randomizations=False):
+                         skip_randomizations=False,
+                         strict=False):
     """
     Returns nothing. Raises ValueError if already existing game id.
     """
@@ -116,7 +117,7 @@ def create_game_instance(game_instance_id, creator_login,
                              game_root=game_data,
                              request=None) # no user messages possible here
         assert not dm.is_initialized
-        dm.reset_game_data() # TODO here provide all necessary info
+        dm.reset_game_data(strict=strict) # TODO here try strict=True
         dm.override_master_credentials(master_real_email=master_real_email,
                                        master_login=master_login,
                                        master_password=master_password)

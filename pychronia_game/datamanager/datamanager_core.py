@@ -128,7 +128,7 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
 
 
     @transaction_watcher(always_writable=True) # might operate on broken data
-    def reset_game_data(self, yaml_fixture=config.GAME_INITIAL_DATA_PATH):
+    def reset_game_data(self, yaml_fixture=config.GAME_INITIAL_DATA_PATH, strict=False):
         """
         This method might raise exceptions, and leave the datamanager uninitialized.
         """
@@ -160,7 +160,7 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
             self.logger.info("Performing setup via GAME_INITIAL_FIXTURE_SCRIPT")
             config.GAME_INITIAL_FIXTURE_SCRIPT(self)
 
-        self.check_database_coherency()
+        self.check_database_coherency(strict=strict)
 
 
 
@@ -184,7 +184,7 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
         utilities.check_object_tree(game_data, allowed_types=utilities.allowed_zodb_types, path=["game_data"])
 
 
-        self._check_database_coherency()
+        self._check_database_coherency(**kwargs)
 
 
 

@@ -49,7 +49,6 @@ def game_events(request, template_name='administration/game_events.html'):
     return render(request,
                   template_name,
                     {
-                     'page_title': _("Game events"),
                      'events': trans_events
                     })
 
@@ -71,7 +70,6 @@ def manage_databases(request, template_name='administration/database_management.
     return render(request,
                   template_name,
                     {
-                     'page_title': _("Database Content"),
                      'formatted_data': formatted_data,
                     })
 
@@ -134,7 +132,7 @@ def manage_characters(request, template_name='administration/character_managemen
 
     return render(request,
                   template_name,
-                    dict(page_title=_("Manage characters"),
+                    dict(
                          character_forms=character_forms,
                          sealed_friendships=sealed_friendships,
                          proposed_friendships=proposed_friendships,
@@ -205,13 +203,12 @@ def FAIL_TEST(request):
 
 
 
-@register_view(access=UserAccess.master, title=ugettext_lazy("Media Test"))
+@register_view(access=UserAccess.master, title=ugettext_lazy("Media Display Test"))
 def MEDIA_TEST(request):
 
     return render(request,
                   "administration/media_test.html",
                     {
-                     'page_title': _("Media Display Test"),
                      'audioplayer': mediaplayers.generate_audio_player([game_file_url("test_samples/music.mp3")]),
                      'videoplayers': ["<p>%s</p>" % extension +
                                       mediaplayers.generate_media_player(game_file_url("test_samples/video." + extension),
