@@ -744,7 +744,8 @@ img.center {
   border: solid 1px #9D8126;
 }
 .admin-note {
-  margin: 4px;
+  clear: both;
+  margin: 5px;
 }
 .missing-content {
   margin-left: auto !important;
@@ -1363,8 +1364,6 @@ textarea {
 #full_content form input[type=submit], #full_content form input[type=button],
 #full_content form .select2-container, #full_content form .markItUp {
   width: 100% !important;
-}
-#full_content form label {
   display: block;
 }
 fieldset {

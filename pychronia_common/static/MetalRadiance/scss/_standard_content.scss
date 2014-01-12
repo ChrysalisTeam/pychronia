@@ -216,10 +216,10 @@ textarea {
 
     textarea, select, input[type=text], input[type=password], input[type=submit], input[type=button], .select2-container, .markItUp {
         width: 100% !important;
+        display: block;
     }
 
     label {
-        display: block;
     }
 
 }

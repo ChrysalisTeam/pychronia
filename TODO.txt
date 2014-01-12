@@ -55,6 +55,7 @@ LABEL { display: inline-block; }
 SCRIPT
 ----------
 
+- talk about webradio public too and pending message notifications with old ww2 voice
 - manual for TTS acapela !!
 
 - add all avatar images
