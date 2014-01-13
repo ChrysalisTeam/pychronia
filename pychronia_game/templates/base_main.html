@@ -196,7 +196,7 @@
                 }
             })//.disableSelection();
 
-            $('#available_radio_spots .radio_spot').draggable( {
+            $('#available_radio_spots .radio_spot').draggable({
                 //containment: "#radiotracks",
                 cursor: "move",
                 helper: "clone",
@@ -204,7 +204,27 @@
                 revert: "invalid",
                 opacity: 0.7,
                 connectToSortable: "#current_playlist",
-              } );
+              }) .click(function(e){
+
+                    if ( $(this).is('.ui-draggable-dragging') ) {
+                          return;
+                    }
+
+                    /*
+                    var target = $( e.target );
+                    if ( target.is( "li" ) ) {
+                        e.stopPropagation();
+                    }*/
+
+                    var tag = $(this).clone();
+                    $("#current_playlist").append(tag);
+                    $("#current_playlist").sortable('refresh');
+                    save_radio_playlist();
+
+              });
+
+
+              ;
 
         {% endif %}
 
