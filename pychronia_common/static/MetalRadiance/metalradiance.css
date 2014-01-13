@@ -1669,6 +1669,9 @@ input.digit {
 .entry-body {
   overflow: visible;
 }
+.entry-body .info {
+  background-color: transparent;
+}
 .hentry {
   margin-left: -30px;
   margin-right: -30px;

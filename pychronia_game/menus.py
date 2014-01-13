@@ -114,7 +114,7 @@ def _generate_web_menu(request, menu_entry_generator):
                       (
                          menu_entry(view=views.all_dispatched_messages), # master only
                          menu_entry(view=views.all_queued_messages), # master only
-                         menu_entry(_(u"My conversations") + conversation_suffix, view=views.conversation),
+                         menu_entry(_(u"My conversations") + conversation_suffix, view=views.conversation), # suffix is the count of unread MESSAGES
                          menu_entry(view=views.messages_templates), # master only
                          menu_entry(view=views.compose_message),
                       )),

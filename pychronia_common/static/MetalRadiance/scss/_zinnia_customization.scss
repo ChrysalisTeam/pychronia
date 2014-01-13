@@ -4,6 +4,10 @@
 
 .entry-body {
     overflow: visible;
+
+    .info {
+        background-color: transparent;
+    }
 }
 
 .hentry {
@@ -36,3 +40,4 @@ ul.paginator {
 .mini_frame_content .scroll_yellow_flat {
     margin: 0;
 }
+
