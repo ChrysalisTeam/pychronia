@@ -9,45 +9,30 @@ FEATURES
 
 - add auto-title to help pages ??
 
-- remove block display for labels, breaks checkboxes...
-
 - add possibility to change fake official name in manage_characters, and role, and gamemaster hints, and secret identity...
 
 - display admin tips with UserAccess and all kinds of permissions required
 
-
-
 - update abilities settings
 
-- Todo  info bulle too - todo todo put stars atound them??!!!
-- Todo playlist management  add simple click!
-
-- todo add field gamemaster_hints to static management of pages
 - todo put full lengh url in shareable links, with site-url
+
 
 CONTACTS
 Todo verifier valeurs par défaut de public
 todo est ce que restriction est vraiment respectee, sur emetteur, sur destinataire
-todo pas email persos dans compose-message du master!!
+
+todo check pas email persos dans compose-message du master!!
 
 .. todo:: talk about faction-inherited permission later
 
 Todo disable public/private control for global contacts form.
-Todo add ?/compose link in contacts management blocks
+
+- add compose link in contacts management blocks
+
 Todo remove all immutable:true, in all management pages
 
-
-Todo - noter que pas lg dans auction list ???
-todo - add brackets around mailing list adresses!
-
-
-INPUT:not([type="radio"]):not([type="checkbox"]) ~ LABEL {
-  width: 100px;
-}
-INPUT:not([type="radio"]):not([type="checkbox"]) {
-  width: 200px;
-}
-LABEL { display: inline-block; }
+Todo - noter que pas lg dans auction list, dans HELP ???
 
 
 
@@ -87,6 +72,7 @@ Faire page d'introduction
 TESTS
 ----------
 
+- allow brackets around mailing-list adresses DONE
 - check proper locale for date formatting and check "utctolocal" presence - DONE
 - test DISPLAY_STATIC_CONTENT handling
 - test message compose form and attachments, it's VERY sensitive
@@ -109,6 +95,8 @@ NEEDS COSMETICS
 TASKS DONE
 ---------------
 
+- add field gamemaster_hints to static management of pages DONE
+- playlist management  add simple click DONE
 - add COLON marker to django templates (not yet propagated to existing strings) DONE
 - add smooth scroll for non-forefox browsers (jquery plugins don't work, fixed manually in own script) DONE
 - add gamemaster_hints to all the kinds of static blocks DONE
@@ -251,6 +239,8 @@ TASKS DONE
 
 FUTUR ENHANCEMENTS
 --------------------------
+
+- Todo info bulle too put brackets around them WIP
 - add typographhy fixer like in https://code.google.com/p/markdown-typografix/source/browse/mdx_typografix/__init__.py
 - fix shaky forms when floated left in number
 - improve compatibility with IE 10+ (menus are buggy)

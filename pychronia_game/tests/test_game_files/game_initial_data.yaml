@@ -130,7 +130,7 @@ global_parameters:
 
     pangea_network_domain: pangea.com
     default_contact_avatar: "images/avatars/question_mark.png"
-    all_players_mailing_list: "auction-list@pangea.com"
+    all_players_mailing_list: "[auction-list]@pangea.com"
 
     anonymous_login: guest
 
@@ -417,7 +417,7 @@ messaging:
 
         everyone@chars.com: {immutable: True}
 
-        "auction-list@pangea.com": {immutable: True}
+        "[auction-list]@pangea.com": {immutable: True}
 
         "translator-robot@hightech.com": {}
 

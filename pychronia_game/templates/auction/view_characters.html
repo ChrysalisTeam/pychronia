@@ -28,7 +28,7 @@
 
 
                 <td class="bigtext">
-		    		<strong {% if user.is_master %} title="{% trans "Password:" %} {{ char_details.password }}" {% endif %}>
+		    		<strong {% if user.is_master %} title="[{% trans "Password:" %} {{ char_details.password }}]" {% endif %}>
 
 		    		    <a href="{% game_view_url "pychronia_game.views.compose_message" %}?recipient={{ char_details.email_address }}"
 		    		        style="color:{{ char_details.character_color }};">
