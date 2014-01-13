@@ -9,15 +9,15 @@ FEATURES
 
 - add auto-title to help pages ??
 
-- remobe block display for labels, breaks checkboxes...
-- add possibility to change fake official name in manage_characters
+- remove block display for labels, breaks checkboxes...
+
+- add possibility to change fake official name in manage_characters, and role, and gamemaster hints, and secret identity...
 
 - display admin tips with UserAccess and all kinds of permissions required
-- add COLON marker to django templates
-- add typographhy fixer like in https://code.google.com/p/markdown-typografix/source/browse/mdx_typografix/__init__.py
+
+
 
 - update abilities settings
-
 
 - Todo  info bulle too - todo todo put stars atound them??!!!
 - Todo playlist management  add simple click!
@@ -109,6 +109,7 @@ NEEDS COSMETICS
 TASKS DONE
 ---------------
 
+- add COLON marker to django templates (not yet propagated to existing strings) DONE
 - add smooth scroll for non-forefox browsers (jquery plugins don't work, fixed manually in own script) DONE
 - add gamemaster_hints to all the kinds of static blocks DONE
 - merge "help_pages" and "content" static page categories into same category DONE
@@ -246,9 +247,11 @@ TASKS DONE
 - http://test.prolifik.net/cms/historique/?edit <- fancybox broken DONE
 
 
+
+
 FUTUR ENHANCEMENTS
 --------------------------
-
+- add typographhy fixer like in https://code.google.com/p/markdown-typografix/source/browse/mdx_typografix/__init__.py
 - fix shaky forms when floated left in number
 - improve compatibility with IE 10+ (menus are buggy)
 - add forms to administrator page (change game state, delete game etc.)
