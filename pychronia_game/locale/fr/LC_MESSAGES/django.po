@@ -3246,7 +3246,7 @@ msgstr "Avatar"
 
 #: .\views\admin_views\global_contacts_management_mod.py:17
 msgid "Public contact"
-msgstr "Contacts publics"
+msgstr "Contact public"
 
 #: .\views\admin_views\global_contacts_management_mod.py:19
 msgid "Or restricted to"

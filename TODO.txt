@@ -13,20 +13,17 @@ FEATURES
 
 - update abilities settings
 
+- todo - check email_re on all new sender/recipient!!
 
 CONTACTS
 Todo verifier valeurs par défaut de public
-todo est ce que restriction est vraiment respectee, sur emetteur, sur destinataire
-
-todo check pas email persos dans compose-message du master!!
+todo est ce que restriction est vraiment respectee, sur emetteur, sur destinataire NON AUCUNE RESTRICTION, PAS DE CHEC KSUR EMAIL
 
 .. todo:: talk about faction-inherited permission later
 
 Todo disable public/private control for global contacts form.
 
-- add compose link in contacts management blocks
-
-Todo remove all immutable:true, in all management pages
+Todo remove all immutable:true, in all management pages ??
 
 Todo - noter que pas lg dans auction list, dans HELP ???
 

@@ -602,7 +602,8 @@ class TestDatamanager(BaseGameTestCase):
 
 
         special_methods = """begin rollback commit close check_no_pending_transaction is_in_writing_transaction
-                             begin_top_level_wrapping end_top_level_wrapping is_under_top_level_wrapping""".split()
+                             begin_top_level_wrapping end_top_level_wrapping is_under_top_level_wrapping
+                             sort_email_addresses_list""".split()
 
         for attr in dir(GameDataManager):
             if attr.startswith("_") or attr in special_methods:
@@ -1688,7 +1689,7 @@ class TestDatamanager(BaseGameTestCase):
 
 
             # mutability control
-            immutable_entry = "auction-list@pangea.com"
+            immutable_entry = "[auction-list]@pangea.com"
             assert immutable_entry in container.get_all_data()
             assert immutable_entry in container.get_all_data(mutability=False)
             assert immutable_entry not in container.get_all_data(mutability=True)

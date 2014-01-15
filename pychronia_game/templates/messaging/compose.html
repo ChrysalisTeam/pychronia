@@ -151,7 +151,7 @@ window.setInterval(save_current_content, 10*1000);
     <div class="rice_paper_rose full_width center inner_center tiny_bullets small_text" style="line-height: 1.5em; cursor: pointer;">
     	{% for contact in contacts_display %}
 	   <div onclick="add_recipient('{{ contact.address|escapejs }}');">
-	       {% include "utilities/contact_display.html" with contact=contact compose_link=False %}
+	       {% include "utilities/contact_display.html" with address="" contact=contact compose_link=False %}
 	   </div>
         {% endfor %}
     </div>

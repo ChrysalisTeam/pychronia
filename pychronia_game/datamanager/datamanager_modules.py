@@ -2501,14 +2501,17 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
 
         return results_dict if as_dict else results
 
+    @staticmethod
+    def sort_email_addresses_list(emails_list):
+        return sorted(emails_list, key=lambda email: (email[0] != '[',) + tuple(reversed(email.split("@")))) # sort by domain then username
 
     @readonly_method
     def get_sorted_user_contacts(self, username=CURRENT_USER):
         """
         For both master and characters.
         """
-        def _sorter(emails_list):
-            return sorted(emails_list, key=lambda email: tuple(reversed(email.split("@")))) # sort by domain then username
+
+        _sorter = self.sort_email_addresses_list
 
         username = self._resolve_username(username)
         assert not self.is_anonymous(username)
