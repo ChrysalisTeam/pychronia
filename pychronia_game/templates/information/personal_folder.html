@@ -18,10 +18,11 @@
 
         // DO NOT use escape(), since it's for latin1 encoding (blerh...)
 
-        $("#media_url").html('<a href="'+encodeURI(fileurl)+'">'+encodeURI(fileurl)+'</a>')
+        $("#media_url").hide() // html('<a href="'+encodeURI(fileurl)+'">'+encodeURI(fileurl)+'</a>')
 
         $("#media_viewer").load("{% game_view_url "pychronia_game.views.view_media" %}?autostart=true&url=" + encodeURIComponent(fileurl));
         $("#media_viewer").css('display', 'block');
+
     }
 
 {% endaddtoblock %}

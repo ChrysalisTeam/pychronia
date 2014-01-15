@@ -116,7 +116,9 @@ def pychronia_template_context(request):
                 'None': None,
                 'True': True,
                 'False': False,
+
                 'COLON': _(":").replace(" ", "\u00a0"), # different spacing when english or french...
+                'SITE_DOMAIN': config.SITE_DOMAIN,
             }
         return res
 
