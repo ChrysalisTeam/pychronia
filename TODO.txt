@@ -7,15 +7,11 @@ TODO LIST CHRYSALIS
 FEATURES
 ------------
 
-- add auto-title to help pages ??
-
 - add possibility to change fake official name in manage_characters, and role, and gamemaster hints, and secret identity...
 
 - display admin tips with UserAccess and all kinds of permissions required
 
 - update abilities settings
-
-- todo put full lengh url in shareable links, with site-url
 
 
 CONTACTS
@@ -95,6 +91,8 @@ NEEDS COSMETICS
 TASKS DONE
 ---------------
 
+- add auto-title to help pages DONE
+- put full lengh url in shareable links, with site-url, and remove personal folders links - DONE
 - add field gamemaster_hints to static management of pages DONE
 - playlist management  add simple click DONE
 - add COLON marker to django templates (not yet propagated to existing strings) DONE

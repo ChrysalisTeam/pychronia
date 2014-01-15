@@ -116,6 +116,7 @@ def view_help_page(request, keyword, template_name='utilities/help_page.html'):
     """
 
     datamanager = request.datamanager
+    
     allowed_entry = None
     if keyword:
         view_name = keyword[len("help-"):]
@@ -136,7 +137,7 @@ def view_help_page(request, keyword, template_name='utilities/help_page.html'):
     return render(request,
                   template_name,
                     {
-                     'page_title': _("Manual Page"),
+                     'page_title': _("Help"),
                      'entry': allowed_entry,
                     })
 
