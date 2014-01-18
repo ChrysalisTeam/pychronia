@@ -9,8 +9,6 @@ FEATURES
 
 - add possibility to change fake official name in manage_characters, and role, and gamemaster hints, and secret identity...
 
-- display admin tips with UserAccess and all kinds of permissions required
-
 - update abilities settings
 
 - todo - check email_re on all new sender/recipient!!
@@ -19,13 +17,23 @@ CONTACTS
 Todo verifier valeurs par défaut de public
 todo est ce que restriction est vraiment respectee, sur emetteur, sur destinataire NON AUCUNE RESTRICTION, PAS DE CHEC KSUR EMAIL
 
-.. todo:: talk about faction-inherited permission later
+
 
 Todo disable public/private control for global contacts form.
 
 Todo remove all immutable:true, in all management pages ??
 
-Todo - noter que pas lg dans auction list, dans HELP ???
+Todo add Just A Memo note to gems bought in my objects ! !? and also ik view sales !!
+
+Important : cette liste de diffusion ne contient que les encherisseurs, donc n'oubliez pas d'inclure votre hote dans tout echange !"
+
+Les adresse email sont automatiquement converties en liens "envoyer un
+COMPOSE MESSAGE
+- les balises mémo (xxxx TODO TODO), présentes uniquement dans les modèles d'emails, sont des marqueurs qui doivent être remplacées par le contenu pertinent, sans quoi le contenu ne sera pas validé.
+- game file links regex = r"""\[\s*GAME_FILE_URL\s*('|")?(?P<path>.+?)('|")? \s*]"""
+- encyclopedia links - messaging links - les liens internes... regex = r"""\{% "(? P<content>[^"]+)" "(?P<view>[.\w]+)" %\}""" # content will be the text used as link
+- [BR]ge", mais attention, pour que le systeme
+
 
 
 
@@ -235,6 +243,10 @@ TASKS DONE
 FUTUR ENHANCEMENTS
 --------------------------
 
+- add and describe faction-inherited permissions
+- display admin tips, enigmas and other data in each competence (only visible in DB dump currently)
+- restore "personal messages" feature for gamemaster
+- display admin tips with UserAccess and all kinds of permissions required
 - Todo info bulle too put brackets around them WIP
 - add typographhy fixer like in https://code.google.com/p/markdown-typografix/source/browse/mdx_typografix/__init__.py
 - fix shaky forms when floated left in number
