@@ -30,6 +30,22 @@ def form_field_unjsonify(value):
 
 
 
+def autostrip(cls):
+    """
+    Marks all CharField entries of that form class as "auto-stripping".
+    
+    Does NOT work with dynamically created fields though.
+    """
+    fields = [(key, value) for key, value in cls.base_fields.iteritems() if isinstance(value, forms.CharField)]
+    for field_name, field_object in fields:
+        def get_clean_func(original_clean):
+            return lambda value: original_clean(value and value.strip())
+        clean_func = get_clean_func(getattr(field_object, 'clean'))
+        setattr(field_object, 'clean', clean_func)
+    return cls
+
+
+
 class BaseAbstractGameForm(forms.Form):
     """
     Base class for forms, able to recognize their data, by adding some hidden fields.
@@ -72,7 +88,8 @@ class BaseAbstractGameForm(forms.Form):
 
         for field in cleaned_data:
             if isinstance(self.cleaned_data[field], basestring):
-                cleaned_data[field] = cleaned_data[field].strip()
+                cleaned_data[field] = cleaned_data[field].strip() # note that Field "required=True" constraints might be already bypassed here, use autostrip instead
+
         return cleaned_data
 
     def get_normalized_values(self):

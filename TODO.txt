@@ -7,7 +7,6 @@ TODO LIST CHRYSALIS
 FEATURES
 ------------
 
-- add possibility to change fake official name in manage_characters, and role, and gamemaster hints, and secret identity...
 
 - update abilities settings
 
@@ -78,7 +77,7 @@ NEEDS COSMETICS
 
 TASKS DONE
 ---------------
-
+- add possibility to change fake official names and roles in admin "character management" page - DONE
 - check email address format on all new senders/recipients DONE
 - mark "gems groups" as mere "memos" in personal_items and view_characters pages (but not "all items" page) DONE
 - add auto-title to help pages DONE

@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 import json
 from pychronia_game.common import *
 from django import forms
-from pychronia_game.datamanager.abstract_form import AbstractGameForm, UninstantiableFormError, GemHandlingFormUtils
+from pychronia_game.datamanager.abstract_form import AbstractGameForm, UninstantiableFormError, GemHandlingFormUtils, autostrip
 
 
 
@@ -138,20 +138,33 @@ class DropdownMultiSelect(forms.SelectMultiple):
         return data_set != initial_set
     """
 
-class CharacterProfileForm(forms.Form):
+
+@autostrip
+class CharacterProfileForm(AbstractGameForm):
+    """
+    CHAR fields are auto-stripped thanks to that base class.
+    """
     target_username = forms.CharField(widget=forms.HiddenInput())
 
-    real_life_identity = forms.CharField(label=ugettext_lazy("Real identity"), required=False, max_length=100)
-    real_life_email = forms.EmailField(label=ugettext_lazy("Real email"), required=False)
+    real_life_identity = forms.CharField(label=ugettext_lazy("Real life identity"), required=False, max_length=100)
+    real_life_email = forms.EmailField(label=ugettext_lazy("Real life email"), required=False)
+
+    official_name = forms.CharField(label=ugettext_lazy("Official name"), required=True, max_length=100)
+    official_role = forms.CharField(label=ugettext_lazy("Official role"), required=True, max_length=500)
 
     allegiances = forms.MultipleChoiceField(label=ugettext_lazy("Allegiances"), required=False, widget=forms.SelectMultiple(attrs={"class": "multichecklist"}))
     permissions = forms.MultipleChoiceField(label=ugettext_lazy("Permissions"), required=False, widget=forms.SelectMultiple(attrs={"class": "multichecklist"}))
 
 
-    def __init__(self, allegiances_choices, permissions_choices, *args, **kwargs):
-        super(CharacterProfileForm, self).__init__(*args, **kwargs)
+    def __init__(self, datamanager, *args, **kwargs):
+        super(CharacterProfileForm, self).__init__(datamanager, *args, **kwargs)
+
+        allegiances_choices = datamanager.build_domain_select_choices()
+        permissions_choices = datamanager.build_permission_select_choices()
+
         self.fields['allegiances'].choices = allegiances_choices
         self.fields['permissions'].choices = permissions_choices
+
 
 
 class SimplePasswordForm(forms.Form):

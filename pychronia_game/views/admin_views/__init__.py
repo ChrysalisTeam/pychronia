@@ -77,24 +77,31 @@ def manage_databases(request, template_name='administration/database_management.
 @register_view(access=UserAccess.master, title=ugettext_lazy("Manage Characters"))
 def manage_characters(request, template_name='administration/character_management.html'):
 
-    domain_choices = request.datamanager.build_domain_select_choices()
-    permissions_choices = request.datamanager.build_permission_select_choices()
+
+
 
     form = None
     if request.method == "POST":
-        form = forms.CharacterProfileForm(data=request.POST,
-                                   allegiances_choices=domain_choices,
-                                   permissions_choices=permissions_choices,
-                                   prefix=None)
+        form = forms.CharacterProfileForm(datamanager=request.datamanager,
+                                          data=request.POST,
+                                          prefix=None)
 
         if form.is_valid():
             target_username = form.cleaned_data["target_username"]
+            official_name = form.cleaned_data["official_name"]
+            official_role = form.cleaned_data["official_role"]
             allegiances = form.cleaned_data["allegiances"]
             permissions = form.cleaned_data["permissions"]
             real_life_identity = form.cleaned_data["real_life_identity"].strip() or None
             real_life_email = form.cleaned_data["real_life_email"].strip() or None
 
+            assert official_name == official_name.strip() # auto-stripping
+            assert official_role == official_role.strip()
+
             with action_failure_handler(request, _("Character %s successfully updated.") % target_username):
+                request.datamanager.update_official_character_data(username=target_username,
+                                                                    official_name=official_name,
+                                                                    official_role=official_role)
                 request.datamanager.update_allegiances(username=target_username,
                                                        allegiances=allegiances)
                 request.datamanager.update_permissions(username=target_username,
@@ -108,16 +115,15 @@ def manage_characters(request, template_name='administration/character_managemen
     character_forms = []
 
     for (username, data) in sorted(request.datamanager.get_character_sets().items(), key=lambda x: (x[1]["is_npc"], x[0])):
-        # print ("AZZZZ", form["target_username"].value(), username)
         if form and form["target_username"].value() == username:
-            #print (" REUSING FOR", username)
-            f = form
+            f = form # we reuse POSTed form from above
         else:
             f = forms.CharacterProfileForm(
-                                    allegiances_choices=domain_choices,
-                                    permissions_choices=permissions_choices,
+                                    datamanager=request.datamanager,
                                     prefix=None,
                                     initial=dict(target_username=username,
+                                                 official_name=data["official_name"],
+                                                 official_role=data["official_role"],
                                                  allegiances=data["domains"],
                                                  permissions=data["permissions"],
                                                  real_life_identity=data["real_life_identity"],
