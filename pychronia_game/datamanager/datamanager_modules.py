@@ -416,13 +416,13 @@ class CharacterHandling(BaseDataManager): # TODO REFINE
                 utilities.check_is_game_file(character["avatar"])
 
             if character["gamemaster_hints"]:
-                utilities.check_is_string(character["gamemaster_hints"])
+                utilities.check_is_string(character["gamemaster_hints"], multiline=True)
 
-            utilities.check_is_string(character["official_name"])
-            utilities.check_is_string(character["official_role"])
+            utilities.check_is_string(character["official_name"], multiline=False)
+            utilities.check_is_string(character["official_role"], multiline=False)
 
             if character["real_life_identity"]: # OPTIONAL
-                utilities.check_is_string(character["real_life_identity"])
+                utilities.check_is_string(character["real_life_identity"], multiline=False)
             if character["real_life_email"]: # OPTIONAL
                 utilities.check_is_email(character["real_life_email"])
 
@@ -520,14 +520,31 @@ class CharacterHandling(BaseDataManager): # TODO REFINE
 
         action_done = False
 
-        if real_life_identity and real_life_identity != data["real_life_identity"]:
+        if real_life_identity is not None and real_life_identity != data["real_life_identity"]:
             data["real_life_identity"] = real_life_identity
             action_done = True
 
-        if real_life_email and real_life_email != data["real_life_email"]:
-            if not utilities.is_email(real_life_email):
+        if real_life_email is not None and real_life_email != data["real_life_email"]:
+            if real_life_email and not utilities.is_email(real_life_email):
                 raise NormalUsageError(_("Wrong email %s") % real_life_email)
             data["real_life_email"] = real_life_email
+            action_done = True
+
+        return action_done
+
+    @transaction_watcher
+    def update_official_character_data(self, username=CURRENT_USER, official_name=None, official_role=None):
+        username = self._resolve_username(username)
+        data = self.get_character_properties(username)
+
+        action_done = False
+
+        if official_name and official_name != data["official_name"]:
+            data["official_name"] = official_name # can't be an empty string
+            action_done = True
+
+        if official_role and official_role != data["official_role"]:
+            data["official_role"] = official_role # can't be an empty string
             action_done = True
 
         return action_done

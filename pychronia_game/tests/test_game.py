@@ -878,6 +878,22 @@ class TestDatamanager(BaseGameTestCase):
 
     @for_core_module(CharacterHandling)
     def test_character_handling(self):
+
+        self._set_user("guy1")
+
+        assert self.dm.update_official_character_data("guy1", official_name="Simon ", official_role="A killer ")
+        data = self.dm.get_character_properties("guy1")
+        assert data["official_name"] == "Simon "
+        assert data["official_role"] == "A killer "
+        assert not self.dm.update_official_character_data("guy1", official_name=None)
+        data = self.dm.get_character_properties("guy1")
+        assert data["official_name"] == "Simon "
+        assert data["official_role"] == "A killer "
+        assert not self.dm.update_official_character_data("guy1", official_name="", official_role="") # THESE can't be empty, so update is ignored
+        data = self.dm.get_character_properties("guy1")
+        assert data["official_name"] == "Simon "
+        assert data["official_role"] == "A killer "
+
         assert self.dm.update_real_life_data("guy1", real_life_identity="jjjj")
         assert self.dm.update_real_life_data("guy1", real_life_email="ss@pangea.com")
         data = self.dm.get_character_properties("guy1")
@@ -886,16 +902,22 @@ class TestDatamanager(BaseGameTestCase):
         assert self.dm.update_real_life_data("guy1", real_life_identity="kkkk", real_life_email="kkkk@pangea.com")
         assert data["real_life_identity"] == "kkkk"
         assert data["real_life_email"] == "kkkk@pangea.com"
-        assert not self.dm.update_real_life_data("guy1", real_life_identity="", real_life_email=None)
+        assert not self.dm.update_real_life_data("guy1", real_life_identity=None, real_life_email=None)
         assert data["real_life_identity"] == "kkkk"
         assert data["real_life_email"] == "kkkk@pangea.com"
-        assert self.dm.get_character_color_or_none("guy1") == "#0033CC"
-        assert self.dm.get_character_color_or_none("unexistinguy") is None
-        assert self.dm.get_character_color_or_none("") is None
         with pytest.raises(UsageError):
             self.dm.update_real_life_data("unexistinguy", real_life_identity="John")
         with pytest.raises(UsageError):
             self.dm.update_real_life_data("guy1", real_life_email="bad_email")
+        assert self.dm.update_real_life_data("guy1", real_life_email="", real_life_identity="") # erasing, these CAN be empty
+        data = self.dm.get_character_properties("guy1")
+        assert data["real_life_email"] == ""
+        assert data["real_life_identity"] == ""
+
+        assert self.dm.get_character_color_or_none("guy1") == "#0033CC"
+        assert self.dm.get_character_color_or_none("unexistinguy") is None
+        assert self.dm.get_character_color_or_none("") is None
+
 
         self._set_user("guy1")
         res1 = self.dm.get_character_usernames()
