@@ -48,7 +48,7 @@ class AbstractDataTableManagement(AbstractGameView):
         table = self.get_data_table_instance()
 
         # insertion and update are the same
-        table[identifier] = data
+        table[identifier] = utilities.convert_object_tree(data, type_mapping=utilities.python_to_zodb_types) # security
 
         # cleanup in case of renaming
         if previous_identifier and previous_identifier != identifier:

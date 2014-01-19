@@ -16,7 +16,7 @@ class GlobalContactForm(DataTableForm):
 
     is_public = forms.BooleanField(label=ugettext_lazy("Public contact"), required=False, initial=True) # public by default
 
-    access_tokens = Select2MultipleChoiceField(label=ugettext_lazy("Or restricted to"), required=False)
+    access_tokens = Select2MultipleChoiceField(label=ugettext_lazy("Or restricted to (then ensure the field above is unchecked)"), required=False)
 
     ###test = Select2TagsField(label=ugettext_lazy("TESTING"), choice_tags=["kkk", "lll"])
 
