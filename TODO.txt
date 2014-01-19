@@ -7,23 +7,26 @@ TODO LIST CHRYSALIS
 FEATURES
 ------------
 
-
 - update abilities settings
 
-Important : cette liste de diffusion ne contient que les encherisseurs, donc n'oubliez pas d'inclure votre hote dans tout echange !"
 
-Les adresse email sont automatiquement converties en liens "envoyer un
+
+
+SCRIPT
+----------
+
+
+- Important : cette liste de diffusion ne contient que les encherisseurs, donc n'oubliez pas d'inclure votre hote dans tout echange !"
+
+Les adresse email sont automatiquement converties en liens "envoyer un message" ?
+
 COMPOSE MESSAGE
 - les balises mémo (xxxx TODO TODO), présentes uniquement dans les modèles d'emails, sont des marqueurs qui doivent être remplacées par le contenu pertinent, sans quoi le contenu ne sera pas validé.
 - game file links regex = r"""\[\s*GAME_FILE_URL\s*('|")?(?P<path>.+?)('|")? \s*]"""
 - encyclopedia links - messaging links - les liens internes... regex = r"""\{% "(? P<content>[^"]+)" "(?P<view>[.\w]+)" %\}""" # content will be the text used as link
 - [BR]ge", mais attention, pour que le systeme
 
-
-SCRIPT
-----------
-
-- talk about webradio public too and pending message notifications with old ww2 voice
+- add answer to ALL captchas ?
 - manual for TTS acapela !!
 
 - add all avatar images
@@ -32,10 +35,9 @@ SCRIPT
 - journée de rame en aval de ENDROIT_PRECIS_XXXX??. <TODO>
 - talk about encrypted folders in manual
 - mark in manual that prices are "for information only"
-- comment that "new message" sounds are not enqueuable manually, in help page
+
 - add enough content for game startup
-- add scale to map (in static comments!!)
-- Add the captcha system to some special static pages - WHICH ??
+
 - compléter les djinns, valeurs par défaut si pas de réponses surtout !
 
 Faire page d'introduction
@@ -55,8 +57,6 @@ Faire page d'introduction
 TESTS
 ----------
 
-- allow brackets around mailing-list adresses DONE
-- check proper locale for date formatting and check "utctolocal" presence - DONE
 - test DISPLAY_STATIC_CONTENT handling
 - test message compose form and attachments, it's VERY sensitive
 - test proper hiding (or not) of characters' belongings depending on permissions, in characters page
@@ -65,7 +65,7 @@ TESTS
 - add tests for gameform instantiation
 - add tests for each ADMIN_ACTION available
 - launch pychecker or pylint on each file of pychronia_game package
-- check that no pb when game paused, for periodic processing
+- check that no pb when game paused, for periodic processing (eg. old pending emails are not viewable because not sent...)
 
 
 NEEDS COSMETICS
@@ -77,6 +77,9 @@ NEEDS COSMETICS
 
 TASKS DONE
 ---------------
+
+- allow brackets around mailing-list adresses DONE
+- check proper locale for date formatting and check "utctolocal" presence - DONE
 - add possibility to change fake official names and roles in admin "character management" page - DONE
 - check email address format on all new senders/recipients DONE
 - mark "gems groups" as mere "memos" in personal_items and view_characters pages (but not "all items" page) DONE
