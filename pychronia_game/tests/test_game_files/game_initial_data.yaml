@@ -268,8 +268,7 @@ character_properties:
         permissions: ["access_dummy_view_character_permission"]
         gems: [[12, null], [200, "several_misc_gems"]]
         avatar: "guy1.png"
-        secret_identity: "SHA1"
-        gamemaster_hints: "This is guy1"
+        gamemaster_hints: "This is guy1, actually agent SHA1."
         is_npc: False
 
     guy2:
@@ -286,12 +285,11 @@ character_properties:
         real_life_email: shalk@gmail.com
         character_color : "#339933"
         avatar: null
-        secret_identity: null
         gamemaster_hints: "This is guy2"
         is_npc: False
 
     guy3:
-        ## THIS ONE MUST HAVE NO MONEY AND GEMS
+        ## THIS ONE MUST HAVE NO MONEY NOR GEMS
         domains: []
         password: awesome2
         account: 2000
@@ -306,7 +304,6 @@ character_properties:
         character_color : "#CC3399"
         gems: []
         avatar: null
-        secret_identity: null
         gamemaster_hints: "This is guy3"
         is_npc: False
 
@@ -325,7 +322,6 @@ character_properties:
         character_color : "#00CCFF"
         gems: []
         avatar: null
-        secret_identity: null
         gamemaster_hints: "This is guy4"
         is_npc: False
 
@@ -344,7 +340,6 @@ character_properties:
         character_color : "#01CCFF"
         gems: []
         avatar: null
-        secret_identity: null
         gamemaster_hints: "This is my_npc"
         is_npc: True
 

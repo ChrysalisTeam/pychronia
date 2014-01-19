@@ -415,10 +415,6 @@ class CharacterHandling(BaseDataManager): # TODO REFINE
             if character["avatar"]:
                 utilities.check_is_game_file(character["avatar"])
 
-
-            if character["secret_identity"]:
-                utilities.check_is_string(character["secret_identity"])
-
             if character["gamemaster_hints"]:
                 utilities.check_is_string(character["gamemaster_hints"])
 

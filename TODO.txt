@@ -11,8 +11,6 @@ FEATURES
 
 - update abilities settings
 
-Todo remove all immutable:true, in all management pages ??
-
 Important : cette liste de diffusion ne contient que les encherisseurs, donc n'oubliez pas d'inclure votre hote dans tout echange !"
 
 Les adresse email sont automatiquement converties en liens "envoyer un

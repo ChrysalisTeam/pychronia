@@ -13,14 +13,14 @@
     {% if sealed_friendships %}
     <ul>
     	{% for name_pair, data in sealed_friendships %}
-    	   <li>{{ name_pair|join:" <-> " }} ({% trans "proposed on" %} {{ data.proposal_date|utctolocal|date:"SHORT_DATE_FORMAT" }}, {% trans "accepted on" %} {{ data.acceptance_date|date:"SHORT_DATE_FORMAT" }})</li>
+    	   <li>{{ name_pair|join:" <=> " }} ({% trans "proposed on" %} {{ data.proposal_date|utctolocal|date:"SHORT_DATE_FORMAT" }}, {% trans "accepted on" %} {{ data.acceptance_date|date:"SHORT_DATE_FORMAT" }})</li>
     	{% endfor %}
     </ul>
     {% else %}
         {% trans "None" %}
     {% endif %}
 
-    <br/><br/>
+    <br/>
 
     <h2>{% trans "Frienship proposals" %}</h2>
 
