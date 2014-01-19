@@ -69,7 +69,7 @@
     		    	<td class="bigtext">
         	    	    <ul>
         	    		{% for item in char_details.user_items %}
-        	    		    <li>{{ item.title }}</li>
+        	    		    <li>{{ item.title }} {% if item.is_gem %}{% trans "(memo)" %}{% endif %}</li>
         	    		{% empty %}
         	    			<li>{% trans "None" %}</li>
         	    		{% endfor %}

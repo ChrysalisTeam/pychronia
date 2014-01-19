@@ -240,17 +240,18 @@ def auction_items_slideshow(request, template_name='auction/items_slideshow.html
                   template_name,
                     {
                      'items': sorted_items,
-                     'items_3D_settings': None
+                     'items_3D_settings': None,
+                     'gems_may_be_memo': False,
+
                     })
 
 
 
-@register_view(access=UserAccess.authenticated, title=ugettext_lazy("Personal Slideshow"))
+@register_view(access=UserAccess.authenticated, title=ugettext_lazy("My Items"))
 def personal_items_slideshow(request, template_name='auction/items_slideshow.html'):
     """
     Contains both auction and external items, all necessarily owned by user hismelf.
     """
-    page_title = _("My Items")
     items = request.datamanager.get_available_items_for_user()
     items_3D_settings = request.datamanager.get_items_3d_settings()
 
@@ -259,9 +260,9 @@ def personal_items_slideshow(request, template_name='auction/items_slideshow.htm
     return render(request,
                   template_name,
                     {
-                     'page_title': page_title,
                      'items': sorted_items,
-                     'items_3D_settings': items_3D_settings
+                     'items_3D_settings': items_3D_settings,
+                     'gems_may_be_memo': True,
                     })
 
 

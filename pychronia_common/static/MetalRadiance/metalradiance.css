@@ -1485,7 +1485,7 @@ fieldset {
 }
 #domslideshow .counter li {
   float: left;
-  padding: 0 1em 0 0;
+  padding: 0 0.4em 0;
   margin: 0;
 }
 #domslideshow #toclist {

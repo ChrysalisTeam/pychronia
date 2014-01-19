@@ -103,11 +103,18 @@
                         {{ item_details.comments}}
                         </p>
 
+                        {% if gems_may_be_memo and item_details.is_gem %}
+                        <p>
+                            <i>{% trans "Please note that this record is just a memo, these gems may already have been transferred to someone else, individually or not." %}</i>
+                        </p>
+                        {% endif %}
+
                         {% if display_admin_tips and item_details.gamemaster_hints %}
                         <p class="admin-note">
                             {{ item_details.gamemaster_hints }}
                         </p>
                         {% endif %}
+
 
                     </blockquote>
 
