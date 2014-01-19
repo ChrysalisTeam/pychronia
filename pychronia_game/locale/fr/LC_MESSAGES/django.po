@@ -254,7 +254,7 @@ msgstr "Editer les Contacts"
 
 #: .\menus.py:159
 msgid "Edit Radio Spots"
-msgstr "Eiter les Spots Radio"
+msgstr "Editer les Spots Radio"
 
 #: .\menus.py:161 .\views\admin_views\__init__.py:58
 msgid "View Database"
