@@ -11,34 +11,20 @@ FEATURES
 
 
 
-
 SCRIPT
 ----------
 
 
-- Important : cette liste de diffusion ne contient que les encherisseurs, donc n'oubliez pas d'inclure votre hote dans tout echange !"
-
-Les adresse email sont automatiquement converties en liens "envoyer un message" ?
-
-COMPOSE MESSAGE
-- les balises mémo (xxxx TODO TODO), présentes uniquement dans les modèles d'emails, sont des marqueurs qui doivent être remplacées par le contenu pertinent, sans quoi le contenu ne sera pas validé.
-- game file links regex = r"""\[\s*GAME_FILE_URL\s*('|")?(?P<path>.+?)('|")? \s*]"""
-- encyclopedia links - messaging links - les liens internes... regex = r"""\{% "(? P<content>[^"]+)" "(?P<view>[.\w]+)" %\}""" # content will be the text used as link
-- [BR]ge", mais attention, pour que le systeme
-
-- add answer to ALL captchas ?
 - manual for TTS acapela !!
 
 - add all avatar images
-- refactor game master manual's hierarchy
+
 - add main missing items (WIP)
+
 - journée de rame en aval de ENDROIT_PRECIS_XXXX??. <TODO>
-- talk about encrypted folders in manual
-- mark in manual that prices are "for information only"
 
 - add enough content for game startup
 
-- compléter les djinns, valeurs par défaut si pas de réponses surtout !
 
 Faire page d'introduction
 	- situation de l'univers
@@ -46,10 +32,12 @@ Faire page d'introduction
 	- bestaire des ennemis ?
 
 - ajouter des details cruciaux à TOUTES runes !
-- clarifier règles absolues : pas de vol d'argent, pas de triche, emails uniquement valables à l'intérieur du site
+- clarifier règles absolues : pas de vol d'argent, pas de triche, emails uniquement valables à l'intérieur du site (dans INTRO "out game" du jeu)
+
 - add description of partners in instruction page !
-- ajouter instructions ou systèmes pour éviter abus de mercenaires ?
-- LG donne reductions aux gens, qu'ils peuvent perdre s'ils sont démasqués
+
+- ajouter instructions ou systèmes pour éviter abus de mercenaires ? -> distribution progressive d'argent, à detailler
+
 - ajouter <instructions> possibilité échange objets archéologiques et lots entiers de gemmes (gamemaster must be aware of that)!
 
 
@@ -230,6 +218,8 @@ TASKS DONE
 FUTUR ENHANCEMENTS
 --------------------------
 
+- restaurer et compléter les djinns, valeurs par défaut si pas de réponses surtout
+- add answer to ALL captchas ?
 - add and describe faction-inherited permissions
 - display admin tips, enigmas and other data in each competence (only visible in DB dump currently)
 - restore "personal messages" feature for gamemaster

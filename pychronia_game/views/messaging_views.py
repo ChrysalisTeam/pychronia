@@ -161,7 +161,7 @@ class MessageComposeForm(AbstractGameForm):
 
 
     def _ensure_no_placeholder_left(self, value):
-        if re.search("{{\s*\w+\s*}}", value, re.IGNORECASE | re.UNICODE):
+        if re.search(r"{{\s*[\w ]+\s*}}", value, re.IGNORECASE | re.UNICODE):
             raise ValidationError(_("Placeholder remaining in text"))
 
     def clean_subject(self):
