@@ -2002,6 +2002,17 @@ class TestDatamanager(BaseGameTestCase):
         self.assertEqual(self.dm.get_unread_messages_count(self.dm.get_global_parameter("master_login")), 1)
 
 
+        # for now we just check email address format, not its existence in our registries #
+        with pytest.raises(NormalUsageError):
+            self.dm.post_message("anything@masssslavia.com",
+                                 "net@sdfworkerds@massla@via.com;aaa@fff.fr", subject="ssd", body="qsdqsd") # wrong recipient format
+        with pytest.raises(NormalUsageError):
+            self.dm.post_message("anything@mas@sss@lavia.com",
+                                 "net@via.com;aaa@fff.fr", subject="ssd", body="qsdqsd") # wrong sender format
+        self.dm.post_message("anything@lavia.com",
+                             "net@via.com;aaa@fff.fr", subject="ssd", body="qsdqsd") # no problem, even if email addresses are unknown
+
+
 
     def test_time_shifts_on_message_posting(self):
 

@@ -408,7 +408,7 @@ def check_is_game_file(*paths_elements):
     return True
 
 def is_email(email):
-    return email_re.match(email)
+    return bool(email_re.match(email))
 
     
 def find_game_file(filename, *rel_path_glob):

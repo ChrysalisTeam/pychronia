@@ -11,15 +11,6 @@ FEATURES
 
 - update abilities settings
 
-- todo - check email_re on all new sender/recipient!!
-
-CONTACTS
-Todo verifier valeurs par défaut de public
-todo est ce que restriction est vraiment respectee, sur emetteur, sur destinataire NON AUCUNE RESTRICTION, PAS DE CHEC KSUR EMAIL
-
-
-Todo disable public/private control for global contacts form.
-
 Todo remove all immutable:true, in all management pages ??
 
 Important : cette liste de diffusion ne contient que les encherisseurs, donc n'oubliez pas d'inclure votre hote dans tout echange !"
@@ -30,9 +21,6 @@ COMPOSE MESSAGE
 - game file links regex = r"""\[\s*GAME_FILE_URL\s*('|")?(?P<path>.+?)('|")? \s*]"""
 - encyclopedia links - messaging links - les liens internes... regex = r"""\{% "(? P<content>[^"]+)" "(?P<view>[.\w]+)" %\}""" # content will be the text used as link
 - [BR]ge", mais attention, pour que le systeme
-
-
-Players begin the game with a total of None kashes in their bank accounts, while the total value of proposed items is None kashes.
 
 
 SCRIPT
@@ -93,7 +81,8 @@ NEEDS COSMETICS
 TASKS DONE
 ---------------
 
-- mark "gems groups" as mere "memos" in personal_items and view_characters pages (but not "all items" page)
+- check email address format on all new senders/recipients DONE
+- mark "gems groups" as mere "memos" in personal_items and view_characters pages (but not "all items" page) DONE
 - add auto-title to help pages DONE
 - put full lengh url in shareable links, with site-url, and remove personal folders links - DONE
 - add field gamemaster_hints to static management of pages DONE

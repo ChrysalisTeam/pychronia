@@ -1735,23 +1735,31 @@ class TextMessagingCore(BaseDataManager):
         for recipient_email in recipient_emails:
             self._check_recipient_email(recipient_email, sender_email=sender_email)
 
+
+    def _check_email_address_format(self, email_address):
+        if not utilities.is_email(email_address):
+            raise NormalUsageError(_("Email address %s is invalid") % email_address)
+
+
     def _check_sender_email(self, sender_email):
         """
-        Default : ALLOW ATM.
+        Default : ALLOW UNKNOWN ADDRESSES, ATM.
         
         To be overridden.
         """
+        self._check_email_address_format(sender_email)
         return # raise UsageError(_("Unknown sender address %r") % sender_email)
 
     def _check_recipient_email(self, recipient_email, sender_email):
         """
-        Default : ALLOW ATM
+        Default : ALLOW UNKNOWN ADDRESSES, ATM.
         
-        Only *sender_email* must be taken into account, not currently logged user,
+        Only *sender_email* must be taken into account as information source, not currently logged user,
         since some abilities might allow to send an email in the name of someone else.
         
         To be overridden.
         """
+        self._check_email_address_format(recipient_email)
         return # raise UsageError(_("Unknown recipient address %r") % recipient_email)
 
 
