@@ -19,22 +19,21 @@ SCRIPT
 
 - add all avatar images
 
-- add main missing items (WIP)
-
 - journée de rame en aval de ENDROIT_PRECIS_XXXX??. <TODO>
 
+- add main missing items (WIP)
 - add enough content for game startup
-
+- ajouter des details cruciaux à TOUTES runes !
 
 Faire page d'introduction
 	- situation de l'univers
 	- situation géopolitique
 	- bestaire des ennemis ?
 
-- ajouter des details cruciaux à TOUTES runes !
+- add description of partners in instruction page !
+
 - clarifier règles absolues : pas de vol d'argent, pas de triche, emails uniquement valables à l'intérieur du site (dans INTRO "out game" du jeu)
 
-- add description of partners in instruction page !
 
 - ajouter instructions ou systèmes pour éviter abus de mercenaires ? -> distribution progressive d'argent, à detailler
 
@@ -218,6 +217,7 @@ TASKS DONE
 FUTUR ENHANCEMENTS
 --------------------------
 
+- enforce placeholder detection ({{ PUT NAME HERE }}) everywhere, not only in message sending form.
 - restaurer et compléter les djinns, valeurs par défaut si pas de réponses surtout
 - add answer to ALL captchas ?
 - add and describe faction-inherited permissions
