@@ -119,7 +119,7 @@ def edit_instance_db(request, target_instance_id):
                 special_message = traceback.format_exc()
                 formatted_data = None # we force refresh of data
             else:
-                datamanager_administrator.replace_game_instance_data(target_instance_id, new_data=data_tree)
+                datamanager_administrator.replace_existing_game_instance_data(target_instance_id, new_data=data_tree)
                 messages.add_message(request, messages.INFO, _(u"Game instance data was properly replaced."))
 
         if not formatted_data: # even if success occurred

@@ -27,7 +27,8 @@ import pprint
 from pychronia_game.datamanager.datamanager_administrator import retrieve_game_instance, \
     _get_zodb_connection, GameDataManager, get_all_instances_metadata, \
     delete_game_instance, check_zodb_structure, change_game_instance_status, \
-    GAME_STATUSES
+    GAME_STATUSES, list_backups_for_game_instance, backup_game_instance, \
+    _get_backup_folder
 from pychronia_game.tests._test_tools import temp_datamanager
 import inspect
 from django.forms.fields import Field
@@ -515,6 +516,36 @@ class TestUtilities(BaseGameTestCase):
 
 
 class TestMetaAdministration(unittest.TestCase): # no django setup required ATM
+
+    def test_game_instance_backups(self):
+        
+        reset_zodb_structure()
+
+        game_instance_id = str(random.randint(10000, 10000000000))
+
+        res = list_backups_for_game_instance(game_instance_id)
+        assert res == []
+
+        with pytest.raises(UsageError):
+            backup_game_instance(game_instance_id, comment="abc")
+
+        res = list_backups_for_game_instance(game_instance_id)
+        assert res == []
+
+        skip_randomizations = random.choice((True, False))
+        create_game_instance(game_instance_id, "ze_creator_test", "aaa@sc.com", "master", "pwd", skip_randomizations=skip_randomizations)
+
+        backup_game_instance(game_instance_id, comment="important")
+
+        res = list_backups_for_game_instance(game_instance_id)
+        assert len(res) == 1
+        assert "important" in res[0]
+        
+        backup_file_path = os.path.join(_get_backup_folder(game_instance_id), res[0])
+        full_tree = utilities.load_yaml_file(backup_file_path)
+        assert full_tree["metadata"]
+        assert full_tree["data"]
+
 
     def test_game_instance_management_api(self):
 

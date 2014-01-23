@@ -525,6 +525,17 @@ def check_dictionary_with_template(my_dict, template, strict=False):
         validate_value(my_dict[key], template[key])
 
 
+
+
+def recursive_dict_sum(d1, d2):
+    """Sums dictionaries recursively."""
+    return dict((k, ((d1[k] if k in d1 else d2[k])
+                       if k not in d1 or k not in d2
+                      else (d1[k] + d2[k] if not isinstance(d1[k], dict)
+                                        else recursive_dict_sum(d1[k], d2[k]))))
+                for k in set(d1.keys() + d2.keys()))
+
+
 def load_yaml_file(yaml_file):
     logging.info("Loading yaml fixture %s" % yaml_file)
     with open(yaml_file, "U") as f:
@@ -537,14 +548,6 @@ def load_yaml_file(yaml_file):
     data = yaml.load(raw_data)
     return data
 
-
-def recursive_dict_sum(d1, d2):
-    """Sums dictionaries recursively."""
-    return dict((k, ((d1[k] if k in d1 else d2[k])
-                       if k not in d1 or k not in d2
-                      else (d1[k] + d2[k] if not isinstance(d1[k], dict)
-                                        else recursive_dict_sum(d1[k], d2[k]))))
-                for k in set(d1.keys() + d2.keys()))
 
 YAML_EXTENSIONS = ["*.yaml", "*.yml", "*/*.yaml", "*/*.yml"] # works on windows too
 def load_yaml_fixture(yaml_fixture):

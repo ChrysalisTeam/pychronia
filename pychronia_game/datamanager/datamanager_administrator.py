@@ -143,7 +143,10 @@ def create_game_instance(game_instance_id, creator_login,
 
 
 @zodb_transaction # TODO UNTESTED
-def replace_game_instance_data(game_instance_id, new_data):
+def replace_existing_game_instance_data(game_instance_id, new_data):
+    """
+    Replaces only inner data, not metadata.
+    """
     assert isinstance(new_data, PersistentDict)
     game_instances = _get_game_instances_mapping()
 
@@ -157,26 +160,13 @@ def replace_game_instance_data(game_instance_id, new_data):
     game_instances[game_instance_id]["data"] = new_data
 
 
-@zodb_transaction # TODO UNTESTED
-def replace_full_game_instance(game_instance_id, new_full_data):
-    assert isinstance(new_full_data, PersistentDict)
-    game_instances = _get_game_instances_mapping()
-
-    if game_instance_id not in game_instances:
-        raise AbnormalUsageError(_("Unexisting instance %r") % game_instance_id)
-
-    if "data" not in new_full_data:
-        raise RuntimeError("Trying to replace full instance %s with dubious data" % game_instance_id)
-    
-    assert game_instances[game_instance_id]
-    game_instances[game_instance_id] = new_full_data
-    
-
 def game_instance_exists(game_instance_id):
-    connection = _get_zodb_connection()
-    res = connection.root()[GAME_INSTANCES_MOUNT_POINT].has_key(game_instance_id)
+    res = game_instances = _get_game_instances_mapping().has_key(game_instance_id)
     return res
 
+
+
+    
 
 @zodb_transaction
 def delete_game_instance(game_instance_id):
@@ -280,7 +270,6 @@ def get_all_instances_metadata():
 
 
 
-'''
 
 
 # BACKUP/RESTORE API #
@@ -294,9 +283,12 @@ def _ensure_instance_backup_folder(game_instance_id):
     wanted_folder = _get_backup_folder(game_instance_id)
     if not os.path.exists(wanted_folder):
         os.makedirs(wanted_folder)
-    return _ensure_instance_backup_folder
+    return wanted_folder
 
 def list_backups_for_game_instance(game_instance_id):
+    """
+    Returns basenames of backup files.
+    """
     wanted_folder = _get_backup_folder(game_instance_id)
     if not os.path.exists(wanted_folder):
         return []
@@ -305,20 +297,18 @@ def list_backups_for_game_instance(game_instance_id):
 def backup_game_instance(game_instance_id, comment=None):
     assert not comment or utilities.check_is_slug(comment)
     comment = comment or "standard"
-    basename = "backup" + game_instance_id + datetime.utcnow().strftime("%Y%m%d_%H%M%S") + "_" + comment
+
+    # no need to "lock" instance, ACID properties do it for us #
+    game_root = _get_game_instances_mapping().get(game_instance_id)
+    if not game_root:
+        raise AbnormalUsageError(_("Unexisting instance %r") % game_instance_id)
     
+    json_bytes_str = utilities.dump_data_tree_to_yaml(game_root, convert=True) # should be in UTF8
+    
+    basename = "backup_" + game_instance_id + "_" + datetime.utcnow().strftime("%Y%m%d_%H%M%S") + "_" + comment
     wanted_folder = _ensure_instance_backup_folder(game_instance_id)
+    final_file_path = os.path.join(wanted_folder, basename)
 
-    
-    
-    
+    with open(final_file_path, "wb") as f:
+        f.write(json_bytes_str)
 
-
-
-def dump_data_tree_to_yaml(data_tree, convert=True):
-
-
-
-def load_data_tree_from_yaml(string, convert=True):
-    
-'''

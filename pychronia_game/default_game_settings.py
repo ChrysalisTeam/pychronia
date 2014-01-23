@@ -23,3 +23,5 @@ BUG_REPORT_EMAIL = None
 PASSWORDS_POOL = None # must be a list of strings
 
 ACAPELA_CLIENT_ARGS = None # must be filled to use TTS
+
+GAME_BACKUPS_PATH = "instance_backups" # relative to GAME_FILES_ROOT
