@@ -21,8 +21,13 @@ PROCESS_LOCK = threading.Lock()
 ZODB_INSTANCE = None
 GAME_INSTANCES_MOUNT_POINT = "game_instances"
 
-
 GAME_STATUSES = Enum(("active", "terminated", "aborted"))
+
+
+GAME_INSTANCES_BACKUPS_ABSPATH = (os.path.join(config.GAME_FILES_ROOT, config.GAME_BACKUPS_PATH)
+                                  if not os.path.isabs(config.GAME_BACKUPS_PATH)
+                                  else config.GAME_BACKUPS_PATH)
+
 
 
 _undefined = object()
@@ -51,6 +56,13 @@ def _get_zodb_connection():
     _ensure_zodb_is_open()
     connection = ZODB_INSTANCE.open() # thread-local connection, by default
     return connection
+
+def _get_game_instances_mapping():
+    connection = _get_zodb_connection()
+    game_instances = connection.root()[GAME_INSTANCES_MOUNT_POINT]
+    return game_instances
+
+
 
 
 @zodb_transaction
@@ -99,8 +111,7 @@ def create_game_instance(game_instance_id, creator_login,
     """
     Returns nothing. Raises UsageError if already existing game id.
     """
-    connection = _get_zodb_connection()
-    game_instances = connection.root()[GAME_INSTANCES_MOUNT_POINT]
+    game_instances = _get_game_instances_mapping()
 
     if game_instances.get(game_instance_id): # must be present and non-empty
         raise AbnormalUsageError(_("Already existing instance"))
@@ -134,15 +145,32 @@ def create_game_instance(game_instance_id, creator_login,
 @zodb_transaction # TODO UNTESTED
 def replace_game_instance_data(game_instance_id, new_data):
     assert isinstance(new_data, PersistentDict)
-    connection = _get_zodb_connection()
-    game_instances = connection.root()[GAME_INSTANCES_MOUNT_POINT]
+    game_instances = _get_game_instances_mapping()
 
     if game_instance_id not in game_instances:
         raise AbnormalUsageError(_("Unexisting instance %r") % game_instance_id)
 
+    if "data" in new_data:
+        raise RuntimeError("Trying to replace instance 'data' with 'full_data' for %s" % game_instance_id)
+    
     assert game_instances[game_instance_id]["data"]
     game_instances[game_instance_id]["data"] = new_data
 
+
+@zodb_transaction # TODO UNTESTED
+def replace_full_game_instance(game_instance_id, new_full_data):
+    assert isinstance(new_full_data, PersistentDict)
+    game_instances = _get_game_instances_mapping()
+
+    if game_instance_id not in game_instances:
+        raise AbnormalUsageError(_("Unexisting instance %r") % game_instance_id)
+
+    if "data" not in new_full_data:
+        raise RuntimeError("Trying to replace full instance %s with dubious data" % game_instance_id)
+    
+    assert game_instances[game_instance_id]
+    game_instances[game_instance_id] = new_full_data
+    
 
 def game_instance_exists(game_instance_id):
     connection = _get_zodb_connection()
@@ -155,13 +183,12 @@ def delete_game_instance(game_instance_id):
     """
     Very sensitive method, beware...
     """
-    connection = _get_zodb_connection()
-    instances = connection.root()[GAME_INSTANCES_MOUNT_POINT]
-    if game_instance_id not in instances:
+    game_instances = _get_game_instances_mapping()
+    if game_instance_id not in game_instances:
         raise AbnormalUsageError(_("Unexisting instance %r") % game_instance_id)
-    if instances[game_instance_id]["metadata"]["status"] == GAME_STATUSES.active:
+    if game_instances[game_instance_id]["metadata"]["status"] == GAME_STATUSES.active:
         raise AbnormalUsageError(_("Can't delete active instance %r") % game_instance_id)
-    del instances[game_instance_id]
+    del game_instances[game_instance_id]
 
 
 
@@ -171,8 +198,8 @@ def _fetch_available_game_data(game_instance_id, metadata_checker):
     The callable metadata_checker, if provided, is called with a copy of instance metadata, 
     and may raise errors or return false to forbid creation of datamanager instance.
     """
-    connection = _get_zodb_connection()
-    game_root = connection.root()[GAME_INSTANCES_MOUNT_POINT].get(game_instance_id)
+    
+    game_root = _get_game_instances_mapping().get(game_instance_id)
 
     if not game_root:
         raise AbnormalUsageError(_("Unexisting instance %r") % game_instance_id)
@@ -222,8 +249,7 @@ def retrieve_game_instance(game_instance_id, request=None, metadata_checker=chec
 def change_game_instance_status(game_instance_id, new_status=None, maintenance_until=_undefined):
     assert new_status or (maintenance_until is not _undefined)
 
-    connection = _get_zodb_connection()
-    game_root = connection.root()[GAME_INSTANCES_MOUNT_POINT].get(game_instance_id)
+    game_root = _get_game_instances_mapping().get(game_instance_id)
 
     if not game_root:
         raise AbnormalUsageError(_("Unexisting instance %r") % game_instance_id)
@@ -247,10 +273,52 @@ def get_all_instances_metadata():
     """
     Returns a list of copies of metadata dicts.
     """
-    connection = _get_zodb_connection()
-    instances = connection.root()[GAME_INSTANCES_MOUNT_POINT].itervalues()
+    instances = _get_game_instances_mapping().itervalues()
     res = sorted((inst["metadata"].copy() for inst in instances), key=lambda x: x["creation_time"], reverse=True) # metadata contains instance id too
     return res
 
 
 
+
+'''
+
+
+# BACKUP/RESTORE API #
+
+
+def _get_backup_folder(game_instance_id):
+    return os.path.join(GAME_INSTANCES_BACKUPS_ABSPATH, game_instance_id)
+
+def _ensure_instance_backup_folder(game_instance_id):
+    assert game_instance_id
+    wanted_folder = _get_backup_folder(game_instance_id)
+    if not os.path.exists(wanted_folder):
+        os.makedirs(wanted_folder)
+    return _ensure_instance_backup_folder
+
+def list_backups_for_game_instance(game_instance_id):
+    wanted_folder = _get_backup_folder(game_instance_id)
+    if not os.path.exists(wanted_folder):
+        return []
+    return os.listdir(wanted_folder)  # might be empty though
+
+def backup_game_instance(game_instance_id, comment=None):
+    assert not comment or utilities.check_is_slug(comment)
+    comment = comment or "standard"
+    basename = "backup" + game_instance_id + datetime.utcnow().strftime("%Y%m%d_%H%M%S") + "_" + comment
+    
+    wanted_folder = _ensure_instance_backup_folder(game_instance_id)
+
+    
+    
+    
+
+
+
+def dump_data_tree_to_yaml(data_tree, convert=True):
+
+
+
+def load_data_tree_from_yaml(string, convert=True):
+    
+'''
