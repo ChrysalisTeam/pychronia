@@ -73,8 +73,8 @@ class ZodbTransactionMiddleware(object):
                 # TODO - better handling of 503 code, with dedicated template #
                 return HttpResponse(content=unicode(e) + "<br/>" + _("Please come back later."),
                                     status=503)
-            except ValueError:
-                raise Http404
+            except UsageError:
+                raise Http404 # unexisting instance
 
             if not request.datamanager.is_initialized:
                 raise RuntimeError("ZodbTransactionMiddleware - Game data isn't in initialized state")

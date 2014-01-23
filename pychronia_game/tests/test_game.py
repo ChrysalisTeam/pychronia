@@ -546,18 +546,18 @@ class TestMetaAdministration(unittest.TestCase): # no django setup required ATM
 
         assert bool(dm.get_character_properties("guy1")["password"] == u"elixir") == skip_randomizations # conditional reset of player passwords
 
-        with pytest.raises(ValueError):
+        with pytest.raises(UsageError):
             retrieve_game_instance("sqdqsd")
         dm = retrieve_game_instance(game_instance_id)
 
         time.sleep(1)
 
-        with pytest.raises(ValueError):
+        with pytest.raises(UsageError):
             delete_game_instance("sqdqsd")
-        with pytest.raises(ValueError):
+        with pytest.raises(UsageError):
             delete_game_instance(game_instance_id) # must be NOn-ACTIVE
 
-        with pytest.raises(ValueError):
+        with pytest.raises(UsageError):
             change_game_instance_status("sqdqsd", GAME_STATUSES.aborted)
 
         change_game_instance_status(game_instance_id, GAME_STATUSES.aborted, maintenance_until=datetime.utcnow() + timedelta(seconds=1))
@@ -584,7 +584,7 @@ class TestMetaAdministration(unittest.TestCase): # no django setup required ATM
 
         assert not game_instance_exists(game_instance_id)
         assert not get_all_instances_metadata()
-        with pytest.raises(ValueError):
+        with pytest.raises(UsageError):
             retrieve_game_instance(game_instance_id)
 
 

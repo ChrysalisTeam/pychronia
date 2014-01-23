@@ -97,13 +97,13 @@ def create_game_instance(game_instance_id, creator_login,
                          skip_randomizations=False,
                          strict=False):
     """
-    Returns nothing. Raises ValueError if already existing game id.
+    Returns nothing. Raises UsageError if already existing game id.
     """
     connection = _get_zodb_connection()
     game_instances = connection.root()[GAME_INSTANCES_MOUNT_POINT]
 
     if game_instances.get(game_instance_id): # must be present and non-empty
-        raise ValueError(_("Already existing instance"))
+        raise AbnormalUsageError(_("Already existing instance"))
 
     try:
 
@@ -138,7 +138,7 @@ def replace_game_instance_data(game_instance_id, new_data):
     game_instances = connection.root()[GAME_INSTANCES_MOUNT_POINT]
 
     if game_instance_id not in game_instances:
-        raise ValueError(_("Unexisting instance %r") % game_instance_id)
+        raise AbnormalUsageError(_("Unexisting instance %r") % game_instance_id)
 
     assert game_instances[game_instance_id]["data"]
     game_instances[game_instance_id]["data"] = new_data
@@ -158,9 +158,9 @@ def delete_game_instance(game_instance_id):
     connection = _get_zodb_connection()
     instances = connection.root()[GAME_INSTANCES_MOUNT_POINT]
     if game_instance_id not in instances:
-        raise ValueError(_("Unexisting instance %r") % game_instance_id)
+        raise AbnormalUsageError(_("Unexisting instance %r") % game_instance_id)
     if instances[game_instance_id]["metadata"]["status"] == GAME_STATUSES.active:
-        raise ValueError(_("Can't delete active instance %r") % game_instance_id)
+        raise AbnormalUsageError(_("Can't delete active instance %r") % game_instance_id)
     del instances[game_instance_id]
 
 
@@ -175,7 +175,7 @@ def _fetch_available_game_data(game_instance_id, metadata_checker):
     game_root = connection.root()[GAME_INSTANCES_MOUNT_POINT].get(game_instance_id)
 
     if not game_root:
-        raise ValueError(_("Unexisting instance %r") % game_instance_id)
+        raise AbnormalUsageError(_("Unexisting instance %r") % game_instance_id)
 
     game_metadata = game_root["metadata"]
 
@@ -226,13 +226,13 @@ def change_game_instance_status(game_instance_id, new_status=None, maintenance_u
     game_root = connection.root()[GAME_INSTANCES_MOUNT_POINT].get(game_instance_id)
 
     if not game_root:
-        raise ValueError(_("Unexisting instance %r") % game_instance_id)
+        raise AbnormalUsageError(_("Unexisting instance %r") % game_instance_id)
 
     game_metadata = game_root["metadata"]
 
     if new_status:
         if new_status not in GAME_STATUSES:
-            raise ValueError(_("Wrong new game status %(status)s for %(instance_id)r") % dict(status=new_status, instance_id=game_instance_id))
+            raise AbnormalUsageError(_("Wrong new game status %(status)s for %(instance_id)r") % dict(status=new_status, instance_id=game_instance_id))
         game_metadata["status"] = new_status
 
     if maintenance_until is not _undefined:
