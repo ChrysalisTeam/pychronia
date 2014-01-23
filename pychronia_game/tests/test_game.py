@@ -521,7 +521,13 @@ class TestMetaAdministration(unittest.TestCase): # no django setup required ATM
         
         reset_zodb_structure()
 
-        game_instance_id = str(random.randint(10000, 10000000000))
+        game_instance_id = "antropiatestgame"
+
+        # cleanup before test
+        backup_folder = _get_backup_folder(game_instance_id)
+        if os.path.exists(backup_folder):
+            for i in os.listdir(backup_folder):
+                os.remove(os.path.join(backup_folder, i))
 
         res = list_backups_for_game_instance(game_instance_id)
         assert res == []
