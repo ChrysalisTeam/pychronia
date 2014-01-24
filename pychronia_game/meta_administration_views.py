@@ -24,6 +24,7 @@ from django.utils.translation import ugettext as _, ugettext_lazy, ungettext
 from pychronia_game.common import *
 from pychronia_game.datamanager import datamanager_administrator
 from django.contrib.messages import get_messages
+from pychronia_game.datamanager.datamanager_administrator import GAME_STATUSES
 
 
 
@@ -70,11 +71,20 @@ def manage_instances(request):
                 game_instance_id = request.POST["lock_instance"]
                 maintenance_until = datetime.utcnow() + timedelta(minutes=GAME_INSTANCE_MAINTENANCE_LOCKING_DELAY_MN)
                 datamanager_administrator.change_game_instance_status(game_instance_id=game_instance_id, maintenance_until=maintenance_until)
-                messages.add_message(request, messages.INFO, _(u"Game instance successfully locked"))
+                messages.add_message(request, messages.INFO, _(u"Game instance '%s' successfully locked") % game_instance_id)
             elif request.POST.get("unlock_instance"):
                 game_instance_id = request.POST["unlock_instance"]
                 datamanager_administrator.change_game_instance_status(game_instance_id=game_instance_id, maintenance_until=None) # removes maintenance
-                messages.add_message(request, messages.INFO, _(u"Game instance successfully unlocked"))
+                messages.add_message(request, messages.INFO, _(u"Game instance '%s' successfully unlocked") % game_instance_id)
+            elif request.POST.get("change_instance_status"):
+                game_instance_id = request.POST["change_instance_status"]
+                new_status = request.POST["new_status"]
+                datamanager_administrator.change_game_instance_status(game_instance_id=game_instance_id, new_status=new_status) # change status
+                messages.add_message(request, messages.INFO, _(u"Game instance '%s' status changed to '%s'") % (game_instance_id, new_status))
+            elif request.POST.get("delete_game_instance"):
+                game_instance_id = request.POST["delete_game_instance"]
+                datamanager_administrator.delete_game_instance(game_instance_id=game_instance_id)
+                messages.add_message(request, messages.INFO, _(u"Game instance '%s' was deleted") % game_instance_id)
             else:
                 raise ValueError(_("Unknown admin action"))
 
@@ -90,6 +100,8 @@ def manage_instances(request):
                      'instances_metadata': instances_metadata,
                      'utc_now': datetime.utcnow(),
                      'notifications': get_messages(request),
+                     'possible_game_statuses': sorted(GAME_STATUSES),
+                     'deletable_statuses': [GAME_STATUSES.terminated, GAME_STATUSES.aborted]
                     })
 
 
