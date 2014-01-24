@@ -668,12 +668,14 @@ class PlayerAuthentication(BaseDataManager):
 
 
     @transaction_watcher(always_writable=True)
-    def override_master_credentials(self, master_login, master_password, master_real_email=_undefined):
-        if not master_login or not master_password:
-            raise NormalUsageError(_("Both master login and password must be provided for reset"))
+    def override_master_credentials(self, master_password=_undefined, master_real_email=_undefined):
+        """
+        The master_login shall NEVER be changed after game got created!!
+        """
+        assert master_password is not _undefined or master_real_email is not _undefined
         global_parameters = self.data["global_parameters"]
-        global_parameters["master_login"] = master_login
-        global_parameters["master_password"] = master_password
+        if master_password is not _undefined:
+            global_parameters["master_password"] = master_password
         if master_real_email is not _undefined:
             global_parameters["master_real_email"] = master_real_email # might be overridden with "None"
 

@@ -539,7 +539,7 @@ class TestMetaAdministration(unittest.TestCase): # no django setup required ATM
         assert res == []
 
         skip_randomizations = random.choice((True, False))
-        create_game_instance(game_instance_id, "ze_creator_test", "aaa@sc.com", "master", "pwd", skip_randomizations=skip_randomizations)
+        create_game_instance(game_instance_id, "ze_creator_test", "aaa@sc.com", "pwd", skip_randomizations=skip_randomizations)
 
         backup_game_instance_data(game_instance_id, comment="important")
 
@@ -577,13 +577,13 @@ class TestMetaAdministration(unittest.TestCase): # no django setup required ATM
 
         game_instance_id = "mystuff"
         assert not game_instance_exists(game_instance_id)
-        create_game_instance(game_instance_id, "ze_creator_test", "aaa@sc.com", "master", "pwd", skip_randomizations=skip_randomizations)
+        create_game_instance(game_instance_id, "ze_creator_test", "aaa@sc.com", "pwd", skip_randomizations=skip_randomizations)
         assert game_instance_exists(game_instance_id)
 
         all_res = get_all_instances_metadata()
         assert len(all_res) == 1
         res = all_res[0]
-        assert res["creator_login"] == "master"
+        assert res["creator_login"] == "ze_creator_test"
         assert res["creation_time"] == res["last_acccess_time"] == res["last_status_change_time"]
         assert res["accesses_count"] == 0
         assert res["status"] == GAME_STATUSES.active == "active"
@@ -625,7 +625,7 @@ class TestMetaAdministration(unittest.TestCase): # no django setup required ATM
         all_res = get_all_instances_metadata()
         assert len(all_res) == 1
         res = all_res[0]
-        assert res["creator_login"] == "master"
+        assert res["creator_login"] == "ze_creator_test"
         assert res["creation_time"] < res["last_acccess_time"] < res["last_status_change_time"]
         assert res["accesses_count"] == 4
         assert res["status"] != GAME_STATUSES.active
@@ -640,8 +640,7 @@ class TestMetaAdministration(unittest.TestCase): # no django setup required ATM
 
 
 
-# TODO - test that messages are well propagated through session
-# TODO - test interception of "POST" when impersonating user
+
 
 
 class TestDatamanager(BaseGameTestCase):
@@ -2989,21 +2988,21 @@ class TestDatamanager(BaseGameTestCase):
         self._set_user(None)
         assert not self.dm.user.is_master
 
+        self.dm.override_master_credentials(master_password=None, master_real_email=None)
+
         master_real_email = random.choice(("abc@mail.com", None))
-        self.dm.override_master_credentials(master_login="othermaster", master_password="mypsgh", master_real_email=master_real_email)
+        self.dm.override_master_credentials(master_password="mypsgh", master_real_email=master_real_email)
 
         with pytest.raises(UsageError): # "unrecognized character name" error
             self.dm.authenticate_with_credentials("master", "ultimate")
 
         assert not self.dm.user.is_master
 
-        self.dm.authenticate_with_credentials("othermaster", "mypsgh")
+        self.dm.authenticate_with_credentials("master", "mypsgh")
 
         assert self.dm.user.is_master
 
         assert self.dm.get_global_parameter("master_real_email") == master_real_email
-
-        self.dm.override_master_credentials(master_login="master", master_password="ultimate", master_real_email=master_real_email) # to please coherency
 
 
     @for_core_module(PlayerAuthentication)

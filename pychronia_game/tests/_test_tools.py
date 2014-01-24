@@ -216,7 +216,7 @@ class BaseGameTestCase(TestCase): # one day, use pytest-django module to make it
 
         reset_zodb_structure()
         create_game_instance(game_instance_id=TEST_GAME_INSTANCE_ID, creator_login="test_creator",
-                             master_real_email="dummy@dummy.fr", master_login="master", master_password="ultimate",
+                             master_real_email="dummy@dummy.fr", master_password="ultimate",
                              skip_randomizations=True)  # handy to test stuffs
 
         try:

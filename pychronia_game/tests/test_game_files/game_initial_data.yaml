@@ -134,9 +134,9 @@ global_parameters:
 
     anonymous_login: guest
 
-    master_login: master # will be reset anyway
-    master_password: jsfhsdfsjkdf # will be reset anyway
-    master_real_email: master@administration.com # will be reset anyway
+    master_login: master # shall NEVER be reset except at game creation
+    master_password: jsfhsdfsjkdf # can be changed
+    master_real_email: master@administration.com # can be changed (optional)
 
     online_presence_timeout_s: 600
     chatroom_presence_timeout_s: 30

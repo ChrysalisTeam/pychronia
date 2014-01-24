@@ -37,7 +37,7 @@ if __name__ == "__main__":
         from pychronia_game.datamanager.datamanager_administrator import reset_zodb_structure, create_game_instance
         reset_zodb_structure()
         create_game_instance(game_instance_id="DEMO", creator_login="ze_creator",
-                             master_real_email="dummy@dummy.fr", master_login="master", master_password="ultimate",
+                             master_real_email="dummy@dummy.fr", master_password="ultimate",
                              strict=False)
 
 
@@ -59,7 +59,7 @@ if __name__ == "__main__":
         print "Successfully packed ZODB items older than 1 day in %s" % utilities.config.ZODB_FILE
 
     else:
-        sys.argv[1:] = ("runserver 127.0.0.1:8000 --settings=%s" % settings_module).split() # beware, with auto-reload this is applied twice...
+        sys.argv[1:] = ("runwsgiserver 127.0.0.1:8000 --settings=%s" % settings_module).split() # beware, with auto-reload this is applied twice...
         execute_from_command_line()
 
 

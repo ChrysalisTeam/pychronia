@@ -52,7 +52,6 @@ def ____create_new_instance(request):  # TODO FINISH LATER
             datamanager_administrator.create_game_instance(game_instance_id=game_instance_id,
                                                            creator_login="??????",
                                                            master_real_email="?????",
-                                                           master_login="????",
                                                            master_password="????????")
 
         except (ValueError, TypeError, LookupError, AttributeError):

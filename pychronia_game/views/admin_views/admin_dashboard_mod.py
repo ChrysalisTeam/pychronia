@@ -47,6 +47,20 @@ class GameDurationForm(AbstractGameForm):
         self.fields['num_days'].initial = datamanager.get_global_parameter("game_theoretical_length_days")
 
 
+class MasterCredentialsForm(AbstractGameForm):
+
+    master_login = forms.CharField(label=ugettext_lazy("Master Login (immutable)"), required=False, widget=forms.TextInput(attrs={'readonly':'readonly'}))
+    master_password = forms.CharField(label=ugettext_lazy("Master Password (NOT your usual one)"), required=False) # NOT a PasswordInput
+    master_real_email = forms.CharField(label=ugettext_lazy("Master Real Email (optional)"), required=False)
+
+    def __init__(self, datamanager, *args, **kwargs):
+        super(MasterCredentialsForm, self).__init__(datamanager, *args, **kwargs)
+
+        self.fields['master_real_email'].initial = datamanager.get_global_parameter("master_real_email")
+        self.fields['master_login'].initial = datamanager.get_global_parameter("master_login")
+        self.fields['master_password'].initial = datamanager.get_global_parameter("master_password")
+
+
 
 @register_view
 class AdminDashboardAbility(AbstractAbility):
@@ -67,7 +81,11 @@ class AdminDashboardAbility(AbstractAbility):
                                                             callback="set_theoretical_game_duration"),
                          set_game_pause_state=dict(title=ugettext_lazy("Set game pause state"),
                                                                 form_class=GamePauseForm,
-                                                                callback="set_game_pause_state"))
+                                                                callback="set_game_pause_state"),
+                         change_master_credentials=dict(title=ugettext_lazy("Change game master credentials"),
+                                                                form_class=MasterCredentialsForm,
+                                                                callback="change_master_credentials")
+                         )
 
 
     TEMPLATE = "administration/admin_dashboard.html"
@@ -167,6 +185,12 @@ class AdminDashboardAbility(AbstractAbility):
         self.datamanager.set_game_state(started=not is_paused) # checked by form
         return _("Game state well saved.")
 
-
-
+    @transaction_watcher
+    def change_master_credentials(self, master_real_email, master_password):
+        """
+        The master_login shall NEVER be changed after game got created!!
+        """
+        self.datamanager.override_master_credentials(master_real_email=master_real_email,
+                                                       master_password=master_password)
+        return _("Game master credentials well changed.")
 

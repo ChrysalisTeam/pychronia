@@ -105,9 +105,9 @@ def _create_metadata_record(game_instance_id, creator_login):
 
 @zodb_transaction
 def create_game_instance(game_instance_id, creator_login,
-                         master_real_email, master_login, master_password,
+                         master_real_email, master_password,
                          skip_randomizations=False,
-                         strict=False):
+                         strict=False): # TODO here try strict=True once
     """
     Returns nothing. Raises UsageError if already existing game id.
     """
@@ -119,7 +119,7 @@ def create_game_instance(game_instance_id, creator_login,
     try:
 
         game_metadata = _create_metadata_record(game_instance_id=game_instance_id,
-                                                creator_login=master_login)
+                                                creator_login=creator_login)
         game_data = PersistentDict()
         game_root = PersistentDict(metadata=game_metadata,
                                    data=game_data)
@@ -128,10 +128,9 @@ def create_game_instance(game_instance_id, creator_login,
                              game_root=game_data,
                              request=None) # no user messages possible here
         assert not dm.is_initialized
-        dm.reset_game_data(strict=strict) # TODO here try strict=True
-        dm.override_master_credentials(master_real_email=master_real_email,
-                                       master_login=master_login,
-                                       master_password=master_password)
+        dm.reset_game_data(strict=strict)
+        dm.override_master_credentials(master_password=master_password,
+                                       master_real_email=master_real_email,)
         if not skip_randomizations:
             dm.randomize_passwords_for_players() # basic security
         assert dm.is_initialized

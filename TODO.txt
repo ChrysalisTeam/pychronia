@@ -44,6 +44,8 @@ Faire page d'introduction
 TESTS
 ----------
 
+# TODO - test that messages are well propagated through session
+# TODO - test interception of "POST" when impersonating user
 - test DISPLAY_STATIC_CONTENT handling
 - test message compose form and attachments, it's VERY sensitive
 - test proper hiding (or not) of characters' belongings depending on permissions, in characters page
