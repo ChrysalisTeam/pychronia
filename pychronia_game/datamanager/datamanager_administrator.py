@@ -161,7 +161,7 @@ def replace_existing_game_instance_data(game_instance_id, new_data):
 
 
 def game_instance_exists(game_instance_id):
-    res = game_instances = _get_game_instances_mapping().has_key(game_instance_id)
+    res = _get_game_instances_mapping().has_key(game_instance_id)
     return res
 
 
@@ -309,7 +309,7 @@ def backup_game_instance_data(game_instance_id, comment=None):
     json_bytes_str = utilities.dump_data_tree_to_yaml(game_root["data"],
                                                       convert=True) # should be output in UTF8
     
-    basename = "backup_" + game_instance_id + "_" + datetime.utcnow().strftime("%Y%m%d_%H%M%S") + "_" + comment
+    basename = "backup_" + game_instance_id + "_" + datetime.utcnow().strftime("%Y%m%d_%H%M%S") + "_" + comment + ".yaml"
     wanted_folder = _ensure_instance_backup_folder(game_instance_id)
     final_file_path = os.path.join(wanted_folder, basename)
 

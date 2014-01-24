@@ -85,6 +85,11 @@ def manage_instances(request):
                 game_instance_id = request.POST["delete_game_instance"]
                 datamanager_administrator.delete_game_instance(game_instance_id=game_instance_id)
                 messages.add_message(request, messages.INFO, _(u"Game instance '%s' was deleted") % game_instance_id)
+            elif request.POST.get("backup_game_instance"):
+                game_instance_id = request.POST["backup_game_instance"]
+                backup_comment = slugify(request.POST["backup_comment"].strip()) or None
+                datamanager_administrator.backup_game_instance_data(game_instance_id=game_instance_id, comment=backup_comment)
+                messages.add_message(request, messages.INFO, _(u"Game instance '%s' backup with comment '%s' done") % (game_instance_id, backup_comment or u"<empty>"))
             else:
                 raise ValueError(_("Unknown admin action"))
 

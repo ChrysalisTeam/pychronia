@@ -56,6 +56,13 @@
                     </select>
                 </form>
 
+                <br/>
+                <form action="" method="post" class="meta_admin_button">
+                    <input type="hidden" name="backup_game_instance" value="{{ meta.instance_id }}"/>
+                    <input type="text" name="backup_comment" title="{% trans "Write backup comment here..." %}" />
+                    <input type="submit" value="{{ _("Backup with comment")}}" />
+                </form>
+
                 {% if meta.status in deletable_statuses %}
                 <br/>
                 <form action="" method="post" class="meta_admin_button" onsubmit="return confirm('{{ _("Are you sure you cant to delete this game instance?")|escapejs }}')">
