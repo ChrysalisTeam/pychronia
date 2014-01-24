@@ -294,7 +294,10 @@ def list_backups_for_game_instance(game_instance_id):
         return []
     return os.listdir(wanted_folder)  # might be empty though
 
-def backup_game_instance(game_instance_id, comment=None):
+def backup_game_instance_data(game_instance_id, comment=None):
+    """
+    We only backup game "data", not metadata.
+    """
     assert not comment or utilities.check_is_slug(comment)
     comment = comment or "standard"
 
@@ -303,7 +306,8 @@ def backup_game_instance(game_instance_id, comment=None):
     if not game_root:
         raise AbnormalUsageError(_("Unexisting instance %r") % game_instance_id)
     
-    json_bytes_str = utilities.dump_data_tree_to_yaml(game_root, convert=True) # should be in UTF8
+    json_bytes_str = utilities.dump_data_tree_to_yaml(game_root["data"],
+                                                      convert=True) # should be output in UTF8
     
     basename = "backup_" + game_instance_id + "_" + datetime.utcnow().strftime("%Y%m%d_%H%M%S") + "_" + comment
     wanted_folder = _ensure_instance_backup_folder(game_instance_id)

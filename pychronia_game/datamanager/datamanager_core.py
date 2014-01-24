@@ -285,7 +285,7 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
     @transaction_watcher
     def load_zope_database(self, string): # TODO UNTESTED
 
-        data_tree = utilities.load_data_tree_from_yaml(string)
+        data_tree = utilities.load_data_tree_from_yaml(string, convert=True)
         assert isinstance(data_tree, PersistentDict)
 
         try:

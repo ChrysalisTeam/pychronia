@@ -27,7 +27,7 @@ import pprint
 from pychronia_game.datamanager.datamanager_administrator import retrieve_game_instance, \
     _get_zodb_connection, GameDataManager, get_all_instances_metadata, \
     delete_game_instance, check_zodb_structure, change_game_instance_status, \
-    GAME_STATUSES, list_backups_for_game_instance, backup_game_instance, \
+    GAME_STATUSES, list_backups_for_game_instance, backup_game_instance_data, \
     _get_backup_folder
 from pychronia_game.tests._test_tools import temp_datamanager
 import inspect
@@ -533,7 +533,7 @@ class TestMetaAdministration(unittest.TestCase): # no django setup required ATM
         assert res == []
 
         with pytest.raises(UsageError):
-            backup_game_instance(game_instance_id, comment="abc")
+            backup_game_instance_data(game_instance_id, comment="abc")
 
         res = list_backups_for_game_instance(game_instance_id)
         assert res == []
@@ -541,16 +541,30 @@ class TestMetaAdministration(unittest.TestCase): # no django setup required ATM
         skip_randomizations = random.choice((True, False))
         create_game_instance(game_instance_id, "ze_creator_test", "aaa@sc.com", "master", "pwd", skip_randomizations=skip_randomizations)
 
-        backup_game_instance(game_instance_id, comment="important")
+        backup_game_instance_data(game_instance_id, comment="important")
 
         res = list_backups_for_game_instance(game_instance_id)
         assert len(res) == 1
         assert "important" in res[0]
         
         backup_file_path = os.path.join(_get_backup_folder(game_instance_id), res[0])
-        full_tree = utilities.load_yaml_file(backup_file_path)
-        assert full_tree["metadata"]
-        assert full_tree["data"]
+        
+        with open(backup_file_path, "U") as f:
+            raw_yaml_data = f.read().decode("utf8")
+        
+        raw_yaml_data = raw_yaml_data.replace(u"pangea.com", u"planeta.fr") # MASS REPLACE in data
+
+        dm = datamanager_administrator.retrieve_game_instance(game_instance_id=game_instance_id,
+                                                              request=None,
+                                                              metadata_checker=None)
+        assert not dm.get_event_count("BASE_CHECK_DB_COHERENCY_PUBLIC_CALLED")
+        data_tree = dm.load_zope_database(raw_yaml_data)
+        assert dm.get_event_count("BASE_CHECK_DB_COHERENCY_PUBLIC_CALLED") == 1 # data well checked
+
+        assert "metadata" not in data_tree # it's well ONLY the "data" part of the game instance tree
+        assert "data" not in data_tree
+        assert data_tree["global_parameters"]["pangea_network_domain"] == u"planeta.fr" # success!
+
 
 
     def test_game_instance_management_api(self):
