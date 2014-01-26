@@ -25,8 +25,12 @@ from pychronia_game.common import *
 from pychronia_game.datamanager import datamanager_administrator
 from django.contrib.messages import get_messages
 from pychronia_game.datamanager.datamanager_administrator import GAME_STATUSES
+from django import forms
 
 
+class GameInstanceCreationForm(forms.Form):
+    game_instance_id = forms.SlugField(label=ugettext_lazy("Game instance ID (slug)"), required=True)
+    creator_login = forms.CharField(label=ugettext_lazy("Creator login"), required=True)
 
 
 
@@ -63,10 +67,25 @@ def ____create_new_instance(request):  # TODO FINISH LATER
 @superuser_required
 def manage_instances(request):
 
+    game_creation_form = None
+
     try:
         if request.method == "POST":
 
-            if request.POST.get("lock_instance"):
+            if request.POST.get("create_game_instance"):
+                game_creation_form = GameInstanceCreationForm(data=request.POST)
+                if game_creation_form.is_valid():
+                    cleaned_data = game_creation_form.cleaned_data
+                    game_instance_id = cleaned_data["game_instance_id"]
+                    creator_login = cleaned_data["creator_login"]
+                    datamanager_administrator.create_game_instance(game_instance_id=game_instance_id,
+                                                                     creator_login=creator_login,
+                                                                     master_real_email=None, master_password=None,
+                                                                     skip_randomizations=False,
+                                                                     strict=True)
+                    messages.add_message(request, messages.INFO, _(u"Game instance '%s' successfully created for '%s'") % (game_instance_id, creator_login))
+                    game_creation_form = None
+            elif request.POST.get("lock_instance"):
                 game_instance_id = request.POST["lock_instance"]
                 maintenance_until = datetime.utcnow() + timedelta(minutes=GAME_INSTANCE_MAINTENANCE_LOCKING_DELAY_MN)
                 datamanager_administrator.change_game_instance_status(game_instance_id=game_instance_id, maintenance_until=maintenance_until)
@@ -105,7 +124,8 @@ def manage_instances(request):
                      'utc_now': datetime.utcnow(),
                      'notifications': get_messages(request),
                      'possible_game_statuses': sorted(GAME_STATUSES),
-                     'deletable_statuses': [GAME_STATUSES.terminated, GAME_STATUSES.aborted]
+                     'deletable_statuses': [GAME_STATUSES.terminated, GAME_STATUSES.aborted],
+                     'game_creation_form': game_creation_form or GameInstanceCreationForm()
                     })
 
 

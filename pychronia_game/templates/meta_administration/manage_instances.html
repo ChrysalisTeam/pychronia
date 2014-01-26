@@ -7,6 +7,15 @@
 
 	<h1>{% trans "Meta Administration" %}</h1>
 
+    <div class="form_scroll_medium" align="center" style="width: 50%; margin: auto;">
+        <h2>{% trans "New Game Instance" %}</h2>
+        <form action="" method="post" class="meta_admin_button">
+            {{ game_creation_form.as_p }}
+            <p><input type="submit" name="create_game_instance" value="{{ _("Create game instance")}}" /></p>
+        </form>
+    </div><br/><br/>
+
+
 	<table class="realtable">
 
 		{% for meta in instances_metadata %}
@@ -51,7 +60,7 @@
                     <input type="hidden" name="change_instance_status" value="{{ meta.instance_id }}"/>
                     <select name="new_status">
                         {% for status in possible_game_statuses %}
-                        <option value="{{ status }}" {% if meta.status == status %}selected{% endif %}>{{ status }}</option>
+                        <option value="{{ status }}" {% if meta.status == status %}selected{% endif %}>{% trans "Status" %}{{COLON}}{{ status }}</option>
                         {% endfor %}
                     </select>
                 </form>

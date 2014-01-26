@@ -686,6 +686,7 @@ class PlayerAuthentication(BaseDataManager):
         Does NOT touch passwords of NPCs, or of disabled accounts.
         """
         choices = config.PASSWORDS_POOL[:]
+        assert choices is not config.PASSWORDS_POOL # ensure no side effects here
         for character in self.get_character_sets().values():
             if not character["is_npc"] and character["password"]: # might be None==disabled
                 character["password"] = random.choice(choices)

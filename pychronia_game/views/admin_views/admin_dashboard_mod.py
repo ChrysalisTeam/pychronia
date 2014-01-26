@@ -49,7 +49,7 @@ class GameDurationForm(AbstractGameForm):
 
 class MasterCredentialsForm(AbstractGameForm):
 
-    master_login = forms.CharField(label=ugettext_lazy("Master Login (immutable)"), required=False, widget=forms.TextInput(attrs={'readonly':'readonly'}))
+    master_login = forms.CharField(label=ugettext_lazy("Master Login (immutable)"), required=False, widget=forms.TextInput(attrs={'disabled':'disabled'}))
     master_password = forms.CharField(label=ugettext_lazy("Master Password (NOT your usual one)"), required=False) # NOT a PasswordInput
     master_real_email = forms.CharField(label=ugettext_lazy("Master Real Email (optional)"), required=False)
 

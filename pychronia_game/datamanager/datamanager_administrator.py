@@ -89,7 +89,7 @@ if __debug__ and config.DEBUG and config.ZODB_RESET_ALLOWED:
 
 def _create_metadata_record(game_instance_id, creator_login):
     utilities.check_is_slug(game_instance_id)
-    utilities.check_is_slug(creator_login)
+    utilities.check_is_string(creator_login) # NOT necessarily a slug
 
     utcnow = datetime.utcnow()
     game_metadata = PersistentDict(instance_id=game_instance_id,
