@@ -17,7 +17,7 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
         if not self._in_writing_transaction:
             self.check_no_pending_transaction()
             self._in_writing_transaction = True
-            #transaction.begin() # not really needed
+            begin_transaction_with_autoreconnect() # not really needed
             return None # value indicating top level
         else:
             return transaction.savepoint()

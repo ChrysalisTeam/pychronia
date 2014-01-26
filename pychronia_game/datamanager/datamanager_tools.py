@@ -9,7 +9,12 @@ from pychronia_game.common import *
 import functools
 
 
-
+def begin_transaction_with_autoreconnect():
+    from _mysql_exceptions import OperationalError
+    try:
+        return transaction.begin()
+    except OperationalError:
+        return transaction.begin() # in case SQL connection timed out in relstorage...
 
 
 def _execute_under_toplevel_zodb_conflict_solver(datamanager, completed_func):
@@ -169,7 +174,7 @@ def zodb_transaction(func, *args, **kwargs):
     
     Subtransactions are not supported with this decorator.
     """
-    transaction.begin() # not really needed
+    begin_transaction_with_autoreconnect()
     try:
         res = func(*args, **kwargs)
         return res
