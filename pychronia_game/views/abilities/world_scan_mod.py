@@ -122,22 +122,19 @@ class WorldScanAbility(AbstractPartnershipAbility):
 
         item_title = self.get_item_properties(item_name)["title"]
 
-        user_email = self.get_character_email()
-
         # dummy request email, to allow wiretapping
 
         subject = "Scanning Request - \"%s\"" % item_title
         body = _("Please scan the world according to the features of this object.")
-        parent_id = self.post_message(user_email, recipient_emails=self.dedicated_email, subject=subject, body=body, date_or_delay_mn=None, is_read=True)
-
+        parent_id = self.send_processing_request(subject=subject, body=body)
+        del subject, body
 
         # answer email
 
         locations = self._compute_scanning_result(item_name) # might raise if item is not analysable
-
         locations_found = ", ".join(locations) if locations else _("None")
-
         item_title = self.get_item_properties(item_name)["title"]
+
         subject = "<World Scan Result - %(item)s>" % SDICT(item=item_title)
 
         body = dedent("""
@@ -149,13 +146,15 @@ class WorldScanAbility(AbstractPartnershipAbility):
 
         # # USELESS self.schedule_delayed_action(scanning_delay, "_add_to_scanned_locations", locations) # pickling instance method
 
-        msg_id = self.send_back_processing_result(parent_id=parent_id, user_email=user_email, subject=subject, body=body, attachment=None)
+        msg_id = self.send_back_processing_result(parent_id=parent_id, subject=subject, body=body, attachment=None)
 
         self.log_game_event(ugettext_noop("Automated scanning request sent for item '%(item_title)s'."),
                              PersistentDict(item_title=item_title),
                              url=self.get_message_viewer_url_or_none(msg_id)) # msg_id might be None
 
         return _("World scan submission in progress, the result will be emailed to you.")
+
+
 
         """ Canceled for now - manual response by gamemaster, from a description of the object...
         else:

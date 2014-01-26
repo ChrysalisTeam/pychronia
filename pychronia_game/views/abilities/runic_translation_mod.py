@@ -205,14 +205,12 @@ class RunicTranslationAbility(AbstractPartnershipAbility):
     def _process_translation_submission(self, item_name, rune_transcription):
         assert rune_transcription # item_name can be None
 
-        user_email = self.get_character_email()
-
         # request email, to allow interception
 
         subject = _('Translation Submission for item %s') % (item_name if item_name else _("unknown"))
         body = _("Runes: ") + rune_transcription
-        parent_id = self.post_message(user_email, recipient_emails=self.dedicated_email, subject=subject, body=body, date_or_delay_mn=None, is_read=True)
-
+        parent_id = self.send_processing_request(subject=subject, body=body)
+        del subject, body
 
         # answer email
 
@@ -234,16 +232,13 @@ class RunicTranslationAbility(AbstractPartnershipAbility):
                         Translation result: "%(translation)s"
                       """) % SDICT(original=rune_transcription, translation=translation)
 
-        attachment = None
-
-        msg_id = self.send_back_processing_result(parent_id=parent_id, user_email=user_email, subject=subject, body=body, attachment=attachment)
+        msg_id = self.send_back_processing_result(parent_id=parent_id, subject=subject, body=body, attachment=None)
 
         self.log_game_event(ugettext_noop("Translation request sent for item '%(item_title)s'."),
                               PersistentDict(item_title=item_title),
                               url=self.get_message_viewer_url_or_none(msg_id)) # msg_id might be None
 
-        return msg_id  # id of the automated response
-
+        return msg_id # might be None
 
     @transaction_watcher
     def process_translation(self, target_item=None, transcription=None, use_gems=()):
@@ -254,7 +249,7 @@ class RunicTranslationAbility(AbstractPartnershipAbility):
         self._process_translation_submission(target_item,
                                               transcription)
 
-        return _("Runic transcription successfully submitted, the result will be emailed to you.")  # TODO REMOVE THIS
+        return _("Runic transcription successfully submitted, the result will be emailed to you.")
 
 
     @classmethod

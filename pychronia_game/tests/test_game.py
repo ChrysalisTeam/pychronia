@@ -5098,6 +5098,7 @@ class TestSpecialAbilities(BaseGameTestCase):
         msg = msgs[0]
         self.assertEqual(msg["recipient_emails"], ["guy1@pangea.com"])
         self.assertTrue("translation" in msg["body"].lower())
+        assert "master" not in msg["has_read"]
 
         msgs = self.dm.get_all_dispatched_messages()
         self.assertEqual(len(msgs), 1)
@@ -5105,7 +5106,7 @@ class TestSpecialAbilities(BaseGameTestCase):
         self.assertEqual(msg["sender_email"], "guy1@pangea.com")
         self.assertTrue(transcription_attempt.strip() in msg["body"], (transcription_attempt, msg["body"]))
         self.assertTrue(self.dm.get_global_parameter("master_login") in msg["has_read"])
-
+        assert "master" in msg["has_read"] # useless request
 
         self.dm.set_global_parameter("disable_automated_ability_responses", True)
 
@@ -5113,6 +5114,9 @@ class TestSpecialAbilities(BaseGameTestCase):
                                               transcription_attempt)
         msgs = self.dm.get_all_dispatched_messages()
         self.assertEqual(len(msgs), 2) # REQUEST is well generated
+        msg = msgs[-1]
+        assert "master" not in msg["has_read"] # needs answer by game master
+
         msgs = self.dm.get_all_queued_messages()
         self.assertEqual(len(msgs), 1) # unchanged, no additional RESPONSE
 
@@ -5403,6 +5407,7 @@ class TestSpecialAbilities(BaseGameTestCase):
         self.assertTrue("scanning" in msg["body"].lower())
         # print(msg["body"])
         self.assertTrue("Alifir" in msg["body"])
+        assert "master" not in msg["has_read"]
 
         msgs = self.dm.get_all_dispatched_messages()
         self.assertEqual(len(msgs), 1)
@@ -5410,12 +5415,15 @@ class TestSpecialAbilities(BaseGameTestCase):
         self.assertEqual(msg["sender_email"], "guy1@pangea.com")
         self.assertTrue("scan" in msg["body"])
         self.assertTrue(self.dm.get_global_parameter("master_login") in msg["has_read"])
-
+        assert "master" in msg["has_read"]
 
         self.dm.set_global_parameter("disable_automated_ability_responses", True)
         scanner.process_world_scan_submission("sacred_chest")
         msgs = self.dm.get_all_dispatched_messages()
         self.assertEqual(len(msgs), 2) # REQUEST is well generated
+        msg = msgs[-1]
+        assert "master" not in msg["has_read"] # needs answer
+
         msgs = self.dm.get_all_queued_messages()
         self.assertEqual(len(msgs), 1) # unchanged, no additional RESPONSE
 
@@ -5578,6 +5586,7 @@ class TestSpecialAbilities(BaseGameTestCase):
         # print(">>>>>>", msg)
         self.assertEqual(msg["recipient_emails"], ["guy1@pangea.com"])
         self.assertTrue("*sacred* chest" in msg["body"].lower())
+        assert "master" not in msg["has_read"]
 
         msgs = self.dm.get_all_dispatched_messages()
         self.assertEqual(len(msgs), 1)
@@ -5585,12 +5594,15 @@ class TestSpecialAbilities(BaseGameTestCase):
         self.assertEqual(msg["sender_email"], "guy1@pangea.com")
         self.assertTrue("Please analyse" in msg["body"])
         self.assertTrue(self.dm.get_global_parameter("master_login") in msg["has_read"])
-
+        assert "master" in msg["has_read"]
 
         self.dm.set_global_parameter("disable_automated_ability_responses", True)
         analyser.process_object_analysis("sacred_chest")
         msgs = self.dm.get_all_dispatched_messages()
         self.assertEqual(len(msgs), 2) # REQUEST is well generated
+        msg = msgs[-1]
+        assert "master" not in msg["has_read"]
+
         msgs = self.dm.get_all_queued_messages()
         self.assertEqual(len(msgs), 1) # unchanged, no additional RESPONSE
 

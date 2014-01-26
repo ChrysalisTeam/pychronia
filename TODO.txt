@@ -13,6 +13,8 @@ FEATURES
 
 - change facebook logo and put background image
 
+- change is_read status of ability requests depending on "disable_automated_ability_responses" status
+
 
 SCRIPT
 ----------

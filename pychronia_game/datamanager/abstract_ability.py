@@ -252,6 +252,8 @@ class AbstractPartnershipAbility(AbstractAbility):
     def check_data_sanity(self, strict=False):
         super(AbstractPartnershipAbility, self).check_data_sanity(strict=strict)
 
+        assert self.ACCESS == UserAccess.character # ONLY TYPE supported ATM
+
         email = self.dedicated_email
         utilities.check_is_email(email)
         contact = self.datamanager.global_contacts[email]
@@ -262,13 +264,31 @@ class AbstractPartnershipAbility(AbstractAbility):
             utilities.check_is_range_or_num(result_delay)
 
 
+    @transaction_watcher
+    def send_processing_request(self, subject, body):
+
+        auto_response_disabled = self.get_global_parameter("disable_automated_ability_responses")
+
+        is_read = (not auto_response_disabled) # if gamemaster must answer manually, let message "unread"
+
+        msg_id = self.post_message(sender_email=self.get_character_email(),
+                                   recipient_emails=[self.dedicated_email],
+                                   subject=subject, 
+                                   body=body,
+                                   attachment=None,
+                                   date_or_delay_mn=None, # immediate
+                                   parent_id=None,
+                                   is_read=is_read)
+        self._last_request_msg_id = msg_id # for coherency checking
+        return msg_id
+
 
     @transaction_watcher
-    def send_back_processing_result(self, parent_id, user_email, subject, body, attachment=None):
+    def send_back_processing_result(self, parent_id, subject, body, attachment=None):
         """
         Returns the automated message's ID, or None if this message was skipped.
         """
-        assert parent_id
+        assert parent_id == self._last_request_msg_id # ATM always true
 
         auto_response_disabled = self.get_global_parameter("disable_automated_ability_responses")
 
@@ -276,8 +296,9 @@ class AbstractPartnershipAbility(AbstractAbility):
             return None # gamemaster will have to respond by himself
 
         msg_id = self.post_message(sender_email=self.dedicated_email,
-                                   recipient_emails=[user_email],
-                                   subject=subject, body=body,
+                                   recipient_emails=[self.get_character_email()],
+                                   subject=subject,
+                                   body=body,
                                    attachment=attachment,
                                    date_or_delay_mn=self.auto_answer_delay_mn,
                                    parent_id=parent_id)
