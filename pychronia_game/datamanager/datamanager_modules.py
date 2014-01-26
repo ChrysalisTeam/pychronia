@@ -64,7 +64,7 @@ class GameGlobalParameters(BaseDataManager):
 
     @transaction_watcher
     def set_global_parameter(self, name, value):
-        assert self.is_master()
+        assert self.is_master() or config.DEBUG
         if name not in self.data["global_parameters"]:
             raise AbnormalUsageError(_("Unexisting setting %s") % name)
         self.data["global_parameters"][name] = value
@@ -255,8 +255,9 @@ class GameEvents(BaseDataManager): # TODO REFINE
         """
         Message must be an UNTRANSLATED string, since we handle translation directly in this class.
         """
-        assert message, "log message must not be empty"
+        assert message, "game event log message must not be empty"
         utilities.check_is_string(message) # no lazy objects
+        assert url is None or (url and isinstance(url, basestring))
 
         message = _(message) # TODO - force language to "official game language", not "user interface language"
 
@@ -986,7 +987,7 @@ class PlayerAuthentication(BaseDataManager):
 
             self.log_game_event(ugettext_noop("Password of %(username)s has been recovered by %(target_email)s."),
                                  PersistentDict(username=username, target_email=target_email),
-                                 url=self.get_message_viewer_url(msg_id))
+                                 url=self.get_message_viewer_url_or_none(msg_id))
 
             return password
 
@@ -1846,7 +1847,9 @@ class TextMessagingCore(BaseDataManager):
         return unicode(index) + "_" + my_hash
 
     @readonly_method
-    def get_message_viewer_url(self, msg_id): # FIXME - where shall this method actually be ?
+    def get_message_viewer_url_or_none(self, msg_id): # FIXME - where shall this method actually be ?
+        if not msg_id:
+            return None
         return reverse('pychronia_game.views.view_single_message',
                         kwargs=dict(msg_id=msg_id, game_instance_id=self.game_instance_id))
 
@@ -3876,6 +3879,9 @@ class SpecialAbilities(BaseDataManager):
 
     def _check_database_coherency(self, strict=False, **kwargs):
         super(SpecialAbilities, self)._check_database_coherency(**kwargs)
+
+        utilities.check_is_bool(self.get_global_parameter("disable_automated_ability_responses"))
+
         for name in self.ABILITIES_REGISTRY.keys():
             ability = self.instantiate_ability(name)
             ability.check_data_sanity(strict=strict)

@@ -240,7 +240,7 @@ class RunicTranslationAbility(AbstractPartnershipAbility):
 
         self.log_game_event(ugettext_noop("Translation request sent for item '%(item_title)s'."),
                               PersistentDict(item_title=item_title),
-                              url=self.get_message_viewer_url(msg_id))
+                              url=self.get_message_viewer_url_or_none(msg_id)) # msg_id might be None
 
         return msg_id  # id of the automated response
 

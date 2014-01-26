@@ -5011,6 +5011,7 @@ class TestSpecialAbilities(BaseGameTestCase):
 
         # TODO - NEED TO WEBTEST BLOCKING OF GEMS NUT NOT NON-OWNED ITEMS
 
+        assert not self.dm.get_global_parameter("disable_automated_ability_responses")
 
         runic_translation = self.dm.instantiate_ability("runic_translation")
 
@@ -5104,6 +5105,16 @@ class TestSpecialAbilities(BaseGameTestCase):
         self.assertEqual(msg["sender_email"], "guy1@pangea.com")
         self.assertTrue(transcription_attempt.strip() in msg["body"], (transcription_attempt, msg["body"]))
         self.assertTrue(self.dm.get_global_parameter("master_login") in msg["has_read"])
+
+
+        self.dm.set_global_parameter("disable_automated_ability_responses", True)
+
+        runic_translation.process_translation(random.choice((rune_item, None)), # auto detect is available at top level
+                                              transcription_attempt)
+        msgs = self.dm.get_all_dispatched_messages()
+        self.assertEqual(len(msgs), 2) # REQUEST is well generated
+        msgs = self.dm.get_all_queued_messages()
+        self.assertEqual(len(msgs), 1) # unchanged, no additional RESPONSE
 
 
     @for_ability(house_locking)
@@ -5351,11 +5362,13 @@ class TestSpecialAbilities(BaseGameTestCase):
 
         # TODO - NEED TO WEBTEST BLOCKING OF GEMS AND NON-OWNED ITEMS
 
+        assert not self.dm.get_global_parameter("disable_automated_ability_responses")
+
         self._reset_django_db()
         self._reset_messages()
 
-        assert self.dm.data["abilities"] ["world_scan"]["settings"]["result_delay"]
-        self.dm.data["abilities"] ["world_scan"]["settings"]["result_delay"] = 0.03 / 45 # flexible time!
+        assert self.dm.data["abilities"]["world_scan"]["settings"]["result_delay"]
+        self.dm.data["abilities"]["world_scan"]["settings"]["result_delay"] = 0.03 / 45 # flexible time!
         self.dm.commit()
 
         scanner = self.dm.instantiate_ability("world_scan")
@@ -5398,6 +5411,16 @@ class TestSpecialAbilities(BaseGameTestCase):
         self.assertTrue("scan" in msg["body"])
         self.assertTrue(self.dm.get_global_parameter("master_login") in msg["has_read"])
 
+
+        self.dm.set_global_parameter("disable_automated_ability_responses", True)
+        scanner.process_world_scan_submission("sacred_chest")
+        msgs = self.dm.get_all_dispatched_messages()
+        self.assertEqual(len(msgs), 2) # REQUEST is well generated
+        msgs = self.dm.get_all_queued_messages()
+        self.assertEqual(len(msgs), 1) # unchanged, no additional RESPONSE
+
+
+
         res = self.dm.process_periodic_tasks()
 
         assert res == {"messages_dispatched": 0, "actions_executed": 0}
@@ -5411,6 +5434,10 @@ class TestSpecialAbilities(BaseGameTestCase):
 
         # ##scanned_locations = self.dm.get_global_parameter("scanned_locations")
         # ##self.assertTrue("Alifir" in scanned_locations, scanned_locations)
+
+
+
+
 
 
         ''' does not work, needs authentication
@@ -5512,6 +5539,8 @@ class TestSpecialAbilities(BaseGameTestCase):
 
         # TODO - NEED TO WEBTEST BLOCKING OF GEMS AND NON-OWNED ITEMS
 
+        assert not self.dm.get_global_parameter("disable_automated_ability_responses")
+
         self._reset_messages()
 
         assert self.dm.data["abilities"] ["matter_analysis"]["settings"]["result_delay"]
@@ -5556,6 +5585,15 @@ class TestSpecialAbilities(BaseGameTestCase):
         self.assertEqual(msg["sender_email"], "guy1@pangea.com")
         self.assertTrue("Please analyse" in msg["body"])
         self.assertTrue(self.dm.get_global_parameter("master_login") in msg["has_read"])
+
+
+        self.dm.set_global_parameter("disable_automated_ability_responses", True)
+        analyser.process_object_analysis("sacred_chest")
+        msgs = self.dm.get_all_dispatched_messages()
+        self.assertEqual(len(msgs), 2) # REQUEST is well generated
+        msgs = self.dm.get_all_queued_messages()
+        self.assertEqual(len(msgs), 1) # unchanged, no additional RESPONSE
+
 
         res = self.dm.process_periodic_tasks()
 

@@ -261,15 +261,27 @@ class AbstractPartnershipAbility(AbstractAbility):
         if result_delay is not None:
             utilities.check_is_range_or_num(result_delay)
 
+
+
     @transaction_watcher
     def send_back_processing_result(self, parent_id, user_email, subject, body, attachment=None):
+        """
+        Returns the automated message's ID, or None if this message was skipped.
+        """
         assert parent_id
-        self.post_message(sender_email=self.dedicated_email, recipient_emails=[user_email],
-                          subject=subject, body=body,
-                           attachment=attachment,
-                           date_or_delay_mn=self.auto_answer_delay_mn,
-                           parent_id=parent_id)
 
+        auto_response_disabled = self.get_global_parameter("disable_automated_ability_responses")
+
+        if auto_response_disabled:
+            return None # gamemaster will have to respond by himself
+
+        msg_id = self.post_message(sender_email=self.dedicated_email,
+                                   recipient_emails=[user_email],
+                                   subject=subject, body=body,
+                                   attachment=attachment,
+                                   date_or_delay_mn=self.auto_answer_delay_mn,
+                                   parent_id=parent_id)
+        return msg_id
 
 '''
     def _instantiate_game_form(self,

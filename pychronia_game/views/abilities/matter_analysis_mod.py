@@ -96,7 +96,7 @@ class MatterAnalysisAbility(AbstractPartnershipAbility):
 
         self.log_game_event(ugettext_noop("Item '%(item_title)s' sent for deep matter analysis."),
                              PersistentDict(item_title=item_title),
-                             url=self.get_message_viewer_url(msg_id))
+                             url=self.get_message_viewer_url_or_none(msg_id)) # msg_id might be None
 
         return _("Item '%s' successfully submitted, you'll receive the result by email") % item_title
 
