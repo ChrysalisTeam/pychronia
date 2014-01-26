@@ -9,6 +9,9 @@ FEATURES
 
 - update abilities settings
 
+- randomize master login at game CREATION only
+
+- change facebook logo and put background image
 
 
 SCRIPT
