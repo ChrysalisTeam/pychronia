@@ -84,7 +84,7 @@ class MatterAnalysisAbility(AbstractPartnershipAbility):
 
         subject = "Deep Analysis Request - item \"%s\"" % item_title
         body = _("Please analyse the physical and biological properties of this item.")
-        self.post_message(user_email, self.dedicated_email, subject, body, date_or_delay_mn=None, is_read=True)
+        parent_id = self.post_message(user_email, recipient_emails=self.dedicated_email, subject=subject, body=body, date_or_delay_mn=None, is_read=True)
 
 
         # answer from laboratory
@@ -92,7 +92,7 @@ class MatterAnalysisAbility(AbstractPartnershipAbility):
         subject = _("<Deep Matter Analysis Report - %(item_title)s>") % SDICT(item_title=item_title)
         body = self._compute_analysis_result(item_name)
 
-        msg_id = self.send_back_processing_result(user_email=user_email, subject=subject, body=body, attachment=None)
+        msg_id = self.send_back_processing_result(parent_id=parent_id, user_email=user_email, subject=subject, body=body, attachment=None)
 
         self.log_game_event(ugettext_noop("Item '%(item_title)s' sent for deep matter analysis."),
                              PersistentDict(item_title=item_title),

@@ -262,11 +262,13 @@ class AbstractPartnershipAbility(AbstractAbility):
             utilities.check_is_range_or_num(result_delay)
 
     @transaction_watcher
-    def send_back_processing_result(self, user_email, subject, body, attachment=None):
+    def send_back_processing_result(self, parent_id, user_email, subject, body, attachment=None):
+        assert parent_id
         self.post_message(sender_email=self.dedicated_email, recipient_emails=[user_email],
                           subject=subject, body=body,
                            attachment=attachment,
-                           date_or_delay_mn=self.auto_answer_delay_mn)
+                           date_or_delay_mn=self.auto_answer_delay_mn,
+                           parent_id=parent_id)
 
 
 '''

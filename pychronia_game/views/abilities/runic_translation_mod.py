@@ -211,7 +211,7 @@ class RunicTranslationAbility(AbstractPartnershipAbility):
 
         subject = _('Translation Submission for item %s') % (item_name if item_name else _("unknown"))
         body = _("Runes: ") + rune_transcription
-        self.post_message(user_email, recipient_emails=self.dedicated_email, subject=subject, body=body, date_or_delay_mn=None, is_read=True)
+        parent_id = self.post_message(user_email, recipient_emails=self.dedicated_email, subject=subject, body=body, date_or_delay_mn=None, is_read=True)
 
 
         # answer email
@@ -236,7 +236,7 @@ class RunicTranslationAbility(AbstractPartnershipAbility):
 
         attachment = None
 
-        msg_id = self.send_back_processing_result(user_email=user_email, subject=subject, body=body, attachment=attachment)
+        msg_id = self.send_back_processing_result(parent_id=parent_id, user_email=user_email, subject=subject, body=body, attachment=attachment)
 
         self.log_game_event(ugettext_noop("Translation request sent for item '%(item_title)s'."),
                               PersistentDict(item_title=item_title),

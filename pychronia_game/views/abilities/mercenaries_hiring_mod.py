@@ -234,8 +234,8 @@ def network_management(request, template_name='specific_operations/network_manag
             body = default_message + "\n\n-------\n\n" + spy_message
             attachment = None
 
-        self.post_message(user_email, recipient_emails, subject, body, attachment,
-                          date_or_delay_mn=self.get_global_parameter("spy_report_delays"))
+        parent_id = self.post_message(user_email, recipient_emails, subject, body, attachment,
+                              date_or_delay_mn=self.get_global_parameter("spy_report_delays"))
 
 
         '''

@@ -128,7 +128,7 @@ class WorldScanAbility(AbstractPartnershipAbility):
 
         subject = "Scanning Request - \"%s\"" % item_title
         body = _("Please scan the world according to the features of this object.")
-        self.post_message(user_email, recipient_emails=self.dedicated_email, subject=subject, body=body, date_or_delay_mn=None, is_read=True)
+        parent_id = self.post_message(user_email, recipient_emails=self.dedicated_email, subject=subject, body=body, date_or_delay_mn=None, is_read=True)
 
 
         # answer email
@@ -149,7 +149,7 @@ class WorldScanAbility(AbstractPartnershipAbility):
 
         # # USELESS self.schedule_delayed_action(scanning_delay, "_add_to_scanned_locations", locations) # pickling instance method
 
-        msg_id = self.send_back_processing_result(user_email=user_email, subject=subject, body=body, attachment=None)
+        msg_id = self.send_back_processing_result(parent_id=parent_id, user_email=user_email, subject=subject, body=body, attachment=None)
 
         self.log_game_event(ugettext_noop("Automated scanning request sent for item '%(item_title)s'."),
                              PersistentDict(item_title=item_title),
