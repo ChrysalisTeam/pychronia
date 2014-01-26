@@ -205,19 +205,16 @@ class RunicTranslationAbility(AbstractPartnershipAbility):
     def _process_translation_submission(self, item_name, rune_transcription):
         assert rune_transcription # item_name can be None
 
-        local_email = self.get_character_email()
-        remote_email = self.dedicated_email
+        user_email = self.get_character_email()
 
         # request email, to allow interception
 
         subject = _('Translation Submission for item %s') % (item_name if item_name else _("unknown"))
         body = _("Runes: ") + rune_transcription
-        self.post_message(local_email, remote_email, subject, body, date_or_delay_mn=0, is_read=True)
+        self.post_message(user_email, recipient_emails=self.dedicated_email, subject=subject, body=body, date_or_delay_mn=None, is_read=True)
 
 
         # answer email
-
-        translation_delay = self.get_ability_parameter("result_delay")
 
         try:
             item_title = self.get_item_properties(item_name)["title"]
@@ -239,8 +236,7 @@ class RunicTranslationAbility(AbstractPartnershipAbility):
 
         attachment = None
 
-
-        msg_id = self.post_message(remote_email, local_email, subject, body, attachment=attachment, date_or_delay_mn=translation_delay)
+        msg_id = self.send_back_processing_result(user_email=user_email, subject=subject, body=body, attachment=attachment)
 
         self.log_game_event(ugettext_noop("Translation request sent for item '%(item_title)s'."),
                               PersistentDict(item_title=item_title),
@@ -273,7 +269,6 @@ class RunicTranslationAbility(AbstractPartnershipAbility):
 
         settings = self.settings
 
-        utilities.check_is_range_or_num(settings["result_delay"])
         utilities.check_is_string(settings["random_translation_words"])
         references = settings["references"]
 

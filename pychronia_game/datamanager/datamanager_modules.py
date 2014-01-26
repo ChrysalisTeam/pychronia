@@ -1668,6 +1668,8 @@ class TextMessagingCore(BaseDataManager):
         """
         Beware, if a delay, date_or_delay_mn is treated as FLEXIBLE TIME.
         
+        sender_email can be in recipient_emails too.
+        
         TODO - is_certified is unused ATM.
         """
         # TOP LEVEL HERE - no parent call #

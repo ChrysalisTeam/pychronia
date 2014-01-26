@@ -76,8 +76,6 @@ class WorldScanAbility(AbstractPartnershipAbility):
         all_artefact_items = self.get_non_gem_items().keys()
         all_locations = self.get_locations().keys()
 
-        assert utilities.check_is_range_or_num(settings["result_delay"])
-
         for (name, scan_set) in settings["scanning_sets"].items():
             utilities.check_is_slug(name)
             utilities.check_no_duplicates(scan_set)
@@ -124,19 +122,16 @@ class WorldScanAbility(AbstractPartnershipAbility):
 
         item_title = self.get_item_properties(item_name)["title"]
 
-        remote_email = self.dedicated_email
-        local_email = self.get_character_email()
+        user_email = self.get_character_email()
 
         # dummy request email, to allow wiretapping
 
         subject = "Scanning Request - \"%s\"" % item_title
         body = _("Please scan the world according to the features of this object.")
-        self.post_message(local_email, remote_email, subject, body, date_or_delay_mn=0, is_read=True)
+        self.post_message(user_email, recipient_emails=self.dedicated_email, subject=subject, body=body, date_or_delay_mn=None, is_read=True)
 
 
         # answer email
-
-        scanning_delay = self.settings["result_delay"]
 
         locations = self._compute_scanning_result(item_name) # might raise if item is not analysable
 
@@ -152,12 +147,9 @@ class WorldScanAbility(AbstractPartnershipAbility):
                 Potential locations of similar items: %(locations_found)s
                 """) % SDICT(locations_found=locations_found)
 
-        attachment = None
-
         # # USELESS self.schedule_delayed_action(scanning_delay, "_add_to_scanned_locations", locations) # pickling instance method
 
-        msg_id = self.post_message(remote_email, local_email, subject, body, attachment=attachment,
-                                   date_or_delay_mn=scanning_delay)
+        msg_id = self.send_back_processing_result(user_email=user_email, subject=subject, body=body, attachment=None)
 
         self.log_game_event(ugettext_noop("Automated scanning request sent for item '%(item_title)s'."),
                              PersistentDict(item_title=item_title),

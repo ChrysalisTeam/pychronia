@@ -236,13 +236,17 @@ class AbstractPartnershipAbility(AbstractAbility):
     @property
     def dedicated_email(self):
         """
-        if not self.HAS_DEDICATED_EMAIL:
-            msg = "Wrong access to dedicated_email in page %s", self.NAME
-            self.logger.critical(msg)
-            raise RuntimeError(msg)
+        Email address used to send fake automated "requests" to,
+        and to send processing results from.
         """
         return self.get_ability_parameter("dedicated_email")
 
+    @property
+    def auto_answer_delay_mn(self):
+        """
+        Delay to send processing results back to the player.
+        """
+        return self.get_ability_parameter("result_delay")
 
     @readonly_method
     def check_data_sanity(self, strict=False):
@@ -252,6 +256,17 @@ class AbstractPartnershipAbility(AbstractAbility):
         utilities.check_is_email(email)
         contact = self.datamanager.global_contacts[email]
         assert contact["immutable"] # else game master might break all
+
+        result_delay = self.auto_answer_delay_mn
+        if result_delay is not None:
+            utilities.check_is_range_or_num(result_delay)
+
+    @transaction_watcher
+    def send_back_processing_result(self, user_email, subject, body, attachment=None):
+        self.post_message(sender_email=self.dedicated_email, recipient_emails=[user_email],
+                          subject=subject, body=body,
+                           attachment=attachment,
+                           date_or_delay_mn=self.auto_answer_delay_mn)
 
 
 '''

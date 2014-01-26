@@ -78,14 +78,13 @@ class MatterAnalysisAbility(AbstractPartnershipAbility):
 
         item_title = self.get_item_properties(item_name)["title"]
 
-        remote_email = self.dedicated_email
-        local_email = self.get_character_email()
+        user_email = self.get_character_email()
 
         # dummy request email, to allow wiretapping
 
         subject = "Deep Analysis Request - item \"%s\"" % item_title
         body = _("Please analyse the physical and biological properties of this item.")
-        self.post_message(local_email, remote_email, subject, body, date_or_delay_mn=0, is_read=True)
+        self.post_message(user_email, self.dedicated_email, subject, body, date_or_delay_mn=None, is_read=True)
 
 
         # answer from laboratory
@@ -93,12 +92,11 @@ class MatterAnalysisAbility(AbstractPartnershipAbility):
         subject = _("<Deep Matter Analysis Report - %(item_title)s>") % SDICT(item_title=item_title)
         body = self._compute_analysis_result(item_name)
 
-        self.post_message(remote_email, local_email, subject, body=body, attachment=None,
-                          date_or_delay_mn=self.settings["result_delay"])
+        msg_id = self.send_back_processing_result(user_email=user_email, subject=subject, body=body, attachment=None)
 
         self.log_game_event(ugettext_noop("Item '%(item_title)s' sent for deep matter analysis."),
                              PersistentDict(item_title=item_title),
-                             url=None)
+                             url=self.get_message_viewer_url(msg_id))
 
         return _("Item '%s' successfully submitted, you'll receive the result by email") % item_title
 
@@ -123,7 +121,6 @@ class MatterAnalysisAbility(AbstractPartnershipAbility):
             return True
 
         _reference = dict(
-                            result_delay=utilities.check_is_range_or_num,
                             reports=reports_checker,
                          )
         utilities.check_dictionary_with_template(settings, _reference, strict=False)

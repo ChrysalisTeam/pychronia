@@ -53,6 +53,7 @@ abilities:
         settings:
             dedicated_email: "translator-robot@hightech.com"
             result_delay: [4, 6] # minutes
+
             random_translation_words: >
                  monkey apocalypse blood sun spear shelter wrath goat son uncle priest drugs moon fire water salt
                  volcano law sacrifice bird squid camel
@@ -80,6 +81,7 @@ abilities:
         settings:
 
             dedicated_email: "mercenaries@brotherhood.pg"
+            result_delay: null
 
             middlewares:
                 hire_remote_agent:
@@ -108,7 +110,6 @@ abilities:
                         gems_price: 234
 
             dedicated_email: "scanner@hightech.com"
-
             result_delay: [4, 10]
 
             scanning_sets:
