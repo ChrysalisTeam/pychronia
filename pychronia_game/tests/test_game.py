@@ -539,7 +539,7 @@ class TestMetaAdministration(unittest.TestCase): # no django setup required ATM
         assert res == []
 
         skip_randomizations = random.choice((True, False))
-        create_game_instance(game_instance_id, "ze_creator_test", "aaa@sc.com", "pwd", skip_randomizations=skip_randomizations)
+        create_game_instance(game_instance_id, creator_login="ze_creator_test", skip_randomizations=skip_randomizations)
 
         backup_game_instance_data(game_instance_id, comment="important")
 
@@ -577,7 +577,7 @@ class TestMetaAdministration(unittest.TestCase): # no django setup required ATM
 
         game_instance_id = "mystuff"
         assert not game_instance_exists(game_instance_id)
-        create_game_instance(game_instance_id, "ze_creator_test", "aaa@sc.com", "pwd", skip_randomizations=skip_randomizations)
+        create_game_instance(game_instance_id, creator_login="ze_creator_test", skip_randomizations=skip_randomizations)
         assert game_instance_exists(game_instance_id)
 
         all_res = get_all_instances_metadata()

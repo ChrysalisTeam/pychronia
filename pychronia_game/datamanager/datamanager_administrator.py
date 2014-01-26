@@ -104,8 +104,8 @@ def _create_metadata_record(game_instance_id, creator_login):
 
 
 @zodb_transaction
-def create_game_instance(game_instance_id, creator_login,
-                         master_real_email, master_password,
+def create_game_instance(game_instance_id,
+                         creator_login,
                          skip_randomizations=False,
                          strict=False): # TODO here try strict=True once
     """
@@ -127,13 +127,11 @@ def create_game_instance(game_instance_id, creator_login,
         dm = GameDataManager(game_instance_id=game_instance_id,
                              game_root=game_data,
                              request=None) # no user messages possible here
+
         assert not dm.is_initialized
-        dm.reset_game_data(strict=strict)
-        dm.override_master_credentials(master_password=master_password,
-                                       master_real_email=master_real_email,)
-        if not skip_randomizations:
-            dm.randomize_passwords_for_players() # basic security
+        dm.reset_game_data(strict=strict, skip_randomizations=skip_randomizations)
         assert dm.is_initialized
+
         game_instances[game_instance_id] = game_root # NOW only we link data to ZODB
 
     except Exception, e:

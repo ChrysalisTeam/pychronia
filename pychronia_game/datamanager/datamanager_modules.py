@@ -628,14 +628,18 @@ class PlayerAuthentication(BaseDataManager):
     play much with CURRENT_USER placeholder here.
     """
 
-    def _load_initial_data(self, **kwargs):
-        super(PlayerAuthentication, self)._load_initial_data(**kwargs)
+    def _load_initial_data(self, skip_randomizations=False, **kwargs):
+        super(PlayerAuthentication, self)._load_initial_data(skip_randomizations=skip_randomizations, **kwargs)
 
         for character in self.get_character_sets().values():
             character.setdefault("secret_question", None)
             character.setdefault("secret_answer", None)
             character["secret_answer"] = character["secret_answer"] if not character["secret_answer"] else character["secret_answer"].strip().lower()
 
+        if not skip_randomizations:
+            old_master_login = self.data["global_parameters"]["master_login"]
+            self.randomize_passwords_for_players() # basic security
+            assert self.data["global_parameters"]["master_login"] == old_master_login # later we might randomize master login too, for now it must NEVER change!
 
     def _check_database_coherency(self, **kwargs):
         super(PlayerAuthentication, self)._check_database_coherency(**kwargs)

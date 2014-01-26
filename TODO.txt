@@ -13,7 +13,7 @@ FEATURES
 
 - change facebook logo and put background image
 
-- change is_read status of ability requests depending on "disable_automated_ability_responses" status
+
 
 
 SCRIPT
@@ -72,6 +72,7 @@ NEEDS COSMETICS
 TASKS DONE
 ---------------
 
+- change is_read status of ability request messages depending on "disable_automated_ability_responses" - DONE
 - allow brackets around mailing-list adresses DONE
 - check proper locale for date formatting and check "utctolocal" presence - DONE
 - add possibility to change fake official names and roles in admin "character management" page - DONE
@@ -224,6 +225,7 @@ TASKS DONE
 FUTUR ENHANCEMENTS
 --------------------------
 
+- randomize master login in PlayerAuthentication._load_initial_data()
 - enforce placeholder detection ({{ PUT NAME HERE }}) everywhere, not only in message sending form.
 - restaurer et compléter les djinns, valeurs par défaut si pas de réponses surtout
 - add answer to ALL captchas ?

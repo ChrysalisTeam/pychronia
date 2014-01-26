@@ -128,7 +128,10 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
 
 
     @transaction_watcher(always_writable=True) # might operate on broken data
-    def reset_game_data(self, yaml_fixture=config.GAME_INITIAL_DATA_PATH, strict=False):
+    def reset_game_data(self,
+                        yaml_fixture=config.GAME_INITIAL_DATA_PATH,
+                        skip_randomizations=False,
+                        strict=False):
         """
         This method might raise exceptions, and leave the datamanager uninitialized.
         """
@@ -145,7 +148,7 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
         initial_data = utilities.load_yaml_fixture(yaml_fixture)
         self.data.update(initial_data)
 
-        self._load_initial_data() # traversal of each core module
+        self._load_initial_data(skip_randomizations=skip_randomizations) # traversal of each core module
 
         # NOW only we normalize and check the object tree
         # normal python types are transformed to ZODB-persistent types

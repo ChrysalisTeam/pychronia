@@ -215,8 +215,8 @@ class BaseGameTestCase(TestCase): # one day, use pytest-django module to make it
         django.utils.translation.activate("en") # to test for error messages, just in case...
 
         reset_zodb_structure()
-        create_game_instance(game_instance_id=TEST_GAME_INSTANCE_ID, creator_login="test_creator",
-                             master_real_email="dummy@dummy.fr", master_password="ultimate",
+        create_game_instance(game_instance_id=TEST_GAME_INSTANCE_ID,
+                             creator_login="test_creator",
                              skip_randomizations=True)  # handy to test stuffs
 
         try:

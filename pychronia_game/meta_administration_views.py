@@ -55,8 +55,7 @@ def ____create_new_instance(request):  # TODO FINISH LATER
 
             datamanager_administrator.create_game_instance(game_instance_id=game_instance_id,
                                                            creator_login="??????",
-                                                           master_real_email="?????",
-                                                           master_password="????????")
+                                                           ) # ???????? OTHER ARGS ???
 
         except (ValueError, TypeError, LookupError, AttributeError):
             return HttpResponseForbidden("Access key not recognized")
@@ -80,9 +79,7 @@ def manage_instances(request):
                     creator_login = cleaned_data["creator_login"]
                     datamanager_administrator.create_game_instance(game_instance_id=game_instance_id,
                                                                      creator_login=creator_login,
-                                                                     master_real_email=None, master_password=None,
-                                                                     skip_randomizations=False,
-                                                                     strict=True)
+                                                                     skip_randomizations=False)
                     messages.add_message(request, messages.INFO, _(u"Game instance '%s' successfully created for '%s'") % (game_instance_id, creator_login))
                     game_creation_form = None
             elif request.POST.get("lock_instance"):
