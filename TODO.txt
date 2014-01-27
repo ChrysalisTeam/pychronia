@@ -9,10 +9,6 @@ FEATURES
 
 - update abilities settings
 
-- randomize master login at game CREATION only
-
-- change facebook logo and put background image
-
 
 
 
@@ -46,6 +42,13 @@ Faire page d'introduction
 
 
 
+PROMOTION
+--------------
+
+- change facebook logo and put background image on it
+
+
+
 TESTS
 ----------
 
@@ -71,6 +74,7 @@ NEEDS COSMETICS
 
 TASKS DONE
 ---------------
+
 
 - change is_read status of ability request messages depending on "disable_automated_ability_responses" - DONE
 - allow brackets around mailing-list adresses DONE
