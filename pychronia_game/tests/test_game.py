@@ -2658,7 +2658,7 @@ class TestDatamanager(BaseGameTestCase):
 
 
         logout_session(request)
-        assert request.datamanager.user.username == "anonymous"
+        assert request.datamanager.user.username == "guest"
 
         try_authenticating_with_session(request)
         assert request.datamanager.user.username == "my_npc"
