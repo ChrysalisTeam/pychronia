@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 
 from pychronia_game.common import *
 from django.db.utils import DatabaseError
+from pychronia_game.utilities import encryption
 
 SESSION_TICKET_KEY_TEMPLATE = 'pychronia_session_ticket_%s'
 IMPERSONATION_TARGET_POST_VARIABLE = "_set_impersonation_target_"
@@ -52,6 +53,36 @@ def try_authenticating_with_credentials(request, username, password):
     request.session[instance_key] = session_ticket # overrides
 
 
+
+def _lookup_enforced_session_or_none(request):
+    session_ticket = None
+
+    if config.GAME_ALLOW_ENFORCED_LOGIN:
+        login_data = request.REQUEST.get("session_ticket")
+        if login_data:
+            try:
+                login_data = login_data.encode("ascii", "strict")
+                login_data = encryption.unicode_decrypt(login_data) # decode using site's SECRET_KEY
+            except (TypeError, ValueError, UnicodeError), e:
+                logging.warning("Error when trying to decode enforced ticket: %r" % e)
+            else:
+                enforced_instance_id, enforced_login = login_data.split("|")
+                if enforced_instance_id != request.datamanager.game_instance_id:
+                    logging.warning("Wrong game instance id in enforced ticket: %s should contain %s instead", login_data, request.datamanager.game_instance_id)
+                else:
+                    session_ticket = dict(game_instance_id=enforced_instance_id,
+                                          game_username=enforced_login,
+                                          impersonation_target=None,
+                                          impersonation_writability=None)
+    return session_ticket
+
+
+def compute_enforced_login_token(game_instance_id, login):
+    login_data = "%s|%s" % (game_instance_id, login)
+    return encryption.unicode_encrypt(login_data)
+    
+
+
 def try_authenticating_with_session(request):
     """
     This function lets exceptions flow...
@@ -60,14 +91,10 @@ def try_authenticating_with_session(request):
     instance_key = instance_session_key(datamanager.game_instance_id)
     session_ticket = request.session.get(instance_key, None)
 
-
-    if config.GAME_ALLOW_ENFORCED_LOGIN:
-        enforced_login = request.REQUEST.get("enforced_login")
-        if enforced_login:
-            session_ticket = dict(game_instance_id=datamanager.game_instance_id,
-                                  game_username=enforced_login,
-                                  impersonation_target=None,
-                                  impersonation_writability=None)
+    potential_session_ticket = _lookup_enforced_session_or_none(request)
+    if potential_session_ticket:
+        session_ticket = potential_session_ticket
+    del potential_session_ticket
 
     # beware, here we distinguish between empty string (stop impersonation) and None (use current settings)
     if IMPERSONATION_TARGET_POST_VARIABLE in request.POST or IMPERSONATION_WRITABILITY_POST_VARIABLE in request.POST:

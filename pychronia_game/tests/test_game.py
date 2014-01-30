@@ -20,7 +20,7 @@ from pychronia_game.common import _undefined, config, AbnormalUsageError, revers
 from pychronia_game.templatetags.helpers import _generate_encyclopedia_links, \
     advanced_restructuredtext, _generate_messaging_links, _generate_site_links, \
     _enriched_text, _generate_game_file_links
-from pychronia_game import views, utilities
+from pychronia_game import views, utilities, authentication
 from pychronia_game.utilities import autolinker
 from django.test.client import RequestFactory
 import pprint
@@ -518,7 +518,7 @@ class TestUtilities(BaseGameTestCase):
 class TestMetaAdministration(unittest.TestCase): # no django setup required ATM
 
     def test_game_instance_backups(self):
-        
+
         reset_zodb_structure()
 
         game_instance_id = "antropiatestgame"
@@ -546,12 +546,12 @@ class TestMetaAdministration(unittest.TestCase): # no django setup required ATM
         res = list_backups_for_game_instance(game_instance_id)
         assert len(res) == 1
         assert "important" in res[0]
-        
+
         backup_file_path = os.path.join(_get_backup_folder(game_instance_id), res[0])
-        
+
         with open(backup_file_path, "U") as f:
             raw_yaml_data = f.read().decode("utf8")
-        
+
         raw_yaml_data = raw_yaml_data.replace(u"pangea.com", u"planeta.fr") # MASS REPLACE in data
 
         dm = datamanager_administrator.retrieve_game_instance(game_instance_id=game_instance_id,
@@ -2603,6 +2603,65 @@ class TestDatamanager(BaseGameTestCase):
                           'impersonation_writability': None, 'game_username': master_login}
 
         _standard_authenticated_checks()
+
+
+    @for_core_module(PlayerAuthentication)
+    def test_enforced_session_ticket(self):
+
+        assert config.GAME_ALLOW_ENFORCED_LOGIN
+        request_var = "session_ticket"
+
+        username = random.choice(("guy3", "master"))
+        home_url = reverse(views.homepage, kwargs={"game_instance_id": TEST_GAME_INSTANCE_ID})
+
+        token = authentication.compute_enforced_login_token(self.dm.game_instance_id, username)
+        request = self.factory.post(home_url, data={request_var : token})
+        request.datamanager = self.dm
+
+        try_authenticating_with_session(request)
+        assert request.datamanager.user.username == username # well auto-signed-in
+
+        request._request = {"sdsds" : "sdsd"} # PATCH
+        assert request.REQUEST["sdsds"]
+
+        try_authenticating_with_session(request)
+        assert request.datamanager.user.username == username # remains
+
+
+        token = random.choice(("", u"ahduiAy@", u"a è"))
+        request._request = {request_var : token} # PATCH
+
+        try_authenticating_with_session(request)
+        assert request.datamanager.user.username == username # wrong session ticket given by REQUEST, so we remain as usual
+
+
+        token = authentication.compute_enforced_login_token("badinstanceid", "guy1")
+        request._request = {request_var : token} # PATCH
+
+        try_authenticating_with_session(request)
+        assert request.datamanager.user.username == username # wrong game id given by REQUEST, so we remain as usual
+
+
+        token = authentication.compute_enforced_login_token(self.dm.game_instance_id, "guy2323")
+        request._request = {request_var : token} # PATCH
+        assert request.REQUEST[request_var] == token
+
+        try_authenticating_with_session(request)
+        assert request.datamanager.user.username == username # wrong user name id given by REQUEST, so we remain as usual
+
+
+        token = authentication.compute_enforced_login_token(self.dm.game_instance_id, "my_npc")
+        request._request = {request_var : token} # PATCH
+
+        try_authenticating_with_session(request)
+        assert request.datamanager.user.username == "my_npc"
+
+
+        logout_session(request)
+        assert request.datamanager.user.username == "anonymous"
+
+        try_authenticating_with_session(request)
+        assert request.datamanager.user.username == "my_npc"
 
 
 
