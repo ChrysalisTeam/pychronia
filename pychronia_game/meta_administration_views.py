@@ -15,7 +15,7 @@ from contextlib import contextmanager
 from django.conf import settings
 from django.core.mail import mail_admins
 from django.http import Http404, HttpResponseRedirect, HttpResponse, \
-    HttpResponseForbidden
+     HttpResponseForbidden
 from django.shortcuts import render
 from django.template import RequestContext
 from django.utils.html import escape
@@ -26,6 +26,7 @@ from pychronia_game.datamanager import datamanager_administrator
 from django.contrib.messages import get_messages
 from pychronia_game.datamanager.datamanager_administrator import GAME_STATUSES
 from django import forms
+from pychronia_game import authentication
 
 
 class GameInstanceCreationForm(forms.Form):
@@ -66,6 +67,7 @@ def ____create_new_instance(request):  # TODO FINISH LATER
 @superuser_required
 def manage_instances(request):
 
+    session_token_display = None
     game_creation_form = None
 
     try:
@@ -105,6 +107,12 @@ def manage_instances(request):
                 backup_comment = slugify(request.POST["backup_comment"].strip()) or None
                 datamanager_administrator.backup_game_instance_data(game_instance_id=game_instance_id, comment=backup_comment)
                 messages.add_message(request, messages.INFO, _(u"Game instance '%s' backup with comment '%s' done") % (game_instance_id, backup_comment or u"<empty>"))
+            elif request.POST.get("compute_enforced_session_ticket"):
+                game_instance_id = request.POST["game_instance_id"].strip() # manually entered
+                login = request.POST["login"].strip()
+                token = authentication.compute_enforced_login_token(game_instance_id=game_instance_id, login=login)
+                messages.add_message(request, messages.INFO, _(u"Auto-connection token for '%s/%s' is displayed below") % (game_instance_id, login,))
+                session_token_display = '%s=%s' % (authentication.ENFORCED_SESSION_TICKET_NAME, token)
             else:
                 raise ValueError(_("Unknown admin action"))
 
@@ -122,7 +130,8 @@ def manage_instances(request):
                      'notifications': get_messages(request),
                      'possible_game_statuses': sorted(GAME_STATUSES),
                      'deletable_statuses': [GAME_STATUSES.terminated, GAME_STATUSES.aborted],
-                     'game_creation_form': game_creation_form or GameInstanceCreationForm()
+                     'game_creation_form': game_creation_form or GameInstanceCreationForm(),
+                     'session_token_display': session_token_display,
                     })
 
 

@@ -9,6 +9,7 @@ from pychronia_game.utilities import encryption
 SESSION_TICKET_KEY_TEMPLATE = 'pychronia_session_ticket_%s'
 IMPERSONATION_TARGET_POST_VARIABLE = "_set_impersonation_target_"
 IMPERSONATION_WRITABILITY_POST_VARIABLE = "_set_impersonation_writability_"
+ENFORCED_SESSION_TICKET_NAME = "session_ticket"
 
 """
 Django Notes
@@ -58,7 +59,7 @@ def _lookup_enforced_session_or_none(request):
     session_ticket = None
 
     if config.GAME_ALLOW_ENFORCED_LOGIN:
-        login_data = request.REQUEST.get("session_ticket")
+        login_data = request.REQUEST.get(ENFORCED_SESSION_TICKET_NAME)
         if login_data:
             try:
                 login_data = login_data.encode("ascii", "strict")

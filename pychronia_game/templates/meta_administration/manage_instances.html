@@ -7,13 +7,9 @@
 
 	<h1>{% trans "Meta Administration" %}</h1>
 
-    <div class="form_scroll_medium" align="center" style="width: 50%; margin: auto;">
-        <h2>{% trans "New Game Instance" %}</h2>
-        <form action="" method="post" class="meta_admin_button">
-            {{ game_creation_form.as_p }}
-            <p><input type="submit" name="create_game_instance" value="{{ _("Create game instance")}}" /></p>
-        </form>
-    </div><br/><br/>
+
+
+
 
 
 	<table class="realtable">
@@ -38,7 +34,7 @@
 				{% if meta.maintenance_until and meta.maintenance_until > utc_now %}
 				    <li><b>{% trans "LOCKED for maintenance until" %} {{ meta.maintenance_until|utctolocal|date:"SHORT_DATETIME_FORMAT" }}</b></li>
     		    </ul>
-    		        <form action="" method="post" class="meta_admin_button">
+    		        <form action="#" method="post" class="meta_admin_button">
     				    <input type="hidden" name="unlock_instance" value="{{ meta.instance_id }}"/>
     				    <input type="submit" value="{{ _("Unlock game instance")}}" />
     				</form>
@@ -49,24 +45,24 @@
                 {% else %}
                     <li>{% trans "Not locked for maintenance" %}</li>
                 </ul>
-                    <form action="" method="post" class="meta_admin_button">
+                    <form action="#" method="post" class="meta_admin_button">
                         <input type="hidden" name="lock_instance" value="{{ meta.instance_id }}"/>
                         <input type="submit" value="{{ _("Lock")}}" />
                     </form>
                 {% endif %}
 
                 <br/>
-                <form action="" method="post" class="meta_admin_button" onchange="this.submit()">
+                <form action="#" method="post" class="meta_admin_button" onchange="this.submit()">
                     <input type="hidden" name="change_instance_status" value="{{ meta.instance_id }}"/>
                     <select name="new_status">
                         {% for status in possible_game_statuses %}
-                        <option value="{{ status }}" {% if meta.status == status %}selected{% endif %}>{% trans "Status" %}{{COLON}}{{ status }}</option>
+                        <option value="{{ status }}" {% if meta.status == status %}selected{% endif %}>{% trans "Status" %}{{COLON}} {{ status }}</option>
                         {% endfor %}
                     </select>
                 </form>
 
                 <br/>
-                <form action="" method="post" class="meta_admin_button">
+                <form action="#" method="post" class="meta_admin_button">
                     <input type="hidden" name="backup_game_instance" value="{{ meta.instance_id }}"/>
                     <input type="text" name="backup_comment" title="{% trans "Write backup comment here..." %}" />
                     <input type="submit" value="{{ _("Backup with comment")}}" />
@@ -74,7 +70,7 @@
 
                 {% if meta.status in deletable_statuses %}
                 <br/>
-                <form action="" method="post" class="meta_admin_button" onsubmit="return confirm('{{ _("Are you sure you cant to delete this game instance?")|escapejs }}')">
+                <form action="#" method="post" class="meta_admin_button" onsubmit="return confirm('{{ _("Are you sure you cant to delete this game instance?")|escapejs }}')">
                     <input type="hidden" name="delete_game_instance" value="{{ meta.instance_id }}"/>
                     <input type="submit" value="{{ _("Delete")}}" />
                 </form>
@@ -85,6 +81,34 @@
 		{% endfor %}
 
 	</table>
+
+
+    <br/><br/>
+
+    <div id="session_token_form_id" class="form_scroll_medium" align="center" style="width: 60% !important; margin: auto;">
+        <h2>{% trans "Get Autoconnect Token" %}</h2>
+        {% if session_token_display %}
+            <strong>{% trans "Result of computation" %}{{COLON}}</strong>
+            <span style="font-size: 0.8em; word-break: break-all">{{ session_token_display }}</span>
+        {% endif %}
+        <form action="#session_token_form_id" method="post" class="meta_admin_button">
+            <p><input type="text" name="game_instance_id" value="{% trans "INSTANCE_ID" %}" /></p>
+            <p><input type="text" name="login" value="{% trans "USERNAME" %}" /></p>
+            <p><input type="submit" name="compute_enforced_session_ticket" value="{{ _("Compute Token")}}" /></p>
+        </form>
+    </div><br/><br/>
+
+
+    <div id="game_creation_form_id" class="form_scroll_medium" align="center" style="width: 70%; margin: auto;">
+        <h2>{% trans "New Game Instance" %}</h2>
+        <form action="#" method="post" class="meta_admin_button">
+            {{ game_creation_form.as_p }}
+            <p><input type="submit" name="create_game_instance" value="{{ _("Create game instance")}}" /></p>
+        </form>
+    </div><br/><br/>
+
+
+
 
 {% endblock %}
 
