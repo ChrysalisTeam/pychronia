@@ -17,6 +17,26 @@ def pychronia_template_context(request):
     Template context manager which adds all necessary game data to all pages.
     """
 
+    is_mobile_page = getattr(request, "is_mobile", None) # middleware might be disabled
+
+    res = {
+            'is_mobile_page': is_mobile_page,
+
+            'use_parallax': True, # might be enabled only for some browsers..
+
+            'bug_report_email': config.BUG_REPORT_EMAIL, # might be None
+
+            # useful constants
+            'None': None,
+            'True': True,
+            'False': False,
+
+            'COLON': _(":").replace(" ", "\u00a0"), # different spacing when english or french...
+            'SITE_DOMAIN': config.SITE_DOMAIN,
+          }
+
+
+
     if hasattr(request, "datamanager") and request.datamanager:
 
         dm = request.datamanager
@@ -62,7 +82,7 @@ def pychronia_template_context(request):
 
         signal_new_text_message = dm.is_character() and dm.has_new_message_notification() # only for characters atm
 
-        is_mobile_page = getattr(request, "is_mobile", None) # middleware might be disabled
+
 
 
         if request.processed_view.DISPLAY_STATIC_CONTENT:
@@ -76,12 +96,8 @@ def pychronia_template_context(request):
             content_blocks = {}
 
 
-        res = {
+        res.update({
                 'game_instance_id': dm.game_instance_id,
-
-                'is_mobile_page': is_mobile_page,
-
-                'use_parallax': True, # might be enabled only for some browsers..
 
                 'fallback_title': request.processed_view.relevant_title(dm),
 
@@ -105,22 +121,15 @@ def pychronia_template_context(request):
 
                 'content_blocks': content_blocks,
                 'action_explanations': action_explanations,
-                'default_contact_avatar': request.datamanager.get_global_parameter("default_contact_avatar"),
+                'default_contact_avatar': dm.get_global_parameter("default_contact_avatar"),
 
                 # entry points
                 'mobile_site_entry_url': config.MOBILE_SITE_ENTRY_URL_TEMPLATE % dm.game_instance_id,
                 'web_site_entry_url': config.WEB_SITE_ENTRY_URL_TEMPLATE % dm.game_instance_id,
-                'bug_report_email': config.BUG_REPORT_EMAIL, # might be None
 
-                # useful constants
-                'None': None,
-                'True': True,
-                'False': False,
-
-                'COLON': _(":").replace(" ", "\u00a0"), # different spacing when english or french...
-                'SITE_DOMAIN': config.SITE_DOMAIN,
-            }
-        return res
+            })
 
     else:
-        return {} # not in valid game instance
+        pass # not in valid game instance
+
+    return res
