@@ -15,7 +15,7 @@ GAME_FILES_URL = "/files/"
 
 GAME_INITIAL_DATA_PATH = os.path.join(GAME_FILES_ROOT, "game_initial_data.yaml")
 
-ACTIVATE_AIML_BOTS = False
+ACTIVATE_AIML_BOTS = True
 
 ZODB_RESET_ALLOWED = True
 

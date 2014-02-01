@@ -78,11 +78,11 @@ def GAME_INITIAL_FIXTURE_SCRIPT(dm):
 
 
 
-
+ACTIVATE_AIML_BOTS = True # TEMP
 
 ## OVERRIDES FOR INTEGRATION OF CHRYSALIS GAME ##
-
-ACTIVATE_AIML_BOTS = False
+'''
+ACTIVATE_AIML_BOTS = True
 GAME_FILES_ROOT = r"P:\Chrysalis Depot\Chrysalis V1\ ".strip()
 GAME_INITIAL_DATA_PATH = r"P:\Chrysalis Depot\Chrysalis V1\script_fixtures"
-
+'''

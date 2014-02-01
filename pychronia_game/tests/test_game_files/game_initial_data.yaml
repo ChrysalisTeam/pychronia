@@ -12,7 +12,7 @@ abilities:
 
         settings:
 
-            bots_answer_delays_ms: 1000
+            bots_answer_delays_ms: 100
             bot_max_answers: 500
 
             terminal_answers:
@@ -29,8 +29,9 @@ abilities:
                 birthplace: "Zorzas"
 
             specific_bot_properties:
-                "Bot Alpha": {}
-                "Bot Omega": {}
+                "Pay Rhuss": {}
+                "Phayl Blogg": {}
+                "Sheuk Nauriss": {}
 
 
 

@@ -42,6 +42,7 @@ from pychronia_game.utilities.mediaplayers import generate_image_viewer
 from django.core.urlresolvers import RegexURLResolver
 from pychronia_game.datamanager.abstract_form import AbstractGameForm, GemPayementFormMixin
 from ZODB.POSException import POSError
+from pychronia_game.views.abilities.artificial_intelligence_mod import DJINN_PROXY
 
 
 
@@ -5705,48 +5706,38 @@ class TestSpecialAbilities(BaseGameTestCase):
         '''
 
 
-    def ____test_bots(self): # TODO PAKAL PUT BOTS BACK!!!
+    def test_artificial_intelligence(self): # TODO PAKAL PUT BOTS BACK!!!
+        
+        if not DJINN_PROXY:
+            pytest.skip("No AIML bot is configured for testing")
+
+        self._set_user("guy1")
+
+        ai = self.dm.instantiate_ability("artificial_intelligence")
+        ai.perform_lazy_initializations() # normally done during request processing
 
         bot_name = "Pay Rhuss" # self.dm.data["AI_bots"]["Pay Rhuss"].keys()[0]
         # print bot_name, " --- ",self.dm.data["AI_bots"]["bot_properties"]
 
-        self._reset_messages()
-
-        username = "guy1"
-
-        res = self.dm.get_bot_response(username, bot_name, "hello")
+        res = ai.get_bot_response(bot_name, "hello")
         self.assertTrue("hi" in res.lower())
 
-        res = self.dm.get_bot_response(username, bot_name, "What's your name ?")
+        res = ai.get_bot_response(bot_name, "What's your name ?")
         self.assertTrue(bot_name.lower() in res.lower())
 
-        res = self.dm.get_bot_response(username, bot_name, "What's my name ?")
-        self.assertTrue(username in res.lower())
+        res = ai.get_bot_response(bot_name, "What's my name ?")
+        self.assertTrue("guy1" in res.lower())
 
-        res = self.dm.get_bot_history(bot_name)
+        res = ai.get_bot_history(bot_name)
         self.assertEqual(len(res), 2)
         self.assertEqual(len(res[0]), 3)
         self.assertEqual(len(res[0]), len(res[1]))
 
-        res = self.dm.get_bot_response(username, bot_name, "do you know where the orbs are ?").lower()
-        self.assertTrue("celestial tears" in res, res)
+        res = ai.get_bot_response(bot_name, "RESPONSEABOUTALPHAORB").lower()
+        self.assertTrue("sharing the same meal" in res, res) # specific answer for that bot name
 
-        res = self.dm.get_bot_response(username, bot_name, "Where is loyd georges' orb ?").lower()
-        self.assertTrue("father and his future son-in-law" in res, res)
-
-        res = self.dm.get_bot_response(username, bot_name, "who owns the beta orb ?").lower()
-        self.assertTrue("underground temple" in res, res)
-
-        res = self.dm.get_bot_response(username, bot_name, "where is the gamma orb ?").lower()
-        self.assertTrue("last treasure" in res, res)
-
-        res = self.dm.get_bot_response(username, bot_name, "where is the wife of the guy2 ?").lower()
-        self.assertTrue("young reporter" in res, res)
-
-        res = self.dm.get_bot_response(username, bot_name, "who is cynthia ?").lower()
-        self.assertTrue("future wife" in res, res)
-
-
+        res = ai.get_bot_response(bot_name, "SYNONYMRESPONSEABOUTALPHAORB").lower()
+        self.assertTrue("sharing the same meal" in res, res) # substitutions work fine
 
 
 class TestGameViews(BaseGameTestCase):

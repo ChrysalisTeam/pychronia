@@ -2,10 +2,12 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import threading
 from pychronia_game.common import *
 from pychronia_game.datamanager import readonly_method, transaction_watcher, register_view, AbstractAbility, AbstractGameForm
 from django import forms
 from django.http import Http404
+from ConfigParser import ConfigParser
 
 """ DEPRECATED
 class DjinnContactForm(AbstractGameForm):
@@ -17,9 +19,12 @@ class DjinnContactForm(AbstractGameForm):
 
 """
 
+djinn_singleton_lock = threading.Lock() # cfor oncurrent access to singleton
+
 
 class DjinnContactForm(AbstractGameForm):
     djinn_name = forms.CharField(label=_("Djinn"), required=True)
+
 
 
 @register_view
@@ -36,7 +41,7 @@ class ArtificialIntelligenceAbility(AbstractAbility):
 
     ACCESS = UserAccess.character
     REQUIRES_CHARACTER_PERMISSION = False
-    REQUIRES_GLOBAL_PERMISSION = False
+    REQUIRES_GLOBAL_PERMISSION = True
 
 
     @classmethod
@@ -138,7 +143,7 @@ class ArtificialIntelligenceAbility(AbstractAbility):
 
 
     @transaction_watcher
-    def get_bot_response(self, username, bot_name, input):
+    def get_bot_response(self, bot_name, input):
         # TIP : say "startup xml" to the bot, to list its main predicates !!
         # TODO - use loadSubs to make proper substitutions
         # we use only the "global session" of bot kernel, in the following calls !
@@ -147,42 +152,47 @@ class ArtificialIntelligenceAbility(AbstractAbility):
 
         if not djinn_proxy:
             return _("[DJINN IS OFFLINE]")
-            
-        bot_session = self.get_bot_session(bot_name) # we load previous session
-        djinn_proxy.setSessionData(bot_session)
 
-        # heavy, we override the personality of the target bot
-        for (predicate, value) in self.settings["common_bot_properties"].items():
-            djinn_proxy.setBotPredicate(predicate, value) # hobbies and tastes
+        with djinn_singleton_lock:
 
-        djinn_proxy.setBotPredicate("name", bot_name) # we change the bot personality
+            bot_session = self.get_bot_session(bot_name) # we load previous session
+            djinn_proxy.setSessionData(bot_session)
 
-        djinn_proxy.setPredicate("name", self.username) # who is talking to him ?
+            # heavy, we override the personality of the target bot
+            for (predicate, value) in self.settings["common_bot_properties"].items():
+                djinn_proxy.setBotPredicate(predicate, value) # hobbies and tastes
 
-        if "?" in input:
-            djinn_proxy.setPredicate("topic", "")  # WARNING - a hack to help the bot get away from its "persistent ideas", as long as A.I. doesn't work very well...
-            djinn_proxy.setPredicate("orbType", "")
+            # we change the bot personality #
+            djinn_proxy.setBotPredicate("name", bot_name) # to use <bot name="name"/>
+            djinn_proxy.setPredicate("botName", bot_name) # to use in <condition> tag
 
-        (inputs, outputs) = self.get_bot_history(bot_name)
+            djinn_proxy.setPredicate("name", self.username) # who is talking to him ?
 
-        if len(outputs) > self.settings["bot_max_answers"]:
-            res = random.choice(self.settings["terminal_answers"])
-            # then let's manually update history
-            inputs.append(input)
-            outputs.append(res)
-        else:
-            res = djinn_proxy.respond(input)
-            data = djinn_proxy.getSessionData()
-            data = utilities.convert_object_tree(data, utilities.python_to_zodb_types) # FIXME, is it really useful ??
-            self.private_data.update(data) # we save current session in ZODB
+            if "?" in input:
+                djinn_proxy.setPredicate("topic", "")  # WARNING - a hack to help the bot get away from its "persistent ideas", as long as A.I. doesn't work very well...
+                djinn_proxy.setPredicate("orbType", "")
 
-        # we simulate answer delay
-        delay_ms = self.settings["bots_answer_delays_ms"]
-        if not isinstance(delay_ms, (int, long, float)):
-            delay_ms = random.randint(delay_ms[0], delay_ms[1])
-        time.sleep(float(delay_ms) / 1000)
+            (inputs, outputs) = self.get_bot_history(bot_name)
 
-        return res
+            if len(outputs) > self.settings["bot_max_answers"]:
+                res = random.choice(self.settings["terminal_answers"])
+                # then let's manually update history
+                inputs.append(input)
+                outputs.append(res)
+            else:
+                res = djinn_proxy.respond(input)
+                # print ("DJINN REQUEST %r => %r" % (input, res))
+                data = djinn_proxy.getSessionData()
+                data = utilities.convert_object_tree(data, utilities.python_to_zodb_types) # FIXME, is it really useful ??
+                self.private_data.update(data) # we save current session in ZODB
+
+            # we simulate answer delay
+            delay_ms = self.settings["bots_answer_delays_ms"]
+            if not isinstance(delay_ms, (int, long, float)):
+                delay_ms = random.randint(delay_ms[0], delay_ms[1])
+            time.sleep(float(delay_ms) / 1000)
+
+            return res
 
 
     def process_user_sentence(self, djinn_name, message, use_gems=()):
@@ -294,13 +304,38 @@ class DjinnProxy(object):
             brainFile=os.path.join(config.GAME_FILES_ROOT, "AI", "botbrain.brn"),
             learnFiles=glob.glob(os.path.join(config.GAME_FILES_ROOT, "AI", "djinn_specific_aiml", "*.aiml"))
         )
+
         self.bot_kernel = kernel
+
+        substitutions_file = os.path.join(config.GAME_FILES_ROOT, "AI", "substitutions.ini")
+        self._update_substitutions(substitutions_file)
 
         """
         print ("INITIALIZED SESSION  for %s : " % name, self.data["AI_bots"]["bot_properties"][name]["bot_sessions"])
         props["bot_sessions"] = kernel.getSessionData() # IMPORTANT - initialized values, with I/O history etc.
         print ("COMMITTING DATA for %s :" % name, self.data["AI_bots"]["bot_properties"][name])
         """
+
+    def _update_substitutions(self, substitutions_file):
+
+        """ OBSOLETE
+        subbers = self.bot_kernel._subbers
+        for section_name, section in subbers.items():
+            assert section_name in subbers, section_name
+            for k, v in section.items():
+        """
+        subbers = self.bot_kernel._subbers
+        del self
+        with open(substitutions_file, "rb") as inFile:
+            parser = ConfigParser()
+            parser.readfp(inFile, substitutions_file)
+            inFile.close()
+            for s in parser.sections():
+                assert subbers.has_key(s), (s, subbers.keys())
+                # iterate over the key,value pairs and add them to the subber
+                for k, v in parser.items(s):
+                    subbers[s][k] = v
+
 
     def respond(self, input):
         return self.bot_kernel.respond(input)

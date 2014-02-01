@@ -10,12 +10,10 @@
         </template>
     </category>   
 
-   
 
     <category>
         <pattern>RESPONSEABOUTALPHAORB</pattern>
         <template>
-            <srai>GETBOTNAME</srai>
             <condition name="botName">
                 <li value="Pay Rhuss">
                     A father and his future son-in-law sharing the same meal tonight. He who indulges
@@ -31,108 +29,10 @@
                         would be sensible enough to prefer her life to a shiny stone.
                 </li>
                 <li>
-                 <srai>NOANSWER</srai>               
+                    <srai>NOANSWER</srai>               
                 </li>
             </condition>
         </template>
     </category>
 
-
-    <category>
-        <pattern>RESPONSEABOUTBETAORB</pattern>
-        <template>
-            <srai>GETBOTNAME</srai>
-            <condition name="botName">
-                <li value="Pay Rhuss">
-                    Long times ago, heathens have found, in an underground temple, a marvellous
-                        stone. Lucky them, it was nothing less than a Divine Tear.
-                </li>
-                <li value="Phayl Blogg">
-                    How may one imagine greater sacrilege, than having a Heart of Purity jailed,
-                        for one decade already, in one of the darkest citadels of our western
-                        neighbours?
-                </li>
-                <li value="Sheuk Nauriss">
-                    I guess masslavian agents know better than me where their orb is imprisoned.
-                        Don't your fellows have the power to question them?
-                </li>
-                <li>
-                 <srai>NOANSWER</srai>               
-                </li>
-            </condition>
-        </template>
-    </category>
-
-    <category>
-        <pattern>RESPONSEABOUTGAMMAORB</pattern>
-        <template>
-            <srai>GETBOTNAME</srai>
-            <condition name="botName">
-                <li value="Pay Rhuss">
-                    In the past, courageous zealots have tried to save their last treasure from
-                        the hands of miscreants. They have been so successful, that to this
-                        day no one has ever seen it again.
-                </li>
-                <li value="Phayl Blogg">
-                    Only the seeker of the past, the awakener of forsaken tongues, might eventually
-                        uncover the Divine Pearl burrowed in an endlessly frozen land.
-                </li>
-                <li value="Sheuk Nauriss">
-                    Salt is like water or sun : too little and there is no life, too much and
-                        there is no life either. And there used to be too much in southern countries.
-                        The statue of Bartzar would confirm my assertions.
-                </li>
-                <li>
-                 <srai>NOANSWER</srai>               
-                </li>
-            </condition>
-        </template>
-    </category>
-
-   
-    <category>
-        <pattern>RESPONSEABOUTOTHERORBS</pattern>
-        <template>
-            <srai>GETBOTNAME</srai>
-            <condition name="botName">
-                <li value="Pay Rhuss">
-                    Not one, not two, but three Celestial Tears, have invited themselves to the
-                    mundane gathering, via the foolish carelessness of brilliant minds,
-                    the mysterious testimony of ancestral signs, and the worried soul of
-                    heathens.
-                </li>
-                <li value="Phayl Blogg">
-                    Sheuk Nauriss knows so much more than me... But I can help anyway.
-                </li>
-                <li value="Sheuk Nauriss">
-                    Time is running out. So many people are seeking these famous Orbs...
-                </li>
-                <li>
-                 <srai>NOANSWER</srai>               
-                </li>
-            </condition>
-        </template>
-    </category>
-    
-   
-    <category>
-        <pattern>RESPONSEABOUTCYNTHIA</pattern>
-        <template>
-            <srai>GETBOTNAME</srai>
-            <condition name="botName">
-                <li value="Pay Rhuss">
-                    Who knows... Irony, the young reporter might actually reveal herself much more important
-                        than the Nalavut leaders she sought to interview.
-                </li>
-                <li value="Phayl Blogg">
-                    The struggle for power is surrounding the wife of the physicist. He who holds
-                        her, will also hold a Divine Tear.
-                </li>
-                <li value="Sheuk Nauriss">
-                    It seems your fellows plan to seek refuge near this peaceful place called
-                        Aklarvik
-                </li>
-            </condition>
-        </template>
-    </category>
 </aiml>
