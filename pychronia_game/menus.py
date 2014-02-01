@@ -132,7 +132,7 @@ def _generate_web_menu(request, menu_entry_generator):
                         menu_entry(view=views.geoip_location),
                         menu_entry(view=views.world_scan),
 
-                        ### menu_entry(view=views.artificial_intelligence), DISABLED ATM
+                        menu_entry(view=views.artificial_intelligence),
 
                         menu_entry(view=views.business_escrow),
                         menu_entry(view=views.black_market),

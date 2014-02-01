@@ -48,7 +48,7 @@ from .messaging_views import (ajax_set_message_read_state, ajax_force_email_send
                               conversation, view_single_message, compose_message, preview_message,
                               all_dispatched_messages, all_queued_messages, messages_templates)
 
-from .abilities import (house_locking, runic_translation, wiretapping_management, # artificial_intelligence,
+from .abilities import (house_locking, runic_translation, wiretapping_management, artificial_intelligence,
                         mercenaries_hiring, matter_analysis, world_scan, chess_challenge, geoip_location,
                         business_escrow, black_market, ability_introduction) # telecom_investigation
 
