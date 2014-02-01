@@ -15,6 +15,7 @@ FEATURES
 SCRIPT
 ----------
 
+- add GAME_IMAGE_URL in help pages
 
 - manual for TTS acapela !!
 

@@ -6,7 +6,7 @@ import sys, re, logging, random, logging
 from datetime import datetime
 
 from pychronia_game.utilities import (mediaplayers, autolinker,
-                             rst_directives) # important to register RST extensions
+                                      rst_directives) # important to register RST extensions
 from pychronia_game.common import exception_swallower, game_file_url as real_game_file_url, determine_asset_url, reverse, _
 
 import django.template
@@ -27,6 +27,23 @@ from pychronia_game.storage import protected_game_file_system_storage, \
     get_game_thumbnailer
 
 register = django.template.Library() # IMPORTANT, module-level object used by templates !
+
+
+
+def _try_generating_thumbnail_url(rel_path, alias=None):
+    """
+    Falls back to original fail url if thumbnail generation fails, or if no alias is provided.
+    """
+    if alias:
+        try:
+            thumb = get_game_thumbnailer(rel_path)[alias] # we enforce the GAME_FILES storage here!
+            return thumb.url
+        except Exception, e:
+            logging.warning("Error generating game_file_img %s (alias=%s): %r", rel_path, alias, e)
+            pass # fallback to plain file
+
+    return real_game_file_url(rel_path) # original image
+
 
 
 @register.simple_tag(takes_context=False)
@@ -77,16 +94,7 @@ def game_file_url(context, a="", b="", c="", d="", e="", f="", varname=None):
 @register.simple_tag(takes_context=False)
 def game_file_img(a="", b="", c="", d="", e="", f="", alias=None):
     rel_path = "".join((a, b, c, d, e, f))
-    if alias is not None:
-        try:
-            thumb = get_game_thumbnailer(rel_path)[alias] # we enforce the GAME_FILES storage here!
-        except Exception, e:
-            print("ERROR GENERATING game_file_img ", rel_path, alias, repr(e))
-            return ''
-        return  thumb.url
-    else:
-        return real_game_file_url(rel_path) # original image
-
+    return _try_generating_thumbnail_url(rel_path=rel_path, alias=alias)
 
 
 
@@ -111,8 +119,19 @@ def _generate_game_file_links(rst_content, datamanager):
     if __debug__: datamanager.notify_event("GENERATE_GAME_FILE_LINKS")
     regex = r"""\[\s*GAME_FILE_URL\s*('|")?(?P<path>.+?)('|")?\s*]"""
     def _replacer(match_obj):
-        relpath = match_obj.group("path")
-        fullpath = real_game_file_url(relpath)
+        rel_path = match_obj.group("path")
+        fullpath = real_game_file_url(rel_path)
+        return fullpath
+    return re.sub(regex, _replacer, rst_content)
+
+
+def _generate_game_image_thumbnails(rst_content, datamanager):
+    if __debug__: datamanager.notify_event("GENERATE_GAME_IMAGE_THUMBNAILS")
+    regex = r"""\[\s*GAME_IMAGE_URL\s*('|")(?P<path>.+?)('|")\s*('|")(?P<alias>.+)('|")\s*]"""
+    def _replacer(match_obj):
+        rel_path = match_obj.group("path")
+        alias = match_obj.group("alias")
+        fullpath = _try_generating_thumbnail_url(rel_path=rel_path, alias=alias)
         return fullpath
     return re.sub(regex, _replacer, rst_content)
 
@@ -227,6 +246,8 @@ def _enriched_text(datamanager, content, initial_header_level=None, report_level
 
     with exception_swallower():
         content = _generate_game_file_links(content, datamanager) # BEFORE html
+    with exception_swallower():
+        content = _generate_game_image_thumbnails(content, datamanager) # BEFORE html
 
     html = advanced_restructuredtext(content, initial_header_level=initial_header_level, report_level=report_level)
 

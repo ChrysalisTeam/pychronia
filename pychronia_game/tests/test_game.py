@@ -19,7 +19,7 @@ from pychronia_game.common import _undefined, config, AbnormalUsageError, revers
     UsageError, checked_game_file_path, NormalUsageError
 from pychronia_game.templatetags.helpers import _generate_encyclopedia_links, \
     advanced_restructuredtext, _generate_messaging_links, _generate_site_links, \
-    _enriched_text, _generate_game_file_links
+    _enriched_text, _generate_game_file_links, _generate_game_image_thumbnails
 from pychronia_game import views, utilities, authentication
 from pychronia_game.utilities import autolinker
 from django.test.client import RequestFactory
@@ -383,6 +383,8 @@ class TestUtilities(BaseGameTestCase):
 
     def test_rst_game_file_url_tags_handling(self):
 
+        self._reset_django_db() # for thumbnails
+
         rst = dedent(r"""
         
                     [   GAME_FILE_URL 'myfile.jpg'    ] here
@@ -409,6 +411,36 @@ class TestUtilities(BaseGameTestCase):
                                     [GAME_FILE_URL "bad
                                     path.jpg]
                                 """).strip()
+
+        # -----------------------------------
+
+        rst = dedent(r"""
+        
+                    [   GAME_IMAGE_URL 'world_map.jpg'   'default' ] here
+                    
+                    .. image:: picture.jpeg [GAME_IMAGE_URL "world_map.jpg" 'badalias' ]
+                
+                        [GAME_IMAGE_URL 'aa bb/cc']
+                        
+                        [GAME_IMAGE_URL "bad
+                        path.jpg]
+                    """)
+
+        res = _generate_game_image_thumbnails(rst, self.dm)
+
+        print(res)
+
+        assert res.strip() == dedent("""
+                                    /files/2ce2bacb/thumbs/world_map.jpg.300x200_q85_autocrop.jpg here
+                                    
+                                    .. image:: picture.jpeg /files/3ab7d512/world_map.jpg
+                                    
+                                        [GAME_IMAGE_URL 'aa bb/cc']
+                                    
+                                        [GAME_IMAGE_URL "bad
+                                        path.jpg]
+                                    """).strip()
+
 
 
     def test_rst_site_links_generation(self):
@@ -450,6 +482,7 @@ class TestUtilities(BaseGameTestCase):
         assert not self.dm.get_event_count("GENERATE_ENCYCLOPEDIA_LINKS")
         assert not self.dm.get_event_count("GENERATE_SITE_LINKS")
         assert not self.dm.get_event_count("GENERATE_GAME_FILE_LINKS")
+        assert not self.dm.get_event_count("GENERATE_GAME_IMAGE_THUMBNAILS")
 
         rst = dedent(r"""
                     hi
@@ -471,6 +504,7 @@ class TestUtilities(BaseGameTestCase):
         assert self.dm.get_event_count("GENERATE_ENCYCLOPEDIA_LINKS") == 1
         assert self.dm.get_event_count("GENERATE_SITE_LINKS") == 1
         assert self.dm.get_event_count("GENERATE_GAME_FILE_LINKS") == 1
+        assert self.dm.get_event_count("GENERATE_GAME_IMAGE_THUMBNAILS") == 1
 
         assert "hi<br />you" in html # handy
 
@@ -5707,7 +5741,7 @@ class TestSpecialAbilities(BaseGameTestCase):
 
 
     def test_artificial_intelligence(self): # TODO PAKAL PUT BOTS BACK!!!
-        
+
         if not DJINN_PROXY:
             pytest.skip("No AIML bot is configured for testing")
 

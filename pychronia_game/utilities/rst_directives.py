@@ -45,7 +45,7 @@ directives.register_directive("embed_video", VideoEmbedDirective)
 
 
 class ImageEmbedDirective(rst.Directive):
-
+    # currently useless, use GAME_IMAGE_URL instead!
     required_arguments = 1
     optional_arguments = 0
     final_argument_whitespace = False
@@ -54,7 +54,7 @@ class ImageEmbedDirective(rst.Directive):
 
     def run(self):
         code = generate_image_viewer(imageurl=self.arguments[0],
-                                     preset=self.options.get("alias", "default")) # BEWARE - we expect that "default" preset to exist in stetings!
+                                     preset=self.options.get("alias", "default")) # BEWARE - we expect that "default" preset to exist in settings!
         return [nodes.raw('', code, format='html')]
 
 directives.register_directive("embed_image", ImageEmbedDirective)
@@ -64,7 +64,7 @@ directives.register_directive("embed_image", ImageEmbedDirective)
 
 
 
-# TODO - ImageEmbedDirective which uses eaysthumbnails if possible to get fional url, and reuses image node in any case
+# TODO - ImageEmbedDirective which uses eaysthumbnails if possible to get final url, and reuses image node in any case
 
 
 '''
