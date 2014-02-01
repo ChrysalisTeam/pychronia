@@ -25,7 +25,7 @@ def _execute_under_toplevel_zodb_conflict_solver(datamanager, completed_func):
             try:
                 return completed_func()
             except ConflictError:
-                time.sleep(0.4)
+                time.sleep(1)
         raise AbnormalUsageError(_("Concurrent access conflict on the resource, please retry"))
     finally:
         datamanager.end_top_level_wrapping()

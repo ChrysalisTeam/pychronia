@@ -1447,6 +1447,12 @@ fieldset {
 .main_frame_border .markItUpFooter {
   display: none;
 }
+.item_display {
+  padding: 0;
+  box-sizing: content-box;
+  max-width: 550px;
+  max-height: 750px;
+}
 #domslideshow {
   position: relative;
 }
@@ -1465,8 +1471,8 @@ fieldset {
   display: none;
 }
 #domslideshow img.slideshow_image {
-  max-width: 700px;
-  max-height: 800px;
+  max-width: 550px;
+  max-height: 750px;
   display: block;
   margin: 0px;
 }
@@ -1550,8 +1556,9 @@ fieldset {
 }
 .item_display {
   padding: 0;
-  max-height: 555px;
-  max-width: 680px;
+  box-sizing: content-box;
+  max-height: 750px;
+  max-width: 500px;
 }
 #password_display {
   display: table-cell;

@@ -5,16 +5,6 @@
 
 
 
-/* styles for items display */
-
-.item_display {
-    @extend .carved_square_frame_gold;
-    padding: 0;
-
-    /* fixes for iframe mess */
-    max-height: 555px;
-    max-width: 680px;
-}
 
 
 /* styles for door locking ability */
