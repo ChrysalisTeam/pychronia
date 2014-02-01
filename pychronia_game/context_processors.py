@@ -45,7 +45,7 @@ def pychronia_template_context(request):
 
         # WARNING - must be BEFORE messages retrieval!
         writability_data = dm.determine_actual_game_writability()
-        if writability_data["reason"]:
+        if writability_data["reason"] and not request.is_ajax():
             dm.user.add_warning(writability_data["reason"]) # a reason for no-writability most probably
 
         online_users = dm.get_online_users() # usernames are fine // to test: (dm.get_character_usernames() * 2)
