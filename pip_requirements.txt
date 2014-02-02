@@ -13,6 +13,7 @@ django-templateaddons==0.1
 South==0.8.4
 #django-wsgiserver==0.8rc1 # must be installed manually atm
 django-debug-toolbar==0.9.4
+django-cprofile-middleware==0.1
 
 Sphinx==1.2
 docutils==0.11

@@ -17,7 +17,8 @@ MIDDLEWARE_CLASSES = (('pychronia_game.middlewares.MobileHostMiddleware',) +
                      ('pychronia_game.middlewares.ZodbTransactionMiddleware',
                      'pychronia_game.middlewares.AuthenticationMiddleware',
                      'pychronia_game.middlewares.PeriodicProcessingMiddleware',
-                     'debug_toolbar.middleware.DebugToolbarMiddleware',))
+                     'debug_toolbar.middleware.DebugToolbarMiddleware',
+                     'django_cprofile_middleware.middleware.ProfilerMiddleware',)) # use in DEBUG mode with '?prof' at the end of URL
 
 
 INSTALLED_APPS += [
