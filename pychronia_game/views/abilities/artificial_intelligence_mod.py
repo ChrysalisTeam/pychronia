@@ -148,6 +148,10 @@ class ArtificialIntelligenceAbility(AbstractAbility):
         # TODO - use loadSubs to make proper substitutions
         # we use only the "global session" of bot kernel, in the following calls !
 
+        if not DJINN_PROXY_IS_INITIALIZED:
+            _activate_djinn_proxy() # might still remain None, though
+            assert DJINN_PROXY_IS_INITIALIZED
+
         djinn_proxy = DJINN_PROXY # SINGLETON instance ATM
 
         if not djinn_proxy:
@@ -359,11 +363,16 @@ class DjinnProxy(object):
         return self.bot_kernel.getPredicate(key)
 
 
-# singleton instance #
-if config.ACTIVATE_AIML_BOTS:
-    DJINN_PROXY = DjinnProxy() # beware in prod, memory-consuming !
-else:
-    DJINN_PROXY = None
-    logging.warning("AI bots not initialized, so as to preserve memory")
+DJINN_PROXY_IS_INITIALIZED = False
+DJINN_PROXY = None
 
-
+def _activate_djinn_proxy():
+    global DJINN_PROXY, DJINN_PROXY_IS_INITIALIZED, _activate_djinn_proxy
+    # singleton instance #
+    if config.ACTIVATE_AIML_BOTS:
+        DJINN_PROXY = DjinnProxy() # beware in prod, memory-consuming !
+    else:
+        DJINN_PROXY = None
+        logging.warning("AI bots not initialized, so as to preserve memory")
+    DJINN_PROXY_IS_INITIALIZED = True
+    del _activate_djinn_proxy # SECURITY

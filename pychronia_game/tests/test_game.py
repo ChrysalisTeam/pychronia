@@ -35,14 +35,13 @@ from django.forms.fields import Field
 from django.core.urlresolvers import resolve, NoReverseMatch
 from pychronia_game.views import friendship_management
 from pychronia_game.views.abilities import house_locking, \
-    wiretapping_management, runic_translation
+    wiretapping_management, runic_translation, artificial_intelligence_mod
 from django.contrib.auth.models import User
 from pychronia_game.authentication import clear_all_sessions
 from pychronia_game.utilities.mediaplayers import generate_image_viewer
 from django.core.urlresolvers import RegexURLResolver
 from pychronia_game.datamanager.abstract_form import AbstractGameForm, GemPayementFormMixin
 from ZODB.POSException import POSError
-from pychronia_game.views.abilities.artificial_intelligence_mod import DJINN_PROXY
 
 
 
@@ -5742,8 +5741,11 @@ class TestSpecialAbilities(BaseGameTestCase):
 
     def test_artificial_intelligence(self): # TODO PAKAL PUT BOTS BACK!!!
 
-        if not DJINN_PROXY:
+        if not config.ACTIVATE_AIML_BOTS:
             pytest.skip("No AIML bot is configured for testing")
+
+        assert not artificial_intelligence_mod.DJINN_PROXY_IS_INITIALIZED
+        assert not artificial_intelligence_mod.DJINN_PROXY # LAZY LOADING
 
         self._set_user("guy1")
 
@@ -5772,6 +5774,9 @@ class TestSpecialAbilities(BaseGameTestCase):
 
         res = ai.get_bot_response(bot_name, "SYNONYMRESPONSEABOUTALPHAORB").lower()
         self.assertTrue("sharing the same meal" in res, res) # substitutions work fine
+
+        assert artificial_intelligence_mod.DJINN_PROXY_IS_INITIALIZED
+        assert artificial_intelligence_mod.DJINN_PROXY
 
 
 class TestGameViews(BaseGameTestCase):
