@@ -30,7 +30,7 @@ pychronia_logging_config = {
         },
         'pychronia_game': {
             'handlers': ['game_instance'],
-            'level': 'WARNING',
+            'level': 'INFO',
             'propagate': False
         },
         'django.db.backends': {
@@ -49,4 +49,4 @@ pychronia_logging_config = {
 
 
 logging.config.dictConfig(pychronia_logging_config)
-logging.disable(logging.INFO) # global limit
+logging.disable(logging.DEBUG) # global limit
