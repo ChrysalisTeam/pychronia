@@ -1322,7 +1322,7 @@ class FriendshipHandling(BaseDataManager):
                                                       for username in usernames}
 
         for other_username in self.get_other_character_usernames(username):
-            character_statuses.setdefault(other_username, None) # other characters that are related at all to current user get "None"
+            character_statuses.setdefault(other_username, None) # other characters that are NOT related at all to current user get "None"
 
         return character_statuses
 

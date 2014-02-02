@@ -186,6 +186,10 @@ character_profile = CharacterProfile.as_view
 
 
 
+class FriendshipRequestForm(AbstractGameForm):
+    other_username = django_forms.CharField(label=ugettext_lazy("User Identifier"), required=True)
+
+
 
 @register_view
 class FriendshipManagementView(AbstractGameView):
@@ -194,7 +198,7 @@ class FriendshipManagementView(AbstractGameView):
     NAME = "friendship_management"
 
     GAME_ACTIONS = dict(do_propose_friendship=dict(title=ugettext_lazy("Propose friendship"),
-                                                          form_class=None,
+                                                          form_class=FriendshipRequestForm,
                                                           callback="do_propose_friendship"),
                         do_accept_friendship=dict(title=ugettext_lazy("Accept friendship"),
                                                           form_class=None,
@@ -243,15 +247,21 @@ class FriendshipManagementView(AbstractGameView):
         friendship_statuses = self.datamanager.get_other_characters_friendship_statuses()
 
         friendship_actions = sorted([(other_username, self._relation_type_to_action(relation_type))
-                                     for (other_username, relation_type) in friendship_statuses.items()]) # list of pairs (other_username, relation_type)
+                                     for (other_username, relation_type) in friendship_statuses.items()
+                                     if relation_type]) # list of pairs (other_username, relation_type), ONLY when a relation of some kind exists
 
         return {
                  'page_title': _("Friendship Management"),
                  'current_friends': self.datamanager.get_friends_for_character(),
                  "friendship_actions": friendship_actions,
+                 'friendship_request_form': self._instantiate_game_form(new_action_name="do_propose_friendship")
                }
 
     def do_propose_friendship(self, other_username):
+        
+        if not self.datamanager.is_character(other_username):
+            raise NormalUsageError(_("Invalid username '%s'") % other_username)
+        
         res = self.datamanager.propose_friendship(recipient=other_username)
         if res:
             return _("You're now friend with %s, as that user concurrently proposed friendship too.") % other_username # should be fairly rare

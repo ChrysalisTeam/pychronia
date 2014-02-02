@@ -9,9 +9,11 @@ FEATURES
 
 - update abilities settings
 
-- fix display of missing addresses, in email templates
 
+- fix display of missing addresses, in email templates
 - improve display of gems list with ¤ in view_characters
+- add periods to wordings like "You've proposed a friendship to that user"
+
 
 
 SCRIPT
@@ -78,7 +80,7 @@ NEEDS COSMETICS
 TASKS DONE
 ---------------
 
-
+- fix abnormal visibility of NPCs in "friendship management" view - DONE
 - change is_read status of ability request messages depending on "disable_automated_ability_responses" - DONE
 - allow brackets around mailing-list adresses DONE
 - check proper locale for date formatting and check "utctolocal" presence - DONE
