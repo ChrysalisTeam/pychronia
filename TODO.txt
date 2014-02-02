@@ -9,7 +9,7 @@ FEATURES
 
 - update abilities settings
 
-
+- fix display of missing addresses, in email templates
 
 
 SCRIPT

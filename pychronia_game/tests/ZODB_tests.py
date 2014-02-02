@@ -9,7 +9,6 @@ import transaction
 from ZODB import DB
 from ZODB.PersistentList import PersistentList
 from ZODB.PersistentMapping import PersistentMapping
-from pprint import pprint
 from unittest import TestCase
 import multiprocessing.pool
 import traceback

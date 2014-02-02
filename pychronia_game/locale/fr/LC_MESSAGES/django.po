@@ -2087,8 +2087,8 @@ msgid "Get back to login page"
 msgstr "Revenir à la page d'authentification"
 
 #: .\templates\utilities\admin_form_widget.html.py:21
-msgid "SUBMIT TEXT"
-msgstr "SOUMETTRE LE TEXTE"
+msgid "SUBMIT FORM"
+msgstr "SOUMETTRE FORMULAIRE"
 
 #: .\templates\utilities\bug_report.html.py:9
 msgid ""

@@ -23,7 +23,6 @@ from pychronia_game.templatetags.helpers import _generate_encyclopedia_links, \
 from pychronia_game import views, utilities, authentication
 from pychronia_game.utilities import autolinker
 from django.test.client import RequestFactory
-import pprint
 from pychronia_game.datamanager.datamanager_administrator import retrieve_game_instance, \
     _get_zodb_connection, GameDataManager, get_all_instances_metadata, \
     delete_game_instance, check_zodb_structure, change_game_instance_status, \

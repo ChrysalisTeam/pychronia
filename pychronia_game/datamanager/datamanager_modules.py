@@ -3518,7 +3518,7 @@ class MoneyItemsOwnership(BaseDataManager):
 
         ## FIXME - make this a character-method too !!!
         item = self.get_item_properties(item_name)
-        from_name = item["owner"] if item["owner"] else ugettext_noop("no one") # must be done IMMEDIATELY
+        from_name = item["owner"] if item["owner"] else _("no one") # must be done IMMEDIATELY
 
         if previous_owner is not None and previous_owner != item["owner"]:
             raise NormalUsageError(_("This object doesn't belong to %s") % previous_owner)
