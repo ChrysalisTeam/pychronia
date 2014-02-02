@@ -21,7 +21,7 @@ class ChessChallengeAbility(AbstractAbility):
 
     ACCESS = UserAccess.authenticated
     REQUIRES_CHARACTER_PERMISSION = False
-    REQUIRES_GLOBAL_PERMISSION = False
+    REQUIRES_GLOBAL_PERMISSION = True
 
 
     @classmethod

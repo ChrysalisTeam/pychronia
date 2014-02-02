@@ -11,6 +11,8 @@ FEATURES
 
 - fix display of missing addresses, in email templates
 
+- improve display of gems list with ¤ in view_characters
+
 
 SCRIPT
 ----------
