@@ -257,7 +257,7 @@ class FriendshipManagementView(AbstractGameView):
                  'friendship_request_form': self._instantiate_game_form(new_action_name="do_propose_friendship")
                }
 
-    def do_propose_friendship(self, other_username):
+    def do_propose_friendship(self, other_username, use_gems=()):
         
         if not self.datamanager.is_character(other_username):
             raise NormalUsageError(_("Invalid username '%s'") % other_username)

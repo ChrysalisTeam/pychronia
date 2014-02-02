@@ -3227,7 +3227,7 @@ class TestDatamanager(BaseGameTestCase):
         assert self.dm.user.is_anonymous
         token = self.dm.get_game_view_access_token(views.homepage.NAME)
         assert token == AccessResult.available
-        token = self.dm.get_game_view_access_token(views.view_sales)
+        token = self.dm.get_game_view_access_token(views.view_characters)
         assert token == AccessResult.authentication_required
 
 
@@ -4067,7 +4067,7 @@ class TestGameViewSystem(BaseGameTestCase):
                 (args, varargs, varkw, defaults) = inspect.getargspec(callback) # will fail if keyword-only arguments are used, in the future
 
                 if action_name in game_view.GAME_ACTIONS and game_view.ACCESS in (UserAccess.authenticated, UserAccess.character):
-                    assert "use_gems" in args # IMPORTANT - all actions available to players MUST be potentially configurable for "gams payment"
+                    assert "use_gems" in args # IMPORTANT - all actions available to players MUST be potentially configurable for "gems payment"
 
                 if args[0] == "self":
                     args = args[1:] # PB if instance is not called "self"...
