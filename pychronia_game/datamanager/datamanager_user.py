@@ -41,7 +41,7 @@ class GameUser(object):
         assert not (is_superuser and username != _game_anonymous_login) # game authentication "hides" the superuser status
         assert is_superuser or datamanager.is_master(username) or not impersonation_target or not impersonation_writability # atm only special user can take full control of other user
 
-        self.is_superuser = is_superuser # REAL state of user, whatever impersonation is happening
+        self.is_superuser = is_superuser # REAL django state of user, whatever impersonation is happening ; can mean both "staff" or "superuser"
         self._real_username = username
         self.is_impersonation = bool(impersonation_target)
         self.impersonation_target = impersonation_target

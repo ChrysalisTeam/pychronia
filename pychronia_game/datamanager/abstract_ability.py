@@ -135,7 +135,7 @@ class AbstractAbility(AbstractAbilityBasesAdapter):
 
 
     def _get_private_key(self):
-        return self._inner_datamanager.user.username # can be guest/anonymous, a character or a superuser login!
+        return self._inner_datamanager.user.username # can be guest/anonymous, or a character
 
 
     @property
