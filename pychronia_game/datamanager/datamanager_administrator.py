@@ -224,7 +224,7 @@ def check_game_is_in_maintenance(game_instance_id, game_metadata):
 # NO transaction management here!
 def retrieve_game_instance(game_instance_id, request=None, metadata_checker=check_game_not_in_maintenance):
     """
-    If force is True, checks on instance availability are skipped.
+    If metadata_checker is None, checks on instance availability are skipped.
     """
     game_data = _fetch_available_game_data(game_instance_id=game_instance_id, metadata_checker=metadata_checker)
     dm = GameDataManager(game_instance_id=game_instance_id,
