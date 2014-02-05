@@ -1479,6 +1479,13 @@ class TestDatamanager(BaseGameTestCase):
             self.dm.get_personal_files(username, absolute_urls=random.choice([True, False]))
 
 
+        files = self.dm.get_personal_files("guy1")
+        print(">>>>files>>>>", files)
+        assert len(files) == 5
+        assert os.path.basename(files[0]) == "111first.jpg" # sorted by basename
+                     
+
+
     @for_core_module(PersonalFiles)
     def test_encrypted_folders(self):
         self._reset_messages()

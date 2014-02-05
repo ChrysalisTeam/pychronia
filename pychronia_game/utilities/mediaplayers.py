@@ -26,16 +26,16 @@ _media_player_templates = \
     </object>
     """,
 
-    ("swf",): """
-    <object type="application/x-shockwave-flash" class="mediaplayer" style="width:%(width)spx;height:%(height)spx;" data="%(fileurl)s" title="%(title)s>
-        <param name="movie" value="%(fileurl)s" />
-        <param name="quality" value="high" />
-        <param name="wmode" value="%(transparency)s" />
-        <param name="bgcolor" value="%(background)s" />
-        <param name="autoplay" value="%(autoplay)s" />
-        <param name="scale" value="showall" />
-    </object>
-    """,
+#    ("swf",): """ NOT WORKING DUNNO WHY
+#    <object type="application/x-shockwave-flash" class="mediaplayer" style="width:%(width)spx;height:%(height)spx;" data="%(fileurl)s" title="%(title)s>
+#        <param name="movie" value="%(fileurl)s" />
+#        <param name="quality" value="high" />
+#        <param name="wmode" value="%(transparency)s" />
+#        <param name="bgcolor" value="%(background)s" />
+#        <param name="autoplay" value="%(autoplay)s" />
+#        <param name="scale" value="showall" />
+#    </object>
+#    """,
 
 #    UNUSABLE, NEEDS JS ESCAPING AND NOT HTML ESCAPING
 #    # uses silverlight/moonlight - badly supported, preferably not used

@@ -3278,7 +3278,7 @@ class PersonalFiles(BaseDataManager):
                           if os.path.isfile(os.path.join(personal_folder_path, filename))
                              and not filename.startswith(".") and not filename.startswith("~")] # hidden files removed
 
-        all_files = sorted(common_files + personal_files)
+        all_files = sorted(common_files + personal_files, key=lambda x: os.path.basename(x)) # sort by basename!
 
         if absolute_urls:
             domain = config.SITE_DOMAIN # "http://%s" % Site.objects.get_current().domain

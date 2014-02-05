@@ -135,7 +135,8 @@ input.digit
     img {
         display: inline-block;
         vertical-align: middle;
-        width: 60px;
+        max-width: 60px;
+        max-height: 60px;
     }
     span {
         vertical-align: middle;

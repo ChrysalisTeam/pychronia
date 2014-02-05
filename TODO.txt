@@ -234,6 +234,7 @@ TASKS DONE
 FUTUR ENHANCEMENTS
 --------------------------
 
+- make all gamemaster_hints editable
 - randomize master login in PlayerAuthentication._load_initial_data()
 - enforce placeholder detection ({{ PUT NAME HERE }}) everywhere, not only in message sending form.
 - restaurer et compléter les djinns, valeurs par défaut si pas de réponses surtout

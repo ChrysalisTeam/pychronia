@@ -1554,12 +1554,6 @@ fieldset {
 .p4wn-controls {
   margin-top: 20px;
 }
-.item_display {
-  padding: 0;
-  box-sizing: content-box;
-  max-height: 750px;
-  max-width: 500px;
-}
 #password_display {
   display: table-cell;
   vertical-align: middle;
@@ -1649,7 +1643,8 @@ input.digit {
 .contact_display img {
   display: inline-block;
   vertical-align: middle;
-  width: 60px;
+  max-width: 60px;
+  max-height: 60px;
 }
 .contact_display span {
   vertical-align: middle;
