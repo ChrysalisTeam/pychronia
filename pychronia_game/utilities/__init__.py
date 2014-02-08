@@ -396,6 +396,7 @@ def check_is_positive_int(value, non_zero=True):
     return True
 
 def check_is_restructuredtext(value):
+    assert isinstance(value, basestring) # NOT A LIST
     from django.contrib.markup.templatetags.markup import restructuredtext
     #print("LOADING RST...", value[0:100])
     usage_assert(restructuredtext(value))

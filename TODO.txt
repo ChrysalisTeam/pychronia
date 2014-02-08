@@ -13,7 +13,10 @@ FEATURES
 - fix display of missing addresses, in email templates
 - improve display of gems list with ¤ in view_characters
 - add periods to wordings like "You've proposed a friendship to that user"
-
+- FIXME - check templates more here #
+- remettre NPCs dans "senders" of emails
+- garder nom près de description de contact
+- emails pour NPCs concernent game master !!!
 
 
 SCRIPT
@@ -234,6 +237,7 @@ TASKS DONE
 FUTUR ENHANCEMENTS
 --------------------------
 
+- radio spots must show only title in playlist edition
 - allow to edit all characters at once in characters management
 - make all gamemaster_hints editable
 - randomize master login in PlayerAuthentication._load_initial_data()

@@ -1,0 +1,28 @@
+(10:19:19) main@conference.sfrpims.fr/hlee: Margarine.mp3 => Application error (please consider reporting that bug) - Error: Permission denied to access property 'toString' - URL:
+×
+Application error (please consider reporting that bug) - Script error. - URL: chrome://flashblock/content/flashblock.xml
+(10:19:41) pascal: damned
+(10:20:17) pascal: elle apparait où cette erreur ?
+(10:20:20) pascal: dans le log javascript ?
+(10:20:26) main@conference.sfrpims.fr/hlee: la musique se lance quand même
+(10:20:46) main@conference.sfrpims.fr/hlee: dans Personal Folder
+(10:21:01) pascal: oui mais le message d'erreur, il apparait où ?
+(10:21:09) main@conference.sfrpims.fr/hlee: les mp4 il me propose de le sauvegarder sur le disk
+(10:21:15) main@conference.sfrpims.fr/hlee: en haut à droite
+(10:21:30) pascal: les mp4 c'est normal, le plugin flash est obsolete ^^
+(10:21:35) pascal: hulm
+(10:21:43) main@conference.sfrpims.fr/hlee: essayes avec le tag <video> :)
+(10:22:01) main@conference.sfrpims.fr/hlee: Phobiques anonymes.flv aussi
+(10:22:07) pascal: yep mais pouur ça faut que je mette le bon format vidéo
+(10:22:14) pascal: ton erreur on dirait que c'est un bug de flashblock
+(10:22:21) pascal: je ocnnais pas cette extension
+(10:22:47) main@conference.sfrpims.fr/hlee: Phoques.avi => alert popup
+(10:22:50) main@conference.sfrpims.fr/hlee: Invalid commandline
+(10:22:57) main@conference.sfrpims.fr/hlee: The parameters passed to the application had an invalid format. Please file a bug!
+
+The parameters were:
+--transient-for=10158967
+gstreamer|1.0|totem-plugin-viewer|DivX MPEG-4 Version 5 decoder|decoder-video/x-divx, divxversion=(int)5, parsed=(boolean)true, profile=(string)simple, level=(string)1
+(10:23:27) pascal: oki, je ote que pour la V1.1, faudra revoir le système de lecture multimédia
+(10:23:33) pascal: je l'ai jamais testé sous linux
+(10:23:47) main@conference.sfrpims.fr/hlee: bah c'est un firefox quand même :)

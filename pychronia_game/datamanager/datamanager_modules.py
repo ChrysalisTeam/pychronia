@@ -1529,7 +1529,7 @@ class TextMessagingCore(BaseDataManager):
 
             msg["sender_email"], msg["recipient_emails"] = self._normalize_message_addresses(msg["sender_email"], msg["recipient_emails"])
 
-            msg ["body"] = utilities.load_multipart_rst(msg ["body"])
+            msg ["body"] = utilities.load_multipart_rst(msg["body"])
 
             msg["attachment"] = msg.get("attachment", None)
             if msg["attachment"]:
@@ -1590,8 +1590,6 @@ class TextMessagingCore(BaseDataManager):
                 # let's keep these IDs simple for now: ASCII...
                 msg["id"].encode("ascii")
                 msg["group_id"].encode("ascii")
-                if msg["transferred_msg"]:
-                    msg["transferred_msg"].encode("ascii")
 
                 assert msg["subject"] # body can be empty, after all...
 
@@ -1613,6 +1611,7 @@ class TextMessagingCore(BaseDataManager):
                     assert msg["attachment"].startswith("/") or msg["attachment"].startswith("http")
 
                 if msg["transferred_msg"]:
+                    msg["transferred_msg"].encode("ascii")
                     assert self.get_dispatched_message_by_id(msg_id=msg["transferred_msg"])
 
             all_ids = [msg["id"] for msg in msg_list]
@@ -2063,7 +2062,7 @@ class TextMessagingTemplates(BaseDataManager):
                 msg["sender_email"], msg["recipient_emails"] = self._normalize_message_addresses(msg.get("sender_email", ""), msg.get("recipient_emails", []))
 
                 msg["subject"] = msg.get("subject", "")
-                msg["body"] = msg.get("body", "")
+                msg["body"] = utilities.load_multipart_rst(msg.get("body", ""))
                 msg["attachment"] = msg.get("attachment", None)
                 msg["transferred_msg"] = msg.get("transferred_msg", None)
                 msg["is_used"] = msg.get("is_used", False)
@@ -2083,10 +2082,31 @@ class TextMessagingTemplates(BaseDataManager):
 
         template_fields = "sender_email recipient_emails subject body attachment transferred_msg is_used parent_id".split()
 
-        for tpl in messaging["manual_messages_templates"].values():
-            utilities.check_has_keys(tpl, keys=template_fields, strict=strict)
+        for msg in messaging["manual_messages_templates"].values():
+            utilities.check_has_keys(msg, keys=template_fields, strict=strict)
 
-        # FIXME - check templates more here #
+            if msg["sender_email"]:
+                utilities.check_is_email(msg["sender_email"])
+            for recipient in msg["recipient_emails"]:
+                utilities.check_is_email(recipient)
+
+            if msg["subject"]:
+                utilities.check_is_string(msg["subject"])
+            if msg["body"]: # might be empty
+                utilities.check_is_restructuredtext(msg["body"])
+
+            if msg["attachment"]:
+                assert msg["attachment"].startswith("/") or msg["attachment"].startswith("http")
+
+            if msg["transferred_msg"]:
+                msg["transferred_msg"].encode("ascii")
+                assert self.get_dispatched_message_by_id(msg_id=msg["transferred_msg"])
+
+            utilities.check_is_bool(msg["is_used"])
+
+            if msg["parent_id"]:
+                assert self.get_dispatched_message_by_id(msg_id=msg["parent_id"])
+
 
 
     def _build_new_message(self, *args, **kwargs):
