@@ -9,14 +9,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-02-03 23:32+0100\n"
-"PO-Revision-Date: 2014-01-20 21:23+0200\n"
+"POT-Creation-Date: 2014-02-09 18:12+0100\n"
+"PO-Revision-Date: 2014-02-09 18:23+0200\n"
 "Last-Translator: Pascal <chambon.pascal@gmail.com>\n"
 "Language-Team: Nothing\n"
+"Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: fr\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Generator: Virtaal 0.7.1\n"
 
@@ -33,13 +33,13 @@ msgstr "Exception inattendue dans action_failure_handler - %r"
 msgid "An internal error occurred"
 msgstr "Une erreur interne est survenue"
 
-#: .\common.py:177 .\common.py:182 .\utilities\__init__.py:618
-#: .\utilities\__init__.py:623
+#: .\common.py:177 .\common.py:182 .\utilities\__init__.py:619
+#: .\utilities\__init__.py:624
 #, python-format
 msgid "Unexpected exception occurred in exception swallower context : %r !"
 msgstr "Exception inattendue dans le contexte de l'avaleur d'exceptions : %r !"
 
-#: .\common.py:179 .\utilities\__init__.py:620
+#: .\common.py:179 .\utilities\__init__.py:621
 msgid "Exception Swallower logging is broken !!!"
 msgstr "Le logger de l'avaleur d'exceptions est cassé !!!"
 
@@ -285,47 +285,47 @@ msgstr "Se connecter"
 
 #: .\meta_administration_views.py:33
 msgid "Game instance ID (slug)"
-msgstr ""
+msgstr "ID d'instance de jeu (slug)"
 
 #: .\meta_administration_views.py:34
 #, fuzzy
 msgid "Creator login"
-msgstr "Créateur:"
+msgstr "Identifiant du créateur:"
 
 #: .\meta_administration_views.py:85
-#, fuzzy, python-format
+#, python-format
 msgid "Game instance '%s' successfully created for '%s'"
-msgstr "Partie verrouillée avec succès"
+msgstr "Instance de jeu '%s' créée avec succès pour '%s'"
 
 #: .\meta_administration_views.py:91
-#, fuzzy, python-format
+#, python-format
 msgid "Game instance '%s' successfully locked"
-msgstr "Partie verrouillée avec succès"
+msgstr "Partie '%s' verrouillée avec succès"
 
 #: .\meta_administration_views.py:95
-#, fuzzy, python-format
+#, python-format
 msgid "Game instance '%s' successfully unlocked"
-msgstr "Partie déverrouillée avec succès"
+msgstr "Partie '%s' déverrouillée avec succès"
 
 #: .\meta_administration_views.py:100
 #, python-format
 msgid "Game instance '%s' status changed to '%s'"
-msgstr ""
+msgstr "Statut '%s' de la partie changé à '%s'"
 
 #: .\meta_administration_views.py:104
-#, fuzzy, python-format
+#, python-format
 msgid "Game instance '%s' was deleted"
-msgstr "Les données de la partie ont été correctement remplacées."
+msgstr "la partie '%s' a été détruite"
 
 #: .\meta_administration_views.py:109
 #, python-format
 msgid "Game instance '%s' backup with comment '%s' done"
-msgstr ""
+msgstr "Sauvegarde de la partie '%s' avec commentaire '%s' effectuée"
 
 #: .\meta_administration_views.py:114
 #, python-format
 msgid "Auto-connection token for '%s/%s' is displayed below"
-msgstr ""
+msgstr "Le jeton d'auto-connexion pour '%s/%s est affichée ci-dessous"
 
 #: .\meta_administration_views.py:117
 msgid "Unknown admin action"
@@ -490,7 +490,7 @@ msgstr "Ne peut être acheté avec de l'argent"
 #: .\datamanager\action_middlewares.py:276
 #, python-format
 msgid "Cost when paying with gems: %s kashes."
-msgstr "Prix si paiement en argent: %s kashes."
+msgstr "Prix si paiement en gemmes: %s kashes."
 
 #: .\datamanager\action_middlewares.py:278
 msgid "Can't be bought with gems."
@@ -510,7 +510,7 @@ msgstr ""
 "l'appoint"
 
 #: .\datamanager\action_middlewares.py:336
-#: .\datamanager\datamanager_modules.py:3616
+#: .\datamanager\datamanager_modules.py:3636
 msgid "You don't possess the gems required"
 msgstr "Vous ne possédez pas les gemmes requises"
 
@@ -676,9 +676,9 @@ msgid "Wrong domain name %s"
 msgstr "Mauvais nom de domaine %s"
 
 #: .\datamanager\datamanager_modules.py:806
-#, fuzzy, python-format
+#, python-format
 msgid "Invalid instance username: '%s'"
-msgstr "Identifiant utilisateur invalide dans l'instance : %s"
+msgstr "Identifiant utilisateur invalide dans l'instance : '%s'"
 
 #: .\datamanager\datamanager_modules.py:808
 #, python-format
@@ -768,70 +768,70 @@ msgstr ""
 "Cette amitié est trop jeune pour être annulée - veuillez respecter la "
 "période de jachère."
 
-#: .\datamanager\datamanager_modules.py:1693
+#: .\datamanager\datamanager_modules.py:1692
 msgid "Sender, recipient, and subject of the message mustn't be empty"
 msgstr "L'émetteur, destinataire et sujet du message ne doivent pas être vides"
 
-#: .\datamanager\datamanager_modules.py:1764
+#: .\datamanager\datamanager_modules.py:1763
 #, python-format
 msgid "Email address %s is invalid"
 msgstr "L'adresse email %s est invalide"
 
-#: .\datamanager\datamanager_modules.py:1875
+#: .\datamanager\datamanager_modules.py:1874
 #, python-format
 msgid "Unknown message id '%s'"
 msgstr "Identifiant de message inconnu '%s'"
 
-#: .\datamanager\datamanager_modules.py:1939
+#: .\datamanager\datamanager_modules.py:1938
 #, python-format
 msgid "Mailbox %s has rejected your email"
 msgstr "La boîte aux lettres %s a rejeté votre email"
 
-#: .\datamanager\datamanager_modules.py:1948
+#: .\datamanager\datamanager_modules.py:1947
 msgid "contact"
 msgstr "contact"
 
-#: .\datamanager\datamanager_modules.py:2114
+#: .\datamanager\datamanager_modules.py:2134
 #, python-format
 msgid "Unexisting template id %r"
 msgstr "Identifiant de modèle %r inexistant"
 
-#: .\datamanager\datamanager_modules.py:2522
+#: .\datamanager\datamanager_modules.py:2542
 msgid "Unidentified contact"
 msgstr "Contact non identifié"
 
-#: .\datamanager\datamanager_modules.py:2712
+#: .\datamanager\datamanager_modules.py:2732
 #, python-format
 msgid "Unknown target username '%(target)s'"
 msgstr "Utilisateur cible inconnu '%(target)s'"
 
-#: .\datamanager\datamanager_modules.py:2717
+#: .\datamanager\datamanager_modules.py:2737
 #, python-format
 msgid "Wiretapping targets set to %(targets)s for %(username)s."
 msgstr "Cibles de mise sur écoute mises à %(targets)s pour %(username)s."
 
-#: .\datamanager\datamanager_modules.py:2804
+#: .\datamanager\datamanager_modules.py:2824
 msgid "radio spots"
 msgstr "spots radio"
 
-#: .\datamanager\datamanager_modules.py:2863
+#: .\datamanager\datamanager_modules.py:2883
 #, python-format
 msgid "Unknown radio message identifier - %(audio_id)s"
 msgstr "Identifiant de message radio inconnu - %(audio_id)s"
 
-#: .\datamanager\datamanager_modules.py:2910
+#: .\datamanager\datamanager_modules.py:2930
 msgid "Unknown radio frequency"
 msgstr "Fréquence radio inconnue"
 
-#: .\datamanager\datamanager_modules.py:3040
+#: .\datamanager\datamanager_modules.py:3060
 msgid "Only authenticated users may chat"
 msgstr "Seuls les utilisateurs authentifiés peuvent chatter"
 
-#: .\datamanager\datamanager_modules.py:3048
+#: .\datamanager\datamanager_modules.py:3068
 msgid "Chat message can't be empty"
 msgstr "Le message de chat ne peut être vide"
 
-#: .\datamanager\datamanager_modules.py:3164
+#: .\datamanager\datamanager_modules.py:3184
 #, python-format
 msgid ""
 "Only strings representing DataManager methods can be scheduled as delayed "
@@ -840,7 +840,7 @@ msgstr ""
 "Seules les chaines de caractère représentant des méthodes du DataManager "
 "peuvent être planifiées comme actions temporisées, et non %(function)s"
 
-#: .\datamanager\datamanager_modules.py:3167
+#: .\datamanager\datamanager_modules.py:3187
 #, python-format
 msgid ""
 "You can only register a callable object as a delayed action, not a %"
@@ -849,15 +849,15 @@ msgstr ""
 "Vous ne pouvez enregistrer que les objets appelables en tant qu'actions "
 "temporisées, non %(function)r"
 
-#: .\datamanager\datamanager_modules.py:3221
+#: .\datamanager\datamanager_modules.py:3241
 msgid "This encrypted archive doesn't exist."
 msgstr "Cette archive encodée n'existe pas."
 
-#: .\datamanager\datamanager_modules.py:3227
+#: .\datamanager\datamanager_modules.py:3247
 msgid "Wrong password for this encrypted folder."
 msgstr "Mauvais mot de passe pour cette archive chiffrée."
 
-#: .\datamanager\datamanager_modules.py:3239
+#: .\datamanager\datamanager_modules.py:3259
 #, python-format
 msgid ""
 "Encrypted folder '%(folder)s/%(password)s' accessed by user '%(username)s'."
@@ -865,29 +865,29 @@ msgstr ""
 "Dossier chiffré '%(folder)s/%(password)s' ouvert par l'utilisateur '%"
 "(username)s'."
 
-#: .\datamanager\datamanager_modules.py:3427
+#: .\datamanager\datamanager_modules.py:3447
 #, python-format
 msgid "Unknown item %s"
 msgstr "Élément inconnu %s"
 
-#: .\datamanager\datamanager_modules.py:3443
+#: .\datamanager\datamanager_modules.py:3463
 msgid "Money amount must be positive"
 msgstr "La somme d'argent doit être positive"
 
-#: .\datamanager\datamanager_modules.py:3446
-#: .\datamanager\datamanager_modules.py:3608
+#: .\datamanager\datamanager_modules.py:3466
+#: .\datamanager\datamanager_modules.py:3628
 msgid "Sender and recipient must be different"
 msgstr "L'émetteur et le destinataire doivent être différents"
 
-#: .\datamanager\datamanager_modules.py:3452
+#: .\datamanager\datamanager_modules.py:3472
 msgid "Bank doesn't have enough money available"
 msgstr "La banque n'a plus assez d'argent en réserve"
 
-#: .\datamanager\datamanager_modules.py:3457
+#: .\datamanager\datamanager_modules.py:3477
 msgid "Sender doesn't have enough money"
 msgstr "L'émetteur n'a pas assez d'argent"
 
-#: .\datamanager\datamanager_modules.py:3466
+#: .\datamanager\datamanager_modules.py:3486
 #, python-format
 msgid ""
 "Bank operation: %(amount)s kashes transferred from %(from_name)s to %"
@@ -896,73 +896,73 @@ msgstr ""
 "Opération bancaire: %(amount)s kashes transféré de %(from_name)s à %(to_name)"
 "s."
 
-#: .\datamanager\datamanager_modules.py:3488
+#: .\datamanager\datamanager_modules.py:3508
 msgid ""
 "Impossible to free item, some gems from this package have already been used"
 msgstr ""
 "Impossible de libérer l'objet, des gemmes de ce lot ont déjà été utilisées"
 
-#: .\datamanager\datamanager_modules.py:3517
+#: .\datamanager\datamanager_modules.py:3537
 #, python-format
 msgid "Unknown user name '%s'"
 msgstr "Identifiant utilisateur inconnu '%s'"
 
-#: .\datamanager\datamanager_modules.py:3521
+#: .\datamanager\datamanager_modules.py:3541
 msgid "no one"
 msgstr "personne"
 
-#: .\datamanager\datamanager_modules.py:3524
+#: .\datamanager\datamanager_modules.py:3544
 #, python-format
 msgid "This object doesn't belong to %s"
 msgstr "Cet objet n'appartient pas à %s"
 
-#: .\datamanager\datamanager_modules.py:3527
+#: .\datamanager\datamanager_modules.py:3547
 msgid "Impossible to have same origin and destination for item transfer"
 msgstr ""
 "Impossible d'avoir même origine et destination pour le transfert d'objet"
 
-#: .\datamanager\datamanager_modules.py:3535
+#: .\datamanager\datamanager_modules.py:3555
 #, python-format
 msgid "Item %(item_name)s transferred from %(from_name)s to %(char_name)s."
 msgstr "Objet %(item_name)s transféré de %(from_name)s à %(char_name)s."
 
-#: .\datamanager\datamanager_modules.py:3611
+#: .\datamanager\datamanager_modules.py:3631
 msgid "You must transfer at least one gem"
 msgstr "Vous devez transférer au moins une gemme"
 
-#: .\datamanager\datamanager_modules.py:3621
+#: .\datamanager\datamanager_modules.py:3641
 #, python-format
 msgid "Gems transferred from %(from_name)s to %(to_name)s : %(gems_choices)s."
 msgstr "Gemmes transférées de %(from_name)s à %(to_name)s : %(gems_choices)s."
 
-#: .\datamanager\datamanager_modules.py:3764
+#: .\datamanager\datamanager_modules.py:3784
 #, python-format
 msgid "Unknown view names detected in the set of views to be activated: %r"
 msgstr "Noms de vues inconnus détectés dans l'ensemble des vues à activer: %r"
 
-#: .\datamanager\datamanager_modules.py:3980
+#: .\datamanager\datamanager_modules.py:4000
 msgid "static pages"
 msgstr "pages statiques"
 
-#: .\datamanager\datamanager_modules.py:4263
+#: .\datamanager\datamanager_modules.py:4283
 #, python-format
 msgid "Unknown captcha id %s"
 msgstr "Identifiant de captcha inconnu %s"
 
-#: .\datamanager\datamanager_modules.py:4267
+#: .\datamanager\datamanager_modules.py:4287
 msgid "Nope, it looked like this captcha had no known answer..."
 msgstr "Nope, il semble que ce captcha n'ait pas de réponse connue..."
 
-#: .\datamanager\datamanager_modules.py:4273
+#: .\datamanager\datamanager_modules.py:4293
 #, python-format
 msgid "Incorrect captcha answer '%s'"
 msgstr "Réponse au captcha incorrecte '%s'"
 
-#: .\datamanager\datamanager_tools.py:29
+#: .\datamanager\datamanager_tools.py:37
 msgid "Concurrent access conflict on the resource, please retry"
 msgstr "Conflit d'accès concurrent à la ressource, veuillez réessayer"
 
-#: .\datamanager\datamanager_tools.py:75
+#: .\datamanager\datamanager_tools.py:83
 msgid "This feature is unavailable at the moment"
 msgstr "Fonctionnalité non accessible pour le moment"
 
@@ -1101,7 +1101,7 @@ msgstr ""
 
 #: .\templates\__specific_operations\chat_with_djinn.html.py:103
 #: .\templates\abilities\artificial_intelligence.html.py:116
-#: .\templates\messaging\compose.html.py:195
+#: .\templates\messaging\compose.html.py:198
 msgid "Send Message"
 msgstr "Envoyer le Message"
 
@@ -1925,31 +1925,31 @@ msgstr "Profitez de la puissance du système de messagerie intégré d'Anthropia
 msgid "Nothing to preview."
 msgstr "Rien à prévisualiser."
 
-#: .\templates\messaging\compose.html.py:76
+#: .\templates\messaging\compose.html.py:78
 msgid "Previously saved content has been restored"
 msgstr "Le contenu précédemment sauvé a été restauré"
 
-#: .\templates\messaging\compose.html.py:149
+#: .\templates\messaging\compose.html.py:152
 msgid "Contacts"
 msgstr "Contacts"
 
-#: .\templates\messaging\compose.html.py:173
+#: .\templates\messaging\compose.html.py:176
 msgid "Cancel message"
 msgstr "Annuler le message"
 
-#: .\templates\messaging\compose.html.py:178
+#: .\templates\messaging\compose.html.py:181
 msgid "Message template used:"
 msgstr "Modèle de message utilisé :"
 
-#: .\templates\messaging\compose.html.py:185
+#: .\templates\messaging\compose.html.py:188
 msgid "MESSAGE TRANSFERRED: click to view in other window."
 msgstr "MESSAGE TRANSFÉRÉ: cliquer pour le voir dans une autre fenêtre."
 
-#: .\templates\messaging\compose.html.py:194
+#: .\templates\messaging\compose.html.py:197
 msgid "Preview Message Body"
 msgstr "Prévisualiser le Corps du Message"
 
-#: .\templates\messaging\compose.html.py:203
+#: .\templates\messaging\compose.html.py:206
 msgid ""
 "Sorry, the sending of digital messages is currently disabled for maintenance."
 msgstr ""
@@ -2048,17 +2048,16 @@ msgid "Lock"
 msgstr "Verrouiller"
 
 #: .\templates\meta_administration\manage_instances.html.py:59
-#, fuzzy
 msgid "Status"
-msgstr "Statut :"
+msgstr "Statut"
 
 #: .\templates\meta_administration\manage_instances.html.py:67
 msgid "Write backup comment here..."
-msgstr ""
+msgstr "Ecrire commentaire ici..."
 
 #: .\templates\meta_administration\manage_instances.html.py:68
 msgid "Backup with comment"
-msgstr ""
+msgstr "Sauvegarde avec commentaire"
 
 #: .\templates\meta_administration\manage_instances.html.py:73
 #, fuzzy
@@ -2069,33 +2068,31 @@ msgstr ""
 
 #: .\templates\meta_administration\manage_instances.html.py:89
 msgid "Get Autoconnect Token"
-msgstr ""
+msgstr "Jeton d'Auto-connexion"
 
 #: .\templates\meta_administration\manage_instances.html.py:91
 msgid "Result of computation"
-msgstr ""
+msgstr "Résultat du calcul"
 
 #: .\templates\meta_administration\manage_instances.html.py:95
 msgid "INSTANCE_ID"
-msgstr ""
+msgstr "INSTANCE_ID"
 
 #: .\templates\meta_administration\manage_instances.html.py:96
 msgid "USERNAME"
-msgstr ""
+msgstr "IDENTIFIANT"
 
 #: .\templates\meta_administration\manage_instances.html.py:97
 msgid "Compute Token"
-msgstr ""
+msgstr "Calculer Jeton"
 
 #: .\templates\meta_administration\manage_instances.html.py:103
-#, fuzzy
 msgid "New Game Instance"
-msgstr "Déverrouiller l'instance de jeu"
+msgstr "Nouvelle Instance de Jeu"
 
 #: .\templates\meta_administration\manage_instances.html.py:106
-#, fuzzy
 msgid "Create game instance"
-msgstr "Déverrouiller l'instance de jeu"
+msgstr "Créer instance de jeu"
 
 #: .\templates\mobile\homepage.html.py:7
 msgid "What's up on Anthropia?"
@@ -2154,9 +2151,8 @@ msgid "You're are currently in a blind friendship with:"
 msgstr "Vous êtes actuellement en amitié aveugle avec :"
 
 #: .\templates\profile\friendship_management.html.py:44
-#, fuzzy
 msgid "Friendship Request"
-msgstr "Amitiés"
+msgstr "Requête d'Amitié"
 
 #: .\templates\profile\instructions.html.py:26
 msgid "Further information is available in your mailbox."
@@ -2241,51 +2237,51 @@ msgstr "mon titre de test 1"
 msgid "my test title 2"
 msgstr "mon titre de test 2"
 
-#: .\tests\test_game.py:3272
+#: .\tests\test_game.py:3279
 msgid "Private dummy ability"
 msgstr "Compétence bidon privée"
 
-#: .\tests\test_game.py:4180
+#: .\tests\test_game.py:4188
 msgid "jjj"
 msgstr "jjj"
 
-#: .\tests\test_game.py:4191
+#: .\tests\test_game.py:4199
 msgid "ssss"
 msgstr "ssss"
 
-#: .\tests\test_game.py:4198 .\tests\test_game.py:4219
+#: .\tests\test_game.py:4206 .\tests\test_game.py:4227
 msgid "SSS"
 msgstr "SSS"
 
-#: .\tests\test_game.py:4202
+#: .\tests\test_game.py:4210
 msgid "DSDSF"
 msgstr "DSDSF"
 
-#: .\tests\test_game.py:4207
+#: .\tests\test_game.py:4215
 msgid "DDD"
 msgstr ""
 
-#: .\tests\test_game.py:4211
+#: .\tests\test_game.py:4219
 msgid "LJKSG"
 msgstr ""
 
-#: .\tests\test_game.py:4230
+#: .\tests\test_game.py:4238
 msgid "Hi"
 msgstr ""
 
-#: .\tests\test_game.py:4234
+#: .\tests\test_game.py:4242
 msgid "Hi2"
 msgstr ""
 
-#: .\tests\test_game.py:4238
+#: .\tests\test_game.py:4246
 msgid "Hi3"
 msgstr ""
 
-#: .\tests\test_game.py:4242
+#: .\tests\test_game.py:4250
 msgid "Hisss"
 msgstr ""
 
-#: .\tests\test_game.py:4246
+#: .\tests\test_game.py:4254
 msgid "QQQ"
 msgstr ""
 
@@ -2711,9 +2707,8 @@ msgid "Password change successfully performed."
 msgstr "Message envoyé avec succès."
 
 #: .\views\profile_views.py:190
-#, fuzzy
 msgid "User Identifier"
-msgstr "Identifiant"
+msgstr "Identifiant Utilisateur"
 
 #: .\views\profile_views.py:197 .\views\profile_views.py:254
 msgid "Friendship Management"
@@ -2776,9 +2771,9 @@ msgid "You're not friends with that user"
 msgstr "Vous êtes n'êtes pas ami avec cet utilisateur"
 
 #: .\views\profile_views.py:263
-#, fuzzy, python-format
+#, python-format
 msgid "Invalid username '%s'"
-msgstr "Identifiant utilisateur invalide."
+msgstr "Identifiant utilisateur '%s' invalide."
 
 #: .\views\profile_views.py:267
 #, python-format
@@ -3324,15 +3319,15 @@ msgstr "Changer la durée théorique du jeu en jours"
 
 #: .\views\admin_views\admin_dashboard_mod.py:52
 msgid "Master Login (immutable)"
-msgstr ""
+msgstr "Identifiant Maître (immuable)"
 
 #: .\views\admin_views\admin_dashboard_mod.py:53
 msgid "Master Password (NOT your usual one)"
-msgstr ""
+msgstr "Mot de passe Maître (PAS votre habituel)"
 
 #: .\views\admin_views\admin_dashboard_mod.py:54
 msgid "Master Real Email (optional)"
-msgstr ""
+msgstr "Email réel du Maître (optionnel)"
 
 #: .\views\admin_views\admin_dashboard_mod.py:68
 msgid "Admin Dashboard"
@@ -3356,7 +3351,7 @@ msgstr "Changer l'état de pause du jeu"
 
 #: .\views\admin_views\admin_dashboard_mod.py:85
 msgid "Change game master credentials"
-msgstr ""
+msgstr "Changer les données du Maître"
 
 #: .\views\admin_views\admin_dashboard_mod.py:174
 msgid "Views status well saved."
@@ -3371,9 +3366,8 @@ msgid "Game state well saved."
 msgstr "État du jeu bien sauvegardé."
 
 #: .\views\admin_views\admin_dashboard_mod.py:195
-#, fuzzy
 msgid "Game master credentials well changed."
-msgstr "Durée théorique du jeu bien sauvegardée."
+msgstr "Données du Maître bien changées."
 
 #: .\views\admin_views\global_contacts_management_mod.py:13
 msgid "Avatar"
