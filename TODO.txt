@@ -7,6 +7,8 @@ TODO LIST CHRYSALIS
 FEATURES
 ------------
 
+- remove django debug toolbar in prod
+- dm.user.add_error(_("Sorry, you don't have access to search features at the moment."))
 - fix broken "save_current_content()" feature of message compose form
 - autoriser espaces dans les tags (mots clefs) automatiques de encyclopedia
 - que se passe-t-il si bad alias ??? dans GAME IMAGE
@@ -248,6 +250,7 @@ TASKS DONE
 FUTUR ENHANCEMENTS
 --------------------------
 
+- make impersonation per-browser-tab!
 - radio spots must show only title in playlist edition
 - allow to edit all characters at once in characters management
 - make all gamemaster_hints editable

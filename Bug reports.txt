@@ -77,3 +77,134 @@ Traceback (most recent call last):
 
 OperationalError: (2006, 'MySQL server has gone away')
 
+
+
+
+
+
+
+
+
+Traceback (most recent call last):
+
+  File "/home/pakal/webapps/chrysalis_game/ENV/lib/python2.7/site-packages/django/core/handlers/base.py", line 109, in get_response
+    response = middleware_method(request, callback, callback_args, callback_kwargs)
+
+  File "/home/pakal/webapps/chrysalis_game/pychronia/pychronia_game/middlewares.py", line 71, in process_view
+    request.datamanager = retrieve_game_instance(game_instance_id=game_instance_id, request=request)
+
+  File "/home/pakal/webapps/chrysalis_game/pychronia/pychronia_game/datamanager/datamanager_administrator.py", line 229, in retrieve_game_instance
+    game_data = _fetch_available_game_data(game_instance_id=game_instance_id, metadata_checker=metadata_checker)
+
+  File "<string>", line 2, in _fetch_available_game_data
+
+  File "/home/pakal/webapps/chrysalis_game/pychronia/pychronia_game/datamanager/datamanager_tools.py", line 185, in zodb_transaction
+    transaction.commit()
+
+  File "/home/pakal/webapps/chrysalis_game/ENV/lib/python2.7/site-packages/transaction/_manager.py", line 111, in commit
+    return self.get().commit()
+
+  File "/home/pakal/webapps/chrysalis_game/ENV/lib/python2.7/site-packages/transaction/_transaction.py", line 280, in commit
+    reraise(t, v, tb)
+
+  File "/home/pakal/webapps/chrysalis_game/ENV/lib/python2.7/site-packages/transaction/_transaction.py", line 271, in commit
+    self._commitResources()
+
+  File "/home/pakal/webapps/chrysalis_game/ENV/lib/python2.7/site-packages/transaction/_transaction.py", line 417, in _commitResources
+    reraise(t, v, tb)
+
+  File "/home/pakal/webapps/chrysalis_game/ENV/lib/python2.7/site-packages/transaction/_transaction.py", line 394, in _commitResources
+    rm.tpc_vote(self)
+
+  File "/home/pakal/webapps/chrysalis_game/ENV/lib/python2.7/site-packages/ZODB/Connection.py", line 783, in tpc_vote
+    s = vote(transaction)
+
+  File "/home/pakal/webapps/chrysalis_game/pychronia/dependencies/relstorage/storage.py", line 789, in tpc_vote
+    return self._vote()
+
+  File "/home/pakal/webapps/chrysalis_game/pychronia/dependencies/relstorage/storage.py", line 836, in _vote
+    serials = self._finish_store()
+
+  File "/home/pakal/webapps/chrysalis_game/pychronia/dependencies/relstorage/storage.py", line 749, in _finish_store
+    rdata = self.tryToResolveConflict(oid, prev_tid, serial, data)
+
+  File "/home/pakal/webapps/chrysalis_game/ENV/lib/python2.7/site-packages/ZODB/ConflictResolution.py", line 308, in tryToResolveConflict
+    data=newpickle)
+
+ConflictError: database conflict error (oid 0x020b03, class persistent.mapping.PersistentMapping, serial this txn started with 0x03a4affc1cf8f044 2014-02-09 15:24:06.790410, serial currently committed 0x03a4affc74e24f11 2014-02-09 15:24:27.394692)
+
+
+
+
+
+
+
+
+
+
+
+
+Traceback (most recent call last):
+
+  File "/home/pakal/webapps/chrysalis_game/ENV/lib/python2.7/site-packages/django/core/handlers/base.py", line 187, in get_response
+    response = middleware_method(request, response)
+
+  File "/home/pakal/webapps/chrysalis_game/ENV/lib/python2.7/site-packages/debug_toolbar/middleware.py", line 129, in process_response
+    panel.process_response(request, response)
+
+  File "/home/pakal/webapps/chrysalis_game/ENV/lib/python2.7/site-packages/debug_toolbar/panels/template.py", line 118, in process_response
+    pformat(k(self.request))) for k in get_standard_processors()
+
+  File "/home/pakal/webapps/chrysalis_game/pychronia/pychronia_game/context_processors.py", line 47, in pychronia_template_context
+    writability_data = dm.determine_actual_game_writability()
+
+  File "<string>", line 2, in determine_actual_game_writability
+
+  File "/home/pakal/webapps/chrysalis_game/pychronia/pychronia_game/datamanager/datamanager_tools.py", line 120, in _build_method_wrapper
+    return _execute_under_toplevel_zodb_conflict_solver(datamanager=datamanager, completed_func=completed_func)
+
+  File "/home/pakal/webapps/chrysalis_game/pychronia/pychronia_game/datamanager/datamanager_tools.py", line 26, in _execute_under_toplevel_zodb_conflict_solver
+    return completed_func()
+
+  File "/home/pakal/webapps/chrysalis_game/pychronia/pychronia_game/datamanager/datamanager_tools.py", line 45, in _call_checked_readonly_method
+    return func(*args, **kwargs)
+
+  File "/home/pakal/webapps/chrysalis_game/pychronia/pychronia_game/datamanager/datamanager_modules.py", line 134, in determine_actual_game_writability
+    if self.is_master() or self.is_game_started(): # master is NOT impacted by game state
+
+  File "<string>", line 2, in is_master
+
+  File "/home/pakal/webapps/chrysalis_game/pychronia/pychronia_game/datamanager/datamanager_tools.py", line 118, in _build_method_wrapper
+    return completed_func()
+
+  File "/home/pakal/webapps/chrysalis_game/pychronia/pychronia_game/datamanager/datamanager_tools.py", line 45, in _call_checked_readonly_method
+    return func(*args, **kwargs)
+
+  File "/home/pakal/webapps/chrysalis_game/pychronia/pychronia_game/datamanager/datamanager_modules.py", line 1022, in is_master
+    return (username == self.master_login)
+
+  File "/home/pakal/webapps/chrysalis_game/pychronia/pychronia_game/datamanager/datamanager_modules.py", line 1036, in master_login
+    return self.get_global_parameter("master_login")
+
+  File "<string>", line 2, in get_global_parameter
+
+  File "/home/pakal/webapps/chrysalis_game/pychronia/pychronia_game/datamanager/datamanager_tools.py", line 118, in _build_method_wrapper
+    return completed_func()
+
+  File "/home/pakal/webapps/chrysalis_game/pychronia/pychronia_game/datamanager/datamanager_tools.py", line 45, in _call_checked_readonly_method
+    return func(*args, **kwargs)
+
+  File "/home/pakal/webapps/chrysalis_game/pychronia/pychronia_game/datamanager/datamanager_modules.py", line 63, in get_global_parameter
+    return self.data["global_parameters"][name]
+
+TypeError: 'NoneType' object has no attribute '__getitem__'
+
+
+
+
+
+Désolé, vous n'avez pas accès à cette fonctionnalité de recherche pour le moment.
+
+Votre usurpation d'identité est en lecture seule.
+
+

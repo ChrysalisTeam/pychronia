@@ -6,7 +6,7 @@
 
 {% kwacro shareable_link link_url %}
 <span class="float-right">
-    <a href="#" onclick="window.prompt ('{% trans "Shareable link to copy/paste" %}', '{{SITE_DOMAIN}}{{link_url}}'); return false;">
+    <a href="#" onclick="window.prompt ('{{ _("Shareable link to copy/paste")|escapejs }}', '{{SITE_DOMAIN}}{{link_url}}'); return false;">
         <img src="{{ STATIC_URL }}MetalRadiance/img/icons/share_link.png">
     </a>
 </span>
@@ -18,7 +18,7 @@
     <form action="" method="post" class="form_deletion_button">
         <input type="hidden" name="_action_" value="delete_item"/>
         <input type="hidden" name="deleted_item" value="{{ del_id }}"/>
-        <input type="submit" name="delete" value="{% trans "Delete" %}" onclick="return confirm('{% trans "Are you sure you want to delete this entry?" %}');"/>
+        <input type="submit" name="delete" value="{% trans "Delete" %}" onclick="return confirm('{{ _("Are you sure you want to delete this entry?")|escapejs }}');"/>
     </form>
     {% endif %}
 {% endkwacro %}

@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-02-09 18:12+0100\n"
-"PO-Revision-Date: 2014-02-09 18:23+0200\n"
+"POT-Creation-Date: 2014-02-09 19:15+0100\n"
+"PO-Revision-Date: 2014-02-09 19:16+0200\n"
 "Last-Translator: Pascal <chambon.pascal@gmail.com>\n"
 "Language-Team: Nothing\n"
 "Language: fr\n"
@@ -78,7 +78,7 @@ msgstr "Artefact"
 #: .\forms.py:97 .\datamanager\datamanager_modules.py:514
 #: .\templates\base_main.html.py:362
 #: .\templates\abilities\mercenaries_hiring.html.py:15
-#: .\templates\abilities\wiretapping_management.html.py:40
+#: .\templates\abilities\wiretapping_management.html.py:41
 #: .\templates\administration\character_management.html.py:20
 #: .\templates\administration\character_management.html.py:34
 #: .\templates\administration\global_contacts_management.html.py:81
@@ -288,9 +288,8 @@ msgid "Game instance ID (slug)"
 msgstr "ID d'instance de jeu (slug)"
 
 #: .\meta_administration_views.py:34
-#, fuzzy
 msgid "Creator login"
-msgstr "Identifiant du créateur:"
+msgstr "Identifiant du créateur"
 
 #: .\meta_administration_views.py:85
 #, python-format
@@ -1356,21 +1355,27 @@ msgstr ""
 "Votre compte de messagerie est correctement protégé par le système de "
 "confidentialité."
 
-#: .\templates\abilities\wiretapping_management.html.py:16
+#: .\templates\abilities\wiretapping_management.html.py:15
 msgid "Buy confidentiality system"
 msgstr "Acheter confidentialité"
 
-#: .\templates\abilities\wiretapping_management.html.py:16
+#: .\templates\abilities\wiretapping_management.html.py:15
 msgid "Are you sure you want to purchase a confidentiality protection system?"
 msgstr ""
 "Êtes-vous sûr de vouloir acheter un système de protection de la "
 "confidentialité ?"
 
-#: .\templates\abilities\wiretapping_management.html.py:23
+#: .\templates\abilities\wiretapping_management.html.py:19
+msgid "You currently have no way to protect your account against wiretapping."
+msgstr ""
+"Vous n'avez actuellement pas de moyen pour protéger votre compte contre une "
+"mise sur écoute."
+
+#: .\templates\abilities\wiretapping_management.html.py:24
 msgid "Your wiretapping targets"
 msgstr "Vos cibles de mise sur écoute"
 
-#: .\templates\abilities\wiretapping_management.html.py:27
+#: .\templates\abilities\wiretapping_management.html.py:28
 msgid ""
 "Something seems to prevent the proper interception of messages concerning "
 "these targets:"
@@ -1378,27 +1383,27 @@ msgstr ""
 "Quelque chose semble empêcher la bonne interception des messages concernant "
 "ces cibles:"
 
-#: .\templates\abilities\wiretapping_management.html.py:29
+#: .\templates\abilities\wiretapping_management.html.py:30
 msgid "Your wiretapping systems seem to work fine."
 msgstr "Vos systèmes de mise sur écoute semblent bien fonctionner."
 
-#: .\templates\abilities\wiretapping_management.html.py:36
+#: .\templates\abilities\wiretapping_management.html.py:37
 msgid "Current target(s)"
 msgstr "Cible(s) actuelle(s)"
 
-#: .\templates\abilities\wiretapping_management.html.py:51
+#: .\templates\abilities\wiretapping_management.html.py:52
 msgid "Set Wiretaps"
 msgstr "Mettre sur Ecoute"
 
-#: .\templates\abilities\wiretapping_management.html.py:55
+#: .\templates\abilities\wiretapping_management.html.py:56
 msgid "You currently have no wiretapping slot available."
 msgstr "Vous n'avez pas de système de mise sur écoute disponible."
 
-#: .\templates\abilities\wiretapping_management.html.py:63
+#: .\templates\abilities\wiretapping_management.html.py:64
 msgid "Buy wiretapping slot"
 msgstr "Acheter espionneur"
 
-#: .\templates\abilities\wiretapping_management.html.py:63
+#: .\templates\abilities\wiretapping_management.html.py:64
 msgid "Are you sure you want to purchase a spying slot?"
 msgstr "Êtes-vous sûr de vouloir acheter un kit d'espionnage ?"
 
@@ -2060,11 +2065,8 @@ msgid "Backup with comment"
 msgstr "Sauvegarde avec commentaire"
 
 #: .\templates\meta_administration\manage_instances.html.py:73
-#, fuzzy
-msgid "Are you sure you cant to delete this game instance?"
-msgstr ""
-"Voulez-vous vraiment supprimer définitivement ce message POUR TOUS LES "
-"UTILISATEURS ?"
+msgid "Are you sure you want to delete this game instance?"
+msgstr "Voulez-vous vraiment supprimer définitivement cette instance de jeu ?"
 
 #: .\templates\meta_administration\manage_instances.html.py:89
 msgid "Get Autoconnect Token"
@@ -3128,7 +3130,7 @@ msgstr "Vous contrôlez déjà des mercenaires dans cette ville"
 #: .\views\abilities\mercenaries_hiring_mod.py:91
 #, python-format
 msgid "Mercenary hired in %(location)s"
-msgstr "Mercenaires embauchés à %(city_name)s"
+msgstr "Mercenaires embauchés à %(location)s"
 
 #: .\views\abilities\mercenaries_hiring_mod.py:95
 msgid "Mercenaries have been successfully hired"

@@ -70,7 +70,7 @@
 
                 {% if meta.status in deletable_statuses %}
                 <br/>
-                <form action="#" method="post" class="meta_admin_button" onsubmit="return confirm('{{ _("Are you sure you cant to delete this game instance?")|escapejs }}')">
+                <form action="#" method="post" class="meta_admin_button" onsubmit="return confirm('{{ _("Are you sure you want to delete this game instance?")|escapejs }}')">
                     <input type="hidden" name="delete_game_instance" value="{{ meta.instance_id }}"/>
                     <input type="submit" value="{{ _("Delete")}}" />
                 </form>
