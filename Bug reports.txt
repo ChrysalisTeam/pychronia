@@ -26,3 +26,54 @@ gstreamer|1.0|totem-plugin-viewer|DivX MPEG-4 Version 5 decoder|decoder-video/x-
 (10:23:27) pascal: oki, je ote que pour la V1.1, faudra revoir le système de lecture multimédia
 (10:23:33) pascal: je l'ai jamais testé sous linux
 (10:23:47) main@conference.sfrpims.fr/hlee: bah c'est un firefox quand même :)
+
+
+
+
+
+
+
+
+
+Traceback (most recent call last):
+
+  File "/home/pakal/webapps/chrysalis_game/ENV/lib/python2.7/site-packages/django/core/handlers/base.py", line 109, in get_response
+    response = middleware_method(request, callback, callback_args, callback_kwargs)
+
+  File "/home/pakal/webapps/chrysalis_game/pychronia/pychronia_game/middlewares.py", line 71, in process_view
+    request.datamanager = retrieve_game_instance(game_instance_id=game_instance_id, request=request)
+
+  File "/home/pakal/webapps/chrysalis_game/pychronia/pychronia_game/datamanager/datamanager_administrator.py", line 229, in retrieve_game_instance
+    game_data = _fetch_available_game_data(game_instance_id=game_instance_id, metadata_checker=metadata_checker)
+
+  File "<string>", line 2, in _fetch_available_game_data
+
+  File "/home/pakal/webapps/chrysalis_game/pychronia/pychronia_game/datamanager/datamanager_tools.py", line 177, in zodb_transaction
+    begin_transaction_with_autoreconnect()
+
+  File "/home/pakal/webapps/chrysalis_game/pychronia/pychronia_game/datamanager/datamanager_tools.py", line 17, in begin_transaction_with_autoreconnect
+    return transaction.begin() # in case SQL connection timed out in relstorage...
+
+  File "/home/pakal/webapps/chrysalis_game/ENV/lib/python2.7/site-packages/transaction/_manager.py", line 71, in begin
+    _new_transaction(txn, self._synchs)
+
+  File "/home/pakal/webapps/chrysalis_game/ENV/lib/python2.7/site-packages/transaction/_manager.py", line 48, in _new_transaction
+    synchs.map(lambda s: s.newTransaction(txn))
+
+  File "/home/pakal/webapps/chrysalis_game/ENV/lib/python2.7/site-packages/transaction/weakset.py", line 58, in map
+    f(elt)
+
+  File "/home/pakal/webapps/chrysalis_game/ENV/lib/python2.7/site-packages/transaction/_manager.py", line 48, in <lambda>
+    synchs.map(lambda s: s.newTransaction(txn))
+
+  File "/home/pakal/webapps/chrysalis_game/pychronia/dependencies/relstorage/__init__.py", line 46, in _storage_sync
+    sync(force=force)
+
+  File "/home/pakal/webapps/chrysalis_game/pychronia/dependencies/relstorage/storage.py", line 1164, in sync
+    self._rollback_load_connection()
+
+  File "/home/pakal/webapps/chrysalis_game/pychronia/dependencies/relstorage/storage.py", line 233, in _rollback_load_connection
+    self._load_conn.rollback()
+
+OperationalError: (2006, 'MySQL server has gone away')
+

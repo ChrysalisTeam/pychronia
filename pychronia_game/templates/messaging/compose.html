@@ -65,11 +65,13 @@ var message_content_id = 'anthropia_saved_message';
 var mylocalStorage = $.localStorage();
 
 function clear_saved_content() {
+    return; // BUGGY
     mylocalStorage.removeItem(message_content_id);
     //console.log("DESTROYING", message_content_id);
 }
 
 function restore_saved_content() {
+    return; // BUGGY
     var saved_content = mylocalStorage.getItem(message_content_id); // may be null
 	if (saved_content) {
 	    $("#id_default_body").val(saved_content);
@@ -78,6 +80,7 @@ function restore_saved_content() {
 }
 
 function save_current_content() {
+    return; // BUGGY
     var content = $("#id_default_body").val().trim();
     if (content.length > 15) { // we don't save ridiculous texts
     	mylocalStorage.setItem(message_content_id, content);

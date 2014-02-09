@@ -7,6 +7,7 @@ TODO LIST CHRYSALIS
 FEATURES
 ------------
 
+- fix broken "save_current_content()" feature of message compose form
 - autoriser espaces dans les tags (mots clefs) automatiques de encyclopedia
 - que se passe-t-il si bad alias ??? dans GAME IMAGE
 - mon compte (PAS "profile personnel"), ou Mon profil
@@ -24,7 +25,7 @@ FEATURES
 - improve display of gems list with ¤ in view_characters
 - add periods to wordings like "You've proposed a friendship to that user"
 - FIXME - check templates more here #
-- remettre NPCs dans "senders" of emails
+- remettre NPCs dans "senders" of emails for master
 - garder nom près de description de contact
 - emails pour NPCs concernent game master !!!
 
