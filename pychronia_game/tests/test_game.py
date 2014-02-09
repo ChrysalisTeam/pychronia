@@ -3323,10 +3323,11 @@ class TestDatamanager(BaseGameTestCase):
 
         EXISTING_HELP_PAGE = "help-homepage"
 
-        utilities.check_is_restructuredtext(self.dm.get_categorized_static_page(category="content", name="view_encyclopedia"))
+        block = self.dm.get_categorized_static_page(category="content", name="help-view_encyclopedia")
+        utilities.check_is_restructuredtext(block["content"])
 
         assert self.dm.get_categorized_static_page(category="content", name="qskiqsjdqsid") is None
-        assert self.dm.get_categorized_static_page(category="badcategory", name="view_encyclopedia") is None
+        assert self.dm.get_categorized_static_page(category="badcategory", name="help-view_encyclopedia") is None
 
         assert EXISTING_HELP_PAGE in self.dm.get_static_page_names_for_category("content")
 

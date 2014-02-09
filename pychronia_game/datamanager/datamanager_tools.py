@@ -10,11 +10,19 @@ import functools
 
 
 def begin_transaction_with_autoreconnect():
-    from _mysql_exceptions import OperationalError
-    try:
-        return transaction.begin()
-    except OperationalError:
-        return transaction.begin() # in case SQL connection timed out in relstorage...
+    from _mysql_exceptions import OperationalError, InterfaceError
+    disconnected_exceptions = (
+        OperationalError,
+        InterfaceError,
+    )
+    for i in range(10):
+        try:
+            return transaction.begin()
+            break ## OK done
+        except disconnected_exceptions:
+            pass # maybe SQL connection timed out in relstorage...
+    else:
+        raise # reraise latest "OperationalError: (2006, 'MySQL server has gone away')" or thing like that
 
 
 def _execute_under_toplevel_zodb_conflict_solver(datamanager, completed_func):

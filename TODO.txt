@@ -7,8 +7,18 @@ TODO LIST CHRYSALIS
 FEATURES
 ------------
 
+- autoriser espaces dans les tags (mots clefs) automatiques de encyclopedia
+- que se passe-t-il si bad alias ??? dans GAME IMAGE
+- mon compte (PAS "profile personnel"), ou Mon profil
+- pas GREFFON <- modules supplémentaires, externes, complémentaires ; proposé par d'autres académies des entreprises ou autres entitées ne dépendant pas de notre académie
+- préciser que "indéfini" est normal <- inconnu, vous n'avez pas l'autorisation
+- les notifications doivent etre cliquables ou plus explicites
+- Nouvelles entrées de menu disponibles ! <<< completer
+- save current content in compose message is BUGGY
+- problem "previously saved content has been restored" !!!
+- typo "quelques" dans email analyse de situation initiale
 - update abilities settings
-
+- dans preview_message, rich_text, pas advanced_restructuredtext!!!
 
 - fix display of missing addresses, in email templates
 - improve display of gems list with ¤ in view_characters
