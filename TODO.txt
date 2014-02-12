@@ -3,10 +3,23 @@ TODO LIST CHRYSALIS
 =========================
 
 
+PARTIE EN COURS
+==================
+- mission d'espionnage des obérons d'Amethyst à l'académie d'alifir : à continuer
+
 
 FEATURES
 ------------
 
+- mettre en gras les non-lus dans liste d'emails ??
+- faire CHRONOLOGIE détaillée des évènements pour aider énigmes
+- dire quand AUTRE perso (ami) a nouveaux messages/autres ??
+- préciser que geolocalisation est EXTERNE (pas mettre pseudo d'espion!!)
+- list keywords of articles for master, in encyclopedia
+- fix fragment # in links of static page management forms
+- cacher compétences spéciales pour PNJ ? comment faire ?
+- trier articles séparément des help et top/bottom, dans static pages !!
+- pour MJ : marqué intercepté par qui, les emails!
 - remove django debug toolbar in prod
 - dm.user.add_error(_("Sorry, you don't have access to search features at the moment."))
 - fix broken "save_current_content()" feature of message compose form

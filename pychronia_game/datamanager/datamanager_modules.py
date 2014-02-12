@@ -2734,9 +2734,6 @@ class TextMessagingInterception(BaseDataManager):
         data = self.get_character_properties(username)
         data["wiretapping_targets"] = PersistentList(target_names)
 
-        self.log_game_event(ugettext_noop("Wiretapping targets set to %(targets)s for %(username)s."),
-                             PersistentDict(targets="[%s]" % (", ".join(target_names)), username=username),
-                             url=None)
 
     @readonly_method
     def get_wiretapping_targets(self, username=CURRENT_USER):
