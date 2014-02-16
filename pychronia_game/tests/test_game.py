@@ -1483,7 +1483,7 @@ class TestDatamanager(BaseGameTestCase):
         print(">>>>files>>>>", files)
         assert len(files) == 5
         assert os.path.basename(files[0]) == "111first.jpg" # sorted by basename
-                     
+
 
 
     @for_core_module(PersonalFiles)
@@ -2712,6 +2712,84 @@ class TestDatamanager(BaseGameTestCase):
         assert not request.datamanager.user.is_observer
 
 
+
+        # SPECIAL OBSERVER MODE #
+
+        username = "master"
+        token = authentication.compute_enforced_login_token(self.dm.game_instance_id, username, is_observer=True)
+
+        request = self.factory.post(home_url, data={request_var : token})
+        request.datamanager = self.dm
+        try_authenticating_with_session(request)
+        assert request.datamanager.user.username == username # well auto-signed-in
+        assert request.datamanager.user.is_observer
+        assert not request.datamanager.user.has_write_access # NO write, even for non-impersonated username
+
+
+        request = self.factory.post(home_url, data={request_var : random.choice((token, None)),
+                                                    IMPERSONATION_TARGET_POST_VARIABLE: "guy1",
+                                                    IMPERSONATION_WRITABILITY_POST_VARIABLE: True})
+        request.datamanager = self.dm
+        try_authenticating_with_session(request)
+        assert request.datamanager.user.username == "guy1" # impersonation
+        assert request.datamanager.user.real_username == "master"
+        assert request.datamanager.user.is_observer
+        assert not request.datamanager.user.has_write_access # NO write, especially for impersonated username
+
+
+
+    @for_core_module(PlayerAuthentication)
+    def test_observer_authentication(self):
+
+        master_login = self.dm.get_global_parameter("master_login")
+        player_login = "guy1"
+        anonymous_login = self.dm.get_global_parameter("anonymous_login")
+
+        session_ticket = {'game_instance_id': TEST_GAME_INSTANCE_ID, 'impersonation_target': None,
+                           'impersonation_writability': None, 'game_username': master_login,
+                           'is_observer': True}
+
+        if random.choice((True, False)):
+            now = timezone.now()
+            is_superuser = random.choice((True, False))
+            django_user = User(username='fakename', email='my@email.fr',
+                              is_staff=is_superuser, is_active=True, is_superuser=is_superuser,
+                              last_login=now, date_joined=now)
+        else:
+            is_superuser = False
+            django_user = None
+
+        requested_impersonation_target = random.choice((None, player_login, anonymous_login))
+        requested_impersonation_writability = random.choice((True, False, None)) # IGNORED!
+        res = self.dm.authenticate_with_session_data(session_ticket.copy(),
+                                                   requested_impersonation_target=requested_impersonation_target,
+                                                   requested_impersonation_writability=requested_impersonation_writability,
+                                                   django_user=django_user)
+
+        assert res == {u'game_username': master_login,
+                       u'impersonation_target': requested_impersonation_target,
+                       u'impersonation_writability': None, # blocked because OBSERVER
+                       u'game_instance_id': TEST_GAME_INSTANCE_ID,
+                       u'is_observer': True}
+        assert self.dm.user.is_observer
+        assert self.dm.user.username == requested_impersonation_target if requested_impersonation_target else master_login
+        assert not self.dm.user.has_write_access
+        assert not self.dm.user.is_superuser # hidden by game_username==master_login
+
+        expected_capabilities = dict(display_impersonation_target_shortcut=True,
+                                     display_impersonation_writability_shortcut=False, # Special
+                                     # impersonation_targets - DELETED
+                                     has_writability_control=False, # Special
+                                     current_impersonation_target=requested_impersonation_target,
+                                     current_impersonation_writability=False)
+
+        res = self.dm.get_current_user_impersonation_capabilities()
+        del res["impersonation_targets"]
+
+        assert res == expected_capabilities
+
+            
+
     @for_core_module(PlayerAuthentication)
     def test_impersonation_by_superuser(self):
 
@@ -2815,6 +2893,7 @@ class TestDatamanager(BaseGameTestCase):
                                         current_impersonation_target=requested_impersonation_target,
                                         current_impersonation_writability=bool(requested_impersonation_writability))
             assert self.dm.get_current_user_impersonation_capabilities() == expected_capabilities
+
 
 
 

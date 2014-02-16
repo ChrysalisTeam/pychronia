@@ -94,7 +94,7 @@
         <form action="#session_token_form_id" method="post" class="meta_admin_button">
             <p><input type="text" name="game_instance_id" value="{% trans "INSTANCE_ID" %}" /></p>
             <p><input type="text" name="login" value="{% trans "USERNAME" %}" /></p>
-            <p><input type="checkbox" name="is_observer" value="ON" /></p>
+            <p><input type="checkbox" name="is_observer" value="ON" /> {% trans "Observer Mode" %}</p>
             <p><input type="submit" name="compute_enforced_session_ticket" value="{{ _("Compute Token")}}" /></p>
         </form>
     </div><br/><br/>

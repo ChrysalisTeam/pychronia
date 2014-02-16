@@ -128,7 +128,7 @@ class CurrentUserHandling(BaseDataManager):
     @readonly_method # TODO FIXME TEST THIS UTIL!!
     def determine_actual_game_writability(self):
         if not self.user.has_write_access:
-            assert self.user.is_impersonation # only case ATM
+            assert self.user.is_impersonation or self.user.is_observer # only cases ATM
             return dict(writable=False,
                         reason=_("Your impersonation is in read-only mode."))
         else:

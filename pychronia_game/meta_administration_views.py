@@ -112,7 +112,7 @@ def manage_instances(request):
                 login = request.POST["login"].strip()
                 is_observer = bool(request.POST.get("is_observer"))
                 token = authentication.compute_enforced_login_token(game_instance_id=game_instance_id, login=login, is_observer=is_observer)
-                messages.add_message(request, messages.INFO, _(u"Auto-connection token for 'instance=%s/login=%s/is_observer=%s' is displayed below") % (game_instance_id, login, is_observer))
+                messages.add_message(request, messages.INFO, _(u"Auto-connection token for 'instance=%s, login=%s and is_observer=%s' is displayed below") % (game_instance_id, login, is_observer))
                 session_token_display = '%s=%s' % (authentication.ENFORCED_SESSION_TICKET_NAME, token)
             else:
                 raise ValueError(_("Unknown admin action"))

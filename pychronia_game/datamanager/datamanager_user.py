@@ -52,7 +52,10 @@ class GameUser(object):
         self.impersonation_target = impersonation_target
         self.impersonation_writability = impersonation_writability # saved even we're not currently impersonating
 
-        self.has_write_access = bool(impersonation_writability) if impersonation_target else True # normal logged-in user always HAS write access ATM
+        if is_observer:
+            self.has_write_access = False # ALWAYS, for both impersonation and "normal user"
+        else:
+            self.has_write_access = bool(impersonation_writability) if impersonation_target else True # normal logged-in user always HAS write access ATM
 
         _effective_username = (impersonation_target if impersonation_target else username)
         assert _effective_username in _available_logins # redundant but yah...
