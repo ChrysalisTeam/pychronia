@@ -11,6 +11,12 @@ PARTIE EN COURS
 FEATURES
 ------------
 
+- montrer gamemaster hinst dans contacts
+- enlever saust de ligne avant TTS radio!
+- pas "indéfini" mais "Inconnu" !!
+- change last_acccess_time... typo
+- TODO - eviter bugs graphiques quand dezoom des contacts emails sur site
+- PB, serveurs webfactions sont en UTC !!!
 - mettre en gras les non-lus dans liste d'emails ??
 - faire CHRONOLOGIE détaillée des évènements pour aider énigmes
 - dire quand AUTRE perso (ami) a nouveaux messages/autres ??
@@ -47,6 +53,17 @@ FEATURES
 
 SCRIPT
 ----------
+
+
+ARTICLES MANQUANTS
+- académie alifir (et image deans)
+-
+
+
+Toutes ces gemmes peuvent etre vendues à leur prix de reference sur le marché international, dont le cours est tres stable actuellement. Il parait d'ailleurs que notre portail Anthropia va etre connecté sous peu à une place des ventes.
+
+Ces lots sont volumineux, mais rien ne vous interdit de vous entendre pour en acheter en commun, puis vous repartir les gemmes individuelles ensuite.
+
 
 - add GAME_IMAGE_URL in help pages
 

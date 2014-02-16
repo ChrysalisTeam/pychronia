@@ -177,20 +177,30 @@ def transaction_watcher(object=None, always_writable=False):
 @decorator
 def zodb_transaction(func, *args, **kwargs):
     """
-    Simply wraps a callable with a transaction rollback/commit logic, 
-    without retries on conflict.
+    Wraps a callable with a transaction rollback/commit logic, 
+    with retries on conflict.
     
     Subtransactions are not supported with this decorator.
     """
-    begin_transaction_with_autoreconnect()
-    try:
-        res = func(*args, **kwargs)
-        return res
-    except:
-        transaction.abort()
-        raise
-    finally:
-        transaction.commit()
+    for i in range(5):
+        try:
+            print ("WE BEGIN!!!", func)
+            begin_transaction_with_autoreconnect()
+            try:
+                res = func(*args, **kwargs)
+            except BaseException: # even sys.exit() !
+                print ("WE ABORT!!!", func)
+                transaction.abort()
+                raise
+            else:
+                print("WE COMMIT!!!", func)
+                transaction.commit()
+                return res
+        except ConflictError, e:
+            time.sleep(0.5)
+    raise AbnormalUsageError(_("Couldn't solve 'concurrent access' conflict on the resource"))
+
+
 
 
 

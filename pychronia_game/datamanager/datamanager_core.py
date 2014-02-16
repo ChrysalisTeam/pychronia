@@ -13,7 +13,6 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
     # utilities for WRITING transactions (readonly ones are implicit) #
 
     def begin(self):
-
         if not self._in_writing_transaction:
             self.check_no_pending_transaction()
             self._in_writing_transaction = True
