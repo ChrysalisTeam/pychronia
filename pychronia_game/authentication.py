@@ -57,6 +57,7 @@ def try_authenticating_with_credentials(request, username, password):
 
 def _lookup_enforced_session_or_none(request):
     session_ticket = None
+    is_observer = False
 
     if config.GAME_ALLOW_ENFORCED_LOGIN:
         login_data = request.REQUEST.get(ENFORCED_SESSION_TICKET_NAME)
@@ -67,19 +68,28 @@ def _lookup_enforced_session_or_none(request):
             except (TypeError, ValueError, UnicodeError), e:
                 logging.warning("Error when trying to decode enforced ticket: %r" % e)
             else:
-                enforced_instance_id, enforced_login = login_data.split("|")
+                data_list = login_data.split("|")
+                if len(data_list) == 2: # LEGACY
+                    enforced_instance_id, enforced_login = data_list
+                else:
+                    assert len(data_list) == 3, data_list
+                    enforced_instance_id, enforced_login, is_observer_str = data_list
+                    is_observer = bool(is_observer_str) # should be "observer"
+                    del is_observer_str
                 if enforced_instance_id != request.datamanager.game_instance_id:
                     logging.warning("Wrong game instance id in enforced ticket: %s should contain %s instead", login_data, request.datamanager.game_instance_id)
                 else:
                     session_ticket = dict(game_instance_id=enforced_instance_id,
                                           game_username=enforced_login,
                                           impersonation_target=None,
-                                          impersonation_writability=None)
+                                          impersonation_writability=None,
+                                          is_observer=is_observer)
     return session_ticket
 
 
-def compute_enforced_login_token(game_instance_id, login):
-    login_data = "%s|%s" % (game_instance_id, login)
+def compute_enforced_login_token(game_instance_id, login, is_observer=False):
+    assert is_observer in (True, False)
+    login_data = "%s|%s|%s" % (game_instance_id, login, "observer" if is_observer else "")
     return encryption.unicode_encrypt(login_data)
     
 

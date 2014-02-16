@@ -103,13 +103,14 @@ class CurrentUserHandling(BaseDataManager):
 
 
     @transaction_watcher(always_writable=True)
-    def _set_user(self, username, impersonation_target=None, impersonation_writability=False, is_superuser=False):
+    def _set_user(self, username, impersonation_target=None, impersonation_writability=False, is_superuser=False, is_observer=False):
         assert not hasattr(super(CurrentUserHandling, self), "_set_user") # we're well top-level here
         self.user = GameUser(datamanager=self,
                              username=username,
                              impersonation_target=impersonation_target,
                              impersonation_writability=impersonation_writability,
-                             is_superuser=is_superuser) # might raise UsageError
+                             is_superuser=is_superuser,
+                             is_observer=is_observer) # might raise UsageError
         del username
         self._notify_user_change(username=self.user.username) # might have been normalized, eg. None -> anonymous_login
 
@@ -763,6 +764,10 @@ class PlayerAuthentication(BaseDataManager):
             display_impersonation_target_shortcut = bool(impersonation_targets)
             display_impersonation_writability_shortcut = False # ALWAYS
 
+        if self.user.is_observer:
+            display_impersonation_writability_shortcut = False # OVERRIDE
+            has_writability_control = False # OVERRIDE
+
         assert not self.user.impersonation_target or self.user.impersonation_target in impersonation_targets
         assert has_writability_control or not self.user.impersonation_writability
         return dict(display_impersonation_target_shortcut=display_impersonation_target_shortcut,
@@ -786,6 +791,8 @@ class PlayerAuthentication(BaseDataManager):
 
         game_username = session_ticket.get("game_username", None) # instance-local user set via login page
         assert game_username != self.anonymous_login # would be absurd, we store "None" for this
+
+        is_observer = session_ticket.get("is_observer", False)
 
         # first, we compute the impersonation we actually want #
         if requested_impersonation_target == "": # special case "delete current impersonation target"
@@ -823,7 +830,7 @@ class PlayerAuthentication(BaseDataManager):
 
 
         if requested_impersonation_writability is not None:
-            if is_superuser or (game_username and self.is_master(game_username)):
+            if not is_observer and (is_superuser or (game_username and self.is_master(game_username))):
                 pass # OK, writability control authorized
             else:
                 self.logger.critical("Attempt at controlling impersonation writability (%s) by non-privileged player %r", requested_impersonation_writability, game_username)
@@ -832,7 +839,8 @@ class PlayerAuthentication(BaseDataManager):
         return dict(is_superuser=is_superuser,
                     game_username=game_username,
                     impersonation_target=requested_impersonation_target,
-                    impersonation_writability=requested_impersonation_writability)
+                    impersonation_writability=requested_impersonation_writability,
+                    is_observer=is_observer)
 
 
     def _generate_session_ticket(self):
@@ -868,29 +876,34 @@ class PlayerAuthentication(BaseDataManager):
             raise AbnormalUsageError(_("Invalid session ticket: %s") % repr(session_ticket)) # only ticket for THIS instance should have been given
 
         new_session_data = self._compute_new_session_data(session_ticket=session_ticket,
-                                                                   requested_impersonation_target=requested_impersonation_target,
-                                                                   requested_impersonation_writability=requested_impersonation_writability,
-                                                                   django_user=django_user)
-        assert len(new_session_data) == 4
+                                                           requested_impersonation_target=requested_impersonation_target,
+                                                           requested_impersonation_writability=requested_impersonation_writability,
+                                                           django_user=django_user)
+        assert len(new_session_data) == 5
         is_superuser = new_session_data["is_superuser"]
         game_username = new_session_data["game_username"]
         impersonation_target = new_session_data["impersonation_target"]
         impersonation_writability = new_session_data["impersonation_writability"]
+        is_observer = new_session_data["is_observer"]
 
         self.logger.info("Authenticating user with ticket, as %r",
                              repr(dict(username=game_username, impersonation_target=impersonation_target,
-                                       impersonation_writability=impersonation_writability, is_superuser=is_superuser)))
+                                       impersonation_writability=impersonation_writability, is_superuser=is_superuser,
+                                       is_observer=is_observer)))
 
         self._set_user(username=game_username,
                         impersonation_target=impersonation_target,
                         impersonation_writability=impersonation_writability,
-                        is_superuser=is_superuser)
+                        is_superuser=is_superuser,
+                        is_observer=is_observer)
 
         if session_ticket is not None:
             assert session_ticket.get("game_instance_id") == self.game_instance_id
             assert session_ticket.get("game_username") == game_username # NEVER TOUCHED ATM
-            session_ticket.update(impersonation_target=impersonation_target,
-                                  impersonation_writability=impersonation_writability)
+            session_ticket.update(
+                                  impersonation_target=impersonation_target,
+                                  impersonation_writability=impersonation_writability,
+                                  ) # NO change on "is_observer" ATM
 
         return session_ticket
 

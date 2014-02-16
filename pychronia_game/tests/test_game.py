@@ -2563,6 +2563,7 @@ class TestDatamanager(BaseGameTestCase):
             assert not request.datamanager.user.impersonation_target
             assert not request.datamanager.user.impersonation_writability
             assert not request.datamanager.user.is_superuser
+            assert not request.datamanager.user.is_observer
 
             res = try_authenticating_with_session(request)
             assert res is None
@@ -2575,6 +2576,7 @@ class TestDatamanager(BaseGameTestCase):
             assert not request.datamanager.user.impersonation_target
             assert not request.datamanager.user.impersonation_writability
             assert not request.datamanager.user.is_superuser
+            assert not request.datamanager.user.is_observer
 
             self._set_user(None)
 
@@ -2625,6 +2627,7 @@ class TestDatamanager(BaseGameTestCase):
         res = try_authenticating_with_credentials(request, player_login, player_password)
         assert res is None # no result expected
         ticket = request.session[SESSION_TICKET_KEY]
+        # NOTE that "is_observer" is NOT added by default
         assert ticket == {'game_instance_id': TEST_GAME_INSTANCE_ID, 'impersonation_target': None,
                           'impersonation_writability': None, 'game_username': player_login}
 
@@ -2639,6 +2642,7 @@ class TestDatamanager(BaseGameTestCase):
         res = try_authenticating_with_credentials(request, master_login, master_password)
         assert res is None # no result expected
         ticket = request.session[SESSION_TICKET_KEY]
+        # NOTE that "is_observer" is NOT added by default
         assert ticket == {'game_instance_id': TEST_GAME_INSTANCE_ID, 'impersonation_target': None,
                           'impersonation_writability': None, 'game_username': master_login}
 
@@ -2660,6 +2664,7 @@ class TestDatamanager(BaseGameTestCase):
 
         try_authenticating_with_session(request)
         assert request.datamanager.user.username == username # well auto-signed-in
+        assert not request.datamanager.user.is_observer
 
         request._request = {"sdsds" : "sdsd"} # PATCH
         assert request.REQUEST["sdsds"]
@@ -2673,9 +2678,10 @@ class TestDatamanager(BaseGameTestCase):
 
         try_authenticating_with_session(request)
         assert request.datamanager.user.username == username # wrong session ticket given by REQUEST, so we remain as usual
+        assert not request.datamanager.user.is_observer
 
 
-        token = authentication.compute_enforced_login_token("badinstanceid", "guy1")
+        token = authentication.compute_enforced_login_token("badinstanceid", "guy1", is_observer=False)
         request._request = {request_var : token} # PATCH
 
         try_authenticating_with_session(request)
@@ -2695,14 +2701,15 @@ class TestDatamanager(BaseGameTestCase):
 
         try_authenticating_with_session(request)
         assert request.datamanager.user.username == "my_npc"
-
+        assert not request.datamanager.user.is_observer
 
         logout_session(request)
         assert request.datamanager.user.username == "guest"
+        assert not request.datamanager.user.is_observer
 
         try_authenticating_with_session(request)
         assert request.datamanager.user.username == "my_npc"
-
+        assert not request.datamanager.user.is_observer
 
 
     @for_core_module(PlayerAuthentication)
@@ -2748,10 +2755,13 @@ class TestDatamanager(BaseGameTestCase):
                                                    requested_impersonation_target=requested_impersonation_target,
                                                    requested_impersonation_writability=requested_impersonation_writability,
                                                    django_user=django_user)
+
+            # NOTE that "is_observer" is NOT added to session by default
             assert res == {u'game_username': None,
                            u'impersonation_target': None, # we can't impersonate because inactive or not staff user
                            u'impersonation_writability': None, # blocked because non-privileged user
                            u'game_instance_id': TEST_GAME_INSTANCE_ID}
+            assert not self.dm.user.is_observer
             assert self.dm.user.username == anonymous_login
             assert self.dm.user.has_write_access
             assert not self.dm.user.is_superuser

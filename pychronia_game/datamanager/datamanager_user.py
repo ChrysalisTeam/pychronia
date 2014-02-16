@@ -12,7 +12,7 @@ class GameUser(object):
 
     def __init__(self, datamanager, username=None,
                  impersonation_target=None, impersonation_writability=False,
-                 is_superuser=False):
+                 is_superuser=False, is_observer=False):
         """
         Builds a user object, storing notifications for the current HTTP request,
         and exposing shortcuts to useful data.
@@ -22,12 +22,16 @@ class GameUser(object):
         
         If is_superuser (django notion, different from is_master), user can impersonate anyone, 
         yet keep his real_username as anonymous.
+        
+        Observers may never WRITE the game.
         """
         assert impersonation_writability in (None, True, False)
         impersonation_writability = bool(impersonation_writability) # we don't care about genesis details here, None => False
         # data normalization #
         _game_anonymous_login = datamanager.anonymous_login
         _available_logins = datamanager.get_available_logins()
+
+        self._is_observer = is_observer
 
         if username is None:
             username = _game_anonymous_login # better than None, to display in templates
@@ -40,6 +44,7 @@ class GameUser(object):
         assert not impersonation_target or is_superuser or datamanager.can_impersonate(username, impersonation_target)
         assert not (is_superuser and username != _game_anonymous_login) # game authentication "hides" the superuser status
         assert is_superuser or datamanager.is_master(username) or not impersonation_target or not impersonation_writability # atm only special user can take full control of other user
+        assert not (is_observer and impersonation_writability)
 
         self.is_superuser = is_superuser # REAL django state of user, whatever impersonation is happening ; can mean both "staff" or "superuser"
         self._real_username = username
@@ -71,6 +76,10 @@ class GameUser(object):
     @property
     def datamanager(self):
         return self._datamanager()
+
+    @property
+    def is_observer(self):
+        return self._is_observer
 
     @property
     def real_username(self):

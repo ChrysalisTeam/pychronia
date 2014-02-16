@@ -110,8 +110,9 @@ def manage_instances(request):
             elif request.POST.get("compute_enforced_session_ticket"):
                 game_instance_id = request.POST["game_instance_id"].strip() # manually entered
                 login = request.POST["login"].strip()
-                token = authentication.compute_enforced_login_token(game_instance_id=game_instance_id, login=login)
-                messages.add_message(request, messages.INFO, _(u"Auto-connection token for '%s/%s' is displayed below") % (game_instance_id, login,))
+                is_observer = bool(request.POST.get("is_observer"))
+                token = authentication.compute_enforced_login_token(game_instance_id=game_instance_id, login=login, is_observer=is_observer)
+                messages.add_message(request, messages.INFO, _(u"Auto-connection token for 'instance=%s/login=%s/is_observer=%s' is displayed below") % (game_instance_id, login, is_observer))
                 session_token_display = '%s=%s' % (authentication.ENFORCED_SESSION_TICKET_NAME, token)
             else:
                 raise ValueError(_("Unknown admin action"))

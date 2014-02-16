@@ -184,16 +184,13 @@ def zodb_transaction(func, *args, **kwargs):
     """
     for i in range(5):
         try:
-            print ("WE BEGIN!!!", func)
             begin_transaction_with_autoreconnect()
             try:
                 res = func(*args, **kwargs)
             except BaseException: # even sys.exit() !
-                print ("WE ABORT!!!", func)
                 transaction.abort()
                 raise
             else:
-                print("WE COMMIT!!!", func)
                 transaction.commit()
                 return res
         except ConflictError, e:
