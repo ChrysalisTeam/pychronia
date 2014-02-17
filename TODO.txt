@@ -11,6 +11,7 @@ PARTIE EN COURS
 FEATURES
 ------------
 
+- message answer does NOT mark "read" the parent message ??
 - montrer gamemaster hinst dans contacts
 - enlever saust de ligne avant TTS radio!
 - pas "indéfini" mais "Inconnu" !!

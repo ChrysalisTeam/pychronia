@@ -2726,7 +2726,7 @@ class TestDatamanager(BaseGameTestCase):
         assert not request.datamanager.user.has_write_access # NO write, even for non-impersonated username
 
 
-        request = self.factory.post(home_url, data={request_var : random.choice((token, None)),
+        request = self.factory.post(home_url, data={request_var: token, # note that django session tracking via cookie doesn't work here
                                                     IMPERSONATION_TARGET_POST_VARIABLE: "guy1",
                                                     IMPERSONATION_WRITABILITY_POST_VARIABLE: True})
         request.datamanager = self.dm
