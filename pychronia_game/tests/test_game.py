@@ -1724,7 +1724,8 @@ class TestDatamanager(BaseGameTestCase):
         contact1 = "SOME_EMAILS"
         contact2 = "phoenix@stash.com"
         contact_bad = "qsd qsdqsd"
-        good_content = dict(avatar="images/avatars/question_mark.png", description="here a description", access_tokens=None)
+        good_content = dict(avatar="images/avatars/question_mark.png", description="here a description", access_tokens=None,
+                            gamemaster_hints=random.choice(("", "here some hint")))
 
         container = self.dm.global_contacts
 
@@ -1786,7 +1787,7 @@ class TestDatamanager(BaseGameTestCase):
             res = copy.copy(container[contact])
             assert res["immutable"] == False
             del res["immutable"]
-            assert res == {"avatar": None, "description": None, "access_tokens": None}
+            assert res == {"avatar": None, "description": None, "access_tokens": None, "gamemaster_hints": ""}
 
             assert contact in container
 
@@ -2302,7 +2303,7 @@ class TestDatamanager(BaseGameTestCase):
         self.assertEqual(username, "guy3")
 
         properties = self.dm.get_audio_message_properties(audio_id)
-        self.assertEqual(set(properties.keys()), set(["title", "text", "file", "url", "immutable"]))
+        self.assertEqual(set(properties.keys()), set(["title", "text", "file", "url", "immutable", "gamemaster_hints"]))
 
         # self.assertEqual(properties["new_messages_notification_for_user"], "guy3")
         # self.assertEqual(self.dm.get_audio_message_properties("request_for_report_teldorium")["new_messages_notification_for_user"], None)

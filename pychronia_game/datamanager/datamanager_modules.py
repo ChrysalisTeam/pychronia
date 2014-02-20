@@ -395,6 +395,10 @@ class CharacterHandling(BaseDataManager): # TODO REFINE
             character.setdefault("real_life_identity", None)
             character.setdefault("real_life_email", None)
 
+            if character["gamemaster_hints"]:
+                character["gamemaster_hints"] = character["gamemaster_hints"].strip()
+
+
     def _check_database_coherency(self, **kwargs):
         super(CharacterHandling, self)._check_database_coherency(**kwargs)
 
@@ -1971,10 +1975,16 @@ class TextMessagingExternalContacts(BaseDataManager):
                 details.setdefault("description", None)
                 details.setdefault("access_tokens", None) # PUBLIC contact
 
+                details.setdefault("gamemaster_hints", "")
+                if details["gamemaster_hints"]:
+                    details["gamemaster_hints"] = details["gamemaster_hints"].strip()
+
+
         def _preprocess_new_item(self, key, value):
             assert "immutable" not in value
             value["immutable"] = False # always, else new entry can't even be deleted later on
             value.setdefault("access_tokens", None)
+            value.setdefault("gamemaster_hints", "")
             return (key, PersistentDict(value))
             # other params are supposed to exist in "value"
 
@@ -1990,6 +2000,10 @@ class TextMessagingExternalContacts(BaseDataManager):
                 utilities.check_is_string(value["description"], multiline=False)
             if value["avatar"]: # optional
                 utilities.check_is_game_file(value["avatar"]) # FIXME improve that
+
+            if value["gamemaster_hints"]: # optional
+                utilities.check_is_restructuredtext(value["gamemaster_hints"])
+
 
         def _sorting_key(self, item_pair):
             return item_pair[0] # we sort by email, simply...
@@ -2066,11 +2080,16 @@ class TextMessagingTemplates(BaseDataManager):
         if isinstance(messaging["manual_messages_templates"], list): # to simplify exchanges with dispatched emails, we allow list fixtures
             for t in messaging["manual_messages_templates"]:
                 assert ("id" in t), t
-            messaging["manual_messages_templates"] = dict((t["id"], t) for t in messaging["manual_messages_templates"])
+            messaging["manual_messages_templates"] = dict((t["id"], t) for t in messaging["manual_messages_templates"]) # indexed by ID
+
 
         def _normalize_messages_templates(msg_list):
 
             for msg in msg_list:
+
+                msg.setdefault("gamemaster_hints", "")
+                if msg["gamemaster_hints"]:
+                    msg["gamemaster_hints"] = msg["gamemaster_hints"].strip()
 
                 msg["sender_email"], msg["recipient_emails"] = self._normalize_message_addresses(msg.get("sender_email", ""), msg.get("recipient_emails", []))
 
@@ -2093,10 +2112,13 @@ class TextMessagingTemplates(BaseDataManager):
 
         messaging = self.messaging_data
 
-        template_fields = "sender_email recipient_emails subject body attachment transferred_msg is_used parent_id".split()
+        template_fields = "sender_email recipient_emails subject body attachment transferred_msg is_used parent_id gamemaster_hints".split()
 
         for msg in messaging["manual_messages_templates"].values():
             utilities.check_has_keys(msg, keys=template_fields, strict=strict)
+
+            if msg["gamemaster_hints"]: # optional
+                utilities.check_is_restructuredtext(msg["gamemaster_hints"])
 
             if msg["sender_email"]:
                 utilities.check_is_email(msg["sender_email"])
@@ -2836,6 +2858,11 @@ class RadioMessaging(BaseDataManager): # TODO REFINE
         def _load_initial_data(self, **kwargs):
 
             for identifier, details in self._table.items():
+
+                details.setdefault("gamemaster_hints", "")
+                if details["gamemaster_hints"]:
+                    details["gamemaster_hints"] = details["gamemaster_hints"].strip()
+
                 details.setdefault("immutable", False) # we assume ANY radio spot is optional for the game, and can be edited/delete
                 details.setdefault("file", None) # LOCAL file
                 if details["file"]:
@@ -2849,6 +2876,7 @@ class RadioMessaging(BaseDataManager): # TODO REFINE
         def _preprocess_new_item(self, key, value):
             assert "immutable" not in value
             value["immutable"] = False
+            value.setdefault("gamemaster_hints", "")
             return (key, PersistentDict(value))
             # other params are supposed to exist in "value"
 
@@ -2858,7 +2886,10 @@ class RadioMessaging(BaseDataManager): # TODO REFINE
 
             utilities.check_is_slug(key)
 
-            utilities.check_has_keys(value, ["title", "text", "file", "url", "immutable"], strict=strict)
+            utilities.check_has_keys(value, ["title", "text", "file", "url", "immutable", "gamemaster_hints"], strict=strict)
+
+            if value["gamemaster_hints"]: # optional
+                utilities.check_is_restructuredtext(value["gamemaster_hints"])
 
             utilities.check_is_string(value["title"])
             assert value["text"] and isinstance(value["text"], basestring)
@@ -3357,6 +3388,11 @@ class MoneyItemsOwnership(BaseDataManager):
             total_digital_money += character["account"]
 
         for (name, properties) in game_data["game_items"].items():
+
+            properties.setdefault("gamemaster_hints", "")
+            if properties["gamemaster_hints"]:
+                properties["gamemaster_hints"] = properties["gamemaster_hints"].strip()
+
             properties['unit_cost'] = self._compute_items_unit_cost(total_cost=properties['total_price'], num_gems=properties['num_items']) # works with NONE too
             properties['owner'] = properties.get('owner', None)
             properties["auction"] = properties.get('auction', None)
@@ -3398,6 +3434,9 @@ class MoneyItemsOwnership(BaseDataManager):
 
         assert game_data["game_items"]
         for (name, properties) in game_data["game_items"].items():
+
+            if properties["gamemaster_hints"]: # optional
+                utilities.check_is_restructuredtext(properties["gamemaster_hints"])
 
             utilities.check_is_slug(name)
             assert isinstance(properties['is_gem'], bool)
@@ -4027,6 +4066,7 @@ class StaticPages(BaseDataManager):
         def _preprocess_new_item(self, key, value):
             assert "immutable" not in value
             value["immutable"] = False
+            value.setdefault("gamemaster_hints", "")
             return (key, PersistentDict(value))
             # other params are supposed to exist in "value"
 

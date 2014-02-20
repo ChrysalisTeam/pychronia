@@ -162,7 +162,8 @@ def _sorted_game_items(items_dict):
     items_list = copy.deepcopy(items_dict.items())
     res = sorted(items_list, key=lambda x: (x[1]['auction'] if x[1]['auction'] else "ZZZZZZZ", x[0]))
     for k, v in res:
-        v["gamemaster_hint"] = "[BUG]" # security
+        assert "gamemaster_hints" in v
+        v["gamemaster_hints"] = "[BUG]" # security
     return res
 
 
