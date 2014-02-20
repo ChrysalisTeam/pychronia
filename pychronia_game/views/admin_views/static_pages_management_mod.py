@@ -6,6 +6,7 @@ from pychronia_game.common import *
 from pychronia_game.datamanager import register_view, AbstractGameForm, AbstractDataTableManagement, DataTableForm
 from pychronia_game.utilities.select2_extensions import Select2TagsField
 from django import forms
+from pychronia_game.datamanager.abstract_form import GAMEMASTER_HINTS_FIELD
 
 
 class StaticPageForm(DataTableForm):
@@ -15,7 +16,7 @@ class StaticPageForm(DataTableForm):
 
     content = forms.CharField(label=ugettext_lazy("Content"), widget=forms.Textarea(attrs={'rows': '8', 'cols':'40'}), required=True)
 
-    gamemaster_hints = forms.CharField(label=ugettext_lazy("Hints for Game Master"), widget=forms.Textarea(attrs={'rows': '2', 'cols':'40'}), required=False)
+    gamemaster_hints = GAMEMASTER_HINTS_FIELD
 
 
 ### TODO - DEAL WITH IMMUTABLES ???

@@ -6,7 +6,7 @@ import json
 from pychronia_game.common import *
 from django import forms
 from pychronia_game.datamanager.abstract_form import AbstractGameForm, UninstantiableFormError, GemHandlingFormUtils, autostrip
-
+from pychronia_game.datamanager.abstract_form import GAMEMASTER_HINTS_FIELD
 
 
 
@@ -151,6 +151,8 @@ class CharacterProfileForm(AbstractGameForm):
 
     official_name = forms.CharField(label=ugettext_lazy("Official name"), required=True, max_length=100)
     official_role = forms.CharField(label=ugettext_lazy("Official role"), required=True, max_length=500)
+
+    gamemaster_hints = GAMEMASTER_HINTS_FIELD
 
     allegiances = forms.MultipleChoiceField(label=ugettext_lazy("Allegiances"), required=False, widget=forms.SelectMultiple(attrs={"class": "multichecklist"}))
     permissions = forms.MultipleChoiceField(label=ugettext_lazy("Permissions"), required=False, widget=forms.SelectMultiple(attrs={"class": "multichecklist"}))

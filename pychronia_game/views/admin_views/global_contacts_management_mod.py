@@ -6,6 +6,7 @@ from pychronia_game.common import *
 from pychronia_game.datamanager import register_view, AbstractGameForm, AbstractDataTableManagement, DataTableForm
 from django_select2 import Select2MultipleChoiceField
 from django import forms
+from pychronia_game.datamanager.abstract_form import GAMEMASTER_HINTS_FIELD
 
 
 class GlobalContactForm(DataTableForm):
@@ -13,6 +14,8 @@ class GlobalContactForm(DataTableForm):
     avatar = forms.CharField(label=ugettext_lazy("Avatar"), required=False)
 
     description = forms.CharField(label=ugettext_lazy("Description"), widget=forms.Textarea(attrs={'rows': '2', 'cols':'40'}), required=False)
+
+    gamemaster_hints = GAMEMASTER_HINTS_FIELD
 
     is_public = forms.BooleanField(label=ugettext_lazy("Public contact"), required=False, initial=True) # public by default
 

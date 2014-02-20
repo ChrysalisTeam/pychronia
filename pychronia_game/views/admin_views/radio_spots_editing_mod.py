@@ -9,12 +9,15 @@ from pychronia_game.datamanager import register_view, AbstractGameView, DataTabl
 
 from pychronia_game.utilities.acapela_vaas_tts import AcapelaClient
 from pychronia_game.utilities import mediaplayers
+from pychronia_game.datamanager.abstract_form import GAMEMASTER_HINTS_FIELD
 
 
 class RadioSpotForm(DataTableForm):
 
     title = forms.CharField(label=ugettext_lazy("Title"), required=True)
     text = forms.CharField(label=ugettext_lazy("Content"), widget=forms.Textarea(attrs={'rows': '2', 'cols':'40'}), required=True)
+
+    gamemaster_hints = GAMEMASTER_HINTS_FIELD
 
     url_or_file = forms.CharField(label=ugettext_lazy("Url or local file"), required=True)
 
