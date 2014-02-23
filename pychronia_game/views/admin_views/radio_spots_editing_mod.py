@@ -15,9 +15,10 @@ from pychronia_game.datamanager.abstract_form import GAMEMASTER_HINTS_FIELD
 class RadioSpotForm(DataTableForm):
 
     title = forms.CharField(label=ugettext_lazy("Title"), required=True)
-    text = forms.CharField(label=ugettext_lazy("Content"), widget=forms.Textarea(attrs={'rows': '2', 'cols':'40'}), required=True)
 
     gamemaster_hints = GAMEMASTER_HINTS_FIELD()
+
+    text = forms.CharField(label=ugettext_lazy("Content"), widget=forms.Textarea(attrs={'rows': '2', 'cols':'40'}), required=True)
 
     url_or_file = forms.CharField(label=ugettext_lazy("Url or local file"), required=True)
 
@@ -74,6 +75,8 @@ class RadioSpotsEditing(AbstractDataTableManagement):
 
 
     def generate_tts_sample(self, text, voice="antoine22k"):
+
+        text = text.replace("\n", "").replace("\r", "") # TTS engine will stop sound mixing when a newline is encountered, so we remove them all
 
         if not config.ACAPELA_CLIENT_ARGS:
             raise RuntimeError("Text-to-speech engine is not configured")

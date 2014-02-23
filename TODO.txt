@@ -24,8 +24,6 @@ FEATURES
 ------------
 
 - message answer does NOT mark "read" the parent message ??
-- montrer gamemaster hinst dans contacts
-- enlever saust de ligne avant TTS radio!
 - pas "indéfini" mais "Inconnu" !!
 - change last_acccess_time... typo
 - TODO - eviter bugs graphiques quand dezoom des contacts emails sur site
@@ -62,6 +60,13 @@ FEATURES
 - remettre NPCs dans "senders" of emails for master
 - garder nom près de description de contact
 - emails pour NPCs concernent game master !!!
+
+
+
+- montrer gamemaster hints dans contacts - DONE
+- enlever sauts de ligne avant TTS radio - DONE
+
+
 
 
 SCRIPT
