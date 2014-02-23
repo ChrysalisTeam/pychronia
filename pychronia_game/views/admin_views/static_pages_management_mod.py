@@ -2,16 +2,20 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
+from pychronia_game.datamanager.abstract_form import GAMEMASTER_HINTS_FIELD
+from pychronia_game.datamanager.datamanager_modules import StaticPages, Encyclopedia
 from pychronia_game.common import *
 from pychronia_game.datamanager import register_view, AbstractGameForm, AbstractDataTableManagement, DataTableForm
 from pychronia_game.utilities.select2_extensions import Select2TagsField
 from django import forms
-from pychronia_game.datamanager.abstract_form import GAMEMASTER_HINTS_FIELD
+
 
 
 class StaticPageForm(DataTableForm):
 
-    categories = Select2TagsField(label=ugettext_lazy("Categories"), required=False)
+    categories = Select2TagsField(label=ugettext_lazy("Categories"), required=False,
+                                  choice_tags=sorted(set([StaticPages.CONTENT_CATEGORY, StaticPages.HELP_CATEGORY, Encyclopedia.ENCYCLOPEDIA_CATEGORY])))
+    
     keywords = Select2TagsField(label=ugettext_lazy("Keywords"), required=False)
 
     content = forms.CharField(label=ugettext_lazy("Content"), widget=forms.Textarea(attrs={'rows': '8', 'cols':'40'}), required=True)

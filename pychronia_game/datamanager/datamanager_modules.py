@@ -457,11 +457,13 @@ class CharacterHandling(BaseDataManager): # TODO REFINE
         return self.data["character_properties"]
 
     @readonly_method
-    def get_character_usernames(self, exclude_current=False):
+    def get_character_usernames(self, exclude_current=False, is_npc=None):
         """
         We sort "players first, NPC second".
         """
-        items = sorted(((k, v) for (k, v) in self.data["character_properties"].items()), key=lambda x: (x[1]["is_npc"], x[0]))
+        
+        items = ((k, v) for (k, v) in self.data["character_properties"].items() if (is_npc is None) or v["is_npc"] == is_npc)
+        items = sorted(items, key=lambda x: (x[1]["is_npc"], x[0]))
         res = [item[0] for item in items]
         if exclude_current and self.user.username in res:
             res.remove(self.user.username)
@@ -2372,9 +2374,9 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
         return username + "@" + self.get_global_parameter("pangea_network_domain")
 
     @readonly_method
-    def get_character_emails(self):
+    def get_character_emails(self, is_npc=None):
         pangea_network_domain = self.get_global_parameter("pangea_network_domain")
-        return [username + "@" + pangea_network_domain for username in self.get_character_usernames()]
+        return [username + "@" + pangea_network_domain for username in self.get_character_usernames(is_npc=is_npc)]
 
     @readonly_method
     def get_other_character_emails(self, username=CURRENT_USER):
@@ -2585,7 +2587,7 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
                         avatar=props["avatar"],
                         color=props.get("character_color", None), # only present for characters
                         description=props["description"] if "description" in props else (props["official_name"] + " - " + props["official_role"]),
-                        gamemaster_hints=props["gamemaster_hints"]) # for both characters and external contacts!
+                        gamemaster_hints=props.get("gamemaster_hints")) # for both characters and external contacts!
  
             if as_dict:
                 results_dict[email] = data

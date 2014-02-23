@@ -975,7 +975,12 @@ class TestDatamanager(BaseGameTestCase):
         assert data["official_role"] == "A killer "
         assert data["gamemaster_hints"] == "ABCD"
         assert not self.dm.update_official_character_data("guy1", official_name="", official_role="", # THESE can't be empty, so update is ignored
-                                                          gamemaster_hints="") # overrides
+                                                          gamemaster_hints=None) # would override if was ""
+        data = self.dm.get_character_properties("guy1")
+        assert data["official_name"] == "Simon "
+        assert data["official_role"] == "A killer "
+        assert data["gamemaster_hints"] == "ABCD"
+        assert self.dm.update_official_character_data("guy1", gamemaster_hints="") # overrides
         data = self.dm.get_character_properties("guy1")
         assert data["official_name"] == "Simon "
         assert data["official_role"] == "A killer "
@@ -1009,14 +1014,31 @@ class TestDatamanager(BaseGameTestCase):
         self._set_user("guy1")
         res1 = self.dm.get_character_usernames()
         assert "guy1" in res1
+        assert "my_npc" in res1
         res2 = self.dm.get_character_usernames(exclude_current=True)
         assert "guy1" not in res2
+        assert "my_npc" in res2
         assert len(res2) == len(res1) - 1
+
+        res1 = self.dm.get_character_usernames(is_npc=True)
+        assert "guy1" not in res1
+        assert "guy2" not in res1
+        assert "my_npc" in res1
+
+        res2 = self.dm.get_character_usernames(is_npc=False)
+        assert "guy1" in res2
+        assert "guy2" in res2
+        assert "my_npc" not in res2
+
+        assert self.dm.get_character_usernames(is_npc=None) == self.dm.get_character_usernames(is_npc=False) + self.dm.get_character_usernames(is_npc=True)
 
         self._set_user("master")
         assert self.dm.get_character_usernames(exclude_current=True) == self.dm.get_character_usernames() # no crash if not a proper character currently set
         self._set_user(None)
         assert self.dm.get_character_usernames(exclude_current=True) == self.dm.get_character_usernames() # no crash if not a proper character currently set
+
+
+
 
 
 
@@ -1895,9 +1917,9 @@ class TestDatamanager(BaseGameTestCase):
         assert res == u' Hello <a href="/TeStiNg/messages/compose/?recipient=h%C3%A9lloaaxsjjs%40gma%C3%AFl.fr">h\xe9lloaaxsjjs@gma\xefl.fr</a>. please write to h\xe9rb\xe8rt@h\xe9l\xe9nia.'
 
 
-        expected_res = [{'description': 'whatever', 'avatar': 'images\\avatars\\guy1.png', 'address': u'guy1@pangea.com', 'color': '#0033CC'},
-                       {'description': 'the terrible judicators', 'avatar': 'images\\avatars\\here.png', 'address': u'judicators@acharis.com', 'color': None},
-                       {'description': u'Unidentified contact', 'avatar': 'images/avatars/question_mark.png', 'address': u'unknown@mydomain.com', 'color': None}]
+        expected_res = [{'description': 'Simon Bladstaffulovza - whatever', 'avatar': 'images\\avatars\\guy1.png', 'address': u'guy1@pangea.com', 'color': '#0033CC', 'gamemaster_hints': 'This is guy1, actually agent SHA1.'},
+                       {'description': 'the terrible judicators', 'avatar': 'images\\avatars\\here.png', 'address': u'judicators@acharis.com', 'color': None, 'gamemaster_hints': ''},
+                       {'description': u'Unidentified contact', 'avatar': 'images/avatars/question_mark.png', 'address': u'unknown@mydomain.com', 'color': None, 'gamemaster_hints': None}]
 
         assert self.dm.get_contacts_display_properties([]) == []
         res = self.dm.get_contacts_display_properties(["guy1@pangea.com", "judicators@acharis.com", "unknown@mydomain.com"])

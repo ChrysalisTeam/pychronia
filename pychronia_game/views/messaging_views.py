@@ -128,7 +128,8 @@ class MessageComposeForm(AbstractGameForm):
         if user.is_master:
 
             sender = Select2TagsField(label=ugettext_lazy("Sender"), required=True, initial=([sender] if sender else [])) # initial MUST be a 1-item list!
-            sender.choice_tags = datamanager.sort_email_addresses_list(datamanager.global_contacts.keys())
+            master_emails = datamanager.global_contacts.keys() + datamanager.get_character_emails(is_npc=True) # PLAYERS EMAILS are not included!
+            sender.choice_tags = datamanager.sort_email_addresses_list(master_emails)
             assert sender.max_selection_size is not None
             sender.max_selection_size = 1
             self.fields.insert(0, "sender", sender)
