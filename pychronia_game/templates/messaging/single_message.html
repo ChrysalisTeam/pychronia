@@ -58,6 +58,7 @@
         </tr>
         {% endif %}
 
+        {% if message.sender_email  %}
         <tr>
         <td><strong>{% trans "From:" %}</strong></td>
         <td>
@@ -69,7 +70,9 @@
             </a-->
         </td>
         </tr>
+        {% endif %}
 
+        {% if message.recipient_emails  %}
         <tr>
         <td><strong>{% trans "To:" %}</strong></td>
         <td>
@@ -84,6 +87,7 @@
             {% endfor %}
         </td>
         </tr>
+        {% endif %}
 
     </table>
 
@@ -98,8 +102,17 @@
     </p>
 
     <div class="pretty_text" style="color:{% usercolor message.sender_email %};">
+
+        {% if display_admin_tips and message.gamemaster_hints %}
+        <p class="admin-note">
+            {{ message.gamemaster_hints }}
+        </p>
+        {% endif %}
+
         {% rich_text message.body %}
+
     </div>
+
 
     {% if message.transferred_msg %}
         <a target="_blank" href="{% game_view_url "pychronia_game.views.view_single_message" msg_id=message.transferred_msg %}">
