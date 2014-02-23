@@ -24,11 +24,9 @@ FEATURES
 ------------
 
 - message answer does NOT mark "read" the parent message ??
-- pas "indéfini" mais "Inconnu" !!
 - change last_acccess_time... typo
 - TODO - eviter bugs graphiques quand dezoom des contacts emails sur site
 - PB, serveurs webfactions sont en UTC !!!
-- mettre en gras les non-lus dans liste d'emails ??
 - faire CHRONOLOGIE détaillée des évènements pour aider énigmes
 - dire quand AUTRE perso (ami) a nouveaux messages/autres ??
 - préciser que geolocalisation est EXTERNE (pas mettre pseudo d'espion!!)
@@ -52,8 +50,6 @@ FEATURES
 - typo "quelques" dans email analyse de situation initiale
 - update abilities settings
 - dans preview_message, rich_text, pas advanced_restructuredtext!!!
-
-- fix display of missing addresses, in email templates
 - improve display of gems list with ¤ in view_characters
 - add periods to wordings like "You've proposed a friendship to that user"
 - FIXME - check templates more here #
@@ -62,11 +58,11 @@ FEATURES
 - emails pour NPCs concernent game master !!!
 
 
-
+- mettre en gras les non-lus dans liste d'emails du master - DONE
 - montrer gamemaster hints dans contacts - DONE
 - enlever sauts de ligne avant TTS radio - DONE
-
-
+- pas "indéfini" mais "Inconnu" dans character details - DONE
+- fix display of missing addresses, in email templates - DONE
 
 
 SCRIPT

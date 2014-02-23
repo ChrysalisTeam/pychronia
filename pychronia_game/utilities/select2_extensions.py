@@ -14,7 +14,7 @@ class Select2TagsWidget(Select2Mixin, MultipleSelect2HiddenInput): ##SpecialHidd
         self.options.update({"closeOnSelect": True, # maximumSelectionSize buggy when not closeOnSelect, so we workaround...
                              "maximumSelectionSize":-1, # overridden by form field
                              "separator": JSVar('django_select2.MULTISEPARATOR'),
-                            "tokenSeparators": [",", ";", " "],
+                            "tokenSeparators": [",", ";"], # spaces are NOT separators
                             "tags": []}) # overridden by field
 
     def set_choice_tags(self, tags):
