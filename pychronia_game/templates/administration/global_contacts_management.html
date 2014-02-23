@@ -84,6 +84,8 @@
 
             <p>{% trans "Description" %}: {{ data.description|default:_("None") }}</p>
 
+            <p>{% trans "Gamemaster Hints" %}: {{ data.gamemaster_hints|default:_("None") }}</p>
+
             <p>
 	        {% if data.access_tokens == None %}
 	            PUBLIC

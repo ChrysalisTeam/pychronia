@@ -2584,8 +2584,9 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
             data = dict(address=email,
                         avatar=props["avatar"],
                         color=props.get("character_color", None), # only present for characters
-                        description=props["description"] if "description" in props else props["official_role"])
-
+                        description=props["description"] if "description" in props else (props["official_name"] + " - " + props["official_role"]),
+                        gamemaster_hints=props["gamemaster_hints"]) # for both characters and external contacts!
+ 
             if as_dict:
                 results_dict[email] = data
             else:

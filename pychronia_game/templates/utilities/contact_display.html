@@ -1,5 +1,5 @@
 {% load i18n helpers%}
-<div class="contact_display" {% if contact.description %}title="{{ contact.description }}"{% endif %}>
+<div class="contact_display" title="{% if contact.description %}{{ contact.description }}{% endif %} {% if contact.gamemaster_hints %} [{{ contact.gamemaster_hints }}]{% endif %}">
 <img src="{% game_file_img contact.avatar|default:default_contact_avatar alias="contact_avatar" %}"/>
 
 {% if compose_link %}<a href="{% game_view_url "pychronia_game.views.compose_message" %}?recipient={{ contact.address|default:address|urlencode }}">{% endif %}
