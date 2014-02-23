@@ -146,13 +146,13 @@ class CharacterProfileForm(AbstractGameForm):
     """
     target_username = forms.CharField(widget=forms.HiddenInput())
 
-    real_life_identity = forms.CharField(label=ugettext_lazy("Real life identity"), required=False, max_length=100)
-    real_life_email = forms.EmailField(label=ugettext_lazy("Real life email"), required=False)
-
     official_name = forms.CharField(label=ugettext_lazy("Official name"), required=True, max_length=100)
     official_role = forms.CharField(label=ugettext_lazy("Official role"), required=True, max_length=500)
 
-    gamemaster_hints = GAMEMASTER_HINTS_FIELD
+    real_life_identity = forms.CharField(label=ugettext_lazy("Real life identity"), required=False, max_length=100)
+    real_life_email = forms.EmailField(label=ugettext_lazy("Real life email"), required=False)
+
+    gamemaster_hints = GAMEMASTER_HINTS_FIELD() # optional
 
     allegiances = forms.MultipleChoiceField(label=ugettext_lazy("Allegiances"), required=False, widget=forms.SelectMultiple(attrs={"class": "multichecklist"}))
     permissions = forms.MultipleChoiceField(label=ugettext_lazy("Permissions"), required=False, widget=forms.SelectMultiple(attrs={"class": "multichecklist"}))

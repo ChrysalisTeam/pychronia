@@ -8,6 +8,18 @@ PARTIE EN COURS
 - mission d'espionnage des obérons d'Amethyst à l'académie d'alifir : à continuer
 
 
+
+GAMEMASTER_HINTS:
+
+	- characters
+	- contacts
+	- templates
+	- radio spots
+	- items
+	- static pages
+
+
+
 FEATURES
 ------------
 

@@ -16,7 +16,7 @@ class StaticPageForm(DataTableForm):
 
     content = forms.CharField(label=ugettext_lazy("Content"), widget=forms.Textarea(attrs={'rows': '8', 'cols':'40'}), required=True)
 
-    gamemaster_hints = GAMEMASTER_HINTS_FIELD
+    gamemaster_hints = GAMEMASTER_HINTS_FIELD()
 
 
 ### TODO - DEAL WITH IMMUTABLES ???

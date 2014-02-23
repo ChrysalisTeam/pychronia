@@ -78,8 +78,6 @@ def manage_databases(request, template_name='administration/database_management.
 def manage_characters(request, template_name='administration/character_management.html'):
 
 
-
-
     form = None
     if request.method == "POST":
         form = forms.CharacterProfileForm(datamanager=request.datamanager,
@@ -94,6 +92,7 @@ def manage_characters(request, template_name='administration/character_managemen
             permissions = form.cleaned_data["permissions"]
             real_life_identity = form.cleaned_data["real_life_identity"].strip() or None
             real_life_email = form.cleaned_data["real_life_email"].strip() or None
+            gamemaster_hints = form.cleaned_data["gamemaster_hints"].strip() # may be an empty string !
 
             assert official_name == official_name.strip() # auto-stripping
             assert official_role == official_role.strip()
@@ -101,7 +100,8 @@ def manage_characters(request, template_name='administration/character_managemen
             with action_failure_handler(request, _("Character %s successfully updated.") % target_username):
                 request.datamanager.update_official_character_data(username=target_username,
                                                                     official_name=official_name,
-                                                                    official_role=official_role)
+                                                                    official_role=official_role,
+                                                                    gamemaster_hints=gamemaster_hints)
                 request.datamanager.update_allegiances(username=target_username,
                                                        allegiances=allegiances)
                 request.datamanager.update_permissions(username=target_username,
@@ -127,7 +127,8 @@ def manage_characters(request, template_name='administration/character_managemen
                                                  allegiances=data["domains"],
                                                  permissions=data["permissions"],
                                                  real_life_identity=data["real_life_identity"],
-                                                 real_life_email=data["real_life_email"])
+                                                 real_life_email=data["real_life_email"],
+                                                 gamemaster_hints=data["gamemaster_hints"])
                                     )
         character_forms.append(f)
 

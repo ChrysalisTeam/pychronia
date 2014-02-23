@@ -11,7 +11,7 @@ from django.core.exceptions import ValidationError
 
 
 
-GAMEMASTER_HINTS_FIELD = forms.CharField(label=ugettext_lazy("Hints for Game Master"), widget=forms.Textarea(attrs={'rows': '2', 'cols':'40'}), required=False)
+GAMEMASTER_HINTS_FIELD = lambda: forms.CharField(label=ugettext_lazy("Hints for Game Master"), widget=forms.Textarea(attrs={'rows': '2', 'cols':'40'}), required=False)
 
 
 

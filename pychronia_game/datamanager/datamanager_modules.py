@@ -539,7 +539,7 @@ class CharacterHandling(BaseDataManager): # TODO REFINE
         return action_done
 
     @transaction_watcher
-    def update_official_character_data(self, username=CURRENT_USER, official_name=None, official_role=None):
+    def update_official_character_data(self, username=CURRENT_USER, official_name=None, official_role=None, gamemaster_hints=None):
         username = self._resolve_username(username)
         data = self.get_character_properties(username)
 
@@ -551,6 +551,10 @@ class CharacterHandling(BaseDataManager): # TODO REFINE
 
         if official_role and official_role != data["official_role"]:
             data["official_role"] = official_role # can't be an empty string
+            action_done = True
+
+        if gamemaster_hints is not None and gamemaster_hints != data["gamemaster_hints"]:
+            data["gamemaster_hints"] = gamemaster_hints # MAY BE EMPTY STRING
             action_done = True
 
         return action_done

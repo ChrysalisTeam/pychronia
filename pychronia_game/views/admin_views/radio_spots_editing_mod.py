@@ -17,7 +17,7 @@ class RadioSpotForm(DataTableForm):
     title = forms.CharField(label=ugettext_lazy("Title"), required=True)
     text = forms.CharField(label=ugettext_lazy("Content"), widget=forms.Textarea(attrs={'rows': '2', 'cols':'40'}), required=True)
 
-    gamemaster_hints = GAMEMASTER_HINTS_FIELD
+    gamemaster_hints = GAMEMASTER_HINTS_FIELD()
 
     url_or_file = forms.CharField(label=ugettext_lazy("Url or local file"), required=True)
 

@@ -38,7 +38,7 @@
                         {{ char_details.official_name }} <br/>
                         {{ char_details.official_role }} <br/>
 
-		    		    {% if display_admin_tips %}
+		    		    {% if display_admin_tips and char_details.gamemaster_hints %}
 		    		        <p class="admin-note"><i>{{ char_details.gamemaster_hints }}</i></p>
 		    		    {% endif %}
 					</strong>

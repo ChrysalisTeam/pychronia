@@ -15,7 +15,7 @@ class GlobalContactForm(DataTableForm):
 
     description = forms.CharField(label=ugettext_lazy("Description"), widget=forms.Textarea(attrs={'rows': '2', 'cols':'40'}), required=False)
 
-    gamemaster_hints = GAMEMASTER_HINTS_FIELD
+    gamemaster_hints = GAMEMASTER_HINTS_FIELD()
 
     is_public = forms.BooleanField(label=ugettext_lazy("Public contact"), required=False, initial=True) # public by default
 
