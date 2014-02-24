@@ -64,7 +64,7 @@
         {% usekwacro deletion_button identifier %}
 
         <a name="entry-{{ identifier }}"><h2>{{ identifier|default:_("NEW ENTRY") }}</h2></a>
-        <form id="update_form" action="" method="post">
+        <form id="update_form" action="#entry-{{ identifier }}" method="post">
             {{ form.as_p }}
             <div id="id_{{ identifier }}_sound_preview" align="center">
                 {% if form.url_or_file.value %}
