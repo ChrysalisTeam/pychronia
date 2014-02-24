@@ -33,7 +33,7 @@ FEATURES
 - cacher compétences spéciales pour PNJ ? comment faire ?
 - trier articles séparément des help et top/bottom, dans static pages !!
 - pour MJ : marqué intercepté par qui, les emails!
-- remove django debug toolbar in prod
+
 - dm.user.add_error(_("Sorry, you don't have access to search features at the moment."))
 - fix broken "save_current_content()" feature of message compose form
 - autoriser espaces dans les tags (mots clefs) automatiques de encyclopedia
@@ -51,11 +51,10 @@ FEATURES
 - improve display of gems list with ¤ in view_characters
 - add periods to wordings like "You've proposed a friendship to that user"
 - FIXME - check templates more here #
-- remettre NPCs dans "senders" of emails for master
-- garder nom près de description de contact
-- emails pour NPCs concernent game master !!!
+- emails pour NPCs concernent game master
 
 
+- remove django debug toolbar from pychronia_game conf - DONE
 - fix fragment # in links of staticpage/radiospot/globalcontact management forms - DONE
 - list keywords of articles for master, in encyclopedia - DONE
 - eviter bugs graphiques quand dezoom des contacts emails sur site, et newline quand on les sélectionne - DONE
@@ -64,6 +63,8 @@ FEATURES
 - enlever sauts de ligne avant TTS radio - DONE
 - pas "indéfini" mais "Inconnu" dans character details - DONE
 - fix display of missing addresses, in email templates - DONE
+- garder nom officiel près de description de contacts - DONE
+- remettre NPCs dans "senders" of emails for master - DONE
 
 
 SCRIPT
