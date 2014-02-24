@@ -4100,7 +4100,14 @@ class StaticPages(BaseDataManager):
 
 
         def _sorting_key(self, item_pair):
-            return item_pair[0] # we sort by key, simply...
+            """
+            We separate articles by prefixes (help, top, bottom...)
+            """
+            key = item_pair[0]
+            if "-" in key:
+                return key.partition("-")
+            else:
+                return (None, "-", key)
 
         def _get_table_container(self, root):
             return root["static_pages"]
