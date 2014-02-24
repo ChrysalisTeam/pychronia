@@ -241,6 +241,7 @@ def _enriched_text(datamanager, content, initial_header_level=None, report_level
     
     *excluded_link* is the ENCYCLOPEDIA article_id in which we currently are, if any.
     """
+    assert isinstance(content, basestring)
 
     content = content.replace("[INSTANCE_ID]", datamanager.game_instance_id) # handy to build URLs manually
 

@@ -29,8 +29,6 @@ FEATURES
 - PB, serveurs webfactions sont en UTC !!!
 
 - dire quand AUTRE perso (ami) a nouveaux messages/autres ??
-
-- list keywords of articles for master, in encyclopedia
 - fix fragment # in links of static page management forms
 - cacher compétences spéciales pour PNJ ? comment faire ?
 - trier articles séparément des help et top/bottom, dans static pages !!
@@ -58,6 +56,7 @@ FEATURES
 - emails pour NPCs concernent game master !!!
 
 
+- list keywords of articles for master, in encyclopedia - DONE
 - eviter bugs graphiques quand dezoom des contacts emails sur site, et newline quand on les sélectionne - DONE
 - mettre en gras les non-lus dans liste d'emails du master - DONE
 - montrer gamemaster hints dans contacts - DONE

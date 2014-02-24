@@ -60,6 +60,13 @@
 
         {% if entry %}
         <div class="pretty_text">
+
+            {% if display_admin_tips and entry.keywords %}
+            <div class="admin-note">
+                {% trans "Keywords" %}{{COLON}} {{ entry.keywords|join:', ' }}
+            </div>
+            {% endif %}
+
             {% include "utilities/static_page_block.html" with article_name=None article_data=entry excluded_link=current_article_id initial_header_level=2 %}
         </div>
         {% endif %}

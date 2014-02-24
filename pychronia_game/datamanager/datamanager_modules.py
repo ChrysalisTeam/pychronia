@@ -4093,7 +4093,7 @@ class StaticPages(BaseDataManager):
 
             utilities.check_is_list(value["keywords"])
             for keyword in (value["keywords"]):
-                utilities.check_is_slug(keyword)
+                utilities.check_is_string(keyword, multiline=False)
 
             if value["gamemaster_hints"]: # optional
                 utilities.check_is_restructuredtext(value["gamemaster_hints"])
@@ -4177,7 +4177,7 @@ class Encyclopedia(BaseDataManager):
     @readonly_method
     def get_encyclopedia_entry(self, article_id):
         """
-        Returns the rst entry, or None.
+        Returns the entry dict, or None.
         Fetching is case-insensitive.
         """
         key = article_id.lower().strip()

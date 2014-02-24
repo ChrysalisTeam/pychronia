@@ -73,7 +73,7 @@ class EncyclopediaView(AbstractGameView):
         search_results = None  # list of matching article ids
 
         if article_id:
-            entry = dm.get_encyclopedia_entry(article_id)
+            entry = dm.get_encyclopedia_entry(article_id) # entry dict or None
             if not entry:
                 dm.user.add_error(_("Sorry, no encyclopedia article has been found for id '%s'") % article_id)
             else:
