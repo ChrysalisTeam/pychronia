@@ -1650,8 +1650,8 @@ input.digit {
   vertical-align: middle;
   text-align: center;
   display: inline-block;
-  width: 148px;
-  max-width: 148px;
+  width: 140px;
+  max-width: 140px;
   font-weight: bold;
 }
 #djinn_chat_wrapper {

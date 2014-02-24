@@ -5,8 +5,7 @@
 {% if compose_link %}<a href="{% game_view_url "pychronia_game.views.compose_message" %}?recipient={{ contact.address|default:address|urlencode }}">{% endif %}
 <span style="color: {{ contact.color|default:"black" }}">
 {% with contact.address|default:address|split:"@" as address_parts %}
-{{ address_parts.0 }}<br/>
-@{{ address_parts.1 }}
+<span style="display: block">{{ address_parts.0 }}</span><span style="display: block">@{{ address_parts.1 }}</span>
 {% endwith %}
 </span>
 {% if compose_link %}</a>{% endif %}
