@@ -65,6 +65,10 @@ class MatterAnalysisAbility(AbstractPartnershipAbility):
     @readonly_method
     def _compute_analysis_result(self, item_name):
         assert not self.get_item_properties(item_name)["is_gem"], item_name
+
+        if self.get_global_parameter("disable_automated_ability_responses"):
+            return _("Result will be sent to you in a short while...") # should actually NOT be sent to user
+
         report = self.settings["reports"].get(item_name, None)
         if report is None:
             raise NormalUsageError(_("Unfortunately this item can't be analyzed by our biophysical lab.")) # any payment will be aborted too

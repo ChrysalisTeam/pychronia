@@ -5812,15 +5812,26 @@ class TestSpecialAbilities(BaseGameTestCase):
         self.assertTrue(self.dm.get_global_parameter("master_login") in msg["has_read"])
         assert "master" in msg["has_read"]
 
+
         self.dm.set_global_parameter("disable_automated_ability_responses", True)
+
         analyser.process_object_analysis("sacred_chest")
         msgs = self.dm.get_all_dispatched_messages()
         self.assertEqual(len(msgs), 2) # REQUEST is well generated
         msg = msgs[-1]
         assert "master" not in msg["has_read"]
-
         msgs = self.dm.get_all_queued_messages()
         self.assertEqual(len(msgs), 1) # unchanged, no additional RESPONSE
+
+        self.dm.transfer_object_to_character("statue", "guy1")
+        analyser.process_object_analysis("statue") # not automatically possible, but Ok when disable_automated_ability_responses is ON
+        msgs = self.dm.get_all_dispatched_messages()
+        self.assertEqual(len(msgs), 3) # REQUEST is well generated
+        msg = msgs[-1]
+        assert "master" not in msg["has_read"]
+        msgs = self.dm.get_all_queued_messages()
+        self.assertEqual(len(msgs), 1) # unchanged, no additional RESPONSE
+
 
 
         res = self.dm.process_periodic_tasks()
