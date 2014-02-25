@@ -57,7 +57,7 @@ class MatterAnalysisAbility(AbstractPartnershipAbility):
         return {
                  'page_title': _("Deep Matter Analysis"),
                  'item_form': item_form,
-                 'specific_message': specific_message, # TODO FIXME DISPLAY THIS
+                 'specific_message': specific_message,
                }
 
 

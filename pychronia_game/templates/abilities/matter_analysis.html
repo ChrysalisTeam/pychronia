@@ -6,8 +6,9 @@
 
 {% block content %}
 
-
-
+{% if specific_message %}
+    <p>{{ specific_message }}</p>
+{% endif %}
 
 {% if item_form %}
     <h2>
@@ -22,5 +23,6 @@
 
     </div>
 {% endif %}
+
 
 {% endblock %}
