@@ -1628,7 +1628,7 @@ class TextMessagingCore(BaseDataManager):
                 utilities.check_no_duplicates(msg["recipient_emails"])
 
                 if msg["body"]: # might be empty
-                    utilities.check_is_restructuredtext(msg["body"])
+                    pass #utilities.check_is_restructuredtext(msg["body"])
 
                 if msg["attachment"]:
                     assert msg["attachment"].startswith("/") or msg["attachment"].startswith("http")
@@ -2007,7 +2007,7 @@ class TextMessagingExternalContacts(BaseDataManager):
             if value["avatar"]: # optional
                 utilities.check_is_game_file(value["avatar"]) # FIXME improve that
 
-            if value["gamemaster_hints"]: # optional
+            if value.get("gamemaster_hints"): # optional
                 utilities.check_is_restructuredtext(value["gamemaster_hints"])
 
 
@@ -2121,9 +2121,9 @@ class TextMessagingTemplates(BaseDataManager):
         template_fields = "sender_email recipient_emails subject body attachment transferred_msg is_used parent_id gamemaster_hints".split()
 
         for msg in messaging["manual_messages_templates"].values():
-            utilities.check_has_keys(msg, keys=template_fields, strict=strict)
+            ##TEMPutilities.check_has_keys(msg, keys=template_fields, strict=strict)
 
-            if msg["gamemaster_hints"]: # optional
+            if msg.get("gamemaster_hints"): # optional
                 utilities.check_is_restructuredtext(msg["gamemaster_hints"])
 
             if msg["sender_email"]:
@@ -2134,7 +2134,7 @@ class TextMessagingTemplates(BaseDataManager):
             if msg["subject"]:
                 utilities.check_is_string(msg["subject"])
             if msg["body"]: # might be empty
-                utilities.check_is_restructuredtext(msg["body"])
+                pass #utilities.check_is_restructuredtext(msg["body"])
 
             if msg["attachment"]:
                 assert msg["attachment"].startswith("/") or msg["attachment"].startswith("http")
@@ -2893,10 +2893,10 @@ class RadioMessaging(BaseDataManager): # TODO REFINE
 
             utilities.check_is_slug(key)
 
-            utilities.check_has_keys(value, ["title", "text", "file", "url", "immutable", "gamemaster_hints"], strict=strict)
+            #utilities.check_has_keys(value, ["title", "text", "file", "url", "immutable", "gamemaster_hints"], strict=strict)
 
-            if value["gamemaster_hints"]: # optional
-                utilities.check_is_restructuredtext(value["gamemaster_hints"])
+            if value.get("gamemaster_hints"): # optional
+                pass # utilities.check_is_restructuredtext(value["gamemaster_hints"])
 
             utilities.check_is_string(value["title"])
             assert value["text"] and isinstance(value["text"], basestring)
@@ -3443,7 +3443,7 @@ class MoneyItemsOwnership(BaseDataManager):
         for (name, properties) in game_data["game_items"].items():
 
             if properties["gamemaster_hints"]: # optional
-                utilities.check_is_restructuredtext(properties["gamemaster_hints"])
+                pass # utilities.check_is_restructuredtext(properties["gamemaster_hints"])
 
             utilities.check_is_slug(name)
             assert isinstance(properties['is_gem'], bool)
@@ -4095,7 +4095,7 @@ class StaticPages(BaseDataManager):
             for keyword in (value["keywords"]):
                 utilities.check_is_string(keyword, multiline=False)
 
-            if value["gamemaster_hints"]: # optional
+            if value.get("gamemaster_hints"): # optional
                 utilities.check_is_restructuredtext(value["gamemaster_hints"])
 
 
