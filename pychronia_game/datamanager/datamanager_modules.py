@@ -2759,6 +2759,13 @@ class TextMessagingInterception(BaseDataManager):
         username = self._resolve_username(username)
         return self._get_messages_visible_for_reason(reason=VISIBILITY_REASONS.interceptor, username=username)
 
+    @readonly_method
+    def get_characters_for_visibility_reason(self, msg, visibility_reason):
+        assert visibility_reason in VISIBILITY_REASONS
+        character_usernames = set(self.get_character_usernames())
+        return sorted([username for (username, reason) in msg["visible_by"].items()
+                                if username in character_usernames and reason == visibility_reason])
+
 
     # management of wiretapping targets #
 

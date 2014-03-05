@@ -93,9 +93,11 @@
 
 
     <p style="color:{% usercolor message.sender_email %};">
+
         <strong>
+            {% if ctx.intercepted_by %}[ {% trans "Intercepted by" %}{{COLON}} {{ ctx.intercepted_by|join:", " }} ]<br/><br/>{% endif %}
+
             <i>
-            {% if ctx.was_intercepted %}{% trans "[intercepted]" %}{% endif %}
             {{ message.subject }}
             </i>
         </strong>

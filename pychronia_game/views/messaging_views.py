@@ -210,7 +210,7 @@ def _determine_template_display_context(datamanager, template_id, template):
                 is_used=template["is_used"],
                 has_read=None, # no buttons at all for that
                 visibility_reason=None,
-                was_intercepted=False,
+                intercepted_by=None,
                 can_transfer=False,
                 can_reply=False,
                 can_recontact=False,
@@ -233,7 +233,7 @@ def _determine_message_display_context(datamanager, msg, is_pending):
                 is_used=None, # for templates only
                 has_read=(username in msg["has_read"]) if not is_pending else None,
                 visibility_reason=visibility_reason,
-                was_intercepted=(datamanager.is_master() and VISIBILITY_REASONS.interceptor in msg["visible_by"].values()),
+                intercepted_by=datamanager.get_characters_for_visibility_reason(msg, visibility_reason=VISIBILITY_REASONS.interceptor) if datamanager.is_master() else None,
                 can_reply=(visibility_reason == VISIBILITY_REASONS.recipient) if not is_pending else None,
                 can_recontact=(visibility_reason == VISIBILITY_REASONS.sender) if not is_pending else None,
                 can_force_sending=is_pending,

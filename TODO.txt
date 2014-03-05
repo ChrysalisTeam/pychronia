@@ -34,15 +34,12 @@ FEATURES
 
 - Envoyer email quand argent recu par un joueur, avec raison
 
-
 - message answer does NOT mark "read" the parent message ??
-
 
 - dire quand AUTRE perso (ami) a nouveaux messages/autres ??
 
 - cacher compétences spéciales pour PNJ ? comment faire ?
 
-- pour MJ : marqué intercepté par qui, les emails!
 
 - dm.user.add_error(_("Sorry, you don't have access to search features at the moment."))
 - fix broken "save_current_content()" feature of message compose form
@@ -62,7 +59,6 @@ FEATURES
 - add periods to wordings like "You've proposed a friendship to that user"
 - FIXME - check templates more here #
 - emails pour NPCs concernent game master
-
 
 
 
@@ -147,7 +143,7 @@ NEEDS COSMETICS
 TASKS DONE
 ---------------
 
-
+- pour MJ : marqué intercepté par qui, les emails - DONE
 - autoriser accents et espaces dans les tags (mots clefs) automatiques de encyclopedia - DONE
 - dans preview_message, utiliser format_enriched_text, pas advanced_restructuredtext - DONE
 - trier articles séparément des help et top/bottom, dans static pages - DONE

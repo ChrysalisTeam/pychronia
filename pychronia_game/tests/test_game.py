@@ -2025,6 +2025,14 @@ class TestDatamanager(BaseGameTestCase):
         self.dm.post_message("guy1@masslavia.com", # NOT recognised as guy1, because wrong domain
                              "netsdfworkerds@masslavia.com", subject="ssd", body="qsdqsd") # this works too !
 
+        msgs = self.dm.get_all_dispatched_messages()
+        self.assertEqual(len(msgs), 1)
+        msg = msgs[0]
+        # we now check that MATSER doesn't appear in get_characters_for_visibility_reason() output
+        assert self.dm.get_characters_for_visibility_reason(msg, visibility_reason=VISIBILITY_REASONS.interceptor) == []
+        assert self.dm.get_characters_for_visibility_reason(msg, visibility_reason=VISIBILITY_REASONS.sender) == []
+        assert self.dm.get_characters_for_visibility_reason(msg, visibility_reason=VISIBILITY_REASONS.recipient) == []
+
         self.assertEqual(len(self.dm.get_user_related_messages(self.dm.master_login)), 1)
         self.dm.get_user_related_messages(self.dm.master_login)[0]["has_read"] = utilities.PersistentList(
             self.dm.get_character_usernames() + [self.dm.get_global_parameter("master_login")]) # we hack this message not to break following assertions
@@ -2092,6 +2100,14 @@ class TestDatamanager(BaseGameTestCase):
         self.assertEqual(len(res), 3) # wiretapping of user as sender AND recipient
         self.assertEqual(set([msg["subject"] for msg in res]), set(["hello everybody 1", "hello everybody 2", "hello everybody 4"]))
         assert all([msg["visible_by"]["guy1"] == VISIBILITY_REASONS.interceptor for msg in res])
+
+        msg = res[0] # first of these messages intercepted by guy1
+        assert msg["subject"] == "hello everybody 1"
+        assert self.dm.get_characters_for_visibility_reason(msg, visibility_reason=VISIBILITY_REASONS.interceptor) == ["guy1"]
+        assert self.dm.get_characters_for_visibility_reason(msg, visibility_reason=VISIBILITY_REASONS.sender) == ["guy2"]
+        assert self.dm.get_characters_for_visibility_reason(msg, visibility_reason=VISIBILITY_REASONS.recipient) == ["guy3"]
+
+
 
         res = self.dm.get_intercepted_messages(self.dm.master_login)
         self.assertEqual(len(res), 0)
