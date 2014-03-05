@@ -235,7 +235,7 @@ def advanced_restructuredtext(value,
 
 
 
-def _enriched_text(datamanager, content, initial_header_level=None, report_level=None, excluded_link=None):
+def format_enriched_text(datamanager, content, initial_header_level=None, report_level=None, excluded_link=None):
     """
     Converts RST content to HTML and adds encyclopedia links.
     
@@ -252,7 +252,7 @@ def _enriched_text(datamanager, content, initial_header_level=None, report_level
 
     html = advanced_restructuredtext(content, initial_header_level=initial_header_level, report_level=report_level)
 
-    #print(">>>_enriched_text>>>>>", html)
+    #print(">>>format_enriched_text>>>>>", html)
     with exception_swallower():
         html = _generate_encyclopedia_links(html, datamanager, excluded_link=excluded_link)
     with exception_swallower():
@@ -273,7 +273,7 @@ def rich_text(context, content, initial_header_level=None, report_level=None, ex
     """
     request = context.get('request')
     report_level = report_level if report_level is not None else 5 # by default we DO NOT display RST syntax errors!
-    return _enriched_text(request.datamanager, content, initial_header_level=initial_header_level, report_level=report_level, excluded_link=excluded_link)
+    return format_enriched_text(request.datamanager, content, initial_header_level=initial_header_level, report_level=report_level, excluded_link=excluded_link)
 
 
 '''
@@ -296,7 +296,7 @@ def static_page(context, article_name, initial_header_level=None):
     else:
         return "" # normal users see nothing here
 
-    return _enriched_text(request.datamanager, content, initial_header_level=initial_header_level, excluded_link=article_name)
+    returnformat_enriched_text(request.datamanager, content, initial_header_level=initial_header_level, excluded_link=article_name)
 '''
 
 

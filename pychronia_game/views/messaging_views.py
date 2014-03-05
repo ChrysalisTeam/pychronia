@@ -7,8 +7,8 @@ from pychronia_game.datamanager import AbstractGameView, register_view, VISIBILI
 from django import forms
 from django.http import Http404, HttpResponseRedirect, HttpResponse
 from pychronia_game.utilities.select2_extensions import Select2TagsField
-from pychronia_game.templatetags.helpers import advanced_restructuredtext
 from django.core.exceptions import ValidationError
+from pychronia_game.templatetags.helpers import format_enriched_text
 
 
 """
@@ -333,7 +333,7 @@ def conversation(request, template_name='messaging/conversation.html'):
                        display_all_conversations=display_all_conversations,
                        conversations=enriched_messages,
                        contact_cache=_build_contact_display_cache(request.datamanager)))
-                       
+
 
 
 @register_view(attach_to=conversation, title=ugettext_lazy("Set Message Read State"))
@@ -520,7 +520,7 @@ def preview_message(request):
 
     rst = request.REQUEST.get("content", _("No content submitted for display")) # we take from both GET and POST
 
-    html = advanced_restructuredtext(rst, initial_header_level=2, report_level=1).strip() # we let ALL debug output here!!
+    html = format_enriched_text(request.datamanager, rst, initial_header_level=2, report_level=1).strip() # we let ALL debug output here!!
 
     return HttpResponse(html) # only a snippet of html, no html/head/body tags - might be EMPTY
 

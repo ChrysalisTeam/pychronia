@@ -8,7 +8,6 @@ PARTIE EN COURS
 - mission d'espionnage des obérons d'Amethyst à l'académie d'alifir : à continuer
 
 
-
 GAMEMASTER_HINTS:
 
 	- characters
@@ -19,14 +18,25 @@ GAMEMASTER_HINTS:
 	- static pages
 
 
+FUTURE BUGS
+================
+- change last_acccess_time... typo IN MAIN DB
+- PB, serveurs webfactions sont en UTC !!!
+- typo "quelques" dans email analyse de situation initiale (partie "anthropia")
+
+
 
 FEATURES
 ------------
 
-- message answer does NOT mark "read" the parent message ??
-- change last_acccess_time... typo IN MAIN DB
+- Requête de traduction envoyée pour l'objet 'objet inconnu'.
+- Mettre username dans request.meta
 
-- PB, serveurs webfactions sont en UTC !!!
+- Envoyer email quand argent recu par un joueur, avec raison
+
+
+- message answer does NOT mark "read" the parent message ??
+
 
 - dire quand AUTRE perso (ami) a nouveaux messages/autres ??
 
@@ -36,35 +46,30 @@ FEATURES
 
 - dm.user.add_error(_("Sorry, you don't have access to search features at the moment."))
 - fix broken "save_current_content()" feature of message compose form
-- autoriser espaces dans les tags (mots clefs) automatiques de encyclopedia
+
 - que se passe-t-il si bad alias ??? dans GAME IMAGE
 - mon compte (PAS "profile personnel"), ou Mon profil
 - pas GREFFON <- modules supplémentaires, externes, complémentaires ; proposé par d'autres académies des entreprises ou autres entitées ne dépendant pas de notre académie
-- préciser que "indéfini" est normal <- inconnu, vous n'avez pas l'autorisation
+
 - les notifications doivent etre cliquables ou plus explicites
 - Nouvelles entrées de menu disponibles ! <<< completer
 - save current content in compose message is BUGGY
 - problem "previously saved content has been restored" !!!
-- typo "quelques" dans email analyse de situation initiale
+
 - update abilities settings
-- dans preview_message, rich_text, pas advanced_restructuredtext!!!
+
 - improve display of gems list with ¤ in view_characters
 - add periods to wordings like "You've proposed a friendship to that user"
 - FIXME - check templates more here #
 - emails pour NPCs concernent game master
 
 
-- remove django debug toolbar from pychronia_game conf - DONE
-- fix fragment # in links of staticpage/radiospot/globalcontact management forms - DONE
-- list keywords of articles for master, in encyclopedia - DONE
-- eviter bugs graphiques quand dezoom des contacts emails sur site, et newline quand on les sélectionne - DONE
-- mettre en gras les non-lus dans liste d'emails du master - DONE
-- montrer gamemaster hints dans contacts - DONE
-- enlever sauts de ligne avant TTS radio - DONE
-- pas "indéfini" mais "Inconnu" dans character details - DONE
-- fix display of missing addresses, in email templates - DONE
-- garder nom officiel près de description de contacts - DONE
-- remettre NPCs dans "senders" of emails for master - DONE
+
+
+
+- autoriser accents et espaces dans les tags (mots clefs) automatiques de encyclopedia - DONE
+- dans preview_message, utiliser format_enriched_text, pas advanced_restructuredtext - DONE
+
 
 
 SCRIPT
@@ -74,7 +79,7 @@ SCRIPT
 ARTICLES MANQUANTS
 - académie alifir (et image deans)
 
-
+- préciser que "indéfini" est normal <- inconnu, vous n'avez pas l'autorisation
 - préciser que geolocalisation est EXTERNE (pas mettre pseudo d'espion!!)
 
 - faire CHRONOLOGIE détaillée des évènements pour aider énigmes
@@ -144,6 +149,21 @@ NEEDS COSMETICS
 
 TASKS DONE
 ---------------
+
+
+- remove django debug toolbar from pychronia_game conf - DONE
+- fix fragment # in links of staticpage/radiospot/globalcontact management forms - DONE
+- list keywords of articles for master, in encyclopedia - DONE
+- eviter bugs graphiques quand dezoom des contacts emails sur site, et newline quand on les sélectionne - DONE
+- mettre en gras les non-lus dans liste d'emails du master - DONE
+- montrer gamemaster hints dans contacts - DONE
+- enlever sauts de ligne avant TTS radio - DONE
+- pas "indéfini" mais "Inconnu" dans character details - DONE
+- fix display of missing addresses, in email templates - DONE
+- garder nom officiel près de description de contacts - DONE
+- remettre NPCs dans "senders" of emails for master - DONE
+
+
 
 - fix abnormal visibility of NPCs in "friendship management" view - DONE
 - change is_read status of ability request messages depending on "disable_automated_ability_responses" - DONE

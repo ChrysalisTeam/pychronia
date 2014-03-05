@@ -19,7 +19,7 @@ from pychronia_game.common import _undefined, config, AbnormalUsageError, revers
     UsageError, checked_game_file_path, NormalUsageError
 from pychronia_game.templatetags.helpers import _generate_encyclopedia_links, \
     advanced_restructuredtext, _generate_messaging_links, _generate_site_links, \
-    _enriched_text, _generate_game_file_links, _generate_game_image_thumbnails
+    format_enriched_text, _generate_game_file_links, _generate_game_image_thumbnails
 from pychronia_game import views, utilities, authentication
 from pychronia_game.utilities import autolinker
 from django.test.client import RequestFactory
@@ -471,7 +471,7 @@ class TestUtilities(BaseGameTestCase):
                                 """).strip()
 
 
-    def test_enriched_text_behaviour(self):
+    def test_format_enriched_text_behaviour(self):
         """
         We only test here that dependencies are well triggered, we don't test them precisely.
         """
@@ -496,7 +496,7 @@ class TestUtilities(BaseGameTestCase):
                     
                     hi[BR]you
                     """)
-        html = _enriched_text(self.dm, rst, initial_header_level=2, report_level=5, excluded_link="lokon")
+        html = format_enriched_text(self.dm, rst, initial_header_level=2, report_level=5, excluded_link="lokon")
 
         assert self.dm.get_event_count("GENERATE_MESSAGING_LINKS") == 1
         assert self.dm.get_event_count("GENERATE_ENCYCLOPEDIA_LINKS") == 1
@@ -525,7 +525,7 @@ class TestUtilities(BaseGameTestCase):
                     .. baddirective:: aaa
                     
                     """)
-        html = _enriched_text(self.dm, rst)  # we ensure NO PERSISTENCE of previously set options!!
+        html = format_enriched_text(self.dm, rst)  # we ensure NO PERSISTENCE of previously set options!!
 
         #print("------->", html)
 
