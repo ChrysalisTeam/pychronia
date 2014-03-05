@@ -41,7 +41,7 @@ FEATURES
 - dire quand AUTRE perso (ami) a nouveaux messages/autres ??
 
 - cacher compétences spéciales pour PNJ ? comment faire ?
-- trier articles séparément des help et top/bottom, dans static pages !!
+
 - pour MJ : marqué intercepté par qui, les emails!
 
 - dm.user.add_error(_("Sorry, you don't have access to search features at the moment."))
@@ -66,9 +66,6 @@ FEATURES
 
 
 
-
-- autoriser accents et espaces dans les tags (mots clefs) automatiques de encyclopedia - DONE
-- dans preview_message, utiliser format_enriched_text, pas advanced_restructuredtext - DONE
 
 
 
@@ -151,6 +148,9 @@ TASKS DONE
 ---------------
 
 
+- autoriser accents et espaces dans les tags (mots clefs) automatiques de encyclopedia - DONE
+- dans preview_message, utiliser format_enriched_text, pas advanced_restructuredtext - DONE
+- trier articles séparément des help et top/bottom, dans static pages - DONE
 - remove django debug toolbar from pychronia_game conf - DONE
 - fix fragment # in links of staticpage/radiospot/globalcontact management forms - DONE
 - list keywords of articles for master, in encyclopedia - DONE

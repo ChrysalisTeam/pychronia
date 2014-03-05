@@ -461,7 +461,7 @@ class CharacterHandling(BaseDataManager): # TODO REFINE
         """
         We sort "players first, NPC second".
         """
-        
+
         items = ((k, v) for (k, v) in self.data["character_properties"].items() if (is_npc is None) or v["is_npc"] == is_npc)
         items = sorted(items, key=lambda x: (x[1]["is_npc"], x[0]))
         res = [item[0] for item in items]
@@ -2588,7 +2588,7 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
                         color=props.get("character_color", None), # only present for characters
                         description=props["description"] if "description" in props else (props["official_name"] + " - " + props["official_role"]),
                         gamemaster_hints=props.get("gamemaster_hints")) # for both characters and external contacts!
- 
+
             if as_dict:
                 results_dict[email] = data
             else:
@@ -4101,13 +4101,14 @@ class StaticPages(BaseDataManager):
 
         def _sorting_key(self, item_pair):
             """
-            We separate articles by prefixes (help, top, bottom...)
+            We separate articles by "dashed" prefixes (none, or "help", "top", "bottom"...)
             """
             key = item_pair[0]
             if "-" in key:
-                return key.partition("-")
+                res = key.partition("-")
             else:
-                return (None, "-", key)
+                res = ("", "-", key) # non-categorized, must be first in list!
+            return res
 
         def _get_table_container(self, root):
             return root["static_pages"]
