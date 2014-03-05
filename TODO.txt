@@ -34,12 +34,7 @@ FEATURES
 
 - Envoyer email quand argent recu par un joueur, avec raison
 
-- message answer does NOT mark "read" the parent message ??
-
-- dire quand AUTRE perso (ami) a nouveaux messages/autres ??
-
 - cacher compétences spéciales pour PNJ ? comment faire ?
-
 
 - dm.user.add_error(_("Sorry, you don't have access to search features at the moment."))
 - fix broken "save_current_content()" feature of message compose form
@@ -76,6 +71,8 @@ ARTICLES MANQUANTS
 - préciser que geolocalisation est EXTERNE (pas mettre pseudo d'espion!!)
 
 - faire CHRONOLOGIE détaillée des évènements pour aider énigmes
+
+- message answer does NOT mark "read" the parent message - YEP, à documenter
 
 Toutes ces gemmes peuvent etre vendues à leur prix de reference sur le marché international, dont le cours est tres stable actuellement. Il parait d'ailleurs que notre portail Anthropia va etre connecté sous peu à une place des ventes.
 
@@ -315,6 +312,7 @@ TASKS DONE
 FUTUR ENHANCEMENTS
 --------------------------
 
+- dire quand AUTRE perso (ami) a nouveaux messages/autres ?
 - make impersonation per-browser-tab!
 - radio spots must show only title in playlist edition
 - allow to edit all characters at once in characters management

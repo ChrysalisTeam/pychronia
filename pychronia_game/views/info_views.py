@@ -81,19 +81,17 @@ class EncyclopediaView(AbstractGameView):
         else:
             search_string = request.REQUEST.get("search")  # needn't appear in browser history, but GET needed for encyclopedia links
             if search_string:
-                if not dm.is_game_writable():
-                    dm.user.add_error(_("Sorry, you don't have access to search features at the moment."))
+                search_results = dm.get_encyclopedia_matches(search_string)
+                if not search_results:
+                    dm.user.add_error(_("Sorry, no matching encyclopedia article has been found for '%s'") % search_string)
                 else:
-                    search_results = dm.get_encyclopedia_matches(search_string)
-                    if not search_results:
-                        dm.user.add_error(_("Sorry, no matching encyclopedia article has been found for '%s'") % search_string)
-                    else:
-                        _conditionally_update_known_article_ids(search_results) # already a list
-                        if len(search_results) == 1:
-                            dm.user.add_message(_("Your search has led to a single article, below."))
-                            return HttpResponseRedirect(redirect_to=reverse("pychronia_game.views.view_encyclopedia",
-                                                                            kwargs=dict(game_instance_id=dm.game_instance_id,
-                                                                                        article_id=search_results[0])))
+                    assert not isinstance(search_results, basestring) # already a list
+                    _conditionally_update_known_article_ids(search_results)
+                    if len(search_results) == 1:
+                        dm.user.add_message(_("Your search has led to a single article, below."))
+                        return HttpResponseRedirect(redirect_to=reverse("pychronia_game.views.view_encyclopedia",
+                                                                        kwargs=dict(game_instance_id=dm.game_instance_id,
+                                                                                    article_id=search_results[0])))
 
         # NOW only retrieve article ids, since known article ids have been updated if necessary
         if dm.is_encyclopedia_index_visible() or dm.is_master(): # master ALWAYS sees everything

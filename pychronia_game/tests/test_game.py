@@ -3932,20 +3932,16 @@ class TestHttpRequests(BaseGameTestCase):
 
     def test_encyclopedia_behaviour(self):
 
+        ok = 0
+
         self._reset_django_db()
 
         url_base = reverse(views.view_encyclopedia, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID))
 
         for login in ("master", "guy1", None):
 
-            self.dm.set_game_state(False)
-
-            self._set_user(login)
-            response = self.client.get(url_base + "?search=animal")
-            assert response.status_code == 200
-            assert "have access to" in response.content.decode("utf8") # no search results
-
-            self.dm.set_game_state(True)
+            game_state = random.choice((True, False))
+            self.dm.set_game_state(game_state)
 
             self._set_user(login)
             response = self.client.get(url_base)
@@ -3957,6 +3953,10 @@ class TestHttpRequests(BaseGameTestCase):
             assert response.status_code == 200
             assert "animals" in response.content.decode("utf8")
 
+            if login == "guy1":
+                assert "gerbil_species" not in self.dm.get_character_known_article_ids()
+                ok += 1
+
             response = self.client.get(url_base + "?search=animal")
             assert response.status_code == 200
             # print(repr(response.content))
@@ -3965,6 +3965,12 @@ class TestHttpRequests(BaseGameTestCase):
             response = self.client.get(url_base + "?search=gerbil")
             assert response.status_code == 302
             assert reverse(views.view_encyclopedia, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID, article_id="gerbil_species")) in response['Location']
+
+            if login == "guy1":
+                assert ("gerbil_species" in self.dm.get_character_known_article_ids()) == (game_state)
+                ok += 1
+
+        assert ok == 2 # coherency of test method
 
 
     def test_usage_error_transformation(self):
