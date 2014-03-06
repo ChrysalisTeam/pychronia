@@ -37,7 +37,7 @@ FEATURES
 
 - cacher compétences spéciales pour PNJ ? comment faire ?
 
-- dm.user.add_error(_("Sorry, you don't have access to search features at the moment.")) BUGGY FIX
+
 - fix broken "save_current_content()" feature of message compose form
 
 - que se passe-t-il si bad alias ??? dans GAME IMAGE
@@ -118,6 +118,7 @@ PROMOTION
 TESTS
 ----------
 
+- test broken notify_chess_player_victory()
 # TODO - test that messages are well propagated through session
 # TODO - test interception of "POST" when impersonating user
 - test DISPLAY_STATIC_CONTENT handling
@@ -141,6 +142,8 @@ NEEDS COSMETICS
 TASKS DONE
 ---------------
 
+
+- let access to enyclopedia search even when game is readonly - DONE
 - pour MJ : marqué intercepté par qui, les emails - DONE
 - autoriser accents et espaces dans les tags (mots clefs) automatiques de encyclopedia - DONE
 - dans preview_message, utiliser format_enriched_text, pas advanced_restructuredtext - DONE
