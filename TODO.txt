@@ -29,6 +29,7 @@ FUTURE BUGS
 FEATURES
 ------------
 
+- Select lists with externals contacts in msg spying etc.
 - Requête de traduction envoyée pour l'objet 'objet inconnu'.
 - Mettre username dans request.meta
 
@@ -36,7 +37,7 @@ FEATURES
 
 - cacher compétences spéciales pour PNJ ? comment faire ?
 
-- dm.user.add_error(_("Sorry, you don't have access to search features at the moment."))
+- dm.user.add_error(_("Sorry, you don't have access to search features at the moment.")) BUGGY FIX
 - fix broken "save_current_content()" feature of message compose form
 
 - que se passe-t-il si bad alias ??? dans GAME IMAGE

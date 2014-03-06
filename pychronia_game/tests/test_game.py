@@ -3943,7 +3943,14 @@ class TestHttpRequests(BaseGameTestCase):
             game_state = random.choice((True, False))
             self.dm.set_game_state(game_state)
 
-            self._set_user(login)
+            self._set_user(login) # auth for local DM
+            if login == "guy1":
+                self._player_auth(login)
+            elif login == "master":
+                self._master_auth()
+            else:
+                pass # remain GUEST
+
             response = self.client.get(url_base)
             assert response.status_code == 200
 
@@ -3967,7 +3974,7 @@ class TestHttpRequests(BaseGameTestCase):
             assert reverse(views.view_encyclopedia, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID, article_id="gerbil_species")) in response['Location']
 
             if login == "guy1":
-                assert ("gerbil_species" in self.dm.get_character_known_article_ids()) == (game_state)
+                assert ("gerbil_species" in self.dm.get_character_known_article_ids()) == game_state
                 ok += 1
 
         assert ok == 2 # coherency of test method

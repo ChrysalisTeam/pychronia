@@ -67,7 +67,7 @@ class EncyclopediaView(AbstractGameView):
             assert all(isinstance(i, basestring) for i in ids_list)
             if dm.is_character() and dm.is_game_writable():  # not for master or anonymous!!
                 dm.update_character_known_article_ids(article_ids=ids_list)
-
+                #print ("Really IN _conditionally_update_known_article_ids", ids_list, self.datamanager.user.username)
         article_ids = None  # index of encyclopedia
         entry = None  # current article
         search_results = None  # list of matching article ids
