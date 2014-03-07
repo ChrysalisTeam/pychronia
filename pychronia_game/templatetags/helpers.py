@@ -116,6 +116,9 @@ def usercolor(context, username_or_email):
 
 
 def _generate_game_file_links(rst_content, datamanager):
+    """
+    Generates a thumbnails ; tag must be in the form [ GAME_FILE_URL "images/emblems/auction_logo_rounded.png" ]
+    """
     if __debug__: datamanager.notify_event("GENERATE_GAME_FILE_LINKS")
     regex = r"""\[\s*GAME_FILE_URL\s*('|")?(?P<path>.+?)('|")?\s*]"""
     def _replacer(match_obj):
@@ -126,6 +129,9 @@ def _generate_game_file_links(rst_content, datamanager):
 
 
 def _generate_game_image_thumbnails(rst_content, datamanager):
+    """
+    Generates a thumbnails ; tag must be in the form [ GAME_IMAGE_URL "images/emblems/auction_logo_rounded.png" "default" ]
+    """
     if __debug__: datamanager.notify_event("GENERATE_GAME_IMAGE_THUMBNAILS")
     regex = r"""\[\s*GAME_IMAGE_URL\s*('|")(?P<path>.+?)('|")\s*('|")(?P<alias>.+)('|")\s*]"""
     def _replacer(match_obj):
@@ -137,6 +143,9 @@ def _generate_game_image_thumbnails(rst_content, datamanager):
 
 
 def _generate_encyclopedia_links(html_snippet, datamanager, excluded_link=None):
+    """
+    Replaces identified keywords by links to corresponding encyclopedia pages.
+    """
     if __debug__: datamanager.notify_event("GENERATE_ENCYCLOPEDIA_LINKS")
     keywords_mapping = datamanager.get_encyclopedia_keywords_mapping(excluded_link=excluded_link)
 
@@ -159,6 +168,9 @@ def _generate_encyclopedia_links(html_snippet, datamanager, excluded_link=None):
 
 def _generate_messaging_links(html_snippet, datamanager):
     """
+    Generates "new message" links for emails identified, provided they have had their @ escapes with a backslash
+    (else they end up as standard mailto links because of docutils systems).
+    
     ATM we also generate links for current user, but it's not a problem.
     """
     if __debug__: datamanager.notify_event("GENERATE_MESSAGING_LINKS")
@@ -175,7 +187,8 @@ def _generate_messaging_links(html_snippet, datamanager):
 
 def _generate_site_links(html_snippet, datamanager):
     """
-    Replacement for django's url template tag, in rst-generated text.
+    Generates a site link, similarly to django's URL tag ; tag must be in the form [ GAME_PAGE_LINK "click here" "pychronia.views.homepage" ]
+    Rg, in rst-generated text.
     """
     if __debug__: datamanager.notify_event("GENERATE_SITE_LINKS")
     def site_link_attr_generator(match):
@@ -188,7 +201,7 @@ def _generate_site_links(html_snippet, datamanager):
         except Exception:
             logging.warning("Error in generate_site_links for match %r", matched_str, exc_info=True)
             return None # abort link creation
-    regex = r"""\{% "(?P<content>[^"]+)" "(?P<view>[.\w]+)" %\}""" # content will be the text used as link
+    regex = r"""\[\s*GAME_PAGE_LINK\s*('|")(?P<content>[^"]+)('|")\s*('|")(?P<view>[.\w]+)('|")\s*]""" # content will be the text used as link
     html_res = autolinker.generate_links(html_snippet, regex=regex, link_attr_generator=site_link_attr_generator)
     return html_res
 

@@ -447,18 +447,18 @@ class TestUtilities(BaseGameTestCase):
         rst = dedent(r"""
                     hi
                     
-                    {% "hello" "kj.jjh" %}
+                    [ GAME_PAGE_LINK "hello" "kj.jjh" ]
                     
-                    {% "good1" "pychronia_game.views.homepage" %}
+                    [GAME_PAGE_LINK'good1' "pychronia_game.views.homepage"]
                     
-                    {% "good2" "view_sales" %}
+                    [GAME_PAGE_LINK "good2" "view_sales"]
                     
-                    {% "bad\"string" "view_sales" %}
+                    [ GAME_PAGE_LINK "bad\"string" "view_sales" ]
                     """)
 
         html = _generate_site_links(rst, self.dm)
 
-        #print("------->", html)
+        print("------->", html)
         assert html.strip() == dedent(r"""
                                 hi
 
@@ -467,7 +467,7 @@ class TestUtilities(BaseGameTestCase):
                                 <a href="/TeStiNg/">good1</a>
                                 <a href="/TeStiNg/view_sales/">good2</a>
                                 
-                                {% "bad\"string" "view_sales" %}
+                                [ GAME_PAGE_LINK "bad\"string" "view_sales" ]
                                 """).strip()
 
 
@@ -2831,7 +2831,7 @@ class TestDatamanager(BaseGameTestCase):
 
         assert res == expected_capabilities
 
-            
+
 
     @for_core_module(PlayerAuthentication)
     def test_impersonation_by_superuser(self):
