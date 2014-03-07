@@ -430,13 +430,13 @@
     {% endif %}
 
     {% if signal_new_menu_entries %}
-        <img title="{% trans "New menu entries are available for you!" %}" onclick="$(this).qtip('show');" style="cursor:pointer" src="{{ STATIC_URL }}MetalRadiance/img/icons/share_link_tiny4.png"/>
+        <img title="{% trans "New menu entries are available for you!" %}" onclick="$(this).qtip('show');" style="cursor:help" src="{{ STATIC_URL }}MetalRadiance/img/icons/share_link_tiny4.png"/>
     {% endif %}
     {% if signal_new_text_message %}
-       <img title="{% trans "New text messages are available for you!" %}" onclick="$(this).qtip('show');" style="cursor:pointer" src="{{ STATIC_URL }}MetalRadiance/img/icons/rolled_parchment_tiny.png"/>
+       <img title="{% trans "New text messages are available for you!" %}" onclick="$(this).qtip('show');" style="cursor:help" src="{{ STATIC_URL }}MetalRadiance/img/icons/rolled_parchment_tiny.png"/>
     {% endif %}
     {% if signal_chatting_users %}
-       <img title="{% trans "There are people in the live chat room!" %}" onclick="$(this).qtip('show');" style="cursor:pointer" src="{{ STATIC_URL }}MetalRadiance/img/icons/speech_bubble_tiny.png"/>
+       <img title="{% trans "There are people in the live chat room!" %}" onclick="$(this).qtip('show');" style="cursor:help" src="{{ STATIC_URL }}MetalRadiance/img/icons/speech_bubble_tiny.png"/>
     {% endif %}
 
 </span>
