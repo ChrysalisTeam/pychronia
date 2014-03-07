@@ -29,6 +29,9 @@ FUTURE BUGS
 FEATURES
 ------------
 
+
+- add "show single static page" view
+
 - Select lists with externals contacts in msg spying etc.
 - Requête de traduction envoyée pour l'objet 'objet inconnu'.
 
@@ -38,17 +41,6 @@ FEATURES
 - cacher compétences spéciales pour PNJ ? comment faire ?
 
 - fix broken "save_current_content()" feature of message compose form
-
-- que se passe-t-il si bad alias ??? dans GAME IMAGE
-- mon compte (PAS "profile personnel"), ou Mon profil
-- pas GREFFON <- modules supplémentaires, externes, complémentaires ; proposé par d'autres académies des entreprises ou autres entitées ne dépendant pas de notre académie
-
-- les notifications doivent etre cliquables ou plus explicites
-- Nouvelles entrées de menu disponibles ! <<< completer
-- save current content in compose message is BUGGY
-- problem "previously saved content has been restored" !!!
-
-- update abilities settings
 
 - improve display of gems list with ¤ in view_characters
 - add periods to wordings like "You've proposed a friendship to that user"
@@ -62,9 +54,16 @@ FEATURES
 SCRIPT
 ----------
 
+- update abilities settings and prices
+
+- mon compte (PAS "profile personnel"), ou Mon profil
+- pas GREFFON <- modules supplémentaires, externes, complémentaires ; proposé par d'autres académies des entreprises ou autres entitées ne dépendant pas de notre académie
+
 
 ARTICLES MANQUANTS
 - académie alifir (et image deans)
+
+- les notifications doivent etre plus explicites dans leur contenu
 
 - préciser que "indéfini" est normal <- inconnu, vous n'avez pas l'autorisation
 - préciser que geolocalisation est EXTERNE (pas mettre pseudo d'espion!!)
