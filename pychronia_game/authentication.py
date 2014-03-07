@@ -42,6 +42,10 @@ def logout_session(request):
         del request.session[instance_key]
 
 
+def _enrich_request_metadata_with_instance_session_ticket(request, session_ticket):
+    """Meant to help debugging critical failures."""
+    request.META["session_ticket"] = session_ticket
+
 
 def try_authenticating_with_credentials(request, username, password):
     """
@@ -52,7 +56,7 @@ def try_authenticating_with_credentials(request, username, password):
 
     instance_key = instance_session_key(request.datamanager.game_instance_id)
     request.session[instance_key] = session_ticket # overrides
-
+    _enrich_request_metadata_with_instance_session_ticket(request, session_ticket=session_ticket)
 
 
 def _lookup_enforced_session_or_none(request):
@@ -135,6 +139,8 @@ def try_authenticating_with_session(request):
         logging.critical("Error in try_authenticating_with_session with locals %r" % repr(locals()), exc_info=True)
         request.session[instance_key] = None # important cleanup!
         pass # thus, if error, we let the anonymous user be...
+
+    _enrich_request_metadata_with_instance_session_ticket(request, session_ticket=session_ticket)
 
     try:
         request.session.save() # force IMMEDIATE saving, to avoid lost updates between web and ajax (eg. chatroom) requests

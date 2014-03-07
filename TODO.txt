@@ -31,12 +31,11 @@ FEATURES
 
 - Select lists with externals contacts in msg spying etc.
 - Requête de traduction envoyée pour l'objet 'objet inconnu'.
-- Mettre username dans request.meta
+
 
 - Envoyer email quand argent recu par un joueur, avec raison
 
 - cacher compétences spéciales pour PNJ ? comment faire ?
-
 
 - fix broken "save_current_content()" feature of message compose form
 
@@ -55,7 +54,6 @@ FEATURES
 - add periods to wordings like "You've proposed a friendship to that user"
 - FIXME - check templates more here #
 - emails pour NPCs concernent game master
-
 
 
 
@@ -142,7 +140,7 @@ NEEDS COSMETICS
 TASKS DONE
 ---------------
 
-
+- Mettre session ticket dans request.meta, pour debugging des http500 - DONE
 - let access to enyclopedia search even when game is readonly - DONE
 - pour MJ : marqué intercepté par qui, les emails - DONE
 - autoriser accents et espaces dans les tags (mots clefs) automatiques de encyclopedia - DONE
