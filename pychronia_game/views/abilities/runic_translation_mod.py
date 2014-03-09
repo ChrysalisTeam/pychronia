@@ -183,9 +183,8 @@ class RunicTranslationAbility(AbstractPartnershipAbility):
 
     @readonly_method
     def _translate_rune_message(self, item_name, rune_transcription):
-
-        if not item_name:
-            item_name = self.get_closest_item_name(decoding_attempt=rune_transcription) # will always return non-None, unless no objects are translatable
+        assert item_name is None or item_name # may be unknown
+        assert rune_transcription
 
         if not item_name or item_name not in self.get_ability_parameter("references").keys():
             translator = {}  # we let random words translation deal with that
@@ -202,26 +201,24 @@ class RunicTranslationAbility(AbstractPartnershipAbility):
 
 
     @transaction_watcher
-    def _process_translation_submission(self, item_name, rune_transcription):
+    def _process_translation_submission(self, rune_transcription):
         assert rune_transcription # item_name can be None
 
         # request email, to allow interception
 
-        subject = _('Translation Submission for item %s') % (item_name if item_name else _("unknown"))
+        subject = _('Translation Request')
         body = _("Runes: ") + rune_transcription
         parent_id = self.send_processing_request(subject=subject, body=body)
         del subject, body
 
         # answer email
 
-        try:
-            item_title = self.get_item_properties(item_name)["title"]
-        except UsageError:
-            item_title = _("unknown object")
+        item_name = self.get_closest_item_name(decoding_attempt=rune_transcription) # will always return non-None, unless no objects are translatable
         translation = self._translate_rune_message(item_name=item_name, rune_transcription=rune_transcription)
+        item_title = item_name or _("unknown")
+        del item_name
 
-
-        subject = "<Rune Translation Result - %(item)s>" % SDICT(item=item_title)
+        subject = "<Rune Translation Result>"
 
         body = dedent("""
                         Below is the output of the automated translation process for the runes of the targeted object.
@@ -234,20 +231,23 @@ class RunicTranslationAbility(AbstractPartnershipAbility):
 
         msg_id = self.send_back_processing_result(parent_id=parent_id, subject=subject, body=body, attachment=None)
 
-        self.log_game_event(ugettext_noop("Translation request sent for item '%(item_title)s'."),
+        self.log_game_event(ugettext_noop("Translation request submitted (presumably for item '%(item_title)s')."),
                               PersistentDict(item_title=item_title),
                               url=self.get_message_viewer_url_or_none(msg_id)) # msg_id might be None
 
         return msg_id # might be None
+    
 
     @transaction_watcher
-    def process_translation(self, target_item=None, transcription=None, use_gems=()):
+    def process_translation(self, transcription="", use_gems=()):
         """
         Parameter target_item may be None (auto detection).
         """
-        assert transcription
-        self._process_translation_submission(target_item,
-                                              transcription)
+        transcription = transcription.strip() if transcription else transcription
+        if not transcription:
+            raise UsageError(_("The transcription submitted is empty."))
+
+        self._process_translation_submission(transcription)
 
         return _("Runic transcription successfully submitted, the result will be emailed to you.")
 

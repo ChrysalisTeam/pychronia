@@ -5333,10 +5333,8 @@ class TestSpecialAbilities(BaseGameTestCase):
         assert translated_tokens_ter != translated_tokens # random generator is initialized with different seed!
 
 
-        # temporary solution to deal with currently untranslated runes... #FIXME
-        available_translations = [(item_name, settings) for (item_name, settings) in runic_translation.get_ability_parameter("references").items()
-                                    if settings["decoding"].strip()]
-        (rune_item, translation_settings) = available_translations[0]
+        rune_item = "sacred_chest"
+        translation_settings = runic_translation.get_ability_parameter("references")[rune_item]
 
         transcription_attempt = translation_settings["decoding"] # '|' and '#'symbols are automatically cleaned
         expected_result = runic_translation._normalize_string(translation_settings["translation"].replace("#", " ").replace("|", " "))
@@ -5344,16 +5342,13 @@ class TestSpecialAbilities(BaseGameTestCase):
         self.assertEqual(translation_result, expected_result)
 
         translation_result = runic_translation._translate_rune_message(item_name=None, rune_transcription=transcription_attempt)
-        self.assertEqual(translation_result, expected_result) # auto detection of item as sacred chest
+        self.assertNotEqual(translation_result, expected_result) # NO auto detection of item as sacred chest
 
-        translation_result = runic_translation._translate_rune_message(item_name=None, rune_transcription=transcription_attempt)
-        self.assertNotEqual("su se", "the miscreant") # auto detection of item as sacred chest
 
         assert runic_translation.get_closest_item_name("sa to | ta ka") == "statue" # not always sacred_chest, as we check
 
         self._set_user("guy1")
-        runic_translation.process_translation(random.choice((rune_item, None)), # auto detect is available at top level
-                                              transcription_attempt)
+        runic_translation.process_translation(transcription_attempt)
 
         msgs = self.dm.get_all_queued_messages()
         self.assertEqual(len(msgs), 1)
@@ -5372,8 +5367,7 @@ class TestSpecialAbilities(BaseGameTestCase):
 
         self.dm.set_global_parameter("disable_automated_ability_responses", True)
 
-        runic_translation.process_translation(random.choice((rune_item, None)), # auto detect is available at top level
-                                              transcription_attempt)
+        runic_translation.process_translation(transcription_attempt)
         msgs = self.dm.get_all_dispatched_messages()
         self.assertEqual(len(msgs), 2) # REQUEST is well generated
         msg = msgs[-1]

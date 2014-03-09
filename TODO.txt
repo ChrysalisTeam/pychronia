@@ -40,7 +40,8 @@ FEATURES
 
 - add "show single static page" view
 
-- Select lists with externals contacts in msg spying etc.
+- Select_lists with externals contacts in msg spying etc.
+
 - Requête de traduction envoyée pour l'objet 'objet inconnu'.
 
 
@@ -51,8 +52,6 @@ FEATURES
 - fix broken "save_current_content()" feature of message compose form
 
 
-- FIXME - check templates more here #
-- emails pour NPCs concernent game master
 
 
 
@@ -147,6 +146,8 @@ TASKS DONE
 ---------------
 
 
+
+- emails de/pour NPCs concernent game master (change visibility_reason) - DONE
 - added periods to wordings like "You've proposed a friendship to that user" - DONE
 - improve display of gems list with ¤ in view_characters, thanks to "list_append_to_each" filter - DONE
 - Mettre session ticket dans request.meta, pour debugging des http500 - DONE
@@ -166,8 +167,6 @@ TASKS DONE
 - fix display of missing addresses, in email templates - DONE
 - garder nom officiel près de description de contacts - DONE
 - remettre NPCs dans "senders" of emails for master - DONE
-
-
 
 - fix abnormal visibility of NPCs in "friendship management" view - DONE
 - change is_read status of ability request messages depending on "disable_automated_ability_responses" - DONE
