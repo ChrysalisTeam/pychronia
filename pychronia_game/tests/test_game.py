@@ -2168,6 +2168,23 @@ class TestDatamanager(BaseGameTestCase):
                              "net@via.com;aaa@fff.fr", subject="ssd", body="qsdqsd") # no problem, even if email addresses are unknown
 
 
+        # special case : visibility reason for game master
+
+        contact_for_master = random.choice(("anything@masssslavia.com", self.dm.get_character_email("my_npc")))
+        contact_for_master2 = random.choice(("anythdfsdfing@mas.com", self.dm.get_character_email("my_npc")))
+
+        self.dm.post_message(contact_for_master, "guy2@pangea.com", subject="AAA", body="BBBBB") # master is SENDER
+        self.dm.post_message("guy2@pangea.com", contact_for_master, subject="AAA", body="BBBBB") # master is RECIPIENT
+        self.dm.post_message("guy2@pangea.com", "guy4@pangea.com", subject="AAA", body="BBBBB") # master is NOTHING
+        self.dm.post_message(contact_for_master, contact_for_master2, subject="AAA", body="BBBBB")
+
+        a, b, c, d = self.dm.get_all_dispatched_messages()[-4:]
+
+        assert a["visible_by"][MASTER] == VISIBILITY_REASONS.sender
+        assert b["visible_by"][MASTER] == VISIBILITY_REASONS.recipient
+        assert MASTER not in c["visible_by"]
+        assert d["visible_by"][MASTER] == VISIBILITY_REASONS.sender # takes precedence!
+
 
     def test_time_shifts_on_message_posting(self):
 

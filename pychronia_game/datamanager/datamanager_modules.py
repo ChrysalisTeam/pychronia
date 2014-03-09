@@ -2345,6 +2345,8 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
         visibilities = {}
         ml = self.get_global_parameter("all_players_mailing_list")
 
+        npc_usernames = self.get_character_usernames(is_npc=True)
+
         assert utilities.check_no_duplicates(msg["recipient_emails"]) # already normalized
         for recipient_email in msg["recipient_emails"]:
             if recipient_email == ml:
@@ -2354,14 +2356,14 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
                 recipient_username = self.get_character_or_none_from_email(recipient_email)
                 if recipient_username:
                     visibilities[recipient_username] = VISIBILITY_REASONS.recipient
-                else:
+                if not recipient_username or recipient_username in npc_usernames: # both external contacts and NPCs concern game master
                     visibilities[self.master_login] = VISIBILITY_REASONS.recipient # might occur several times, we don't care
 
         sender_username = self.get_character_or_none_from_email(msg["sender_email"])
         if sender_username:
             visibilities[sender_username] = VISIBILITY_REASONS.sender # might override "recipient" status, in case of self-mailing
-        else:
-            visibilities[self.master_login] = VISIBILITY_REASONS.sender
+        if not sender_username or sender_username in npc_usernames:
+            visibilities[self.master_login] = VISIBILITY_REASONS.sender # overrides existing - both external contacts and NPCs concern game master
 
 
         return visibilities
