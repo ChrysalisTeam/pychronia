@@ -2738,20 +2738,20 @@ msgid "Friendship Management"
 msgstr "Gestion de l'Amitié"
 
 #: .\views\profile_views.py:200 .\views\profile_views.py:242
-msgid "Propose friendship"
-msgstr "Proposer une amitié"
+msgid "Propose friendship."
+msgstr "Proposer une amitié."
 
 #: .\views\profile_views.py:203
-msgid "Accept friendship"
-msgstr "Accepter la proposition d'amitié"
+msgid "Accept friendship."
+msgstr "Accepter la proposition d'amitié."
 
 #: .\views\profile_views.py:206 .\views\profile_views.py:233
-msgid "Cancel friendship proposal"
-msgstr "Annuler la proposition d'amitié"
+msgid "Cancel friendship proposal."
+msgstr "Annuler la proposition d'amitié."
 
 #: .\views\profile_views.py:209
-msgid "Cancel friendship"
-msgstr "Annuler la proposition d'amitié"
+msgid "Cancel friendship."
+msgstr "Annuler la proposition d'amitié."
 
 #: .\views\profile_views.py:213
 msgid "Set minimum friendship duration"
@@ -2762,36 +2762,36 @@ msgid "Minimum friendship duration well set."
 msgstr "Durée minimale d'amitié correctement changée."
 
 #: .\views\profile_views.py:233
-msgid "You've proposed a friendship to that user"
-msgstr "Vous avez proposé une amitié à cet utilisateur"
+msgid "You've proposed a friendship to that user."
+msgstr "Vous avez proposé une amitié à cet utilisateur."
 
 #: .\views\profile_views.py:235
-msgid "Accept friendship proposal"
-msgstr "Accepter la proposition d'amitié"
+msgid "Accept friendship proposa.l"
+msgstr "Accepter la proposition d'amitié."
 
 #: .\views\profile_views.py:235
-msgid "You've been proposed a friendship by that user"
-msgstr "Cet utilisateur vous a proposé une amitié"
+msgid "You've been proposed a friendship by that user."
+msgstr "Cet utilisateur vous a proposé une amitié."
 
 #: .\views\profile_views.py:237
 msgid ""
 "You've been friend with that user for a short time (impossible to break that "
-"friendship at the moment)"
+"friendship at the moment)."
 msgstr ""
 "Vous êtes ami avec cet utilisateur depuis trop peu de temps (impossible de "
-"briser l'amitié pour l'instant)"
+"briser l'amitié pour l'instant)."
 
 #: .\views\profile_views.py:239
-msgid "Abort friendship"
-msgstr "Annuler l'amitié"
+msgid "Abort friendship."
+msgstr "Annuler l'amitié."
 
 #: .\views\profile_views.py:239
-msgid "You're friends with that user"
-msgstr "Vous êtes ami avec cet utilisateur"
+msgid "You're friends with that user."
+msgstr "Vous êtes ami avec cet utilisateur."
 
 #: .\views\profile_views.py:242
-msgid "You're not friends with that user"
-msgstr "Vous êtes n'êtes pas ami avec cet utilisateur"
+msgid "You're not friends with that user."
+msgstr "Vous êtes n'êtes pas ami avec cet utilisateur."
 
 #: .\views\profile_views.py:263
 #, python-format
@@ -2814,7 +2814,7 @@ msgstr "Votre proposition d'amitié à %s a été enregistrée."
 #: .\views\profile_views.py:275
 #, python-format
 msgid "You're now friend with %s."
-msgstr "Vous êtes désormais amis avec %s."
+msgstr "Vous êtes désormais ami avec %s."
 
 #: .\views\profile_views.py:277
 #, python-format

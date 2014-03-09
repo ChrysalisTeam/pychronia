@@ -51,7 +51,6 @@ FEATURES
 - fix broken "save_current_content()" feature of message compose form
 
 
-- add periods to wordings like "You've proposed a friendship to that user"
 - FIXME - check templates more here #
 - emails pour NPCs concernent game master
 
@@ -148,7 +147,7 @@ TASKS DONE
 ---------------
 
 
-
+- added periods to wordings like "You've proposed a friendship to that user" - DONE
 - improve display of gems list with ¤ in view_characters, thanks to "list_append_to_each" filter - DONE
 - Mettre session ticket dans request.meta, pour debugging des http500 - DONE
 - let access to enyclopedia search even when game is readonly - DONE
