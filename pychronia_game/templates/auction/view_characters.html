@@ -58,7 +58,7 @@
     		    		<span title="{% trans "Values, in kashes, of each gem" %}"">
     		    		    <b>{% trans "Gemmes:" %}</b>
                             {% if char_details.gems %}
-                                {{ char_details.gems|list_filter:0|join:", " }}
+                                {{ char_details.gems|list_filter:"0"|list_append_to_each:"¤"|join:", " }}
                             {% else %}
                                 {% trans "None" %}
                             {% endif %}

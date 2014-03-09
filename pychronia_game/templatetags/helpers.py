@@ -351,11 +351,19 @@ register.filter('dict_get', dict_get)
 
 def list_filter(value, offset):
     """
-    Extracts the nth elemet of each item in a list.
+    Extracts the nth element of each item in a list.
     """
     offset = int(offset)
     return [val[offset] for val in value]
 register.filter('list_filter', list_filter)
+
+
+def list_append_to_each(value, suffix):
+    """
+    Appends a suffix to each value of the strings list.
+    """
+    return [unicode(val) + suffix for val in value]
+register.filter('list_append_to_each', list_append_to_each)
 
 
 def utctolocal(value, arg=None): # FIXME - BUGGY CALLS

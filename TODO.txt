@@ -7,6 +7,14 @@ PARTIE EN COURS
 ==================
 - mission d'espionnage des obérons d'Amethyst à l'académie d'alifir : à continuer
 
+Avis à tous les membres de l'Académie, et affiliés.
+Nous venons d'apprendre que la Faculté d'Imuo allait sortir d'ici peu
+une Intelligence Artificelle de jeu d'échecs, qu'ils qualifient de
+"révolutionnaire".
+Si tel était vraiment le cas, ce serait un coup dur pour la
+crédibilité de notre Académie, qui a toujours été en pointe dans ce
+domaine.
+
 
 GAMEMASTER_HINTS:
 
@@ -42,7 +50,7 @@ FEATURES
 
 - fix broken "save_current_content()" feature of message compose form
 
-- improve display of gems list with ¤ in view_characters
+
 - add periods to wordings like "You've proposed a friendship to that user"
 - FIXME - check templates more here #
 - emails pour NPCs concernent game master
@@ -139,6 +147,9 @@ NEEDS COSMETICS
 TASKS DONE
 ---------------
 
+
+
+- improve display of gems list with ¤ in view_characters, thanks to "list_append_to_each" filter - DONE
 - Mettre session ticket dans request.meta, pour debugging des http500 - DONE
 - let access to enyclopedia search even when game is readonly - DONE
 - pour MJ : marqué intercepté par qui, les emails - DONE
