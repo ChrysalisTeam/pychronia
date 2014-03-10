@@ -1,0 +1,15 @@
+
+{% extends "base_one_column.html" %}
+
+{% load i18n helpers kwacros %}
+{% loadkwacros "metalradiance_kwacros.html" %}
+
+
+
+{% block content %}
+
+    <div class="pretty_text">
+        {% include "utilities/static_page_block.html" with article_name=None article_data=entry excluded_link=None initial_header_level=2 %}
+    </div>
+
+{% endblock %}

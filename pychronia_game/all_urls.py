@@ -69,6 +69,8 @@ web_game_urlpatterns = patterns('pychronia_game.views',
     url(r'^view_sales/$', 'view_sales'),
     url(r'^view_characters/$', 'view_characters'),
 
+    url(r'^pages/(?P<page_id>[^/]*)/$', 'view_static_page'),
+
     url(r'^encyclopedia/$', 'view_encyclopedia'),
     url(r'^encyclopedia/(?P<article_id>[^/]*)/$', 'view_encyclopedia'),
 

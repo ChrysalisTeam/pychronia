@@ -4040,6 +4040,7 @@ class StaticPages(BaseDataManager):
 
     @readonly_method
     def get_categorized_static_page(self, category, name):
+        assert category and name
         assert " " not in category
         assert " " not in name
         if name not in self.static_pages:

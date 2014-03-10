@@ -23,6 +23,42 @@ def view_world_map(request, template_name='information/world_map.html'):
                     })
 
 
+
+
+
+
+@register_view
+class StaticPageView(AbstractGameView):
+    """
+    This view allows one to see ANY static page on its own, without any permission checking
+    (jsut a "private link" notion).
+    """
+
+    TITLE = ugettext_lazy("Article")
+    NAME = "view_static_page"
+
+    TEMPLATE = "information/view_static_page.html"
+
+    ACCESS = UserAccess.anonymous
+    REQUIRES_CHARACTER_PERMISSION = False
+    REQUIRES_GLOBAL_PERMISSION = False
+
+    def get_template_vars(self, previous_form_data=None):
+        
+        page_id = self.kwargs.get("page_id")
+        
+        if not page_id or page_id not in self.datamanager.static_pages:
+            print(">>>>", page_id, self.datamanager.static_pages.keys())
+            raise Http404 # unexisting static page
+
+        entry = self.datamanager.static_pages[page_id]
+
+        return dict(entry=entry)
+
+view_static_page = StaticPageView.as_view
+
+
+
 class EnyclopediaIndexVisibilityForm(AbstractGameForm):
 
     is_index_visible = django_forms.BooleanField(label=ugettext_lazy("Full Index Visibility"), required=False)

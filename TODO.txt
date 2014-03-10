@@ -37,6 +37,8 @@ FUTURE BUGS
 FEATURES
 ------------
 
+- test static page viewer, and add its link to management forms!!!
+- add optional "title" to static pages
 
 - add "show single static page" view
 

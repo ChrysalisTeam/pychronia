@@ -36,7 +36,7 @@ from .mobile_views import homepage_mobile
 from .auction_views import (_build_display_data_from_viewer_settings, homepage, view_characters,
                             view_sales, auction_items_slideshow, personal_items_slideshow, item_3d_view, ajax_chat, chatroom)
 
-from .info_views import (view_encyclopedia,
+from .info_views import (view_encyclopedia, view_static_page,
                          personal_webradio_popup, personal_webradio_page, get_radio_xml_conf, public_webradio,
                          ajax_get_next_audio_message, ajax_notify_audio_message_finished,
                          personal_folder, view_media, encrypted_folder, view_world_map)
