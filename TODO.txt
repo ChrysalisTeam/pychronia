@@ -37,30 +37,24 @@ FUTURE BUGS
 FEATURES
 ------------
 
-- test static page viewer, and add its link to management forms!!!
-- add optional "title" to static pages
 
-- add "show single static page" view
+- resize display of "bidders" page forms
 
-- Select_lists with externals contacts in msg spying etc.
+- put official name in all user-related SELECTS
 
-- Requête de traduction envoyée pour l'objet 'objet inconnu'.
-
+- Select_lists with externals contacts in messaging wiretapping etc.
 
 - Envoyer email quand argent recu par un joueur, avec raison
 
 - cacher compétences spéciales pour PNJ ? comment faire ?
-
-- fix broken "save_current_content()" feature of message compose form
-
-
-
 
 
 
 
 SCRIPT
 ----------
+
+- explain about static page "titles" usage
 
 - update abilities settings and prices
 
@@ -123,6 +117,7 @@ PROMOTION
 TESTS
 ----------
 
+- test localstorage in PROD
 - test broken notify_chess_player_victory()
 # TODO - test that messages are well propagated through session
 # TODO - test interception of "POST" when impersonating user
@@ -148,7 +143,11 @@ TASKS DONE
 ---------------
 
 
-
+- fix broken "save_current_content()" feature of message compose form - DONE
+- refactor bad item-related wordings in runic translation - DONE
+- add optional title to all static pages - DONE
+- test static page viewer, and add its link to management forms - DONE
+- add "show single static page" view - DONE
 - emails de/pour NPCs concernent game master (change visibility_reason) - DONE
 - added periods to wordings like "You've proposed a friendship to that user" - DONE
 - improve display of gems list with ¤ in view_characters, thanks to "list_append_to_each" filter - DONE
