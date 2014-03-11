@@ -3705,6 +3705,7 @@ class TestHttpRequests(BaseGameTestCase):
 
         # these urls and their post data might easily change, beware !
         special_urls = {ROOT_GAME_URL + "/item3dview/sacred_chest/": None,
+                        reverse(views.view_static_page, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID, page_id="lokon")): None,
                         # FIXME NOT YET READYROOT_GAME_URL + "/djinn/": {"djinn": "Pay Rhuss"},
                         ##### FIXME LATER config.MEDIA_URL + "Burned/default_styles.css": None,
                         game_file_url("images/attachments/image1.png"): None,
@@ -3763,7 +3764,7 @@ class TestHttpRequests(BaseGameTestCase):
 
     UNGETTABLE_SPECIAL_VIEWS = ("""CHARACTERS_IDENTITIES DATABASE_OPERATIONS FAIL_TEST MEDIA_TEST  logout ___instructions ___logo_animation ___opening
                         """.split() + # BROKEN VIEWS
-                     ["view_single_message", "item_3d_view", "encrypted_folder", "view_help_page", "secret_question", # NEEDS PARAMETERS
+                     ["view_single_message", "item_3d_view", "encrypted_folder", "view_help_page", "secret_question", "view_static_page", # NEEDS PARAMETERS
                       "homepage_mobile"]) # MOBILE ONLY
 
     def _test_all_views_http_get(self):
