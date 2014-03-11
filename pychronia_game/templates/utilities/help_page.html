@@ -2,10 +2,9 @@
 
     {% load i18n helpers markup %}
 
-    <h2>{{ page_title }}</h2>
+    <h2>{{ entry.title|default:page_title }}</h2>
 
     {% include "utilities/static_page_block.html" with article_name=None article_data=entry initial_header_level=3 %}
-
 
     <script language="javascript" type="text/javascript">
     {# FIXME PUT THIS IN COMMON WITH MAIN PAGE #}

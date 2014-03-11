@@ -1,5 +1,8 @@
 {% load i18n helpers %}
 {% if article_data %}
+
+    {% comment %} {% if article_data.title %}<h{{ initial_header_level }}>{{ article_data.title }}</h{{ initial_header_level }}>{% endif %} {% endcomment %}
+
     <div class="section">{% rich_text article_data.content excluded_link=excluded_link initial_header_level=initial_header_level %}</div>
 
     {% if display_admin_tips and article_data.gamemaster_hints %}

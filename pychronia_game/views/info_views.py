@@ -136,12 +136,16 @@ class EncyclopediaView(AbstractGameView):
             article_ids = dm.get_character_known_article_ids()
         else:
             assert dm.is_anonymous()  # we leave article_ids to None
-
+        
+        _pages = dm.static_pages
+        articles_index = ((article_id, _pages[article_id].get("title")) for article_id in article_ids)
+        del article_ids
+        
         return TemplateResponse(request=request,
                                 template=self.TEMPLATE,
                                 context={
                                          'page_title': _("Pangea Encyclopedia"),
-                                         'article_ids': article_ids,
+                                         'articles_index': articles_index,
                                          'current_article_id': article_id,
                                          'entry': entry,
                                          'search_results': search_results

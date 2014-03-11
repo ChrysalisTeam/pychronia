@@ -13,6 +13,8 @@ from django import forms
 
 class StaticPageForm(DataTableForm):
 
+    title = forms.CharField(label=ugettext_lazy("Title"), required=False)
+
     categories = Select2TagsField(label=ugettext_lazy("Categories"), required=False,
                                   choice_tags=sorted(set([StaticPages.CONTENT_CATEGORY, StaticPages.HELP_CATEGORY, Encyclopedia.ENCYCLOPEDIA_CATEGORY])))
     

@@ -4079,6 +4079,10 @@ class StaticPages(BaseDataManager):
                 details.setdefault("gamemaster_hints", "") # for gamemaster only
                 details["gamemaster_hints"] = details["gamemaster_hints"].strip()
 
+                details.setdefault("title", None)
+                if details["title"]:
+                    details["title"] = details["title"].strip(), details["title"]
+
 
         def _preprocess_new_item(self, key, value):
             assert "immutable" not in value
@@ -4091,9 +4095,13 @@ class StaticPages(BaseDataManager):
             utilities.check_is_slug(key)
             assert key.lower() == key # handy
 
-            utilities.check_has_keys(value, ["immutable", "categories", "content", "gamemaster_hints", "keywords"], strict=strict)
+            utilities.check_has_keys(value, ["immutable", "categories", "content", "gamemaster_hints", "keywords"], strict=strict) # SOON -> "title" TOO!! FIXME TODO
 
             utilities.check_is_bool(value["immutable"],)
+
+            if value.get("title"): # retrocompatibility layer
+                utilities.check_is_string(value["title"], multiline=False)
+                assert value["title"] == value["title"].strip(), value["title"]
 
             utilities.check_is_restructuredtext(value["content"])
 

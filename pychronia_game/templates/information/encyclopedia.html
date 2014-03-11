@@ -39,13 +39,13 @@
     {% usekwacro side_panel_end %}
 
 
-    {% if article_ids %}
+    {% if articles_index %}
         {% usekwacro side_panel_start frame_class="mini_frame float_left clear_left" decos="1" %}
         <div class="rice_paper_rose full_width">
             <h2>{% trans "Index" %}</h2>
             <ul>
-                {% for article_id in article_ids %}
-                    <li><a href="{% game_view_url "pychronia_game.views.view_encyclopedia" article_id=article_id %}">{{ article_id|capfirst }}</a></li>
+                {% for article_id, article_title in articles_index %}
+                    <li><a href="{% game_view_url "pychronia_game.views.view_encyclopedia" article_id=article_id %}">{{ article_title|default:article_id }}</a></li>
                 {% endfor %}
             </ul>
         </div>
@@ -59,6 +59,10 @@
 {% block content %}
 
         {% if entry %}
+
+
+        {% if entry.title %}<h2>{{ entry.title }}</h2>{% endif %}
+
         <div class="pretty_text">
 
             {% if display_admin_tips and entry.keywords %}
@@ -67,7 +71,7 @@
             </div>
             {% endif %}
 
-            {% include "utilities/static_page_block.html" with article_name=None article_data=entry excluded_link=current_article_id initial_header_level=2 %}
+            {% include "utilities/static_page_block.html" with article_name=None article_data=entry excluded_link=current_article_id initial_header_level=3 %}
         </div>
         {% endif %}
 
