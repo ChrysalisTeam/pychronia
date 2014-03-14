@@ -37,7 +37,7 @@ FUTURE BUGS
 FEATURES
 ------------
 
-
+- disable auto play on VLC media (phoque.avi)
 - resize display of "bidders" page forms
 
 - put official name in all user-related SELECTS

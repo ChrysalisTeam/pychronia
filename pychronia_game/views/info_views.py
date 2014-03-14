@@ -104,7 +104,7 @@ class EncyclopediaView(AbstractGameView):
             if dm.is_character() and dm.is_game_writable():  # not for master or anonymous!!
                 dm.update_character_known_article_ids(article_ids=ids_list)
                 #print ("Really IN _conditionally_update_known_article_ids", ids_list, self.datamanager.user.username)
-        article_ids = None  # index of encyclopedia
+        article_ids = []  # index of encyclopedia
         entry = None  # current article
         search_results = None  # list of matching article ids
 
@@ -135,7 +135,7 @@ class EncyclopediaView(AbstractGameView):
         elif dm.is_character():
             article_ids = dm.get_character_known_article_ids()
         else:
-            assert dm.is_anonymous()  # we leave article_ids to None
+            assert dm.is_anonymous()  # we leave article_ids to []
         
         _pages = dm.static_pages
         articles_index = ((article_id, _pages[article_id].get("title")) for article_id in article_ids)
