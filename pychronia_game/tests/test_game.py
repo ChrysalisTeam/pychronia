@@ -3196,7 +3196,7 @@ class TestDatamanager(BaseGameTestCase):
         # we finish the friendship
         try:
             self.dm.propose_friendship(player_name, other_player)
-        except AbnormalUsageError:
+        except UsageError:
             pass
         try:
             self.dm.propose_friendship(other_player, player_name)
