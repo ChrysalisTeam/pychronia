@@ -37,10 +37,13 @@ FUTURE BUGS
 FEATURES
 ------------
 
-- disable auto play on VLC media (phoque.avi)
-- resize display of "bidders" page forms
+- use forms sets for character edits
 
+- sort gems in forms and displays
 - put official name in all user-related SELECTS
+
+
+- disable auto play on VLC media (phoque.avi)
 
 - Select_lists with externals contacts in messaging wiretapping etc.
 
@@ -142,7 +145,7 @@ NEEDS COSMETICS
 TASKS DONE
 ---------------
 
-
+- resize display of "bidders" page's forms - DONE
 - fix broken "save_current_content()" feature of message compose form - DONE
 - refactor bad item-related wordings in runic translation - DONE
 - add optional title to all static pages - DONE

@@ -7,7 +7,7 @@
 
 
 <div style="text-align: center">
-<div style="display: inline-block">
+<div style="display: inline-block; text-align: left">
 {% include "utilities/scroll_form.html" with title=_("Money Transfer") form=money_form class="float_left" button_title=_("Transfer money") button_name="money_transfer" %}
 
 {% include "utilities/scroll_form.html" with title=_("Gems Transfer") form=gems_form class="float_left" button_title=_("Transfer gems") button_name="gems_transfer" %}
@@ -42,14 +42,15 @@
 
 	    		    <strong {% if user.is_master %} title="[{% trans "Password:" %} {{ char_details.password }}]" {% endif %}>
 
-                    <p>{{ char_details.official_name }}</p>
 
 	    		    <p>
-	    		    <a href="{% game_view_url "pychronia_game.views.compose_message" %}?recipient={{ char_details.email_address }}"
-	    		        style="color:{{ char_details.character_color }};">
+	    		    <a href="{% game_view_url "pychronia_game.views.compose_message" %}?recipient={{ char_details.email_address }}">
 	    		        {{ char_details.email_address }}
 	    		    </a>
 	    		    </p>
+
+	    		    <p>{{ char_details.official_name }}</p>
+
 
                     </strong>
 

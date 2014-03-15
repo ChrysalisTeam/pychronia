@@ -533,7 +533,7 @@ body {
             @extend .clearfix;
             min-width: 200px;
             min-height: 150px;
-            margin: 0 20px 55px; // bottom space to avoid collisions with decorations
+            margin: 0 10px 55px; // bottom space to avoid collisions with decorations
             padding: 0;
             overflow: visible;
             position: relative;
