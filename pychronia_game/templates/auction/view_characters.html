@@ -5,13 +5,24 @@
 {% block content %}
 
 
+
+<div style="text-align: center">
+<div style="display: inline-block">
+{% include "utilities/scroll_form.html" with title=_("Money Transfer") form=money_form class="float_left" button_title=_("Transfer money") button_name="money_transfer" %}
+
+{% include "utilities/scroll_form.html" with title=_("Gems Transfer") form=gems_form class="float_left" button_title=_("Transfer gems") button_name="gems_transfer" %}
+
+{% include "utilities/scroll_form.html" with title=_("Artefact Transfer") form=artefact_form class="float_left" button_title=_("Transfer artefact") button_name="artefact_transfer" %}
+</div>
+</div>
+
+
 <table class="realtable">
 
 	<thead>
 		<tr><th>&nbsp;</th>
 			<th>{% trans "Identity" %}</th>
-			<th>{% trans "Currencies" %}</th>
-			<th>{% trans "Items owned" %}</th>
+			<th>{% trans "Currencies and Items" %}</th>
 		</tr>
 	</thead>
 
@@ -28,58 +39,63 @@
 
 
                 <td class="bigtext">
-		    		<strong {% if user.is_master %} title="[{% trans "Password:" %} {{ char_details.password }}]" {% endif %}>
 
-		    		    <a href="{% game_view_url "pychronia_game.views.compose_message" %}?recipient={{ char_details.email_address }}"
-		    		        style="color:{{ char_details.character_color }};">
-		    		        {{ char_details.email_address }}
-		    		    </a> <br/>
+	    		    <strong {% if user.is_master %} title="[{% trans "Password:" %} {{ char_details.password }}]" {% endif %}>
 
-                        {{ char_details.official_name }} <br/>
-                        {{ char_details.official_role }} <br/>
+                    <p>{{ char_details.official_name }}</p>
 
-		    		    {% if display_admin_tips and char_details.gamemaster_hints %}
-		    		        <p class="admin-note"><i>{{ char_details.gamemaster_hints }}</i></p>
-		    		    {% endif %}
-					</strong>
+	    		    <p>
+	    		    <a href="{% game_view_url "pychronia_game.views.compose_message" %}?recipient={{ char_details.email_address }}"
+	    		        style="color:{{ char_details.character_color }};">
+	    		        {{ char_details.email_address }}
+	    		    </a>
+	    		    </p>
+
+                    </strong>
+
+                    {{ char_details.official_role }} <br/>
+
+	    		    {% if display_admin_tips and char_details.gamemaster_hints %}
+	    		        <p class="admin-note"><i>{{ char_details.gamemaster_hints }}</i></p>
+	    		    {% endif %}
+
 		    	</td>
-
-
 
 
 		    	{% if user.username == char_details.username or show_others_belongings %}
 
-    		    	<td class="bigtext" style="text-align: left">
+    		    	<td class="bigtext" style="text-align: left; min-width: 250px">
 
-                        <span title="{% trans "Money available in the bank account" %}">
+                        <p title="{% trans "Money available in the bank account" %}">
                             <b>{% trans "Bank:" %}</b> {{ char_details.account }}¤
-                        </span>
+                        </p>
 
-    		    		<span title="{% trans "Values, in kashes, of each gem" %}"">
-    		    		    <b>{% trans "Gemmes:" %}</b>
+    		    		<p title="{% trans "Values, in kashes, of each gem" %}"">
+    		    		    <b>{% trans "Gems:" %}</b>
                             {% if char_details.gems %}
                                 {{ char_details.gems|list_filter:"0"|list_append_to_each:"¤"|join:", " }}
                             {% else %}
                                 {% trans "None" %}
                             {% endif %}
-                        </span>
+                        </p>
 
-    		    	</td>
-
-    		    	<td class="bigtext">
+                        <p>
+                        <b>{% trans "Items" %}{{COLON}}</b>
+                        {% if char_details.user_items %}
         	    	    <ul>
         	    		{% for item in char_details.user_items %}
         	    		    <li>{{ item.title }} {% if item.is_gem %}{% trans "(memo)" %}{% endif %}</li>
         	    		{% empty %}
-        	    			<li>{% trans "None" %}</li>
         	    		{% endfor %}
         	    		<ul>
+        	    		{% else %}
+        	    		{% trans "None" %}
+        	    		{% endif %}
+        	    		</p>
     		    	</td>
 
 
-
                 {% else %}
-                    <td class="bigtext"><i>{% trans "Unknown" %}</i></td>
                     <td class="bigtext"><i>{% trans "Unknown" %}</i></td>
                 {% endif %}
 
@@ -90,14 +106,6 @@
 </table>
 
 <br/>
-
-<div style="width: 760px; margin: 10px auto;">
-{% include "utilities/scroll_form.html" with title=_("Money Transfer") form=money_form class="float_left" button_title=_("Transfer money") button_name="money_transfer" %}
-
-{% include "utilities/scroll_form.html" with title=_("Gems Transfer") form=gems_form class="float_left" button_title=_("Transfer gems") button_name="gems_transfer" %}
-
-{% include "utilities/scroll_form.html" with title=_("Artefact Transfer") form=artefact_form class="float_left" button_title=_("Transfer artefact") button_name="artefact_transfer" %}
-</div>
 
 {% endblock %}
 

@@ -48,7 +48,7 @@ FEATURES
 
 - cacher compétences spéciales pour PNJ ? comment faire ?
 
-
+- envoi de mail quotidien
 
 
 SCRIPT
