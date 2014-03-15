@@ -37,25 +37,19 @@ FUTURE BUGS
 FEATURES
 ------------
 
-- test get_other_known_characters
-
-- add form for autoresponse of abilities
-
 - use forms sets for character edits
 
-
 - put official name in all user-related SELECTS
-
+- Select_lists with externals contacts in messaging wiretapping etc.
 
 - disable auto play on VLC media (phoque.avi)
-
-- Select_lists with externals contacts in messaging wiretapping etc.
 
 - Envoyer email quand argent recu par un joueur, avec raison
 
 - cacher compétences spéciales pour PNJ ? comment faire ?
 
 - envoi de mail quotidien
+
 
 
 SCRIPT
@@ -149,6 +143,9 @@ NEEDS COSMETICS
 TASKS DONE
 ---------------
 
+
+- add form to change autoresponse of abilities - DONE
+- test get_other_known_characters - DONE
 - sort gems in forms and displays - DONE
 - resize display of "bidders" page's forms - DONE
 - fix broken "save_current_content()" feature of message compose form - DONE

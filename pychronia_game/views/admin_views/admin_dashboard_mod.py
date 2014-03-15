@@ -20,6 +20,15 @@ class GamePauseForm(AbstractGameForm):
         self.fields['is_paused'].initial = not datamanager.is_game_started()
 
 
+class AbilityAutoresponseForm(AbstractGameForm):
+
+    disable_ability_autoresponse = forms.BooleanField(label=ugettext_lazy("Disable ability auto-responses?"), required=False)
+
+    def __init__(self, datamanager, *args, **kwargs):
+        super(AbilityAutoresponseForm, self).__init__(datamanager, *args, **kwargs)
+        self.fields['disable_ability_autoresponse'].initial = datamanager.get_global_parameter("disable_automated_ability_responses")
+
+
 class GameViewActivationForm(AbstractGameForm):
 
     activated_views = forms.MultipleChoiceField(label=ugettext_lazy("Game views"), required=False, widget=forms.CheckboxSelectMultiple)
@@ -84,7 +93,10 @@ class AdminDashboardAbility(AbstractAbility):
                                                                 callback="set_game_pause_state"),
                          change_master_credentials=dict(title=ugettext_lazy("Change game master credentials"),
                                                                 form_class=MasterCredentialsForm,
-                                                                callback="change_master_credentials")
+                                                                callback="change_master_credentials"),
+                         ability_autoresponse_mode=dict(title=ugettext_lazy("Set ability autoresponse"),
+                                                                form_class=AbilityAutoresponseForm,
+                                                                callback="disable_ability_autoresponse"),
                          )
 
 
@@ -193,4 +205,11 @@ class AdminDashboardAbility(AbstractAbility):
         self.datamanager.override_master_credentials(master_real_email=master_real_email,
                                                        master_password=master_password)
         return _("Game master credentials well changed.")
+
+
+    @transaction_watcher
+    def disable_ability_autoresponse(self, disable_ability_autoresponse):
+        assert disable_ability_autoresponse in (True, False)
+        self.set_global_parameter("disable_automated_ability_responses", disable_ability_autoresponse)
+        return _("Automated ability responses well %(new_state)s.") % SDICT(new_state=_("enabled") if not disable_ability_autoresponse else _("disabled"))
 

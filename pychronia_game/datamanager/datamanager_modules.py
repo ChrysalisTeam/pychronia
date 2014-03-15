@@ -3460,7 +3460,7 @@ class MoneyItemsOwnership(BaseDataManager):
             utilities.check_is_positive_int(character["account"], non_zero=False)
             total_digital_money += character["account"]
 
-            assert character["gems"] == sorted(character["gems"])
+            assert character["gems"] == sorted(character["gems"]), character["gems"]
 
             for gem in character["gems"]:
                 assert isinstance(gem, tuple) # must be hashable!!
