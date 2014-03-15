@@ -22,7 +22,7 @@ def pychronia_template_context(request):
     res = {
             'is_mobile_page': is_mobile_page,
 
-            'use_parallax': True, # might be enabled only for some browsers..
+            'use_parallax': False, # might be enabled only for some browsers..
 
             'bug_report_email': config.BUG_REPORT_EMAIL, # might be None
 

@@ -37,6 +37,10 @@ FUTURE BUGS
 FEATURES
 ------------
 
+- test get_other_known_characters
+
+- add form for autoresponse of abilities
+
 - use forms sets for character edits
 
 - sort gems in forms and displays

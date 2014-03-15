@@ -514,8 +514,18 @@ class CharacterHandling(BaseDataManager): # TODO REFINE
         return others
 
     @readonly_method
-    def build_select_choices_from_usernames(self, usernames, add_empty=False):
-        visible_names = [username.capitalize() for username in usernames] # no need for real official names here
+    def build_visible_character_names(self, usernames):
+        """
+        Returns display names (combining logins and official names) for these characters
+        """
+        _chars_data = self.get_character_sets()
+        visible_names = [username + u" (%s)" % (_chars_data[username]["official_name"] or _("Unidentified"))
+                         for username in usernames]
+        return visible_names
+
+    @readonly_method
+    def build_select_choices_from_character_usernames(self, usernames, add_empty=False):
+        visible_names = self.build_visible_character_names(usernames)
         character_choices = zip(usernames, visible_names)
         if add_empty:
             character_choices = [("", _("None"))] + character_choices # by default, None selected
@@ -1226,16 +1236,16 @@ class FriendshipHandling(BaseDataManager):
         assert recipient
         username = self._resolve_username(username)
         if not self.is_character(username) or not self.is_character(recipient):
-            raise AbnormalUsageError(_("Forbidden friendship proposal: %(username)s -> %(recipient)s") % SDICT(username=username, recipient=recipient))
+            raise UsageError(_("Forbidden friendship proposal: %(username)s -> %(recipient)s") % SDICT(username=username, recipient=recipient))
         if username == recipient:
-            raise AbnormalUsageError(_("User %s can't be friend with himself") % username)
+            raise UsageError(_("User %s can't be friend with himself") % username)
         if self.are_friends(username, recipient):
-            raise AbnormalUsageError(_("Already existing friendship between %(username)s and %(recipient)s") % SDICT(username=username, recipient=recipient))
+            raise UsageError(_("Already existing friendship between %(username)s and %(recipient)s") % SDICT(username=username, recipient=recipient))
 
         friendship_proposals = self.data["friendships"]["proposed"]
         friendships = self.data["friendships"]["sealed"]
         if (username, recipient) in friendship_proposals:
-            raise AbnormalUsageError(_("%(username)s has already requested the friendship of %(recipient)s") % SDICT(username=username, recipient=recipient))
+            raise UsageError(_("%(username)s has already requested the friendship of %(recipient)s") % SDICT(username=username, recipient=recipient))
 
         current_date = datetime.utcnow()
         if (recipient, username) in friendship_proposals:
@@ -2678,6 +2688,15 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
         return (concerned_characters, all_msg_emails)
 
 
+    @readonly_method
+    def get_other_known_characters(self, username=CURRENT_USER):
+        """
+        Currently HEAVY method.
+        """
+        username = self._resolve_username(username)
+        emails = self.get_character_address_book(username=username)
+        other_characters_and_nones = [self.get_character_or_none_from_email(email) for email in emails]
+        return [char for char in other_characters_and_nones if char and char != username]
 
     # Audio notifications for new messages #
 
@@ -3105,7 +3124,8 @@ class Chatroom(BaseDataManager):
 
     @readonly_method
     def get_chatting_users(self, exclude_current=False):
-        return sorted([username for username in self.get_character_usernames(exclude_current=exclude_current) if self.get_chatting_status(username)])
+        chatting_usernames = [username for username in self.get_character_usernames(exclude_current=exclude_current) if self.get_chatting_status(username)]
+        return chatting_usernames
 
     @transaction_watcher
     def send_chatroom_message(self, message):

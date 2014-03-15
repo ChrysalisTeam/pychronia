@@ -8,6 +8,7 @@ from pychronia_game.authentication import try_authenticating_with_credentials, l
 from django.http import HttpResponseRedirect
 from pychronia_game import forms
 from django import forms as django_forms
+from pychronia_game.utilities.select2_extensions import Select2TagsField
 
 
 
@@ -187,8 +188,22 @@ character_profile = CharacterProfile.as_view
 
 
 class FriendshipRequestForm(AbstractGameForm):
-    other_username = django_forms.CharField(label=ugettext_lazy("User Identifier"), required=True)
 
+    other_username = None # django_forms.CharField(label=ugettext_lazy("User Identifier"), required=True)
+
+    def __init__(self, datamanager, *args, **kwargs):
+        super(FriendshipRequestForm, self).__init__(datamanager, *args, **kwargs)
+
+        field_name = "other_username"
+        self.fields[field_name] = Select2TagsField(label=_("User Identifier"), required=True)
+        self.fields[field_name].choice_tags = datamanager.get_other_known_characters()
+        self.fields[field_name].max_selection_size = 1 # IMPORTANT
+
+
+    def clean_other_username(self):
+        data = self.cleaned_data['other_username']
+        assert not isinstance(data, basestring)
+        return data[0] if data else None
 
 
 @register_view

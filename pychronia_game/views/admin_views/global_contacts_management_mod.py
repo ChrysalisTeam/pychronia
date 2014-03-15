@@ -29,7 +29,7 @@ class GlobalContactForm(DataTableForm):
             initial["is_public"] = (initial["access_tokens"] is None) # else, we let it be false
         super(GlobalContactForm, self).__init__(datamanager=datamanager, **kwargs)
         assert not self.fields["access_tokens"].choices
-        self.fields["access_tokens"].choices = datamanager.build_select_choices_from_usernames(datamanager.get_character_usernames(), add_empty=False)
+        self.fields["access_tokens"].choices = datamanager.build_select_choices_from_character_usernames(datamanager.get_character_usernames(), add_empty=False)
 
     def get_normalized_values(self):
         values = super(GlobalContactForm, self).get_normalized_values()

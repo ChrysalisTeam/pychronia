@@ -6,6 +6,7 @@
 
         <h2>{% trans "Summary of your belongings" %}</strong></h2>
 
+        <div style="margin:auto;width:400px;">
         <b>
         <ul>
             <li>{% trans "Money:" %} {{ character_properties.account }} ¤</li>
@@ -13,11 +14,14 @@
             <li>{% trans "Objects:" %} {{ user_artefacts|join:", " }}</li>
         </ul>
         </b>
+        </div>
+
+        <br/>
 
         <h2>{% trans "Password change" %}</strong></h2>
 
         <form action="{{ password_change_form.url }}" method="post">
-        <table style="margin:auto;width:400px;">
+        <table style="margin:auto; width:400px;">
         {{ password_change_form.as_table }}
         <tr>
             <td colspan="2">

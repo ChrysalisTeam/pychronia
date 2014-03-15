@@ -367,9 +367,11 @@ def ajax_chat(request):
                                "message": msg_format % data})
             previous_msg_timestamp = msg["time"]
 
+        chatting_users = sorted(request.datamanager.build_visible_character_names(request.datamanager.get_chatting_users()))
+
         all_data = {"slice_index": new_slice_index,
                     "messages": text_lines,
-                    'chatting_users': request.datamanager.get_chatting_users(), }
+                    'chatting_users': chatting_users, }
 
         response = HttpResponse(json.dumps(all_data))
         response['Content-Type'] = 'text/plain; charset=utf-8'

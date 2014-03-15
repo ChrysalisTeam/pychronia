@@ -20,7 +20,7 @@ class MoneyTransferForm(AbstractGameForm):
         # dynamic fields here ...
         if user.is_master:
             _money_all_character_choices = [(datamanager.get_global_parameter("bank_name"), '<' + _("Bank") + '>')] + \
-                                            datamanager.build_select_choices_from_usernames(datamanager.get_character_usernames())
+                                            datamanager.build_select_choices_from_character_usernames(datamanager.get_character_usernames())
 
             self.fields.insert(0, "sender_name", forms.ChoiceField(label=_("Sender"), choices=_money_all_character_choices))
             self.fields.insert(1, "recipient_name", forms.ChoiceField(label=_("Recipient"), choices=_money_all_character_choices))
@@ -29,7 +29,7 @@ class MoneyTransferForm(AbstractGameForm):
             if datamanager.get_character_properties()["account"] <= 0:
                 raise UninstantiableFormError(_("No money available for transfer."))
             others = datamanager.get_other_character_usernames()
-            others_choices = datamanager.build_select_choices_from_usernames(others, add_empty=True)
+            others_choices = datamanager.build_select_choices_from_character_usernames(others, add_empty=True)
             self.fields.insert(0, "recipient_name", forms.ChoiceField(label=_("Recipient"), choices=others_choices))
 
     amount = forms.IntegerField(label=_("Amount"), widget=forms.TextInput(attrs={'size':'8', 'style':'text-align:left;', 'autocomplete':'off'}),
@@ -60,12 +60,12 @@ class GemsTransferForm(AbstractGameForm, GemHandlingFormUtils):
 
         # dynamic fields here ...
         if user.is_master:
-            _character_choices = datamanager.build_select_choices_from_usernames(datamanager.get_character_usernames(), add_empty=True)
+            _character_choices = datamanager.build_select_choices_from_character_usernames(datamanager.get_character_usernames(), add_empty=True)
             self.fields.insert(0, "sender_name", forms.ChoiceField(label=_("Sender"), choices=_character_choices))
             self.fields.insert(1, "recipient_name", forms.ChoiceField(label=_("Recipient"), choices=_character_choices))
         else:
             others = datamanager.get_other_character_usernames()
-            others_choices = datamanager.build_select_choices_from_usernames(others, add_empty=True)
+            others_choices = datamanager.build_select_choices_from_character_usernames(others, add_empty=True)
             self.fields.insert(1, "recipient_name", forms.ChoiceField(label=_("Recipient"), choices=others_choices))
 
         self.fields.insert(2, "gems_choices", forms.MultipleChoiceField(required=False, label=_("Gems"), choices=gems_choices))
@@ -97,7 +97,7 @@ class ArtefactTransferForm(AbstractGameForm):
         self.fields["artefact_name"].choices = [("", _("None"))] + artefacts_choices
 
         others = datamanager.get_other_character_usernames()
-        others_choices = datamanager.build_select_choices_from_usernames(others, add_empty=True)
+        others_choices = datamanager.build_select_choices_from_character_usernames(others, add_empty=True)
         self.fields["recipient_name"].choices = others_choices
 
         if not artefacts_choices or not others_choices:
@@ -267,7 +267,7 @@ class TelecomInvestigationForm(forms.Form):
         # dynamic fields here ...
 
         others = datamanager.get_other_character_usernames()
-        others_choices = datamanager.build_select_choices_from_usernames(others)
+        others_choices = datamanager.build_select_choices_from_character_usernames(others)
         self.fields["official_name"] = forms.ChoiceField(label=_("Name"), choices=others_choices)
 
 
@@ -297,7 +297,7 @@ class OtherCharactersForm(AbstractGameForm):
         super(OtherCharactersForm, self).__init__(datamanager=datamanager, *args, **kwargs)
 
         usernames = datamanager.get_character_usernames(exclude_current=True)
-        usernames_choices = datamanager.build_select_choices_from_usernames(usernames)
+        usernames_choices = datamanager.build_select_choices_from_character_usernames(usernames)
         self.fields['target_username'] = forms.ChoiceField(label=_("User"), choices=usernames_choices)
 
 

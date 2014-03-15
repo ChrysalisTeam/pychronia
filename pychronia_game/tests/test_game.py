@@ -1077,11 +1077,11 @@ class TestDatamanager(BaseGameTestCase):
         assert not dm.data["friendships"]["proposed"]
         assert not dm.data["friendships"]["sealed"]
 
-        with pytest.raises(AbnormalUsageError):
+        with pytest.raises(UsageError):
             dm.propose_friendship(dm.anonymous_login, "guy1")
-        with pytest.raises(AbnormalUsageError):
+        with pytest.raises(UsageError):
             dm.propose_friendship("guy1", dm.anonymous_login)
-        with pytest.raises(AbnormalUsageError):
+        with pytest.raises(UsageError):
             dm.propose_friendship("guy1", "guy1") # auto-friendship impossible
 
         assert not dm.propose_friendship("guy2", "guy1") # proposes
@@ -1097,13 +1097,13 @@ class TestDatamanager(BaseGameTestCase):
         assert not self.dm.can_impersonate("guy1", "guy2")
         assert not self.dm.can_impersonate("guy2", "guy1")
 
-        with pytest.raises(AbnormalUsageError):
+        with pytest.raises(UsageError):
             dm.propose_friendship("guy2", "guy1") # friendship already requested
 
         assert dm.data["friendships"]["proposed"]
         assert not dm.data["friendships"]["sealed"]
 
-        with pytest.raises(AbnormalUsageError):
+        with pytest.raises(UsageError):
             dm.propose_friendship("guy2", "guy1") # duplicate proposal
 
         assert dm.get_friendship_requests_for_character("guy3") == dict(proposed_to=[],
@@ -1123,9 +1123,9 @@ class TestDatamanager(BaseGameTestCase):
         assert self.dm.get_other_characters_friendship_statuses("guy1") == {u'guy2': 'recent_friend', 'guy3': None, 'guy4': None, 'my_npc': None}
         assert self.dm.get_other_characters_friendship_statuses("guy2") == {u'guy1': 'recent_friend', 'guy3': None, 'guy4': None, 'my_npc': None}
 
-        with pytest.raises(AbnormalUsageError):
+        with pytest.raises(UsageError):
             dm.propose_friendship("guy2", "guy1") # already friends
-        with pytest.raises(AbnormalUsageError):
+        with pytest.raises(UsageError):
             dm.propose_friendship("guy1", "guy2") # already friends
 
         assert not dm.data["friendships"]["proposed"]
@@ -1139,18 +1139,18 @@ class TestDatamanager(BaseGameTestCase):
         assert datetime.utcnow() - timedelta(seconds=5) <= params["acceptance_date"] <= datetime.utcnow()
         assert params["proposal_date"] < params["acceptance_date"]
 
-        with pytest.raises(AbnormalUsageError):
+        with pytest.raises(UsageError):
             dm.get_friendship_params("guy1", "guy3")
-        with pytest.raises(AbnormalUsageError):
+        with pytest.raises(UsageError):
             dm.get_friendship_params("guy3", "guy1")
-        with pytest.raises(AbnormalUsageError):
+        with pytest.raises(UsageError):
             dm.get_friendship_params("guy3", "guy4")
 
         assert dm.are_friends("guy2", "guy1") == dm.are_friends("guy1", "guy2") == True
         assert dm.are_friends("guy2", "guy3") == dm.are_friends("guy3", "guy4") == False
 
         assert not dm.propose_friendship("guy2", "guy3") # proposed
-        with pytest.raises(AbnormalUsageError):
+        with pytest.raises(UsageError):
             dm.terminate_friendship("guy3", "guy2") # wrong direction
         assert not dm.terminate_friendship("guy2", "guy3") # abort proposal, actually
 
@@ -1163,9 +1163,9 @@ class TestDatamanager(BaseGameTestCase):
         assert self.dm.get_other_characters_friendship_statuses("guy1") == {u'guy2': 'recent_friend', 'guy3': None, 'guy4': None, 'my_npc': None}
         assert self.dm.get_other_characters_friendship_statuses("guy2") == {u'guy1': 'recent_friend', 'guy3': 'recent_friend', 'guy4': None, 'my_npc': None}
 
-        with pytest.raises(AbnormalUsageError):
+        with pytest.raises(UsageError):
             dm.terminate_friendship("guy3", "guy4") # unexisting friendship
-        with pytest.raises(AbnormalUsageError):
+        with pytest.raises(UsageError):
             dm.terminate_friendship("guy1", "guy2") # too young friendship
 
         # old friendship still makes impersonation possible of course
@@ -3200,7 +3200,7 @@ class TestDatamanager(BaseGameTestCase):
             pass
         try:
             self.dm.propose_friendship(other_player, player_name)
-        except AbnormalUsageError:
+        except UsageError:
             pass
         assert self.dm.are_friends(player_name, other_player)
 
@@ -6034,20 +6034,20 @@ class TestGameViews(BaseGameTestCase):
         assert "friendship proposal" in view.do_propose_friendship("guy2")
         assert "friendship proposal" in view.do_propose_friendship("guy4")
         assert "friendship proposal" in view.do_propose_friendship("guy3")
-        with pytest.raises(AbnormalUsageError):
+        with pytest.raises(UsageError):
             view.do_propose_friendship("guy2") # duplicate proposal
 
         self._set_user("guy2")
         assert "now friend with" in view.do_propose_friendship("guy1")
-        with pytest.raises(AbnormalUsageError):
+        with pytest.raises(UsageError):
             view.do_propose_friendship("guy1") # already friends
-        with pytest.raises(AbnormalUsageError):
+        with pytest.raises(UsageError):
             view.do_accept_friendship("guy1") # already friends
 
         self._set_user("guy3")
         assert "now friend" in view.do_accept_friendship("guy1")
         assert "friendship proposal" in view.do_accept_friendship("guy4")
-        with pytest.raises(AbnormalUsageError): # too young friendship
+        with pytest.raises(UsageError): # too young friendship
             view.do_cancel_friendship("guy1")
 
         self._set_user("guy4")

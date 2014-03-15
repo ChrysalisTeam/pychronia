@@ -8,15 +8,15 @@ from pychronia_game.forms import AbstractGameForm
 from django import forms
 from django.forms.fields import ChoiceField
 from django.core.exceptions import ValidationError
-
+from pychronia_game.utilities.select2_extensions import Select2TagsField
 
 class WiretappingTargetsForm(AbstractGameForm):
     def __init__(self, ability, *args, **kwargs):
         super(WiretappingTargetsForm, self).__init__(ability, *args, **kwargs)
         # dynamic fields here ...
 
-        self._usernames = ability.get_character_usernames(exclude_current=True)
-        #user_choices = ability.build_select_choices_from_usernames(names)
+        self._usernames = ability.get_character_usernames(exclude_current=True) # for data validation
+        #user_choices = ability.build_select_choices_from_character_usernames(names)
 
         num_slots = ability.get_wiretapping_slots_count()
         if not num_slots:
@@ -28,7 +28,10 @@ class WiretappingTargetsForm(AbstractGameForm):
                                                              choices=[("", "")] + user_choices,
                                                              widget=forms.TextInput) # IMPORTANT - HIDE possible choices
             '''
-            self.fields["target_%d" % i] = forms.CharField(label=_("Target %d") % i, required=False)
+            field_name = "target_%d" % i
+            self.fields[field_name] = Select2TagsField(label=_("Target %d") % i, required=False)
+            self.fields[field_name].choice_tags = ability.get_other_known_characters()
+            self.fields[field_name].max_selection_size = 1 # IMPORTANT
 
 
     def clean(self):
@@ -36,7 +39,8 @@ class WiretappingTargetsForm(AbstractGameForm):
 
         for (key, value) in cleaned_data.items():
             if key.startswith("target_"):
-                value = value.strip().lower()
+                assert not isinstance(value, basestring) # we expect a container
+                value = value[0].strip().lower() if value else None
                 if value:
                     for real_username in self._usernames:
                         if value == real_username.lower():
@@ -105,9 +109,9 @@ class WiretappingAbility(AbstractAbility):
         initial_data = {}
         for i in range(self.get_wiretapping_slots_count()):
             if i < len(current_targets):
-                initial_data["target_%d" % i] = current_targets[i]
+                initial_data["target_%d" % i] = [current_targets[i]]
             else:
-                initial_data["target_%d" % i] = ""
+                initial_data["target_%d" % i] = []
 
         #print (">>>initial_data targets", initial_data)
 
