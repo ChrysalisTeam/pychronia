@@ -1697,6 +1697,13 @@ class TestDatamanager(BaseGameTestCase):
 
     def test_address_book(self):
 
+        emails = self.dm.get_character_address_book("my_npc")
+        assert not emails
+        usernames = self.dm.get_other_known_characters("my_npc")
+        assert not usernames
+        usernames = self.dm.get_other_known_characters("guy2")
+        assert not usernames
+
         self.dm.post_message("guy2@pangea.com",
                              recipient_emails=["guy1@pangea.com"],
                              subject="subj22323", body="qsdqsd")
@@ -1726,11 +1733,15 @@ class TestDatamanager(BaseGameTestCase):
         assert "guy1@pangea.com" in emails
         assert "judicators2@acharis.com" in emails
         assert ml not in emails # not yet concerned by this one yet
+        usernames = self.dm.get_other_known_characters("guy2")
+        assert usernames == ["guy1"]
 
         emails = self.dm.get_sorted_user_contacts("guy3")
         assert emails == [] # not even ml
         emails = self.dm.get_character_address_book("guy3")
         assert emails == [] # not even ml
+        usernames = self.dm.get_other_known_characters("guy3")
+        assert not usernames
 
         self.dm.post_message("guy3@pangea.com",
                              recipient_emails=[ml, "judicators2@acharis.com"],
@@ -1741,7 +1752,8 @@ class TestDatamanager(BaseGameTestCase):
         assert set(emails) == set([ml, "judicators2@acharis.com", "guy3@pangea.com"])
         emails = self.dm.get_character_address_book("guy3")
         assert set(emails) == set([ml, "judicators2@acharis.com", "guy3@pangea.com"])
-
+        usernames = self.dm.get_other_known_characters("guy3")
+        assert not usernames # guy3
 
 
     @for_core_module(TextMessagingCore)

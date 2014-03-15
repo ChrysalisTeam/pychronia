@@ -43,7 +43,7 @@ FEATURES
 
 - use forms sets for character edits
 
-- sort gems in forms and displays
+
 - put official name in all user-related SELECTS
 
 
@@ -149,6 +149,7 @@ NEEDS COSMETICS
 TASKS DONE
 ---------------
 
+- sort gems in forms and displays - DONE
 - resize display of "bidders" page's forms - DONE
 - fix broken "save_current_content()" feature of message compose form - DONE
 - refactor bad item-related wordings in runic translation - DONE
