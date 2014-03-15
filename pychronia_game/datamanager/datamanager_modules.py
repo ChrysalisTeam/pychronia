@@ -3417,8 +3417,10 @@ class MoneyItemsOwnership(BaseDataManager):
 
         for (name, character) in game_data["character_properties"].items():
             character["account"] = character.get("account", 0)
-            character["gems"] = character.get("gems", [])
-            character["gems"] = [tuple(i) for i in character["gems"]]
+
+            character_gems = character.get("gems", [])
+            character_gems = [tuple(i) for i in character_gems]
+            character["gems"] = sorted(character_gems)
 
             total_gems += [i[0] for i in character["gems"]]
             total_digital_money += character["account"]
@@ -3457,6 +3459,8 @@ class MoneyItemsOwnership(BaseDataManager):
         for (name, character) in game_data["character_properties"].items():
             utilities.check_is_positive_int(character["account"], non_zero=False)
             total_digital_money += character["account"]
+
+            assert character["gems"] == sorted(character["gems"])
 
             for gem in character["gems"]:
                 assert isinstance(gem, tuple) # must be hashable!!
@@ -3591,6 +3595,7 @@ class MoneyItemsOwnership(BaseDataManager):
             remaining_gems = utilities.substract_lists(character["gems"], gems) # gems are pairs (value, origin) here!
             if remaining_gems is None:
                 raise UsageError(_("Impossible to free item, some gems from this package have already been used"))
+            remaining_gems.sort()
             character["gems"] = remaining_gems
         item["owner"] = None
 
@@ -3601,6 +3606,7 @@ class MoneyItemsOwnership(BaseDataManager):
         if item["is_gem"]:
             gems = self._get_item_separate_gems(item_name)
             character["gems"] += gems # we add each gem separately, along with its reference
+            character["gems"].sort()
         item["owner"] = char_name
 
 
@@ -3720,7 +3726,9 @@ class MoneyItemsOwnership(BaseDataManager):
         if remaining_gems is None:
             raise UsageError(_("You don't possess the gems required"))
 
+        remaining_gems.sort()
         sender_char["gems"] = remaining_gems
+        gems_choices.sort()
         recipient_char["gems"] += gems_choices
 
         self.log_game_event(ugettext_noop("Gems transferred from %(from_name)s to %(to_name)s : %(gems_choices)s."),
