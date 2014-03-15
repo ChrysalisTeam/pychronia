@@ -37,8 +37,6 @@ FUTURE BUGS
 FEATURES
 ------------
 
-- use forms sets for character edits
-
 - put official name in all user-related SELECTS
 - Select_lists with externals contacts in messaging wiretapping etc.
 
@@ -50,6 +48,7 @@ FEATURES
 
 - envoi de mail quotidien
 
+- systeme pour créer partie
 
 
 SCRIPT
@@ -143,7 +142,7 @@ NEEDS COSMETICS
 TASKS DONE
 ---------------
 
-
+- use kinds of "forms sets" for mass character edits - DONE
 - add form to change autoresponse of abilities - DONE
 - test get_other_known_characters - DONE
 - sort gems in forms and displays - DONE

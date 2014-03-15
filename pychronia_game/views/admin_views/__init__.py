@@ -77,62 +77,88 @@ def manage_databases(request, template_name='administration/database_management.
 @register_view(access=UserAccess.master, title=ugettext_lazy("Manage Characters"))
 def manage_characters(request, template_name='administration/character_management.html'):
 
+    dm = request.datamanager
 
-    form = None
-    if request.method == "POST":
-        form = forms.CharacterProfileForm(datamanager=request.datamanager,
-                                          data=request.POST,
-                                          prefix=None)
+    characters_items = sorted(dm.get_character_sets().items(), key=lambda x: (x[1]["is_npc"], x[0]))
 
-        if form.is_valid():
-            target_username = form.cleaned_data["target_username"]
-            official_name = form.cleaned_data["official_name"]
-            official_role = form.cleaned_data["official_role"]
-            allegiances = form.cleaned_data["allegiances"]
-            permissions = form.cleaned_data["permissions"]
-            real_life_identity = form.cleaned_data["real_life_identity"].strip() or None
-            real_life_email = form.cleaned_data["real_life_email"].strip() or None
-            gamemaster_hints = form.cleaned_data["gamemaster_hints"].strip() # may be an empty string !
-
-            assert official_name == official_name.strip() # auto-stripping
-            assert official_role == official_role.strip()
-
-            with action_failure_handler(request, _("Character %s successfully updated.") % target_username):
-                request.datamanager.update_official_character_data(username=target_username,
-                                                                    official_name=official_name,
-                                                                    official_role=official_role,
-                                                                    gamemaster_hints=gamemaster_hints)
-                request.datamanager.update_allegiances(username=target_username,
-                                                       allegiances=allegiances)
-                request.datamanager.update_permissions(username=target_username,
-                                                       permissions=permissions)
-                request.datamanager.update_real_life_data(username=target_username,
-                                                            real_life_identity=real_life_identity,
-                                                            real_life_email=real_life_email)
-        else:
-            request.datamanager.user.add_error(_("Wrong data provided (see errors below)"))
-
+    form_validation_failed = None
     character_forms = []
 
-    for (username, data) in sorted(request.datamanager.get_character_sets().items(), key=lambda x: (x[1]["is_npc"], x[0])):
-        if form and form["target_username"].value() == username:
-            f = form # we reuse POSTed form from above
-        else:
-            f = forms.CharacterProfileForm(
-                                    datamanager=request.datamanager,
-                                    prefix=None,
-                                    initial=dict(target_username=username,
-                                                 official_name=data["official_name"],
-                                                 official_role=data["official_role"],
-                                                 allegiances=data["domains"],
-                                                 permissions=data["permissions"],
-                                                 real_life_identity=data["real_life_identity"],
-                                                 real_life_email=data["real_life_email"],
-                                                 gamemaster_hints=data["gamemaster_hints"])
-                                    )
-        character_forms.append(f)
+    def _prefix(idx):
+        return "form%s" % idx
 
-    friendship_data = request.datamanager.get_full_friendship_data()
+    if request.method == "POST":
+
+        form_validation_failed = False
+
+        for idx, (username, __character_data) in enumerate(characters_items):
+
+            form = forms.CharacterProfileForm(datamanager=dm,
+                                              data=request.POST,
+                                              prefix=_prefix(idx))
+
+            if form.is_valid():
+                target_username = form.cleaned_data["target_username"]
+                official_name = form.cleaned_data["official_name"]
+                official_role = form.cleaned_data["official_role"]
+                allegiances = form.cleaned_data["allegiances"]
+                permissions = form.cleaned_data["permissions"]
+                real_life_identity = form.cleaned_data["real_life_identity"].strip() or None
+                real_life_email = form.cleaned_data["real_life_email"].strip() or None
+                gamemaster_hints = form.cleaned_data["gamemaster_hints"].strip() # may be an empty string !
+
+                assert official_name == official_name.strip() # auto-stripping
+                assert official_role == official_role.strip()
+
+                with action_failure_handler(request, success_message=None):
+
+                    assert not dm.is_in_writing_transaction() # each call below will be separately atomic
+
+                    dm.update_official_character_data(username=target_username,
+                                                                        official_name=official_name,
+                                                                        official_role=official_role,
+                                                                        gamemaster_hints=gamemaster_hints)
+                    dm.update_allegiances(username=target_username,
+                                                           allegiances=allegiances)
+                    dm.update_permissions(username=target_username,
+                                                           permissions=permissions)
+                    dm.update_real_life_data(username=target_username,
+                                                                real_life_identity=real_life_identity,
+                                                                real_life_email=real_life_email)
+
+            else:
+                form_validation_failed = True
+
+            character_forms.append(form)
+
+    else:
+
+        for idx, (username, character_data) in enumerate(characters_items):
+            f = forms.CharacterProfileForm(
+                                    datamanager=dm,
+                                    prefix=_prefix(idx),
+                                    initial=dict(target_username=username,
+                                                 official_name=character_data["official_name"],
+                                                 official_role=character_data["official_role"],
+                                                 allegiances=character_data["domains"],
+                                                 permissions=character_data["permissions"],
+                                                 real_life_identity=character_data["real_life_identity"],
+                                                 real_life_email=character_data["real_life_email"],
+                                                 gamemaster_hints=character_data["gamemaster_hints"])
+                                    )
+            character_forms.append(f)
+
+    assert len(character_forms) == len(characters_items), [character_forms, characters_items]
+
+    if form_validation_failed == True :
+        dm.user.add_error(_("Some character updates failed (see below)."))
+    elif form_validation_failed == False:
+        dm.user.add_message(_("Characters were properly updated."))
+    else:
+        assert form_validation_failed is None
+        pass
+
+    friendship_data = dm.get_full_friendship_data()
     sealed_friendships = sorted(friendship_data["sealed"].items())
     proposed_friendships = sorted(friendship_data["proposed"].items())
     del friendship_data

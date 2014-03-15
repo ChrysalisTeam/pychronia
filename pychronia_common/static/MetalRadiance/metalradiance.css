@@ -1376,6 +1376,9 @@ fieldset {
 .jp-audio * {
   box-sizing: content-box !important;
 }
+.ui-dropdownchecklist-dropcontainer {
+  border: solid 1px black;
+}
 .ui-dropdownchecklist {
   background-color: white;
   padding: 1px 2px;
