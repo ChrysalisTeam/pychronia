@@ -115,7 +115,7 @@ class CharactersView(AbstractGameView):
 
 
     @transaction_watcher
-    def transfer_money(self, recipient_name, amount, sender_name=None, use_gems=()):
+    def transfer_money(self, recipient_name, amount, sender_name=None, reason=None, use_gems=()):
         assert amount > 0 # enforced by form system
         user = self.datamanager.user
         if not user.is_master:
@@ -124,7 +124,8 @@ class CharactersView(AbstractGameView):
 
         self.datamanager.transfer_money_between_characters(from_name=sender_name,
                                                            to_name=recipient_name,
-                                                           amount=amount)  # amount can only be positive here, thx to form validation
+                                                           amount=amount, # amount can only be positive here, thx to form validation
+                                                           reason=reason)
         return _("Money transfer successful.")
 
 

@@ -31,11 +31,13 @@ class MoneyTransferForm(AbstractGameForm):
             others = datamanager.get_other_character_usernames()
             others_choices = datamanager.build_select_choices_from_character_usernames(others, add_empty=True)
             self.fields.insert(0, "recipient_name", forms.ChoiceField(label=_("Recipient"), choices=others_choices))
+        
+        
 
     amount = forms.IntegerField(label=_("Amount"), widget=forms.TextInput(attrs={'size':'8', 'style':'text-align:left;', 'autocomplete':'off'}),
                                 initial=0, min_value=1, max_value=1000000)
 
-
+    reason = forms.CharField(label=_("Reason"), required=False)
 
 
 class GemsTransferForm(AbstractGameForm, GemHandlingFormUtils):

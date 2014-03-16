@@ -3573,12 +3573,17 @@ class MoneyItemsOwnership(BaseDataManager):
 
     @transaction_watcher
     def transfer_money_between_characters(self, from_name, to_name, amount, reason=None):
+
         amount = int(amount) # might raise error
         if amount <= 0:
             raise UsageError(_("Money amount must be positive"))
 
         if from_name == to_name:
             raise UsageError(_("Sender and recipient must be different"))
+
+        if reason:
+            reason = reason.strip()
+            reason = reason if reason else None
 
         bank_name = self.get_global_parameter("bank_name")
         visible_by = []

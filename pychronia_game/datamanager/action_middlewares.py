@@ -308,17 +308,27 @@ class CostlyActionMiddleware(AbstractActionMiddleware):
                 character_properties = self.get_character_properties()
 
                 if use_gems or not middleware_settings["money_price"]:
-                    self._pay_with_gems(character_properties, middleware_settings, use_gems)
+                    gems_price = middleware_settings["gems_price"]
+                    self._pay_with_gems(character_properties, gems_price, use_gems)
+                    self.log_game_event(ugettext_noop("A payment of %(cost)s¤ was issued with gems %(gems_list)s for service '%(service)s'"),
+                                         PersistentDict(cost=gems_price, service=action_name, gems_list=unicode(use_gems)),
+                                         url=None,
+                                         visible_by=[self.user.username])
+
                 else:
-                    self._pay_with_money(character_properties, middleware_settings)
+                    money_price = middleware_settings["money_price"]
+                    self._pay_with_money(character_properties, money_price)
+                    self.log_game_event(ugettext_noop("A payment of %(cost)s¤ was issued with money, for service '%(service)s'"),
+                                         PersistentDict(cost=money_price, service=action_name),
+                                         url=None,
+                                         visible_by=[self.user.username])
 
         return super(CostlyActionMiddleware, self)._process_action_through_middlewares(action_name=action_name, method=method, params=params)
 
 
-    def _pay_with_gems(self, character_properties, middleware_settings, gems_list):
-        gems_values = [i[0] for i in gems_list] if gems_list else []
-        gems_price = middleware_settings["gems_price"]
+    def _pay_with_gems(self, character_properties, gems_price, gems_list):
         assert gems_price
+        gems_values = [i[0] for i in gems_list] if gems_list else []
 
         provided_gems_value = sum(gems_values) if gems_values else 0 # gems_list could be empty!!
         if (provided_gems_value < gems_price):
@@ -327,7 +337,6 @@ class CostlyActionMiddleware(AbstractActionMiddleware):
         min_gem_value = min(gems_values) if gems_values else 0 # necessarily non-empty here
         if (provided_gems_value - gems_price) >= min_gem_value:
             raise NormalUsageError(_("You provided too many gems for the value of that asset, please top off") % SDICT(gems_price=gems_price))
-
 
         # we don't care if the player has given too many gems
         remaining_gems = utilities.substract_lists(character_properties["gems"], gems_list)
@@ -339,8 +348,7 @@ class CostlyActionMiddleware(AbstractActionMiddleware):
             self.data["global_parameters"]["spent_gems"] += [x[0] for x in gems_list] # only value in kashes, not origin
 
 
-    def _pay_with_money(self, character_properties, middleware_settings):
-        money_price = middleware_settings["money_price"]
+    def _pay_with_money(self, character_properties, money_price):
         assert money_price
         #print("PAYING WITH", money_price)
 

@@ -37,6 +37,7 @@ FUTURE BUGS
 FEATURES
 ------------
 
+- manually test gems/money transfers and payments, as well as corresponding logging !!!!
 - test log_game_event() visibility lists
 
 - if response to email - don't keep attachement ??
