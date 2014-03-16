@@ -1711,6 +1711,7 @@ class TestDatamanager(BaseGameTestCase):
         ml = self.dm.get_global_parameter("all_players_mailing_list")
 
         master_contacts = self.dm.get_sorted_user_contacts(self.dm.master_login)
+        assert sorted(master_contacts) == sorted(self.dm.get_all_existing_emails())
         assert master_contacts[0] == ml
         master_contacts = set(master_contacts)
         assert master_contacts == set(self.dm.get_all_contacts_unsorted()) # get_all_contacts_unsorted is just an optimized method
@@ -1721,6 +1722,7 @@ class TestDatamanager(BaseGameTestCase):
         assert "judicators2@acharis.com" in master_contacts
 
         emails = self.dm.get_sorted_user_contacts("guy2")
+        assert sorted(emails) != sorted(self.dm.get_all_existing_emails())
         emails = set(emails)
         assert ml not in emails # not ALWAYS
         assert (char_emails - emails) # guy2 has not ALL character emails
@@ -3516,15 +3518,18 @@ class TestDatamanager(BaseGameTestCase):
         self._reset_messages()
 
         self._set_user("guy1")
-        events = self.dm.get_game_events()
-        self.assertEqual(len(events), 1) # fixture
+        events = self.dm.get_game_events() # for guy1
+        assert not events
+
+        events = self.dm.get_game_events("master")
+        self.assertEqual(len(events), 1) # fixture for master
 
         self.dm.log_game_event("hello there 1")
         self._set_user("master")
-        self.dm.log_game_event("hello there 2", url="/my/url/")
+        self.dm.log_game_event("hello there 2", url="/my/url/", visible_by=["guy1", "guy2"])
         self.dm.commit()
 
-        events = self.dm.get_game_events()[1:] # skip fixture
+        events = self.dm.get_game_events("master")[1:] # skip fixture
         self.assertEqual(len(events), 2)
         self.assertEqual(events[0]["message"], "hello there 1")
         self.assertEqual(events[0]["username"], "guy1")
@@ -3536,6 +3541,15 @@ class TestDatamanager(BaseGameTestCase):
         utcnow = datetime.utcnow()
         for event in events:
             self.assertTrue(utcnow - timedelta(seconds=2) < event["time"] <= utcnow)
+
+        self._set_user("guy1")
+        events = self.dm.get_game_events() # for guy1
+        self.assertEqual(len(events), 1)
+        self.assertEqual(events[0]["message"], "hello there 2") # only one authorized
+
+        self._set_user("guy4")
+        events = self.dm.get_game_events() # for guy4
+        self.assertEqual(len(events), 0)
 
 
     @for_datamanager_base

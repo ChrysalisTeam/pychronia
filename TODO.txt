@@ -37,6 +37,14 @@ FUTURE BUGS
 FEATURES
 ------------
 
+- test log_game_event() visibility lists
+
+- if response to email - don't keep attachement ??
+
+- put in black unread conversations too in their index!
+
+- chatroom : ajouter time tags (ou séparateurs)
+
 - put official name in all user-related SELECTS
 - Select_lists with externals contacts in messaging wiretapping etc.
 
@@ -49,6 +57,11 @@ FEATURES
 - envoi de mail quotidien
 
 - systeme pour créer partie
+
+- autofolding des emails lus
+- tri par tags des templates email
+
+
 
 
 SCRIPT

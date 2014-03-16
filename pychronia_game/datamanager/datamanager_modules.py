@@ -224,6 +224,7 @@ class GameEvents(BaseDataManager): # TODO REFINE
             if isinstance(evt["time"], (long, int, float)): # NEGATIVE offset in minutes
                 assert evt["time"] <= 0
                 evt["time"] = self.compute_effective_remote_datetime(delay_mn=evt["time"])
+            evt.setdefault("visible_by", PersistentList())
         game_data["events_log"].sort(key=lambda evt: evt["time"])
 
 
@@ -235,7 +236,8 @@ class GameEvents(BaseDataManager): # TODO REFINE
             "message": basestring, # TRANSLATED message
             "substitutions": (types.NoneType, PersistentDict),
             "url": (types.NoneType, basestring),
-            "username": (types.NoneType, basestring)
+            "username": (types.NoneType, basestring),
+            "visible_by": (types.NoneType, PersistentList),
         }
         previous_time = None
         for event in self.data["events_log"]:
@@ -246,15 +248,23 @@ class GameEvents(BaseDataManager): # TODO REFINE
             utilities.check_dictionary_with_template(event, event_reference)
             username = event["username"]
 
+            character_names = self.get_character_usernames()
+
+            message = event["message"]
+            visible_by = event["visible_by"]
+            assert visible_by is None or all([(c in character_names) for c in visible_by])
+
             # test is a little brutal, if we reset master login it might fail...
             assert username in self.get_character_usernames() or \
                     username == self.get_global_parameter("master_login") or \
                     username == self.get_global_parameter("anonymous_login")
 
     @transaction_watcher
-    def log_game_event(self, message, substitutions=None, url=None):
+    def log_game_event(self, message, substitutions=None, url=None, visible_by=None):
         """
         Message must be an UNTRANSLATED string, since we handle translation directly in this class.
+        
+        The sequence visible_by lists characters able to view this log entry, by default only MASTER can view it.
         """
         assert message, "game event log message must not be empty"
         utilities.check_is_string(message) # no lazy objects
@@ -275,16 +285,24 @@ class GameEvents(BaseDataManager): # TODO REFINE
         record = PersistentDict({
             "time": utcnow,
             "message": message, # TRANSLATED message !
-            "substitutions": substitutions,
+            "substitutions": PersistentDict(substitutions),
             "url": url,
-            "username": self.user.username
+            "username": self.user.username,
+            "visible_by": PersistentList(visible_by)
             # FIXME - add impersonation data here!!
         })
         self.data["events_log"].append(record)
 
+
     @readonly_method
-    def get_game_events(self):
-        return self.data["events_log"]
+    def get_game_events(self, username=CURRENT_USER):
+        """
+        If concerned user is a character, filters log entries according to their (potential) white-list.
+        """
+        username = self._resolve_username(username)
+        all_entries = self.data["events_log"]
+        is_master = self.is_master(username)
+        return [entry for entry in all_entries if (is_master or entry["visible_by"] is None or username in entry["visible_by"])]
 
 
 
@@ -1001,7 +1019,7 @@ class PlayerAuthentication(BaseDataManager):
 
         # WARNING - if by bug, no answer is actually expected, attempts must ALWAYS fail
         if expected_answer and (secret_answer_attempt == expected_answer):
-            if target_email not in self.get_sorted_user_contacts(self.get_global_parameter("master_login")): # all emails available
+            if target_email not in self.get_all_existing_emails():
                 raise UsageError(_("Right answer, but invalid email address %s." % target_email))
             # success !
 
@@ -1024,7 +1042,8 @@ class PlayerAuthentication(BaseDataManager):
 
             self.log_game_event(ugettext_noop("Password of %(username)s has been recovered by %(target_email)s."),
                                  PersistentDict(username=username, target_email=target_email),
-                                 url=self.get_message_viewer_url_or_none(msg_id))
+                                 url=self.get_message_viewer_url_or_none(msg_id),
+                                 visible_by=None) # on purpose, we hide that hacking!
 
             return password
 
@@ -2224,7 +2243,7 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
         assert not self._recompute_all_address_book_via_msgs()
 
         # initial coherency check
-        all_emails = self.get_sorted_user_contacts(self.master_login) # ALL available
+        all_emails = self.get_all_existing_emails() # ALL available
         #print (">>>>>>>>###", all_emails)
         for msg in messaging["messages_dispatched"] + messaging["messages_queued"]:
             assert msg["sender_email"] in all_emails, msg["sender_email"]
@@ -2613,17 +2632,23 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
         return sorted(emails_list, key=lambda email: (email[0] != '[',) + tuple(reversed(email.split("@")))) # sort by domain then username
 
     @readonly_method
+    def get_all_existing_emails(self):
+        """
+        Unsorted list is output.
+        """
+        return self.get_character_emails() + self.global_contacts.keys()
+
+    @readonly_method
     def get_sorted_user_contacts(self, username=CURRENT_USER):
         """
         For both master and characters.
         """
-
         _sorter = self.sort_email_addresses_list
 
         username = self._resolve_username(username)
         assert not self.is_anonymous(username)
         if self.is_master(username=username):
-            res = _sorter(self.get_character_emails()) + _sorter(self.global_contacts.keys())
+            res = _sorter(self.get_character_emails()) + _sorter(self.global_contacts.keys()) # separate characters from external contacts
         else:
             res = _sorter(self.get_character_address_book(username=username)) # including user himself
 
@@ -3335,7 +3360,8 @@ class PersonalFiles(BaseDataManager):
 
         self.log_game_event(ugettext_noop("Encrypted folder '%(folder)s/%(password)s' accessed by user '%(username)s'."),
                              PersistentDict(folder=folder, password=password, username=username),
-                             url=None)
+                             url=None,
+                             visible_by=None) # only game master shall see this
 
         return decrypted_files
 
@@ -3546,7 +3572,7 @@ class MoneyItemsOwnership(BaseDataManager):
     """
 
     @transaction_watcher
-    def transfer_money_between_characters(self, from_name, to_name, amount):
+    def transfer_money_between_characters(self, from_name, to_name, amount, reason=None):
         amount = int(amount) # might raise error
         if amount <= 0:
             raise UsageError(_("Money amount must be positive"))
@@ -3555,26 +3581,34 @@ class MoneyItemsOwnership(BaseDataManager):
             raise UsageError(_("Sender and recipient must be different"))
 
         bank_name = self.get_global_parameter("bank_name")
+        visible_by = []
 
         if from_name == bank_name: # special case
             if self.get_global_parameter("bank_account") < amount:
                 raise UsageError(_("Bank doesn't have enough money available"))
             self.data["global_parameters"]["bank_account"] -= amount
         else:
-            from_char = self.get_character_properties(from_name)
+            from_char = self.get_character_properties(from_name) # might raise error
             if from_char["account"] < amount:
                 raise UsageError(_("Sender doesn't have enough money"))
             from_char["account"] -= amount
+            visible_by.append(from_name)
 
         if to_name == bank_name: # special case
             self.data["global_parameters"]["bank_account"] += amount
         else:
-            to_char = self.get_character_properties(to_name)
+            to_char = self.get_character_properties(to_name) # might raise error
             to_char["account"] += amount
+            visible_by.append(to_name) # can't be the same as from_name, due to checks above
 
-        self.log_game_event(ugettext_noop("Bank operation: %(amount)s kashes transferred from %(from_name)s to %(to_name)s."),
+        msg = ugettext_noop("Bank operation: %(amount)s kashes transferred from %(from_name)s to %(to_name)s.")
+        if reason:
+            msg += " " + ugettext_noop("Reason: %(reason)s") % reason
+
+        self.log_game_event(msg,
                              PersistentDict(amount=amount, from_name=from_name, to_name=to_name),
-                             url=None)
+                             url=None,
+                             visible_by=(visible_by or None))
 
 
     def _get_item_separate_gems(self, item_name):
@@ -3630,6 +3664,7 @@ class MoneyItemsOwnership(BaseDataManager):
         ## FIXME - make this a character-method too !!!
         item = self.get_item_properties(item_name)
         from_name = item["owner"] if item["owner"] else _("no one") # must be done IMMEDIATELY
+        visible_by = []
 
         if previous_owner is not None and previous_owner != item["owner"]:
             raise NormalUsageError(_("This object doesn't belong to %s") % previous_owner)
@@ -3638,14 +3673,17 @@ class MoneyItemsOwnership(BaseDataManager):
             raise NormalUsageError(_("Impossible to have same origin and destination for item transfer"))
 
         if item["owner"]:
+            visible_by.append(item["owner"]) # FIRST
             self._free_item_from_character(item_name, item)
 
         if char_name:
+            visible_by.append(char_name)
             self._assign_free_item_to_character(item_name=item_name, item=item, char_name=char_name)
 
         self.log_game_event(ugettext_noop("Item %(item_name)s transferred from %(from_name)s to %(char_name)s."),
                              PersistentDict(item_name=item_name, from_name=from_name, char_name=char_name),
-                             url=None)
+                             url=None,
+                             visible_by=visible_by) # characters involved thus see the transaction in events
 
 
     ''' DEPRECATED
@@ -3733,7 +3771,8 @@ class MoneyItemsOwnership(BaseDataManager):
 
         self.log_game_event(ugettext_noop("Gems transferred from %(from_name)s to %(to_name)s : %(gems_choices)s."),
                              PersistentDict(from_name=from_name, to_name=to_name, gems_choices=gems_choices),
-                             url=None)
+                             url=None,
+                             visible_by=[from_name, to_name]) # event visible by both characters
 
 
 
