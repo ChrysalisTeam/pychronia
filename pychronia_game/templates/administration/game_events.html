@@ -27,7 +27,8 @@
                         <a href="{{ event.url }}">
                     {% endif %}
                         <span style="color:{% usercolor event.username %};">
-                            [{{event.username}}] {{ event.final_message }} {% if display_admin_tips and event.visible_by %}[{% trans "Visibility" %}{{COLON}} {{ event.visible_by|join:", " }}]{% endif %}
+                            [{{event.username}}] {{ event.final_message }}
+                            {% if display_admin_tips and event.visible_by %}<span class="admin-note">{% trans "Visibility" %}{{COLON}} {{ event.visible_by|join:", " }}</span>{% endif %}
                         </span>
                     {% if event.url %}
                         </a>
