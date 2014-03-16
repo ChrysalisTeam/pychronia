@@ -41,7 +41,7 @@ from .info_views import (view_encyclopedia, view_static_page,
                          ajax_get_next_audio_message, ajax_notify_audio_message_finished,
                          personal_folder, view_media, encrypted_folder, view_world_map)
 
-from .profile_views import login, logout, secret_question, character_profile, friendship_management
+from .profile_views import login, logout, secret_question, character_profile, friendship_management, game_events
 
 
 from .messaging_views import (ajax_set_message_read_state, ajax_force_email_sending, ajax_permanently_delete_message,
@@ -52,7 +52,7 @@ from .abilities import (house_locking, runic_translation, wiretapping_management
                         mercenaries_hiring, matter_analysis, world_scan, chess_challenge, geoip_location,
                         business_escrow, black_market, ability_introduction) # telecom_investigation
 
-from .admin_views import (admin_dashboard, game_events, webradio_management,
+from .admin_views import (admin_dashboard, webradio_management,
                           manage_databases, static_pages_management, global_contacts_management,
                           radio_spots_editing,
                           manage_characters, CHARACTERS_IDENTITIES,

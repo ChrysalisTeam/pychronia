@@ -317,6 +317,33 @@ friendship_management = FriendshipManagementView.as_view
 
 
 
+@register_view(access=UserAccess.authenticated, title=ugettext_lazy("System Events"))
+def game_events(request, template_name='administration/game_events.html'):
+
+    events = request.datamanager.get_game_events() # FILTERS by current user
+
+    trans_events = []
+    for event in events:
+        trans_event = dict(**event) # dont use dict.copy() or copy.copy() else inner side effects
+        if trans_event["substitutions"]:
+            trans_event["final_message"] = trans_event["message"] % utilities.SDICT(**trans_event["substitutions"])
+        else:
+            trans_event["final_message"] = trans_event["message"]
+        del trans_event["message"]
+        del trans_event["substitutions"]
+        trans_events.append(trans_event)
+
+    trans_events = list(reversed(trans_events))  # most recent first
+
+    return render(request,
+                  template_name,
+                    {
+                     'events': trans_events
+                    })
+
+
+
+
 
 @register_view(access=UserAccess.character, requires_global_permission=False, title=ugettext_lazy("Instructions"))
 def ___instructions(request, template_name='profile/instructions.html'): # TODO - remove that ?????
