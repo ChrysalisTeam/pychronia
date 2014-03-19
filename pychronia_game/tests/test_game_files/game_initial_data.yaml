@@ -470,6 +470,7 @@ messaging:
     manual_messages_templates:
 
         mind_opening_instructions_oracle:
+            categories: ["misc", "other_misc"]
             group_id: "22"
             sender_email: djinn-master@djinn-city.com
             recipient_emails: guy2

@@ -296,13 +296,24 @@ def ajax_force_email_sending(request):
 
 @register_view(access=UserAccess.master, title=ugettext_lazy("Message Templates"))
 def messages_templates(request, template_name='messaging/messages.html'):
+
+    message_template_categories = request.datamanager.get_global_parameter("message_template_categories")
+
+    selected_category = request.GET.get("category")
+    if selected_category and selected_category not in message_template_categories:
+        request.datamanager.user.add_error(_("Unknown template category '%(category)s'") % SDICT(category=selected_category))
+        selected_category = None
+
     templates = request.datamanager.get_messages_templates().items() # PAIRS (template_id, template_dict)
     templates.sort(key=lambda msg: msg[0])  # we sort by template name
-    enriched_templates = [(_determine_template_display_context(request.datamanager, template_id=tpl[0], template=tpl[1]), tpl[1]) for tpl in templates]
+    enriched_templates = [(_determine_template_display_context(request.datamanager, template_id=tpl[0], template=tpl[1]), tpl[1])
+                          for tpl in templates if (not selected_category or selected_category in tpl[1]["categories"])]
     return render(request,
                   template_name,
                   dict(messages=enriched_templates,
-                       contact_cache=_build_contact_display_cache(request.datamanager)))
+                       contact_cache=_build_contact_display_cache(request.datamanager),
+                       message_categories=message_template_categories,
+                       selected_category=selected_category))
 
 
 @register_view(access=UserAccess.authenticated, requires_global_permission=False, title=ugettext_lazy("Conversations"))

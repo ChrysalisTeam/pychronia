@@ -2117,10 +2117,14 @@ class TextMessagingTemplates(BaseDataManager):
                 assert ("id" in t), t
             messaging["manual_messages_templates"] = dict((t["id"], t) for t in messaging["manual_messages_templates"]) # indexed by ID
 
+        existing_template_categories = set() # we build initial list of template "tags"
 
         def _normalize_messages_templates(msg_list):
 
             for msg in msg_list:
+
+                msg.setdefault("categories", []) # to FILTER for gamemaster
+                existing_template_categories.update(msg["categories"])
 
                 msg.setdefault("gamemaster_hints", "")
                 if msg["gamemaster_hints"]:
@@ -2141,9 +2145,16 @@ class TextMessagingTemplates(BaseDataManager):
         # complete_messages_templates(game_data["automated_messages_templates"], is_manual=False)
         _normalize_messages_templates(messaging["manual_messages_templates"].values())
 
+        existing_template_categories = sorted(existing_template_categories)
+        game_data["global_parameters"]["message_template_categories"] = existing_template_categories # OVERRIDDEN and STATIC for non !
+
 
     def _check_database_coherency(self, strict=False, **kwargs):
         super(TextMessagingTemplates, self)._check_database_coherency(**kwargs)
+
+        existing_template_categories = self.get_global_parameter("message_template_categories")
+        for cat in existing_template_categories:
+            utilities.check_is_slug(cat)
 
         messaging = self.messaging_data
 
@@ -2151,6 +2162,11 @@ class TextMessagingTemplates(BaseDataManager):
 
         for msg in messaging["manual_messages_templates"].values():
             ##TEMPutilities.check_has_keys(msg, keys=template_fields, strict=strict)
+            
+            assert isinstance(msg["categories"], PersistentList)
+            for cat in msg["categories"]:
+                utilities.check_is_slug(cat)
+                assert cat in existing_template_categories, cat
 
             if msg.get("gamemaster_hints"): # optional
                 utilities.check_is_restructuredtext(msg["gamemaster_hints"])

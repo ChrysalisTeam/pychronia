@@ -58,6 +58,15 @@
         </tr>
         {% endif %}
 
+        {% if message.categories %}
+        <tr>
+        <td><strong>{% trans "Category" %}{{COLON}}</strong></td>
+        <td>
+            <strong>{{ message.categories|join:", " }}</strong>
+        </td>
+        </tr>
+        {% endif %}
+
         {% if message.sender_email  %}
         <tr>
         <td><strong>{% trans "From:" %}</strong></td>

@@ -36,6 +36,17 @@
 
     {{ block.super }}
 
+    {% if selected_category %}
+        <h2>{% trans "Category" %}{{COLON}} {{ selected_category }}</h2>
+    {% endif %}
+
+    {% if message_categories %}
+    <div class="scroll_yellow_flat center medium_width">
+        <a {% if not selected_category %}style="font-weight: bold"{% endif %} href="{% game_view_url "pychronia_game.views.messages_templates" %}">{% trans "ALL" %}</a>&nbsp;
+        {% for cat in message_categories %}<a {% if cat == selected_category %}style="font-weight: bold"{% endif %} href="{% game_view_url "pychronia_game.views.messages_templates" %}?category={{ cat|urlencode }}">{{ cat }}</a>&nbsp; {% endfor %}
+    </div>
+    {% endif %}
+
     {% if not messages %}
 
         <div style="text-align:center;">
