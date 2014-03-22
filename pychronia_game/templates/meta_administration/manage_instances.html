@@ -9,21 +9,20 @@
 
 
 
-
-
-
-	<table class="realtable">
+	<table class="realtable"">
 
 		{% for meta in instances_metadata %}
 		<tr>
-			<td>
-    			<a href="{% url 'pychronia_game.views.homepage' game_instance_id=meta.instance_id %}" ><b>{{ meta.instance_id }}</b></a><br/>
-    			{% trans "Creator:" %} {{ meta.creator_login }}<br/>
-    			{% trans "Created:" %} {{ meta.creation_time|utctolocal|date:"SHORT_DATE_FORMAT" }}<br/>
+			<td style="text-align: left">
+			    <center>
+    			    <a href="{% url 'pychronia_game.views.homepage' game_instance_id=meta.instance_id %}" ><b>{{ meta.instance_id }}</b></a><br/><br/>
+    			</center>
+
+    			{% trans "Creator Login:" %} {{ meta.creator_login }}<br/>
+    			{% trans "Creator Email:" %} {{ meta.creator_email|default:_("None") }}<br/>
+    			{% trans "Creation Date:" %} {{ meta.creation_time|utctolocal|date:"SHORT_DATE_FORMAT" }}<br/>
 			</td>
-			<td style="text-align: left;">
-
-
+			<td>
 
 				<ul>
 				    <li>{% trans "Status:" %} '{{ meta.status }}' ({% trans "last change:" %} {{ meta.last_status_change_time|utctolocal|date:"SHORT_DATETIME_FORMAT" }})</li>

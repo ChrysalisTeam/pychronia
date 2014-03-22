@@ -51,16 +51,17 @@ FEATURES
 
 - disable auto play on VLC media (phoque.avi)
 
-- Envoyer email quand argent recu par un joueur, avec raison
+- Envoyer email quand argent recu par un joueur, avec raison <- NO, EVENT LOG
 
-- cacher compétences spéciales pour PNJ ? comment faire ?
+- cacher compétences spéciales pour PNJ
 
-- envoi de mail quotidien
+- envoi de mail quotidien !!
 
-- systeme pour créer partie
+- systeme pour créer partie !!
 
 - autofolding des emails lus
-- tri par tags des templates email
+
+- tri par tags des templates email WIP
 
 
 

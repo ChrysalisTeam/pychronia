@@ -87,13 +87,15 @@ if __debug__ and config.DEBUG and config.ZODB_RESET_ALLOWED:
 
 
 
-def _create_metadata_record(game_instance_id, creator_login):
+def _create_metadata_record(game_instance_id, creator_login, creator_email):
     utilities.check_is_slug(game_instance_id)
     utilities.check_is_string(creator_login) # NOT necessarily a slug
-
+    if creator_email is not None:
+        utilities.check_is_email(creator_email)
     utcnow = datetime.utcnow()
     game_metadata = PersistentDict(instance_id=game_instance_id,
                                    creator_login=creator_login,
+                                   creator_email=creator_email,
                                    creation_time=utcnow,
                                    accesses_count=0,
                                    last_acccess_time=utcnow,
@@ -106,6 +108,7 @@ def _create_metadata_record(game_instance_id, creator_login):
 @zodb_transaction
 def create_game_instance(game_instance_id,
                          creator_login,
+                         creator_email=None,
                          skip_randomizations=False,
                          strict=False): # TODO here try strict=True once
     """
@@ -119,7 +122,8 @@ def create_game_instance(game_instance_id,
     try:
 
         game_metadata = _create_metadata_record(game_instance_id=game_instance_id,
-                                                creator_login=creator_login)
+                                                creator_login=creator_login,
+                                                creator_email=creator_email)
         game_data = PersistentDict()
         game_root = PersistentDict(metadata=game_metadata,
                                    data=game_data)

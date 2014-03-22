@@ -606,17 +606,19 @@ class TestMetaAdministration(unittest.TestCase): # no django setup required ATM
 
         assert not get_all_instances_metadata()
 
+        creator_email = random.choice((None, "aaa@sffr.com"))
         skip_randomizations = random.choice((True, False))
 
         game_instance_id = "mystuff"
         assert not game_instance_exists(game_instance_id)
-        create_game_instance(game_instance_id, creator_login="ze_creator_test", skip_randomizations=skip_randomizations)
+        create_game_instance(game_instance_id, creator_login="ze_creator_test", creator_email=creator_email, skip_randomizations=skip_randomizations)
         assert game_instance_exists(game_instance_id)
 
         all_res = get_all_instances_metadata()
         assert len(all_res) == 1
         res = all_res[0]
         assert res["creator_login"] == "ze_creator_test"
+        assert res["creator_email"] == creator_email
         assert res["creation_time"] == res["last_acccess_time"] == res["last_status_change_time"]
         assert res["accesses_count"] == 0
         assert res["status"] == GAME_STATUSES.active == "active"
