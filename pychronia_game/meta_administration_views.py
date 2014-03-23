@@ -29,7 +29,7 @@ from django import forms
 from pychronia_game import authentication
 from pychronia_game.utilities import encryption
 from django.utils.http import urlencode
-import pychronia_game
+from smtplib import SMTPException
 
 
 class GameInstanceCreationForm(forms.Form):
@@ -76,8 +76,8 @@ def create_instance(request):
 
     game_creation_form = None
 
-    information = _("Please provide a valid email address, so that we can send you the activation link for your new game." 
-                    "If after several attempts you don't manage to create your game, please contact the game staff.")
+    information = _("Please provide a valid email address, so that we can send you the activation link for your new game. "
+                    "If after several attempts you don't manage to create your game, please contact the game staff. ")
 
     if request.method == "POST":
 
@@ -92,24 +92,28 @@ def create_instance(request):
                 messages.add_message(request, messages.ERROR, _(u"Please choose another game identifier."))
 
             else:
-                    
+
                 _token = compute_game_activation_token(game_instance_id=game_instance_id, creator_login=creator_login, creator_email=creator_email)
-                autologin_link = reverse(activate_instance) + "?" + urlencode(dict(token=_token))
-    
+                autologin_link = settings.SITE_DOMAIN + reverse(activate_instance) + "?" + urlencode(dict(token=_token))
+
                 message = GAME_ACTIVATION_EMAIL_BODY_TPL % locals()
-    
-                send_mail(subject=GAME_ACTIVATION_EMAIL_SUBJECT,
-                          message=message,
-                          from_email=settings.SERVER_EMAIL,
-                          recipient_list=[creator_email],
-                          fail_silently=False)
-    
-                messages.add_message(request, messages.INFO, _(u"Game instance '%s' successfully created for '%s/%s'") % (game_instance_id, creator_login, creator_email))
-                game_creation_form = None
-                information = _("The activation email has been sent to %(creator_email)s.") % SDICT(creator_email=creator_email)
-                
-                if settings.DEBUG:
-                    information += " " + _("Debug Information: %(autologin_link)s.") % SDICT(autologin_link=autologin_link)
+
+                try:
+                    send_mail(subject=GAME_ACTIVATION_EMAIL_SUBJECT,
+                              message=message,
+                              from_email=settings.SERVER_EMAIL,
+                              recipient_list=[creator_email],
+                              fail_silently=False)
+                except (SMTPException, EnvironmentError), e:
+                    logging.warning("Couldn't send game instance activation email to %s", creator_email, exc_info=True)
+                    messages.add_message(request, messages.ERROR, _(u"Couldn't send activation email."))
+                else:
+                    messages.add_message(request, messages.INFO, _(u"Game instance '%s' successfully created for '%s/%s'") % (game_instance_id, creator_login, creator_email))
+                    game_creation_form = None
+                    information = _("The activation email has been sent to %(creator_email)s.") % SDICT(creator_email=creator_email)
+
+                if settings.DEBUG and request.GET.get("_debug_"): # even if we haven't managed to send the activation email
+                    information += " " + _("Debug Information: [%(autologin_link)s].") % SDICT(autologin_link=autologin_link)
         else:
             messages.add_message(request, messages.ERROR, _(u"Invalid game creation form submitted."))
 
@@ -125,8 +129,10 @@ def create_instance(request):
 
 def activate_instance(request):
 
+    token = request.GET.get("token", "")
+
     try:
-        encrypted_data = request.GET["token"] # encrypted json containing the game id, the user login and a validity timestamp
+        encrypted_data = token.encode("ascii") # encrypted json containing the game id, the user login and a validity timestamp
         (game_instance_id, creator_login, creator_email) = decode_game_activation_token(encrypted_data)
 
         if not datamanager_administrator.game_instance_exists(game_instance_id):
@@ -136,20 +142,21 @@ def activate_instance(request):
                                                            skip_randomizations=False)
 
         # we retrieve the datamanager whatever its possible maintenance status
-        dm = datamanager_administrator.retrieve_game_instance(game_instance_id, request=None, metadata_checker=lambda *args, **kwargs: None)
+        dm = datamanager_administrator.retrieve_game_instance(game_instance_id, request=None, metadata_checker=lambda *args, **kwargs: True)
         master_login = dm.get_global_parameter("master_login")
 
         authentication_token = authentication.compute_enforced_login_token(game_instance_id=game_instance_id, login=master_login, is_observer=False)
         session_token_display = urlencode({authentication.ENFORCED_SESSION_TICKET_NAME: authentication_token})
 
         import pychronia_game.views
-        target_url = reverse(pychronia_game.views.homepage) + "?" + session_token_display
+        target_url = settings.SITE_DOMAIN + reverse(pychronia_game.views.homepage, kwargs=dict(game_instance_id=game_instance_id)) + "?" + session_token_display
 
         content = _("In case you don't get properly redirected, please copy this link into our URL bar:") + " " + target_url
         return HttpResponseRedirect(target_url, content=content)
 
-    except (ValueError, TypeError, LookupError, AttributeError):
-        return HttpResponseForbidden(_("Access key not recognized"))
+    except (ValueError, TypeError, LookupError, AttributeError, UnicodeError), e:
+        logging.warning("Game activation key not recognized : %s", token, exc_info=True)
+        return HttpResponseForbidden(_("Activation key not recognized"))
 
 
 
