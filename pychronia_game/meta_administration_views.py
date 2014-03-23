@@ -34,17 +34,22 @@ class GameInstanceCreationForm(forms.Form):
     creator_login = forms.CharField(label=ugettext_lazy("Creator login"), required=True)
     creator_email = forms.EmailField(label=ugettext_lazy("Creator email"), required=False) # only required for non-superuser
 
+    def __init__(self, require_email, *args, **kwargs):
+        super(GameInstanceCreationForm, self).__init__(*args, **kwargs)
+        assert hasattr(self.fields["creator_email"], "required")
+        self.fields["creator_email"].required = require_email
 
 
 GAME_INSTANCE_MAINTENANCE_LOCKING_DELAY_MN = 15
-
-
 
 GAME_ACTIVATION_EMAIL_SUBJECT = ugettext_lazy("New game instance of Chrysalis RPG")
 GAME_ACTIVATION_EMAIL_BODY_TPL = ugettext_lazy("""\
 Dear %(creator_login)s,
 
-here is the link that will allow you to complete the creation of your Chrysalis game, 
+here is the link that will allow you to complete the creation of your Chrysalis game,\
+and to automatically sign in as the game master.
+
+%(autologin_link)s
 """)
 
 
@@ -53,23 +58,29 @@ def create_instance(request):
     """
     Workflow to create an instance through email validation, by non-superusers.
     """
-
+    require_email = True # important
     rst_message = None # explanatory text
     game_creation_form = None
 
     if request.method == "POST":
 
-        game_creation_form = GameInstanceCreationForm(data=request.POST)
+        game_creation_form = GameInstanceCreationForm(require_email=require_email, data=request.POST)
         if game_creation_form.is_valid():
             cleaned_data = game_creation_form.cleaned_data
             game_instance_id = cleaned_data["game_instance_id"]
             creator_login = cleaned_data["creator_login"]
             creator_email = cleaned_data["creator_email"] or None
+            autologin_link = 
 
+            message = GAME_ACTIVATION_EMAIL_BODY_TPL % locals()
 
-            send_mail(subject, message, from_email, recipient_list, fail_silently=False, auth_user=None, auth_password=None, connection=None, html_message=None)
-            # SEND EMAIL 
-            
+            send_mail(subject=GAME_ACTIVATION_EMAIL_SUBJECT,
+                      message=message,
+                      from_email=settings.SERVER_EMAIL,
+                      recipient_list=[creator_email],
+                      fail_silently=False)
+            # SEND EMAIL
+
             messages.add_message(request, messages.INFO, _(u"Game instance '%s' successfully created for '%s/%s'") % (game_instance_id, creator_login, creator_email))
             game_creation_form = None
         else:
@@ -78,7 +89,8 @@ def create_instance(request):
     return render(request,
                   "meta_administration/create_instance.html",
                     {
-                     'game_creation_form': game_creation_form or GameInstanceCreationForm(),
+                     'notifications': get_messages(request),
+                     'game_creation_form': game_creation_form or GameInstanceCreationForm(require_email=require_email),
                      'rst_message': rst_message,
                     })
 
@@ -113,12 +125,13 @@ def manage_instances(request):
 
     session_token_display = None
     game_creation_form = None
+    require_email = False # superuser does what he wants
 
     try:
         if request.method == "POST":
 
             if request.POST.get("create_game_instance"):
-                game_creation_form = GameInstanceCreationForm(data=request.POST)
+                game_creation_form = GameInstanceCreationForm(require_email=require_email, data=request.POST)
                 if game_creation_form.is_valid():
                     cleaned_data = game_creation_form.cleaned_data
                     game_instance_id = cleaned_data["game_instance_id"]
@@ -179,7 +192,7 @@ def manage_instances(request):
                      'notifications': get_messages(request),
                      'possible_game_statuses': sorted(GAME_STATUSES),
                      'deletable_statuses': [GAME_STATUSES.terminated, GAME_STATUSES.aborted],
-                     'game_creation_form': game_creation_form or GameInstanceCreationForm(),
+                     'game_creation_form': game_creation_form or GameInstanceCreationForm(require_email=require_email),
                      'session_token_display': session_token_display,
                     })
 

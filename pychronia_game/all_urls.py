@@ -164,7 +164,8 @@ support_urlpatterns = patterns('',
 
 game_admin_urlpatterns = patterns('pychronia_game.meta_administration_views',
     (r'^administration/$', "manage_instances"),
-    (r'^administration/(?P<target_instance_id>[^/]+)/$', "edit_instance_db"), # NOT game_instance_id, else bug with middleware
+    (r'^administration/create/$', "create_instance"), # to be used by non-superusers
+    (r'^administration/edit/(?P<target_instance_id>[^/]+)/$', "edit_instance_db"), # NOT game_instance_id, else bug with middleware
 )
 
 
