@@ -4465,10 +4465,27 @@ class NightmareCaptchas(BaseDataManager):
 
         return value["explanation"]
 
+'''
 
+@register_module
+class PlayerNotifications(BaseDataManager):
 
+    @readonly_method
+    def get_single_player_external_notifications(self, username=CURRENT_USER):
+        username = self._resolve_username(username)
 
+        signal_new_radio_messages = not dm.has_read_current_playlist() if not isinstance(request.processed_view, WebradioManagement) else False
+        signal_new_text_message = dm.is_character() and dm.has_new_message_notification() # only for characters atm
 
+        res = {
+                'signal_new_radio_messages': signal_new_radio_messages,
+                'signal_new_text_messages': signal_new_text_message,
+              }
+        return res
 
+    @readonly_method
+    def get_all_players_(self, username=CURRENT_USER):
+
+'''
 
 

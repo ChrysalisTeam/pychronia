@@ -64,6 +64,9 @@ def pychronia_template_context(request):
         if len(levels) == 1:
             notification_type = levels[0]
 
+
+        action_explanations = request.processed_view.get_game_actions_explanations()
+
         # we only check the 2 first levels of menu for "novelty" menu entries
         signal_new_menu_entries = False
         if menus:
@@ -74,16 +77,11 @@ def pychronia_template_context(request):
                     if subentry.is_novelty:
                         signal_new_menu_entries = True
 
-
-        action_explanations = request.processed_view.get_game_actions_explanations()
-
         help_page_key = "help-" + view_name
         signal_new_help_page = not dm.has_user_accessed_static_page(help_page_key)
 
-        signal_new_text_message = dm.is_character() and dm.has_new_message_notification() # only for characters atm
-
-
-
+        signal_new_radio_messages = not dm.has_read_current_playlist() if not isinstance(request.processed_view, WebradioManagement) else False
+        signal_new_text_messages = dm.is_character() and dm.has_new_message_notification() # only for characters atm
 
         if request.processed_view.DISPLAY_STATIC_CONTENT:
             content_blocks = dict(help_page=dict(name=help_page_key,
@@ -94,7 +92,6 @@ def pychronia_template_context(request):
                                                        data=dm.get_categorized_static_page(dm.CONTENT_CATEGORY, "bottom-" + view_name)))
         else:
             content_blocks = {}
-
 
         res.update({
                 'game_instance_id': dm.game_instance_id,
@@ -109,11 +106,11 @@ def pychronia_template_context(request):
                 'menus': menus.submenus if menus else [], # we ignore root entry
 
                 'online_users': online_users,
-                'signal_new_radio_messages': not dm.has_read_current_playlist() if not isinstance(request.processed_view, WebradioManagement) else False,
-                'signal_new_help_page': signal_new_help_page,
-                'signal_new_text_message': signal_new_text_message,
                 'signal_chatting_users': bool(dm.get_chatting_users()),
                 'signal_new_menu_entries': signal_new_menu_entries,
+                'signal_new_help_page': signal_new_help_page,
+                'signal_new_radio_messages': signal_new_radio_messages,
+                'signal_new_text_messages': signal_new_text_messages,
 
                 # replacement of django.contrib.messages middleware
                 'notification_type': notification_type,
