@@ -56,15 +56,18 @@ and to automatically sign in as the game master.
 """)
 
 
-# THIS NEEDS TO BE TESTED
+
 def compute_game_activation_token(game_instance_id, creator_login, creator_email):
+    assert game_instance_id
+    assert creator_login
+    creator_email = creator_email or ""
     activation_data = "%s|%s|%s" % (game_instance_id, creator_login, creator_email)
     return encryption.unicode_encrypt(activation_data)
 
 def decode_game_activation_token(activation_token):
     activation_data = encryption.unicode_decrypt(activation_token)
     (game_instance_id, creator_login, creator_email) = activation_data.split("|")
-    return (game_instance_id, creator_login, creator_email)
+    return (game_instance_id, creator_login, creator_email or None)
 
 
 # no authentication!
@@ -140,6 +143,8 @@ def activate_instance(request):
                                                            creator_login=creator_login,
                                                            creator_email=creator_email,
                                                            skip_randomizations=False)
+        else:
+            pass # TODO FIXME add check on existing metadata.creator_login
 
         # we retrieve the datamanager whatever its possible maintenance status
         dm = datamanager_administrator.retrieve_game_instance(game_instance_id, request=None, metadata_checker=lambda *args, **kwargs: True)

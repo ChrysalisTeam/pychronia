@@ -2162,7 +2162,7 @@ class TextMessagingTemplates(BaseDataManager):
 
         for msg in messaging["manual_messages_templates"].values():
             ##TEMPutilities.check_has_keys(msg, keys=template_fields, strict=strict)
-            
+
             assert isinstance(msg["categories"], PersistentList)
             for cat in msg["categories"]:
                 utilities.check_is_slug(cat)
@@ -4465,17 +4465,18 @@ class NightmareCaptchas(BaseDataManager):
 
         return value["explanation"]
 
-'''
+
 
 @register_module
-class PlayerNotifications(BaseDataManager):
+class NoveltyNotifications(BaseDataManager):
 
     @readonly_method
-    def get_single_player_external_notifications(self, username=CURRENT_USER):
+    def get_single_character_external_notifications(self, username=CURRENT_USER):
         username = self._resolve_username(username)
+        assert self.is_character(username)
 
-        signal_new_radio_messages = not dm.has_read_current_playlist() if not isinstance(request.processed_view, WebradioManagement) else False
-        signal_new_text_message = dm.is_character() and dm.has_new_message_notification() # only for characters atm
+        signal_new_radio_messages = not self.has_read_current_playlist(username=username)
+        signal_new_text_message = self.has_new_message_notification(username=username) # only for characters atm
 
         res = {
                 'signal_new_radio_messages': signal_new_radio_messages,
@@ -4483,9 +4484,25 @@ class PlayerNotifications(BaseDataManager):
               }
         return res
 
+
     @readonly_method
-    def get_all_players_(self, username=CURRENT_USER):
+    def get_characters_external_notifications(self, username=CURRENT_USER):
+        """
+        Only players having a good "real life email" will be returned here.
+        
+        Both players and NPCs can have these external notifications (eg. if someone is in charge of an NPC).
+        """
+        all_notifications = []
 
-'''
+        for username in self.get_character_usernames(exclude_current=False, is_npc=None): # ALL characters
 
+            real_email = self.get_character_properties(username)["real_life_email"]
+
+            if real_email:
+                notifications = self.get_single_character_external_notifications(username=username)
+                all_notifications.append(dict(username=username,
+                                           real_email=real_email,
+                                           **notifications))
+
+        return all_notifications
 

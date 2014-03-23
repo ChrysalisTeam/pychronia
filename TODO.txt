@@ -63,7 +63,7 @@ FEATURES
 
 - tri par tags des templates email WIP
 
-
+- note which ones are NPCs
 
 
 SCRIPT

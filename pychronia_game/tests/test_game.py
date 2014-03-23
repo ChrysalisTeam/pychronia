@@ -41,6 +41,8 @@ from pychronia_game.utilities.mediaplayers import generate_image_viewer
 from django.core.urlresolvers import RegexURLResolver
 from pychronia_game.datamanager.abstract_form import AbstractGameForm, GemPayementFormMixin
 from ZODB.POSException import POSError
+from pychronia_game.meta_administration_views import compute_game_activation_token, \
+    decode_game_activation_token
 
 
 
@@ -675,6 +677,13 @@ class TestMetaAdministration(unittest.TestCase): # no django setup required ATM
 
 
 
+    def test_meta_admin_utilities(self):
+
+        data = compute_game_activation_token(u"myinstànce", u"mylogïn", "my@email.fr")
+        assert decode_game_activation_token(data) == (u"myinstànce", u"mylogïn", "my@email.fr")
+
+        data = compute_game_activation_token(u"2myinstànce", u"amylogïn", None)
+        assert decode_game_activation_token(data) == (u"2myinstànce", u"amylogïn", None)
 
 
 
@@ -3661,6 +3670,51 @@ class TestDatamanager(BaseGameTestCase):
                                                   ("mycat", u'dllll'): [u'guy4']}
         assert not self.dm.has_accessed_novelty("guy1", 'qdq|sd')
         assert self.dm.has_accessed_novelty("guy1", 'qsdffsdf')
+
+
+
+    @for_core_module(NoveltyNotifications)
+    def test_novelty_notifications(self):
+
+        res = self.dm.get_characters_external_notifications()
+        assert res == [{'username': 'guy1', 'real_email': 'dummy@hotmail.com', u'signal_new_text_messages': False, u'signal_new_radio_messages': False},
+                       {'username': 'guy2', 'real_email': 'shalk@gmail.com', u'signal_new_text_messages': False, u'signal_new_radio_messages': False},
+                       {'username': 'my_npc', 'real_email': 'xcvxcv@gmail.com', u'signal_new_text_messages': False, u'signal_new_radio_messages': False}]
+
+        assert self.dm.get_single_character_external_notifications("guy1") == {'signal_new_radio_messages': False, 'signal_new_text_messages': False}
+        assert self.dm.get_single_character_external_notifications("guy2") == {'signal_new_radio_messages': False, 'signal_new_text_messages': False}
+
+        audio_id = self.dm.get_character_properties("guy2")["new_messages_notification"]
+        self.dm.add_radio_message(audio_id)
+
+        assert self.dm.get_single_character_external_notifications("guy1") == {'signal_new_radio_messages': True, 'signal_new_text_messages': False}
+        assert self.dm.get_single_character_external_notifications("guy2") == {'signal_new_radio_messages': True, 'signal_new_text_messages': False}
+
+        self.dm.post_message("guy1@pangea.com", "guy2@pangea.com", "yowh1", "qhsdhqsdh")
+
+        assert self.dm.get_single_character_external_notifications("guy1") == {'signal_new_radio_messages': True, 'signal_new_text_messages': False} # sender NOT notified
+        assert self.dm.get_single_character_external_notifications("guy2") == {'signal_new_radio_messages': True, 'signal_new_text_messages': True}
+
+        res = self.dm.get_characters_external_notifications()
+        #print(res)
+        assert res == [{'username': 'guy1', 'real_email': 'dummy@hotmail.com', u'signal_new_text_messages': False, u'signal_new_radio_messages': True},
+                       {'username': 'guy2', 'real_email': 'shalk@gmail.com', u'signal_new_text_messages': True, u'signal_new_radio_messages': True},
+                       {'username': 'my_npc', 'real_email': 'xcvxcv@gmail.com', u'signal_new_text_messages': False, u'signal_new_radio_messages': True}]
+        self.dm.reset_audio_messages()
+
+        assert self.dm.get_single_character_external_notifications("guy1") == {'signal_new_radio_messages': False, 'signal_new_text_messages': False} # sender NOT notified
+        assert self.dm.get_single_character_external_notifications("guy2") == {'signal_new_radio_messages': False, 'signal_new_text_messages': True}
+
+        self.dm.set_new_message_notification(["guy2"], False)
+
+        assert self.dm.get_single_character_external_notifications("guy1") == {'signal_new_radio_messages': False, 'signal_new_text_messages': False}
+        assert self.dm.get_single_character_external_notifications("guy2") == {'signal_new_radio_messages': False, 'signal_new_text_messages': False}
+
+        res = self.dm.get_characters_external_notifications()
+        #print(res)
+        assert res == [{'username': 'guy1', 'real_email': 'dummy@hotmail.com', u'signal_new_text_messages': False, u'signal_new_radio_messages': False},
+                       {'username': 'guy2', 'real_email': 'shalk@gmail.com', u'signal_new_text_messages': False, u'signal_new_radio_messages': False},
+                       {'username': 'my_npc', 'real_email': 'xcvxcv@gmail.com', u'signal_new_text_messages': False, u'signal_new_radio_messages': False}]
 
 
 

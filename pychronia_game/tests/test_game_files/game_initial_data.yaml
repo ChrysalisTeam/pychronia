@@ -304,7 +304,7 @@ character_properties:
         official_name: "Salar"
         official_role: "whatever"
         real_life_identity: "John Doe"
-        real_life_email: belez@gmail.com
+        real_life_email: null
         character_color : "#CC3399"
         gems: []
         avatar: null
@@ -322,7 +322,7 @@ character_properties:
         official_name: "Kha"
         official_role: "wanderer"
         real_life_identity: "John Doe"
-        real_life_email: belez2@gmail.com
+        real_life_email: null
         character_color : "#00CCFF"
         gems: []
         avatar: null
