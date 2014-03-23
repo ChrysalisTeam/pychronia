@@ -73,8 +73,11 @@ def create_instance(request):
     Workflow to create an instance through email validation, by non-superusers.
     """
     require_email = True # important
-    rst_message = None # explanatory text
+
     game_creation_form = None
+
+    information = _("Please provide a valid email address, so that we can send you the activation link for your new game." 
+                    "If after several attempts you don't manage to create your game, please contact the game staff.")
 
     if request.method == "POST":
 
@@ -85,28 +88,38 @@ def create_instance(request):
             creator_login = cleaned_data["creator_login"]
             creator_email = cleaned_data["creator_email"] or None
 
-            _token = compute_game_activation_token(game_instance_id=game_instance_id, creator_login=creator_login, creator_email=creator_email)
-            autologin_link = reverse(activate_instance) + "?" + urlencode(dict(token=_token))
+            if datamanager_administrator.game_instance_exists(game_instance_id):
+                messages.add_message(request, messages.ERROR, _(u"Please choose another game identifier."))
 
-            message = GAME_ACTIVATION_EMAIL_BODY_TPL % locals()
-
-            send_mail(subject=GAME_ACTIVATION_EMAIL_SUBJECT,
-                      message=message,
-                      from_email=settings.SERVER_EMAIL,
-                      recipient_list=[creator_email],
-                      fail_silently=False)
-
-            messages.add_message(request, messages.INFO, _(u"Game instance '%s' successfully created for '%s/%s'") % (game_instance_id, creator_login, creator_email))
-            game_creation_form = None
+            else:
+                    
+                _token = compute_game_activation_token(game_instance_id=game_instance_id, creator_login=creator_login, creator_email=creator_email)
+                autologin_link = reverse(activate_instance) + "?" + urlencode(dict(token=_token))
+    
+                message = GAME_ACTIVATION_EMAIL_BODY_TPL % locals()
+    
+                send_mail(subject=GAME_ACTIVATION_EMAIL_SUBJECT,
+                          message=message,
+                          from_email=settings.SERVER_EMAIL,
+                          recipient_list=[creator_email],
+                          fail_silently=False)
+    
+                messages.add_message(request, messages.INFO, _(u"Game instance '%s' successfully created for '%s/%s'") % (game_instance_id, creator_login, creator_email))
+                game_creation_form = None
+                information = _("The activation email has been sent to %(creator_email)s.") % SDICT(creator_email=creator_email)
+                
+                if settings.DEBUG:
+                    information += " " + _("Debug Information: %(autologin_link)s.") % SDICT(autologin_link=autologin_link)
         else:
             messages.add_message(request, messages.ERROR, _(u"Invalid game creation form submitted."))
+
 
     return render(request,
                   "meta_administration/create_instance.html",
                     {
                      'notifications': get_messages(request),
                      'game_creation_form': game_creation_form or GameInstanceCreationForm(require_email=require_email),
-                     'rst_message': rst_message,
+                     'information': information,
                     })
 
 
