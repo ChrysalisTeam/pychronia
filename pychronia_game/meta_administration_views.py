@@ -27,6 +27,9 @@ from django.contrib.messages import get_messages
 from pychronia_game.datamanager.datamanager_administrator import GAME_STATUSES
 from django import forms
 from pychronia_game import authentication
+from pychronia_game.utilities import encryption
+from django.utils.http import urlencode
+import pychronia_game
 
 
 class GameInstanceCreationForm(forms.Form):
@@ -53,6 +56,17 @@ and to automatically sign in as the game master.
 """)
 
 
+# THIS NEEDS TO BE TESTED
+def compute_game_activation_token(game_instance_id, creator_login, creator_email):
+    activation_data = "%s|%s|%s" % (game_instance_id, creator_login, creator_email)
+    return encryption.unicode_encrypt(activation_data)
+
+def decode_game_activation_token(activation_token):
+    activation_data = encryption.unicode_decrypt(activation_token)
+    (game_instance_id, creator_login, creator_email) = activation_data.split("|")
+    return (game_instance_id, creator_login, creator_email)
+
+
 # no authentication!
 def create_instance(request):
     """
@@ -70,7 +84,9 @@ def create_instance(request):
             game_instance_id = cleaned_data["game_instance_id"]
             creator_login = cleaned_data["creator_login"]
             creator_email = cleaned_data["creator_email"] or None
-            autologin_link = 
+
+            _token = compute_game_activation_token(game_instance_id=game_instance_id, creator_login=creator_login, creator_email=creator_email)
+            autologin_link = reverse(activate_instance) + "?" + urlencode(dict(token=_token))
 
             message = GAME_ACTIVATION_EMAIL_BODY_TPL % locals()
 
@@ -79,7 +95,6 @@ def create_instance(request):
                       from_email=settings.SERVER_EMAIL,
                       recipient_list=[creator_email],
                       fail_silently=False)
-            # SEND EMAIL
 
             messages.add_message(request, messages.INFO, _(u"Game instance '%s' successfully created for '%s/%s'") % (game_instance_id, creator_login, creator_email))
             game_creation_form = None
@@ -96,28 +111,33 @@ def create_instance(request):
 
 
 def activate_instance(request):
-    '''
-     try:
-        encrypted_data = request.POST["data"] # encrypted json containing the game id, the user login and a validity timestamp
-        data = unicode_decrypt(encrypted_data)
-        data_dict = json.loads(data)
 
-        if math.fabs((datetime.utcnow() - data_dict["generation_time"]).days) > 1:
-            raise ValueError("Outdated access key")
+    try:
+        encrypted_data = request.GET["token"] # encrypted json containing the game id, the user login and a validity timestamp
+        (game_instance_id, creator_login, creator_email) = decode_game_activation_token(encrypted_data)
 
-        game_instance_id = data_dict["game_instance_id"]
-        creator_portal_login = data_dict["creator_portal_login"] # FIXME put into metadata
+        if not datamanager_administrator.game_instance_exists(game_instance_id):
+            datamanager_administrator.create_game_instance(game_instance_id=game_instance_id,
+                                                           creator_login=creator_login,
+                                                           creator_email=creator_email,
+                                                           skip_randomizations=False)
 
-        datamanager_administrator.create_game_instance(game_instance_id=game_instance_id,
-                                                       creator_login="??????",
-                                                       ) # ???????? OTHER ARGS ???
-        datamanager_administrator.create_game_instance(game_instance_id=game_instance_id,
-                                                         creator_login=creator_login,
-                                                         creator_email=creator_email,
-                                                         skip_randomizations=False)
+        # we retrieve the datamanager whatever its possible maintenance status
+        dm = datamanager_administrator.retrieve_game_instance(game_instance_id, request=None, metadata_checker=lambda *args, **kwargs: None)
+        master_login = dm.get_global_parameter("master_login")
+
+        authentication_token = authentication.compute_enforced_login_token(game_instance_id=game_instance_id, login=master_login, is_observer=False)
+        session_token_display = urlencode({authentication.ENFORCED_SESSION_TICKET_NAME: authentication_token})
+
+        import pychronia_game.views
+        target_url = reverse(pychronia_game.views.homepage) + "?" + session_token_display
+
+        content = _("In case you don't get properly redirected, please copy this link into our URL bar:") + " " + target_url
+        return HttpResponseRedirect(target_url, content=content)
+
     except (ValueError, TypeError, LookupError, AttributeError):
-        return HttpResponseForbidden("Access key not recognized")
-         '''
+        return HttpResponseForbidden(_("Access key not recognized"))
+
 
 
 @superuser_required
@@ -172,9 +192,9 @@ def manage_instances(request):
                 game_instance_id = request.POST["game_instance_id"].strip() # manually entered
                 login = request.POST["login"].strip()
                 is_observer = bool(request.POST.get("is_observer"))
-                token = authentication.compute_enforced_login_token(game_instance_id=game_instance_id, login=login, is_observer=is_observer)
+                authentication_token = authentication.compute_enforced_login_token(game_instance_id=game_instance_id, login=login, is_observer=is_observer)
                 messages.add_message(request, messages.INFO, _(u"Auto-connection token for 'instance=%s, login=%s and is_observer=%s' is displayed below") % (game_instance_id, login, is_observer))
-                session_token_display = '%s=%s' % (authentication.ENFORCED_SESSION_TICKET_NAME, token)
+                session_token_display = urlencode({authentication.ENFORCED_SESSION_TICKET_NAME: authentication_token})
             else:
                 raise ValueError(_("Unknown admin action"))
 

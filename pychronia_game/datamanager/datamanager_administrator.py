@@ -161,6 +161,7 @@ def replace_existing_game_instance_data(game_instance_id, new_data):
     game_instances[game_instance_id]["data"] = new_data
 
 
+# no need for transaction management
 def game_instance_exists(game_instance_id):
     res = _get_game_instances_mapping().has_key(game_instance_id)
     return res
