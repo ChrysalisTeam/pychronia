@@ -13,7 +13,7 @@ import math
 
 from contextlib import contextmanager
 from django.conf import settings
-from django.core.mail import mail_admins
+from django.core.mail import mail_admins, send_mail
 from django.http import Http404, HttpResponseRedirect, HttpResponse, \
      HttpResponseForbidden
 from django.shortcuts import render
@@ -39,29 +39,73 @@ class GameInstanceCreationForm(forms.Form):
 GAME_INSTANCE_MAINTENANCE_LOCKING_DELAY_MN = 15
 
 
-def ____create_new_instance(request):  # TODO FINISH LATER
 
-    if request.method != "POST":
+GAME_ACTIVATION_EMAIL_SUBJECT = ugettext_lazy("New game instance of Chrysalis RPG")
+GAME_ACTIVATION_EMAIL_BODY_TPL = ugettext_lazy("""\
+Dear %(creator_login)s,
 
-        try:
-            encrypted_data = request.POST["data"] # encrypted json containing the game id, the user login and a validity timestamp
-            data = unicode_decrypt(encrypted_data)
-            data_dict = json.loads(data)
-
-            if math.fabs((datetime.utcnow() - data_dict["generation_time"]).days) > 1:
-                raise ValueError("Outdated access key")
-
-            game_instance_id = data_dict["game_instance_id"]
-            creator_portal_login = data_dict["creator_portal_login"] # FIXME put into metadata
-
-            datamanager_administrator.create_game_instance(game_instance_id=game_instance_id,
-                                                           creator_login="??????",
-                                                           ) # ???????? OTHER ARGS ???
-
-        except (ValueError, TypeError, LookupError, AttributeError):
-            return HttpResponseForbidden("Access key not recognized")
+here is the link that will allow you to complete the creation of your Chrysalis game, 
+""")
 
 
+# no authentication!
+def create_instance(request):
+    """
+    Workflow to create an instance through email validation, by non-superusers.
+    """
+
+    rst_message = None # explanatory text
+    game_creation_form = None
+
+    if request.method == "POST":
+
+        game_creation_form = GameInstanceCreationForm(data=request.POST)
+        if game_creation_form.is_valid():
+            cleaned_data = game_creation_form.cleaned_data
+            game_instance_id = cleaned_data["game_instance_id"]
+            creator_login = cleaned_data["creator_login"]
+            creator_email = cleaned_data["creator_email"] or None
+
+
+            send_mail(subject, message, from_email, recipient_list, fail_silently=False, auth_user=None, auth_password=None, connection=None, html_message=None)
+            # SEND EMAIL 
+            
+            messages.add_message(request, messages.INFO, _(u"Game instance '%s' successfully created for '%s/%s'") % (game_instance_id, creator_login, creator_email))
+            game_creation_form = None
+        else:
+            messages.add_message(request, messages.ERROR, _(u"Invalid game creation form submitted."))
+
+    return render(request,
+                  "meta_administration/create_instance.html",
+                    {
+                     'game_creation_form': game_creation_form or GameInstanceCreationForm(),
+                     'rst_message': rst_message,
+                    })
+
+
+def activate_instance(request):
+    '''
+     try:
+        encrypted_data = request.POST["data"] # encrypted json containing the game id, the user login and a validity timestamp
+        data = unicode_decrypt(encrypted_data)
+        data_dict = json.loads(data)
+
+        if math.fabs((datetime.utcnow() - data_dict["generation_time"]).days) > 1:
+            raise ValueError("Outdated access key")
+
+        game_instance_id = data_dict["game_instance_id"]
+        creator_portal_login = data_dict["creator_portal_login"] # FIXME put into metadata
+
+        datamanager_administrator.create_game_instance(game_instance_id=game_instance_id,
+                                                       creator_login="??????",
+                                                       ) # ???????? OTHER ARGS ???
+        datamanager_administrator.create_game_instance(game_instance_id=game_instance_id,
+                                                         creator_login=creator_login,
+                                                         creator_email=creator_email,
+                                                         skip_randomizations=False)
+    except (ValueError, TypeError, LookupError, AttributeError):
+        return HttpResponseForbidden("Access key not recognized")
+         '''
 
 
 @superuser_required
@@ -84,7 +128,7 @@ def manage_instances(request):
                                                                      creator_login=creator_login,
                                                                      creator_email=creator_email,
                                                                      skip_randomizations=False)
-                    messages.add_message(request, messages.INFO, _(u"Game instance '%s' successfully created for '%s'") % (game_instance_id, creator_login))
+                    messages.add_message(request, messages.INFO, _(u"Game instance '%s' successfully created for '%s/%s'") % (game_instance_id, creator_login, creator_email))
                     game_creation_form = None
                 else:
                     messages.add_message(request, messages.ERROR, _(u"Invalid game creation form submitted."))
