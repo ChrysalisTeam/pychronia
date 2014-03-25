@@ -4476,6 +4476,12 @@ class NightmareCaptchas(BaseDataManager):
 @register_module
 class NoveltyNotifications(BaseDataManager):
 
+
+    def _check_database_coherency(self, strict=False, **kwargs):
+        super(NoveltyNotifications, self)._check_database_coherency(**kwargs)
+        utilities.check_is_bool(self.get_global_parameter("disable_real_email_notifications"))
+
+
     @readonly_method
     def get_single_character_external_notifications(self, username=CURRENT_USER):
         username = self._resolve_username(username)
@@ -4498,6 +4504,10 @@ class NoveltyNotifications(BaseDataManager):
         
         Both players and NPCs can have these external notifications (eg. if someone is in charge of an NPC).
         """
+
+        if self.get_global_parameter("disable_real_email_notifications"):
+            return []
+
         all_notifications = []
 
         for username in self.get_character_usernames(exclude_current=False, is_npc=None): # ALL characters

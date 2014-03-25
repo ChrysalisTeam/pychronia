@@ -3676,6 +3676,8 @@ class TestDatamanager(BaseGameTestCase):
     @for_core_module(NoveltyNotifications)
     def test_novelty_notifications(self):
 
+        assert not self.dm.get_global_parameter("disable_real_email_notifications")
+
         res = self.dm.get_characters_external_notifications()
         assert res == [{'username': 'guy1', 'real_email': 'dummy@hotmail.com', u'signal_new_text_messages': False, u'signal_new_radio_messages': False},
                        {'username': 'guy2', 'real_email': 'shalk@gmail.com', u'signal_new_text_messages': False, u'signal_new_radio_messages': False},
@@ -3711,12 +3713,23 @@ class TestDatamanager(BaseGameTestCase):
         assert self.dm.get_single_character_external_notifications("guy1") == {'signal_new_radio_messages': False, 'signal_new_text_messages': False}
         assert self.dm.get_single_character_external_notifications("guy2") == {'signal_new_radio_messages': False, 'signal_new_text_messages': False}
 
-        res = self.dm.get_characters_external_notifications()
+        res = old_res = self.dm.get_characters_external_notifications()
         #print(res)
         assert res == [{'username': 'guy1', 'real_email': 'dummy@hotmail.com', u'signal_new_text_messages': False, u'signal_new_radio_messages': False},
                        {'username': 'guy2', 'real_email': 'shalk@gmail.com', u'signal_new_text_messages': False, u'signal_new_radio_messages': False},
                        {'username': 'my_npc', 'real_email': 'xcvxcv@gmail.com', u'signal_new_text_messages': False, u'signal_new_radio_messages': False}]
 
+        self.dm.set_global_parameter("disable_real_email_notifications", True)
+        assert self.dm.get_global_parameter("disable_real_email_notifications")
+
+        res = self.dm.get_characters_external_notifications()
+        assert res == [] # completely disabled
+
+        self.dm.set_global_parameter("disable_real_email_notifications", False)
+        assert not self.dm.get_global_parameter("disable_real_email_notifications")
+
+        res = self.dm.get_characters_external_notifications()
+        assert res == old_res
 
 
 class TestHttpRequests(BaseGameTestCase):

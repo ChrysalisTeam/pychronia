@@ -11,6 +11,7 @@ from pychronia_game.datamanager import UninstantiableFormError
 
 
 
+
 class GamePauseForm(AbstractGameForm):
 
     is_paused = forms.BooleanField(label=ugettext_lazy("Game is paused?"), required=False)
@@ -27,6 +28,15 @@ class AbilityAutoresponseForm(AbstractGameForm):
     def __init__(self, datamanager, *args, **kwargs):
         super(AbilityAutoresponseForm, self).__init__(datamanager, *args, **kwargs)
         self.fields['disable_ability_autoresponse'].initial = datamanager.get_global_parameter("disable_automated_ability_responses")
+
+
+class ExternalNotificationForm(AbstractGameForm):
+
+    disable_real_email_notifications = forms.BooleanField(label=ugettext_lazy("Disable real email notifications?"), required=False)
+
+    def __init__(self, datamanager, *args, **kwargs):
+        super(ExternalNotificationForm, self).__init__(datamanager, *args, **kwargs)
+        self.fields['disable_real_email_notifications'].initial = datamanager.get_global_parameter("disable_real_email_notifications")
 
 
 class GameViewActivationForm(AbstractGameForm):
@@ -94,9 +104,12 @@ class AdminDashboardAbility(AbstractAbility):
                          change_master_credentials=dict(title=ugettext_lazy("Change game master credentials"),
                                                                 form_class=MasterCredentialsForm,
                                                                 callback="change_master_credentials"),
-                         ability_autoresponse_mode=dict(title=ugettext_lazy("Set ability autoresponse"),
+                         ability_autoresponse_mode=dict(title=ugettext_lazy("Set ability autoresponses"),
                                                                 form_class=AbilityAutoresponseForm,
                                                                 callback="disable_ability_autoresponse"),
+                         external_email_mode=dict(title=ugettext_lazy("Set external notifications"),
+                                                                form_class=ExternalNotificationForm,
+                                                                callback="disable_external_notifications"),
                          )
 
 
@@ -185,12 +198,10 @@ class AdminDashboardAbility(AbstractAbility):
         self.set_activated_game_views(activated_views) # checked by form
         return _("Views status well saved.")
 
-
     @transaction_watcher
     def set_theoretical_game_duration(self, num_days):
         self.set_global_parameter("game_theoretical_length_days", num_days) # checked by form
         return _("Game theoretical duration well saved.")
-
 
     @transaction_watcher
     def set_game_pause_state(self, is_paused):
@@ -206,10 +217,19 @@ class AdminDashboardAbility(AbstractAbility):
                                                        master_password=master_password)
         return _("Game master credentials well changed.")
 
-
     @transaction_watcher
     def disable_ability_autoresponse(self, disable_ability_autoresponse):
         assert disable_ability_autoresponse in (True, False)
         self.set_global_parameter("disable_automated_ability_responses", disable_ability_autoresponse)
         return _("Automated ability responses well %(new_state)s.") % SDICT(new_state=_("enabled") if not disable_ability_autoresponse else _("disabled"))
+
+    @transaction_watcher
+    def disable_external_notifications(self, disable_real_email_notifications):
+        assert disable_real_email_notifications in (True, False)
+        self.set_global_parameter("disable_real_email_notifications", disable_real_email_notifications)
+        return _("External email notifications well %(new_state)s.") % SDICT(new_state=_("enabled") if not disable_real_email_notifications else _("disabled"))
+
+
+
+
 

@@ -164,6 +164,7 @@ global_parameters:
     password_recovery_delay_mn: 10
 
     disable_automated_ability_responses: false
+    disable_real_email_notifications: false
 
 
 locations:
