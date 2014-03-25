@@ -70,7 +70,7 @@ class MasterCredentialsForm(AbstractGameForm):
 
     master_login = forms.CharField(label=ugettext_lazy("Master Login (immutable)"), required=False, widget=forms.TextInput(attrs={'disabled':'disabled'}))
     master_password = forms.CharField(label=ugettext_lazy("Master Password (NOT your usual one)"), required=False) # NOT a PasswordInput
-    master_real_email = forms.CharField(label=ugettext_lazy("Master Real Email (optional)"), required=False)
+    master_real_email = forms.EmailField(label=ugettext_lazy("Master Real Email (optional)"), required=False)
 
     def __init__(self, datamanager, *args, **kwargs):
         super(MasterCredentialsForm, self).__init__(datamanager, *args, **kwargs)
@@ -214,7 +214,7 @@ class AdminDashboardAbility(AbstractAbility):
         The master_login shall NEVER be changed after game got created!!
         """
         self.datamanager.override_master_credentials(master_real_email=master_real_email,
-                                                       master_password=master_password)
+                                                     master_password=master_password)
         return _("Game master credentials well changed.")
 
     @transaction_watcher

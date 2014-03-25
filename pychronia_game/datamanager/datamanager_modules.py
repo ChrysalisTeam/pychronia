@@ -706,7 +706,7 @@ class PlayerAuthentication(BaseDataManager):
         utilities.check_is_slug(global_parameters["master_login"])
         utilities.check_is_slug(global_parameters["master_password"])
         if global_parameters["master_real_email"]:
-            utilities.check_is_slug(global_parameters["master_real_email"])
+            utilities.check_is_email(global_parameters["master_real_email"])
 
         utilities.check_is_range_or_num(global_parameters["password_recovery_delay_mn"])
 
