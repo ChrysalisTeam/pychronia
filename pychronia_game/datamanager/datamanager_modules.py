@@ -4498,7 +4498,7 @@ class NoveltyNotifications(BaseDataManager):
 
 
     @readonly_method
-    def get_characters_external_notifications(self, username=CURRENT_USER):
+    def get_characters_external_notifications(self):
         """
         Only players having a good "real life email" will be returned here.
         
@@ -4517,8 +4517,8 @@ class NoveltyNotifications(BaseDataManager):
             if real_email:
                 notifications = self.get_single_character_external_notifications(username=username)
                 all_notifications.append(dict(username=username,
-                                           real_email=real_email,
-                                           **notifications))
+                                              real_email=real_email,
+                                              **notifications))
 
         return all_notifications
 

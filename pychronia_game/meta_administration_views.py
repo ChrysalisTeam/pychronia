@@ -108,7 +108,7 @@ def create_instance(request):
                               recipient_list=[creator_email],
                               fail_silently=False)
                 except (SMTPException, EnvironmentError), e:
-                    logging.warning("Couldn't send game instance activation email to %s", creator_email, exc_info=True)
+                    logging.error("Couldn't send game instance activation email to %s", creator_email, exc_info=True)
                     messages.add_message(request, messages.ERROR, _(u"Couldn't send activation email."))
                 else:
                     messages.add_message(request, messages.INFO, _(u"Game instance '%s' successfully created for '%s/%s'") % (game_instance_id, creator_login, creator_email))
