@@ -2234,7 +2234,7 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
         utilities.check_is_game_file(game_data["global_parameters"]["default_contact_avatar"])
 
         for (name, character) in game_data["character_properties"].items():
-            character.setdefault("has_new_messages", False)
+            character.setdefault("has_new_messages", 0)
             character.setdefault("new_messages_notification", None)
 
             # ADDRESS BOOK may contain any email, including characters' and "self" #
@@ -2316,6 +2316,7 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
         utilities.check_no_duplicates(all_msg_files) # users must NOT have the same new-message audio notifications
 
         for character_set in self.data["character_properties"].values():
+            utilities.check_is_int(character_set["has_new_messages"])
             utilities.check_no_duplicates(character_set["address_book"])
             for external_contact in character_set["address_book"]: # MIGHT BE A CHARACTER CONTACT!!
                 utilities.check_is_email(external_contact) # FIXME - check that it exists and is authorized, too ???
@@ -2369,7 +2370,7 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
                                       if reason != VISIBILITY_REASONS.sender and username in characters] # thus we remove master_login and sender
 
         assert self.is_game_writable() # we MUST be in writable game here
-        self.set_new_message_notification(concerned_characters=target_characters, new_status=True)
+        self.set_new_message_notification(concerned_characters=target_characters, increment=1)
 
     def _check_sender_email(self, sender_email):
         if sender_email in self.get_character_emails():
@@ -2554,7 +2555,7 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
         username = self._resolve_username(username)
         records = self.get_received_messages(username=username)
         if self.is_character(username):
-            self.set_new_message_notification(concerned_characters=[username], new_status=False)
+            self.set_new_message_notification(concerned_characters=[username], increment=0)
         return records
 
     @readonly_method
@@ -2757,14 +2758,19 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
     def has_new_message_notification(self, username=CURRENT_USER):
         """Only for CHARACTERS ATM"""
         username = self._resolve_username(username)
-        return self.data["character_properties"][username]["has_new_messages"] # boolean
+        return self.data["character_properties"][username]["has_new_messages"] # integer
 
     @transaction_watcher
-    def set_new_message_notification(self, concerned_characters, new_status):
-        """Only for CHARACTERS ATM"""
+    def set_new_message_notification(self, concerned_characters, increment):
+        """
+        Only for CHARACTERS ATM. used both to increment and RESET the counter.
+        """
         for character in concerned_characters:
-            self.data["character_properties"][character]["has_new_messages"] = new_status
-
+            if increment:
+                assert isinstance(increment, (int, long)) and increment > 0, increment
+                self.data["character_properties"][character]["has_new_messages"] += increment
+            else:
+                self.data["character_properties"][character]["has_new_messages"] = 0 # RESET
 
 
 
@@ -3084,7 +3090,7 @@ class RadioMessaging(BaseDataManager): # TODO REFINE
             if properties["new_messages_notification"] == audio_id:
                 # even if new messages have arrived just after the playing of the audio message, it's OK,
                 # since anyway the user will need some time to reach his webmail...
-                properties["has_new_messages"] = False
+                properties["has_new_messages"] = 0 # RESET
                 break # users can't share the same audio message, so...
 
         return res

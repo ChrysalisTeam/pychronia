@@ -336,7 +336,7 @@ def conversation(request, template_name='messaging/conversation.html'):
 
     dm = request.datamanager
     if dm.is_game_writable() and dm.is_character():
-        dm.set_new_message_notification(concerned_characters=[dm.username], new_status=False)
+        dm.set_new_message_notification(concerned_characters=[dm.username], increment=0)
 
     return render(request,
                   template_name,

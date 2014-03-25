@@ -2096,18 +2096,18 @@ class TestDatamanager(BaseGameTestCase):
         self.assertEqual(self.dm.get_pending_new_message_notifications(), expected_notifications)
         self.assertEqual(self.dm.get_pending_new_message_notifications(), expected_notifications) # no disappearance
 
-        self.assertTrue(self.dm.has_new_message_notification("guy3"))
+        self.assertEqual(self.dm.has_new_message_notification("guy3"), 3)
         self.assertEqual(len(self.dm.pop_received_messages("guy3")), 3)
         self.assertFalse(self.dm.has_new_message_notification("guy3"))
 
         # here we can't do check messages of secret-services@masslavia.com since it's not a normal character
 
-        self.assertTrue(self.dm.has_new_message_notification("guy2"))
+        self.assertEqual(self.dm.has_new_message_notification("guy2"), 2) # 2 messages where he's TARGET
         self.assertEqual(len(self.dm.get_received_messages("guy2")), 2)
         assert not self.dm.get_intercepted_messages("guy2") # wiretapping is overridden by other visibility reasons
 
         self.assertTrue(self.dm.has_new_message_notification("guy2"))
-        self.dm.set_new_message_notification(utilities.PersistentList(["guy1", "guy2"]), new_status=False)
+        self.dm.set_new_message_notification(utilities.PersistentList(["guy1", "guy2"]), increment=0)
         self.assertFalse(self.dm.has_new_message_notification("guy1"))
         self.assertFalse(self.dm.has_new_message_notification("guy2"))
 
@@ -3690,22 +3690,23 @@ class TestDatamanager(BaseGameTestCase):
         assert self.dm.get_single_character_external_notifications("guy1") == {'signal_new_radio_messages': True, 'signal_new_text_messages': False}
         assert self.dm.get_single_character_external_notifications("guy2") == {'signal_new_radio_messages': True, 'signal_new_text_messages': False}
 
-        self.dm.post_message("guy1@pangea.com", "guy2@pangea.com", "yowh1", "qhsdhqsdh")
+        for i in range(3):
+            self.dm.post_message("guy1@pangea.com", "guy2@pangea.com", "yowh1", "qhsdhqsdh")
 
         assert self.dm.get_single_character_external_notifications("guy1") == {'signal_new_radio_messages': True, 'signal_new_text_messages': False} # sender NOT notified
-        assert self.dm.get_single_character_external_notifications("guy2") == {'signal_new_radio_messages': True, 'signal_new_text_messages': True}
+        assert self.dm.get_single_character_external_notifications("guy2") == {'signal_new_radio_messages': True, 'signal_new_text_messages': 3}
 
         res = self.dm.get_characters_external_notifications()
         #print(res)
         assert res == [{'username': 'guy1', 'real_email': 'dummy@hotmail.com', u'signal_new_text_messages': False, u'signal_new_radio_messages': True},
-                       {'username': 'guy2', 'real_email': 'shalk@gmail.com', u'signal_new_text_messages': True, u'signal_new_radio_messages': True},
+                       {'username': 'guy2', 'real_email': 'shalk@gmail.com', u'signal_new_text_messages': 3, u'signal_new_radio_messages': True},
                        {'username': 'my_npc', 'real_email': 'xcvxcv@gmail.com', u'signal_new_text_messages': False, u'signal_new_radio_messages': True}]
         self.dm.reset_audio_messages()
 
         assert self.dm.get_single_character_external_notifications("guy1") == {'signal_new_radio_messages': False, 'signal_new_text_messages': False} # sender NOT notified
-        assert self.dm.get_single_character_external_notifications("guy2") == {'signal_new_radio_messages': False, 'signal_new_text_messages': True}
+        assert self.dm.get_single_character_external_notifications("guy2") == {'signal_new_radio_messages': False, 'signal_new_text_messages': 3}
 
-        self.dm.set_new_message_notification(["guy2"], False)
+        self.dm.set_new_message_notification(["guy2"], increment=0)
 
         assert self.dm.get_single_character_external_notifications("guy1") == {'signal_new_radio_messages': False, 'signal_new_text_messages': False}
         assert self.dm.get_single_character_external_notifications("guy2") == {'signal_new_radio_messages': False, 'signal_new_text_messages': False}
