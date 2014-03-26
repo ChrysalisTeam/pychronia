@@ -686,6 +686,28 @@ class TestMetaAdministration(unittest.TestCase): # no django setup required ATM
         assert decode_game_activation_token(data) == (u"2myinstànce", u"amylogïn", None)
 
 
+    def test_admin_scripts(self):
+        
+        from pychronia_game.scripts import backup_all_games, check_global_sanity, notify_novalties_by_email, reset_demo_account
+        
+        reset_zodb_structure()
+
+        assert reset_demo_account.execute() == None
+
+        assert backup_all_games.execute() == 1
+
+        assert check_global_sanity.execute() == (1, True)
+
+        dm = retrieve_game_instance("DEMO")
+        dm.post_message("guy2@pangea.com",
+                         recipient_emails=["guy1@pangea.com"], # HAS NEWS
+                         subject="subj22323", body="qsdqsd")
+
+        (idx, successes, errors) = notify_novalties_by_email.execute()
+        assert (idx, successes, errors) == (1, 0, 1) # no smtp server, so exception!
+
+
+
 
 class TestDatamanager(BaseGameTestCase):
 
@@ -6050,8 +6072,8 @@ class TestSpecialAbilities(BaseGameTestCase):
         assert artificial_intelligence_mod.DJINN_PROXY
 
 
-class TestGameViews(BaseGameTestCase):
 
+class TestGameViews(BaseGameTestCase):
 
 
     def test_3D_items_display(self):
