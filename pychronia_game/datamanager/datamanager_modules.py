@@ -569,7 +569,7 @@ class CharacterHandling(BaseDataManager): # TODO REFINE
         return action_done
 
     @transaction_watcher
-    def update_official_character_data(self, username=CURRENT_USER, official_name=None, official_role=None, gamemaster_hints=None):
+    def update_official_character_data(self, username=CURRENT_USER, official_name=None, official_role=None, gamemaster_hints=None, is_npc=None):
         username = self._resolve_username(username)
         data = self.get_character_properties(username)
 
@@ -585,6 +585,10 @@ class CharacterHandling(BaseDataManager): # TODO REFINE
 
         if gamemaster_hints is not None and gamemaster_hints != data["gamemaster_hints"]:
             data["gamemaster_hints"] = gamemaster_hints # MAY BE EMPTY STRING
+            action_done = True
+
+        if is_npc is not None and is_npc != data["is_npc"]:
+            data["is_npc"] = is_npc # bool
             action_done = True
 
         return action_done
@@ -2284,7 +2288,9 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
                              }
 
         def _check_message_list(msg_list, is_queued):
-
+            
+            master = self.get_global_parameter("master_login")
+            
             for msg in msg_list:
 
                 utilities.check_dictionary_with_template(msg, message_reference, strict=False)
@@ -2302,7 +2308,7 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
 
                 if not is_queued: # queued message don't have basic visibility ysettings yet
                     # later, special script events might make it normal that even senders or recipients do NOT see the message anymore, but NOT NOW
-                    assert set(self._determine_basic_visibility(msg).keys()) <= set(msg["visible_by"].keys()), [self._determine_basic_visibility(msg).keys(), msg]
+                    assert set(self._determine_basic_visibility(msg).keys()) - set([master]) <= set(msg["visible_by"].keys()), [self._determine_basic_visibility(msg).keys(), msg]
 
 
         # WARNING - we must check the two lists separately, because little incoherencies can appear at their junction due to the workflow

@@ -148,6 +148,8 @@ class CharacterProfileForm(AbstractGameForm):
     """
     target_username = forms.CharField(widget=forms.HiddenInput())
 
+    is_npc = forms.BooleanField(required=False)
+
     official_name = forms.CharField(label=ugettext_lazy("Official name"), required=True, max_length=100)
     official_role = forms.CharField(label=ugettext_lazy("Official role"), required=True, max_length=500)
 

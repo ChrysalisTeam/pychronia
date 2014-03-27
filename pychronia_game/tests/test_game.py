@@ -997,27 +997,31 @@ class TestDatamanager(BaseGameTestCase):
 
         self._set_user("guy1")
 
-        assert self.dm.update_official_character_data("guy1", official_name="Simon ", official_role="A killer ", gamemaster_hints="ABCD")
+        assert self.dm.update_official_character_data("guy1", official_name="Simon ", official_role="A killer ", gamemaster_hints="ABCD", is_npc=True)
         data = self.dm.get_character_properties("guy1")
         assert data["official_name"] == "Simon "
         assert data["official_role"] == "A killer "
         assert data["gamemaster_hints"] == "ABCD"
-        assert not self.dm.update_official_character_data("guy1", official_name=None)
+        assert data["is_npc"] == True
+        assert not self.dm.update_official_character_data("guy1", official_name=None, is_npc=None)
         data = self.dm.get_character_properties("guy1")
         assert data["official_name"] == "Simon "
         assert data["official_role"] == "A killer "
         assert data["gamemaster_hints"] == "ABCD"
+        assert data["is_npc"] == True
         assert not self.dm.update_official_character_data("guy1", official_name="", official_role="", # THESE can't be empty, so update is ignored
-                                                          gamemaster_hints=None) # would override if was ""
+                                                          gamemaster_hints=None, is_npc=None) # would override if was ""
         data = self.dm.get_character_properties("guy1")
         assert data["official_name"] == "Simon "
         assert data["official_role"] == "A killer "
         assert data["gamemaster_hints"] == "ABCD"
-        assert self.dm.update_official_character_data("guy1", gamemaster_hints="") # overrides
+        assert data["is_npc"] == True
+        assert self.dm.update_official_character_data("guy1", gamemaster_hints="", is_npc=False) # overrides
         data = self.dm.get_character_properties("guy1")
         assert data["official_name"] == "Simon "
         assert data["official_role"] == "A killer "
         assert data["gamemaster_hints"] == ""
+        assert data["is_npc"] == False
 
         assert self.dm.update_real_life_data("guy1", real_life_identity="jjjj")
         assert self.dm.update_real_life_data("guy1", real_life_email="ss@pangea.com")

@@ -73,6 +73,7 @@ def manage_characters(request, template_name='administration/character_managemen
 
             if form.is_valid():
                 target_username = form.cleaned_data["target_username"]
+                is_npc = form.cleaned_data["is_npc"]
                 official_name = form.cleaned_data["official_name"]
                 official_role = form.cleaned_data["official_role"]
                 allegiances = form.cleaned_data["allegiances"]
@@ -89,16 +90,17 @@ def manage_characters(request, template_name='administration/character_managemen
                     assert not dm.is_in_writing_transaction() # each call below will be separately atomic
 
                     dm.update_official_character_data(username=target_username,
-                                                                        official_name=official_name,
-                                                                        official_role=official_role,
-                                                                        gamemaster_hints=gamemaster_hints)
+                                                    official_name=official_name,
+                                                    official_role=official_role,
+                                                    gamemaster_hints=gamemaster_hints,
+                                                    is_npc=is_npc)
                     dm.update_allegiances(username=target_username,
-                                                           allegiances=allegiances)
+                                          allegiances=allegiances)
                     dm.update_permissions(username=target_username,
-                                                           permissions=permissions)
+                                          permissions=permissions)
                     dm.update_real_life_data(username=target_username,
-                                                                real_life_identity=real_life_identity,
-                                                                real_life_email=real_life_email)
+                                            real_life_identity=real_life_identity,
+                                            real_life_email=real_life_email)
 
             else:
                 form_validation_failed = True
@@ -118,7 +120,8 @@ def manage_characters(request, template_name='administration/character_managemen
                                                  permissions=character_data["permissions"],
                                                  real_life_identity=character_data["real_life_identity"],
                                                  real_life_email=character_data["real_life_email"],
-                                                 gamemaster_hints=character_data["gamemaster_hints"])
+                                                 gamemaster_hints=character_data["gamemaster_hints"],
+                                                 is_npc=character_data["is_npc"],)
                                     )
             character_forms.append(f)
 
