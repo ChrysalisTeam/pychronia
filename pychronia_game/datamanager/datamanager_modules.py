@@ -1657,7 +1657,7 @@ class TextMessagingCore(BaseDataManager):
                 utilities.check_no_duplicates(msg["recipient_emails"])
 
                 if msg["body"]: # might be empty
-                    pass #utilities.check_is_restructuredtext(msg["body"])
+                    pass #utilities.check_is_restructuredtext(msg["body"]) - there might be formatting errors in new emails...
 
                 if msg["attachment"]:
                     assert msg["attachment"].startswith("/") or msg["attachment"].startswith("http")

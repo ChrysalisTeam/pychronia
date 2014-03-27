@@ -37,6 +37,8 @@ FUTURE BUGS
 FEATURES
 ------------
 
+- tweak font size in personal files INDEX - broken
+
 - manually test gems/money transfers and payments, as well as corresponding logging !!!!
 - test log_game_event() visibility lists
 
