@@ -2,7 +2,7 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from django.conf.urls.defaults import * # default HTTP404 etc.
+from django.conf.urls import * # default HTTP404 etc.
 from django.conf import settings
 from django.contrib.staticfiles.urls import urlpatterns as staticfiles_urlpatterns
 

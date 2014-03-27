@@ -2,7 +2,7 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from django.conf.urls.defaults import *
+from django.conf.urls import *
 from django.contrib import admin
 from .utilities import config
 from django.http import HttpResponse
