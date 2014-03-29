@@ -2675,6 +2675,7 @@ class TestDatamanager(BaseGameTestCase):
             assert not request.datamanager.user.impersonation_writability
             assert not request.datamanager.user.is_superuser
             assert not request.datamanager.user.is_observer
+            assert not self.dm.should_display_admin_tips()
 
             res = try_authenticating_with_session(request)
             assert res is None
@@ -2688,6 +2689,7 @@ class TestDatamanager(BaseGameTestCase):
             assert not request.datamanager.user.impersonation_writability
             assert not request.datamanager.user.is_superuser
             assert not request.datamanager.user.is_observer
+            assert self.dm.should_display_admin_tips() == (original_username == master_login)
 
             self._set_user(None)
 
@@ -2954,6 +2956,7 @@ class TestDatamanager(BaseGameTestCase):
             assert self.dm.user.username == anonymous_login
             assert self.dm.user.has_write_access
             assert not self.dm.user.is_superuser
+            assert not self.dm.should_display_admin_tips()
             assert not self.dm.user.is_impersonation
             assert self.dm.user.real_username == anonymous_login
             assert self.dm.user.has_notifications() == bool(requested_impersonation_target)
@@ -2989,6 +2992,7 @@ class TestDatamanager(BaseGameTestCase):
             _expected_writability = True if not requested_impersonation_target else bool(requested_impersonation_writability)
             assert self.dm.user.has_write_access == _expected_writability
             assert self.dm.user.is_superuser
+            assert self.dm.should_display_admin_tips()
             assert self.dm.user.is_impersonation == bool(requested_impersonation_target)
             assert self.dm.user.impersonation_target == requested_impersonation_target
             assert self.dm.user.impersonation_writability == bool(requested_impersonation_writability)
@@ -3088,6 +3092,7 @@ class TestDatamanager(BaseGameTestCase):
             assert self.dm.user.impersonation_target == player_login
             assert self.dm.user.impersonation_writability == bool(writability)
             assert self.dm.user.real_username == master_login
+            assert self.dm.should_display_admin_tips()
             assert not self.dm.user.has_notifications()
 
             # Impersonated player renewed just with ticket
@@ -3130,6 +3135,7 @@ class TestDatamanager(BaseGameTestCase):
             assert self.dm.user.impersonation_target == anonymous_login
             assert self.dm.user.impersonation_writability == bool(writability)
             assert self.dm.user.real_username == master_login
+            assert self.dm.should_display_admin_tips()
             assert not self.dm.user.has_notifications()
 
             # MASTER CASE
@@ -3156,6 +3162,7 @@ class TestDatamanager(BaseGameTestCase):
             assert not self.dm.user.impersonation_target
             assert not self.dm.user.impersonation_writability
             assert self.dm.user.real_username == master_login
+            assert self.dm.should_display_admin_tips()
             assert self.dm.user.has_notifications()
             self.dm.user.discard_notifications()
 
@@ -3175,6 +3182,7 @@ class TestDatamanager(BaseGameTestCase):
             assert self.dm.user.impersonation_target == anonymous_login
             assert self.dm.user.impersonation_writability == bool(writability)
             assert self.dm.user.real_username == master_login
+            assert self.dm.should_display_admin_tips()
             assert not self.dm.user.has_notifications()
 
 
@@ -3195,6 +3203,7 @@ class TestDatamanager(BaseGameTestCase):
             assert not self.dm.user.impersonation_target
             assert self.dm.user.impersonation_writability == False # RESET
             assert self.dm.user.real_username == master_login
+            assert self.dm.should_display_admin_tips()
             assert not self.dm.user.has_notifications() # IMPORTANT - no error message
 
 
@@ -3233,6 +3242,7 @@ class TestDatamanager(BaseGameTestCase):
         assert not self.dm.user.impersonation_target
         assert not self.dm.user.impersonation_writability
         assert self.dm.user.real_username == player_name
+        assert not self.dm.should_display_admin_tips()
 
         expected_capabilities = dict(display_impersonation_target_shortcut=False,
                                      display_impersonation_writability_shortcut=False,
@@ -3268,7 +3278,7 @@ class TestDatamanager(BaseGameTestCase):
         assert self.dm.user.impersonation_target == other_player
         assert not self.dm.user.impersonation_writability
         assert self.dm.user.real_username == player_name # well kept
-
+        assert not self.dm.should_display_admin_tips()
 
         expected_capabilities = dict(display_impersonation_target_shortcut=True, # NOW we display shortcut
                                      display_impersonation_writability_shortcut=False, # NEVER

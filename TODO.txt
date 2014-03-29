@@ -37,6 +37,8 @@ FUTURE BUGS
 FEATURES
 ------------
 
+- allow to grab sources of any RST, for game master !
+
 - tweak font size in personal files INDEX - broken
 
 - manually test gems/money transfers and payments, as well as corresponding logging !!!!

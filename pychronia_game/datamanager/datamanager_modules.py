@@ -1082,6 +1082,9 @@ class PlayerAuthentication(BaseDataManager):
         username = self._resolve_username(username)
         return (username in self.get_character_usernames())
 
+    @readonly_method
+    def should_display_admin_tips(self):
+        return self.user.is_superuser or self.is_master(self.user.real_username) # tips also visible when impersonation!
 
     @property
     def anonymous_login(self):

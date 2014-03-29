@@ -102,7 +102,7 @@ def pychronia_template_context(request):
                 'impersonation_capabilities': impersonation_capabilities,
                 'game_is_writable': writability_data["writable"],
                 'disable_widgets': not writability_data["writable"] and not request.processed_view.ALWAYS_ALLOW_POST,
-                'display_admin_tips': dm.user.is_superuser or dm.is_master(dm.user.real_username), # tips also visible when impersonation!
+                'display_admin_tips': dm.should_display_admin_tips(),
                 'menus': menus.submenus if menus else [], # we ignore root entry
 
                 'online_users': online_users,
