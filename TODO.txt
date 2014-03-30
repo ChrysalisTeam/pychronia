@@ -38,29 +38,11 @@ FEATURES
 ------------
 
 
-- manually test gems/money transfers and payments, as well as corresponding logging !!!!
-- test log_game_event() visibility lists
-
-
-
-- put in black unread conversations too in their index!
-
-
-
-- put official name in all user-related SELECTS
-- Select_lists with externals contacts in messaging wiretapping etc.
-
-- disable auto play on VLC media (phoque.avi)
-
-- Envoyer email quand argent recu par un joueur, avec raison <- NO, EVENT LOG
-
 - envoi de mail quotidien !!
 
-- systeme pour créer partie !!
+- systeme pour créer partie - WIP
 
 - autofolding des emails lus
-
-
 
 
 
@@ -133,6 +115,9 @@ PROMOTION
 TESTS
 ----------
 
+
+- manually test gems/money transfers and payments, as well as corresponding logging !!!!
+- test log_game_event() visibility lists
 - test localstorage in PROD
 - test broken notify_chess_player_victory()
 # TODO - test that messages are well propagated through session
@@ -158,6 +143,11 @@ NEEDS COSMETICS
 TASKS DONE
 ---------------
 
+
+- have event log for players too (eg. for money received...) - DONE
+- have autoselect2lists widget with externals contacts in messaging wiretapping - DONE
+- put official name in all user-related SELECTS - DONE
+- set in bold "unread" conversations too, in their index - DONE
 - chatroom : ajouter time tags (ou séparateurs) - DONE
 - if response to email, don't keep attachement - DONE
 - tri par tags des templates email - DONE
@@ -349,6 +339,8 @@ TASKS DONE
 FUTUR ENHANCEMENTS
 --------------------------
 
+
+- disable auto play on VLC media (phoque.avi)
 - dire quand AUTRE perso (ami) a nouveaux messages/autres ?
 - make impersonation per-browser-tab!
 - radio spots must show only title in playlist edition

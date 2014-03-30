@@ -18,9 +18,19 @@
 
             <ul>
                 {% for message_list in conversations %}
+
                 {% with message_list|last as last %}
-                    <li><a href="#{{ last.1.id }}" >{{ last.1.subject }}</a></li>
+                    <li {% if message_list|has_unread_msg %}class="bold"{% endif %}><a href="#{{ last.1.id }}" >{{ last.1.subject }}</a></li>
                 {% endwith %}
+
+                    {% comment %}
+                        {% for ctx, message in message_list %}
+                            {% if forloop.last %}
+                                <li {% if ctx.has_read == False %}class="bold"{% endif %}><a href="#{{ message.id }}" >{{ message.subject }}</a></li>
+                            {% endif %}
+                        {% endfor %}
+                    {% endcomment %}
+
                 {% endfor %}
             </ul>
 
@@ -53,8 +63,9 @@
 			<div class="notaccordion">
 
 			    <!--h3 class="{% if forloop.first %}firstTitle{% else %}otherTitle{% endif %}"><a href="#">{{ message.subject }}</a></h-->
+
                 {% if not forloop.first %}
-                    <hr/>
+                    <!--hr/-->
                 {% endif %}
 
 				{% for ctx, message in message_list reversed %}

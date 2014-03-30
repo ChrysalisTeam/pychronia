@@ -420,6 +420,15 @@ def jsonify(object):
     return mark_safe(simplejson.dumps(object))
 register.filter('jsonify', jsonify)
 
+def has_unread_msg(ctx_msgs_list):
+    res = False
+    for ctx, msg in ctx_msgs_list:
+        if not ctx["has_read"]:
+            res = True
+            break
+    return res
+register.filter('has_unread_msg', has_unread_msg)
+
 """
 def preformat(value):
     "

@@ -658,6 +658,12 @@ img.center {
 .smallest_text {
   font-size: 0.5em;
 }
+.bold {
+  font-weight: bold;
+}
+.italic {
+  font-style: italic;
+}
 .missing-content > * {
   margin-left: auto !important;
   margin-right: auto !important;
