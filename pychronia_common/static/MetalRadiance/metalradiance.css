@@ -637,6 +637,27 @@ img.center {
 .small_width, .form_scroll_thin {
   width: 250px !important;
 }
+.biggest_text {
+  font-size: 2em;
+}
+.bigger_text {
+  font-size: 1.5em;
+}
+.big_text {
+  font-size: 1.25em;
+}
+.normal_text {
+  font-size: 1em;
+}
+.small_text {
+  font-size: 0.85em;
+}
+.smaller_text {
+  font-size: 0.75em;
+}
+.smallest_text {
+  font-size: 0.5em;
+}
 .missing-content > * {
   margin-left: auto !important;
   margin-right: auto !important;
