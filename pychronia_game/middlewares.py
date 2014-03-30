@@ -106,8 +106,9 @@ class ZodbTransactionMiddleware(object):
 
         if __debug__ and hasattr(request, "start_time"):
             url = request.get_full_path()
-            delay = time.time() - request.start_time
-            logger.info("Pychronia request took %.3f seconds for url %r" % (delay, url))
+            if not url.startswith(config.GAME_FILES_URL): # we don't care about media files here
+                delay = time.time() - request.start_time
+                logger.info("Pychronia request took %.3f seconds for url %r" % (delay, url))
 
         try:
             if hasattr(request, "datamanager"):

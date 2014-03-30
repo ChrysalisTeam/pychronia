@@ -25,6 +25,7 @@ from easy_thumbnails.templatetags.thumbnail import thumbnail_url
 from easy_thumbnails.files import get_thumbnailer
 from pychronia_game.storage import protected_game_file_system_storage, \
     get_game_thumbnailer
+from django.template.loader import render_to_string
 
 register = django.template.Library() # IMPORTANT, module-level object used by templates !
 
@@ -286,7 +287,16 @@ def rich_text(context, content, initial_header_level=None, report_level=None, ex
     """
     request = context.get('request')
     report_level = report_level if report_level is not None else 5 # by default we DO NOT display RST syntax errors!
-    return format_enriched_text(request.datamanager, content, initial_header_level=initial_header_level, report_level=report_level, excluded_link=excluded_link)
+    result = format_enriched_text(request.datamanager, content, initial_header_level=initial_header_level, report_level=report_level, excluded_link=excluded_link)
+
+    content_id = str(random.randint(1, 10000000000))
+    html = render_to_string('utilities/rich_text.html', {'content_id':content_id,
+                                                         'source': content,
+                                                         'result': result,
+                                                         'display_admin_tips': request.datamanager.should_display_admin_tips()})
+    return html
+
+
 
 
 '''
