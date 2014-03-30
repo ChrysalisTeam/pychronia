@@ -37,9 +37,6 @@ FUTURE BUGS
 FEATURES
 ------------
 
-- allow to grab sources of any RST, for game master !
-
-- tweak font size in personal files INDEX - broken
 
 - manually test gems/money transfers and payments, as well as corresponding logging !!!!
 - test log_game_event() visibility lists
@@ -57,21 +54,21 @@ FEATURES
 
 - Envoyer email quand argent recu par un joueur, avec raison <- NO, EVENT LOG
 
-- cacher compétences spéciales pour PNJ
-
 - envoi de mail quotidien !!
 
 - systeme pour créer partie !!
 
 - autofolding des emails lus
 
-- tri par tags des templates email WIP
 
-- note which ones are NPCs
+
+
 
 
 SCRIPT
 ----------
+
+- cacher compétences spéciales pour PNJ <- personal permissions EVERYWHERE
 
 - explain about static page "titles" usage
 
@@ -161,6 +158,10 @@ NEEDS COSMETICS
 TASKS DONE
 ---------------
 
+- tri par tags des templates email - DONE
+- note characters ones are NPCs and allow to change it - DONE
+- tweak font size in personal files INDEX - DONE
+- allow to grab sources of any RST sample, for game master - DONE
 - use kinds of "forms sets" for mass character edits - DONE
 - add form to change autoresponse of abilities - DONE
 - test get_other_known_characters - DONE

@@ -107,7 +107,7 @@ class MessageComposeForm(AbstractGameForm):
                     my_email = datamanager.get_character_email() if user.is_character else None
                     recipients += [_email for _email in msg["recipient_emails"] if _email != my_email and _email != sender]  # works OK if my_email is None (i.e game master) or sender is None
                     subject = _("Re:") + " " + msg["subject"]
-                    attachment = msg["attachment"]
+                    # don't resend attachment, here too! #
 
                 else: # visibility reason is None, or another visibility case (eg. interception)
                     self.logger.warning("Access to forbidden message parent_id %s was attempted", parent_id)
