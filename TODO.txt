@@ -45,7 +45,7 @@ FEATURES
 
 - put in black unread conversations too in their index!
 
-- chatroom : ajouter time tags (ou séparateurs)
+
 
 - put official name in all user-related SELECTS
 - Select_lists with externals contacts in messaging wiretapping etc.
@@ -158,7 +158,7 @@ NEEDS COSMETICS
 TASKS DONE
 ---------------
 
-
+- chatroom : ajouter time tags (ou séparateurs) - DONE
 - if response to email, don't keep attachement - DONE
 - tri par tags des templates email - DONE
 - note characters ones are NPCs and allow to change it - DONE

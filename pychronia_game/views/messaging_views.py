@@ -218,7 +218,6 @@ def _determine_template_display_context(datamanager, template_id, template):
                 can_permanently_delete=False,
                 )
 
-
 def _determine_message_display_context(datamanager, msg, is_pending):
     """
     Useful for both pending and dispatched messages.

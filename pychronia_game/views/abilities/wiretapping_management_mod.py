@@ -122,7 +122,7 @@ class WiretappingAbility(AbstractAbility):
 
         return {
                  'page_title': _("Wiretapping Management"),
-                 'current_targets': current_targets,
+                 'current_targets': self.build_visible_character_names(current_targets),
                  'confidentiality_form': self._instantiate_game_form(new_action_name="purchase_confidentiality_protection"), # might be None if no personal permissions
                  'wiretapping_targets_form': targets_form,
                  'slots_purchase_form': self._instantiate_game_form(new_action_name="purchase_wiretapping_slot"),

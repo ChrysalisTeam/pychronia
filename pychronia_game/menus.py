@@ -147,9 +147,10 @@ def _generate_web_menu(request, menu_entry_generator):
                         # menu_entry(_(u"World Scans"), view=views.scanning_management),
                       )),
 
-            menu_entry(_(u"Admin"), views.game_events,
+            menu_entry(_(u"Admin"), views.admin_dashboard,
                        (
                          menu_entry(_(u"Dashboard"), views.admin_dashboard),
+                         menu_entry(_(u"Game Events"), views.game_events, forced_visibility=(True if user.is_master else False)),
                          menu_entry(_(u"Manage Characters"), views.manage_characters),
                          menu_entry(_(u"Manage Webradio Playlist"), views.webradio_management),
 
@@ -167,7 +168,7 @@ def _generate_web_menu(request, menu_entry_generator):
                         menu_entry(view=views.friendship_management, forced_visibility=(True if user.is_character else False)), # character only
                         menu_entry(view=views.personal_folder),
                         menu_entry(view=views.personal_items_slideshow),
-                        menu_entry(_(u"System Events"), views.game_events),
+                        menu_entry(_(u"System Events"), views.game_events, forced_visibility=(True if user.is_character else False)),
                         menu_entry(_(u"Log Out"), views.logout, forced_visibility=not user.is_impersonation),
                         ),
                        forced_visibility=(False if not user.is_authenticated else True)),

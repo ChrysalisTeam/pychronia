@@ -1362,11 +1362,11 @@ class TestDatamanager(BaseGameTestCase):
         object_name = object_names[0]
         bank_name = self.dm.get_global_parameter("bank_name")
 
-        self.assertRaises(UsageError, self.dm.transfer_money_between_characters, bank_name, "guy1", 10000000)
+        self.assertRaises(UsageError, self.dm.transfer_money_between_characters, bank_name, "guy1", 10000000, reason="because!")
         self.assertRaises(UsageError, self.dm.transfer_money_between_characters, "guy3", "guy1", -100)
         self.assertRaises(UsageError, self.dm.transfer_money_between_characters, "guy3", "guy1", 0)
         self.assertRaises(UsageError, self.dm.transfer_money_between_characters, "guy3", "guy1", lg_old["account"] + 1) # too much
-        self.assertRaises(UsageError, self.dm.transfer_money_between_characters, "guy3", "guy3", 1) # same ids
+        self.assertRaises(UsageError, self.dm.transfer_money_between_characters, "guy3", "guy3", 1, reason="lalalall") # same ids
         self.assertRaises(UsageError, self.dm.transfer_object_to_character, "dummy_name", "guy3") # shall NOT happen
         self.assertRaises(UsageError, self.dm.transfer_object_to_character, object_name, "dummy_name")
 
