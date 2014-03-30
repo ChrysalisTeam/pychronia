@@ -142,7 +142,7 @@ global_parameters:
 
     online_presence_timeout_s: 600
     chatroom_presence_timeout_s: 30
-    chatroom_timestamp_display_threshold_s: 120
+    chatroom_timestamp_display_threshold_s: 30
 
     bank_name: bank
     bank_account: 100000 # let's take huge margins

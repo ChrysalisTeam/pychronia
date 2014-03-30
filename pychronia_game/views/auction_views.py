@@ -354,21 +354,27 @@ def ajax_chat(request):
         usernames = request.datamanager.get_character_usernames()
         for msg in new_messages:
             if not previous_msg_timestamp or (msg["time"] - previous_msg_timestamp) > chatroom_timestamp_display_threshold:
-                text_lines.append(msg["time"].strftime(time_format))
+                record = {"username": None,
+                       "color": "grey",
+                       "message": msg["time"].strftime(time_format)}
+                text_lines.append(record)
             if msg["username"] in usernames:
                 official_name = msg["username"]
                 color = request.datamanager.get_character_color_or_none(msg["username"])
             else:  # system message
                 official_name = _("system")
-                color = "grey"
+                color = "DarkGrey"
             data = dict(official_name=official_name,
                         message=msg["message"])
-            text_lines.append({"username": msg["username"],
-                               "color": color,
-                               "message": msg_format % data})
+            record = {"username": msg["username"],
+                       "color": color,
+                       "message": msg_format % data}
+            text_lines.append(record)
             previous_msg_timestamp = msg["time"]
 
         chatting_users = sorted(request.datamanager.build_visible_character_names(request.datamanager.get_chatting_users()))
+
+        print("RETURNING TEXT LINES AJAX ", new_slice_index, text_lines, chatting_users)
 
         all_data = {"slice_index": new_slice_index,
                     "messages": text_lines,

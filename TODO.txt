@@ -41,7 +41,7 @@ FEATURES
 - manually test gems/money transfers and payments, as well as corresponding logging !!!!
 - test log_game_event() visibility lists
 
-- if response to email - don't keep attachement ??
+
 
 - put in black unread conversations too in their index!
 
@@ -158,6 +158,8 @@ NEEDS COSMETICS
 TASKS DONE
 ---------------
 
+
+- if response to email, don't keep attachement - DONE
 - tri par tags des templates email - DONE
 - note characters ones are NPCs and allow to change it - DONE
 - tweak font size in personal files INDEX - DONE
