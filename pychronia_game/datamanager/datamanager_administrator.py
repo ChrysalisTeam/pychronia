@@ -166,9 +166,17 @@ def game_instance_exists(game_instance_id):
     res = _get_game_instances_mapping().has_key(game_instance_id)
     return res
 
-
-
+# no need for transaction management
+def get_game_instance_metadata_copy(game_instance_id):
     
+    game_root = _get_game_instances_mapping().get(game_instance_id)
+    
+    if not game_root:
+        raise AbnormalUsageError(_("Unexisting instance %r") % game_instance_id)
+    
+    return game_root["metadata"].copy()
+
+
 
 @zodb_transaction
 def delete_game_instance(game_instance_id):

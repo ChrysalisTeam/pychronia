@@ -73,7 +73,7 @@ def decode_game_activation_token(activation_token):
 # no authentication!
 def create_instance(request):
     """
-    Workflow to create an instance through email validation, by non-superusers.
+    Workflow to create an instance through email validation, for non-superusers.
     """
     require_email = True # important
 
@@ -144,6 +144,10 @@ def activate_instance(request):
                                                            creator_email=creator_email,
                                                            skip_randomizations=False)
         else:
+            metadata = datamanager_administrator.get_game_instance_metadata_copy(game_instance_id) # shall NOT raise errors
+            if (metadata["creator_login"] != creator_login or metadata["creator_email"] != creator_email):
+                raise ValueError("Creator data doesn't match for game instance %s" % game_instance_id)
+                
             pass # TODO FIXME add check on existing metadata.creator_login
 
         # we retrieve the datamanager whatever its possible maintenance status
@@ -156,7 +160,7 @@ def activate_instance(request):
         import pychronia_game.views
         target_url = settings.SITE_DOMAIN + reverse(pychronia_game.views.homepage, kwargs=dict(game_instance_id=game_instance_id)) + "?" + session_token_display
 
-        content = _("In case you don't get properly redirected, please copy this link into our URL bar:") + " " + target_url
+        content = _("In case you don't get properly redirected, please copy this link into our URL bar: %s") % target_url
         return HttpResponseRedirect(target_url, content=content)
 
     except (ValueError, TypeError, LookupError, AttributeError, UnicodeError), e:
