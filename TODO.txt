@@ -44,7 +44,7 @@ FEATURES
 
 - autofolding des emails lus
 
-
+- add border-radius: 5px to chrysalis slideshow images
 
 
 SCRIPT

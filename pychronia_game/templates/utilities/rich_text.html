@@ -4,7 +4,10 @@
 
 {% if display_admin_tips %}
 <div class="markup_source_link admin-note inner_center center" style="width: 200px; font-size:0.8em;"><a href="#fb_{{content_id}}" class="fancybox">{% trans "Show Markup Sources" %}</a></div>
-<div style="display: none"><div id="fb_{{content_id}}">{{ source|linebreaksbr }}</div></div>
+<div style="display: none"><div id="fb_{{content_id}}">
+<pre style="white-space: pre-wrap;"> {# PREFORMATTED WRAPPING #}
+{{ source|linebreaksbr }}
+</pre></div></div>
 <script type="text/javascript">
     $("#fb_{{content_id}}").fancybox();
 </script>
