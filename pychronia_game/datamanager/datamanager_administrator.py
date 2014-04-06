@@ -156,7 +156,7 @@ def replace_existing_game_instance_data(game_instance_id, new_data):
 
     if "data" in new_data:
         raise RuntimeError("Trying to replace instance 'data' with 'full_data' for %s" % game_instance_id)
-    
+
     assert game_instances[game_instance_id]["data"]
     game_instances[game_instance_id]["data"] = new_data
 
@@ -168,12 +168,12 @@ def game_instance_exists(game_instance_id):
 
 # no need for transaction management
 def get_game_instance_metadata_copy(game_instance_id):
-    
+
     game_root = _get_game_instances_mapping().get(game_instance_id)
-    
+
     if not game_root:
         raise AbnormalUsageError(_("Unexisting instance %r") % game_instance_id)
-    
+
     return game_root["metadata"].copy()
 
 
@@ -198,7 +198,7 @@ def _fetch_available_game_data(game_instance_id, metadata_checker):
     The callable metadata_checker, if provided, is called with a copy of instance metadata, 
     and may raise errors or return false to forbid creation of datamanager instance.
     """
-    
+
     game_root = _get_game_instances_mapping().get(game_instance_id)
 
     if not game_root:
@@ -315,10 +315,10 @@ def backup_game_instance_data(game_instance_id, comment=None):
     game_root = _get_game_instances_mapping().get(game_instance_id)
     if not game_root:
         raise AbnormalUsageError(_("Unexisting instance %r") % game_instance_id)
-    
+
     json_bytes_str = utilities.dump_data_tree_to_yaml(game_root["data"],
                                                       convert=True) # should be output in UTF8
-    
+
     basename = "backup_" + game_instance_id + "_" + datetime.utcnow().strftime("%Y%m%d_%H%M%S") + "_" + comment + ".yaml"
     wanted_folder = _ensure_instance_backup_folder(game_instance_id)
     final_file_path = os.path.join(wanted_folder, basename)

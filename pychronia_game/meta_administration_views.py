@@ -52,7 +52,7 @@ Dear %(creator_login)s,
 here is the link that will allow you to complete the creation of your Chrysalis game,\
 and to automatically sign in as the game master.
 
-%(autologin_link)s
+%(activation_link)s
 """)
 
 
@@ -68,6 +68,12 @@ def decode_game_activation_token(activation_token):
     activation_data = encryption.unicode_decrypt(activation_token)
     (game_instance_id, creator_login, creator_email) = activation_data.split("|")
     return (game_instance_id, creator_login, creator_email or None)
+
+
+def _build_activation_url(**kwargs):
+    token = compute_game_activation_token(**kwargs)
+    activation_link = settings.SITE_DOMAIN + reverse(activate_instance) + "?" + urlencode(dict(token=token))
+    return activation_link
 
 
 # no authentication!
@@ -96,8 +102,7 @@ def create_instance(request):
 
             else:
 
-                _token = compute_game_activation_token(game_instance_id=game_instance_id, creator_login=creator_login, creator_email=creator_email)
-                autologin_link = settings.SITE_DOMAIN + reverse(activate_instance) + "?" + urlencode(dict(token=_token))
+                activation_link = _build_activation_url(game_instance_id=game_instance_id, creator_login=creator_login, creator_email=creator_email)
 
                 message = GAME_ACTIVATION_EMAIL_BODY_TPL % locals()
 
@@ -116,7 +121,7 @@ def create_instance(request):
                     information = _("The activation email has been sent to %(creator_email)s.") % SDICT(creator_email=creator_email)
 
                 if settings.DEBUG and request.GET.get("_debug_"): # even if we haven't managed to send the activation email
-                    information += " " + _("Debug Information: [%(autologin_link)s].") % SDICT(autologin_link=autologin_link)
+                    information += " " + _("Debug Information: [%(activation_link)s].") % SDICT(activation_link=activation_link)
         else:
             messages.add_message(request, messages.ERROR, _(u"Invalid game creation form submitted."))
 
@@ -232,11 +237,14 @@ def manage_instances(request):
 
     instances_metadata = datamanager_administrator.get_all_instances_metadata()
 
+    for _meta in instances_metadata:
+        _activation_link = _build_activation_url(game_instance_id=_meta["instance_id"], creator_login=_meta["creator_login"], creator_email=_meta["creator_email"])
+        _meta["activation_link"] = _activation_link
 
     return render(request,
                   "meta_administration/manage_instances.html",
                     {
-                     'instances_metadata': instances_metadata,
+                     'instances_metadata': instances_metadata, # enriched info
                      'utc_now': datetime.utcnow(),
                      'notifications': get_messages(request),
                      'possible_game_statuses': sorted(GAME_STATUSES),
