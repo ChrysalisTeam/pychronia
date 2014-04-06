@@ -45,8 +45,8 @@ body {
   text-overflow: ellipsis;
 }
 body.full_background {
-  background-image: url('img/backgrounds/nazur_temple_75.jpg');
-  background-size: cover;
+  background-image: url('img/backgrounds/nazur_temple_75_smooth.jpg');
+  background-size: 100% auto;
   background-repeat: no-repeat;
   background-attachment: scroll;
   background-position: center top;

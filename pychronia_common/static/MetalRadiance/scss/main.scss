@@ -107,8 +107,8 @@ body {
     text-overflow: ellipsis; // or clip or string, not inherited
 
     &.full_background {
-        background-image: url('#{$IMGS}backgrounds/nazur_temple_75.jpg');
-        background-size: cover;
+        background-image: url('#{$IMGS}backgrounds/nazur_temple_75_smooth.jpg');
+        background-size: 100% auto;
         background-repeat: no-repeat;
         background-attachment: scroll;
         background-position: center top;
