@@ -2130,7 +2130,7 @@ class TextMessagingTemplates(BaseDataManager):
 
             for msg in msg_list:
 
-                msg.setdefault("categories", []) # to FILTER for gamemaster
+                msg.setdefault("categories", ["unsorted"]) # to FILTER for gamemaster
                 existing_template_categories.update(msg["categories"])
 
                 msg.setdefault("gamemaster_hints", "")
@@ -2171,6 +2171,7 @@ class TextMessagingTemplates(BaseDataManager):
             ##TEMPutilities.check_has_keys(msg, keys=template_fields, strict=strict)
 
             assert isinstance(msg["categories"], PersistentList)
+            assert msg["categories"] # ALL templates need to be categorized
             for cat in msg["categories"]:
                 utilities.check_is_slug(cat)
                 assert cat in existing_template_categories, cat
