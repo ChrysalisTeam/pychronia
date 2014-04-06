@@ -8,38 +8,54 @@
 
 <div id="{% first_non_empty message.id ctx.template_id %}" class="{% if ctx.has_read or ctx.is_used %}email_read{% else %}email_unread{% endif %} {% if not is_first %}cover_previous{% endif %}">
 
-    {% if game_is_writable %}
-        <span class="message_operations">
-
-            {% if ctx.has_read != None %}
-                <a {% if ctx.has_read %}style="display: none;"{% endif %} class="mark_read_tag" onclick="set_message_read_state('{{ message.id|escapejs }}', true); return false;" href="#">{% trans "Mark as read" %}</a>
-                <a {% if not ctx.has_read %}style="display: none;"{% endif %} class="mark_unread_tag" onclick="set_message_read_state('{{ message.id|escapejs }}', false); return false;" href="#">{% trans "Mark as unread" %}</a>
-            {% endif %}
-
-            {% if ctx.can_force_sending %}
-                <a onclick="force_email_sending('{{ message.id|escapejs }}', true); return false;" href="#">{% trans "Force sending" %}</a>
-            {% endif %}
-
-            {% if ctx.can_reply or ctx.can_recontact %}
-                <a href="{% game_view_url "pychronia_game.views.compose_message" %}?parent_id={{ message.id|urlencode }}">{% if ctx.can_reply %}{% trans "Reply" %}{% else %}{% trans "Recontact" %}{% endif %}</a>
-            {% endif %}
-
-            {% if ctx.can_transfer %}
-                <a href="{% game_view_url "pychronia_game.views.compose_message" %}?transferred_msg={{ message.id|urlencode }}">{% trans "Transfer" %}</a>
-            {% endif %}
-
-            {% if ctx.template_id %}
-                <a href="{% game_view_url "pychronia_game.views.compose_message" %}?use_template={{ ctx.template_id|urlencode }}">{% trans "Use template" %}</a>
-            {% endif %}
-
-            {% if ctx.can_permanently_delete %}
-                <a href="#" onclick="permanently_delete_message('{{ message.id|escapejs }}'); return false;" >{% trans "Delete" %}</a>
-            {% endif %}
-
-        </span>
-    {% endif %}
 
 
+    <div class="message_hideable">
+
+        {% if game_is_writable %}
+            <span class="message_operations">
+
+                {% if ctx.has_read != None %}
+                    <a {% if ctx.has_read %}style="display: none;"{% endif %} class="mark_read_tag" onclick="set_message_read_state('{{ message.id|escapejs }}', true); return false;" href="#">{% trans "Mark as read" %}</a>
+                    <a {% if not ctx.has_read %}style="display: none;"{% endif %} class="mark_unread_tag" onclick="set_message_read_state('{{ message.id|escapejs }}', false); return false;" href="#">{% trans "Mark as unread" %}</a>
+                {% endif %}
+
+                {% if ctx.can_force_sending %}
+                    <a onclick="force_email_sending('{{ message.id|escapejs }}', true); return false;" href="#">{% trans "Force sending" %}</a>
+                {% endif %}
+
+                {% if ctx.can_reply or ctx.can_recontact %}
+                    <a href="{% game_view_url "pychronia_game.views.compose_message" %}?parent_id={{ message.id|urlencode }}">{% if ctx.can_reply %}{% trans "Reply" %}{% else %}{% trans "Recontact" %}{% endif %}</a>
+                {% endif %}
+
+                {% if ctx.can_transfer %}
+                    <a href="{% game_view_url "pychronia_game.views.compose_message" %}?transferred_msg={{ message.id|urlencode }}">{% trans "Transfer" %}</a>
+                {% endif %}
+
+                {% if ctx.template_id %}
+                    <a href="{% game_view_url "pychronia_game.views.compose_message" %}?use_template={{ ctx.template_id|urlencode }}">{% trans "Use template" %}</a>
+                {% endif %}
+
+                {% if ctx.can_permanently_delete %}
+                    <a href="#" onclick="permanently_delete_message('{{ message.id|escapejs }}'); return false;" >{% trans "Delete" %}</a>
+                {% endif %}
+
+            </span>
+        {% endif %}
+
+    </div>
+
+
+    <p style="color:{% usercolor message.sender_email %};">
+        <strong>
+            <i>
+            {{ message.subject }}
+            </i>
+        </strong>
+    </p>
+
+
+    <div class="message_hideable">
         {% if message.id %}
             <div style="position: absolute; width: 100px; top: 0; right:0;"> {# we put that OFF the stream, so that contact displays are not blocked in width #}
                 {% assign name="msg_link" %}{% game_view_url "pychronia_game.views.view_single_message" msg_id=message.id %}{% endassign %}
@@ -48,98 +64,97 @@
         {% endif %}
 
 
-    <table style="margin:2px 2px; font-size:0.9em; line-height:0.9em;">
+        <table style="margin:2px 2px; font-size:0.9em; line-height:0.9em;">
 
-        {% if not ctx.template_id %}
-        <tr>
-        <td><strong>{% trans "Date:" %}</strong></td>
-        <td><strong>{{ message.sent_at|utctolocal|date:"SHORT_DATETIME_FORMAT" }}</strong></td>
-            {%comment %} IF NEEDED {% load humanize %}{{ message.sent_at|utctolocal|naturalday:"d/N/Y" }}{% endcomment %}
-        </tr>
-        {% endif %}
+            {% if ctx.intercepted_by  %}
+            <tr style="height: 40px">
+            <td><strong>[[ {% trans "Intercepted by" %}{{COLON}}</strong></td>
+            <td>
+                <strong>{{ ctx.intercepted_by|join:", " }} ]]</strong>
+            </td>
+            </tr>
+            {% endif %}
 
-        {% if message.categories %}
-        <tr>
-        <td><strong>{% trans "Category" %}{{COLON}}</strong></td>
-        <td>
-            <strong>{{ message.categories|join:", " }}</strong>
-        </td>
-        </tr>
-        {% endif %}
+            {% if not ctx.template_id %}
+            <tr>
+            <td><strong>{% trans "Date:" %}</strong></td>
+            <td><strong>{{ message.sent_at|utctolocal|date:"SHORT_DATETIME_FORMAT" }}</strong></td>
+                {%comment %} IF NEEDED {% load humanize %}{{ message.sent_at|utctolocal|naturalday:"d/N/Y" }}{% endcomment %}
+            </tr>
+            {% endif %}
 
-        {% if message.sender_email  %}
-        <tr>
-        <td><strong>{% trans "From:" %}</strong></td>
-        <td>
-            {% with contact=contact_cache|dict_get:message.sender_email %}
-                {% include "utilities/contact_display.html" with address=message.sender_email contact=contact compose_link=True %}
-            {% endwith %}
-            <!--a href="{% game_view_url "pychronia_game.views.compose_message" %}?recipient={{ message.sender_email|urlencode }}">
-            <span style="color:{% usercolor message.sender_email %};">{{ message.sender_email }}</span>
-            </a-->
-        </td>
-        </tr>
-        {% endif %}
+            {% if message.categories %}
+            <tr>
+            <td><strong>{% trans "Category" %}{{COLON}}</strong></td>
+            <td>
+                <strong>{{ message.categories|join:", " }}</strong>
+            </td>
+            </tr>
+            {% endif %}
 
-        {% if message.recipient_emails  %}
-        <tr>
-        <td><strong>{% trans "To:" %}</strong></td>
-        <td>
-            {% for recipient_email in message.recipient_emails %}
-                {% with contact=contact_cache|dict_get:recipient_email %}
-                    {% include "utilities/contact_display.html" with address=recipient_email contact=contact compose_link=True %}
+            {% if message.sender_email  %}
+            <tr>
+            <td><strong>{% trans "From:" %}</strong></td>
+            <td>
+                {% with contact=contact_cache|dict_get:message.sender_email %}
+                    {% include "utilities/contact_display.html" with address=message.sender_email contact=contact compose_link=True %}
                 {% endwith %}
-                <!--{% if not forloop.first %}, {% endif %}
-                <a href="{% game_view_url "pychronia_game.views.compose_message" %}?recipient={{ recipient_email|urlencode }}">
-                <span style="color:{% usercolor recipient_email %};">{{ recipient_email }}</span>-->
-                </a>
-            {% endfor %}
-        </td>
-        </tr>
+                <!--a href="{% game_view_url "pychronia_game.views.compose_message" %}?recipient={{ message.sender_email|urlencode }}">
+                <span style="color:{% usercolor message.sender_email %};">{{ message.sender_email }}</span>
+                </a-->
+            </td>
+            </tr>
+            {% endif %}
+
+            {% if message.recipient_emails  %}
+            <tr>
+            <td><strong>{% trans "To:" %}</strong></td>
+            <td>
+                {% for recipient_email in message.recipient_emails %}
+                    {% with contact=contact_cache|dict_get:recipient_email %}
+                        {% include "utilities/contact_display.html" with address=recipient_email contact=contact compose_link=True %}
+                    {% endwith %}
+                    <!--{% if not forloop.first %}, {% endif %}
+                    <a href="{% game_view_url "pychronia_game.views.compose_message" %}?recipient={{ recipient_email|urlencode }}">
+                    <span style="color:{% usercolor recipient_email %};">{{ recipient_email }}</span>-->
+                    </a>
+                {% endfor %}
+            </td>
+            </tr>
+            {% endif %}
+
+        </table>
+
+
+
+        <div class="pretty_text" style="color:{% usercolor message.sender_email %};">
+
+            {% if display_admin_tips and message.gamemaster_hints %}
+            <p class="admin-note">
+                {{ message.gamemaster_hints }}
+            </p>
+            {% endif %}
+
+            {% rich_text message.body %}
+
+        </div>
+
+
+        {% if message.transferred_msg %}
+            <a target="_blank" href="{% game_view_url "pychronia_game.views.view_single_message" msg_id=message.transferred_msg %}">
+                {% trans "MESSAGE TRANSFERRED: click to view." %}
+            </a>
         {% endif %}
 
-    </table>
-
-
-    <p style="color:{% usercolor message.sender_email %};">
-
-        <strong>
-            {% if ctx.intercepted_by %}[ {% trans "Intercepted by" %}{{COLON}} {{ ctx.intercepted_by|join:", " }} ]<br/><br/>{% endif %}
-
-            <i>
-            {{ message.subject }}
-            </i>
-        </strong>
-    </p>
-
-    <div class="pretty_text" style="color:{% usercolor message.sender_email %};">
-
-        {% if display_admin_tips and message.gamemaster_hints %}
-        <p class="admin-note">
-            {{ message.gamemaster_hints }}
-        </p>
+        {% if message.attachment %}
+        <hr/>
+        <div class="inner_center">
+            <div class="file_url_block">{{ message.attachment }}</div>
+            {{ message.attachment|mediaplayer:"false" }} {# ALREADY A COMPLETE URL #}
+        </div>
         {% endif %}
 
-        {% rich_text message.body %}
 
     </div>
-
-
-    {% if message.transferred_msg %}
-        <a target="_blank" href="{% game_view_url "pychronia_game.views.view_single_message" msg_id=message.transferred_msg %}">
-            {% trans "MESSAGE TRANSFERRED: click to view." %}
-        </a>
-    {% endif %}
-
-    {% if message.attachment %}
-    <hr/>
-    <div class="inner_center">
-        <div class="file_url_block">{{ message.attachment }}</div>
-        {{ message.attachment|mediaplayer:"false" }} {# ALREADY A COMPLETE URL #}
-    </div>
-    {% endif %}
-
-
-
 
 </div>

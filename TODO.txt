@@ -37,14 +37,10 @@ FUTURE BUGS
 FEATURES
 ------------
 
-
 - envoi de mail quotidien !!
 
 - systeme pour créer partie - WIP
 
-- autofolding des emails lus
-
-- add border-radius: 5px to chrysalis slideshow images
 
 
 SCRIPT
@@ -143,7 +139,7 @@ NEEDS COSMETICS
 TASKS DONE
 ---------------
 
-
+- show parent ID in compose form - DONE
 - have event log for players too (eg. for money received...) - DONE
 - have autoselect2lists widget with externals contacts in messaging wiretapping - DONE
 - put official name in all user-related SELECTS - DONE
@@ -339,7 +335,7 @@ TASKS DONE
 FUTUR ENHANCEMENTS
 --------------------------
 
-
+- autofolding of read emails, to save space on the page
 - disable auto play on VLC media (phoque.avi)
 - dire quand AUTRE perso (ami) a nouveaux messages/autres ?
 - make impersonation per-browser-tab!

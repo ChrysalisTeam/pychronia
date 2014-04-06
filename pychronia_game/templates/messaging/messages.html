@@ -57,9 +57,12 @@
     {% else %}
 
         {% for ctx, message in messages %}
+
+            {% comment %}
             {% if not forloop.first %}
                 <hr/>
             {% endif %}
+            {% endcomment %}
 
             {% include "messaging/single_message.html" with ctx=ctx message=message is_first=1 %}
         {% endfor %}

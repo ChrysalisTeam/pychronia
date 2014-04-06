@@ -41,7 +41,7 @@ def GAME_INITIAL_FIXTURE_SCRIPT(dm):
     dm.set_activated_game_views(activable_views)
 
 
-    player_name, player_name_bis = dm.get_character_usernames()[0:2]
+    player_name, player_name_bis, player_name_ter = dm.get_character_usernames()[0:3]
 
     # we give first player access to everything
     assert not dm.get_character_properties(player_name)["is_npc"]
@@ -55,11 +55,13 @@ def GAME_INITIAL_FIXTURE_SCRIPT(dm):
     email_guy2 = dm.get_character_email(player_name_bis)
     email_external = sorted(dm.global_contacts.keys())[0]
 
-    msg_id1 = dm.post_message(sender_email=email_guy1, recipient_emails=email_guy2, subject="message1 TEST", body="hello")
+    dm.set_wiretapping_targets(player_name_ter, [player_name])
+
+    msg_id1 = dm.post_message(sender_email=email_guy1, recipient_emails=email_guy2, subject="NULL TEST", body="hello")
     msg1 = dm.get_dispatched_message_by_id(msg_id1)
-    msg_id2 = dm.post_message(sender_email=email_guy2, recipient_emails=email_guy1, subject="RE:%s TEST" % msg1["subject"], body="hello world", parent_id=msg_id1)
+    msg_id2 = dm.post_message(sender_email=email_guy2, recipient_emails=email_guy1, subject="RE:%s" % msg1["subject"], body="hello world", parent_id=msg_id1)
     msg2 = dm.get_dispatched_message_by_id(msg_id2)
-    msg_id3 = dm.post_message(sender_email=email_guy1, recipient_emails=email_guy2, subject="Bis:%s TEST" % msg2["subject"], body="hello hello", parent_id=msg_id2)
+    msg_id3 = dm.post_message(sender_email=email_guy1, recipient_emails=email_guy2, subject="Bis:%s" % msg2["subject"], body="hello hello", parent_id=msg_id2)
 
     msg_id4 = dm.post_message(sender_email=email_guy1, recipient_emails=email_external, subject="Ask master TEST", body="for something")
     msg4 = dm.get_dispatched_message_by_id(msg_id4)

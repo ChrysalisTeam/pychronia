@@ -339,7 +339,7 @@ def conversation(request, template_name='messaging/conversation.html'):
 
     return render(request,
                   template_name,
-                  dict(page_title=_("All Conversations") if display_all_conversations else _("Recent Conversations"),
+                  dict(page_title=_("All My Conversations") if display_all_conversations else _("My Recent Conversations"),
                        display_all_conversations=display_all_conversations,
                        conversations=enriched_messages,
                        contact_cache=_build_contact_display_cache(request.datamanager)))

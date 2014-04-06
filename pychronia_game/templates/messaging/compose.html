@@ -203,6 +203,12 @@ if(!block_autosave) {
         </p>
         {% endif %}
 
+        {% if message_form.parent_id.value %}
+        <p>
+            <b>{% trans "Parent message ID:" %} {{ message_form.parent_id.value }}</b>
+        </p>
+        {% endif %}
+
         {% if message_form.transferred_msg.value %}
         <p>
             <a class="message_transfer_link" target="_blank" href="{% game_view_url "pychronia_game.views.view_single_message" msg_id=message_form.transferred_msg.value %}">
