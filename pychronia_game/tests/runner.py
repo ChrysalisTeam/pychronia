@@ -36,11 +36,20 @@ if __name__ == "__main__":
         import pychronia_game.models # initializes everything
         from pychronia_game.datamanager.datamanager_administrator import reset_zodb_structure, create_game_instance
         reset_zodb_structure()
+
+        if "use_fixture" in arguments:
+            skip_initializations = True
+            skip_randomizations = True
+            yaml_fixture = os.path.join(settings.GAME_FILES_ROOT, "script_fixtures", "PROD_DUMP.yaml")
+        else:
+            skip_initializations = False
+            skip_randomizations = False
+            yaml_fixture = None
         create_game_instance(game_instance_id="DEMO",
                              creator_login="ze_creator",
-                             skip_randomizations=False)
-
-
+                             skip_initializations=skip_initializations,
+                             yaml_fixture=yaml_fixture,
+                             skip_randomizations=skip_randomizations)
     elif "reset_django" in arguments:
         if not settings.DEBUG:
             raise RuntimeError("Can't reset django DB in non-DEBUG mode")

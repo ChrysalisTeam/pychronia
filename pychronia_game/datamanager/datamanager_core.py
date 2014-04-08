@@ -128,8 +128,9 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
 
     @transaction_watcher(always_writable=True) # might operate on broken data
     def reset_game_data(self,
-                        yaml_fixture=config.GAME_INITIAL_DATA_PATH,
+                        yaml_fixture=None,
                         skip_randomizations=False,
+                        skip_initializations=False,
                         strict=False):
         """
         This method might raise exceptions, and leave the datamanager uninitialized.
@@ -138,6 +139,10 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
         if self.data and not config.ZODB_RESET_ALLOWED:
             raise RuntimeError("Can't reset existing databases in this environment")
 
+        if not yaml_fixture:
+            yaml_fixture = config.GAME_INITIAL_DATA_PATH
+
+        self.logger.info("Resetting game data with fixture '%s'", yaml_fixture)
         #print "RESETTING DATABASE !"
 
         # ZODB reset - warning, we must replace content of dictionary "data",
@@ -147,8 +152,11 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
         initial_data = utilities.load_yaml_fixture(yaml_fixture)
         self.data.update(initial_data)
 
-        self._load_initial_data(skip_randomizations=skip_randomizations) # traversal of each core module
-
+        if not skip_initializations:
+            self._load_initial_data(skip_randomizations=skip_randomizations) # traversal of each core module
+        else:
+            assert skip_randomizations == True
+            
         # NOW only we normalize and check the object tree
         # normal python types are transformed to ZODB-persistent types
         for key in self.data.keys():
@@ -158,7 +166,7 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
         self.is_initialized = True
         self._init_from_db()
 
-        if config.GAME_INITIAL_FIXTURE_SCRIPT:
+        if config.GAME_INITIAL_FIXTURE_SCRIPT and not skip_initializations:
             self.logger.info("Performing setup via GAME_INITIAL_FIXTURE_SCRIPT")
             config.GAME_INITIAL_FIXTURE_SCRIPT(self)
 

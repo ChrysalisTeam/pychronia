@@ -109,7 +109,9 @@ def _create_metadata_record(game_instance_id, creator_login, creator_email):
 def create_game_instance(game_instance_id,
                          creator_login,
                          creator_email=None,
+                         skip_initializations=False,
                          skip_randomizations=False,
+                         yaml_fixture=None,
                          strict=False): # TODO here try strict=True once
     """
     Returns nothing. Raises UsageError if already existing game id.
@@ -133,7 +135,8 @@ def create_game_instance(game_instance_id,
                              request=None) # no user messages possible here
 
         assert not dm.is_initialized
-        dm.reset_game_data(strict=strict, skip_randomizations=skip_randomizations)
+        dm.reset_game_data(strict=strict, skip_initializations=skip_initializations,
+                           skip_randomizations=skip_randomizations, yaml_fixture=yaml_fixture)
         assert dm.is_initialized
 
         game_instances[game_instance_id] = game_root # NOW only we link data to ZODB
