@@ -61,9 +61,10 @@ def manage_characters(request, template_name='administration/character_managemen
     def _prefix(idx):
         return "form%s" % idx
 
-    if request.method == "POST":
 
-        form_validation_failed = False
+    form_validation_failed = False
+
+    if request.method == "POST":
 
         for idx, (username, __character_data) in enumerate(characters_items):
 
@@ -81,6 +82,7 @@ def manage_characters(request, template_name='administration/character_managemen
                 real_life_identity = form.cleaned_data["real_life_identity"].strip() or None
                 real_life_email = form.cleaned_data["real_life_email"].strip() or None
                 gamemaster_hints = form.cleaned_data["gamemaster_hints"].strip() # may be an empty string !
+                extra_goods = form.cleaned_data["extra_goods"]
 
                 assert official_name == official_name.strip() # auto-stripping
                 assert official_role == official_role.strip()
@@ -93,6 +95,7 @@ def manage_characters(request, template_name='administration/character_managemen
                                                     official_name=official_name,
                                                     official_role=official_role,
                                                     gamemaster_hints=gamemaster_hints,
+                                                    extra_goods=extra_goods,
                                                     is_npc=is_npc)
                     dm.update_allegiances(username=target_username,
                                           allegiances=allegiances)
@@ -107,7 +110,10 @@ def manage_characters(request, template_name='administration/character_managemen
 
             character_forms.append(form)
 
-    else:
+
+    if not form_validation_failed:
+
+        character_forms = []
 
         for idx, (username, character_data) in enumerate(characters_items):
             f = forms.CharacterProfileForm(
@@ -121,7 +127,8 @@ def manage_characters(request, template_name='administration/character_managemen
                                                  real_life_identity=character_data["real_life_identity"],
                                                  real_life_email=character_data["real_life_email"],
                                                  gamemaster_hints=character_data["gamemaster_hints"],
-                                                 is_npc=character_data["is_npc"],)
+                                                 is_npc=character_data["is_npc"],
+                                                 extra_goods=character_data["extra_goods"])
                                     )
             character_forms.append(f)
 

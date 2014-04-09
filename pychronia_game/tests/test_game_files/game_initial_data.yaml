@@ -275,6 +275,7 @@ character_properties:
         avatar: "guy1.png"
         gamemaster_hints: "This is guy1, actually agent SHA1."
         is_npc: False
+        extra_goods: "Special money: 354 units"
 
     guy2:
         domains: ["acharis"]

@@ -79,18 +79,24 @@
                         </p>
 
                         <p>
-                        <b>{% trans "Items" %}{{COLON}}</b>
-                        {% if char_details.user_items %}
-        	    	    <ul>
-        	    		{% for item in char_details.user_items %}
-        	    		    <li>{{ item.title }} {% if item.is_gem %}{% trans "(memo)" %}{% endif %}</li>
-        	    		{% empty %}
-        	    		{% endfor %}
-        	    		<ul>
-        	    		{% else %}
-        	    		{% trans "None" %}
-        	    		{% endif %}
+                            <b>{% trans "Items" %}{{COLON}}</b>
+                            {% if char_details.user_items %}
+            	    	    <ul>
+            	    		{% for item in char_details.user_items %}
+            	    		    <li>{{ item.title }} {% if item.is_gem %}{% trans "(memo)" %}{% endif %}</li>
+            	    		{% empty %}
+            	    		{% endfor %}
+            	    		</ul>
+            	    		{% else %}
+            	    		{% trans "None" %}
+            	    		{% endif %}
         	    		</p>
+
+
+                        {% if char_details.extra_goods %}
+                            {% rich_text char_details.extra_goods %}
+                        {% endif %}
+
     		    	</td>
 
 

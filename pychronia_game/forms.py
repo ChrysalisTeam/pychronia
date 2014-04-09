@@ -161,6 +161,8 @@ class CharacterProfileForm(AbstractGameForm):
     allegiances = forms.MultipleChoiceField(label=ugettext_lazy("Allegiances"), required=False, widget=forms.SelectMultiple(attrs={"class": "multichecklist"}))
     permissions = forms.MultipleChoiceField(label=ugettext_lazy("Permissions"), required=False, widget=forms.SelectMultiple(attrs={"class": "multichecklist"}))
 
+    extra_goods = forms.CharField(label=ugettext_lazy("Extra Goods"), widget=forms.Textarea(attrs={'rows': '2', 'cols':'40'}), required=False)
+
 
     def __init__(self, datamanager, *args, **kwargs):
         super(CharacterProfileForm, self).__init__(datamanager, *args, **kwargs)

@@ -570,7 +570,7 @@ class CharacterHandling(BaseDataManager): # TODO REFINE
         return action_done
 
     @transaction_watcher
-    def update_official_character_data(self, username=CURRENT_USER, official_name=None, official_role=None, gamemaster_hints=None, is_npc=None):
+    def update_official_character_data(self, username=CURRENT_USER, official_name=None, official_role=None, gamemaster_hints=None, is_npc=None, extra_goods=None):
         username = self._resolve_username(username)
         data = self.get_character_properties(username)
 
@@ -590,6 +590,10 @@ class CharacterHandling(BaseDataManager): # TODO REFINE
 
         if is_npc is not None and is_npc != data["is_npc"]:
             data["is_npc"] = is_npc # bool
+            action_done = True
+
+        if extra_goods is not None:
+            data["extra_goods"] = extra_goods # string
             action_done = True
 
         return action_done
@@ -3482,6 +3486,8 @@ class MoneyItemsOwnership(BaseDataManager):
         for (name, character) in game_data["character_properties"].items():
             character["account"] = character.get("account", 0)
 
+            character.setdefault("extra_goods", "") # restructuredtext string
+
             character_gems = character.get("gems", [])
             character_gems = [tuple(i) for i in character_gems]
             character["gems"] = sorted(character_gems)
@@ -3523,6 +3529,12 @@ class MoneyItemsOwnership(BaseDataManager):
         for (name, character) in game_data["character_properties"].items():
             utilities.check_is_positive_int(character["account"], non_zero=False)
             total_digital_money += character["account"]
+
+            character.setdefault("extra_goods", "") # FIXME TEMP
+
+            assert isinstance(character["extra_goods"], basestring)
+            if character["extra_goods"]:
+                utilities.check_is_restructuredtext(character["extra_goods"])
 
             #assert character["gems"] == sorted(character["gems"]), character["gems"] FIXME TEMP
 
