@@ -138,6 +138,11 @@ NEEDS COSMETICS
 TASKS DONE
 ---------------
 
+
+- add forms to administrator page (change game state, delete game etc.) - DONE
+- allow to edit all characters at once in characters management - DONE
+- setup all select choices with a default empty choice - DONE
+- messaging templates filtering by taxonomy - DONE
 - change "last_acccess_time" typo - DONE
 - show parent ID in compose form - DONE
 - have event log for players too (eg. for money received...) - DONE
@@ -180,7 +185,6 @@ TASKS DONE
 - fix display of missing addresses, in email templates - DONE
 - garder nom officiel près de description de contacts - DONE
 - remettre NPCs dans "senders" of emails for master - DONE
-
 - fix abnormal visibility of NPCs in "friendship management" view - DONE
 - change is_read status of ability request messages depending on "disable_automated_ability_responses" - DONE
 - allow brackets around mailing-list adresses DONE
@@ -335,14 +339,15 @@ TASKS DONE
 FUTUR ENHANCEMENTS
 --------------------------
 
+
+- randomize master login in PlayerAuthentication._load_initial_data() DANGEROUS FOR NOW
+- allow multi-instance staff impersonation, so that superuser can remain logged everywhere - DONE in theory
+- make ALL gamemaster_hints editable (items too)
 - autofolding of read emails, to save space on the page
 - disable auto play on VLC media (phoque.avi)
 - dire quand AUTRE perso (ami) a nouveaux messages/autres ?
 - make impersonation per-browser-tab!
-- radio spots must show only title in playlist edition
-- allow to edit all characters at once in characters management
-- make all gamemaster_hints editable
-- randomize master login in PlayerAuthentication._load_initial_data()
+- radio spots must show only title in playlist edition <--- WIP
 - enforce placeholder detection ({{ PUT NAME HERE }}) everywhere, not only in message sending form.
 - restaurer et compléter les djinns, valeurs par défaut si pas de réponses surtout
 - add answer to ALL captchas ?
@@ -354,42 +359,41 @@ FUTUR ENHANCEMENTS
 - add typographhy fixer like in https://code.google.com/p/markdown-typografix/source/browse/mdx_typografix/__init__.py
 - fix shaky forms when floated left in number
 - improve compatibility with IE 10+ (menus are buggy)
-- add forms to administrator page (change game state, delete game etc.)
-- reorganize top headers of game (motto left=real, motto right=impersonation, carvings= GAME DATA)
+- reorganize top headers of game (motto left=real, motto right=impersonation, carvings=GAME_DATA)
+  -> add money and gems to page top headers
 - CMS : stop float pbs when EDIT=ON, on main frames (use clearfix) - should be OK actually
 - ensure game events logs are translated to OFFICIAL game language!!!
-- fix up/down keys when a "select" field is selected (must not scroll page)
-- add money and gems to page top headers
+- fix up/down keys when a "select" field is selected in PARALLAX (must not scroll page)
 - grant/revoke private_contact_access_to_character (ex. mercenaries)
 - securize "_action_" form-less system, since it bypasses input data validation
 - add "stop impersonation" link in menu ?
-- allow multi-instance staff impersonation, so that superuser can remain logged everywhere
 - better menus for meta admin pages
 - better handling of 503 (maintenance) state on both cms and instance
 - convert "orbe" to masculine genre ; replace acharis by akharis
-- add automated "geoip localization" ability
+- add real automated "geoip localization" ability
 - memorize "real player authentications", to know who really hacks accounts
 - make real "attach to" feature to delegate permissions (ex. for dependent ajax views)
 - rethink and repair telecom archive investigation
 - add to specific index any (external) visualized document in "personal files"
-- setup all select choices with a default empty choice
 - add RST summary to all forms, especially admin ones ??? not needed right ATM
-- messaging templates filtering by taxonomy ?
 - put back accordeon toggles in messaging
 - allow accumulation of visibility reasons, to have both sender and recipient together in msg for same user? useless I guess...
 - idea of captcha: play with colors illusions!!
-- include timezone handling
+- include real timezone handling per game (or use TIMEZONE of django and its template filters)
 - use UsageError in all getters of datamanager instead of keyerror?
-- include tiny webradio widget in div with same color, and make it bigger, to avoid zoom/dezoom problems.
+- include tiny webradio widget in div with same color, and make it bigger, to avoid zoom/dezoom problems (cosmetics)
 - internationalize personal documents (all in yaml ??)
+- add RST support for personal files
 - switch to small JALICE bot? humz
 - other items needing to be editable:
-	- items, gems & artefacts ?
+	- items, gems & artefacts ?  (DANGEROUS)
 	- nightmare captcha ?
-- make better use of titles, of '#' anchors (with id or name of tags)...
-- normalize is_character as both bool and method, in DM and User instances
+- make better use of html tag titles, of '#' anchors (with id or name of tags)...
+- normalize is_character as both bool and method, in DM and User instances ? (tricky)
 - improve wiretapping - must not be only on characters, but also external emails
 - add standard 404 and 500 templates, + custom 403 in latest django etc.
+
+
 
 
 ELITE RPG:
