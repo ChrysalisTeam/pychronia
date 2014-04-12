@@ -40,7 +40,7 @@ if __name__ == "__main__":
         if "use_fixture" in arguments:
             skip_initializations = True
             skip_randomizations = True
-            yaml_fixture = os.path.join(settings.GAME_FILES_ROOT, "script_fixtures", "PROD_DUMP.yaml")
+            yaml_fixture = os.path.join(settings.GAME_FILES_ROOT, "script_fixtures", "_PROD_DUMP.yaml")
         else:
             skip_initializations = False
             skip_randomizations = False

@@ -25,10 +25,13 @@ from easy_thumbnails.templatetags.thumbnail import thumbnail_url
 from easy_thumbnails.files import get_thumbnailer
 from pychronia_game.storage import protected_game_file_system_storage, \
     get_game_thumbnailer
+from pychronia_game.common import config
 from django.template.loader import render_to_string
 
 register = django.template.Library() # IMPORTANT, module-level object used by templates !
 
+
+GAME_LOCAL_TZ = config.GAME_LOCAL_TZ # real timezone object
 
 
 def _try_generating_thumbnail_url(rel_path, alias=None):
@@ -377,15 +380,24 @@ register.filter('list_append_to_each', list_append_to_each)
 
 
 def utctolocal(value, arg=None): # FIXME - BUGGY CALLS
+    """
+    Convert naive UTC datetime to wanted gameserver timezone.
+    """
+    import pytz
+    now_utc = pytz.utc.localize(value)
+    local_time = now_utc.astimezone(GAME_LOCAL_TZ)
+    return local_time
     # poor man's timezone system, base on current time offset
     # all we want ATM is to avoid dealing with the nightmare of TZ and DST...
     ##print (">>>>>>>>>>>>>>>>", value)
+    '''
     try:
         timedelta = datetime.now() - datetime.utcnow() # both NAIVE datetimes
         return value + timedelta
     except:
         logging.critical("utctolocal filter failed", exc_info=True)
         return value
+    '''
 register.filter('utctolocal', utctolocal)
 
 

@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
-import os, sys
+import os, sys, pytz
+
+GAME_LOCAL_TZ = pytz.timezone('Europe/Paris') # for now...
 
 GAME_ROOT = os.path.dirname(os.path.realpath(__file__))
 GAME_FILES_ROOT = ""
