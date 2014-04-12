@@ -43,7 +43,7 @@ class MercenariesHiringAbility(AbstractPartnershipAbility):
     TEMPLATE = "abilities/mercenaries_hiring.html"
 
     ACCESS = UserAccess.character
-    REQUIRES_CHARACTER_PERMISSION = False
+    REQUIRES_CHARACTER_PERMISSION = True
     REQUIRES_GLOBAL_PERMISSION = True
 
 

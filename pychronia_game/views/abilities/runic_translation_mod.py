@@ -44,7 +44,7 @@ class RunicTranslationAbility(AbstractPartnershipAbility):
     TEMPLATE = "abilities/runic_translation.html"
 
     ACCESS = UserAccess.character # game master not welcome!
-    REQUIRES_CHARACTER_PERMISSION = False
+    REQUIRES_CHARACTER_PERMISSION = True
     REQUIRES_GLOBAL_PERMISSION = True
 
     def get_template_vars(self, previous_form_data=None):

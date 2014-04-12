@@ -20,7 +20,7 @@ class ChessChallengeAbility(AbstractAbility):
     TEMPLATE = "abilities/chess_challenge.html"
 
     ACCESS = UserAccess.authenticated
-    REQUIRES_CHARACTER_PERMISSION = False
+    REQUIRES_CHARACTER_PERMISSION = True
     REQUIRES_GLOBAL_PERMISSION = True
 
 
