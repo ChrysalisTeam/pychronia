@@ -1165,6 +1165,20 @@ class PermissionsHandling(BaseDataManager): # TODO REFINE
         data["permissions"] = PersistentList(permissions)
 
 
+    @transaction_watcher
+    def set_permission(self, username=CURRENT_USER, permission=None, is_present=None):
+        assert permission in self.PERMISSIONS_REGISTRY
+        assert is_present in(True, False)
+        username = self._resolve_username(username)
+        data = self.get_character_properties(username)
+        if is_present:
+            permissions = set(data["permissions"]) | set([permission])
+        else:
+            permissions = set(data["permissions"]) - set([permission])
+        assert isinstance(permissions, set)
+        data["permissions"] = PersistentList(permissions)
+
+
     @readonly_method
     def has_permission(self, username=CURRENT_USER, permission=None):
         assert permission

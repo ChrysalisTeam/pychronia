@@ -906,6 +906,18 @@ class TestDatamanager(BaseGameTestCase):
         assert not self.dm.has_permission(permission=permission)
         assert not self.dm.user.has_permission(permission)
 
+        permission_other = "view_others_belongings"
+        self.dm.set_permission("guy3", permission, is_present=True)
+        self.dm.set_permission("guy3", permission, is_present=True)
+        assert self.dm.user.has_permission(permission)
+        assert not self.dm.user.has_permission(permission_other)
+
+        self.dm.set_permission("guy3", permission_other, is_present=True)
+        self.dm.set_permission("guy3", permission, is_present=False)
+        self.dm.set_permission("guy3", permission, is_present=False)
+        assert not self.dm.user.has_permission(permission)
+        assert self.dm.user.has_permission(permission_other)
+
 
     @for_core_module(FlexibleTime)
     def test_flexible_time_module(self):
@@ -4140,6 +4152,7 @@ class TestHttpRequests(BaseGameTestCase):
 
 
         self._player_auth("guy1")
+        self.dm.set_permission("guy1", views.wiretapping_management.get_access_permission_name(), is_present=True)
 
         url_home = reverse("pychronia_game-homepage", kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID))
 
@@ -4625,6 +4638,8 @@ class TestGameViewSystem(BaseGameTestCase):
             assert not wiretapping._is_action_permitted_for_user("purchase_confidentiality_protection", wiretapping.GAME_ACTIONS, wiretapping.datamanager.user)
             assert wiretapping._instantiate_game_form(new_action_name="purchase_confidentiality_protection") is None
 
+            self.dm.set_permission(username, wiretapping.get_access_permission_name(), True) # personal access permission
+
             # FAILURE #
             response = wiretapping(request)
             print(">>>>>>>>>", response.content)
@@ -4632,7 +4647,7 @@ class TestGameViewSystem(BaseGameTestCase):
             assert error_msg in response.content.decode("utf8")
             assert not wiretapping.datamanager.get_confidentiality_protection_status() # NOT ACQUIRED BY USER
 
-            request.datamanager.update_permissions(permissions=["purchase_confidentiality_protection"])  # has same name as action, here
+            request.datamanager.set_permission(username, "purchase_confidentiality_protection", is_present=True)  # has same name as action, here
             assert wiretapping.datamanager.has_permission(permission="purchase_confidentiality_protection")
             assert wiretapping._is_action_permitted_for_user("purchase_confidentiality_protection", wiretapping.GAME_ACTIONS, wiretapping.datamanager.user)
             assert wiretapping._instantiate_game_form(new_action_name="purchase_confidentiality_protection")
@@ -4658,6 +4673,8 @@ class TestGameViewSystem(BaseGameTestCase):
         # first a "direct action" html call
         request = self.factory.post(view_url, data=dict(_action_="purchase_wiretapping_slot", qsdhqsdh="33"))
         request.datamanager._set_user("guy1")
+        request.datamanager.set_permission("guy1", views.wiretapping_management.get_access_permission_name(), is_present=True)
+
         wiretapping = request.datamanager.instantiate_ability("wiretapping")
         assert not request.datamanager.get_event_count("TRY_PROCESSING_FORMLESS_GAME_ACTION")
         assert not request.datamanager.get_event_count("PROCESS_HTML_REQUEST")
@@ -4730,6 +4747,7 @@ class TestGameViewSystem(BaseGameTestCase):
         request = self.factory.post(view_url)
 
         request.datamanager._set_user("master")
+        request.datamanager.set_permission("guy1", views.runic_translation.get_access_permission_name(), is_present=True)
 
         runic_translation = request.datamanager.instantiate_ability("runic_translation")
 
