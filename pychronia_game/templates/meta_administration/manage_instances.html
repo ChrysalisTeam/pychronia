@@ -31,7 +31,7 @@
 				<ul>
 				    <li>{% trans "Status:" %} '{{ meta.status }}' ({% trans "last change:" %} {{ meta.last_status_change_time|utctolocal|date:"SHORT_DATETIME_FORMAT" }})</li>
 
-					<li>{% trans "Accesses:" %} {{ meta.accesses_count }} ({% trans "last access:" %} {{ meta.last_acccess_time|utctolocal|date:"SHORT_DATETIME_FORMAT" }})</li>
+					<li>{% trans "Accesses:" %} {{ meta.accesses_count }} ({% trans "last access:" %} {{ meta.last_access_time|utctolocal|date:"SHORT_DATETIME_FORMAT" }})</li>
 
 
 				{% if meta.maintenance_until and meta.maintenance_until > utc_now %}

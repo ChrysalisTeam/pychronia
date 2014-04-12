@@ -621,7 +621,7 @@ class TestMetaAdministration(unittest.TestCase): # no django setup required ATM
         res = all_res[0]
         assert res["creator_login"] == "ze_creator_test"
         assert res["creator_email"] == creator_email
-        assert res["creation_time"] == res["last_acccess_time"] == res["last_status_change_time"]
+        assert res["creation_time"] == res["last_access_time"] == res["last_status_change_time"]
         assert res["accesses_count"] == 0
         assert res["status"] == GAME_STATUSES.active == "active"
         assert res["maintenance_until"] is None
@@ -663,7 +663,7 @@ class TestMetaAdministration(unittest.TestCase): # no django setup required ATM
         assert len(all_res) == 1
         res = all_res[0]
         assert res["creator_login"] == "ze_creator_test"
-        assert res["creation_time"] < res["last_acccess_time"] < res["last_status_change_time"]
+        assert res["creation_time"] < res["last_access_time"] < res["last_status_change_time"]
         assert res["accesses_count"] == 4
         assert res["status"] != GAME_STATUSES.active
         assert res["maintenance_until"] is not None # was left as is

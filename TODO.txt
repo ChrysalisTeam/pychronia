@@ -5,7 +5,6 @@ TODO LIST CHRYSALIS
 
 PARTIE EN COURS
 ==================
-- mission d'espionnage des obérons d'Amethyst à l'académie d'alifir : à continuer
 
 Avis à tous les membres de l'Académie, et affiliés.
 Nous venons d'apprendre que la Faculté d'Imuo allait sortir d'ici peu
@@ -28,7 +27,7 @@ GAMEMASTER_HINTS:
 
 FUTURE BUGS
 ================
-- change last_acccess_time... typo IN MAIN DB
+
 - PB, serveurs webfactions sont en UTC !!!
 - typo "quelques" dans email analyse de situation initiale (partie "anthropia")
 
@@ -139,6 +138,7 @@ NEEDS COSMETICS
 TASKS DONE
 ---------------
 
+- change "last_acccess_time" typo - DONE
 - show parent ID in compose form - DONE
 - have event log for players too (eg. for money received...) - DONE
 - have autoselect2lists widget with externals contacts in messaging wiretapping - DONE

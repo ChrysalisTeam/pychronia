@@ -98,7 +98,7 @@ def _create_metadata_record(game_instance_id, creator_login, creator_email):
                                    creator_email=creator_email,
                                    creation_time=utcnow,
                                    accesses_count=0,
-                                   last_acccess_time=utcnow,
+                                   last_access_time=utcnow,
                                    last_status_change_time=utcnow,
                                    status=GAME_STATUSES.active,
                                    maintenance_until=None) # None or datetime here
@@ -216,7 +216,7 @@ def _fetch_available_game_data(game_instance_id, metadata_checker):
             raise GameMaintenanceError(_("Metadata check didn't allow access to instance."))
 
     game_metadata["accesses_count"] += 1
-    game_metadata["last_acccess_time"] = datetime.utcnow()
+    game_metadata["last_access_time"] = datetime.utcnow()
 
     game_data = game_root["data"] # we don't care about game STATUS, we fetch it anyway
     return game_data
