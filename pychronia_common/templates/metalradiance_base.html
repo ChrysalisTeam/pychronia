@@ -349,7 +349,7 @@
             */
 
            /* sign that parts of the page are for admins only */
-           $(".admin-note").pulsate({
+           $(".admin-note").not(".admin-note .admin-note").pulsate({
                               color: "#9D8126",                       // set the color of the pulse
                               reach: 4,                              // how far the pulse goes in px
                               speed: 1000,                            // how long one pulse takes in ms

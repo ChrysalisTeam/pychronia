@@ -67,7 +67,7 @@
 
             {% if display_admin_tips and entry.keywords %}
             <div class="admin-note">
-                {% trans "Keywords" %}{{COLON}} {{ entry.keywords|join:', ' }}
+                <strong>{% trans "Keywords" %}{{COLON}}</strong> {{ entry.keywords|join:', ' }}
             </div>
             {% endif %}
 

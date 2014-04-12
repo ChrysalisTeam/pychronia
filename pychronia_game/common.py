@@ -242,6 +242,18 @@ def determine_asset_url(properties):
         fileurl = game_file_url(myfile)
     return fileurl
 
+
+def utctolocal(value):
+    """
+    Convert naive UTC datetime to wanted gameserver timezone.
+    """
+    import pytz
+    now_utc = pytz.utc.localize(value)
+    local_time = now_utc.astimezone(config.GAME_LOCAL_TZ)
+    return local_time
+
+
+
 __all__ = [key for key in globals().copy() if not key.startswith("_")]
 __all__ += ["_", "ugettext_lazy", "ugettext_noop", "_undefined"] # we add translation shortcuts and _undefined placeholder for default function args
 

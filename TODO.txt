@@ -25,13 +25,6 @@ GAMEMASTER_HINTS:
 	- static pages
 
 
-FUTURE BUGS
-================
-
-- PB, serveurs webfactions sont en UTC !!!
-- typo "quelques" dans email analyse de situation initiale (partie "anthropia")
-
-
 
 FEATURES
 ------------
@@ -44,6 +37,8 @@ FEATURES
 
 SCRIPT
 ----------
+
+- typo "quelques" dans email analyse de situation initiale (partie "anthropia")
 
 - cacher compétences spéciales pour PNJ <- personal permissions EVERYWHERE
 
@@ -138,7 +133,7 @@ NEEDS COSMETICS
 TASKS DONE
 ---------------
 
-
+- handle GAME timezone - DONE
 - add forms to administrator page (change game state, delete game etc.) - DONE
 - allow to edit all characters at once in characters management - DONE
 - setup all select choices with a default empty choice - DONE

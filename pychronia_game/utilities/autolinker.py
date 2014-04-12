@@ -9,7 +9,8 @@ clean_parser = functools.partial(BeautifulSoup, features="html.parser")
 del BeautifulSoup
 
 
-SKIPPED_TAGS = ["head", "a", "textarea", "pre", "code"] # IMPORTANT - thse tags must stay as-is
+SKIPPED_TAGS = ["head", "a", "textarea", "pre", "code",
+                "h1", "h2", "h3", "h4", "h5", "h6", "h7", "h8"] # IMPORTANT - the content of these tags must stay as-is
 
 
 
@@ -64,8 +65,10 @@ def generate_links(html_snippet, regex, link_attr_generator):
                     child.extract()
                     for new_child in reversed(new_children):
                         element.insert(current_index, new_child)
-            elif child.name not in SKIPPED_TAGS: # necessarily a Tag
-                recurse_elements(child)
+            else:
+                assert child.name.lower() == child.name # LOWERCASE
+                if child.name not in SKIPPED_TAGS: # necessarily a Tag
+                    recurse_elements(child)
 
     recurse_elements(soup)
     return unicode(soup)

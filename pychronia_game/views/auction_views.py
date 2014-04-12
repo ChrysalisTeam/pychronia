@@ -346,7 +346,7 @@ def ajax_chat(request):
 
         (new_slice_index, previous_msg_timestamp, new_messages) = request.datamanager.get_chatroom_messages(slice_index)
         msg_format = "<b>%(official_name)s</b> - %(message)s"
-        time_format = "<i>=== %d/%m/%Y - %H:%M:%S UTC ===</i>"
+        time_format = "<i>=== %d/%m/%Y %H:%M:%S ===</i>"
 
         threshold = request.datamanager.get_global_parameter("chatroom_timestamp_display_threshold_s")
         chatroom_timestamp_display_threshold = timedelta(seconds=threshold)
@@ -356,7 +356,7 @@ def ajax_chat(request):
             if not previous_msg_timestamp or (msg["time"] - previous_msg_timestamp) > chatroom_timestamp_display_threshold:
                 record = {"username": None,
                        "color": "grey",
-                       "message": msg["time"].strftime(time_format)}
+                       "message": utctolocal(msg["time"]).strftime(time_format)}
                 text_lines.append(record)
             if msg["username"] in usernames:
                 official_name = msg["username"]
@@ -374,7 +374,7 @@ def ajax_chat(request):
 
         chatting_users = sorted(request.datamanager.build_visible_character_names(request.datamanager.get_chatting_users()))
 
-        print("RETURNING TEXT LINES AJAX ", new_slice_index, text_lines, chatting_users)
+        #print("RETURNING TEXT LINES AJAX ", new_slice_index, text_lines, chatting_users)
 
         all_data = {"slice_index": new_slice_index,
                     "messages": text_lines,
