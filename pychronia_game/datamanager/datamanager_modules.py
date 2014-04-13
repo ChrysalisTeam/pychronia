@@ -303,7 +303,7 @@ class GameEvents(BaseDataManager): # TODO REFINE
         username = self._resolve_username(username)
         all_entries = self.data["events_log"]
         is_master = self.is_master(username)
-        return [entry for entry in all_entries if (is_master or entry["visible_by"] is None or username in entry["visible_by"])]
+        return [entry for entry in all_entries if (is_master or (entry["visible_by"] is not None and username in entry["visible_by"]))]
 
 
 

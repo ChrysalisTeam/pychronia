@@ -204,7 +204,7 @@ class ArtificialIntelligenceAbility(AbstractAbility):
         if djinn_name not in self.get_bot_names():
             raise Http404 # pathological
 
-        res = self.get_bot_response(self.username, bot_name=djinn_name, input=message) # in case of error, a "500" code will be returned
+        res = self.get_bot_response(bot_name=djinn_name, input=message) # in case of error, a "500" code will be returned
         return dict(response=res)
 
 

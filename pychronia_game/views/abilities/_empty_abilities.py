@@ -3,6 +3,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from pychronia_game.common import *
+from pychronia_game.datamanager.abstract_game_view import AbstractGameView
 from pychronia_game.datamanager.abstract_ability import AbstractAbility
 from pychronia_game.views.gameview_mixins import AbstractCaptchaProtectedView
 
@@ -40,7 +41,7 @@ class GeoipLocationAbility(EmptyAbilityMixin, AbstractAbility):
     REQUIRES_GLOBAL_PERMISSION = True
 
 
-class BusinessEscrowAbility(EmptyAbilityMixin, AbstractCaptchaProtectedView): # actually a simple GAMEVIEW, but captcha-protected
+class BusinessEscrowAbility(EmptyAbilityMixin, AbstractGameView): # actually a simple GAMEVIEW, and not captcha
 
     TITLE = ugettext_lazy("Business Escrow")
     NAME = "business_escrow"
