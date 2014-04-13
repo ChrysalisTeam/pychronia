@@ -47,7 +47,7 @@ class RadioSpotForm(DataTableForm):
                 cleaned_data["url"] = None # ERASED
                 cleaned_data["file"] = data
 
-        del cleaned_data["url_or_file"]
+            del cleaned_data["url_or_file"]
         return cleaned_data
 
 
