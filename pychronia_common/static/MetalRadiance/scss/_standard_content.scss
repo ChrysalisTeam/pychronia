@@ -90,7 +90,7 @@ h3 {
 
     /* useful and little known properties */
     word-spacing: normal; // or length measure
-    word-wrap: normal; // or break-word
+    word-wrap: break-word; // or normal
     word-break: normal; // or break-all/hyphenate
     white-space: normal; // or nowrap/pre/pre-line/pre-wrap
     quotes: none; // or string string string string

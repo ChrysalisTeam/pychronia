@@ -190,7 +190,7 @@ msgstr "Vous ne possédez pas d'artefacts."
 
 #: .\forms.py:288
 msgid "Select your artefact..."
-msgstr "Sélectionnez votre artefact."
+msgstr "Sélectionnez votre artefact..."
 
 #: .\forms.py:301
 msgid "User"
@@ -1438,7 +1438,7 @@ msgstr "Propositions d'amitié"
 
 #: .\templates\administration\character_management.html.py:39
 msgid "Character settings"
-msgstr "Paramètres de personnage"
+msgstr "Paramètres des personnages"
 
 #: .\templates\administration\character_management.html.py:49
 msgid "Update character"

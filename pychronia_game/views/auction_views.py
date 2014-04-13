@@ -363,7 +363,7 @@ def ajax_chat(request):
                 color = request.datamanager.get_character_color_or_none(msg["username"])
             else:  # system message
                 official_name = _("system")
-                color = "DarkGrey"
+                color = "#4A4A4A" # dark grey
             data = dict(official_name=official_name,
                         message=msg["message"])
             record = {"username": msg["username"],

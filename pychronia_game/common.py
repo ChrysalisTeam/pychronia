@@ -46,6 +46,8 @@ _undefined = object()
 superuser_required = user_passes_test(lambda u: u.is_superuser)
 
 
+NBSP = "\u00a0"  # unicode equivalent of &nbsp;
+
 
 class UserAccess:
     """

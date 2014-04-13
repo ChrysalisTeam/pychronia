@@ -47,7 +47,7 @@
 
 
     <p style="color:{% usercolor message.sender_email %};">
-        <strong>
+        <strong class="big_text">
             <i>
             {{ message.subject }}
             </i>
@@ -68,9 +68,8 @@
 
             {% if ctx.intercepted_by  %}
             <tr style="height: 40px">
-            <td><strong>[[ {% trans "Intercepted by" %}{{COLON}}</strong></td>
-            <td>
-                <strong>{{ ctx.intercepted_by|join:", " }} ]]</strong>
+            <td colspan="2">
+                <strong>[[ {% trans "Intercepted by" %}{{COLON}} {{ ctx.intercepted_by|join:", " }} ]]</strong>
             </td>
             </tr>
             {% endif %}
@@ -125,7 +124,7 @@
 
         </table>
 
-
+        <br/>
 
         <div class="pretty_text" style="color:{% usercolor message.sender_email %};">
 

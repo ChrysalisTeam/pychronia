@@ -38,7 +38,7 @@ body {
   font-family: Arial, Helvetica, sans-serif;
   background-color: black;
   word-spacing: normal;
-  word-wrap: normal;
+  word-wrap: break-word;
   word-break: normal;
   white-space: normal;
   quotes: none;
@@ -187,7 +187,7 @@ body:after {
   padding: 4px 12px;
 }
 #full_header #full_header_background #notification_table .carving {
-  font-size: 1.1em;
+  font-size: 1.05em;
   color: white;
   width: 183px;
   background-image: url('img/backgrounds/carving1.png');
@@ -639,24 +639,31 @@ img.center {
 }
 .biggest_text {
   font-size: 2em;
+  line-height: 2.5em;
 }
 .bigger_text {
   font-size: 1.5em;
+  line-height: 1.7em;
 }
 .big_text {
   font-size: 1.25em;
+  line-height: 1.4em;
 }
 .normal_text {
   font-size: 1em;
+  line-height: 1.2em;
 }
 .small_text {
   font-size: 0.85em;
+  line-height: 1em;
 }
 .smaller_text {
   font-size: 0.75em;
+  line-height: 0.9em;
 }
 .smallest_text {
   font-size: 0.5em;
+  line-height: 0.7em;
 }
 .bold {
   font-weight: bold;
@@ -1296,7 +1303,7 @@ h3 {
   text-decoration: none;
   text-indent: 20px;
   word-spacing: normal;
-  word-wrap: normal;
+  word-wrap: break-word;
   word-break: normal;
   white-space: normal;
   quotes: none;

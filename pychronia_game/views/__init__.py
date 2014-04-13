@@ -162,7 +162,7 @@ def bug_report_treatment(request):
                                 location=location,
                                 report_data=report_data)
 
-    mail_admins("Pychronia Bug Report", message=message, html_message=None)
+    mail_admins("Pychronia Bug Report", message=message, html_message=None) # we don't know if it REALLY sends stuffs...
 
     return HttpResponse("OK - bug reported")
 

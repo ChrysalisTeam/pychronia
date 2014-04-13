@@ -69,7 +69,7 @@ def _generate_web_menu(request, menu_entry_generator):
 
     if user.is_authenticated and (not processed_view or processed_view.NAME != views.conversation.NAME):
         unread_msgs_count = datamanager.get_unread_messages_count()
-        conversation_suffix = u"(%d)" % unread_msgs_count
+        conversation_suffix = NBSP + u"(%d)" % unread_msgs_count
     else:
         conversation_suffix = u""
 
@@ -77,7 +77,7 @@ def _generate_web_menu(request, menu_entry_generator):
     if user.is_authenticated and (not processed_view or processed_view.NAME != views.chatroom.NAME):
         # same for chatroom
         num_chatters = len(request.datamanager.get_chatting_users(exclude_current=True))
-        chatroom_suffix = u"(%d)" % num_chatters
+        chatroom_suffix = NBSP + u"(%d)" % num_chatters
     else:
         chatroom_suffix = u""
 
@@ -151,10 +151,12 @@ def _generate_web_menu(request, menu_entry_generator):
                        (
                          menu_entry(_(u"Dashboard"), views.admin_dashboard),
                          menu_entry(_(u"Game Events"), views.game_events, forced_visibility=(True if user.is_master else False)),
+                         menu_entry(_(u"Admin Information"), view=views.admin_information),
+
                          menu_entry(_(u"Manage Characters"), views.manage_characters),
                          menu_entry(_(u"Manage Webradio Playlist"), views.webradio_management),
 
-                         menu_entry(_(u"Admin Information"), view=views.admin_information),
+
                          menu_entry(_(u"Edit Static Pages"), views.static_pages_management),
                          menu_entry(_(u"Edit Email Contacts"), views.global_contacts_management),
                          menu_entry(_(u"Edit Radio Spots"), views.radio_spots_editing),
