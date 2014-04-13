@@ -54,7 +54,7 @@ from .abilities import (house_locking, runic_translation, wiretapping_management
 
 from .admin_views import (admin_dashboard, webradio_management,
                           manage_databases, static_pages_management, global_contacts_management,
-                          radio_spots_editing,
+                          radio_spots_editing, encrypted_folders_management,
                           manage_characters, CHARACTERS_IDENTITIES,
                           DATABASE_OPERATIONS, FAIL_TEST, MEDIA_TEST)
 

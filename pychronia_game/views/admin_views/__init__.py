@@ -26,7 +26,8 @@ global_contacts_management = GlobalContactsManagement.as_view
 from .radio_spots_editing_mod import RadioSpotsEditing
 radio_spots_editing = RadioSpotsEditing.as_view
 
-
+from .encrypted_folders_mod import EncryptedFoldersManagement
+encrypted_folders_management = EncryptedFoldersManagement.as_view
 
 
 @register_view(access=UserAccess.master, title=ugettext_lazy("View Database"))

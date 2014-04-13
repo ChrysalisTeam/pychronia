@@ -3421,6 +3421,24 @@ class PersonalFiles(BaseDataManager):
 
         return decrypted_files
 
+    @readonly_method
+    def get_all_encrypted_folders_info(self):
+        """
+        Retursn a mapping {folder_name => passwords_list}
+        """
+        folders_info = {}
+        folders = os.listdir(os.path.join(config.GAME_FILES_ROOT, "encrypted"))
+        for f in folders:
+            folder_path = os.path.join(config.GAME_FILES_ROOT, "encrypted", f)
+            if folder_path.startswith("_") or not os.path.isdir(folder_path):
+                continue # might be a README file or stuffs
+            pwds = os.listdir(folder_path)
+            pwds = [pwd for pwd in pwds if (not pwd.startswith("_") and os.path.isdir(os.path.join(config.GAME_FILES_ROOT, "encrypted", f, pwd)))]
+            if not pwds:
+                continue # empty folder
+            folders_info[f] = sorted(pwds)
+        return folders_info
+
 
     @readonly_method
     def get_personal_files(self, username=CURRENT_USER, absolute_urls=False):

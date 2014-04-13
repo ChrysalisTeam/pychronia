@@ -116,7 +116,7 @@ $error_color: red;
     text-indent: 15px;
 }
 
-.pretty_text {
+.pretty_text p, p.pretty_text{
     @include pretty_text;
 }
 

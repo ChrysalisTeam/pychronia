@@ -1,0 +1,34 @@
+
+{% extends "base_one_column.html" %}
+
+{% load i18n helpers kwacros %}
+
+
+{% block content %}
+
+    {% if folders_info %}
+
+        {% for folder, pwds in folders_info %}
+
+        <h2>{% trans "Folder" %}{{COLON}} {{ folder }}</h2>
+
+            <p>
+                {% trans "URL" %}{{COLON}}
+                <a href={% game_view_url "pychronia_game.views.encrypted_folder" folder=folder %}>
+                {% game_view_url "pychronia_game.views.encrypted_folder" folder=folder %}
+                </a>
+            </p>
+            <p>
+                {% trans "Passwords" %}{{COLON}} {{ pwds|join:", " }}
+            </p>
+
+        {% endfor %}
+
+    {% else %}
+        <p class="inner_center">{% trans "No encrypted folders are currently configured." %}</p>
+    {% endif %}
+{% endblock %}
+
+
+
+

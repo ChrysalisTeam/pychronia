@@ -105,7 +105,7 @@ def _generate_web_menu(request, menu_entry_generator):
                          menu_entry(view=views.personal_webradio_page),
                          menu_entry(view=views.view_world_map),
 
-                         menu_entry(_(u"__EncryptedFolder__"), view=views.encrypted_folder, view_kwargs=dict(folder="guy2_report"), forced_visibility=(False if not user.is_master else None)), # TODO REMOVE ME
+                         # menu_entry(_(u"__EncryptedFolder__"), view=views.encrypted_folder, view_kwargs=dict(folder="guy2_report"), forced_visibility=(False if not user.is_master else None)), # TODO REMOVE ME
                          menu_entry(_(u"__PublicWebradio__"), view=views.public_webradio, forced_visibility=(False if not user.is_master else None)), # TODO REMOVE ME
 
                       )),
@@ -154,6 +154,7 @@ def _generate_web_menu(request, menu_entry_generator):
                          menu_entry(_(u"Manage Characters"), views.manage_characters),
                          menu_entry(_(u"Manage Webradio Playlist"), views.webradio_management),
 
+                         menu_entry(_(u"View Encrypted Folders"), view=views.encrypted_folders_management),
                          menu_entry(_(u"Edit Static Pages"), views.static_pages_management),
                          menu_entry(_(u"Edit Email Contacts"), views.global_contacts_management),
                          menu_entry(_(u"Edit Radio Spots"), views.radio_spots_editing),

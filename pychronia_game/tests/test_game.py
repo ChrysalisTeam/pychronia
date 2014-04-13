@@ -1567,7 +1567,10 @@ class TestDatamanager(BaseGameTestCase):
 
     @for_core_module(PersonalFiles)
     def test_encrypted_folders(self):
+        self._reset_django_db()
         self._reset_messages()
+
+        assert self.dm.get_all_encrypted_folders_info() == dict(guy2_report=["evans", "schamaalamoktuhg"])
 
         self.assertTrue(self.dm.encrypted_folder_exists("guy2_report"))
         self.assertFalse(self.dm.encrypted_folder_exists("dummyarchive"))

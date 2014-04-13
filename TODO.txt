@@ -334,7 +334,7 @@ TASKS DONE
 FUTUR ENHANCEMENTS
 --------------------------
 
-
+- improve encrypted folders, put password in GET url
 - randomize master login in PlayerAuthentication._load_initial_data() DANGEROUS FOR NOW
 - allow multi-instance staff impersonation, so that superuser can remain logged everywhere - DONE in theory
 - make ALL gamemaster_hints editable (items too)
