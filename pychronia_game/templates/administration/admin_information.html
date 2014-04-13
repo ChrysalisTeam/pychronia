@@ -6,11 +6,23 @@
 
 {% block content %}
 
+    <h2>{% trans "Public Webradio" %}</h2>
+    <p>
+        {% trans "Public Webradio URL" %}{{COLON}}
+        <a href={% game_view_url "pychronia_game.views.public_webradio" %}>
+            {% game_view_url "pychronia_game.views.public_webradio" %}
+        </a>
+    </p>
+
+    <br/>
+
+    <h2>{% trans "Encrypted Folders" %}</h2>
+
     {% if folders_info %}
 
         {% for folder, pwds in folders_info %}
 
-        <h2>{% trans "Folder" %}{{COLON}} {{ folder }}</h2>
+        <strong>{% trans "Folder" %}{{COLON}} {{ folder }}</strong>
 
             <p>
                 {% trans "URL" %}{{COLON}}
@@ -22,6 +34,7 @@
                 {% trans "Passwords" %}{{COLON}} {{ pwds|join:", " }}
             </p>
 
+        <br/>
         {% endfor %}
 
     {% else %}

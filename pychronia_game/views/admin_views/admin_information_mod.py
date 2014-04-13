@@ -14,16 +14,17 @@ from pychronia_game.datamanager.abstract_game_view import AbstractGameView
 
 
 @register_view
-class EncryptedFoldersManagement(AbstractGameView):
+class AdminInformation(AbstractGameView):
 
-    TITLE = ugettext_lazy("Encrypted Folders")
-    NAME = "encrypted_folders_management"
+    TITLE = ugettext_lazy("Admin Information")
+    NAME = "admin_information"
 
-    TEMPLATE = "administration/encrypted_folders_management.html"
+    TEMPLATE = "administration/admin_information.html"
 
     ACCESS = UserAccess.master
     REQUIRES_CHARACTER_PERMISSION = False
     REQUIRES_GLOBAL_PERMISSION = False
+
 
     def get_template_vars(self, previous_form_data=None):
 
