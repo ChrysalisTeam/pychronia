@@ -148,12 +148,15 @@ def manage_characters(request, template_name='administration/character_managemen
     proposed_friendships = sorted(friendship_data["proposed"].items())
     del friendship_data
 
+    characters_emails = [x["real_life_email"] for (_username, x) in characters_items if x["real_life_email"]]
+
     return render(request,
                   template_name,
                     dict(
                          character_forms=character_forms,
                          sealed_friendships=sealed_friendships,
                          proposed_friendships=proposed_friendships,
+                         characters_emails=characters_emails,
                          ))
 
 

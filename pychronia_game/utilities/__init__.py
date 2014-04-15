@@ -348,6 +348,7 @@ def check_is_datetime(value):
     return True
 
 def check_is_email(value):
+    assert value == value.strip()
     usage_assert(email_re.match(value), value)
     return True
 
