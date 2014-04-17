@@ -1422,6 +1422,9 @@ fieldset {
   padding: 0;
   margin: 4px 0 3px 3px;
 }
+.select2-search-choice, .select2-results {
+  font-size: 0.8em;
+}
 .zoomable > img {
   border: none;
 }

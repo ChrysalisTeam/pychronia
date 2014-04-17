@@ -8,6 +8,7 @@ import json
 
 from pychronia_game.common import *
 from django.core.exceptions import ValidationError
+from django_select2 import Select2MultipleWidget
 
 
 
@@ -139,6 +140,7 @@ class GemPayementFormMixin(GemHandlingFormUtils):
 
             _gems = datamanager.get_character_properties()["gems"]
             _gems_choices = zip(self._encode_gems(_gems), [self._gem_display(gem) for gem in _gems]) # gem is (value, origin) here
+            _gems_choices.sort(key=lambda x: x[1]) # sort by labels
 
             if payment_by_money:
                 if payment_by_gems and _gems_choices:
@@ -152,13 +154,14 @@ class GemPayementFormMixin(GemHandlingFormUtils):
             if payment_by_gems:
 
                 if _gems_choices:
-                    self.fields["gems_list"] = forms.MultipleChoiceField(required=False, label=_("Or pay with gems"), choices=_gems_choices) #, widget=forms.SelectMultiple(attrs={"class": "multichecklist"}))
+                    self.fields["gems_list"] = forms.MultipleChoiceField(required=False, 
+                                                                         label=_("Or pay with gems"), 
+                                                                         choices=_gems_choices,
+                                                                         widget=Select2MultipleWidget)
                 else:
                     self.fields["gems_list"] = forms.MultipleChoiceField(required=False, widget=forms.HiddenInput) # we could just
 
                 assert "gems_list" in self.fields
-
-        #print(">>>>>>>>> GemPayementFormMixin", self.__class__.__name__, self.fields.keys())
 
 
     def get_normalized_values(self):
