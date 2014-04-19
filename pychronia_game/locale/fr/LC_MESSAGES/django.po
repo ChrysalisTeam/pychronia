@@ -399,7 +399,7 @@ msgstr "Payer en argent"
 
 #: .\datamanager\abstract_form.py:155
 msgid "Or pay with gems"
-msgstr "Ou paiement en gemmes"
+msgstr "Ou payer en gemmes"
 
 #: .\datamanager\abstract_form.py:200
 msgid "Initial identifier"

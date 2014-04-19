@@ -13,7 +13,13 @@
 }
 
 
+.ui-dropdownchecklist-selector-wrapper, .ui-dropdownchecklist-selector, .ui-dropdownchecklist-text {
+    width: 100% !important;
+}
 
+.ui-dropdownchecklist-dropcontainer-wrapper {
+    width: auto !important;
+}
 
 .ui-dropdownchecklist {
     background-color: white;

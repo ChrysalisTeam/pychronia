@@ -1397,8 +1397,7 @@ textarea {
 #full_content form textarea, #full_content form select,
 #full_content form input[type=text], #full_content form input[type=password],
 #full_content form input[type=submit], #full_content form input[type=button],
-#full_content form .select2-container, #full_content form .markItUp,
-#full_content form .ui-dropdownchecklist {
+#full_content form .select2-container, #full_content form .markItUp {
   width: 100%;
   display: block;
 }
@@ -1411,6 +1410,13 @@ fieldset {
 }
 .jp-audio * {
   box-sizing: content-box !important;
+}
+.ui-dropdownchecklist-selector-wrapper, .ui-dropdownchecklist-selector,
+.ui-dropdownchecklist-text {
+  width: 100% !important;
+}
+.ui-dropdownchecklist-dropcontainer-wrapper {
+  width: auto !important;
 }
 .ui-dropdownchecklist {
   background-color: white;
