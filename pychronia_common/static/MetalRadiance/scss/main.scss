@@ -98,6 +98,9 @@ body {
 
     background-color: black;
 
+    // WORKAROUND 2014/04/19, avoids lag and jitter on background images, see https://bugzilla.mozilla.org/show_bug.cgi?id=846315
+    image-rendering: -moz-crisp-edges;
+
     /* useful and little known properties */
     word-spacing: normal; // or length measure
     word-wrap: break-word; // or normal
