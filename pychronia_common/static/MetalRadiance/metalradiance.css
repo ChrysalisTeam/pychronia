@@ -37,6 +37,7 @@ body {
   line-height: 20px;
   font-family: Arial, Helvetica, sans-serif;
   background-color: black;
+  image-rendering: -moz-crisp-edges;
   word-spacing: normal;
   word-wrap: break-word;
   word-break: normal;
@@ -1396,7 +1397,8 @@ textarea {
 #full_content form textarea, #full_content form select,
 #full_content form input[type=text], #full_content form input[type=password],
 #full_content form input[type=submit], #full_content form input[type=button],
-#full_content form .select2-container, #full_content form .markItUp {
+#full_content form .select2-container, #full_content form .markItUp,
+#full_content form .ui-dropdownchecklist {
   width: 100%;
   display: block;
 }
@@ -1410,13 +1412,14 @@ fieldset {
 .jp-audio * {
   box-sizing: content-box !important;
 }
-.ui-dropdownchecklist-dropcontainer {
-  border: solid 1px black;
-}
 .ui-dropdownchecklist {
   background-color: white;
-  padding: 1px 2px;
+  padding: 1px;
   font-size: 0.9em;
+}
+.ui-dropdownchecklist-dropcontainer {
+  border: solid 1px black;
+  padding: 2px;
 }
 .select2-container-multi .select2-choices .select2-search-field input {
   padding: 0;

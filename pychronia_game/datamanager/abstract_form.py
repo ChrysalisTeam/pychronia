@@ -7,8 +7,8 @@ import json
 
 
 from pychronia_game.common import *
+from django import forms
 from django.core.exceptions import ValidationError
-from django_select2 import Select2MultipleWidget
 
 
 
@@ -157,7 +157,7 @@ class GemPayementFormMixin(GemHandlingFormUtils):
                     self.fields["gems_list"] = forms.MultipleChoiceField(required=False, 
                                                                          label=_("Or pay with gems"), 
                                                                          choices=_gems_choices,
-                                                                         widget=Select2MultipleWidget)
+                                                                         widget=forms.SelectMultiple(attrs={"class": "multichecklist"}))
                 else:
                     self.fields["gems_list"] = forms.MultipleChoiceField(required=False, widget=forms.HiddenInput) # we could just
 

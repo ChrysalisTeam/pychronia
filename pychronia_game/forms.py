@@ -71,7 +71,7 @@ class GemsTransferForm(AbstractGameForm, GemHandlingFormUtils):
             others_choices = datamanager.build_select_choices_from_character_usernames(others, add_empty=True)
             self.fields.insert(1, "recipient_name", forms.ChoiceField(label=_("Recipient"), choices=others_choices))
 
-        self.fields.insert(2, "gems_choices", forms.MultipleChoiceField(required=False, label=_("Gems"), choices=gems_choices, widget=Select2MultipleWidget))
+        self.fields.insert(2, "gems_choices", forms.MultipleChoiceField(required=False, label=_("Gems"), choices=gems_choices, widget=forms.SelectMultiple(attrs={"class": "multichecklist"})))
 
 
     def clean(self):
