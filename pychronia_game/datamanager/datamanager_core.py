@@ -287,7 +287,9 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
                 del data_tree[key]
         """
 
-        string = utilities.dump_data_tree_to_yaml(data_tree, **kwargs)
+        string = utilities.dump_data_tree_to_yaml(data_tree,
+                                                  default_style=">", # prevents too long lines and double "'" quotes
+                                                  ** kwargs)
 
         return string
 

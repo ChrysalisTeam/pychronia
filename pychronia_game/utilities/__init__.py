@@ -280,12 +280,40 @@ def load_multipart_rst(val):
 
 
 def dump_data_tree_to_yaml(data_tree, convert=True, **kwargs):
-
+    """
+    Valid keywords for the method def dump(data, stream=None, Dumper=Dumper, **kwds) in python-yaml :
+    
+    default_style : indicates the style of the scalar. Possible values are None, '', '\'', '"', '|', '>'.
+    
+    default_flow_style :  indicates if a collection is block or flow. The possible values are None, True, False.
+    
+    canonical : if True export tag type to the output file
+    
+    indent :  sets the preferred indentation
+    
+    width : set the preferred line width
+    allow_unicode : allow unicode in output file
+    
+    line_break : specify the line break you need
+    
+    encoding : output encoding, defaults to utf-8
+    
+    explicit_start : if True, adds an explicit start using “—”
+    
+    explicit_end: if True, adds an explicit end using “—”
+    
+    version : version of the YAML parser, tuple (major, minor), supports only major version 1
+    
+    tags : I didn’t find any information about this parameter … and no time to test it ;-). Comments are welcome !
+    """
     if convert:
         data_tree = convert_object_tree(data_tree, zodb_to_python_types)
 
-    dump_args = dict(width=100, indent=4, # NO default_style nor canonical, else stuffs break
-                        default_flow_style=False, allow_unicode=True)
+    dump_args = dict(width=100,# NOT canonical
+                     indent=4,
+                     default_style=">", # or
+                     default_flow_style=False, # not BLOCK
+                     allow_unicode=True)
     dump_args.update(kwargs)
 
     yaml.add_representer(unicode, lambda dumper, value: dumper.represent_scalar(u'tag:yaml.org,2002:str', value))
