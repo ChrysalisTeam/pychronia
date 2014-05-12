@@ -25,10 +25,11 @@ INSTALLED_APPS += [
     'pychronia_game',
     'easy_thumbnails',
     'django.contrib.messages', # not in pychronia_common, as long as it doesn't get displayed (and thus emptied) by ALL templates
+    'filemanager',
 ]
 
 
-
+FILEMANAGER_STATIC_ROOT = "filemanager/"
 
 ############# DJANGO-APP CONFS ############
 

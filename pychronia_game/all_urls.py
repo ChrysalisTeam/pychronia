@@ -6,7 +6,7 @@ from django.conf.urls import *
 from django.contrib import admin
 from .utilities import config
 from django.http import HttpResponse
-
+from filemanager import path_end
 
 admin.autodiscover()
 
@@ -143,7 +143,10 @@ web_game_urlpatterns = patterns('pychronia_game.views',
     url(r'^ability/business_escrow/$', 'business_escrow'),
     url(r'^ability/black_market/$', 'black_market'),
 
+
 )
+
+
 
 
 support_urlpatterns = patterns('',
@@ -159,6 +162,7 @@ support_urlpatterns = patterns('',
     url(r'^%s(?P<hash>[^/]+)/(?P<path>.+)$' % config.GAME_FILES_URL[1:], 'pychronia_game.views.serve_game_file'), # NOT a gameview
 
     ## no need to serve MEDIA_URL in this site
+    url(r'^abc/' + path_end, 'pychronia_game.views.myfiles'),
 )
 
 

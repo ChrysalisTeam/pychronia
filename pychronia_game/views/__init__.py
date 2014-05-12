@@ -64,6 +64,10 @@ from .admin_views import (admin_dashboard, webradio_management,
 
 #### Here are the views that don't belong to any particular category ####
 
+from filemanager import FileManager
+def myfiles(request, path):
+  fm = FileManager(os.path.join(config.GAME_FILES_ROOT, "images", "sketches"))
+  return fm.render(request, path)
 
 
 def serve_game_file(request, hash="", path="", **kwargs):

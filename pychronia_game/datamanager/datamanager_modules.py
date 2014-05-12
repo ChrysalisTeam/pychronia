@@ -2186,7 +2186,7 @@ class TextMessagingTemplates(BaseDataManager):
 
         messaging = self.messaging_data
 
-        template_fields = "sender_email recipient_emails subject body attachment transferred_msg is_used parent_id gamemaster_hints".split()
+        #template_fields = "sender_email recipient_emails subject body attachment transferred_msg is_used parent_id gamemaster_hints".split()
 
         for msg in messaging["manual_messages_templates"].values():
             ##TEMPutilities.check_has_keys(msg, keys=template_fields, strict=strict)
