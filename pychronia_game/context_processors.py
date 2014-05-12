@@ -37,7 +37,7 @@ def pychronia_template_context(request):
 
 
 
-    if hasattr(request, "datamanager") and request.datamanager:
+    if hasattr(request, "datamanager") and request.datamanager and getattr(request, "processed_view", None):
 
         dm = request.datamanager
 
