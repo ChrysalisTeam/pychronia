@@ -311,7 +311,7 @@ def dump_data_tree_to_yaml(data_tree, convert=True, **kwargs):
 
     dump_args = dict(width=100,# NOT canonical
                      indent=4,
-                     default_style="|", # or
+                     default_style="|",
                      default_flow_style=False, # not BLOCK
                      allow_unicode=True)
     dump_args.update(kwargs)

@@ -2216,7 +2216,7 @@ class TextMessagingTemplates(BaseDataManager):
 
             if msg["transferred_msg"]:
                 msg["transferred_msg"].encode("ascii")
-                assert self.get_dispatched_message_by_id(msg_id=msg["transferred_msg"])
+                assert self.get_dispatched_message_by_id(msg_id=msg["transferred_msg"]) # must ALREADY be dispatched
 
             utilities.check_is_bool(msg["is_used"])
 
