@@ -34,7 +34,6 @@ FEATURES
 - systeme pour créer partie - WIP
 
 
-
 SCRIPT
 ----------
 
@@ -133,6 +132,7 @@ NEEDS COSMETICS
 TASKS DONE
 ---------------
 
+- added basic sorting to message templates - DONE
 - handle GAME timezone - DONE
 - add forms to administrator page (change game state, delete game etc.) - DONE
 - allow to edit all characters at once in characters management - DONE

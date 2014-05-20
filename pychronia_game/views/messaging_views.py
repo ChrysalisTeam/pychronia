@@ -298,7 +298,7 @@ def ajax_force_email_sending(request):
 @register_view(access=UserAccess.master, title=ugettext_lazy("Message Templates"))
 def messages_templates(request, template_name='messaging/messages.html'):
 
-    message_template_categories = request.datamanager.get_global_parameter("message_template_categories")
+    message_template_categories = request.datamanager.get_global_parameter("message_template_categories") # already sorted, ATM
 
     selected_category = request.GET.get("category")
     if selected_category and selected_category not in message_template_categories:
@@ -306,7 +306,7 @@ def messages_templates(request, template_name='messaging/messages.html'):
         selected_category = None
 
     templates = request.datamanager.get_messages_templates().items() # PAIRS (template_id, template_dict)
-    templates.sort(key=lambda msg: msg[0])  # we sort by template name
+    templates.sort(key=lambda msg: (msg[1]["order"], msg[0]))  # we sort by order and then template name
     enriched_templates = [(_determine_template_display_context(request.datamanager, template_id=tpl[0], template=tpl[1]), tpl[1])
                           for tpl in templates if (not selected_category or selected_category in tpl[1]["categories"])]
     return render(request,

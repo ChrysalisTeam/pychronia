@@ -2139,8 +2139,9 @@ class TextMessagingTemplates(BaseDataManager):
         messaging.setdefault("manual_messages_templates", PersistentDict())
 
         if isinstance(messaging["manual_messages_templates"], list): # to simplify exchanges with dispatched emails, we allow list fixtures
-            for t in messaging["manual_messages_templates"]:
+            for idx, t in enumerate(messaging["manual_messages_templates"]):
                 assert ("id" in t), t
+                t.setdefault("order", idx * 10)
             messaging["manual_messages_templates"] = dict((t["id"], t) for t in messaging["manual_messages_templates"]) # indexed by ID
 
         existing_template_categories = set() # we build initial list of template "tags"
@@ -2186,10 +2187,17 @@ class TextMessagingTemplates(BaseDataManager):
 
         messaging = self.messaging_data
 
-        template_fields = "sender_email recipient_emails subject body attachment transferred_msg is_used parent_id gamemaster_hints".split()
+        #FIXME - BEWARE group_id not used yet, but it will be someday!!!
+
+        template_fields = set("sender_email recipient_emails subject body attachment transferred_msg is_used parent_id gamemaster_hints categories sent_at group_id order".split())
 
         for msg in messaging["manual_messages_templates"].values():
-            ##TEMPutilities.check_has_keys(msg, keys=template_fields, strict=strict)
+
+            assert set(msg.keys()) <= template_fields, (set(msg.keys()) - template_fields, msg["subject"])
+
+            utilities.check_is_int(msg["order"])
+
+            utilities.check_is_string(msg["subject"], multiline=False) # necessary for sidebar menu
 
             msg.setdefault("categories", PersistentList(["unsorted"])) # FIXME TEMP FIX
             assert isinstance(msg["categories"], PersistentList)
@@ -2316,9 +2324,9 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
                              }
 
         def _check_message_list(msg_list, is_queued):
-            
+
             master = self.get_global_parameter("master_login")
-            
+
             for msg in msg_list:
 
                 utilities.check_dictionary_with_template(msg, message_reference, strict=False)
