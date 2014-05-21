@@ -116,7 +116,8 @@ def create_instance(request):
                     logging.error("Couldn't send game instance activation email to %s", creator_email, exc_info=True)
                     messages.add_message(request, messages.ERROR, _(u"Couldn't send activation email."))
                 else:
-                    messages.add_message(request, messages.INFO, _(u"Game instance '%s' successfully created for '%s/%s'") % (game_instance_id, creator_login, creator_email))
+                    messages.add_message(request, messages.INFO, _(u"Game instance '%(game_instance_id)s' successfully created for '%(creator_login)s/%(creator_email)s'") %
+                                         SDICT(game_instance_id=game_instance_id, creator_login=creator_login, creator_email=creator_email))
                     game_creation_form = None
                     information = _("The activation email has been sent to %(creator_email)s.") % SDICT(creator_email=creator_email)
 
@@ -151,7 +152,7 @@ def activate_instance(request):
         else:
             metadata = datamanager_administrator.get_game_instance_metadata_copy(game_instance_id) # shall NOT raise errors
             if (metadata["creator_login"] != creator_login or metadata["creator_email"] != creator_email):
-                raise ValueError("Creator data doesn't match for game instance %s" % game_instance_id)
+                raise ValueError("Creator data doesn't match for game instance %(game_instance_id)s" % SDICT(game_instance_id=game_instance_id))
                 
             pass # TODO FIXME add check on existing metadata.creator_login
 
@@ -165,7 +166,7 @@ def activate_instance(request):
         import pychronia_game.views
         target_url = settings.SITE_DOMAIN + reverse(pychronia_game.views.homepage, kwargs=dict(game_instance_id=game_instance_id)) + "?" + session_token_display
 
-        content = _("In case you don't get properly redirected, please copy this link into our URL bar: %s") % target_url
+        content = _("In case you don't get properly redirected, please copy this link into our URL bar: %(target_url)s") % SDICT(target_url=target_url)
         return HttpResponseRedirect(target_url, content=content)
 
     except (ValueError, TypeError, LookupError, AttributeError, UnicodeError), e:
@@ -195,7 +196,8 @@ def manage_instances(request):
                                                                      creator_login=creator_login,
                                                                      creator_email=creator_email,
                                                                      skip_randomizations=False)
-                    messages.add_message(request, messages.INFO, _(u"Game instance '%s' successfully created for '%s/%s'") % (game_instance_id, creator_login, creator_email))
+                    messages.add_message(request, messages.INFO, _(u"Game instance '%(game_instance_id)s' successfully created for '%(creator_login)s/%(creator_email)s'") %
+                                                                    SDICT(game_instance_id=game_instance_id, creator_login=creator_login, creator_email=creator_email))
                     game_creation_form = None
                 else:
                     messages.add_message(request, messages.ERROR, _(u"Invalid game creation form submitted."))
@@ -203,31 +205,33 @@ def manage_instances(request):
                 game_instance_id = request.POST["lock_instance"]
                 maintenance_until = datetime.utcnow() + timedelta(minutes=GAME_INSTANCE_MAINTENANCE_LOCKING_DELAY_MN)
                 datamanager_administrator.change_game_instance_status(game_instance_id=game_instance_id, maintenance_until=maintenance_until)
-                messages.add_message(request, messages.INFO, _(u"Game instance '%s' successfully locked") % game_instance_id)
+                messages.add_message(request, messages.INFO, _(u"Game instance '%(game_instance_id)s' successfully locked") % SDICT(game_instance_id=game_instance_id))
             elif request.POST.get("unlock_instance"):
                 game_instance_id = request.POST["unlock_instance"]
                 datamanager_administrator.change_game_instance_status(game_instance_id=game_instance_id, maintenance_until=None) # removes maintenance
-                messages.add_message(request, messages.INFO, _(u"Game instance '%s' successfully unlocked") % game_instance_id)
+                messages.add_message(request, messages.INFO, _(u"Game instance '%(game_instance_id)s' successfully unlocked") % SDICT(game_instance_id=game_instance_id))
             elif request.POST.get("change_instance_status"):
                 game_instance_id = request.POST["change_instance_status"]
                 new_status = request.POST["new_status"]
                 datamanager_administrator.change_game_instance_status(game_instance_id=game_instance_id, new_status=new_status) # change status
-                messages.add_message(request, messages.INFO, _(u"Game instance '%s' status changed to '%s'") % (game_instance_id, new_status))
+                messages.add_message(request, messages.INFO, _(u"Game instance '%(game_instance_id)s' status changed to '%(new_status)s'") % SDICT(game_instance_id=game_instance_id, new_status=new_status))
             elif request.POST.get("delete_game_instance"):
                 game_instance_id = request.POST["delete_game_instance"]
                 datamanager_administrator.delete_game_instance(game_instance_id=game_instance_id)
-                messages.add_message(request, messages.INFO, _(u"Game instance '%s' was deleted") % game_instance_id)
+                messages.add_message(request, messages.INFO, _(u"Game instance '%(game_instance_id)s' was deleted") % SDICT(game_instance_id=game_instance_id))
             elif request.POST.get("backup_game_instance"):
                 game_instance_id = request.POST["backup_game_instance"]
                 backup_comment = slugify(request.POST["backup_comment"].strip()) or None
                 datamanager_administrator.backup_game_instance_data(game_instance_id=game_instance_id, comment=backup_comment)
-                messages.add_message(request, messages.INFO, _(u"Game instance '%s' backup with comment '%s' done") % (game_instance_id, backup_comment or u"<empty>"))
+                messages.add_message(request, messages.INFO, _(u"Game instance '%(game_instance_id)s' backup with comment '%(backup_comment)s' done") %
+                                                               SDICT(game_instance_id=game_instance_id, backup_comment=(backup_comment or u"<empty>")))
             elif request.POST.get("compute_enforced_session_ticket"):
                 game_instance_id = request.POST["game_instance_id"].strip() # manually entered
                 login = request.POST["login"].strip()
                 is_observer = bool(request.POST.get("is_observer"))
                 authentication_token = authentication.compute_enforced_login_token(game_instance_id=game_instance_id, login=login, is_observer=is_observer)
-                messages.add_message(request, messages.INFO, _(u"Auto-connection token for 'instance=%s, login=%s and is_observer=%s' is displayed below") % (game_instance_id, login, is_observer))
+                messages.add_message(request, messages.INFO, _(u"Auto-connection token for 'instance=%(instance)s, login=%(login)s and is_observer=%(is_observer)s' is displayed below") %
+                                                               SDICT(game_instance_id=game_instance_id, login=login, is_observer=is_observer))
                 session_token_display = urlencode({authentication.ENFORCED_SESSION_TICKET_NAME: authentication_token})
             else:
                 raise ValueError(_("Unknown admin action"))
