@@ -49,7 +49,7 @@ GAME_ACTIVATION_EMAIL_SUBJECT = ugettext_lazy("New game instance of Chrysalis RP
 GAME_ACTIVATION_EMAIL_BODY_TPL = ugettext_lazy("""\
 Dear %(creator_login)s,
 
-here is the link that will allow you to complete the creation of your Chrysalis game,\
+here is the link that will allow you to complete the creation of your Chrysalis game, \
 and to automatically sign in as the game master.
 
 %(activation_link)s
