@@ -53,6 +53,9 @@ here is the link that will allow you to complete the creation of your Chrysalis 
 and to automatically sign in as the game master.
 
 %(activation_link)s
+
+regards,
+The Chrysalis Team
 """)
 
 
@@ -153,7 +156,7 @@ def activate_instance(request):
             metadata = datamanager_administrator.get_game_instance_metadata_copy(game_instance_id) # shall NOT raise errors
             if (metadata["creator_login"] != creator_login or metadata["creator_email"] != creator_email):
                 raise ValueError("Creator data doesn't match for game instance %(game_instance_id)s" % SDICT(game_instance_id=game_instance_id))
-                
+
             pass # TODO FIXME add check on existing metadata.creator_login
 
         # we retrieve the datamanager whatever its possible maintenance status
@@ -280,7 +283,7 @@ def edit_instance_db(request, target_instance_id):
             try:
                 data_tree = dm.load_zope_database(yaml_input) # checks data
             except Exception as e:
-                messages.add_message(request, messages.ERROR, _(u"Data check error, see details below.") % e)
+                messages.add_message(request, messages.ERROR, _(u"Data check error (%(exception)r), see details below.") % SDICT(exception=e))
                 special_message = traceback.format_exc()
                 formatted_data = None # we force refresh of data
             else:
@@ -288,8 +291,8 @@ def edit_instance_db(request, target_instance_id):
                 messages.add_message(request, messages.INFO, _(u"Game instance data was properly replaced."))
 
         if not formatted_data: # even if success occurred
-            assert not special_message
-            special_message = _("Current DB content is displayed here for editing.")
+            if not special_message:
+                special_message = _("Current DB content is displayed here for editing.")
             dm = datamanager_administrator.retrieve_game_instance(game_instance_id=target_instance_id, request=None,
                                                                   metadata_checker=datamanager_administrator.check_game_is_in_maintenance)
             formatted_data = dm.dump_zope_database(width=90)

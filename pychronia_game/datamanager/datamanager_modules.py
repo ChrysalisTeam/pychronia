@@ -3988,7 +3988,7 @@ class GameViews(BaseDataManager):
         game_data = self.data
         utilities.check_no_duplicates(game_data["views"]["activated_views"])
         for view_name in game_data["views"]["activated_views"]:
-            assert view_name in self.ACTIVABLE_VIEWS_REGISTRY.keys()
+            assert view_name in self.ACTIVABLE_VIEWS_REGISTRY.keys(), (view_name, self.ACTIVABLE_VIEWS_REGISTRY.keys())
 
 
     @readonly_method
