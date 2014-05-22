@@ -142,7 +142,7 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
         if not yaml_fixture:
             yaml_fixture = config.GAME_INITIAL_DATA_PATH
 
-        self.logger.info("Resetting game data with fixture '%s'", yaml_fixture)
+        self.logger.info("Resetting game data for instance '%s' with fixture '%s'", self.game_instance_id, yaml_fixture)
         #print "RESETTING DATABASE !"
 
         # ZODB reset - warning, we must replace content of dictionary "data",

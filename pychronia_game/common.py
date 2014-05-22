@@ -236,7 +236,7 @@ def checked_game_file_path(url):
 
 def determine_asset_url(properties):
     if isinstance(properties, basestring):
-        fileurl = properties
+        fileurl = utilities.complete_game_file_url(properties) # works for both internal and external ones
     elif properties.get("url"):
         fileurl = properties["url"]
     else:
