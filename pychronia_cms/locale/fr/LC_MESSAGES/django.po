@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-05-21 21:08+0200\n"
+"POT-Creation-Date: 2014-05-22 21:48+0200\n"
 "PO-Revision-Date: 2014-01-12 17:28+0200\n"
 "Last-Translator: Pascal <chambon.pascal@gmail.com>\n"
 "Language-Team: Nothing\n"
@@ -50,24 +50,7 @@ msgstr "Bienvenue"
 msgid "Visitor"
 msgstr "Visiteur"
 
-#: .\templates\cms_base.html.py:66 .\templates\userprofiles\login.html.py:5
-#: .\templates\zinnia\original_templates\login.html.py:34
-msgid "Login"
-msgstr "Connexion"
-
-#: .\templates\cms_base.html.py:68
-msgid "Profile"
-msgstr "Profil"
-
-#: .\templates\cms_base.html.py:71
-msgid "Change password"
-msgstr "Changer le mot de passe"
-
-#: .\templates\cms_base.html.py:74
-msgid "Logout"
-msgstr "Déconnexion"
-
-#: .\templates\cms_base.html.py:85
+#: .\templates\cms_base.html.py:88
 msgid ""
 "\n"
 "This site requires a fully CSS3-enabled browser like recent versions of "
@@ -78,7 +61,7 @@ msgstr ""
 "Ce site est prévu pour fonctionner avec un navigateur fortement compatible "
 "CSS3 comme Firefox, Chrome ou Safari.\n"
 
-#: .\templates\cms_base.html.py:93
+#: .\templates\cms_base.html.py:96
 msgid ""
 "\n"
 "Game only available in French for now. Translations will arrive later.\n"
@@ -87,6 +70,11 @@ msgstr ""
 "Jeu uniquement disponible en français pour l'instant. Des traductions "
 "suivront.\n"
 "\n"
+
+#: .\templates\userprofiles\login.html.py:5
+#: .\templates\zinnia\original_templates\login.html.py:34
+msgid "Login"
+msgstr "Connexion"
 
 #: .\templates\userprofiles\login.html.py:8
 #: .\templates\userprofiles\login.html.py:18
@@ -820,3 +808,12 @@ msgid "%(entry_count)s entry tagged by %(tag)s"
 msgid_plural "%(entry_count)s entries tagged by %(tag)s"
 msgstr[0] ""
 msgstr[1] ""
+
+#~ msgid "Profile"
+#~ msgstr "Profil"
+
+#~ msgid "Change password"
+#~ msgstr "Changer le mot de passe"
+
+#~ msgid "Logout"
+#~ msgstr "Déconnexion"

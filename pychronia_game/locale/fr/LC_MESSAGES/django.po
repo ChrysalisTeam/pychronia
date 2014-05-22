@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-05-21 21:07+0200\n"
-"PO-Revision-Date: 2014-05-21 21:40+0200\n"
+"POT-Creation-Date: 2014-05-22 21:47+0200\n"
+"PO-Revision-Date: 2014-05-22 21:50+0200\n"
 "Last-Translator: Pascal <chambon.pascal@gmail.com>\n"
 "Language-Team: Nothing\n"
 "Language: fr\n"
@@ -321,6 +321,9 @@ msgid ""
 "Chrysalis game, and to automatically sign in as the game master.\n"
 "\n"
 "%(activation_link)s\n"
+"\n"
+"regards,\n"
+"The Chrysalis Team\n"
 msgstr ""
 "Cher %(creator_login)s,\n"
 "\n"
@@ -328,8 +331,11 @@ msgstr ""
 "Chrysalis, et d'automatiquement vous connecter en temps que maître du jeu.\n"
 "\n"
 "%(activation_link)s\n"
+"\n"
+"cordialement,\n"
+"L'Equipe Chrysalis"
 
-#: .\meta_administration_views.py:88
+#: .\meta_administration_views.py:91
 msgid ""
 "Please provide a valid email address, so that we can send you the activation "
 "link for your new game. If after several attempts you don't manage to create "
@@ -339,15 +345,15 @@ msgstr ""
 "lien d'activation de votre partie. Si après plusieurs tentatives vous "
 "n'arrivez pas à créer votre partie, veuillez contacter les créateurs du jeu."
 
-#: .\meta_administration_views.py:101
+#: .\meta_administration_views.py:104
 msgid "Please choose another game identifier."
 msgstr "Veuillez choisir un autre identifiant de jeu."
 
-#: .\meta_administration_views.py:117
+#: .\meta_administration_views.py:120
 msgid "Couldn't send activation email."
 msgstr "Impossible d'envoyer l'email d'activation."
 
-#: .\meta_administration_views.py:119 .\meta_administration_views.py:199
+#: .\meta_administration_views.py:122 .\meta_administration_views.py:202
 #, python-format
 msgid ""
 "Game instance '%(game_instance_id)s' successfully created for '%"
@@ -356,21 +362,21 @@ msgstr ""
 "Instance de jeu '%(game_instance_id)s' créée avec succès pour '%"
 "(creator_login)s/%(creator_email)s'"
 
-#: .\meta_administration_views.py:122
+#: .\meta_administration_views.py:125
 #, python-format
 msgid "The activation email has been sent to %(creator_email)s."
 msgstr "L'email d'activation a été envoyé à %(creator_email)s."
 
-#: .\meta_administration_views.py:125
+#: .\meta_administration_views.py:128
 #, python-format
 msgid "Debug Information: [%(activation_link)s]."
 msgstr "Information de débogage : [%(activation_link)s]."
 
-#: .\meta_administration_views.py:127 .\meta_administration_views.py:203
+#: .\meta_administration_views.py:130 .\meta_administration_views.py:206
 msgid "Invalid game creation form submitted."
 msgstr "Formulaire de création de partie invalide soumis."
 
-#: .\meta_administration_views.py:169
+#: .\meta_administration_views.py:172
 #, python-format
 msgid ""
 "In case you don't get properly redirected, please copy this link into our "
@@ -379,31 +385,31 @@ msgstr ""
 "Si vous n'êtes pas correctement redirigé, veuillez copier ce lien dans votre "
 "barre d'adresse : %(target_url)s"
 
-#: .\meta_administration_views.py:174
+#: .\meta_administration_views.py:177
 msgid "Activation key not recognized"
 msgstr "Clef d'activation non reconnue"
 
-#: .\meta_administration_views.py:208
+#: .\meta_administration_views.py:211
 #, python-format
 msgid "Game instance '%(game_instance_id)s' successfully locked"
 msgstr "Partie '%(game_instance_id)s' verrouillée avec succès"
 
-#: .\meta_administration_views.py:212
+#: .\meta_administration_views.py:215
 #, python-format
 msgid "Game instance '%(game_instance_id)s' successfully unlocked"
 msgstr "Partie '%(game_instance_id)s' déverrouillée avec succès"
 
-#: .\meta_administration_views.py:217
+#: .\meta_administration_views.py:220
 #, python-format
 msgid "Game instance '%(game_instance_id)s' status changed to '%(new_status)s'"
 msgstr "Statut de la partie '%(game_instance_id)s' changé à '%(new_status)s'"
 
-#: .\meta_administration_views.py:221
+#: .\meta_administration_views.py:224
 #, python-format
 msgid "Game instance '%(game_instance_id)s' was deleted"
 msgstr "La partie '%(game_instance_id)s' a été détruite"
 
-#: .\meta_administration_views.py:226
+#: .\meta_administration_views.py:229
 #, python-format
 msgid ""
 "Game instance '%(game_instance_id)s' backup with comment '%(backup_comment)"
@@ -412,7 +418,7 @@ msgstr ""
 "Sauvegarde de la partie '%(game_instance_id)s' avec commentaire '%"
 "(backup_comment)s' effectuée"
 
-#: .\meta_administration_views.py:233
+#: .\meta_administration_views.py:236
 #, python-format
 msgid ""
 "Auto-connection token for 'instance=%(instance)s, login=%(login)s and "
@@ -421,28 +427,29 @@ msgstr ""
 "Le jeton d'auto-connexion pour 'instance=%(instance)s, login=%(login)s et "
 "is_observer=%(is_observer)s' est affiché ci-dessous"
 
-#: .\meta_administration_views.py:237
+#: .\meta_administration_views.py:240
 msgid "Unknown admin action"
 msgstr "Action d'administration inconnue"
 
-#: .\meta_administration_views.py:240
+#: .\meta_administration_views.py:243
 #, python-format
 msgid "Unexpected error: %s"
 msgstr "Erreur inattendue : %s"
 
-#: .\meta_administration_views.py:283
-msgid "Data check error, see details below."
-msgstr "Erreur d'intégrité des données, CF détails ci-dessous."
+#: .\meta_administration_views.py:286
+#, python-format
+msgid "Data check error (%(exception)r), see details below."
+msgstr "Erreur d'intégrité des données (%(exception)r), CF détails ci-dessous."
 
-#: .\meta_administration_views.py:288
+#: .\meta_administration_views.py:291
 msgid "Game instance data was properly replaced."
 msgstr "Les données de la partie ont été correctement remplacées."
 
-#: .\meta_administration_views.py:292
+#: .\meta_administration_views.py:295
 msgid "Current DB content is displayed here for editing."
 msgstr "Le contenu actuel de la DB est affiché ici pour édition."
 
-#: .\meta_administration_views.py:301
+#: .\meta_administration_views.py:304
 msgid ""
 "DB modification is now forbidden, please stash your potential modifications "
 "elsewhere and begin the process again."
@@ -2230,7 +2237,7 @@ msgid "Data for"
 msgstr "Données pour"
 
 #: .\templates\meta_administration\edit_instance_db.html.py:53
-#: .\templates\meta_administration\edit_instance_db.html.py:57
+#: .\templates\meta_administration\edit_instance_db.html.py:55
 msgid "Replace game database"
 msgstr "Remplacer la base de données de jeu"
 
@@ -2280,7 +2287,7 @@ msgstr "Déverrouiller l'instance de jeu"
 
 #: .\templates\meta_administration\manage_instances.html.py:46
 msgid "Directly edit instance database (dangerous!)"
-msgstr "Modification de la base de données de l'instance (dangereux !)"
+msgstr "Modification de la base de données du jeu (dangereux!)"
 
 #: .\templates\meta_administration\manage_instances.html.py:49
 msgid "Not locked for maintenance"
