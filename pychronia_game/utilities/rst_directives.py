@@ -13,7 +13,7 @@ class AudioEmbedDirective(rst.Directive):
 
     required_arguments = 1
     optional_arguments = 0
-    final_argument_whitespace = False
+    final_argument_whitespace = True
     option_spec = {}
     has_content = False
 
@@ -29,7 +29,7 @@ class VideoEmbedDirective(rst.Directive):
 
     required_arguments = 1
     optional_arguments = 0
-    final_argument_whitespace = False
+    final_argument_whitespace = True
     option_spec = {'height': directives.length_or_unitless,
                    'width': directives.length_or_percentage_or_unitless,
                    'image': directives.unchanged} # front image url
@@ -48,7 +48,7 @@ class ImageEmbedDirective(rst.Directive):
     # currently useless, use GAME_IMAGE_URL instead!
     required_arguments = 1
     optional_arguments = 0
-    final_argument_whitespace = False
+    final_argument_whitespace = True
     option_spec = {'alias': directives.unchanged} # easy-thumbnail preset
     has_content = False
 
