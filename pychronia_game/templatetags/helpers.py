@@ -277,7 +277,7 @@ def format_enriched_text(datamanager, content, initial_header_level=None, report
     with exception_swallower():
         html = _generate_site_links(html, datamanager) # o
 
-    html = html.replace("[BR]", "<br />") # line bbreaks, handy for vertical spacing
+    html = html.replace("[BR]", "<br />") # line breaks, handy for vertical spacing
     html = html.replace("[NBSP]", unichr(160)) # non-breaking spaces, handy for punctuation mainly
 
     return html

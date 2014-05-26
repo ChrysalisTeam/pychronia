@@ -187,6 +187,7 @@ def generate_audio_player(files, titles=None, artists=None, autostart=False):
                     "initialvolume=60&" +
                     #"soundFile=" + ",".join(files) +
                     urlencode({"soundFile": ",".join(files)}) +
+                    #"soundFile=" + (",".join(files)) +
                     ("&" + urlencode({"titles": ",".join(titles)}) if titles else "") +
                     ("&" + urlencode({"artists": ",".join(artists)}) if artists else "")
 
