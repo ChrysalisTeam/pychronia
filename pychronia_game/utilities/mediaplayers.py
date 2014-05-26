@@ -7,6 +7,7 @@ from pychronia_game.common import *
 from django.utils.http import urlencode
 from django.utils.html import escape
 from pychronia_game.storage import get_game_thumbnailer
+import json
 
 LIB_DIR = config.STATIC_URL + "libs/"
 
@@ -152,57 +153,24 @@ def generate_media_player(fileurl, image="", autostart=False, width=450, height=
 # We could use the JS script to load this SWF in a safer way, but well...
 # <!--script language="JavaScript" src="{{ lib_dir }}audioplayer/audio-player.js"></script-->
 _mp3_template = """
-    <object width="300px" height="24px" type="application/x-shockwave-flash" data="%(lib_dir)saudioplayer/player.swf" class="audioplayer">
-        <param name="movie" value="%(lib_dir)saudioplayer/player.swf" />
-        <param name="FlashVars" value="%(audiosettings)s" /> <!-- additional value: &playerID=id-of-script-tag -->
-        <param name="quality" value="high" />
-        <param name="scale" value="showall" />
-        <param name="menu" value="true" />  <!-- add or not additional right-click menu entries -->
-        <param name="wmode" value="transparent" /> <!--  opacity of background in shrinked mode - alternatives : opaque, window -->
-        <p>Error - Your browser doesn't seem to support Flash, please install it from <a target="_blank" href="http://get.adobe.com/flashplayer/">the Adobe site</a>.</p>
-    </object> 
+<p id="%(unikid)s">MP3 Flayer should appear here</p>
+<script type="text/javascript">  
+AudioPlayer.embed("%(unikid)s", %(options)s);  
+</script>  
 """
-
 def generate_audio_player(files, titles=None, artists=None, autostart=False):
+    assert files
 
-    audiosettings = (# one long string of '&' separated options
-                    "bg=0xEFDCC2&" +
-                    "leftbg=0xDFBD99&" +
-                    "lefticon=0x6F5129&" +
-                    "voltrack=0xEFDCC2&" +
-                    "volslider=0x6F5129&" +
-                    "rightbg=0xDFBD99&" +
-                    "rightbghover=0xCFAD89&" +
-                    "righticon=0x6F5129&" +
-                    "righticonhover=0xffffff&" +
-                    "text=0x6F5129&" +
-                    "track=0xEFDCC2&" +
-                    "tracker=0xDFBD99&" +
-                    "border=0x6F5129&" +
-                    "loader=0xDFBD99&" +
-                    "skip=0x6F5129&" +
-                    "loop=no&" +
-                    "autostart=" + ("yes" if autostart else "no") + "&" +
-                    "animation=no&" + # shrinking/etending of the player
-                    "initialvolume=60&" +
-                    #"soundFile=" + ",".join(files) +
-                    urlencode({"soundFile": ",".join(files)}) +
-                    #"soundFile=" + (",".join(files)) +
-                    ("&" + urlencode({"titles": ",".join(titles)}) if titles else "") +
-                    ("&" + urlencode({"artists": ",".join(artists)}) if artists else "")
-
-                    # Options visibly not working without instantiating SWF through javascript...
-                    #"width=50%&" +
-                    #"transparentpagebg=0x00FF00&" +
-                    #"pagebg=0xFF0000&" +
-                    )
+    unikid = str(random.randint(100000, 100000000000))
 
     options = {
-                "lib_dir": LIB_DIR,
-                "audiosettings": audiosettings
-              }
+        "soundFile": ",".join(files),
+        "titles": ",".join(titles) if titles else "",
+        "artists": ",".join(artists) if artists else "",
+        "autostart": "yes" if autostart else "no",
+    }
 
-    return _mp3_template % options
+    return _mp3_template % dict(options=json.dumps(options), unikid=unikid)
 
 
 

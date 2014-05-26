@@ -53,6 +53,32 @@
     <script src="{{ STATIC_URL }}libs/jquery-jplayer-2.3.0/add-on/jplayer.playlist.min.js" type="text/javascript"></script>
     <script src="{{ STATIC_URL }}libs/jnotify/lib/jquery.jnotify.js" type="text/javascript"></script>
 
+    <script src="{{ STATIC_URL }}libs/audioplayer/audio-player.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        AudioPlayer.setup("{{ STATIC_URL }}libs/audioplayer/player.swf", {
+            width: 290,
+            height: 24,
+            bg: "EFDCC2",
+            leftbg: "DFBD99",
+            lefticon: "6F5129",
+            voltrack: "EFDCC2",
+            volslider: "6F5129",
+            rightbg: "DFBD99",
+            rightbghover: "CFAD89",
+            righticon: "6F5129",
+            righticonhover: "ffffff",
+            text: "6F5129",
+            track: "EFDCC2" ,
+            tracker: "DFBD99",
+            border: "6F5129",
+            loader: "DFBD99",
+            skip: "6F5129",
+            loop: "no",
+            animation: "no", // shrinking/etending of the player
+            initialvolume: "60"
+        });
+    </script>
+
     {% render_block "js" %}
 
 
