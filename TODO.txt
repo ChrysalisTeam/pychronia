@@ -33,6 +33,11 @@ FEATURES
 
 - systeme pour créer partie - WIP
 
+- fix bugs in ricj text, with spaces in embed_ rst_directives, and
+  utilities.check_is_restructuredtext(value["content"]) which is buggy because must use rich_text instead
+
+- fix translation bug for "Bank operation: %(amount)s kashes transferred from %(from_name)s to %(to_name)s."
+
 
 SCRIPT
 ----------

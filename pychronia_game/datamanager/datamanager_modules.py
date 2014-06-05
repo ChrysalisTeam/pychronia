@@ -3696,9 +3696,10 @@ class MoneyItemsOwnership(BaseDataManager):
             to_char["account"] += amount
             visible_by.append(to_name) # can't be the same as from_name, due to checks above
 
-        msg = ugettext_noop("Bank operation: %(amount)s kashes transferred from %(from_name)s to %(to_name)s.")
+        # FIXME - bug here with early translation !!! #
+        msg = _("Bank operation: %(amount)s kashes transferred from %(from_name)s to %(to_name)s.")
         if reason:
-            msg += " " + ugettext_noop("Reason: %(reason)s") % SDICT(reason=reason)
+            msg += " " + _("Reason: %(reason)s") % SDICT(reason=reason)
 
         self.log_game_event(msg,
                              PersistentDict(amount=amount, from_name=from_name, to_name=to_name),
