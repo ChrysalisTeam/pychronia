@@ -69,8 +69,6 @@ class TestUtilities(BaseGameTestCase):
 
         assert "title1" in restructuredtext("""title1\n=======\n\naaa""") # thx to our conf, title1 stays in html fragment
 
-        #print("\n-_-\n", file=sys.stderr)
-
         html = restructuredtext(dedent("""
                     title1
                     -------
@@ -96,7 +94,9 @@ class TestUtilities(BaseGameTestCase):
 
         assert "title1" in html and "title2" in html
 
-        for mystr in ("<object", "audioplayer", "http%3A%2F%2Fmydomain.com%2Fmyfile%3CABC"): # IMPORTANT - url-escaping of file url
+        print("------>", html)
+
+        for mystr in ("<object", "AudioPlayer.embed", "http://mydomain.com/myfile<ABC"): # IMPORTANT - url-escaping of file url
             assert mystr in html
 
         for mystr in ("<object", "mediaplayer", "https://hi.com/a&amp;b.flv"): # AT LEAST html-escaped, but urlescaping could be necessary for some media types
