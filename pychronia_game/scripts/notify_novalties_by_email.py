@@ -16,7 +16,7 @@ from django.core.mail import send_mail
 SUBJECT = "Notification - Portail Anthropia"
 
 TEMPLATE = """\
-Cher %(username)s,
+Cher(ère) %(username)s,
 
 de nouveaux contenus sont apparus sur votre compte depuis votre dernier passage.
 
