@@ -30,17 +30,17 @@ INSTALLED_APPS += [
     'cmsplugin_rst',
     'cmsplugin_simple_gallery',
 
-    # 'cms.plugins.flash',
-    # 'cms.plugins.googlemap',
-    'cms.plugins.link',
-    'cms.plugins.snippet',
-    #'cms.plugins.text',
+    # 'djangocms_flash',
+    # 'djangocms_googlemap',
+    # 'djangocms_text',
+    'djangocms_link',
+    'djangocms_snippet',
 
     ## too weak versions of plugins ##
-    # 'cms.plugins.file',
-    # 'cms.plugins.picture',
-    # 'cms.plugins.teaser',
-    # 'cms.plugins.video',
+    # 'djangocms_file',
+    # 'djangocms_picture',
+    # 'djangocms_teaser',
+    # 'djangocms_video',
 
     ## OR BETTER: ##
     'filer',
@@ -59,7 +59,7 @@ INSTALLED_APPS += [
 ]
 
 
-TEMPLATE_CONTEXT_PROCESSORS = TEMPLATE_CONTEXT_PROCESSORS + ("cms.context_processors.media",) # for CMS_MEDIA_URL
+TEMPLATE_CONTEXT_PROCESSORS = TEMPLATE_CONTEXT_PROCESSORS + ("cms.context_processors.cms_settings",) # for CMS_MEDIA_URL etc.
 
 
 MIDDLEWARE_CLASSES += (
