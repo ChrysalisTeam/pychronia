@@ -213,14 +213,15 @@ class TestUtilities(BaseGameTestCase):
 
         res = autolinker.generate_links(input, "ones?", lambda x: dict(href="TARGET_" + x.group(0), title="mytitle"))
 
-        assert res == dedent('''
+        #print(">>>", res)
+
+        assert res.strip() == dedent('''
         <html>
         <head><title>Page title one</title></head>
         <body>
         <div>Hi</div>
-        <p align="center" class="one red" id="firstpara">This is <a href="TARGET_one" title="mytitle">one</a> paragraph <b><a href="TARGET_ones" title="mytitle">ones</a></b>.
-        <a href="http://aaa">This is one paragraph <b>one</b>.</a>
-        </p></body></html>''')
+        <p align="center" class="one red" id="firstpara">This is <a href="TARGET_one" title="mytitle">one</a> paragraph <b><a href="TARGET_ones" title="mytitle">ones</a></b>.</p></body></html>
+        <a href="http://aaa">This is one paragraph <b>one</b>.</a>''').strip()
 
 
 

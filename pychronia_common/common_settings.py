@@ -140,7 +140,6 @@ INSTALLED_APPS = [
     'south',
     'debug_toolbar',
     'sekizai',
-    'django_wsgiserver', # uses cherrypy
 
     'sessionprofile', # keeps track of sessions/users in DB table, for PHPBB integration
     'templateaddons', # assign and headers tags

@@ -34,6 +34,7 @@ import django.utils.translation
 if not config.ZODB_RESET_ALLOWED:
     raise RuntimeError("Can't launch tests - we must be in a production environment !!")
 
+ORIGINAL_CONFIG_INSTALLED_APPS = config.INSTALLED_APPS[:]
 
 
 # dummy objects for delayed processing
@@ -298,9 +299,10 @@ class BaseGameTestCase(TestCase): # one day, use pytest-django module to make it
     def _reset_django_db(self):
         from django.test.utils import setup_test_environment
         from django.core import management
-        management.call_command('syncdb', verbosity=0, interactive=False)
-        ##management.call_command('migrate', verbosity=1, interactive=False)
-        management.call_command('flush', verbosity=0, interactive=False)
-
-
+        try:
+            management.call_command('flush', verbosity=0, interactive=False) # we try to empty tables,  if already created
+        except Exception:
+            management.call_command('syncdb', verbosity=1, interactive=False)
+            management.call_command('migrate', verbosity=1, interactive=False)
+        config.INSTALLED_APPS[:] = ORIGINAL_CONFIG_INSTALLED_APPS[:] # SOUTH might nastily monkey patch settings...
 
