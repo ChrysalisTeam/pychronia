@@ -11,14 +11,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""PostgreSQL adapter for RelStorage."""
-
-import logging
-import psycopg2
-import psycopg2.extensions
-import re
-from zope.interface import implements
-
+from perfmetrics import metricmethod
 from relstorage.adapters.connmanager import AbstractConnectionManager
 from relstorage.adapters.dbiter import HistoryFreeDatabaseIterator
 from relstorage.adapters.dbiter import HistoryPreservingDatabaseIterator
@@ -35,6 +28,14 @@ from relstorage.adapters.scriptrunner import ScriptRunner
 from relstorage.adapters.stats import PostgreSQLStats
 from relstorage.adapters.txncontrol import PostgreSQLTransactionControl
 from relstorage.options import Options
+from zope.interface import implements
+import logging
+import psycopg2
+import psycopg2.extensions
+import re
+"""PostgreSQL adapter for RelStorage."""
+
+
 
 log = logging.getLogger(__name__)
 
@@ -79,7 +80,7 @@ class PostgreSQLAdapter(object):
             keep_history=self.keep_history,
             )
         self.mover = ObjectMover(
-            database_name='postgresql',
+            database_type='postgresql',
             options=options,
             runner=self.runner,
             version_detector=self.version_detector,
@@ -94,30 +95,31 @@ class PostgreSQLAdapter(object):
             poll_query="EXECUTE get_latest_tid",
             keep_history=self.keep_history,
             runner=self.runner,
-            )
+            revert_when_stale=options.revert_when_stale,
+        )
 
         if self.keep_history:
             self.packundo = HistoryPreservingPackUndo(
-                database_name='postgresql',
+                database_type='postgresql',
                 connmanager=self.connmanager,
                 runner=self.runner,
                 locker=self.locker,
                 options=options,
                 )
             self.dbiter = HistoryPreservingDatabaseIterator(
-                database_name='postgresql',
+                database_type='postgresql',
                 runner=self.runner,
                 )
         else:
             self.packundo = HistoryFreePackUndo(
-                database_name='postgresql',
+                database_type='postgresql',
                 connmanager=self.connmanager,
                 runner=self.runner,
                 locker=self.locker,
                 options=options,
                 )
             self.dbiter = HistoryFreeDatabaseIterator(
-                database_name='postgresql',
+                database_type='postgresql',
                 runner=self.runner,
                 )
 
@@ -157,39 +159,40 @@ class Psycopg2ConnectionManager(AbstractConnectionManager):
     close_exceptions = close_exceptions
 
     def __init__(self, dsn, options):
-        self._orig_dsn = dsn
         self._dsn = dsn
         self.keep_history = options.keep_history
-        # _dsn_derived_from_replica contains the replica that
-        # was used to set self._dsn.
-        self._dsn_derived_from_replica = None
         super(Psycopg2ConnectionManager, self).__init__(options)
 
-    def _set_dsn(self, replica):
+    def _alter_dsn(self, replica):
         """Alter the DSN to use the specified replica.
 
         The replica parameter is a string specifying either host or host:port.
         """
-        if replica != self._dsn_derived_from_replica:
-            if ':' in replica:
-                host, port = replica.split(':')
-                self._dsn = self._orig_dsn + ' host=%s port=%s' % (host, port)
-            else:
-                self._dsn = self._orig_dsn + ' host=%s' % replica
-            self._dsn_derived_from_replica = replica
+        if ':' in replica:
+            host, port = replica.split(':')
+            dsn = '%s host=%s port=%s' % (self._dsn, host, port)
+        else:
+            dsn = '%s host=%s' % (self._dsn, replica)
+        return dsn
 
+    @metricmethod
     def open(self,
-            isolation=psycopg2.extensions.ISOLATION_LEVEL_READ_COMMITTED):
+            isolation=psycopg2.extensions.ISOLATION_LEVEL_READ_COMMITTED,
+            replica_selector=None):
         """Open a database connection and return (conn, cursor)."""
-        if self.replica_selector is not None:
-            replica = self.replica_selector.current()
-            self._set_dsn(replica)
+        if replica_selector is None:
+            replica_selector = self.replica_selector
+
+        if replica_selector is not None:
+            replica = replica_selector.current()
+            dsn = self._alter_dsn(replica)
         else:
             replica = None
+            dsn = self._dsn
 
         while True:
             try:
-                conn = Psycopg2Connection(self._dsn)
+                conn = Psycopg2Connection(dsn)
                 conn.set_isolation_level(isolation)
                 cursor = conn.cursor()
                 cursor.arraysize = 64
@@ -197,16 +200,14 @@ class Psycopg2ConnectionManager(AbstractConnectionManager):
                 return conn, cursor
             except psycopg2.OperationalError, e:
                 if replica is not None:
-                    log.warning("Unable to connect to replica %s: %s",
-                        replica, e)
-                else:
-                    log.warning("Unable to connect: %s", e)
-                if self.replica_selector is not None:
-                    replica = self.replica_selector.next()
-                    if replica is not None:
-                        # try the new replica
-                        self._set_dsn(replica)
+                    next_replica = replica_selector.next()
+                    if next_replica is not None:
+                        log.warning("Unable to connect to replica %s: %s, "
+                            "now trying %s", replica, e, next_replica)
+                        replica = next_replica
+                        dsn = self._alter_dsn(replica)
                         continue
+                log.warning("Unable to connect: %s", e)
                 raise
 
     def open_for_load(self):
@@ -214,7 +215,8 @@ class Psycopg2ConnectionManager(AbstractConnectionManager):
 
         Returns (conn, cursor).
         """
-        conn, cursor = self.open(self.isolation_serializable)
+        conn, cursor = self.open(self.isolation_serializable,
+            replica_selector=self.ro_replica_selector)
         if self.keep_history:
             stmt = """
             PREPARE get_latest_tid AS

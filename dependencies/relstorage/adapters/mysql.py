@@ -110,7 +110,7 @@ class MySQLAdapter(object):
             keep_history=self.keep_history,
             )
         self.mover = ObjectMover(
-            database_name='mysql',
+            database_type='mysql',
             options=options,
             Binary=MySQLdb.Binary,
             )
@@ -129,30 +129,31 @@ class MySQLAdapter(object):
             poll_query=poll_query,
             keep_history=self.keep_history,
             runner=self.runner,
-            )
+            revert_when_stale=options.revert_when_stale,
+        )
 
         if self.keep_history:
             self.packundo = MySQLHistoryPreservingPackUndo(
-                database_name='mysql',
+                database_type='mysql',
                 connmanager=self.connmanager,
                 runner=self.runner,
                 locker=self.locker,
                 options=options,
                 )
             self.dbiter = HistoryPreservingDatabaseIterator(
-                database_name='mysql',
+                database_type='mysql',
                 runner=self.runner,
                 )
         else:
             self.packundo = MySQLHistoryFreePackUndo(
-                database_name='mysql',
+                database_type='mysql',
                 connmanager=self.connmanager,
                 runner=self.runner,
                 locker=self.locker,
                 options=options,
                 )
             self.dbiter = HistoryFreeDatabaseIterator(
-                database_name='mysql',
+                database_type='mysql',
                 runner=self.runner,
                 )
 
@@ -187,40 +188,39 @@ class MySQLdbConnectionManager(AbstractConnectionManager):
     close_exceptions = close_exceptions
 
     def __init__(self, params, options):
-        self._orig_params = params.copy()
-        self._params = self._orig_params
-        # _params_derived_from_replica contains the replica that
-        # was used to set self._params.
-        self._params_derived_from_replica = None
+        self._params = params.copy()
         super(MySQLdbConnectionManager, self).__init__(options)
 
-    def _set_params(self, replica):
+    def _alter_params(self, replica):
         """Alter the connection parameters to use the specified replica.
 
         The replica parameter is a string specifying either host or host:port.
         """
-        if replica != self._params_derived_from_replica:
-            params = self._orig_params.copy()
-            if ':' in replica:
-                host, port = replica.split(':')
-                params['host'] = host
-                params['port'] = int(port)
-            else:
-                params['host'] = replica
-            self._params_derived_from_replica = replica
-            self._params = params
+        params = self._params.copy()
+        if ':' in replica:
+            host, port = replica.split(':')
+            params['host'] = host
+            params['port'] = int(port)
+        else:
+            params['host'] = replica
+        return params
 
-    def open(self, transaction_mode="ISOLATION LEVEL READ COMMITTED"):
+    def open(self, transaction_mode="ISOLATION LEVEL READ COMMITTED",
+            replica_selector=None):
         """Open a database connection and return (conn, cursor)."""
-        if self.replica_selector is not None:
-            replica = self.replica_selector.current()
-            self._set_params(replica)
+        if replica_selector is None:
+            replica_selector = self.replica_selector
+
+        if replica_selector is not None:
+            replica = replica_selector.current()
+            params = self._alter_params(replica)
         else:
             replica = None
+            params = self._params
 
         while True:
             try:
-                conn = MySQLdb.connect(**self._params)
+                conn = MySQLdb.connect(**params)
                 cursor = conn.cursor()
                 cursor.arraysize = 64
                 if transaction_mode:
@@ -232,16 +232,14 @@ class MySQLdbConnectionManager(AbstractConnectionManager):
                 return conn, cursor
             except MySQLdb.OperationalError, e:
                 if replica is not None:
-                    log.warning("Unable to connect to replica %s: %s",
-                        replica, e)
-                else:
-                    log.warning("Unable to connect: %s", e)
-                if self.replica_selector is not None:
-                    replica = self.replica_selector.next()
-                    if replica is not None:
-                        # try the new replica
-                        self._set_params(replica)
+                    next_replica = replica_selector.next()
+                    if next_replica is not None:
+                        log.warning("Unable to connect to replica %s: %s, "
+                            "now trying %s", replica, e, next_replica)
+                        replica = next_replica
+                        params = self._alter_params(replica)
                         continue
+                log.warning("Unable to connect: %s", e)
                 raise
 
     def open_for_load(self):
@@ -249,7 +247,8 @@ class MySQLdbConnectionManager(AbstractConnectionManager):
 
         Returns (conn, cursor).
         """
-        return self.open(self.isolation_repeatable_read)
+        return self.open(self.isolation_repeatable_read,
+            replica_selector=self.ro_replica_selector)
 
     def open_for_pre_pack(self):
         """Open a connection to be used for the pre-pack phase.

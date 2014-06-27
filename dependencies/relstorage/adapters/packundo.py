@@ -14,12 +14,14 @@
 """Pack/Undo implementations.
 """
 
+from ZODB.POSException import UndoError
 from base64 import decodestring
 from itertools import groupby
 from operator import itemgetter
+from perfmetrics import metricmethod
 from relstorage.adapters.interfaces import IPackUndo
-from ZODB.POSException import UndoError
 from zope.interface import implements
+import BTrees
 import logging
 import time
 
@@ -30,9 +32,10 @@ class PackUndo(object):
     """Abstract base class for pack/undo"""
 
     verify_sane_database = False
+    traverse_batch_size = 100000
 
-    def __init__(self, database_name, connmanager, runner, locker, options):
-        self.database_name = database_name
+    def __init__(self, database_type, connmanager, runner, locker, options):
+        self.database_type = database_type
         self.connmanager = connmanager
         self.runner = runner
         self.locker = locker
@@ -62,8 +65,17 @@ class PackUndo(object):
         """
         log.info("pre_pack: downloading pack_object and object_ref.")
 
+        # Note: TreeSet can be updated at random much faster than Set,
+        # but TreeSet consumes more memory. (Random TreeSet updates are
+        # probably O(log n) while random Set updates are probably O(n).
+        # OTOH, adding to Sets or TreeSets in order is an O(1) operation.)
+        Set = BTrees.family64.II.Set
+        TreeSet = BTrees.family64.II.TreeSet
+        Bucket = BTrees.family64.IO.Bucket
+        set_difference = BTrees.family64.II.difference
+
         # Download the list of root objects to keep from pack_object.
-        keep_set = set()  # set([oid])
+        keep_set = TreeSet()
         stmt = """
         SELECT zoid
         FROM pack_object
@@ -71,54 +83,71 @@ class PackUndo(object):
         """
         self.runner.run_script_stmt(cursor, stmt)
         for from_oid, in cursor:
-            keep_set.add(from_oid)
+            keep_set.insert(from_oid)
 
         # Download the list of object references into all_refs.
-        all_refs = {}  # {from_oid: set([to_oid])}
+        all_refs = Bucket()  # {from_oid: set([to_oid])}
         # Note the Oracle optimizer hints in the following statement; MySQL
         # and PostgreSQL ignore these. Oracle fails to notice that pack_object
         # is now filled and chooses the wrong execution plan, completely
         # killing this query on large RelStorage databases, unless these hints
         # are included.
         stmt = """
-        SELECT 
-            /*+ FULL(object_ref) */ 
-            /*+ FULL(pack_object) */ 
+        SELECT
+            /*+ FULL(object_ref) */
+            /*+ FULL(pack_object) */
             object_ref.zoid, object_ref.to_zoid
         FROM object_ref
             JOIN pack_object ON (object_ref.zoid = pack_object.zoid)
         WHERE object_ref.tid >= pack_object.keep_tid
-        ORDER BY object_ref.zoid
+        ORDER BY object_ref.zoid, object_ref.to_zoid
+        LIMIT %d
+        OFFSET %d
         """
-        self.runner.run_script_stmt(cursor, stmt)
-        # Grouped by object_ref.zoid, store all object_ref.to_zoid in sets
-        for from_oid, rows in groupby(cursor, itemgetter(0)):
-            all_refs[from_oid] = set(row[1] for row in rows)
+        # Download in batches to avoid eating up all RAM.
+        # While downloading the OIDs, move them to Set and Bucket
+        # objects. A Set takes a lot less RAM than Python integer sets.
+        offset = 0
+        batch_size = self.traverse_batch_size
+        while True:
+            # Grouped by object_ref.zoid, store all object_ref.to_zoid in sets
+            self.runner.run_script_stmt(cursor, stmt % (batch_size, offset))
+            added = False
+
+            for from_oid, rows in groupby(cursor, itemgetter(0)):
+                added = True
+                d = all_refs.get(from_oid)
+                if d is None:
+                    all_refs[from_oid] = d = Set()
+                d.update(row[1] for row in rows)
+
+            if added:
+                offset += batch_size
+            else:
+                # Finished download
+                break
 
         # Traverse the object graph.  Add all of the reachable OIDs
         # to keep_set.
         log.info("pre_pack: traversing the object graph "
-            "to find reachable objects.")
-        parents = set()
-        parents.update(keep_set)
+                 "to find reachable objects.")
+        parents = Set(keep_set)
         pass_num = 0
         while parents:
             pass_num += 1
-            children = set()
+            children = TreeSet()
             for parent in parents:
                 to_oids = all_refs.get(parent)
                 if to_oids:
                     children.update(to_oids)
-            parents = children.difference(keep_set)
+            parents = set_difference(children, keep_set)
             keep_set.update(parents)
             log.debug("pre_pack: found %d more referenced object(s) in "
-                "pass %d", len(parents), pass_num)
+                      "pass %d", len(parents), pass_num)
 
         # Set pack_object.keep for all OIDs in keep_set.
         del all_refs  # Free some RAM
-        keep_list = list(keep_set)
-        keep_list.sort()
-        log.info("pre_pack: marking objects reachable: %d", len(keep_list))
+        log.info("pre_pack: marking objects reachable: %d", len(keep_set))
         batch = []
 
         def upload_batch():
@@ -130,7 +159,7 @@ class PackUndo(object):
             """ % oids_str
             self.runner.run_script_stmt(cursor, stmt)
 
-        for oid in keep_list:
+        for oid in keep_set:
             batch.append(oid)
             if len(batch) >= 1000:
                 upload_batch()
@@ -243,6 +272,7 @@ class HistoryPreservingPackUndo(PackUndo):
         ))
         """
 
+    @metricmethod
     def verify_undoable(self, cursor, undo_tid):
         """Raise UndoError if it is not safe to undo the specified txn."""
         stmt = """
@@ -290,6 +320,7 @@ class HistoryPreservingPackUndo(PackUndo):
             raise UndoError("Can't undo the creation of the root object")
 
 
+    @metricmethod
     def undo(self, cursor, undo_tid, self_tid):
         """Undo a transaction.
 
@@ -403,7 +434,7 @@ class HistoryPreservingPackUndo(PackUndo):
         """
         log.debug("pre_pack: transaction %d: computing references ", tid)
         from_count = 0
-        use_base64 = (self.database_name == 'postgresql')
+        use_base64 = (self.database_type == 'postgresql')
 
         if use_base64:
             stmt = """
@@ -463,6 +494,7 @@ class HistoryPreservingPackUndo(PackUndo):
             "from %d object(s)", tid, to_count, from_count)
         return to_count
 
+    @metricmethod
     def pre_pack(self, pack_tid, get_references):
         """Decide what to pack.
 
@@ -635,14 +667,17 @@ class HistoryPreservingPackUndo(PackUndo):
 
     def _find_pack_tid(self):
         """If pack was not completed, find our pack tid again"""
-
         conn, cursor = self.connmanager.open_for_pre_pack()
-        stmt = self._script_find_pack_tid
-        self.runner.run_script_stmt(cursor, stmt)
-        res = [tid for (tid,) in cursor]
+        try:
+            stmt = self._script_find_pack_tid
+            self.runner.run_script_stmt(cursor, stmt)
+            res = [tid for (tid,) in cursor]
+        finally:
+            self.connmanager.close(conn, cursor)
         return res and res[0] or 0
 
 
+    @metricmethod
     def pack(self, pack_tid, sleep=None, packed_func=None):
         """Pack.  Requires the information provided by pre_pack."""
 
@@ -698,7 +733,7 @@ class HistoryPreservingPackUndo(PackUndo):
                         if counter >= lastreport + reportstep:
                             log.info("pack: packed %d (%.1f%%) transaction(s), "
                                 "affecting %d states",
-                                counter, counter/float(total)*100, 
+                                counter, counter/float(total)*100,
                                 statecounter)
                             lastreport = counter / reportstep * reportstep
                         del packed_list[:]
@@ -1004,7 +1039,7 @@ class HistoryFreePackUndo(PackUndo):
         Returns the number of references added.
         """
         oid_list = ','.join(str(oid) for oid in oids)
-        use_base64 = (self.database_name == 'postgresql')
+        use_base64 = (self.database_type == 'postgresql')
 
         if use_base64:
             stmt = """
@@ -1061,6 +1096,7 @@ class HistoryFreePackUndo(PackUndo):
 
         return len(add_refs)
 
+    @metricmethod
     def pre_pack(self, pack_tid, get_references):
         """Decide what the garbage collector should delete.
 
@@ -1133,6 +1169,7 @@ class HistoryFreePackUndo(PackUndo):
         return None
 
 
+    @metricmethod
     def pack(self, pack_tid, sleep=None, packed_func=None):
         """Run garbage collection.
 

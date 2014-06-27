@@ -16,20 +16,23 @@
 Stores pickles in the database.
 """
 
+from ZODB import ConflictResolution
+from ZODB import POSException
+from ZODB.BaseStorage import DataRecord
+from ZODB.BaseStorage import TransactionRecord
+from ZODB.POSException import POSKeyError
+from ZODB.UndoLogCompatible import UndoLogCompatible
+from ZODB.utils import p64
+from ZODB.utils import u64
+from perfmetrics import Metric
+from perfmetrics import metricmethod
 from persistent.TimeStamp import TimeStamp
 from relstorage.blobhelper import BlobHelper
 from relstorage.blobhelper import is_blob_record
 from relstorage.cache import StorageCache
 from relstorage.options import Options
-from ZODB.BaseStorage import DataRecord
-from ZODB.BaseStorage import TransactionRecord
-from ZODB import ConflictResolution
-from ZODB import POSException
-from ZODB.POSException import POSKeyError
-from ZODB.UndoLogCompatible import UndoLogCompatible
-from ZODB.utils import p64
-from ZODB.utils import u64
 from zope.interface import implements
+import ZODB.interfaces
 import base64
 import cPickle
 import logging
@@ -38,7 +41,6 @@ import tempfile
 import threading
 import time
 import weakref
-import ZODB.interfaces
 
 try:
     from ZODB.interfaces import StorageStopIteration
@@ -87,7 +89,14 @@ class RelStorage(
     # load_conn and load_cursor are open most of the time.
     _load_conn = None
     _load_cursor = None
-    _load_transaction_open = False
+
+    # _load_transaction_open is:
+    # - an empty string when the load transaction is not open.
+    # - 'active' when the load connection has begun a read-only transaction.
+    # - 'idle' when the load transaction has been left open but nothing
+    #   is using it. At those times, the load transaction can be closed
+    #   by another thread (with the protection of the lock).
+    _load_transaction_open = ''
 
     # store_conn and store_cursor are open during commit,
     # but not necessarily open at other times.
@@ -142,6 +151,10 @@ class RelStorage(
     # calling the database.
     _batcher_row_limit = 100
 
+    # _stale_error is None most of the time.  It's a ReadConflictError
+    # when the database connection is stale (due to async replication).
+    _stale_error = None
+
     def __init__(self, adapter, name=None, create=None,
             options=None, cache=None, blobhelper=None, **kwoptions):
         self._adapter = adapter
@@ -184,7 +197,14 @@ class RelStorage(
         if cache is not None:
             self._cache = cache
         else:
-            self._cache = StorageCache(adapter, options)
+            prefix = options.cache_prefix
+            if not prefix:
+                # Use the database name as the cache prefix.
+                self._open_load_connection()
+                prefix = adapter.schema.get_database_name(self._load_cursor)
+                self._drop_load_connection()
+                prefix = prefix.replace(' ', '_')
+            self._cache = StorageCache(adapter, options, prefix)
 
         if blobhelper is not None:
             self.blobhelper = blobhelper
@@ -218,14 +238,14 @@ class RelStorage(
         conn, cursor = self._adapter.connmanager.open_for_load()
         self._drop_load_connection()
         self._load_conn, self._load_cursor = conn, cursor
-        self._load_transaction_open = True
+        self._load_transaction_open = 'active'
 
     def _drop_load_connection(self):
         """Unconditionally drop the load connection"""
         conn, cursor = self._load_conn, self._load_cursor
         self._load_conn, self._load_cursor = None, None
         self._adapter.connmanager.close(conn, cursor)
-        self._load_transaction_open = False
+        self._load_transaction_open = ''
 
     def _rollback_load_connection(self):
         if self._load_conn is not None:
@@ -234,7 +254,7 @@ class RelStorage(
             except:
                 self._drop_load_connection()
                 raise
-            self._load_transaction_open = False
+            self._load_transaction_open = ''
 
     def _restart_load_and_call(self, f, *args, **kw):
         """Restart the load connection and call a function.
@@ -250,7 +270,7 @@ class RelStorage(
             if need_restart:
                 self._adapter.connmanager.restart_load(
                     self._load_conn, self._load_cursor)
-                self._load_transaction_open = True
+                self._load_transaction_open = 'active'
             return f(self._load_conn, self._load_cursor, *args, **kw)
         except self._adapter.connmanager.disconnected_exceptions, e:
             log.warning("Reconnecting load_conn: %s", e)
@@ -315,17 +335,17 @@ class RelStorage(
             log.info("Reconnected.")
             return f(self._store_conn, self._store_cursor, *args, **kw)
 
-    def zap_all(self):
+    def zap_all(self, reset_oid=True):
         """Clear all objects and transactions out of the database.
 
         Used by the test suite and the ZODBConvert script.
         """
-        self._adapter.schema.zap_all()
+        self._adapter.schema.zap_all(reset_oid=reset_oid)
         self._rollback_load_connection()
         self._cache.clear()
 
     def release(self):
-        """Release back end database sessions used by this storage instance.
+        """Release database sessions used by this storage instance.
         """
         self._lock_acquire()
         try:
@@ -443,10 +463,17 @@ class RelStorage(
         logfunc('; '.join(msg))
 
     def _before_load(self):
-        if not self._load_transaction_open:
+        state = self._load_transaction_open
+        if not state:
             self._restart_load_and_poll()
+        elif state == 'idle':
+            self._load_transaction_open = 'active'
 
+    @Metric(method=True, rate=0.1)
     def load(self, oid, version=''):
+        if self._stale_error is not None:
+            raise self._stale_error
+
         oid_int = u64(oid)
         cache = self._cache
 
@@ -471,7 +498,10 @@ class RelStorage(
             raise POSKeyError(oid)
 
     def getTid(self, oid):
-        state, serial = self.load(oid, '')
+        if self._stale_error is not None:
+            raise self._stale_error
+
+        _state, serial = self.load(oid, '')
         return serial
 
     getSerial = getTid  # ZODB 3.7
@@ -481,6 +511,7 @@ class RelStorage(
         # string onto load's result.
         return self.load(oid, version) + ("",)
 
+    @Metric(method=True, rate=0.1)
     def loadSerial(self, oid, serial):
         """Load a specific revision of an object"""
         oid_int = u64(oid)
@@ -507,8 +538,12 @@ class RelStorage(
         else:
             raise POSKeyError(oid)
 
+    @Metric(method=True, rate=0.1)
     def loadBefore(self, oid, tid):
         """Return the most recent revision of oid before tid committed."""
+        if self._stale_error is not None:
+            raise self._stale_error
+
         oid_int = u64(oid)
 
         self._lock_acquire()
@@ -540,7 +575,10 @@ class RelStorage(
         finally:
             self._lock_release()
 
+    @Metric(method=True, rate=0.1)
     def store(self, oid, serial, data, version, transaction):
+        if self._stale_error is not None:
+            raise self._stale_error
         if self._is_read_only:
             raise POSException.ReadOnlyError()
         if transaction is not self._transaction:
@@ -578,6 +616,8 @@ class RelStorage(
         # Like store(), but used for importing transactions.  See the
         # comments in FileStorage.restore().  The prev_txn optimization
         # is not used.
+        if self._stale_error is not None:
+            raise self._stale_error
         if self._is_read_only:
             raise POSException.ReadOnlyError()
         if transaction is not self._transaction:
@@ -604,6 +644,8 @@ class RelStorage(
             self._lock_release()
 
     def checkCurrentSerialInTransaction(self, oid, serial, transaction):
+        if self._stale_error is not None:
+            raise self._stale_error
         if transaction is not self._transaction:
             raise POSException.StorageTransactionError(self, transaction)
 
@@ -623,7 +665,10 @@ class RelStorage(
                     oid=oid, serials=(previous_serial, serial))
         self._txn_check_serials[oid] = serial
 
+    @metricmethod
     def tpc_begin(self, transaction, tid=None, status=' '):
+        if self._stale_error is not None:
+            raise self._stale_error
         if self._is_read_only:
             raise POSException.ReadOnlyError()
         self._lock_acquire()
@@ -777,6 +822,7 @@ class RelStorage(
 
         return serials
 
+    @metricmethod
     def tpc_vote(self, transaction):
         self._lock_acquire()
         try:
@@ -843,6 +889,7 @@ class RelStorage(
 
         return serials
 
+    @metricmethod
     def tpc_finish(self, transaction, f=None):
         self._lock_acquire()
         try:
@@ -881,6 +928,7 @@ class RelStorage(
         # including cache updates.
         self._ltid = self._tid
 
+    @metricmethod
     def tpc_abort(self, transaction):
         self._lock_acquire()
         try:
@@ -914,6 +962,8 @@ class RelStorage(
             self._lock_release()
 
     def new_oid(self):
+        if self._stale_error is not None:
+            raise self._stale_error
         if self._is_read_only:
             raise POSException.ReadOnlyError()
         self._lock_acquire()
@@ -947,7 +997,10 @@ class RelStorage(
     def supportsTransactionalUndo(self):
         return self._adapter.keep_history
 
+    @metricmethod
     def undoLog(self, first=0, last=-20, filter=None):
+        if self._stale_error is not None:
+            raise self._stale_error
         if last < 0:
             last = first - last
 
@@ -977,7 +1030,10 @@ class RelStorage(
         finally:
             adapter.connmanager.close(conn, cursor)
 
+    @metricmethod
     def history(self, oid, version=None, size=1, filter=None):
+        if self._stale_error is not None:
+            raise self._stale_error
         self._lock_acquire()
         try:
             self._before_load()
@@ -1011,6 +1067,7 @@ class RelStorage(
         finally:
             self._lock_release()
 
+    @metricmethod
     def undo(self, transaction_id, transaction):
         """Undo a transaction identified by transaction_id.
 
@@ -1019,6 +1076,8 @@ class RelStorage(
         the transaction.
         """
 
+        if self._stale_error is not None:
+            raise self._stale_error
         if self._is_read_only:
             raise POSException.ReadOnlyError()
         if transaction is not self._transaction:
@@ -1062,6 +1121,7 @@ class RelStorage(
         finally:
             self._lock_release()
 
+    @metricmethod
     def pack(self, t, referencesf, prepack_only=False, skip_prepack=False,
              sleep=None):
         if self._is_read_only:
@@ -1154,13 +1214,15 @@ class RelStorage(
         sync with the database only if enough time has elapsed since
         the last poll.
         """
-        if not force and self._options.poll_interval:
-            # keep the load transaction open so that it's possible
-            # to ignore the next poll.
-            return
         self._lock_acquire()
         try:
-            if self._load_transaction_open:
+            if not self._load_transaction_open:
+                return
+            elif not force and self._options.poll_interval:
+                # keep the load transaction open and idle so
+                # that it's possible to ignore the next poll.
+                self._load_transaction_open = 'idle'
+            else:
                 self._rollback_load_connection()
         finally:
             self._lock_release()
@@ -1197,8 +1259,17 @@ class RelStorage(
         prev = self._prev_polled_tid
 
         # get a list of changed OIDs and the most recent tid
-        changes, new_polled_tid = self._restart_load_and_call(
-            self._adapter.poller.poll_invalidations, prev, ignore_tid)
+        try:
+            changes, new_polled_tid = self._restart_load_and_call(
+                self._adapter.poller.poll_invalidations, prev, ignore_tid)
+        except POSException.ReadConflictError, e:
+            # The database connection is stale, but postpone this
+            # error until the application tries to read or write something.
+            self._stale_error = e
+            self._poll_at = 0  # Don't defer polling.
+            return (), prev
+
+        self._stale_error = None
 
         # Inform the cache of the changes.
         self._cache.after_poll(
@@ -1220,6 +1291,8 @@ class RelStorage(
 
             if self._options.poll_interval:
                 if not self.need_poll():
+                    if self._load_transaction_open == 'idle':
+                        self._load_transaction_open = 'active'
                     return {}
                 # reset the timeout
                 self._poll_at = time.time() + self._options.poll_interval
@@ -1238,6 +1311,7 @@ class RelStorage(
         finally:
             self._lock_release()
 
+    @metricmethod
     def loadBlob(self, oid, serial):
         """Return the filename of the Blob data for this OID and serial.
 
@@ -1256,6 +1330,7 @@ class RelStorage(
         finally:
             self._lock_release()
 
+    @metricmethod
     def openCommittedBlobFile(self, oid, serial, blob=None):
         """Return a file for committed data for the given object id and serial
 
@@ -1283,6 +1358,7 @@ class RelStorage(
         """
         return self.blobhelper.temporaryDirectory()
 
+    @metricmethod
     def storeBlob(self, oid, serial, data, blobfilename, version, txn):
         """Stores data that has a BLOB attached.
 

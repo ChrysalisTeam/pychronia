@@ -13,10 +13,7 @@
 ##############################################################################
 """Oracle adapter for RelStorage."""
 
-import logging
-import cx_Oracle
-from zope.interface import implements
-
+from perfmetrics import metricmethod
 from relstorage.adapters.connmanager import AbstractConnectionManager
 from relstorage.adapters.dbiter import HistoryFreeDatabaseIterator
 from relstorage.adapters.dbiter import HistoryPreservingDatabaseIterator
@@ -33,6 +30,9 @@ from relstorage.adapters.scriptrunner import OracleScriptRunner
 from relstorage.adapters.stats import OracleStats
 from relstorage.adapters.txncontrol import OracleTransactionControl
 from relstorage.options import Options
+from zope.interface import implements
+import cx_Oracle
+import logging
 
 log = logging.getLogger(__name__)
 
@@ -92,7 +92,7 @@ class OracleAdapter(object):
             keep_history=self.keep_history,
             )
         self.mover = ObjectMover(
-            database_name='oracle',
+            database_type='oracle',
             options=options,
             runner=self.runner,
             Binary=cx_Oracle.Binary,
@@ -124,30 +124,31 @@ class OracleAdapter(object):
             poll_query=poll_query,
             keep_history=self.keep_history,
             runner=self.runner,
-            )
+            revert_when_stale=options.revert_when_stale,
+        )
 
         if self.keep_history:
             self.packundo = OracleHistoryPreservingPackUndo(
-                database_name='oracle',
+                database_type='oracle',
                 connmanager=self.connmanager,
                 runner=self.runner,
                 locker=self.locker,
                 options=options,
                 )
             self.dbiter = HistoryPreservingDatabaseIterator(
-                database_name='oracle',
+                database_type='oracle',
                 runner=self.runner,
                 )
         else:
             self.packundo = OracleHistoryFreePackUndo(
-                database_name='oracle',
+                database_type='oracle',
                 connmanager=self.connmanager,
                 runner=self.runner,
                 locker=self.locker,
                 options=options,
                 )
             self.dbiter = HistoryFreeDatabaseIterator(
-                database_name='oracle',
+                database_type='oracle',
                 runner=self.runner,
                 )
 
@@ -282,17 +283,22 @@ class CXOracleConnectionManager(AbstractConnectionManager):
         self._twophase = twophase
         super(CXOracleConnectionManager, self).__init__(options)
 
+    @metricmethod
     def open(self, transaction_mode="ISOLATION LEVEL READ COMMITTED",
-            twophase=False):
+            twophase=False, replica_selector=None):
         """Open a database connection and return (conn, cursor)."""
-        if self.replica_selector is not None:
-            self._dsn = self.replica_selector.current()
+        if replica_selector is None:
+            replica_selector = self.replica_selector
+
+        if replica_selector is not None:
+            dsn = replica_selector.current()
+        else:
+            dsn = self._dsn
 
         while True:
             try:
                 kw = {'twophase': twophase, 'threaded': True}
-                conn = cx_Oracle.connect(
-                    self._user, self._password, self._dsn, **kw)
+                conn = cx_Oracle.connect(self._user, self._password, dsn, **kw)
                 cursor = conn.cursor()
                 cursor.arraysize = 64
                 if transaction_mode:
@@ -300,13 +306,14 @@ class CXOracleConnectionManager(AbstractConnectionManager):
                 return conn, cursor
 
             except cx_Oracle.OperationalError, e:
-                log.warning("Unable to connect to DSN %s: %s", self._dsn, e)
-                if self.replica_selector is not None:
-                    replica = self.replica_selector.next()
-                    if replica is not None:
-                        # try the new replica
-                        self._dsn = replica
+                if replica_selector is not None:
+                    next_dsn = replica_selector.next()
+                    if next_dsn is not None:
+                        log.warning("Unable to connect to DSN %s: %s, "
+                            "now trying %s", dsn, e, next_dsn)
+                        dsn = next_dsn
                         continue
+                log.warning("Unable to connect: %s", e)
                 raise
 
     def open_for_load(self):
@@ -314,23 +321,28 @@ class CXOracleConnectionManager(AbstractConnectionManager):
 
         Returns (conn, cursor).
         """
-        return self.open(self.isolation_read_only)
+        return self.open(self.isolation_read_only,
+            replica_selector=self.ro_replica_selector)
 
     def restart_load(self, conn, cursor):
         """Reinitialize a connection for loading objects."""
-        self.check_replica(conn, cursor)
+        self.check_replica(conn, cursor,
+            replica_selector=self.ro_replica_selector)
         conn.rollback()
         cursor.execute("SET TRANSACTION %s" % self.isolation_read_only)
 
-    def check_replica(self, conn, cursor):
+    def check_replica(self, conn, cursor, replica_selector=None):
         """Raise an exception if the connection belongs to an old replica"""
-        if self.replica_selector is not None:
-            current = self.replica_selector.current()
+        if replica_selector is None:
+            replica_selector = self.replica_selector
+
+        if replica_selector is not None:
+            current = replica_selector.current()
             if conn.dsn != current:
                 # Prompt the change to a new replica by raising an exception.
                 self.close(conn, cursor)
                 raise ReplicaClosedException(
-                    "Switching replica from %s to %s" % (conn.dsn, current))
+                    "Switched replica from %s to %s" % (conn.dsn, current))
 
     def _set_xid(self, conn, cursor):
         """Set up a distributed transaction"""
