@@ -101,10 +101,16 @@ REQUEST_ONLY_ERRORS = False
 RESTRUCTUREDTEXT_FILTER_SETTINGS["raw_enabled"] = True
 
 
+CMS_LANGUAGES = {
+    1: [
+        {
+            'code': 'fr',
+            'name': ugettext('French'),
+            'public': True,
+        },
+    ],
+}
 
-LANGUAGES = (
-  ('fr', ugettext('French')), # TODO REMOVE THIS LATER - override put only for CMS
-)
 
 ## DJANGO CMS CONF ##
 CMS_TEMPLATES = (

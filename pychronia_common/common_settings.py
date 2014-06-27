@@ -48,6 +48,8 @@ ROOT_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) # base f
 
 INTERNAL_IPS = () # used for debug output etc.
 
+ALLOWED_HOSTS = ['*'] # should be overridden by local settings
+
 SESSION_COOKIE_NAME = 'sessionid' # DO NOT CHANGE - needed for phpbb integration
 
 MEDIA_URL = '/static/media/' # examples: "http://media.lawrence.com", "http://example.com/media/"
@@ -146,6 +148,10 @@ INSTALLED_APPS = [
     'easy_thumbnails',
 
 ]
+
+SOUTH_MIGRATION_MODULES = {
+        'easy_thumbnails': 'easy_thumbnails.south_migrations',
+}
 
 
 ## activate django-sentry if present ##
