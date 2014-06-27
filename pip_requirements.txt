@@ -1,17 +1,15 @@
 
 ZODB==4
-MySQL-python==1.2.4
-PIL==1.1.7
+#MySQL-python==1.2.4
+#PIL==1.1.7
 PyYAML==3.10
-BeautifulSoup==3.2.1
-beautifulsoup4==4.1.3
+beautifulsoup4==4.3.2
 
-Django==1.5.5
+Django==1.6.5
 Django-Select2==4.2.2
 django-zodb==0.3dev
 django-templateaddons==0.1
 South==0.8.4
-#django-wsgiserver==0.8rc1 # must be installed manually atm
 django-debug-toolbar==0.9.4
 django-cprofile-middleware==0.1
 pytz
@@ -19,29 +17,31 @@ pytz
 Sphinx==1.2
 docutils==0.11
 
-easy-thumbnails==1.4
+easy-thumbnails==2.0.1
 odict==1.5.1
 pycrypto==2.6.1  # no much used ATM
-pyparsing==1.5.7 # now v2 available
-requests==1.2.3 # now v2 available
+pyparsing==2.0.2
+requests==2.3.0
 decorator==3.4.0
 python-memcached==1.53
 
-django-cms==2.3.5
-django-filer==0.9.3
-cmsplugin-filer==0.9.3
+django-cms==3.0.2
+django-filer==0.9.5
+cmsplugin-filer==0.9.9
 
-django-tagging==0.3.1
-
+django-tagging==0.3.2
 
 django-apptemplates==0.0.1
-djangocms-text-ckeditor==1.0.9
+djangocms-text-ckeditor==2.1.6
 
 # if trouble with "Unknown column 'zinnia_entry.content_placeholder_id' in 'field list" : python manage.py reset zinnia
-django-blog-zinnia==0.12
+django-blog-zinnia==0.14.1
 ##git+https://github.com/Fantomas42/django-blog-zinnia.git
-cmsplugin-zinnia==0.4
+
+cmsplugin-zinnia==0.6
 ##git+https://github.com/Fantomas42/cmsplugin-zinnia.git
+
+django-request==1.0.1
 
 
 # DEV tools only
@@ -51,7 +51,7 @@ rst2pdf==0.93
 
 #django-sentry==1.8.6.2 # might be useful
 
-# other plugins, not well maintained, are included in repository
+# other plugins, not well maintained, are included in the repository
 
 
 
@@ -66,86 +66,3 @@ rst2pdf==0.93
 
 
 
-
-
-
-====================
-TO BE UPDATED
-
-
-BTrees==4.0.8
-BeautifulSoup==3.2.1
-Django==1.6.5
-Django-Select2==4.2.2
-Jinja2==2.7.3
-MarkupSafe==0.23
-Mezzanine==1.3.0
-MySQL-python==1.2.4
-PIL==1.1.7
-Pillow==2.4.0
-PyYAML==3.10
-Pygments==1.6
-South==0.8.4
-Sphinx==1.2
-ZConfig==3.0.4
-ZEO==4.0.0
-ZODB==4.0.0
-ZODB3==3.11.0
-beautifulsoup4==4.3.2
-bleach==1.1.5
-cmsplugin-filer==0.9.9
-cmsplugin-zinnia==0.6
-decorator==3.4.0
-distribute==0.7.3
-django-admin-jqueryui==1.8.22
-django-appconf==0.6
-django-apptemplates==0.0.1
-django-blog-zinnia==0.14.1
-django-classy-tags==0.5.1
-django-cms==3.0.2
-django-cprofile-middleware==0.1
-django-debug-toolbar==0.9.4
-django-filebrowser==3.5.2
-django-filer==0.9.5
-django-grappelli==2.4.4
-django-inline-ordering==1.0.2
-django-mptt==0.6.1
-django-polymorphic==0.5.5
-django-request==1.0.1
-django-sekizai==0.7
-django-tagging==0.3.2
-django-templateaddons==0.1
-django-tinymce==1.5.1
-django-wsgiserver==0.6.10
-django-xmlrpc==0.1.5
-django-zodb==0.3dev
-djangocms-admin-style==0.2.2
-djangocms-file==0.0.1
-djangocms-flash==0.0.2
-djangocms-googlemap==0.0.5
-djangocms-inherit==0.0.1
-djangocms-link==1.3.4
-djangocms-picture==0.0.2
-djangocms-snippet==1.0.2
-djangocms-teaser==0.0.1
-djangocms-text-ckeditor==2.1.6
-djangocms-video==0.0.1
-docutils==0.11
-easy-thumbnails==2.0.1
-filebrowser-safe==0.2.14
-html5lib==1.0b3
-odict==1.5.1
-persistent==4.0.8
-py==1.4.13
-pycrypto==2.6
-pyparsing==2.0.2
-pytest==2.3.4
-python-memcached==1.53
-pytz==2014.4
-requests==1.2.3
-six==1.7.2
-transaction==1.4.3
-wsgiref==0.1.2
-zc.lockfile==1.1.0
-zdaemon==4.0.0
-zope.interface==4.1.1
