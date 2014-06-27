@@ -133,7 +133,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions', # only these sessions are scalable for "sharding"
     'django.contrib.sites',
     'django.contrib.humanize',
-    'django.contrib.markup',
     'django.contrib.staticfiles',
 
     'south',
