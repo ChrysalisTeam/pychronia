@@ -6,7 +6,7 @@ from __future__ import unicode_literals
 
 import sys, os, collections, logging, inspect, types, traceback, re, glob
 import yaml, random, contextlib
-from counter import Counter
+from collections import Counter
 from datetime import datetime, timedelta
 
 import ZODB # must be first !

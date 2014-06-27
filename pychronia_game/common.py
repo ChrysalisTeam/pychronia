@@ -14,7 +14,7 @@ from urlparse import urlparse
 
 from odict import odict as OrderedDict
 from pafo import printObject
-from counter import Counter
+from collections import Counter
 
 import yaml, pyparsing
 
