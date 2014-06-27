@@ -3,63 +3,62 @@
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
-#   <neoascetic@gmail.com>, 2012.
+#   <klaus.dahlen@gmail.com>, 2012.
 msgid ""
 msgstr ""
 "Project-Id-Version: cmsplugin-filer\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-01-09 18:33+0100\n"
-"PO-Revision-Date: 2012-09-11 09:55+0000\n"
-"Last-Translator: Pavel Puchkin <neoascetic@gmail.com>\n"
-"Language-Team: Russian (http://www.transifex.com/projects/p/cmsplugin-filer/"
-"language/ru/)\n"
-"Language: ru\n"
+"PO-Revision-Date: 2012-10-24 14:54+0000\n"
+"Last-Translator: nanook <klaus.dahlen@gmail.com>\n"
+"Language-Team: Finnish (http://www.transifex.com/projects/p/cmsplugin-filer/"
+"language/fi/)\n"
+"Language: fi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: cms_plugins.py:13
 msgid "Image"
-msgstr "Изображение"
+msgstr "Kuva"
 
 #: cms_plugins.py:22
 msgid "Image resizing options"
-msgstr "Опции изменения размеров изображения"
+msgstr "Kuvakoon asetukset"
 
 #: cms_plugins.py:33
 msgid "More"
-msgstr "Больше"
+msgstr "Lisää"
 
 #: models.py:18
 msgid "left"
-msgstr "лево"
+msgstr "vasen"
 
 #: models.py:19
 msgid "right"
-msgstr "право"
+msgstr "oikea"
 
 #: models.py:21
 msgid "caption text"
-msgstr "текст заголовка"
+msgstr "kuvateksti"
 
 #: models.py:22
 msgid "image"
-msgstr "изображение"
+msgstr "kuva"
 
 #: models.py:24 models.py:26
 msgid "alternative image url"
-msgstr "альтернативная ссылка на изображение"
+msgstr "vaihtoehtoisen kuvan URL"
 
 #: models.py:27
 msgid "alt text"
-msgstr "альтернативный текст"
+msgstr "alt-teksti"
 
 #: models.py:28
 #, fuzzy
 msgid "use the original image"
-msgstr "ссылка на оригинальное изображение"
+msgstr "linkitä alkuperäiseen kuvaan"
 
 #: models.py:29
 msgid "do not resize the image. use the original image instead."
@@ -67,7 +66,7 @@ msgstr ""
 
 #: models.py:30 models.py:114
 msgid "thumbnail option"
-msgstr "опция миниатюры"
+msgstr "pikkukuvan asetukset"
 
 #: models.py:31
 msgid ""
@@ -77,55 +76,56 @@ msgstr ""
 
 #: models.py:32
 msgid "use automatic scaling"
-msgstr "использовать автоматическое масштабирование"
+msgstr "käytä automaattista skaalausta"
 
 #: models.py:33
 msgid "tries to auto scale the image based on the placeholder context"
-msgstr "попытка масштабировать изображение, основываясь на контексте слота"
+msgstr ""
+"pyrkii skaalaamaan kuvan automaattisesti sisältöalueen kontekstin perusteella"
 
 #: models.py:34 models.py:107
 msgid "width"
-msgstr "ширина"
+msgstr "leveys"
 
 #: models.py:35 models.py:108
 msgid "height"
-msgstr "высота"
+msgstr "korkeus"
 
 #: models.py:36 models.py:109
 msgid "crop"
-msgstr "обрезать"
+msgstr "rajaus"
 
 #: models.py:37 models.py:110
 msgid "upscale"
-msgstr "увеличивать"
+msgstr "suurennus"
 
 #: models.py:38
 msgid "image alignment"
-msgstr "выравнивание изображения"
+msgstr "kuvan asemointi"
 
 #: models.py:40
 msgid "link"
-msgstr "ссылка"
+msgstr "linkki"
 
 #: models.py:41 models.py:43 models.py:45 models.py:46
 msgid "if present image will be clickable"
-msgstr "если установлено, изображение будет кликабельным"
+msgstr "kuva on klikattavissa mikäli tämä on täytetty"
 
 #: models.py:44
 msgid "page link"
-msgstr "ссылка на страницу"
+msgstr "sivulinkki"
 
 #: models.py:45
 msgid "file link"
-msgstr "ссылка на файл"
+msgstr "tiedostolinkki"
 
 #: models.py:46
 msgid "link original image"
-msgstr "ссылка на оригинальное изображение"
+msgstr "linkitä alkuperäiseen kuvaan"
 
 #: models.py:47
 msgid "description"
-msgstr "описание"
+msgstr "kuvaus"
 
 #: models.py:48
 msgid "Open link in new window"
@@ -133,33 +133,33 @@ msgstr ""
 
 #: models.py:57
 msgid "filer image"
-msgstr "изображение (filer)"
+msgstr "filer-kuva"
 
 #: models.py:58
 msgid "filer images"
-msgstr "изображения (filer)"
+msgstr "filer-kuvat"
 
 #: models.py:64
 msgid "Either an image or an image url must be selected."
-msgstr "Изображение либо ссылка на изображение должны быть установлены."
+msgstr "Joko kuva tai kuvan URL on valittava."
 
 #: models.py:71
 #, python-format
 msgid "Image Publication %(caption)s"
-msgstr "Публикация изображения %(caption)s"
+msgstr "Kuvan julkaisu %(caption)s"
 
 #: models.py:106
 msgid "name"
-msgstr "имя"
+msgstr "nimi"
 
 #: models.py:107
 msgid "width in pixel."
-msgstr "ширина в пикселях."
+msgstr "leveys pikseleinä"
 
 #: models.py:108
 msgid "height in pixel."
-msgstr "высота в пикселях."
+msgstr "korkeus pikseleinä"
 
 #: models.py:115
 msgid "thumbnail options"
-msgstr "опции миниатюры"
+msgstr "pikkukuvan asetukset"

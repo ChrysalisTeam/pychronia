@@ -1,29 +1,38 @@
+from __future__ import unicode_literals
+
 import os
 from cms.plugin_pool import plugin_pool
 from cms.plugin_base import CMSPluginBase
+from django.template.loader import select_template
 from django.utils.translation import ugettext_lazy as _
-import models
-from django.conf import settings
-
+from . import models
+from .conf import settings
 from filer.settings import FILER_STATICMEDIA_PREFIX
+
 
 class FilerImagePlugin(CMSPluginBase):
     module = 'Filer'
     model = models.FilerImage
     name = _("Image")
-    render_template = "cmsplugin_filer_image/image.html"
+    TEMPLATE_NAME = 'cmsplugin_filer_image/plugins/image/%s.html'
+    render_template = TEMPLATE_NAME % 'default'
     text_enabled = True
-    raw_id_fields = ('image',)
+    raw_id_fields = ('image', 'page_link')
     admin_preview = False
     fieldsets = (
         (None, {
-            'fields': ('caption_text', ('image', 'image_url',), 'alt_text',)
+            'fields': [
+                'caption_text',
+                ('image', 'image_url',),
+                'alt_text',
+            ]
         }),
         (_('Image resizing options'), {
             'fields': (
                 'use_original_image',
-                ('width', 'height'),
-                ('crop', 'upscale'),
+                ('width', 'height', 'crop', 'upscale'),
+                'thumbnail_option',
+                'use_autoscale',
             )
         }),
         (None, {
@@ -35,6 +44,8 @@ class FilerImagePlugin(CMSPluginBase):
         }),
 
     )
+    if settings.CMSPLUGIN_FILER_IMAGE_STYLE_CHOICES:
+        fieldsets[0][1]['fields'].append('style')
 
     def _get_thumbnail_options(self, context, instance):
         """
@@ -87,15 +98,20 @@ class FilerImagePlugin(CMSPluginBase):
 
     def get_thumbnail(self, context, instance):
         if instance.image:
-            return instance.image.image.file.get_thumbnail(self._get_thumbnail_options(context, instance))
+            return instance.image.file.get_thumbnail(self._get_thumbnail_options(context, instance))
 
     def render(self, context, instance, placeholder):
+        self.render_template = select_template((
+            'cmsplugin_filer_image/plugins/image.html',  # backwards compatibility. deprecated!
+            self.TEMPLATE_NAME % instance.style,
+            self.TEMPLATE_NAME % 'default')
+        )
         options = self._get_thumbnail_options(context, instance)
         context.update({
             'instance': instance,
             'link': instance.link,
             'opts': options,
-            'size': options.get('size',None),
+            'size': options.get('size', None),
             'placeholder': placeholder
         })
         return context
@@ -107,8 +123,8 @@ class FilerImagePlugin(CMSPluginBase):
             else:
                 # Fake the context with a reasonable width value because it is not
                 # available at this stage
-                thumbnail = self.get_thumbnail({'width':200}, instance)
+                thumbnail = self.get_thumbnail({'width': 200}, instance)
                 return thumbnail.url
         else:
-            return os.path.normpath(u"%s/icons/missingfile_%sx%s.png" % (FILER_STATICMEDIA_PREFIX, 32, 32,))
+            return os.path.normpath("%s/icons/missingfile_%sx%s.png" % (FILER_STATICMEDIA_PREFIX, 32, 32,))
 plugin_pool.register_plugin(FilerImagePlugin)
