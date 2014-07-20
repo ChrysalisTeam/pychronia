@@ -138,10 +138,7 @@ CMS_LANGUAGE_CONF = { # fallbacks ordering
     'en': ['fr'],
 }
 '''
-CMS_LANGUAGES = (# BEWARE - structure has changed in djangocms 1.5
-    ('fr', ugettext('French')),
-   # ('en', ugettext('English')),
-)
+
 CMS_HIDE_UNTRANSLATED = False
 CMS_LANGUAGE_FALLBACK = False
 CMS_FRONTEND_LANGUAGES = ("fr",)

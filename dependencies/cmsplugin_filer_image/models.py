@@ -6,17 +6,16 @@ from cms.models import CMSPlugin
 from cms.models.fields import PageField
 from filer.fields.image import FilerImageField
 from filer.fields.file import FilerFileField
-from filer.utils.compatibility import python_2_unicode_compatible
 from cmsplugin_filer_utils import FilerPluginManager
 from .conf import settings
 
 
-@python_2_unicode_compatible
 class FilerImage(CMSPlugin):
     LEFT = "left"
     RIGHT = "right"
+    CENTER = "center"
     FLOAT_CHOICES = ((CENTER, _("center")),
-                     ((LEFT, _("left")),
+                     (LEFT, _("left")),
                      (RIGHT, _("right")),
                      )
     STYLE_CHOICES = settings.CMSPLUGIN_FILER_IMAGE_STYLE_CHOICES
@@ -101,7 +100,6 @@ class FilerImage(CMSPlugin):
             return ''
 
 
-@python_2_unicode_compatible
 class ThumbnailOption(models.Model):
     """
     This class defines the option use to create the thumbnail.
@@ -132,5 +130,5 @@ class ThumbnailOption(models.Model):
             thumbnailer = filerimage.easy_thumbnails_thumbnailer
             thumb_image = thumbnailer.get_thumbnail(option_dict)
         """
-        return {"size":(self.width,self.height), "width":self.width,
-                "height":self.height,"crop":self.crop,"upscale":self.upscale}
+        return {"size":(self.width, self.height), "width":self.width,
+                "height":self.height, "crop":self.crop, "upscale":self.upscale}
