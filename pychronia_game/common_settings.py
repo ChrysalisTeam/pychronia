@@ -8,7 +8,8 @@ TEMPLATE_CONTEXT_PROCESSORS = TEMPLATE_CONTEXT_PROCESSORS + ("pychronia_game.con
 
 
 _old_middlewares = list(MIDDLEWARE_CLASSES)
-_old_middlewares.remove("debug_toolbar.middleware.DebugToolbarMiddleware") # not for anthropia, bugs with ZODB late access...
+if "debug_toolbar.middleware.DebugToolbarMiddleware" in _old_middlewares:
+    _old_middlewares.remove("debug_toolbar.middleware.DebugToolbarMiddleware") # not for anthropia, bugs with ZODB late access...
 
 # beware of ordering here
 # no need for CSRF in pychronia_game, data is not sensitive

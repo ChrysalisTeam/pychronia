@@ -781,6 +781,8 @@ img.center {
 .admin-note {
   clear: both;
   margin: 5px;
+  padding-left: 2px;
+  padding-right: 2px;
 }
 .missing-content {
   margin-left: auto !important;
@@ -1322,7 +1324,7 @@ p {
   margin: 8px 0 8px;
 }
 .announce {
-  font-size: 1.3em;
+  font-size: 1.1em;
   line-height: 1.1em;
 }
 a:link {
@@ -1363,20 +1365,24 @@ blockquote, q, cite {
   padding: 6px;
   width: 50%;
 }
-ul {
+ul.pretty_bullets, .pretty_bullets ul, .section ul, .realtable ul,
+.main_frame_content ul, .mini_frame_content ul {
   text-align: left;
   margin: 10px 0 10px;
   padding-left: 26px;
   list-style-position: outside;
   list-style-image: url("img/icons/bullet_gold_small.png");
 }
-ul li {
+ul.pretty_bullets li, .pretty_bullets ul li, .section ul li, .realtable ul li,
+.main_frame_content ul li, .mini_frame_content ul li {
   margin-top: 5px;
 }
-ul ul {
+ul.pretty_bullets ul, .pretty_bullets ul ul, .section ul ul, .realtable ul ul,
+.main_frame_content ul ul, .mini_frame_content ul ul {
   list-style-image: url("img/icons/bullet_silver_small.png");
 }
-ul ul ul {
+ul.pretty_bullets ul ul, .pretty_bullets ul ul ul, .section ul ul ul,
+.realtable ul ul ul, .main_frame_content ul ul ul, .mini_frame_content ul ul ul {
   list-style-image: url("img/icons/bullet_bronze_small.png");
 }
 .no_bullets, .no_bullets * {
@@ -1617,7 +1623,7 @@ fieldset {
 input.digit {
   width: 150px;
   height: 50px;
-  margin: 7px;
+  padding: 0 7px;
   font-size: 20px;
   font-weight: bold;
   background-color: #D3C469;
@@ -1643,8 +1649,8 @@ input.digit {
   background-color: transparent;
 }
 .admin_widgets {
-  list-style-type: none;
-  list-style-image: none;
+  list-style-type: none !important;
+  list-style-image: none !important;
   padding: 0;
   margin: 10px auto;
 }

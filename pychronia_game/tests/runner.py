@@ -68,7 +68,7 @@ if __name__ == "__main__":
         print "Successfully packed ZODB items older than 1 day in %s" % utilities.config.ZODB_FILE
 
     else:
-        sys.argv[1:] = ("runwsgiserver 127.0.0.1:8000 --settings=%s" % settings_module).split() # beware, with auto-reload this is applied twice...
+        sys.argv[1:] = ("runserver 127.0.0.1:8000 --settings=%s" % settings_module).split() # beware, with auto-reload this is applied twice...
         execute_from_command_line()
 
 

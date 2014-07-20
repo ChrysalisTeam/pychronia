@@ -116,7 +116,7 @@ p {
 }
 
 .announce {
-    font-size: 1.3em;
+    font-size: 1.1em;
     line-height: 1.1em;
 }
 
@@ -171,7 +171,7 @@ blockquote, q, cite {
 
 
 
-ul
+ul.pretty_bullets, .pretty_bullets ul, .section ul, .realtable ul, .main_frame_content ul, .mini_frame_content ul
 {
     li {
         margin-top: 5px;

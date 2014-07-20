@@ -119,7 +119,7 @@ MIDDLEWARE_CLASSES = (
 'django.contrib.messages.middleware.MessageMiddleware',
 'django.middleware.common.CommonMiddleware',
 'django.contrib.auth.middleware.AuthenticationMiddleware',
-'debug_toolbar.middleware.DebugToolbarMiddleware',
+## TEMP #'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
 
 
@@ -198,6 +198,10 @@ DEBUG_TOOLBAR_CONFIG = {
 
 ## DJANGO CONTRIB RST CONF ##
 RESTRUCTUREDTEXT_INITIALIZER = """
+
+.. |nbsp| unicode:: 0xA0 
+   :trim:
+    
 .. |br| raw:: html
 
    <br />
