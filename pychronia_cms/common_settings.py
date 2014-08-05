@@ -19,8 +19,8 @@ INSTALLED_APPS += [
 
     'request', # stats on HTTP requests
 
-    'userprofiles',
-    'userprofiles.contrib.profiles',
+    #'userprofiles',
+    #'userprofiles.contrib.profiles',
 
     'djangocms_text_ckeditor', # must be before CMS
     'cms',

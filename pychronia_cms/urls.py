@@ -21,7 +21,7 @@ urlpatterns = patterns('',
 
 urlpatterns += i18n_patterns('',
 
-    (r'^accounts/', include('userprofiles.urls')), # one-step registration
+    #(r'^accounts/', include('userprofiles.urls')), # one-step registration
 
     url(r'^weblog/', include('zinnia.urls')), # TOO MANY URLS, but required by cms menu integration  ## , namespace='zinnia')
 
