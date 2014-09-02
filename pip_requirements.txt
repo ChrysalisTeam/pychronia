@@ -1,7 +1,10 @@
 
+# BEWARE - on windows, use MSI instead for these few packages #
+MySQL-python==1.2.4
+Pillow==2.5.3
+
+
 ZODB==4
-#MySQL-python==1.2.4
-#PIL==1.1.7
 PyYAML==3.10
 beautifulsoup4==4.3.2
 

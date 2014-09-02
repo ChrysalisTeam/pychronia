@@ -2,6 +2,8 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import setup_pychronia_env
+
 import random
 from textwrap import dedent
 import tempfile
@@ -1988,9 +1990,9 @@ class TestDatamanager(BaseGameTestCase):
         assert res == u' Hello <a href="/TeStiNg/messages/compose/?recipient=h%C3%A9lloaaxsjjs%40gma%C3%AFl.fr">h\xe9lloaaxsjjs@gma\xefl.fr</a>. please write to h\xe9rb\xe8rt@h\xe9l\xe9nia.'
 
 
-        expected_res = [{'description': 'Simon Bladstaffulovza - whatever', 'avatar': 'images\\avatars\\guy1.png', 'address': u'guy1@pangea.com', 'color': '#0033CC', 'gamemaster_hints': 'This is guy1, actually agent SHA1.'},
-                       {'description': 'the terrible judicators', 'avatar': 'images\\avatars\\here.png', 'address': u'judicators@acharis.com', 'color': None, 'gamemaster_hints': ''},
-                       {'description': u'Unidentified contact', 'avatar': 'images/avatars/question_mark.png', 'address': u'unknown@mydomain.com', 'color': None, 'gamemaster_hints': None}]
+        expected_res = [{'description': 'Simon Bladstaffulovza - whatever', 'avatar': os.path.normpath('images/avatars/guy1.png'), 'address': u'guy1@pangea.com', 'color': '#0033CC', 'gamemaster_hints': 'This is guy1, actually agent SHA1.'},
+                       {'description': 'the terrible judicators', 'avatar': os.path.normpath('images/avatars/here.png'), 'address': u'judicators@acharis.com', 'color': None, 'gamemaster_hints': ''},
+                       {'description': u'Unidentified contact', 'avatar': os.path.normpath('images/avatars/question_mark.png'), 'address': u'unknown@mydomain.com', 'color': None, 'gamemaster_hints': None}]
 
         assert self.dm.get_contacts_display_properties([]) == []
         res = self.dm.get_contacts_display_properties(["guy1@pangea.com", "judicators@acharis.com", "unknown@mydomain.com"])
