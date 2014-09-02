@@ -5,9 +5,10 @@ PYCHRONIA README
 Prerequisites
 =================
 
-- Ensure you have this folder in your PYTHONPATH (not mandatory)
+- Ensure you have this folder in your PYTHONPATH (not mandatory), as well as ./dependencies
 - Ensure you have installed proper dependencies (eg. run "pip install -r pip_requirements.txt") in each subpackage
 
+- Mysqldb must be installed (under debian/ubuntu: "sudo apt-get libmysqlclient-dev" and then "pip install mysql-python")
 
 Launching tests
 ==================
