@@ -5,8 +5,14 @@ PYCHRONIA README
 Prerequisites
 =================
 
-- Ensure you have this folder in your PYTHONPATH
-- Ensure you have installed proper dependencies (eg. use bootstrapper script, if under ubuntu/debian OS)
+- Ensure you have this folder in your PYTHONPATH (eg. via your ~/.bashrc, or a virtualenv's activate script...) 
+- Ensure you have installed proper dependencies, for example:
+
+On a debian/ubuntu, run:
+$ sudo apt-get install python python-dev python-pip libjpeg8-dev libmysqlclient-dev"
+
+And then, with or without sudo (depending on whether you use a system python or a virtualenv): 
+$ pip install -r  pip_requirements.txt
 
 
 Launching tests
@@ -18,6 +24,8 @@ Tests are run with py.test against fake databases stored in temp directories::
 	py.test -vl pychronia_game/tests/test_game.py
 
 	CF http://pytest.org/latest/usage.html#usage for more usage info
+
+WARNING - if you use a virtualenv, "python -m pytest" might be safest to use, so that you're sure to use the proper python executable.
 
 
 Utilities and servers
