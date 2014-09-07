@@ -2270,6 +2270,7 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
         messaging = self.messaging_data
 
         utilities.check_is_game_file(game_data["global_parameters"]["default_contact_avatar"])
+        game_data["global_parameters"]["default_contact_avatar"] = os.path.normpath(game_data["global_parameters"]["default_contact_avatar"])
 
         for (name, character) in game_data["character_properties"].items():
             character.setdefault("has_new_messages", 0)
