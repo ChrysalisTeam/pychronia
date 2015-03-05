@@ -9,7 +9,9 @@ import os, sys, pytest, unittest, traceback
 ## TEST CONFIGURATION ##
 
 os.environ["DJANGO_SETTINGS_MODULE"] = "pychronia_game.tests.transient_mode_settings"
-
+import django
+if hasattr(django, "setup"):
+    django.setup()  # for django >= 1.7
 
 from pychronia_game.common import *
 from pychronia_game.datamanager.datamanager_administrator import create_game_instance, \
@@ -76,7 +78,7 @@ def for_ability(view):
 
 TEST_GAME_INSTANCE_ID = "TeStiNg"
 ROOT_GAME_URL = "/%s" % TEST_GAME_INSTANCE_ID
-HOME_URL = lambda: reverse(pychronia_game.views.homepage, kwargs={"game_instance_id": TEST_GAME_INSTANCE_ID})
+HOME_URL = reverse(pychronia_game.views.homepage, kwargs={"game_instance_id": TEST_GAME_INSTANCE_ID})
 
 AJAX_HEADERS = dict(HTTP_X_REQUESTED_WITH='XMLHttpRequest')
 
@@ -231,7 +233,7 @@ class BaseGameTestCase(TestCase): # one day, use pytest-django module to make it
             self.client = Client()
             self.factory = RequestMock(HTTP_HOST=test_http_host)
 
-            self.request = self.factory.get(HOME_URL())
+            self.request = self.factory.get(HOME_URL)
             assert self.request.user
             assert self.request.datamanager.user.datamanager.request # double linking
             assert self.request.session
