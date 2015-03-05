@@ -690,9 +690,9 @@ class TestMetaAdministration(unittest.TestCase): # no django setup required ATM
 
 
     def test_admin_scripts(self):
-        
+
         from pychronia_game.scripts import backup_all_games, check_global_sanity, notify_novalties_by_email, reset_demo_account
-        
+
         reset_zodb_structure()
 
         assert reset_demo_account.execute() == None

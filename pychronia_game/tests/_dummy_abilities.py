@@ -14,7 +14,7 @@ from pychronia_game.datamanager.datamanager_tools import transaction_watcher
 
 
 class DummyForm(AbstractGameForm):
-    use_gems = forms.ChoiceField(label=_("Use_gems"), choices=[123, 122])
+    use_gems = forms.ChoiceField(label=ugettext_lazy("Use_gems"), choices=[123, 122])
     def __init__(self, ability, *args, **kwargs):
         super(DummyForm, self).__init__(ability, *args, **kwargs)
         self.fields["target_item"] = forms.ChoiceField(label=_("Object"), choices=["one", "two"])

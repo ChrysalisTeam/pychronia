@@ -2,7 +2,7 @@ from django.conf import settings
 from django.template import RequestContext
 from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
-from django.utils.simplejson import dumps
+from json import dumps
 
 def safe_json(data):
     return mark_safe(dumps(data))

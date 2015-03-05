@@ -2,7 +2,7 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
-import sys, re, logging, random, logging
+import sys, re, logging, random, logging, json
 from datetime import datetime
 
 from pychronia_game.utilities import (mediaplayers, autolinker,
@@ -16,7 +16,6 @@ from django.utils.html import escape
 from django.utils.http import urlencode
 from django.core.serializers import serialize
 from django.db.models.query import QuerySet
-from django.utils import simplejson
 from django.template.defaultfilters import stringfilter
 
 import urllib
@@ -410,7 +409,7 @@ register.filter('split', split)
 def jsonify(object):
     if isinstance(object, QuerySet):
         return serialize('json', object)
-    return mark_safe(simplejson.dumps(object))
+    return mark_safe(json.dumps(object))
 register.filter('jsonify', jsonify)
 
 def has_unread_msg(ctx_msgs_list):

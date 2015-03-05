@@ -34,10 +34,10 @@ class MoneyTransferForm(AbstractGameForm):
         
         
 
-    amount = forms.IntegerField(label=_("Amount"), widget=forms.TextInput(attrs={'size':'8', 'style':'text-align:left;', 'autocomplete':'off'}),
+    amount = forms.IntegerField(label=ugettext_lazy("Amount"), widget=forms.TextInput(attrs={'size':'8', 'style':'text-align:left;', 'autocomplete':'off'}),
                                 initial=0, min_value=1, max_value=1000000)
 
-    reason = forms.CharField(label=_("Reason"), required=False)
+    reason = forms.CharField(label=ugettext_lazy("Reason"), required=False)
 
 
 class GemsTransferForm(AbstractGameForm, GemHandlingFormUtils):

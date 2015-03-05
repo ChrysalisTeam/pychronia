@@ -23,7 +23,7 @@ djinn_singleton_lock = threading.Lock() # cfor oncurrent access to singleton
 
 
 class DjinnContactForm(AbstractGameForm):
-    djinn_name = forms.CharField(label=_("Djinn"), required=True)
+    djinn_name = forms.CharField(label=ugettext_lazy("Djinn"), required=True)
 
 
 

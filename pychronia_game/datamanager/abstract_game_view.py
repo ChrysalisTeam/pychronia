@@ -54,7 +54,7 @@ def transform_usage_error(caller, self, request, *args, **kwargs):
         else:
             dm.user.add_error(_("Access denied to page %s") % self.TITLE)
             dm.logger.warning("Access denied to page %s" % self.TITLE, exc_info=True)
-        return return_to_home     
+        return return_to_home
 
     except (GameError, POSError), e:
 
@@ -104,7 +104,6 @@ class GameViewMetaclass(type):
 
             if __debug__:
 
-                assert NewClass.TITLE
                 utilities.check_is_lazy_translation(NewClass.TITLE)
                 if NewClass.ACCESS == UserAccess.authenticated:
                     assert NewClass.TITLE_FOR_MASTER is None or utilities.check_is_lazy_translation(NewClass.TITLE_FOR_MASTER)
@@ -132,7 +131,7 @@ class GameViewMetaclass(type):
                     raise NotImplementedError("Missing UserAccess case in GameView setup")
 
                 if NewClass.TEMPLATE is not None:
-                    assert loader.get_template(NewClass.TEMPLATE)
+                    pass  # cant' do that anymore due to new app initialization system: assert loader.get_template(NewClass.TEMPLATE)
 
 
                 RESERVED_CALLBACK_NAMES = AbstractGameView.__dict__.keys()
@@ -843,7 +842,7 @@ def register_view(view_object=None,
 
         else:
 
-            assert title and utilities.check_is_lazy_translation(title)
+            assert utilities.check_is_lazy_translation(title)
             assert inspect.isroutine(real_view_object) # not a class!
 
             if local_attach_to is not _undefined and not isinstance(local_attach_to, GameViewMetaclass):
