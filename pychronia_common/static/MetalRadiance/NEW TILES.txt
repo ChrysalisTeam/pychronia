@@ -1,0 +1,4 @@
+border-style: solid; border-width: 77px 70px 84px 155px; -moz-border-image: url(big_frame.png) 77 70 84 155 repeat; -webkit-border-image: url(big_frame.png) 77 70 84 155 repeat; -o-border-image: url(big_frame.png) 77 70 84 155 repeat; border-image: url(big_frame.png) 77 70 84 155 fil4 155 fill repeat;
+
+
+border-style: solid; border-width: 104px 70px 104px 155px; -moz-border-image: url(big_frame.png) 104 70 104 155 repeat; -webkit-border-image: url(big_frame.png) 104 70 104 155 repeat; -o-border-image: url(big_frame.png) 104 70 104 155 repeat; border-image: url(big_frame.png) 104 70 104 155 fill repeat;
