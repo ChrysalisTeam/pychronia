@@ -4495,15 +4495,17 @@ class TestGameViewSystem(BaseGameTestCase):
         def my_little_view(request, *args, **kwargs):
             pass
 
+        title = ugettext_lazy("test-title")
+
         # stupid cases get rejected in debug mode
         with pytest.raises(AssertionError):
-            register_view(my_little_view, access=UserAccess.master, requires_character_permission=True)
+            register_view(my_little_view, access=UserAccess.master, requires_character_permission=True, title=title)
         with pytest.raises(AssertionError):
-            register_view(my_little_view, access=UserAccess.master, requires_global_permission=True) # master must always access his views!
+            register_view(my_little_view, access=UserAccess.master, requires_global_permission=True, title=title) # master must always access his views!
         with pytest.raises(AssertionError):
-            register_view(my_little_view, access=UserAccess.anonymous, requires_character_permission=True)
+            register_view(my_little_view, access=UserAccess.anonymous, requires_character_permission=True, title=title)
 
-        klass = register_view(my_little_view, access=UserAccess.master, title=ugettext_lazy("jjj"), always_allow_post=True)
+        klass = register_view(my_little_view, access=UserAccess.master, title=title, always_allow_post=True)
 
         assert issubclass(klass, AbstractGameView)
         assert klass.__name__ == "MyLittleView" # pascal case
