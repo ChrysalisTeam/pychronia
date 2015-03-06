@@ -10,6 +10,8 @@
 *.fs*
 ~*
 
+.vagrant
+
 thumbs/
 /bits and pieces of old pychronia.py
 savegames
