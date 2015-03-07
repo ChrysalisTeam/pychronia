@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-05-22 21:48+0200\n"
+"POT-Creation-Date: 2015-03-07 20:55+0100\n"
 "PO-Revision-Date: 2014-01-12 17:28+0200\n"
 "Last-Translator: Pascal <chambon.pascal@gmail.com>\n"
 "Language-Team: Nothing\n"
@@ -18,15 +18,15 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Generator: Virtaal 0.7.1\n"
 
-#: .\common_settings.py:106 .\common_settings.py:136
+#: .\common_settings.py:108
 msgid "French"
 msgstr "Français"
 
-#: .\common_settings.py:111
+#: .\common_settings.py:117
 msgid "One column"
 msgstr "Une colonne"
 
-#: .\common_settings.py:112
+#: .\common_settings.py:118
 msgid "Two columns"
 msgstr "Deux colonnes"
 
@@ -38,19 +38,19 @@ msgstr "Combien fait \"2 x 7\" (en chiffres) ?"
 msgid "Improper answer to special question."
 msgstr "Mauvaise réponse à la question spéciale."
 
-#: .\templates\cms_base.html.py:5
+#: .\templates\cms_base.html:5
 msgid "Chrysalis Game"
 msgstr "Chrysalis Game"
 
-#: .\templates\cms_base.html.py:37
+#: .\templates\cms_base.html:37
 msgid "Welcome"
 msgstr "Bienvenue"
 
-#: .\templates\cms_base.html.py:46
+#: .\templates\cms_base.html:46
 msgid "Visitor"
 msgstr "Visiteur"
 
-#: .\templates\cms_base.html.py:88
+#: .\templates\cms_base.html:88
 msgid ""
 "\n"
 "This site requires a fully CSS3-enabled browser like recent versions of "
@@ -61,7 +61,7 @@ msgstr ""
 "Ce site est prévu pour fonctionner avec un navigateur fortement compatible "
 "CSS3 comme Firefox, Chrome ou Safari.\n"
 
-#: .\templates\cms_base.html.py:96
+#: .\templates\cms_base.html:96
 msgid ""
 "\n"
 "Game only available in French for now. Translations will arrive later.\n"
@@ -71,738 +71,735 @@ msgstr ""
 "suivront.\n"
 "\n"
 
-#: .\templates\userprofiles\login.html.py:5
-#: .\templates\zinnia\original_templates\login.html.py:34
+#: .\templates\userprofiles\login.html:5
+#: .\templates\zinnia\original_templates\login.html:34
 msgid "Login"
 msgstr "Connexion"
 
-#: .\templates\userprofiles\login.html.py:8
-#: .\templates\userprofiles\login.html.py:18
+#: .\templates\userprofiles\login.html:8
+#: .\templates\userprofiles\login.html:18
 msgid "Sign In"
 msgstr "Connexion"
 
-#: .\templates\userprofiles\login.html.py:20
+#: .\templates\userprofiles\login.html:20
 msgid "No account? Register here."
 msgstr "Pas de compte ? Inscrivez-vous ici."
 
-#: .\templates\userprofiles\login.html.py:21
+#: .\templates\userprofiles\login.html:21
 msgid "No Password? Reset your password here."
 msgstr "Pas de mot de passe ? Réinitialisez le ici."
 
-#: .\templates\userprofiles\registration.html.py:4
-#: .\templates\userprofiles\registration.html.py:7
+#: .\templates\userprofiles\registration.html:4
+#: .\templates\userprofiles\registration.html:7
 msgid "Registration"
 msgstr "Inscription"
 
-#: .\templates\userprofiles\registration.html.py:17
+#: .\templates\userprofiles\registration.html:17
 msgid "Create account"
 msgstr "Créer un compte"
 
-#: .\templates\zinnia\!!skeleton.html.py:32
-#: .\templates\zinnia\!!skeleton.html.py:33
-#: .\templates\zinnia\!!skeleton.html.py:70
-#: .\templates\zinnia\!!skeleton.html.py:71
-#: .\templates\zinnia\original_templates\sitemap.html.py:4
-#: .\templates\zinnia\original_templates\sitemap.html.py:9
-#: .\templates\zinnia\original_templates\skeleton.html.py:32
-#: .\templates\zinnia\original_templates\skeleton.html.py:33
-#: .\templates\zinnia\original_templates\skeleton.html.py:70
-#: .\templates\zinnia\original_templates\skeleton.html.py:71
+#: .\templates\zinnia\!!skeleton.html:32 .\templates\zinnia\!!skeleton.html:33
+#: .\templates\zinnia\!!skeleton.html:70 .\templates\zinnia\!!skeleton.html:71
+#: .\templates\zinnia\original_templates\sitemap.html:4
+#: .\templates\zinnia\original_templates\sitemap.html:9
+#: .\templates\zinnia\original_templates\skeleton.html:32
+#: .\templates\zinnia\original_templates\skeleton.html:33
+#: .\templates\zinnia\original_templates\skeleton.html:70
+#: .\templates\zinnia\original_templates\skeleton.html:71
 msgid "Sitemap"
 msgstr ""
 
-#: .\templates\zinnia\!!skeleton.html.py:37
-#: .\templates\zinnia\original_templates\base.html.py:17
-#: .\templates\zinnia\original_templates\skeleton.html.py:37
+#: .\templates\zinnia\!!skeleton.html:37
+#: .\templates\zinnia\original_templates\base.html:17
+#: .\templates\zinnia\original_templates\skeleton.html:37
 msgid "RSS Feed of latest entries"
 msgstr ""
 
-#: .\templates\zinnia\!!skeleton.html.py:38
-#: .\templates\zinnia\original_templates\entry_list.html.py:10
-#: .\templates\zinnia\original_templates\entry_list.html.py:13
-#: .\templates\zinnia\original_templates\entry_list.html.py:16
-#: .\templates\zinnia\original_templates\skeleton.html.py:38
+#: .\templates\zinnia\!!skeleton.html:38
+#: .\templates\zinnia\original_templates\entry_list.html:10
+#: .\templates\zinnia\original_templates\entry_list.html:13
+#: .\templates\zinnia\original_templates\entry_list.html:16
+#: .\templates\zinnia\original_templates\skeleton.html:38
 msgid "RSS Feed"
 msgstr ""
 
-#: .\templates\zinnia\!!skeleton.html.py:44
-#: .\templates\zinnia\original_templates\skeleton.html.py:44
-#: .\templates\zinnia\original_templates\tags\search_form.html.py:5
+#: .\templates\zinnia\!!skeleton.html:44
+#: .\templates\zinnia\original_templates\skeleton.html:44
+#: .\templates\zinnia\original_templates\tags\search_form.html:5
 msgid "Keywords..."
 msgstr ""
 
-#: .\templates\zinnia\!!skeleton.html.py:62
-#: .\templates\zinnia\original_templates\skeleton.html.py:62
+#: .\templates\zinnia\!!skeleton.html:62
+#: .\templates\zinnia\original_templates\skeleton.html:62
 msgid "Useful links"
 msgstr ""
 
-#: .\templates\zinnia\!!skeleton.html.py:65
-#: .\templates\zinnia\!!skeleton.html.py:66
-#: .\templates\zinnia\original_templates\skeleton.html.py:65
-#: .\templates\zinnia\original_templates\skeleton.html.py:66
+#: .\templates\zinnia\!!skeleton.html:65 .\templates\zinnia\!!skeleton.html:66
+#: .\templates\zinnia\original_templates\skeleton.html:65
+#: .\templates\zinnia\original_templates\skeleton.html:66
 msgid "Blog index"
 msgstr ""
 
-#: .\templates\zinnia\!!skeleton.html.py:77
-#: .\templates\zinnia\original_templates\skeleton.html.py:77
+#: .\templates\zinnia\!!skeleton.html:77
+#: .\templates\zinnia\original_templates\skeleton.html:77
 msgid "Search"
 msgstr ""
 
-#: .\templates\zinnia\_entry_detail.html.py:12
-#: .\templates\zinnia\original_templates\_entry_detail.html.py:22
+#: .\templates\zinnia\_entry_detail.html:12
+#: .\templates\zinnia\original_templates\_entry_detail.html:22
 msgid "Written on"
 msgstr ""
 
-#: .\templates\zinnia\_entry_detail.html.py:17
-#: .\templates\zinnia\original_templates\_entry_detail.html.py:28
-#: .\templates\zinnia\original_templates\tags\recent_comments.html.py:6
-#: .\templates\zinnia\original_templates\tags\recent_linkbacks.html.py:7
+#: .\templates\zinnia\_entry_detail.html:17
+#: .\templates\zinnia\original_templates\_entry_detail.html:28
+#: .\templates\zinnia\original_templates\tags\recent_comments.html:6
+#: .\templates\zinnia\original_templates\tags\recent_linkbacks.html:7
 msgid "in"
 msgstr ""
 
-#: .\templates\zinnia\_entry_detail.html.py:20
-#: .\templates\zinnia\original_templates\_entry_detail.html.py:31
-#: .\templates\zinnia\original_templates\category_list.html.py:16
-#: .\templates\zinnia\original_templates\tags\categories.html.py:6
-#: .\templates\zinnia\original_templates\tags\categories_tree.html.py:5
+#: .\templates\zinnia\_entry_detail.html:20
+#: .\templates\zinnia\original_templates\_entry_detail.html:31
+#: .\templates\zinnia\original_templates\category_list.html:16
+#: .\templates\zinnia\original_templates\tags\categories.html:6
+#: .\templates\zinnia\original_templates\tags\categories_tree.html:5
 #, python-format
 msgid "Show all entries in %(category)s"
 msgstr ""
 
-#: .\templates\zinnia\_entry_detail.html.py:47
-#: .\templates\zinnia\original_templates\_entry_detail.html.py:56
+#: .\templates\zinnia\_entry_detail.html:47
+#: .\templates\zinnia\original_templates\_entry_detail.html:56
 #, python-format
 msgid "Continue reading %(object)s"
 msgstr ""
 
-#: .\templates\zinnia\_entry_detail.html.py:49
-#: .\templates\zinnia\original_templates\_entry_detail.html.py:58
+#: .\templates\zinnia\_entry_detail.html:49
+#: .\templates\zinnia\original_templates\_entry_detail.html:58
 msgid "Continue reading"
 msgstr ""
 
-#: .\templates\zinnia\base.html.py:39
-#: .\templates\zinnia\original_templates\base.html.py:28
-#: .\templates\zinnia\original_templates\category_list.html.py:6
-#: .\templates\zinnia\original_templates\sitemap.html.py:52
+#: .\templates\zinnia\base.html:39
+#: .\templates\zinnia\original_templates\base.html:28
+#: .\templates\zinnia\original_templates\category_list.html:6
+#: .\templates\zinnia\original_templates\sitemap.html:52
 msgid "Categories"
 msgstr ""
 
-#: .\templates\zinnia\base.html.py:49
-#: .\templates\zinnia\original_templates\base.html.py:64
-#: .\templates\zinnia\original_templates\entry_archive_day.html.py:5
-#: .\templates\zinnia\original_templates\entry_archive_day.html.py:7
-#: .\templates\zinnia\original_templates\entry_archive_day.html.py:12
-#: .\templates\zinnia\original_templates\entry_archive_day.html.py:29
-#: .\templates\zinnia\original_templates\entry_archive_month.html.py:5
-#: .\templates\zinnia\original_templates\entry_archive_month.html.py:7
-#: .\templates\zinnia\original_templates\entry_archive_month.html.py:12
-#: .\templates\zinnia\original_templates\entry_archive_month.html.py:37
-#: .\templates\zinnia\original_templates\entry_archive_today.html.py:23
-#: .\templates\zinnia\original_templates\entry_archive_week.html.py:17
-#: .\templates\zinnia\original_templates\entry_archive_year.html.py:5
-#: .\templates\zinnia\original_templates\entry_archive_year.html.py:7
-#: .\templates\zinnia\original_templates\entry_archive_year.html.py:12
-#: .\templates\zinnia\original_templates\tags\archives_entries.html.py:6
-#: .\templates\zinnia\original_templates\tags\archives_entries_link.html.py:2
-#: .\templates\zinnia\original_templates\tags\archives_entries_tree.html.py:7
-#: .\templates\zinnia\original_templates\tags\archives_entries_tree.html.py:14
-#: .\templates\zinnia\original_templates\tags\archives_entries_tree.html.py:24
+#: .\templates\zinnia\base.html:49
+#: .\templates\zinnia\original_templates\base.html:64
+#: .\templates\zinnia\original_templates\entry_archive_day.html:5
+#: .\templates\zinnia\original_templates\entry_archive_day.html:7
+#: .\templates\zinnia\original_templates\entry_archive_day.html:12
+#: .\templates\zinnia\original_templates\entry_archive_day.html:29
+#: .\templates\zinnia\original_templates\entry_archive_month.html:5
+#: .\templates\zinnia\original_templates\entry_archive_month.html:7
+#: .\templates\zinnia\original_templates\entry_archive_month.html:12
+#: .\templates\zinnia\original_templates\entry_archive_month.html:37
+#: .\templates\zinnia\original_templates\entry_archive_today.html:23
+#: .\templates\zinnia\original_templates\entry_archive_week.html:17
+#: .\templates\zinnia\original_templates\entry_archive_year.html:5
+#: .\templates\zinnia\original_templates\entry_archive_year.html:7
+#: .\templates\zinnia\original_templates\entry_archive_year.html:12
+#: .\templates\zinnia\original_templates\tags\archives_entries.html:6
+#: .\templates\zinnia\original_templates\tags\archives_entries_link.html:2
+#: .\templates\zinnia\original_templates\tags\archives_entries_tree.html:7
+#: .\templates\zinnia\original_templates\tags\archives_entries_tree.html:14
+#: .\templates\zinnia\original_templates\tags\archives_entries_tree.html:24
 msgid "Archives"
 msgstr ""
 
-#: .\templates\zinnia\entry_detail_base.html.py:22
-#: .\templates\zinnia\original_templates\entry_detail_base.html.py:22
+#: .\templates\zinnia\entry_detail_base.html:22
+#: .\templates\zinnia\original_templates\entry_detail_base.html:22
 msgid "RSS Feed of discussions on"
 msgstr ""
 
-#: .\templates\zinnia\entry_detail_base.html.py:24
-#: .\templates\zinnia\original_templates\entry_detail_base.html.py:24
+#: .\templates\zinnia\entry_detail_base.html:24
+#: .\templates\zinnia\original_templates\entry_detail_base.html:24
 msgid "RSS Feed of comments on"
 msgstr ""
 
-#: .\templates\zinnia\entry_detail_base.html.py:26
-#: .\templates\zinnia\original_templates\entry_detail_base.html.py:26
+#: .\templates\zinnia\entry_detail_base.html:26
+#: .\templates\zinnia\original_templates\entry_detail_base.html:26
 msgid "RSS Feed of pingbacks on"
 msgstr ""
 
-#: .\templates\zinnia\entry_detail_base.html.py:28
-#: .\templates\zinnia\original_templates\entry_detail_base.html.py:28
+#: .\templates\zinnia\entry_detail_base.html:28
+#: .\templates\zinnia\original_templates\entry_detail_base.html:28
 msgid "RSS Feed of trackbacks on"
 msgstr ""
 
-#: .\templates\zinnia\entry_detail_base.html.py:46
-#: .\templates\zinnia\original_templates\entry_detail_base.html.py:46
+#: .\templates\zinnia\entry_detail_base.html:46
+#: .\templates\zinnia\original_templates\entry_detail_base.html:46
 msgid "Next entry"
 msgstr ""
 
-#: .\templates\zinnia\entry_detail_base.html.py:58
-#: .\templates\zinnia\original_templates\entry_detail_base.html.py:58
+#: .\templates\zinnia\entry_detail_base.html:58
+#: .\templates\zinnia\original_templates\entry_detail_base.html:58
 msgid "Previous entry"
 msgstr ""
 
-#: .\templates\zinnia\entry_detail_base.html.py:70
-#: .\templates\zinnia\original_templates\entry_detail_base.html.py:70
+#: .\templates\zinnia\entry_detail_base.html:70
+#: .\templates\zinnia\original_templates\entry_detail_base.html:70
 msgid "Related entries"
 msgstr ""
 
-#: .\templates\zinnia\entry_detail_base.html.py:82
-#: .\templates\zinnia\original_templates\entry_detail_base.html.py:82
+#: .\templates\zinnia\entry_detail_base.html:82
+#: .\templates\zinnia\original_templates\entry_detail_base.html:82
 msgid "Similar entries"
 msgstr ""
 
-#: .\templates\zinnia\entry_detail_base.html.py:94
-#: .\templates\zinnia\entry_detail_base.html.py:95
-#: .\templates\zinnia\original_templates\entry_detail_base.html.py:216
-#: .\templates\zinnia\original_templates\entry_detail_base.html.py:217
+#: .\templates\zinnia\entry_detail_base.html:94
+#: .\templates\zinnia\entry_detail_base.html:95
+#: .\templates\zinnia\original_templates\entry_detail_base.html:216
+#: .\templates\zinnia\original_templates\entry_detail_base.html:217
 msgid "Edit the entry"
 msgstr ""
 
-#: .\templates\zinnia\entry_list.html.py:8
-#: .\templates\zinnia\original_templates\entry_list.html.py:20
-#: .\templates\zinnia\original_templates\entry_search.html.py:5
+#: .\templates\zinnia\entry_list.html:8
+#: .\templates\zinnia\original_templates\entry_list.html:20
+#: .\templates\zinnia\original_templates\entry_search.html:5
 msgid "Page"
 msgstr ""
 
-#: .\templates\zinnia\entry_list.html.py:19
-#: .\templates\zinnia\original_templates\entry_list.html.py:48
-#: .\templates\zinnia\original_templates\sitemap.html.py:25
-#: .\templates\zinnia\original_templates\sitemap.html.py:45
-#: .\templates\zinnia\original_templates\tags\featured_entries.html.py:9
-#: .\templates\zinnia\original_templates\tags\popular_entries.html.py:12
-#: .\templates\zinnia\original_templates\tags\random_entries.html.py:9
-#: .\templates\zinnia\original_templates\tags\recent_entries.html.py:9
+#: .\templates\zinnia\entry_list.html:19
+#: .\templates\zinnia\original_templates\entry_list.html:48
+#: .\templates\zinnia\original_templates\sitemap.html:25
+#: .\templates\zinnia\original_templates\sitemap.html:45
+#: .\templates\zinnia\original_templates\tags\featured_entries.html:9
+#: .\templates\zinnia\original_templates\tags\popular_entries.html:12
+#: .\templates\zinnia\original_templates\tags\random_entries.html:9
+#: .\templates\zinnia\original_templates\tags\recent_entries.html:9
 msgid "No entries yet."
 msgstr ""
 
-#: .\templates\zinnia\original_templates\_entry_detail.html.py:13
+#: .\templates\zinnia\original_templates\_entry_detail.html:13
 msgid "Written by"
 msgstr ""
 
-#: .\templates\zinnia\original_templates\_entry_detail.html.py:17
-#: .\templates\zinnia\original_templates\author_list.html.py:17
-#: .\templates\zinnia\original_templates\tags\authors.html.py:6
+#: .\templates\zinnia\original_templates\_entry_detail.html:17
+#: .\templates\zinnia\original_templates\author_list.html:17
+#: .\templates\zinnia\original_templates\tags\authors.html:6
 #, python-format
 msgid "Show all %(author)s's entries"
 msgstr ""
 
-#: .\templates\zinnia\original_templates\_entry_detail.html.py:20
-#: .\templates\zinnia\original_templates\entry_detail_base.html.py:106
-#: .\templates\zinnia\original_templates\entry_detail_base.html.py:143
-#: .\templates\zinnia\original_templates\entry_detail_base.html.py:179
+#: .\templates\zinnia\original_templates\_entry_detail.html:20
+#: .\templates\zinnia\original_templates\entry_detail_base.html:106
+#: .\templates\zinnia\original_templates\entry_detail_base.html:143
+#: .\templates\zinnia\original_templates\entry_detail_base.html:179
 msgid "on"
 msgstr ""
 
-#: .\templates\zinnia\original_templates\_entry_detail.html.py:66
-#: .\templates\zinnia\original_templates\base.html.py:40
-#: .\templates\zinnia\original_templates\tag_list.html.py:7
+#: .\templates\zinnia\original_templates\_entry_detail.html:66
+#: .\templates\zinnia\original_templates\base.html:40
+#: .\templates\zinnia\original_templates\tag_list.html:7
 msgid "Tags"
 msgstr ""
 
-#: .\templates\zinnia\original_templates\_entry_detail.html.py:69
-#: .\templates\zinnia\original_templates\tag_list.html.py:18
+#: .\templates\zinnia\original_templates\_entry_detail.html:69
+#: .\templates\zinnia\original_templates\tag_list.html:18
 #, python-format
 msgid "Show all entries tagged by %(tag)s"
 msgstr ""
 
-#: .\templates\zinnia\original_templates\_entry_detail.html.py:72
+#: .\templates\zinnia\original_templates\_entry_detail.html:72
 msgid "No tags"
 msgstr ""
 
-#: .\templates\zinnia\original_templates\_entry_detail.html.py:77
+#: .\templates\zinnia\original_templates\_entry_detail.html:77
 msgid "Short url"
 msgstr ""
 
-#: .\templates\zinnia\original_templates\_entry_detail.html.py:79
+#: .\templates\zinnia\original_templates\_entry_detail.html:79
 #, python-format
 msgid "Short URL to %(object)s"
 msgstr ""
 
-#: .\templates\zinnia\original_templates\_entry_detail.html.py:86
+#: .\templates\zinnia\original_templates\_entry_detail.html:86
 msgid "Discussions"
 msgstr ""
 
-#: .\templates\zinnia\original_templates\_entry_detail.html.py:90
-#: .\templates\zinnia\original_templates\tags\popular_entries.html.py:7
+#: .\templates\zinnia\original_templates\_entry_detail.html:90
+#: .\templates\zinnia\original_templates\tags\popular_entries.html:7
 #, python-format
 msgid "Comments on %(object)s"
 msgstr ""
 
-#: .\templates\zinnia\original_templates\_entry_detail.html.py:91
-#: .\templates\zinnia\original_templates\tags\popular_entries.html.py:8
-#: .\templates\zinnia\original_templates\tags\statistics.html.py:16
+#: .\templates\zinnia\original_templates\_entry_detail.html:91
+#: .\templates\zinnia\original_templates\tags\popular_entries.html:8
+#: .\templates\zinnia\original_templates\tags\statistics.html:16
 #, python-format
 msgid "%(comment_count)s comment"
 msgid_plural "%(comment_count)s comments"
 msgstr[0] ""
 msgstr[1] ""
 
-#: .\templates\zinnia\original_templates\_entry_detail.html.py:95
-#: .\templates\zinnia\original_templates\entry_detail_base.html.py:124
-#: .\templates\zinnia\original_templates\tags\recent_comments.html.py:15
+#: .\templates\zinnia\original_templates\_entry_detail.html:95
+#: .\templates\zinnia\original_templates\entry_detail_base.html:124
+#: .\templates\zinnia\original_templates\tags\recent_comments.html:15
 msgid "No comments yet."
 msgstr ""
 
-#: .\templates\zinnia\original_templates\_entry_detail.html.py:97
+#: .\templates\zinnia\original_templates\_entry_detail.html:97
 #, python-format
 msgid "Leave a comment on %(object)s"
 msgstr ""
 
-#: .\templates\zinnia\original_templates\_entry_detail.html.py:98
+#: .\templates\zinnia\original_templates\_entry_detail.html:98
 msgid "Be first to comment!"
 msgstr ""
 
-#: .\templates\zinnia\original_templates\_entry_detail.html.py:101
-#: .\templates\zinnia\original_templates\entry_detail_base.html.py:120
-#: .\templates\zinnia\original_templates\entry_detail_base.html.py:126
+#: .\templates\zinnia\original_templates\_entry_detail.html:101
+#: .\templates\zinnia\original_templates\entry_detail_base.html:120
+#: .\templates\zinnia\original_templates\entry_detail_base.html:126
 msgid "Comments are closed."
 msgstr ""
 
-#: .\templates\zinnia\original_templates\_entry_detail.html.py:107
+#: .\templates\zinnia\original_templates\_entry_detail.html:107
 #, python-format
 msgid "Pingbacks on %(object)s"
 msgstr ""
 
-#: .\templates\zinnia\original_templates\_entry_detail.html.py:108
-#: .\templates\zinnia\original_templates\tags\statistics.html.py:19
+#: .\templates\zinnia\original_templates\_entry_detail.html:108
+#: .\templates\zinnia\original_templates\tags\statistics.html:19
 #, python-format
 msgid "%(pingback_count)s pingback"
 msgid_plural "%(pingback_count)s pingbacks"
 msgstr[0] ""
 msgstr[1] ""
 
-#: .\templates\zinnia\original_templates\_entry_detail.html.py:114
+#: .\templates\zinnia\original_templates\_entry_detail.html:114
 #, python-format
 msgid "Trackbacks on %(object)s"
 msgstr ""
 
-#: .\templates\zinnia\original_templates\_entry_detail.html.py:115
-#: .\templates\zinnia\original_templates\tags\statistics.html.py:22
+#: .\templates\zinnia\original_templates\_entry_detail.html:115
+#: .\templates\zinnia\original_templates\tags\statistics.html:22
 #, python-format
 msgid "%(trackback_count)s trackback"
 msgid_plural "%(trackback_count)s trackbacks"
 msgstr[0] ""
 msgstr[1] ""
 
-#: .\templates\zinnia\original_templates\author_list.html.py:4
-#: .\templates\zinnia\original_templates\author_list.html.py:11
+#: .\templates\zinnia\original_templates\author_list.html:4
+#: .\templates\zinnia\original_templates\author_list.html:11
 msgid "Author list"
 msgstr ""
 
-#: .\templates\zinnia\original_templates\author_list.html.py:6
-#: .\templates\zinnia\original_templates\base.html.py:32
+#: .\templates\zinnia\original_templates\author_list.html:6
+#: .\templates\zinnia\original_templates\base.html:32
 msgid "Authors"
 msgstr ""
 
-#: .\templates\zinnia\original_templates\author_list.html.py:19
-#: .\templates\zinnia\original_templates\category_list.html.py:17
-#: .\templates\zinnia\original_templates\sitemap.html.py:57
-#: .\templates\zinnia\original_templates\tag_list.html.py:19
-#: .\templates\zinnia\original_templates\tags\authors.html.py:8
-#: .\templates\zinnia\original_templates\tags\categories.html.py:7
-#: .\templates\zinnia\original_templates\tags\categories_tree.html.py:6
-#: .\templates\zinnia\original_templates\tags\statistics.html.py:7
+#: .\templates\zinnia\original_templates\author_list.html:19
+#: .\templates\zinnia\original_templates\category_list.html:17
+#: .\templates\zinnia\original_templates\sitemap.html:57
+#: .\templates\zinnia\original_templates\tag_list.html:19
+#: .\templates\zinnia\original_templates\tags\authors.html:8
+#: .\templates\zinnia\original_templates\tags\categories.html:7
+#: .\templates\zinnia\original_templates\tags\categories_tree.html:6
+#: .\templates\zinnia\original_templates\tags\statistics.html:7
 #, python-format
 msgid "%(entry_count)s entry"
 msgid_plural "%(entry_count)s entries"
 msgstr[0] ""
 msgstr[1] ""
 
-#: .\templates\zinnia\original_templates\author_list.html.py:23
-#: .\templates\zinnia\original_templates\tags\authors.html.py:12
+#: .\templates\zinnia\original_templates\author_list.html:23
+#: .\templates\zinnia\original_templates\tags\authors.html:12
 msgid "No authors yet."
 msgstr ""
 
-#: .\templates\zinnia\original_templates\base.html.py:18
+#: .\templates\zinnia\original_templates\base.html:18
 msgid "RSS Feed of latest discussions"
 msgstr ""
 
-#: .\templates\zinnia\original_templates\base.html.py:36
+#: .\templates\zinnia\original_templates\base.html:36
 msgid "Calendar"
 msgstr ""
 
-#: .\templates\zinnia\original_templates\base.html.py:44
+#: .\templates\zinnia\original_templates\base.html:44
 msgid "Recent entries"
 msgstr ""
 
-#: .\templates\zinnia\original_templates\base.html.py:48
+#: .\templates\zinnia\original_templates\base.html:48
 msgid "Recent comments"
 msgstr ""
 
-#: .\templates\zinnia\original_templates\base.html.py:52
+#: .\templates\zinnia\original_templates\base.html:52
 msgid "Recent linkbacks"
 msgstr ""
 
-#: .\templates\zinnia\original_templates\base.html.py:56
+#: .\templates\zinnia\original_templates\base.html:56
 msgid "Random entries"
 msgstr ""
 
-#: .\templates\zinnia\original_templates\base.html.py:60
+#: .\templates\zinnia\original_templates\base.html:60
 msgid "Popular entries"
 msgstr ""
 
-#: .\templates\zinnia\original_templates\base.html.py:69
+#: .\templates\zinnia\original_templates\base.html:69
 msgid "Tools"
 msgstr ""
 
-#: .\templates\zinnia\original_templates\base.html.py:73
-#: .\templates\zinnia\original_templates\base.html.py:74
+#: .\templates\zinnia\original_templates\base.html:73
+#: .\templates\zinnia\original_templates\base.html:74
 msgid "Dashboard"
 msgstr ""
 
-#: .\templates\zinnia\original_templates\base.html.py:80
-#: .\templates\zinnia\original_templates\base.html.py:81
+#: .\templates\zinnia\original_templates\base.html:80
+#: .\templates\zinnia\original_templates\base.html:81
 msgid "Post an entry"
 msgstr ""
 
-#: .\templates\zinnia\original_templates\base.html.py:88
-#: .\templates\zinnia\original_templates\base.html.py:89
+#: .\templates\zinnia\original_templates\base.html:88
+#: .\templates\zinnia\original_templates\base.html:89
 #, fuzzy
 msgid "Log out"
 msgstr "Déconnexion"
 
-#: .\templates\zinnia\original_templates\category_list.html.py:4
-#: .\templates\zinnia\original_templates\category_list.html.py:11
+#: .\templates\zinnia\original_templates\category_list.html:4
+#: .\templates\zinnia\original_templates\category_list.html:11
 msgid "Category list"
 msgstr ""
 
-#: .\templates\zinnia\original_templates\category_list.html.py:28
-#: .\templates\zinnia\original_templates\sitemap.html.py:62
-#: .\templates\zinnia\original_templates\tags\categories.html.py:11
-#: .\templates\zinnia\original_templates\tags\categories_tree.html.py:16
+#: .\templates\zinnia\original_templates\category_list.html:28
+#: .\templates\zinnia\original_templates\sitemap.html:62
+#: .\templates\zinnia\original_templates\tags\categories.html:11
+#: .\templates\zinnia\original_templates\tags\categories_tree.html:16
 msgid "No categories yet."
 msgstr ""
 
-#: .\templates\zinnia\original_templates\entry_archive.html.py:5
-#: .\templates\zinnia\original_templates\entry_archive.html.py:7
-#: .\templates\zinnia\original_templates\entry_list.html.py:20
+#: .\templates\zinnia\original_templates\entry_archive.html:5
+#: .\templates\zinnia\original_templates\entry_archive.html:7
+#: .\templates\zinnia\original_templates\entry_list.html:20
 msgid "Latest entries"
 msgstr ""
 
-#: .\templates\zinnia\original_templates\entry_archive.html.py:17
+#: .\templates\zinnia\original_templates\entry_archive.html:17
 msgid "Yearly archives"
 msgstr ""
 
-#: .\templates\zinnia\original_templates\entry_archive_day.html.py:17
-#: .\templates\zinnia\original_templates\entry_archive_today.html.py:17
+#: .\templates\zinnia\original_templates\entry_archive_day.html:17
+#: .\templates\zinnia\original_templates\entry_archive_today.html:17
 msgid "Previous day"
 msgstr ""
 
-#: .\templates\zinnia\original_templates\entry_archive_day.html.py:23
+#: .\templates\zinnia\original_templates\entry_archive_day.html:23
 msgid "Next day"
 msgstr ""
 
-#: .\templates\zinnia\original_templates\entry_archive_month.html.py:16
+#: .\templates\zinnia\original_templates\entry_archive_month.html:16
 msgid "Daily archives"
 msgstr ""
 
-#: .\templates\zinnia\original_templates\entry_archive_month.html.py:26
+#: .\templates\zinnia\original_templates\entry_archive_month.html:26
 msgid "Previous month"
 msgstr ""
 
-#: .\templates\zinnia\original_templates\entry_archive_month.html.py:32
+#: .\templates\zinnia\original_templates\entry_archive_month.html:32
 msgid "Next month"
 msgstr ""
 
-#: .\templates\zinnia\original_templates\entry_archive_today.html.py:5
-#: .\templates\zinnia\original_templates\entry_archive_today.html.py:7
-#: .\templates\zinnia\original_templates\entry_archive_today.html.py:12
+#: .\templates\zinnia\original_templates\entry_archive_today.html:5
+#: .\templates\zinnia\original_templates\entry_archive_today.html:7
+#: .\templates\zinnia\original_templates\entry_archive_today.html:12
 msgid "Today archives"
 msgstr ""
 
-#: .\templates\zinnia\original_templates\entry_archive_week.html.py:5
-#: .\templates\zinnia\original_templates\entry_archive_week.html.py:7
-#: .\templates\zinnia\original_templates\entry_archive_week.html.py:12
+#: .\templates\zinnia\original_templates\entry_archive_week.html:5
+#: .\templates\zinnia\original_templates\entry_archive_week.html:7
+#: .\templates\zinnia\original_templates\entry_archive_week.html:12
 #, python-format
 msgid "Archives week %(week_number)s of %(year)s"
 msgstr ""
 
-#: .\templates\zinnia\original_templates\entry_archive_year.html.py:16
-#: .\templates\zinnia\original_templates\sitemap.html.py:69
+#: .\templates\zinnia\original_templates\entry_archive_year.html:16
+#: .\templates\zinnia\original_templates\sitemap.html:69
 msgid "Monthly archives"
 msgstr ""
 
-#: .\templates\zinnia\original_templates\entry_detail_base.html.py:90
+#: .\templates\zinnia\original_templates\entry_detail_base.html:90
 msgid "Comments"
 msgstr ""
 
-#: .\templates\zinnia\original_templates\entry_detail_base.html.py:112
+#: .\templates\zinnia\original_templates\entry_detail_base.html:112
 msgid "Direct link to this comment"
 msgstr ""
 
-#: .\templates\zinnia\original_templates\entry_detail_base.html.py:134
+#: .\templates\zinnia\original_templates\entry_detail_base.html:134
 msgid "Pingbacks"
 msgstr ""
 
-#: .\templates\zinnia\original_templates\entry_detail_base.html.py:149
+#: .\templates\zinnia\original_templates\entry_detail_base.html:149
 msgid "Direct link to this pingback"
 msgstr ""
 
-#: .\templates\zinnia\original_templates\entry_detail_base.html.py:160
+#: .\templates\zinnia\original_templates\entry_detail_base.html:160
 msgid "Pingbacks are open."
 msgstr ""
 
-#: .\templates\zinnia\original_templates\entry_detail_base.html.py:162
+#: .\templates\zinnia\original_templates\entry_detail_base.html:162
 msgid "Pingbacks are closed."
 msgstr ""
 
-#: .\templates\zinnia\original_templates\entry_detail_base.html.py:170
+#: .\templates\zinnia\original_templates\entry_detail_base.html:170
 msgid "Trackbacks"
 msgstr ""
 
-#: .\templates\zinnia\original_templates\entry_detail_base.html.py:185
+#: .\templates\zinnia\original_templates\entry_detail_base.html:185
 msgid "Direct link to this trackback"
 msgstr ""
 
-#: .\templates\zinnia\original_templates\entry_detail_base.html.py:198
+#: .\templates\zinnia\original_templates\entry_detail_base.html:198
 msgid "Trackback URL"
 msgstr ""
 
-#: .\templates\zinnia\original_templates\entry_list.html.py:5
+#: .\templates\zinnia\original_templates\entry_list.html:5
 msgid "Latest entries for"
 msgstr ""
 
-#: .\templates\zinnia\original_templates\entry_list.html.py:5
+#: .\templates\zinnia\original_templates\entry_list.html:5
 msgid "the category"
 msgstr ""
 
-#: .\templates\zinnia\original_templates\entry_list.html.py:5
+#: .\templates\zinnia\original_templates\entry_list.html:5
 msgid "the tag"
 msgstr ""
 
-#: .\templates\zinnia\original_templates\entry_list.html.py:5
+#: .\templates\zinnia\original_templates\entry_list.html:5
 msgid "the author"
 msgstr ""
 
-#: .\templates\zinnia\original_templates\entry_list.html.py:5
-#: .\templates\zinnia\original_templates\entry_search.html.py:7
+#: .\templates\zinnia\original_templates\entry_list.html:5
+#: .\templates\zinnia\original_templates\entry_search.html:7
 msgid "page"
 msgstr ""
 
-#: .\templates\zinnia\original_templates\entry_list.html.py:20
+#: .\templates\zinnia\original_templates\entry_list.html:20
 msgid "Category"
 msgstr ""
 
-#: .\templates\zinnia\original_templates\entry_list.html.py:20
+#: .\templates\zinnia\original_templates\entry_list.html:20
 msgid "Tag"
 msgstr ""
 
-#: .\templates\zinnia\original_templates\entry_list.html.py:20
+#: .\templates\zinnia\original_templates\entry_list.html:20
 msgid "Author"
 msgstr ""
 
-#: .\templates\zinnia\original_templates\entry_list.html.py:28
+#: .\templates\zinnia\original_templates\entry_list.html:28
 #, python-format
 msgid "Category archives: %(category)s"
 msgstr ""
 
-#: .\templates\zinnia\original_templates\entry_list.html.py:35
+#: .\templates\zinnia\original_templates\entry_list.html:35
 #, python-format
 msgid "Tag archives: %(tag)s"
 msgstr ""
 
-#: .\templates\zinnia\original_templates\entry_list.html.py:39
+#: .\templates\zinnia\original_templates\entry_list.html:39
 #, python-format
 msgid "Author archives: %(author)s"
 msgstr ""
 
-#: .\templates\zinnia\original_templates\entry_list.html.py:67
-#: .\templates\zinnia\original_templates\entry_list.html.py:68
+#: .\templates\zinnia\original_templates\entry_list.html:67
+#: .\templates\zinnia\original_templates\entry_list.html:68
 msgid "Edit the category"
 msgstr ""
 
-#: .\templates\zinnia\original_templates\entry_list.html.py:74
-#: .\templates\zinnia\original_templates\entry_list.html.py:75
+#: .\templates\zinnia\original_templates\entry_list.html:74
+#: .\templates\zinnia\original_templates\entry_list.html:75
 msgid "Edit the tag"
 msgstr ""
 
-#: .\templates\zinnia\original_templates\entry_list.html.py:81
-#: .\templates\zinnia\original_templates\entry_list.html.py:82
+#: .\templates\zinnia\original_templates\entry_list.html:81
+#: .\templates\zinnia\original_templates\entry_list.html:82
 msgid "Edit the author"
 msgstr ""
 
-#: .\templates\zinnia\original_templates\entry_search.html.py:5
-#: .\templates\zinnia\original_templates\entry_search.html.py:7
-#: .\templates\zinnia\original_templates\entry_search.html.py:17
+#: .\templates\zinnia\original_templates\entry_search.html:5
+#: .\templates\zinnia\original_templates\entry_search.html:7
+#: .\templates\zinnia\original_templates\entry_search.html:17
 msgid "Search results for"
 msgstr ""
 
-#: .\templates\zinnia\original_templates\entry_search.html.py:11
+#: .\templates\zinnia\original_templates\entry_search.html:11
 msgid "RSS Feed of search result of"
 msgstr ""
 
-#: .\templates\zinnia\original_templates\entry_search.html.py:25
+#: .\templates\zinnia\original_templates\entry_search.html:25
 #, python-format
 msgid "%(entry_count)s entry found"
 msgid_plural "%(entry_count)s entries found"
 msgstr[0] ""
 msgstr[1] ""
 
-#: .\templates\zinnia\original_templates\entry_search.html.py:35
+#: .\templates\zinnia\original_templates\entry_search.html:35
 msgid "Nothing found."
 msgstr ""
 
-#: .\templates\zinnia\original_templates\login.html.py:4
-#: .\templates\zinnia\original_templates\login.html.py:9
+#: .\templates\zinnia\original_templates\login.html:4
+#: .\templates\zinnia\original_templates\login.html:9
 msgid "Login required"
 msgstr ""
 
-#: .\templates\zinnia\original_templates\login.html.py:13
+#: .\templates\zinnia\original_templates\login.html:13
 msgid "Your username and password didn't match. Please try again."
 msgstr ""
 
-#: .\templates\zinnia\original_templates\login.html.py:17
+#: .\templates\zinnia\original_templates\login.html:17
 msgid "You need to be connected to view this entry."
 msgstr ""
 
-#: .\templates\zinnia\original_templates\password.html.py:4
-#: .\templates\zinnia\original_templates\password.html.py:9
+#: .\templates\zinnia\original_templates\password.html:4
+#: .\templates\zinnia\original_templates\password.html:9
 msgid "Password required"
 msgstr ""
 
-#: .\templates\zinnia\original_templates\password.html.py:13
+#: .\templates\zinnia\original_templates\password.html:13
 msgid "The password provided is not valid. Please try again."
 msgstr ""
 
-#: .\templates\zinnia\original_templates\password.html.py:17
+#: .\templates\zinnia\original_templates\password.html:17
 msgid "You need to provide a password to view this entry."
 msgstr ""
 
-#: .\templates\zinnia\original_templates\password.html.py:24
+#: .\templates\zinnia\original_templates\password.html:24
 msgid "Password"
 msgstr ""
 
-#: .\templates\zinnia\original_templates\password.html.py:29
+#: .\templates\zinnia\original_templates\password.html:29
 msgid "Valid"
 msgstr ""
 
-#: .\templates\zinnia\original_templates\sitemap.html.py:12
+#: .\templates\zinnia\original_templates\sitemap.html:12
 msgid "Entries per categories"
 msgstr ""
 
-#: .\templates\zinnia\original_templates\sitemap.html.py:20
-#: .\templates\zinnia\original_templates\sitemap.html.py:40
+#: .\templates\zinnia\original_templates\sitemap.html:20
+#: .\templates\zinnia\original_templates\sitemap.html:40
 msgid "comment"
 msgstr ""
 
-#: .\templates\zinnia\original_templates\sitemap.html.py:33
+#: .\templates\zinnia\original_templates\sitemap.html:33
 msgid "All the entries"
 msgstr ""
 
-#: .\templates\zinnia\original_templates\tag_list.html.py:5
-#: .\templates\zinnia\original_templates\tag_list.html.py:12
+#: .\templates\zinnia\original_templates\tag_list.html:5
+#: .\templates\zinnia\original_templates\tag_list.html:12
 msgid "Tag list"
 msgstr ""
 
-#: .\templates\zinnia\original_templates\tag_list.html.py:23
-#: .\templates\zinnia\original_templates\tags\tag_cloud.html.py:12
+#: .\templates\zinnia\original_templates\tag_list.html:23
+#: .\templates\zinnia\original_templates\tags\tag_cloud.html:12
 msgid "No tags yet."
 msgstr ""
 
-#: .\templates\zinnia\original_templates\tags\archives_entries.html.py:13
-#: .\templates\zinnia\original_templates\tags\archives_entries_tree.html.py:38
+#: .\templates\zinnia\original_templates\tags\archives_entries.html:13
+#: .\templates\zinnia\original_templates\tags\archives_entries_tree.html:38
 msgid "No archives yet."
 msgstr ""
 
-#: .\templates\zinnia\original_templates\tags\draft_entries.html.py:9
+#: .\templates\zinnia\original_templates\tags\draft_entries.html:9
 msgid "No draft entries."
 msgstr ""
 
-#: .\templates\zinnia\original_templates\tags\pagination.html.py:4
+#: .\templates\zinnia\original_templates\tags\pagination.html:4
 #, python-format
 msgid "Page %(current_page)s of %(total_page)s"
 msgstr ""
 
-#: .\templates\zinnia\original_templates\tags\pagination.html.py:10
+#: .\templates\zinnia\original_templates\tags\pagination.html:10
 msgid "More recent entries"
 msgstr ""
 
-#: .\templates\zinnia\original_templates\tags\pagination.html.py:20
-#: .\templates\zinnia\original_templates\tags\pagination.html.py:33
-#: .\templates\zinnia\original_templates\tags\pagination.html.py:47
+#: .\templates\zinnia\original_templates\tags\pagination.html:20
+#: .\templates\zinnia\original_templates\tags\pagination.html:33
+#: .\templates\zinnia\original_templates\tags\pagination.html:47
 msgid "Entries page"
 msgstr ""
 
-#: .\templates\zinnia\original_templates\tags\pagination.html.py:56
+#: .\templates\zinnia\original_templates\tags\pagination.html:56
 msgid "More old entries"
 msgstr ""
 
-#: .\templates\zinnia\original_templates\tags\recent_comments.html.py:8
+#: .\templates\zinnia\original_templates\tags\recent_comments.html:8
 msgid "Comment on"
 msgstr ""
 
-#: .\templates\zinnia\original_templates\tags\recent_linkbacks.html.py:9
+#: .\templates\zinnia\original_templates\tags\recent_linkbacks.html:9
 msgid "Linkback on"
 msgstr ""
 
-#: .\templates\zinnia\original_templates\tags\recent_linkbacks.html.py:16
+#: .\templates\zinnia\original_templates\tags\recent_linkbacks.html:16
 msgid "No linkbacks yet."
 msgstr ""
 
-#: .\templates\zinnia\original_templates\tags\search_form.html.py:7
+#: .\templates\zinnia\original_templates\tags\search_form.html:7
 msgid ""
 "You can use - to exclude words or phrases, &quot;double quotes&quot; for "
 "exact phrases and the AND/OR boolean operators combined with parenthesis for "
 "complex queries."
 msgstr ""
 
-#: .\templates\zinnia\original_templates\tags\similar_entries.html.py:9
+#: .\templates\zinnia\original_templates\tags\similar_entries.html:9
 msgid "No similar entries."
 msgstr ""
 
-#: .\templates\zinnia\original_templates\tags\statistics.html.py:4
+#: .\templates\zinnia\original_templates\tags\statistics.html:4
 #, python-format
 msgid "%(author_count)s author"
 msgid_plural "%(author_count)s authors"
 msgstr[0] ""
 msgstr[1] ""
 
-#: .\templates\zinnia\original_templates\tags\statistics.html.py:10
+#: .\templates\zinnia\original_templates\tags\statistics.html:10
 #, python-format
 msgid "%(tag_count)s tag"
 msgid_plural "%(tag_count)s tags"
 msgstr[0] ""
 msgstr[1] ""
 
-#: .\templates\zinnia\original_templates\tags\statistics.html.py:13
+#: .\templates\zinnia\original_templates\tags\statistics.html:13
 #, python-format
 msgid "%(category_count)s category"
 msgid_plural "%(category_count)s categories"
 msgstr[0] ""
 msgstr[1] ""
 
-#: .\templates\zinnia\original_templates\tags\statistics.html.py:25
+#: .\templates\zinnia\original_templates\tags\statistics.html:25
 #, python-format
 msgid "%(reject_count)s rejected item"
 msgid_plural "%(reject_count)s rejected items"
 msgstr[0] ""
 msgstr[1] ""
 
-#: .\templates\zinnia\original_templates\tags\statistics.html.py:28
+#: .\templates\zinnia\original_templates\tags\statistics.html:28
 #, python-format
 msgid "%(entries_per_month)s entries per month"
 msgstr ""
 
-#: .\templates\zinnia\original_templates\tags\statistics.html.py:31
+#: .\templates\zinnia\original_templates\tags\statistics.html:31
 #, python-format
 msgid "%(words_per_entry)s words per entry"
 msgstr ""
 
-#: .\templates\zinnia\original_templates\tags\statistics.html.py:34
+#: .\templates\zinnia\original_templates\tags\statistics.html:34
 #, python-format
 msgid "%(words_per_comment)s words per comment"
 msgstr ""
 
-#: .\templates\zinnia\original_templates\tags\statistics.html.py:37
+#: .\templates\zinnia\original_templates\tags\statistics.html:37
 #, python-format
 msgid "%(comments_per_entry)s comments per entry"
 msgstr ""
 
-#: .\templates\zinnia\original_templates\tags\statistics.html.py:40
+#: .\templates\zinnia\original_templates\tags\statistics.html:40
 #, python-format
 msgid "%(linkbacks_per_entry)s linkbacks per entry"
 msgstr ""
 
-#: .\templates\zinnia\original_templates\tags\tag_cloud.html.py:7
+#: .\templates\zinnia\original_templates\tags\tag_cloud.html:7
 #, python-format
 msgid "%(entry_count)s entry tagged by %(tag)s"
 msgid_plural "%(entry_count)s entries tagged by %(tag)s"
