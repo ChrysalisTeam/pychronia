@@ -137,7 +137,6 @@ INSTALLED_APPS = [
     'django.contrib.humanize',
     'django.contrib.staticfiles',
 
-    'south',
     'debug_toolbar',
     'sekizai',
 
