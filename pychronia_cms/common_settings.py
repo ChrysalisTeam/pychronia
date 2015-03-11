@@ -22,7 +22,8 @@ INSTALLED_APPS += [
     #'userprofiles',
     #'userprofiles.contrib.profiles',
 
-    'djangocms_text_ckeditor', # must be before CMS
+    'djangocms_text_ckeditor', # must be before django-cms entry
+    'djangocms_admin_style',
     'cms',
     'mptt',
     'menus',
@@ -59,10 +60,29 @@ INSTALLED_APPS += [
 ]
 
 
+MIGRATION_MODULES.update({
+    'cms': 'cms.migrations_django',
+    'menus': 'menus.migrations_django',
+
+    # Add also the following modules if you're using these plugins:
+    #'djangocms_file': 'djangocms_file.migrations_django',
+    #'djangocms_flash': 'djangocms_flash.migrations_django',
+    #'djangocms_googlemap': 'djangocms_googlemap.migrations_django',
+    #'djangocms_inherit': 'djangocms_inherit.migrations_django',
+    'djangocms_link': 'djangocms_link.migrations_django',
+    #'djangocms_picture': 'djangocms_picture.migrations_django',
+    'djangocms_snippet': 'djangocms_snippet.migrations_django',
+    #'djangocms_teaser': 'djangocms_teaser.migrations_django',
+    #'djangocms_video': 'djangocms_video.migrations_django',
+    #
+    'djangocms_text_ckeditor': 'djangocms_text_ckeditor.migrations_django',
+})
+
 TEMPLATE_CONTEXT_PROCESSORS = TEMPLATE_CONTEXT_PROCESSORS + ("cms.context_processors.cms_settings",) # for CMS_MEDIA_URL etc.
 
 
 MIDDLEWARE_CLASSES += (
+'django.middleware.doc.XViewMiddleware',
 'django.middleware.clickjacking.XFrameOptionsMiddleware',
 'django.middleware.csrf.CsrfViewMiddleware',
 # #'cms.middleware.multilingual.MultilingualURLMiddleware', OBSOLETE
@@ -70,6 +90,7 @@ MIDDLEWARE_CLASSES += (
 'cms.middleware.user.CurrentUserMiddleware',
 'request.middleware.RequestMiddleware',
 'cms.middleware.toolbar.ToolbarMiddleware',
+'cms.middleware.language.LanguageCookieMiddleware'
 )
 
 

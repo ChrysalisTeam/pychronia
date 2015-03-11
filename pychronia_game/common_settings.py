@@ -24,7 +24,6 @@ MIDDLEWARE_CLASSES = (('pychronia_game.middlewares.MobileHostMiddleware',) +
 
 INSTALLED_APPS += [
     'pychronia_game',
-    'django.contrib.messages', # not in pychronia_common, as long as it doesn't get displayed (and thus emptied) by ALL templates
 ]
 
 

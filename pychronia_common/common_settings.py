@@ -102,7 +102,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.media",
     "django.core.context_processors.request",
     "django.core.context_processors.static",
-    "django.contrib.messages.context_processors.messages", # we use our own version in pychronia-game!
+    "django.contrib.messages.context_processors.messages", # note that we use our own version in pychronia-game!
     "sekizai.context_processors.sekizai",
 )
 
@@ -136,6 +136,7 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'django.contrib.humanize',
     'django.contrib.staticfiles',
+    'django.contrib.messages', # for both game and cms now
 
     'debug_toolbar',
     'sekizai',
@@ -147,7 +148,7 @@ INSTALLED_APPS = [
 
 ]
 
-SOUTH_MIGRATION_MODULES = {
+MIGRATION_MODULES = {
     'easy_thumbnails': 'easy_thumbnails.south_migrations',
 }
 
