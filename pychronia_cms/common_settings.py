@@ -64,6 +64,8 @@ MIGRATION_MODULES.update({
     'cms': 'cms.migrations_django',
     'menus': 'menus.migrations_django',
 
+    'filer': 'filer.migrations_django',
+
     # Add also the following modules if you're using these plugins:
     #'djangocms_file': 'djangocms_file.migrations_django',
     #'djangocms_flash': 'djangocms_flash.migrations_django',
@@ -76,6 +78,13 @@ MIGRATION_MODULES.update({
     #'djangocms_video': 'djangocms_video.migrations_django',
     #
     'djangocms_text_ckeditor': 'djangocms_text_ckeditor.migrations_django',
+
+    'cmsplugin_filer_file': 'cmsplugin_filer_file.migrations_django',
+    'cmsplugin_filer_folder': 'cmsplugin_filer_folder.migrations_django',
+    #'cmsplugin_filer_link': 'cmsplugin_filer_link.migrations_django',
+    'cmsplugin_filer_image': 'cmsplugin_filer_image.migrations_django',
+    'cmsplugin_filer_teaser': 'cmsplugin_filer_teaser.migrations_django',
+    'cmsplugin_filer_video': 'cmsplugin_filer_video.migrations_django',
 })
 
 TEMPLATE_CONTEXT_PROCESSORS = TEMPLATE_CONTEXT_PROCESSORS + ("cms.context_processors.cms_settings",) # for CMS_MEDIA_URL etc.
@@ -101,6 +110,10 @@ ABSOLUTE_URL_OVERRIDES = {
 
 
 ############# DJANGO-APP CONFS ############
+
+
+FILER_IMAGE_USE_ICON = True # use django-filer icons for plugins
+TEXT_SAVE_IMAGE_FUNCTION = 'cmsplugin_filer_image.integrations.ckeditor.create_image_plugin'
 
 
 ## DJANGO-REQUEST STATS CONF ##
