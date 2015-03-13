@@ -1328,13 +1328,13 @@ p {
   line-height: 1.1em;
 }
 a:link {
-  color: #0104A2;
+  color: #336727;
 }
 a:visited, a:active {
-  color: #0B0D6C;
+  color: #3B693B;
 }
 a:hover {
-  color: old_blue;
+  color: #19490F;
 }
 a img {
   border-width: 0;

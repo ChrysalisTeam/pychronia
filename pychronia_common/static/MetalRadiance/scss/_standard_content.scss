@@ -121,9 +121,9 @@ p {
 }
 
 a {
-    &:link { color: $light_blue; }
-    &:visited, &:active { color: $dark_blue; }
-    &:hover { color: old_blue; }
+    &:link { color: $darker_green; }
+    &:visited, &:active { color: $old_green; }
+    &:hover { color: $darkest_green; }
 
     img {
         border-width: 0;
