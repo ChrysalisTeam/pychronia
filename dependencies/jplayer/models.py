@@ -40,7 +40,7 @@ class JPlayer(models.Model):
         return playlist
 
     def ogg_support(self):
-        return all(entry["oga"] for entry in self.get_json_playlist())
+        return all(entry["oga"] for entry in self.playlist())
 
     def get_json_ogg_support(self):
         return safe_json(self.ogg_support())
