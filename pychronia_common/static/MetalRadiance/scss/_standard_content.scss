@@ -121,9 +121,9 @@ p {
 }
 
 a {
-    &:link { color: $darker_green; }
+    &:link { color: $darkest_green; }
     &:visited, &:active { color: $old_green; }
-    &:hover { color: $darkest_green; }
+    &:hover { color: $darker_green; }
 
     img {
         border-width: 0;
@@ -228,5 +228,12 @@ fieldset {
   border-color: $medium_yellow;
   margin: 5px auto;
 }
+
+/* Tag used for cms videos mainly */
+object {
+    display: block;
+    margin: 20px auto;
+}
+
 
 

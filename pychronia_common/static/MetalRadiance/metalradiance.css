@@ -939,6 +939,10 @@ table.realtable thead th:last-child {
   max-width: 400px;
   margin: auto;
 }
+.filer_image_link {
+  text-align: center;
+  display: block;
+}
 .borderless, table.borderless td, table.borderless th {
   border: 0;
 }
@@ -1328,13 +1332,13 @@ p {
   line-height: 1.1em;
 }
 a:link {
-  color: #336727;
+  color: #19490F;
 }
 a:visited, a:active {
-  color: #3B693B;
+  color: #19490F;
 }
 a:hover {
-  color: #19490F;
+  color: #336727;
 }
 a img {
   border-width: 0;
@@ -1410,6 +1414,10 @@ textarea {
 fieldset {
   border-color: #9D8126;
   margin: 5px auto;
+}
+object {
+  display: block;
+  margin: 20px auto;
 }
 .jp-audio {
   margin: 10px auto;
