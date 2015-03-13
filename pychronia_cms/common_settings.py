@@ -57,6 +57,8 @@ INSTALLED_APPS += [
     'tagging',
     'zinnia',
     'cmsplugin_zinnia',
+
+    'reversion',
 ]
 
 
@@ -65,6 +67,8 @@ MIGRATION_MODULES.update({
     'menus': 'menus.migrations_django',
 
     'filer': 'filer.migrations_django',
+
+    ##'reversion': 'reversion.migrations_django', - NOPE DIRECTLY USE STD MIGRATIONS
 
     # Add also the following modules if you're using these plugins:
     #'djangocms_file': 'djangocms_file.migrations_django',
@@ -76,7 +80,7 @@ MIGRATION_MODULES.update({
     'djangocms_snippet': 'djangocms_snippet.migrations_django',
     #'djangocms_teaser': 'djangocms_teaser.migrations_django',
     #'djangocms_video': 'djangocms_video.migrations_django',
-    #
+
     'djangocms_text_ckeditor': 'djangocms_text_ckeditor.migrations_django',
 
     'cmsplugin_filer_file': 'cmsplugin_filer_file.migrations_django',
@@ -183,7 +187,7 @@ CMS_CACHE_DURATIONS = { # in seconds
     'permissions': 60 * 60,
 }
 
-CMS_MAX_PAGE_PUBLISH_REVERSIONS = 25 # FIXME - for when we'll use DJANGO-REVERSION
+CMS_MAX_PAGE_PUBLISH_REVERSIONS = 14
 
 
 ## SIMPLEGALLERY CONF ##
