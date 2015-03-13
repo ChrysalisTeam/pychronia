@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+import os, sys
+
 from pychronia_cms.common_settings import *
 
 from pychronia_common.tests.persistent_mode_settings import * # simple overrides
