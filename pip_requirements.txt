@@ -53,6 +53,9 @@ easy-thumbnails==2.2
 
 odict==1.5.1
 
+# exposes pip-review + pip-dump
+pip-tools
+
 pytz
 
 pycrypto==2.6.1  # no much used ATM
@@ -80,7 +83,7 @@ ZODB==4.1.0
 
 pytest==2.6.4
 pyScss==1.3.4
-rst2pdf==0.93
+rst2pdf>=0.9
 
 
 
