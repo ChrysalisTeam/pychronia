@@ -23,7 +23,7 @@ INSTALLED_APPS += [
     #'userprofiles.contrib.profiles',
 
     'djangocms_text_ckeditor', # must be before django-cms entry
-    'djangocms_admin_style',
+
     'cms',
     'mptt',
     'menus',

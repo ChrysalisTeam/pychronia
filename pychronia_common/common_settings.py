@@ -128,6 +128,7 @@ MIDDLEWARE_CLASSES = (
 INSTALLED_APPS = [
     'pychronia_common', # common templates, tags, static files etc. BEFORE OTHER APPS for overrides!
 
+    'djangocms_admin_style',  # must come BEFORE admin
 
     'django.contrib.auth',
     'django.contrib.admin',
