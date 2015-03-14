@@ -80,8 +80,8 @@ def GAME_INITIAL_FIXTURE_SCRIPT(dm):
 
 
 
-## OVERRIDES FOR INTEGRATION OF CHRYSALIS GAME ##
-
-GAME_FILES_ROOT = r"P:\Chrysalis Depot\Chrysalis V1\ ".strip()
-GAME_INITIAL_DATA_PATH = r"P:\Chrysalis Depot\Chrysalis V1\script_fixtures"
+## OVERRIDES FOR INTEGRATION OF CHRYSALIS GAME ON PASCAL'S WINDOWS PC ##
+if os.path.exists("P:"):
+    GAME_FILES_ROOT = r"P:\Chrysalis Depot\Chrysalis V1\ ".strip()
+    GAME_INITIAL_DATA_PATH = r"P:\Chrysalis Depot\Chrysalis V1\script_fixtures"
 
