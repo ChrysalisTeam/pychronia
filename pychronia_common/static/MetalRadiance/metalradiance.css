@@ -716,6 +716,7 @@ img.center {
   background: url('img/backgrounds/scroll_yellow_flat.png');
   background-size: 100% 100%;
   background-repeat: no-repeat;
+  image-rendering: optimizequality;
 }
 .scroll_yellow_rolled, .form_scroll_thin, .form_scroll_medium, .form_scroll_big {
   margin: 10px 0;
@@ -723,6 +724,7 @@ img.center {
   background: url('img/backgrounds/scroll_yellow_rolled.png');
   background-size: 100% 100%;
   background-repeat: no-repeat;
+  image-rendering: optimizequality;
 }
 .antique_marble_frame {
   padding: 5px;

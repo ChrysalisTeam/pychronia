@@ -54,6 +54,7 @@
     background: url('#{$IMGS}backgrounds/scroll_yellow_flat.png');
     background-size: 100% 100%;
     background-repeat: no-repeat;
+    image-rendering: optimizequality;
 }
 
 .scroll_yellow_rolled {
@@ -62,6 +63,7 @@
     background: url('#{$IMGS}backgrounds/scroll_yellow_rolled.png');
     background-size: 100% 100%;
     background-repeat: no-repeat;
+    image-rendering: optimizequality;
 }
 
 
