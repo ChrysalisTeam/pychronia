@@ -1,7 +1,10 @@
 import os
 import sys
 
-from django.core.handlers.wsgi import WSGIHandler
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'pychronia_settings')
 
-os.environ['DJANGO_SETTINGS_MODULE'] = 'pychronia_settings'
-application = WSGIHandler()
+from django.core.wsgi import get_wsgi_application
+application = get_wsgi_application()
+
+
+
