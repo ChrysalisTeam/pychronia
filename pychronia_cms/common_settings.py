@@ -59,6 +59,8 @@ INSTALLED_APPS += [
     'cmsplugin_zinnia',
 
     'reversion',
+
+    'debug_toolbar',
 ]
 
 
@@ -95,6 +97,7 @@ TEMPLATE_CONTEXT_PROCESSORS = TEMPLATE_CONTEXT_PROCESSORS + ("cms.context_proces
 
 
 MIDDLEWARE_CLASSES += (
+'debug_toolbar.middleware.DebugToolbarMiddleware',
 'django.middleware.doc.XViewMiddleware',
 'django.middleware.clickjacking.XFrameOptionsMiddleware',
 'django.middleware.csrf.CsrfViewMiddleware',
@@ -103,7 +106,7 @@ MIDDLEWARE_CLASSES += (
 'cms.middleware.user.CurrentUserMiddleware',
 'request.middleware.RequestMiddleware',
 'cms.middleware.toolbar.ToolbarMiddleware',
-'cms.middleware.language.LanguageCookieMiddleware'
+'cms.middleware.language.LanguageCookieMiddleware',
 )
 
 
@@ -114,6 +117,19 @@ ABSOLUTE_URL_OVERRIDES = {
 
 
 ############# DJANGO-APP CONFS ############
+
+
+## DJANGO DEBUG TOOLBAR CONF ##
+def show_toolbar_to_superusers_only(request):
+    if request.user.is_superuser:
+        return True
+    return False
+DEBUG_TOOLBAR_CONFIG = {
+    'SHOW_TOOLBAR_CALLBACK': show_toolbar_to_superusers_only, # only show toolbar to authenticated users
+    'SHOW_COLLAPSED' : True,
+}
+DEBUG_TOOLBAR_PATCH_SETTINGS = False  # let us configure MANUALLY
+
 
 
 FILER_IMAGE_USE_ICON = True # use django-filer icons for plugins

@@ -119,7 +119,6 @@ MIDDLEWARE_CLASSES = (
 'django.contrib.messages.middleware.MessageMiddleware',
 'django.middleware.common.CommonMiddleware',
 'django.contrib.auth.middleware.AuthenticationMiddleware',
-## TEMP #'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
 
 
@@ -139,7 +138,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.messages', # for both game and cms now
 
-    'debug_toolbar',
     'sekizai',
 
     'sessionprofile', # keeps track of sessions/users in DB table, for PHPBB integration
@@ -181,20 +179,6 @@ AUTO_RENDER_SELECT2_STATICS = False
 from django.contrib.messages import constants as message_constants
 MESSAGE_LEVEL = message_constants.DEBUG # minimum recorded level
 # Set MESSAGE_TAGS setting if needed, to control corresponding CSS classes
-
-
-## DJANGO DEBUG TOOLBAR CONF ##
-def custom_show_toolbar(request):
-    if request.user.is_superuser:
-        return True
-    return False
-DEBUG_TOOLBAR_CONFIG = {
-    'INTERCEPT_REDIRECTS': False,
-    'SHOW_TOOLBAR_CALLBACK': custom_show_toolbar, # only show toolbar to authenticated users
-    'ENABLE_STACKTRACES' : True,
-    'HIDE_DJANGO_SQL': True,
-    'SHOW_TEMPLATE_CONTEXT': True,
-}
 
 
 ## DJANGO CONTRIB RST CONF ##
