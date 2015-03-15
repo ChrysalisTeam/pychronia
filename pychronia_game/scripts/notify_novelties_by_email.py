@@ -81,7 +81,7 @@ def execute():
         except Exception, e:
             logging.critical("Error during external notifications processing on game instance '%s'", instance_id, exc_info=True)
         else:
-            logging.info("Properly notified,by emails, characters from all instances about novelties.")
+            logging.info("Properly notified, by emails, characters from all instances about their novelties.")
 
         return (idx, successes, errors)
 
