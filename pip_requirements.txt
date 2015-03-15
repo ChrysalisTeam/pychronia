@@ -53,6 +53,9 @@ easy-thumbnails==2.2
 
 odict==1.5.1
 
+# for relstorage mainly
+perfmetrics==2.0
+
 # exposes pip-review + pip-dump
 pip-tools
 
