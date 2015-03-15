@@ -691,7 +691,7 @@ class TestMetaAdministration(unittest.TestCase): # no django setup required ATM
 
     def test_admin_scripts(self):
 
-        from pychronia_game.scripts import backup_all_games, check_global_sanity, notify_novalties_by_email, reset_demo_account
+        from pychronia_game.scripts import backup_all_games, check_global_sanity, notify_novelties_by_email, reset_demo_account
 
         reset_zodb_structure()
 
@@ -706,7 +706,7 @@ class TestMetaAdministration(unittest.TestCase): # no django setup required ATM
                          recipient_emails=["guy1@pangea.com"], # HAS NEWS
                          subject="subj22323", body="qsdqsd")
 
-        (idx, successes, errors) = notify_novalties_by_email.execute()
+        (idx, successes, errors) = notify_novelties_by_email.execute()
         assert (idx, successes, errors) == (1, 0, 1) # no smtp server, so exception!
 
 
