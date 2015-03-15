@@ -381,8 +381,8 @@ body:after {
   background-clip: padding-box;
   background-position: center top;
   position: relative;
-  background-color: transparent
-border-color: transparent;
+  background-color: transparent;
+  border-color: transparent;
   border-style: solid;
   padding-right: 4px;
   border-width: 0px 0px 0px 121px;
@@ -405,8 +405,8 @@ border-color: transparent;
   background-clip: padding-box;
   background-position: center top;
   position: relative;
-  background-color: transparent
-border-color: transparent;
+  background-color: transparent;
+  border-color: transparent;
   border-style: solid;
   padding-left: 4px;
   border-width: 0px 121px 0px 0px;
@@ -429,8 +429,8 @@ border-color: transparent;
   background-clip: padding-box;
   background-position: center top;
   position: relative;
-  background-color: transparent
-border-color: transparent;
+  background-color: transparent;
+  border-color: transparent;
   border-style: solid;
   border-width: 1px;
   border-style: solid;
@@ -462,8 +462,8 @@ border-color: transparent;
   height: 58px;
   display: inline-block;
   vertical-align: top;
-  background-color: transparent
-border-color: transparent;
+  background-color: transparent;
+  border-color: transparent;
   border-style: solid;
   border-width: 0px 300px 0px 304px;
   border-image: url('img/backgrounds/low_footer_border.png') 0 300 0 304 fill stretch;
@@ -603,9 +603,9 @@ img.center {
   height: 0;
   clear: both;
 }
-.clearfix:after, :after.hentry, #full_content:after,
-#full_content .mini_frame :after.mini_frame_content,
-#full_content .main_frame_border :after.main_frame_content {
+.clearfix:after, .hentry:after, #full_content:after,
+#full_content .mini_frame .mini_frame_content:after,
+#full_content .main_frame_border .main_frame_content:after {
   content: ".";
   visibility: hidden;
   display: block;
@@ -671,10 +671,6 @@ img.center {
 }
 .italic {
   font-style: italic;
-}
-.missing-content > * {
-  margin-left: auto !important;
-  margin-right: auto !important;
 }
 .outlined {
   outline: #9D8126 ridge 2px;
@@ -798,6 +794,10 @@ img.center {
   font-style: italic;
   line-height: normal;
   width: 95%;
+}
+.missing-content > * {
+  margin-left: auto !important;
+  margin-right: auto !important;
 }
 .form_scroll_thin {
   text-align: left;
@@ -949,13 +949,13 @@ table.realtable thead th:last-child {
   border: 0;
 }
 table.borderless td, table.borderless th {
-  padding: 0 0.5em 0 0 ! important;
+  padding: 0 0.5em 0 0 !important;
 }
 .first {
-  margin-top: 0 ! important;
+  margin-top: 0 !important;
 }
 .last, .with-subtitle {
-  margin-bottom: 0 ! important;
+  margin-bottom: 0 !important;
 }
 .hidden {
   display: none;
@@ -1407,9 +1407,11 @@ textarea {
   resize: vertical;
 }
 #full_content form textarea, #full_content form select,
-#full_content form input[type=text], #full_content form input[type=password],
-#full_content form input[type=submit], #full_content form input[type=button],
-#full_content form .select2-container, #full_content form .markItUp {
+#full_content form input[type=text], #full_content form input[type=email],
+#full_content form input[type=number], #full_content form input[type=tel],
+#full_content form input[type=password], #full_content form input[type=submit],
+#full_content form input[type=button], #full_content form .select2-container,
+#full_content form .markItUp {
   width: 100%;
   display: block;
 }
