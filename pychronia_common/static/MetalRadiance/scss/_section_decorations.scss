@@ -17,6 +17,7 @@
     border-style: solid;
     border-width: 7px 10px 10px;
     border-image: url('#{$IMGS}backgrounds/marble_plate_dark.png') 7 10 10 fill stretch;
+    image-rendering: optimizequality;
 }
 
 .post-it {
@@ -25,6 +26,7 @@
     border-style: solid;
     border-width: 4px 4px 6px;
     border-image: url('#{$IMGS}backgrounds/post-it.png') 4 4 6 fill stretch;
+    image-rendering: optimizequality;
 }
 
 
@@ -35,6 +37,7 @@
     border-style: solid;
     border-width: 142px 63px 124px 71px;
     border-image: url('#{$IMGS}backgrounds/scroll_realistic.png') 142 63 124 71 fill stretch stretch;
+    image-rendering: optimizequality;
 }
 
 .scroll_realistic_thin_ends {
@@ -45,6 +48,7 @@
     border-style: solid;
     border-width: 79px 45px 81px 39px;
     border-image: url('#{$IMGS}backgrounds/scroll_realistic_thin_ends.png') 79 45 81 39 fill stretch stretch;
+    image-rendering: optimizequality;
 }
 
 .scroll_yellow_flat {
@@ -73,6 +77,7 @@
     border-style: solid;
     border-width: 17px;
     border-image: url('#{$IMGS}backgrounds/antique_marble_frame2.png') 17 fill round;
+    image-rendering: optimizequality;
     margin: -5px;
 }
 
@@ -82,6 +87,7 @@
     border-style: solid;
     border-width: 35px 40px 35px 40px; // only HALF of real border-image size here...
     border-image: url('#{$IMGS}backgrounds/antique_large_decorated_frame.png') 70 80 70 80 fill stretch;
+    image-rendering: optimizequality;
     margin: -5px;
 }
 
@@ -90,6 +96,7 @@
     border-style: solid;
     border-width: 25px 27px 25px;
     border-image: url('#{$IMGS}backgrounds/decorated_golden_frame.png') 25 27 25 fill stretch;
+    image-rendering: optimizequality;
     margin: -5px;
 }
 
@@ -99,6 +106,7 @@
     border-style: solid;
     border-width: 90px;
     border-image: none 125 125 127 117 stretch;
+    image-rendering: optimizequality;
 }
 .carved_square_frame_gold {
     @include carved_square_frame;
@@ -114,12 +122,14 @@
     padding: 5px 5px;
     background-image: url('#{$IMGS}backgrounds/seamless_paper_beige.jpg');
     box-shadow: 2px 2px 3px black;
+    image-rendering: optimizequality;
 }
 
 .rice_paper_rose {
     padding: 5px 5px;
     background-image: url('#{$IMGS}backgrounds/seamless_paper_rose1.jpg');
     box-shadow: 2px 2px 3px black;
+    image-rendering: optimizequality;
 }
 
 

@@ -67,6 +67,7 @@
         border-bottom-left-radius: 30px 10px;
         opacity: 0.97;
         background-image: url('#{$IMGS}backgrounds/metal_bump_semitransparent.png');
+        image-rendering: optimizequality;
     }
 
     .jnotify-notification-warning .jnotify-close,
@@ -90,6 +91,7 @@
 .fancybox-default {
     z-index: 100000 !important; // we must be in front of dropdown menus
     background-image: url('#{$IMGS}backgrounds/ricepaper-hue-orange.jpg');
+    image-rendering: optimizequality;
 
 
     .fancybox-outer {

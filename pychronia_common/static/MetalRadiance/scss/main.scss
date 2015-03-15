@@ -69,10 +69,12 @@ img {
 
     &.back {
         background-image: url('#{$IMGS}backgrounds/parallax/back_fuzzy.jpg');
+        image-rendering: optimizequality;
     }
 
     &.front {
         background-image: url('#{$IMGS}backgrounds/parallax/front_rocks.png');
+        image-rendering: optimizequality;
     }
 
 }
@@ -115,6 +117,7 @@ body {
         background-repeat: no-repeat;
         background-attachment: scroll;
         background-position: center top;
+        image-rendering: optimizequality;
     }
 
 
@@ -414,12 +417,14 @@ body {
                 background-image: url('#{$IMGS}backgrounds/post-it.png');
                 background-clip: padding-box;
                 background-size: 100% 100%;
+                image-rendering: optimizequality;
 
 
                 border-style: solid;
                 border-color:transparent;
                 border-width: 18px 52px 20px 55px;
                 border-image: url('#{$IMGS}backgrounds/menu_border.png') 18 52 20 55 fill round stretch;
+                image-rendering: optimizequality;
             }
 
         }
@@ -468,6 +473,7 @@ body {
             border-style: solid;
             border-width: 22px 22px;
             border-image: url('#{$IMGS}backgrounds/mini_frame4.png') 22 22 repeat;
+            image-rendering: optimizequality;
 
             & > p {
                 color: $white_color;
@@ -531,6 +537,7 @@ body {
         border-style: solid;
         border-width: 41px 43px 43px 41px;
         border-image: url('#{$IMGS}backgrounds/big_frame.png') 41 43 43 41 fill round round;
+        image-rendering: optimizequality;
 
         .main_frame_content {
             @extend .clearfix;
@@ -588,6 +595,7 @@ body {
         padding-right: 4px;
         border-width: 0px 0px 0px 121px;
         border-image: url('#{$IMGS}backgrounds/up_footer_left.png') 0 0 0 121 fill round stretch;
+        image-rendering: optimizequality;
     }
 
     #up_footer_border_right {
@@ -595,6 +603,7 @@ body {
         padding-left: 4px;
         border-width: 0px 121px 0px 0px;
         border-image: url('#{$IMGS}backgrounds/up_footer_right.png') 0 121 0 0 fill round stretch;
+        image-rendering: optimizequality;
     }
 
     #up_footer_border_center {
@@ -603,6 +612,7 @@ body {
         border-style: solid; // important
         /////background-image: url('#{$IMGS}backgrounds/up_footer_center.png');
         border-image: url('#{$IMGS}backgrounds/up_footer_center.png') 1 1 1 1 fill stretch stretch;
+        image-rendering: optimizequality;
         width: 225px;
     }
 
@@ -645,6 +655,7 @@ body {
         border-style: solid;
         border-width: 0px 300px 0px 304px;
         border-image: url('#{$IMGS}backgrounds/low_footer_border.png') 0 300 0 304 fill stretch;
+        image-rendering: optimizequality;
         overflow: visible; // important to avoid mess with vertical alignment
 
         &:before {
@@ -677,6 +688,7 @@ body {
     margin-left: -300px;
     top: 50px;
     background-image: url('#{$IMGS}backgrounds/ricepaper-hue-gold.jpg');
+    image-rendering: optimizequality;
     color: $text_color;
 
     .bug_report_panel_content {

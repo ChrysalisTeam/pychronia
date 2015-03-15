@@ -71,6 +71,7 @@ div.frame {
   border-style: ridge;
   border-width: 14px;
   border-image: url("img/backgrounds/mobile/frame.jpg") 14 fill repeat;
+  image-rendering: optimizequality;
   margin: 4px 0;
 }
 

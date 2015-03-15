@@ -102,6 +102,7 @@ input.digit
     @include email_common;
     background-image: none; // would look ugly
     border-image: url('#{$IMGS}backgrounds/scroll_realistic_thin_ends.png') 79 45 81 39 fill stretch stretch;
+    image-rendering: optimizequality;
 }
 
 
@@ -109,6 +110,7 @@ input.digit
     @include email_common;
     background-image: none; // would look ugly
     border-image: url('#{$IMGS}backgrounds/scroll_realistic_thin_ends_disabled.png') 79 45 81 39 fill stretch stretch;
+    image-rendering: optimizequality;
 }
 
 
