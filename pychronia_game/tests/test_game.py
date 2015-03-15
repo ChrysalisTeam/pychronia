@@ -2,8 +2,6 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
-import setup_pychronia_env
-
 import random
 from textwrap import dedent
 import tempfile

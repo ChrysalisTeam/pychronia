@@ -9,9 +9,7 @@ import os, sys, pytest, unittest, traceback
 ## TEST CONFIGURATION ##
 
 os.environ["DJANGO_SETTINGS_MODULE"] = "pychronia_game.tests.transient_mode_settings"
-import django
-if hasattr(django, "setup"):
-    django.setup()  # for django >= 1.7
+import setup_pychronia_env  # only AFTER setting this DJANGO_SETTINGS_MODULE
 
 from pychronia_game.common import *
 from pychronia_game.datamanager.datamanager_administrator import create_game_instance, \

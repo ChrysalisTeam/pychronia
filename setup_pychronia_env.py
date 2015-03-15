@@ -1,7 +1,7 @@
 
 import os, sys
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "pychronia_settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "pychronia_settings")  # not erased if already set, eg. for tests
 
 import django
 django.setup()
