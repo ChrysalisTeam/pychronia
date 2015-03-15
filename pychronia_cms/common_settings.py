@@ -237,7 +237,7 @@ JPLAYER_BASE_PATH = STATIC_URL + "libs/jquery-jplayer-2.3.0/" # for Jplayer SWF 
 ACCOUNT_ACTIVATION_DAYS = 7
 
 
-
+# OUTDATED STUFF - no django1.7 support
 ## DJANGO AUTH & USERPROFILES CONF ##
 AUTH_PROFILE_MODULE = "pychronia_cms.Profile"
 USERPROFILES_REGISTRATION_FORM = 'pychronia_cms.forms.RegistrationForm'

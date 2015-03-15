@@ -10,6 +10,9 @@ from pychronia_cms.models import Profile
 
 
 
+
+# OUTDATED - DOESN'T SUPPORT DJANGO1.7 DUE TO SORTEDICT
+
 class RegistrationForm(DefaultRegistrationForm):
 
     antibot_check = forms.CharField(label=_('How much is "2 * 7" (in digits)?'), required=True)
