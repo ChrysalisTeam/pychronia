@@ -9,6 +9,8 @@ sys.path.insert(0, os.path.join(root, "dependencies"))
 
 os.environ["DJANGO_SETTINGS_MODULE"] = settings_module = "pychronia_game.tests.persistent_mode_settings" # with DB not in temp dir
 
+import django
+django.setup()
 from django.core.management import execute_from_command_line
 from django.conf import settings
 
@@ -50,15 +52,15 @@ if __name__ == "__main__":
                              skip_initializations=skip_initializations,
                              yaml_fixture=yaml_fixture,
                              skip_randomizations=skip_randomizations)
+
     elif "reset_django" in arguments:
         if not settings.DEBUG:
             raise RuntimeError("Can't reset django DB in non-DEBUG mode")
-        sys.argv[1:] = ("syncdb --noinput --settings=%s" % settings_module).split()
-        execute_from_command_line()
         sys.argv[1:] = ("migrate --noinput --settings=%s" % settings_module).split()
         execute_from_command_line()
         sys.argv[1:] = ("flush --noinput --settings=%s" % settings_module).split()
         execute_from_command_line()
+
 
     elif "pack_file" in arguments:
         from pychronia_game import utilities
