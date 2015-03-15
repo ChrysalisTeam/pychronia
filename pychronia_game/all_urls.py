@@ -148,7 +148,7 @@ web_game_urlpatterns = patterns('pychronia_game.views',
 
 support_urlpatterns = patterns('',
 
-    (r'^robots\.txt$', lambda r: HttpResponse("User-agent: *\nDisallow: /", mimetype="text/plain")),
+    (r'^robots\.txt$', lambda r: HttpResponse("User-agent: *\nDisallow: /", content_type="text/plain")),
 
     (r'^admin/', include(admin.site.urls)),
 
