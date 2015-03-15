@@ -9,6 +9,7 @@ from django.http import Http404, HttpResponseRedirect, HttpResponse
 from pychronia_game.utilities.select2_extensions import Select2TagsField
 from django.core.exceptions import ValidationError
 from pychronia_game.templatetags.helpers import format_enriched_text
+from pychronia_game.utilities import add_to_ordered_dict
 
 
 """
@@ -134,15 +135,15 @@ class MessageComposeForm(AbstractGameForm):
             sender.choice_tags = datamanager.sort_email_addresses_list(master_emails)
             assert sender.max_selection_size is not None
             sender.max_selection_size = 1
-            self.fields.insert(0, "sender", sender)
+            self.fields = add_to_ordered_dict(self.fields, 0, "sender", sender)
 
             ''' OBSOLETE CHOCIE FIELD
             _delay_values_minutes = [unicode(value) for value in [0, 5, 10, 15, 30, 45, 60, 120, 720, 1440]]
             _delay_values_minutes_labels = [_("%s minutes") % value for value in _delay_values_minutes]
             _delay_values_minutes_choices = zip(_delay_values_minutes, _delay_values_minutes_labels)
-            self.fields.insert(2, "delay_mn", forms.ChoiceField(label=_("Sending delay"), choices=_delay_values_minutes_choices, initial="0"))
+           self.fields = add_to_ordered_dict(self.fields, 2, "delay_mn", forms.ChoiceField(label=_("Sending delay"), choices=_delay_values_minutes_choices, initial="0"))
             '''
-            self.fields.insert(2, "delay_h", forms.FloatField(label=_("Sending delay in hours (eg. 2.4)"), initial=0))
+            self.fields = add_to_ordered_dict(self.fields, 2, "delay_h", forms.FloatField(label=_("Sending delay in hours (eg. 2.4)"), initial=0))
 
         else:
             pass # no sender or delay_mn fields!

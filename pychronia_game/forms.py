@@ -3,12 +3,16 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import json
-from pychronia_game.common import *
+
 from django import forms
+from django_select2 import Select2MultipleWidget
+
+from pychronia_game.common import *
 from pychronia_game.datamanager.abstract_form import AbstractGameForm, UninstantiableFormError, GemHandlingFormUtils, autostrip
 from pychronia_game.datamanager.abstract_form import GAMEMASTER_HINTS_FIELD
+from pychronia_game.utilities import add_to_ordered_dict
 
-from django_select2 import Select2MultipleWidget
+
 
 
 class MoneyTransferForm(AbstractGameForm):
@@ -22,15 +26,15 @@ class MoneyTransferForm(AbstractGameForm):
             _money_all_character_choices = [(datamanager.get_global_parameter("bank_name"), '<' + _("Bank") + '>')] + \
                                             datamanager.build_select_choices_from_character_usernames(datamanager.get_character_usernames())
 
-            self.fields.insert(0, "sender_name", forms.ChoiceField(label=_("Sender"), choices=_money_all_character_choices))
-            self.fields.insert(1, "recipient_name", forms.ChoiceField(label=_("Recipient"), choices=_money_all_character_choices))
+            self.fields = add_to_ordered_dict(self.fields, 0, "sender_name", forms.ChoiceField(label=_("Sender"), choices=_money_all_character_choices))
+            self.fields = add_to_ordered_dict(self.fields, 1, "recipient_name", forms.ChoiceField(label=_("Recipient"), choices=_money_all_character_choices))
         else:
             # for standard characters
             if datamanager.get_character_properties()["account"] <= 0:
                 raise UninstantiableFormError(_("No money available for transfer."))
             others = datamanager.get_other_character_usernames()
             others_choices = datamanager.build_select_choices_from_character_usernames(others, add_empty=True)
-            self.fields.insert(0, "recipient_name", forms.ChoiceField(label=_("Recipient"), choices=others_choices))
+            self.fields = add_to_ordered_dict(self.fields, 0, "recipient_name", forms.ChoiceField(label=_("Recipient"), choices=others_choices))
         
         
 
@@ -64,14 +68,14 @@ class GemsTransferForm(AbstractGameForm, GemHandlingFormUtils):
         # dynamic fields here ...
         if user.is_master:
             _character_choices = datamanager.build_select_choices_from_character_usernames(datamanager.get_character_usernames(), add_empty=True)
-            self.fields.insert(0, "sender_name", forms.ChoiceField(label=_("Sender"), choices=_character_choices))
-            self.fields.insert(1, "recipient_name", forms.ChoiceField(label=_("Recipient"), choices=_character_choices))
+            self.fields = add_to_ordered_dict(self.fields, 0, "sender_name", forms.ChoiceField(label=_("Sender"), choices=_character_choices))
+            self.fields = add_to_ordered_dict(self.fields, 1, "recipient_name", forms.ChoiceField(label=_("Recipient"), choices=_character_choices))
         else:
             others = datamanager.get_other_character_usernames()
             others_choices = datamanager.build_select_choices_from_character_usernames(others, add_empty=True)
-            self.fields.insert(1, "recipient_name", forms.ChoiceField(label=_("Recipient"), choices=others_choices))
+            self.fields = add_to_ordered_dict(self.fields, 1, "recipient_name", forms.ChoiceField(label=_("Recipient"), choices=others_choices))
 
-        self.fields.insert(2, "gems_choices", forms.MultipleChoiceField(required=False, label=_("Gems"), choices=gems_choices, widget=forms.SelectMultiple(attrs={"class": "multichecklist"})))
+        self.fields = add_to_ordered_dict(self.fields, 2, "gems_choices", forms.MultipleChoiceField(required=False, label=_("Gems"), choices=gems_choices, widget=forms.SelectMultiple(attrs={"class": "multichecklist"})))
 
 
     def clean(self):

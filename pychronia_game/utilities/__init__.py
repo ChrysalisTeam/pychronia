@@ -6,7 +6,7 @@ from __future__ import unicode_literals
 
 import sys, os, collections, logging, inspect, types, traceback, re, glob
 import yaml, random, contextlib
-from collections import Counter
+from collections import Counter, OrderedDict
 from datetime import datetime, timedelta
 
 import ZODB # must be first !
@@ -195,6 +195,15 @@ def substract_lists(available_gems, given_gems):
     gems_remaining = available_gems - given_gems
     return PersistentList(gems_remaining.elements())
 
+
+def add_to_ordered_dict(odict, idx, name, value):
+    """
+    returns the altered ordered dict.
+    """
+    data = odict.items()
+    data.insert(idx, (name, value))
+    return OrderedDict(data)
+                        
 
 def string_similarity(first, second):
     """Find the Levenshtein distance between two strings.

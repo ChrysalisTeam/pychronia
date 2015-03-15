@@ -20,7 +20,7 @@ class PersonalItemForm(AbstractGameForm):
 
         self.fields["item_name"] = forms.ChoiceField(label=ugettext_lazy(u"Item"), choices=_objects_choices)
 
-        assert self.fields.keyOrder # if reordering needed
+        assert self.fields.keyOrder # if reordering needed OBSOLETE
 '''
 
 
