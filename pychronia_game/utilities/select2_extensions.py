@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import copy
-from django_select2.util import JSVar
+import re, copy
 from django_select2 import HeavySelect2MultipleChoiceField, Select2MultipleWidget
 from django_select2.widgets import MultipleSelect2HiddenInput, Select2Mixin
 from django.utils.translation import ugettext_lazy
@@ -13,7 +12,7 @@ class Select2TagsWidget(Select2Mixin, MultipleSelect2HiddenInput): ##SpecialHidd
     def init_options(self):
         self.options.update({"closeOnSelect": True, # maximumSelectionSize buggy when not closeOnSelect, so we workaround...
                              "maximumSelectionSize":-1, # overridden by form field
-                             "separator": JSVar('django_select2.MULTISEPARATOR'),
+                             "separator": '*START*django_select2.MULTISEPARATOR*END*',
                             "tokenSeparators": [",", ";"], # spaces are NOT separators
                             "tags": []}) # overridden by field
 
@@ -23,6 +22,20 @@ class Select2TagsWidget(Select2Mixin, MultipleSelect2HiddenInput): ##SpecialHidd
     def set_max_selection_size(self, size):
         self.options["maximumSelectionSize"] = size
 
+    def render_inner_js_code(self, id_, *args):
+        fieldset_id = re.sub(r'-\d+-', '_', id_).replace('-', '_')
+        if '__prefix__' in id_:
+            return ''
+        else:
+            js = u'''
+                  window.django_select2.%s = function (selector, fieldID) {
+                    var hashedSelector = "#" + selector;
+                    $(hashedSelector).data("field_id", fieldID);
+                  ''' % (fieldset_id)
+            js += super(Select2TagsWidget, self).render_inner_js_code(id_, *args)
+            js += '};'
+            js += 'django_select2.%s("%s", "%s");' % (fieldset_id, id_, id_)
+            return js
 
 
 

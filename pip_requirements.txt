@@ -14,7 +14,9 @@ cmsplugin-zinnia==0.7
 decorator==3.4.0
 
 Django==1.7.6
-Django-Select2==4.2.2
+
+#Django-Select2==4.2.2 OUTDATED
+git+https://github.com/applegrew/django-select2.git@91dad724fb1364731a2a66954c97976fe020b946
 
 django-admin-jqueryui==1.8.22
 django-appconf==1.0.1
