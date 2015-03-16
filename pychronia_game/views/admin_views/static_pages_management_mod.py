@@ -17,7 +17,7 @@ class StaticPageForm(DataTableForm):
 
     categories = Select2TagsField(label=ugettext_lazy("Categories"), required=False,
                                   choice_tags=sorted(set([StaticPages.CONTENT_CATEGORY, StaticPages.HELP_CATEGORY, Encyclopedia.ENCYCLOPEDIA_CATEGORY])))
-    
+
     keywords = Select2TagsField(label=ugettext_lazy("Keywords"), required=False)
 
     content = forms.CharField(label=ugettext_lazy("Content"), widget=forms.Textarea(attrs={'rows': '8', 'cols':'40'}), required=True)

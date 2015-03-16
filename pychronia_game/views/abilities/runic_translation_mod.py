@@ -104,7 +104,7 @@ class RunicTranslationAbility(AbstractPartnershipAbility):
         assert len(real_rune_tokens) == len(translated_tokens), "Mismatch between rune an real tokens"
         assert len(set(real_rune_tokens)) == len(real_rune_tokens), "No unicity of real rune tokens"  # rune phrases must be unique in the message, to allow proper translation
 
-        translator = PersistentDict(zip(real_rune_tokens, translated_tokens))
+        translator = PersistentMapping(zip(real_rune_tokens, translated_tokens))
         return translator
 
     @classmethod
@@ -232,7 +232,7 @@ class RunicTranslationAbility(AbstractPartnershipAbility):
         msg_id = self.send_back_processing_result(parent_id=parent_id, subject=subject, body=body, attachment=None)
 
         self.log_game_event(ugettext_noop("Translation request submitted (presumably for item '%(item_title)s')."),
-                              PersistentDict(item_title=item_title),
+                              PersistentMapping(item_title=item_title),
                               url=self.get_message_viewer_url_or_none(msg_id)) # msg_id might be None
 
         return msg_id # might be None

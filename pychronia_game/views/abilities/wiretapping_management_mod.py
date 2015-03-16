@@ -166,7 +166,7 @@ class WiretappingAbility(AbstractAbility):
         '''
 
         self.datamanager.log_game_event(ugettext_noop("Wiretapping targets set to (%(targets)s)."),
-                             PersistentDict(targets=", ".join(target_names)),
+                             PersistentMapping(targets=", ".join(target_names)),
                              url=None)
 
         return _("Wiretapping successfully set up.")

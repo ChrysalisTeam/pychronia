@@ -23,7 +23,7 @@ from __future__ import unicode_literals
 
         self.log_game_event(
             ugettext_noop("Acharith attack launched by %(username)s on %(city_name)s, terminating at %(time)s."),
-            PersistentDict(username=username, city_name=city_name, time=local_finish_time_str),
+            PersistentMapping(username=username, city_name=city_name, time=local_finish_time_str),
             url=self.get_message_viewer_url_or_none(msg_id))
 
 
@@ -58,7 +58,7 @@ from __future__ import unicode_literals
 
         self.log_game_event(
             ugettext_noop("Teldorian teleportation launched by %(username)s on %(city_name)s, terminating at %(time)s."),
-            PersistentDict(username=username, city_name=city_name, time=local_finish_time_str),
+            PersistentMapping(username=username, city_name=city_name, time=local_finish_time_str),
             url=self.get_message_viewer_url_or_none(msg_id))
 
 
@@ -84,7 +84,7 @@ from __future__ import unicode_literals
 
         self.log_game_event(
             ugettext_noop("Mercenary intervention launched by %(username)s on %(city_name)s, terminating at %(time)s."),
-            PersistentDict(username=username, city_name=city_name, time=local_finish_time_str),
+            PersistentMapping(username=username, city_name=city_name, time=local_finish_time_str),
             url=self.get_message_viewer_url_or_none(msg_id))
 
 

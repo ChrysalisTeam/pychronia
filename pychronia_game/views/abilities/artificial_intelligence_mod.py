@@ -52,7 +52,7 @@ class ArtificialIntelligenceAbility(AbstractAbility):
         settings = self.settings
 
         for bot_name in settings["specific_bot_properties"].keys():
-            bot_session = private_data.setdefault(bot_name, PersistentDict())
+            bot_session = private_data.setdefault(bot_name, PersistentMapping())
             bot_session.setdefault("_inputStack", PersistentList()) # always empty between bot requests !
             bot_session.setdefault("_inputHistory", PersistentList())
             bot_session.setdefault("_outputHistory", PersistentList())

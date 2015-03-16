@@ -257,7 +257,7 @@ class TestUtilities(BaseGameTestCase):
 
         newdata = utilities.convert_object_tree(data, utilities.python_to_zodb_types)
 
-        self.assertTrue(isinstance(newdata, utilities.PersistentDict))
+        self.assertTrue(isinstance(newdata, utilities.PersistentMapping))
         self.assertEqual(len(newdata), len(data))
 
         self.assertTrue(isinstance(newdata["abc"], utilities.PersistentList))
@@ -277,7 +277,7 @@ class TestUtilities(BaseGameTestCase):
 
         # test 2 #
 
-        data = utilities.PersistentDict(abc=utilities.PersistentList([1, 2, 3]))
+        data = utilities.PersistentMapping(abc=utilities.PersistentList([1, 2, 3]))
 
         newdata = utilities.convert_object_tree(data, utilities.zodb_to_python_types)
 
@@ -842,7 +842,7 @@ class TestDatamanager(BaseGameTestCase):
             try:
                 root = _get_zodb_connection().root()
                 my_id = str(random.randint(1, 10000))
-                root[my_id] = PersistentDict()
+                root[my_id] = PersistentMapping()
                 castrated_dm.__init__(game_instance_id=my_id,
                                       game_root=root[my_id],
                                       request=self.request)
@@ -1121,7 +1121,7 @@ class TestDatamanager(BaseGameTestCase):
         dm.reset_friendship_data()
 
         full = self.dm.get_full_friendship_data()
-        assert isinstance(full, (dict, PersistentDict))
+        assert isinstance(full, (dict, PersistentMapping))
         assert "sealed" in full and "proposed" in full
 
 

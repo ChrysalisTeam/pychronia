@@ -172,8 +172,8 @@ class AbstractAbility(AbstractAbilityBasesAdapter):
     def setup_main_ability_data(cls, ability_data):
         # no transaction handling here - it's all up to the caller of that classmethod
         ##print("setup_main_ability_data", cls.NAME)
-        settings = ability_data.setdefault("settings", PersistentDict())
-        ability_data.setdefault("data", PersistentDict())
+        settings = ability_data.setdefault("settings", PersistentMapping())
+        ability_data.setdefault("data", PersistentMapping())
         cls._setup_ability_settings(settings=settings) # FIRST
         cls._setup_action_middleware_settings(settings=settings) # SECOND
 
@@ -189,7 +189,7 @@ class AbstractAbility(AbstractAbilityBasesAdapter):
         #print ("@@@@@@@@@@", self.ability_data)
         if not self.ability_data["data"].has_key(private_key):
             self.logger.warning("Setting up private data for '%s'", private_key)
-            private_data = self.ability_data["data"].setdefault(private_key, PersistentDict())
+            private_data = self.ability_data["data"].setdefault(private_key, PersistentMapping())
             self._setup_private_ability_data(private_data=private_data) # FIRST
             self._setup_private_action_middleware_data(private_data=private_data) # SECOND
 
@@ -361,7 +361,7 @@ class AbstractPartnershipAbility(AbstractAbility):
  
     def __init__(self, ability_name, max_items, items_available=0):
         self.__ability_name = ability_name
-        self.__record = PersistentDict(
+        self.__record = PersistentMapping(
                                          items_consumed=0,
                                          items_available=items_available,
                                          max_items=max_items,

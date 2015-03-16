@@ -93,7 +93,7 @@ def _create_metadata_record(game_instance_id, creator_login, creator_email):
     if creator_email is not None:
         utilities.check_is_email(creator_email)
     utcnow = datetime.utcnow()
-    game_metadata = PersistentDict(instance_id=game_instance_id,
+    game_metadata = PersistentMapping(instance_id=game_instance_id,
                                    creator_login=creator_login,
                                    creator_email=creator_email,
                                    creation_time=utcnow,
@@ -126,8 +126,8 @@ def create_game_instance(game_instance_id,
         game_metadata = _create_metadata_record(game_instance_id=game_instance_id,
                                                 creator_login=creator_login,
                                                 creator_email=creator_email)
-        game_data = PersistentDict()
-        game_root = PersistentDict(metadata=game_metadata,
+        game_data = PersistentMapping()
+        game_root = PersistentMapping(metadata=game_metadata,
                                    data=game_data)
 
         dm = GameDataManager(game_instance_id=game_instance_id,
@@ -151,7 +151,7 @@ def replace_existing_game_instance_data(game_instance_id, new_data):
     """
     Replaces only inner data, not metadata.
     """
-    assert isinstance(new_data, PersistentDict)
+    assert isinstance(new_data, PersistentMapping)
     game_instances = _get_game_instances_mapping()
 
     if game_instance_id not in game_instances:

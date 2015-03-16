@@ -89,7 +89,7 @@ class MercenariesHiringAbility(AbstractPartnershipAbility):
         ### self._process_spy_activation(location) # USELESS ?
 
         self.log_game_event(ugettext_noop("Mercenary hired in %(location)s"),
-                             PersistentDict(location=location),
+                             PersistentMapping(location=location),
                              url=None)
 
         return _("Mercenaries have been successfully hired")

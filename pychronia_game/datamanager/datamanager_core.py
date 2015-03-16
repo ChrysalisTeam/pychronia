@@ -266,7 +266,7 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
         Note that none of these tasks should rely on current user, which could be anything...
         """
         assert self.is_game_writable()
-        report = PersistentDict()
+        report = PersistentMapping()
         self._process_periodic_tasks(report)
         return report
 
@@ -298,7 +298,7 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
     def load_zope_database(self, string): # TODO UNTESTED
 
         data_tree = utilities.load_data_tree_from_yaml(string, convert=True)
-        assert isinstance(data_tree, PersistentDict)
+        assert isinstance(data_tree, PersistentMapping)
 
         try:
             old_data = self.data

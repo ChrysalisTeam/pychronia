@@ -234,7 +234,7 @@ class GameEvents(BaseDataManager): # TODO REFINE
         event_reference = {
             "time": datetime,
             "message": basestring, # TRANSLATED message
-            "substitutions": (types.NoneType, PersistentDict),
+            "substitutions": (types.NoneType, PersistentMapping),
             "url": (types.NoneType, basestring),
             "username": (types.NoneType, basestring),
             "visible_by": (types.NoneType, PersistentList),
@@ -274,7 +274,7 @@ class GameEvents(BaseDataManager): # TODO REFINE
         message = _(message) # TODO - force language to "official game language", not "user interface language"
 
         if substitutions:
-            assert isinstance(substitutions, PersistentDict), (message, substitutions)
+            assert isinstance(substitutions, PersistentMapping), (message, substitutions)
             if config.DEBUG:
                 message % substitutions # may raise formatting errors if corrupt...
         else:
@@ -283,10 +283,10 @@ class GameEvents(BaseDataManager): # TODO REFINE
 
         utcnow = datetime.utcnow() # NAIVE UTC datetime
 
-        record = PersistentDict({
+        record = PersistentMapping({
             "time": utcnow,
             "message": message, # TRANSLATED message !
-            "substitutions": PersistentDict(substitutions),
+            "substitutions": PersistentMapping(substitutions),
             "url": url,
             "username": self.user.username,
             "visible_by": PersistentList(visible_by)
@@ -332,7 +332,7 @@ class NovaltyTracker(BaseDataManager):
     def _load_initial_data(self, **kwargs):
         super(NovaltyTracker, self)._load_initial_data(**kwargs)
         game_data = self.data
-        game_data.setdefault("novelty_tracker", PersistentDict())
+        game_data.setdefault("novelty_tracker", PersistentMapping())
 
 
     def _check_database_coherency(self, strict=False, **kwargs):
@@ -1050,7 +1050,7 @@ class PlayerAuthentication(BaseDataManager):
                                        date_or_delay_mn=self.get_global_parameter("password_recovery_delay_mn"))
 
             self.log_game_event(ugettext_noop("Password of %(username)s has been recovered by %(target_email)s."),
-                                 PersistentDict(username=username, target_email=target_email),
+                                 PersistentMapping(username=username, target_email=target_email),
                                  url=self.get_message_viewer_url_or_none(msg_id),
                                  visible_by=None) # on purpose, we hide that hacking!
 
@@ -1215,9 +1215,9 @@ class FriendshipHandling(BaseDataManager):
     def _load_initial_data(self, strict=False, **kwargs):
         super(FriendshipHandling, self)._load_initial_data(**kwargs)
         game_data = self.data
-        game_data.setdefault("friendships", PersistentDict())
-        game_data["friendships"].setdefault("proposed", PersistentDict()) # mapping (proposer, recipient) => dict(proposal_date)
-        game_data["friendships"].setdefault("sealed", PersistentDict()) # mapping (proposer, accepter) => dict(proposal_date, acceptance_date)
+        game_data.setdefault("friendships", PersistentMapping())
+        game_data["friendships"].setdefault("proposed", PersistentMapping()) # mapping (proposer, recipient) => dict(proposal_date)
+        game_data["friendships"].setdefault("sealed", PersistentMapping()) # mapping (proposer, accepter) => dict(proposal_date, acceptance_date)
 
     def _check_database_coherency(self, strict=False, **kwargs):
         super(FriendshipHandling, self)._check_database_coherency(**kwargs)
@@ -1297,11 +1297,11 @@ class FriendshipHandling(BaseDataManager):
             # we seal the deal, with "recipient" as the initial proposer!
             existing_data = friendship_proposals[(recipient, username)]
             del friendship_proposals[(recipient, username)] # important
-            friendships[(recipient, username)] = PersistentDict(proposal_date=existing_data["proposal_date"],
+            friendships[(recipient, username)] = PersistentMapping(proposal_date=existing_data["proposal_date"],
                                                                 acceptance_date=current_date)
             res = True
         else:
-            friendship_proposals[(username, recipient)] = PersistentDict(proposal_date=current_date)
+            friendship_proposals[(username, recipient)] = PersistentMapping(proposal_date=current_date)
             res = False
 
         # TODO FIXME - add game events for both events
@@ -1475,7 +1475,7 @@ class GameInstructions(BaseDataManager):
             prologue_music = game_file_url("musics/" + domain["prologue_music"])
         '''
 
-        return PersistentDict(prologue_music=prologue_music,
+        return PersistentMapping(prologue_music=prologue_music,
                               global_introduction=global_introduction,
                               team_introduction=team_introduction)
 
@@ -1647,7 +1647,7 @@ class TextMessagingCore(BaseDataManager):
         message_reference = {
                              "sender_email": basestring, # only initial one
                              "recipient_emails": PersistentList, # only initial, theoretical ones
-                             "visible_by": PersistentDict, # mapping usernames (including master_login) to translatable (ugettext_noop'ed) string "reason of visibility" or None (if obvious)
+                             "visible_by": PersistentMapping, # mapping usernames (including master_login) to translatable (ugettext_noop'ed) string "reason of visibility" or None (if obvious)
 
                              "subject": basestring,
                              "body": basestring,
@@ -1787,7 +1787,7 @@ class TextMessagingCore(BaseDataManager):
         else:
             sent_at = self.compute_effective_remote_datetime(date_or_delay_mn) # date_or_delay_mn is None or (negative/positive) number or pair
 
-        msg = PersistentDict({
+        msg = PersistentMapping({
                               "sender_email": sender_email,
                               "recipient_emails": recipient_emails,
                               "subject": subject,
@@ -1985,7 +1985,7 @@ class TextMessagingExternalContacts(BaseDataManager):
     def _load_initial_data(self, **kwargs):
         super(TextMessagingExternalContacts, self)._load_initial_data(**kwargs)
 
-        self.messaging_data.setdefault("globally_registered_contacts", PersistentDict()) # identifier -> None or dict(description, avatar)
+        self.messaging_data.setdefault("globally_registered_contacts", PersistentMapping()) # identifier -> None or dict(description, avatar)
         self.global_contacts._load_initial_data(**kwargs)
 
 
@@ -2027,7 +2027,7 @@ class TextMessagingExternalContacts(BaseDataManager):
         def _load_initial_data(self, **kwargs):
             for identifier, details in self._table.items():
                 if details is None:
-                    details = PersistentDict()
+                    details = PersistentMapping()
                     self._table[identifier] = details
                 details.setdefault("immutable", True) # contacts that are necessary to gameplay CANNOT be edited/deleted
                 details.setdefault("avatar", None)
@@ -2046,7 +2046,7 @@ class TextMessagingExternalContacts(BaseDataManager):
             value["immutable"] = False # always, else new entry can't even be deleted later on
             value.setdefault("access_tokens", None)
             value.setdefault("gamemaster_hints", "")
-            return (key, PersistentDict(value))
+            return (key, PersistentMapping(value))
             # other params are supposed to exist in "value"
 
         def _check_item_validity(self, key, value, strict=False):
@@ -2136,7 +2136,7 @@ class TextMessagingTemplates(BaseDataManager):
 
         game_data = self.data
         messaging = self.messaging_data
-        messaging.setdefault("manual_messages_templates", PersistentDict())
+        messaging.setdefault("manual_messages_templates", PersistentMapping())
 
         if isinstance(messaging["manual_messages_templates"], list): # to simplify exchanges with dispatched emails, we allow list fixtures
             for idx, t in enumerate(messaging["manual_messages_templates"]):
@@ -2290,7 +2290,7 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
             msg["has_read"] = msg.get("has_read", PersistentList())
             msg["has_replied"] = msg.get("has_replied", PersistentList())
 
-            msg["visible_by"] = msg.get("visible_by", PersistentDict())
+            msg["visible_by"] = msg.get("visible_by", PersistentMapping())
             msg["visible_by"].update(self._determine_basic_visibility(msg)) # we might override here
 
         # we compute automatic address_book for the first time
@@ -2389,7 +2389,7 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
         assert "has_read" not in msg and "has_replied" not in msg and "visible_by" not in msg
         msg.update({"has_read": PersistentList(),
                     "has_replied": PersistentList(),
-                    "visible_by": PersistentDict(), })
+                    "visible_by": PersistentMapping(), })
 
         if is_read: # workaround : we add ALL users to the "has read" list !
             msg["has_read"] = PersistentList(self.get_character_usernames() + [self.master_login])
@@ -2788,7 +2788,7 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
     @readonly_method
     def get_pending_new_message_notifications(self):
         # returns users that must be notified, with corresponding message audio_id
-        needing_notifications = PersistentDict((username, properties["new_messages_notification"])
+        needing_notifications = PersistentMapping((username, properties["new_messages_notification"])
                                                 for (username, properties) in self.get_character_sets().items()
                                                 if properties["has_new_messages"])
         return needing_notifications
@@ -3002,7 +3002,7 @@ class RadioMessaging(BaseDataManager): # TODO REFINE
             assert "immutable" not in value
             value["immutable"] = False
             value.setdefault("gamemaster_hints", "")
-            return (key, PersistentDict(value))
+            return (key, PersistentMapping(value))
             # other params are supposed to exist in "value"
 
         def _check_item_validity(self, key, value, strict=False):
@@ -3234,7 +3234,7 @@ class Chatroom(BaseDataManager):
         if not message:
             raise UsageError(_("Chat message can't be empty"))
 
-        record = PersistentDict(time=datetime.utcnow(), username=self.user.username, message=message)
+        record = PersistentMapping(time=datetime.utcnow(), username=self.user.username, message=message)
         self.data["chatroom_messages"].append(record)
 
 
@@ -3286,7 +3286,7 @@ class ActionScheduling(BaseDataManager):
             "execute_at": datetime,
             "function": (basestring, collections.Callable), # string to represent a datamanager method
             "args": tuple,
-            "kwargs": PersistentDict
+            "kwargs": PersistentMapping
         }
         previous_time = None
         for action in game_data["scheduled_actions"]:
@@ -3341,7 +3341,7 @@ class ActionScheduling(BaseDataManager):
         """
 
         args = tuple(args) # already the case, normally...
-        kwargs = PersistentDict(kwargs)
+        kwargs = PersistentMapping(kwargs)
 
         # print >>sys.stderr, "REGISTERING ONE SHOT  ", function
 
@@ -3359,7 +3359,7 @@ class ActionScheduling(BaseDataManager):
         else:
             time = self.compute_effective_remote_datetime(date_or_delay_mn)
 
-        record = PersistentDict({
+        record = PersistentMapping({
             "execute_at": time,
             "function": function,
             "args": args,
@@ -3424,7 +3424,7 @@ class PersonalFiles(BaseDataManager):
             decrypted_files = [domain + decrypted_file for decrypted_file in decrypted_files]
 
         self.log_game_event(ugettext_noop("Encrypted folder '%(folder)s/%(password)s' accessed by user '%(username)s'."),
-                             PersistentDict(folder=folder, password=password, username=username),
+                             PersistentMapping(folder=folder, password=password, username=username),
                              url=None,
                              visible_by=None) # only game master shall see this
 
@@ -3703,7 +3703,7 @@ class MoneyItemsOwnership(BaseDataManager):
             msg += " " + _("Reason: %(reason)s") % SDICT(reason=reason)
 
         self.log_game_event(msg,
-                             PersistentDict(amount=amount, from_name=from_name, to_name=to_name),
+                             PersistentMapping(amount=amount, from_name=from_name, to_name=to_name),
                              url=None,
                              visible_by=(visible_by or None))
 
@@ -3778,7 +3778,7 @@ class MoneyItemsOwnership(BaseDataManager):
             self._assign_free_item_to_character(item_name=item_name, item=item, char_name=char_name)
 
         self.log_game_event(ugettext_noop("Item %(item_name)s transferred from %(from_name)s to %(char_name)s."),
-                             PersistentDict(item_name=item_name, from_name=from_name, char_name=char_name),
+                             PersistentMapping(item_name=item_name, from_name=from_name, char_name=char_name),
                              url=None,
                              visible_by=visible_by) # characters involved thus see the transaction in events
 
@@ -3831,7 +3831,7 @@ class MoneyItemsOwnership(BaseDataManager):
             # user_domain = self.get_character_properties(username)["domain"]
             # all_domain_users = [name for (name, value) in self.get_character_sets().items() if
             #                    value["domain"] == user_domain]
-            available_items = PersistentDict([(name, value) for (name, value)
+            available_items = PersistentMapping([(name, value) for (name, value)
                                               in my_getter().items()
                                               if value['owner'] in all_sharing_users])
         return available_items
@@ -3839,7 +3839,7 @@ class MoneyItemsOwnership(BaseDataManager):
     @readonly_method
     def get_user_artefacts(self, username=CURRENT_USER):
         username = self._resolve_username(username)
-        return PersistentDict([(name, value) for (name, value)
+        return PersistentMapping([(name, value) for (name, value)
                                   in self.get_available_items_for_user(username=username).items()
                                   if not value['is_gem']])
 
@@ -3867,7 +3867,7 @@ class MoneyItemsOwnership(BaseDataManager):
         recipient_char["gems"] += gems_choices
 
         self.log_game_event(ugettext_noop("Gems transferred from %(from_name)s to %(to_name)s : %(gems_choices)s."),
-                             PersistentDict(from_name=from_name, to_name=to_name, gems_choices=gems_choices),
+                             PersistentMapping(from_name=from_name, to_name=to_name, gems_choices=gems_choices),
                              url=None,
                              visible_by=[from_name, to_name]) # event visible by both characters
 
@@ -3979,7 +3979,7 @@ class GameViews(BaseDataManager):
     def _load_initial_data(self, **kwargs):
         super(GameViews, self)._load_initial_data(**kwargs)
         game_data = self.data
-        game_data.setdefault("views", PersistentDict())
+        game_data.setdefault("views", PersistentMapping())
         game_data["views"].setdefault("activated_views", PersistentList())
         # no need to sync - it will done later in _init_from_db()
 
@@ -4111,7 +4111,7 @@ class SpecialAbilities(BaseDataManager):
         for (key, klass) in self.ABILITIES_REGISTRY.items():
             if key not in self.data["abilities"]:
                 self.logger.warning("Lately setting up main settings for ability %s" % key)
-                ability_data = self.data["abilities"][key] = PersistentDict()
+                ability_data = self.data["abilities"][key] = PersistentMapping()
                 klass.setup_main_ability_data(ability_data) 
             assert self.data["abilities"][key]["data"]
         # if exceeding data exists (some abilities have disappeared), so be it
@@ -4252,7 +4252,7 @@ class StaticPages(BaseDataManager):
             assert "immutable" not in value
             value["immutable"] = False
             value.setdefault("gamemaster_hints", "")
-            return (key, PersistentDict(value))
+            return (key, PersistentMapping(value))
             # other params are supposed to exist in "value"
 
         def _check_item_validity(self, key, value, strict=False):

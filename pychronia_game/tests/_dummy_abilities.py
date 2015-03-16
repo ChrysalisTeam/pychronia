@@ -83,8 +83,8 @@ class DummyTestAbility(AbstractAbility):
     def reset_test_settings(self, action_name, middleware_class, new_settings):
         # we activate the middleware if not yet there
         new_settings.setdefault("is_active", True) # retrocompatibility
-        self.settings["middlewares"].setdefault(action_name, PersistentDict())
-        middleware_settings = self.settings["middlewares"][action_name].setdefault(middleware_class.__name__, PersistentDict())
+        self.settings["middlewares"].setdefault(action_name, PersistentMapping())
+        middleware_settings = self.settings["middlewares"][action_name].setdefault(middleware_class.__name__, PersistentMapping())
         middleware_settings.clear()
         middleware_settings.update(new_settings)
         assert middleware_settings is self.get_middleware_settings(action_name, middleware_class, ensure_active=False)

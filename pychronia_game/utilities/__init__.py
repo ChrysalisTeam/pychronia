@@ -12,7 +12,7 @@ from datetime import datetime, timedelta
 import ZODB # must be first !
 import transaction
 from persistent import Persistent
-from persistent.dict import PersistentDict
+from persistent.mapping import PersistentMapping
 from persistent.list import PersistentList
 
 from django_zodb import database
@@ -47,13 +47,14 @@ del Conf
 
 ## Python <-> ZODB types conversion and checking ##
 
-python_to_zodb_types = {list: PersistentList,
-                        dict: PersistentDict}
+ATOMIC_PYTHON_TYPES =  (types.NoneType, int, long, float, basestring, datetime, collections.Callable)
 
+python_to_zodb_types = {list: PersistentList,
+                        dict: PersistentMapping}
 zodb_to_python_types = dict((value, key) for (key, value) in python_to_zodb_types.items())
 
-allowed_zodb_types = (types.NoneType, int, long, float, basestring, tuple, datetime, collections.Callable, PersistentDict, PersistentList)
-
+allowed_zodb_types = ATOMIC_PYTHON_TYPES + (tuple, PersistentMapping, PersistentList)
+allowed_python_types = ATOMIC_PYTHON_TYPES + (tuple, dict, list)
 
 def usage_assert(value, comment=None):
     from pychronia_game.common import UsageError
@@ -140,7 +141,7 @@ def convert_object_tree(tree, type_mapping):
             tree = B(tree)
             break
 
-    if isinstance(tree, (types.NoneType, int, long, float, basestring, tuple, datetime, collections.Callable)):
+    if isinstance(tree, ATOMIC_PYTHON_TYPES):
         return tree # Warning - we must thus avoid infinite recursion on character sequences (aka strings)...
     elif isinstance(tree, collections.MutableSequence):
         for (index, item) in enumerate(tree):
@@ -152,11 +153,14 @@ def convert_object_tree(tree, type_mapping):
         for value in tree:
             tree.remove(value)
             tree.add(convert_object_tree(value, type_mapping))
+    elif isinstance(tree, tuple):
+        tree = tuple(convert_object_tree(value, type_mapping) for value in tree)
     elif hasattr(tree, "__dict__"):
         for (key, value) in tree.__dict__.items():
             setattr(tree, key, convert_object_tree(value, type_mapping))
+    else:
+        raise ValueError("Can't handle value %r (type=%s) in convert_object_tree" % (tree, type(tree)))
     return tree
-
 
 
 def check_object_tree(tree, allowed_types, path):
@@ -164,9 +168,8 @@ def check_object_tree(tree, allowed_types, path):
     if not isinstance(tree, allowed_types):
         raise RuntimeError("Bad object type detected : %s - %s via path %s" % (type(tree), tree, path))
 
-    if isinstance(tree, (int, long, basestring)):
+    if isinstance(tree, ATOMIC_PYTHON_TYPES):
         return
-
     elif isinstance(tree, collections.MutableSequence):
         for (index, item) in enumerate(tree):
             check_object_tree(item, allowed_types, path + [index])
@@ -176,10 +179,14 @@ def check_object_tree(tree, allowed_types, path):
     elif isinstance(tree, collections.MutableSet):
         for value in tree:
             check_object_tree(value, allowed_types, path + ["<set-item>"])
+    elif isinstance(tree, tuple):
+        for value in tree:
+            check_object_tree(value, allowed_types, path + ["<tuple>"])
     elif hasattr(tree, "__dict__"):
         for (key, value) in tree.__dict__.items():
             check_object_tree(value, allowed_types, path + [key])
-
+    else:
+        raise ValueError("Can't check value %r (type=%s) in check_object_tree" % (tree, type(tree)))
 
 
 def substract_lists(available_gems, given_gems):
@@ -203,7 +210,7 @@ def add_to_ordered_dict(odict, idx, name, value):
     data = odict.items()
     data.insert(idx, (name, value))
     return OrderedDict(data)
-                        
+
 
 def string_similarity(first, second):
     """Find the Levenshtein distance between two strings.
@@ -449,7 +456,7 @@ def check_is_game_file(*paths_elements):
 def is_email(email):
     return bool(email_re.match(email))
 
-    
+
 def find_game_file(filename, *rel_path_glob):
     """
     Returns the SINGLE file called filename, in 
@@ -467,14 +474,14 @@ def find_game_file(filename, *rel_path_glob):
     else:
         rel_path_glob = os.path.join(*rel_path_glob)
         # we hope that game_files_root contains no special chars...
-        search_trees = glob.glob(os.path.join(game_files_root, rel_path_glob)) 
+        search_trees = glob.glob(os.path.join(game_files_root, rel_path_glob))
     assert search_trees
-    
+
     result_folders = []
     for search_tree in search_trees:
         for root, dirs, files in os.walk(search_tree):
             if filename in files:
-                result_folders.append(root) 
+                result_folders.append(root)
                 pass # for robustness, we keep searching
     if not result_folders:
         raise RuntimeError("Game file %r not found in %r", filename, search_trees)
@@ -486,7 +493,7 @@ def find_game_file(filename, *rel_path_glob):
     rel_file_path = os.path.relpath(full_file_path, start=game_files_root)
     assert not os.path.isabs(rel_file_path)
     return rel_file_path
-        
+
 
 def ___complete_game_file_path(filename, *elements):
     """

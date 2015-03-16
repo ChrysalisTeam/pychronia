@@ -37,7 +37,7 @@ class AbstractActionMiddleware(object):
         """
         These methods must call their parent.
         """
-        settings.setdefault("middlewares", PersistentDict()) # mapping action_name => dict of (middleware_name => data_dict) entries
+        settings.setdefault("middlewares", PersistentMapping()) # mapping action_name => dict of (middleware_name => data_dict) entries
 
         for action_name, action_middlewares in settings["middlewares"].items():
             for middleware_name, data_dict in action_middlewares.items():
@@ -47,7 +47,7 @@ class AbstractActionMiddleware(object):
         """
         These methods must call their parent.
         """
-        private_data.setdefault("middlewares", PersistentDict())  # structure similar to middleware settings above
+        private_data.setdefault("middlewares", PersistentMapping())  # structure similar to middleware settings above
 
     def _check_action_middleware_data_sanity(self, strict=False):
         """
@@ -122,8 +122,8 @@ class AbstractActionMiddleware(object):
         assert self.user.is_character
         middleware_data = self.private_data["middlewares"]
         if create_if_unexisting:
-            middleware_data.setdefault(action_name, PersistentDict())
-            middleware_data[action_name].setdefault(middleware_class.__name__, PersistentDict())
+            middleware_data.setdefault(action_name, PersistentMapping())
+            middleware_data[action_name].setdefault(middleware_class.__name__, PersistentMapping())
         return middleware_data[action_name][middleware_class.__name__]
 
 
@@ -311,7 +311,7 @@ class CostlyActionMiddleware(AbstractActionMiddleware):
                     gems_price = middleware_settings["gems_price"]
                     self._pay_with_gems(character_properties, gems_price, use_gems)
                     self.log_game_event(ugettext_noop("A payment of %(cost)s¤ was issued with gems %(gems_list)s for service '%(service)s'"),
-                                         PersistentDict(cost=gems_price, service=action_name, gems_list=unicode(use_gems)),
+                                         PersistentMapping(cost=gems_price, service=action_name, gems_list=unicode(use_gems)),
                                          url=None,
                                          visible_by=[self.user.username])
 
@@ -319,7 +319,7 @@ class CostlyActionMiddleware(AbstractActionMiddleware):
                     money_price = middleware_settings["money_price"]
                     self._pay_with_money(character_properties, money_price)
                     self.log_game_event(ugettext_noop("A payment of %(cost)s¤ was issued with money, for service '%(service)s'"),
-                                         PersistentDict(cost=money_price, service=action_name),
+                                         PersistentMapping(cost=money_price, service=action_name),
                                          url=None,
                                          visible_by=[self.user.username])
 
@@ -746,8 +746,8 @@ class TimeLimitedActionMiddleware(AbstractActionMiddleware):
         """
         if self.is_action_middleware_activated(self, action_name, middleware_class): 
             middleware_data = self.private_datar["middlewares"]
-            middleware_data.setdefault(action_name, PersistentDict()) 
+            middleware_data.setdefault(action_name, PersistentMapping()) 
             if middleware_class. name_ not in middleware_data[action_name]: 
-                middleware_data[action_name].setdefault(action_name, PersistentDict()) 
+                middleware_data[action_name].setdefault(action_name, PersistentMapping()) 
                 return True 
         return False'''

@@ -21,7 +21,7 @@ import yaml, pyparsing
 import ZODB # must be first !
 import transaction
 from persistent import Persistent
-from persistent.dict import PersistentDict
+from persistent.mapping import PersistentMapping
 from persistent.list import PersistentList
 
 from django.conf import settings

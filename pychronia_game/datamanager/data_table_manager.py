@@ -2,6 +2,7 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
+from pychronia_game import utilities
 from pychronia_game.common import *
 from .datamanager_tools import *
 
@@ -84,18 +85,25 @@ class DataTableManager(object):
     @readonly_method
     def get_all_data(self, as_sorted_list=False, mutability=None):
         """
+        returns STANDARD python objects, no ZODB ones.
+        
         If mutability is not None, then its value is enforced for selected items.
         """
         items_gen = self._table.items()
         if mutability is not None:
             items_gen = ((k, v) for (k, v) in items_gen if bool(self._item_can_be_edited(k, v)) == bool(mutability))
         if not as_sorted_list:
-            return dict(items_gen)
+            data = dict(items_gen)
         else:
-            mylist = list(items_gen)
-            mylist.sort(key=self._sorting_key)
-            return mylist
+            data = list(items_gen)
+            data.sort(key=self._sorting_key)
 
+        data = utilities.convert_object_tree(data, type_mapping=utilities.zodb_to_python_types)
+        if __debug__: 
+            utilities.check_object_tree(data, allowed_types=utilities.allowed_python_types, path=[])
+            import json
+            json.dumps(data)  # compatibility test
+        return data
 
     @readonly_method
     def __len__(self):
@@ -131,6 +139,7 @@ class DataTableManager(object):
 
     @readonly_method
     def copy(self):
+        """Shallow copy"""
         return dict(**self._table) # thus no WRITE on dict
 
     # transaction watching here would make no sense
