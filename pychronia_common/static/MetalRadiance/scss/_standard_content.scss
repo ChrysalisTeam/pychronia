@@ -212,9 +212,35 @@ textarea {
 }
 
 
+@mixin form_controls_variant($color) {
+
+    textarea, select, input,
+    .select2-container-multi .select2-choices, .select2-container-multi .select2-choices .select2-search-choice,
+    .select2-drop,  // note that .select2-drop gets attached to BODY anyway
+    .markItUp {
+         background-color: $color;
+         background-image: none;
+    }
+
+}
+
+body {
+    @include form_controls_variant(#fff7e7);
+}
+
+
 #full_content form {
 
-    textarea, select, input[type=text], input[type=email], input[type=number], input[type=tel], input[type=password], input[type=submit], input[type=button], .select2-container, .markItUp {
+    input[type=text], input[type=email], input[type=number], input[type=tel], input[type=password] {
+        min-height: 29px;
+        border: 1px solid $form_input_border_color;
+        padding: 1px 3px;
+    }
+    .select2-choices input {
+        min-height: 0;  // inner input of fake select2 input
+    }
+
+    input[type=text], input[type=email], input[type=number], input[type=tel], input[type=password], input[type=submit], input[type=button], textarea, select, .select2-container, .markItUp {
         width: 100%;
         display: block;
     }
@@ -225,8 +251,8 @@ textarea {
 }
 
 fieldset {
-  border-color: $medium_yellow;
-  margin: 5px auto;
+    border-color: $medium_yellow;
+    margin: 5px auto;
 }
 
 /* Tag used for cms videos mainly */

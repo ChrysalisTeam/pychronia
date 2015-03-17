@@ -1429,11 +1429,28 @@ ul.tiny_bullets, .tiny_bullets ul {
 textarea {
   resize: vertical;
 }
-#full_content form textarea, #full_content form select,
+body textarea, body select, body input,
+body .select2-container-multi .select2-choices,
+body .select2-container-multi .select2-choices .select2-search-choice,
+body .select2-drop, body .markItUp {
+  background-color: #fff7e7;
+  background-image: none;
+}
+#full_content form input[type=text], #full_content form input[type=email],
+#full_content form input[type=number], #full_content form input[type=tel],
+#full_content form input[type=password] {
+  min-height: 29px;
+  border: 1px solid #aaa;
+  padding: 1px 3px;
+}
+#full_content form .select2-choices input {
+  min-height: 0;
+}
 #full_content form input[type=text], #full_content form input[type=email],
 #full_content form input[type=number], #full_content form input[type=tel],
 #full_content form input[type=password], #full_content form input[type=submit],
-#full_content form input[type=button], #full_content form .select2-container,
+#full_content form input[type=button], #full_content form textarea,
+#full_content form select, #full_content form .select2-container,
 #full_content form .markItUp {
   width: 100%;
   display: block;
@@ -1470,10 +1487,11 @@ object {
 }
 .select2-container-multi .select2-choices .select2-search-field input {
   padding: 0;
-  margin: 4px 0 3px 3px;
+  margin: 2px 2px;
 }
 .select2-search-choice, .select2-results {
   font-size: 0.8em;
+  min-height: 14px;
 }
 .zoomable > img {
   border: none;
@@ -1527,14 +1545,25 @@ object {
 .main_frame_border .markItUp {
   width: 95%;
   margin: auto;
-  border: #9D8126 ridge 2px;
+  border: 1px solid #aaa;
 }
 .main_frame_border .markItUpContainer {
   background-image: url('img/backgrounds/ricepaper-hue-orange.jpg');
 }
+.main_frame_border .markItUpHeader ul, .main_frame_border .markItUpHeader li {
+  margin: 0;
+  padding: 0;
+}
+.main_frame_border .markItUpHeader a {
+  background-position: center center;
+  width: 22px;
+  height: 22px;
+}
 .main_frame_border .markItUpEditor {
   width: 100%;
   height: 150px;
+  border: none;
+  border-top: 1px solid #aaa;
 }
 .main_frame_border .markItUpFooter {
   display: none;
