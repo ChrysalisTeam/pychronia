@@ -217,6 +217,7 @@ textarea {
     textarea, select, input,
     .select2-container-multi .select2-choices, .select2-container-multi .select2-choices .select2-search-choice,
     .select2-drop,  // note that .select2-drop gets attached to BODY anyway
+    .ui-dropdownchecklist-selector-wrapper, .ui-dropdownchecklist-dropcontainer,
     .markItUp {
          background-color: $color;
          background-image: none;
@@ -231,13 +232,18 @@ body {
 
 #full_content form {
 
-    input[type=text], input[type=email], input[type=number], input[type=tel], input[type=password] {
+    input[type=submit] {
+        margin-top: 25px;
+    }
+
+    select, input[type=text], input[type=email], input[type=number], input[type=tel], input[type=password] {
+        line-height: 29px;
         min-height: 29px;
         border: 1px solid $form_input_border_color;
         padding: 1px 3px;
     }
     .select2-choices input {
-        min-height: 0;  // inner input of fake select2 input
+        min-height: 0;  // inner input of "fake" select2 <div> control
     }
 
     input[type=text], input[type=email], input[type=number], input[type=tel], input[type=password], input[type=submit], input[type=button], textarea, select, .select2-container, .markItUp {

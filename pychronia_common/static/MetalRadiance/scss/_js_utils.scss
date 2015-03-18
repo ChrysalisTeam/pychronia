@@ -13,6 +13,12 @@
 }
 
 
+.ui-dropdownchecklist-selector-wrapper {
+    min-height: 29px;
+    border: 1px solid $form_input_border_color;
+    padding: 1px 3px;
+}
+
 .ui-dropdownchecklist-selector-wrapper, .ui-dropdownchecklist-selector, .ui-dropdownchecklist-text {
     width: 100% !important;
 }
@@ -23,12 +29,11 @@
 
 .ui-dropdownchecklist {
     background-color: white;
-    padding: 1px;
     font-size: 0.9em;
 }
 
 .ui-dropdownchecklist-dropcontainer {
-    border: solid 1px black;
+    border: 1px solid $form_input_border_color;
     padding: 2px;
 }
 

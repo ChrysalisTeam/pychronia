@@ -1432,13 +1432,18 @@ textarea {
 body textarea, body select, body input,
 body .select2-container-multi .select2-choices,
 body .select2-container-multi .select2-choices .select2-search-choice,
-body .select2-drop, body .markItUp {
+body .select2-drop, body .ui-dropdownchecklist-selector-wrapper,
+body .ui-dropdownchecklist-dropcontainer, body .markItUp {
   background-color: #fff7e7;
   background-image: none;
 }
-#full_content form input[type=text], #full_content form input[type=email],
-#full_content form input[type=number], #full_content form input[type=tel],
-#full_content form input[type=password] {
+#full_content form input[type=submit] {
+  margin-top: 25px;
+}
+#full_content form select, #full_content form input[type=text],
+#full_content form input[type=email], #full_content form input[type=number],
+#full_content form input[type=tel], #full_content form input[type=password] {
+  line-height: 29px;
   min-height: 29px;
   border: 1px solid #aaa;
   padding: 1px 3px;
@@ -1469,6 +1474,11 @@ object {
 .jp-audio * {
   box-sizing: content-box !important;
 }
+.ui-dropdownchecklist-selector-wrapper {
+  min-height: 29px;
+  border: 1px solid #aaa;
+  padding: 1px 3px;
+}
 .ui-dropdownchecklist-selector-wrapper, .ui-dropdownchecklist-selector,
 .ui-dropdownchecklist-text {
   width: 100% !important;
@@ -1478,11 +1488,10 @@ object {
 }
 .ui-dropdownchecklist {
   background-color: white;
-  padding: 1px;
   font-size: 0.9em;
 }
 .ui-dropdownchecklist-dropcontainer {
-  border: solid 1px black;
+  border: 1px solid #aaa;
   padding: 2px;
 }
 .select2-container-multi .select2-choices .select2-search-field input {
