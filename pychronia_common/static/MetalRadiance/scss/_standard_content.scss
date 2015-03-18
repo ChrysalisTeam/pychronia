@@ -216,6 +216,8 @@ textarea {
 
     textarea, select, input,
     .select2-container-multi .select2-choices, .select2-container-multi .select2-choices .select2-search-choice,
+    .select2-dropdown-open.select2-drop-above .select2-choice, .select2-dropdown-open.select2-drop-above .select2-choices,
+    .select2-results .select2-selection-limit,
     .select2-drop,  // note that .select2-drop gets attached to BODY anyway
     .ui-dropdownchecklist-selector-wrapper, .ui-dropdownchecklist-dropcontainer,
     .markItUp {
@@ -237,7 +239,6 @@ body {
     }
 
     select, input[type=text], input[type=email], input[type=number], input[type=tel], input[type=password] {
-        line-height: 29px;
         min-height: 29px;
         border: 1px solid $form_input_border_color;
         padding: 1px 3px;

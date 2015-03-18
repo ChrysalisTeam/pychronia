@@ -1432,7 +1432,10 @@ textarea {
 body textarea, body select, body input,
 body .select2-container-multi .select2-choices,
 body .select2-container-multi .select2-choices .select2-search-choice,
-body .select2-drop, body .ui-dropdownchecklist-selector-wrapper,
+body .select2-dropdown-open.select2-drop-above .select2-choice,
+body .select2-dropdown-open.select2-drop-above .select2-choices,
+body .select2-results .select2-selection-limit, body .select2-drop,
+body .ui-dropdownchecklist-selector-wrapper,
 body .ui-dropdownchecklist-dropcontainer, body .markItUp {
   background-color: #fff7e7;
   background-image: none;
@@ -1443,7 +1446,6 @@ body .ui-dropdownchecklist-dropcontainer, body .markItUp {
 #full_content form select, #full_content form input[type=text],
 #full_content form input[type=email], #full_content form input[type=number],
 #full_content form input[type=tel], #full_content form input[type=password] {
-  line-height: 29px;
   min-height: 29px;
   border: 1px solid #aaa;
   padding: 1px 3px;
