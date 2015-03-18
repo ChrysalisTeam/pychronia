@@ -155,8 +155,8 @@ body:after {
   width: 225px;
   font-size: 13px;
   font-weight: bold;
-  color: white;
-  text-shadow: 1px 1px 0px black, -1px -1px 0px black;
+  color: black;
+  text-shadow: 1px 1px 0 white, -1px -1px 0 white, 1px -1px 0 white, -1px 1px 0 white;
 }
 #full_header #full_header_background #full_header_center #title_table .motto.left_image {
   background-image: url('img/titles/ad_augusta.png');

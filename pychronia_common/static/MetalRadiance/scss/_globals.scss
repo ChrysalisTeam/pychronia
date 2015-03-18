@@ -101,8 +101,8 @@ $form_input_border_color: #aaa;
 
 
 
-@mixin text_shadow {
-    text-shadow: 1px 1px 0 black, -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black;
+@mixin text_shadow($bgcolor: black) {
+    text-shadow: 1px 1px 0 $bgcolor, -1px -1px 0 $bgcolor, 1px -1px 0 $bgcolor, -1px 1px 0 $bgcolor;
 }
 
 

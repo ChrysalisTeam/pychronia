@@ -257,9 +257,9 @@ body {
 
                     font-size: 13px;
                     font-weight: bold;
-                    color: $white_color;
-                    text-shadow: 1px 1px 0px $black_color,
-                                 -1px -1px 0px $black_color;
+                    color: $black_color;
+
+                    @include text_shadow($white_color);
 
                     &.left_image {
                         background: {
