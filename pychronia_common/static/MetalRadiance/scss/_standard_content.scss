@@ -232,11 +232,12 @@ body {
 }
 
 
-#full_content form {
+/* for ALL instances */
+input[type=submit] {
+    margin-top: 25px 10px;
+}
 
-    input[type=submit] {
-        margin-top: 25px;
-    }
+#full_content form {
 
     select, input[type=text], input[type=email], input[type=number], input[type=tel], input[type=password] {
         min-height: 29px;
