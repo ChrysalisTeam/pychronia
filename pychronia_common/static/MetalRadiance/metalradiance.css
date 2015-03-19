@@ -843,7 +843,7 @@ table.realtable tr:nth-child(odd) {
   background-color: #eed892;
 }
 table.realtable tr:nth-child(even) {
-  background-color: #f1d875;
+  background-color: #F5DF8B;
 }
 table.realtable td {
   vertical-align: middle;
@@ -857,7 +857,7 @@ table.realtable td {
   line-height: 1.1em;
 }
 table.realtable thead th {
-  background-color: #AF411C;
+  background-color: #E1B151;
   border: 0px solid #000000;
   text-align: center;
   border-width: 0px 0px 1px 1px;
