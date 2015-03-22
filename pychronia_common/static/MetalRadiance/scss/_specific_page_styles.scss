@@ -86,16 +86,13 @@ input.digit
     margin-left: -20px;
     margin-right: -20px;
 
-    /* ugly
-    background-size: 98% 98%;
-    background-clip: border-box;
-    background-position: center center;
-    background-repeat: no-repeat;
-    */
-
     border-width: 79px 45px 81px 39px;
     border-color: transparent;
     border-style: solid;
+
+    &.cover_previous {
+        margin-top: -60px;
+    }
 }
 
 .email_unread {
@@ -114,6 +111,29 @@ input.digit
 }
 
 
+
+@mixin email_collapsed_common {
+    padding: 30px 40px;
+    background-size: 100% 100%;
+
+    &.cover_previous {
+        margin-top: -15px;
+    }
+}
+
+.email_collapsed_unread {
+    @include email_collapsed_common;
+    background-image: url('#{$IMGS}backgrounds/scroll_realistic_thin_ends_collapsed_disabled.png');
+}
+
+.email_collapsed_read {
+    @include email_collapsed_common;
+    background-image: url('#{$IMGS}backgrounds/scroll_realistic_thin_ends_collapsed_disabled.png');
+}
+
+
+
+
 .message_operations {
     position: absolute;
     top: -66px;
@@ -122,11 +142,6 @@ input.digit
         margin-right: 8px;
     }
 }
-
-.cover_previous {
-    margin-top: -60px;
-}
-
 
 .contact_display {
     margin: 1px 1px;

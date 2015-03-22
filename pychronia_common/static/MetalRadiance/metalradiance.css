@@ -1744,6 +1744,9 @@ input.digit {
   border-image: url('img/backgrounds/scroll_realistic_thin_ends.png') 79 45 81 39 fill stretch stretch;
   image-rendering: optimizequality;
 }
+.email_unread.cover_previous {
+  margin-top: -60px;
+}
 .email_read {
   position: relative;
   min-width: 150px;
@@ -1757,6 +1760,25 @@ input.digit {
   border-image: url('img/backgrounds/scroll_realistic_thin_ends_disabled.png') 79 45 81 39 fill stretch stretch;
   image-rendering: optimizequality;
 }
+.email_read.cover_previous {
+  margin-top: -60px;
+}
+.email_collapsed_unread {
+  padding: 30px 40px;
+  background-size: 100% 100%;
+  background-image: url('img/backgrounds/scroll_realistic_thin_ends_collapsed_disabled.png');
+}
+.email_collapsed_unread.cover_previous {
+  margin-top: -15px;
+}
+.email_collapsed_read {
+  padding: 30px 40px;
+  background-size: 100% 100%;
+  background-image: url('img/backgrounds/scroll_realistic_thin_ends_collapsed_disabled.png');
+}
+.email_collapsed_read.cover_previous {
+  margin-top: -15px;
+}
 .message_operations {
   position: absolute;
   top: -66px;
@@ -1764,9 +1786,6 @@ input.digit {
 }
 .message_operations a {
   margin-right: 8px;
-}
-.cover_previous {
-  margin-top: -60px;
 }
 .contact_display {
   margin: 1px 1px;
