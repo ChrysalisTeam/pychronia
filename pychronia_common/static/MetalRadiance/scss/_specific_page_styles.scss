@@ -78,59 +78,63 @@ input.digit
 
 /* styles for messaging pages */
 
-
-@mixin email_common {
-    position: relative; // to allow absolute stuffs inside
+@mixin email_base {
+    position: relative; // to allow absolute stuffs inside, and have proper z-indexing
     min-width: 150px;
     padding: 0 2px;
+
     margin-left: -20px;
     margin-right: -20px;
 
+    background-image: none; // would look ugly
+    image-rendering: optimizequality;
+}
+
+
+@mixin email_uncollapsed_common {
+    @include email_base;
     border-width: 79px 45px 81px 39px;
     border-color: transparent;
     border-style: solid;
-
-    &.cover_previous {
-        margin-top: -60px;
-    }
 }
 
 .email_unread {
-    @include email_common;
-    background-image: none; // would look ugly
+    @include email_uncollapsed_common;
     border-image: url('#{$IMGS}backgrounds/scroll_realistic_thin_ends.png') 79 45 81 39 fill stretch stretch;
     image-rendering: optimizequality;
 }
 
-
 .email_read {
-    @include email_common;
-    background-image: none; // would look ugly
+    @include email_uncollapsed_common;
     border-image: url('#{$IMGS}backgrounds/scroll_realistic_thin_ends_disabled.png') 79 45 81 39 fill stretch stretch;
-    image-rendering: optimizequality;
+}
+
+.email_read + .cover_previous, .email_unread + .cover_previous {
+    margin-top: -60px;
 }
 
 
 
 @mixin email_collapsed_common {
-    padding: 30px 40px;
-    background-size: 100% 100%;
-
-    &.cover_previous {
-        margin-top: -15px;
-    }
+    @include email_base;
+    border-width: 30px 40px 30px 40px;
+    border-color: transparent;
+    border-style: solid;
 }
 
 .email_collapsed_unread {
     @include email_collapsed_common;
-    background-image: url('#{$IMGS}backgrounds/scroll_realistic_thin_ends_collapsed_disabled.png');
+    border-image: url('#{$IMGS}backgrounds/scroll_realistic_thin_ends_collapsed_disabled.png') 30 40 30 40 fill stretch stretch;
 }
 
 .email_collapsed_read {
     @include email_collapsed_common;
-    background-image: url('#{$IMGS}backgrounds/scroll_realistic_thin_ends_collapsed_disabled.png');
+    border-image: url('#{$IMGS}backgrounds/scroll_realistic_thin_ends_collapsed_disabled.png') 30 40 30 40 fill stretch stretch;
 }
 
+.email_collapsed_read + .cover_previous, .email_collapsed_unread + .cover_previous {
+    margin-top: -25px;
+}
 
 
 
