@@ -9,7 +9,7 @@ The code written for PyChronia is covered by the BSD license below. This means t
 However, note that for commercial projects, you'll have to remove/replace dependencies whose license forbids such uses (some jquery libraries and web templates, especially), or get appropriate licenses from their owners.
 We added below a quick summary of the licenses of third-party included modules, to help you assess the impacts of licensing for your own usage.
 
-Other python packages, not included, are required to run that framework (see "pip_requirements.txt") ; refer to their respective websites for licensing information.
+Other python packages, not embedded, are required to run that framework (see "pip_requirements.txt") ; refer to their respective websites for licensing information.
 
 By the way, nothing forces you to contribute back the bugfixes or features that you might add to the code, however we'd be very thankful if you gave back your own improvements to the community. ^^
 

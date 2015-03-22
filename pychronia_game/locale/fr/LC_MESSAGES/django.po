@@ -1014,7 +1014,7 @@ msgid ""
 "Bank operation: %(amount)s kashes transferred from %(from_name)s to %"
 "(to_name)s."
 msgstr ""
-"Opération bancaire: %(amount)s kashes transféré de %(from_name)s à %(to_name)"
+"Opération bancaire: %(amount)s kashes transférés de %(from_name)s à %(to_name)"
 "s."
 
 #: .\datamanager\datamanager_modules.py:3703
