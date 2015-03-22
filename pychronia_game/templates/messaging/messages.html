@@ -64,7 +64,7 @@
             {% endif %}
             {% endcomment %}
 
-            {% include "messaging/single_message.html" with ctx=ctx message=message is_first=1 %}
+            {% include "messaging/single_message.html" with ctx=ctx message=message is_first=1 counter=1 %}
         {% endfor %}
 
     {% endif %}

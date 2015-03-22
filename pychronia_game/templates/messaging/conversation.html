@@ -70,7 +70,7 @@
 
 				{% for ctx, message in message_list reversed %}
 
-					{% include "messaging/single_message.html" with ctx=ctx message=message is_first=forloop.first%}
+					{% include "messaging/single_message.html" with ctx=ctx message=message is_first=forloop.first counter=1 %}
 
 				{% endfor %}
 
