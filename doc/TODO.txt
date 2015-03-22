@@ -15,13 +15,13 @@ crédibilité de notre Académie, qui a toujours été en pointe dans ce
 domaine.
 
 
-GAMEMASTER_HINTS:
+GAMEMASTER_HINTS in:
 
 	- characters
 	- contacts
 	- templates
 	- radio spots
-	- items
+	- game items
 	- static pages
 
 
@@ -29,14 +29,12 @@ GAMEMASTER_HINTS:
 FEATURES
 ------------
 
-- envoi de mail quotidien !!
 
-- systeme pour créer partie - WIP
-
-- fix bugs in ricj text, with spaces in embed_ rst_directives, and
+- fix bugs in rich text, with spaces in embed rst_directives, and
   utilities.check_is_restructuredtext(value["content"]) which is buggy because must use rich_text instead
+  <- WONT FIX, this filter requires a valid request ??????
 
-- fix translation bug for "Bank operation: %(amount)s kashes transferred from %(from_name)s to %(to_name)s."
+
 
 
 SCRIPT
@@ -51,11 +49,12 @@ SCRIPT
 - update abilities settings and prices
 
 - mon compte (PAS "profile personnel"), ou Mon profil
+
 - pas GREFFON <- modules supplémentaires, externes, complémentaires ; proposé par d'autres académies des entreprises ou autres entitées ne dépendant pas de notre académie
 
 
 ARTICLES MANQUANTS
-- académie alifir (et image deans)
+- académie alifir (et image deans) <--------
 
 - les notifications doivent etre plus explicites dans leur contenu
 
@@ -71,7 +70,7 @@ Toutes ces gemmes peuvent etre vendues à leur prix de reference sur le marché 
 Ces lots sont volumineux, mais rien ne vous interdit de vous entendre pour en acheter en commun, puis vous repartir les gemmes individuelles ensuite.
 
 
-- add GAME_IMAGE_URL in help pages
+- add GAME_IMAGE_URL in help pages <- ??
 
 - manual for TTS acapela !!
 
@@ -91,7 +90,6 @@ Faire page d'introduction
 - add description of partners in instruction page !
 
 - clarifier règles absolues : pas de vol d'argent, pas de triche, emails uniquement valables à l'intérieur du site (dans INTRO "out game" du jeu)
-
 
 - ajouter instructions ou systèmes pour éviter abus de mercenaires ? -> distribution progressive d'argent, à detailler
 
@@ -130,13 +128,17 @@ TESTS
 NEEDS COSMETICS
 -----------------
 
-- add "centering" for images in DJANGOCMS
+
 
 
 
 TASKS DONE
 ---------------
 
+
+- allow multi-instance staff impersonation, so that superuser can remain logged on each game instance - DONE
+- add "centering" for images in DJANGOCMS - DONE
+- envoi de mail quotidien - DONE
 - added basic sorting to message templates - DONE
 - handle GAME timezone - DONE
 - add forms to administrator page (change game state, delete game etc.) - DONE
@@ -335,30 +337,35 @@ TASKS DONE
 
 
 
+CONTROVERSIAL ENHANCEMENTS
+-----------------------------------
+
+- improve encrypted folders, put password in GET url ?
+- randomize master login in PlayerAuthentication._load_initial_data() DANGEROUS FOR NOW ?
+
+
 
 FUTUR ENHANCEMENTS
 --------------------------
 
-- improve encrypted folders, put password in GET url
-- randomize master login in PlayerAuthentication._load_initial_data() DANGEROUS FOR NOW
-- allow multi-instance staff impersonation, so that superuser can remain logged everywhere - DONE in theory
+- système pour créer partie - WIP, quasi fini mais plus tard, pour l'instant en manuel
 - make ALL gamemaster_hints editable (items too)
 - autofolding of read emails, to save space on the page
 - disable auto play on VLC media (phoque.avi)
 - dire quand AUTRE perso (ami) a nouveaux messages/autres ?
-- make impersonation per-browser-tab!
+- make impersonation per-browser-tab! -> sessioNStorage
 - radio spots must show only title in playlist edition <--- WIP
 - enforce placeholder detection ({{ PUT NAME HERE }}) everywhere, not only in message sending form.
 - restaurer et compléter les djinns, valeurs par défaut si pas de réponses surtout
 - add answer to ALL captchas ?
 - add and describe faction-inherited permissions
 - display admin tips, enigmas and other data in each competence (only visible in DB dump currently)
-- restore "personal messages" feature for gamemaster
+- restore "personal messages" feature for gamemaster (per player sending)
 - display admin tips with UserAccess and all kinds of permissions required
 - Todo info bulle too put brackets around them WIP
-- add typographhy fixer like in https://code.google.com/p/markdown-typografix/source/browse/mdx_typografix/__init__.py
+- add typography fixer like in https://code.google.com/p/markdown-typografix/source/browse/mdx_typografix/__init__.py
 - fix shaky forms when floated left in number
-- improve compatibility with IE 10+ (menus are buggy)
+- improve compatibility with IE 10+ (menus are buggy) --> red\9 HACK
 - reorganize top headers of game (motto left=real, motto right=impersonation, carvings=GAME_DATA)
   -> add money and gems to page top headers
 - CMS : stop float pbs when EDIT=ON, on main frames (use clearfix) - should be OK actually
@@ -369,7 +376,7 @@ FUTUR ENHANCEMENTS
 - add "stop impersonation" link in menu ?
 - better menus for meta admin pages
 - better handling of 503 (maintenance) state on both cms and instance
-- convert "orbe" to masculine genre ; replace acharis by akharis
+- convert "orbe" to masculine genre ; replace acharis by akharis !!!!!!!!!!!!!!!!!!!
 - add real automated "geoip localization" ability
 - memorize "real player authentications", to know who really hacks accounts
 - make real "attach to" feature to delegate permissions (ex. for dependent ajax views)
