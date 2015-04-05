@@ -49,6 +49,9 @@
     min-height: 14px;
 }
 
+.select2-input {
+   border: none !important;  // else ugly resizes when editing the select2 "text" input...
+}
 
 .zoomable > img {
     border: none /* 5px ridge $dark_yellow; */
