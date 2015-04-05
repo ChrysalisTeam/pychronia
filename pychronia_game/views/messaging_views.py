@@ -150,7 +150,7 @@ class MessageComposeForm(AbstractGameForm):
 
 
         available_recipients = datamanager.get_sorted_user_contacts()  # current username should not be "anonymous", since it's used only in member areas !
-        self.fields["recipients"].initial = recipients
+        self.fields["recipients"].initial = list(recipients)  # prevents ZODB types...
         self.fields["recipients"].choice_tags = available_recipients
 
         self.fields["subject"].initial = subject
