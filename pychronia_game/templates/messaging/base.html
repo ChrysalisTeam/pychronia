@@ -34,18 +34,12 @@
                       is_read: (is_read ? "1" : "0") },
                     function(data){
                         if (is_read) {
-                            $("#"+msg_id).removeClass("email_unread");
-                            $("#"+msg_id).addClass("email_read");
-                            $("#"+msg_id +" .mark_read_tag").css("display", "none");
-                            $("#"+msg_id +" .mark_unread_tag").css("display", "inline");
+                            $("#"+msg_id).removeClass("unread");
+                            $("#"+msg_id).addClass("read");
+                        } else {
+                            $("#"+msg_id).addClass("unread");
+                            $("#"+msg_id).removeClass("read");
                         }
-                        else {
-                            $("#"+msg_id).removeClass("email_read");
-                            $("#"+msg_id).addClass("email_unread");
-                            $("#"+msg_id +" .mark_read_tag").css("display", "inline");
-                            $("#"+msg_id +" .mark_unread_tag").css("display", "none");
-                        }
-
                     });
         }
 
