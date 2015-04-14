@@ -23,7 +23,7 @@
 
 <div id="{% first_non_empty message.id ctx.template_id %}" class="email_message {% if ctx.has_read or ctx.is_used %}read{% else %}unread{% endif %} {% if not is_first %}cover_previous{% endif %}">
 
-    <div class="message_hideable">
+    <div>
 
         {% if game_is_writable %}
             <span class="message_operations">
@@ -68,7 +68,7 @@
     </p>
 
 
-    <div class="message_hideable">
+    <div>
         {% if message.id %}
             <div style="position: absolute; width: 100px; top: 0; right:0;"> {# we put that OFF the stream, so that contact displays are not blocked in width #}
                 {% assign name="msg_link" %}{% game_view_url "pychronia_game.views.view_single_message" msg_id=message.id %}{% endassign %}
