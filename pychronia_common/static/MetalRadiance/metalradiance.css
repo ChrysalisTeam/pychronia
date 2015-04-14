@@ -1504,6 +1504,9 @@ object {
   font-size: 0.8em;
   min-height: 14px;
 }
+.select2-input {
+  border: none !important;
+}
 .zoomable > img {
   border: none;
 }
@@ -1731,7 +1734,7 @@ input.digit {
   padding: 0;
   margin: 10px auto;
 }
-.email_unread {
+.email_message.unread {
   position: relative;
   min-width: 150px;
   padding: 0 2px;
@@ -1745,7 +1748,7 @@ input.digit {
   border-image: url('img/backgrounds/scroll_realistic_thin_ends.png') 79 45 81 39 fill stretch stretch;
   image-rendering: optimizequality;
 }
-.email_read {
+.email_message.read {
   position: relative;
   min-width: 150px;
   padding: 0 2px;
@@ -1758,10 +1761,10 @@ input.digit {
   border-style: solid;
   border-image: url('img/backgrounds/scroll_realistic_thin_ends_disabled.png') 79 45 81 39 fill stretch stretch;
 }
-.email_read + .cover_previous, .email_unread + .cover_previous {
+.email_message.read + .cover_previous, .email_message.unread + .cover_previous {
   margin-top: -60px;
 }
-.email_collapsed_unread {
+.email_message.unread.collapsed {
   position: relative;
   min-width: 150px;
   padding: 0 2px;
@@ -1774,7 +1777,7 @@ input.digit {
   border-style: solid;
   border-image: url('img/backgrounds/scroll_realistic_thin_ends_collapsed_disabled.png') 30 40 30 40 fill stretch stretch;
 }
-.email_collapsed_read {
+.email_message.read.collapsed {
   position: relative;
   min-width: 150px;
   padding: 0 2px;
@@ -1787,8 +1790,15 @@ input.digit {
   border-style: solid;
   border-image: url('img/backgrounds/scroll_realistic_thin_ends_collapsed_disabled.png') 30 40 30 40 fill stretch stretch;
 }
-.email_collapsed_read + .cover_previous, .email_collapsed_unread + .cover_previous {
+.email_message.read.collapsed + .cover_previous,
+.email_message.unread.collapsed + .cover_previous {
   margin-top: -25px;
+}
+.email_message.unread .mark_unread_tag {
+  display: none;
+}
+.email_message.read .mark_read_tag {
+  display: none;
 }
 .message_operations {
   position: absolute;
