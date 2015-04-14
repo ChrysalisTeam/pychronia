@@ -28,35 +28,34 @@
 function display_preview() {}
 
 function preview_message() {
-	var rst = $("#id_default_body").val().trim();
-	if (rst != "") {
-		$.post("{% game_view_url "pychronia_game.views.preview_message" %}",
-		       {content: rst},
-		       function(answer) {
-		       	   answer = answer.trim(); // shouldn't be empty, since input was not...
-	               $.fancybox({content: answer, // answer must be HTML here
-	               	            //type: "inline",
-	               	            autoDimensions: false,
-					            padding: "65px",
-					            width: "1000px",
-	               	            });
+    var rst = $("#id_default_body").val().trim();
+    if (rst != "") {
+        $.post("{% game_view_url "pychronia_game.views.preview_message" %}",
+               {content: rst},
+               function(answer) {
+                      answer = answer.trim(); // shouldn't be empty, since input was not...
+                   $.fancybox({content: answer, // answer must be HTML here
+                                autoSize: true,
+                                padding: 20,
+                                maxWidth: 600
+                                   });
 
-	           });
-	} else {
-		$.jnotify("{{ _("Nothing to preview.")|escapejs }}", "warning")
-	}
+               });
+    } else {
+        $.jnotify("{{ _("Nothing to preview.")|escapejs }}", "warning")
+    }
 }
 
 
 function add_recipient(address) {
-	var current = $("#id_default_recipients").select2("data");
-	var newentry = {id: address, text: address};
-	if ($.inArray(newentry, current) == -1) {
-		current.push(newentry);
-		$("#id_default_recipients").select2("data", current);
-		$("#id_default_recipients").change(); //trigger("change");
-	};
-	//console.log(current);
+    var current = $("#id_default_recipients").select2("data");
+    var newentry = {id: address, text: address};
+    if ($.inArray(newentry, current) == -1) {
+        current.push(newentry);
+        $("#id_default_recipients").select2("data", current);
+        $("#id_default_recipients").change(); //trigger("change");
+    };
+    //console.log(current);
 }
 
 
@@ -72,17 +71,17 @@ function clear_saved_content() {
 
 function restore_saved_content() {
     var saved_content = mylocalStorage.getItem(message_content_id); // may be null
-	if (saved_content) {
-	    $("#id_default_body").val(saved_content);
-	    $.jnotify("{{ _("Previously saved content has been restored.")|escapejs }}", "warning")
+    if (saved_content) {
+        $("#id_default_body").val(saved_content);
+        $.jnotify("{{ _("Previously saved content has been restored.")|escapejs }}", "warning")
     }
 }
 
 function save_current_content() {
     var content = $("#id_default_body").val().trim();
     if (content.length > 20) { // we don't save ridiculous texts
-    	mylocalStorage.setItem(message_content_id, content);
-    	$.jnotify("{{ _("Body content has been saved.")|escapejs }}", "success")
+        mylocalStorage.setItem(message_content_id, content);
+        $.jnotify("{{ _("Body content has been saved.")|escapejs }}", "success")
         //console.log("SAVING", content);
     }
 }
@@ -110,7 +109,7 @@ block_autosave = false;
     if(mylocalStorage.getItem(message_content_id)) {
         $('#text_restore_message').css('display', 'block');
         block_autosave = true
-	}
+    }
 {% endif %}
 
 if(!block_autosave) {
@@ -167,9 +166,9 @@ if(!block_autosave) {
             {% trans "None" %}
         {% else %}
             {% for contact in contacts_display %}
-    	    <div onclick="add_recipient('{{ contact.address|escapejs }}');">
-    	        {% include "utilities/contact_display.html" with address="" contact=contact compose_link=False %}
-    	    </div>
+            <div onclick="add_recipient('{{ contact.address|escapejs }}');">
+                {% include "utilities/contact_display.html" with address="" contact=contact compose_link=False %}
+            </div>
             {% endfor %}
         {% endif %}
     </div>
