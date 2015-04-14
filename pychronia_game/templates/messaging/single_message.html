@@ -4,11 +4,24 @@
 
 {# TEMPLATE MEANT FOR INCLUSION IN REAL WEBPAGE #}
 
+<!--
+<div class="{% if ctx.has_read or ctx.is_used %}email_collapsed_read{% else %}email_collapsed_unread{% endif %}">
+    Ceci est un test
+</div>
+<div class="{% if ctx.has_read or ctx.is_used %}email_read{% else %}email_unread{% endif %} cover_previous">
+    Ceci est un test2
+</div>
+<div class="{% if ctx.has_read or ctx.is_used %}email_read{% else %}email_unread{% endif %} cover_previous">
+    Ceci est un test3
+</div>
+<div class="{% if ctx.has_read or ctx.is_used %}email_collapsed_read{% else %}email_collapsed_unread{% endif %} cover_previous">
+    Ceci est un test4
+    <br>
+    Avec bcp de text<br>sss
+</div>
+-->
 
-
-<div id="{% first_non_empty message.id ctx.template_id %}" class="{% if ctx.has_read or ctx.is_used %}email_read{% else %}email_unread{% endif %} {% if not is_first %}cover_previous{% endif %}">
-
-
+<div id="{% first_non_empty message.id ctx.template_id %}" class="email_message {% if ctx.has_read or ctx.is_used %}read{% else %}unread{% endif %} {% if not is_first %}cover_previous{% endif %}">
 
     <div class="message_hideable">
 
@@ -16,8 +29,8 @@
             <span class="message_operations">
 
                 {% if ctx.has_read != None %}
-                    <a {% if ctx.has_read %}style="display: none;"{% endif %} class="mark_read_tag" onclick="set_message_read_state('{{ message.id|escapejs }}', true); return false;" href="#">{% trans "Mark as read" %}</a>
-                    <a {% if not ctx.has_read %}style="display: none;"{% endif %} class="mark_unread_tag" onclick="set_message_read_state('{{ message.id|escapejs }}', false); return false;" href="#">{% trans "Mark as unread" %}</a>
+                    <a class="mark_read_tag" onclick="set_message_read_state('{{ message.id|escapejs }}', true); return false;" href="#">{% trans "Mark as read" %}</a>
+                    <a class="mark_unread_tag" onclick="set_message_read_state('{{ message.id|escapejs }}', false); return false;" href="#">{% trans "Mark as unread" %}</a>
                 {% endif %}
 
                 {% if ctx.can_force_sending %}
