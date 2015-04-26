@@ -1775,7 +1775,7 @@ input.digit {
   border-width: 30px 40px 30px 40px;
   border-color: transparent;
   border-style: solid;
-  border-image: url('img/backgrounds/scroll_realistic_thin_ends_collapsed_disabled.png') 30 40 30 40 fill stretch stretch;
+  border-image: url('img/backgrounds/scroll_realistic_thin_ends_collapsed.png') 30 40 30 40 fill stretch stretch;
 }
 .email_message.read.collapsed {
   position: relative;
@@ -1800,13 +1800,34 @@ input.digit {
 .email_message.read .mark_read_tag {
   display: none;
 }
+.email_message .collapsed_content {
+  display: none;
+}
+.email_message.collapsed > * {
+  display: none;
+}
+.email_message.collapsed > .collapsed_content {
+  display: initial;
+}
 .message_operations {
   position: absolute;
+  width: 100%;
   top: -66px;
   left: 5px;
 }
 .message_operations a {
   margin-right: 8px;
+}
+.collapse_icon {
+  position: absolute;
+  right: 5px;
+  top: -7px;
+}
+.shareable_message_link {
+  position: absolute;
+  width: 100px;
+  top: 0;
+  right: 0;
 }
 .contact_display {
   margin: 1px 1px;

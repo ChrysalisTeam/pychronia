@@ -124,7 +124,7 @@ input.digit
 
 .email_message.unread.collapsed {
     @include email_collapsed_common;
-    border-image: url('#{$IMGS}backgrounds/scroll_realistic_thin_ends_collapsed_disabled.png') 30 40 30 40 fill stretch stretch;
+    border-image: url('#{$IMGS}backgrounds/scroll_realistic_thin_ends_collapsed.png') 30 40 30 40 fill stretch stretch;
 }
 
 .email_message.read.collapsed {
@@ -136,7 +136,6 @@ input.digit
     margin-top: -25px;
 }
 
-
 /* hide irrelevant message modification links */
 .email_message.unread .mark_unread_tag {
     display: none;
@@ -146,13 +145,45 @@ input.digit
 }
 
 
+.email_message .collapsed_content {
+  display: none;
+}
+.email_message.collapsed > * {
+  display: none;
+}
+.email_message.collapsed > .collapsed_content {
+  display: initial;
+}
+
+/*
+.email_message.collapsed . {
+    display: none;
+    .message_operations, .shareable_message_link {
+        display: none;
+    }
+}*/
+
 .message_operations {
     position: absolute;
+    width: 100%;
     top: -66px;
     left: 5px;
     a {
         margin-right: 8px;
     }
+}
+
+.collapse_icon {
+    position: absolute;
+    right: 5px;
+    top: -7px;
+}
+
+.shareable_message_link {
+    position: absolute;
+    width: 100px;
+    top: 0;
+    right:0;
 }
 
 .contact_display {
