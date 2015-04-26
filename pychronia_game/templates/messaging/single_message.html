@@ -26,7 +26,7 @@
     <div>
 
         {% if game_is_writable %}
-            <span class="message_operations">
+            <div class="message_operations">
 
                 {% if ctx.has_read != None %}
                     <a class="mark_read_tag" onclick="set_message_read_state('{{ message.id|escapejs }}', true); return false;" href="#">{% trans "Mark as read" %}</a>
@@ -53,24 +53,35 @@
                     <a href="#" onclick="permanently_delete_message('{{ message.id|escapejs }}'); return false;" >{% trans "Delete" %}</a>
                 {% endif %}
 
-            </span>
+                <img class="collapse_icon" style="float:right" title="{% trans "Collapse this message" %}" onclick="$('#{{ message.id|escapejs }}').addClass('collapsed');" src="{{ STATIC_URL }}MetalRadiance/img/icons/collapse_green.png"/>
+
+            </div>
         {% endif %}
 
     </div>
 
+    <div class="collapsed_content">
+        <img class="collapse_icon" style="float:right" title="{% trans "Expand this message" %}" onclick="$('#{{ message.id|escapejs }}').removeClass('collapsed');" src="{{ STATIC_URL }}MetalRadiance/img/icons/expand_green.png"/>
 
-    <p style="color:{% usercolor message.sender_email %};">
-        <strong class="big_text">
-            <i>
-            {{ message.subject }}
-            </i>
-        </strong>
-    </p>
+        <p style="color:{% usercolor message.sender_email %};">
+            <strong><i>{{ message.subject }}</i></strong><br/>
+            <strong>{% trans "From:" %}</strong> {{ message.sender_email }} &nbsp; ({{ message.sent_at|utctolocal|date:"SHORT_DATE_FORMAT" }})
+        </p>
 
+    </div>
 
     <div>
+
+        <p style="color:{% usercolor message.sender_email %};">
+            <strong class="big_text">
+                <i>
+                {{ message.subject }}
+                </i>
+            </strong>
+        </p>
+
         {% if message.id %}
-            <div style="position: absolute; width: 100px; top: 0; right:0;"> {# we put that OFF the stream, so that contact displays are not blocked in width #}
+            <div class="shareable_message_link"> {# we put that OFF the stream, so that contact displays are not blocked in width #}
                 {% assign name="msg_link" %}{% game_view_url "pychronia_game.views.view_single_message" msg_id=message.id %}{% endassign %}
                 {% usekwacro shareable_link msg_link %}
             </div>
