@@ -1,7 +1,25 @@
 {% load i18n helpers assign %}
 
+<script type="text/javascript">
+function unfoldAllMessages() {
+    $('.email_message').removeClass('collapsed');
+}
+function smartUnfoldMessages() {
+    $('.email_message.read').addClass('collapsed');
+    $('.email_message.unread').removeClass('collapsed');
+}
+function foldAllMessages() {
+    $('.email_message').addClass('collapsed');
+}
+
+function setupMessagesDisplay() {
+    smartUnfoldMessages();  // for now THIS is the default display state
+}
+$(setupMessagesDisplay);  // init at document "loaded" state
+</script>
+
 <div class="message_global_controls">
-<button class="pretty_button" title="{% trans "Expand all messages" %}" onclick="$('.email_message').removeClass('collapsed');">{% trans "Unfold All" %}</button>
-<button class="pretty_button" title="{% trans "Expand unread/unused messages, fold others" %}" onclick="$('.email_message.read').addClass('collapsed'); $('.email_message.unread').removeClass('collapsed');">{% trans "Smart Fold" %}</button>
-<button class="pretty_button" title="{% trans "Fold all messages" %}" onclick="$('.email_message').addClass('collapsed');">{% trans "Fold All" %}</button>
+<button class="pretty_button" title="{% trans "Expand all messages" %}" onclick="unfoldAllMessages();">{% trans "Unfold All" %}</button>
+<button class="pretty_button" title="{% trans "Expand unread/unused messages, fold others" %}" onclick="smartUnfoldMessages();">{% trans "Smart Fold" %}</button>
+<button class="pretty_button" title="{% trans "Fold all messages" %}" onclick="foldAllMessages();">{% trans "Fold All" %}</button>
 </div>
