@@ -201,6 +201,11 @@ class MessageComposeForm(AbstractGameForm):
         return transferred_msg or None
 
 
+def _check_message_display_context(ctx, msg):
+    assert ctx["display_id"]
+    for k, v in ctx.items():
+        if "can_" in k and v:
+            assert msg.get("id")  # neeeded for message controls
 
 
 def _determine_template_display_context(datamanager, template_id, template):
@@ -208,7 +213,7 @@ def _determine_template_display_context(datamanager, template_id, template):
     Only used for message templates, not real ones.
     """
     assert datamanager.is_master()
-    res = dict(
+    ctx = dict(
                 template_id=template_id, # allow use as template
                 is_used=template["is_used"],
                 has_read=None, # no buttons at all for that
@@ -221,7 +226,8 @@ def _determine_template_display_context(datamanager, template_id, template):
                 can_permanently_delete=False,
                 display_id=template_id, # USED IN UI controls!
                 )
-    return res
+    _check_message_display_context(ctx, msg=template)
+    return ctx
 
 def _determine_message_display_context(datamanager, msg, is_pending):
     """
@@ -233,7 +239,7 @@ def _determine_message_display_context(datamanager, msg, is_pending):
     username = datamanager.user.username
     visibility_reason = msg["visible_by"].get(username, None) # one of VISIBILITY_REASONS, or None
 
-    res = dict(
+    ctx = dict(
                 template_id=None,
                 is_used=None, # for templates only
                 has_read=(username in msg["has_read"]) if not is_pending else None,
@@ -246,7 +252,8 @@ def _determine_message_display_context(datamanager, msg, is_pending):
                 can_transfer=True if not is_pending else None,
                 display_id=msg["id"], # USED IN UI controls!
                 )
-    return res
+    _check_message_display_context(ctx, msg=msg)
+    return ctx
 
 def _determine_message_list_display_context(datamanager, messages, is_pending):
     """
