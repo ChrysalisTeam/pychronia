@@ -21,12 +21,14 @@
 </div>
 -->
 
-<div id="{% first_non_empty message.id ctx.template_id %}" class="email_message {% if ctx.has_read or ctx.is_used %}read{% else %}unread{% endif %} {% if not is_first %}cover_previous{% endif %}">
+<div id="{{ ctx.display_id }}" class="email_message {% if ctx.has_read or ctx.is_used %}read{% else %}unread{% endif %} {% if not is_first %}cover_previous{% endif %}">
 
     <div>
 
         {% if game_is_writable %}
             <div class="message_operations">
+
+                {# BEWARE - a valid 'message.id' is implied by some of these ctx flags! #}
 
                 {% if ctx.has_read != None %}
                     <a class="mark_read_tag" onclick="set_message_read_state('{{ message.id|escapejs }}', true); return false;" href="#">{% trans "Mark as read" %}</a>
@@ -53,7 +55,7 @@
                     <a href="#" onclick="permanently_delete_message('{{ message.id|escapejs }}'); return false;" >{% trans "Delete" %}</a>
                 {% endif %}
 
-                <img class="collapse_icon" style="float:right" title="{% trans "Collapse this message" %}" onclick="$('#{{ message.id|escapejs }}').addClass('collapsed');" src="{{ STATIC_URL }}MetalRadiance/img/icons/collapse_green.png"/>
+                <img class="collapse_icon" style="float:right" title="{% trans "Collapse this message" %}" onclick="$('#{{ ctx.display_id|escapejs }}').addClass('collapsed');" src="{{ STATIC_URL }}MetalRadiance/img/icons/collapse_green.png"/>
 
             </div>
         {% endif %}
@@ -61,11 +63,11 @@
     </div>
 
     <div class="collapsed_content">
-        <img class="collapse_icon" style="float:right" title="{% trans "Expand this message" %}" onclick="$('#{{ message.id|escapejs }}').removeClass('collapsed');" src="{{ STATIC_URL }}MetalRadiance/img/icons/expand_green.png"/>
+        <img class="collapse_icon" style="float:right" title="{% trans "Expand this message" %}" onclick="$('#{{ ctx.display_id|escapejs }}').removeClass('collapsed');" src="{{ STATIC_URL }}MetalRadiance/img/icons/expand_green.png"/>
 
         <p style="color:{% usercolor message.sender_email %};">
             <strong><i>{{ message.subject }}</i></strong><br/>
-            <strong>{% trans "From:" %}</strong> {{ message.sender_email }} &nbsp; ({{ message.sent_at|utctolocal|date:"SHORT_DATE_FORMAT" }})
+            <strong>{% trans "From:" %}</strong> {{ message.sender_email }} &nbsp; {% if message.sent_at %}({{ message.sent_at|utctolocal|date:"SHORT_DATE_FORMAT" }}){% endif %}
         </p>
 
     </div>

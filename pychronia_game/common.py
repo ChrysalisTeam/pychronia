@@ -250,6 +250,8 @@ def utctolocal(value):
     Convert naive UTC datetime to wanted gameserver timezone.
     """
     import pytz
+    if not value:
+        pass ## return "@@%r@@" % value  # if we need to debug troubles
     now_utc = pytz.utc.localize(value)
     local_time = now_utc.astimezone(config.GAME_LOCAL_TZ)
     return local_time

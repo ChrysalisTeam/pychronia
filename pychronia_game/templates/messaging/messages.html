@@ -15,7 +15,7 @@
         <ul>
             {% for ctx, message in messages %}
                 <li>{% if ctx.has_read == False %}<b>{% endif %}
-                        <a href="#{% first_non_empty message.id ctx.template_id %}" >{{ message.subject }}</a>
+                        <a href="#{{ ctx.display_id }}" >{{ message.subject }}</a>
                     {% if ctx.has_read == False %}</b>{% endif %}
                 </li>
             {% endfor %}
