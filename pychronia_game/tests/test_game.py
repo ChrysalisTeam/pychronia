@@ -2002,6 +2002,33 @@ class TestDatamanager(BaseGameTestCase):
         assert sorted(res.values(), key=lambda x: x["address"]) == expected_res # values are the same as above...
 
 
+    def test_deletion_of_transferred_message(self):
+        
+        msg_id_1 = self.dm.post_message("guy2@pangea.com",
+                             recipient_emails=["secret-services@masslavia.com", "guy1@pangea.com"],
+                             subject="subj", body="INITIAL MESSAGE 1")
+
+        # SIMPLE REPLY
+        msg_id_2 = self.dm.post_message("guy3@pangea.com",
+                             recipient_emails=["secret-services@heliossar.com"],
+                             subject="subj", body="MESSAGE WITH PARENT", parent_id=msg_id_1)
+        
+        # TRANSFER
+        msg_id_3 = self.dm.post_message("guy4@pangea.com",
+                             recipient_emails=["guy1@pangea.com"],
+                             subject="subj", body="MESSAGE WITH TRANSFER", transferred_msg=msg_id_1)
+
+        self.dm.get_dispatched_message_by_id(msg_id_1)
+        self.dm.permanently_delete_message(msg_id_1)
+        with pytest.raises(UsageError):
+            self.dm.get_dispatched_message_by_id(msg_id_1)  # will cause trouble in global coherency check, if handling is buggy
+
+        msg2 = self.dm.get_dispatched_message_by_id(msg_id_2)
+        assert not msg2["transferred_msg"]
+
+        msg3 = self.dm.get_dispatched_message_by_id(msg_id_3)
+        assert msg3["transferred_msg"] == msg_id_1  # STILL present
+
 
     def test_mailing_list_special_case(self):
 
@@ -2514,7 +2541,7 @@ class TestDatamanager(BaseGameTestCase):
         assert not self.dm.has_read_current_playlist("guy3")
 
 
-    def test_delayed_message_processing_and_message_deletion(self):
+    def test_delayed_message_processing_and_basic_message_deletion(self):
 
         WANTED_FACTOR = 2 # we only double durations below
         params = self.dm.get_global_parameters()
@@ -2590,7 +2617,7 @@ class TestDatamanager(BaseGameTestCase):
         self.assertTrue(self.dm.get_dispatched_message_by_id(myid1))
 
 
-        # message deletion #
+        # basic message deletion #
         assert not self.dm.permanently_delete_message("badid")
 
         assert self.dm.permanently_delete_message(myid1) # DISPATCHED MESSAGE DELETED
