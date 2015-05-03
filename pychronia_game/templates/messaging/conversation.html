@@ -59,6 +59,9 @@
         	<i>{% trans "No messages yet." %}</i>
     	</div>
 	{% else %}
+
+	    {% include "messaging/global_message_controls.html" %}
+
 		{% for message_list in conversations %}
 			<div>
 

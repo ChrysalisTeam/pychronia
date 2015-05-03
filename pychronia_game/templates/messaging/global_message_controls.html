@@ -1,0 +1,7 @@
+{% load i18n helpers assign %}
+
+<div class="message_global_controls">
+<button class="pretty_button" title="{% trans "Expand all messages" %}" onclick="$('.email_message').removeClass('collapsed');">{% trans "Unfold All" %}</button>
+<button class="pretty_button" title="{% trans "Expand unread/unused messages, fold others" %}" onclick="$('.email_message.read').addClass('collapsed'); $('.email_message.unread').removeClass('collapsed');">{% trans "Smart Fold" %}</button>
+<button class="pretty_button" title="{% trans "Fold all messages" %}" onclick="$('.email_message').addClass('collapsed');">{% trans "Fold All" %}</button>
+</div>
