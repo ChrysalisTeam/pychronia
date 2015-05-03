@@ -41,6 +41,7 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
         return self._in_writing_transaction
 
     def check_no_pending_transaction(self):
+        assert self.connection  # else, connectionless mode, we shouldn't be using transaction API
         assert not self._in_writing_transaction, self._in_writing_transaction
         assert not self.connection._registered_objects, repr(self.connection._registered_objects)
 

@@ -1652,7 +1652,7 @@ class TextMessagingCore(BaseDataManager):
                              "subject": basestring,
                              "body": basestring,
                              "attachment": (types.NoneType, basestring), # a plainly functional URL, a personal document mostly
-                             "transferred_msg": (types.NoneType, basestring), # text message id
+                             "transferred_msg": (types.NoneType, basestring), # text message id, might be "broken" if transferred message got deleted
 
                              "sent_at": datetime,
                              "is_certified": bool, # for messages sent via automated processes
@@ -1690,7 +1690,10 @@ class TextMessagingCore(BaseDataManager):
 
                 if msg["transferred_msg"]:
                     msg["transferred_msg"].encode("ascii")
-                    assert self.get_dispatched_message_by_id(msg_id=msg["transferred_msg"])
+                    try:
+                        assert self.get_dispatched_message_by_id(msg_id=msg["transferred_msg"]) # must ALREADY be dispatched
+                    except UsageError as e:
+                        pass  # message might have been deleted by game master, we ignore this
 
             all_ids = [msg["id"] for msg in msg_list]
             utilities.check_no_duplicates(all_ids)
@@ -1793,7 +1796,7 @@ class TextMessagingCore(BaseDataManager):
                               "subject": subject,
                               "body": body,
                               "attachment": attachment, # None or string, a valid URL
-                              "transferred_msg": transferred_msg, # msg id or None
+                              "transferred_msg": transferred_msg, # msg id or None, might become invalidated
                               "sent_at": sent_at,
                               "is_certified": is_certified,
                               "id": new_id,
@@ -2224,7 +2227,10 @@ class TextMessagingTemplates(BaseDataManager):
 
             if msg["transferred_msg"]:
                 msg["transferred_msg"].encode("ascii")
-                assert self.get_dispatched_message_by_id(msg_id=msg["transferred_msg"]) # must ALREADY be dispatched
+                try:
+                    assert self.get_dispatched_message_by_id(msg_id=msg["transferred_msg"]) # must ALREADY be dispatched
+                except UsageError as e:
+                    pass  # message might have been deleted by game master, we ignore this
 
             utilities.check_is_bool(msg["is_used"])
 
