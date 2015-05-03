@@ -1470,6 +1470,14 @@ object {
   display: block;
   margin: 20px auto;
 }
+button.pretty_button {
+  background-color: #F1D68E;
+  border: 3px outset #abab65;
+  border-radius: 0px;
+  margin: 0;
+  color: #19490F;
+  font-weight: bold;
+}
 .jp-audio {
   margin: 10px auto;
 }
@@ -1733,6 +1741,10 @@ input.digit {
   list-style-image: none !important;
   padding: 0;
   margin: 10px auto;
+}
+.message_global_controls {
+  text-align: left;
+  margin: 20px 5px;
 }
 .email_message.unread {
   position: relative;

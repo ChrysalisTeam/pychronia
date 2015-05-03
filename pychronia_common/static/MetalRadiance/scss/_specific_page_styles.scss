@@ -78,6 +78,12 @@ input.digit
 
 /* styles for messaging pages */
 
+
+.message_global_controls {
+  text-align: left;
+  margin: 20px 5px;
+}
+
 @mixin email_base {
     position: relative; // to allow absolute stuffs inside, and have proper z-indexing
     min-width: 150px;
