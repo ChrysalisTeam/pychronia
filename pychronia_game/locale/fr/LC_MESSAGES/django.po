@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-05-03 19:18+0200\n"
-"PO-Revision-Date: 2015-05-03 19:21+0200\n"
+"POT-Creation-Date: 2015-05-03 21:46+0200\n"
+"PO-Revision-Date: 2015-05-03 21:47+0200\n"
 "Last-Translator: Pascal <chambon.pascal@gmail.com>\n"
 "Language-Team: Nothing\n"
 "Language: fr\n"
@@ -2181,7 +2181,6 @@ msgid "Display All Conversations"
 msgstr "Toutes Les Conversations"
 
 #: .\templates\messaging\global_message_controls.html:22
-#| msgid "Cancel message"
 msgid "Expand all messages"
 msgstr "Déplier tous les messages"
 
@@ -2198,7 +2197,6 @@ msgid "Smart Fold"
 msgstr "Pli Intelligent"
 
 #: .\templates\messaging\global_message_controls.html:24
-#| msgid "Cancel message"
 msgid "Fold all messages"
 msgstr "Replier tous les messages"
 
@@ -2237,12 +2235,10 @@ msgid "Delete"
 msgstr "Supprimer"
 
 #: .\templates\messaging\single_message.html:58
-#| msgid "Compose message"
 msgid "Collapse this message"
 msgstr "Replier ce message"
 
 #: .\templates\messaging\single_message.html:66
-#| msgid "Reply to message"
 msgid "Expand this message"
 msgstr "Déplier ce message"
 
@@ -2253,6 +2249,11 @@ msgstr "Intercepté par"
 #: .\templates\messaging\single_message.html:171
 msgid "MESSAGE TRANSFERRED: click to view."
 msgstr "MESSAGE TRANSFÉRÉ: cliquer pour le voir."
+
+#: .\templates\messaging\view_single_message.html:30
+#| msgid "No files available"
+msgid "No content available..."
+msgstr "Pas de contenu disponible..."
 
 #: .\templates\meta_administration\create_instance.html:8
 msgid "Create Game"
@@ -2438,12 +2439,12 @@ msgid "Further information is available in your mailbox."
 msgstr "Des informations supplémentaires vous attendent dans votre messagerie."
 
 #: .\templates\profile\login.html:17
-msgid "Forgot password ?"
-msgstr "Mot de passe oublié ?"
-
-#: .\templates\profile\login.html:22
 msgid "Log Me In !"
 msgstr "Authentifiez moi !"
+
+#: .\templates\profile\login.html:22
+msgid "Forgot password ?"
+msgstr "Mot de passe oublié ?"
 
 #: .\templates\profile\secret_question.html:19
 msgid "Recover Password"
@@ -2520,52 +2521,52 @@ msgstr "mon titre de test 1"
 msgid "my test title 2"
 msgstr "mon titre de test 2"
 
-#: .\tests\test_game.py:3509
+#: .\tests\test_game.py:3536
 msgid "Private dummy ability"
 msgstr "Compétence bidon privée"
 
-#: .\tests\test_game.py:4496
+#: .\tests\test_game.py:4523
 #, fuzzy
 msgid "test-title"
 msgstr "mon titre de test 1"
 
-#: .\tests\test_game.py:4517
+#: .\tests\test_game.py:4544
 msgid "ssss"
 msgstr "ssss"
 
-#: .\tests\test_game.py:4524 .\tests\test_game.py:4545
+#: .\tests\test_game.py:4551 .\tests\test_game.py:4572
 msgid "SSS"
 msgstr "SSS"
 
-#: .\tests\test_game.py:4528
+#: .\tests\test_game.py:4555
 msgid "DSDSF"
 msgstr "DSDSF"
 
-#: .\tests\test_game.py:4533
+#: .\tests\test_game.py:4560
 msgid "DDD"
 msgstr ""
 
-#: .\tests\test_game.py:4537
+#: .\tests\test_game.py:4564
 msgid "LJKSG"
 msgstr ""
 
-#: .\tests\test_game.py:4556
+#: .\tests\test_game.py:4583
 msgid "Hi"
 msgstr ""
 
-#: .\tests\test_game.py:4560
+#: .\tests\test_game.py:4587
 msgid "Hi2"
 msgstr ""
 
-#: .\tests\test_game.py:4564
+#: .\tests\test_game.py:4591
 msgid "Hi3"
 msgstr ""
 
-#: .\tests\test_game.py:4568
+#: .\tests\test_game.py:4595
 msgid "Hisss"
 msgstr ""
 
-#: .\tests\test_game.py:4572
+#: .\tests\test_game.py:4599
 msgid "QQQ"
 msgstr ""
 
