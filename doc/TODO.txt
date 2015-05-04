@@ -29,13 +29,12 @@ GAMEMASTER_HINTS in:
 FEATURES
 ------------
 
-
 - fix bugs in rich text, with spaces in embed rst_directives, and
   utilities.check_is_restructuredtext(value["content"]) which is buggy because must use rich_text instead
   <- WONT FIX, this filter requires a valid request ??????
-- auto-rediriger vers "messages transmis" après un envoi réussi ??
+- auto-rediriger vers "messages transmis" après un envoi de message réussi ??
 
-- BUG - gérer les messages supprimés mais "transferred" déjà!!
+- def _post_request(self):  <<-- rename that!!!
 
 
 SCRIPT
@@ -108,7 +107,6 @@ PROMOTION
 TESTS
 ----------
 
-
 - manually test gems/money transfers and payments, as well as corresponding logging !!!!
 - test log_game_event() visibility lists
 - test localstorage in PROD
@@ -136,7 +134,12 @@ NEEDS COSMETICS
 TASKS DONE
 ---------------
 
-
+- make "attach to" feature to delegate permissions (ex. for dependent ajax views) - DONE
+- infobulles put brackets around them when they are GAME MASTER SECRET - DONE
+- radio spots must show only title in playlist edition - DONE
+- disable auto play on VLC media (phoque.avi) - DONE
+- autofolding of read emails, to save space on the page - DONE (+ misc collapsing controls)
+- gérer les messages supprimés mais auparavant "transferred" - DONE
 - allow multi-instance staff impersonation, so that superuser can remain logged on each game instance - DONE
 - add "centering" for images in DJANGOCMS - DONE
 - envoi de mail quotidien - DONE
@@ -351,21 +354,19 @@ FUTUR ENHANCEMENTS
 
 - système pour créer partie - WIP, quasi fini mais plus tard, pour l'instant en manuel
 - make ALL gamemaster_hints editable (items too)
-- autofolding of read emails, to save space on the page
-- disable auto play on VLC media (phoque.avi)
 - dire quand AUTRE perso (ami) a nouveaux messages/autres ?
-- make impersonation per-browser-tab! -> sessioNStorage
-- radio spots must show only title in playlist edition <--- WIP
+- make impersonation per-browser-tab! -> sessionStorage!!!
+
 - enforce placeholder detection ({{ PUT NAME HERE }}) everywhere, not only in message sending form.
 - restaurer et compléter les djinns, valeurs par défaut si pas de réponses surtout
 - add answer to ALL captchas ?
 - add and describe faction-inherited permissions
 - display admin tips, enigmas and other data in each competence (only visible in DB dump currently)
 - restore "personal messages" feature for gamemaster (per player sending)
-- display admin tips with UserAccess and all kinds of permissions required
-- Todo info bulle too put brackets around them WIP
+- display admin tips with UserAccess and all kinds of permissions required, for each page
+
 - add typography fixer like in https://code.google.com/p/markdown-typografix/source/browse/mdx_typografix/__init__.py
-- fix shaky forms when floated left in number
+- fix shaky forms when floated left in number - should be DONE now
 - improve compatibility with IE 10+ (menus are buggy) --> red\9 HACK
 - reorganize top headers of game (motto left=real, motto right=impersonation, carvings=GAME_DATA)
   -> add money and gems to page top headers
@@ -373,23 +374,22 @@ FUTUR ENHANCEMENTS
 - ensure game events logs are translated to OFFICIAL game language!!!
 - fix up/down keys when a "select" field is selected in PARALLAX (must not scroll page)
 - grant/revoke private_contact_access_to_character (ex. mercenaries)
-- securize "_action_" form-less system, since it bypasses input data validation
+- securize "_action_" form-less system, since it bypasses input data validation !!!
 - add "stop impersonation" link in menu ?
 - better menus for meta admin pages
 - better handling of 503 (maintenance) state on both cms and instance
 - convert "orbe" to masculine genre ; replace acharis by akharis !!!!!!!!!!!!!!!!!!!
 - add real automated "geoip localization" ability
 - memorize "real player authentications", to know who really hacks accounts
-- make real "attach to" feature to delegate permissions (ex. for dependent ajax views)
+
 - rethink and repair telecom archive investigation
 - add to specific index any (external) visualized document in "personal files"
 - add RST summary to all forms, especially admin ones ??? not needed right ATM
-- put back accordeon toggles in messaging
 - allow accumulation of visibility reasons, to have both sender and recipient together in msg for same user? useless I guess...
 - idea of captcha: play with colors illusions!!
 - include real timezone handling per game (or use TIMEZONE of django and its template filters)
 - use UsageError in all getters of datamanager instead of keyerror?
-- include tiny webradio widget in div with same color, and make it bigger, to avoid zoom/dezoom problems (cosmetics)
+- include multimp3 webradio widget in div with same color, and make it bigger, to avoid zoom/dezoom problems (cosmetics)
 - internationalize personal documents (all in yaml ??)
 - add RST support for personal files
 - switch to small JALICE bot? humz
