@@ -69,7 +69,7 @@ _media_player_templates = \
         <param name="pluginspage" value="http://go.divx.com/plugin/download/" />
         <param name="allowContextMenu" value="true" />
         <param name="previewImage" value="%(image)s" />
-        <param name="autoPlay" value="%(autoplay)s" />
+        <param name="autoplay" value="%(autoplay)s" />
         <param name="minVersion" value="1.0.0" />
         <param name="custommode" value="none" />
         <p>No video? Get the DivX browser plug-in for <a href="http://download.divx.com/player/DivXWebPlayerInstaller.exe">Windows</a> or <a href="http://download.divx.com/player/DivXWebPlayer.dmg">Mac</a></p>

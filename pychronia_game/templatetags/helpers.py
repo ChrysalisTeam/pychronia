@@ -381,7 +381,7 @@ register.filter('list_append_to_each', list_append_to_each)
 register.filter('utctolocal', utctolocal)
 
 
-def mediaplayer(properties, autostart=False):
+def mediaplayer(properties, autostart="false"):
 
     fileurl = determine_asset_url(properties)
 
