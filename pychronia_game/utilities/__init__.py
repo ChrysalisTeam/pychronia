@@ -294,6 +294,8 @@ def load_multipart_rst(val):
     return u"\n\n".join(val) # we assume a sequence of strings dedicated to restructuredtext format!
 
 
+# IMPORTANT - globally registered encoder for unicode strings
+yaml.add_representer(unicode, lambda dumper, value: dumper.represent_scalar(u'tag:yaml.org,2002:str', value))
 
 def dump_data_tree_to_yaml(data_tree, convert=True, **kwargs):
     """
@@ -331,8 +333,6 @@ def dump_data_tree_to_yaml(data_tree, convert=True, **kwargs):
                      default_flow_style=False, # not BLOCK
                      allow_unicode=True)
     dump_args.update(kwargs)
-
-    yaml.add_representer(unicode, lambda dumper, value: dumper.represent_scalar(u'tag:yaml.org,2002:str', value))
 
     string = yaml.dump(data_tree, **dump_args) # TODO fix safe_dump() to accept unicode in input!!
 
