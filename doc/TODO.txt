@@ -29,6 +29,8 @@ GAMEMASTER_HINTS in:
 FEATURES
 ------------
 
+- auto-check that no errors in yaml files ?
+
 - fix bugs in rich text, with spaces in embed rst_directives, and
   utilities.check_is_restructuredtext(value["content"]) which is buggy because must use rich_text instead
   <- WONT FIX, this filter requires a valid request ??????

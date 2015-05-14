@@ -13,7 +13,7 @@ from pychronia_game.forms import OtherCharactersForm
 BROKEN ATM 
 
 
-# TODO - make randomness constant between retries, thansk to game_random_seed parameter #
+# TODO - make randomness constant between retries, thanks to game_random_seed parameter #
 
 @register_view
 class TelecomInvestigationAbility(AbstractAbility):
