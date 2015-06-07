@@ -83,6 +83,7 @@ def GAME_INITIAL_FIXTURE_SCRIPT(dm):
     dm.propose_friendship(player_name, player_name_bis)
     dm.propose_friendship(player_name_bis, player_name) # accept friendship
 
+    logging.info("Finished special game fixture script...")
 
 
 ## OVERRIDES FOR INTEGRATION OF CHRYSALIS GAME ON PASCAL'S WINDOWS PC ##
