@@ -20,13 +20,15 @@ from pychronia_game.utilities import add_to_ordered_dict
 
 class MessageComposeForm(AbstractGameForm):
     """
-    A simple default form for private messages.
+    A form for text-based messages.
     """
 
-    # origin = forms.CharField(required=False, widget=forms.HiddenInput) # the id of the message to which we replay, if any
+    # origin = forms.CharField(required=False, widget=forms.HiddenInput) # the id of the message to which we replay, if any   #FIXME, still valid name???
 
-
+    
     recipients = Select2TagsField(label=ugettext_lazy("Recipients"), required=True)
+    
+    mask_recipients = forms.BooleanField(label=_("Send to each recipient individually"), initial=False, required=False)
 
     subject = forms.CharField(label=ugettext_lazy("Subject"), widget=forms.TextInput(attrs={'size':'35'}), required=True)
 
@@ -411,6 +413,7 @@ def compose_message(request, template_name='messaging/compose.html'):
 
                 # we parse the list of emails
                 recipient_emails = form.cleaned_data["recipients"]
+                mask_recipients = form.cleaned_data["mask_recipients"]
 
                 subject = form.cleaned_data["subject"]
                 body = form.cleaned_data["body"]

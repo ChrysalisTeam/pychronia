@@ -1614,7 +1614,8 @@ class TextMessagingCore(BaseDataManager):
                 msg["attachment"] = utilities.complete_game_file_url(msg["attachment"])
 
             msg["is_certified"] = msg.get("is_certified", False)
-
+            msg["mask_recipients"] = msg.get("mask_recipients", False)
+            
             if isinstance(msg["sent_at"], (long, int)): # offset in minutes
                 msg["sent_at"] = self.compute_effective_remote_datetime(msg["sent_at"])
 
@@ -1648,6 +1649,7 @@ class TextMessagingCore(BaseDataManager):
                              "sender_email": basestring, # only initial one
                              "recipient_emails": PersistentList, # only initial, theoretical ones
                              "visible_by": PersistentMapping, # mapping usernames (including master_login) to translatable (ugettext_noop'ed) string "reason of visibility" or None (if obvious)
+                             "mask_recipients": bool,  # equivalent of "full black-carbon-copy", even for current user
 
                              "subject": basestring,
                              "body": basestring,
@@ -1749,11 +1751,13 @@ class TextMessagingCore(BaseDataManager):
     def _build_new_message(self, sender_email, recipient_emails, subject, body,
                            attachment=None, transferred_msg=None,
                            date_or_delay_mn=None, is_read=False, is_certified=False,
-                           parent_id=None, **kwargs):
+                           parent_id=None, mask_recipients=False, **kwargs):
         """
         Beware, if a delay, date_or_delay_mn is treated as FLEXIBLE TIME.
         
         sender_email can be in recipient_emails too.
+        
+        mask_recipients is the equivalent of "full BCC", bo one can see the list of recipients
         
         TODO - is_certified is unused ATM.
         """
@@ -1778,11 +1782,12 @@ class TextMessagingCore(BaseDataManager):
                 parent_msg = self.get_dispatched_message_by_id(parent_id)
                 group_id = parent_msg["group_id"]
                 sender_username = self.get_username_from_email(sender_email) # character, or fallback to master
-                self._set_message_reply_state(sender_username, parent_msg, True) # do not touch the READ state - must be done MANUALLY
+                self._set_message_reply_state(sender_username, parent_msg, has_replied=True) # do not touch the READ state - must be done MANUALLY
             except UsageError, e:
-                self.logger.error(e, exc_info=True)
+                self.logger.error(e, exc_info=True)  # something ugly happened to messaging history ? let it be...
 
-        new_id = self._get_new_msg_id(len(self.messaging_data["messages_dispatched"]) + len(self.messaging_data["messages_queued"]),
+        msgs_count = len(self.messaging_data["messages_dispatched"]) + len(self.messaging_data["messages_queued"])
+        new_id = self._get_new_msg_id(msgs_count,
                                       subject + body) # unicity more than guaranteed
 
         if isinstance(date_or_delay_mn, datetime):
@@ -1793,6 +1798,7 @@ class TextMessagingCore(BaseDataManager):
         msg = PersistentMapping({
                               "sender_email": sender_email,
                               "recipient_emails": recipient_emails,
+                              "mask_recipients": mask_recipients,
                               "subject": subject,
                               "body": body,
                               "attachment": attachment, # None or string, a valid URL
@@ -2559,13 +2565,13 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
         elif not is_read and username in msg["has_read"]:
             msg["has_read"].remove(username)
 
-    def _set_message_reply_state(self, username=CURRENT_USER, msg=None, is_read=None):
+    def _set_message_reply_state(self, username=CURRENT_USER, msg=None, has_replied=None):
         # we don't care about whether user had the right to view msg or not
         username = self._resolve_username(username)
-        assert username and msg and is_read is not None
-        if is_read and username not in msg["has_replied"]:
+        assert username and msg and has_replied is not None
+        if has_replied and username not in msg["has_replied"]:
             msg["has_replied"].append(username)
-        elif not is_read and username in msg["has_replied"]:
+        elif not has_replied and username in msg["has_replied"]:
             msg["has_replied"].remove(username)
 
     @transaction_watcher(always_writable=True)

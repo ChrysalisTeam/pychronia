@@ -131,21 +131,28 @@
             </tr>
             {% endif %}
 
-            {% if message.recipient_emails  %}
+            {% if message.recipient_emails %}
+                
+     
             <tr>
             <td><strong>{% trans "To:" %}</strong></td>
             <td>
-                {% for recipient_email in message.recipient_emails %}
-                    {% with contact=contact_cache|dict_get:recipient_email %}
-                        {% include "utilities/contact_display.html" with address=recipient_email contact=contact compose_link=True %}
-                    {% endwith %}
-                    <!--{% if not forloop.first %}, {% endif %}
-                    <a href="{% game_view_url "pychronia_game.views.compose_message" %}?recipient={{ recipient_email|urlencode }}">
-                    <span style="color:{% usercolor recipient_email %};">{{ recipient_email }}</span>-->
-                    </a>
-                {% endfor %}
+                {% if message.mask_recipients %}
+                    <i>{% trans "undisclosed recipients list" %}</i>
+                {% else %}   
+                    {% for recipient_email in message.recipient_emails %}
+                        {% with contact=contact_cache|dict_get:recipient_email %}
+                            {% include "utilities/contact_display.html" with address=recipient_email contact=contact compose_link=True %}
+                        {% endwith %}
+                        <!--{% if not forloop.first %}, {% endif %}
+                        <a href="{% game_view_url "pychronia_game.views.compose_message" %}?recipient={{ recipient_email|urlencode }}">
+                        <span style="color:{% usercolor recipient_email %};">{{ recipient_email }}</span>
+                        </a>-->
+                    {% endfor %}
+                {% endif %}
             </td>
             </tr>
+           
             {% endif %}
 
         </table>

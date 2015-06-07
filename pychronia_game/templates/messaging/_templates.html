@@ -127,7 +127,7 @@ OLD STUFFS BELOW
                 <span class="message_operation">
                     {% ifequal mode "inbox" %}
                         <a href="{% game_view_url "pychronia_game.views.compose_message" %}?parent_id={{ message.id|urlencode }}">
-                            {% trans "Reply to message" %} {% if user.username in message.has_replied %}({% trans "already done" %}){% endif %}
+                            {% trans "Reply to message" %} {% if user.username in message.has_replied %}({% trans "already done" %}){% endif %} {% FIXME still used ?? %}
                         </a>
                     {% endifequal %}
 
