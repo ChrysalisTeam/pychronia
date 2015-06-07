@@ -3028,7 +3028,8 @@ class RadioMessaging(BaseDataManager): # TODO REFINE
             assert not value["file"] or isinstance(value["file"], basestring), value["file"]
             assert not value["url"] or isinstance(value["url"], basestring), value["url"]
 
-            assert value["url"] or value["file"] # if both, it's supposed to be the same sound file
+            # it might be that neither file nor url is set (one must then use TTS)
+            # if both are set, it's supposed to be the same sound file
 
             # TODO - ensure no "|" in file name!!
             if value["file"]:
