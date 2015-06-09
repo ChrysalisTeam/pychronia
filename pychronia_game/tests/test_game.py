@@ -2003,7 +2003,7 @@ class TestDatamanager(BaseGameTestCase):
 
 
     def test_deletion_of_transferred_message(self):
-        
+
         msg_id_1 = self.dm.post_message("guy2@pangea.com",
                              recipient_emails=["secret-services@masslavia.com", "guy1@pangea.com"],
                              subject="subj", body="INITIAL MESSAGE 1")
@@ -2012,7 +2012,7 @@ class TestDatamanager(BaseGameTestCase):
         msg_id_2 = self.dm.post_message("guy3@pangea.com",
                              recipient_emails=["secret-services@heliossar.com"],
                              subject="subj", body="MESSAGE WITH PARENT", parent_id=msg_id_1)
-        
+
         # TRANSFER
         msg_id_3 = self.dm.post_message("guy4@pangea.com",
                              recipient_emails=["guy1@pangea.com"],
@@ -2126,6 +2126,7 @@ class TestDatamanager(BaseGameTestCase):
         msgs = self.dm.get_all_dispatched_messages()
         self.assertEqual(len(msgs), 1)
         msg = msgs[0]
+        assert not msg["mask_recipients"]  # default value
         # we now check that MATSER doesn't appear in get_characters_for_visibility_reason() output
         assert self.dm.get_characters_for_visibility_reason(msg, visibility_reason=VISIBILITY_REASONS.interceptor) == []
         assert self.dm.get_characters_for_visibility_reason(msg, visibility_reason=VISIBILITY_REASONS.sender) == []
@@ -2232,18 +2233,20 @@ class TestDatamanager(BaseGameTestCase):
         # self.assertEqual(self.dm.get_all_dispatched_messages()[0]["no_reply"], False)
         # self.assertEqual(self.dm.get_all_dispatched_messages()[4]["no_reply"], True)# msg from robot
 
-        self.assertEqual(self.dm.get_all_dispatched_messages()[0]["is_certified"], False)
-        self.assertEqual(self.dm.get_all_dispatched_messages()[0]["has_read"], ["guy2"])
+        _get_first_dispatched_msg = lambda: self.dm.get_all_dispatched_messages()[0]
+
+        self.assertEqual(_get_first_dispatched_msg()["is_certified"], False)
+        self.assertEqual(_get_first_dispatched_msg()["has_read"], ["guy2"])
         self.dm.set_message_read_state("guy3", msg_id1, True)
         self.dm.set_message_read_state("guy2", msg_id1, True)
 
-        self.assertEqual(len(self.dm.get_all_dispatched_messages()[0]["has_read"]), 2)
-        self.assertTrue("guy2" in self.dm.get_all_dispatched_messages()[0]["has_read"])
-        self.assertTrue("guy3" in self.dm.get_all_dispatched_messages()[0]["has_read"])
+        self.assertEqual(len(_get_first_dispatched_msg()["has_read"]), 2)
+        self.assertTrue("guy2" in _get_first_dispatched_msg()["has_read"])
+        self.assertTrue("guy3" in _get_first_dispatched_msg()["has_read"])
 
         self.assertEqual(self.dm.get_unread_messages_count("guy3"), 2)
         self.dm.set_message_read_state("guy3", msg_id1, False)
-        self.assertEqual(self.dm.get_all_dispatched_messages()[0]["has_read"], ["guy2"])
+        self.assertEqual(_get_first_dispatched_msg()["has_read"], ["guy2"])
         self.assertEqual(self.dm.get_unread_messages_count("guy3"), 3)
 
         self.assertEqual(self.dm.get_all_dispatched_messages()[3]["has_read"], ["guy4"])
@@ -2282,6 +2285,22 @@ class TestDatamanager(BaseGameTestCase):
         assert b["visible_by"][MASTER] == VISIBILITY_REASONS.recipient
         assert MASTER not in c["visible_by"]
         assert d["visible_by"][MASTER] == VISIBILITY_REASONS.sender # takes precedence!
+
+        assert all(not x["mask_recipients"] for x in self.dm.get_all_dispatched_messages())
+
+
+    def test_message_recipients_masking(self):
+
+        self._reset_messages()
+
+        self.dm.post_message("guy2@pangea.com", "guy1@pangea.com", subject="AAA", body="BBBBB", mask_recipients=True)
+
+        (msg,) = self.dm.get_all_dispatched_messages()
+
+        assert msg["mask_recipients"]  # important
+
+        assert msg["visible_by"]["guy2"] == VISIBILITY_REASONS.sender
+        assert msg["visible_by"]["guy1"] == VISIBILITY_REASONS.recipient
 
 
     def test_time_shifts_on_message_posting(self):
