@@ -29,6 +29,8 @@ GAMEMASTER_HINTS in:
 FEATURES
 ------------
 
+- mask_recipients : NOT if we're sender!!!!
+
 - auto-check that no errors in yaml files ?
 
 - fix bugs in rich text, with spaces in embed rst_directives, and

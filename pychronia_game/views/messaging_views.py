@@ -28,7 +28,7 @@ class MessageComposeForm(AbstractGameForm):
     
     recipients = Select2TagsField(label=ugettext_lazy("Recipients"), required=True)
     
-    mask_recipients = forms.BooleanField(label=_("Send to each recipient individually"), initial=False, required=False)
+    mask_recipients = forms.BooleanField(label=ugettext_lazy("Mask recipients"), initial=False, required=False)
 
     subject = forms.CharField(label=ugettext_lazy("Subject"), widget=forms.TextInput(attrs={'size':'35'}), required=True)
 
@@ -426,7 +426,7 @@ def compose_message(request, template_name='messaging/compose.html'):
                 # sender_email and one of the recipient_emails can be the same email, we don't care !
                 request.datamanager.post_message(sender_email, recipient_emails, subject, body,
                                                  attachment=attachment, transferred_msg=transferred_msg,
-                                                 date_or_delay_mn=sending_date,
+                                                 date_or_delay_mn=sending_date, mask_recipients=mask_recipients,
                                                  parent_id=parent_id, use_template=use_template)
                 message_sent = True
                 form = MessageComposeForm(request)  # new empty form
