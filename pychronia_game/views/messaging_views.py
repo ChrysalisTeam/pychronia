@@ -227,6 +227,7 @@ def _determine_template_display_context(datamanager, template_id, template):
                 can_force_sending=False,
                 can_permanently_delete=False,
                 display_id=template_id, # USED IN UI controls!
+                force_recipients_display=False, # useless, since we're MASTER here...
                 )
     _check_message_display_context(ctx, msg=template)
     return ctx
@@ -253,6 +254,7 @@ def _determine_message_display_context(datamanager, msg, is_pending):
                 can_permanently_delete=datamanager.is_master(),
                 can_transfer=True if not is_pending else None,
                 display_id=msg["id"], # USED IN UI controls!
+                force_recipients_display=(visibility_reason == VISIBILITY_REASONS.sender),
                 )
     _check_message_display_context(ctx, msg=msg)
     return ctx

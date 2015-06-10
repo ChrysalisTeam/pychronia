@@ -137,7 +137,7 @@
             <tr>
             <td><strong>{% trans "To:" %}</strong></td>
             <td>
-                {% if message.mask_recipients %}
+                {% if message.mask_recipients and not ctx.force_recipients_display and not display_admin_tips %}
                     <i>&lt; {% trans "undisclosed recipients list" %} &gt;</i>
                 {% else %}
                     {% for recipient_email in message.recipient_emails %}
@@ -156,6 +156,13 @@
             {% endif %}
 
         </table>
+
+        {% if message.mask_recipients and ctx.force_recipients_display or message.mask_recipients and display_admin_tips %}
+            <p {% if display_admin_tips %}class="admin-note"{% endif %}>
+                <b>{% trans "The recipients list is masked for all viewers except the sender" %} {# even if master, no need for admin-note, we just simulate "I'm the sender" #}</b>
+            </p>
+        {% endif %}
+
 
         <br/>
 
