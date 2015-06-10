@@ -9,14 +9,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-06-09 23:45+0200\n"
-"PO-Revision-Date: 2015-06-09 23:42+0200\n"
+"POT-Creation-Date: 2015-06-10 22:34+0200\n"
+"PO-Revision-Date: 2015-06-10 22:36+0200\n"
 "Last-Translator: Pascal <chambon.pascal@gmail.com>\n"
 "Language-Team: Nothing\n"
+"Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: fr\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Generator: Virtaal 0.7.1\n"
 
@@ -2172,7 +2172,7 @@ msgstr ""
 "Désolé, l'envoi de messages numériques est actuellement désactivé pour "
 "maintenance."
 
-#: .\templates\messaging\conversation.html:10 .\views\messaging_views.py:335
+#: .\templates\messaging\conversation.html:10 .\views\messaging_views.py:337
 msgid "Conversations"
 msgstr "Conversations"
 
@@ -2250,7 +2250,11 @@ msgstr "Intercepté par"
 msgid "undisclosed recipients list"
 msgstr "liste des destinataires masquée"
 
-#: .\templates\messaging\single_message.html:178
+#: .\templates\messaging\single_message.html:163
+msgid "The recipients list is masked for all viewers except the sender"
+msgstr "La liste des destinataires est masquée pour tous excepté l'émetteur"
+
+#: .\templates\messaging\single_message.html:185
 msgid "MESSAGE TRANSFERRED: click to view."
 msgstr "MESSAGE TRANSFÉRÉ: cliquer pour le voir."
 
@@ -3540,80 +3544,80 @@ msgstr "Délai d'envoi en heures (ex. 2.4)"
 msgid "Placeholder remaining in text"
 msgstr "Marqueur de substitution restant dans le texte"
 
-#: .\views\messaging_views.py:279
+#: .\views\messaging_views.py:281
 msgid "Dispatched Messages"
 msgstr "Messages Transmis"
 
-#: .\views\messaging_views.py:285
+#: .\views\messaging_views.py:287
 msgid "All Dispatched Messages"
 msgstr "Messages Transmis"
 
-#: .\views\messaging_views.py:290
+#: .\views\messaging_views.py:292
 msgid "Pending Messages"
 msgstr "Messages en Attente"
 
-#: .\views\messaging_views.py:296
+#: .\views\messaging_views.py:298
 msgid "All Queued Messages"
 msgstr "Messages en Attente"
 
-#: .\views\messaging_views.py:300
+#: .\views\messaging_views.py:302
 msgid "Force Message Sending"
 msgstr "Forcer Envoi du Message"
 
-#: .\views\messaging_views.py:313
+#: .\views\messaging_views.py:315
 msgid "Message Templates"
 msgstr "Modèles de message"
 
-#: .\views\messaging_views.py:320
+#: .\views\messaging_views.py:322
 #, python-format
 msgid "Unknown template category '%(category)s'"
 msgstr "Catégorie de modèle inconnue '%(category)s'"
 
-#: .\views\messaging_views.py:359
+#: .\views\messaging_views.py:361
 msgid "All My Conversations"
 msgstr "Toutes Mes Conversations"
 
-#: .\views\messaging_views.py:359
+#: .\views\messaging_views.py:361
 msgid "My Recent Conversations"
 msgstr "Mes Conversations Récentes"
 
-#: .\views\messaging_views.py:366
+#: .\views\messaging_views.py:368
 msgid "Set Message Read State"
 msgstr "Changer l'État de Lecture du Message"
 
-#: .\views\messaging_views.py:378
+#: .\views\messaging_views.py:380
 msgid "Delete Message"
 msgstr "Effacer Message"
 
-#: .\views\messaging_views.py:390 .\views\messaging_views.py:444
+#: .\views\messaging_views.py:392 .\views\messaging_views.py:446
 msgid "Compose Message"
 msgstr "Nouveau Message"
 
-#: .\views\messaging_views.py:401
+#: .\views\messaging_views.py:403
 msgid "Message successfully sent."
 msgstr "Message envoyé avec succès."
 
-#: .\views\messaging_views.py:434
+#: .\views\messaging_views.py:436
 msgid "Errors in message fields."
 msgstr "Erreur dans les champs du message."
 
-#: .\views\messaging_views.py:506
+#: .\views\messaging_views.py:508
 msgid "View Single Message"
 msgstr "Voir Message Seul"
 
-#: .\views\messaging_views.py:530
+#: .\views\messaging_views.py:532
 msgid "The requested message doesn't exist."
 msgstr "Le message demandé n'existe pas."
 
-#: .\views\messaging_views.py:538
+#: .\views\messaging_views.py:540
 msgid "Single Message"
 msgstr "Message Unique"
 
-#: .\views\messaging_views.py:546
+#: .\views\messaging_views.py:548
 msgid "Message Preview"
 msgstr "Aperçu du Message"
 
-#: .\views\messaging_views.py:549
+#: .\views\messaging_views.py:551
 msgid "No content submitted for display"
 msgstr "Pas de contenu envoyé pour affichage"
 
