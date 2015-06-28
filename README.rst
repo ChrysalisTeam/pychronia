@@ -16,7 +16,10 @@ It serves as a support for "alternate reality games", thanks to all the communic
 - special abilities for game masters and game observers (impersonation of users, ingame hints, full control of game data)
 - internationalized (English and French only, at the moment)
 
-It also contains a Django-CMS application, used to present
+It also contains a Django-CMS application, used to present games created with this engine.
+
+See the "doc/" folder for more information on licenses, dev setup, etc.
+
 
 Related Redmine project management system: http://redmine.prolifik.net/projects/chrysalis/issues
 
