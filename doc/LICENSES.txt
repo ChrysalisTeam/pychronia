@@ -2,7 +2,7 @@
 Pychronia "Leet RPG" Framework
 ####################################
 
-Official repository: https://gitorious.org/hysteresis/pychronia
+Official repository: https://github.com/ChrysalisTeam/pychronia
 
 The code written for PyChronia is covered by the BSD license below. This means that you may freely use/modify/redistribute it, even for commercial purposes.
 
