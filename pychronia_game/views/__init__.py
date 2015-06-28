@@ -473,11 +473,11 @@ def __mercenary_commandos(request, template_name='specific_operations/armed_inte
 
 
 @register_view(access=UserAccess.character)#(permission="launch_attacks")
-def __acharith_attacks(request, template_name='specific_operations/armed_interventions.html'):
+def __akarith_attacks(request, template_name='specific_operations/armed_interventions.html'):
 
     user = request.datamanager.user
 
-    instructions = _("You may here send intervention orders to acharith zealots accointed with us, and who are spread over the world.\n<Baazel>")
+    instructions = _("You may here send intervention orders to akarith zealots accointed with us, and who are spread over the world.\n<Baazel>")
 
     available_locations = sorted(request.datamanager.get_locations().keys()) # NO FILTERING
 
@@ -492,7 +492,7 @@ def __acharith_attacks(request, template_name='specific_operations/armed_interve
                 message = form.cleaned_data["message"]
                 city_name = form.cleaned_data["city_name"]
                 with action_failure_handler(request, _("Attack successfully launched on %s.") % city_name):
-                    request.datamanager.trigger_acharith_attack(user.username, city_name, message) # might be game master
+                    request.datamanager.trigger_akarith_attack(user.username, city_name, message) # might be game master
                     form = forms.ArmedInterventionForm(available_locations) # new empty formulary
             else:
                 user.add_error(_("Attack not launched - invalid instructions."))
@@ -500,7 +500,7 @@ def __acharith_attacks(request, template_name='specific_operations/armed_interve
         else:
             form = forms.ArmedInterventionForm(available_locations)
 
-    intervention_impossible_msg = None # acharith people can ALWAYS attack, at the moment
+    intervention_impossible_msg = None # akarith people can ALWAYS attack, at the moment
 
     return render_to_response(template_name,
                                 {
@@ -508,7 +508,7 @@ def __acharith_attacks(request, template_name='specific_operations/armed_interve
                                  'instructions': instructions,
                                  'intervention_form': form,
                                  'intervention_impossible_msg': intervention_impossible_msg,
-                                 'target_url': reverse(acharith_attacks, kwargs=dict(game_instance_id=request.datamanager.game_instance_id)),
+                                 'target_url': reverse(akarith_attacks, kwargs=dict(game_instance_id=request.datamanager.game_instance_id)),
                                  'same_width_widgets': True
                                 },
                                 context_instance=RequestContext(request))

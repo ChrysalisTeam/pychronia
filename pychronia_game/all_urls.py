@@ -95,7 +95,7 @@ web_game_urlpatterns = patterns('pychronia_game.views',
 
     #(r'^mercenary_commandos/$', 'mercenary_commandos'),
     #(r'^teldorian_teleportations/$', 'teldorian_teleportations'),
-    #(r'^acharith_attacks/$', 'acharith_attacks'),
+    #(r'^akarith_attacks/$', 'akarith_attacks'),
     #(r'^telecom_investigation/$', 'telecom_investigation'),
 
 #    (r'^oracle/$', 'contact_djinns'),

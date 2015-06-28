@@ -5,14 +5,14 @@ from __future__ import unicode_literals
     OBSOLETE - ATTACKS WILL BE MANAGED BY EMAILS AT THE MOMENT
 
     @transaction_watcher
-    def trigger_acharith_attack(self, username, city_name, message):
-        # no special check is performed, as acharith agents are infiltrated about everywhere !
+    def trigger_akarith_attack(self, username, city_name, message):
+        # no special check is performed, as akarith agents are infiltrated about everywhere !
         user_email = self.get_character_email(username)
         recipient_emails = "acharis-army@special.com"
 
         subject = _("<Acharith Attack on %(city_name)s>") % SDICT(city_name=city_name.capitalize())
 
-        local_finish_time = utilities.utc_to_local(self.compute_effective_remote_datetime(self.get_global_parameter("acharith_attack_delays")))
+        local_finish_time = utilities.utc_to_local(self.compute_effective_remote_datetime(self.get_global_parameter("akarith_attack_delays")))
         local_finish_time_str = local_finish_time.strftime("%H:%M:%S")
 
         body = (_("*** termination planned at %(time)s ***") % SDICT(time=local_finish_time_str) + "\n\n" + message)

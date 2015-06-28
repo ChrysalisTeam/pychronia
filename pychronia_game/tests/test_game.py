@@ -5760,14 +5760,14 @@ class TestSpecialAbilities(BaseGameTestCase):
         self.assertRaises(dm_module.UsageError, self.dm.trigger_teldorian_teleportation, "scanner", cities[3], "Please destroy this city.") # too many teleportations
 
 
-    def ___test_acharith_attack(self):
+    def ___test_akarith_attack(self):
         self._reset_messages()
 
         cities = self.dm.get_locations().keys()[0:5]
 
         self.assertEqual(len(self.dm.get_all_queued_messages()), 0)
 
-        self.dm.trigger_acharith_attack("guy2", cities[3], "Please annihilate this city.")
+        self.dm.trigger_akarith_attack("guy2", cities[3], "Please annihilate this city.")
 
         self.assertEqual(len(self.dm.get_all_queued_messages()), 0)
 

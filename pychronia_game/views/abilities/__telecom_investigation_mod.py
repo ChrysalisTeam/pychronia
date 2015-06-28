@@ -103,7 +103,7 @@ class TelecomInvestigationAbility(AbstractAbility):
         raw_team_intro = self.get_game_instructions(target_username)["team_introduction"]
         if raw_team_intro:
             team_introductions = raw_team_intro.split(
-                "<hr/>")  # some teams like achariths have several parts in their intro
+                "<hr/>")  # some teams like akariths have several parts in their intro
             intro_chunks = [self._corrupt_text_parts(strip_tags(intro), chunk_lengths, key_phrase) for intro in
                             team_introductions]
             result += "\n\n------------\n\n".join(intro_chunks)

@@ -44,6 +44,8 @@ FEATURES
 SCRIPT
 ----------
 
+IMPORTANT - renommer ACHARIS en AKARIS partout!!!!
+
 - cacher compétences spéciales pour PNJ <- personal permissions EVERYWHERE
 
 - explain about static page "titles" usage

@@ -142,7 +142,7 @@ def _generate_web_menu(request, menu_entry_generator):
                         # menu_entry(_(u"Oracles"), view=views.contact_djinns),
                         # menu_entry(_(u"Mercenary Commandos"), view=views.mercenary_commandos),
                         # menu_entry(_(u"Teleportations"), view=views.teldorian_teleportations),
-                        # menu_entry(_(u"Zealot Attacks"), view=views.acharith_attacks),
+                        # menu_entry(_(u"Zealot Attacks"), view=views.akarith_attacks),
                         # menu_entry(_(u"Telecom Investigations"), view=views.telecom_investigation),
                         # menu_entry(_(u"World Scans"), view=views.scanning_management),
                       )),

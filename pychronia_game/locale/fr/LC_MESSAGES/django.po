@@ -2604,7 +2604,7 @@ msgstr "Aide"
 #: .\views\abilities\__attacks_mod.py:13
 #, python-format
 msgid "<Acharith Attack on %(city_name)s>"
-msgstr "<Attaque acharite sur %(city_name)s>"
+msgstr "<Attaque akarite sur %(city_name)s>"
 
 #: .\views\abilities\__attacks_mod.py:18 .\views\abilities\__attacks_mod.py:50
 #: .\views\abilities\__attacks_mod.py:78

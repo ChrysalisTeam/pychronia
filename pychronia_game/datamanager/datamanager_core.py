@@ -224,7 +224,7 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
                 assert value in game_data["locations"].keys()
             elif name in (
             "password_recovery_delays", "scanning_delays", "teldorian_teleportation_delays",
-            "spy_report_delays", "mercenary_intervention_delays", "acharith_attack_delays",
+            "spy_report_delays", "mercenary_intervention_delays", "akarith_attack_delays",
             "telecom_investigation_delays", "bots_answer_delays_ms"):
                 utilities.check_is_range_or_num(value) # can be floats too !
             elif name in ["global_introduction", "history_summary"]:
@@ -246,7 +246,7 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
             scanned_locations scanning_delays
             orbs_locations    cynthia_abduction_location
             teldorian_teleportation_delays max_teldorian_teleportations teldorian_teleportations_done
-            acharith_attack_delays
+            akarith_attack_delays
             telecom_investigation_delays telecom_investigations_done max_telecom_investigations
             radio_is_on
             bots_answer_delays_ms bots_max_answers
