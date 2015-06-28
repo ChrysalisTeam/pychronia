@@ -5963,7 +5963,7 @@ class TestSpecialAbilities(BaseGameTestCase):
         text = self.dm._get_corrupted_introduction("guy2", "SiMoN  BladstaFfulOvza")
 
         dump = set(text.split())
-        parts1 = set(u"Depuis , notre Ordre Acharite fouille Ciel Terre retrouver Trois Orbes".split())
+        parts1 = set(u"Depuis , notre Ordre Akarite fouille Ciel Terre retrouver Trois Orbes".split())
         parts2 = set(u"votre drogues sera aide inestimable cette mission".split())
 
         self.assertTrue(len(dump ^ parts1) > 2)

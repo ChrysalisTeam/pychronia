@@ -10,7 +10,7 @@ from __future__ import unicode_literals
         user_email = self.get_character_email(username)
         recipient_emails = "acharis-army@special.com"
 
-        subject = _("<Acharith Attack on %(city_name)s>") % SDICT(city_name=city_name.capitalize())
+        subject = _("<Akarith Attack on %(city_name)s>") % SDICT(city_name=city_name.capitalize())
 
         local_finish_time = utilities.utc_to_local(self.compute_effective_remote_datetime(self.get_global_parameter("akarith_attack_delays")))
         local_finish_time_str = local_finish_time.strftime("%H:%M:%S")
@@ -22,7 +22,7 @@ from __future__ import unicode_literals
                                    is_certified=True)
 
         self.log_game_event(
-            ugettext_noop("Acharith attack launched by %(username)s on %(city_name)s, terminating at %(time)s."),
+            ugettext_noop("Akarith attack launched by %(username)s on %(city_name)s, terminating at %(time)s."),
             PersistentMapping(username=username, city_name=city_name, time=local_finish_time_str),
             url=self.get_message_viewer_url_or_none(msg_id))
 

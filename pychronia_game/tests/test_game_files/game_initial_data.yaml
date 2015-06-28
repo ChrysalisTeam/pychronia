@@ -25,7 +25,7 @@ abilities:
                 age: "18876"
                 gender: "Djinn"
                 location: "Olympia"
-                nationality: "Acharith"
+                nationality: "Akarith"
                 birthplace: "Zorzas"
 
             specific_bot_properties:
@@ -170,7 +170,7 @@ global_parameters:
 locations:
 
     Baynon:
-        spy_message: "This city is famous for its jewelry industry and its huge archeological museum. It seems no Acharith has ever been so deep into the 'miscreant continent'."
+        spy_message: "This city is famous for its jewelry industry and its huge archeological museum. It seems no Akarith has ever been so deep into the 'miscreant continent'."
     Alifir:
         spy_message: "People here are very healthy, but quite ignorant. They don't know anything about thye Great Atomic Chaos that took place in Midolia."
 

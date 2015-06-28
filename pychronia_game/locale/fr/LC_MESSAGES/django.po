@@ -2603,7 +2603,7 @@ msgstr "Aide"
 
 #: .\views\abilities\__attacks_mod.py:13
 #, python-format
-msgid "<Acharith Attack on %(city_name)s>"
+msgid "<Akarith Attack on %(city_name)s>"
 msgstr "<Attaque akarite sur %(city_name)s>"
 
 #: .\views\abilities\__attacks_mod.py:18 .\views\abilities\__attacks_mod.py:50
@@ -2615,7 +2615,7 @@ msgstr "*** terminaison prévue à %(time)s ***"
 #: .\views\abilities\__attacks_mod.py:25
 #, python-format
 msgid ""
-"Acharith attack launched by %(username)s on %(city_name)s, terminating at %"
+"Akarith attack launched by %(username)s on %(city_name)s, terminating at %"
 "(time)s."
 msgstr ""
 

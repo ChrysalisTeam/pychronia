@@ -508,7 +508,7 @@
 </tr>
 <tr>
 	<td>assertTextPresent</td>
-	<td>Acharith Attack on Aklarvik</td>
+	<td>Akarith Attack on Aklarvik</td>
 	<td></td>
 </tr>
 <tr>
