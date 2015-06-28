@@ -35,15 +35,13 @@ FEATURES
 - fix bugs in rich text, with spaces in embed rst_directives, and
   utilities.check_is_restructuredtext(value["content"]) which is buggy because must use rich_text instead
   <- WONT FIX, this filter requires a valid request ??????
+
 - auto-rediriger vers "messages transmis" après un envoi de message réussi ??
 
-- def _post_request(self):  <<-- rename that!!!
 
 
 SCRIPT
 ----------
-
-- typo "quelques" dans email analyse de situation initiale (partie "anthropia")
 
 - cacher compétences spéciales pour PNJ <- personal permissions EVERYWHERE
 

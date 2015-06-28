@@ -2718,7 +2718,7 @@ msgstr "Investigation Télécom en cours, vous recevrez le résultat par email."
 
 #: .\views\abilities\_empty_abilities.py:26
 msgid "Extra Plugins"
-msgstr "Greffons Externes"
+msgstr "Modules Externes"
 
 #: .\views\abilities\_empty_abilities.py:36
 msgid "Web Geolocation"
