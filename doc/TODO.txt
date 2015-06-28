@@ -44,8 +44,6 @@ FEATURES
 SCRIPT
 ----------
 
-IMPORTANT - renommer ACHARIS en AKARIS partout!!!!
-
 - cacher compétences spéciales pour PNJ <- personal permissions EVERYWHERE
 
 - explain about static page "titles" usage
@@ -135,6 +133,7 @@ NEEDS COSMETICS
 TASKS DONE
 ---------------
 
+- renommer ACHARIS en AKARIS partout, dans code et scripts
 - mask recipients of message : NOT if we're sender or game master
 - make "attach to" feature to delegate permissions (ex. for dependent ajax views) - DONE
 - infobulles put brackets around them when they are GAME MASTER SECRET - DONE
