@@ -245,7 +245,7 @@ item_3d_settings:
 
 domains:
 
-    acharis:
+    akaris:
         national_anthem: sample.mp3
 
     sciences:
@@ -258,12 +258,12 @@ character_properties:
     # WARNING - the values of global parameters anonymous_login and master_login and common_login are reserved and shall not be used here
 
     guy1:
-        domains: ["acharis"]
+        domains: ["akaris"]
         password: elixir
         account: 1000
         secret_question: null
         secret_answer: null
-        address_book: ["belasquez@acharis.com", "baazel@acharis.com"]
+        address_book: ["belasquez@akaris.com", "baazel@akaris.com"]
         new_messages_notification: info_spots_1
         official_name: "Simon Bladstaffulovza"
         official_role: "whatever"
@@ -278,7 +278,7 @@ character_properties:
         extra_goods: "Special money: 354 units"
 
     guy2:
-        domains: ["acharis"]
+        domains: ["akaris"]
         password: awesome
         account: 1000
         secret_question: null
@@ -320,7 +320,7 @@ character_properties:
         secret_question: null
         secret_answer: null
         address_book: []
-        new_messages_notification: victory_acharis
+        new_messages_notification: victory_akaris
         official_name: "Kha"
         official_role: "wanderer"
         real_life_identity: "John Doe"
@@ -338,7 +338,7 @@ character_properties:
         secret_question: null
         secret_answer: null
         address_book: []
-        new_messages_notification: defeat_acharis
+        new_messages_notification: defeat_akaris
         official_name: "cxcv"
         official_role: "xcvxcv"
         real_life_identity: "Jxcvxcve"
@@ -367,12 +367,12 @@ audio_messages:
         text: "Tante Atalie fait du vélo en short."
         file: "atalie.mp3"
 
-    victory_acharis:
+    victory_akaris:
         title: "Cat Sound"
         text: "Sound of a cat"
         file: andromaque.mp3
 
-    defeat_acharis:
+    defeat_akaris:
         title: "Cicada Sound"
         text: "Sound of a cicada"
         file: "other.mp3"
@@ -403,14 +403,14 @@ messaging:
 
         authenticator@hightech.com: {}
 
-        judicators@acharis.com:
+        judicators@akaris.com:
             avatar: "here.png"
             description: "the terrible judicators"
             access_tokens: ["guy1", "guy2"]
 
-        judicators1@acharis.com: {}
+        judicators1@akaris.com: {}
 
-        judicators2@acharis.com: {}
+        judicators2@akaris.com: {}
 
         othercontact@anything.fr: {immutable: False}
 
@@ -432,7 +432,7 @@ messaging:
     messages_dispatched:  #-> list of messages processed
 
         - id: instructions_bewitcher
-          sender_email: judicators1@acharis.com
+          sender_email: judicators1@akaris.com
           recipient_emails: guy1
           subject: "Ordres de Missions"
           attachment: "attachments/image2.png"
@@ -445,7 +445,7 @@ messaging:
 
         - id: instructions_oracle
           group_id: "A111"
-          sender_email: judicators2@acharis.com
+          sender_email: judicators2@akaris.com
           recipient_emails: ["guy2", "othercontact@anything.fr"]
           subject: "Ordres de Missions"
           attachment: "attachments/image1.png"
@@ -456,7 +456,7 @@ messaging:
 
         - id: instructions_oracle_bis
           group_id: "A111"
-          sender_email: judicators2@acharis.com
+          sender_email: judicators2@akaris.com
           recipient_emails: ["guy2", "othercontact@anything.fr"]
           subject: "Ordres de Missions 2"
           sent_at: -7000

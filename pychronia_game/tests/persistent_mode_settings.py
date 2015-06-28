@@ -69,7 +69,7 @@ def GAME_INITIAL_FIXTURE_SCRIPT(dm):
     msg5 = dm.get_dispatched_message_by_id(msg_id5)
     msg_id6 = dm.post_message(sender_email=email_guy1, recipient_emails=email_external, subject="Bis:%s TEST" % msg5["subject"], body="ask for something", parent_id=msg_id5)
 
-    tpl = dm.get_message_template("feedback_acharis_threats_geoip")
+    tpl = dm.get_message_template("feedback_akaris_threats_geoip")
     assert tpl["transferred_msg"] is None
     tpl["transferred_msg"] = "unexisting_transferred_msg_id_sozj"  # wrong transferred_msg shouldn't break stuffs
     # transient mode here, no need to commit

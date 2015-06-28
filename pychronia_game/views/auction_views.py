@@ -104,7 +104,7 @@ class CharactersView(AbstractGameView):
         characters = sorted((v for (k, v) in characters), # now all is in user data dict
                             key=lambda value: (value["is_npc"], value["username"])) # sort by type and then login
 
-        # NOW WRONG {% comment %} character is at least {'gems': [], 'items': [], 'domain': 'acharis.com', 'password': 'xxxx', 'account': 0} {% endcomment %}
+        # NOW WRONG {% comment %} character is at least {'gems': [], 'items': [], 'domain': 'akaris.com', 'password': 'xxxx', 'account': 0} {% endcomment %}
         return {
                  'show_others_belongings': show_others_belongings,
                  'character_groups': [characters], # single set ATM

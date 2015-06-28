@@ -1103,8 +1103,8 @@ class TestDatamanager(BaseGameTestCase):
 
         assert self.dm.update_allegiances("guy1", ["sciences"]) == (["sciences"], [])
         assert self.dm.update_allegiances("guy1", []) == ([], ["sciences"])
-        assert self.dm.update_allegiances("guy1", ["sciences", "acharis"]) == (["acharis", "sciences"], []) # sorted
-        assert self.dm.update_allegiances("guy1", ["sciences", "acharis"]) == ([], []) # no changes
+        assert self.dm.update_allegiances("guy1", ["sciences", "akaris"]) == (["akaris", "sciences"], []) # sorted
+        assert self.dm.update_allegiances("guy1", ["sciences", "akaris"]) == ([], []) # no changes
 
         with pytest.raises(UsageError):
             self.dm.update_allegiances("guy1", ["dummydomain"])
@@ -1776,7 +1776,7 @@ class TestDatamanager(BaseGameTestCase):
         char_emails = set(self.dm.get_character_emails())
         assert master_contacts & char_emails == char_emails # all chars are in
         assert len(master_contacts) > len(char_emails) + 4
-        assert "judicators2@acharis.com" in master_contacts
+        assert "judicators2@akaris.com" in master_contacts
 
         emails = self.dm.get_sorted_user_contacts("guy2")
         assert sorted(emails) != sorted(self.dm.get_all_existing_emails())
@@ -1786,11 +1786,11 @@ class TestDatamanager(BaseGameTestCase):
         assert (char_emails & emails) # has SOME character emails
         assert self.dm.get_character_email("guy2") in emails # has self as contact due to any dispatched email
         assert "guy1@pangea.com" in emails
-        assert "judicators2@acharis.com" in emails
+        assert "judicators2@akaris.com" in emails
 
         emails = self.dm.get_character_address_book("guy2")
         assert "guy1@pangea.com" in emails
-        assert "judicators2@acharis.com" in emails
+        assert "judicators2@akaris.com" in emails
         assert ml not in emails # not yet concerned by this one yet
         usernames = self.dm.get_other_known_characters("guy2")
         assert usernames == ["guy1"]
@@ -1803,14 +1803,14 @@ class TestDatamanager(BaseGameTestCase):
         assert not usernames
 
         self.dm.post_message("guy3@pangea.com",
-                             recipient_emails=[ml, "judicators2@acharis.com"],
+                             recipient_emails=[ml, "judicators2@akaris.com"],
                              subject="fffff", body="ffff")
 
         emails = self.dm.get_sorted_user_contacts("guy3")
         assert emails[0] == ml
-        assert set(emails) == set([ml, "judicators2@acharis.com", "guy3@pangea.com"])
+        assert set(emails) == set([ml, "judicators2@akaris.com", "guy3@pangea.com"])
         emails = self.dm.get_character_address_book("guy3")
-        assert set(emails) == set([ml, "judicators2@acharis.com", "guy3@pangea.com"])
+        assert set(emails) == set([ml, "judicators2@akaris.com", "guy3@pangea.com"])
         usernames = self.dm.get_other_known_characters("guy3")
         assert not usernames # guy3
 
@@ -1962,8 +1962,8 @@ class TestDatamanager(BaseGameTestCase):
     @for_core_module(TextMessagingForCharacters)
     def test_messaging_utilities(self):
 
-        input1 = "guy1 , ; ; guy2@acharis.com , master, ; everyone@lg-auction.com ,master, stuff@micro.fr"
-        input2 = ["everyone@lg-auction.com", "guy1@pangea.com", "guy2@acharis.com", "master@pangea.com", "stuff@micro.fr"]
+        input1 = "guy1 , ; ; guy2@akaris.com , master, ; everyone@lg-auction.com ,master, stuff@micro.fr"
+        input2 = ["everyone@lg-auction.com", "guy1@pangea.com", "guy2@akaris.com", "master@pangea.com", "stuff@micro.fr"]
 
 
         sender, recipients = self.dm._normalize_message_addresses("  guy1   ", input1)
@@ -1989,16 +1989,16 @@ class TestDatamanager(BaseGameTestCase):
 
 
         expected_res = [{'description': 'Simon Bladstaffulovza - whatever', 'avatar': os.path.normpath('images/avatars/guy1.png'), 'address': u'guy1@pangea.com', 'color': '#0033CC', 'gamemaster_hints': 'This is guy1, actually agent SHA1.'},
-                       {'description': 'the terrible judicators', 'avatar': os.path.normpath('images/avatars/here.png'), 'address': u'judicators@acharis.com', 'color': None, 'gamemaster_hints': ''},
+                       {'description': 'the terrible judicators', 'avatar': os.path.normpath('images/avatars/here.png'), 'address': u'judicators@akaris.com', 'color': None, 'gamemaster_hints': ''},
                        {'description': u'Unidentified contact', 'avatar': os.path.normpath('images/avatars/question_mark.png'), 'address': u'unknown@mydomain.com', 'color': None, 'gamemaster_hints': None}]
 
         assert self.dm.get_contacts_display_properties([]) == []
-        res = self.dm.get_contacts_display_properties(["guy1@pangea.com", "judicators@acharis.com", "unknown@mydomain.com"])
+        res = self.dm.get_contacts_display_properties(["guy1@pangea.com", "judicators@akaris.com", "unknown@mydomain.com"])
         #print(">>", res)
         assert res == expected_res
 
-        res = self.dm.get_contacts_display_properties(["guy1@pangea.com", "judicators@acharis.com", "unknown@mydomain.com"], as_dict=True)
-        assert set(res.keys()) == set(["guy1@pangea.com", "judicators@acharis.com", "unknown@mydomain.com"])
+        res = self.dm.get_contacts_display_properties(["guy1@pangea.com", "judicators@akaris.com", "unknown@mydomain.com"], as_dict=True)
+        assert set(res.keys()) == set(["guy1@pangea.com", "judicators@akaris.com", "unknown@mydomain.com"])
         assert sorted(res.values(), key=lambda x: x["address"]) == expected_res # values are the same as above...
 
 
@@ -2355,7 +2355,7 @@ class TestDatamanager(BaseGameTestCase):
 
     def test_messaging_address_restrictions(self):
 
-        target = "judicators@acharis.com"
+        target = "judicators@akaris.com"
         assert self.dm.global_contacts[target]["access_tokens"] == ["guy1", "guy2"]
 
         if random.choice((True, False)):
@@ -5775,8 +5775,8 @@ class TestSpecialAbilities(BaseGameTestCase):
         self.assertEqual(len(new_queue), 1)
 
         msg = new_queue[0]
-        self.assertEqual(msg["sender_email"], "guy2@acharis.com", msg) # we MUST use a dummy email to prevent forgery here
-        self.assertEqual(msg["recipient_emails"], ["acharis-army@special.com"], msg)
+        self.assertEqual(msg["sender_email"], "guy2@akaris.com", msg) # we MUST use a dummy email to prevent forgery here
+        self.assertEqual(msg["recipient_emails"], ["akaris-army@special.com"], msg)
         self.assertTrue(msg["is_certified"], msg)
         self.assertTrue("annihilate" in msg["body"].lower())
         self.assertTrue("***" in msg["body"].lower())

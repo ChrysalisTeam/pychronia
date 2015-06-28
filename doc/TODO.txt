@@ -380,7 +380,7 @@ FUTUR ENHANCEMENTS
 - add "stop impersonation" link in menu ?
 - better menus for meta admin pages
 - better handling of 503 (maintenance) state on both cms and instance
-- convert "orbe" to masculine genre ; replace acharis by akharis !!!!!!!!!!!!!!!!!!!
+- convert "orbe" to masculine genre ; replace akaris by akharis !!!!!!!!!!!!!!!!!!!
 - add real automated "geoip localization" ability
 - memorize "real player authentications", to know who really hacks accounts
 

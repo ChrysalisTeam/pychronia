@@ -8,7 +8,7 @@ from __future__ import unicode_literals
     def trigger_akarith_attack(self, username, city_name, message):
         # no special check is performed, as akarith agents are infiltrated about everywhere !
         user_email = self.get_character_email(username)
-        recipient_emails = "acharis-army@special.com"
+        recipient_emails = "akaris-army@special.com"
 
         subject = _("<Akarith Attack on %(city_name)s>") % SDICT(city_name=city_name.capitalize())
 
