@@ -626,7 +626,7 @@ class AbstractGameView(object):
         return self._auto_process_request()
 
 
-    def _pre_request(self, request, *args, **kwargs):
+    def _before_request(self, request, *args, **kwargs):
         # we finish initializing the game view instance, with request-specific parameters
         assert request.datamanager == self._inner_datamanager # let's be coherent
         self.request = request
@@ -635,7 +635,7 @@ class AbstractGameView(object):
 
         request.processed_view = self # needed for menu building and template context processor, later
 
-    def _post_request(self):
+    def _after_request(self):
         del self.request, self.args, self.kwargs # cleanup
 
 
@@ -645,7 +645,7 @@ class AbstractGameView(object):
         """
         Do not override that method - too sensitive.
         """
-        self._pre_request(request, *args, **kwargs)
+        self._before_request(request, *args, **kwargs)
         try:
 
             self._check_standard_access() # crucial
@@ -658,7 +658,7 @@ class AbstractGameView(object):
             return response
 
         finally:
-            self._post_request()
+            self._after_request()
 
 
     @readonly_method
@@ -735,7 +735,7 @@ class AbstractGameView(object):
 
         assert action_name in self.ADMIN_ACTIONS # else big pb!
 
-        self._pre_request(request)
+        self._before_request(request)
         try:
 
             self._check_admin_access() # crucial
@@ -765,7 +765,7 @@ class AbstractGameView(object):
             """
             return res
         finally:
-            self._post_request()
+            self._after_request()
 
 
 
