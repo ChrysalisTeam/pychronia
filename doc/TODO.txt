@@ -38,6 +38,7 @@ FEATURES
 
 - auto-rediriger vers "messages transmis" après un envoi de message réussi ??
 
+- finish embed_image ??
 
 
 SCRIPT
@@ -51,11 +52,9 @@ SCRIPT
 
 - mon compte (PAS "profile personnel"), ou Mon profil
 
-- pas GREFFON <- modules supplémentaires, externes, complémentaires ; proposé par d'autres académies des entreprises ou autres entitées ne dépendant pas de notre académie
-
 
 ARTICLES MANQUANTS
-- académie alifir (et image deans) <--------
+- académie alifir (et image dedans) <--------
 
 - les notifications doivent etre plus explicites dans leur contenu
 
@@ -71,7 +70,7 @@ Toutes ces gemmes peuvent etre vendues à leur prix de reference sur le marché 
 Ces lots sont volumineux, mais rien ne vous interdit de vous entendre pour en acheter en commun, puis vous repartir les gemmes individuelles ensuite.
 
 
-- add GAME_IMAGE_URL in help pages <- ??
+- add GAME_IMAGE_URL in help pages, better than embed_image for now <- ??
 
 - manual for TTS acapela !!
 
@@ -81,7 +80,8 @@ Ces lots sont volumineux, mais rien ne vous interdit de vous entendre pour en ac
 
 - add main missing items (WIP)
 - add enough content for game startup
-- ajouter des details cruciaux à TOUTES runes !
+
+- ajouter des details cruciaux à TOUTES runes !!!!
 
 Faire page d'introduction
 	- situation de l'univers

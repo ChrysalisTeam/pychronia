@@ -120,7 +120,7 @@ def usercolor(context, username_or_email):
 
 def _generate_game_file_links(rst_content, datamanager):
     """
-    Generates a thumbnails ; tag must be in the form [ GAME_FILE_URL "images/emblems/auction_logo_rounded.png" ]
+    Generates file urls ; tag must be in the form [ GAME_FILE_URL "images/emblems/auction_logo_rounded.png" ]
     """
     if __debug__: datamanager.notify_event("GENERATE_GAME_FILE_LINKS")
     regex = r"""\[\s*GAME_FILE_URL\s*('|")?(?P<path>.+?)('|")?\s*]"""
@@ -133,7 +133,7 @@ def _generate_game_file_links(rst_content, datamanager):
 
 def _generate_game_image_thumbnails(rst_content, datamanager):
     """
-    Generates a thumbnails ; tag must be in the form [ GAME_IMAGE_URL "images/emblems/auction_logo_rounded.png" "default" ]
+    Generates urls of thumbnails ; tag must be in the form [ GAME_IMAGE_URL "images/emblems/auction_logo_rounded.png" "default" ]
     """
     if __debug__: datamanager.notify_event("GENERATE_GAME_IMAGE_THUMBNAILS")
     regex = r"""\[\s*GAME_IMAGE_URL\s*('|")(?P<path>.+?)('|")\s*('|")(?P<alias>.+)('|")\s*]"""
