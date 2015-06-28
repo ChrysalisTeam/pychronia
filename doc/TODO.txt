@@ -58,9 +58,6 @@ ARTICLES MANQUANTS
 
 - les notifications doivent etre plus explicites dans leur contenu
 
-- préciser que "indéfini" est normal <- inconnu, vous n'avez pas l'autorisation
-- préciser que geolocalisation est EXTERNE (pas mettre pseudo d'espion!!)
-
 - faire CHRONOLOGIE détaillée des évènements pour aider énigmes
 
 - message answer does NOT mark "read" the parent message - YEP, à documenter
