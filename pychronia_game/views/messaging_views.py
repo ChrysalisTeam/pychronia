@@ -10,6 +10,7 @@ from pychronia_game.utilities.select2_extensions import Select2TagsField
 from django.core.exceptions import ValidationError
 from pychronia_game.templatetags.helpers import format_enriched_text
 from pychronia_game.utilities import add_to_ordered_dict
+import urllib
 
 
 """
@@ -25,9 +26,9 @@ class MessageComposeForm(AbstractGameForm):
 
     # origin = forms.CharField(required=False, widget=forms.HiddenInput) # the id of the message to which we replay, if any   #FIXME, still valid name???
 
-    
+
     recipients = Select2TagsField(label=ugettext_lazy("Recipients"), required=True)
-    
+
     mask_recipients = forms.BooleanField(label=ugettext_lazy("Mask recipients"), initial=False, required=False)
 
     subject = forms.CharField(label=ugettext_lazy("Subject"), widget=forms.TextInput(attrs={'size':'35'}), required=True)
@@ -339,6 +340,8 @@ def conversation(request, template_name='messaging/conversation.html'):
 
     CONVERSATIONS_LIMIT = 15
 
+    message_sent = (request.GET.get("message_sent") == "1")
+
     display_all_conversations = bool(request.GET.get("display_all", None) == "1")
 
     messages = request.datamanager.get_user_related_messages() # for current master or character
@@ -361,7 +364,8 @@ def conversation(request, template_name='messaging/conversation.html'):
                   dict(page_title=_("All My Conversations") if display_all_conversations else _("My Recent Conversations"),
                        display_all_conversations=display_all_conversations,
                        conversations=enriched_messages,
-                       contact_cache=_build_contact_display_cache(request.datamanager)))
+                       contact_cache=_build_contact_display_cache(request.datamanager),
+                       message_sent=message_sent))
 
 
 
@@ -436,6 +440,13 @@ def compose_message(request, template_name='messaging/compose.html'):
             user.add_error(_("Errors in message fields."))
     else:
         form = MessageComposeForm(request)
+
+    conversation_url = reverse("pychronia_game.views.conversation",
+                                kwargs=dict(game_instance_id=request.datamanager.game_instance_id))
+    conversation_url += '?' + urllib.urlencode(dict(message_sent="1"))
+
+    if message_sent:
+        return HttpResponseRedirect(redirect_to=conversation_url)
 
     user_contacts = request.datamanager.get_sorted_user_contacts() # properly SORTED list
     contacts_display = request.datamanager.get_contacts_display_properties(user_contacts) # DICT FIELDS: address avatar description

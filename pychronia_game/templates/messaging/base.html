@@ -94,6 +94,12 @@
 {% endaddtoblock %}
 
 
+{% addtoblock "onload_js" %}
+    {% if message_sent %}
+        clear_saved_content();
+    {% endif %}
+{% endaddtoblock %}
+
 
 {% endblock %}
 

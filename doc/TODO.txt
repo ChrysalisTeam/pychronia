@@ -36,7 +36,7 @@ FEATURES
   utilities.check_is_restructuredtext(value["content"]) which is buggy because must use rich_text instead
   <- WONT FIX, this filter requires a valid request ??????
 
-- auto-rediriger vers "messages transmis" après un envoi de message réussi ??
+- auto-rediriger vers "messages transmis" après un envoi de message réussi ?? TO BE TESTED
 
 - finish embed_image ??
 

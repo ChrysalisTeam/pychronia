@@ -94,9 +94,7 @@ $("#id_default_body").markItUp(mySettings); // mySettings comes from /markitup/s
 
 
 var block_autosave = false;
-{% if message_sent %}
-    clear_saved_content();
-{% elif not message_form.is_bound %}
+{% if not message_sent and not message_form.is_bound %}
     if(mylocalStorage.getItem(message_content_id)) {
         $('#text_restore_message').css('display', 'block');
         block_autosave = true
