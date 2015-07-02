@@ -11,71 +11,85 @@
 
 {% addtoblock "definition_js" %}
 
-        function remove_message_displays(msg_id) {
-            $("#"+msg_id).remove();
-            $("[href='#"+msg_id+"']").parent().remove(); // remove links pointing to it, maybe resulting in empty "li" tags (but it's ok)
-        }
+    function remove_message_displays(msg_id) {
+        $("#"+msg_id).remove();
+        $("[href='#"+msg_id+"']").parent().remove(); // remove links pointing to it, maybe resulting in empty "li" tags (but it's ok)
+    }
 
-        function force_email_sending(msg_id) {
+    function force_email_sending(msg_id) {
 
-            $.post("{% game_view_url "pychronia_game.views.ajax_force_email_sending" %}",
-                    { id: msg_id },
-                    function(data){
-                        remove_message_displays(msg_id);
-                        $.jnotify('{% trans "Queued message successfully dispatched" %}', "success");
-                    });
-        }
-
-
-        function set_message_read_state(msg_id, is_read) {
-
-            $.post("{% game_view_url "pychronia_game.views.ajax_set_message_read_state" %}",
-                    { id: msg_id,
-                      is_read: (is_read ? "1" : "0") },
-                    function(data){
-                        if (is_read) {
-                            $("#"+msg_id).removeClass("unread");
-                            $("#"+msg_id).addClass("read");
-                        } else {
-                            $("#"+msg_id).addClass("unread");
-                            $("#"+msg_id).removeClass("read");
-                        }
-                    });
-        }
-
-
-        function permanently_delete_message(msg_id) {
-        	if (confirm('{{ _("Are you sure you want to permanently delete this message FOR ALL USERS?")|escapejs }}')){
-        		if (confirm('{{ _("This action cannot be undone, do you confirm deletion FOR ALL USERS?")|escapejs }}')){
-		            $.post("{% game_view_url "pychronia_game.views.ajax_permanently_delete_message" %}",
-		                    { id: msg_id },
-		                    function(data){
-		                    	remove_message_displays(msg_id);
-		                    	$.jnotify('{% trans "Message successfully deleted" %}', "success");
-		                    });
-        		}
-        	}
-        }
-
-
-        /* UNUSED ATM
-        $.fn.togglepanels = function(){
-            return this.each(function(){
-                $(this).addClass("ui-accordion ui-accordion-icons ui-widget ui-helper-reset")
-              .find(".otherTitle")
-                .addClass("ui-accordion-header ui-helper-reset ui-state-default ui-corner-top ui-corner-bottom")
-                .hover(function() { $(this).toggleClass("ui-state-hover"); })
-                .prepend('<span class="ui-icon ui-icon-triangle-1-e"></span>')
-                .click(function() {
-                  $(this)
-                    .toggleClass("ui-accordion-header-active ui-state-active ui-state-default ui-corner-bottom")
-                    .find("> .ui-icon").toggleClass("ui-icon-triangle-1-e ui-icon-triangle-1-s").end()
-                    .next().slideToggle();
-                  return false;
+        $.post("{% game_view_url "pychronia_game.views.ajax_force_email_sending" %}",
+                { id: msg_id },
+                function(data){
+                    remove_message_displays(msg_id);
+                    $.jnotify('{% trans "Queued message successfully dispatched" %}', "success");
                 });
-                $(this).find(".otherDiv").addClass("ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom").hide();
-              });
-            };*/
+    }
+
+
+    function set_message_read_state(msg_id, is_read) {
+
+        $.post("{% game_view_url "pychronia_game.views.ajax_set_message_read_state" %}",
+                { id: msg_id,
+                  is_read: (is_read ? "1" : "0") },
+                function(data){
+                    if (is_read) {
+                        $("#"+msg_id).removeClass("unread");
+                        $("#"+msg_id).addClass("read");
+                    } else {
+                        $("#"+msg_id).addClass("unread");
+                        $("#"+msg_id).removeClass("read");
+                    }
+                });
+    }
+
+
+    function permanently_delete_message(msg_id) {
+    	if (confirm('{{ _("Are you sure you want to permanently delete this message FOR ALL USERS?")|escapejs }}')){
+    		if (confirm('{{ _("This action cannot be undone, do you confirm deletion FOR ALL USERS?")|escapejs }}')){
+	            $.post("{% game_view_url "pychronia_game.views.ajax_permanently_delete_message" %}",
+	                    { id: msg_id },
+	                    function(data){
+	                    	remove_message_displays(msg_id);
+	                    	$.jnotify('{% trans "Message successfully deleted" %}', "success");
+	                    });
+    		}
+    	}
+    }
+
+
+    /* UNUSED ATM
+    $.fn.togglepanels = function(){
+        return this.each(function(){
+            $(this).addClass("ui-accordion ui-accordion-icons ui-widget ui-helper-reset")
+          .find(".otherTitle")
+            .addClass("ui-accordion-header ui-helper-reset ui-state-default ui-corner-top ui-corner-bottom")
+            .hover(function() { $(this).toggleClass("ui-state-hover"); })
+            .prepend('<span class="ui-icon ui-icon-triangle-1-e"></span>')
+            .click(function() {
+              $(this)
+                .toggleClass("ui-accordion-header-active ui-state-active ui-state-default ui-corner-bottom")
+                .find("> .ui-icon").toggleClass("ui-icon-triangle-1-e ui-icon-triangle-1-s").end()
+                .next().slideToggle();
+              return false;
+            });
+            $(this).find(".otherDiv").addClass("ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom").hide();
+          });
+    };*/
+
+
+
+    /* common setup of locastorage stuffs */
+
+    var message_content_id = 'anthropia_saved_message';
+    var mylocalStorage = $.localStorage();
+
+    function clear_saved_content() {
+        mylocalStorage.removeItem(message_content_id);
+        $.jnotify("{{ _("Saved body content was cleared.")|escapejs }}", "warning")
+        //console.log("DESTROYING", message_content_id);
+    }
+
 
 {% endaddtoblock %}
 
