@@ -6,6 +6,7 @@ import random
 from textwrap import dedent
 import tempfile
 import shutil
+import inspect
 
 from ._test_tools import *
 from ._dummy_abilities import *
@@ -29,7 +30,6 @@ from pychronia_game.datamanager.datamanager_administrator import retrieve_game_i
     GAME_STATUSES, list_backups_for_game_instance, backup_game_instance_data, \
     _get_backup_folder
 from pychronia_game.tests._test_tools import temp_datamanager
-import inspect
 from django.forms.fields import Field
 from django.core.urlresolvers import resolve, NoReverseMatch
 from pychronia_game.views import friendship_management
@@ -4287,6 +4287,31 @@ class TestHttpRequests(BaseGameTestCase):
 
         finally:
             AbstractGameView._process_standard_request = oldie
+
+
+    def test_message_composition(self):
+
+        self._reset_django_db()
+
+        self._player_auth("guy1")
+
+        url = reverse(views.compose_message, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID))
+
+        params = dict(_ability_form="pychronia_game.views.messaging_views.MessageComposeForm",
+                      body="Ceci est le body!",
+                      delay_h=0,
+                      recipients=["guy2@pangea.com", "guy3@pangea.com"],
+                      sender="guy1@pangea.com",
+                      subject="Sujet de test")
+
+        response = self.client.post(url, data=params, follow=True)
+        #print("@@@@@@", response.content)
+        assert response.status_code == 200
+
+        html = response.content.decode("utf8")
+
+        assert "conversation" in html  # we got redirected
+        assert "clear_saved_content();  // we do cleanup localstorage, since email was sent" in html
 
 
 

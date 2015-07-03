@@ -96,7 +96,7 @@
 
 {% addtoblock "onload_js" %}
     {% if message_sent %}
-        clear_saved_content();
+        clear_saved_content();  // we do cleanup localstorage, since email was sent
     {% endif %}
 {% endaddtoblock %}
 
