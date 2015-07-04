@@ -29,6 +29,17 @@ GAMEMASTER_HINTS in:
 FEATURES
 ------------
 
+- réparer (Dernier accès : 4 juil. 2015 04:45:36), à cause des crontasks, en page administartion
+
+- tester "no url nor path" in webradio spot page
+
+- regler les "HERE GAMEMASTER HINTS" et autres FIXME
+
+- URL Webradio Publique -> dire quelle frequence, dans admin info page
+
+- appeler http://localhost:8000/DEMO/webradio_management/ depuis tests??
+
+- game_events : ne pas afficher "master" mais "système"
 
 - auto-check that no errors in yaml files ?
 
@@ -39,6 +50,8 @@ FEATURES
 - auto-rediriger vers "messages transmis" après un envoi de message réussi ?? TO BE TESTED
 
 - finish embed_image ??
+
+- remettre formaulaire après submission sur http://localhost:8000/DEMO/ability/matter_analysis/
 
 
 SCRIPT
