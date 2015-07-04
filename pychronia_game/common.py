@@ -239,9 +239,11 @@ def determine_asset_url(properties):
         fileurl = utilities.complete_game_file_url(properties) # works for both internal and external ones
     elif properties.get("url"):
         fileurl = properties["url"]
-    else:
+    elif properties.get("file"):
         myfile = properties["file"] # MUST exist and be relative to GAME_FILES_ROOT
         fileurl = game_file_url(myfile)
+    else:
+        return "#"  # now this case is possible
     return fileurl
 
 
