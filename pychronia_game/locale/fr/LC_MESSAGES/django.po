@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-06-10 22:34+0200\n"
-"PO-Revision-Date: 2015-06-10 22:36+0200\n"
+"POT-Creation-Date: 2015-07-04 16:40+0200\n"
+"PO-Revision-Date: 2015-07-04 16:41+0200\n"
 "Last-Translator: Pascal <chambon.pascal@gmail.com>\n"
 "Language-Team: Nothing\n"
 "Language: fr\n"
@@ -83,6 +83,15 @@ msgstr "Payer en argent"
 #: .\datamanager\abstract_form.py:158
 msgid "Or pay with gems"
 msgstr "Ou payer en gemmes"
+
+#: .\datamanager\abstract_form.py:179
+#| msgid "Wrong current password submitted"
+msgid "Wrong data submitted"
+msgstr "Mauvaises données soumises"
+
+#: .\datamanager\abstract_form.py:186
+msgid "You must choose between money and gems, for payment."
+msgstr "Vous devez choisir entre argent et gemmes, pour le paiement."
 
 #: .\datamanager\abstract_form.py:203
 msgid "Initial identifier"
@@ -387,7 +396,7 @@ msgstr "Non identifié"
 #: .\templates\administration\global_contacts_management.html:87
 #: .\templates\auction\view_characters.html:77
 #: .\templates\auction\view_characters.html:91 .\templates\base_main.html:366
-#: .\templates\messaging\compose.html:166
+#: .\templates\messaging\compose.html:155
 #: .\templates\meta_administration\manage_instances.html:22
 #: .\templates\profile\character_profile.html:13
 #: .\templates\profile\character_profile.html:14
@@ -714,7 +723,7 @@ msgstr "Cible d'usurpation d'identité %s inconnue"
 msgid "Bank"
 msgstr "Banque"
 
-#: .\forms.py:29 .\forms.py:71 .\views\messaging_views.py:135
+#: .\forms.py:29 .\forms.py:71 .\views\messaging_views.py:136
 msgid "Sender"
 msgstr "Emetteur"
 
@@ -1117,7 +1126,7 @@ msgstr ""
 
 #: .\templates\__specific_operations\chat_with_djinn.html:103
 #: .\templates\abilities\artificial_intelligence.html:116
-#: .\templates\messaging\compose.html:224
+#: .\templates\messaging\compose.html:213
 msgid "Send Message"
 msgstr "Envoyer le Message"
 
@@ -1309,7 +1318,7 @@ msgid "Lock Doors"
 msgstr "Verrouillage des Portes"
 
 #: .\templates\abilities\house_locking.html:62
-#: .\templates\auction\view_sales.html:123
+#: .\templates\auction\view_sales.html:126
 msgid "Reset"
 msgstr "Réinitialiser"
 
@@ -1742,45 +1751,62 @@ msgstr ""
 "(total_archaeological_objects_number)s</strong> objets archéologiques mis "
 "aux enchères.\n"
 
-#: .\templates\auction\view_sales.html:27
+#: .\templates\auction\view_sales.html:16
+#, python-format
+msgid ""
+"\n"
+"Players begin the game with a total of\n"
+"<strong>%(total_bank_account_available)s</strong> kashes in their bank "
+"accounts,\n"
+"while the total value of proposed items is <strong>%(total_items_price)s</"
+"strong> kashes.\n"
+msgstr ""
+"\n"
+"Les joueurs commencent le jeu avec un total de\n"
+"<strong>%(total_bank_account_available)s</strong> kashes dans leur compte "
+"bancaire,\n"
+"tandis que la valeur totale des objets proposés est <strong>%"
+"(total_items_price)s</strong> kashes.\n"
+
+#: .\templates\auction\view_sales.html:29
 msgid "Id"
 msgstr "Id"
 
-#: .\templates\auction\view_sales.html:28
+#: .\templates\auction\view_sales.html:30
 msgid "Photo"
 msgstr "Photo"
 
-#: .\templates\auction\view_sales.html:29
+#: .\templates\auction\view_sales.html:31
 msgid "Details"
 msgstr "Détails"
 
-#: .\templates\auction\view_sales.html:30
+#: .\templates\auction\view_sales.html:32
 msgid "Comments"
 msgstr "Commentaires"
 
-#: .\templates\auction\view_sales.html:32
-#: .\templates\auction\view_sales.html:115
+#: .\templates\auction\view_sales.html:34
+#: .\templates\auction\view_sales.html:117
 #: .\templates\messaging\single_message.html:47
 msgid "Transfer"
 msgstr "Transférer"
 
-#: .\templates\auction\view_sales.html:69
+#: .\templates\auction\view_sales.html:71
 msgid "gem"
 msgstr "gemme"
 
-#: .\templates\auction\view_sales.html:71
+#: .\templates\auction\view_sales.html:73
 msgid "object"
 msgstr "objet"
 
-#: .\templates\auction\view_sales.html:77
+#: .\templates\auction\view_sales.html:79
 msgid "Unit"
 msgstr "Unité"
 
-#: .\templates\auction\view_sales.html:81
+#: .\templates\auction\view_sales.html:83
 msgid "Total"
 msgstr "Total"
 
-#: .\templates\auction\view_sales.html:121
+#: .\templates\auction\view_sales.html:123
 msgid "Owner"
 msgstr "Propriétaire"
 
@@ -2102,31 +2128,31 @@ msgstr ""
 msgid "Message successfully deleted"
 msgstr "Message supprimé avec succès"
 
-#: .\templates\messaging\base.html:96
-msgid "Enjoy the power of Anthropia's integrated messaging system."
-msgstr "Profitez de la puissance du système de messagerie intégré d'Anthropia"
-
-#: .\templates\messaging\compose.html:45
-msgid "Nothing to preview."
-msgstr "Rien à prévisualiser."
-
-#: .\templates\messaging\compose.html:68
+#: .\templates\messaging\base.html:89
 msgid "Saved body content was cleared."
 msgstr "Le contenu sauvegardé a été effacé."
 
-#: .\templates\messaging\compose.html:76
+#: .\templates\messaging\base.html:116
+msgid "Enjoy the power of Anthropia's integrated messaging system."
+msgstr "Profitez de la puissance du système de messagerie intégré d'Anthropia"
+
+#: .\templates\messaging\compose.html:43
+msgid "Nothing to preview."
+msgstr "Rien à prévisualiser."
+
+#: .\templates\messaging\compose.html:67
 msgid "Previously saved content has been restored."
 msgstr "Le contenu précédemment sauvé a été restauré"
 
-#: .\templates\messaging\compose.html:84
+#: .\templates\messaging\compose.html:75
 msgid "Body content has been saved."
 msgstr "Le contenu a été sauvegardé."
 
-#: .\templates\messaging\compose.html:162
+#: .\templates\messaging\compose.html:151
 msgid "Contacts"
 msgstr "Contacts"
 
-#: .\templates\messaging\compose.html:189
+#: .\templates\messaging\compose.html:178
 msgid ""
 "Draft text from a previous message (neither sent nor canceled) has been auto-"
 "saved, do you want to restore it into the message body now ? Autosave will "
@@ -2137,42 +2163,42 @@ msgstr ""
 "L'autosauvegarde restera désactivée jusqu'à ce que vous ayez pris une "
 "décision."
 
-#: .\templates\messaging\compose.html:190
+#: .\templates\messaging\compose.html:179
 msgid "Restore"
 msgstr "Restaurer"
 
-#: .\templates\messaging\compose.html:191
+#: .\templates\messaging\compose.html:180
 msgid "Dismiss"
 msgstr "Rejeter"
 
-#: .\templates\messaging\compose.html:196
+#: .\templates\messaging\compose.html:185
 msgid "Cancel message and clear autosave"
 msgstr "Annuler le message et effacer l'autosauvegarde"
 
-#: .\templates\messaging\compose.html:201
+#: .\templates\messaging\compose.html:190
 msgid "Message template used:"
 msgstr "Modèle de message utilisé :"
 
-#: .\templates\messaging\compose.html:207
+#: .\templates\messaging\compose.html:196
 msgid "Parent message ID:"
 msgstr "ID du message parent :"
 
-#: .\templates\messaging\compose.html:214
+#: .\templates\messaging\compose.html:203
 msgid "MESSAGE TRANSFERRED: click to view in other window."
 msgstr "MESSAGE TRANSFÉRÉ: cliquer pour le voir dans une autre fenêtre."
 
-#: .\templates\messaging\compose.html:223
+#: .\templates\messaging\compose.html:212
 msgid "Preview Message Body"
 msgstr "Prévisualiser le Corps du Message"
 
-#: .\templates\messaging\compose.html:232
+#: .\templates\messaging\compose.html:221
 msgid ""
 "Sorry, the sending of digital messages is currently disabled for maintenance."
 msgstr ""
 "Désolé, l'envoi de messages numériques est actuellement désactivé pour "
 "maintenance."
 
-#: .\templates\messaging\conversation.html:10 .\views\messaging_views.py:337
+#: .\templates\messaging\conversation.html:10 .\views\messaging_views.py:338
 msgid "Conversations"
 msgstr "Conversations"
 
@@ -2532,48 +2558,48 @@ msgstr "mon titre de test 2"
 msgid "Private dummy ability"
 msgstr "Compétence bidon privée"
 
-#: .\tests\test_game.py:4542
+#: .\tests\test_game.py:4567
 #, fuzzy
 msgid "test-title"
 msgstr "mon titre de test 1"
 
-#: .\tests\test_game.py:4563
+#: .\tests\test_game.py:4588
 msgid "ssss"
 msgstr "ssss"
 
-#: .\tests\test_game.py:4570 .\tests\test_game.py:4591
+#: .\tests\test_game.py:4595 .\tests\test_game.py:4616
 msgid "SSS"
 msgstr "SSS"
 
-#: .\tests\test_game.py:4574
+#: .\tests\test_game.py:4599
 msgid "DSDSF"
 msgstr "DSDSF"
 
-#: .\tests\test_game.py:4579
+#: .\tests\test_game.py:4604
 msgid "DDD"
 msgstr ""
 
-#: .\tests\test_game.py:4583
+#: .\tests\test_game.py:4608
 msgid "LJKSG"
 msgstr ""
 
-#: .\tests\test_game.py:4602
+#: .\tests\test_game.py:4627
 msgid "Hi"
 msgstr ""
 
-#: .\tests\test_game.py:4606
+#: .\tests\test_game.py:4631
 msgid "Hi2"
 msgstr ""
 
-#: .\tests\test_game.py:4610
+#: .\tests\test_game.py:4635
 msgid "Hi3"
 msgstr ""
 
-#: .\tests\test_game.py:4614
+#: .\tests\test_game.py:4639
 msgid "Hisss"
 msgstr ""
 
-#: .\tests\test_game.py:4618
+#: .\tests\test_game.py:4643
 msgid "QQQ"
 msgstr ""
 
@@ -3494,130 +3520,130 @@ msgstr "Aucun fichier dans le dossier."
 msgid "Decrypted archive"
 msgstr "Décoder l'archive"
 
-#: .\views\messaging_views.py:29
+#: .\views\messaging_views.py:30
 msgid "Recipients"
 msgstr "Destinataires"
 
-#: .\views\messaging_views.py:31
+#: .\views\messaging_views.py:32
 msgid "Mask recipients"
 msgstr "Masquer les destinataires"
 
-#: .\views\messaging_views.py:33
+#: .\views\messaging_views.py:34
 msgid "Subject"
 msgstr "Sujet"
 
-#: .\views\messaging_views.py:35
+#: .\views\messaging_views.py:36
 msgid "Body"
 msgstr "Corps"
 
-#: .\views\messaging_views.py:37
+#: .\views\messaging_views.py:38
 msgid "Attachment"
 msgstr "Pièce jointe"
 
-#: .\views\messaging_views.py:79
+#: .\views\messaging_views.py:80
 #, python-format
 msgid "Message template %s not found"
 msgstr "Modèle de message %s non trouvé"
 
-#: .\views\messaging_views.py:96
+#: .\views\messaging_views.py:97
 #, python-format
 msgid "Parent message %s not found"
 msgstr "Message parent %s non trouvé"
 
-#: .\views\messaging_views.py:104 .\views\messaging_views.py:105
+#: .\views\messaging_views.py:105 .\views\messaging_views.py:106
 msgid "Bis:"
 msgstr "Bis:"
 
-#: .\views\messaging_views.py:113 .\views\messaging_views.py:114
+#: .\views\messaging_views.py:114 .\views\messaging_views.py:115
 msgid "Re:"
 msgstr "Re:"
 
-#: .\views\messaging_views.py:119
+#: .\views\messaging_views.py:120
 msgid "Access to initial message forbidden."
 msgstr "Accès au message initial interdit."
 
-#: .\views\messaging_views.py:148
+#: .\views\messaging_views.py:149
 msgid "Sending delay in hours (eg. 2.4)"
 msgstr "Délai d'envoi en heures (ex. 2.4)"
 
-#: .\views\messaging_views.py:171
+#: .\views\messaging_views.py:172
 msgid "Placeholder remaining in text"
 msgstr "Marqueur de substitution restant dans le texte"
 
-#: .\views\messaging_views.py:281
+#: .\views\messaging_views.py:282
 msgid "Dispatched Messages"
 msgstr "Messages Transmis"
 
-#: .\views\messaging_views.py:287
+#: .\views\messaging_views.py:288
 msgid "All Dispatched Messages"
 msgstr "Messages Transmis"
 
-#: .\views\messaging_views.py:292
+#: .\views\messaging_views.py:293
 msgid "Pending Messages"
 msgstr "Messages en Attente"
 
-#: .\views\messaging_views.py:298
+#: .\views\messaging_views.py:299
 msgid "All Queued Messages"
 msgstr "Messages en Attente"
 
-#: .\views\messaging_views.py:302
+#: .\views\messaging_views.py:303
 msgid "Force Message Sending"
 msgstr "Forcer Envoi du Message"
 
-#: .\views\messaging_views.py:315
+#: .\views\messaging_views.py:316
 msgid "Message Templates"
 msgstr "Modèles de message"
 
-#: .\views\messaging_views.py:322
+#: .\views\messaging_views.py:323
 #, python-format
 msgid "Unknown template category '%(category)s'"
 msgstr "Catégorie de modèle inconnue '%(category)s'"
 
-#: .\views\messaging_views.py:361
+#: .\views\messaging_views.py:364
 msgid "All My Conversations"
 msgstr "Toutes Mes Conversations"
 
-#: .\views\messaging_views.py:361
+#: .\views\messaging_views.py:364
 msgid "My Recent Conversations"
 msgstr "Mes Conversations Récentes"
 
-#: .\views\messaging_views.py:368
+#: .\views\messaging_views.py:372
 msgid "Set Message Read State"
 msgstr "Changer l'État de Lecture du Message"
 
-#: .\views\messaging_views.py:380
+#: .\views\messaging_views.py:384
 msgid "Delete Message"
 msgstr "Effacer Message"
 
-#: .\views\messaging_views.py:392 .\views\messaging_views.py:446
+#: .\views\messaging_views.py:396 .\views\messaging_views.py:457
 msgid "Compose Message"
 msgstr "Nouveau Message"
 
-#: .\views\messaging_views.py:403
+#: .\views\messaging_views.py:407
 msgid "Message successfully sent."
 msgstr "Message envoyé avec succès."
 
-#: .\views\messaging_views.py:436
+#: .\views\messaging_views.py:440
 msgid "Errors in message fields."
 msgstr "Erreur dans les champs du message."
 
-#: .\views\messaging_views.py:508
+#: .\views\messaging_views.py:519
 msgid "View Single Message"
 msgstr "Voir Message Seul"
 
-#: .\views\messaging_views.py:532
+#: .\views\messaging_views.py:543
 msgid "The requested message doesn't exist."
 msgstr "Le message demandé n'existe pas."
 
-#: .\views\messaging_views.py:540
+#: .\views\messaging_views.py:551
 msgid "Single Message"
 msgstr "Message Unique"
 
-#: .\views\messaging_views.py:548
+#: .\views\messaging_views.py:559
 msgid "Message Preview"
 msgstr "Aperçu du Message"
 
-#: .\views\messaging_views.py:551
+#: .\views\messaging_views.py:562
 msgid "No content submitted for display"
 msgstr "Pas de contenu envoyé pour affichage"
 

@@ -12,11 +12,13 @@ There are altogether <strong>{{ total_gems_number }}</strong> gems and <strong>{
 </p>
 
 {% if display_admin_tips %}
-    <p class="admin-note">
-    Players begin the game with a total of
-    <strong>{{ total_bank_account_available }}</strong> kashes in their bank accounts,
-    while the total value of proposed items is <strong>{{ total_items_price }}</strong> kashes.
-    </p>
+<p class="admin-note">
+{% blocktrans %}
+Players begin the game with a total of
+<strong>{{ total_bank_account_available }}</strong> kashes in their bank accounts,
+while the total value of proposed items is <strong>{{ total_items_price }}</strong> kashes.
+{% endblocktrans %}
+</p>
 {% endif %}
 
 <br/>
@@ -105,21 +107,23 @@ There are altogether <strong>{{ total_gems_number }}</strong> gems and <strong>{
         	    	{% if not item_details.owner %}
 
         		 		<td>
-        		 			<select name="username">
+        		 			<div><select name="username">
         		 			    <option value="">&nbsp;</option>
         	 				{% for username in usernames %}
         						<option value="{{ username }}">{{ username|capfirst }}</option>
         					{% endfor %}
-        					</select><br/>
-        		 			<input type="submit" name="buy" value="{% trans "Transfer" %}"/>
+        					</select></div>
+        		 			<div><input type="submit" name="buy" value="{% trans "Transfer" %}"/></div>
         		 		</td>
 
         			{% else %}
 
         				<td>
-        		 			<strong>{% trans "Owner" %}: {{ item_details.owner }}</strong>
-        		 			<input type="hidden" name="username" value="{{ item_details.owner }}"/><br/>
-        		 			<input type="submit" name="unbuy" value="{% trans "Reset" %}"/>
+        		 			<div><strong>{% trans "Owner" %}: {{ item_details.owner }}</strong></div>
+        		 			<div>
+                                  <input type="hidden" name="username" value="{{ item_details.owner }}"/>
+                                  <input type="submit" name="unbuy" value="{% trans "Reset" %}"/>
+                            </div>
         		 		</td>
 
         			{% endif %}

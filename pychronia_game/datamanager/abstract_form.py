@@ -176,14 +176,14 @@ class GemPayementFormMixin(GemHandlingFormUtils):
                 del parameters["gems_list"]
             except (TypeError, ValueError), e:
                 self.logger.critical("Wrong data submitted - %r", parameters["gems_list"], exc_info=True)
-                raise AbnormalUsageError("Wrong data submitted")
+                raise AbnormalUsageError(_("Wrong data submitted"))
 
         if "pay_with_money" in parameters:
             if "use_gems" in parameters:
                 # only if we have a choice between several means of payment
                 if ((parameters["pay_with_money"] and parameters["use_gems"]) or
                    not (parameters["pay_with_money"] or parameters["use_gems"])):
-                    raise NormalUsageError("You must choose between money and gems, for payment.")
+                    raise NormalUsageError(_("You must choose between money and gems, for payment."))
             del parameters["pay_with_money"]
 
         return parameters
