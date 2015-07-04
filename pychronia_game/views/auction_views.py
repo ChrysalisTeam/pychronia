@@ -201,7 +201,7 @@ def view_sales(request, template_name='auction/view_sales.html'):
 
     sorted_items_for_sale = _sorted_game_items(items_for_sales) # we push non-auction items to the end of list
 
-    if user.is_master or request.datamanager.is_master(user.real_username):
+    if request.datamanager.should_display_admin_tips():  # security
         total_items_price = sum((item["total_price"] or 0) for item in items_for_sales.values())
         total_bank_account_available = sum(character["account"] for character in request.datamanager.get_character_sets().values())
     else:
