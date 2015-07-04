@@ -84,11 +84,11 @@
 
 table.realtable {
     border-collapse: collapse;
-      margin: 15px 0;
+    margin: 15px 0;
     padding:0px;
-      width:100%;
-      box-shadow: 5px 5px 3px #888888;
-      border:1px solid #000000;
+    width:100%;
+    box-shadow: 5px 5px 3px #888888;
+    border:1px solid #000000;
 
     tr:nth-child(odd){ background-color:#eed892; }
     tr:nth-child(even) { background-color:#F5DF8B; }
@@ -102,7 +102,7 @@ table.realtable {
         font-size:1.1em;
         font-family:Arial;
         font-weight:normal;
-        line-height:1.1em;
+        line-height:1.3em;
     }
 
     tr:last-child td {
