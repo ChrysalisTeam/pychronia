@@ -121,6 +121,9 @@ PROMOTION
 TESTS
 ----------
 
+- checker que les formulaires et le compose_message ne listent PAS les gens inconnus via address book
+- checker le bon display des PJ only dans la page des enchérisseurs
+- vérifier les displays du cas "destinataires masqués"
 - test "message display context" stuffs, in particular stuffs around masked recipients
 - manually test gems/money transfers and payments, as well as corresponding logging !!!!
 - test log_game_event() visibility lists
