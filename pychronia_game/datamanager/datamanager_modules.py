@@ -526,7 +526,7 @@ class CharacterHandling(BaseDataManager): # TODO REFINE
 
 
     @readonly_method
-    def get_other_character_usernames(self, username=CURRENT_USER):
+    def get_all_other_character_usernames(self, username=CURRENT_USER):
         # also works for game master : returns ALL players
         username = self._resolve_username(username)
         others = [name for name in self.get_character_usernames() if name != username]
@@ -1399,7 +1399,7 @@ class FriendshipHandling(BaseDataManager):
         character_statuses = {username: relation_type for (relation_type, usernames) in relation_groups.items()
                                                       for username in usernames}
 
-        for other_username in self.get_other_character_usernames(username):
+        for other_username in self.get_all_other_character_usernames(username):
             character_statuses.setdefault(other_username, None) # other characters that are NOT related at all to current user get "None"
 
         return character_statuses

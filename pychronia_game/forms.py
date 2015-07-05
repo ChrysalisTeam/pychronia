@@ -32,11 +32,11 @@ class MoneyTransferForm(AbstractGameForm):
             # for standard characters
             if datamanager.get_character_properties()["account"] <= 0:
                 raise UninstantiableFormError(_("No money available for transfer."))
-            others = datamanager.get_other_character_usernames()
+            others = datamanager.get_other_known_characters()
             others_choices = datamanager.build_select_choices_from_character_usernames(others, add_empty=True)
             self.fields = add_to_ordered_dict(self.fields, 0, "recipient_name", forms.ChoiceField(label=_("Recipient"), choices=others_choices))
-        
-        
+
+
 
     amount = forms.IntegerField(label=ugettext_lazy("Amount"), widget=forms.TextInput(attrs={'size':'8', 'style':'text-align:left;', 'autocomplete':'off'}),
                                 initial=0, min_value=1, max_value=1000000)
@@ -45,7 +45,6 @@ class MoneyTransferForm(AbstractGameForm):
 
 
 class GemsTransferForm(AbstractGameForm, GemHandlingFormUtils):
-
 
 
     def __init__(self, datamanager, *args, **kwargs):
@@ -71,7 +70,7 @@ class GemsTransferForm(AbstractGameForm, GemHandlingFormUtils):
             self.fields = add_to_ordered_dict(self.fields, 0, "sender_name", forms.ChoiceField(label=_("Sender"), choices=_character_choices))
             self.fields = add_to_ordered_dict(self.fields, 1, "recipient_name", forms.ChoiceField(label=_("Recipient"), choices=_character_choices))
         else:
-            others = datamanager.get_other_character_usernames()
+            others = datamanager.get_other_known_characters()
             others_choices = datamanager.build_select_choices_from_character_usernames(others, add_empty=True)
             self.fields = add_to_ordered_dict(self.fields, 1, "recipient_name", forms.ChoiceField(label=_("Recipient"), choices=others_choices))
 
@@ -103,14 +102,13 @@ class ArtefactTransferForm(AbstractGameForm):
         artefacts_choices = [(name, value["title"]) for (name, value) in artefacts.items()]
         self.fields["artefact_name"].choices = [("", _("None"))] + artefacts_choices
 
-        others = datamanager.get_other_character_usernames()
+        others = datamanager.get_other_known_characters()
         others_choices = datamanager.build_select_choices_from_character_usernames(others, add_empty=True)
         self.fields["recipient_name"].choices = others_choices
 
         if not artefacts_choices or not others_choices:
             raise UninstantiableFormError("No artefact or recipient available")
 
-        #others = datamanager.get_other_character_usernames()
 
 
 
@@ -277,7 +275,7 @@ class TelecomInvestigationForm(forms.Form):
         super(TelecomInvestigationForm, self).__init__(*args, **kwargs)
         # dynamic fields here ...
 
-        others = datamanager.get_other_character_usernames()
+        others = datamanager.get_other_known_characters()
         others_choices = datamanager.build_select_choices_from_character_usernames(others)
         self.fields["official_name"] = forms.ChoiceField(label=_("Name"), choices=others_choices)
 
