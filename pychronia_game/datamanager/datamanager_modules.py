@@ -1615,7 +1615,7 @@ class TextMessagingCore(BaseDataManager):
 
             msg["is_certified"] = msg.get("is_certified", False)
             msg["mask_recipients"] = msg.get("mask_recipients", False)
-            
+
             if isinstance(msg["sent_at"], (long, int)): # offset in minutes
                 msg["sent_at"] = self.compute_effective_remote_datetime(msg["sent_at"])
 
@@ -2791,9 +2791,12 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
         Currently HEAVY method.
         """
         username = self._resolve_username(username)
-        emails = self.get_character_address_book(username=username)
-        other_characters_and_nones = [self.get_character_or_none_from_email(email) for email in emails]
-        return [char for char in other_characters_and_nones if char and char != username]
+        if self.is_master(username):
+            return self.get_character_usernames()
+        else:
+            emails = self.get_character_address_book(username=username)
+            other_characters_and_nones = [self.get_character_or_none_from_email(email) for email in emails]
+            return [char for char in other_characters_and_nones if char and char != username]
 
     # Audio notifications for new messages #
 
