@@ -159,7 +159,7 @@
 
         {% if message.mask_recipients and ctx.force_recipients_display or message.mask_recipients and display_admin_tips %}
             <p {% if display_admin_tips %}class="admin-note"{% endif %}>
-                <b>{% trans "The recipients list is masked for all viewers except the sender" %} {# even if master, no need for admin-note, we just simulate "I'm the sender" #}</b>
+                <b>{% trans "The recipients list is masked for all viewers except the sender." %} {# even if master, no need for admin-note, we just simulate "I'm the sender" #}</b>
             </p>
         {% endif %}
 

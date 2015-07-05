@@ -2280,8 +2280,8 @@ msgid "undisclosed recipients list"
 msgstr "liste des destinataires masquée"
 
 #: .\templates\messaging\single_message.html:163
-msgid "The recipients list is masked for all viewers except the sender"
-msgstr "La liste des destinataires est masquée pour tous excepté l'émetteur"
+msgid "The recipients list is masked for all viewers except the sender."
+msgstr "La liste des destinataires est masquée pour tous excepté l'émetteur."
 
 #: .\templates\messaging\single_message.html:185
 msgid "MESSAGE TRANSFERRED: click to view."
