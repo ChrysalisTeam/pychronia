@@ -101,8 +101,8 @@ Development tips
 - Gameviews offer a powerful API to process forms, and turn them into method calls - no need to manually validate forms anymore.
 - *register_view* can be used to to turn a standard django view into a GameView.
 - An old Django debug toolbar might require a fix in django core/handlers/base.py to work with custom urlconfs::
-
   SEE https://code.djangoproject.com/ticket/19784#ticket::
+- if layout gets screwed up in Chrome (a vertical spacing before the anthropia header, "&#65279;." appearing in web debugger), it's probably due to Byte Order Marks in html templates - just remove them.
 
 		...
 
