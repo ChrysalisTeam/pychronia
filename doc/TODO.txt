@@ -29,10 +29,37 @@ GAMEMASTER_HINTS in:
 FEATURES
 ------------
 
+- BUG : $(hashedSelector).select2({"closeOnSelect": false, "placeholder": ""});
+    <script type="text/javascript">
+        jQuery(function ($) {
+            $(hashedSelector).select2({"closeOnSelect": false, "placeholder": ""});
+        });
+    </script>
+
+
+- bouger à droite le controle "non lu"
+
+- fix checks of ajax calls when impersonation changes
+  SEE EMAILS ERROR (EXTERNAL IP): Internal Server Error: /premium/messages/ajax_mark_msg_read/
+
+- agrandire zone de text par défaut
+
+- réparer le "sujet" des mails répondus 2fois, qui ne se sette pas. OK DONE
+
+- trier contacts par ordre logique ??
+
+- permettre d'éditer les messages en attente d'envoi ?
+
+- "envoyer le spot radio" --> noooon
+
+- objets proposés est 10665 kashes -> varie suivant qu'on est master ou impersoné, weird....
+
+- gros bug de use_template quand multiples recipients (fusionnent)
+
 - fixer l'aide de la page "dahsboard admin"
 - dire qu'on peut réordonner les forms de la page admin dashboard
 
-- réparer (Dernier accès : 4 juil. 2015 04:45:36), à cause des crontasks, en page administartion
+- réparer (Dernier accès : 4 juil. 2015 04:45:36), à cause des crontasks, en page administration
 
 - tester "no url nor path" in webradio spot page
 
@@ -59,6 +86,8 @@ FEATURES
 
 SCRIPT
 ----------
+
+- dire "marquer comm lus les messages de LG périodiquement, soi même"
 
 - cacher compétences spéciales pour PNJ <- personal permissions EVERYWHERE
 
