@@ -99,11 +99,14 @@ class MessageComposeForm(AbstractGameForm):
 
                 visibility_reason = msg["visible_by"].get(user.username, None)
 
+                subject = msg["subject"]  # always retrieved here (but might be prefixed)
+
                 if visibility_reason == VISIBILITY_REASONS.sender: # we simply recontact recipients (even if we were one of the recipients too)
                     sender = msg["sender_email"] # for master
                     recipients = msg["recipient_emails"]
+
                     if _("Bis:") not in msg["subject"]:
-                        subject = _("Bis:") + " " + msg["subject"]
+                        subject = _("Bis:") + " " + subject
                     # don't resend attachment! #
 
                 elif visibility_reason == VISIBILITY_REASONS.recipient: # we reply to a message
@@ -112,7 +115,7 @@ class MessageComposeForm(AbstractGameForm):
                     my_email = datamanager.get_character_email() if user.is_character else None
                     recipients += [_email for _email in msg["recipient_emails"] if _email != my_email and _email != sender]  # works OK if my_email is None (i.e game master) or sender is None
                     if _("Re:") not in msg["subject"]:
-                        subject = _("Re:") + " " + msg["subject"]
+                        subject = _("Re:") + " " + subject
                     # don't resend attachment, here too! #
 
                 else: # visibility reason is None, or another visibility case (eg. interception)
