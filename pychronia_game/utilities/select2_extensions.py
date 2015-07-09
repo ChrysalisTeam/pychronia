@@ -9,14 +9,14 @@ from django.core.exceptions import ValidationError
 
 class Select2TagsWidget(Select2Mixin, MultipleSelect2HiddenInput): ##SpecialHiddenInput): ###forms.HiddenInput): ###MultipleSelect2HiddenInput):
 
-    input_type = 'text'  # additioanl security...
+    input_type = 'text'  # additional security...
 
     def init_options(self):
         self.options.update({"closeOnSelect": True, # maximumSelectionSize buggy when not closeOnSelect, so we workaround...
                              "maximumSelectionSize":-1, # overridden by form field
                              "separator": '*START*django_select2.MULTISEPARATOR*END*',
-                            "tokenSeparators": [",", ";"], # spaces are NOT separators
-                            "tags": []}) # overridden by field
+                             "tokenSeparators": [",", ";"], # spaces are NOT separators
+                             "tags": []}) # overridden by field
 
     def set_choice_tags(self, tags):
         self.options["tags"] = tags
