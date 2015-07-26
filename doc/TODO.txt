@@ -29,6 +29,78 @@ GAMEMASTER_HINTS in:
 FEATURES
 ------------
 
+- allow to wiretap ANY email address
+
+- fix 3 scrolls on view_characters page :
+    <div class="scroll_yellow_rolled float_left" style="max-width:300px">   <- 280px max
+
+
+- investigate sql handles on webfaction relstorage
+  File "/home/pakal/webapps/chrysalis_game/ENV/lib/python2.7/site-packages/django/core/handlers/base.py", line 104, in get_response
+    response = middleware_method(request, callback, callback_args, callback_kwargs)
+  File "/home/pakal/webapps/chrysalis_game/pychronia/pychronia_game/middlewares.py", line 71, in process_view
+    request.datamanager = retrieve_game_instance(game_instance_id=game_instance_id, request=request)
+  File "/home/pakal/webapps/chrysalis_game/pychronia/pychronia_game/datamanager/datamanager_administrator.py", line 245, in retrieve_game_instance
+    game_data = _fetch_available_game_data(game_instance_id=game_instance_id, metadata_checker=metadata_checker)
+  File "<string>", line 2, in _fetch_available_game_data
+  File "/home/pakal/webapps/chrysalis_game/pychronia/pychronia_game/datamanager/datamanager_tools.py", line 189, in zodb_transaction
+    res = func(*args, **kwargs)
+  File "/home/pakal/webapps/chrysalis_game/pychronia/pychronia_game/datamanager/datamanager_administrator.py", line 205, in _fetch_available_game_data
+    game_root = _get_game_instances_mapping().get(game_instance_id)
+  File "/home/pakal/webapps/chrysalis_game/pychronia/pychronia_game/datamanager/datamanager_administrator.py", line 61, in _get_game_instances_mapping
+    connection = _get_zodb_connection()
+  File "/home/pakal/webapps/chrysalis_game/pychronia/pychronia_game/datamanager/datamanager_administrator.py", line 57, in _get_zodb_connection
+    connection = ZODB_INSTANCE.open() # thread-local connection, by default
+  File "/home/pakal/webapps/chrysalis_game/ENV/lib/python2.7/site-packages/ZODB/DB.py", line 749, in open
+    result.open(transaction_manager)
+  File "/home/pakal/webapps/chrysalis_game/ENV/lib/python2.7/site-packages/ZODB/Connection.py", line 1057, in open
+    self._flush_invalidations()
+  File "/home/pakal/webapps/chrysalis_game/ENV/lib/python2.7/site-packages/ZODB/Connection.py", line 499, in _flush_invalidations
+    invalidated = self._storage.poll_invalidations()
+  File "/home/pakal/webapps/chrysalis_game/pychronia/dependencies/relstorage/storage.py", line 1300, in poll_invalidations
+    changes, new_polled_tid = self._restart_load_and_poll()
+  File "/home/pakal/webapps/chrysalis_game/pychronia/dependencies/relstorage/storage.py", line 1264, in _restart_load_and_poll
+    self._adapter.poller.poll_invalidations, prev, ignore_tid)
+  File "/home/pakal/webapps/chrysalis_game/pychronia/dependencies/relstorage/storage.py", line 266, in _restart_load_and_call
+    self._open_load_connection()
+  File "/home/pakal/webapps/chrysalis_game/pychronia/dependencies/relstorage/storage.py", line 238, in _open_load_connection
+    conn, cursor = self._adapter.connmanager.open_for_load()
+  File "/home/pakal/webapps/chrysalis_game/pychronia/dependencies/relstorage/adapters/mysql.py", line 251, in open_for_load
+    replica_selector=self.ro_replica_selector)
+  File "/home/pakal/webapps/chrysalis_game/pychronia/dependencies/relstorage/adapters/mysql.py", line 223, in open
+    conn = MySQLdb.connect(**params)
+  File "/home/pakal/webapps/chrysalis_game/ENV/lib/python2.7/site-packages/MySQLdb/__init__.py", line 81, in Connect
+    return Connection(*args, **kwargs)
+  File "/home/pakal/webapps/chrysalis_game/ENV/lib/python2.7/site-packages/MySQLdb/connections.py", line 187, in __init__
+    super(Connection, self).__init__(*args, **kwargs2)
+OperationalError: (1203, "User pakal_anthropia already has more than 'max_user_connections' active connections")
+
+- fix support of mp4 format, and prevent nasty errors like this
+      File "/home/pakal/webapps/chrysalis_game/pychronia/pychronia_game/utilities/mediaplayers.py", line 146, in generate_media_player
+        raise ValueError("Unsupported media type")
+      ValueError: Unsupported media type
+
+- "transraciations" changé en transfiliation??
+
+- mieux séparer conversations
+
+- expliquer "masquer les destinataires" et qu'on peut cliquer sur un contact
+
+- obéron keyword
+
+- limite de conversation par défaut : pas assez ?
+
+- enlever la homepage "enchères" inutile, amener de suiet sur les persos ??
+
+- BUG si joueurs passés en pnj/non pnj avec auctionlist :
+   assert set(self._determine_basic_visibility(msg).keys()) - set([master]) <= set(msg["visible_by"].keys()), [self._determine_basic_visibility(msg).keys(), msg]
+
+
+- BUG si % dans message
+      File "/home/pakal/webapps/chrysalis_game/pychronia/pychronia_game/views/profile_views.py", line 329, in game_events
+        trans_event["final_message"] = trans_event["message"] % utilities.SDICT(**trans_event["substitutions"])
+    TypeError: not enough arguments for format string
+
 - BUG : $(hashedSelector).select2({"closeOnSelect": false, "placeholder": ""});
     <script type="text/javascript">
         jQuery(function ($) {
