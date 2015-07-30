@@ -23,6 +23,7 @@ mobile_game_urlpatterns = patterns('pychronia_game.views',
 web_game_urlpatterns = patterns('pychronia_game.views',
 
     # WARNING - DANGEROUS #
+    url(r'^homepage_mobile$', 'homepage_mobile', name="pychronia_game-homepage"),
 
     url(r'^TEST_CAPTCHA/$', 'gameview_mixins.test_captcha'),
     url(r'^CHARACTERS_IDENTITIES/$', 'CHARACTERS_IDENTITIES'),
