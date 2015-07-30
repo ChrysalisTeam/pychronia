@@ -27,7 +27,7 @@ ZODB_URL = None
 
 
 
-def GAME_INITIAL_FIXTURE_SCRIPT(dm):
+def __GAME_INITIAL_FIXTURE_SCRIPT(dm):
     """
     Called just before conversion of initial data tree, and coherency check.
     """
