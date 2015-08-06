@@ -1,0 +1,468 @@
+@charset "UTF-8";
+
+@import "_reset.scss";
+
+@import "_globals.scss";
+
+@import "_advanced_widgets.scss";
+
+@import "_corner_decorations.scss";
+
+@import "_django_customization.scss";
+
+@import "_docutils_customization.scss";
+
+@import "_js_utils.scss";
+
+@import "_section_decorations.scss";
+
+@import "_specific_page_styles.scss";
+
+@import "_standard_content.scss";
+
+@import "_zinnia_customization.scss";
+
+
+
+* {
+    /* IMPORTANT - use better box model everywhere, by default */
+    -webkit-box-sizing: border-box; /* webkit */
+     -khtml-box-sizing: border-box; /* konqueror */
+       -moz-box-sizing: border-box; /* firefox */
+        -ms-box-sizing: border-box; /* ie */
+            box-sizing: border-box; /* css3 */
+   // possible values of box-sizing: content-box|border-box|inherit
+}
+
+html {
+    /* just if we need to test higher or lower screen resolutions */
+    /* zoom: 1.0;
+    transform: scale(1.0);
+    transform-origin: center top;*/
+}
+
+img {
+  // global filtering, doesn't work well
+    // filter: url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\'><filter id=\'grayscale\'><feColorMatrix type=\'matrix\' values=\'0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0 0 0 1 0\'/></filter></svg>#grayscale");
+    /* Firefox 10+, Firefox on Android */
+
+    // filter: gray; /* IE6-9 */
+    /*-webkit-filter: grayscale(1); NO THIS BREAKS z-index and stuffs on Chrome*/
+    //-webkit-filter: grayscale(0.5) blur(10px);
+}
+
+
+
+
+
+
+body {
+    margin: 0 auto;
+    font-family: Arial, Tahoma, Verdana, sans-serif;
+    width: auto;
+    padding: 0;
+
+    height: 100%;
+
+    overflow: auto; // needed for djangocms front-editing mode, which uses floats
+
+    font-size: 10%;
+    //font-size: 14px;
+    line-height: 20px;
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: black;
+
+    // WORKAROUND 2014/04/19, avoids lag and jitter on background images, see https://bugzilla.mozilla.org/show_bug.cgi?id=846315
+    image-rendering: -moz-crisp-edges;
+
+    /* useful and little known properties */
+    word-spacing: normal; // or length measure
+    word-wrap: break-word; // or normal
+    word-break: normal; // or break-all/hyphenate
+    white-space: normal; // or nowrap/pre/pre-line/pre-wrap
+    quotes: none; // or string string string string
+    text-overflow: ellipsis; // or clip or string, not inherited
+
+    &.full_background {
+        background: #152421 url("img/backgrounds/mobile/body-bg.jpg") repeat-y top center;
+        background-size: 100% auto;
+        background-attachment: scroll;
+        image-rendering: optimizequality;
+    }
+
+}
+
+#full_header {
+    width: 100%;
+    position: relative;
+    height: 109px;
+
+    #full_header_background {
+        margin: auto;
+        text-align: center;
+        z-index: 1000;
+        background: #342716 url("img/backgrounds/mobile/header-bg.jpg") repeat-x scroll center top;
+
+        #full_header_center {
+            margin: 0px auto 0px;
+            height: 74px;
+            background: url("img/backgrounds/mobile/header.jpg") no-repeat top center;
+
+            #title_table{
+                display:none;
+            }
+        }
+
+        #notification_table {
+            display:none;
+        }
+    }
+}
+
+
+#full_menu {
+    width: 100%;
+    height: 45px;
+    background: #342716 url("img/backgrounds/mobile/menu-bg.jpg") repeat-x bottom center;
+    text-align: center;
+    margin-top: -35px;
+    position: relative;
+    z-index: 2000; // below the title panel
+
+    #main_menu {
+        margin: auto;
+        display: table;
+
+        .big_icon_panel{
+            display:none;
+        }
+
+        a{
+          font-size: 16px;
+          color: #ffeaa3;
+          text-decoration: none;
+          line-height: 27px;
+          padding: 0px 10px;
+        }
+
+        a:hover{
+            text-decoration: underline;
+        }
+
+        .marble_menu_container{
+            width: 100%;
+            display: table-cell;
+            margin-top: 50px;
+            height: 13px;
+           // padding: 0px 10px 0px 10px;
+            //background: url("img/backgrounds/mobile/menu-bar.png") repeat-x top center;
+        }
+
+    }
+}
+
+/*
+.post-it{
+padding: 4px;
+border-color: transparent;
+border-style: solid;
+color: #bbaacc;
+border-width: 4px 4px 6px;
+border-image: url("img/backgrounds/post-it.png") 4 4 6 4 fill;
+image-rendering: optimizequality;
+}*/
+
+.clear_left{
+display: none;
+}
+
+
+#full_content {
+  margin: 0 auto;
+  width: 97%;
+  text-align: center;
+  padding: 10px;
+  overflow: visible;
+
+  background-color: transparent;
+  border-color: $border_image_yellow;
+  border-style: ridge;
+  border-width: 14px;
+  border-image: url("img/backgrounds/mobile/frame.jpg") 14 fill repeat;
+  image-rendering: optimizequality;
+  margin: 4px 0;
+
+  p{
+     color: #ffeaa3;
+     background: #21140b none repeat scroll 0% 0%;
+     text-align: left;
+     text-decoration: none;
+     font-size: 12px;
+     line-height: 14px;
+  }
+
+  h1{
+      font-size: 16px;
+      color: #fecd2b;
+      text-decoration: none;
+      line-height: 27px;
+      padding: 0px 10px;
+  }
+
+  h1::before{
+      display:none;
+  }
+
+  h1::after{
+      display:none;
+  }
+
+  .main_frame_content{
+     color: #ffeaa3;
+     background: #21140b none repeat scroll 0% 0%;
+     text-align: left;
+  }
+}
+
+#up_footer_wrapper {
+  display:none;
+}
+#low_footer_wrapper {
+  display:none;
+}
+
+
+table.frame {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+
+/*
+.positioner {
+display:none;
+}*/
+.icon_stick_top_right {
+ display:none;
+}
+.big_stick_bottom_left{
+display:none;
+}
+.icon_stick_bottom_left{
+display:none;
+}
+.big_stick_bottom_right{
+display:none;
+}
+.big_stick_top_right {
+ display:none;
+}
+.icon_stick_bottom_right{
+display:none;
+}
+.icon_stick_top_left {
+display:none;
+}
+.big_stick_top_left {
+display:none;
+}
+
+.stick_top_left{
+display:none;
+}
+.stick_bottom_right{
+display:none;
+}
+
+/** background and borders of frame, if not using border-image **/
+/*
+td.frame-hg {
+  height: 15px;
+  width: 15px;
+  background: url("img/backgrounds/mobile/frame.jpg") no-repeat top left;
+}
+
+td.frame-h {
+  height: 15px;
+  background: url("img/backgrounds/mobile/frame-h.jpg") repeat-x top center;
+}
+
+td.frame-hd {
+  height: 15px;
+  width: 15px;
+  background: url("img/backgrounds/mobile/frame.jpg") no-repeat top right;
+}
+
+
+td.frame-cg {
+  width: 15px;
+  background: url("img/backgrounds/mobile/frame-v.jpg") repeat-y top left;
+}
+
+td.frame-cd {
+  width: 15px;
+  background: url("img/backgrounds/mobile/frame-v.jpg") repeat-y top right;
+}
+
+
+td.frame-bg {
+  height: 15px;
+  width: 15px;
+  background: url("img/backgrounds/mobile/frame.jpg") no-repeat bottom left;
+}
+
+td.frame-b {
+  height: 15px;
+  background: url("img/backgrounds/mobile/frame-h.jpg") repeat-x bottom center;
+}
+
+td.frame-bd {
+  height: 15px;
+  width: 15px;
+  background: url("img/backgrounds/mobile/frame.jpg") no-repeat bottom right;
+}
+
+
+td.frame-space {
+  height: 5px;
+  background: #21140b;
+}
+
+td.frame-blank {
+  height: 10px;
+}
+
+
+*/
+
+/** misc. stuffs in content frame **/
+
+/*
+.frame {
+  background: #21140b;
+  text-align: left;
+  font-size: 12px;
+  line-height: 14px;
+  color: #ffeaa3;
+}
+
+.frame a {
+  font-size: 12px;
+  color: #ffeaa3;
+  line-height: 16px;
+  text-decoration: underline;
+  font-style: italic;
+}
+
+.frame img {
+  position: relative;
+  float: left;
+}
+
+
+h1 {
+  font-size: 30px;
+  line-height: 34px;
+  color: #ffd21d;
+  text-shadow: 2px 2px 1px black, -2px -2px 1px black;
+  font-family: augustus;
+  text-stroke: 1px #000; // barely supported
+}
+
+h2 {
+  font-size: 16px;
+  line-height: 20px;
+}
+
+h3{
+  padding: 0px 0px 0px 34px;
+}
+
+
+
+
+a.big-link {
+  color: #ffeaa3;
+  text-decoration: underline;
+  font-style: italic;
+  font-size: 14px;
+  padding: 5px 10px 5px 10px;
+}
+
+
+
+p.footer {
+  color: #ffeaa3;
+  font-size: 10px;
+  line-height: 80px;
+}
+
+p.footer a {
+  text-decoration: underline;
+  font-style: italic;
+  color: #ffeaa3;
+}
+
+
+*/
+
+/** POTENTIALLY USELESS STUFFS ?? **/
+
+
+div.read a, div.read p{
+  color: #b5b1a3
+}
+
+img.img-article {
+  margin: 5px 5px 5px 0px;
+}
+
+p.small{
+  font-size: 10px;
+}
+
+p.chat {
+  padding-left: 10px;
+  padding-top: 4px;
+  padding-bottom: 10px;
+  font-style: italic;
+}
+
+p.title {
+  text-decoration: underline;
+}
+
+p.info{
+  font-style: italic;
+  color: red;
+  font-size: 14px;
+  padding: 5px 0px 5px 0px;
+}
+
+
+input {
+  width: 98%;
+  margin-bottom: 8px;
+}
+
+input.chat {
+  width: 72%;
+  margin-bottom: 0px;
+  margin-right: 5px;
+}
+
+input.submit {
+  width: 70px;
+  margin-bottom: 0px;
+}
+
+input.search{
+  width: 80px;
+  margin-bottom: 0px;
+}
+
+textarea {
+  width:100%;
+  margin-right: 3px;
+  font-family: Arial, Tahoma, Verdana, sans-serif;
+}
