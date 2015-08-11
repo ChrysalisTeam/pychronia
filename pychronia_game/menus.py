@@ -161,6 +161,8 @@ def _generate_web_menu(request, menu_entry_generator):
                          menu_entry(_(u"Edit Email Contacts"), views.global_contacts_management),
                          menu_entry(_(u"Edit Radio Spots"), views.radio_spots_editing),
 
+                         menu_entry(_(u"View Master Manual"), views.gamemaster_manual),
+
                          menu_entry(_(u"View Database"), views.manage_databases),
 
                       )),

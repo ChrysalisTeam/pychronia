@@ -29,6 +29,8 @@ radio_spots_editing = RadioSpotsEditing.as_view
 from .admin_information_mod import AdminInformation
 admin_information = AdminInformation.as_view
 
+from .gamemaster_manual import gamemaster_manual
+
 
 @register_view(access=UserAccess.master, title=ugettext_lazy("View Database"))
 def manage_databases(request, template_name='administration/database_management.html'):

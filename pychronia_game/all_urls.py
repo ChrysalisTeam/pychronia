@@ -85,6 +85,7 @@ web_game_urlpatterns = patterns('pychronia_game.views',
     url(r'^global_contacts_management/$', 'global_contacts_management'),
     url(r'^radio_spots_editing/$', 'radio_spots_editing'),
     url(r'^admin_information/$', 'admin_information'),
+    url(r'^master_manual/$', 'gamemaster_manual'),
 
     url(r'^chatroom/$', 'chatroom'),
     url(r'^ajax_chat/$', 'ajax_chat'),

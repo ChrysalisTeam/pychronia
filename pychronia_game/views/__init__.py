@@ -52,7 +52,7 @@ from .abilities import (house_locking, runic_translation, wiretapping_management
                         mercenaries_hiring, matter_analysis, world_scan, chess_challenge, geoip_location,
                         business_escrow, black_market, ability_introduction) # telecom_investigation
 
-from .admin_views import (admin_dashboard, webradio_management,
+from .admin_views import (admin_dashboard, webradio_management, gamemaster_manual,
                           manage_databases, static_pages_management, global_contacts_management,
                           radio_spots_editing, admin_information,
                           manage_characters, CHARACTERS_IDENTITIES,
