@@ -145,6 +145,9 @@ def create_game_instance(game_instance_id,
         logging.critical("Impossible to initialize game instance %r..." % game_instance_id, exc_info=True)
         raise
 
+    else:
+        logging.info("Successfully initialized game instance %r!" % game_instance_id)
+
 
 @zodb_transaction # TODO UNTESTED
 def replace_existing_game_instance_data(game_instance_id, new_data):

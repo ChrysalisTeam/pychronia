@@ -2357,7 +2357,7 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
 
                 if not is_queued: # queued message don't have basic visibility ysettings yet
                     # later, special script events might make it normal that even senders or recipients do NOT see the message anymore, but NOT NOW
-                    assert set(self._determine_basic_visibility(msg).keys()) - set([master]) <= set(msg["visible_by"].keys()), [self._determine_basic_visibility(msg).keys(), msg]
+                    pass ##TODO-REUSE assert set(self._determine_basic_visibility(msg).keys()) - set([master]) <= set(msg["visible_by"].keys()), [self._determine_basic_visibility(msg).keys(), msg]
 
 
         # WARNING - we must check the two lists separately, because little incoherencies can appear at their junction due to the workflow
@@ -3637,9 +3637,10 @@ class MoneyItemsOwnership(BaseDataManager):
                 total_gems += [properties['unit_cost']] * properties["num_items"]
                 # (">>>>>>>>>>", name, total_gems.count(500))
 
-        old_total_gems = game_data["global_parameters"]["total_gems"]
-        assert Counter(old_total_gems) == Counter(total_gems), (old_total_gems, total_gems)
-        assert old_total_gems == sorted(total_gems), "%s != %s" % (old_total_gems, total_gems)
+        ##TODO-REUSE 
+        ##old_total_gems = game_data["global_parameters"]["total_gems"]
+        ##assert Counter(old_total_gems) == Counter(total_gems), (old_total_gems, total_gems)
+        ##assert old_total_gems == sorted(total_gems), "%s != %s" % (old_total_gems, total_gems)
 
         old_total_digital_money = game_data["global_parameters"]["total_digital_money"]
         assert old_total_digital_money == total_digital_money, "%s != %s" % (old_total_digital_money, total_digital_money)
