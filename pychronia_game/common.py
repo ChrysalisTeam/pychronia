@@ -33,6 +33,7 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import user_passes_test
 ## from django.utils.text import slugify - FIXME - for 1.5 only
 from django.template.defaultfilters import slugify
+from django.template import Template, Context
 
 from . import utilities
 from .utilities import config, SDICT, Enum
@@ -257,6 +258,19 @@ def utctolocal(value):
     now_utc = pytz.utc.localize(value)
     local_time = now_utc.astimezone(config.GAME_LOCAL_TZ)
     return local_time
+
+
+
+def render_rst_template(rst_tpl, datamanager):
+    template = Template(rst_tpl)
+
+    context = Context(dict(a="bbbbbbbb"))
+
+    rst_text = template.render(context)
+
+    print("RST TEXT", rst_text)
+
+    return rst_text
 
 
 
