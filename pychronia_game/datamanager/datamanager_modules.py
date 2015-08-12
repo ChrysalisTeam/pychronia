@@ -31,6 +31,24 @@ VISIBILITY_REASONS = Enum([ugettext_noop("sender"),
 
 
 @register_module
+class GameMasterManual(BaseDataManager):
+    
+    def _check_database_coherency(self, **kwargs):
+        super(GameMasterManual, self)._check_database_coherency(**kwargs)
+
+        game_data = self.data
+
+        for key in ("common_content", "pdf_prefix", "html_prefix"):
+            utilities.check_is_string(game_data["gamemaster_manual"][key])
+
+        utilities.check_is_restructuredtext(game_data["gamemaster_manual"]["common_content"])
+
+    @readonly_method
+    def get_gamemaster_manual_for_html(self):
+        return self.data["gamemaster_manual"]["html_prefix"] + "\n\n" + self.data["gamemaster_manual"]["common_content"]
+
+
+@register_module
 class GameGlobalParameters(BaseDataManager):
 
     def _load_initial_data(self, **kwargs):

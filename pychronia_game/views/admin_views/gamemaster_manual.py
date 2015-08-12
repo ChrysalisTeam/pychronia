@@ -9,11 +9,12 @@ from pychronia_game.datamanager.abstract_game_view import register_view
 @register_view(access=UserAccess.master, title=ugettext_lazy("Master Manual"))
 def gamemaster_manual(request, template_name="administration/master_manual.html"):
 
-    datas = render_rst_template("hellllllooo", request.datamanager)
+    dm = request.datamanager
+
+    gamemaster_manual = dm.get_gamemaster_manual_for_html()
 
     return render(request,
                   template_name,
                     {
-                     "datas": datas
-
+                     "gamemaster_manual": gamemaster_manual
                     })

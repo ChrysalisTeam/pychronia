@@ -288,7 +288,7 @@ def rich_text(context, content, initial_header_level=None, report_level=None, ex
     Converts to enriched html the restructuredtext content of the variable.
     """
     request = context.get('request')
-    report_level = report_level if report_level is not None else 5 # by default we DO NOT display RST syntax errors!
+    report_level = report_level if report_level is not None else 5 # FIXME - by default we DO NOT display RST syntax errors!
     result = format_enriched_text(request.datamanager, content, initial_header_level=initial_header_level, report_level=report_level, excluded_link=excluded_link)
 
     content_id = str(random.randint(1, 10000000000))
