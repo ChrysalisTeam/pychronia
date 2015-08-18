@@ -267,6 +267,9 @@ body:after {
   border-image: url('img/backgrounds/menu_border.png') 18 52 20 55 fill round stretch;
   image-rendering: optimizequality;
 }
+#menu-bar {
+  display: none;
+}
 #full_content {
   width: 980px;
   margin: -10px auto 2px;

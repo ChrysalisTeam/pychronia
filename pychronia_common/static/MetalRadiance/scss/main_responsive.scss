@@ -22,6 +22,8 @@
 
 @import "_zinnia_customization.scss";
 
+@import url(C:\Users\abdrrazak\Desktop\pychronia-master\pychronia_common\static\bootstrap\assets\stylesheets\mobile-only.scss);
+
 
 
 * {
@@ -61,6 +63,7 @@ body {
     font-family: Arial, Tahoma, Verdana, sans-serif;
     width: auto;
     padding: 0;
+    min-width: 400px;
 
     height: 100%;
 
@@ -108,9 +111,13 @@ body {
             height: 74px;
             background: url("img/backgrounds/mobile/header.jpg") no-repeat top center;
 
-            #title_table{
-                display:none;
+            .notification_panel{
+            display:none;
             }
+        }
+
+        #title_table{
+           display:none;
         }
 
         #notification_table {
@@ -133,20 +140,23 @@ body {
         margin: auto;
         display: table;
 
-        .big_icon_panel{
-            display:none;
-        }
-
         a{
-          font-size: 16px;
-          color: #ffeaa3;
+          font-size: 18px;
+          color: #f5af09;
           text-decoration: none;
           line-height: 27px;
           padding: 0px 10px;
+          text-align: center;
+          background: #342716;
         }
 
         a:hover{
             text-decoration: underline;
+        }
+
+
+        .big_icon_panel{
+            display:none;
         }
 
         .marble_menu_container{
@@ -154,23 +164,15 @@ body {
             display: table-cell;
             margin-top: 50px;
             height: 13px;
-           // padding: 0px 10px 0px 10px;
-            //background: url("img/backgrounds/mobile/menu-bar.png") repeat-x top center;
         }
 
     }
 }
-
-/*
-.post-it{
-padding: 4px;
-border-color: transparent;
-border-style: solid;
-color: #bbaacc;
-border-width: 4px 4px 6px;
-border-image: url("img/backgrounds/post-it.png") 4 4 6 4 fill;
-image-rendering: optimizequality;
-}*/
+#menu-bar{
+   width: 100%;
+   height: 13px;
+   background: url("img/backgrounds/mobile/menu-bar.png") repeat-x top center;
+}
 
 .clear_left{
 display: none;
@@ -178,50 +180,73 @@ display: none;
 
 
 #full_content {
-  margin: 0 auto;
-  width: 97%;
-  text-align: center;
-  padding: 10px;
-  overflow: visible;
+      margin: 0 auto;
+      width: 97%;
+      text-align: center;
+      padding: 10px;
+      overflow: visible;
 
-  background-color: transparent;
-  border-color: $border_image_yellow;
-  border-style: ridge;
-  border-width: 14px;
-  border-image: url("img/backgrounds/mobile/frame.jpg") 14 fill repeat;
-  image-rendering: optimizequality;
-  margin: 4px 0;
+      background-color: transparent;
+      border-color: $border_image_yellow;
+      border-style: ridge;
+      border-width: 14px;
+      border-image: url("img/backgrounds/mobile/frame.jpg") 14 fill repeat;
+      image-rendering: optimizequality;
+      margin: 4px 0;
 
-  p{
-     color: #ffeaa3;
-     background: #21140b none repeat scroll 0% 0%;
-     text-align: left;
-     text-decoration: none;
-     font-size: 12px;
-     line-height: 14px;
-  }
+      p{
+         //color: #ffeaa3;
+         //background: #21140b none repeat scroll 0% 0%;
+         text-align: left;
+         text-decoration: none;
+         font-size: 16px;
+         line-height: 14px;
+      }
 
-  h1{
-      font-size: 16px;
-      color: #fecd2b;
-      text-decoration: none;
-      line-height: 27px;
-      padding: 0px 10px;
-  }
+      h1{
+          font-size: 20px;
+          color: #fecd2b;
+          text-decoration: none;
+          line-height: 27px;
+          padding: 0px 10px;
+          -webkit-text-stroke:none;
+      }
 
-  h1::before{
-      display:none;
-  }
+      h1::before{
+          display:none;
+      }
 
-  h1::after{
-      display:none;
-  }
+      h1::after{
+          display:none;
+      }
 
-  .main_frame_content{
-     color: #ffeaa3;
-     background: #21140b none repeat scroll 0% 0%;
-     text-align: left;
-  }
+      .main_frame_content{
+         //color: #ffeaa3;
+         //background: #21140b none repeat scroll 0% 0%;
+         text-align: left;
+
+            .antique_marble_frame{
+                padding: 5px;
+                image-redering: optimizequality;
+                border-image: none;
+                margin: -5px;
+            }
+
+            .inner-center{
+
+            }
+            .carved_square_frame_gold {
+            border-image:none;/*
+                .item_display{
+                display:none;
+                    border-image:none;
+                }*/
+            }
+
+            .scroll_yellow_rolled, .form_scroll_thin, .form_scroll_medium, .form_scroll_big{
+                background: none;
+            }
+      }
 }
 
 #up_footer_wrapper {
@@ -238,10 +263,7 @@ table.frame {
 }
 
 
-/*
-.positioner {
-display:none;
-}*/
+
 .icon_stick_top_right {
  display:none;
 }
@@ -275,7 +297,7 @@ display:none;
 }
 
 /** background and borders of frame, if not using border-image **/
-/*
+
 td.frame-hg {
   height: 15px;
   width: 15px;
@@ -333,11 +355,11 @@ td.frame-blank {
 }
 
 
-*/
+
 
 /** misc. stuffs in content frame **/
 
-/*
+
 .frame {
   background: #21140b;
   text-align: left;
@@ -404,7 +426,7 @@ p.footer a {
 }
 
 
-*/
+
 
 /** POTENTIALLY USELESS STUFFS ?? **/
 
