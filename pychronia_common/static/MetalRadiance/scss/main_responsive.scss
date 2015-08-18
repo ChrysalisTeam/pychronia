@@ -221,7 +221,7 @@ display: none;
       }
 
       .main_frame_content{
-         //color: #ffeaa3;
+         color: #ffeaa3;
          //background: #21140b none repeat scroll 0% 0%;
          text-align: left;
 
@@ -234,9 +234,15 @@ display: none;
 
             .inner-center{
 
+                .zoomable{
+                width:100px;
+                height:100px;
+                }
+
             }
             .carved_square_frame_gold {
-            border-image:none;/*
+            border-image:none;
+            /*
                 .item_display{
                 display:none;
                     border-image:none;
@@ -244,7 +250,11 @@ display: none;
             }
 
             .scroll_yellow_rolled, .form_scroll_thin, .form_scroll_medium, .form_scroll_big{
-                background: none;
+                background: silver;
+                color:black;
+            }
+            .email_message.unread{
+                color: black;
             }
       }
 }
