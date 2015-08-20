@@ -71,15 +71,6 @@ body.full_background {
   margin: auto;
   display: table;
 }
-#full_menu #main_menu a {
-  font-size: 18px;
-  color: #f5af09;
-  text-decoration: none;
-  line-height: 27px;
-  padding: 0px 10px;
-  text-align: center;
-  background: #342716;
-}
 #full_menu #main_menu a:hover {
   text-decoration: underline;
 }
@@ -126,13 +117,23 @@ body.full_background {
   text-decoration: none;
   line-height: 27px;
   padding: 0px 10px;
-  -webkit-text-stroke: none;
+  -webkit-text-stroke: inherit;
 }
 #full_content h1::before {
   display: none;
 }
 #full_content h1::after {
   display: none;
+}
+#full_content .main_sidebar {
+  line-height: 15px;
+  padding: 10px;
+  margin: 0;
+  overflow: hidden;
+  width: auto !important;
+}
+#full_content .main_sidebar .mini_frame {
+  margin: 0 0 20px 0;
 }
 #full_content .main_frame_content {
   color: #ffeaa3;
@@ -144,9 +145,8 @@ body.full_background {
   border-image: none;
   margin: -5px;
 }
-#full_content .main_frame_content .inner-center .zoomable {
-  width: 100px;
-  height: 100px;
+#full_content .main_frame_content .zoomable > img {
+  height: 250px;
 }
 #full_content .main_frame_content .carved_square_frame_gold,
 #full_content .main_frame_content .item_display {
@@ -157,6 +157,7 @@ body.full_background {
 #full_content .main_frame_content .form_scroll_medium,
 #full_content .main_frame_content .form_scroll_big {
   background: silver;
+  border: gold;
   color: black;
 }
 #full_content .main_frame_content .email_message.unread {

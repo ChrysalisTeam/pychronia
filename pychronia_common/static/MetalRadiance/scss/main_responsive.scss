@@ -140,16 +140,6 @@ body {
         margin: auto;
         display: table;
 
-        a{
-          font-size: 18px;
-          color: #f5af09;
-          text-decoration: none;
-          line-height: 27px;
-          padding: 0px 10px;
-          text-align: center;
-          background: #342716;
-        }
-
         a:hover{
             text-decoration: underline;
         }
@@ -209,7 +199,7 @@ display: none;
           text-decoration: none;
           line-height: 27px;
           padding: 0px 10px;
-          -webkit-text-stroke:none;
+          -webkit-text-stroke:inherit;
       }
 
       h1::before{
@@ -219,6 +209,21 @@ display: none;
       h1::after{
           display:none;
       }
+
+
+        .main_sidebar { // container for miniframes
+        ///@extend .clearfix;
+        line-height: 15px;
+        padding: 10px;
+        margin: 0; //-3px 0px 0px;
+        overflow: hidden; // important, since jquery-sticky affects wrong widths because of box-sizing...
+        width: auto !important;
+            .mini_frame {
+                // mini-frames that are inside sidebar must beware of their margins!
+                margin: 0 0 20px 0;
+            }
+        }
+
 
       .main_frame_content{
          color: #ffeaa3;
@@ -232,14 +237,10 @@ display: none;
                 margin: -5px;
             }
 
-            .inner-center{
-
-                .zoomable{
-                width:100px;
-                height:100px;
-                }
-
+            .zoomable > img{
+                height:250px;
             }
+
             .carved_square_frame_gold {
             border-image:none;
             /*
@@ -251,6 +252,7 @@ display: none;
 
             .scroll_yellow_rolled, .form_scroll_thin, .form_scroll_medium, .form_scroll_big{
                 background: silver;
+                border:gold;
                 color:black;
             }
             .email_message.unread{
