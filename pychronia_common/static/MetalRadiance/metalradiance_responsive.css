@@ -1,5 +1,4 @@
 @charset "UTF-8";
-@import url(C:\Users\abdrrazak\Desktop\pychronia-master\pychronia_common\static\bootstrap\assets\stylesheets\mobile-only.scss);
 * {
   -webkit-box-sizing: border-box;
   -khtml-box-sizing: border-box;
@@ -70,6 +69,17 @@ body.full_background {
 #full_menu #main_menu {
   margin: auto;
   display: table;
+}
+#full_menu #main_menu a {
+  display: none;
+  font-size: 18px;
+  color: #f5af09;
+  text-decoration: none;
+  line-height: 27px;
+  padding: 0px 10px;
+  text-align: center;
+  background: #342716;
+  float: none;
 }
 #full_menu #main_menu a:hover {
   text-decoration: underline;
@@ -162,6 +172,18 @@ body.full_background {
 }
 #full_content .main_frame_content .email_message.unread {
   color: black;
+}
+#full_content .main_frame_content .realtable {
+  box-shadow: none;
+}
+#full_content .main_frame_content .realtable table.realtable td {
+  border: 1px solid #fff;
+}
+#full_content .main_frame_content .realtable .rowA {
+  background-color: transparent;
+}
+#full_content .main_frame_content .realtable .rowB {
+  background-color: transparent;
 }
 #up_footer_wrapper {
   display: none;
