@@ -3,6 +3,7 @@
 
 @import "_section_decorations.scss";
 
+@import "_bootstrap_utils.scss";
 
 /* widgets visible onl by admins and masters */
 
@@ -90,8 +91,15 @@ table.realtable {
     box-shadow: 5px 5px 3px #888888;
     border:1px solid #000000;
 
-    tr:nth-child(odd){ background-color:#eed892; }
-    tr:nth-child(even) { background-color:#F5DF8B; }
+    @if ($is_mobile == false){
+        tr:nth-child(odd){ background-color:#eed892; }
+        tr:nth-child(even) { background-color:#F5DF8B; }
+    }
+    @else{
+        tr:nth-child(odd){ background-color:transparent; }
+        tr:nth-child(even) { background-color:transparent; }
+        box-shadow: none;
+    }
 
     td {
         vertical-align:middle;
