@@ -1,0 +1,102 @@
+/*!
+ * Bootstrap v3.3.5 (http://getbootstrap.com)
+ * Copyright 2011-2015 Twitter, Inc.
+ * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
+ */
+
+// Core variables and mixins
+@import "bootstrap/variables";
+@import "bootstrap/mixins";
+
+// Utility classes
+@import "bootstrap/utilities";
+@import "bootstrap/responsive-utilities";
+
+
+
+
+table.realtable {
+    @include make-row();
+
+    td{
+        @include make-xs-column(12);
+        @include make-sm-column(3);
+    }
+
+
+
+    tr:first-child {
+        @include make-xs-column(12);
+        @include make-sm-column(3);
+    }
+
+    tr:last-child td {
+        @include make-xs-column(10);
+        @include make-sm-column(3);
+    }
+    tr td:last-child {
+        @include make-xs-column(10);
+        @include make-sm-column(3);
+    }
+    tr:last-child td:last-child {
+        //@include make-xs-column(10);
+        //@include make-sm-column(3);
+    }
+
+   thead th {
+       @include make-xs-column(12);
+       @include make-sm-column(3);
+   }
+/*
+    thead th:first-child {
+        @include make-xs-column(10);
+        @include make-sm-column(3);
+    }
+
+    thead th:last-child {
+        @include make-xs-column(10);
+        @include make-sm-column(3);
+    }*/
+}
+
+
+
+/*
+.realtable {
+
+    @include make-row();
+
+    .table_row{
+        @include make-xs-column(12);
+    }
+    .table_cell_small{
+        @include make-sm-column(6);
+    }
+    .table_cell_big{
+        @include make-lg-column(4);
+    }
+}
+
+
+
+section {
+    @include make-row();
+
+}
+
+table_row{
+Row = ligne et col3_lg ou 12_sn
+}
+
+table_cell_small{
+sm
+}
+
+table_cell_big{
+lg
+4/12 ou 3/12
+display :block ou initial
+}
+
+---> remplacer table/tr/td du html par des div avec ces Classes la
+*/
