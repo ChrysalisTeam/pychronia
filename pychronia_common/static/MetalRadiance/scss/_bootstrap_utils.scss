@@ -16,47 +16,49 @@
 
 
 table.realtable {
-    @include make-row();
 
+    @include make-row();
+    text-align:center;
+@if ($is_mobile == true){
+p{
+text-align: inherit;
+}
     td{
         @include make-xs-column(12);
-        @include make-sm-column(3);
+        @include make-md-column(4);
     }
-
-
 
     tr:first-child {
         @include make-xs-column(12);
-        @include make-sm-column(3);
+        @include make-md-column(4);
     }
 
     tr:last-child td {
-        @include make-xs-column(10);
-        @include make-sm-column(3);
+        @include make-xs-column(12);
+        @include make-md-column(12);
     }
     tr td:last-child {
-        @include make-xs-column(10);
-        @include make-sm-column(3);
+        @include make-xs-column(12);
+        @include make-md-column(12);
     }
     tr:last-child td:last-child {
-        //@include make-xs-column(10);
-        //@include make-sm-column(3);
+        @include make-xs-column(12);
+        @include make-md-column(12);
     }
+
+
 
    thead th {
-       @include make-xs-column(12);
-       @include make-sm-column(3);
+       display:none;
    }
-/*
-    thead th:first-child {
-        @include make-xs-column(10);
-        @include make-sm-column(3);
-    }
 
-    thead th:last-child {
-        @include make-xs-column(10);
-        @include make-sm-column(3);
-    }*/
+}
+@else{
+    .rowrow{
+        width:160px; background-color: white;
+    }
+}
+
 }
 
 
@@ -90,6 +92,8 @@ Row = ligne et col3_lg ou 12_sn
 
 table_cell_small{
 sm
+
+xs a md pas le reste
 }
 
 table_cell_big{
