@@ -5,8 +5,7 @@
 <head>
     <title>{% block html_title %}{% trans "Welcome" %}{% endblock %}</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
     {% render_block "meta" %}
 
@@ -38,8 +37,13 @@
 
 
 
+
+
     <link  media="screen and (min-width: 601px)" href="{{ STATIC_URL }}MetalRadiance/metalradiance.css" rel="stylesheet" type="text/css" /><!-- MUST BE LAST -->
     <link  media="screen and (max-width: 600px)" href="{{ STATIC_URL }}MetalRadiance/metalradiance_responsive.css" rel="stylesheet" type="text/css" />
+
+    <!-- css for the slidebars -->
+    <link media="screen and (max-width: 600px)" rel="stylesheet" href="slidebars/slidebars.css">
 
     <script src="{{ STATIC_URL }}libs/jquery-1.9.1.js" type="text/javascript"></script>
     <script src="{{ STATIC_URL }}libs/main_responsive.js" type="text/javascript"></script>
@@ -274,7 +278,22 @@
 
 
     <div id="full_content">
-        {% block panels %}{% endblock %}
+        {% block panels %}
+        <!-- jQuery -->
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+
+		<!-- Slidebars -->
+		<script src="slidebars/slidebars.js"></script>
+		<script>
+			(function($) {
+				$(document).ready(function() {
+					$.slidebars({
+						disableOver: 600,
+						hideControlClasses: true
+					});
+				});
+			}) (jQuery);
+		</script>{% endblock %}
         <div class="clearfixer">&nbsp;</div>
     </div>
 

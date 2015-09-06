@@ -7,24 +7,33 @@
 
 {% block sidebar %}
 
-    {% usekwacro side_panel_start frame_class="mini_frame float_left clear_left" decos="3" %}
+		<div id="sb-site">
 
-        <div class="post-it full_width" style="font-size:0.8em;">
-            <strong>{% trans "System Notification" %}</strong>
-            <p>
-            {% if not article_ids %}
-    	        {% blocktrans %}
-    	            Due to a very unfortunate overclocking attempt on our data servers,
-    	            encyclopedia indexes have been entirely lost. We apologize for the inconvenience
-    	            and do our best to get them back from backups.
-    	        {% endblocktrans %}
-    	    {% else %}
-                {% blocktrans %}
-                    Following the last database crash, we've managed to recover a tiny part of the encyclopedia index.
-                    We'll continue investigation when we have the budget for it, in one year or so.
-                {% endblocktrans %}
-    	    {% endif %}
-            </p>
+			<ul>
+				<li class="sb-toggle-left">Index</li>
+				<li class="sb-toggle-right">Notification </li>
+			</ul>
+		</div>
+
+    {% usekwacro side_panel_start frame_class="mini_frame float_left clear_left" decos="3" %}
+		<div class="sb-slidebar sb-right">
+            <div class="post-it full_width" style="font-size:0.8em;">
+                <strong>{% trans "System Notification" %}</strong>
+                <p>
+                {% if not article_ids %}
+                    {% blocktrans %}
+                        Due to a very unfortunate overclocking attempt on our data servers,
+                        encyclopedia indexes have been entirely lost. We apologize for the inconvenience
+                        and do our best to get them back from backups.
+                    {% endblocktrans %}
+                {% else %}
+                    {% blocktrans %}
+                        Following the last database crash, we've managed to recover a tiny part of the encyclopedia index.
+                        We'll continue investigation when we have the budget for it, in one year or so.
+                    {% endblocktrans %}
+                {% endif %}
+                </p>
+            </div>
         </div>
 
         <br/>
@@ -41,13 +50,15 @@
 
     {% if articles_index %}
         {% usekwacro side_panel_start frame_class="mini_frame float_left clear_left" decos="1" %}
-        <div class="rice_paper_rose full_width">
-            <h2>{% trans "Index" %}</h2>
-            <ul>
-                {% for article_id, article_title in articles_index %}
-                    <li><a href="{% game_view_url "pychronia_game.views.view_encyclopedia" article_id=article_id %}">{{ article_title|default:article_id }}</a></li>
-                {% endfor %}
-            </ul>
+		<div class="sb-slidebar sb-left">
+            <div class="rice_paper_rose full_width">
+                <h2>{% trans "Index" %}</h2>
+                <ul>
+                    {% for article_id, article_title in articles_index %}
+                        <li><a href="{% game_view_url "pychronia_game.views.view_encyclopedia" article_id=article_id %}">{{ article_title|default:article_id }}</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
         </div>
         {% usekwacro side_panel_end %}
     {% endif %}

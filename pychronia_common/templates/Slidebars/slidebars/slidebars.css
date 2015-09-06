@@ -31,24 +31,14 @@ html, body, #sb-site, .sb-site-container, .sb-slidebar {
 	        box-sizing: border-box;
 }
 
-html, body {
-	width: 100%;
-	overflow-x: hidden; /* Stops horizontal scrolling. */
-}
 
-html {
-	height: 100%; /* Site is as tall as device. */
-}
-
-body {
-	min-height: 100%;
-	height: auto;
-	position: relative; /* Required for static Slidebars to function properly. */
-}
 
 /* Site scroll locking - prevent site from scrolling when a Slidebar is open, except when static Slidebars are only available. */
 html.sb-scroll-lock.sb-active:not(.sb-static) {
 	overflow: hidden;
+}
+html.sb-active #sb-site, .sb-toggle-left, .sb-toggle-right {
+	cursor: pointer;
 }
 
 /* ----------
@@ -59,6 +49,7 @@ html.sb-scroll-lock.sb-active:not(.sb-static) {
 	/* You may now use class .sb-site-container instead of #sb-site and use your own id. However please make sure you don't set any of the following styles any differently on your id. */
 	width: 100%;
 	min-height: 100vh;
+	padding: 14px;
 	position: relative;
 	z-index: 1; /* Site sits above Slidebars */
 	background-color: #ffffff; /* Default background colour, overwrite this with your own css. I suggest moving your html or body background styling here. Making this transparent will allow the Slidebars beneath to be visible. */
@@ -82,6 +73,8 @@ html.sb-scroll-lock.sb-active:not(.sb-static) {
 	height: 100%;
 	overflow-y: auto; /* Enable vertical scrolling on Slidebars when needed. */
 	position: fixed;
+	padding: 14px;
+	color: #fff;
 	top: 0;
 	z-index: 0; /* Slidebars sit behind sb-site. */
 	display: none; /* Initially hide the Slidebars. Changed from visibility to display to allow -webkit-overflow-scrolling. */
@@ -172,33 +165,8 @@ html.sb-static .sb-slidebar,
 	}
 }
 
-@media (min-width: 992px) { /* Slidebar widths on large screens. */
-	.sb-slidebar {
-		width: 30%;
-	}
-	
-	.sb-width-thin {
-		width: 15%;
-	}
-	
-	.sb-width-wide {
-		width: 45%;
-	}
-}
 
-@media (min-width: 1200px) { /* Slidebar widths on extra large screens. */
-	.sb-slidebar {
-		width: 20%;
-	}
-	
-	.sb-width-thin {
-		width: 5%;
-	}
-	
-	.sb-width-wide {
-		width: 35%;
-	}
-}
+
 
 /* ---------------
  * 004 - Animation
