@@ -85,21 +85,6 @@
 
     {% render_block "js" %}
 
-    <script language="javascript" type="text/javascript">
-        // listen for scroll it suppose to fixed the menu when scrolling
-        /*var positionElementInPage = $('.marble_menu').offset().top;
-        $(window).scroll(
-            function() {
-                if ($(window).scrollTop() >= positionElementInPage) {
-                    // fixed
-                    $('.marble_menu').addClass("floatable");
-                } else {
-                    // relative
-                    $('.marble_menu').removeClass("floatable");
-                }
-            }
-        );*/
-    </script>
 
     <script language="javascript" type="text/javascript">
         /* here put JS that must be executed only on PAGE LOAD, not fast transitions */
@@ -164,7 +149,7 @@
 
 </head>
 <body {% if not use_parallax %}class="full_background"{% endif %}>
-    
+
     {% cms_toolbar %}
 
     {% if use_parallax %}
@@ -334,6 +319,21 @@
 
 
 
+    <script language="javascript" type="text/javascript">
+        // listen for scroll it suppose to fixed the menu when scrolling
+   /*     var positionElementInPage = $('.marble_menu').offset().top;
+        $(window).scroll(
+            function() {
+                if ($(window).scrollTop() >= positionElementInPage) {
+                    // fixed
+                    $('.marble_menu').addClass("floatable");
+                } else {
+                    // relative
+                    $('.marble_menu').removeClass("floatable");
+                }
+            }
+        ); */
+    </script>
 
     <script language="javascript" type="text/javascript">
 
