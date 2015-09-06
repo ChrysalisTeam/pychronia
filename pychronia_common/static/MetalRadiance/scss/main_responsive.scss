@@ -160,7 +160,7 @@ body {
 }
 
 .clear_left {
-    display: none;
+   // display: none;
 }
 
 #full_content {
@@ -176,9 +176,6 @@ body {
     image-rendering: optimizequality;
     margin: 4px 10px;
     p {
-        //color: #ffeaa3;
-        //background: #21140b none repeat scroll 0% 0%;
-        text-align: left;
         text-decoration: none;
         font-size: 16px;
         line-height: 14px;
