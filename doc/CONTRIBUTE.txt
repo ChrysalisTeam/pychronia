@@ -28,11 +28,17 @@ $ pip install -r  pip_requirements.txt
 
 On windows : if some C-backed python modules fail at installing (ex. because VC++ environment is not setup), then comment problematic module(s) out of the pip_requirements.txt, and install them via precompiled packages (*.msi, *.exe...)
 
-Then navigate to "runner.py" in pychronia_game package, and use it to "reset_django" (the SQL DB storing sesssions) and then "reset_zodb" (the object DB containing game data).
+Then reset both Mysql DB and Zope Object DB, using the "runner.py" described below.
 
 
 Utilities and servers
 ========================
+
+The script "runner.py" in pychronia_game/tests package, can be used to "reset_django" (the MySQL DB storing sesssions) and then "reset_zodb" (the object DB containing game data).
+
+The demo game which gets created, is by default filled with the content of test_game_files/game_initial_data.yaml, which gets altered by the GAME_INITIAL_FIXTURE_SCRIPT() function if it exists in the settings.
+
+You may modify GAME_FILES_ROOT and GAME_INITIAL_DATA_PATH settings to point respectively to a different tree of game assets, and a different yaml "fixture" file (or folder of complementary yaml files).
 
 In addition to resetting DBs, the runner.py script of pychronia_game package can pack persistent ZODB, and run django dev server against persistent DBs
 located in the same directory::
