@@ -612,5 +612,23 @@ nightmare_captchas:
 
 
 
+gamemaster_manual:
+
+    pdf_prefix: |
+
+        PDF prefix here
+
+    html_prefix: |
+
+        .. contents:: Sommaire
+           :depth: 2
+
+    common_content: |
+
+        Introduction
+        ===============
+
+        lalalala manual of game master
+
 
 ...
