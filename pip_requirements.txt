@@ -2,7 +2,7 @@
 
 
 # BEWARE - on windows, use MSI instead for these few packages #
-MySQL-python==1.2.4
+PyMySQL==0.6.6
 Pillow==2.7.0
 
 
