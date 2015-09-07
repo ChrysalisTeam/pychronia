@@ -151,6 +151,8 @@ MIGRATION_MODULES = {
     'easy_thumbnails': 'easy_thumbnails.south_migrations',
 }
 
+TEST_RUNNER = 'django.test.runner.DiscoverRunner'
+
 
 ## activate django-sentry if present ##
 try:
