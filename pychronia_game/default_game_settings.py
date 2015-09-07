@@ -3,10 +3,9 @@ import os, sys, pytz
 
 GAME_LOCAL_TZ = pytz.timezone('Europe/Paris') # for now...
 
-GAME_ROOT = os.path.dirname(os.path.realpath(__file__))
-GAME_FILES_ROOT = ""
 GAME_FILES_URL = "/files/" # must end with /
-GAME_INITIAL_DATA_PATH = os.path.join(GAME_FILES_ROOT, "game_initial_data.yaml")
+GAME_FILES_ROOT = None  # MUST be overridden
+GAME_INITIAL_DATA_PATH = None  # MUST be overridden
 GAME_INITIAL_FIXTURE_SCRIPT = None # must be a callable taking a datamanager as unique parameter
 
 GAME_ALLOW_ENFORCED_LOGIN = False
