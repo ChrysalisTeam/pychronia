@@ -5,14 +5,45 @@ PYCHRONIA README
 Prerequisites
 =================
 
-- Ensure you have the root of this depot in your PYTHONPATH (eg. via your ~/.bashrc, or a virtualenv's activate script...)
-- Ensure you have installed proper dependencies, for example:
+- Install Git, and have it in your PATH
+- Setup and activate a virtual python environment, if you wish
+- Ensure you have the root of this Git depot in your PYTHONPATH (eg. via your windows environment variables, or ~/.bashrc on linux, or virtualenv's activate script...)
 
-On a debian/ubuntu, run:
-$ sudo apt-get install python python-dev python-pip libjpeg8-dev libmysqlclient-dev"
+On a debian/ubuntu, install additional dev files:
 
-And then, with or without sudo (depending on whether you use a system python or a virtualenv):
+    $ sudo apt-get install python python-dev python-pip libjpeg8-dev libmysqlclient-dev"
+
+
+Installing dependencies and creating DBs
+=========================================
+
+
+The quick way is to launch "python BOOTSTRAP.py" from the root of the depot, if you needn't sudo. 
+If everything goes fine, you can skip the remainder of this section.
+
+ELSE:
+
+With or without sudo (depending on whether you use a system python or a virtualenv):
 $ pip install -r  pip_requirements.txt
+
+On windows : if some C-backed python modules fail at installing (ex. because VC++ environment is not setup), then comment problematic module(s) out of the pip_requirements.txt, and install them via precompiled packages (*.msi, *.exe...)
+
+Then navigate to "runner.py" in pychronia_game package, and use it to "reset_django" (the SQL DB storing sesssions) and then "reset_zodb" (the object DB containing game data).
+
+
+Utilities and servers
+========================
+
+IN addition to resetting DBs, the runner.py script of pychronia_game package can pack persistent ZODB, and run django dev server against persistent DBs
+located in the same directory::
+
+    python pychronia_game/tests/runner.py --help
+
+When dev server is launched, the test game instance (created by "reset_zodb") can be reached at "http://localhost:8000/DEMO/"
+ 
+..note::
+    Standard manage.py scripts, pointing to the "persistent test DB" configuration, are
+    also available in /test folders, so as to launch dev servers or issue any other standard django command.
 
 
 Launching tests
@@ -20,25 +51,23 @@ Launching tests
 
 Tests are run with py.test against fake databases stored in temp directories::
 
-	py.test -vl pychronia_game/tests/ZODB_tests.py
-	py.test -vl pychronia_game/tests/test_game.py
+    py.test -vl pychronia_game/tests/ZODB_tests.py
+    py.test -vl pychronia_game/tests/test_game.py
 
-	CF http://pytest.org/latest/usage.html#usage for more usage info
+    CF http://pytest.org/latest/usage.html#usage for more usage info
 
 WARNING - if you use a virtualenv, "python -m pytest" might be safer to use, so that you're sure to use the proper python executable.
 
 
-Utilities and servers
-========================
+Managing games as an admin 
+===============================
 
-Use the runner.py script of pychronia_game package to reset test DBs, pack persistent ZODB, and run django dev server against persistent DBs
-located in the same directory::
+First use "manage.py createsuperuser" to create a standard django admin account, from within the pychronia_game/tests folder.
 
-	python pychronia_game/tests/runner.py --help
+Then sign in via the dev server: http://localhost:8000/admin/
 
-..note::
-	Standard manage.py scripts, pointing to the "persistent test DB" configuration, are
-	also available in /test folders, so as to launch dev servers or issue any other standard django command.
+Now you can manage the different pychronia games: http://localhost:8000/administration/
+
 
 
 Sources Tree Overview for pychronia_game package
@@ -104,7 +133,7 @@ Development tips
   SEE https://code.djangoproject.com/ticket/19784#ticket::
 - if layout gets screwed up in Chrome (a vertical spacing before the anthropia header, "&#65279;." appearing in web debugger), it's probably due to Byte Order Marks in html templates - just remove them.
 
-		...
+        ...
 
             try:
                 # Apply response middleware, regardless of the response
