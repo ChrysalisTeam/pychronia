@@ -490,7 +490,13 @@ messaging:
                 This is a dedicated member of the academy of sciences,
                 the goal of which has always been to seek always further the secrets of light and matter.
 
-
+        feedback_akaris_threats_geoip:
+            order: 22
+            sender_email: threats@unknown.pg
+            recipient_emails: ""
+            subject: Akaris threats
+            body: >
+               You are almost dead
 
 
 
