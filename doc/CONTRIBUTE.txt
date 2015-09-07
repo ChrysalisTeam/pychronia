@@ -19,7 +19,7 @@ Installing dependencies and creating DBs
 
 
 The quick way is to launch "python BOOTSTRAP.py" from the root of the depot, if you needn't sudo. 
-If everything goes fine, you can skip the remainder of this section.
+If everything goes fine (except some deprecation warnings), you can skip the remainder of this section.
 
 ELSE:
 
@@ -34,7 +34,7 @@ Then navigate to "runner.py" in pychronia_game package, and use it to "reset_dja
 Utilities and servers
 ========================
 
-IN addition to resetting DBs, the runner.py script of pychronia_game package can pack persistent ZODB, and run django dev server against persistent DBs
+In addition to resetting DBs, the runner.py script of pychronia_game package can pack persistent ZODB, and run django dev server against persistent DBs
 located in the same directory::
 
     python pychronia_game/tests/runner.py --help
@@ -42,8 +42,11 @@ located in the same directory::
 When dev server is launched, the test game instance (created by "reset_zodb") can be reached at "http://localhost:8000/DEMO/"
  
 ..note::
+
     Standard manage.py scripts, pointing to the "persistent test DB" configuration, are
-    also available in /test folders, so as to launch dev servers or issue any other standard django command.
+    also available in /test folders, so as to launch dev servers or issue any other standard django commands.
+    
+    Note that the manage.py at depot roor expects a PROD setup, with a "pychronia_settings.py" file available ; in dev environment, you won't need it.
 
 
 Launching tests
@@ -64,9 +67,9 @@ Managing games as an admin
 
 First use "manage.py createsuperuser" to create a standard django admin account, from within the pychronia_game/tests folder.
 
-Then sign in via the dev server: http://localhost:8000/admin/
+Then sign in via the dev server at http://localhost:8000/admin/
 
-Now you can manage the different pychronia games: http://localhost:8000/administration/
+Now you can manage the different pychronia games at http://localhost:8000/administration/
 
 
 
@@ -128,28 +131,12 @@ Development tips
   to take care of ZODB transactions, depending on whether it may modify content or not.
 - If webdesign gets broken, ensure you have well your {% extends %} tags at the TOP of your template
 - Gameviews offer a powerful API to process forms, and turn them into method calls - no need to manually validate forms anymore.
-- *register_view* can be used to to turn a standard django view into a GameView.
+- *register_view()* can be used to turn a standard django view into a GameView.
 - An old Django debug toolbar might require a fix in django core/handlers/base.py to work with custom urlconfs::
   SEE https://code.djangoproject.com/ticket/19784#ticket::
 - if layout gets screwed up in Chrome (a vertical spacing before the anthropia header, "&#65279;." appearing in web debugger), it's probably due to Byte Order Marks in html templates - just remove them.
 
-        ...
 
-            try:
-                # Apply response middleware, regardless of the response
-                for middleware_method in self._response_middleware:
-                    response = middleware_method(request, response)
-                response = self.apply_response_fixes(request, response)
-            except: # Any exception should be gathered and handled
-                signals.got_request_exception.send(sender=self.__class__, request=request)
-                response = self.handle_uncaught_exception(request, resolver, sys.exc_info())
-
-            return response
-
-        finally:
-            # Reset URLconf for this thread on the way out for complete
-            # isolation of request.urlconf
-            urlresolvers.set_urlconf(None)
 
 
 
