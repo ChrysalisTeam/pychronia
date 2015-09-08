@@ -19,6 +19,8 @@ from collections import Counter
 import yaml, pyparsing
 
 import ZODB # must be first !
+from ZODB.POSException import ConflictError
+
 import transaction
 from persistent import Persistent
 from persistent.mapping import PersistentMapping
@@ -152,6 +154,10 @@ def action_failure_handler(request, success_message=ugettext_lazy("Operation suc
         #import traceback
         #traceback.print_exc()
         # we must locate this serious error, as often (eg. assertion errors) there is no specific message attached...
+        
+        if isinstance(e, ConflictError) and request.datamanager.is_under_top_level_wrapping():
+            raise  # we let upper level handle the retry!
+        
         msg = _("Unexpected exception caught in action_failure_handler - %r") % e
         logger.critical(msg, exc_info=True)
         if config.DEBUG:

@@ -109,7 +109,7 @@ def _call_with_transaction_watcher(datamanager, always_writable, func, args, kwa
 
 def _build_wrapped_method(obj, secondary_wrapper, **extra_args):
     @decorator
-    def _build_method_wrapper(func, *args, **kwargs):
+    def _conditional_method_wrapper(func, *args, **kwargs):
         self = args[0] # should always exist, we're in methods here
         if hasattr(self, "_inner_datamanager"):
             datamanager = self._inner_datamanager # for methods of ability or other kind of proxy
@@ -126,7 +126,7 @@ def _build_wrapped_method(obj, secondary_wrapper, **extra_args):
             return completed_func()
         else:
             return _execute_under_toplevel_zodb_conflict_solver(datamanager=datamanager, completed_func=completed_func)
-    return _build_method_wrapper(obj)
+    return _conditional_method_wrapper(obj)
 
 
 def readonly_method(obj):
