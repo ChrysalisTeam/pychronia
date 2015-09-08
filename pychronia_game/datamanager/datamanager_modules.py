@@ -2315,7 +2315,7 @@ class TextMessagingTemplates(BaseDataManager):
                    gamemaster_hints="")
 
         copied_fields = "sender_email recipient_emails mask_recipients subject body attachment transferred_msg".split()
-        res.update({k: copy.copy(v) for (k, v) in msg.items() if k in copied_fields})
+        res.update({k: copy.copy(v) for (k, v) in msg.items() if k in copied_fields and v is not None})
         
         return res
 

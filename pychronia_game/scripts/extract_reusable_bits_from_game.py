@@ -21,12 +21,13 @@ def execute():
     #pprint.pprint(tpls)
 
     data = dump_data_tree_to_yaml(tpls, default_style=">", width=100)
+    data = data.replace("\n-", "\n\n\n-")  # separate atomic templates
 
     filename = "%s_extracted_message_templates.yaml" % instance_id
     with open(filename, "wb") as f:
         f.write(data)
 
-    print(data)
+    #print(data)
     print(">> Extract file %s successfully created" % filename)
 
 
