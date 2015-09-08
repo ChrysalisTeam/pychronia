@@ -63,6 +63,14 @@ function callServer(){
 }
 
 
+function scrollChatToBottom() {
+    var objDiv = document.getElementById("chatwindow");
+    if (objDiv.scrollHeight !== undefined && objDiv.scrollTop !== undefined) {
+        objDiv.scrollTop = objDiv.scrollHeight - objDiv.clientHeight;
+    }
+}
+
+
 function processResponse(payload) {
 
     //if (!payload) return; // may only happen in buggy jquery 1.4.2
@@ -77,6 +85,13 @@ function processResponse(payload) {
 	chatting_users = payload.chatting_users;
 	$("#chatting_users").html(chatting_users.join(", ") || " --- ");
 
+    // Scroll down if messages fill up the div, and we were previously scrolled "almost" to bottom
+    var objDiv = document.getElementById("chatwindow");
+    var mustScroll = true;
+    if (objDiv.scrollHeight !== undefined && objDiv.scrollTop !== undefined) {
+        mustScroll = ((objDiv.scrollHeight - objDiv.scrollTop - objDiv.clientHeight) < 40);
+    }
+    console.log("MUSTSCROLL VAR IS ", mustScroll, "because", objDiv.scrollHeight, objDiv.scrollTop + objDiv.clientHeight);
 
 	for(id in payload.messages) {
 		var message = payload.messages[id]["message"];
@@ -88,9 +103,10 @@ function processResponse(payload) {
 		    $("#chatwindow").append("<br/>");
 		}
 	}
-	// Scroll down if messages fill up the div.
-	var objDiv = document.getElementById("chatwindow");
-	objDiv.scrollTop = objDiv.scrollHeight;
+
+    if (mustScroll) {
+        scrollChatToBottom();
+    }
 
 	// Handle custom data (data other than messages).
 	// This is only called if a callback function has been specified.
@@ -130,6 +146,7 @@ function InitChatWindow(ChatMessagesUrl, CanChat, ProcessResponseCallback){
     		if(msg == "") return false;
 
     		post_request_in_progress = true;
+            scrollChatToBottom();
 
             $.ajax({
               url: url,
