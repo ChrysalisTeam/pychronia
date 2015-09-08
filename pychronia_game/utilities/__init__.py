@@ -52,9 +52,9 @@ def normalize(v):
     Mainly used for strings, so that their yaml dump has a pretty format.
     """
     if hasattr(v, "strip"):
-        v = v.strip()
-        v = v.replace("\r\n", "\n")  # all UNIX
-        v = re.sub("\s*$", "", v, flags=re.MULTILINE)  # remove trailing spaces at ends of lines
+        v = v.strip(" \t")  # we LET extra newlines, might be necessary for RST markups
+        v = v.replace("\r\n", "\n")  # all UNIX newlines
+        v = re.sub("[ \t]+\n", "\n", v, flags=re.MULTILINE)  # remove trailing spaces/tabs at ends of regular lines
     return v
 
 
