@@ -18,7 +18,7 @@ Installing dependencies and creating DBs
 =========================================
 
 
-The quick way is to launch "python BOOTSTRAP.py" from the root of the depot, if you needn't sudo. 
+The quick way is to launch "python BOOTSTRAP.py" from the root of the depot, if you needn't sudo.
 If everything goes fine (except some deprecation warnings), you can skip the remainder of this section.
 
 ELSE:
@@ -46,13 +46,21 @@ located in the same directory::
     python pychronia_game/tests/runner.py --help
 
 When dev server is launched, the test game instance (created by "reset_zodb") can be reached at "http://localhost:8000/DEMO/"
- 
+
 ..note::
 
     Standard manage.py scripts, pointing to the "persistent test DB" configuration, are
     also available in /test folders, so as to launch dev servers or issue any other standard django commands.
-    
+
     Note that the manage.py at depot roor expects a PROD setup, with a "pychronia_settings.py" file available ; in dev environment, you won't need it.
+
+
+Regenerating CSS files
+=======================
+
+If you modify SCSS files of the website, you'll have to recompile them with pyscss.
+
+See pychronia_common/static/MetalRadiance/build.bat for related commands.
 
 
 Launching tests
@@ -68,7 +76,7 @@ Tests are run with py.test against fake databases stored in temp directories::
 WARNING - if you use a virtualenv, "python -m pytest" might be safer to use, so that you're sure to use the proper python executable.
 
 
-Managing games as an admin 
+Managing games as an admin
 ===============================
 
 First use "manage.py createsuperuser" to create a standard django admin account, from within the pychronia_game/tests folder.
