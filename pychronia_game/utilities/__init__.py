@@ -47,7 +47,7 @@ del Conf
 
 ## Python <-> ZODB types conversion and checking ##
 
-ATOMIC_PYTHON_TYPES =  (types.NoneType, int, long, float, basestring, datetime, collections.Callable)
+ATOMIC_PYTHON_TYPES = (types.NoneType, int, long, float, basestring, datetime, collections.Callable)
 
 python_to_zodb_types = {list: PersistentList,
                         dict: PersistentMapping}
@@ -299,6 +299,9 @@ yaml.add_representer(unicode, lambda dumper, value: dumper.represent_scalar(u'ta
 
 def dump_data_tree_to_yaml(data_tree, convert=True, **kwargs):
     """
+    BEWARE - if the end of a string is made of spaces, the double-quotes dump style is forced,
+    see (http://sourceforge.net/p/yaml/mailman/message/30159253/)
+    
     Valid keywords for the method def dump(data, stream=None, Dumper=Dumper, **kwds) in python-yaml :
     
     default_style : indicates the style of the scalar. Possible values are None, '', '\'', '"', '|', '>'.
@@ -332,7 +335,7 @@ def dump_data_tree_to_yaml(data_tree, convert=True, **kwargs):
                      indent=4,
                      default_style="|",
                      default_flow_style=False, # not BLOCK
-                     allow_unicode=True)
+                     allow_unicode=True,)
     dump_args.update(kwargs)
 
     string = yaml.dump(data_tree, **dump_args) # TODO fix safe_dump() to accept unicode in input!!

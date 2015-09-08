@@ -20,7 +20,7 @@ def execute():
     tpls = [dm.convert_msg_to_template(msg) for msg in msgs]
     #pprint.pprint(tpls)
 
-    data = dump_data_tree_to_yaml(tpls, width=50, default_style=None)
+    data = dump_data_tree_to_yaml(tpls, default_style=">", width=100)
 
     filename = "%s_extracted_message_templates.yaml" % instance_id
     with open(filename, "wb") as f:
