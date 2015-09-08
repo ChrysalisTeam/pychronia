@@ -310,6 +310,7 @@ def dump_data_tree_to_yaml(data_tree, convert=True, **kwargs):
     indent :  sets the preferred indentation
     
     width : set the preferred line width
+    
     allow_unicode : allow unicode in output file
     
     line_break : specify the line break you need
@@ -327,7 +328,7 @@ def dump_data_tree_to_yaml(data_tree, convert=True, **kwargs):
     if convert:
         data_tree = convert_object_tree(data_tree, zodb_to_python_types)
 
-    dump_args = dict(width=100,# NOT canonical
+    dump_args = dict(width=100, # NOT canonical
                      indent=4,
                      default_style="|",
                      default_flow_style=False, # not BLOCK
