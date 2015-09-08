@@ -45,16 +45,33 @@ class Conf(object):
 config = Conf()
 del Conf
 
+
+
+def normalize(v):
+    """
+    Mainly used for strings, so that their yaml dump has a pretty format.
+    """
+    if hasattr(v, "strip"):
+        v = v.strip()
+        v = v.replace("\r\n", "\n")  # all UNIX
+        v = re.sub("\s*$", "", v, flags=re.MULTILINE)  # remove trailing spaces at ends of lines
+    return v
+
+
 ## Python <-> ZODB types conversion and checking ##
 
 ATOMIC_PYTHON_TYPES = (types.NoneType, int, long, float, basestring, datetime, collections.Callable)
 
 python_to_zodb_types = {list: PersistentList,
-                        dict: PersistentMapping}
-zodb_to_python_types = dict((value, key) for (key, value) in python_to_zodb_types.items())
+                        dict: PersistentMapping,
+                        str: lambda x : normalize(x),
+                        unicode: lambda x : normalize(x)}
+zodb_to_python_types = dict((value, key) if isinstance(value, type) else (key, value)  # NOT ALL are reversed
+                            for (key, value) in python_to_zodb_types.items())
 
 allowed_zodb_types = ATOMIC_PYTHON_TYPES + (tuple, PersistentMapping, PersistentList)
 allowed_python_types = ATOMIC_PYTHON_TYPES + (tuple, dict, list)
+
 
 def usage_assert(value, comment=None):
     from pychronia_game.common import UsageError

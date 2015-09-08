@@ -2237,7 +2237,7 @@ class TextMessagingTemplates(BaseDataManager):
 
             assert set(msg.keys()) <= template_fields, (set(msg.keys()) - template_fields, msg["subject"])
 
-            utilities.check_is_int(msg["order"])
+            utilities.check_is_int(msg["order"])  # important - order of messages
 
             utilities.check_is_string(msg["subject"], multiline=False) # necessary for sidebar menu
 
@@ -2311,17 +2311,11 @@ class TextMessagingTemplates(BaseDataManager):
         Returns a new, non-persistent, template object.
         """
 
-        def cleanup(v):
-            if hasattr(v, "strip"):
-                v = v.strip()
-                v = v.replace("\r\n", "\n")
-            return v
-
         res = dict(categories=["unsorted"],
                    gamemaster_hints="")
 
         copied_fields = "sender_email recipient_emails mask_recipients subject body attachment transferred_msg".split()
-        res.update({k: cleanup(copy.copy(v)) for (k, v) in msg.items() if k in copied_fields})
+        res.update({k: copy.copy(v) for (k, v) in msg.items() if k in copied_fields})
         
         return res
 
