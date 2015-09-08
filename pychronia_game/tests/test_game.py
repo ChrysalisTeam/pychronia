@@ -1696,16 +1696,24 @@ class TestDatamanager(BaseGameTestCase):
         (tpl_id, tpl) = self.dm.get_messages_templates().items()[0]
         self.assertEqual(tpl["is_used"], False)
 
-        msg_id4 = self.dm.post_message(email("guy3"), email("guy1"), subject="ssd", body="qsdqsd", use_template=tpl_id)
+        msg_id4 = self.dm.post_message(email("guy3"), email("guy1"), subject="ssd", body="qsdqsd", 
+                                       use_template=tpl_id, mask_recipients=True, transferred_msg=msg_id2,
+                                       attachment="/urlbidon")
 
-        msg = self.dm.get_dispatched_message_by_id(msg_id4) # new message isn't impacted
-        self.assertFalse(msg["has_replied"])
+        msg = self.dm.get_dispatched_message_by_id(msg_id4)
+        self.assertFalse(msg["has_replied"])  # new message isn't impacted
         self.assertEqual(msg["has_read"], ["guy3"])
 
         tpl = self.dm.get_message_template(tpl_id)
         self.assertEqual(tpl["is_used"], True) # template properly marked as used (even if message sending - when delay>0 - is eventually canceled)
 
-
+        new_tpl = self.dm.convert_msg_to_template(msg)
+        
+        print (new_tpl)
+        assert new_tpl == {u'body': u'qsdqsd', 'gamemaster_hints': u'',
+                           u'mask_recipients': True, u'recipient_emails': [u'guy1@pangea.com'],
+                           u'transferred_msg': u'1_1ef3', u'attachment': None, u'sender_email': u'guy3@pangea.com',
+                           u'categories': [u'unsorted'], u'subject': u'ssd', u'attachment': u'/urlbidon'}
 
 
 

@@ -2303,6 +2303,22 @@ class TextMessagingTemplates(BaseDataManager):
             raise AbnormalUsageError(_("Unexisting template id %r") % tpl_id)
         return mydata[tpl_id]
 
+    @readonly_method
+    def convert_msg_to_template(self, msg):
+        """
+        Takes as argument a msg object which was already dispatched previously.
+        
+        Returns a new, non-persistent, template object.
+        """
+        res = dict(categories=["unsorted"],
+                   gamemaster_hints="")
+
+        copied_fields = "sender_email recipient_emails mask_recipients subject body attachment transferred_msg".split()
+        res.update({k: copy.copy(v) for (k, v) in msg.items() if k in copied_fields})
+        
+        return res
+
+
 
 
 @register_module
