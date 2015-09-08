@@ -548,6 +548,9 @@ body:after {
   text-align: justify;
   text-indent: 15px;
 }
+.pretty_text img {
+  border-radius: 6px;
+}
 .bg_beige, .mixed {
   background-color: #A89D97;
 }

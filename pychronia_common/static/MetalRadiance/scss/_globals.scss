@@ -125,6 +125,10 @@ $form_input_border_color: #aaa;
     @include pretty_text;
 }
 
+.pretty_text img {
+  border-radius: 6px;
+}
+
 
 /* COMMON BACKGROUND COLOR CLASSES */
 
