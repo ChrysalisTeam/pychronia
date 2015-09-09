@@ -1606,6 +1606,14 @@ class TestDatamanager(BaseGameTestCase):
         assert ("animals?", ["lokon", "gerbil_species"]) in self.dm.get_encyclopedia_keywords_mapping().items()
         assert ("animals?", ["lokon"]) in self.dm.get_encyclopedia_keywords_mapping(excluded_link="gerbil_species").items() # no links to currently viewed article
 
+        regexes = self.dm.get_encyclopedia_keywords_mapping(only_primary_keywords=False)
+        assert regexes == self.dm.get_encyclopedia_keywords_mapping()  # default value
+        assert "animals?" in regexes
+        assert "lokons?" in regexes
+        regexes = self.dm.get_encyclopedia_keywords_mapping(only_primary_keywords=True)
+        assert "animals?" in regexes
+        assert "lokons?" not in regexes  # secondary keyword
+
         for entry in self.dm.get_encyclopedia_keywords_mapping().keys():
             utilities.check_is_slug(entry)
             assert entry.lower() == entry
@@ -1696,7 +1704,7 @@ class TestDatamanager(BaseGameTestCase):
         (tpl_id, tpl) = self.dm.get_messages_templates().items()[0]
         self.assertEqual(tpl["is_used"], False)
 
-        msg_id4 = self.dm.post_message(email("guy3"), email("guy1"), subject="ssd", body="qsdqsd", 
+        msg_id4 = self.dm.post_message(email("guy3"), email("guy1"), subject="ssd", body="qsdqsd",
                                        use_template=tpl_id, mask_recipients=True, transferred_msg=msg_id2,
                                        attachment="/urlbidon")
 
@@ -1708,7 +1716,7 @@ class TestDatamanager(BaseGameTestCase):
         self.assertEqual(tpl["is_used"], True) # template properly marked as used (even if message sending - when delay>0 - is eventually canceled)
 
         new_tpl = self.dm.convert_msg_to_template(msg)
-        
+
         print (new_tpl)
         assert new_tpl == {u'body': u'qsdqsd', 'gamemaster_hints': u'',
                            u'mask_recipients': True, u'recipient_emails': [u'guy1@pangea.com'],

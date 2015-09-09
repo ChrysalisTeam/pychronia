@@ -4468,7 +4468,7 @@ class Encyclopedia(BaseDataManager):
         return self.get_static_page_names_for_category(self.ENCYCLOPEDIA_CATEGORY)
 
     @readonly_method
-    def get_encyclopedia_keywords_mapping(self, excluded_link=None):
+    def get_encyclopedia_keywords_mapping(self, excluded_link=None, only_primary_keywords=False):
         """
         Returns a dict mapping keywords (which can be regular expressions) to lists 
         of targeted article ids.
@@ -4481,6 +4481,8 @@ class Encyclopedia(BaseDataManager):
                 assert keyword
                 mapping.setdefault(keyword, [])
                 mapping[keyword].append(article_id)
+                if only_primary_keywords:
+                    break  # other keywords are not meant eg. for auto-linking
         ###print (">>>>>>>>>>>", mapping)
         return mapping
 
