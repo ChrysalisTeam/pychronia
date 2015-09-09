@@ -576,7 +576,7 @@ static_pages:
 
     gerbil_species:
         categories: encyclopedia
-        keywords: ["animals?", "gerbils?", "rodents?", "i<à"]
+        keywords: ["gerbils?", "animals?", "rodents?"]
         content:   |
             Test to be translated here
             ===============================
@@ -588,6 +588,15 @@ static_pages:
         keywords: ["ugly", "wu\\gly<_é", "éàk"]
         content:   |
             Just to ensure that this ugly slug gets well encoded in urls and regexes...
+
+    other_articles:
+        categories: encyclopedia
+        keywords: ["i<à"]
+        content:   |
+            Another article again
+
+
+
 
 
 

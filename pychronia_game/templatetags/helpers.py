@@ -150,7 +150,7 @@ def _generate_encyclopedia_links(html_snippet, datamanager, excluded_link=None):
     Replaces identified keywords by links to corresponding encyclopedia pages.
     """
     if __debug__: datamanager.notify_event("GENERATE_ENCYCLOPEDIA_LINKS")
-    keywords_mapping = datamanager.get_encyclopedia_keywords_mapping(excluded_link=excluded_link)
+    keywords_mapping = datamanager.get_encyclopedia_keywords_mapping(excluded_link=excluded_link, only_primary_keywords=True)
 
     def encyclopedia_link_attr_generator(match):
         matched_str = match.group(0)

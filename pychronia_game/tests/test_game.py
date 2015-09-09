@@ -491,7 +491,11 @@ class TestUtilities(BaseGameTestCase):
                     
                     lokons
                     
+                    rodents
+                    
                     gerbils
+                    
+                    ugly
                     
                     [INSTANCE_ID]
                     
@@ -499,7 +503,7 @@ class TestUtilities(BaseGameTestCase):
                     
                     hi[BR]you
                     """)
-        html = format_enriched_text(self.dm, rst, initial_header_level=2, report_level=5, excluded_link="lokon")
+        html = format_enriched_text(self.dm, rst, initial_header_level=2, report_level=5, excluded_link=u"wu\\gly_é")
 
         assert self.dm.get_event_count("GENERATE_MESSAGING_LINKS") == 1
         assert self.dm.get_event_count("GENERATE_ENCYCLOPEDIA_LINKS") == 1
@@ -515,7 +519,9 @@ class TestUtilities(BaseGameTestCase):
                             <div class="section" id="hi">
                             <h2>hi</h2>
                             <p>lokons</p>
+                            <p>rodents</p>
                             <p><a href="/TeStiNg/encyclopedia/?search=gerbils">gerbils</a></p>
+                            <p>ugly</p>
                             <p>TeStiNg</p>
                             <p>hi<br />you</p>
                             </div>""").strip()
@@ -1597,7 +1603,7 @@ class TestDatamanager(BaseGameTestCase):
 
 
     @for_core_module(Encyclopedia)
-    def test_encyclopedia(self):
+    def test_encyclopedia_api_and_keywords(self):
 
         utilities.check_is_restructuredtext(self.dm.get_encyclopedia_entry(" gerbiL_speCies ")["content"])# tolerant fetching
         assert self.dm.get_encyclopedia_entry("qskiqsjdqsid") is None
@@ -1635,14 +1641,14 @@ class TestDatamanager(BaseGameTestCase):
         assert not self.dm.is_encyclopedia_index_visible()
 
         # generation of entry links
-        res = _generate_encyclopedia_links("lokon lokons lokonsu", self.dm)
-        expected = """<a href="@@@?search=lokon">lokon</a> <a href="@@@?search=lokons">lokons</a> lokonsu"""
+        res = _generate_encyclopedia_links("animals lokons lokonsu", self.dm)
+        expected = """<a href="@@@?search=animals">animals</a> lokons lokonsu"""
         expected = expected.replace("@@@", reverse(views.view_encyclopedia, kwargs=dict(game_instance_id=self.dm.game_instance_id)))
         assert res == expected
 
         res = _generate_encyclopedia_links(u"""wu\\gly_é gerbil \n lokongerbil dummy gerb\nil <a href="#">lokon\n</a> lokons""", self.dm)
         print (repr(res))
-        expected = u'wu\\gly_é <a href="@@@?search=gerbil">gerbil</a> \n lokongerbil dummy gerb\nil <a href="#">lokon\n</a> <a href="@@@?search=lokons">lokons</a>'
+        expected = u'wu\\gly_é <a href="@@@?search=gerbil">gerbil</a> \n lokongerbil dummy gerb\nil <a href="#">lokon\n</a> lokons'
         expected = expected.replace("@@@", reverse(views.view_encyclopedia, kwargs=dict(game_instance_id=self.dm.game_instance_id)))
         assert res == expected
 
@@ -4162,7 +4168,7 @@ class TestHttpRequests(BaseGameTestCase):
         assert response.status_code == 404 # view always available, but no help text available for it
 
 
-    def test_encyclopedia_behaviour(self):
+    def test_encyclopedia_index_knowledge(self):
 
         ok = 0
 
