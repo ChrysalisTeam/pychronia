@@ -1,5 +1,8 @@
 @charset "UTF-8";
 
+$is_mobile: false;
+
+@import "_bootstrap_utils.scss";
 
 @import "_globals.scss";
 
@@ -430,6 +433,10 @@ body {
         }
     }
 }
+#menu-bar{
+    display:none;
+}
+
 
 
 

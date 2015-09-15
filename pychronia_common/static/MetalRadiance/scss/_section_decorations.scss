@@ -89,34 +89,48 @@
     border-image: url('#{$IMGS}backgrounds/antique_large_decorated_frame.png') 70 80 70 80 fill stretch;
     image-rendering: optimizequality;
     margin: -5px;
-}
 
-.decorated_golden_frame {
-    border-color: transparent;
-    border-style: solid;
-    border-width: 25px 27px 25px;
-    border-image: url('#{$IMGS}backgrounds/decorated_golden_frame.png') 25 27 25 fill stretch;
-    image-rendering: optimizequality;
-    margin: -5px;
-}
+    }
+
+@if ($is_mobile == false){
+    .decorated_golden_frame {
+        border-color: transparent;
+        border-style: solid;
+        border-width: 25px 27px 25px;
+        border-image: url('#{$IMGS}backgrounds/decorated_golden_frame.png') 25 27 25 fill stretch;
+        image-rendering: optimizequality;
+        margin: -5px;
+    }
 
 
-@mixin carved_square_frame {
-    border-color: transparent;
-    border-style: solid;
-    border-width: 90px;
-    border-image: none 125 125 127 117 stretch;
-    image-rendering: optimizequality;
-}
-.carved_square_frame_gold {
-    @include carved_square_frame;
-    border-image-source: url('#{$IMGS}backgrounds/carved_square_frame_gold.png') !important;
-}
-.carved_square_frame_silver {
-    @include carved_square_frame;
-    border-image-source: url('#{$IMGS}backgrounds/carved_square_frame_silver.png') !important;
-}
+    @mixin carved_square_frame {
+        border-color: transparent;
+        border-style: solid;
+        border-width: 90px;
+        border-image: none 125 125 127 117 stretch;
+        image-rendering: optimizequality;
+    }
 
+    .carved_square_frame_gold {
+        @include carved_square_frame;
+        border-image-source: url('#{$IMGS}backgrounds/carved_square_frame_gold.png') !important;
+    }
+    .carved_square_frame_silver {
+        @include carved_square_frame;
+        border-image-source: url('#{$IMGS}backgrounds/carved_square_frame_silver.png') !important;
+    }
+}
+@else{
+    @mixin carved_square_frame {
+        display:none;
+    }
+    .carved_square_frame_gold {
+        @include carved_square_frame;
+    }
+    .carved_square_frame_silver {
+        @include carved_square_frame;
+    }
+}
 
 .rice_paper_beige {
     padding: 5px 5px;

@@ -311,6 +311,14 @@
     display: none;
 }
 
-.p4wn-controls {
-    margin-top: 20px;
+@if ($is_mobile == true){
+    .p4wn-controls {
+        margin-top: 20px;
+    }
+}
+@else{
+    .p4wn-controls {
+        margin-top: 20px;
+        width: 450px;
+    }
 }

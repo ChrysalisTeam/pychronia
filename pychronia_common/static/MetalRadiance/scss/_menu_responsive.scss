@@ -1,0 +1,61 @@
+$menu-width:2500px;
+
+@media only screen and (max-width: 510px){
+            #full_content {
+                padding-top: 0;
+            }
+
+            .marble_menu_container {
+                position: static;
+
+                .marble_menu{
+                    position: relative;
+                    display: block;
+                    float: left;
+                    width: 65px;
+                    height: 40px;
+                    //background-color: rgba(#FFF, 0.5);
+
+                    cursor: pointer;
+
+                    &:after{
+                        content:'';
+                        position: absolute;
+                        display: block;
+                        width: 35px;
+                        height:0;
+                        top: 5px;
+                        left: 15px;
+                        @include box-shadow(0 10px 0 1px #FFF, 0 16px 0 1px #FFF, 0 22px 0 1px #FFF);
+                    }
+
+
+                    .toplevel{
+                        position: absolute;
+                        left: 0;
+                        top: 0;
+                        bottom: 0;
+                        //background-color: #342716;
+                        width: $menu-width;
+
+                        transform: translateX($menu-width * -1);
+                        //@include transform(transformX($menu-width * -1));
+                        //@include transition-duration(0.3s);
+
+                        a{
+                            display: block;
+                            height: 40px;
+
+                            text-align: center;
+                            line-height: 40px;
+
+                            border-bottom: 1px solid #342716;
+                        }
+                    }
+                    .with--sidebar{
+                        .toplevel{ transform: translateX(0px); }
+                        //.toplevel{ @include transform(transformX(0px)); }
+                    }
+                }
+            }
+        }

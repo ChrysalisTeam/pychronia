@@ -1,0 +1,61 @@
+/*!
+ * Bootstrap v3.3.5 (http://getbootstrap.com)
+ * Copyright 2011-2015 Twitter, Inc.
+ * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
+ */
+
+// Core variables and mixins
+@import "bootstrap/variables";
+@import "bootstrap/mixins";
+
+// Utility classes
+@import "bootstrap/utilities";
+@import "bootstrap/responsive-utilities";
+
+
+
+
+table.realtable {
+
+    @include make-row();
+    text-align:center;
+    @if ($is_mobile == true){
+
+        td{
+            @include make-xs-column(12);
+        }
+
+        tr:first-child {
+            @include make-xs-column(12);
+        }
+
+        tr:last-child td {
+            @include make-xs-column(12);
+        }
+        tr td:last-child {
+            @include make-xs-column(12);
+        }
+        tr:last-child td:last-child {
+            @include make-xs-column(12);
+        }
+
+
+
+       thead th {
+           display:none;
+       }
+
+    }
+    @else{
+        .rowrow{
+            width:160px; background-color: white;
+        }
+    }
+
+}
+
+
+
+/*
+xs et md pas le reste
+*/

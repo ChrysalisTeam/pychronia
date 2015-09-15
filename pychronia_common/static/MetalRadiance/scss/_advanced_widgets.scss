@@ -3,6 +3,7 @@
 
 @import "_section_decorations.scss";
 
+@import "_bootstrap_utils.scss";
 
 /* widgets visible onl by admins and masters */
 
@@ -90,13 +91,52 @@ table.realtable {
     box-shadow: 5px 5px 3px #888888;
     border:1px solid #000000;
 
-    tr:nth-child(odd){ background-color:#eed892; }
-    tr:nth-child(even) { background-color:#F5DF8B; }
+@if ($is_mobile == false){
+    .rowrow{
+        width:160px;
+        background-color: white;
+    }
 
     td {
         vertical-align:middle;
         border:1px solid #000000;
         border-width:1px 1px 1px 1px;
+        text-align:center;
+        padding:7px;
+        font-size:1.1em;
+        font-family:Arial;
+        font-weight:normal;
+        line-height:1.3em;
+        padding-top:30px;
+    }
+
+    tr:last-child td {
+    }
+    tr td:last-child {
+    }
+    tr:last-child td:last-child {
+    }
+
+    tr:nth-child(odd){ background-color:#eed892; }
+    tr:nth-child(even) { background-color:#F5DF8B; }
+}
+
+
+@else{
+
+    .rowrow{
+        //width:160px;
+        //background-color: white;
+        img{
+           heights:250px;
+        }
+    }
+
+
+
+    td {
+        vertical-align:middle;
+        border:none;
         text-align:center;
         padding:7px;
         font-size:1.1em;
@@ -111,6 +151,13 @@ table.realtable {
     }
     tr:last-child td:last-child {
     }
+
+    tr:nth-child(odd){ background-color:transparent; }
+    tr:nth-child(even) { background-color:transparent; }
+    box-shadow: none;
+    border:none;
+}
+
 
     thead th {
         background-color:#E1B151;

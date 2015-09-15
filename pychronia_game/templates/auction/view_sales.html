@@ -25,8 +25,9 @@ while the total value of proposed items is <strong>{{ total_items_price }}</stro
 
 <table class="realtable">
 	<thead>
+
 		<tr>
-		    <th style="width:40px;">{% trans "Id" %}</th>
+		    <th>{% trans "Id" %}</th>
 			<th>{% trans "Photo" %}</th>
 			<th>{% trans "Details" %}</th>
 		    <th>{% trans "Comments" %}</th>
@@ -53,7 +54,7 @@ while the total value of proposed items is <strong>{{ total_items_price }}</stro
 	    	{{ item_details.auction|default:"X" }}
 	    	</td>
 
-	    	<td style="width:160px; background-color: white;">
+	    	<td class="rowrow" >
     		     <a href="{% game_file_url item_details.image %}" class="fancybox">
     		         <img class="thumbnail" title="{{ item_details.title }}" src="{% game_file_img item_details.image alias="item_avatar" %}"/>
     		     </a>
