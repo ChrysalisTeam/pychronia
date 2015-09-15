@@ -1,11 +1,4 @@
 @charset "UTF-8";
-* {
-  -webkit-box-sizing: border-box;
-  -khtml-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  -ms-box-sizing: border-box;
-  box-sizing: border-box;
-}
 .parallax {
   position: absolute;
   opacity: 1;
@@ -28,24 +21,7 @@
   image-rendering: optimizequality;
 }
 body {
-  margin: 0;
-  padding: 0;
-  width: 100%;
   min-width: 1000px;
-  position: relative;
-  height: 100%;
-  overflow: auto;
-  font-size: 100%;
-  line-height: 20px;
-  font-family: Arial, Helvetica, sans-serif;
-  background-color: black;
-  image-rendering: -moz-crisp-edges;
-  word-spacing: normal;
-  word-wrap: break-word;
-  word-break: normal;
-  white-space: normal;
-  quotes: none;
-  text-overflow: ellipsis;
 }
 body.full_background {
   background-image: url('img/backgrounds/nazur_temple_75_smooth.jpg');
@@ -191,7 +167,7 @@ body:after {
   padding: 4px 12px;
 }
 #full_header #full_header_background #notification_table .carving {
-  font-size: 1.7px;
+  font-size: 17px;
   color: white;
   width: 183px;
   background-image: url('img/backgrounds/carving1.png');
@@ -957,6 +933,33 @@ img.center {
 }
 .italic {
   font-style: italic;
+}
+* {
+  -webkit-box-sizing: border-box;
+  -khtml-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -ms-box-sizing: border-box;
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  position: relative;
+  height: 100%;
+  overflow: auto;
+  font-size: 100%;
+  line-height: 120%;
+  font-family: Arial, Helvetica, sans-serif;
+  background-color: black;
+  image-rendering: -moz-crisp-edges;
+  word-spacing: normal;
+  word-wrap: break-word;
+  word-break: normal;
+  white-space: normal;
+  quotes: none;
+  text-overflow: ellipsis;
 }
 .outlined {
   outline: #9D8126 ridge 2px;

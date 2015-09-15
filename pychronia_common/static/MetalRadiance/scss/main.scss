@@ -6,6 +6,8 @@ $is_mobile: false;
 
 @import "_globals.scss";
 
+@import "_top_level_structures.scss";
+
 @import "_advanced_widgets.scss";
 
 @import "_corner_decorations.scss";
@@ -24,34 +26,6 @@ $is_mobile: false;
 
 @import "_zinnia_customization.scss";
 
-
-
-* {
-    /* IMPORTANT - use better box model everywhere, by default */
-    -webkit-box-sizing: border-box; /* webkit */
-     -khtml-box-sizing: border-box; /* konqueror */
-       -moz-box-sizing: border-box; /* firefox */
-        -ms-box-sizing: border-box; /* ie */
-            box-sizing: border-box; /* css3 */
-   // possible values of box-sizing: content-box|border-box|inherit
-}
-
-html {
-    /* just if we need to test higher or lower screen resolutions */
-    /* zoom: 1.0;
-    transform: scale(1.0);
-    transform-origin: center top;*/
-}
-
-img {
-  // global filtering, doesn't work well
-    // filter: url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\'><filter id=\'grayscale\'><feColorMatrix type=\'matrix\' values=\'0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0 0 0 1 0\'/></filter></svg>#grayscale");
-    /* Firefox 10+, Firefox on Android */
-
-    // filter: gray; /* IE6-9 */
-    /*-webkit-filter: grayscale(1); NO THIS BREAKS z-index and stuffs on Chrome*/
-    //-webkit-filter: grayscale(0.5) blur(10px);
-}
 
 
 .parallax {
@@ -86,32 +60,9 @@ img {
 
 
 body {
-    margin: 0;
-    padding: 0;
-    width: 100%;
+
     min-width: 1000px;
 
-    position: relative; // to help parallax
-    height: 100%;
-
-    overflow: auto; // needed for djangocms front-editing mode, which uses floats
-
-    font-size: 100%;
-    line-height: 20px;
-    font-family: Arial, Helvetica, sans-serif;
-
-    background-color: black;
-
-    // WORKAROUND 2014/04/19, avoids lag and jitter on background images, see https://bugzilla.mozilla.org/show_bug.cgi?id=846315
-    image-rendering: -moz-crisp-edges;
-
-    /* useful and little known properties */
-    word-spacing: normal; // or length measure
-    word-wrap: break-word; // or normal
-    word-break: normal; // or break-all/hyphenate
-    white-space: normal; // or nowrap/pre/pre-line/pre-wrap
-    quotes: none; // or string string string string
-    text-overflow: ellipsis; // or clip or string, not inherited
 
     &.full_background {
         background-image: url('#{$IMGS}backgrounds/nazur_temple_75_smooth.jpg');
@@ -128,19 +79,20 @@ body {
     // put here all images to PRELOAD (eg. used in dynamic menus and hover effects)
     content: " ";
     background: url('#{$IMGS}backgrounds/tube_gold_small.png'),
-               url('#{$IMGS}backgrounds/tube_silver_small.png'),
-               url('#{$IMGS}backgrounds/tube_bronze_small.png'),
-               url('#{$IMGS}backgrounds/dropdown_menu.png'),
-               url("#{$IMGS}backgrounds/notification_panel_decorations.png"),
-               url("img/backgrounds/antique_large_decorated_frame.png"),
-               url("img/backgrounds/ricepaper-hue-orange.jpg"),
-               url('#{$IMGS}backgrounds/decorated_golden_frame.png'),
-               url('#{$IMGS}backgrounds/ricepaper-hue-gold.jpg');
+                url('#{$IMGS}backgrounds/tube_silver_small.png'),
+                url('#{$IMGS}backgrounds/tube_bronze_small.png'),
+                url('#{$IMGS}backgrounds/dropdown_menu.png'),
+                url("#{$IMGS}backgrounds/notification_panel_decorations.png"),
+                url("img/backgrounds/antique_large_decorated_frame.png"),
+                url("img/backgrounds/ricepaper-hue-orange.jpg"),
+                url('#{$IMGS}backgrounds/decorated_golden_frame.png'),
+                url('#{$IMGS}backgrounds/ricepaper-hue-gold.jpg');
     background-repeat: no-repeat;
     background-position: -1000000 - 1000000;
     display: inline; // caching doesn't work if display==None'background-position:
     }
 }
+
 
 .grey_layer {
     margin: 0;
@@ -148,7 +100,6 @@ body {
     background: url("#{$IMGS}backgrounds/oblic_grey_3x3.png") repeat scroll 0 0 transparent;
     position: relative; // important to appear in front of absolutely positioned parallax divs
 }
-
 
 
 #full_header {
@@ -306,7 +257,7 @@ body {
             }
             .carving{
 
-                font-size: 1.7px;
+                font-size: 17px;
                 color: $white_color;
 
                 .marquee {
