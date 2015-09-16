@@ -193,6 +193,9 @@ jquery-css3-finalize
 jquery-dropmenu
     MIT License
 
+jquery-doubletaptogo
+    MIT License
+
 jquery-globalstylesheet
     Dual licensed under the MIT and GPL licenses
 
