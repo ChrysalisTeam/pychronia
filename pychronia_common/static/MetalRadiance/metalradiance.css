@@ -263,10 +263,6 @@ table.realtable:before, table.realtable:after {
 table.realtable:after {
   clear: both;
 }
-table.realtable .rowrow {
-  width: 160px;
-  background-color: white;
-}
 html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6,
 p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn,
 em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var,
@@ -545,27 +541,29 @@ table.realtable {
   box-shadow: 5px 5px 3px #888888;
   border: 1px solid #000000;
 }
-table.realtable .rowrow {
-  width: 160px;
-  background-color: white;
-}
-table.realtable td {
-  vertical-align: middle;
-  border: 1px solid #000000;
-  border-width: 1px 1px 1px 1px;
-  text-align: center;
-  padding: 7px;
-  font-size: 1.1em;
-  font-family: Arial;
-  font-weight: normal;
-  line-height: 1.3em;
-  padding-top: 30px;
-}
-table.realtable tr:nth-child(odd) {
-  background-color: #eed892;
-}
-table.realtable tr:nth-child(even) {
-  background-color: #F5DF8B;
+@media only screen and (min-width: 992px) {
+  table.realtable .rowrow {
+    width: 160px;
+    background-color: white;
+  }
+  table.realtable td {
+    vertical-align: middle;
+    border: 1px solid #000000;
+    border-width: 1px 1px 1px 1px;
+    text-align: center;
+    padding: 7px;
+    font-size: 1.1em;
+    font-family: Arial;
+    font-weight: normal;
+    line-height: 1.3em;
+    padding-top: 30px;
+  }
+  table.realtable tr:nth-child(odd) {
+    background-color: #eed892;
+  }
+  table.realtable tr:nth-child(even) {
+    background-color: #F5DF8B;
+  }
 }
 table.realtable thead th {
   background-color: #E1B151;
@@ -922,9 +920,16 @@ table.footnote {
 .p4wn-log, .p4wn-messages {
   display: none;
 }
-.p4wn-controls {
-  margin-top: 20px;
-  width: 450px;
+@media only screen and (max-width: 991px) {
+  .p4wn-controls {
+    margin-top: 20px;
+  }
+}
+@media only screen and (min-width: 992px) {
+  .p4wn-controls {
+    margin-top: 20px;
+    width: 450px;
+  }
 }
 .outlined {
   outline: #9D8126 ridge 2px;
@@ -998,29 +1003,39 @@ table.footnote {
   image-rendering: optimizequality;
   margin: -5px;
 }
-.decorated_golden_frame {
-  border-color: transparent;
-  border-style: solid;
-  border-width: 25px 27px 25px;
-  border-image: url('img/backgrounds/decorated_golden_frame.png') 25 27 25 fill stretch;
-  image-rendering: optimizequality;
-  margin: -5px;
+@media only screen and (min-width: 992px) {
+  .decorated_golden_frame {
+    border-color: transparent;
+    border-style: solid;
+    border-width: 25px 27px 25px;
+    border-image: url('img/backgrounds/decorated_golden_frame.png') 25 27 25 fill stretch;
+    image-rendering: optimizequality;
+    margin: -5px;
+  }
+  .carved_square_frame_gold, .item_display {
+    border-color: transparent;
+    border-style: solid;
+    border-width: 90px;
+    border-image: none 125 125 127 117 stretch;
+    image-rendering: optimizequality;
+    border-image-source: url('img/backgrounds/carved_square_frame_gold.png') !important;
+  }
+  .carved_square_frame_silver {
+    border-color: transparent;
+    border-style: solid;
+    border-width: 90px;
+    border-image: none 125 125 127 117 stretch;
+    image-rendering: optimizequality;
+    border-image-source: url('img/backgrounds/carved_square_frame_silver.png') !important;
+  }
 }
-.carved_square_frame_gold, .item_display {
-  border-color: transparent;
-  border-style: solid;
-  border-width: 90px;
-  border-image: none 125 125 127 117 stretch;
-  image-rendering: optimizequality;
-  border-image-source: url('img/backgrounds/carved_square_frame_gold.png') !important;
-}
-.carved_square_frame_silver {
-  border-color: transparent;
-  border-style: solid;
-  border-width: 90px;
-  border-image: none 125 125 127 117 stretch;
-  image-rendering: optimizequality;
-  border-image-source: url('img/backgrounds/carved_square_frame_silver.png') !important;
+@media only screen and (max-width: 991px) {
+  .carved_square_frame_gold, .item_display {
+    display: none;
+  }
+  .carved_square_frame_silver {
+    display: none;
+  }
 }
 .rice_paper_beige {
   padding: 5px 5px;

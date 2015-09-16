@@ -19,7 +19,8 @@ table.realtable {
 
     @include make-row();
     text-align:center;
-    @if ($is_mobile == true){
+
+    @include mobile-only {
 
         td{
             @include make-xs-column(12);
@@ -46,7 +47,8 @@ table.realtable {
        }
 
     }
-    @else{
+
+    @include desktop-only {
         .rowrow{
             width:160px; background-color: white;
         }

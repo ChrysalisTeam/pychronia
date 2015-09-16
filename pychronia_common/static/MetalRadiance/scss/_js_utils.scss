@@ -306,12 +306,12 @@
     display: none;
 }
 
-@if ($is_mobile == true){
+@include mobile-only {
     .p4wn-controls {
         margin-top: 20px;
     }
 }
-@else{
+@include desktop-only {
     .p4wn-controls {
         margin-top: 20px;
         width: 450px;

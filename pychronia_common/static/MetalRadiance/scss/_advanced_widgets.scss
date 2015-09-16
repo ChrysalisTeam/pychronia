@@ -86,7 +86,7 @@ table.realtable {
     box-shadow: 5px 5px 3px #888888;
     border:1px solid #000000;
 
-@if ($is_mobile == false){
+@include desktop-only {
     .rowrow{
         width:160px;
         background-color: white;
@@ -117,7 +117,7 @@ table.realtable {
 }
 
 
-@else{
+@include mobile-only {
 
     .rowrow{
         //width:160px;

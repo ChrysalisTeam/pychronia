@@ -88,7 +88,7 @@
 
     }
 
-@if ($is_mobile == false){
+@include desktop-only{
     .decorated_golden_frame {
         border-color: transparent;
         border-style: solid;
@@ -116,7 +116,7 @@
         border-image-source: url('#{$IMGS}backgrounds/carved_square_frame_silver.png') !important;
     }
 }
-@else{
+@include mobile-only{
     @mixin carved_square_frame {
         display:none;
     }
