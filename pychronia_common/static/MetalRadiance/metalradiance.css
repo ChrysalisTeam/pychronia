@@ -1533,8 +1533,6 @@ ul.paginator .index {
   }
   #full_menu {
     width: 100%;
-    height: 55px;
-    background: #342716 url("img/backgrounds/mobile/menu-bg.jpg") repeat-x bottom center;
     text-align: center;
     margin-top: -35px;
     position: relative;
@@ -1546,17 +1544,19 @@ ul.paginator .index {
   }
   #full_menu #main_menu a {
     display: none;
-    font-size: 18px;
     color: #f5af09;
+    font-size: 18px;
     text-decoration: none;
     line-height: 27px;
     padding: 0px 10px;
     text-align: center;
-    background: #342716;
     float: none;
   }
   #full_menu #main_menu a:hover {
     text-decoration: underline;
+  }
+  #full_menu #main_menu a a {
+    background: #342716;
   }
   #full_menu #main_menu .big_icon_panel {
     display: none;
@@ -2159,12 +2159,12 @@ ul.paginator .index {
     position: relative;
   }
   #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu > li {
-    display: block;
+    display: inline-block;
     list-style: none outside none;
     position: relative;
     margin: 0px;
     padding: 0px;
-    float: left;
+    float: none;
   }
   #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu > li a,
   #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu > li span {

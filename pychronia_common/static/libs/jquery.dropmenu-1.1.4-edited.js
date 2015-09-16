@@ -32,7 +32,7 @@
 					display: 'block',
 					listStyle: 'none'
 				})
-				.find("li")
+				.find("li")  // OTHER levels
 				.css({
 					display: 'block',
 					listStyle: 'none',
@@ -57,7 +57,8 @@
 			//	top-level LI's and top level A's and SPANs
 			$topl
 				.css({
-					float: 'left'
+					float: 'none',
+					display: 'inline-block'
 				})
 				.find('> a, > span')
 				.addClass('toplevel')

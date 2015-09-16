@@ -14,7 +14,7 @@ ul.dropmenu {
 
     & > li {
 
-        display: block; list-style: none outside none; position: relative; margin: 0px; padding: 0px; float: left; // styles pushed by JS dropdown system
+        display: inline-block; list-style: none outside none; position: relative; margin: 0px; padding: 0px; float: none; // styles pushed by JS dropdown system
 
         a, span { // every descendant, too
 

@@ -47,29 +47,33 @@ body {
 
 #full_menu {
     width: 100%;
-    height: 55px;
-    background: #342716 url("img/backgrounds/mobile/menu-bg.jpg") repeat-x bottom center;
+    // NOPE background: #342716 url("img/backgrounds/mobile/menu-bg.jpg") repeat-x bottom center;
     text-align: center;
     margin-top: -35px;
     position: relative;
     z-index: 2000; // below the title panel
     #main_menu {
-        margin: auto;
+        margin: 0 40px;
         display: table;
         a {
             display: none;
-            font-size: 18px;
             color: #f5af09;
+            font-size: 18px;
             text-decoration: none;
             line-height: 27px;
             padding: 0px 10px;
             text-align: center;
-            background: #342716;
             float: none;
+
+            &:hover {
+                text-decoration: underline;
+            }
+
+            a {
+                background: #342716;  // sublinks only
+            }
         }
-        a:hover {
-            text-decoration: underline;
-        }
+
         .big_icon_panel {
             display: none;
         }
