@@ -100,6 +100,13 @@ $form_input_border_color: #aaa;
 }
 
 
+@mixin mobile-only {
+    @media only screen and (max-width: #{$screen-md-min - 1}) { @content; }
+}
+@mixin desktop-only {
+    @media only screen and (min-width: $screen-md-min) { @content; }
+}
+
 
 @mixin text_shadow($bgcolor: black) {
     text-shadow: 1px 1px 0 $bgcolor, -1px -1px 0 $bgcolor, 1px -1px 0 $bgcolor, -1px 1px 0 $bgcolor;

@@ -1,0 +1,40 @@
+@charset "UTF-8";
+
+$is_mobile: false;
+
+@import "_bootstrap_utils.scss";
+
+@import "_reset.scss";
+
+@import "_globals.scss";
+
+@import "_top_level_structures.scss";
+
+@import "_advanced_widgets.scss";
+
+@import "_corner_decorations.scss";
+
+@import "_django_customization.scss";
+
+@import "_docutils_customization.scss";
+
+@import "_js_utils.scss";
+
+@import "_section_decorations.scss";
+
+@import "_specific_page_styles.scss";
+
+@import "_standard_content.scss";
+
+@import "_zinnia_customization.scss";
+
+@import "_menu_responsive.scss";
+
+
+@include mobile-only {
+  @import "_layout_mobile.scss";
+}
+
+@include desktop-only {
+  @import "_layout_desktop.scss";
+}
