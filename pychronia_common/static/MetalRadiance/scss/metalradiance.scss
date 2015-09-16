@@ -26,8 +26,6 @@
 
 @import "_zinnia_customization.scss";
 
-@import "_menu_responsive.scss";
-
 
 @include mobile-only {
   @import "_layout_mobile.scss";

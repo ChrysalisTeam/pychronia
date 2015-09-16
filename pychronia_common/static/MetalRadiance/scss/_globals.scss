@@ -100,11 +100,12 @@ $form_input_border_color: #aaa;
 }
 
 
+/* DON'T restrict to "screen" for now, since we have no layout for print and other media... */
 @mixin mobile-only {
-    @media only screen and (max-width: #{$screen-md-min - 1}) { @content; }
+    @media (max-width: #{$screen-md-min - 1}) { @content; }
 }
 @mixin desktop-only {
-    @media only screen and (min-width: $screen-md-min) { @content; }
+    @media (min-width: $screen-md-min) { @content; }
 }
 
 

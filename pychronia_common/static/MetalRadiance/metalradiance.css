@@ -541,7 +541,7 @@ table.realtable {
   box-shadow: 5px 5px 3px #888888;
   border: 1px solid #000000;
 }
-@media only screen and (min-width: 992px) {
+@media (min-width: 992px) {
   table.realtable .rowrow {
     width: 160px;
     background-color: white;
@@ -563,6 +563,31 @@ table.realtable {
   }
   table.realtable tr:nth-child(even) {
     background-color: #F5DF8B;
+  }
+}
+@media (max-width: 991px) {
+  table.realtable {
+    box-shadow: none;
+    border: none;
+  }
+  table.realtable .rowrow img {
+    heights: 250px;
+  }
+  table.realtable td {
+    vertical-align: middle;
+    border: none;
+    text-align: center;
+    padding: 7px;
+    font-size: 1.1em;
+    font-family: Arial;
+    font-weight: normal;
+    line-height: 1.3em;
+  }
+  table.realtable tr:nth-child(odd) {
+    background-color: transparent;
+  }
+  table.realtable tr:nth-child(even) {
+    background-color: transparent;
   }
 }
 table.realtable thead th {
@@ -920,12 +945,12 @@ table.footnote {
 .p4wn-log, .p4wn-messages {
   display: none;
 }
-@media only screen and (max-width: 991px) {
+@media (max-width: 991px) {
   .p4wn-controls {
     margin-top: 20px;
   }
 }
-@media only screen and (min-width: 992px) {
+@media (min-width: 992px) {
   .p4wn-controls {
     margin-top: 20px;
     width: 450px;
@@ -1003,7 +1028,7 @@ table.footnote {
   image-rendering: optimizequality;
   margin: -5px;
 }
-@media only screen and (min-width: 992px) {
+@media (min-width: 992px) {
   .decorated_golden_frame {
     border-color: transparent;
     border-style: solid;
@@ -1029,7 +1054,7 @@ table.footnote {
     border-image-source: url('img/backgrounds/carved_square_frame_silver.png') !important;
   }
 }
-@media only screen and (max-width: 991px) {
+@media (max-width: 991px) {
   .carved_square_frame_gold, .item_display {
     display: none;
   }
@@ -1471,52 +1496,7 @@ ul.paginator .index {
 .mini_frame_content .scroll_yellow_flat {
   margin: 0;
 }
-@media only screen and (max-width: 510px) {
-  #full_content {
-    padding-top: 0;
-  }
-  .marble_menu_container {
-    position: static;
-  }
-  .marble_menu_container .marble_menu {
-    position: relative;
-    display: block;
-    float: left;
-    width: 65px;
-    height: 40px;
-    cursor: pointer;
-  }
-  .marble_menu_container .marble_menu:after {
-    content: '';
-    position: absolute;
-    display: block;
-    width: 35px;
-    height: 0;
-    top: 5px;
-    left: 15px;
-    -webkit-box-shadow: 0 10px 0 1px #FFF, 0 16px 0 1px #FFF, 0 22px 0 1px #FFF;
-    box-shadow: 0 10px 0 1px #FFF, 0 16px 0 1px #FFF, 0 22px 0 1px #FFF;
-  }
-  .marble_menu_container .marble_menu .toplevel {
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 2500px;
-    transform: translateX(-2500px);
-  }
-  .marble_menu_container .marble_menu .toplevel a {
-    display: block;
-    height: 40px;
-    text-align: center;
-    line-height: 40px;
-    border-bottom: 1px solid #342716;
-  }
-  .marble_menu_container .marble_menu .with--sidebar .toplevel {
-    transform: translateX(0px);
-  }
-}
-@media only screen and (max-width: 991px) {
+@media (max-width: 991px) {
   body {
     min-width: 400px;
     font-size: 140%;
@@ -1675,7 +1655,7 @@ ul.paginator .index {
     display: none;
   }
 }
-@media only screen and (min-width: 992px) {
+@media (min-width: 992px) {
   .parallax {
     position: absolute;
     opacity: 1;
@@ -2170,7 +2150,7 @@ ul.paginator .index {
     padding: 5px 20px 20px;
   }
 }
-@media only screen and (min-width: 992px) {
+@media (min-width: 992px) {
   #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu {
     margin: 0;
     padding: 0;
