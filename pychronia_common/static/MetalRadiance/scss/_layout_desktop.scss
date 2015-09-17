@@ -332,7 +332,7 @@ body {
                     border: 1px solid transparent; // $border_image_yellow_light
                 }*/
 
-                @import "_dropdown_menu.scss";
+                @import "_dropdown_menu_desktop.scss";
 
                 box-sizing: content-box !important; // for border-image fallback
                 min-width: 120px;

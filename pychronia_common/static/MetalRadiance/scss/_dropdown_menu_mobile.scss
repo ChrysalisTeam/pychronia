@@ -1,0 +1,29 @@
+
+
+ul.dropmenu {
+
+  a {
+      display: none;
+      color: #f5af09;
+      font-size: 18px;
+      text-decoration: none;
+      line-height: 27px;
+      padding: 0px 10px;
+      text-align: center;
+      float: none;
+
+      &:hover {
+          text-decoration: underline;
+      }
+
+  }
+
+  ul {
+      border: 1px solid #f5af09;
+  }
+
+  ul a {
+      background-color: #342716;  // sublinks only
+  }
+
+}

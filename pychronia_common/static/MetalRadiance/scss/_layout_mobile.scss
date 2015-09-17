@@ -5,8 +5,8 @@ body {
 
     min-width: 400px;
 
-    font-size: 140%;
-    line-height: 160%;
+    font-size: 110%;
+    line-height: 130%;
 
 
     &.full_background {
@@ -49,30 +49,13 @@ body {
     width: 100%;
     // NOPE background: #342716 url("img/backgrounds/mobile/menu-bg.jpg") repeat-x bottom center;
     text-align: center;
-    margin-top: -35px;
+    margin-top: -25px;
     position: relative;
     z-index: 2000; // below the title panel
+
     #main_menu {
         margin: 0 40px;
         display: table;
-        a {
-            display: none;
-            color: #f5af09;
-            font-size: 18px;
-            text-decoration: none;
-            line-height: 27px;
-            padding: 0px 10px;
-            text-align: center;
-            float: none;
-
-            &:hover {
-                text-decoration: underline;
-            }
-
-            a {
-                background: #342716;  // sublinks only
-            }
-        }
 
         .big_icon_panel {
             display: none;
@@ -82,10 +65,15 @@ body {
             display: table-cell;
             margin-top: 50px;
             height: 13px;
-                .marble_menu.floatable {
-                    position: fixed;
-                    top: 6%;
-                }
+
+            .marble_menu {
+                @import "_dropdown_menu_mobile.scss";
+            }
+
+            /*.marble_menu.floatable {
+                position: fixed;
+                top: 6%;
+            }*/
         }
     }
 }
@@ -107,7 +95,7 @@ body {
     p {
         text-decoration: none;
         font-size: 1em;
-        line-height: 14px;
+        line-height: 1.2em;
     }
     h1 {
         font-size: 20px;
