@@ -82,7 +82,7 @@
 				.css({
 					left: "-3px", // PAKAL
 					top: $topl.outerHeight()
-				})
+				}).data('sub', true)
 				.find('li > a, li > span')
 				.addClass('sublevel')
 				.parent()
@@ -90,10 +90,6 @@
 				.css({
 					top: 0
 				}).data('subsub', true);
-
-			$topl
-
-
 
 			//	IE fixes
 			if (isIE6) {
@@ -128,13 +124,22 @@
 					if (!subnav) return;
 					if ($(subnav).is(":animated")) return;
 
-					if ($.data(subnav, 'subsub')) {
+                    if ($.data(subnav, 'sub')) {
+                        var offset = window.innerWidth - ($(listit).offset().left + opts.maxWidth);
+
+                        console.log("SUBMENU", window.innerWidth, "and", $(listit).offset().left, "_", opts.maxWidth, "->", offset);
+
+                        offset = Math.min(-3, offset);
+                        subcss["left"] = offset;
+                    }
+					else if ($.data(subnav, 'subsub')) {
 						var distance  = $(listit).outerWidth(),
 							itemWidth = $(listit).offset().left + distance - menuX,
 							position  = (opts.maxWidth < itemWidth) ? "right" : "left";
 
 						subcss[position] = distance;
 					}
+
 					$(subnav).css(subcss);
 					$.data(subnav, 'stayOpen', true);
 
