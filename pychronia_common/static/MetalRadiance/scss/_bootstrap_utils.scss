@@ -14,6 +14,16 @@
 
 
 
+/* DON'T restrict to "screen" for now, since we have no layout for print and other media... */
+@mixin mobile-only {
+    @media (max-width: #{$screen-md-min - 1}) { @content; }
+}
+@mixin desktop-only {
+    @media (min-width: $screen-md-min) { @content; }
+}
+
+
+
 
 table.realtable {
 

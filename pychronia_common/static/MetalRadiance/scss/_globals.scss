@@ -23,10 +23,15 @@ $light_blue: #0104A2;
 $dark_blue: #0B0D6C;
 $old_blue: #464780;
 
+
+$lightest_green: #BAEBAF;
+$light_green: #55E736;
+$bright_green: #62CB4B;
+$medium_green: #408232;
 $dark_green: #386D2C;
 $darker_green: #336727;
 $darkest_green: #19490F;
-$old_green: #19490F;
+$old_green: #2F7362;
 
 $light_yellow: #D3C469;
 $medium_yellow: #9D8126;
@@ -97,15 +102,6 @@ $form_input_border_color: #aaa;
          url("#{$IMGS}fonts/black_chancery/BLKCHCRY.ttf") format("truetype");
     font-weight: normal;
     font-style: normal;
-}
-
-
-/* DON'T restrict to "screen" for now, since we have no layout for print and other media... */
-@mixin mobile-only {
-    @media (max-width: #{$screen-md-min - 1}) { @content; }
-}
-@mixin desktop-only {
-    @media (min-width: $screen-md-min) { @content; }
 }
 
 
