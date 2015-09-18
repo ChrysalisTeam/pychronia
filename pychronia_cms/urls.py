@@ -7,12 +7,23 @@ from cms.views import details
 from django.views.generic import RedirectView
 from django.core.urlresolvers import reverse_lazy
 from django.conf.urls.i18n import i18n_patterns
+from django.http.response import HttpResponse
 
 admin.autodiscover()
 
 
+ROBOTS_TEXT = """\
+User-agent: *
+Disallow: /static/ 
+Disallow: /media/ 
+Disallow: *.pdf  
+"""
+
+
 
 urlpatterns = patterns('',
+
+    (r'^robots.txt$', lambda r: HttpResponse(ROBOTS_TEXT, content_type="text/plain")),
 
     (r'^admin/', include(admin.site.urls)),
 
