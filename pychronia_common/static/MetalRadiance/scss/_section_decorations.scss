@@ -17,6 +17,7 @@
 }
 
 .post-it {
+    color: $scroll_text_color;
     padding: 4px;
     border-color: transparent;
     border-style: solid;
@@ -27,6 +28,7 @@
 
 
 .scroll_realistic {
+    color: $scroll_text_color;
     margin: 10px;
     padding: 0 10px;
     border-color: transparent;
@@ -37,6 +39,7 @@
 }
 
 .scroll_realistic_thin_ends {
+    color: $scroll_text_color;
     margin: 10px;
     min-width: 150px;
     padding: 0 10px;
@@ -48,6 +51,7 @@
 }
 
 .scroll_yellow_flat {
+    color: $scroll_text_color;
     margin: 10px;
     padding: 20px;
     border-color: transparent;
@@ -58,6 +62,7 @@
 }
 
 .scroll_yellow_rolled {
+    color: $scroll_text_color;
     margin: 10px 0;
     padding: 45px 20px;
     background: url('#{$IMGS}backgrounds/scroll_yellow_rolled.png');
@@ -98,7 +103,6 @@
         margin: -5px;
     }
 
-
     @mixin carved_square_frame {
         border-color: transparent;
         border-style: solid;
@@ -117,18 +121,13 @@
     }
 }
 @include mobile-only{
-    @mixin carved_square_frame {
+    .carved_square_frame_gold, .carved_square_frame_silver {
         display:none;
-    }
-    .carved_square_frame_gold {
-        @include carved_square_frame;
-    }
-    .carved_square_frame_silver {
-        @include carved_square_frame;
     }
 }
 
 .rice_paper_beige {
+    color: $scroll_text_color;
     padding: 5px 5px;
     background-image: url('#{$IMGS}backgrounds/seamless_paper_beige.jpg');
     box-shadow: 2px 2px 3px black;
@@ -136,6 +135,7 @@
 }
 
 .rice_paper_rose {
+    color: $scroll_text_color;
     padding: 5px 5px;
     background-image: url('#{$IMGS}backgrounds/seamless_paper_rose1.jpg');
     box-shadow: 2px 2px 3px black;
