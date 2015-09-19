@@ -24,7 +24,7 @@ ul.dropmenu {
             font-size: 25px; // MAX 31px, needs to be PRECISE, so no em.
 
             margin: 0;
-            padding: 0px 6px;
+            padding: 0px 4px;
             color: $title_white;
 
             list-style-type: none;
@@ -42,7 +42,7 @@ ul.dropmenu {
         /* all sublevels are in metal&glass tubes */
 
         li a, li span {
-            font-size: 20pt; // needs to be PRECISE, so no em.
+            font-size: 17pt; // needs to be PRECISE, so no em.
             background-color: transparent;
             border-color: transparent;
             border-style: solid;
