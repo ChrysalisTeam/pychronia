@@ -7,6 +7,11 @@
     outline: $medium_yellow ridge 2px;
 }
 
+@mixin mobile-fallback-border {
+    @include mobile-only {
+        border: 6px ridge $medium_yellow;
+    }
+}
 
 .marble_panel {
     border-color: transparent;
@@ -36,6 +41,7 @@
     border-width: 142px 63px 124px 71px;
     border-image: url('#{$IMGS}backgrounds/scroll_realistic.png') 142 63 124 71 fill stretch stretch;
     image-rendering: optimizequality;
+
 }
 
 .scroll_realistic_thin_ends {
@@ -86,9 +92,7 @@
     padding: 10px;
     border-color: transparent;
     border-style: solid;
-    @include mobile-only {
-        border: 6px ridge $medium_yellow;
-    }
+    @include mobile-fallback-border;
     @include desktop-only {
         border-width: 35px 40px 35px 40px; // only HALF of real border-image size here...
         border-image: url('#{$IMGS}backgrounds/antique_large_decorated_frame.png') 70 80 70 80 fill stretch;
@@ -102,26 +106,36 @@
         border-color: transparent;
         border-style: solid;
         border-width: 25px 27px 25px;
-        border-image: url('#{$IMGS}backgrounds/decorated_golden_frame.png') 25 27 25 fill stretch;
-        image-rendering: optimizequality;
-        margin: -5px;
+        @include mobile-fallback-border;
+        @include desktop-only {
+            border-image: url('#{$IMGS}backgrounds/decorated_golden_frame.png') 25 27 25 fill stretch;
+            image-rendering: optimizequality;
+            margin: -5px;
+        }
     }
 
     @mixin carved_square_frame {
         border-color: transparent;
         border-style: solid;
         border-width: 90px;
-        border-image: none 125 125 127 117 stretch;
-        image-rendering: optimizequality;
+        @include mobile-fallback-border;
+        @include desktop-only {
+            border-image: none 125 125 127 117 stretch;
+            image-rendering: optimizequality;
+        }
     }
 
     .carved_square_frame_gold {
         @include carved_square_frame;
-        border-image-source: url('#{$IMGS}backgrounds/carved_square_frame_gold.png') !important;
+        @include desktop-only {
+            border-image-source: url('#{$IMGS}backgrounds/carved_square_frame_gold.png') !important;
+        }
     }
     .carved_square_frame_silver {
         @include carved_square_frame;
-        border-image-source: url('#{$IMGS}backgrounds/carved_square_frame_silver.png') !important;
+        @include desktop-only {
+            border-image-source: url('#{$IMGS}backgrounds/carved_square_frame_silver.png') !important;
+        }
     }
 }
 @include mobile-only{
