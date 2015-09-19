@@ -122,9 +122,7 @@ body {
             margin: 0 0 20px 0;
         }
     }
-    .right, .float_right, .float-right, .floatright{
-        float: none;
-    }
+
     .main_frame_content {
         color: #ffeaa3;
         text-align: left;
@@ -136,11 +134,6 @@ body {
         }
         .zoomable > img {
             height: 250px;
-        }
-        .item_display {
-            height: 250px;
-            border-style: solid;
-            border-width: 5px;
         }
         .email_message.unread {
             color: black;

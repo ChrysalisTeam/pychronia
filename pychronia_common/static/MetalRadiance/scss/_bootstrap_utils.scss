@@ -22,3 +22,9 @@
     @media (min-width: $screen-md-min) { @content; }
 }
 
+.mobile-only {
+    @include desktop-only { display: none };
+}
+.desktop-only {
+    @include mobile-only { display: none };
+}

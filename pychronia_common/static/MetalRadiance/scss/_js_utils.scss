@@ -176,6 +176,10 @@
     /* fixes for iframe mess */
     max-width: 550px;
     max-height: 750px;
+
+    @include mobile-only {
+        border: 5px solid $medium_yellow;
+    }
 }
 
 
@@ -200,6 +204,7 @@
     }
 
     img.slideshow_image {
+        width: 90%;
         max-width: 550px;
         max-height: 750px;
         display: block;
@@ -208,13 +213,14 @@
 
 
     blockquote {
-        width: 70%;
+        max-width: 600px;
+        width: 90%;
     }
 
     .counter {
         display:block;
         position:absolute;
-        top: 0;
+        top: 5px;
         right:0;
         font-weight:bold;
         font-size: 1.3em;
@@ -228,7 +234,9 @@
         }
     }
 
-
+    .slide {
+        clear: both;
+    }
 
 
     #toclist {
@@ -237,7 +245,7 @@
         font-size:1.8em;
         margin:5px 55px 5px 10px;
         padding:10px;
-        position:absolute;
+        float: left;
     }
 
     #toclist li{
