@@ -106,9 +106,8 @@
         padding: 16px !important;  // HACK to override fancybox styles
     }
 
-    .fancybox-outer {
-        /*width: 100% !important;
-        height: 100% !important;*/
+    .fancybox-inner {
+        margin: auto;
     }
 
     .fancybox-title-float-wrap .child {

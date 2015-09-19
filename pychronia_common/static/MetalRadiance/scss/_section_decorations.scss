@@ -86,12 +86,16 @@
     padding: 10px;
     border-color: transparent;
     border-style: solid;
-    border-width: 35px 40px 35px 40px; // only HALF of real border-image size here...
-    border-image: url('#{$IMGS}backgrounds/antique_large_decorated_frame.png') 70 80 70 80 fill stretch;
-    image-rendering: optimizequality;
-    margin: -5px;
-
+    @include mobile-only {
+        border: 6px ridge $medium_yellow;
     }
+    @include desktop-only {
+        border-width: 35px 40px 35px 40px; // only HALF of real border-image size here...
+        border-image: url('#{$IMGS}backgrounds/antique_large_decorated_frame.png') 70 80 70 80 fill stretch;
+        image-rendering: optimizequality;
+        margin: -5px;
+    }
+}
 
 @include desktop-only{
     .decorated_golden_frame {
