@@ -103,6 +103,7 @@
         background-color: transparent;
         box-shadow: none !important; // doesn't work with transparent borders
         border-width: 10px;
+        padding: 16px !important;  // HACK to override fancybox styles
     }
 
     .fancybox-outer {
