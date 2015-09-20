@@ -31,26 +31,6 @@
             </ul>
         </div>
 
-        <br/>
-
-        <div class="post-it full_width" style="font-size:0.8em;">
-            <strong>{% trans "System Notification" %}</strong>
-            <p>
-            {% if not article_ids %}
-                {% blocktrans %}
-                    Due to a very unfortunate overclocking attempt on our data servers,
-                    encyclopedia indexes have been entirely lost. We apologize for the inconvenience
-                    and do our best to get them back from backups.
-                {% endblocktrans %}
-            {% else %}
-                {% blocktrans %}
-                    Following the last database crash, we've managed to recover a tiny part of the encyclopedia index.
-                    We'll continue investigation when we have the budget for it, in one year or so.
-                {% endblocktrans %}
-            {% endif %}
-            </p>
-        </div>
-
         {% usekwacro side_panel_end %}
     {% endif %}
 
@@ -87,9 +67,30 @@
         {% endif %}
 
         {% if not entry and not search_results %}
+
             {% blocktrans %}
                 Please use the side controls to find whatever science you still lack.
             {% endblocktrans %}
+
+
+            <div class="post-it full_width" style="font-size:0.8em;">
+                <strong>{% trans "System Notification" %}</strong>
+                <p>
+                {% if not article_ids %}
+                    {% blocktrans %}
+                        Due to a very unfortunate overclocking attempt on our data servers,
+                        encyclopedia indexes have been entirely lost. We apologize for the inconvenience
+                        and do our best to get them back from backups.
+                    {% endblocktrans %}
+                {% else %}
+                    {% blocktrans %}
+                        Following the last database crash, we've managed to recover a tiny part of the encyclopedia index.
+                        We'll continue investigation when we have the budget for it, in one year or so.
+                    {% endblocktrans %}
+                {% endif %}
+                </p>
+            </div>
+
         {% endif %}
 
 {% endblock %}
