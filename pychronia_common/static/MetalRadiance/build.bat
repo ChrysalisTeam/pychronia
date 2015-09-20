@@ -1,8 +1,12 @@
 :loop
 
-python -m scss scss/metalradiance.scss -o metalradiance.css -I scss -I ../bootstrap-sass/assets/stylesheets -I ../bootstrap-sass/assets/stylesheets/bootstrap -C
+rem python -m scss scss/metalradiance.scss -o metalradiance.css -I scss -I ../bootstrap-sass/assets/stylesheets -I ../bootstrap-sass/assets/stylesheets/bootstrap -C
+rem TIMEOUT /T 5
+rem goto loop
 
-rem python -m scss -r -C -I scss -w .\scss -o . --debug-info
+rem BEWARE - watchdog only recompiles *.scss files WITHOUT underscore prefix, so "touch" metalradiance.scss to trigger it 
+python -m scss -w scss -o . -I scss -I ../bootstrap-sass/assets/stylesheets -I ../bootstrap-sass/assets/stylesheets/bootstrap -C
 
-TIMEOUT /T 5
-goto loop
+rem : --debug-info
+
+
