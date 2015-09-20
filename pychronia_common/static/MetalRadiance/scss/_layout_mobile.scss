@@ -3,6 +3,8 @@
 
 body {
 
+    @include light-texts;
+
     min-width: 400px;
 
     font-size: 110%;
@@ -92,6 +94,7 @@ body {
     border-image: url("img/backgrounds/mobile/frame.jpg") 14 fill repeat;
     image-rendering: optimizequality;
     margin: 4px 10px;
+
     p {
         text-decoration: none;
     }

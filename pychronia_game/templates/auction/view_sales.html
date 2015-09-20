@@ -51,13 +51,13 @@ while the total value of proposed items is <strong>{{ total_items_price }}</stro
 
 
 	    	<td>
-	    	{{ item_details.auction|default:"X" }}
+	    	    <b>{{ item_details.auction|default:"X" }}</b>
 	    	</td>
 
 	    	<td class="rowrow" >
-    		     <a href="{% game_file_url item_details.image %}" class="fancybox">
-    		         <img class="thumbnail" title="{{ item_details.title }}" src="{% game_file_img item_details.image alias="item_avatar" %}"/>
-    		     </a>
+    		    <a href="{% game_file_url item_details.image %}" class="fancybox">
+    		        <img class="thumbnail" title="{{ item_details.title }}" src="{% game_file_img item_details.image alias="item_avatar" %}"/>
+    		    </a>
 	    	</td>
 
 

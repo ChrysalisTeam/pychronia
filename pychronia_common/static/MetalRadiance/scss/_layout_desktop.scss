@@ -34,6 +34,8 @@
 
 body {
 
+    @include dark-texts;
+
     min-width: 1000px;
 
 
