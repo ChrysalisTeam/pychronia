@@ -206,10 +206,16 @@ def ajax_get_next_audio_message(request):
 
 @register_view(access=UserAccess.anonymous, requires_global_permission=False, title=ugettext_lazy("Pangea Webradio"))
 def personal_webradio_page(request, template_name='information/web_radio_page.html'):
+
+    dm = request.datamanager
+    current_playlist = dm.get_all_next_audio_messages()
+    current_audio_messages = [dm.get_audio_message_properties(audio_id) for audio_id in current_playlist]
+
     return render(request,
                   template_name,
                     {
                      'page_title': _("Pangea Webradio"),
+                     'playlist': current_audio_messages,
                     })
 
 

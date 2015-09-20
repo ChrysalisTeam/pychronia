@@ -14,6 +14,17 @@
      <br/>
     </div>
 
+    {% if playlist %}
+    <h2>{% trans "Standalone radio spots" %}</h2>
+    <div>
+       <ul>
+           {% for properties in playlist %}
+               <li><a href="{{ properties|determine_asset_url }}">{{ forloop.counter }} - {{ properties.title }}</a></li>
+           {% endfor %}
+       </ul>
+    </div>
+    {% endif %}
+
 {% endblock %}
 
 
