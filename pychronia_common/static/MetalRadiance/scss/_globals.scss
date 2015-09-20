@@ -10,8 +10,7 @@ $IMGS: unquote("img/"); // use for every path relative to css file
 
 $main_brass_color: #AC8B28; // color applied to most decorations after desaturation
 
-$text_color: black;
-$alt_text_color: white;
+$white_text_color: white;
 
 $drop_cap: #775F13;
 
@@ -37,6 +36,10 @@ $light_yellow: #D3C469;
 $medium_yellow: #9D8126;
 $dark_yellow: #775F13;
 $old_yellow: #A79353;
+
+$light_orange: #ffeaa3;
+$medium_orange: #f8d85b;
+$dark_orange: #f5af09;
 
 $border_image_yellow: #775F13;
 $border_image_yellow_light: #9D8126;
@@ -110,10 +113,39 @@ $scroll_text_color: black;
     text-shadow: 1px 1px 0 $bgcolor, -1px -1px 0 $bgcolor, 1px -1px 0 $bgcolor, -1px 1px 0 $bgcolor;
 }
 
+@mixin pretty_text {
+    text-align: justify;
+    text-indent: 15px;
+}
+
+@mixin light-texts {
+    color: $light_orange;
+    a {
+        //text-shadow: 1px 1px 0 $medium_yellow, -1px -1px 0 $medium_yellow;
+        &:link { color: $bright_green; }
+        &:visited, { color: $lightest_green; }
+        &:hover { color: $light_green; }
+        &:active { color: $light_green; }
+    }
+}
+
+@mixin dark-texts {
+    color: black;
+    a {
+        //text-shadow: 1px 1px 0 $medium_yellow, -1px -1px 0 $medium_yellow;
+        &:link { color: $dark_green; }
+        &:visited { color: $old_green; }
+        &:hover { color: $bright_green }
+        &:active { color: $bright_green }
+    }
+}
+
+
+
 
 @mixin header_common {
     @include text_shadow;
-    color: #BF9635; //#f4ed62; //#ac8b28; // #cc9933;
+    color: $medium_orange; //#f4ed62; //#ac8b28; // #cc9933;
     font-family: black_chancery, serif;
     margin: 2px;
     text-align: center;
@@ -121,10 +153,6 @@ $scroll_text_color: black;
 }
 
 
-@mixin pretty_text {
-    text-align: justify;
-    text-indent: 15px;
-}
 
 .pretty_text p, p.pretty_text{
     @include pretty_text;

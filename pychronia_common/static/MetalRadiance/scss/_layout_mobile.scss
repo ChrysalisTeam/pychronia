@@ -136,7 +136,7 @@ body {
 
 
     .main_frame_content {
-        color: #ffeaa3;
+        color: $light_orange; // fixme
         text-align: left;
 
         .zoomable > img {

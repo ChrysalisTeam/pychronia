@@ -90,7 +90,7 @@ table.realtable {
     tr:nth-child(odd) { background-color:#eed892; }
     tr:nth-child(even) { background-color:#F5DF8B; }
 
-    color: black;
+    @include dark-texts;
 
     @include mobile-only {
 
@@ -139,7 +139,6 @@ table.realtable {
             line-height:1.3em;
             font-family:Arial;
             font-weight:bold;
-            color:#ffffff;
         }
 
         thead th:first-child {

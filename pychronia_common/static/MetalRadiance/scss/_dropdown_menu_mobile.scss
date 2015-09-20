@@ -4,7 +4,7 @@ ul.dropmenu {
 
   a {
       display: none;
-      color: #f5af09;
+      color: $dark_orange;
       font-size: 18px;
       text-decoration: none;
       line-height: 27px;
@@ -19,7 +19,7 @@ ul.dropmenu {
   }
 
   ul {
-      border: 1px solid #f5af09;
+      border: 1px solid $dark_orange;
   }
 
   ul a {
