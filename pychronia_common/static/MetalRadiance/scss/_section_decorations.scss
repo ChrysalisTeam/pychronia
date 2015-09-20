@@ -147,17 +147,21 @@
 .rice_paper_beige {
     color: $scroll_text_color;
     padding: 5px 5px;
-    background-image: url('#{$IMGS}backgrounds/seamless_paper_beige.jpg');
-    box-shadow: 2px 2px 3px black;
-    image-rendering: optimizequality;
+    @include desktop-only {
+        background-image: url('#{$IMGS}backgrounds/seamless_paper_beige.jpg');
+        box-shadow: 2px 2px 3px black;
+        image-rendering: optimizequality;
+    }
 }
 
 .rice_paper_rose {
     color: $scroll_text_color;
     padding: 5px 5px;
-    background-image: url('#{$IMGS}backgrounds/seamless_paper_rose1.jpg');
-    box-shadow: 2px 2px 3px black;
-    image-rendering: optimizequality;
+    @include desktop-only {
+        background-image: url('#{$IMGS}backgrounds/seamless_paper_rose1.jpg');
+        box-shadow: 2px 2px 3px black;
+        image-rendering: optimizequality;
+    }
 }
 
 

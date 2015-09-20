@@ -112,16 +112,27 @@ body {
     .main_sidebar {
         // container for miniframes
         ///@extend .clearfix;
+        clear: both;
+
+        border-top: 2px solid $medium_yellow;
+        margin: 20px 0 0;
+        padding: 20px 10px 2px;
+
         line-height: 15px;
-        padding: 10px;
-        margin: 0; //-3px 0px 0px;
         overflow: hidden; // important, since jquery-sticky affects wrong widths because of box-sizing...
-        width: auto !important;
+        width: 100% !important;
+
         .mini_frame {
             // mini-frames that are inside sidebar must beware of their margins!
             margin: 0 0 20px 0;
         }
     }
+
+    .sidebar-sticky, .medium_frame, .big_frame, .giant_frame, .mini_frame, .mini_frame_content {
+        width: 100%;
+        clear: both;
+    }
+
 
     .main_frame_content {
         color: #ffeaa3;
@@ -141,12 +152,7 @@ body {
     display: none;
 }
 
-.icon_stick_top_right, .big_stick_top_right,
-.icon_stick_bottom_right, .big_stick_bottom_right,
-.icon_stick_bottom_left, .big_stick_bottom_left,
-.icon_stick_top_left, .big_stick_top_left {
-    display: none;
-}
+
 
 /** POTENTIALLY USELESS STUFFS ?? **/
 

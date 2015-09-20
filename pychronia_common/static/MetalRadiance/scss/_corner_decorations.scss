@@ -95,3 +95,20 @@
 }
 
 
+/* we hide ALL decorations for now, in mobile mode */
+@include mobile-only {
+    .stick_bottom_left, .stick_bottom_right,
+    .stick_top_left, .stick_top_right,
+    .big_stick_bottom_left, .big_stick_bottom_right,
+    .big_stick_top_left, .big_stick_top_right,
+    .icon_stick_bottom_left, .icon_stick_bottom_right,
+    .icon_stick_top_left, .icon_stick_top_right {
+        display: none !important;
+    }
+}
+
+
+
+
+
+
