@@ -116,10 +116,11 @@ body {
         // container for miniframes
         ///@extend .clearfix;
         clear: both;
+        position: static !important;
 
         border-top: 2px solid $medium_yellow;
         margin: 20px 0 0;
-        padding: 20px 10px 2px;
+        padding: 20px 0;
 
         line-height: 15px;
         overflow: hidden; // important, since jquery-sticky affects wrong widths because of box-sizing...
@@ -132,9 +133,16 @@ body {
     }
 
     .sidebar-sticky, .medium_frame, .big_frame, .giant_frame, .mini_frame, .mini_frame_content {
-        width: 100%;
+        width: 100% !important;
         clear: both;
         margin-bottom: 25px;
+    }
+    .sidebar-sticky, .sidebar-sticky .sticky {
+        position: static !important;
+        top: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        left: 0 !important;
     }
 
 
