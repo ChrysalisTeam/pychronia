@@ -120,7 +120,7 @@ body {
 
         border-top: 2px solid $medium_yellow;
         margin: 20px 0 0;
-        padding: 20px 0;
+        padding: 20px 0 0;
 
         line-height: 15px;
         overflow: hidden; // important, since jquery-sticky affects wrong widths because of box-sizing...
@@ -135,14 +135,19 @@ body {
     .sidebar-sticky, .medium_frame, .big_frame, .giant_frame, .mini_frame, .mini_frame_content {
         width: 100% !important;
         clear: both;
+    }
+
+    .medium_frame, .big_frame, .giant_frame, .mini_frame {
         margin-bottom: 25px;
     }
+
     .sidebar-sticky, .sidebar-sticky .sticky {
         position: static !important;
         top: 0 !important;
         right: 0 !important;
         bottom: 0 !important;
         left: 0 !important;
+        height: auto !important;  // else too much space at the bottom...
     }
 
 
@@ -161,9 +166,18 @@ body {
 
 
 #up_footer_wrapper, #low_footer_wrapper {
-    display: none;
+    display: block;
+    width: 100%;
+    text-align: center;
+    margin: 10px 0;
+    img {
+        vertical-align: baseline !important;
+    }
 }
 
+#up_footer_border_center {
+    display: none;
+}
 
 
 /** POTENTIALLY USELESS STUFFS ?? **/

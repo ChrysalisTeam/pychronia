@@ -497,6 +497,9 @@ body {
     font-size: 12px;
     line-height: 14px;
 
+    img {
+        vertical-align: middle !important;
+    }
 
     @mixin up_footer_common {
         margin: 0;
