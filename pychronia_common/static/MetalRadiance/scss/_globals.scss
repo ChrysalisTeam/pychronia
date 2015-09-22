@@ -293,10 +293,12 @@ img.center {
 
 .big_width {
     width: 600px !important;
+    max-width: 100% !important;
 }
 
 .medium_width {
     width: 400px !important;
+    max-width: 100% !important;
 }
 
 .small_width {
