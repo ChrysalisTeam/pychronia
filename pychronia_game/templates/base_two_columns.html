@@ -37,7 +37,8 @@
     {% block activate_floating_menu %}
         {% addtoblock "onload_js" %}
             $('.main_sidebar').hcSticky({
-                top: 20, // The distance from the top of the Window at which to trigger hcSticky.
+                responsive: false, // recompute stuffs on window resize
+                top: 0, // The distance from the top of the Window at which to trigger hcSticky.
                 bottom: 0, // The distance from the bottom of the Window at which to glue hcSticky.
                 bottomEnd: 0, // The distance from the bottom of the referring element at which to stop hcSticky.
                 bottomLimiter: null, // jQuery selector that selects element and calculates bottomEnd value based on its offset top position.
