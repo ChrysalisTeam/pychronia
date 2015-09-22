@@ -34,7 +34,7 @@
             {% trans "None" %}
         {% endif %}
 
-        <br/>
+        <br/><br/>
 
         <h2>{% trans "Character settings" %}</h2>
 
@@ -49,8 +49,8 @@
         {% for character_form in character_forms %}
 
         	<fieldset>
-    		<legend align=top>{{ character_form.target_username.value|capfirst }}</legend>
-    			<table style="margin:auto;width:600px;">
+    		<legend align=top><b>{{ character_form.target_username.value|capfirst }}</b></legend>
+    			<table class="realtable" style="width: 96%; margin: 20px auto;">
     			{{ character_form.as_table }}
     			</table>
     		</fieldset>

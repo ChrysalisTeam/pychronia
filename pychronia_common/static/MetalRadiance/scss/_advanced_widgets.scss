@@ -100,15 +100,19 @@ table.realtable {
         box-shadow: none;
         border: none;
 
-        tr:first-child {
+        thead, tfoot {
            display:none;
+        }
+
+        tbody {
+          // we leave tbody as is
         }
 
         tr {
             @include make-row();
         }
 
-        td {
+        th, td {
             @include make-xs-column(12);
 
             vertical-align:middle;
@@ -125,19 +129,17 @@ table.realtable {
 
     @include desktop-only {
 
-        .rowrow{
+        .preview-image{
             width:160px;
             background-color: white;
         }
 
         thead th {
             background-color:#E1B151;
-            border:0px solid #000000;
-            text-align:center;
+            border:0px solid #000000; // special border
             border-width:0px 0px 1px 1px;
             font-size:1.3em;
             line-height:1.3em;
-            font-family:Arial;
             font-weight:bold;
         }
 
@@ -149,7 +151,7 @@ table.realtable {
             border-width:0px 0px 1px 1px;
         }
 
-        td {
+        th, td {
             vertical-align:middle;
             border:1px solid #000000;
             border-width:1px 1px 1px 1px;
@@ -159,7 +161,6 @@ table.realtable {
             font-family:Arial;
             font-weight:normal;
             line-height:1.3em;
-            padding-top:30px;
         }
 
     }

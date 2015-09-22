@@ -100,6 +100,9 @@ h3 {
    font-size: 0.8em !important;
 }
 
+b, strong {
+    font-weight: bolder;
+}
 
 div, span, p {
     background-color: transparent;
@@ -222,10 +225,10 @@ textarea {
     .select2-drop,  // note that .select2-drop gets attached to BODY anyway
     .ui-dropdownchecklist-selector-wrapper, .ui-dropdownchecklist-dropcontainer,
     .markItUp {
+         color: $black_text_color;
          background-color: $color;
          background-image: none;
     }
-
 }
 
 body {
@@ -260,8 +263,13 @@ input[type=submit] {
 }
 
 fieldset {
-    border-color: $medium_yellow;
+    border: 2px groove $medium_yellow;
     margin: 5px auto;
+
+    legend {
+        margin: 0 10px;
+        padding: 0 5px;
+    }
 }
 
 /* Tag used for cms videos mainly */

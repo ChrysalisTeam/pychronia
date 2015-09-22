@@ -185,7 +185,7 @@ body {
 
                     font-size: 13px;
                     font-weight: bold;
-                    color: $black_color;
+                    color: $black_text_color;
 
                     @include text_shadow($white_color);
 
@@ -233,7 +233,7 @@ body {
             .carving{
 
                 font-size: 17px;
-                color: $white_color;
+                color: $white_text_color;
 
                 .marquee {
                   overflow: hidden;
@@ -408,7 +408,7 @@ body {
             image-rendering: optimizequality;
 
             & > p {
-                color: $white_color;
+                color: $white_text_color;
             }
         }
 
