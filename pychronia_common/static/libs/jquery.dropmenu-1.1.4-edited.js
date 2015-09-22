@@ -127,7 +127,7 @@
                     if ($.data(subnav, 'sub')) {
                         var offset = window.innerWidth - ($(listit).offset().left + opts.maxWidth);
 
-                        console.log("SUBMENU", window.innerWidth, "and", $(listit).offset().left, "_", opts.maxWidth, "->", offset);
+                        //console.log("SUBMENU", window.innerWidth, "and", $(listit).offset().left, "_", opts.maxWidth, "->", offset);
 
                         offset = Math.min(-3, offset);
                         subcss["left"] = offset;
