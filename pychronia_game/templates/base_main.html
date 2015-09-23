@@ -421,12 +421,15 @@
 
 {% block carving_left %}
 <div title="{% trans "Your current user login." %}">{# Use class="marquee" to make it scroll! #}
+<span class="mobile-only">{% trans "Effective identity" %} - </span>
 {{ user.username|capfirst }}
 </div>
 {% endblock %}
 
 
 {% block carving_right %}
+<div>
+<span class="mobile-only">{% trans "Novelties" %} - </span>
 <span>
 
     {% if not signal_new_menu_entries and not signal_new_text_messages and not signal_chatting_users %}
@@ -444,6 +447,7 @@
     {% endif %}
 
 </span>
+</div>
 {% endblock %}
 
 

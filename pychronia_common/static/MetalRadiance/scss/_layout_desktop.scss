@@ -77,6 +77,15 @@ body {
 }
 
 
+#mm-full_header {
+    // jquery.mmenu clone of header
+    display: none !important;
+}
+.mm-slideout {
+    // no opening of side-menu on desktop
+    transform: none !important;
+}
+
 #full_header {
     width: 100%;
     position: relative;

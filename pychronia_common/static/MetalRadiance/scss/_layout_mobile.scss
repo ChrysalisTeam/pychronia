@@ -19,6 +19,18 @@ body {
     }
 }
 
+
+
+#mm-full_header {
+    // jquery.mmenu clone of header
+    #mm-site_title {
+        display: none;
+    }
+    #mm-notification_table {
+        margin: 10px 0;
+    }
+}
+
 #full_header {
     width: 100%;
     position: relative;
@@ -46,6 +58,7 @@ body {
 
     }
 }
+
 
 #full_menu {
     width: 100%;

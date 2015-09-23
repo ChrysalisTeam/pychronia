@@ -15,6 +15,7 @@
     <link href="{{ STATIC_URL }}libs/fancybox/jquery.fancybox.css" rel="stylesheet" type="text/css" />
     <link href="{{ STATIC_URL }}libs/fasw.transitions/transition.css" rel="stylesheet" type="text/css"/>
     <link href="{{ STATIC_URL }}libs/jquery-jplayer-2.3.0/blue.monday/jplayer.blue.monday.css" rel="stylesheet" type="text/css"/>
+    <link href="{{ STATIC_URL }}libs/jquery-mmenu/dist/core/css/jquery.mmenu.all.css" type="text/css" rel="stylesheet" />
 
     <!--[if lte IE 9]>
 
@@ -59,6 +60,9 @@
     <script src="{{ STATIC_URL }}libs/jquery-jplayer-2.3.0/jquery.jplayer.min.js" type="text/javascript"></script>
     <script src="{{ STATIC_URL }}libs/jquery-jplayer-2.3.0/add-on/jplayer.playlist.min.js" type="text/javascript"></script>
     <script src="{{ STATIC_URL }}libs/jnotify/lib/jquery.jnotify.js" type="text/javascript"></script>
+    <script src="{{ STATIC_URL }}libs/hammer.js" type="text/javascript"></script>
+    <script src="{{ STATIC_URL }}libs/jquery-mmenu/dist/core/js/jquery.mmenu.min.all.js" type="text/javascript"></script>
+
 
     <script src="{{ STATIC_URL }}libs/audioplayer/audio-player.js" type="text/javascript"></script>
     <script type="text/javascript">
@@ -386,7 +390,7 @@
 
 
 
-    INIT_JS = function() {
+    var INIT_JS = function() {
 
             if (typeof my_fast_transitions == 'undefined' && 0) {  // JS PAGE TRANSITIONS DISABLED ATM
                 my_fast_transitions = new ft({ /* data-ftrans attr must be set to slide/slideup/slidedown/fade/flip/pop */
@@ -395,6 +399,25 @@
                         "cBa" : INIT_JS,      //callback function, with newly defined body
                 }); // nifty javascript transitions between pages
             }
+
+
+            $("#full_header").mmenu({
+                                       navbar: {
+                                           add: true,
+                                           title: "{{ _('Controls')|escapejs }}",
+                                           titleLink: null
+                                       },
+                                       // options : http://mmenu.frebsite.nl/documentation/options/
+                                       dragOpen: {
+                                           open: $.mmenu.support.touch  // only on touch devices
+                                       }
+                                    },
+                                    {
+                                       // configuration : http://mmenu.frebsite.nl/documentation/options/configuration.html
+                                       clone: true
+                                    });
+            var API = $("#full_header").data( "mmenu" );
+            //API.open();
 
             $('#menulist').dropmenu(
                 {
@@ -485,7 +508,8 @@
                                                           //   count     - the number of items left in queue
                                                           //   callback  - a function you must execute once your transition has executed
                                                           //   options   - the options used for this jnotify instance
-        }
+        };
+
         $.jnotify.setup(jnotify_options);
 
         /*TESTS
@@ -508,7 +532,7 @@
 
         {% render_block "onload_js" %}
 
-        }
+        };
 
        $(document).ready(INIT_JS); // only called on full page loading, not on ajax-based fast-transitions
     </script>
