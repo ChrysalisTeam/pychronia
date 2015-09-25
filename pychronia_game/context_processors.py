@@ -64,6 +64,11 @@ def pychronia_template_context(request):
         if len(levels) == 1:
             notification_type = levels[0]
 
+        # TEST of notifications:
+        #notification_type = "success"  # or info/warning/error
+        #notifications = ["heelqsdqsdqsdq sdqdqsdq rle \n qsdqsdqsd dfgdfgdfg dfgdfg dfgdfg dfg  sdfsdfsdf sdfsdfsdf ",
+        #                 "sdfqjidqksd sdqkj qsdkqsdjk qsd \n qsdqsdqsd",
+        #                 "sdfs sdf ghhgh fgh fghfgh fghfg fghgh fghfghfgh fghfgh "]
 
         action_explanations = request.processed_view.get_game_actions_explanations()
 

@@ -166,26 +166,25 @@
 
     {% block body_top %}{% endblock %}
 
+    {% block notification_banners %}
+        {% if notifications %}
+        <div class="notification_panel {{ notification_type|default:"mixed" }}">
+            <div class="notification_panel_decorations">
+                <div class="notification_panel_content">
+                   {% for message in notifications %}
+                       <p>{{ message|linebreaksbr }}</p>
+                   {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    {% endblock %}
 
     <div id="full_header">
 
         <div id="full_header_background">
 
         	<div id="full_header_center">
-
-	            {% block notification_banners %}
-	                {% if notifications %}
-                    <div class="notification_panel {{ notification_type|default:"mixed" }}">
-                        <div class="notification_panel_decorations">
-                            <div class="notification_panel_content">
-                               {% for message in notifications %}
-                                   <p>{{ message|linebreaksbr }}</p>
-                               {% endfor %}
-                            </div>
-                        </div>
-                    </div>
-                    {% endif %}
-                {% endblock %}
 
 	            <div id="title_table">
 	                {% block top_left_motto %}<div class="motto left_image"></div>{% endblock %}
