@@ -267,25 +267,6 @@ body .notification_panel {
                 position: center;
             }
 
-            .positioner {
-                display: block !important;
-                position: relative !important;
-
-                .novelty_mark {
-                    display: block;
-                    font-size: 40px;
-                    color: $light_yellow;
-                    font-weight: bold;
-                    font-style: italic;
-                    text-shadow: 1px 1px 0 $white_color, -1px -1px 0 $white_color, -1px 1px 0 $white_color, 1px -1px 0 $white_color;
-                    font-family: black_chancery, serif;
-                    position: absolute;
-                    right: 15px;
-                    bottom: 4px;
-                    text-decoration: blink;
-                    border: none !important;
-                  }
-            }
 
             img {
                /* display: inline-block;

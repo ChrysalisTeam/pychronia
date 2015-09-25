@@ -27,11 +27,36 @@ body .notification_panel {
         display: block;
         width: 100%;
 
-        padding: 5px 73px 28px;
+        padding: 5px 73px 12px;
 
         .notification_panel_content {
             opacity: 1;
             overflow: visible;
+        p {
+            margin: 4px 0;
+        }
        }
+    }
+}
+
+.big_icon_panel {
+    .positioner {
+        display: block !important;
+        position: relative !important;
+
+        .novelty_mark {
+            display: block;
+            font-size: 40px;
+            color: $light_yellow;
+            font-weight: bold;
+            font-style: italic;
+            text-shadow: 1px 1px 0 $white_color, -1px -1px 0 $white_color, -1px 1px 0 $white_color, 1px -1px 0 $white_color;
+            font-family: black_chancery, serif;
+            position: absolute;
+            right: 15px;
+            bottom: 4px;
+            text-decoration: blink;
+            border: none !important;
+          }
     }
 }
