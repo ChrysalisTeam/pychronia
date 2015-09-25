@@ -476,32 +476,32 @@
 
          jnotify_options = {
               // define core settings
-                type: ""                                  // if a type is specified, then an additional class of classNotification
+              type: "",                                  // if a type is specified, then an additional class of classNotification
                                                           // + type is created for each notification
-              , delay: 3500                               // the default time to show each notification (in milliseconds)
-              , sticky: false                             // determines if the message should be considered "sticky" (user
+              delay: 3500,                              // the default time to show each notification (in milliseconds)
+              sticky: false,                             // determines if the message should be considered "sticky" (user
                                                           // must manually close notification)
-              , closeLabel: "&times;"                     // the HTML to use for the "Close" link
-              , showClose: true                           // determines if the "Close" link should be shown if notification is also sticky
-              , fadeSpeed: 1000                           // the speed to fade messages out (in milliseconds)
-              , slideSpeed: 250                           // the speed used to slide messages out (in milliseconds)
+              closeLabel: "&times;",                     // the HTML to use for the "Close" link
+              showClose: true,                           // determines if the "Close" link should be shown if notification is also sticky
+              fadeSpeed: 600,                           // the speed to fade messages out (in milliseconds)
+              slideSpeed: 250,                           // the speed used to slide messages out (in milliseconds)
 
               // define the class statements
-              , classContainer: "jnotify-container"       // className to use for the outer most container--this is where all the
+              classContainer: "jnotify-container",       // className to use for the outer most container--this is where all the
                                                           // notifications appear
-              , classNotification: "jnotify-notification" // className of the individual notification containers
-              , classBackground: "jnotify-background"     // className of the background layer for each notification container
-              , classClose: "jnotify-close"               // className to use for the "Close" link
-              , classMessage: "jnotify-message"           // className to use for the actual notification text container--this is
+              classNotification: "jnotify-notification", // className of the individual notification containers
+              classBackground: "jnotify-background",     // className of the background layer for each notification container
+              assClose: "jnotify-close",               // className to use for the "Close" link
+              classMessage: "jnotify-message",           // className to use for the actual notification text container--this is
                                                           // where the message is actually written
 
               // event handlers
-              , init: null                                // callback that occurs when the main jnotify container is created
-              , create: null                              // callback that occurs when when the note is created (occurs just before
+              init: null,                                // callback that occurs when the main jnotify container is created
+              create: null,                              // callback that occurs when when the note is created (occurs just before
                                                           // appearing in DOM)
-              , beforeRemove: null                        // callback that occurs when before the notification starts to fade away
-              , remove: null                              // callback that occurs when notification is removed
-              , transition: null                          // allows you to overwrite how the transitions between messages are handled
+              beforeRemove: null,                        // callback that occurs when before the notification starts to fade away
+              remove: null,                              // callback that occurs when notification is removed
+              transition: null                          // allows you to overwrite how the transitions between messages are handled
                                                           // receives the following arguments:
                                                           //   container - jQuery object containing the notification
                                                           //   message   - jQuery object of the actual message
@@ -512,11 +512,11 @@
 
         $.jnotify.setup(jnotify_options);
 
-        /*TESTS
-        $.jnotify("mehello", "success");
-        $.jnotify("mehello", "warning");
-        $.jnotify("mehello", "error");
-        $.jnotify("mehello", "");*/
+        /* TESTS of JNOTIFY
+        $.jnotify("mehello", "success", true);
+        $.jnotify("mehello", "warning", true);
+        $.jnotify("mehello", "error", true);
+        $.jnotify("mehello", "", true);*/
 
 
         $(".notification_panel").css( 'cursor', 'pointer' );
@@ -529,12 +529,11 @@
         });
 
 
-
         {% render_block "onload_js" %}
 
-        };
+    };
 
-       $(document).ready(INIT_JS); // only called on full page loading, not on ajax-based fast-transitions
+    $(document).ready(INIT_JS); // only called on full page loading, not on ajax-based fast-transitions
     </script>
 
     {% block body_bottom %}{% endblock %}
