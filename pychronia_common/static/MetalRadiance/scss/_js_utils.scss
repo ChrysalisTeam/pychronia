@@ -122,6 +122,9 @@
 
     .fancybox-inner {
         margin: auto;
+        @include mobile-only {
+            width: 100% !important;
+        }
     }
 
     .fancybox-title-float-wrap .child {

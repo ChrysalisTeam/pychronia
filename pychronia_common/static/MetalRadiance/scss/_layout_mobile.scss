@@ -40,6 +40,11 @@ body {
     }
 }
 
+/* actually unused
+#mobile-top-widgets {
+    padding: 20px 5px;
+}*/
+
 #full_header {
     width: 100%;
     position: relative;
@@ -76,12 +81,13 @@ body {
     z-index: 2000; // below the title panel
 
     #main_menu {
-        margin: 0 40px;
+        margin: 0 20px;
         display: table;
 
         .big_icon_panel {
-            display: none;
+            margin: 10px 10px 5px;
         }
+
         .marble_menu_container {
             width: 100%;
             display: table-cell;

@@ -454,14 +454,14 @@
 {% block left_big_icon_panel %}
 {% if 1 %}
 <a onclick="open_webradio_popup(); return false;" href="#">
-<div title="{% trans "Pangea webradio is currently ONLINE" %}" class="big_icon_panel">
+<div title="{% trans "Pangea webradio is currently ONLINE" %}" class="big_icon_panel desktop-only">
     <div class="positioner">
         <img src="{{ STATIC_URL }}MetalRadiance/img/icons/radio.png"/>{% if signal_new_radio_messages %}<span class="novelty_mark">!</span>{% endif %}
     </div>
 </div>
 </a>
 {% else %}
-<div title="{% trans "Pangea webradio is currently OFFLINE" %}" class="big_icon_panel">
+<div title="{% trans "Pangea webradio is currently OFFLINE" %}" class="big_icon_panel desktop-only">
     <img src="{{ STATIC_URL }}MetalRadiance/img/icons/radio_disabled.png"/>
 </div>
 {% endif %}
