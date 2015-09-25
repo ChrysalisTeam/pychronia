@@ -6,7 +6,7 @@
 
 {% kwacro shareable_link_float link_url %}
 <span class="float-right">
-    <a title="{% trans "Share" %}" Zhref="#" onclick="window.prompt ('{{ _("Shareable link to copy/paste")|escapejs }}', '{{SITE_DOMAIN}}{{link_url}}'); return false;">
+    <a title="{% trans "Share" %}" href="#" onclick="window.prompt ('{{ _("Shareable link to copy/paste")|escapejs }}', '{{SITE_DOMAIN}}{{link_url}}'); return false;">
         <img src="{{ STATIC_URL }}MetalRadiance/img/icons/share_link.png">
     </a>
 </span>
