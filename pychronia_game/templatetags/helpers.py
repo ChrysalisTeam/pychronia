@@ -301,6 +301,23 @@ def rich_text(context, content, initial_header_level=None, report_level=None, ex
 
 
 
+@register.simple_tag
+def fontawesome_icon(icon, large=True, fixed=False, spin=False, li=False,
+    rotate=False, border=False, color=False):
+
+    return '<i class="{prefix} {prefix}-{icon}{large}{fixed}{spin}{li}{rotate}{border}"{color}></i>'.format(
+        prefix='fa',
+        icon=icon,
+        large=' fa-lg' if large is True else '',
+        fixed=' fa-fw' if fixed else '',
+        spin=' fa-spin' if spin else '',
+        li=' fa-li' if li else '',
+        rotate=' fa-rotate-%s' % str(rotate) if rotate else '',
+        border=' fa-border' if border else '',
+        color='style="color:%s;"' % color if color else ''
+    )
+
+
 '''
 @register.simple_tag(takes_context=True)
 def static_page(context, article_name, initial_header_level=None):
