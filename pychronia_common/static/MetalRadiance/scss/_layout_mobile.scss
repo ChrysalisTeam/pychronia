@@ -21,6 +21,15 @@ body {
 
 
 
+.mm-menu, .mm-menu .mm-navbar > *, .mm-menu .mm-navbar a,
+.mm-panels, .mm-panels > .mm-panel {
+    background-color: $background_green;
+    @include light-texts;
+}
+.mm-menu .mm-navbar a {
+    font-weight: bold;
+}
+
 #mm-full_header {
     // jquery.mmenu clone of header
     #mm-site_title {
