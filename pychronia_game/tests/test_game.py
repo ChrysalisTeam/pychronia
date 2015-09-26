@@ -756,7 +756,7 @@ class TestDatamanager(BaseGameTestCase):
 
         assert GameDataManager.set_game_state._is_always_writable == True # even if master bypasses constraints here
         assert GameDataManager.sync_game_view_data._is_always_writable == True
-        assert GameDataManager.set_message_read_state._is_always_writable == True
+        assert GameDataManager.set_dispatched_message_state_flags._is_always_writable == True
 
 
     def test_zodb_conflict_retrier(self):
@@ -2243,13 +2243,13 @@ class TestDatamanager(BaseGameTestCase):
         msg_id2 = self.dm.get_all_dispatched_messages()[3]["id"] # sent to external contact
 
         """ # NO PROBLEM with wrong msg owner
-        self.assertRaises(Exception, self.dm.set_message_read_state, MASTER, msg_id1, True)
-        self.assertRaises(Exception, self.dm.set_message_read_state, "guy2", msg_id1, True)
-        self.assertRaises(Exception, self.dm.set_message_read_state, "guy1", msg_id2, True)
+        self.assertRaises(Exception, self.dm.set_dispatched_message_state_flags, MASTER, msg_id1, has_read=True)
+        self.assertRaises(Exception, self.dm.set_dispatched_message_state_flags, "guy2", msg_id1, has_read=True)
+        self.assertRaises(Exception, self.dm.set_dispatched_message_state_flags, "guy1", msg_id2, has_read=True)
         """
 
         # wrong msg id
-        self.assertRaises(Exception, self.dm.set_message_read_state, "dummyid", False)
+        self.assertRaises(Exception, self.dm.set_dispatched_message_state_flags, "dummyid", has_read=False)
 
 
         # self.assertEqual(self.dm.get_all_dispatched_messages()[0]["no_reply"], False)
@@ -2259,23 +2259,23 @@ class TestDatamanager(BaseGameTestCase):
 
         self.assertEqual(_get_first_dispatched_msg()["is_certified"], False)
         self.assertEqual(_get_first_dispatched_msg()["has_read"], ["guy2"])
-        self.dm.set_message_read_state("guy3", msg_id1, True)
-        self.dm.set_message_read_state("guy2", msg_id1, True)
+        self.dm.set_dispatched_message_state_flags("guy3", msg_id1, has_read=True)
+        self.dm.set_dispatched_message_state_flags("guy2", msg_id1, has_read=True)
 
         self.assertEqual(len(_get_first_dispatched_msg()["has_read"]), 2)
         self.assertTrue("guy2" in _get_first_dispatched_msg()["has_read"])
         self.assertTrue("guy3" in _get_first_dispatched_msg()["has_read"])
 
         self.assertEqual(self.dm.get_unread_messages_count("guy3"), 2)
-        self.dm.set_message_read_state("guy3", msg_id1, False)
+        self.dm.set_dispatched_message_state_flags("guy3", msg_id1, has_read=False)
         self.assertEqual(_get_first_dispatched_msg()["has_read"], ["guy2"])
         self.assertEqual(self.dm.get_unread_messages_count("guy3"), 3)
 
         self.assertEqual(self.dm.get_all_dispatched_messages()[3]["has_read"], ["guy4"])
-        self.dm.set_message_read_state(MASTER, msg_id2, True)
+        self.dm.set_dispatched_message_state_flags(MASTER, msg_id2, has_read=True)
         self.assertTrue(MASTER in self.dm.get_all_dispatched_messages()[3]["has_read"])
         self.assertEqual(self.dm.get_unread_messages_count(self.dm.get_global_parameter("master_login")), 0)
-        self.dm.set_message_read_state(MASTER, msg_id2, False)
+        self.dm.set_dispatched_message_state_flags(MASTER, msg_id2, has_read=False)
         self.assertEqual(self.dm.get_all_dispatched_messages()[3]["has_read"], ["guy4"])
         self.assertEqual(self.dm.get_unread_messages_count(self.dm.get_global_parameter("master_login")), 1)
 

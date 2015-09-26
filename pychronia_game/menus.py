@@ -361,7 +361,7 @@ def transaction_watcher(func, self, *args, **kwargs): #@NoSelf
 
     if not self.get_global_parameter("game_is_started"):
         # some state-changing methods are allowed even before the game starts !
-        #if func.__name__ not in ["set_message_read_state", "set_new_message_notification", "force_message_sending",
+        #if func.__name__ not in ["set_dispatched_message_state_flags", "set_new_message_notification", "force_message_sending",
         #                         "set_online_status"]:
         if getattr(func, "requires_global_permission", True):
             raise UsageError(_("This feature is unavailable at the moment"))

@@ -378,7 +378,7 @@ def ajax_set_message_read_state(request):
     msg_id = request.REQUEST.get("id", None)
     is_read = request.REQUEST.get("is_read", None) == "1"
 
-    request.datamanager.set_message_read_state(msg_id=msg_id, is_read=is_read)
+    request.datamanager.set_dispatched_message_state_flags(msg_id=msg_id, has_read=is_read)
 
     return HttpResponse("OK")
     # in case of error, a "500" code will be returned

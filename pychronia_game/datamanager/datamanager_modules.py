@@ -1815,7 +1815,7 @@ class TextMessagingCore(BaseDataManager):
                 parent_msg = self.get_dispatched_message_by_id(parent_id)
                 group_id = parent_msg["group_id"]
                 sender_username = self.get_username_from_email(sender_email) # character, or fallback to master
-                self._set_message_reply_state(sender_username, parent_msg, has_replied=True) # do not touch the READ state - must be done MANUALLY
+                self._set_dispatched_message_state_flags(sender_username, msg_id=parent_id, has_replied=True)  # do not touch the READ state - must be done MANUALLY
             except UsageError, e:
                 self.logger.error(e, exc_info=True)  # something ugly happened to messaging history ? let it be...
 
@@ -2606,11 +2606,10 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
 
 
 
-    def _set_dispatched_message_state_flags(self, username=CURRENT_USER, msg_id=None, **flags):
+    def _set_dispatched_message_state_flags(self, username, msg_id, **flags):
         # we don't care about whether user had the right to view msg or not, basically
         assert username and msg_id, (username, msg_id)
         utilities.check_is_subset(flags, self.EMAIL_BOOLEAN_FIELDS_FOR_USERS)
-        username = self._resolve_username(username) # username can be master login here !
         msg = self.get_dispatched_message_by_id(msg_id)
         for (k, v) in flags.items():
             assert v in (True, False)  # NOT NONE!
@@ -2619,23 +2618,10 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
             elif not v and username in msg[k]:
                 msg[k].remove(username)
 
-    def _set_message_reply_state(self, username=CURRENT_USER, msg=None, has_replied=None):
-        # we don't care about whether user had the right to view msg or not
-        username = self._resolve_username(username)
-        assert username and msg and has_replied is not None
-        if has_replied and username not in msg["has_replied"]:
-            msg["has_replied"].append(username)
-        elif not has_replied and username in msg["has_replied"]:
-            msg["has_replied"].remove(username)
-
     @transaction_watcher(always_writable=True)
-    def set_message_read_state(self, username=CURRENT_USER, msg_id=None, is_read=None):
-        """
-        OBSOLETE FUNCTION, TO BE REPLACED by _set_dispatched_message_state_flags!!
-        """
-        assert is_read is not None
-        self._set_dispatched_message_state_flags(username, msg_id, is_read=is_read)
-
+    def set_dispatched_message_state_flags(self, username=CURRENT_USER, msg_id=None, **flags):
+        username = self._resolve_username(username) # username can be master login here !
+        self._set_dispatched_message_state_flags(username=username, msg_id=msg_id, **flags)
 
     def _get_messages_visible_for_reason(self, reason, username):
         assert reason in VISIBILITY_REASONS
