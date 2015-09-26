@@ -427,6 +427,10 @@ def check_is_bool(value):
     usage_assert(isinstance(value, bool), value)
     return True
 
+def check_is_subset(value, main_set):
+    usage_assert(set(value) <= set(main_set), (value, main_set))
+    return True
+
 def check_is_list(value):
     usage_assert(isinstance(value, collections.Sequence), value)
     return True

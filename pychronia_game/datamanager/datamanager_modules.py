@@ -2606,14 +2606,18 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
 
 
 
-    def _set_message_read_state(self, username=CURRENT_USER, msg=None, is_read=None):
-        # we don't care about whether user had the right to view msg or not
-        username = self._resolve_username(username)
-        assert username and msg and is_read is not None
-        if is_read and username not in msg["has_read"]:
-            msg["has_read"].append(username)
-        elif not is_read and username in msg["has_read"]:
-            msg["has_read"].remove(username)
+    def _set_dispatched_message_state_flags(self, username=CURRENT_USER, msg_id=None, **flags):
+        # we don't care about whether user had the right to view msg or not, basically
+        assert username and msg_id, (username, msg_id)
+        utilities.check_is_subset(flags, self.EMAIL_BOOLEAN_FIELDS_FOR_USERS)
+        username = self._resolve_username(username) # username can be master login here !
+        msg = self.get_dispatched_message_by_id(msg_id)
+        for (k, v) in flags.items():
+            assert v in (True, False)  # NOT NONE!
+            if v and username not in msg[k]:
+                msg[k].append(username)
+            elif not v and username in msg[k]:
+                msg[k].remove(username)
 
     def _set_message_reply_state(self, username=CURRENT_USER, msg=None, has_replied=None):
         # we don't care about whether user had the right to view msg or not
@@ -2626,10 +2630,11 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
 
     @transaction_watcher(always_writable=True)
     def set_message_read_state(self, username=CURRENT_USER, msg_id=None, is_read=None):
-        username = self._resolve_username(username) # username can be master login here !
-        assert username and msg_id and is_read is not None
-        msg = self.get_dispatched_message_by_id(msg_id)
-        self._set_message_read_state(username, msg, is_read)
+        """
+        OBSOLETE FUNCTION, TO BE REPLACED by _set_dispatched_message_state_flags!!
+        """
+        assert is_read is not None
+        self._set_dispatched_message_state_flags(username, msg_id, is_read=is_read)
 
 
     def _get_messages_visible_for_reason(self, reason, username):
