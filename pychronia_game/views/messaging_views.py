@@ -9,7 +9,7 @@ from django.http import Http404, HttpResponseRedirect, HttpResponse
 from pychronia_game.utilities.select2_extensions import Select2TagsField
 from django.core.exceptions import ValidationError
 from pychronia_game.templatetags.helpers import format_enriched_text
-from pychronia_game.utilities import add_to_ordered_dict
+from pychronia_game import utilities
 import urllib
 
 
@@ -141,7 +141,7 @@ class MessageComposeForm(AbstractGameForm):
             sender.choice_tags = datamanager.sort_email_addresses_list(master_emails)
             assert sender.max_selection_size is not None
             sender.max_selection_size = 1
-            self.fields = add_to_ordered_dict(self.fields, 0, "sender", sender)
+            self.fields = utilities.add_to_ordered_dict(self.fields, 0, "sender", sender)
 
             ''' OBSOLETE CHOCIE FIELD
             _delay_values_minutes = [unicode(value) for value in [0, 5, 10, 15, 30, 45, 60, 120, 720, 1440]]
@@ -149,7 +149,7 @@ class MessageComposeForm(AbstractGameForm):
             _delay_values_minutes_choices = zip(_delay_values_minutes, _delay_values_minutes_labels)
            self.fields = add_to_ordered_dict(self.fields, 2, "delay_mn", forms.ChoiceField(label=_("Sending delay"), choices=_delay_values_minutes_choices, initial="0"))
             '''
-            self.fields = add_to_ordered_dict(self.fields, 2, "delay_h", forms.FloatField(label=_("Sending delay in hours (eg. 2.4)"), initial=0))
+            self.fields = utilities.add_to_ordered_dict(self.fields, 2, "delay_h", forms.FloatField(label=_("Sending delay in hours (eg. 2.4)"), initial=0))
 
         else:
             pass # no sender or delay_mn fields!
@@ -372,13 +372,18 @@ def conversation(request, template_name='messaging/conversation.html'):
 
 
 
-@register_view(attach_to=conversation, title=ugettext_lazy("Set Message Read State"))
-def ajax_set_message_read_state(request):
+@register_view(attach_to=conversation, title=ugettext_lazy("Set Message Boolean Flags"))
+def ajax_set_dispatched_message_state_flags(request):
     # to be used by AJAX
-    msg_id = request.REQUEST.get("id", None)
-    is_read = request.REQUEST.get("is_read", None) == "1"
+    msg_id = request.REQUEST.get("msg_id", None)
 
-    request.datamanager.set_dispatched_message_state_flags(msg_id=msg_id, has_read=is_read)
+    fields = request.datamanager.EMAIL_BOOLEAN_FIELDS_FOR_USERS
+
+    flags = {k: (request.REQUEST.get(k, None) in ("1", "true")) for k in fields if k in request.REQUEST}
+
+    utilities.usage_assert(msg_id)
+    utilities.usage_assert(flags)
+    request.datamanager.set_dispatched_message_state_flags(msg_id=msg_id, **flags)
 
     return HttpResponse("OK")
     # in case of error, a "500" code will be returned

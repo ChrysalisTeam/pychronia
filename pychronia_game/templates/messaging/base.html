@@ -27,19 +27,25 @@
     }
 
 
-    function set_message_read_state(msg_id, is_read) {
+    function ajax_set_dispatched_message_state_flags(msg_id, flags) {
 
-        $.post("{% game_view_url "pychronia_game.views.ajax_set_message_read_state" %}",
-                { id: msg_id,
-                  is_read: (is_read ? "1" : "0") },
+        flags.msg_id = msg_id;
+
+        $.post("{% game_view_url "pychronia_game.views.ajax_set_dispatched_message_state_flags" %}",
+                flags,
                 function(data){
-                    if (is_read) {
-                        $("#"+msg_id).removeClass("unread");
-                        $("#"+msg_id).addClass("read");
-                    } else {
-                        $("#"+msg_id).addClass("unread");
-                        $("#"+msg_id).removeClass("read");
+
+                    if ("has_read" in flags) {
+                        if (flags.has_read) {
+                            $("#"+msg_id).removeClass("unread");
+                            $("#"+msg_id).addClass("read");
+                        } else {
+                            $("#"+msg_id).addClass("unread");
+                            $("#"+msg_id).removeClass("read");
+                        }
                     }
+
+                    // COMPLETE FOR OTHER STATES
                 });
     }
 

@@ -44,7 +44,7 @@ from .info_views import (view_encyclopedia, view_static_page,
 from .profile_views import login, logout, secret_question, character_profile, friendship_management, game_events
 
 
-from .messaging_views import (ajax_set_message_read_state, ajax_force_email_sending, ajax_permanently_delete_message,
+from .messaging_views import (ajax_set_dispatched_message_state_flags, ajax_force_email_sending, ajax_permanently_delete_message,
                               conversation, view_single_message, compose_message, preview_message,
                               all_dispatched_messages, all_queued_messages, messages_templates)
 

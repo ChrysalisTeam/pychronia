@@ -61,10 +61,10 @@ OLD STUFFS BELOW
 
                 {% ifequal mode "inbox" %}
                 <span class="message_operation">
-                    <a class="mark_read_tag" onclick="set_message_read_state('{{ message.id|escapejs }}', true); return false;" href="#">
+                    <a class="mark_read_tag" onclick="ajax_set_dispatched_message_state_flags('{{ message.id|escapejs }}', {has_read: true}); return false;" href="#">
                         {% trans "Mark as read" %}
                     </a>
-                    <a class="mark_unread_tag" onclick="set_message_read_state('{{ message.id|escapejs }}', false); return false;" href="#">
+                    <a class="mark_unread_tag" onclick="ajax_set_dispatched_message_state_flags('{{ message.id|escapejs }}', {has_read: false}); return false;" href="#">
                         {% trans "Mark as unread" %}
                     </a>
                 </span>

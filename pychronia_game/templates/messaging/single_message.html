@@ -31,8 +31,8 @@
                 {# BEWARE - a valid 'message.id' is implied by some of these ctx flags! #}
 
                 {% if ctx.has_read != None %}
-                    <a class="mark_read_tag" title="{% trans "Mark as read" %}" onclick="set_message_read_state('{{ message.id|escapejs }}', true); return false;" href="#">{% fontawesome_icon "envelope" %}</a>
-                    <a class="mark_unread_tag" title="{% trans "Mark as unread" %}" onclick="set_message_read_state('{{ message.id|escapejs }}', false); return false;" href="#">{% fontawesome_icon "envelope-o" %}</a>
+                    <a class="mark_read_tag" title="{% trans "Mark as read" %}" onclick="ajax_set_dispatched_message_state_flags('{{ message.id|escapejs }}', {has_read: true}); return false;" href="#">{% fontawesome_icon "envelope" %}</a>
+                    <a class="mark_unread_tag" title="{% trans "Mark as unread" %}" onclick="ajax_set_dispatched_message_state_flags('{{ message.id|escapejs }}', {has_read: false}); return false;" href="#">{% fontawesome_icon "envelope-o" %}</a>
                 {% endif %}
 
                 {% if ctx.can_force_sending %}
