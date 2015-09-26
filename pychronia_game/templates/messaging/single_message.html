@@ -35,6 +35,16 @@
                     <a class="mark_unread_tag" title="{% trans "Mark as unread" %}" onclick="ajax_set_dispatched_message_state_flags('{{ message.id|escapejs }}', {has_read: false}); return false;" href="#">{% fontawesome_icon "envelope-o" %}</a>
                 {% endif %}
 
+                {% if ctx.has_starred != None %}
+                    <a class="mark_star_tag" title="{% trans "Mark as starred" %}" onclick="ajax_set_dispatched_message_state_flags('{{ message.id|escapejs }}', {has_starred: true}); return false;" href="#">{% fontawesome_icon "star-o" %}</a>
+                    <a class="mark_nonstar_tag" title="{% trans "Mark as non-starred" %}" onclick="ajax_set_dispatched_message_state_flags('{{ message.id|escapejs }}', {has_starred: false}); return false;" href="#">{% fontawesome_icon "star" %}</a>
+                {% endif %}
+
+                {% if ctx.has_archived != None %}
+                    <a class="mark_archive_tag" title="{% trans "Mark as archived" %}" onclick="ajax_set_dispatched_message_state_flags('{{ message.id|escapejs }}', {has_archived: true}); return false;" href="#">{% fontawesome_icon "folder-o" %}</a>
+                    <a class="mark_archive_tag" title="{% trans "Mark as non-archived" %}" onclick="ajax_set_dispatched_message_state_flags('{{ message.id|escapejs }}', {has_archived: false}); return false;" href="#">{% fontawesome_icon "folder" %}</a>
+                {% endif %}
+
                 {% if ctx.can_force_sending %}
                     <a title="{% trans "Force sending" %}" onclick="force_email_sending('{{ message.id|escapejs }}', true); return false;" href="#">{% fontawesome_icon "paper-plane" %}</a>
                 {% endif %}

@@ -226,6 +226,8 @@ def _determine_template_display_context(datamanager, template_id, template):
                 visibility_reason=None,
                 intercepted_by=None,
                 can_transfer=False,
+                has_starred=None,  # useless for now
+                has_archived=None,
                 can_reply=False,
                 can_recontact=False,
                 can_force_sending=False,
@@ -252,11 +254,13 @@ def _determine_message_display_context(datamanager, msg, is_pending):
                 has_read=(username in msg["has_read"]) if not is_pending else None,
                 visibility_reason=visibility_reason,
                 intercepted_by=datamanager.get_characters_for_visibility_reason(msg, visibility_reason=VISIBILITY_REASONS.interceptor) if datamanager.is_master() else None,
+                can_transfer=True if not is_pending else None,
+                has_starred=(username in msg["has_starred"]) if not is_pending else None,
+                has_archived=(username in msg["has_archived"]) if not is_pending else None,
                 can_reply=(visibility_reason == VISIBILITY_REASONS.recipient) if not is_pending else None,
                 can_recontact=(visibility_reason == VISIBILITY_REASONS.sender) if not is_pending else None,
                 can_force_sending=is_pending,
                 can_permanently_delete=datamanager.is_master(),
-                can_transfer=True if not is_pending else None,
                 display_id=msg["id"], # USED IN UI controls!
                 force_recipients_display=(visibility_reason == VISIBILITY_REASONS.sender),
                 )
