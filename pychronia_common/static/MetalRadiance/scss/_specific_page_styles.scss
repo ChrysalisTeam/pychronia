@@ -138,13 +138,12 @@ input.digit
 }
 
 /* hide irrelevant message modification links */
-.email_message.unread .mark_unread_tag {
+.email_message.unread .mark_unread_tag, .email_message.read .mark_read_tag,
+.email_message.unstarred .mark_unstarred_tag, .email_message.starred .mark_starred_tag,
+.email_message.unarchived .mark_unarchived_tag, .email_message.archived .mark_archived_tag
+{
     display: none;
 }
-.email_message.read .mark_read_tag {
-    display: none;
-}
-
 
 .email_message .collapsed_content {
   display: none;
@@ -167,10 +166,11 @@ input.digit
 .message_operations {
     position: absolute;
     width: 100%;
-    top: -66px;
+    top: -70px;
     left: 5px;
     a {
-        margin-right: 15px;
+        margin-right: 10px;
+        text-decoration: none;
     }
     .fa {
         color: $darkest_green !important;  // font-awesome icons
@@ -179,8 +179,8 @@ input.digit
 
 .collapse_icon {
     position: absolute;
-    right: 5px;
-    top: -7px;
+    right: 3px;
+    top: -4px;
 }
 
 .shareable_message_link {

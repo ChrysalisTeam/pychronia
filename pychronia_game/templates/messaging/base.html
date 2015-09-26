@@ -35,16 +35,24 @@
                 flags,
                 function(data){
 
-                    if ("has_read" in flags) {
-                        if (flags.has_read) {
-                            $("#"+msg_id).removeClass("unread");
-                            $("#"+msg_id).addClass("read");
-                        } else {
-                            $("#"+msg_id).addClass("unread");
-                            $("#"+msg_id).removeClass("read");
-                        }
-                    }
+                    var flag;
+                    var allExistingFlags = ["read", "starred", "archived"];
+                    //console.log(">>>>>", allExistingFlags, flags);
 
+                    for (var i=0; i < allExistingFlags.length; i++) {
+                        flag = allExistingFlags[i];
+                        //console.log("========>", "has_"+flag, flags);
+                        if ("has_"+flag in flags) {
+
+                            if (flags["has_"+flag]) {
+                                $("#"+msg_id).removeClass("un"+flag);
+                                $("#"+msg_id).addClass(flag);
+                            } else {
+                                $("#"+msg_id).addClass("un"+flag);
+                                $("#"+msg_id).removeClass(flag);
+                            }
+                        }
+                    };
                     // COMPLETE FOR OTHER STATES
                 });
     }

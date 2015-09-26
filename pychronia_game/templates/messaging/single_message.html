@@ -21,7 +21,7 @@
 </div>
 -->
 
-<div id="{{ ctx.display_id }}" class="email_message {% if ctx.has_read or ctx.is_used %}read{% else %}unread{% endif %} {% if not is_first %}cover_previous{% endif %}">
+<div id="{{ ctx.display_id }}" class="email_message {% if ctx.has_read or ctx.is_used %}read{% else %}unread{% endif %} {% if ctx.has_starred %}starred{% else %}unstarred{% endif %} {% if ctx.has_archived %}archived{% else %}unarchived{% endif %} {% if not is_first %}cover_previous{% endif %}">
 
     <div>
 
@@ -36,14 +36,21 @@
                 {% endif %}
 
                 {% if ctx.has_starred != None %}
-                    <a class="mark_star_tag" title="{% trans "Mark as starred" %}" onclick="ajax_set_dispatched_message_state_flags('{{ message.id|escapejs }}', {has_starred: true}); return false;" href="#">{% fontawesome_icon "star-o" %}</a>
-                    <a class="mark_nonstar_tag" title="{% trans "Mark as non-starred" %}" onclick="ajax_set_dispatched_message_state_flags('{{ message.id|escapejs }}', {has_starred: false}); return false;" href="#">{% fontawesome_icon "star" %}</a>
+                    <a class="mark_starred_tag" title="{% trans "Mark as starred" %}" onclick="ajax_set_dispatched_message_state_flags('{{ message.id|escapejs }}', {has_starred: true}); return false;" href="#">{% fontawesome_icon "star-o" %}</a>
+                    <a class="mark_unstarred_tag" title="{% trans "Mark as non-starred" %}" onclick="ajax_set_dispatched_message_state_flags('{{ message.id|escapejs }}', {has_starred: false}); return false;" href="#">{% fontawesome_icon "star" %}</a>
                 {% endif %}
 
                 {% if ctx.has_archived != None %}
-                    <a class="mark_archive_tag" title="{% trans "Mark as archived" %}" onclick="ajax_set_dispatched_message_state_flags('{{ message.id|escapejs }}', {has_archived: true}); return false;" href="#">{% fontawesome_icon "folder-o" %}</a>
-                    <a class="mark_archive_tag" title="{% trans "Mark as non-archived" %}" onclick="ajax_set_dispatched_message_state_flags('{{ message.id|escapejs }}', {has_archived: false}); return false;" href="#">{% fontawesome_icon "folder" %}</a>
+                    <a class="mark_archived_tag" title="{% trans "Mark as archived" %}" onclick="ajax_set_dispatched_message_state_flags('{{ message.id|escapejs }}', {has_archived: true}); return false;" href="#">{% fontawesome_icon "folder-o" %}</a>
+                    <a class="mark_unarchived_tag" title="{% trans "Mark as non-archived" %}" onclick="ajax_set_dispatched_message_state_flags('{{ message.id|escapejs }}', {has_archived: false}); return false;" href="#">{% fontawesome_icon "folder" %}</a>
                 {% endif %}
+
+                {% if message.id %}
+                    {% assign name="msg_link" %}{% game_view_url "pychronia_game.views.view_single_message" msg_id=message.id %}{% endassign %}
+                    {% usekwacro shareable_link_font msg_link %}
+                {% endif %}
+
+                &nbsp;&nbsp;
 
                 {% if ctx.can_force_sending %}
                     <a title="{% trans "Force sending" %}" onclick="force_email_sending('{{ message.id|escapejs }}', true); return false;" href="#">{% fontawesome_icon "paper-plane" %}</a>
@@ -61,17 +68,10 @@
                     <a title="{% trans "Use template" %}" href="{% game_view_url "pychronia_game.views.compose_message" %}?use_template={{ ctx.template_id|urlencode }}">{% fontawesome_icon "edit" %}</a>
                 {% endif %}
 
-                {# POUR ARCHIVER :  "archive" icon #}
-                {# POUR TRIER :  "star" "star-o" "warning" icon #}
-
                 {% if ctx.can_permanently_delete %}
                     <a title="{% trans "Delete" %}" href="#" onclick="permanently_delete_message('{{ message.id|escapejs }}'); return false;" >{% fontawesome_icon "trash" %}</a>
                 {% endif %}
 
-                {% if message.id %}
-                    {% assign name="msg_link" %}{% game_view_url "pychronia_game.views.view_single_message" msg_id=message.id %}{% endassign %}
-                    {% usekwacro shareable_link_font msg_link %}
-                {% endif %}
 
                 <img class="collapse_icon" style="float: right" title="{% trans "Collapse this message" %}" onclick="$('#{{ ctx.display_id|escapejs }}').addClass('collapsed');" src="{{ STATIC_URL }}MetalRadiance/img/icons/collapse_green.png"/>
 
