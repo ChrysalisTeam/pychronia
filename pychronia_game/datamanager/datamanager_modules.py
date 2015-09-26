@@ -2316,7 +2316,7 @@ class TextMessagingTemplates(BaseDataManager):
 
         copied_fields = "sender_email recipient_emails mask_recipients subject body attachment transferred_msg".split()
         res.update({k: copy.copy(v) for (k, v) in msg.items() if k in copied_fields and v is not None})
-        
+
         return res
 
 
@@ -2324,6 +2324,8 @@ class TextMessagingTemplates(BaseDataManager):
 
 @register_module
 class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
+
+    EMAIL_BOOLEAN_FIELDS_FOR_USERS = ("has_read", "has_replied", "has_starred", "has_archived")
 
     def _load_initial_data(self, **kwargs):
         super(TextMessagingForCharacters, self)._load_initial_data(**kwargs)
@@ -2349,8 +2351,8 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
             if "@" not in msg["sender_email"]:
                 msg["sender_email"] = (msg["sender_email"] + "@" + pangea_network) # we allow short character usernames as sender/recipient
 
-            msg["has_read"] = msg.get("has_read", PersistentList())
-            msg["has_replied"] = msg.get("has_replied", PersistentList())
+            for field in self.EMAIL_BOOLEAN_FIELDS_FOR_USERS:
+                msg.setdefault(field, PersistentList())
 
             msg["visible_by"] = msg.get("visible_by", PersistentMapping())
             msg["visible_by"].update(self._determine_basic_visibility(msg)) # we might override here
@@ -2380,11 +2382,9 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
 
         utilities.check_is_slug(game_data["global_parameters"]["pangea_network_domain"])
 
-        message_reference = {
-                             "has_read": PersistentList,
-                             "has_replied": PersistentList,
-                             "is_certified": bool, # for messages sent via automated processes
-                             }
+        message_reference = {field: PersistentList for field in self.EMAIL_BOOLEAN_FIELDS_FOR_USERS}
+        message_reference["is_certified"] = bool  # for messages sent via automated processes
+
 
         def _check_message_list(msg_list, is_queued):
 
@@ -2396,8 +2396,8 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
 
                 all_chars = game_data["character_properties"].keys()
                 all_users = all_chars + [game_data["global_parameters"]["master_login"]]
-                assert all((char in all_users) for char in msg["has_read"]), msg["has_read"]
-                assert all((char in all_users) for char in msg["has_replied"]), msg["has_replied"]
+                for field in self.EMAIL_BOOLEAN_FIELDS_FOR_USERS:
+                    assert all((char in all_users) for char in msg[field]), msg[field]
 
                 potential_viewers = self.get_character_usernames() + [self.master_login] # master_login is set if NPCs were concerned
                 for username, reason in msg["visible_by"].items():
@@ -2448,10 +2448,11 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
 
         is_read = kwargs.get("is_read", False) # we expect it in keyword args... bring on py3k plz
 
-        assert "has_read" not in msg and "has_replied" not in msg and "visible_by" not in msg
-        msg.update({"has_read": PersistentList(),
-                    "has_replied": PersistentList(),
-                    "visible_by": PersistentMapping(), })
+        assert not any(field in msg for field in self.EMAIL_BOOLEAN_FIELDS_FOR_USERS)
+        msg.update({field: PersistentList() for field in self.EMAIL_BOOLEAN_FIELDS_FOR_USERS})
+
+        assert "visible_by" not in msg
+        msg["visible_by"] = PersistentMapping()
 
         if is_read: # workaround : we add ALL users to the "has read" list !
             msg["has_read"] = PersistentList(self.get_character_usernames() + [self.master_login])
@@ -2536,7 +2537,6 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
         username = self._resolve_username(username)
         my_email = self.get_character_email(username=username)
         return [email for email in self.get_character_emails() if email != my_email]
-
 
     @readonly_method
     def get_character_or_none_from_email(self, email):

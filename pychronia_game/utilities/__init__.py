@@ -583,12 +583,14 @@ def validate_value(value, validator):
 
 def check_dictionary_with_template(my_dict, template, strict=False):
     # checks that the keys and value types of a dictionary matches that of a template
+    #print("==> we check_dictionary_with_template", my_dict, template)
     if strict:
         assert_sets_equal(my_dict.keys(), template.keys())
     else:
         usage_assert(set(template.keys()) <= set(my_dict.keys()), comment=set(template.keys()) - set(my_dict.keys()))
 
     for key in template.keys():
+        #print("WE VALIDATE MORE PRECISELY", key, my_dict[key], template[key])
         validate_value(my_dict[key], template[key])
 
 
