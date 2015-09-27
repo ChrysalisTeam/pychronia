@@ -119,6 +119,7 @@ web_game_urlpatterns = patterns('pychronia_game.views',
     #url(r'^messages/inbox/$', 'inbox'),
     #url(r'^messages/outbox/$', 'outbox'),
     url(r'^messages/conversation/$', 'conversation'),
+    url(r'^messages/intercepted_messages/$', 'intercepted_messages'),
     url(r'^messages/all_dispatched_messages/$', 'all_dispatched_messages'),
     url(r'^messages/all_queued_messages/$', 'all_queued_messages'),
     #url(r'^messages/intercepted_messages/$', 'intercepted_messages'),
@@ -127,7 +128,6 @@ web_game_urlpatterns = patterns('pychronia_game.views',
     url(r'^messages/ajax_force_email_sending/$', 'ajax_force_email_sending'),
     url(r'^messages/view_single_message/(?P<msg_id>\w+)/$', 'view_single_message'),
     url(r'^messages/ajax_permanently_delete_message/$', 'ajax_permanently_delete_message'),
-
 
 
     url(r'^ability/abilities/$', 'ability_introduction'),

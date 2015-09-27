@@ -345,13 +345,15 @@ def messages_templates(request, template_name='messaging/messages.html'):
 @register_view(access=UserAccess.authenticated, requires_global_permission=False, title=ugettext_lazy("Conversations"))
 def conversation(request, template_name='messaging/conversation.html'):
 
-    CONVERSATIONS_LIMIT = 15
+    CONVERSATIONS_LIMIT = 30
 
     message_sent = (request.GET.get("message_sent") == "1")
 
     display_all_conversations = bool(request.GET.get("display_all", None) == "1")
 
-    messages = request.datamanager.get_user_related_messages() # for current master or character
+    visibility_reasons = (VISIBILITY_REASONS.sender, VISIBILITY_REASONS.recipient)  # we EXCLUDE intercepted messages from this
+    messages = request.datamanager.get_user_related_messages(visibility_reasons=visibility_reasons)  # for current master or character
+
     _grouped_messages = request.datamanager.sort_messages_by_conversations(messages)
     enriched_messages = _determine_message_list_display_context(request.datamanager, messages=_grouped_messages, is_pending=False)
     del _grouped_messages
@@ -373,6 +375,19 @@ def conversation(request, template_name='messaging/conversation.html'):
                        conversations=enriched_messages,
                        contact_cache=_build_contact_display_cache(request.datamanager),
                        message_sent=message_sent))
+
+
+@register_view(access=UserAccess.character, requires_global_permission=False, title=ugettext_lazy("Intercepted Messages"))  # master doesn't INTERCEPTED messages...
+def intercepted_messages(request, template_name='messaging/messages.html'):
+    visibility_reasons = [VISIBILITY_REASONS.interceptor]  # we EXCLUDE intercepted messages from this
+    messages = request.datamanager.get_user_related_messages(visibility_reasons=visibility_reasons)
+    messages = list(reversed(messages))
+    enriched_messages = _determine_message_list_display_context(request.datamanager, messages=messages, is_pending=False)
+    return render(request,
+                  template_name,
+                  dict(page_title=_("Intercepted Messages"),
+                       messages=enriched_messages,
+                       contact_cache=_build_contact_display_cache(request.datamanager)))
 
 
 

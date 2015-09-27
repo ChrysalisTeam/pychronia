@@ -2692,6 +2692,7 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
         """
         Considers ALL user-related messages.
         """
+        # FIXME !!!!!!!!!!!!!! OBSOLETED ???
         username = self._resolve_username(username)
         unread_msgs = [msg for msg in self.get_user_related_messages(username=username)
                            if username not in msg["has_read"]]

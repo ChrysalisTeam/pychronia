@@ -69,7 +69,7 @@ def _generate_web_menu(request, menu_entry_generator):
 
     if user.is_authenticated and (not processed_view or processed_view.NAME != views.conversation.NAME):
         unread_msgs_count = datamanager.get_unread_messages_count()
-        conversation_suffix = NBSP + u"(%d)" % unread_msgs_count
+        conversation_suffix = u"" ### TODO FIXME NBSP + u"(%d)" % unread_msgs_count
     else:
         conversation_suffix = u""
 
@@ -115,6 +115,7 @@ def _generate_web_menu(request, menu_entry_generator):
                          menu_entry(view=views.all_dispatched_messages), # master only
                          menu_entry(view=views.all_queued_messages), # master only
                          menu_entry(_(u"My conversations") + conversation_suffix, view=views.conversation), # suffix is the count of unread MESSAGES
+                         menu_entry(view=views.intercepted_messages),
                          menu_entry(view=views.messages_templates), # master only
                          menu_entry(view=views.compose_message),
                       )),
