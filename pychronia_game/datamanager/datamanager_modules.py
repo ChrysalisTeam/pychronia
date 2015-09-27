@@ -2655,17 +2655,24 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
         return records
 
     @readonly_method
-    def get_user_related_messages(self, username=CURRENT_USER, visibility_reasons=None):
+    def get_user_related_messages(self, username=CURRENT_USER, visibility_reasons=None, archived=None):
         """
         For game master, actually returns all emails sent to external contacts.
-        Ptreserves msg order by date ascending.
+        Preserves msg order by date ascending.
+        
+        If specified, "visibility_reasons" is a sequence of allowed visibility reasons for the messages to be returned.
+        
+        If "archived" is not None, it's a boolean specifying if we must consider inbox or archived messages.
         """
         assert visibility_reasons is None or visibility_reasons and utilities.check_is_subset(visibility_reasons, VISIBILITY_REASONS)
+        assert archived in (None, True, False)
         username = self._resolve_username(username)
         all_messages = self.get_all_dispatched_messages()
         visibility_reasons = visibility_reasons or VISIBILITY_REASONS  # by default, ANY visibility reason is OK
         assert None not in visibility_reasons
-        return [msg for msg in all_messages if msg["visible_by"].get(username) in visibility_reasons]
+        def msg_filter(msg):
+            return msg["visible_by"].get(username) in visibility_reasons and (archived is None or ((username in msg["has_archived"]) == archived))
+        return [msg for msg in all_messages if msg_filter(msg)]
 
 
     @readonly_method

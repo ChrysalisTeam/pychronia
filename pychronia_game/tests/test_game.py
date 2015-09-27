@@ -2024,6 +2024,58 @@ class TestDatamanager(BaseGameTestCase):
         assert sorted(res.values(), key=lambda x: x["address"]) == expected_res # values are the same as above...
 
 
+    def test_message_archiving(self):
+
+        self._reset_messages()
+
+        msg_id_1 = self.dm.post_message("guy2@pangea.com",
+                             recipient_emails=["secret-services@masslavia.com", "guy1@pangea.com"],
+                             subject="subj", body="INITIAL MESSAGE 1")
+
+        # SIMPLE REPLY
+        msg_id_2 = self.dm.post_message("guy1@pangea.com",
+                             recipient_emails=["secret-services@heliossar.com", "guy2@pangea.com"],
+                             subject="subj", body="MESSAGE WITH PARENT", parent_id=msg_id_1)
+
+        self.dm.set_dispatched_message_state_flags("guy1", msg_id=msg_id_2, has_archived=True)
+        msg2 = self.dm.get_dispatched_message_by_id(msg_id_2)
+        print("-------------------->", msg2)
+
+
+        res = self.dm.get_user_related_messages("guy1")
+        assert len(res) == 2
+
+        res = self.dm.get_user_related_messages("guy1", archived=None)
+        assert len(res) == 2
+
+        res1 = self.dm.get_user_related_messages("guy1", archived=True)
+        assert len(res1) == 1
+        assert res1[0]["id"] == msg_id_2
+
+        res2 = self.dm.get_user_related_messages("guy1", archived=False)
+        assert len(res2) == 1
+        assert res2[0]["id"] == msg_id_1
+
+
+        res = self.dm.get_user_related_messages("guy2")
+        assert len(res) == 2
+
+        res = self.dm.get_user_related_messages("guy2", archived=None)
+        assert len(res) == 2
+
+        res1 = self.dm.get_user_related_messages("guy2", archived=True)
+        assert len(res1) == 0
+
+        res2 = self.dm.get_user_related_messages("guy2", archived=False)
+        assert len(res2) == 2  # only "guy1" has archived the msg2
+
+
+        archived = random.choice((None, True, False))
+        res = self.dm.get_user_related_messages("guy3", archived=archived)
+        assert len(res) == 0
+
+
+
     def test_deletion_of_transferred_message(self):
 
         msg_id_1 = self.dm.post_message("guy2@pangea.com",
