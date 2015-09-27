@@ -14,9 +14,8 @@
         {% if messages %}
         <ul>
             {% for ctx, message in messages %}
-                <li>{% if ctx.has_read == False %}<b>{% endif %}
-                        <a href="#{{ ctx.display_id }}" >{{ message.subject }}</a>
-                    {% if ctx.has_read == False %}</b>{% endif %}
+                <li>
+                    <a {% if ctx.has_read == False %}class="bold"{% endif %} href="#{{ ctx.display_id }}" >{{ message.subject }}</a>&nbsp;{% if ctx.has_starred %}{% fontawesome_icon "star" large=False %}{% endif %}
                 </li>
             {% endfor %}
         </ul>

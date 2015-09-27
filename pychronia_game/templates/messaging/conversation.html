@@ -20,7 +20,7 @@
                 {% for message_list in conversations %}
 
                 {% with message_list|last as last %}
-                    <li {% if message_list|has_unread_msg %}class="bold"{% endif %}><a href="#{{ last.1.id }}" >{{ last.1.subject }}</a></li>
+                    <li {% if message_list|has_unread_msg %}class="bold"{% endif %}><a href="#{{ last.1.id }}" >{{ last.1.subject }}</a>&nbsp;{% if message_list|has_starred_msg %}{% fontawesome_icon "star" large=False %}{% endif %}</li>
                 {% endwith %}
 
                     {% comment %}

@@ -443,6 +443,18 @@ def has_unread_msg(ctx_msgs_list):
     return res
 register.filter('has_unread_msg', has_unread_msg)
 
+def has_starred_msg(ctx_msgs_list):
+    res = False
+    for ctx, msg in ctx_msgs_list:
+        if ctx["has_starred"]:
+            res = True
+            break
+    return res
+register.filter('has_starred_msg', has_starred_msg)
+
+
+
+
 """
 def preformat(value):
     "
