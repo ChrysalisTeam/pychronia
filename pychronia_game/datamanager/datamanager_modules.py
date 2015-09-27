@@ -2655,14 +2655,17 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
         return records
 
     @readonly_method
-    def get_user_related_messages(self, username=CURRENT_USER):
+    def get_user_related_messages(self, username=CURRENT_USER, visibility_reasons=None):
         """
         For game master, actually returns all emails sent to external contacts.
         Ptreserves msg order by date ascending.
         """
+        assert visibility_reasons is None or visibility_reasons and utilities.check_is_subset(visibility_reasons, VISIBILITY_REASONS)
         username = self._resolve_username(username)
         all_messages = self.get_all_dispatched_messages()
-        return [msg for msg in all_messages if username in msg["visible_by"]]
+        visibility_reasons = visibility_reasons or VISIBILITY_REASONS  # by default, ANY visibility reason is OK
+        assert None not in visibility_reasons
+        return [msg for msg in all_messages if msg["visible_by"].get(username) in visibility_reasons]
 
 
     @readonly_method

@@ -2186,7 +2186,17 @@ class TestDatamanager(BaseGameTestCase):
 
         res = self.dm.get_user_related_messages(self.dm.master_login)
         #pprint.pprint(res)
-        self.assertEqual(len(res), 3) # secret services masslavia + wrong newtorker email address + dummy-robot
+        self.assertEqual(len(res), 3) # secret services masslavia + wrong networker email address + dummy-robot
+
+        visibility_reasons = random.sample(list(VISIBILITY_REASONS), random.randint(1, 3))
+        res = self.dm.get_user_related_messages(self.dm.master_login, visibility_reasons=visibility_reasons)
+        assert len(res) <= 3
+        assert all(msg["visible_by"][self.dm.master_login] in visibility_reasons for msg in res)
+
+        self.assertEqual(len(self.dm.get_user_related_messages("guy3")), 3)  # duplicate sending of msg1
+        self.assertEqual(len(self.dm.get_user_related_messages("guy3", visibility_reasons=(VISIBILITY_REASONS.sender,))), 0)
+        self.assertEqual(len(self.dm.get_user_related_messages("guy3", visibility_reasons=(VISIBILITY_REASONS.interceptor,))), 0)
+        self.assertEqual(len(self.dm.get_user_related_messages("guy3", visibility_reasons=(VISIBILITY_REASONS.recipient,))), 3)
 
         expected_notifications = {'guy2': "new_messages_2", 'guy3': "new_messages_1", 'guy1': 'info_spots_1'} # guy1 because of wiretapping, not guy4 because was only a sender
         self.assertEqual(self.dm.get_pending_new_message_notifications(), expected_notifications)
