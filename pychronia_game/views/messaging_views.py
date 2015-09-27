@@ -352,7 +352,7 @@ def standard_conversations(request, template_name='messaging/conversation.html')
     display_all_conversations = bool(request.GET.get("display_all", None) == "1")
 
     visibility_reasons = (VISIBILITY_REASONS.sender, VISIBILITY_REASONS.recipient)  # we EXCLUDE intercepted messages from this
-    messages = request.datamanager.get_user_related_messages(visibility_reasons=visibility_reasons)  # for current master or character
+    messages = request.datamanager.get_user_related_messages(visibility_reasons=visibility_reasons, archived=False)  # for current master or character
 
     _grouped_messages = request.datamanager.sort_messages_by_conversations(messages)
     enriched_messages = _determine_message_list_display_context(request.datamanager, messages=_grouped_messages, is_pending=False)
@@ -377,10 +377,10 @@ def standard_conversations(request, template_name='messaging/conversation.html')
                        message_sent=message_sent))
 
 
-@register_view(access=UserAccess.character, requires_global_permission=False, title=ugettext_lazy("Intercepted Messages"))  # master doesn't INTERCEPTED messages...
+@register_view(access=UserAccess.character, requires_global_permission=False, title=ugettext_lazy("Intercepted Messages"))  # master doesn't INTERCEPT messages...
 def intercepted_messages(request, template_name='messaging/messages.html'):
     visibility_reasons = [VISIBILITY_REASONS.interceptor]  # we EXCLUDE intercepted messages from this
-    messages = request.datamanager.get_user_related_messages(visibility_reasons=visibility_reasons)  # no LIMIT for now...
+    messages = request.datamanager.get_user_related_messages(visibility_reasons=visibility_reasons, archived=False)  # no LIMIT for now...
     messages = list(reversed(messages))
     enriched_messages = _determine_message_list_display_context(request.datamanager, messages=messages, is_pending=False)
     return render(request,
@@ -389,6 +389,17 @@ def intercepted_messages(request, template_name='messaging/messages.html'):
                        messages=enriched_messages,
                        contact_cache=_build_contact_display_cache(request.datamanager)))
 
+@register_view(access=UserAccess.authenticated, requires_global_permission=False, title=ugettext_lazy("Archived Messages"))  # ALSO for master
+def all_archived_messages(request, template_name='messaging/messages.html'):
+    visibility_reasons = VISIBILITY_REASONS  # in this archive, we list ALL messages, even intercepted
+    messages = request.datamanager.get_user_related_messages(visibility_reasons=visibility_reasons, archived=True)  # no LIMIT for now...
+    messages = list(reversed(messages))
+    enriched_messages = _determine_message_list_display_context(request.datamanager, messages=messages, is_pending=False)
+    return render(request,
+                  template_name,
+                  dict(page_title=_("Archived Messages"),
+                       messages=enriched_messages,
+                       contact_cache=_build_contact_display_cache(request.datamanager)))
 
 
 @register_view(attach_to=standard_conversations, title=ugettext_lazy("Set Message Boolean Flags"))

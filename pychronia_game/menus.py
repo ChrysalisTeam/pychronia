@@ -116,6 +116,7 @@ def _generate_web_menu(request, menu_entry_generator):
                          menu_entry(view=views.all_queued_messages), # master only
                          menu_entry(_(u"My conversations") + standard_conversations_suffix, view=views.standard_conversations), # suffix is the count of unread MESSAGES
                          menu_entry(view=views.intercepted_messages),
+                         menu_entry(view=views.all_archived_messages),
                          menu_entry(view=views.messages_templates), # master only
                          menu_entry(view=views.compose_message),
                       )),
