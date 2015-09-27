@@ -343,7 +343,7 @@ def messages_templates(request, template_name='messaging/messages.html'):
 
 
 @register_view(access=UserAccess.authenticated, requires_global_permission=False, title=ugettext_lazy("Conversations"))
-def conversation(request, template_name='messaging/conversation.html'):
+def standard_conversations(request, template_name='messaging/conversation.html'):
 
     CONVERSATIONS_LIMIT = 30
 
@@ -380,7 +380,7 @@ def conversation(request, template_name='messaging/conversation.html'):
 @register_view(access=UserAccess.character, requires_global_permission=False, title=ugettext_lazy("Intercepted Messages"))  # master doesn't INTERCEPTED messages...
 def intercepted_messages(request, template_name='messaging/messages.html'):
     visibility_reasons = [VISIBILITY_REASONS.interceptor]  # we EXCLUDE intercepted messages from this
-    messages = request.datamanager.get_user_related_messages(visibility_reasons=visibility_reasons)
+    messages = request.datamanager.get_user_related_messages(visibility_reasons=visibility_reasons)  # no LIMIT for now...
     messages = list(reversed(messages))
     enriched_messages = _determine_message_list_display_context(request.datamanager, messages=messages, is_pending=False)
     return render(request,
@@ -391,7 +391,7 @@ def intercepted_messages(request, template_name='messaging/messages.html'):
 
 
 
-@register_view(attach_to=conversation, title=ugettext_lazy("Set Message Boolean Flags"))
+@register_view(attach_to=standard_conversations, title=ugettext_lazy("Set Message Boolean Flags"))
 def ajax_set_dispatched_message_state_flags(request):
     # to be used by AJAX
     msg_id = request.REQUEST.get("msg_id", None)
@@ -420,7 +420,7 @@ def ajax_permanently_delete_message(request):
 
 
 
-@register_view(attach_to=conversation, title=ugettext_lazy("Compose Message"))
+@register_view(attach_to=standard_conversations, title=ugettext_lazy("Compose Message"))
 def compose_message(request, template_name='messaging/compose.html'):
 
     user = request.datamanager.user
@@ -468,12 +468,12 @@ def compose_message(request, template_name='messaging/compose.html'):
     else:
         form = MessageComposeForm(request)
 
-    conversation_url = reverse("pychronia_game.views.conversation",
+    conversations_url = reverse("pychronia_game.views.standard_conversations",
                                 kwargs=dict(game_instance_id=request.datamanager.game_instance_id))
-    conversation_url += '?' + urllib.urlencode(dict(message_sent="1"))
+    conversations_url += '?' + urllib.urlencode(dict(message_sent="1"))
 
     if message_sent:
-        return HttpResponseRedirect(redirect_to=conversation_url)
+        return HttpResponseRedirect(redirect_to=conversations_url)
 
     user_contacts = request.datamanager.get_sorted_user_contacts() # properly SORTED list
     contacts_display = request.datamanager.get_contacts_display_properties(user_contacts) # DICT FIELDS: address avatar description

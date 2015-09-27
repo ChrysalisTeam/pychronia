@@ -45,7 +45,7 @@ from .profile_views import login, logout, secret_question, character_profile, fr
 
 
 from .messaging_views import (ajax_set_dispatched_message_state_flags, ajax_force_email_sending, ajax_permanently_delete_message,
-                              conversation, view_single_message, compose_message, preview_message,
+                              standard_conversations, view_single_message, compose_message, preview_message,
                               all_dispatched_messages, all_queued_messages, intercepted_messages, messages_templates)
 
 from .abilities import (house_locking, runic_translation, wiretapping_management, artificial_intelligence,
