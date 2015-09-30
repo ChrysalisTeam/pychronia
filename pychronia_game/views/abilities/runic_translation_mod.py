@@ -211,7 +211,6 @@ class RunicTranslationAbility(AbstractPartnershipAbility):
 
 
     def _compute_processing_result_message(self, rune_transcription):
-        raise NotImplementedError("_compute_processing_request_body missing")
 
         item_name = self.get_closest_item_name(decoding_attempt=rune_transcription) # will always return non-None, unless no objects are translatable
         translation = self._translate_rune_message(item_name=item_name, rune_transcription=rune_transcription)
@@ -232,11 +231,7 @@ class RunicTranslationAbility(AbstractPartnershipAbility):
         return dict(subject=subject,
                     body=body,
                     attachment=None,
-                    item_name=item_name,  # extra data for logging
-                    item_title=item_title)
-
-
-
+                    item_title=item_title) # extra data for logging
 
 
     @transaction_watcher
@@ -248,7 +243,7 @@ class RunicTranslationAbility(AbstractPartnershipAbility):
         if not transcription:
             raise UsageError(_("The transcription submitted is empty."))
 
-        results = self._process_standard_exchange_with_partner(transcription=transcription)
+        results = self._process_standard_exchange_with_partner(rune_transcription=transcription)
 
         self.log_game_event(ugettext_noop("Translation request submitted (presumably for item '%(item_title)s')."),
                               PersistentMapping(item_title=results["result_msg_data"]["item_title"]),

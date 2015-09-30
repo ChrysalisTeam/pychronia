@@ -324,17 +324,14 @@ class AbstractPartnershipAbility(AbstractAbility):
 
         request_msg_data = self._compute_processing_request_message(**params)
 
-        result_msg_data = None
+        result_msg_data = self._compute_processing_result_message(**params)  # always computed, since it provides data for logging...
+
         auto_response_disabled = self.get_global_parameter("disable_automated_ability_responses")
-        if not auto_response_disabled:
-            result_msg_data = self._compute_processing_result_message(**params)
-
-
         request_msg_id = self.send_processing_request(subject=request_msg_data["subject"],
                                                       body=request_msg_data["body"])  # TODO - notify when no result_msg_data has been set!!!!
 
         result_msg_id = None
-        if result_msg_data:
+        if not auto_response_disabled:
             result_msg_id = self.send_back_processing_result(parent_id=request_msg_id,
                                                              subject=result_msg_data["subject"],
                                                              body=result_msg_data["body"],
