@@ -264,8 +264,16 @@ class AbstractPartnershipAbility(AbstractAbility):
             utilities.check_is_range_or_num(result_delay)
 
 
+
+    def _compute_processing_request_message(self, **args):
+        raise NotImplementedError("_compute_processing_request_body missing")
+        
+
     @transaction_watcher
     def send_processing_request(self, subject, body):
+        """
+        Returns the new message ID.
+        """
 
         auto_response_disabled = self.get_global_parameter("disable_automated_ability_responses")
 
@@ -283,17 +291,18 @@ class AbstractPartnershipAbility(AbstractAbility):
         return msg_id
 
 
+
+    def _compute_processing_result_message(self, **args):
+        raise NotImplementedError("_compute_processing_request_body missing")
+
+
     @transaction_watcher
     def send_back_processing_result(self, parent_id, subject, body, attachment=None):
         """
-        Returns the automated message's ID, or None if this message was skipped.
+        Returns the new message ID.
         """
+
         assert parent_id == self._last_request_msg_id # ATM always true
-
-        auto_response_disabled = self.get_global_parameter("disable_automated_ability_responses")
-
-        if auto_response_disabled:
-            return None # gamemaster will have to respond by himself
 
         msg_id = self.post_message(sender_email=self.dedicated_email,
                                    recipient_emails=[self.get_character_email()],
@@ -303,6 +312,47 @@ class AbstractPartnershipAbility(AbstractAbility):
                                    date_or_delay_mn=self.auto_answer_delay_mn,
                                    parent_id=parent_id)
         return msg_id
+
+
+
+    def _process_standard_exchange_with_partner(self, **params):
+        """
+        Workflow from a standard request message, and (potentially) its auto-response.
+        
+        Parameters are simply forwarded to inner overridden methods, whose signature must match.
+        """
+
+        request_msg_data = self._compute_processing_request_message(**params)
+
+        result_msg_data = None
+        auto_response_disabled = self.get_global_parameter("disable_automated_ability_responses")
+        if not auto_response_disabled:
+            result_msg_data = self._compute_processing_result_message(**params)
+
+
+        request_msg_id = self.send_processing_request(subject=request_msg_data["subject"],
+                                                      body=request_msg_data["body"])  # TODO - notify when no result_msg_data has been set!!!!
+
+        result_msg_id = None
+        if result_msg_data:
+            result_msg_id = self.send_back_processing_result(parent_id=request_msg_id,
+                                                             subject=result_msg_data["subject"],
+                                                             body=result_msg_data["body"],
+                                                             attachment=result_msg_data["attachment"])
+
+        return dict(request_msg_data=request_msg_data,
+                    request_msg_id=request_msg_id,
+                    result_msg_data=result_msg_data,
+                    result_msg_id=result_msg_id)
+
+
+
+
+
+
+
+
+
 
 '''
     def _instantiate_game_form(self,

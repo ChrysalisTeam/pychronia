@@ -200,18 +200,18 @@ class RunicTranslationAbility(AbstractPartnershipAbility):
         return " ".join(translated_tokens)
 
 
-    @transaction_watcher
-    def _process_translation_submission(self, rune_transcription):
-        assert rune_transcription # item_name can be None
 
-        # request email, to allow interception
 
+    def _compute_processing_request_message(self, rune_transcription):
+        assert rune_transcription
         subject = _('Translation Request')
         body = _("Runes: ") + rune_transcription
-        parent_id = self.send_processing_request(subject=subject, body=body)
-        del subject, body
+        return dict(subject=subject,
+                    body=body)
 
-        # answer email
+
+    def _compute_processing_result_message(self, rune_transcription):
+        raise NotImplementedError("_compute_processing_request_body missing")
 
         item_name = self.get_closest_item_name(decoding_attempt=rune_transcription) # will always return non-None, unless no objects are translatable
         translation = self._translate_rune_message(item_name=item_name, rune_transcription=rune_transcription)
@@ -229,14 +229,15 @@ class RunicTranslationAbility(AbstractPartnershipAbility):
                         Translation result: "%(translation)s"
                       """) % SDICT(original=rune_transcription, translation=translation)
 
-        msg_id = self.send_back_processing_result(parent_id=parent_id, subject=subject, body=body, attachment=None)
+        return dict(subject=subject,
+                    body=body,
+                    attachment=None,
+                    item_name=item_name,  # extra data for logging
+                    item_title=item_title)
 
-        self.log_game_event(ugettext_noop("Translation request submitted (presumably for item '%(item_title)s')."),
-                              PersistentMapping(item_title=item_title),
-                              url=self.get_message_viewer_url_or_none(msg_id)) # msg_id might be None
 
-        return msg_id # might be None
-    
+
+
 
     @transaction_watcher
     def process_translation(self, transcription="", use_gems=()):
@@ -247,7 +248,11 @@ class RunicTranslationAbility(AbstractPartnershipAbility):
         if not transcription:
             raise UsageError(_("The transcription submitted is empty."))
 
-        self._process_translation_submission(transcription)
+        results = self._process_standard_exchange_with_partner(transcription=transcription)
+
+        self.log_game_event(ugettext_noop("Translation request submitted (presumably for item '%(item_title)s')."),
+                              PersistentMapping(item_title=results["result_msg_data"]["item_title"]),
+                              url=self.get_message_viewer_url_or_none(results["request_msg_id"]))
 
         return _("Runic transcription successfully submitted, the result will be emailed to you.")
 
