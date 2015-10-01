@@ -302,16 +302,15 @@ class AbstractPartnershipAbility(AbstractAbility):
         return msg_id
 
 
-    def _process_standard_exchange_with_partner(self, request_msg_data, response_msg_data):
+    def _process_standard_exchange_with_partner(self, request_msg_data, response_msg_data=None):
         """
         Workflow from a standard request message, and (potentially) its auto-response.
-        
-        Parameters are simply forwarded to inner overridden methods, whose signature must match.
         """
 
         auto_response_disabled = self.get_global_parameter("disable_automated_ability_responses")
         request_msg_id = self._send_processing_request(subject=request_msg_data["subject"],
                                                       body=request_msg_data["body"])  # TODO - notify when no result_msg_data has been set!!!!
+        assert self.get_dispatched_message_by_id(request_msg_id)  # immediately sent
 
         response_msg_id = None
         if response_msg_data and not auto_response_disabled:
@@ -319,6 +318,9 @@ class AbstractPartnershipAbility(AbstractAbility):
                                                              subject=response_msg_data["subject"],
                                                              body=response_msg_data["body"],
                                                              attachment=response_msg_data["attachment"])
+        else:
+            pass  # FIXME - flag the message as requiring an answer!!!!!!!!!
+            # self._set_dispatched_message_state_flags(username=sender_username, msg_id=parent_id, has_replied=True)
 
         return (response_msg_id or request_msg_id)
 

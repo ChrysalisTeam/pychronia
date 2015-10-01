@@ -160,7 +160,7 @@ class RunicTranslationAbility(AbstractPartnershipAbility):
         return translated_tokens
 
 
-    def get_closest_item_name(self, decoding_attempt):
+    def _get_closest_item_name_or_none(self, decoding_attempt):
         """
         Used to determine object which is most likely to carry these runes,
         for when user doesn't (or can't) explicitly select one (eg. he doesn't 
@@ -209,13 +209,16 @@ class RunicTranslationAbility(AbstractPartnershipAbility):
         if not transcription:
             raise UsageError(_("The transcription submitted is empty."))
 
+        # dummy request email, to allow wiretapping
         subject = _('Translation Request')
         body = _("Runes: ") + transcription
         request_msg_data = dict(subject=subject,
                                 body=body)
+        del subject, body
 
+        # answer from laboratory
         response_msg_data = None
-        item_name = self.get_closest_item_name(decoding_attempt=transcription)  # will always return non-None, unless no objects are translatable
+        item_name = self._get_closest_item_name_or_none(decoding_attempt=transcription)  # will always return non-None, unless no objects are translatable
         if item_name:
             translation = self._translate_rune_message(item_name=item_name, rune_transcription=transcription)
             item_title = item_name or _("unknown")
@@ -234,13 +237,14 @@ class RunicTranslationAbility(AbstractPartnershipAbility):
             response_msg_data = dict(subject=subject,
                                      body=body,
                                      attachment=None)
+            del subject, body
 
         best_msg_id = self._process_standard_exchange_with_partner(request_msg_data=request_msg_data,
                                                                    response_msg_data=response_msg_data)
 
         self.log_game_event(ugettext_noop("Translation request submitted (presumably for item '%(item_title)s')."),
                               PersistentMapping(item_title=item_title),
-                              url=self.get_message_viewer_url_or_none(best_msg_id))
+                              url=self.get_message_viewer_url_or_none(best_msg_id))  # best_msg_id might be None
 
         return _("Runic transcription successfully submitted, the result will be emailed to you.")
 

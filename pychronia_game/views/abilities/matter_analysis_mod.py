@@ -63,43 +63,50 @@ class MatterAnalysisAbility(AbstractPartnershipAbility):
 
 
     @readonly_method
-    def _compute_analysis_result(self, item_name):
+    def _compute_analysis_result_or_none(self, item_name):
         assert not self.get_item_properties(item_name)["is_gem"], item_name
 
         if self.get_global_parameter("disable_automated_ability_responses"):
             return _("Result will be sent to you in a short while...") # should actually NOT be sent to user
 
         report = self.settings["reports"].get(item_name, None)
-        if report is None:
-            raise NormalUsageError(_("Unfortunately this item can't be analyzed by our biophysical lab.")) # any payment will be aborted too
-        return report
+
+        return report  # might be None
 
 
 
     @transaction_watcher
     def process_object_analysis(self, item_name, use_gems=()):
 
+        # here input checking has already been done by form system (item_name is required=True)
         assert item_name in self.datamanager.get_available_items_for_user(), item_name
 
         item_title = self.get_item_properties(item_name)["title"]
 
         # dummy request email, to allow wiretapping
-
         subject = "Deep Analysis Request - item \"%s\"" % item_title
         body = _("Please analyse the physical and biological properties of this item.")
-        parent_id = self._send_processing_request(subject=subject, body=body)
+        request_msg_data = dict(subject=subject,
+                                body=body)
         del subject, body
 
         # answer from laboratory
+        response_msg_data = None
+        result = self._compute_analysis_result_or_none(item_name)
+        if result:
+            subject = _("<Deep Matter Analysis Report - %(item_title)s>") % SDICT(item_title=item_title)
+            body = result  # as is
+            response_msg_data = dict(subject=subject,
+                                     body=body,
+                                     attachment=None)
+            del subject, body
 
-        subject = _("<Deep Matter Analysis Report - %(item_title)s>") % SDICT(item_title=item_title)
-        body = self._compute_analysis_result(item_name)
-
-        msg_id = self._send_back_processing_result(parent_id=parent_id, subject=subject, body=body, attachment=None)
+        best_msg_id = self._process_standard_exchange_with_partner(request_msg_data=request_msg_data,
+                                                                   response_msg_data=response_msg_data)
 
         self.log_game_event(ugettext_noop("Item '%(item_title)s' sent for deep matter analysis."),
                              PersistentMapping(item_title=item_title),
-                             url=self.get_message_viewer_url_or_none(msg_id)) # msg_id might be None
+                             url=self.get_message_viewer_url_or_none(best_msg_id))  # best_msg_id might be None
 
         return _("Item '%s' successfully submitted, you'll receive the result by email") % item_title
 

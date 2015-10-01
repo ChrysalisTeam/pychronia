@@ -5661,7 +5661,7 @@ class TestSpecialAbilities(BaseGameTestCase):
         self.assertNotEqual(translation_result, expected_result) # NO auto detection of item as sacred chest
 
 
-        assert runic_translation.get_closest_item_name("sa to | ta ka") == "statue" # not always sacred_chest, as we check
+        assert runic_translation._get_closest_item_name_or_none("sa to | ta ka") == "statue" # not always sacred_chest, as we check
 
         self._set_user("guy1")
         runic_translation.process_translation(transcription_attempt)
@@ -5952,10 +5952,9 @@ class TestSpecialAbilities(BaseGameTestCase):
         self._set_user("guy1")
 
         assert "statue" in self.dm.get_all_items()
-        with pytest.raises(NormalUsageError):
-            scanner._compute_scanning_result("statue") # not analyzable
+        assert scanner._compute_scanning_result_or_none("statue") is None  # not analyzable
 
-        res = scanner._compute_scanning_result("sacred_chest")
+        res = scanner._compute_scanning_result_or_none("sacred_chest")
         self.assertEqual(res, ["Alifir", "Baynon"])
 
         with pytest.raises(AssertionError):
@@ -6134,10 +6133,9 @@ class TestSpecialAbilities(BaseGameTestCase):
         self.dm.transfer_object_to_character("several_misc_gems", "guy1")
 
         assert "statue" in self.dm.get_all_items()
-        with pytest.raises(NormalUsageError):
-            analyser._compute_analysis_result("statue") # not analyzable
+        assert analyser._compute_analysis_result_or_none("statue") is None  # not analyzable
 
-        res = analyser._compute_analysis_result("sacred_chest")
+        res = analyser._compute_analysis_result_or_none("sacred_chest")
         self.assertEqual(res, "same, here stuffs about *sacred* chest")
 
         with pytest.raises(AssertionError):

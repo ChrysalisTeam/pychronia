@@ -96,14 +96,14 @@ class WorldScanAbility(AbstractPartnershipAbility):
 
 
     @readonly_method
-    def _compute_scanning_result(self, item_name):
+    def _compute_scanning_result_or_none(self, item_name):
         assert not self.get_item_properties(item_name)["is_gem"], item_name
         # Potential evolution - in the future, it might be possible to remove some locations depending on hints provided !
         scanning_set_name = self.settings["item_locations"].get(item_name, None)
         if scanning_set_name is None:
-            raise NormalUsageError(_("Unfortunately this item can't be analyzed for a world scan.")) # any payment will be aborted too
+            return None
         locations = self.settings["scanning_sets"][scanning_set_name] # MUST exist
-        return locations  # list of city names
+        return locations  # list of city names, migh tbe empty
 
     '''
     # WARNING - do not put inside a transaction manager, else too many levels of transaction when processing scheduled tasks...
@@ -117,40 +117,44 @@ class WorldScanAbility(AbstractPartnershipAbility):
     @transaction_watcher
     def process_world_scan_submission(self, item_name, use_gems=()):
 
-        # here input checking has already been done by form system (item_name is required=True) #
-        assert item_name, item_name
+        # here input checking has already been done by form system (item_name is required=True)
+        assert item_name in self.datamanager.get_available_items_for_user(), item_name
 
         item_title = self.get_item_properties(item_name)["title"]
 
         # dummy request email, to allow wiretapping
-
         subject = "Scanning Request - \"%s\"" % item_title
         body = _("Please scan the world according to the features of this object.")
-        parent_id = self.send_processing_request(subject=subject, body=body)
+        request_msg_data = dict(subject=subject,
+                                body=body)
         del subject, body
 
         # answer email
+        response_msg_data = None
+        locations = self._compute_scanning_result_or_none(item_name) # might raise if item is not analysable
+        if locations:
+            locations_found = ", ".join(locations)
+    
+            subject = "<World Scan Result - %(item)s>" % SDICT(item=item_title)
+    
+            body = dedent("""
+                    Below is the result of the scanning operation which has been performed according to the documents you sent.
+                    Please note that these results might be incomplete or erroneous, depending on the accuracy of the information available.
+    
+                    Potential locations of similar items: %(locations_found)s
+                    """) % SDICT(locations_found=locations_found)
 
-        locations = self._compute_scanning_result(item_name) # might raise if item is not analysable
-        locations_found = ", ".join(locations) if locations else _("None")
-        item_title = self.get_item_properties(item_name)["title"]
-
-        subject = "<World Scan Result - %(item)s>" % SDICT(item=item_title)
-
-        body = dedent("""
-                Below is the result of the scanning operation which has been performed according to the documents you sent.
-                Please note that these results might be incomplete or erroneous, depending on the accuracy of the information available.
-
-                Potential locations of similar items: %(locations_found)s
-                """) % SDICT(locations_found=locations_found)
-
-        # # USELESS self.schedule_delayed_action(scanning_delay, "_add_to_scanned_locations", locations) # pickling instance method
-
-        msg_id = self.send_back_processing_result(parent_id=parent_id, subject=subject, body=body, attachment=None)
+            response_msg_data = dict(subject=subject,
+                                     body=body,
+                                     attachment=None)
+            del subject, body
+            
+        best_msg_id = self._process_standard_exchange_with_partner(request_msg_data=request_msg_data,
+                                                                   response_msg_data=response_msg_data)
 
         self.log_game_event(ugettext_noop("Automated scanning request sent for item '%(item_title)s'."),
                              PersistentMapping(item_title=item_title),
-                             url=self.get_message_viewer_url_or_none(msg_id)) # msg_id might be None
+                             url=self.get_message_viewer_url_or_none(best_msg_id))  # best_msg_id might be None
 
         return _("World scan submission in progress, the result will be emailed to you.")
 
