@@ -7,6 +7,7 @@ from textwrap import dedent
 import tempfile
 import shutil
 import inspect
+from pprint import pprint
 
 from ._test_tools import *
 from ._dummy_abilities import *
@@ -5700,6 +5701,8 @@ class TestSpecialAbilities(BaseGameTestCase):
         runic_translation.commit()
         assert runic_translation._get_closest_item_name_or_none("sa to | ta ka") == None  # no items available at all
 
+
+        self.dm.set_global_parameter("disable_automated_ability_responses", False)
         runic_translation.process_translation(transcription_attempt)
         msgs = self.dm.get_all_dispatched_messages()
         self.assertEqual(len(msgs), 3) # REQUEST is well generated
@@ -5707,6 +5710,7 @@ class TestSpecialAbilities(BaseGameTestCase):
         assert "master" not in msg["has_read"] # needs answer by game master
         msgs = self.dm.get_all_queued_messages()
         self.assertEqual(len(msgs), 1) # unchanged, no additional RESPONSE
+
 
 
     @for_ability(house_locking)
@@ -6010,7 +6014,16 @@ class TestSpecialAbilities(BaseGameTestCase):
         self.assertEqual(len(msgs), 2) # REQUEST is well generated
         msg = msgs[-1]
         assert "master" not in msg["has_read"] # needs answer
+        msgs = self.dm.get_all_queued_messages()
+        self.assertEqual(len(msgs), 1) # unchanged, no additional RESPONSE
 
+        self.dm.set_global_parameter("disable_automated_ability_responses", False)
+        scanner.process_world_scan_submission("statue")  # has no locations specified
+        msgs = self.dm.get_all_dispatched_messages()
+        self.assertEqual(len(msgs), 3) # REQUEST is well generated
+        msg = msgs[-1]
+        pprint(msg)
+        assert "master" not in msg["has_read"] # needs answer by game master
         msgs = self.dm.get_all_queued_messages()
         self.assertEqual(len(msgs), 1) # unchanged, no additional RESPONSE
 
@@ -6191,15 +6204,14 @@ class TestSpecialAbilities(BaseGameTestCase):
         msgs = self.dm.get_all_queued_messages()
         self.assertEqual(len(msgs), 1) # unchanged, no additional RESPONSE
 
-        self.dm.transfer_object_to_character("statue", "guy1")
-        analyser.process_object_analysis("statue") # not automatically possible, but Ok when disable_automated_ability_responses is ON
+        self.dm.set_global_parameter("disable_automated_ability_responses", False)
+        analyser.process_object_analysis("statue")
         msgs = self.dm.get_all_dispatched_messages()
         self.assertEqual(len(msgs), 3) # REQUEST is well generated
         msg = msgs[-1]
         assert "master" not in msg["has_read"]
         msgs = self.dm.get_all_queued_messages()
         self.assertEqual(len(msgs), 1) # unchanged, no additional RESPONSE
-
 
 
         res = self.dm.process_periodic_tasks()

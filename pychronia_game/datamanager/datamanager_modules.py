@@ -1783,7 +1783,7 @@ class TextMessagingCore(BaseDataManager):
 
     def _build_new_message(self, sender_email, recipient_emails, subject, body,
                            attachment=None, transferred_msg=None,
-                           date_or_delay_mn=None, is_read=False, is_certified=False,
+                           date_or_delay_mn=None, is_certified=False,
                            parent_id=None, mask_recipients=False, **kwargs):
         """
         Beware, if a delay, date_or_delay_mn is treated as FLEXIBLE TIME.
@@ -2447,16 +2447,11 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
     def _build_new_message(self, *args, **kwargs):
         msg = super(TextMessagingForCharacters, self)._build_new_message(*args, **kwargs)
 
-        is_read = kwargs.get("is_read", False) # we expect it in keyword args... bring on py3k plz
-
         assert not any(field in msg for field in self.EMAIL_BOOLEAN_FIELDS_FOR_USERS)
         msg.update({field: PersistentList() for field in self.EMAIL_BOOLEAN_FIELDS_FOR_USERS})
 
         assert "visible_by" not in msg
         msg["visible_by"] = PersistentMapping()
-
-        if is_read: # workaround : we add ALL users to the "has read" list !
-            msg["has_read"] = PersistentList(self.get_character_usernames() + [self.master_login])
 
         return msg
 

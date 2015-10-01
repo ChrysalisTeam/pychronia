@@ -264,14 +264,10 @@ class AbstractPartnershipAbility(AbstractAbility):
             utilities.check_is_range_or_num(result_delay)
 
 
-    def _send_processing_request(self, subject, body):
+    def _send_processing_request(self, subject, body, requires_manual_answer=False):
         """
         Returns the new message ID.
         """
-
-        auto_response_disabled = self.get_global_parameter("disable_automated_ability_responses")
-
-        is_read = (not auto_response_disabled) # if gamemaster must answer manually, let message "unread"
 
         msg_id = self.post_message(sender_email=self.get_character_email(),
                                    recipient_emails=[self.dedicated_email],
@@ -279,8 +275,12 @@ class AbstractPartnershipAbility(AbstractAbility):
                                    body=body,
                                    attachment=None,
                                    date_or_delay_mn=None, # immediate
-                                   parent_id=None,
-                                   is_read=is_read)
+                                   parent_id=None)
+        if requires_manual_answer:
+            pass
+        else:
+            self.set_dispatched_message_state_flags(username=self.master_login, msg_id=msg_id, has_read=True)
+
         self._last_request_msg_id = msg_id # for coherency checking
         return msg_id
 
@@ -308,19 +308,20 @@ class AbstractPartnershipAbility(AbstractAbility):
         """
 
         auto_response_disabled = self.get_global_parameter("disable_automated_ability_responses")
+
+        auto_response_must_occur = response_msg_data and not auto_response_disabled
+
         request_msg_id = self._send_processing_request(subject=request_msg_data["subject"],
-                                                      body=request_msg_data["body"])  # TODO - notify when no result_msg_data has been set!!!!
+                                                      body=request_msg_data["body"],
+                                                      requires_manual_answer=not auto_response_must_occur)
         assert self.get_dispatched_message_by_id(request_msg_id)  # immediately sent
 
         response_msg_id = None
-        if response_msg_data and not auto_response_disabled:
+        if auto_response_must_occur:
             response_msg_id = self._send_back_processing_result(parent_id=request_msg_id,
                                                              subject=response_msg_data["subject"],
                                                              body=response_msg_data["body"],
                                                              attachment=response_msg_data["attachment"])
-        else:
-            pass  # FIXME - flag the message as requiring an answer!!!!!!!!!
-            # self._set_dispatched_message_state_flags(username=sender_username, msg_id=parent_id, has_replied=True)
 
         return (response_msg_id or request_msg_id)
 

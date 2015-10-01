@@ -141,7 +141,7 @@ class TelecomInvestigationAbility(AbstractAbility):
         subject = _("Investigation Request for character %(target_official_name)s") % \
                   SDICT(target_official_name=target_official_name)
         body = _("Please let me know anything you may discover about this individual.")
-        self.post_message(local_email, remote_email, subject, body, date_or_delay_mn=0, is_read=True)
+        self.post_message(local_email, remote_email, subject, body, date_or_delay_mn=0)
 
 
         # answer email
