@@ -200,40 +200,6 @@ class RunicTranslationAbility(AbstractPartnershipAbility):
         return " ".join(translated_tokens)
 
 
-
-
-    def _compute_processing_request_message(self, rune_transcription):
-        assert rune_transcription
-        subject = _('Translation Request')
-        body = _("Runes: ") + rune_transcription
-        return dict(subject=subject,
-                    body=body)
-
-
-    def _compute_processing_result_message(self, rune_transcription):
-
-        item_name = self.get_closest_item_name(decoding_attempt=rune_transcription) # will always return non-None, unless no objects are translatable
-        translation = self._translate_rune_message(item_name=item_name, rune_transcription=rune_transcription)
-        item_title = item_name or _("unknown")
-        del item_name
-
-        subject = "<Rune Translation Result>"
-
-        body = dedent("""
-                        Below is the output of the automated translation process for the runes of the targeted object.
-                        Please note that any error in the decoding of runes may lead to important errors in the translation result.
-
-                        Runes transcription: "%(original)s"
-
-                        Translation result: "%(translation)s"
-                      """) % SDICT(original=rune_transcription, translation=translation)
-
-        return dict(subject=subject,
-                    body=body,
-                    attachment=None,
-                    item_title=item_title) # extra data for logging
-
-
     @transaction_watcher
     def process_translation(self, transcription="", use_gems=()):
         """
@@ -243,11 +209,38 @@ class RunicTranslationAbility(AbstractPartnershipAbility):
         if not transcription:
             raise UsageError(_("The transcription submitted is empty."))
 
-        results = self._process_standard_exchange_with_partner(rune_transcription=transcription)
+        subject = _('Translation Request')
+        body = _("Runes: ") + transcription
+        request_msg_data = dict(subject=subject,
+                                body=body)
+
+        response_msg_data = None
+        item_name = self.get_closest_item_name(decoding_attempt=transcription)  # will always return non-None, unless no objects are translatable
+        if item_name:
+            translation = self._translate_rune_message(item_name=item_name, rune_transcription=transcription)
+            item_title = item_name or _("unknown")
+            del item_name
+
+            subject = "<Rune Translation Result>"
+            body = dedent("""
+                            Below is the output of the automated translation process for the runes of the targeted object.
+                            Please note that any error in the decoding of runes may lead to important errors in the translation result.
+    
+                            Runes transcription: "%(original)s"
+    
+                            Translation result: "%(translation)s"
+                          """) % SDICT(original=transcription, translation=translation)
+
+            response_msg_data = dict(subject=subject,
+                                     body=body,
+                                     attachment=None)
+
+        best_msg_id = self._process_standard_exchange_with_partner(request_msg_data=request_msg_data,
+                                                                   response_msg_data=response_msg_data)
 
         self.log_game_event(ugettext_noop("Translation request submitted (presumably for item '%(item_title)s')."),
-                              PersistentMapping(item_title=results["result_msg_data"]["item_title"]),
-                              url=self.get_message_viewer_url_or_none(results["request_msg_id"]))
+                              PersistentMapping(item_title=item_title),
+                              url=self.get_message_viewer_url_or_none(best_msg_id))
 
         return _("Runic transcription successfully submitted, the result will be emailed to you.")
 

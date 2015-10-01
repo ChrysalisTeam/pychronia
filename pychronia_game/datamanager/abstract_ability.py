@@ -264,13 +264,7 @@ class AbstractPartnershipAbility(AbstractAbility):
             utilities.check_is_range_or_num(result_delay)
 
 
-
-    def _compute_processing_request_message(self, **args):
-        raise NotImplementedError("_compute_processing_request_body missing")
-        
-
-    @transaction_watcher
-    def send_processing_request(self, subject, body):
+    def _send_processing_request(self, subject, body):
         """
         Returns the new message ID.
         """
@@ -281,7 +275,7 @@ class AbstractPartnershipAbility(AbstractAbility):
 
         msg_id = self.post_message(sender_email=self.get_character_email(),
                                    recipient_emails=[self.dedicated_email],
-                                   subject=subject, 
+                                   subject=subject,
                                    body=body,
                                    attachment=None,
                                    date_or_delay_mn=None, # immediate
@@ -291,13 +285,7 @@ class AbstractPartnershipAbility(AbstractAbility):
         return msg_id
 
 
-
-    def _compute_processing_result_message(self, **args):
-        raise NotImplementedError("_compute_processing_request_body missing")
-
-
-    @transaction_watcher
-    def send_back_processing_result(self, parent_id, subject, body, attachment=None):
+    def _send_back_processing_result(self, parent_id, subject, body, attachment=None):
         """
         Returns the new message ID.
         """
@@ -314,33 +302,25 @@ class AbstractPartnershipAbility(AbstractAbility):
         return msg_id
 
 
-
-    def _process_standard_exchange_with_partner(self, **params):
+    def _process_standard_exchange_with_partner(self, request_msg_data, response_msg_data):
         """
         Workflow from a standard request message, and (potentially) its auto-response.
         
         Parameters are simply forwarded to inner overridden methods, whose signature must match.
         """
 
-        request_msg_data = self._compute_processing_request_message(**params)
-
-        result_msg_data = self._compute_processing_result_message(**params)  # always computed, since it provides data for logging...
-
         auto_response_disabled = self.get_global_parameter("disable_automated_ability_responses")
-        request_msg_id = self.send_processing_request(subject=request_msg_data["subject"],
+        request_msg_id = self._send_processing_request(subject=request_msg_data["subject"],
                                                       body=request_msg_data["body"])  # TODO - notify when no result_msg_data has been set!!!!
 
-        result_msg_id = None
-        if not auto_response_disabled:
-            result_msg_id = self.send_back_processing_result(parent_id=request_msg_id,
-                                                             subject=result_msg_data["subject"],
-                                                             body=result_msg_data["body"],
-                                                             attachment=result_msg_data["attachment"])
+        response_msg_id = None
+        if response_msg_data and not auto_response_disabled:
+            response_msg_id = self._send_back_processing_result(parent_id=request_msg_id,
+                                                             subject=response_msg_data["subject"],
+                                                             body=response_msg_data["body"],
+                                                             attachment=response_msg_data["attachment"])
 
-        return dict(request_msg_data=request_msg_data,
-                    request_msg_id=request_msg_id,
-                    result_msg_data=result_msg_data,
-                    result_msg_id=result_msg_id)
+        return (response_msg_id or request_msg_id)
 
 
 

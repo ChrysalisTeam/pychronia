@@ -75,6 +75,7 @@ class MatterAnalysisAbility(AbstractPartnershipAbility):
         return report
 
 
+
     @transaction_watcher
     def process_object_analysis(self, item_name, use_gems=()):
 
@@ -86,7 +87,7 @@ class MatterAnalysisAbility(AbstractPartnershipAbility):
 
         subject = "Deep Analysis Request - item \"%s\"" % item_title
         body = _("Please analyse the physical and biological properties of this item.")
-        parent_id = self.send_processing_request(subject=subject, body=body)
+        parent_id = self._send_processing_request(subject=subject, body=body)
         del subject, body
 
         # answer from laboratory
@@ -94,7 +95,7 @@ class MatterAnalysisAbility(AbstractPartnershipAbility):
         subject = _("<Deep Matter Analysis Report - %(item_title)s>") % SDICT(item_title=item_title)
         body = self._compute_analysis_result(item_name)
 
-        msg_id = self.send_back_processing_result(parent_id=parent_id, subject=subject, body=body, attachment=None)
+        msg_id = self._send_back_processing_result(parent_id=parent_id, subject=subject, body=body, attachment=None)
 
         self.log_game_event(ugettext_noop("Item '%(item_title)s' sent for deep matter analysis."),
                              PersistentMapping(item_title=item_title),
