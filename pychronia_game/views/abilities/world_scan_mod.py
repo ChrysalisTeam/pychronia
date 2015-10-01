@@ -118,7 +118,7 @@ class WorldScanAbility(AbstractPartnershipAbility):
     def process_world_scan_submission(self, item_name, use_gems=()):
 
         # here input checking has already been done by form system (item_name is required=True)
-        assert item_name in self.datamanager.get_available_items_for_user(), item_name
+        assert item_name, item_name
 
         item_title = self.get_item_properties(item_name)["title"]
 

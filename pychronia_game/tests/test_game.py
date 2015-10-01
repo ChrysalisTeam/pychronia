@@ -5547,8 +5547,14 @@ class TestActionMiddlewares(BaseGameTestCase):
 
         old_account = request.datamanager.get_character_properties("guy1")["account"]
 
+        # we break the ability
+        def broken(*args, **kwargs):
+            raise NormalUsageError(u"this item can't be analyzed")
+        assert world_scan._compute_scanning_result_or_none
+        world_scan._compute_scanning_result_or_none = broken
 
         res = world_scan(request)
+
         assert res.status_code == 200
         #print(res.content.decode("utf8"))
         assert u"this item can&#39;t be analyzed" in res.content.decode("utf8")
@@ -6140,8 +6146,6 @@ class TestSpecialAbilities(BaseGameTestCase):
 
         with pytest.raises(AssertionError):
             analyser.process_object_analysis("several_misc_gems") # no gems allowed here
-        with pytest.raises(AssertionError):
-            analyser.process_object_analysis("statue") # item must be owned by current user
 
         self.assertEqual(len(self.dm.get_all_dispatched_messages()), 0)
         self.assertEqual(len(self.dm.get_all_queued_messages()), 0)
