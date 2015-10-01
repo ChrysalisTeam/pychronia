@@ -160,6 +160,7 @@ class RunicTranslationAbility(AbstractPartnershipAbility):
         return translated_tokens
 
 
+    @readonly_method
     def _get_closest_item_name_or_none(self, decoding_attempt):
         """
         Used to determine object which is most likely to carry these runes,
@@ -218,6 +219,7 @@ class RunicTranslationAbility(AbstractPartnershipAbility):
 
         # answer from laboratory
         response_msg_data = None
+        item_title = None
         item_name = self._get_closest_item_name_or_none(decoding_attempt=transcription)  # will always return non-None, unless no objects are translatable
         if item_name:
             translation = self._translate_rune_message(item_name=item_name, rune_transcription=transcription)

@@ -1811,6 +1811,7 @@ class TextMessagingCore(BaseDataManager):
 
         group_id = None
         if parent_id:
+            # we IMMEDIATELY set the parent as answered, even if date_or_delay_mn is in the future
             try:
                 parent_msg = self.get_dispatched_message_by_id(parent_id)
                 group_id = parent_msg["group_id"]

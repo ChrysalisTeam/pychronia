@@ -5533,7 +5533,6 @@ class TestActionMiddlewares(BaseGameTestCase):
                                     dict(waiting_period_mn=3, max_uses_per_period=50)) # to please coherency checking, after our rough changes
 
 
-
     def test_action_middleware_rollback_on_error(self):
 
         self.dm.update_permissions("guy1", PersistentList(self.dm.PERMISSIONS_REGISTRY))
@@ -5694,7 +5693,18 @@ class TestSpecialAbilities(BaseGameTestCase):
         self.assertEqual(len(msgs), 2) # REQUEST is well generated
         msg = msgs[-1]
         assert "master" not in msg["has_read"] # needs answer by game master
+        msgs = self.dm.get_all_queued_messages()
+        self.assertEqual(len(msgs), 1) # unchanged, no additional RESPONSE
 
+        runic_translation.settings["references"] = utilities.PersistentMapping()
+        runic_translation.commit()
+        assert runic_translation._get_closest_item_name_or_none("sa to | ta ka") == None  # no items available at all
+
+        runic_translation.process_translation(transcription_attempt)
+        msgs = self.dm.get_all_dispatched_messages()
+        self.assertEqual(len(msgs), 3) # REQUEST is well generated
+        msg = msgs[-1]
+        assert "master" not in msg["has_read"] # needs answer by game master
         msgs = self.dm.get_all_queued_messages()
         self.assertEqual(len(msgs), 1) # unchanged, no additional RESPONSE
 
