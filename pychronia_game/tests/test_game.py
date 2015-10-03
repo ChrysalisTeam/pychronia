@@ -2359,10 +2359,10 @@ class TestDatamanager(BaseGameTestCase):
         contact_for_master = random.choice(("anything@masssslavia.com", self.dm.get_character_email("my_npc")))
         contact_for_master2 = random.choice(("anythdfsdfing@mas.com", self.dm.get_character_email("my_npc")))
 
-        self.dm.post_message(contact_for_master, "guy2@pangea.com", subject="AAA", body="BBBBB") # master is SENDER
-        self.dm.post_message("guy2@pangea.com", contact_for_master, subject="AAA", body="BBBBB") # master is RECIPIENT
-        self.dm.post_message("guy2@pangea.com", "guy4@pangea.com", subject="AAA", body="BBBBB") # master is NOTHING
-        self.dm.post_message(contact_for_master, contact_for_master2, subject="AAA", body="BBBBB")
+        self.dm.post_message(contact_for_master, "guy2@pangea.com", subject="AAA1", body="BBBBB") # master is SENDER
+        self.dm.post_message("guy2@pangea.com", contact_for_master, subject="AAA2", body="BBBBB") # master is RECIPIENT
+        self.dm.post_message("guy2@pangea.com", "guy4@pangea.com", subject="AAA3", body="BBBBB") # master is NOTHING
+        self.dm.post_message(contact_for_master, contact_for_master2, subject="AAA4", body="BBBBB")
 
         a, b, c, d = self.dm.get_all_dispatched_messages()[-4:]
 
@@ -2372,6 +2372,26 @@ class TestDatamanager(BaseGameTestCase):
         assert d["visible_by"][MASTER] == VISIBILITY_REASONS.sender # takes precedence!
 
         assert all(not x["mask_recipients"] for x in self.dm.get_all_dispatched_messages())
+
+
+        # test that we can initialize boolean fields as we wish
+        self.dm.post_message(**{
+            "sender_email": "guy4@pangea.com",
+            "recipient_emails": ["guy4@pangea.com"],
+            "subject": "BOOLEAN_FIELDS",
+            "body": "Here is the body of this message lalalal...",
+            "date_or_delay_mn":0,
+            "has_read": ["guy1"],
+            "has_replied": ["guy2"],
+            "has_starred": ["guy3"],
+            "has_archived": ["guy4"]
+            })
+        msg = self.dm.get_all_dispatched_messages()[-1]
+        assert msg["subject"] == "BOOLEAN_FIELDS"
+        assert msg["has_read"] == ["guy1", "guy4"]  # sender is auto-added
+        assert msg["has_replied"] == ["guy2"]
+        assert msg["has_starred"] == ["guy3"]
+        assert msg["has_archived"] == ["guy4"] 
 
 
     def test_message_recipients_masking(self):

@@ -1773,9 +1773,11 @@ class TextMessagingCore(BaseDataManager):
         sent_at = msg["sent_at"]
 
         if sent_at > datetime.utcnow():
+            print("WE QUEU", msg["subject"])
             self.messaging_data["messages_queued"].append(msg)
             self.messaging_data["messages_queued"].sort(key=lambda msg: msg["sent_at"]) # python sorting is stable !
         else:
+            print("WE DISPATCH", msg["subject"])
             self._immediately_dispatch_message(msg)
 
         return msg["id"]
@@ -2448,7 +2450,7 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
         msg = super(TextMessagingForCharacters, self)._build_new_message(*args, **kwargs)
 
         assert not any(field in msg for field in self.EMAIL_BOOLEAN_FIELDS_FOR_USERS)
-        msg.update({field: PersistentList() for field in self.EMAIL_BOOLEAN_FIELDS_FOR_USERS})
+        msg.update({field: PersistentList(kwargs.get(field, {})) for field in self.EMAIL_BOOLEAN_FIELDS_FOR_USERS})
 
         assert "visible_by" not in msg
         msg["visible_by"] = PersistentMapping()
