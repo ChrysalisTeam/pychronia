@@ -4724,7 +4724,6 @@ class TestGameViewSystem(BaseGameTestCase):
 
     def test_access_token_computation(self):
 
-
         datamanager = self.dm
 
         def dummy_view_callable(request):
@@ -4732,23 +4731,59 @@ class TestGameViewSystem(BaseGameTestCase):
 
         view_anonymous = register_view(dummy_view_callable, access=UserAccess.anonymous, requires_global_permission=False, title=ugettext_lazy("Hi"), view_name="view_anonymous")
         view_anonymous_gp = register_view(dummy_view_callable, access=UserAccess.anonymous, requires_global_permission=True, title=ugettext_lazy("Hi2"), view_name="view_anonymous_gp")
-
+        assert view_anonymous_gp.klass.REQUIRES_GLOBAL_PERMISSION
         view_character = register_view(dummy_view_callable, access=UserAccess.character, requires_global_permission=False, title=ugettext_lazy("Yowh1"), view_name="view_character")
-        view_character_gp = register_view(dummy_view_callable, access=UserAccess.character, requires_character_permission=True, requires_global_permission=True, title=ugettext_lazy("Yowh2"), view_name="view_character_gp")
-        view_character_cp = register_view(dummy_view_callable, access=UserAccess.character, requires_character_permission=False, requires_global_permission=True, title=ugettext_lazy("Yowh3"), view_name="view_character_cp")
+        view_character_gp = register_view(dummy_view_callable, access=UserAccess.character, requires_character_permission=False, requires_global_permission=True, title=ugettext_lazy("Yowh2"), view_name="view_character_gp")
+        view_character_cp = register_view(dummy_view_callable, access=UserAccess.character, requires_character_permission=True, requires_global_permission=False, title=ugettext_lazy("Yowh3"), view_name="view_character_cp")
         view_character_gp_cp = register_view(dummy_view_callable, access=UserAccess.character, requires_character_permission=True, requires_global_permission=True, title=ugettext_lazy("Yowh4"), view_name="view_character_gp_cp")
 
         view_authenticated = register_view(dummy_view_callable, access=UserAccess.authenticated, requires_global_permission=False, title=ugettext_lazy("Yayh1"), view_name="view_authenticated")
-        view_authenticated_gp = register_view(dummy_view_callable, access=UserAccess.authenticated, requires_character_permission=True, requires_global_permission=True, title=ugettext_lazy("Yayh2"), view_name="view_authenticated_gp")
-        view_authenticated_cp = register_view(dummy_view_callable, access=UserAccess.authenticated, requires_character_permission=False, requires_global_permission=True, title=ugettext_lazy("Yayh3"), view_name="view_authenticated_cp")
+        view_authenticated_gp = register_view(dummy_view_callable, access=UserAccess.authenticated, requires_character_permission=False, requires_global_permission=True, title=ugettext_lazy("Yayh2"), view_name="view_authenticated_gp")
+        view_authenticated_cp = register_view(dummy_view_callable, access=UserAccess.authenticated, requires_character_permission=True, requires_global_permission=False, title=ugettext_lazy("Yayh3"), view_name="view_authenticated_cp")
         view_authenticated_gp_cp = register_view(dummy_view_callable, access=UserAccess.authenticated, requires_character_permission=True, requires_global_permission=True, title=ugettext_lazy("Yayh4"), view_name="view_authenticated_gp_cp")
 
         view_master = register_view(dummy_view_callable, access=UserAccess.master, title=ugettext_lazy("Maaaster"), view_name="view_master")  # requires_global_permission is enforced to False for master views, actually
 
 
+        """
+        # check global disabling of "requires_global_permission" views #
+        for username in (None, "guy1", "guy2", self.dm.get_global_parameter("master_login")):
+            self._set_user(username)
+
+            for my_view in (view_anonymous_gp, view_character_gp, view_character_gp_cp, view_authenticated_gp, view_authenticated_gp_cp):  # not view_master
+
+                assert my_view.klass.REQUIRES_GLOBAL_PERMISSION == True # view is DISABLED ATM
+                if self.dm.is_master():
+                    if my_view.klass.ACCESS == UserAccess.character:
+                        expected = [AccessResult.authentication_required] # master can't access character-only view
+                    else:
+                        expected = [AccessResult.available] # master bypasses activation check
+                else:
+                    expected = [AccessResult.authentication_required, AccessResult.globally_forbidden]  # depending on whether user matches the klass.ACCESS setting
+                assert my_view.get_access_token(datamanager) in expected
+
+                self.dm.set_activated_game_views([my_view.NAME]) # exists in ACTIVABLE_VIEWS_REGISTRY because we registered view with requires_global_permission=True
+                assert my_view.get_access_token(datamanager) != AccessResult.globally_forbidden
+
+                my_view.klass.REQUIRES_GLOBAL_PERMISSION = False
+                assert my_view.get_access_token(datamanager) != AccessResult.globally_forbidden
+                self.dm.set_activated_game_views([]) # RESET
+                assert my_view.get_access_token(datamanager) != AccessResult.globally_forbidden
+
+                my_view.klass.REQUIRES_GLOBAL_PERMISSION = True  # restore it
+        """
+
+        for perm in self.dm.PERMISSIONS_REGISTRY:
+            self.dm.set_permission("guy1", permission=perm, is_present=True)
+        for perm in self.dm.PERMISSIONS_REGISTRY:
+            self.dm.set_permission("guy2", permission=perm, is_present=False)
+
+
+        self.dm.set_activated_game_views([])  # NO VIEWS ARE ACTIVATED
+
         self._set_user(None)
         assert view_anonymous.get_access_token(datamanager) == AccessResult.available
-        assert view_anonymous_gp.get_access_token(datamanager) == AccessResult.authentication_required
+        assert view_anonymous_gp.get_access_token(datamanager) == AccessResult.globally_forbidden
         assert view_character.get_access_token(datamanager) == AccessResult.authentication_required
         assert view_character_gp.get_access_token(datamanager) == AccessResult.authentication_required
         assert view_character_cp.get_access_token(datamanager) == AccessResult.authentication_required
@@ -4759,6 +4794,19 @@ class TestGameViewSystem(BaseGameTestCase):
         assert view_authenticated_gp_cp.get_access_token(datamanager) == AccessResult.authentication_required
         assert view_master.get_access_token(datamanager) == AccessResult.authentication_required
 
+
+        self._set_user("guy1")  # has ALL CHARACTER PERMISSIONS
+        assert view_anonymous.get_access_token(datamanager) == AccessResult.available
+        assert view_anonymous_gp.get_access_token(datamanager) == AccessResult.globally_forbidden
+        assert view_character.get_access_token(datamanager) == AccessResult.available
+        assert view_character_gp.get_access_token(datamanager) == AccessResult.globally_forbidden
+        assert view_character_cp.get_access_token(datamanager) == AccessResult.available
+        assert view_character_gp_cp.get_access_token(datamanager) == AccessResult.available  # character permission overrides global disabling of view
+        assert view_authenticated.get_access_token(datamanager) == AccessResult.available
+        assert view_authenticated_gp.get_access_token(datamanager) == AccessResult.globally_forbidden
+        assert view_authenticated_cp.get_access_token(datamanager) == AccessResult.available
+        assert view_authenticated_gp_cp.get_access_token(datamanager) == AccessResult.available
+        assert view_master.get_access_token(datamanager) == AccessResult.authentication_required
 
 
         """
