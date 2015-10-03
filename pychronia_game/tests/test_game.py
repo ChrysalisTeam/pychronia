@@ -4313,7 +4313,7 @@ class TestHttpRequests(BaseGameTestCase):
 
         url = reverse(views.wiretapping_management, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID))
 
-        self.dm.set_activated_game_views([])
+        self.dm.set_activated_game_views([])  # for wiretapping, character permissions are the most important anyway
         assert not self.dm.is_game_view_activated("wiretapping")
 
         # AJAX ACCESS DENIED #
@@ -4326,18 +4326,16 @@ class TestHttpRequests(BaseGameTestCase):
         self.assertRedirects(response, expected_url=url_home)
 
         # ACCESS OK, in ajax or not #
-        self.dm.set_activated_game_views(["wiretapping"])
-
+        self.dm.set_permission("guy1", views.wiretapping_management.get_access_permission_name(), is_present=True)
         response = self.client.get(url)
         assert response.status_code == 200
-
         response = self.client.post(url, data=dict(_action_="purchase_wiretapping_slot"), **AJAX_HEADERS)
         assert response.status_code == 200
 
 
-
         self.dm.set_activated_game_views([])
         assert not self.dm.is_game_view_activated("wiretapping")
+        self.dm.set_permission("guy1", views.wiretapping_management.get_access_permission_name(), is_present=False)
 
         # impersonate guy1 while being logged as master #
         self._master_auth()
@@ -4358,12 +4356,8 @@ class TestHttpRequests(BaseGameTestCase):
 
 
 
-        # whatever authentication
-        if random.choice((True, False)):
-            self._player_auth("guy1")
-        self.dm.set_activated_game_views(["wiretapping"])
-
-
+        self._player_auth("guy1")
+        self.dm.set_permission("guy1", views.wiretapping_management.get_access_permission_name(), is_present=True)  # else, would override is_game_view_activated()!
 
         def _broken_func(*args, **kwargs):
             raise EXCEPTION("TESTINNNG")
