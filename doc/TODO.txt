@@ -29,6 +29,14 @@ GAMEMASTER_HINTS in:
 FEATURES
 ------------
 
+
+- corrupt wiretapped emails
+- handle readonly state in mobile design
+
+- METTRE UN LIEN PARAMETRABLE QUAND ON GAGNE CONTRE l'IA d'échecs!!!!!
+
+- rendre les limitations des compétences spéciales PAR JOUEUR!!! eg. kits mise sur écoute maximum
+
 - allow to wiretap ANY email address
 
 - fix 3 scrolls on view_characters page :
@@ -114,10 +122,10 @@ Enchères amène vers la page d'accueil => vide
 média => encyclopédie => saisir l'expression : si on écrit une phrase trop longue le message d'erreur s'affiche mais le texte sort du bloc.
    une petite croix sur la gauche ou la droite serait la bien venu ou un clic ailleurs sur le site pour refermer rapidement la bande
    ou tout simplement autoriser le clic sur le texte pour refermer.
-   
+
 "rapporter un bogue" => problème lorsqu'on agrandit un peu trop le textfield la page du site descend mais pas la fenêtre du rapport
    => oblige le refresh donc annule l'envoi du bug
-   
+
 carte du monde : un clic sur un pays/ville principal pour un zoom plus détaillé (un peu comme hurlevent wow)
 
 Sinon pourquoi faire une "aide" en anglais et le site en français ?
