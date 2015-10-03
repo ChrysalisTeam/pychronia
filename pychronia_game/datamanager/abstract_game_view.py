@@ -290,17 +290,20 @@ class AbstractGameView(object):
         if user.is_master:
             return AccessResult.available  # game master does what he wants then!
 
+        view_is_globally_available = True
+        if cls.REQUIRES_GLOBAL_PERMISSION:
+            if not datamanager.is_game_view_activated(cls.NAME):
+                view_is_globally_available = False
+
         if cls.REQUIRES_CHARACTER_PERMISSION:
             assert cls.ACCESS in (UserAccess.character, UserAccess.authenticated)
             if user.has_permission(cls.get_access_permission_name()):
-                return AccessResult.available  # even if no global permission, user has access then!
-            else:
-                return AccessResult.permission_required
+                return AccessResult.available  # OVERRIDE: even if not view_is_globally_available, this user has access then!
+            elif view_is_globally_available:
+                return AccessResult.permission_required  # thus menu entry will be disable but VISIBKLE
 
-        if cls.REQUIRES_GLOBAL_PERMISSION:
-            if not datamanager.is_game_view_activated(cls.NAME):
-                #print (">>>>>", cls.NAME, "-", datamanager.get_activated_game_views())
-                return AccessResult.globally_forbidden # EVEN for game master ATM
+        if not view_is_globally_available:
+            return AccessResult.globally_forbidden # EVEN for game master ATM
 
         return AccessResult.available
 

@@ -4785,11 +4785,11 @@ class TestGameViewSystem(BaseGameTestCase):
         assert view_character.get_access_token(datamanager) == AccessResult.available
         assert view_character_gp.get_access_token(datamanager) == AccessResult.globally_forbidden
         assert view_character_cp.get_access_token(datamanager) == AccessResult.permission_required
-        assert view_character_gp_cp.get_access_token(datamanager) == AccessResult.permission_required
+        assert view_character_gp_cp.get_access_token(datamanager) == AccessResult.globally_forbidden
         assert view_authenticated.get_access_token(datamanager) == AccessResult.available
         assert view_authenticated_gp.get_access_token(datamanager) == AccessResult.globally_forbidden
         assert view_authenticated_cp.get_access_token(datamanager) == AccessResult.permission_required
-        assert view_authenticated_gp_cp.get_access_token(datamanager) == AccessResult.permission_required
+        assert view_authenticated_gp_cp.get_access_token(datamanager) == AccessResult.globally_forbidden
         assert view_master.get_access_token(datamanager) == AccessResult.authentication_required
 
         self._set_user(self.dm.get_global_parameter("master_login"))
