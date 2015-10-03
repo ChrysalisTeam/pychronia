@@ -114,8 +114,13 @@ class GameViewMetaclass(type):
                 # assert NewClass.NAME.lower() == NewClass.NAME # FIXME, NOT YET ATM !!!
 
                 assert NewClass.ACCESS in UserAccess.enum_values
+
+                # Both can be True, in which case global-permission=True displays a non-clickable link in menu,
+                # and character-permission=True then enables the menu link
+                # However character-permission laways allows access=True even if global-permission=False
                 assert NewClass.REQUIRES_CHARACTER_PERMISSION in (True, False)
                 assert NewClass.REQUIRES_GLOBAL_PERMISSION in (True, False)
+
                 assert NewClass.ALWAYS_ALLOW_POST in (True, False)
                 for perm in NewClass.EXTRA_PERMISSIONS:
                     assert perm and perm.lower() == perm and " " not in perm
@@ -276,24 +281,27 @@ class AbstractGameView(object):
 
         user = datamanager.user
 
-        if not user.is_master and cls.REQUIRES_GLOBAL_PERMISSION:
-            if not datamanager.is_game_view_activated(cls.NAME):
-                #print (">>>>>", cls.NAME, "-", datamanager.get_activated_game_views())
-                return AccessResult.globally_forbidden # EVEN for game master ATM
-
         if ((cls.ACCESS == UserAccess.master and not user.is_master) or
             (cls.ACCESS == UserAccess.authenticated and not user.is_authenticated) or
             (cls.ACCESS == UserAccess.character and not user.is_character)):
             #print(">>>>>>>>>>", cls.ACCESS, "|", user.is_master, user.is_authenticated, user.is_character, user.username)
-            return AccessResult.authentication_required
+            return AccessResult.authentication_required  # that view is UNABLE to handle that kind of user!
+
+        if user.is_master:
+            return AccessResult.available  # game master does what he wants then!
 
         if cls.REQUIRES_CHARACTER_PERMISSION:
             assert cls.ACCESS in (UserAccess.character, UserAccess.authenticated)
-            if not user.is_master: # game master does what he wants
-                if not user.has_permission(cls.get_access_permission_name()):
-                    return AccessResult.permission_required
+            if user.has_permission(cls.get_access_permission_name()):
+                return AccessResult.available  # even if no global permission, user has access then!
+
+        if cls.REQUIRES_GLOBAL_PERMISSION:
+            if not datamanager.is_game_view_activated(cls.NAME):
+                #print (">>>>>", cls.NAME, "-", datamanager.get_activated_game_views())
+                return AccessResult.globally_forbidden # EVEN for game master ATM
 
         return AccessResult.available
+
 
     @classmethod
     def relevant_title(cls, datamanager):
@@ -822,14 +830,19 @@ def register_view(view_object=None,
                   always_allow_post=_undefined,
                   attach_to=_undefined,
                   title=None,
-                  title_for_master=None):
+                  title_for_master=None,
+                  view_name=None):
     """
     Helper allowing with or without-arguments decorator usage for GameView.
     
     Returns a CLASS or a METHOD, depending on the type of the wrapped object.
     """
 
+
+
     def _build_final_view_callable(real_view_object):
+
+        final_view_name = str(view_name) if view_name else real_view_object.__name__
 
         local_attach_to = attach_to # tiny optimization
 
@@ -859,14 +872,14 @@ def register_view(view_object=None,
             class_data = dict((key.upper(), value) for key, value in normalized_access_args.items()) # auto build access attributes
             class_data["TITLE"] = title
             class_data["TITLE_FOR_MASTER"] = title_for_master
-            class_data["NAME"] = real_view_object.__name__
+            class_data["NAME"] = final_view_name
             if always_allow_post is not _undefined:
                 class_data["ALWAYS_ALLOW_POST"] = always_allow_post # unaltered boolean
             class_data["_process_standard_request"] = staticmethod(real_view_object) # we install the real request handler, not expecting a "self"
 
             ###print ("BUILDING VIEW", real_view_object.__name__, class_data)
             # we build new GameView subclass on the fly
-            KlassName = utilities.to_pascal_case(real_view_object.__name__)
+            KlassName = utilities.to_pascal_case(final_view_name)
             NewViewType = type(KlassName, (AbstractGameView,), class_data) # metaclass checks everything for us
             view_callable = NewViewType.as_view
 
