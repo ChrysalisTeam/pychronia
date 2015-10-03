@@ -1151,7 +1151,7 @@ class PermissionsHandling(BaseDataManager): # TODO REFINE
     @classmethod
     def register_permissions(cls, names):
         assert all((name and name.lower() == name and " " not in name) for name in names)
-        cls.PERMISSIONS_REGISTRY.update(names) # SET operation, not dict
+        cls.PERMISSIONS_REGISTRY.update(names)  # SET operation, not dict
 
 
     def _load_initial_data(self, **kwargs):
@@ -4016,6 +4016,7 @@ class GameViews(BaseDataManager):
     @classmethod
     def register_game_view(cls, view_class):
         assert isinstance(view_class, type)
+        print("WE REGISTER", view_class.NAME, view_class.REQUIRES_CHARACTER_PERMISSION, view_class.get_access_permission_name() if view_class.REQUIRES_CHARACTER_PERMISSION else None)
 
         assert view_class.NAME and view_class.NAME not in cls.GAME_VIEWS_REGISTRY, view_class.NAME
         cls.GAME_VIEWS_REGISTRY[view_class.NAME] = view_class

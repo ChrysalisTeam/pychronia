@@ -4745,34 +4745,6 @@ class TestGameViewSystem(BaseGameTestCase):
         view_master = register_view(dummy_view_callable, access=UserAccess.master, title=ugettext_lazy("Maaaster"), view_name="view_master")  # requires_global_permission is enforced to False for master views, actually
 
 
-        """
-        # check global disabling of "requires_global_permission" views #
-        for username in (None, "guy1", "guy2", self.dm.get_global_parameter("master_login")):
-            self._set_user(username)
-
-            for my_view in (view_anonymous_gp, view_character_gp, view_character_gp_cp, view_authenticated_gp, view_authenticated_gp_cp):  # not view_master
-
-                assert my_view.klass.REQUIRES_GLOBAL_PERMISSION == True # view is DISABLED ATM
-                if self.dm.is_master():
-                    if my_view.klass.ACCESS == UserAccess.character:
-                        expected = [AccessResult.authentication_required] # master can't access character-only view
-                    else:
-                        expected = [AccessResult.available] # master bypasses activation check
-                else:
-                    expected = [AccessResult.authentication_required, AccessResult.globally_forbidden]  # depending on whether user matches the klass.ACCESS setting
-                assert my_view.get_access_token(datamanager) in expected
-
-                self.dm.set_activated_game_views([my_view.NAME]) # exists in ACTIVABLE_VIEWS_REGISTRY because we registered view with requires_global_permission=True
-                assert my_view.get_access_token(datamanager) != AccessResult.globally_forbidden
-
-                my_view.klass.REQUIRES_GLOBAL_PERMISSION = False
-                assert my_view.get_access_token(datamanager) != AccessResult.globally_forbidden
-                self.dm.set_activated_game_views([]) # RESET
-                assert my_view.get_access_token(datamanager) != AccessResult.globally_forbidden
-
-                my_view.klass.REQUIRES_GLOBAL_PERMISSION = True  # restore it
-        """
-
         for perm in self.dm.PERMISSIONS_REGISTRY:
             self.dm.set_permission("guy1", permission=perm, is_present=True)
         for perm in self.dm.PERMISSIONS_REGISTRY:
@@ -4794,7 +4766,6 @@ class TestGameViewSystem(BaseGameTestCase):
         assert view_authenticated_gp_cp.get_access_token(datamanager) == AccessResult.authentication_required
         assert view_master.get_access_token(datamanager) == AccessResult.authentication_required
 
-
         self._set_user("guy1")  # has ALL CHARACTER PERMISSIONS
         assert view_anonymous.get_access_token(datamanager) == AccessResult.available
         assert view_anonymous_gp.get_access_token(datamanager) == AccessResult.globally_forbidden
@@ -4808,29 +4779,89 @@ class TestGameViewSystem(BaseGameTestCase):
         assert view_authenticated_gp_cp.get_access_token(datamanager) == AccessResult.available
         assert view_master.get_access_token(datamanager) == AccessResult.authentication_required
 
-
-        """
-        self._set_user("guy1") # has special "access_dummy_view_character_permission" permission
+        self._set_user("guy2")  # has NO CHARACTER PERMISSIONS
         assert view_anonymous.get_access_token(datamanager) == AccessResult.available
+        assert view_anonymous_gp.get_access_token(datamanager) == AccessResult.globally_forbidden
         assert view_character.get_access_token(datamanager) == AccessResult.available
-        assert view_character_permission.get_access_token(datamanager) == AccessResult.available
+        assert view_character_gp.get_access_token(datamanager) == AccessResult.globally_forbidden
+        assert view_character_cp.get_access_token(datamanager) == AccessResult.permission_required
+        assert view_character_gp_cp.get_access_token(datamanager) == AccessResult.permission_required
         assert view_authenticated.get_access_token(datamanager) == AccessResult.available
-        assert view_master.get_access_token(datamanager) == AccessResult.authentication_required
-
-        self._set_user("guy2") # has NO special "access_dummy_view_character_permission" permission
-        assert view_anonymous.get_access_token(datamanager) == AccessResult.available
-        assert view_character.get_access_token(datamanager) == AccessResult.available
-        assert view_character_permission.get_access_token(datamanager) == AccessResult.permission_required # != authentication required
-        assert view_authenticated.get_access_token(datamanager) == AccessResult.available
+        assert view_authenticated_gp.get_access_token(datamanager) == AccessResult.globally_forbidden
+        assert view_authenticated_cp.get_access_token(datamanager) == AccessResult.permission_required
+        assert view_authenticated_gp_cp.get_access_token(datamanager) == AccessResult.permission_required
         assert view_master.get_access_token(datamanager) == AccessResult.authentication_required
 
         self._set_user(self.dm.get_global_parameter("master_login"))
         assert view_anonymous.get_access_token(datamanager) == AccessResult.available
-        assert view_character.get_access_token(datamanager) == AccessResult.authentication_required # master must downgrade to character!!
-        assert view_character_permission.get_access_token(datamanager) == AccessResult.authentication_required # master must downgrade to character!!
+        assert view_anonymous_gp.get_access_token(datamanager) == AccessResult.available
+        assert view_character.get_access_token(datamanager) == AccessResult.authentication_required
+        assert view_character_gp.get_access_token(datamanager) == AccessResult.authentication_required
+        assert view_character_cp.get_access_token(datamanager) == AccessResult.authentication_required
+        assert view_character_gp_cp.get_access_token(datamanager) == AccessResult.authentication_required
         assert view_authenticated.get_access_token(datamanager) == AccessResult.available
+        assert view_authenticated_gp.get_access_token(datamanager) == AccessResult.available
+        assert view_authenticated_cp.get_access_token(datamanager) == AccessResult.available
+        assert view_authenticated_gp_cp.get_access_token(datamanager) == AccessResult.available
         assert view_master.get_access_token(datamanager) == AccessResult.available
-        """
+
+
+
+        self.dm.set_activated_game_views(self.dm.ACTIVABLE_VIEWS_REGISTRY.keys())  # NO VIEWS ARE ACTIVATED
+
+        self._set_user(None)
+        assert view_anonymous.get_access_token(datamanager) == AccessResult.available
+        assert view_anonymous_gp.get_access_token(datamanager) == AccessResult.available
+        assert view_character.get_access_token(datamanager) == AccessResult.authentication_required
+        assert view_character_gp.get_access_token(datamanager) == AccessResult.authentication_required
+        assert view_character_cp.get_access_token(datamanager) == AccessResult.authentication_required
+        assert view_character_gp_cp.get_access_token(datamanager) == AccessResult.authentication_required
+        assert view_authenticated.get_access_token(datamanager) == AccessResult.authentication_required
+        assert view_authenticated_gp.get_access_token(datamanager) == AccessResult.authentication_required
+        assert view_authenticated_cp.get_access_token(datamanager) == AccessResult.authentication_required
+        assert view_authenticated_gp_cp.get_access_token(datamanager) == AccessResult.authentication_required
+        assert view_master.get_access_token(datamanager) == AccessResult.authentication_required
+
+        self._set_user("guy1")  # has ALL CHARACTER PERMISSIONS
+        assert view_anonymous.get_access_token(datamanager) == AccessResult.available
+        assert view_anonymous_gp.get_access_token(datamanager) == AccessResult.available
+        assert view_character.get_access_token(datamanager) == AccessResult.available
+        assert view_character_gp.get_access_token(datamanager) == AccessResult.available
+        assert view_character_cp.get_access_token(datamanager) == AccessResult.available
+        assert view_character_gp_cp.get_access_token(datamanager) == AccessResult.available
+        assert view_authenticated.get_access_token(datamanager) == AccessResult.available
+        assert view_authenticated_gp.get_access_token(datamanager) == AccessResult.available
+        assert view_authenticated_cp.get_access_token(datamanager) == AccessResult.available
+        assert view_authenticated_gp_cp.get_access_token(datamanager) == AccessResult.available
+        assert view_master.get_access_token(datamanager) == AccessResult.authentication_required
+
+        self._set_user("guy2")  # has NO CHARACTER PERMISSIONS
+        assert view_anonymous.get_access_token(datamanager) == AccessResult.available
+        assert view_anonymous_gp.get_access_token(datamanager) == AccessResult.available
+        assert view_character.get_access_token(datamanager) == AccessResult.available
+        assert view_character_gp.get_access_token(datamanager) == AccessResult.available
+        assert view_character_cp.get_access_token(datamanager) == AccessResult.permission_required
+        assert view_character_gp_cp.get_access_token(datamanager) == AccessResult.permission_required
+        assert view_authenticated.get_access_token(datamanager) == AccessResult.available
+        assert view_authenticated_gp.get_access_token(datamanager) == AccessResult.available
+        assert view_authenticated_cp.get_access_token(datamanager) == AccessResult.permission_required
+        assert view_authenticated_gp_cp.get_access_token(datamanager) == AccessResult.permission_required
+        assert view_master.get_access_token(datamanager) == AccessResult.authentication_required
+
+        self._set_user(self.dm.get_global_parameter("master_login"))
+        assert view_anonymous.get_access_token(datamanager) == AccessResult.available
+        assert view_anonymous_gp.get_access_token(datamanager) == AccessResult.available
+        assert view_character.get_access_token(datamanager) == AccessResult.authentication_required
+        assert view_character_gp.get_access_token(datamanager) == AccessResult.authentication_required
+        assert view_character_cp.get_access_token(datamanager) == AccessResult.authentication_required
+        assert view_character_gp_cp.get_access_token(datamanager) == AccessResult.authentication_required
+        assert view_authenticated.get_access_token(datamanager) == AccessResult.available
+        assert view_authenticated_gp.get_access_token(datamanager) == AccessResult.available
+        assert view_authenticated_cp.get_access_token(datamanager) == AccessResult.available
+        assert view_authenticated_gp_cp.get_access_token(datamanager) == AccessResult.available
+        assert view_master.get_access_token(datamanager) == AccessResult.available
+
+
 
     def test_per_action_user_permissions(self):
 

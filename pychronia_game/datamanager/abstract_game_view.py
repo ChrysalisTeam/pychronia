@@ -294,6 +294,8 @@ class AbstractGameView(object):
             assert cls.ACCESS in (UserAccess.character, UserAccess.authenticated)
             if user.has_permission(cls.get_access_permission_name()):
                 return AccessResult.available  # even if no global permission, user has access then!
+            else:
+                return AccessResult.permission_required
 
         if cls.REQUIRES_GLOBAL_PERMISSION:
             if not datamanager.is_game_view_activated(cls.NAME):
