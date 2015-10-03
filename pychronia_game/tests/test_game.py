@@ -5698,6 +5698,7 @@ class TestSpecialAbilities(BaseGameTestCase):
         self.assertEqual(msg["recipient_emails"], ["guy1@pangea.com"])
         self.assertTrue("translation" in msg["body"].lower())
         assert "master" not in msg["has_read"]
+        assert "master" not in msg["has_starred"]
 
         msgs = self.dm.get_all_dispatched_messages()
         self.assertEqual(len(msgs), 1)
@@ -5706,6 +5707,7 @@ class TestSpecialAbilities(BaseGameTestCase):
         self.assertTrue(transcription_attempt.strip() in msg["body"], (transcription_attempt, msg["body"]))
         self.assertTrue(self.dm.get_global_parameter("master_login") in msg["has_read"])
         assert "master" in msg["has_read"] # useless request
+        assert "master" not in msg["has_starred"]
 
         self.dm.set_global_parameter("disable_automated_ability_responses", True)
 
@@ -5714,6 +5716,7 @@ class TestSpecialAbilities(BaseGameTestCase):
         self.assertEqual(len(msgs), 2) # REQUEST is well generated
         msg = msgs[-1]
         assert "master" not in msg["has_read"] # needs answer by game master
+        assert "master" in msg["has_starred"]
         msgs = self.dm.get_all_queued_messages()
         self.assertEqual(len(msgs), 1) # unchanged, no additional RESPONSE
 
@@ -5728,6 +5731,7 @@ class TestSpecialAbilities(BaseGameTestCase):
         self.assertEqual(len(msgs), 3) # REQUEST is well generated
         msg = msgs[-1]
         assert "master" not in msg["has_read"] # needs answer by game master
+        assert "master" in msg["has_starred"]
         msgs = self.dm.get_all_queued_messages()
         self.assertEqual(len(msgs), 1) # unchanged, no additional RESPONSE
 
@@ -6019,6 +6023,7 @@ class TestSpecialAbilities(BaseGameTestCase):
         # print(msg["body"])
         self.assertTrue("Alifir" in msg["body"])
         assert "master" not in msg["has_read"]
+        assert "master" not in msg["has_starred"]
 
         msgs = self.dm.get_all_dispatched_messages()
         self.assertEqual(len(msgs), 1)
@@ -6027,6 +6032,7 @@ class TestSpecialAbilities(BaseGameTestCase):
         self.assertTrue("scan" in msg["body"])
         self.assertTrue(self.dm.get_global_parameter("master_login") in msg["has_read"])
         assert "master" in msg["has_read"]
+        assert "master" not in msg["has_starred"]
 
         self.dm.set_global_parameter("disable_automated_ability_responses", True)
         scanner.process_world_scan_submission("sacred_chest")
@@ -6034,6 +6040,7 @@ class TestSpecialAbilities(BaseGameTestCase):
         self.assertEqual(len(msgs), 2) # REQUEST is well generated
         msg = msgs[-1]
         assert "master" not in msg["has_read"] # needs answer
+        assert "master" in msg["has_starred"]
         msgs = self.dm.get_all_queued_messages()
         self.assertEqual(len(msgs), 1) # unchanged, no additional RESPONSE
 
@@ -6044,6 +6051,7 @@ class TestSpecialAbilities(BaseGameTestCase):
         msg = msgs[-1]
         pprint(msg)
         assert "master" not in msg["has_read"] # needs answer by game master
+        assert "master" in msg["has_starred"]
         msgs = self.dm.get_all_queued_messages()
         self.assertEqual(len(msgs), 1) # unchanged, no additional RESPONSE
 
@@ -6204,6 +6212,7 @@ class TestSpecialAbilities(BaseGameTestCase):
         self.assertEqual(msg["recipient_emails"], ["guy1@pangea.com"])
         self.assertTrue("*sacred* chest" in msg["body"].lower())
         assert "master" not in msg["has_read"]
+        assert "master" not in msg["has_starred"]
 
         msgs = self.dm.get_all_dispatched_messages()
         self.assertEqual(len(msgs), 1)
@@ -6212,6 +6221,7 @@ class TestSpecialAbilities(BaseGameTestCase):
         self.assertTrue("Please analyse" in msg["body"])
         self.assertTrue(self.dm.get_global_parameter("master_login") in msg["has_read"])
         assert "master" in msg["has_read"]
+        assert "master" not in msg["has_starred"]
 
 
         self.dm.set_global_parameter("disable_automated_ability_responses", True)
@@ -6221,6 +6231,7 @@ class TestSpecialAbilities(BaseGameTestCase):
         self.assertEqual(len(msgs), 2) # REQUEST is well generated
         msg = msgs[-1]
         assert "master" not in msg["has_read"]
+        assert "master" in msg["has_starred"]
         msgs = self.dm.get_all_queued_messages()
         self.assertEqual(len(msgs), 1) # unchanged, no additional RESPONSE
 
@@ -6230,6 +6241,7 @@ class TestSpecialAbilities(BaseGameTestCase):
         self.assertEqual(len(msgs), 3) # REQUEST is well generated
         msg = msgs[-1]
         assert "master" not in msg["has_read"]
+        assert "master" in msg["has_starred"]
         msgs = self.dm.get_all_queued_messages()
         self.assertEqual(len(msgs), 1) # unchanged, no additional RESPONSE
 

@@ -319,9 +319,15 @@ class AbstractPartnershipAbility(AbstractAbility):
         response_msg_id = None
         if auto_response_must_occur:
             response_msg_id = self._send_back_processing_result(parent_id=request_msg_id,
-                                                             subject=response_msg_data["subject"],
-                                                             body=response_msg_data["body"],
-                                                             attachment=response_msg_data["attachment"])
+                                                                 subject=response_msg_data["subject"],
+                                                                 body=response_msg_data["body"],
+                                                                 attachment=response_msg_data["attachment"])
+        else:
+            # we notify gamemaster that he MUST answer the request by himself
+            self.set_dispatched_message_state_flags(username=self.master_login,
+                                                    msg_id=request_msg_id,
+                                                    has_starred=True)
+
 
         return (response_msg_id or request_msg_id)
 
