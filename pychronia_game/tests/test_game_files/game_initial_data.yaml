@@ -270,7 +270,7 @@ character_properties:
         real_life_identity: "John Smith"
         real_life_email: dummy@hotmail.com
         character_color: "#0033CC"
-        permissions: ["access_dummy_view_character_permission"]
+        permissions: []
         gems: [[12, null], [200, "several_misc_gems"]]
         avatar: "guy1.png"
         gamemaster_hints: "This is guy1, actually agent SHA1."
