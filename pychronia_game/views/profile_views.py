@@ -101,7 +101,7 @@ def secret_question(request, concerned_username, template_name='profile/secret_q
         if target_email:
             target_email = target_email.strip()
 
-        with action_failure_handler(request, _("Your password has been successfully emailed to your backup address.")):
+        with action_failure_handler(request, _("Your password will be emailed to your backup address as soon as possible.")):
             try:
                 request.datamanager.process_secret_answer_attempt(concerned_username, secret_answer_attempt, target_email)  # raises error on bad answer/email
                 # success
