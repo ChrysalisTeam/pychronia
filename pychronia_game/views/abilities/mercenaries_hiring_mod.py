@@ -90,7 +90,8 @@ class MercenariesHiringAbility(AbstractPartnershipAbility):
 
         self.log_game_event(ugettext_noop("Mercenary hired in %(location)s"),
                              PersistentMapping(location=location),
-                             url=None)
+                             url=None,
+                             visible_by=[self.username])
 
         return _("Mercenaries have been successfully hired")
 

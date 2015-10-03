@@ -3742,7 +3742,7 @@ class TestDatamanager(BaseGameTestCase):
         events = self.dm.get_game_events("master")
         self.assertEqual(len(events), 1) # fixture for master
 
-        self.dm.log_game_event("hello there 1")
+        self.dm.log_game_event("hello there 1", visible_by=None)
         self._set_user("master")
         self.dm.log_game_event("hello there 2", url="/my/url/", visible_by=["guy1", "guy2"])
         self.dm.commit()

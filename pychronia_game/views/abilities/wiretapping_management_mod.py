@@ -167,7 +167,8 @@ class WiretappingAbility(AbstractAbility):
 
         self.datamanager.log_game_event(ugettext_noop("Wiretapping targets set to (%(targets)s)."),
                              PersistentMapping(targets=", ".join(target_names)),
-                             url=None)
+                             url=None,
+                             visible_by=[self.username])
 
         return _("Wiretapping successfully set up.")
 
@@ -177,6 +178,8 @@ class WiretappingAbility(AbstractAbility):
         if self.get_confidentiality_protection_status():
             raise AbnormalUsageError(_("You already have confidentiality system activated"))
         self.set_confidentiality_protection_status(has_confidentiality=True)
+        self.datamanager.log_game_event(ugettext_noop("Confidentiality system activated."),
+                                        visible_by=[self.username])
         return _("Confidentiality system properly activated.")
 
 

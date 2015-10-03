@@ -294,12 +294,16 @@ class GameEvents(BaseDataManager): # TODO REFINE
                     username == self.get_global_parameter("anonymous_login")
 
     @transaction_watcher
-    def log_game_event(self, message, substitutions=None, url=None, visible_by=None):
+    def log_game_event(self, message, substitutions=None, url=None, visible_by=_undefined):
         """
         Message must be an UNTRANSLATED string, since we handle translation directly in this class.
         
         The sequence visible_by lists characters able to view this log entry, by default only MASTER can view it.
         """
+
+        assert visible_by is not _undefined, "visible_by parameter must be explicitly defined in log_game_event() call"
+        visible_by = visible_by if visible_by is not _undefined else None  # double security...
+
         assert message, "game event log message must not be empty"
         utilities.check_is_string(message) # no lazy objects
         assert url is None or (url and isinstance(url, basestring))

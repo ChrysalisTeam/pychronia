@@ -246,7 +246,8 @@ class RunicTranslationAbility(AbstractPartnershipAbility):
 
         self.log_game_event(ugettext_noop("Translation request submitted (presumably for item '%(item_title)s')."),
                               PersistentMapping(item_title=item_title),
-                              url=self.get_message_viewer_url_or_none(best_msg_id))  # best_msg_id might be None
+                              url=self.get_message_viewer_url_or_none(best_msg_id),  # best_msg_id might be None
+                              visible_by=[self.username])
 
         return _("Runic transcription successfully submitted, the result will be emailed to you.")
 

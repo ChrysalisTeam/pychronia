@@ -158,7 +158,8 @@ class TelecomInvestigationAbility(AbstractAbility):
 
         self.log_game_event(ugettext_noop('Character inquiry opened into %(target_official_name)s'),
                              PersistentMapping(target_official_name=target_official_name),
-                             url=self.get_message_viewer_url_or_none(msg_id))
+                             url=self.get_message_viewer_url_or_none(msg_id),
+                             visible_by=None)
 
         return _("Telecom investigation is in process, you'll receive the result by email.")
 
