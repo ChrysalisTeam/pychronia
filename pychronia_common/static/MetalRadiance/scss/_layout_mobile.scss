@@ -55,6 +55,7 @@ body {
         text-align: center;
         z-index: 1000;
         background: #342716 url("img/backgrounds/mobile/header-bg.jpg") repeat-x scroll center top;
+        border-bottom: 3px ridge $dark_yellow;
 
         #full_header_center {
             margin: 0px auto 0px;
@@ -81,7 +82,7 @@ body {
     z-index: 2000; // below the title panel
 
     #main_menu {
-        margin: 0 20px;
+        margin: 0 8px;
         display: table;
 
         .big_icon_panel {

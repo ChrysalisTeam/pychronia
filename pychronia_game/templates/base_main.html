@@ -452,9 +452,13 @@
 
 
 {% block left_big_icon_panel %}
+<div class="big_icon_panel mobile-only">
+    <a href="#full_header" style="font-size: 2em; color: #CC971A">{% fontawesome_icon "bars" %}</a>
+</div>
+
 {% if 1 %}
-<a onclick="open_webradio_popup(); return false;" href="#">
-<div title="{% trans "Pangea webradio is currently ONLINE" %}" class="big_icon_panel desktop-only">
+<a onclick="open_webradio_popup(); return false;" href="#" class="desktop-only">
+<div title="{% trans "Pangea webradio is currently ONLINE" %}" class="big_icon_panel">
     <div class="positioner">
         <img src="{{ STATIC_URL }}MetalRadiance/img/icons/radio.png"/>{% if signal_new_radio_messages %}<span class="novelty_mark">!</span>{% endif %}
     </div>

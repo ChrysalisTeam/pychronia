@@ -23,8 +23,8 @@
 }
 
 .mobile-only {
-    @include desktop-only { display: none };
+    @include desktop-only { display: none !important; };
 }
 .desktop-only {
-    @include mobile-only { display: none };
+    @include mobile-only { display: none !important; };
 }
