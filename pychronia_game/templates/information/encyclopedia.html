@@ -10,7 +10,7 @@
     {% usekwacro side_panel_start frame_class="mini_frame float_left clear_left" decos="3" %}
 
         <h2>{% trans "Search" %}</h2>
-        <form action="{% game_view_url "pychronia_game.views.view_encyclopedia" %}" method="get"
+        <form action="{% game_view_url "pychronia_game.views.view_encyclopedia" %}" method="get" autocomplete="on"
               onsubmit="if ($('#search').data('activated') !== 'true' || $.trim($('#search').attr('value')) === '') {return false;}">
             <input id="search" type="text" name="search" size="25" value="{% trans "Enter phrase here..." %}"
                    onclick="if ($('#search').data('activated') !== 'true') {this.value=''; $('#search').data('activated', 'true');}"/>

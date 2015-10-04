@@ -49,7 +49,7 @@ $("#yaml_editor").markItUp(mySettings); // mySettings comes from /markitup/sets/
 
     {% if editing_allowed %}
 
-        <form action="" method="post" class="meta_admin_button">
+        <form action="" method="post" class="meta_admin_button" autocomplete="off">
             <input type="submit" value="{{ _("Replace game database")}}" />
             <textarea id="yaml_editor" name="db_content" style="width:100%; height:1000px; margin: 5px 0; ">{{ formatted_data }}</textarea> {# LEAVE NO SPACES AROUND DATA!!! #}
             <input type="submit" value="{{ _("Replace game database")}}" />

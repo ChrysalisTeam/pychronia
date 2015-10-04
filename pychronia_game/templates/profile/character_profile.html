@@ -20,7 +20,7 @@
 
         <h2>{% trans "Password change" %}</strong></h2>
 
-        <form action="{{ password_change_form.url }}" method="post">
+        <form action="{{ password_change_form.url }}" method="post" autocomplete="off">
         <table style="margin:auto; width:400px;">
         {{ password_change_form.as_table }}
         <tr>

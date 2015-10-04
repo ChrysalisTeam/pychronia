@@ -11,7 +11,7 @@
 {% blocktrans %}Sorry, we need to check your that you're neither a robot, nor a zombie, thanks to this captcha.{% endblocktrans %}
 
 
-<form method="post">  {% comment %} form to same url exactly, params included {% endcomment %}
+<form method="post" autocomplete="on">  {% comment %} form to same url exactly, params included {% endcomment %}
 <table style="margin:auto;width:400px;">
 
     {% if captcha.text %}

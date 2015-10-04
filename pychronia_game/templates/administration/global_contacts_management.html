@@ -47,7 +47,7 @@
 	        {% usekwacro deletion_button identifier %}
 
 	        <a name="entry-{{ identifier }}"><h2>{{ identifier|default:_("NEW ENTRY") }}</h2></a>
-	        <form id="update_form" action="#entry-{{ identifier }}" method="post">
+	        <form id="update_form" action="#entry-{{ identifier }}" method="post" autocomplete="off">
 	            {{ form.as_p }}
 	            <input type="submit" name="submit" value="{% trans "Submit" %}"/>
 	        </form>

@@ -180,7 +180,7 @@ if(!block_autosave) {
             <button style="float: right" onclick="clear_saved_content(); setup_content_autosave();">{% trans "Dismiss" %}</button>
         </div>
 
-        <form action="{% game_view_url "pychronia_game.views.compose_message" %}" method="post">
+        <form action="{% game_view_url "pychronia_game.views.compose_message" %}" method="post" autocomplete="on">
 
         <p><input type="button" name="cancel_message" value="{% trans "Cancel message and clear autosave" %}"
             onclick="clear_saved_content(); return_to_home();" /></p>

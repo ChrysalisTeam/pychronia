@@ -2,7 +2,7 @@
 
 {% if form %}
 <div class="scroll_yellow_rolled {{ class }}" style="max-width:280px; display: inline-block; vertical-align: top;">
-    <form id="{% random_id %}" action="{{ form.target_url }}" method="post">
+    <form id="{% random_id %}" action="{{ form.target_url }}" method="post" autocomplete="on">
     <h3>{{ title }}</h3>
     {{ form.as_p }}
     <input type="submit" name="{{ button_name }}" value="{{ button_title }}" />

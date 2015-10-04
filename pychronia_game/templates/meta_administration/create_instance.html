@@ -13,7 +13,7 @@
 
     <div id="game_creation_form_id" class="form_scroll_medium" align="center" style="width: 70%; margin: auto;">
         <h2>{% trans "New Game Instance" %}</h2>
-        <form action="#" method="post" class="meta_admin_button">
+        <form action="#" method="post" class="meta_admin_button" autocomplete="off">
             {{ game_creation_form.as_p }}
             <p><input type="submit" name="create_game_instance" value="{{ _("Create game instance")}}" /></p>
         </form>
