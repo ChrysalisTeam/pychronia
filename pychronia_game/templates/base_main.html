@@ -317,11 +317,20 @@
 		});
 
 
+        var submissionControls = $('input[type="button"], input[type="submit"]');
         {% if disable_widgets %}
-            $('input[type="button"]').attr('disabled', 'disabled');
-            $('input[type="submit"]').attr('disabled', 'disabled');
-            $('input.autosubmit').attr('disabled', 'disabled');
+            submissionControls.add('input.autosubmit');
+            submissionControls.attr('disabled', 'disabled');
+        {% else %}
+            /* prevent quick double submits */
+            submissionControls.click(function (event) {
+                var myButton = $(this);
+                myButton.attr("disabled", true);
+                setTimeout(function(){myButton.attr("disabled", false);}, 3000);
+                event.preventDefault();
+            });
         {% endif %}
+
 
 {% endaddtoblock %}
 
