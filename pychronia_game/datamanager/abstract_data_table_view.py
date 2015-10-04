@@ -45,13 +45,20 @@ class AbstractDataTableManagement(AbstractGameView):
 
     def submit_item(self, previous_identifier, identifier, **data):
 
+        assert identifier, "Bad submit_item previous_identifier %r" % identifier
+
+        identifier_changed = (previous_identifier != identifier)  # previous_identifier might be empty
+
         table = self.get_data_table_instance()
 
-        # insertion and update are the same
+        if (identifier_changed and identifier in table):
+            raise NormalUsageError(_("Entry '%s' already exists") % identifier)
+
+        # insertion and update are the same then
         table[identifier] = utilities.convert_object_tree(data, type_mapping=utilities.python_to_zodb_types) # security
 
         # cleanup in case of renaming
-        if previous_identifier and previous_identifier != identifier:
+        if identifier_changed and previous_identifier:
             if previous_identifier in table:
                 del table[previous_identifier]
             else:
@@ -64,7 +71,7 @@ class AbstractDataTableManagement(AbstractGameView):
         table = self.get_data_table_instance()
 
         if not deleted_item or deleted_item not in table:
-            raise AbnormalUsageError(_("Entry '%s' not found") % deleted_item)
+            raise UsageError(_("Entry '%s' not found") % deleted_item)
         del table[deleted_item]
         return _("Entry '%s' properly deleted") % deleted_item
 

@@ -244,6 +244,9 @@ PROMOTION
 TESTS
 ----------
 
+- tester radiospots et static pages comme le sont les global_contacts
+- tester les utilitaires DataTable et son form+view
+
 - checker que les formulaires et le compose_message ne listent PAS les gens inconnus via address book
 - checker le bon display des PJ only dans la page des enchérisseurs
 - vérifier les displays du cas "destinataires masqués"
