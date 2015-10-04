@@ -64,6 +64,8 @@ class AbstractDataTableManagement(AbstractGameView):
             else:
                 self.logger.critical("Wrong previous_identifier submitted in StaticPagesManagement: %r", previous_identifier)
 
+        self._setup_http_redirect_on_success("./#entry-" + slugify(identifier))  # we set the #fragment to target new identifier, even if unchanged
+
         return _("Entry '%s' properly submitted") % identifier
 
 
@@ -73,19 +75,24 @@ class AbstractDataTableManagement(AbstractGameView):
         if not deleted_item or deleted_item not in table:
             raise UsageError(_("Entry '%s' not found") % deleted_item)
         del table[deleted_item]
+
+        self._setup_http_redirect_on_success("./#none")  # we force dummy hash to remove url fragment
+
         return _("Entry '%s' properly deleted") % deleted_item
 
 
     @readonly_method
     def get_template_vars(self, previous_form_data=None):
 
+        concerned_identifier = None
+        if previous_form_data and not previous_form_data.action_successful:
+            concerned_identifier = self.request.POST.get("previous_identifier", "") # empty string if it was a new item
+
         table = self.get_data_table_instance()
         mutable_table_items = table.get_all_data(as_sorted_list=True, mutability=True)
         immutable_table_items = table.get_all_data(as_sorted_list=True, mutability=False)
 
-        concerned_identifier = None
-        if previous_form_data and not previous_form_data.action_successful:
-            concerned_identifier = self.request.POST.get("previous_identifier", "") # empty string if it was a new item
+
 
         forms = [("", self.instantiate_table_form(previous_form_data=(previous_form_data if concerned_identifier == "" else None)))] # form for new table entry
 

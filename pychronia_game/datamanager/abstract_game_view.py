@@ -20,6 +20,7 @@ from django.forms import Form
 from ZODB.POSException import POSError # parent of ConflictError
 from django.core import urlresolvers
 from django.utils.functional import Promise # used eg. for lazy-translated strings
+from django.shortcuts import redirect
 
 '''
 REDIRECTION TO LOGIN PAGE - not used ATM
@@ -604,13 +605,16 @@ class AbstractGameView(object):
         if __debug__: self.datamanager.notify_event("PROCESS_HTML_REQUEST")
         if self.request.method == "POST":
             res = self._process_html_post_data()
-            success = res["result"] # can be None also if nothing processed
+            action_success = res["result"] # can be None also if nothing processed
             previous_form_data = res["form_data"]
         else:
-            success = None # unused ATM
+            action_success = None # unused ATM
             previous_form_data = None
 
-        assert not previous_form_data or previous_form_data.action_successful == success # coherency
+        assert not previous_form_data or previous_form_data.action_successful == action_success # coherency
+
+        if action_success and self._redirection_url:
+            return redirect(self._redirection_url)  # optimization: we do it BEFORE get_template_vars()
 
         template_vars = self.get_template_vars(previous_form_data)
 
@@ -639,17 +643,25 @@ class AbstractGameView(object):
         return self._auto_process_request()
 
 
+    def _setup_http_redirect_on_success(self, url):
+        """
+        For now, it's only taken intop account for NON-AJAX HTTP POST actions.
+        """
+        self._redirection_url = url
+
+
     def _before_request(self, request, *args, **kwargs):
         # we finish initializing the game view instance, with request-specific parameters
         assert request.datamanager == self._inner_datamanager # let's be coherent
         self.request = request
         self.args = args
         self.kwargs = kwargs
+        self._redirection_url = None
 
         request.processed_view = self # needed for menu building and template context processor, later
 
     def _after_request(self):
-        del self.request, self.args, self.kwargs # cleanup
+        del self.request, self.args, self.kwargs, self._redirection_url # cleanup
 
 
     @transform_usage_error
