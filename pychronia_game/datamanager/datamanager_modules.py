@@ -4020,7 +4020,7 @@ class GameViews(BaseDataManager):
     @classmethod
     def register_game_view(cls, view_class):
         assert isinstance(view_class, type)
-        print("WE REGISTER", view_class.NAME, view_class.REQUIRES_CHARACTER_PERMISSION, view_class.get_access_permission_name() if view_class.REQUIRES_CHARACTER_PERMISSION else None)
+        ##print("WE REGISTER", view_class.NAME, view_class.REQUIRES_CHARACTER_PERMISSION, view_class.get_access_permission_name() if view_class.REQUIRES_CHARACTER_PERMISSION else None)
 
         assert view_class.NAME and view_class.NAME not in cls.GAME_VIEWS_REGISTRY, view_class.NAME
         cls.GAME_VIEWS_REGISTRY[view_class.NAME] = view_class
