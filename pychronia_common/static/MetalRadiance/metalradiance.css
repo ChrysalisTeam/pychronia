@@ -1984,6 +1984,16 @@ body .ui-dropdownchecklist-dropcontainer, body .markItUp {
   background-color: #fff7e7;
   background-image: none;
 }
+body textarea:disabled, body select:disabled, body input:disabled,
+body .select2-container-multi .select2-choices:disabled,
+body .select2-container-multi .select2-choices .select2-search-choice:disabled,
+body .select2-dropdown-open.select2-drop-above .select2-choice:disabled,
+body .select2-dropdown-open.select2-drop-above .select2-choices:disabled,
+body .select2-results .select2-selection-limit:disabled,
+body .select2-drop:disabled, body .ui-dropdownchecklist-selector-wrapper:disabled,
+body .ui-dropdownchecklist-dropcontainer:disabled, body .markItUp:disabled {
+  background-color: #E4E4E4;
+}
 input[type=submit] {
   margin-top: 25px 10px;
 }

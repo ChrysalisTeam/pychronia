@@ -235,6 +235,10 @@ textarea {
          color: $black_text_color;
          background-color: $color;
          background-image: none;
+
+         &:disabled {
+             background-color: $grey_color;
+         }
     }
 }
 
