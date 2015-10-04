@@ -821,10 +821,10 @@ table.realtable a:visited {
   color: #2F7362;
 }
 table.realtable a:hover {
-  color: #62CB4B;
+  color: #408232;
 }
 table.realtable a:active {
-  color: #62CB4B;
+  color: #408232;
 }
 @media (max-width: 991px) {
   table.realtable {
@@ -1327,10 +1327,10 @@ table.footnote {
   color: #2F7362;
 }
 .post-it a:hover, .missing-content a:hover {
-  color: #62CB4B;
+  color: #408232;
 }
 .post-it a:active, .missing-content a:active {
-  color: #62CB4B;
+  color: #408232;
 }
 .scroll_realistic {
   color: black;
@@ -1349,10 +1349,10 @@ table.footnote {
   color: #2F7362;
 }
 .scroll_realistic a:hover {
-  color: #62CB4B;
+  color: #408232;
 }
 .scroll_realistic a:active {
-  color: #62CB4B;
+  color: #408232;
 }
 .scroll_realistic_thin_ends, .hentry {
   color: black;
@@ -1372,10 +1372,10 @@ table.footnote {
   color: #2F7362;
 }
 .scroll_realistic_thin_ends a:hover, .hentry a:hover {
-  color: #62CB4B;
+  color: #408232;
 }
 .scroll_realistic_thin_ends a:active, .hentry a:active {
-  color: #62CB4B;
+  color: #408232;
 }
 .scroll_yellow_flat {
   color: black;
@@ -1394,10 +1394,10 @@ table.footnote {
   color: #2F7362;
 }
 .scroll_yellow_flat a:hover {
-  color: #62CB4B;
+  color: #408232;
 }
 .scroll_yellow_flat a:active {
-  color: #62CB4B;
+  color: #408232;
 }
 .scroll_yellow_rolled, .form_scroll_thin, .form_scroll_medium, .form_scroll_big {
   color: black;
@@ -1418,11 +1418,11 @@ table.footnote {
 }
 .scroll_yellow_rolled a:hover, .form_scroll_thin a:hover,
 .form_scroll_medium a:hover, .form_scroll_big a:hover {
-  color: #62CB4B;
+  color: #408232;
 }
 .scroll_yellow_rolled a:active, .form_scroll_thin a:active,
 .form_scroll_medium a:active, .form_scroll_big a:active {
-  color: #62CB4B;
+  color: #408232;
 }
 .antique_marble_frame {
   padding: 5px;
@@ -1536,10 +1536,10 @@ table.footnote {
   color: #2F7362;
 }
 .rice_paper_beige a:hover {
-  color: #62CB4B;
+  color: #408232;
 }
 .rice_paper_beige a:active {
-  color: #62CB4B;
+  color: #408232;
 }
 .rice_paper_rose {
   color: black;
@@ -1556,10 +1556,10 @@ table.footnote {
   color: #2F7362;
 }
 .rice_paper_rose a:hover {
-  color: #62CB4B;
+  color: #408232;
 }
 .rice_paper_rose a:active {
-  color: #62CB4B;
+  color: #408232;
 }
 #password_display {
   display: table-cell;
@@ -1632,10 +1632,10 @@ input.digit {
   color: #2F7362;
 }
 .email_message.unread a:hover {
-  color: #62CB4B;
+  color: #408232;
 }
 .email_message.unread a:active {
-  color: #62CB4B;
+  color: #408232;
 }
 .email_message.read {
   color: black;
@@ -1658,10 +1658,10 @@ input.digit {
   color: #2F7362;
 }
 .email_message.read a:hover {
-  color: #62CB4B;
+  color: #408232;
 }
 .email_message.read a:active {
-  color: #62CB4B;
+  color: #408232;
 }
 .email_message.read + .cover_previous, .email_message.unread + .cover_previous {
   margin-top: -60px;
@@ -1687,10 +1687,10 @@ input.digit {
   color: #2F7362;
 }
 .email_message.unread.collapsed a:hover {
-  color: #62CB4B;
+  color: #408232;
 }
 .email_message.unread.collapsed a:active {
-  color: #62CB4B;
+  color: #408232;
 }
 .email_message.read.collapsed {
   color: black;
@@ -1713,10 +1713,10 @@ input.digit {
   color: #2F7362;
 }
 .email_message.read.collapsed a:hover {
-  color: #62CB4B;
+  color: #408232;
 }
 .email_message.read.collapsed a:active {
-  color: #62CB4B;
+  color: #408232;
 }
 .email_message.read.collapsed + .cover_previous,
 .email_message.unread.collapsed + .cover_previous {
@@ -2350,10 +2350,10 @@ body .notification_panel .notification_panel_decorations .notification_panel_con
     color: #2F7362;
   }
   body a:hover {
-    color: #62CB4B;
+    color: #408232;
   }
   body a:active {
-    color: #62CB4B;
+    color: #408232;
   }
   body.full_background {
     background-image: url('img/backgrounds/nazur_temple_75_smooth.jpg');

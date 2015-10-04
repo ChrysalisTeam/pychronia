@@ -134,8 +134,8 @@ $scroll_text_color: black;
         //text-shadow: 1px 1px 0 $medium_yellow, -1px -1px 0 $medium_yellow;
         &:link { color: $dark_green; }
         &:visited { color: $old_green; }
-        &:hover { color: $bright_green }
-        &:active { color: $bright_green }
+        &:hover { color: $medium_green }
+        &:active { color: $medium_green }
     }
 }
 
