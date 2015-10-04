@@ -19,7 +19,9 @@
         </ul>
     </div>
 
-    <div id="trashcan" onclick="clear_radio_playlist();">&nbsp;</div>
+    <div id="trashcan" onclick="if(confirm('{{ _("This will empty the webradio playlist, are you sure?")|escapejs }}')){clear_radio_playlist();}">
+        &nbsp;
+    </div>
 {% usekwacro side_panel_end %}
 
 {% endblock %}
