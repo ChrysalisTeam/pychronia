@@ -347,8 +347,6 @@ def standard_conversations(request, template_name='messaging/conversation.html')
 
     CONVERSATIONS_LIMIT = 30
 
-    message_sent = (request.GET.get("message_sent") == "1")
-
     display_all_conversations = bool(request.GET.get("display_all", None) == "1")
 
     visibility_reasons = (VISIBILITY_REASONS.sender, VISIBILITY_REASONS.recipient)  # we EXCLUDE intercepted messages from this
@@ -373,8 +371,7 @@ def standard_conversations(request, template_name='messaging/conversation.html')
                   dict(page_title=_("All My Conversations") if display_all_conversations else _("My Recent Conversations"),
                        display_all_conversations=display_all_conversations,
                        conversations=enriched_messages,
-                       contact_cache=_build_contact_display_cache(request.datamanager),
-                       message_sent=message_sent))
+                       contact_cache=_build_contact_display_cache(request.datamanager)))
 
 
 @register_view(access=UserAccess.character, requires_global_permission=False, title=ugettext_lazy("Intercepted Messages"))  # master doesn't INTERCEPT messages...
@@ -437,6 +434,7 @@ def compose_message(request, template_name='messaging/compose.html'):
     user = request.datamanager.user
     message_sent = False
     form = None
+    sent_msg_id = None
 
     if request.method == "POST":
         form = MessageComposeForm(request, data=request.POST)
@@ -468,10 +466,11 @@ def compose_message(request, template_name='messaging/compose.html'):
                 use_template = form.cleaned_data.get("use_template", None)
 
                 # sender_email and one of the recipient_emails can be the same email, we don't care !
-                request.datamanager.post_message(sender_email, recipient_emails, subject, body,
-                                                 attachment=attachment, transferred_msg=transferred_msg,
-                                                 date_or_delay_mn=sending_date, mask_recipients=mask_recipients,
-                                                 parent_id=parent_id, use_template=use_template)
+                sent_msg_id = request.datamanager.post_message(sender_email, recipient_emails, subject, body,
+                                                              attachment=attachment, transferred_msg=transferred_msg,
+                                                              date_or_delay_mn=sending_date, mask_recipients=mask_recipients,
+                                                              parent_id=parent_id, use_template=use_template)
+                assert sent_msg_id
                 message_sent = True
                 form = MessageComposeForm(request)  # new empty form
         else:
@@ -479,12 +478,25 @@ def compose_message(request, template_name='messaging/compose.html'):
     else:
         form = MessageComposeForm(request)
 
-    conversations_url = reverse("pychronia_game.views.standard_conversations",
-                                kwargs=dict(game_instance_id=request.datamanager.game_instance_id))
-    conversations_url += '?' + urllib.urlencode(dict(message_sent="1"))
 
-    if message_sent:
+    if sent_msg_id:
+        # we redirect towards the most probable view
+        if not request.datamanager.is_master():
+            target_view = "pychronia_game.views.standard_conversations"
+        else:
+            try:
+                msg = request.datamanager.get_dispatched_message_by_id(sent_msg_id)
+                del msg
+                target_view = "pychronia_game.views.all_dispatched_messages"
+            except UsageError:
+                assert len([message for message in request.datamanager.messaging_data["messages_queued"] if message["id"] == sent_msg_id]) == 1
+                target_view = "pychronia_game.views.all_queued_messages"
+
+        conversations_url = reverse(target_view,
+                                    kwargs=dict(game_instance_id=request.datamanager.game_instance_id))
+        conversations_url += '?' + urllib.urlencode(dict(message_sent="1"))
         return HttpResponseRedirect(redirect_to=conversations_url)
+
 
     user_contacts = request.datamanager.get_sorted_user_contacts() # properly SORTED list
     contacts_display = request.datamanager.get_contacts_display_properties(user_contacts) # DICT FIELDS: address avatar description

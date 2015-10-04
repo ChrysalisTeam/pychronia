@@ -88,6 +88,8 @@ def pychronia_template_context(request):
         signal_new_radio_messages = not dm.has_read_current_playlist() if not isinstance(request.processed_view, WebradioManagement) else False
         signal_new_text_messages = dm.is_character() and dm.has_new_message_notification() # only for characters atm
 
+        message_sent = (request.GET.get("message_sent") == "1")  # useful to purge localstorage backups
+
         if request.processed_view.DISPLAY_STATIC_CONTENT:
             content_blocks = dict(help_page=dict(name=help_page_key,
                                                       data=dm.get_categorized_static_page(dm.HELP_CATEGORY, help_page_key)),
@@ -116,6 +118,8 @@ def pychronia_template_context(request):
                 'signal_new_help_page': signal_new_help_page,
                 'signal_new_radio_messages': signal_new_radio_messages,
                 'signal_new_text_messages': signal_new_text_messages,
+
+                'message_sent': message_sent,
 
                 # replacement of django.contrib.messages middleware
                 'notification_type': notification_type,
