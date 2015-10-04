@@ -129,8 +129,27 @@
 
         $('*[title]').qtip({
         	                 show: { delay: 800 },
+                             hide: { when: 'mouseout', fixed: true, delay: 800 },
         	                 style: { name: 'cream', tip: false, "font-size": "0.8em"},
-                             hide: { when: 'mouseout', fixed: true, delay: 800 }
+
+
+                             events: {
+                                 show: function() {
+                                     // Tell the tip itself to not bubble up clicks on it
+                                     $($(this).qtip('api').elements.tooltip).click(function() { return false; });
+
+                                     // Tell the document itself when clicked to hide the tip and then unbind
+                                     // the click event (the .one() method does the auto-unbinding after one time)
+                                     $(body).one("click", function() { $("*[title]").qtip('hide'); });
+                                 }
+                             },
+
+                             position: {
+                                  adjust: {
+                                      screen: true
+                                  }
+                             }
+
                            }); // lots of options remain
 
 
