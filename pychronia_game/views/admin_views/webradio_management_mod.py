@@ -91,7 +91,7 @@ class WebradioManagement(AbstractGameView):
             return super(WebradioManagement, self)._process_html_request() # displays error if POST data is useless
 
         return dict(result=result,
-                form_data=None) # no form data unless with went through super()._process_html_request() above
+                    form_data=None) # no form data unless with went through super()._process_html_request() above
 
 
     def save_radio_playlist(self, audio_ids=None):

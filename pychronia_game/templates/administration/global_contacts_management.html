@@ -15,7 +15,7 @@
     <div class="rice_paper_rose tiny_bullets full_width" style="font-size:0.8em;">
     <ul>
         {% for identifier, form in forms %}
-            <li><a href="#entry-{{ identifier }}">{{ identifier|default:_("NEW ENTRY") }}</a></li>
+            <li><a href="#entry-{{ identifier|slugify }}">{{ identifier|default:_("NEW ENTRY") }}</a></li>
         {% endfor %}
     </ul>
     </div>
@@ -24,7 +24,7 @@
     <div class="rice_paper_rose tiny_bullets full_width" style="font-size:0.8em;">
     <ul>
         {% for identifier, form in immutable_table_items %}
-            <li><a href="#entry-{{ identifier }}">{{ identifier }}</a></li>
+            <li><a href="#entry-{{ identifier|slugify }}">{{ identifier }}</a></li>
         {% endfor %}
     </ul>
     </div>
@@ -42,12 +42,12 @@
 	    <h2>{% trans "Editable contacts" %}</h2>
 
 	    {% for identifier, form in forms %}
-	    <div id="entry-{{ identifier }}" class="scroll_realistic_thin_ends center">
+	    <div id="entry-{{ identifier|slugify }}" class="scroll_realistic_thin_ends center">
 
 	        {% usekwacro deletion_button identifier %}
 
-	        <a name="entry-{{ identifier }}"><h2>{{ identifier|default:_("NEW ENTRY") }}</h2></a>
-	        <form id="update_form" action="#entry-{{ identifier }}" method="post" autocomplete="off">
+	        <a name="entry-{{ identifier|slugify }}"><h2>{{ identifier|default:_("NEW ENTRY") }}</h2></a>
+	        <form id="update_form" action="#entry-{{ identifier|slugify }}" method="post" autocomplete="off">
 	            {{ form.as_p }}
 	            <input type="submit" name="submit" value="{% trans "Submit" %}"/>
 	        </form>
@@ -69,7 +69,7 @@
 	    <h2>{% trans "Immutable contacts" %}</h2>
 
 	    {% for identifier, data in immutable_table_items %}
-	    <div id="entry-{{ identifier }}" class="scroll_realistic_thin_ends center">
+	    <div id="entry-{{ identifier|slugify }}" class="scroll_realistic_thin_ends center">
 
             <p><b>{{ identifier }}</b></p>
 

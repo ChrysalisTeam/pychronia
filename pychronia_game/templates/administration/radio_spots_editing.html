@@ -43,7 +43,7 @@
     <div class="rice_paper_rose tiny_bullets full_width" style="font-size:0.8em;">
     <ul>
         {% for identifier, form in forms %}
-            <li><a href="#entry-{{ identifier }}">{{ identifier|default:_("NEW ENTRY") }}</a></li>
+            <li><a href="#entry-{{ identifier|slugify }}">{{ identifier|default:_("NEW ENTRY") }}</a></li>
         {% endfor %}
     </ul>
     </div>
@@ -63,10 +63,10 @@
     <div class="scroll_realistic_thin_ends center">
         {% usekwacro deletion_button identifier %}
 
-        <a name="entry-{{ identifier }}"><h2>{{ identifier|default:_("NEW ENTRY") }}</h2></a>
-        <form id="update_form" action="#entry-{{ identifier }}" method="post" autocomplete="off">
+        <a name="entry-{{ identifier|slugify }}"><h2>{{ identifier|default:_("NEW ENTRY") }}</h2></a>
+        <form id="update_form" action="#entry-{{ identifier|slugify }}" method="post" autocomplete="off">
             {{ form.as_p }}
-            <div id="id_{{ identifier }}_sound_preview" align="center">
+            <div id="id_{{ identifier|slugify }}_sound_preview" align="center">
                 {% if form.url_or_file.value %}
                     {{ form.url_or_file.value|mediaplayer }}
                 {% else %}
