@@ -277,10 +277,10 @@ class FriendshipManagementView(AbstractGameView):
                }
 
     def do_propose_friendship(self, other_username, use_gems=()):
-        
+
         if not self.datamanager.is_character(other_username):
             raise NormalUsageError(_("Invalid username '%s'") % other_username)
-        
+
         res = self.datamanager.propose_friendship(recipient=other_username)
         if res:
             return _("You're now friend with %s, as that user concurrently proposed friendship too.") % other_username # should be fairly rare

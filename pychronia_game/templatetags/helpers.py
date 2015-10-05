@@ -361,6 +361,14 @@ def threefirstletters(value):
 register.filter('threefirstletters',threefirstletters)
 '''
 
+def list_sum(value):
+    """
+    Simple sum (or concatenate) all items in list.
+    """
+    if not value:
+        return None
+    return sum(value, value[0].__class__())
+register.filter('list_sum', list_sum)
 
 
 def dict_get(value, arg):
@@ -378,13 +386,13 @@ def dict_get(value, arg):
 register.filter('dict_get', dict_get)
 
 
-def list_filter(value, offset):
+def matrix_extract_column(value, offset):
     """
     Extracts the nth element of each item in a list.
     """
     offset = int(offset)
     return [val[offset] for val in value]
-register.filter('list_filter', list_filter)
+register.filter('matrix_extract_column', matrix_extract_column)
 
 
 def list_append_to_each(value, suffix):

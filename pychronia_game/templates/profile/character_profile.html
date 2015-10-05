@@ -10,7 +10,13 @@
         <b>
         <ul>
             <li>{% trans "Money:" %} {{ character_properties.account }} ¤</li>
-            <li>{% trans "Gems (values in ¤):" %} {% if user_gems %}{{ user_gems|list_append_to_each:"¤"|join:", " }}{% else %}{% trans "None" %}{% endif %}</li>
+            <li>{% trans "Gems:" %}
+                    {% if user_gems %}
+                        {{ user_gems|list_sum }}¤ {% trans "total" %}
+                        ({{ user_gems|list_append_to_each:"¤"|join:", " }})
+                    {% else %}
+                        {% trans "None" %}
+                    {% endif %}</li>
             <li>{% trans "Objects:" %} {% if user_artefacts %}{{ user_artefacts|join:", " }}{% else %}{% trans "None" %}{% endif %}</li>
         </ul>
         </b>

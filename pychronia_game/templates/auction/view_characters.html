@@ -72,7 +72,9 @@
     		    		<p title="{% trans "Values, in kashes, of each gem" %}"">
     		    		    <b>{% trans "Gems:" %}</b>
                             {% if char_details.gems %}
-                                {{ char_details.gems|list_filter:"0"|list_append_to_each:"¤"|join:", " }}
+                                {{ char_details.gems|matrix_extract_column:"0"|list_sum }}¤ {% trans "total" %}
+                                ({{ char_details.gems|matrix_extract_column:"0"|list_append_to_each:"¤"|join:", " }})
+
                             {% else %}
                                 {% trans "None" %}
                             {% endif %}
