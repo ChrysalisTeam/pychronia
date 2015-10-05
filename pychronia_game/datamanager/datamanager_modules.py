@@ -296,7 +296,8 @@ class GameEvents(BaseDataManager): # TODO REFINE
     @transaction_watcher
     def log_game_event(self, message, substitutions=None, url=None, visible_by=_undefined):
         """
-        Message must be an UNTRANSLATED string, since we handle translation directly in this class.
+        Input message must be an UNTRANSLATED string, since we handle translation directly in this class. 
+        So use "ugettext_noop()" to mark it.
         
         The sequence visible_by lists characters able to view this log entry, by default only MASTER can view it.
         """
@@ -3769,9 +3770,9 @@ class MoneyItemsOwnership(BaseDataManager):
             visible_by.append(to_name) # can't be the same as from_name, due to checks above
 
         # FIXME - bug here with early translation !!! #
-        msg = _("Bank operation: %(amount)s kashes transferred from %(from_name)s to %(to_name)s.")
+        msg = ugettext_noop("Bank operation: %(amount)s kashes transferred from %(from_name)s to %(to_name)s.")
         if reason:
-            msg += " " + _("Reason: %(reason)s") % SDICT(reason=reason)
+            msg += " " + ugettext_noop("Reason: %(reason)s") % SDICT(reason=reason)
 
         self.log_game_event(msg,
                              PersistentMapping(amount=amount, from_name=from_name, to_name=to_name),

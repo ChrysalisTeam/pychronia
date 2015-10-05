@@ -179,6 +179,10 @@ class CharacterProfile(AbstractGameView):
                                                          old_password=old_password,
                                                          new_password=new_password1)
 
+        self.datamanager.log_game_event(ugettext_noop("User account password has been changed."),
+                                         url=None,
+                                         visible_by=[self.datamanager.username])
+
         return _("Password change successfully performed.")
 
 character_profile = CharacterProfile.as_view
