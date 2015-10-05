@@ -3710,7 +3710,7 @@ msgstr "Profil Utilisateur"
 
 #: .\views\profile_views.py:182
 msgid "Password change successfully performed."
-msgstr "Message envoyé avec succès."
+msgstr "Changement de mot de passe effectué avec succès."
 
 #: .\views\profile_views.py:198
 msgid "User Identifier"
