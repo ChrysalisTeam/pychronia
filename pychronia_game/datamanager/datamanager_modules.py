@@ -612,29 +612,19 @@ class CharacterHandling(BaseDataManager): # TODO REFINE
         username = self._resolve_username(username)
         data = self.get_character_properties(username)
 
-        action_done = False
+        updates_done = []  # list of tuples (key, old_value, new_value) for all changed values
 
-        if official_name and official_name != data["official_name"]:
-            data["official_name"] = official_name # can't be an empty string
-            action_done = True
+        character_keys = ["official_name", "official_role", "gamemaster_hints", "is_npc", "extra_goods"]
+        mandatory_keys = character_keys[:2]  # name and role only ATM, can't be empty string
 
-        if official_role and official_role != data["official_role"]:
-            data["official_role"] = official_role # can't be an empty string
-            action_done = True
+        new_data = locals()
+        for key in character_keys:
+            if new_data[key] or (key not in mandatory_keys and new_data[key] is not None):
+                if new_data[key] != data[key]:
+                    updates_done.append((key, data[key], new_data[key]))
+                    data[key] = new_data[key]
 
-        if gamemaster_hints is not None and gamemaster_hints != data["gamemaster_hints"]:
-            data["gamemaster_hints"] = gamemaster_hints # MAY BE EMPTY STRING
-            action_done = True
-
-        if is_npc is not None and is_npc != data["is_npc"]:
-            data["is_npc"] = is_npc # bool
-            action_done = True
-
-        if extra_goods is not None:
-            data["extra_goods"] = extra_goods # string
-            action_done = True
-
-        return action_done
+        return updates_done
 
 
 
