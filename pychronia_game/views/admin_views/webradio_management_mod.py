@@ -24,6 +24,15 @@ class WebradioManagement(AbstractGameView):
     REQUIRES_GLOBAL_PERMISSION = False
 
 
+    def _log_current_playlist_before_deletion(self):
+        previous_playlist = self.datamanager.get_all_next_audio_messages()
+        if previous_playlist:
+            playlist_str = ", ".join(previous_playlist)
+            self.datamanager.log_game_event(ugettext_noop("Radio playlist was emptied, it contained: %(playlist)s"),
+                                          substitutions=PersistentMapping(playlist=playlist_str),
+                                          url=None,
+                                          visible_by=None) # only for game master
+
     def get_template_vars(self, previous_form_data=None):
 
         radio_is_on = self.datamanager.get_global_parameter("radio_is_on")
@@ -57,6 +66,8 @@ class WebradioManagement(AbstractGameView):
         POST = request.POST
         result = None
 
+
+
         # manual form management, since there are hell a lot of stuffs...
         if POST.has_key("turn_radio_off"):
             result = False
@@ -67,11 +78,6 @@ class WebradioManagement(AbstractGameView):
             result = False
             with action_failure_handler(request, _("Web Radio has been turned ON.")):
                 self.datamanager.set_radio_state(is_on=True)
-                result = True
-        elif POST.has_key("reset_playlist"):
-            result = False
-            with action_failure_handler(request, _("Audio Playlist has been emptied.")):
-                self.datamanager.reset_audio_messages()
                 result = True
         elif POST.has_key("notify_new_messages"):
             result = False
@@ -89,6 +95,14 @@ class WebradioManagement(AbstractGameView):
         else:
             assert result is None
             return super(WebradioManagement, self)._process_html_request() # displays error if POST data is useless
+        """ # seems unused ATM
+        elif POST.has_key("reset_playlist"):  
+            result = False
+            with action_failure_handler(request, _("Audio Playlist has been emptied.")):
+                self._log_current_playlist_before_deletion()
+                self.datamanager.reset_audio_messages()
+                result = True
+        """
 
         return dict(result=result,
                     form_data=None) # no form data unless with went through super()._process_html_request() above
@@ -96,6 +110,8 @@ class WebradioManagement(AbstractGameView):
 
     def save_radio_playlist(self, audio_ids=None):
         audio_ids = audio_ids if audio_ids is not None else [] # ajax won't send any audio_ids if playlist is emptied
+        if not audio_ids:
+            self._log_current_playlist_before_deletion()  # we consider this as a reset
         self.datamanager.set_radio_messages(audio_ids) # breaks if not a proper list of audio ids
         return True
 
