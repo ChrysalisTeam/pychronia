@@ -58,7 +58,6 @@ def manage_characters(request, template_name='administration/character_managemen
 
     characters_items = sorted(dm.get_character_sets().items(), key=lambda x: (x[1]["is_npc"], x[0]))
 
-    form_validation_failed = None
     character_forms = []
 
     def _prefix(idx):
@@ -94,19 +93,52 @@ def manage_characters(request, template_name='administration/character_managemen
 
                     assert not dm.is_in_writing_transaction() # each call below will be separately atomic
 
+                    previous_data = copy.deepcopy(dm.get_character_properties(username=target_username))
+
                     dm.update_official_character_data(username=target_username,
-                                                    official_name=official_name,
-                                                    official_role=official_role,
-                                                    gamemaster_hints=gamemaster_hints,
-                                                    extra_goods=extra_goods,
-                                                    is_npc=is_npc)
+                                                        official_name=official_name,
+                                                        official_role=official_role,
+                                                        gamemaster_hints=gamemaster_hints,
+                                                        extra_goods=extra_goods,
+                                                        is_npc=is_npc)
+
                     dm.update_allegiances(username=target_username,
                                           allegiances=allegiances)
+
                     dm.update_permissions(username=target_username,
                                           permissions=permissions)
                     dm.update_real_life_data(username=target_username,
                                             real_life_identity=real_life_identity,
                                             real_life_email=real_life_email)
+
+                    new_data = dm.get_character_properties(username=target_username)
+
+                    utilities.assert_sets_equal(previous_data.keys(), new_data.keys())
+
+                    with exception_swallower():  # we don't want this advanced logging to mess with the game
+
+                        def _is_equivalent(a, b):
+                            if isinstance(a, (list, PersistentList, tuple)):
+                                return sorted(a) == sorted(b)  # handle damn allegiances, permissions etc.
+                            return a == b
+                        # we create a list of tuples (key, old_value, new_value) ONLY for modified fields
+                        all_changes = [(k, previous_data[k], new_data[k])
+                                       for k in sorted(new_data.keys()) if not _is_equivalent(previous_data[k], new_data[k])]
+
+                        if all_changes:
+
+                            message = ugettext_noop("""Attributes of user "%(username)s" have been modified:""")
+
+                            additional_details = ""
+                            for change_triplet in all_changes:
+                                additional_details += """~ %s: "%s" => "%s"\n""" % change_triplet
+                            additional_details = re.sub(r"\bu'", "'", additional_details)  # WORKAROUND for ugly "unicode" prefixes of python2
+
+                            dm.log_game_event(message,
+                                              substitutions=PersistentMapping(username=target_username),
+                                              additional_details=additional_details,
+                                              url=None,
+                                              visible_by=None) # only for game master
 
             else:
                 form_validation_failed = True

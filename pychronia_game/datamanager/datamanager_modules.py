@@ -294,12 +294,14 @@ class GameEvents(BaseDataManager): # TODO REFINE
                     username == self.get_global_parameter("anonymous_login")
 
     @transaction_watcher
-    def log_game_event(self, message, substitutions=None, url=None, visible_by=_undefined):
+    def log_game_event(self, message, substitutions=None, url=None, visible_by=_undefined, additional_details=None):
         """
         Input message must be an UNTRANSLATED string, since we handle translation directly in this class. 
         So use "ugettext_noop()" to mark it.
         
-        The sequence visible_by lists characters able to view this log entry, by default only MASTER can view it.
+        The optional parameter "additional_details" will be concatenated but not translate.
+        
+        The sequence "visible_by" lists characters able to view this log entry, by default only MASTER can view it.
         """
 
         assert visible_by is not _undefined, "visible_by parameter must be explicitly defined in log_game_event() call"
@@ -310,6 +312,9 @@ class GameEvents(BaseDataManager): # TODO REFINE
         assert url is None or (url and isinstance(url, basestring))
 
         message = _(message) # TODO - force language to "official game language", not "user interface language"
+        
+        if additional_details:
+            message += "\n" + additional_details
 
         if substitutions:
             assert isinstance(substitutions, PersistentMapping), (message, substitutions)
@@ -612,7 +617,7 @@ class CharacterHandling(BaseDataManager): # TODO REFINE
         username = self._resolve_username(username)
         data = self.get_character_properties(username)
 
-        updates_done = []  # list of tuples (key, old_value, new_value) for all changed values
+        updates_done = False
 
         character_keys = ["official_name", "official_role", "gamemaster_hints", "is_npc", "extra_goods"]
         mandatory_keys = character_keys[:2]  # name and role only ATM, can't be empty string
@@ -621,7 +626,7 @@ class CharacterHandling(BaseDataManager): # TODO REFINE
         for key in character_keys:
             if new_data[key] or (key not in mandatory_keys and new_data[key] is not None):
                 if new_data[key] != data[key]:
-                    updates_done.append((key, data[key], new_data[key]))
+                    updates_done = True
                     data[key] = new_data[key]
 
         return updates_done
