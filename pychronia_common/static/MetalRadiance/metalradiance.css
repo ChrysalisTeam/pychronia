@@ -734,6 +734,9 @@ img.center {
 .italic {
   font-style: italic;
 }
+.line-through {
+  text-decoration: line-through;
+}
 * {
   -webkit-box-sizing: border-box;
   -khtml-box-sizing: border-box;

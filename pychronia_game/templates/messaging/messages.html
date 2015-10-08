@@ -15,7 +15,7 @@
         <ul>
             {% for ctx, message in messages %}
                 <li>
-                    <a {% if ctx.has_read == False %}class="bold"{% endif %} href="#{{ ctx.display_id }}" >{{ message.subject }}</a>&nbsp;{% if ctx.has_starred %}{% fontawesome_icon "star" large=False %}{% endif %}
+                    <a class="{% if ctx.has_read == False or ctx.is_ignored == False and ctx.is_used == False %}bold{% endif %} {% if ctx.is_used == True %}italic{% endif %} {% if ctx.is_ignored == True %}line-through{% endif %}" href="#{{ ctx.display_id }}" >{{ message.subject }}</a>&nbsp;{% if ctx.has_starred %}{% fontawesome_icon "star" large=False %}{% endif %}
                 </li>
             {% endfor %}
         </ul>
