@@ -125,6 +125,8 @@ web_game_urlpatterns = patterns('pychronia_game.views',
     url(r'^messages/all_archived_messages/$', 'all_archived_messages'),
     url(r'^messages/messages_templates/$', 'messages_templates'),
     url(r'^messages/ajax_set_dispatched_message_state_flags/$', 'ajax_set_dispatched_message_state_flags'),
+    url(r'^messages/ajax_set_message_template_state_flags/$', 'ajax_set_message_template_state_flags'),
+
     url(r'^messages/ajax_force_email_sending/$', 'ajax_force_email_sending'),
     url(r'^messages/view_single_message/(?P<msg_id>\w+)/$', 'view_single_message'),
     url(r'^messages/ajax_permanently_delete_message/$', 'ajax_permanently_delete_message'),

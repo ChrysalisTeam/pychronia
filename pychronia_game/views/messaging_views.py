@@ -222,6 +222,7 @@ def _determine_template_display_context(datamanager, template_id, template):
     ctx = dict(
                 template_id=template_id, # allow use as template
                 is_used=template["is_used"],
+                is_ignored=template["is_ignored"],
                 has_read=None, # no buttons at all for that
                 visibility_reason=None,
                 intercepted_by=None,
@@ -251,6 +252,7 @@ def _determine_message_display_context(datamanager, msg, is_pending):
     ctx = dict(
                 template_id=None,
                 is_used=None, # for templates only
+                is_ignored=None,
                 has_read=(username in msg["has_read"]) if not is_pending else None,
                 visibility_reason=visibility_reason,
                 intercepted_by=datamanager.get_characters_for_visibility_reason(msg, visibility_reason=VISIBILITY_REASONS.interceptor) if datamanager.is_master() else None,
@@ -399,6 +401,22 @@ def all_archived_messages(request, template_name='messaging/messages.html'):
                        contact_cache=_build_contact_display_cache(request.datamanager)))
 
 
+@register_view(attach_to=standard_conversations, title=ugettext_lazy("Set Template Boolean Flags"))
+def ajax_set_message_template_state_flags(request):
+    # to be used by AJAX
+    tpl_id = request.REQUEST.get("tpl_id", None)
+
+    fields = ["is_ignored"]
+    flags = {k: (request.REQUEST.get(k, None) in ("1", "true")) for k in fields if k in request.REQUEST}
+
+    utilities.usage_assert(tpl_id)
+    utilities.usage_assert(flags)
+    request.datamanager.set_template_state_flags(tpl_id=tpl_id, **flags)
+
+    return HttpResponse("OK")
+    # in case of error, an HTTP error code will be returned
+
+
 @register_view(attach_to=standard_conversations, title=ugettext_lazy("Set Message Boolean Flags"))
 def ajax_set_dispatched_message_state_flags(request):
     # to be used by AJAX
@@ -413,7 +431,7 @@ def ajax_set_dispatched_message_state_flags(request):
     request.datamanager.set_dispatched_message_state_flags(msg_id=msg_id, **flags)
 
     return HttpResponse("OK")
-    # in case of error, a "500" code will be returned
+    # in case of error, an HTTP error code will be returned
 
 
 @register_view(access=UserAccess.master, requires_global_permission=False, title=ugettext_lazy("Delete Message"))
@@ -424,7 +442,7 @@ def ajax_permanently_delete_message(request):
     request.datamanager.permanently_delete_message(msg_id=msg_id) # should never fail
 
     return HttpResponse("OK")
-    # in case of error, a "500" code will be returned
+    # in case of error, an HTTP error code will be returned
 
 
 
