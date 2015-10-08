@@ -140,7 +140,8 @@ input.digit
 /* hide irrelevant message modification links */
 .email_message.unread .mark_unread_tag, .email_message.read .mark_read_tag,
 .email_message.unstarred .mark_unstarred_tag, .email_message.starred .mark_starred_tag,
-.email_message.unarchived .mark_unarchived_tag, .email_message.archived .mark_archived_tag
+.email_message.unarchived .mark_unarchived_tag, .email_message.archived .mark_archived_tag,
+.email_message.unignored .mark_unignored_tag, .email_message.ignored .mark_ignored_tag,
 {
     display: none;
 }
@@ -155,7 +156,7 @@ input.digit
   display: initial;
 }
 
-.email_message.archived {
+.email_message.archived, .email_message.ignored {
   opacity: 0.7;
 }
 

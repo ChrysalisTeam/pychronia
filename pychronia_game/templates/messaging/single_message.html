@@ -21,7 +21,7 @@
 </div>
 -->
 
-<div id="{{ ctx.display_id }}" class="email_message {% if ctx.has_read or ctx.is_used %}read{% else %}unread{% endif %} {% if ctx.has_starred %}starred{% else %}unstarred{% endif %} {% if ctx.has_archived %}archived{% else %}unarchived{% endif %} {% if not is_first %}cover_previous{% endif %}">
+<div id="{{ ctx.display_id }}" class="email_message {% if ctx.has_read or ctx.is_used %}read{% else %}unread{% endif %} {% if ctx.has_starred %}starred{% else %}unstarred{% endif %} {% if ctx.has_archived %}archived{% else %}unarchived{% endif %} {% if ctx.is_ignored %}ignored{% else %}unignored{% endif %} {% if not is_first %}cover_previous{% endif %}">
 
     <div>
 
@@ -48,6 +48,11 @@
                 {% if message.id %}
                     {% assign name="msg_link" %}{% game_view_url "pychronia_game.views.view_single_message" msg_id=message.id %}{% endassign %}
                     {% usekwacro shareable_link_font msg_link %}
+                {% endif %}
+
+                {% if ctx.template_id %}
+                    <a class="mark_ignored_tag" title="{% trans "Mark as ignored" %}" onclick="ajax_set_message_template_state_flags('{{ ctx.template_id|escapejs }}', {is_ignored: true}); return false;" href="#">{% fontawesome_icon "trash-o" %}</a>
+                    <a class="mark_unignored_tag" title="{% trans "Mark as non-ignored" %}" onclick="ajax_set_message_template_state_flags('{{ ctx.template_id|escapejs }}', {is_ignored: false}); return false;" href="#">{% fontawesome_icon "trash" %}</a>
                 {% endif %}
 
                 &nbsp;&nbsp;

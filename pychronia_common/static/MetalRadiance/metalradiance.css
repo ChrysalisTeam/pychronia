@@ -1726,7 +1726,9 @@ input.digit {
 .email_message.unstarred .mark_unstarred_tag,
 .email_message.starred .mark_starred_tag,
 .email_message.unarchived .mark_unarchived_tag,
-.email_message.archived .mark_archived_tag {
+.email_message.archived .mark_archived_tag,
+.email_message.unignored .mark_unignored_tag,
+.email_message.ignored .mark_ignored_tag {
   display: none;
 }
 .email_message .collapsed_content {
@@ -1738,7 +1740,7 @@ input.digit {
 .email_message.collapsed > .collapsed_content {
   display: initial;
 }
-.email_message.archived {
+.email_message.archived, .email_message.ignored {
   opacity: 0.7;
 }
 .message_operations {

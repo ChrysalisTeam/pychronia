@@ -27,15 +27,33 @@
     }
 
 
+    function ajax_set_message_template_state_flags(tpl_id, flags) {
+
+        flags = {tpl_id: tpl_id,
+                 is_ignored: flags.is_ignored};
+
+        $.post("{% game_view_url "pychronia_game.views.ajax_set_message_template_state_flags" %}",
+                flags,
+                function(data){
+                    if (flags.is_ignored) {
+                        $("#"+tpl_id).removeClass("unignored");
+                        $("#"+tpl_id).addClass("ignored");
+                    } else {
+                        $("#"+tpl_id).addClass("unignored");
+                        $("#"+tpl_id).removeClass("ignored");
+                    }
+                });
+    }
+
 
     function _handle_message_state_feedbacks(allExistingFlags, updatedFlags, flagPrefix, msg_id) {
         var flag;
         for (var i=0; i < allExistingFlags.length; i++) {
             flag = allExistingFlags[i];
             //console.log("========>", flagPrefix+"_"+flag, updatedFlags);
-            if ("has_"+flag in updatedFlags) {
+            if (flagPrefix+"_"+flag in updatedFlags) {
 
-                if (updatedFlags["has_"+flag]) {
+                if (updatedFlags[flagPrefix+"_"+flag]) {
                     $("#"+msg_id).removeClass("un"+flag);
                     $("#"+msg_id).addClass(flag);
                 } else {

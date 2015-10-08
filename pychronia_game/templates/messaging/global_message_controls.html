@@ -5,8 +5,8 @@ function unfoldAllMessages() {
     $('.email_message').removeClass('collapsed');
 }
 function smartUnfoldMessages() {
-    $('.email_message.read').addClass('collapsed');
-    $('.email_message.unread').removeClass('collapsed');
+    $('.email_message.unread, .email_message.unignored').removeClass('collapsed');
+    $('.email_message.read, .email_message.ignored').addClass('collapsed');  // any of these TAKES PRECEDENCE
 }
 function foldAllMessages() {
     $('.email_message').addClass('collapsed');
