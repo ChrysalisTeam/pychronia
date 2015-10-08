@@ -27,6 +27,27 @@
     }
 
 
+
+    function _handle_message_state_feedbacks(allExistingFlags, updatedFlags, flagPrefix, msg_id) {
+        var flag;
+        for (var i=0; i < allExistingFlags.length; i++) {
+            flag = allExistingFlags[i];
+            //console.log("========>", flagPrefix+"_"+flag, updatedFlags);
+            if ("has_"+flag in updatedFlags) {
+
+                if (updatedFlags["has_"+flag]) {
+                    $("#"+msg_id).removeClass("un"+flag);
+                    $("#"+msg_id).addClass(flag);
+                } else {
+                    $("#"+msg_id).addClass("un"+flag);
+                    $("#"+msg_id).removeClass(flag);
+                }
+            }
+        };
+        // COMPLETE FOR OTHER STATES
+    }
+
+
     function ajax_set_dispatched_message_state_flags(msg_id, flags) {
 
         flags.msg_id = msg_id;
@@ -34,26 +55,9 @@
         $.post("{% game_view_url "pychronia_game.views.ajax_set_dispatched_message_state_flags" %}",
                 flags,
                 function(data){
-
-                    var flag;
                     var allExistingFlags = ["read", "starred", "archived"];
                     //console.log(">>>>>", allExistingFlags, flags);
-
-                    for (var i=0; i < allExistingFlags.length; i++) {
-                        flag = allExistingFlags[i];
-                        //console.log("========>", "has_"+flag, flags);
-                        if ("has_"+flag in flags) {
-
-                            if (flags["has_"+flag]) {
-                                $("#"+msg_id).removeClass("un"+flag);
-                                $("#"+msg_id).addClass(flag);
-                            } else {
-                                $("#"+msg_id).addClass("un"+flag);
-                                $("#"+msg_id).removeClass(flag);
-                            }
-                        }
-                    };
-                    // COMPLETE FOR OTHER STATES
+                    _handle_message_state_feedbacks(allExistingFlags, flags, "has", msg_id);
                 });
     }
 
