@@ -312,7 +312,7 @@ class GameEvents(BaseDataManager): # TODO REFINE
         assert url is None or (url and isinstance(url, basestring))
 
         message = _(message) # TODO - force language to "official game language", not "user interface language"
-        
+
         if additional_details:
             message += "\n" + additional_details
 
@@ -2209,6 +2209,7 @@ class TextMessagingTemplates(BaseDataManager):
                 msg["attachment"] = msg.get("attachment", None)
                 msg["transferred_msg"] = msg.get("transferred_msg", None)
                 msg["is_used"] = msg.get("is_used", False)
+                msg["is_ignored"] = msg.get("is_ignored", False)
                 msg["parent_id"] = msg.get("parent_id", None)
 
                 if "id" in msg:
@@ -2234,7 +2235,7 @@ class TextMessagingTemplates(BaseDataManager):
 
         #FIXME - BEWARE group_id not used yet, but it will be someday!!!
 
-        template_fields = set("sender_email recipient_emails subject body attachment transferred_msg is_used parent_id gamemaster_hints categories sent_at group_id order".split())
+        template_fields = set("sender_email recipient_emails subject body attachment transferred_msg is_used is_ignored parent_id gamemaster_hints categories sent_at group_id order".split())
 
         for msg in messaging["manual_messages_templates"].values():
 
@@ -2275,11 +2276,10 @@ class TextMessagingTemplates(BaseDataManager):
                     pass  # message might have been deleted by game master, we ignore this
 
             utilities.check_is_bool(msg["is_used"])
+            utilities.check_is_bool(msg["is_ignored"])
 
             if msg["parent_id"]:
                 assert self.get_dispatched_message_by_id(msg_id=msg["parent_id"])
-
-
 
     def _build_new_message(self, *args, **kwargs):
         use_template = kwargs.pop("use_template", None) # we remove our specific use_template param
@@ -2288,12 +2288,10 @@ class TextMessagingTemplates(BaseDataManager):
         if use_template:
             try:
                 tpl = self.get_message_template(use_template)
-                tpl["is_used"] = True # will stay True even if message sending is actually canceled - we don't care
+                tpl["is_used"] = True # will stay True even if queued message is actually canceled - we don't care
             except UsageError, e:
                 self.logger.error(e, exc_info=True) # non-fatal error
-
         return msg
-
 
     @readonly_method
     def get_messages_templates(self):
@@ -2305,6 +2303,12 @@ class TextMessagingTemplates(BaseDataManager):
         if tpl_id not in mydata:
             raise AbnormalUsageError(_("Unexisting template id %r") % tpl_id)
         return mydata[tpl_id]
+
+    @transaction_watcher(always_writable=True)
+    def set_template_state_flags(self, tpl_id=None, is_ignored=None):
+        assert is_ignored in (True, False)
+        tpl = self.get_message_template(tpl_id)
+        tpl["is_ignored"] = is_ignored
 
     @readonly_method
     def convert_msg_to_template(self, msg):
