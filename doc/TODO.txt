@@ -31,16 +31,12 @@ FEATURES
 
 
 - corrupt wiretapped emails
-- handle readonly state in mobile design
 
 - METTRE UN LIEN PARAMETRABLE QUAND ON GAGNE CONTRE l'IA d'échecs!!!!!
 
 - rendre les limitations des compétences spéciales PAR JOUEUR!!! eg. kits mise sur écoute maximum
 
 - allow to wiretap ANY email address
-
-- fix 3 scrolls on view_characters page :
-    <div class="scroll_yellow_rolled float_left" style="max-width:300px">   <- 280px max
 
 
 - investigate sql handles on webfaction relstorage
@@ -96,9 +92,7 @@ OperationalError: (1203, "User pakal_anthropia already has more than 'max_user_c
 
 - obéron keyword
 
-- limite de conversation par défaut : pas assez ?
-
-- enlever la homepage "enchères" inutile, amener de suiet sur les persos ??
+- enlever la homepage "enchères" inutile, amener de suite sur les persos ??
 
 - BUG si joueurs passés en pnj/non pnj avec auctionlist :
    assert set(self._determine_basic_visibility(msg).keys()) - set([master]) <= set(msg["visible_by"].keys()), [self._determine_basic_visibility(msg).keys(), msg]
@@ -131,14 +125,11 @@ carte du monde : un clic sur un pays/ville principal pour un zoom plus détaill�
 Sinon pourquoi faire une "aide" en anglais et le site en français ?
 
 
-- bouger à droite le controle "non lu"
-
 - fix checks of ajax calls when impersonation changes
   SEE EMAILS ERROR (EXTERNAL IP): Internal Server Error: /premium/messages/ajax_mark_msg_read/
 
 - agrandire zone de text par défaut
 
-- réparer le "sujet" des mails répondus 2fois, qui ne se sette pas. OK DONE
 
 - trier contacts par ordre logique ??
 
@@ -163,7 +154,6 @@ Sinon pourquoi faire une "aide" en anglais et le site en français ?
 
 - appeler http://localhost:8000/DEMO/webradio_management/ depuis tests??
 
-- game_events : ne pas afficher "master" mais "système"
 
 - auto-check that no errors in yaml files ?
 
@@ -175,7 +165,7 @@ Sinon pourquoi faire une "aide" en anglais et le site en français ?
 
 - finish embed_image ??
 
-- remettre formaulaire après submission sur http://localhost:8000/DEMO/ability/matter_analysis/
+- remettre formulaire après submission sur http://localhost:8000/DEMO/ability/matter_analysis/
 
 
 SCRIPT
@@ -278,6 +268,10 @@ NEEDS COSMETICS
 TASKS DONE
 ---------------
 
+- game_events : ne pas afficher "master" mais "système" - FIXED with master_login=system
+- réparer le "sujet" des mails répondus 2fois, qui ne se sette pas. OK DONE
+- handle readonly state in mobile design - DONE
+- fix 3 scrolls on view_characters page : width 280px max - DONE
 - renommer ACHARIS en AKARIS partout, dans code et scripts
 - mask recipients of message : NOT if we're sender or game master
 - make "attach to" feature to delegate permissions (ex. for dependent ajax views) - DONE
