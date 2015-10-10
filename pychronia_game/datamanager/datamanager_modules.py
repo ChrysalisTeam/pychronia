@@ -1773,11 +1773,9 @@ class TextMessagingCore(BaseDataManager):
         sent_at = msg["sent_at"]
 
         if sent_at > datetime.utcnow():
-            print("WE QUEU", msg["subject"])
             self.messaging_data["messages_queued"].append(msg)
             self.messaging_data["messages_queued"].sort(key=lambda msg: msg["sent_at"]) # python sorting is stable !
         else:
-            print("WE DISPATCH", msg["subject"])
             self._immediately_dispatch_message(msg)
 
         return msg["id"]

@@ -27,7 +27,7 @@ ZODB_URL = None
 
 
 
-def __GAME_INITIAL_FIXTURE_SCRIPT(dm):
+def GAME_INITIAL_FIXTURE_SCRIPT(dm):
     """
     Called just before conversion of initial data tree, and coherency check.
     """
@@ -86,8 +86,11 @@ def __GAME_INITIAL_FIXTURE_SCRIPT(dm):
     logging.info("Finished special game fixture script...")
 
 
-## OVERRIDES FOR INTEGRATION OF CHRYSALIS GAME ON PASCAL'S WINDOWS PC ##
-if os.path.exists("P:\Chrysalis Depot"):
-    GAME_FILES_ROOT = r"P:\Chrysalis Depot\Chrysalis V1\ ".strip()
-    GAME_INITIAL_DATA_PATH = r"P:\Chrysalis Depot\Chrysalis V1\script_fixtures"
+## OVERRIDES FOR INTEGRATION OF REAL CHRYSALIS FIXTURES, if they're in ../Chrysalis relatively to this depot's root ##
+import pychronia_game, os
+_external_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(pychronia_game.__file__))))
+_chrysalis_data_dir = os.path.join(_external_dir, "Chrysalis")
+if os.path.exists(_chrysalis_data_dir):
+    GAME_FILES_ROOT = _chrysalis_data_dir + os.sep
+    GAME_INITIAL_DATA_PATH = os.path.join(_chrysalis_data_dir, "script_fixtures")
 
