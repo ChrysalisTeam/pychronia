@@ -46,7 +46,7 @@ class MatterAnalysisAbility(AbstractPartnershipAbility):
         # for now we don't exclude objects already analysed, players just have to take care !
         try:
             item_form = self._instantiate_game_form(new_action_name="process_artefact",
-                                                 hide_on_success=True,
+                                                 hide_on_success=False,
                                                  previous_form_data=previous_form_data,
                                                  propagate_errors=True)
             specific_message = None

@@ -112,11 +112,8 @@ carte du monde : un clic sur un pays/ville principal pour un zoom plus détaill�
 
 - tester "no url nor path" in webradio spot page
 
-- regler les "HERE GAMEMASTER HINTS" et autres FIXME
 
 - URL Webradio Publique -> dire quelle frequence, dans admin info page
-
-- appeler http://localhost:8000/DEMO/webradio_management/ depuis tests??
 
 
 - fix bugs in rich text, with spaces in embed rst_directives, and
@@ -126,12 +123,14 @@ carte du monde : un clic sur un pays/ville principal pour un zoom plus détaill�
 
 - finish embed_image ??
 
-- remettre formulaire après submission sur http://localhost:8000/DEMO/ability/matter_analysis/
+
 
 
 
 SCRIPT
 ----------
+
+- regler les "HERE GAMEMASTER HINTS" et autres FIXME
 
 Sinon pourquoi faire une "aide" en anglais et le site en français ? => EXPLIQUER dans manuel du joueur
 
@@ -210,6 +209,8 @@ PROMOTION
 TESTS
 ----------
 
+- appeler http://localhost:8000/DEMO/webradio_management/ depuis tests
+
 - tester radiospots et static pages comme le sont les global_contacts
 - tester les utilitaires DataTable et son form+view
 
@@ -244,6 +245,7 @@ NEEDS COSMETICS
 TASKS DONE
 ---------------
 
+- remettre formulaire après submission sur matter_analysis - DONE (hide_on_success=False)
 - agrandir zones de texte - DONE in CMS-like gamemaster pages
 "rapporter un bogue" => problème lorsqu'on agrandit un peu trop le textfield la page du site descend mais pas la fenêtre du rapport
    => oblige le refresh donc annule l'envoi du bug  -> OK NOW FANCYBOX without resizing

@@ -39,7 +39,7 @@ class WorldScanAbility(AbstractPartnershipAbility):
 
         try:
             scan_form = self._instantiate_game_form(new_action_name="scan_form",
-                                                      hide_on_success=True,
+                                                      hide_on_success=False,
                                                       previous_form_data=previous_form_data,
                                                       propagate_errors=True,)
             specific_message = None
