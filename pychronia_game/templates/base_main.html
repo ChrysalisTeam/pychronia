@@ -76,7 +76,6 @@
 
     function display_bug_report_panel(){
         $('#bug_report_panel .obfusk').css('display', 'none'); // definitively remove antispam markers
-        $('#bug_report_panel').css('display', 'block');
     }
 
     function submit_report_data(){
@@ -89,7 +88,7 @@
                    { report_data: report_data,
                      location: window.location.toString() },
                    function(answer) {
-                       $('#bug_report_panel').css('display', 'none');
+                       $.fancybox.close();
                        $.jnotify('{{ _("Bug report properly sent.")|escapejs }}', "success");
                    }
          );
@@ -574,7 +573,7 @@
 
 
 {% block low_footer_content %}
-    <a id="bug_report_link" href="#" onclick="display_bug_report_panel(); return false;" >{% trans "Bug Report" %}</a>
+    <a id="bug_report_link" href="#bug_report_panel" class="fancybox" onclick="display_bug_report_panel(); return false;" >{% trans "Bug Report" %}</a>
 {% endblock %}
 
 

@@ -2411,7 +2411,7 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
                     utilities.check_is_slug(reason)
                     assert reason in VISIBILITY_REASONS, reason
 
-                if not is_queued: # queued message don't have basic visibility ysettings yet
+                if not is_queued: # queued message don't have basic visibility settings yet
                     # later, special script events might make it normal that even senders or recipients do NOT see the message anymore, but NOT NOW
                     pass ##TODO-REUSE assert set(self._determine_basic_visibility(msg).keys()) - set([master]) <= set(msg["visible_by"].keys()), [self._determine_basic_visibility(msg).keys(), msg]
 

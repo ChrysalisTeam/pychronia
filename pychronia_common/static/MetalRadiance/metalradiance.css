@@ -2123,20 +2123,7 @@ body .notification_panel .notification_panel_decorations .notification_panel_con
   border: none !important;
 }
 #bug_report_panel {
-  z-index: 10000;
-  position: fixed;
-  left: 50%;
-  max-width: 100%;
-  width: 600px;
-  margin-left: -300px;
-  top: 50px;
-  image-rendering: optimizequality;
   color: black;
-  background-image: url('img/backgrounds/ricepaper-hue-gold.jpg');
-}
-#bug_report_panel .bug_report_panel_content {
-  min-height: 200px;
-  padding: 5px 20px 20px;
 }
 #bug_report_panel textarea {
   resize: none;

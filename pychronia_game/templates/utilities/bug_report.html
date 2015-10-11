@@ -2,30 +2,28 @@
 
 
 <div id="bug_report_panel" style="display: none;">
-    <div class="bug_report_panel_content decorated_golden_frame clearfix">
-        <h2>{% trans "Bug Report" %}</h2>
+    <h2>{% trans "Bug Report" %}</h2>
 
-        <p>
-        {% blocktrans %}
-        Please use this form to describe the bug you've encountered on our portal.
-        {% endblocktrans %}
-        </p>
+    <p>
+    {% blocktrans %}
+    Please use this form to describe the bug you've encountered on our portal.
+    {% endblocktrans %}
+    </p>
 
-        {% if bug_report_email %}
-        <p>
-        {% blocktrans %}
-        If this form doesn't work, then please directly send a real email to the following address:
-        {% endblocktrans %}
-        <b>{{ bug_report_email|corrupt_string }}</b>
-        </p>
-        {% endif %}
+    {% if bug_report_email %}
+    <p>
+    {% blocktrans %}
+    If this form doesn't work, then please directly send a real email to the following address:
+    {% endblocktrans %}
+    <b>{{ bug_report_email|corrupt_string }}</b>
+    </p>
+    {% endif %}
 
-        <textarea id="bug_report_textarea" rows="8" cols="60"></textarea>
+    <textarea id="bug_report_textarea" rows="8" cols="60"></textarea>
 
-        <div style="margin: 10px 40px 10px;">
-        <input id="submit_bug_report" type="button" style="float: left;" value="{% trans "Submit" %}" onclick="submit_report_data(); return false;"/>
-        <input id="abort_bug_report" type="button" style="float: right;" value="{% trans "Cancel" %}" onclick="$('#bug_report_panel').css('display', 'none');" />
-        </div>
-        <br/>
+    <div style="margin: 10px 40px 10px;">
+    <input id="submit_bug_report" type="button" value="{% trans "Submit" %}" onclick="submit_report_data(); return false;"/>
+    <input id="abort_bug_report" type="button" style="float: right;" value="{% trans "Cancel" %}" onclick="$.fancybox.close();"/>
     </div>
+    <br/>
 </div>
