@@ -133,6 +133,7 @@ def manage_characters(request, template_name='administration/character_managemen
                             for change_triplet in all_changes:
                                 additional_details += """~ %s: "%s" => "%s"\n""" % change_triplet
                             additional_details = re.sub(r"\bu'", "'", additional_details)  # WORKAROUND for ugly "unicode" prefixes of python2
+                            additional_details = additional_details.replace("%", "%%") # security against rogue placeholders
 
                             dm.log_game_event(message,
                                               substitutions=PersistentMapping(username=target_username),

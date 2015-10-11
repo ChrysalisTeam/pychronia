@@ -318,6 +318,7 @@ class GameEvents(BaseDataManager): # TODO REFINE
 
         if substitutions:
             assert isinstance(substitutions, PersistentMapping), (message, substitutions)
+            assert not re.search(r"[^%]%[^(%]", message)  # we forbid single % signs
             if config.DEBUG:
                 message % substitutions # may raise formatting errors if corrupt...
         else:

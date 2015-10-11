@@ -332,7 +332,7 @@ def game_events(request, template_name='administration/game_events.html'):
         if trans_event["substitutions"]:
             try:
                 trans_event["final_message"] = trans_event["message"] % utilities.SDICT(**trans_event["substitutions"])
-            except Exception:
+            except Exception:  # eg. in case where a rogue "%" appears in message...
                 trans_event["final_message"] = trans_event["message"] + " " + repr(trans_event["substitutions"])
         else:
             trans_event["final_message"] = trans_event["message"]
