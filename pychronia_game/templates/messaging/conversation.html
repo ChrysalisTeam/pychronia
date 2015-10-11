@@ -67,15 +67,14 @@
 
 			    <!--h3 class="{% if forloop.first %}firstTitle{% else %}otherTitle{% endif %}"><a href="#">{{ message.subject }}</a></h-->
 
-                {% if not forloop.first %}
-                    <!--hr/-->
-                {% endif %}
 
+                <div class="messaging_conversation">
 				{% for ctx, message in message_list reversed %}
 
 					{% include "messaging/single_message.html" with ctx=ctx message=message is_first=forloop.first counter=1 %}
 
 				{% endfor %}
+				</div>
 
 			</div>
 		{% endfor %}

@@ -29,6 +29,7 @@ GAMEMASTER_HINTS in:
 FEATURES
 ------------
 
+- ajouter formulaires de pognon dans la page character_management ?
 
 - corrupt wiretapped emails
 
@@ -86,7 +87,7 @@ OperationalError: (1203, "User pakal_anthropia already has more than 'max_user_c
 
 - "transraciations" changé en transfiliation??
 
-- mieux séparer conversations
+
 
 - expliquer "masquer les destinataires" et qu'on peut cliquer sur un contact
 
@@ -109,9 +110,6 @@ OperationalError: (1203, "User pakal_anthropia already has more than 'max_user_c
             $(hashedSelector).select2({"closeOnSelect": false, "placeholder": ""});
         });
     </script>
-
-
-Enchères amène vers la page d'accueil => vide
 
 média => encyclopédie => saisir l'expression : si on écrit une phrase trop longue le message d'erreur s'affiche mais le texte sort du bloc.
    une petite croix sur la gauche ou la droite serait la bien venu ou un clic ailleurs sur le site pour refermer rapidement la bande
@@ -268,6 +266,8 @@ NEEDS COSMETICS
 TASKS DONE
 ---------------
 
+
+- mieux séparer conversations -> DONE with class messaging_conversation
 - game_events : ne pas afficher "master" mais "système" - FIXED with master_login=system
 - réparer le "sujet" des mails répondus 2fois, qui ne se sette pas. OK DONE
 - handle readonly state in mobile design - DONE

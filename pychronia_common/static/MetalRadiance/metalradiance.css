@@ -1609,6 +1609,9 @@ input.digit {
   padding: 0 !important;
   margin: 10px auto;
 }
+.messaging_conversation {
+  margin: 0 0 20px;
+}
 .message_global_controls {
   text-align: left;
   margin: 20px 5px;
