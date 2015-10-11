@@ -58,14 +58,13 @@ class AbstractActionMiddleware(object):
             for middleware_name, data_dict in action_middlewares.items():
                 utilities.check_is_bool(data_dict["is_active"]) # common to all middleware confs
 
-        # we check below that no unknown middleware is in settings or private data (could be a typo),
+        # we check below that no unknown middleware NAME is in settings or private data (could be a typo),
         # and that activated middlewares are well compatible with current ability (security measure)
-        middleware_settings = self.settings["middlewares"].values()
-        if "middlewares" in self.all_private_data:
-            middleware_private_data_packs = self.all_private_data["middlewares"].values()
-        else: # not yet lazy-initialized
-            middleware_private_data_packs = []
-        all_middleware_data_packs = middleware_settings + middleware_private_data_packs
+        all_middleware_data_packs = self.settings["middlewares"].values()
+
+        for user_id, private_data in self.all_private_data.items():
+            for action_name, tree in private_data.get("middlewares", {}).items():
+                all_middleware_data_packs.append(tree)  # maps middleware class names to their data
 
         known_middleware_names_set = set([klass.__name__ for klass in ACTION_MIDDLEWARES])
         compatible_middleware_names_set = set([klass.__name__ for klass in ACTION_MIDDLEWARES if self.ACCESS in klass.COMPATIBLE_ACCESSES])
@@ -73,7 +72,7 @@ class AbstractActionMiddleware(object):
         for pack in all_middleware_data_packs:
             pack_keys = set(pack.keys())
             if strict:
-                assert pack_keys <= known_middleware_names_set, known_middleware_names_set - pack_keys # unknown middleware (typo ?)
+                assert pack_keys <= known_middleware_names_set, known_middleware_names_set - pack_keys  # unknown middleware (typo ?)
             assert pack_keys <= compatible_middleware_names_set, (pack_keys, compatible_middleware_names_set, self.ACCESS, known_middleware_names_set) # middleware can't be used with that kind of ability ACCESS
 
 
@@ -91,7 +90,16 @@ class AbstractActionMiddleware(object):
     def get_middleware_settings(self, action_name, middleware_class, ensure_active=True):
         assert action_name and middleware_class
         assert not ensure_active or self.user.is_character
-        middleware_settings = self.settings["middlewares"][action_name][middleware_class.__name__]
+        middleware_settings = copy.copy(self.settings["middlewares"][action_name][middleware_class.__name__])
+        if self.user.is_character:
+            try:
+                private_settings_overrides = self.get_private_middleware_data(action_name=action_name,
+                                                                              middleware_class=middleware_class,
+                                                                              create_if_unexisting=False)
+                overrides = private_settings_overrides.get("settings_overrides", {})
+                middleware_settings.update(overrides)
+            except LookupError:
+                pass  # no middleware settings overrides, all is OK
         if ensure_active and not middleware_settings["is_active"]:
             # most of the time we we should not deal with inactive middlewares
             raise RuntimeError(_("Inactive middleware lookup in get_middleware_settings() of %s") % self.__class__.__name__)

@@ -87,7 +87,7 @@ class DummyTestAbility(AbstractAbility):
         middleware_settings = self.settings["middlewares"][action_name].setdefault(middleware_class.__name__, PersistentMapping())
         middleware_settings.clear()
         middleware_settings.update(new_settings)
-        assert middleware_settings is self.get_middleware_settings(action_name, middleware_class, ensure_active=False)
+        assert middleware_settings == self.get_middleware_settings(action_name, middleware_class, ensure_active=False)
 
     @transaction_watcher
     def reset_test_data(self, action_name, middleware_class, game_data):

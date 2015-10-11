@@ -120,6 +120,16 @@ abilities:
             item_locations:
                 sacred_chest: "varied_artefacts_locations"
 
+        data:
+            guy1:  # special
+                middlewares:
+                    scan_form:
+                        CostlyActionMiddleware:
+                            settings_overrides:
+                                money_price: 888
+                                gems_price: 777
+
+
 
 global_parameters:
 
