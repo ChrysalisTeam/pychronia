@@ -2122,6 +2122,26 @@ body .notification_panel .notification_panel_decorations .notification_panel_con
   text-decoration: blink;
   border: none !important;
 }
+#bug_report_panel {
+  z-index: 10000;
+  position: fixed;
+  left: 50%;
+  max-width: 100%;
+  width: 600px;
+  margin-left: -300px;
+  top: 50px;
+  image-rendering: optimizequality;
+  color: black;
+  background-image: url('img/backgrounds/ricepaper-hue-gold.jpg');
+}
+#bug_report_panel .bug_report_panel_content {
+  min-height: 200px;
+  padding: 5px 20px 20px;
+}
+#bug_report_panel textarea {
+  resize: none;
+  width: 100%;
+}
 @media (max-width: 991px) {
   body {
     color: #ffeaa3;
@@ -2784,21 +2804,6 @@ body .notification_panel .notification_panel_decorations .notification_panel_con
     content: url('img/decorations/low_footer_deco_right.png');
     padding: 0;
     position: absolute;
-  }
-  #bug_report_panel {
-    z-index: 10000;
-    position: fixed;
-    left: 50%;
-    width: 600px;
-    margin-left: -300px;
-    top: 50px;
-    background-image: url('img/backgrounds/ricepaper-hue-gold.jpg');
-    image-rendering: optimizequality;
-    color: black;
-  }
-  #bug_report_panel .bug_report_panel_content {
-    min-height: 200px;
-    padding: 5px 20px 20px;
   }
 }
 @media (min-width: 992px) {

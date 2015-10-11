@@ -67,3 +67,32 @@ body .notification_panel {
           }
     }
 }
+
+
+
+#bug_report_panel {
+    //display: none;
+    z-index: 10000;
+    position: fixed;
+    left: 50%;
+    max-width: 100%;
+    width: 600px;
+    margin-left: -300px;
+    top: 50px;
+
+    image-rendering: optimizequality;
+    color: black;
+
+    background-image: url('#{$IMGS}backgrounds/ricepaper-hue-gold.jpg');
+
+    .bug_report_panel_content {
+      min-height: 200px; // single child expected
+      padding: 5px 20px 20px;
+    }
+
+    textarea {
+      resize: none;
+      width: 100%;
+    }
+}
+

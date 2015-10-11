@@ -566,25 +566,6 @@ body .notification_panel {
 
 
 
-#bug_report_panel {
-    //display: none;
-    z-index: 10000;
-    position: fixed;
-    left: 50%;
-    width: 600px;
-    margin-left: -300px;
-    top: 50px;
-    background-image: url('#{$IMGS}backgrounds/ricepaper-hue-gold.jpg');
-    image-rendering: optimizequality;
-    color: black;
-
-    .bug_report_panel_content {
-      min-height: 200px; // single child expected
-      padding: 5px 20px 20px;
-    }
-}
-
-
 
 
 
