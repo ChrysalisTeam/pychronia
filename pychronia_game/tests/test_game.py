@@ -5625,7 +5625,6 @@ class TestActionMiddlewares(BaseGameTestCase):
         self.dm.update_permissions("guy1", PersistentList(self.dm.PERMISSIONS_REGISTRY))
 
         view_url = reverse(views.world_scan, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID))
-
         request = self.factory.post(view_url, data=dict(_action_="scan_form", item_name="statue")) # has no scanning settings
         request.datamanager._set_user("guy1")
 
@@ -5659,6 +5658,44 @@ class TestActionMiddlewares(BaseGameTestCase):
 
         assert request.datamanager.get_character_properties("guy1")["account"] < old_account
 
+
+
+    def test_action_settings_overrides(self):
+
+        self.dm.update_permissions("guy1", PersistentList(self.dm.PERMISSIONS_REGISTRY))
+
+        view_url = reverse(views.world_scan, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID))
+
+        request = self.factory.post(view_url, data=dict(_action_="scan_form", item_name="sacred_chest"))
+        world_scan = request.datamanager.instantiate_ability("world_scan")
+
+        other_user = random.choice(("guy2", "guy3"))
+        request.datamanager._set_user(other_user)
+        settings = world_scan.get_middleware_settings("scan_form", CostlyActionMiddleware, ensure_active=True)
+        assert settings == dict(money_price=115,  # GLOBAL SETTINGS
+                                 gems_price=234,
+                                 is_active=True)
+
+        request.datamanager._set_user("guy1")
+        settings = world_scan.get_middleware_settings("scan_form", CostlyActionMiddleware, ensure_active=True)
+        assert settings == dict(money_price=888,  # PRIVATE OVERRIDES
+                                 gems_price=777,
+                                 is_active=True)
+
+        private_data = world_scan.get_private_middleware_data("scan_form", CostlyActionMiddleware)
+        del private_data["settings_overrides"]["money_price"]
+        request.datamanager.commit()
+        settings = world_scan.get_middleware_settings("scan_form", CostlyActionMiddleware, ensure_active=True)
+        # we check that it's well a MERGING of different settings layers
+        assert settings == dict(money_price=115,  # GLOBAL SETTINGS
+                                 gems_price=777,
+                                 is_active=True)  # PRIVATE OVERRIDE
+
+        request.datamanager._set_user("master")
+        settings = world_scan.get_middleware_settings("scan_form", CostlyActionMiddleware, ensure_active=False)
+        assert settings == dict(money_price=115,  # ALWAYS GLOBAL SETTINGS ONLY FOR MASTER
+                                 gems_price=234,
+                                 is_active=True)
 
 
 
