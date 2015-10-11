@@ -29,6 +29,8 @@ GAMEMASTER_HINTS in:
 FEATURES
 ------------
 
+- REVIEW thumbs and image formats, for mobile too
+
 - nouveau system d'impersonation
 
 - enlever la homepage "enchères" inutile, amener de suite sur les persos ??
@@ -40,48 +42,8 @@ FEATURES
 - METTRE UN LIEN PARAMETRABLE QUAND ON GAGNE CONTRE l'IA d'échecs!!!!!
 
 
-- allow to wiretap ANY email address?
+- allow to wiretap ANY email address? nope dans le "future enhancement"
 
-
-- investigate sql handles on webfaction relstorage
-  File "/home/pakal/webapps/chrysalis_game/ENV/lib/python2.7/site-packages/django/core/handlers/base.py", line 104, in get_response
-    response = middleware_method(request, callback, callback_args, callback_kwargs)
-  File "/home/pakal/webapps/chrysalis_game/pychronia/pychronia_game/middlewares.py", line 71, in process_view
-    request.datamanager = retrieve_game_instance(game_instance_id=game_instance_id, request=request)
-  File "/home/pakal/webapps/chrysalis_game/pychronia/pychronia_game/datamanager/datamanager_administrator.py", line 245, in retrieve_game_instance
-    game_data = _fetch_available_game_data(game_instance_id=game_instance_id, metadata_checker=metadata_checker)
-  File "<string>", line 2, in _fetch_available_game_data
-  File "/home/pakal/webapps/chrysalis_game/pychronia/pychronia_game/datamanager/datamanager_tools.py", line 189, in zodb_transaction
-    res = func(*args, **kwargs)
-  File "/home/pakal/webapps/chrysalis_game/pychronia/pychronia_game/datamanager/datamanager_administrator.py", line 205, in _fetch_available_game_data
-    game_root = _get_game_instances_mapping().get(game_instance_id)
-  File "/home/pakal/webapps/chrysalis_game/pychronia/pychronia_game/datamanager/datamanager_administrator.py", line 61, in _get_game_instances_mapping
-    connection = _get_zodb_connection()
-  File "/home/pakal/webapps/chrysalis_game/pychronia/pychronia_game/datamanager/datamanager_administrator.py", line 57, in _get_zodb_connection
-    connection = ZODB_INSTANCE.open() # thread-local connection, by default
-  File "/home/pakal/webapps/chrysalis_game/ENV/lib/python2.7/site-packages/ZODB/DB.py", line 749, in open
-    result.open(transaction_manager)
-  File "/home/pakal/webapps/chrysalis_game/ENV/lib/python2.7/site-packages/ZODB/Connection.py", line 1057, in open
-    self._flush_invalidations()
-  File "/home/pakal/webapps/chrysalis_game/ENV/lib/python2.7/site-packages/ZODB/Connection.py", line 499, in _flush_invalidations
-    invalidated = self._storage.poll_invalidations()
-  File "/home/pakal/webapps/chrysalis_game/pychronia/dependencies/relstorage/storage.py", line 1300, in poll_invalidations
-    changes, new_polled_tid = self._restart_load_and_poll()
-  File "/home/pakal/webapps/chrysalis_game/pychronia/dependencies/relstorage/storage.py", line 1264, in _restart_load_and_poll
-    self._adapter.poller.poll_invalidations, prev, ignore_tid)
-  File "/home/pakal/webapps/chrysalis_game/pychronia/dependencies/relstorage/storage.py", line 266, in _restart_load_and_call
-    self._open_load_connection()
-  File "/home/pakal/webapps/chrysalis_game/pychronia/dependencies/relstorage/storage.py", line 238, in _open_load_connection
-    conn, cursor = self._adapter.connmanager.open_for_load()
-  File "/home/pakal/webapps/chrysalis_game/pychronia/dependencies/relstorage/adapters/mysql.py", line 251, in open_for_load
-    replica_selector=self.ro_replica_selector)
-  File "/home/pakal/webapps/chrysalis_game/pychronia/dependencies/relstorage/adapters/mysql.py", line 223, in open
-    conn = MySQLdb.connect(**params)
-  File "/home/pakal/webapps/chrysalis_game/ENV/lib/python2.7/site-packages/MySQLdb/__init__.py", line 81, in Connect
-    return Connection(*args, **kwargs)
-  File "/home/pakal/webapps/chrysalis_game/ENV/lib/python2.7/site-packages/MySQLdb/connections.py", line 187, in __init__
-    super(Connection, self).__init__(*args, **kwargs2)
-OperationalError: (1203, "User pakal_anthropia already has more than 'max_user_connections' active connections")
 
 - fix support of mp4 format, and prevent nasty errors like this
       File "/home/pakal/webapps/chrysalis_game/pychronia/pychronia_game/utilities/mediaplayers.py", line 146, in generate_media_player
@@ -104,16 +66,11 @@ carte du monde : un clic sur un pays/ville principal pour un zoom plus détaill�
 
 - permettre d'éditer les messages en attente d'envoi ? nope, mieux vaut save as draft...
 
-- objets proposés est 10665 kashes -> varie suivant qu'on est master ou impersoné, weird....
 
-- gros bug de use_template quand multiples recipients (fusionnent)
 
 - réparer (Dernier accès : 4 juil. 2015 04:45:36), à cause des crontasks, en page administration
 
 - tester "no url nor path" in webradio spot page
-
-
-- URL Webradio Publique -> dire quelle frequence, dans admin info page
 
 
 - fix bugs in rich text, with spaces in embed rst_directives, and
@@ -129,6 +86,8 @@ carte du monde : un clic sur un pays/ville principal pour un zoom plus détaill�
 
 SCRIPT
 ----------
+
+- objets proposés est 10665 kashes -> varie suivant qu'on est master ou impersoné, weird.... REVOIR WORDING
 
 - regler les "HERE GAMEMASTER HINTS" et autres FIXME
 
@@ -234,6 +193,49 @@ TESTS
 - launch pychecker or pylint on each file of pychronia_game package
 - check that no pb when game paused, for periodic processing (eg. old pending emails are not viewable because not sent...)
 
+- investigate sql handles on webfaction relstorage
+  File "/home/pakal/webapps/chrysalis_game/ENV/lib/python2.7/site-packages/django/core/handlers/base.py", line 104, in get_response
+    response = middleware_method(request, callback, callback_args, callback_kwargs)
+  File "/home/pakal/webapps/chrysalis_game/pychronia/pychronia_game/middlewares.py", line 71, in process_view
+    request.datamanager = retrieve_game_instance(game_instance_id=game_instance_id, request=request)
+  File "/home/pakal/webapps/chrysalis_game/pychronia/pychronia_game/datamanager/datamanager_administrator.py", line 245, in retrieve_game_instance
+    game_data = _fetch_available_game_data(game_instance_id=game_instance_id, metadata_checker=metadata_checker)
+  File "<string>", line 2, in _fetch_available_game_data
+  File "/home/pakal/webapps/chrysalis_game/pychronia/pychronia_game/datamanager/datamanager_tools.py", line 189, in zodb_transaction
+    res = func(*args, **kwargs)
+  File "/home/pakal/webapps/chrysalis_game/pychronia/pychronia_game/datamanager/datamanager_administrator.py", line 205, in _fetch_available_game_data
+    game_root = _get_game_instances_mapping().get(game_instance_id)
+  File "/home/pakal/webapps/chrysalis_game/pychronia/pychronia_game/datamanager/datamanager_administrator.py", line 61, in _get_game_instances_mapping
+    connection = _get_zodb_connection()
+  File "/home/pakal/webapps/chrysalis_game/pychronia/pychronia_game/datamanager/datamanager_administrator.py", line 57, in _get_zodb_connection
+    connection = ZODB_INSTANCE.open() # thread-local connection, by default
+  File "/home/pakal/webapps/chrysalis_game/ENV/lib/python2.7/site-packages/ZODB/DB.py", line 749, in open
+    result.open(transaction_manager)
+  File "/home/pakal/webapps/chrysalis_game/ENV/lib/python2.7/site-packages/ZODB/Connection.py", line 1057, in open
+    self._flush_invalidations()
+  File "/home/pakal/webapps/chrysalis_game/ENV/lib/python2.7/site-packages/ZODB/Connection.py", line 499, in _flush_invalidations
+    invalidated = self._storage.poll_invalidations()
+  File "/home/pakal/webapps/chrysalis_game/pychronia/dependencies/relstorage/storage.py", line 1300, in poll_invalidations
+    changes, new_polled_tid = self._restart_load_and_poll()
+  File "/home/pakal/webapps/chrysalis_game/pychronia/dependencies/relstorage/storage.py", line 1264, in _restart_load_and_poll
+    self._adapter.poller.poll_invalidations, prev, ignore_tid)
+  File "/home/pakal/webapps/chrysalis_game/pychronia/dependencies/relstorage/storage.py", line 266, in _restart_load_and_call
+    self._open_load_connection()
+  File "/home/pakal/webapps/chrysalis_game/pychronia/dependencies/relstorage/storage.py", line 238, in _open_load_connection
+    conn, cursor = self._adapter.connmanager.open_for_load()
+  File "/home/pakal/webapps/chrysalis_game/pychronia/dependencies/relstorage/adapters/mysql.py", line 251, in open_for_load
+    replica_selector=self.ro_replica_selector)
+  File "/home/pakal/webapps/chrysalis_game/pychronia/dependencies/relstorage/adapters/mysql.py", line 223, in open
+    conn = MySQLdb.connect(**params)
+  File "/home/pakal/webapps/chrysalis_game/ENV/lib/python2.7/site-packages/MySQLdb/__init__.py", line 81, in Connect
+    return Connection(*args, **kwargs)
+  File "/home/pakal/webapps/chrysalis_game/ENV/lib/python2.7/site-packages/MySQLdb/connections.py", line 187, in __init__
+    super(Connection, self).__init__(*args, **kwargs2)
+OperationalError: (1203, "User pakal_anthropia already has more than 'max_user_connections' active connections")
+
+
+
+
 
 NEEDS COSMETICS
 -----------------
@@ -245,6 +247,8 @@ NEEDS COSMETICS
 TASKS DONE
 ---------------
 
+- URL Webradio Publique -> dire quelle frequence, dans admin info page - DONE
+- gros bug de use_template quand multiples recipients (fusionnent) - OK no more problem
 - remettre formulaire après submission sur matter_analysis - DONE (hide_on_success=False)
 - agrandir zones de texte - DONE in CMS-like gamemaster pages
 "rapporter un bogue" => problème lorsqu'on agrandit un peu trop le textfield la page du site descend mais pas la fenêtre du rapport
@@ -483,14 +487,16 @@ CONTROVERSIAL ENHANCEMENTS
 - randomize master login in PlayerAuthentication._load_initial_data() DANGEROUS FOR NOW ?
 
 
-
+- fix shaky forms when floated left in number - should be DONE now
+- convert "orbe" to masculine genre ; replace akaris by akharis !!!!!!!!!!!!!!!!!!!
 FUTUR ENHANCEMENTS
 --------------------------
 
+- permetter de modifier les OBJETS (ex. cloner)
 - système pour créer partie - WIP, quasi fini mais plus tard, pour l'instant en manuel
 - make ALL gamemaster_hints editable (items too)
 - dire quand AUTRE perso (ami) a nouveaux messages/autres ?
-- make impersonation per-browser-tab! -> sessionStorage!!!
+- make impersonation per-browser-tab! -> sessionStorage ou url rewriting!!!
 
 - enforce placeholder detection ({{ PUT NAME HERE }}) everywhere, not only in message sending form.
 - restaurer et compléter les djinns, valeurs par défaut si pas de réponses surtout
@@ -501,7 +507,7 @@ FUTUR ENHANCEMENTS
 - display admin tips with UserAccess and all kinds of permissions required, for each page
 
 - add typography fixer like in https://code.google.com/p/markdown-typografix/source/browse/mdx_typografix/__init__.py
-- fix shaky forms when floated left in number - should be DONE now
+
 - improve compatibility with IE 10+ (menus are buggy) --> red\9 HACK
 - reorganize top headers of game (motto left=real, motto right=impersonation, carvings=GAME_DATA)
   -> add money and gems to page top headers
@@ -513,18 +519,16 @@ FUTUR ENHANCEMENTS
 - add "stop impersonation" link in menu ?
 - better menus for meta admin pages
 - better handling of 503 (maintenance) state on both cms and instance
-- convert "orbe" to masculine genre ; replace akaris by akharis !!!!!!!!!!!!!!!!!!!
 - add real automated "geoip localization" ability
-- memorize "real player authentications", to know who really hacks accounts
-
+- memorize "real player authentications", to know who really hacks accounts -> already wip?
 - rethink and repair telecom archive investigation
 - add to specific index any (external) visualized document in "personal files"
-- add RST summary to all forms, especially admin ones ??? not needed right ATM
+- add RST context summary to all forms, especially admin ones ??? not needed right ATM
 - allow accumulation of visibility reasons, to have both sender and recipient together in msg for same user? useless I guess...
 - idea of captcha: play with colors illusions!!
 - include real timezone handling per game (or use TIMEZONE of django and its template filters)
 - use UsageError in all getters of datamanager instead of keyerror?
-- include multimp3 webradio widget in div with same color, and make it bigger, to avoid zoom/dezoom problems (cosmetics)
+- include multimp3 webradio widget in div with same color, and make it bigger, to avoid zoom/dezoom problems (cosmetics) -> NOPE, JPLAYER NOW, HTML5
 - internationalize personal documents (all in yaml ??)
 - add RST support for personal files
 - switch to small JALICE bot? humz
