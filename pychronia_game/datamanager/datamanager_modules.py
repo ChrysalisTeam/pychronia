@@ -5,12 +5,12 @@ from __future__ import unicode_literals
 import string
 from pychronia_game.common import *
 from pychronia_game.common import _, ugettext_lazy, ugettext_noop, _undefined # mainly to shut up the static checker...
+from pychronia_game import utilities
 
 from .datamanager_tools import *
 from .datamanager_user import GameUser
 from .datamanager_core import BaseDataManager
 from .data_table_manager import *
-from persistent.list import PersistentList
 
 PLACEHOLDER = object()
 
@@ -2320,7 +2320,7 @@ class TextMessagingTemplates(BaseDataManager):
                    gamemaster_hints="")
 
         copied_fields = "sender_email recipient_emails mask_recipients subject body attachment transferred_msg".split()
-        res.update({k: copy.copy(v) for (k, v) in msg.items() if k in copied_fields and v is not None})
+        res.update({k: utilities.safe_copy(v) for (k, v) in msg.items() if k in copied_fields and v is not None})  # beware copy()
 
         return res
 

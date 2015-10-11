@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 
 ### NO import from pychronia_game.common, else circular import !! ###
 
-import sys, os, collections, logging, inspect, types, traceback, re, glob
+import sys, os, collections, logging, inspect, types, traceback, re, glob, copy
 import yaml, random, contextlib
 from collections import Counter, OrderedDict
 from datetime import datetime, timedelta
@@ -45,6 +45,18 @@ class Conf(object):
 config = Conf()
 del Conf
 
+
+def safe_copy(value): 
+    """
+    dict.copy() and copy.copy() are not safe regarding ZODB persistent objects, 
+    so we use our own function.
+    """
+    if isinstance(value, (dict, PersistentMapping)):
+        return dict(value)
+    elif isinstance(value, (list, PersistentList)):
+        return list(value)
+    else:
+        return copy.copy(value)
 
 
 def normalize(v):

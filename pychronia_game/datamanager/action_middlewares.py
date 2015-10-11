@@ -91,28 +91,34 @@ class AbstractActionMiddleware(object):
             if middleware_class.__name__ in tree:
                 action_settings_dicts[action_name] = tree[middleware_class.__name__]
 
+        #print("----action_settings_dicts AA --->", middleware_class.__name__, action_settings_dicts)
+
         for user_id, private_data in self.all_private_data.items():
             for action_name, tree in private_data.get("middlewares", {}).items():
                 if middleware_class.__name__ in tree and "settings_overrides" in tree[middleware_class.__name__]:
-                    user_specific_settings = copy.copy(action_settings_dicts[action_name])  # MUST exist - no user-specific overrides without a base content!
+                    user_specific_settings = {}  # NEW container, copy.copy() has bugs with persistent mappings and their ID
+                    user_specific_settings.update(action_settings_dicts[action_name])  # MUST exist - no user-specific overrides without a base content!
                     user_specific_settings.update(tree[middleware_class.__name__]["settings_overrides"])  # OVERRIDES
                     action_settings_dicts[action_name + "." + user_id] = user_specific_settings
 
-        #print("----action_settings_dicts--->", action_settings_dicts)
+        #print("----action_settings_dicts BB --->", middleware_class.__name__, action_settings_dicts)
 
         return action_settings_dicts
 
 
     def get_middleware_settings(self, action_name, middleware_class, ensure_active=True):
+
         assert action_name and middleware_class
         assert not ensure_active or self.user.is_character
-        middleware_settings = copy.copy(self.settings["middlewares"][action_name][middleware_class.__name__])
+        middleware_settings = {}  # NEW container
+        middleware_settings.update(self.settings["middlewares"][action_name][middleware_class.__name__])
+        #print(">-------222222--", self.user.is_character, self.user.username, middleware_settings)
         if self.user.is_character:
             try:
-                private_settings_overrides = self.get_private_middleware_data(action_name=action_name,
-                                                                              middleware_class=middleware_class,
-                                                                              create_if_unexisting=False)
-                overrides = private_settings_overrides.get("settings_overrides", {})
+                private_data = self.get_private_middleware_data(action_name=action_name,
+                                                                  middleware_class=middleware_class,
+                                                                  create_if_unexisting=False)
+                overrides = private_data.get("settings_overrides", {})
                 middleware_settings.update(overrides)
             except LookupError:
                 pass  # no middleware settings overrides, all is OK

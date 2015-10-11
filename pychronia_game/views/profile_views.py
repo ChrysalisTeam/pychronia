@@ -328,7 +328,7 @@ def game_events(request, template_name='administration/game_events.html'):
 
     trans_events = []
     for event in events:
-        trans_event = dict(**event) # dont use dict.copy() or copy.copy() else inner side effects
+        trans_event = dict(**event) # dont use dict.copy() or copy.copy(), else nasty side effects
         if trans_event["substitutions"]:
             try:
                 trans_event["final_message"] = trans_event["message"] % utilities.SDICT(**trans_event["substitutions"])
