@@ -11,7 +11,8 @@
         {% trans "Public Webradio URL" %}{{COLON}}
         <a href={% game_view_url "pychronia_game.views.public_webradio" %}>
             {% game_view_url "pychronia_game.views.public_webradio" %}
-        </a>
+        </a><br/>
+        {% trans "Frequency" %}{{COLON}} {{ global_parameters.pangea_radio_frequency }}
     </p>
 
     <br/>
@@ -22,7 +23,7 @@
 
         {% for folder, pwds in folders_info %}
 
-        <strong>{% trans "Folder" %}{{COLON}} {{ folder }}</strong>
+            <p><strong>{% trans "Folder" %}{{COLON}} {{ folder }}</strong></p>
 
             <p>
                 {% trans "URL" %}{{COLON}}

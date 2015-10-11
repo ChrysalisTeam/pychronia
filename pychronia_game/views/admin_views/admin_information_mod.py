@@ -28,6 +28,9 @@ class AdminInformation(AbstractGameView):
 
     def get_template_vars(self, previous_form_data=None):
 
+        global_parameters = self.datamanager.get_global_parameters()
+
         folders_info = self.datamanager.get_all_encrypted_folders_info()
 
-        return dict(folders_info=sorted(folders_info.items()))
+        return dict(global_parameters=global_parameters,
+                    folders_info=sorted(folders_info.items()))
