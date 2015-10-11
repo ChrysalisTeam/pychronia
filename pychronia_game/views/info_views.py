@@ -44,9 +44,9 @@ class StaticPageView(AbstractGameView):
     REQUIRES_GLOBAL_PERMISSION = False
 
     def get_template_vars(self, previous_form_data=None):
-        
+
         page_id = self.kwargs.get("page_id")
-        
+
         if not page_id or page_id not in self.datamanager.static_pages:
             print(">>>>", page_id, self.datamanager.static_pages.keys())
             raise Http404 # unexisting static page
@@ -136,11 +136,11 @@ class EncyclopediaView(AbstractGameView):
             article_ids = dm.get_character_known_article_ids()
         else:
             assert dm.is_anonymous()  # we leave article_ids to []
-        
+
         _pages = dm.static_pages
         articles_index = ((article_id, _pages[article_id].get("title")) for article_id in article_ids)
         del article_ids
-        
+
         return TemplateResponse(request=request,
                                 template=self.TEMPLATE,
                                 context={
@@ -350,7 +350,7 @@ def encrypted_folder(request, folder, entry_template_name="information/encrypted
     form = None
 
     if request.method == "POST":
-        form = forms.SimplePasswordForm(request.POST)
+        form = forms.CleartextPasswordForm(request.POST)
         if form.is_valid():
             password = form.cleaned_data["simple_password"].lower()  # normalized !
 
@@ -359,7 +359,7 @@ def encrypted_folder(request, folder, entry_template_name="information/encrypted
                 form = None  # triggers the display of files
 
     else:
-        form = forms.SimplePasswordForm()
+        form = forms.CleartextPasswordForm()
 
 
     if form:

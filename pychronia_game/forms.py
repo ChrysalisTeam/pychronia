@@ -181,6 +181,9 @@ class CharacterProfileForm(AbstractGameForm):
 class SimplePasswordForm(forms.Form):
     simple_password = forms.CharField(label=ugettext_lazy("Password"), required=True, widget=forms.PasswordInput)
 
+class CleartextPasswordForm(forms.Form):
+    simple_password = forms.CharField(label=ugettext_lazy("Password"), required=True, widget=forms.TextInput(attrs={"autocomplete": "off"}))
+
 
 class AuthenticationForm(forms.Form):
     secret_username = forms.CharField(label=ugettext_lazy("Username"), required=True, max_length=30, widget=forms.TextInput(attrs={'autocomplete':'on'}))
