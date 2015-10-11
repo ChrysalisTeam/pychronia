@@ -69,6 +69,8 @@ class AbstractActionMiddleware(object):
         known_middleware_names_set = set([klass.__name__ for klass in ACTION_MIDDLEWARES])
         compatible_middleware_names_set = set([klass.__name__ for klass in ACTION_MIDDLEWARES if self.ACCESS in klass.COMPATIBLE_ACCESSES])
 
+        #print ("------DATAPACKS-------->", self.__class__.__name__, all_middleware_data_packs)
+
         for pack in all_middleware_data_packs:
             pack_keys = set(pack.keys())
             if strict:
@@ -79,11 +81,25 @@ class AbstractActionMiddleware(object):
     def get_all_middleware_settings(self, middleware_class):
         """
         Returns a dict action_name => middleware settings) for that specific middleware_class.
+        
+        User-specific overrides are also returned, with keys "action_name.username" and values 
+        already "complete" (merged with base settings).
         """
         action_settings_dicts = {}
+
         for action_name, tree in self.settings["middlewares"].items():
             if middleware_class.__name__ in tree:
                 action_settings_dicts[action_name] = tree[middleware_class.__name__]
+
+        for user_id, private_data in self.all_private_data.items():
+            for action_name, tree in private_data.get("middlewares", {}).items():
+                if middleware_class.__name__ in tree and "settings_overrides" in tree[middleware_class.__name__]:
+                    user_specific_settings = copy.copy(action_settings_dicts[action_name])  # MUST exist - no user-specific overrides without a base content!
+                    user_specific_settings.update(tree[middleware_class.__name__]["settings_overrides"])  # OVERRIDES
+                    action_settings_dicts[action_name + "." + user_id] = user_specific_settings
+
+        #print("----action_settings_dicts--->", action_settings_dicts)
+
         return action_settings_dicts
 
 
