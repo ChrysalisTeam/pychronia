@@ -15,11 +15,11 @@ class GlobalContactForm(DataTableForm):
 
     description = forms.CharField(label=ugettext_lazy("Description"), widget=forms.Textarea(attrs={'rows': '2', 'cols':'40'}), required=False)
 
-    gamemaster_hints = GAMEMASTER_HINTS_FIELD()
-
     is_public = forms.BooleanField(label=ugettext_lazy("Public contact"), required=False, initial=True) # public by default
 
     access_tokens = Select2MultipleChoiceField(label=ugettext_lazy("Or restricted to (then ensure the field above is unchecked)"), required=False)
+
+    gamemaster_hints = GAMEMASTER_HINTS_FIELD()
 
     ###test = Select2TagsField(label=ugettext_lazy("TESTING"), choice_tags=["kkk", "lll"])
 

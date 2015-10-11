@@ -16,11 +16,12 @@ class RadioSpotForm(DataTableForm):
 
     title = forms.CharField(label=ugettext_lazy("Title"), required=True)
 
-    gamemaster_hints = GAMEMASTER_HINTS_FIELD()
-
-    text = forms.CharField(label=ugettext_lazy("Content"), widget=forms.Textarea(attrs={'rows': '2', 'cols':'40'}), required=True)
+    text = forms.CharField(label=ugettext_lazy("Content"), widget=forms.Textarea(attrs={'rows': '5', 'cols':'40'}), required=True)
 
     url_or_file = forms.CharField(label=ugettext_lazy("Url or local file"), required=True)
+
+    gamemaster_hints = GAMEMASTER_HINTS_FIELD()
+
 
     def __init__(self, datamanager, initial=None, **kwargs):
         """
