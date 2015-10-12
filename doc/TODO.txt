@@ -29,7 +29,11 @@ GAMEMASTER_HINTS in:
 FEATURES
 ------------
 
-- REVIEW thumbs and image formats, for mobile too
+- /DEMO/guy1/... URLS for transparent per-tab sessions
+
+
+- TWEAK image styles and thumbs, responsive, REVIEW thumbs and image formats, for mobile too
+
 
 - nouveau system d'impersonation
 
@@ -78,7 +82,6 @@ carte du monde : un clic sur un pays/ville principal pour un zoom plus détaill�
   <- WONT FIX, this filter requires a valid request ??????
 
 
-- finish embed_image ??
 
 
 
@@ -86,6 +89,8 @@ carte du monde : un clic sur un pays/ville principal pour un zoom plus détaill�
 
 SCRIPT
 ----------
+
+- USE embed_image(alias, align) everywhere in fixtures, and maybe unregister image directive ??
 
 - objets proposés est 10665 kashes -> varie suivant qu'on est master ou impersoné, weird.... REVOIR WORDING
 
@@ -247,6 +252,7 @@ NEEDS COSMETICS
 TASKS DONE
 ---------------
 
+- finish embed_image directive -> DONE with "align" parameter
 - URL Webradio Publique -> dire quelle frequence, dans admin info page - DONE
 - gros bug de use_template quand multiples recipients (fusionnent) - OK no more problem
 - remettre formulaire après submission sur matter_analysis - DONE (hide_on_success=False)
