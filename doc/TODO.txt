@@ -29,27 +29,21 @@ GAMEMASTER_HINTS in:
 FEATURES
 ------------
 
-- /DEMO/guy1/... URLS for transparent per-tab sessions
+- /DEMO/guy1/... URLS for transparent per-tab sessions (nouveau system d'impersonation)
 
-
-- TWEAK image styles and thumbs, responsive, REVIEW thumbs and image formats, for mobile too
-
-
-- nouveau system d'impersonation
 
 - enlever la homepage "enchères" inutile, amener de suite sur les persos ??
 
 - ajouter formulaires de pognon dans la page character_management ?
 
-- corrupt wiretapped emails
+- corrupt wiretapped emails, via duplication (else trouble with direct access links)
 
 - METTRE UN LIEN PARAMETRABLE QUAND ON GAGNE CONTRE l'IA d'échecs!!!!!
-
 
 - allow to wiretap ANY email address? nope dans le "future enhancement"
 
 
-- fix support of mp4 format, and prevent nasty errors like this
+- fix support of mp4 format, and prevent nasty errors like this (JPLAYER FTW)
       File "/home/pakal/webapps/chrysalis_game/pychronia/pychronia_game/utilities/mediaplayers.py", line 146, in generate_media_player
         raise ValueError("Unsupported media type")
       ValueError: Unsupported media type
@@ -59,17 +53,16 @@ FEATURES
    assert set(self._determine_basic_visibility(msg).keys()) - set([master]) <= set(msg["visible_by"].keys()), [self._determine_basic_visibility(msg).keys(), msg]
 
 
-carte du monde : un clic sur un pays/ville principal pour un zoom plus détaillé (un peu comme hurlevent wow)
+- carte du monde : un clic sur un pays/ville principal pour un zoom plus détaillé (un peu comme hurlevent wow) -> intégrer touch map prototype
 
 
 - fix checks of ajax calls when impersonation changes
   SEE EMAILS ERROR (EXTERNAL IP): Internal Server Error: /premium/messages/ajax_mark_msg_read/
 
 
-- trier contacts par ordre logique ??
+- trier contacts par ordre logique ?? déjà par domaine...
 
-- permettre d'éditer les messages en attente d'envoi ? nope, mieux vaut save as draft...
-
+- permettre d'éditer les messages en attente d'envoi ? nope, mieux vaut "save as template"...
 
 
 - réparer (Dernier accès : 4 juil. 2015 04:45:36), à cause des crontasks, en page administration
@@ -89,6 +82,8 @@ carte du monde : un clic sur un pays/ville principal pour un zoom plus détaill�
 
 SCRIPT
 ----------
+
+- add tags with titles to all MP3s
 
 - USE embed_image(alias, align) everywhere in fixtures, and maybe unregister image directive ??
 
@@ -252,6 +247,7 @@ NEEDS COSMETICS
 TASKS DONE
 ---------------
 
+- TWEAK image styles and thumbs, responsive, REVIEW thumbs and image formats, for mobile too - somehow DONE
 - finish embed_image directive -> DONE with "align" parameter
 - URL Webradio Publique -> dire quelle frequence, dans admin info page - DONE
 - gros bug de use_template quand multiples recipients (fusionnent) - OK no more problem
