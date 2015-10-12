@@ -96,10 +96,6 @@ h3 {
 
 
 
-.small_text {
-   font-size: 0.8em !important;
-}
-
 b, strong {
     font-weight: bolder;
 }
@@ -118,6 +114,7 @@ div, span, p {
 
 p {
     margin: 8px 0 8px;
+    min-width: 200px;  // to prevent horrors with inline images, when screen gets small
 }
 
 
@@ -219,7 +216,6 @@ textarea {
     resize: vertical;
 }
 
-
 @mixin form_controls_variant($color) {
 
     textarea, select, input,
@@ -296,5 +292,11 @@ button.pretty_button {
     font-weight: bold;
 }
 
-
+.section img, // typical of restructuredtext images
+img.content {
+    max-width: 100%;
+    @include mobile-only {
+        // TODO - how to prevent image from taking 80% of width, and thus compressing texts?
+    }
+}
 

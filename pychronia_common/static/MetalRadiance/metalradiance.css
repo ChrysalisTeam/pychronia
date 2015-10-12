@@ -1886,9 +1886,6 @@ h3 {
   quotes: none;
   text-overflow: ellipsis;
 }
-.small_text {
-  font-size: 0.8em !important;
-}
 b, strong {
   font-weight: bolder;
 }
@@ -1902,6 +1899,7 @@ div, span, p {
 }
 p {
   margin: 8px 0 8px;
+  min-width: 200px;
 }
 @media (max-width: 991px) {
   p {
@@ -2040,6 +2038,9 @@ button.pretty_button {
   margin: 0;
   color: #19490F;
   font-weight: bold;
+}
+.section img, img.content {
+  max-width: 100%;
 }
 .entry-body {
   overflow: visible;
