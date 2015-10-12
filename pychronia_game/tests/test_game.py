@@ -433,7 +433,7 @@ class TestUtilities(BaseGameTestCase):
         print(res)
 
         assert res.strip() == dedent("""
-                                    /files/2ce2bacb/thumbs/world_map.jpg.300x200_q85_autocrop.jpg here
+                                    /files/3560c5f8/thumbs/world_map.jpg.300x300_q85_autocrop.jpg here
                                     
                                     .. image:: picture.jpeg /files/3ab7d512/world_map.jpg
                                     

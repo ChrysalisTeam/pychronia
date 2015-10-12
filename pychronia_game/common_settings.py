@@ -43,34 +43,39 @@ THUMBNAIL_ALIASES = { '': {
     # project-wide aliases here
     'default' : { # NECESSARY
         'autocrop': True, # remove useless whitespace
-        'size': (300, 200), # one of these can be 0
-        #'crop': "scale", # True or <smart|scale|W,H>
+        'size': (300, 300), # one of these can be 0 to ignore that dimension
+        #'crop': "scale", # True or <smart|scale|W,H>, scale means "only 1 dimension must fit", remove this setting to disable any cropping
     },
-    'item_avatar' : {
-        'autocrop': True, # remove useless whitespace
-        'size': (150, 220), # one of these can be 0
-        #'crop': "smart", # True or <smart|scale|W,H>
+
+    'item_avatar' : { # Eg. in sales page
+        'autocrop': True,
+        'size': (150, 220),
     },
-    'character_avatar' : {
-        'autocrop': False, # remove useless whitespace
-        'size': (100, 100), # one of these can be 0
-        #'crop': "smart", # True or <smart|scale|W,H>
+    'character_avatar' : { # Eg. in characters page
+        'autocrop': False,
+        'size': (100, 100),
     },
-    'contact_avatar' : {
-        'autocrop': False, # remove useless whitespace
-        'size': (60, 60), # one of these can be 0
-        #'crop': "smart", # True or <smart|scale|W,H>
+    'contact_avatar' : { # Eg. in list of email contacts
+        'autocrop': False,
+        'size': (60, 60),
+    },
+
+    'small_width' : {
+        'autocrop': False,
+        'size': (200, 0),
     },
     'medium_width' : {
-        'autocrop': False, # remove useless whitespace
-        'size': (500, 0), # one of these can be 0
-        #'crop': "scale", # True or <smart|scale|W,H>
+        'autocrop': False,
+        'size': (350, 0),
+    },
+    'big_width' : {
+        'autocrop': False,
+        'size': (500, 0),
     },
     'giant_width' : {
-        'autocrop': False, # remove useless whitespace
-        'size': (800, 0), # one of these can be 0
-        #'crop': "scale", # True or <smart|scale|W,H>
+        'autocrop': False,
+        'size': (800, 0),
     },
 }}
-
+### medium_width
 
