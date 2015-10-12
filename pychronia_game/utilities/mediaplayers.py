@@ -174,7 +174,10 @@ def generate_audio_player(files, titles=None, artists=None, autostart=False):
 
 
 
-def generate_image_viewer(imageurl, width=450, height=350, preset=None, **kwargs):
+def generate_image_viewer(imageurl, width=300, height=300, preset=None, align="", **kwargs):
+    """
+    Align, if not empty, can be center/left/right.
+    """
 
     md5 = hashlib.md5()
     md5.update(imageurl.encode('ascii', 'ignore'))
@@ -184,7 +187,7 @@ def generate_image_viewer(imageurl, width=450, height=350, preset=None, **kwargs
 
     rel_path = checked_game_file_path(imageurl)
     if not rel_path:
-        thumburl = imageurl
+        thumburl = imageurl  # this might just not be an internal, secure, image
     else:
         try:
             # this url is actually a local game file
@@ -193,11 +196,11 @@ def generate_image_viewer(imageurl, width=450, height=350, preset=None, **kwargs
             if preset:
                 try:
                     thumb = thumbnailer[preset]
-                except Exception, e:
+                except Exception, e:  # eg. if preset name is unexisting
                     logging.critical("generate_image_viewer preset selection failed for %s/%s", imageurl, preset, exc_info=True)
                     pass
-            if not thumb:
-                options = {
+            if not thumb:  #we fallback to default options
+                options = { 
                            'autocrop': False, # remove useless whitespace
                            'crop': False, # no cropping at all,thumb must fit in both W and H
                            'size': (width, height), # one of these can be 0
@@ -216,13 +219,13 @@ def generate_image_viewer(imageurl, width=450, height=350, preset=None, **kwargs
         "thumburl": escape(thumburl),
         "width": escape(thumb.width if thumb else width),
         "height": escape(thumb.height if thumb else height),
+        "classes": "align-%s" % align if align else "",
     }
 
-    template = ("""<a href="%(imageurl)s"><img class="imageviewer" src="%(thumburl)s" title="%(title)s"id="%(id)s" """ +
+    template = ("""<a href="%(imageurl)s"><img class="imageviewer %(classes)s" src="%(thumburl)s" title="%(title)s"id="%(id)s" """ +
                """style="max-width: %(width)spx; max-height:%(height)spx"/></a>""")
 
     return template % options
-
 
 
 

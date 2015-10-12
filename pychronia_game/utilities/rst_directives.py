@@ -49,13 +49,27 @@ class ImageEmbedDirective(rst.Directive):
     required_arguments = 1
     optional_arguments = 0
     final_argument_whitespace = True
-    option_spec = {'alias': directives.unchanged} # easy-thumbnail preset
+    option_spec = {'alias': directives.unchanged,  # easy-thumbnail preset
+                   'align': directives.unchanged}  # like in "image" directive
     has_content = False
 
+    align_h_values = ('left', 'center', 'right')
+
     def run(self):
+
+        if 'align' in self.options:
+            if self.options['align'] not in self.align_h_values:
+                raise self.error(
+                    'Error in "%s" directive: "%s" is not a valid value for '
+                    'the "align" option.  Valid values for "align" are: "%s".'
+                    % (self.name, self.options['align'],
+                       '", "'.join(self.align_h_values)))
+
         code = generate_image_viewer(imageurl=self.arguments[0],
-                                     preset=self.options.get("alias", "default")) # BEWARE - we expect that "default" preset to exist in settings!
+                                     preset=self.options.get("alias", "default"),
+                                     align=self.options.get("align", "")) # BEWARE - we expect that "default" preset to exist in settings!
         return [nodes.raw('', code, format='html')]
+
 
 directives.register_directive("embed_image", ImageEmbedDirective)
 
