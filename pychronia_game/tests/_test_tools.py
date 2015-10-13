@@ -226,11 +226,7 @@ class BaseGameTestCase(TestCase): # one day, use pytest-django module to make it
 
         try:
 
-            # need for custom urlconf setup
-            if "mobile" in self.__class__.__name__.lower():
-                test_http_host = config.MOBILE_HOST_NAMES[0]
-            else:
-                test_http_host = "localhost:80"
+            test_http_host = "localhost:80"
 
             self.client = Client()
             self.factory = RequestMock(HTTP_HOST=test_http_host)

@@ -12,9 +12,6 @@ GAME_ALLOW_ENFORCED_LOGIN = False
 ACTIVATE_AIML_BOTS = False
 ZODB_RESET_ALLOWED = False
 
-MOBILE_HOST_NAMES = []
-ROOT_URLCONF_MOBILE = None
-
 # at least one of these must be set, URL takes precedence over file
 ZODB_FILE = None
 ZODB_URL = None

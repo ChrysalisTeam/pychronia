@@ -12,13 +12,6 @@ admin.autodiscover()
 
 
 
-mobile_game_urlpatterns = patterns('pychronia_game.views',
-
-    url(r'^$', 'homepage_mobile', name="pychronia_game-homepage"),
-    #url(r'^encyclopedia/$', 'encyclopedia_mobile'),
-)
-
-
 
 web_game_urlpatterns = patterns('pychronia_game.views',
 

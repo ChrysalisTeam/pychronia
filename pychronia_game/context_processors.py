@@ -17,10 +17,7 @@ def pychronia_template_context(request):
     Template context manager which adds all necessary game data to all pages.
     """
 
-    is_mobile_page = getattr(request, "is_mobile", None) # middleware might be disabled
-
     res = {
-            'is_mobile_page': is_mobile_page,
 
             'use_parallax': False, # might be enabled only for some browsers..
 
@@ -128,10 +125,6 @@ def pychronia_template_context(request):
                 'content_blocks': content_blocks,
                 'action_explanations': action_explanations,
                 'default_contact_avatar': dm.get_global_parameter("default_contact_avatar"),
-
-                # entry points
-                'mobile_site_entry_url': config.MOBILE_SITE_ENTRY_URL_TEMPLATE % dm.game_instance_id,
-                'web_site_entry_url': config.WEB_SITE_ENTRY_URL_TEMPLATE % dm.game_instance_id,
 
             })
 

@@ -200,10 +200,6 @@ def generate_full_menu(request): # # game_menu_generator
         res = MenuEntry(request, *args, **kwargs)
         return res # no filtering here!
 
-
-    if request.is_mobile:
-        return None # _generate_mobile_menu(request=request, menu_entry_generator=menu_entry_generator)
-    else:
         return _generate_web_menu(request=request, menu_entry_generator=menu_entry_generator)
 
 

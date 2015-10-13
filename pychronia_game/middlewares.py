@@ -18,32 +18,6 @@ del settings # use config instead
 assert logging
 
 
-
-
-class MobileHostMiddleware:
-
-    def __init__(self):
-        if not config.MOBILE_HOST_NAMES:
-            raise MiddlewareNotUsed
-
-    def process_request(self, request):
-        host = request.META.get("HTTP_HOST", "") # not present in django test client
-        if host[-3:] == ":80":
-            host = host[:-3] # ignore default port number, if present
-        if host in config.MOBILE_HOST_NAMES:
-            request.urlconf = config.ROOT_URLCONF_MOBILE
-            request.is_mobile = True
-        else:
-            assert not hasattr(request, "urlconf")
-            request.is_mobile = False
-
-    def process_response(self, request, response):
-        if getattr(request, "urlconf", None):
-            patch_vary_headers(response, ('Host',))
-        return response
-
-
-
 class ZodbTransactionMiddleware(object):
 
     def process_request(self, request):
@@ -113,8 +87,9 @@ class ZodbTransactionMiddleware(object):
         try:
             if hasattr(request, "datamanager"):
                 if config.DEBUG:
-                    request.datamanager.check_database_coherency() # checking after each request, then
-                    logger.info("Pychronia debug mode: post-processing check_database_coherency() is over (might take a long time)")
+                    pass
+                    #request.datamanager.check_database_coherency() # checking after each request, then
+                    #logger.info("Pychronia debug mode: post-processing check_database_coherency() is over (might take a long time)")
                 request.datamanager.close()
         except Exception, e:
             # exception should NEVER flow out of response processing middlewares

@@ -14,8 +14,7 @@ if "debug_toolbar.middleware.DebugToolbarMiddleware" in _old_middlewares:
 
 # beware of ordering here
 # no need for CSRF in pychronia_game, data is not sensitive
-MIDDLEWARE_CLASSES = (('pychronia_game.middlewares.MobileHostMiddleware',) +
-                     tuple(_old_middlewares) +
+MIDDLEWARE_CLASSES = (tuple(_old_middlewares) +
                      ('pychronia_game.middlewares.ZodbTransactionMiddleware',
                      'pychronia_game.middlewares.AuthenticationMiddleware',
                      'pychronia_game.middlewares.PeriodicProcessingMiddleware',
