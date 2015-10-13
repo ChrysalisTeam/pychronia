@@ -111,7 +111,7 @@ def try_authenticating_with_session(request):
         session_ticket = potential_session_ticket
     del potential_session_ticket
 
-    # beware, here we distinguish between empty string (stop impersonation) and None (use current settings)
+    # BEWARE, here we distinguish between empty string (=> stop impersonation) and None (=> use current settings)
     if IMPERSONATION_TARGET_POST_VARIABLE in request.POST or IMPERSONATION_WRITABILITY_POST_VARIABLE in request.POST:
 
         # Beware here, pop() on QueryDict would return a LIST always
@@ -132,7 +132,7 @@ def try_authenticating_with_session(request):
                                                            requested_impersonation_writability=requested_impersonation_writability,
                                                            django_user=request.user) # can be anonymous
         #print("NEW AUTHENTICATION DATA IN SESSION", res)
-        request.session[instance_key] = res # this refreshes expiry time, and ensures we properly modify session
+        request.session[instance_key] = res  # this refreshes expiry time, and ensures we properly modify session
 
     except UsageError, e:
         # invalid session data, or request vars...

@@ -875,12 +875,15 @@ class PlayerAuthentication(BaseDataManager):
 
         is_observer = session_ticket.get("is_observer", False)
 
-        # first, we compute the impersonation we actually want #
-        if requested_impersonation_target == "": # special case "delete current impersonation target"
-            requested_impersonation_target = None
-            requested_impersonation_writability = False # for security, we reset that too
-        elif requested_impersonation_target is None: # means "use legacy one"
+        # first, we compute the impersonation we REALLY want #
+        if requested_impersonation_target is None: # means "use legacy one"
             requested_impersonation_target = session_ticket.get("impersonation_target", None)
+        elif (requested_impersonation_target in ("",  # special case "delete current impersonation target"
+                                                 game_username)):  # means "just stay as real authenticated user"
+            assert game_username  # of course
+            requested_impersonation_target = None
+            requested_impersonation_writability = False  # for security, we reset that too
+            self.logger.info("-------------> RESET WRITABILITY game_username=%s" % game_username)
         else:
             pass # we let submitted requested_impersonation_target continue
 
@@ -908,7 +911,6 @@ class PlayerAuthentication(BaseDataManager):
                 # here we don't erase the session data, but this stops impersonation completely
                 self.user.add_error(_("Unauthorized user impersonation detected: %s") % requested_impersonation_target)
                 requested_impersonation_target = requested_impersonation_writability = None # TODO FIXME TEST THAT CURRENT GAME USERNAME REMAINS
-
 
         if requested_impersonation_writability is not None:
             if not is_observer and (is_superuser or (game_username and self.is_master(game_username))):
@@ -972,19 +974,21 @@ class PlayerAuthentication(BaseDataManager):
                                        impersonation_writability=impersonation_writability, is_superuser=is_superuser,
                                        is_observer=is_observer)))
 
+        # this will raise error if data is not fully coherent
         self._set_user(username=game_username,
                         impersonation_target=impersonation_target,
                         impersonation_writability=impersonation_writability,
                         is_superuser=is_superuser,
                         is_observer=is_observer)
 
-        if session_ticket is not None:
-            assert session_ticket.get("game_instance_id") == self.game_instance_id
-            assert session_ticket.get("game_username") == game_username # NEVER TOUCHED ATM
-            session_ticket.update(
-                                  impersonation_target=impersonation_target,
-                                  impersonation_writability=impersonation_writability,
-                                  ) # NO change on "is_observer" ATM
+        # we check changes from the old session ticket
+        assert session_ticket
+        assert session_ticket["game_instance_id"] == self.game_instance_id
+        assert session_ticket["game_username"] == game_username # NEVER TOUCHED ATM
+        session_ticket.update(
+                              impersonation_target=impersonation_target,
+                              impersonation_writability=impersonation_writability,
+                              ) # NO change on "is_observer" ATM
 
         return session_ticket
 
