@@ -104,7 +104,7 @@ class TestUtilities(BaseGameTestCase):
         for mystr in ("<object", "mediaplayer", "https://hi.com/a&amp;b.flv"): # AT LEAST html-escaped, but urlescaping could be necessary for some media types
             assert mystr in html
 
-        for mystr in ("<img class=\"imageviewer align-center\"", "https://hisss.com/a&amp;b.jpg", "450px"): # fallback to default width/height since image url is buggy (so easy-thumbnails fails)
+        for mystr in ("<img class=\"imageviewer align-center\"", "https://hisss.com/a&amp;b.jpg", "300px"): # fallback to default width/height since image url is buggy (so easy-thumbnails fails)
             assert mystr in html
 
 
@@ -4184,7 +4184,7 @@ class TestHttpRequests(BaseGameTestCase):
 
         # VIEWS SELECTION
         from django.core.urlresolvers import RegexURLResolver
-        from pychronia_game.all_urls import web_game_urlpatterns  # only desktop views atm
+        from pychronia_game.all_urls import web_game_urlpatterns
         # we test some views for which there is a distinction between master and player
         selected_patterns = """ compose_message view_sales personal_items_slideshow character_profile friendship_management""".split()
         views = [url._callback_str for url in web_game_urlpatterns if not isinstance(url, RegexURLResolver) and [match for match in selected_patterns if match in url._callback_str]]
