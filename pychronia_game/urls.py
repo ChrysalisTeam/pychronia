@@ -171,7 +171,7 @@ game_admin_urlpatterns = patterns('pychronia_game.meta_administration_views',
 urlpatterns = patterns('',
         url(r'^', include(game_admin_urlpatterns)),
         url(r'^', include(support_urlpatterns)),
-        url(r'^(?P<game_instance_id>\w+)/', include(inner_game_urlpatterns)),
+        url(r'^(?P<game_instance_id>\w+)/(?P<game_username>\w+)/', include(inner_game_urlpatterns)),
 )
 
 

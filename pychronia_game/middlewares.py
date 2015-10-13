@@ -11,6 +11,7 @@ from django.core.exceptions import MiddlewareNotUsed
 
 from . import authentication
 from pychronia_game.datamanager.datamanager_administrator import retrieve_game_instance
+from django.http.response import HttpResponseRedirect
 
 settings = None
 del settings # use config instead
@@ -117,7 +118,17 @@ class AuthenticationMiddleware(object):
         if not hasattr(request, 'session'):
             raise RuntimeError("The game authentication middleware requires session middleware to be installed. Edit your MIDDLEWARE_CLASSES setting to insert 'django.contrib.sessions.middleware.SessionMiddleware'.")
 
+        url_username = view_kwargs.get("game_username", None)
+        if url_username:
+            # about every request will go through that system, when we use username-including URLs
+            request.POST.setdefault(authentication.IMPERSONATION_TARGET_POST_VARIABLE, view_kwargs["game_username"])  # only if NOT ALREADY SET
+
         authentication.try_authenticating_with_session(request)
+
+        if url_username and request.datamanager.username != url_username:
+            # we redirect to the proper url prefix, so that current "effective username" is well kept during navigation
+            corrected_url = reverse(view_func, kwargs=dict(game_instance_id=request.datamanager.game_instance_id, game_username=url_username))
+            return HttpResponseRedirect(corrected_url)
 
         return None
 

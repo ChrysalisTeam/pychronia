@@ -80,7 +80,7 @@ def for_ability(view):
 
 TEST_GAME_INSTANCE_ID = "TeStiNg"
 ROOT_GAME_URL = "/%s" % TEST_GAME_INSTANCE_ID
-HOME_URL = reverse(pychronia_game.views.homepage, kwargs={"game_instance_id": TEST_GAME_INSTANCE_ID})
+HOME_URL = reverse(pychronia_game.views.homepage, kwargs={"game_instance_id": TEST_GAME_INSTANCE_ID, "game_username":"guest"})
 
 AJAX_HEADERS = dict(HTTP_X_REQUESTED_WITH='XMLHttpRequest')
 
