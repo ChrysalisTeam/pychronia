@@ -30,9 +30,6 @@ from pychronia_game.utilities import mediaplayers
 from pychronia_game.datamanager import GameDataManager
 
 
-from .mobile_views import homepage_mobile
-
-
 from .auction_views import (_build_display_data_from_viewer_settings, homepage, view_characters,
                             view_sales, auction_items_slideshow, personal_items_slideshow, item_3d_view, ajax_chat, chatroom)
 
@@ -116,7 +113,7 @@ def view_help_page(request, keyword, template_name='utilities/help_page.html'):
     """
 
     datamanager = request.datamanager
-    
+
     allowed_entry = None
     if keyword:
         view_name = keyword[len("help-"):]

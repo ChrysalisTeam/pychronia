@@ -36,10 +36,9 @@ def transform_usage_error(caller, self, request, *args, **kwargs):
     if an exception is encountered.
     """
     dm = request.datamanager
-    return_to_home_url = reverse("pychronia_game-homepage", kwargs=dict(game_instance_id=request.datamanager.game_instance_id)) # works for both web and mobile
-    return_to_home = HttpResponseRedirect(return_to_home_url) # TEMPORARY
-    # HttpResponseRedirect(reverse("pychronia_game.views.homepage", kwargs=dict(game_instance_id=dm.game_instance_id))) - FAILS on mobile
-    assert urlresolvers.resolve(return_to_home_url) # url works BOTH for mobile and web domains!
+    return_to_home_url = reverse("pychronia_game-homepage", kwargs=dict(game_instance_id=request.datamanager.game_instance_id))
+    return_to_home = HttpResponseRedirect(return_to_home_url)
+    assert urlresolvers.resolve(return_to_home_url)
     try:
 
         return caller(self, request, *args, **kwargs)
