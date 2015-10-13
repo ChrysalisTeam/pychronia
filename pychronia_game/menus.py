@@ -41,21 +41,6 @@ class MenuEntry:
 
 
 
-def _generate_mobile_menu(request, menu_entry_generator):
-    # UNUSED ATM
-    menu_entry = menu_entry_generator
-
-    full_menu_tree = menu_entry(_(u"Anthropia"), views.homepage_mobile,
-        (
-            # encoding note : \xa0 <-> &nbsp <-> alt+0160;
-
-            menu_entry(_(u"Home"), view=views.homepage_mobile),
-            #menu_entry(_(u"Encyclopedia"), views.encyclopedia_mobile),
-
-        ))
-    return full_menu_tree
-
-
 def _generate_web_menu(request, menu_entry_generator):
 
     menu_entry = menu_entry_generator
@@ -188,7 +173,7 @@ def _generate_web_menu(request, menu_entry_generator):
 
 
 
-def generate_full_menu(request): # # game_menu_generator
+def generate_full_menu(request):
 
     assert request.datamanager
 
@@ -200,7 +185,7 @@ def generate_full_menu(request): # # game_menu_generator
         res = MenuEntry(request, *args, **kwargs)
         return res # no filtering here!
 
-        return _generate_web_menu(request=request, menu_entry_generator=menu_entry_generator)
+    return _generate_web_menu(request=request, menu_entry_generator=menu_entry_generator)
 
 
 
