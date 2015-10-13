@@ -13,11 +13,9 @@ admin.autodiscover()
 
 
 
-web_game_urlpatterns = patterns('pychronia_game.views',
+inner_game_urlpatterns = patterns('pychronia_game.views',
 
     # WARNING - DANGEROUS #
-    url(r'^homepage_mobile$', 'homepage_mobile', name="pychronia_game-homepage"),
-
     url(r'^TEST_CAPTCHA/$', 'gameview_mixins.test_captcha'),
     url(r'^CHARACTERS_IDENTITIES/$', 'CHARACTERS_IDENTITIES'),
     url(r'^DATABASE_OPERATIONS/$', 'DATABASE_OPERATIONS'),
@@ -165,5 +163,16 @@ game_admin_urlpatterns = patterns('pychronia_game.meta_administration_views',
     (r'^administration/activate/$', "activate_instance"),
     (r'^administration/edit/(?P<target_instance_id>[^/]+)/$', "edit_instance_db"), # NOT game_instance_id, else bug with middleware
 )
+
+
+
+
+# standard urlpatterns of pychronia_game applications, eg. in prod
+urlpatterns = patterns('',
+        url(r'^', include(game_admin_urlpatterns)),
+        url(r'^', include(support_urlpatterns)),
+        url(r'^(?P<game_instance_id>\w+)/', include(inner_game_urlpatterns)),
+)
+
 
 

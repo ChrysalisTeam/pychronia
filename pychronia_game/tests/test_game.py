@@ -4077,8 +4077,8 @@ class TestHttpRequests(BaseGameTestCase):
 
     UNGETTABLE_SPECIAL_VIEWS = ("""CHARACTERS_IDENTITIES DATABASE_OPERATIONS FAIL_TEST MEDIA_TEST  logout ___instructions ___logo_animation ___opening
                         """.split() + # BROKEN VIEWS
-                     ["view_single_message", "item_3d_view", "encrypted_folder", "view_help_page", "secret_question", "view_static_page", # NEEDS PARAMETERS
-                      "homepage_mobile"]) # MOBILE ONLY
+                     ["view_single_message", "item_3d_view", "encrypted_folder", "view_help_page", "secret_question", "view_static_page", ])  # NEEDS PARAMETERS
+
 
     def _test_all_views_http_get(self):
 
@@ -4184,10 +4184,10 @@ class TestHttpRequests(BaseGameTestCase):
 
         # VIEWS SELECTION
         from django.core.urlresolvers import RegexURLResolver
-        from pychronia_game.all_urls import web_game_urlpatterns
+        from pychronia_game.urls import inner_game_urlpatterns
         # we test some views for which there is a distinction between master and player
         selected_patterns = """ compose_message view_sales personal_items_slideshow character_profile friendship_management""".split()
-        views = [url._callback_str for url in web_game_urlpatterns if not isinstance(url, RegexURLResolver) and [match for match in selected_patterns if match in url._callback_str]]
+        views = [url._callback_str for url in inner_game_urlpatterns if not isinstance(url, RegexURLResolver) and [match for match in selected_patterns if match in url._callback_str]]
         assert len(views) == len(selected_patterns)
 
         def test_views(views):
