@@ -1649,7 +1649,7 @@ class TextMessagingCore(BaseDataManager):
 
             msg["attachment"] = msg.get("attachment", None)
             if msg["attachment"]:
-                msg["attachment"] = complete_game_file_url(msg["attachment"])
+                msg["attachment"] = game_file_url(msg["attachment"])
 
             msg["is_certified"] = msg.get("is_certified", False)
             msg["mask_recipients"] = msg.get("mask_recipients", False)

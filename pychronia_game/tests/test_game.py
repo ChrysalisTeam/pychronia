@@ -6658,7 +6658,8 @@ class TestAdminActions(BaseGameTestCase):
 
     def test_admin_dashboard_interface(self):
 
-        dashboard_url = reverse(views.admin_dashboard, kwargs={"game_instance_id": TEST_GAME_INSTANCE_ID})
+        dashboard_url = reverse(views.admin_dashboard, kwargs={"game_instance_id": TEST_GAME_INSTANCE_ID,
+                                                               "game_username": "guest"})
         def gen_request():
             return self.factory.post(dashboard_url, dict(target_form_id="admin_dashboard.set_game_pause_state",
                                                         is_paused="1",

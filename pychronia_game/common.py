@@ -154,10 +154,10 @@ def action_failure_handler(request, success_message=ugettext_lazy("Operation suc
         #import traceback
         #traceback.print_exc()
         # we must locate this serious error, as often (eg. assertion errors) there is no specific message attached...
-        
+
         if isinstance(e, ConflictError) and request.datamanager.is_under_top_level_wrapping():
             raise  # we let upper level handle the retry!
-        
+
         msg = _("Unexpected exception caught in action_failure_handler - %r") % e
         logger.critical(msg, exc_info=True)
         if config.DEBUG:
@@ -210,21 +210,23 @@ def hash_url_path(url_path):
 #    return reverse(view kwargs=dict(game_instance_id=self.dm.game_instance_id)
 
 
-def game_file_url(rel_path):
-    rel_path = rel_path.replace("\\", "/") # some external libs use os.path methods to create urls.......
-    rel_path = rel_path.lstrip("/") # IMPORTANT
-    url_hash = hash_url_path(rel_path)
-    return config.GAME_FILES_URL + url_hash + "/" + rel_path
+def game_file_url(url):
+    """
+    If URL is relative, complete it with the secret hash and make it absolute. 
+    """
+    url = url.strip()
+    assert url
 
-
-def complete_game_file_url(fileurl):
-    ## TODO FIX THIS WEIRD
-    assert fileurl
     abs_prefixes = ["http://", "https://", "/"]
     for pref in abs_prefixes:
-        if fileurl.startswith(pref):
-            return fileurl # URL SHALL NOT BE MODIFIED
-    return game_file_url(fileurl) # url starting with / and containing security token
+        if url.startswith(pref):
+            return url # URL SHALL NOT BE MODIFIED
+
+    rel_path = url.replace("\\", "/") # some external libs use os.path methods to create urls.......
+    url_hash = hash_url_path(rel_path)
+    full_url = config.GAME_FILES_URL + url_hash + "/" + rel_path
+
+    return full_url  # url starting with / and containing security token
 
 
 _game_files_url_prefix = urlparse(config.GAME_FILES_URL).path
@@ -256,7 +258,7 @@ def checked_game_file_path(url):
 
 def determine_asset_url(properties):
     if isinstance(properties, basestring):
-        fileurl = utilities.complete_game_file_url(properties) # works for both internal and external ones
+        fileurl = utilities.game_file_url(properties) # works for both internal and external ones
     elif properties.get("url"):
         fileurl = properties["url"]
     elif properties.get("file"):
