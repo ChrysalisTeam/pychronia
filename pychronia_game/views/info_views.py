@@ -127,6 +127,7 @@ class EncyclopediaView(AbstractGameView):
                         dm.user.add_message(_("Your search has led to a single article, below."))
                         return HttpResponseRedirect(redirect_to=reverse("pychronia_game.views.view_encyclopedia",
                                                                         kwargs=dict(game_instance_id=dm.game_instance_id,
+                                                                                    game_username=dm.username,
                                                                                     article_id=search_results[0])))
 
         # NOW only retrieve article ids, since known article ids have been updated if necessary

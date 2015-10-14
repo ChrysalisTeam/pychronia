@@ -511,7 +511,8 @@ def compose_message(request, template_name='messaging/compose.html'):
                 target_view = "pychronia_game.views.all_queued_messages"
 
         conversations_url = reverse(target_view,
-                                    kwargs=dict(game_instance_id=request.datamanager.game_instance_id))
+                                    kwargs=dict(game_instance_id=request.datamanager.game_instance_id,
+                                                game_username=request.datamanager.username,))
         conversations_url += '?' + urllib.urlencode(dict(message_sent="1"))
         return HttpResponseRedirect(redirect_to=conversations_url)
 
