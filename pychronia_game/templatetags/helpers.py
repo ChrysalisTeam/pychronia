@@ -7,7 +7,7 @@ from datetime import datetime
 
 from pychronia_game.utilities import (mediaplayers, autolinker,
                                       rst_directives) # important to register RST extensions
-from pychronia_game.common import exception_swallower, game_file_url as real_game_file_url, determine_asset_url, reverse, _
+from pychronia_game.common import exception_swallower, game_file_url as real_game_file_url, determine_asset_url, reverse, game_view_url, _
 
 import django.template
 from django.templatetags.future import url as default_url_tag
@@ -62,8 +62,8 @@ def random_id():
     """Tag to generate random ids in HTML tags, just to please javascript utilities."""
     return "uuid-" + str(random.randint(1000000, 1000000000))
 
-@register.tag
-def game_view_url(parser, token):
+@register.tag(name="game_view_url")
+def game_view_url_tag(parser, token):
     """
     Only works if a "game_instance_id" template variable is available (use request processors for that).
     """
@@ -79,8 +79,8 @@ def game_view_url(parser, token):
     url_node = default_url_tag(parser, token)
     return url_node
 
-@register.simple_tag(takes_context=True)
-def game_file_url(context, a="", b="", c="", d="", e="", f="", varname=None):
+@register.simple_tag(takes_context=True, name="game_file_url")
+def game_file_url_tag(context, a="", b="", c="", d="", e="", f="", varname=None):
     """
     Here "varname" is the varuiable under which to store the result, if any.
     """
