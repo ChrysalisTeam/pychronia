@@ -206,12 +206,25 @@ def hash_url_path(url_path):
     return url_hash
     '''
 
+#def game_view_url(view, datamanager):
+#    return reverse(view kwargs=dict(game_instance_id=self.dm.game_instance_id)
+
 
 def game_file_url(rel_path):
     rel_path = rel_path.replace("\\", "/") # some external libs use os.path methods to create urls.......
     rel_path = rel_path.lstrip("/") # IMPORTANT
     url_hash = hash_url_path(rel_path)
     return config.GAME_FILES_URL + url_hash + "/" + rel_path
+
+
+def complete_game_file_url(fileurl):
+    ## TODO FIX THIS WEIRD
+    assert fileurl
+    abs_prefixes = ["http://", "https://", "/"]
+    for pref in abs_prefixes:
+        if fileurl.startswith(pref):
+            return fileurl # URL SHALL NOT BE MODIFIED
+    return game_file_url(fileurl) # url starting with / and containing security token
 
 
 _game_files_url_prefix = urlparse(config.GAME_FILES_URL).path
