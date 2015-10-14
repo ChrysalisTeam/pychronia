@@ -10,6 +10,7 @@ SESSION_TICKET_KEY_TEMPLATE = 'pychronia_session_ticket_%s'
 IMPERSONATION_TARGET_POST_VARIABLE = "_set_impersonation_target_"
 IMPERSONATION_WRITABILITY_POST_VARIABLE = "_set_impersonation_writability_"
 ENFORCED_SESSION_TICKET_NAME = "session_ticket"
+NEUTRAL_URL_USERNAME = "any"
 
 """
 Django Notes

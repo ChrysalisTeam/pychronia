@@ -1645,19 +1645,19 @@ class TestDatamanager(BaseGameTestCase):
         # generation of entry links
         res = _generate_encyclopedia_links("animals lokons lokonsu", self.dm)
         expected = """<a href="@@@?search=animals">animals</a> lokons lokonsu"""
-        expected = expected.replace("@@@", reverse(views.view_encyclopedia, kwargs=dict(game_instance_id=self.dm.game_instance_id)))
+        expected = expected.replace("@@@", neutral_url_reverse(views.view_encyclopedia))
         assert res == expected
 
         res = _generate_encyclopedia_links(u"""wu\\gly_é gerbil \n lokongerbil dummy gerb\nil <a href="#">lokon\n</a> lokons""", self.dm)
         print (repr(res))
         expected = u'wu\\gly_é <a href="@@@?search=gerbil">gerbil</a> \n lokongerbil dummy gerb\nil <a href="#">lokon\n</a> lokons'
-        expected = expected.replace("@@@", reverse(views.view_encyclopedia, kwargs=dict(game_instance_id=self.dm.game_instance_id)))
+        expected = expected.replace("@@@", neutral_url_reverse(views.view_encyclopedia))
         assert res == expected
 
         res = _generate_encyclopedia_links(u"""i<à hi""", self.dm)
         print (repr(res))
         expected = u'<a href="/TeStiNg/encyclopedia/?search=i%3C%C3%A0">i&lt;\xe0</a> hi'
-        expected = expected.replace("@@@", reverse(views.view_encyclopedia, kwargs=dict(game_instance_id=self.dm.game_instance_id)))
+        expected = expected.replace("@@@", neutral_url_reverse(views.view_encyclopedia))
         assert res == expected
 
 
@@ -2815,7 +2815,7 @@ class TestDatamanager(BaseGameTestCase):
 
         OTHER_SESSION_TICKET_KEY = SESSION_TICKET_KEY_TEMPLATE % "my_other_test_game_id"
 
-        home_url = reverse(views.homepage, kwargs={"game_instance_id": TEST_GAME_INSTANCE_ID})
+        home_url = neutral_url_reverse(views.homepage)
 
         master_login = self.dm.get_global_parameter("master_login")
         master_password = self.dm.get_global_parameter("master_password")
@@ -2950,7 +2950,7 @@ class TestDatamanager(BaseGameTestCase):
         request_var = "session_ticket"
 
         username = random.choice(("guy3", "master"))
-        home_url = reverse(views.homepage, kwargs={"game_instance_id": TEST_GAME_INSTANCE_ID})
+        home_url = neutral_url_reverse(views.homepage)
 
         token = authentication.compute_enforced_login_token(self.dm.game_instance_id, username)
         request = self.factory.post(home_url, data={request_var : token})
@@ -3959,7 +3959,7 @@ class TestHttpRequests(BaseGameTestCase):
     def _master_auth(self):
 
         master_login = self.dm.get_global_parameter("master_login")
-        login_page = reverse("pychronia_game.views.login", kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID))
+        login_page = neutral_url_reverse("pychronia_game.views.login")
         response = self.client.get(login_page) # to set preliminary cookies
         self.assertEqual(response.status_code, 200)
 
@@ -3977,7 +3977,7 @@ class TestHttpRequests(BaseGameTestCase):
     def _player_auth(self, username):
 
 
-        login_page = reverse("pychronia_game.views.login", kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID))
+        login_page = neutral_url_reverse("pychronia_game.views.login")
         response = self.client.get(login_page) # to set preliminary cookies
         self.assertEqual(response.status_code, 200)
 
@@ -3994,8 +3994,8 @@ class TestHttpRequests(BaseGameTestCase):
 
     def _logout(self):
 
-        login_page = reverse("pychronia_game.views.login", kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID))
-        logout_page = reverse("pychronia_game.views.logout", kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID))
+        login_page = neutral_url_reverse("pychronia_game.views.login")
+        logout_page = neutral_url_reverse("pychronia_game.views.logout")
         response = self.client.get(logout_page, follow=False)
 
         self.assertEqual(response.status_code, 302)
@@ -4023,7 +4023,7 @@ class TestHttpRequests(BaseGameTestCase):
 
         # these urls and their post data might easily change, beware !
         special_urls = {ROOT_GAME_URL + "/item3dview/sacred_chest/": None,
-                        reverse(views.view_static_page, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID, page_id="lokon")): None,
+                        neutral_url_reverse(views.view_static_page, page_id="lokon"): None,
                         # FIXME NOT YET READYROOT_GAME_URL + "/djinn/": {"djinn": "Pay Rhuss"},
                         ##### FIXME LATER config.MEDIA_URL + "Burned/default_styles.css": None,
                         game_file_url("images/attachments/image1.png"): None,
@@ -4031,7 +4031,7 @@ class TestHttpRequests(BaseGameTestCase):
                         ROOT_GAME_URL + "/messages/view_single_message/%s/" % msg_id: None,
                         ROOT_GAME_URL + "/secret_question/guy3/": dict(secret_answer="Fluffy", target_email="guy3@pangea.com"),
                         ROOT_GAME_URL + "/public_webradio/": dict(frequency=self.dm.get_global_parameter("pangea_radio_frequency")),
-                        reverse(views.view_help_page, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID, keyword="help-homepage")): None,
+                        neutral_url_reverse(views.view_help_page, keyword="help-homepage"): None,
                         }
 
         for url, value in special_urls.items():
@@ -4096,7 +4096,7 @@ class TestHttpRequests(BaseGameTestCase):
                 if name in skipped_views_lowercase or "ajax" in name or "dummy" in name:
                     results.append(0)
                     continue
-                url = reverse(view_class.as_view, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID))
+                url = neutral_url_reverse(view_class.as_view)
                 response = self.client.get(url)
                 # print response.content
                 self.assertEqual(response.status_code, 200, name + " | " + url + " | " + str(response.status_code))
@@ -4197,7 +4197,7 @@ class TestHttpRequests(BaseGameTestCase):
 
         def test_views(views):
             for view in views:
-                url = reverse(view, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID))
+                url = neutral_url_reverse(view)
                 response = self.client.get(url)
                 # print response.content
                 self.assertEqual(response.status_code, 200, view + " | " + url + " | " + str(response.status_code))
@@ -4239,29 +4239,24 @@ class TestHttpRequests(BaseGameTestCase):
 
         # TODO FIXME - use Http403 exceptions instead, when new django version is out !!
 
-        url = reverse(views.view_help_page, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID,
-                                                        keyword=""))
+        url = neutral_url_reverse(views.view_help_page, keyword="")
         response = self.client.get(url)
         assert response.status_code == 404
 
-        url = reverse(views.view_help_page, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID,
-                                                        keyword="qsd8778GAVVV"))
+        url = neutral_url_reverse(views.view_help_page, keyword="qsd8778GAVVV")
         response = self.client.get(url)
         assert response.status_code == 404
 
-        url = reverse(views.view_help_page, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID,
-                                                        keyword="help-homepage"))
+        url = neutral_url_reverse(views.view_help_page, keyword="help-homepage")
         response = self.client.get(url)
         assert response.status_code == 200
 
         assert self.dm.get_categorized_static_page(self.dm.HELP_CATEGORY, "help-runic_translation")
-        url = reverse(views.view_help_page, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID,
-                                                        keyword="help-runic_translation"))
+        url = neutral_url_reverse(views.view_help_page, keyword="help-runic_translation")
         response = self.client.get(url)
         assert response.status_code == 404 # ACCESS FORBIDDEN
 
-        url = reverse(views.view_help_page, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID,
-                                                        keyword="help-chatroom"))
+        url = neutral_url_reverse(views.view_help_page, keyword="help-chatroom")
         response = self.client.get(url)
         assert response.status_code == 404 # view always available, but no help text available for it
 
@@ -4272,7 +4267,7 @@ class TestHttpRequests(BaseGameTestCase):
 
         self._reset_django_db()
 
-        url_base = reverse(views.view_encyclopedia, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID))
+        url_base = neutral_url_reverse(views.view_encyclopedia)
 
         for login in ("master", "guy1", None):
 
@@ -4290,8 +4285,7 @@ class TestHttpRequests(BaseGameTestCase):
             response = self.client.get(url_base)
             assert response.status_code == 200
 
-            url = reverse(views.view_encyclopedia, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID,
-                                                               article_id="lokon"))
+            url = neutral_url_reverse(views.view_encyclopedia, article_id="lokon")
             response = self.client.get(url)
             assert response.status_code == 200
             assert "animals" in response.content.decode("utf8")
@@ -4307,7 +4301,7 @@ class TestHttpRequests(BaseGameTestCase):
 
             response = self.client.get(url_base + "?search=gerbil")
             assert response.status_code == 302
-            assert reverse(views.view_encyclopedia, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID, article_id="gerbil_species")) in response['Location']
+            assert neutral_url_reverse(views.view_encyclopedia, article_id="gerbil_species") in response['Location']
 
             if login == "guy1":
                 assert ("gerbil_species" in self.dm.get_character_known_article_ids()) == game_state
@@ -4324,9 +4318,9 @@ class TestHttpRequests(BaseGameTestCase):
         self._player_auth("guy1")
         self.dm.set_permission("guy1", views.wiretapping_management.get_access_permission_name(), is_present=False)  # else, would override is_game_view_activated()!
 
-        url_home = reverse("pychronia_game-homepage", kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID))
+        url_home = neutral_url_reverse("pychronia_game-homepage")
 
-        url = reverse(views.wiretapping_management, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID))
+        url = neutral_url_reverse(views.wiretapping_management)
 
         self.dm.set_activated_game_views([])  # for wiretapping, character permissions are the most important anyway
         assert not self.dm.is_game_view_activated("wiretapping")
@@ -4409,7 +4403,7 @@ class TestHttpRequests(BaseGameTestCase):
 
         self._player_auth("guy1")
 
-        url = reverse(views.compose_message, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID))
+        url = neutral_url_reverse(views.compose_message)
 
         params = dict(_ability_form="pychronia_game.views.messaging_views.MessageComposeForm",
                       body="Ceci est le body!",
@@ -4874,7 +4868,7 @@ class TestGameViewSystem(BaseGameTestCase):
 
     def test_per_action_user_permissions(self):
 
-        view_url = reverse(views.wiretapping_management, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID))
+        view_url = neutral_url_reverse(views.wiretapping_management)
 
         # ACTIONS that require personal permissions
         request1 = self.factory.post(view_url, data=dict(_action_="purchase_confidentiality_protection")) # direct call
@@ -4922,7 +4916,7 @@ class TestGameViewSystem(BaseGameTestCase):
         self.dm.transfer_money_between_characters(bank_name, "guy1", amount=1000)
 
         # BEWARE - below we use another datamanager !!
-        view_url = reverse(views.wiretapping_management, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID))
+        view_url = neutral_url_reverse(views.wiretapping_management)
 
         # first a "direct action" html call
         request = self.factory.post(view_url, data=dict(_action_="purchase_wiretapping_slot", qsdhqsdh="33"))
@@ -4995,7 +4989,7 @@ class TestGameViewSystem(BaseGameTestCase):
 
     def test_gameview_novelty_tracking(self):
 
-        view_url = reverse(views.runic_translation, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID)) # access == character only
+        view_url = neutral_url_reverse(views.runic_translation)  # access == character only
 
         # first a "direct action" html call
         request = self.factory.post(view_url)
@@ -5630,7 +5624,7 @@ class TestActionMiddlewares(BaseGameTestCase):
 
         self.dm.update_permissions("guy1", PersistentList(self.dm.PERMISSIONS_REGISTRY))
 
-        view_url = reverse(views.world_scan, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID))
+        view_url = neutral_url_reverse(views.world_scan)
         request = self.factory.post(view_url, data=dict(_action_="scan_form", item_name="statue")) # has no scanning settings
         request.datamanager._set_user("guy1")
 
@@ -5670,7 +5664,7 @@ class TestActionMiddlewares(BaseGameTestCase):
 
         self.dm.update_permissions("guy1", PersistentList(self.dm.PERMISSIONS_REGISTRY))
 
-        view_url = reverse(views.world_scan, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID))
+        view_url = neutral_url_reverse(views.world_scan)
 
         request = self.factory.post(view_url, data=dict(_action_="scan_form", item_name="sacred_chest"))
         world_scan = request.datamanager.instantiate_ability("world_scan")
@@ -6186,7 +6180,7 @@ class TestSpecialAbilities(BaseGameTestCase):
 
 
         ''' does not work, needs authentication
-        url = reverse(views.world_scan, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID))
+        url = sssss(views.world_scan, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID))
 
         self._set_user("guy1")
 
@@ -6658,8 +6652,7 @@ class TestAdminActions(BaseGameTestCase):
 
     def test_admin_dashboard_interface(self):
 
-        dashboard_url = reverse(views.admin_dashboard, kwargs={"game_instance_id": TEST_GAME_INSTANCE_ID,
-                                                               "game_username": "guest"})
+        dashboard_url = neutral_url_reverse(views.admin_dashboard)
         def gen_request():
             return self.factory.post(dashboard_url, dict(target_form_id="admin_dashboard.set_game_pause_state",
                                                         is_paused="1",

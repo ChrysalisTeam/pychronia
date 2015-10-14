@@ -22,7 +22,8 @@ import pychronia_game.datamanager as dm_module
 from pychronia_game.datamanager import *
 from pychronia_game.datamanager.datamanager_modules import *
 from pychronia_game.authentication import (try_authenticating_with_credentials, try_authenticating_with_session, logout_session,
-                                   SESSION_TICKET_KEY_TEMPLATE, IMPERSONATION_TARGET_POST_VARIABLE, IMPERSONATION_WRITABILITY_POST_VARIABLE)
+                                           SESSION_TICKET_KEY_TEMPLATE, IMPERSONATION_TARGET_POST_VARIABLE,
+                                           IMPERSONATION_WRITABILITY_POST_VARIABLE, NEUTRAL_URL_USERNAME)
 import pychronia_game.middlewares
 import pychronia_game.views
 from pychronia_game.datamanager.abstract_game_view import AbstractGameView, register_view
@@ -39,6 +40,12 @@ if not config.ZODB_RESET_ALLOWED:
     raise RuntimeError("Can't launch tests - we must be in a production environment !!")
 
 ORIGINAL_CONFIG_INSTALLED_APPS = config.INSTALLED_APPS[:]
+
+
+def neutral_url_reverse(view, **more_kwargs):
+    kwargs = {"game_instance_id": TEST_GAME_INSTANCE_ID, "game_username": NEUTRAL_URL_USERNAME}
+    kwargs.update(more_kwargs)
+    return reverse(view, kwargs=kwargs)
 
 
 # dummy objects for delayed processing
@@ -82,7 +89,7 @@ TEST_GAME_INSTANCE_ID = "TeStiNg"
 ROOT_GAME_URL = "/%s" % TEST_GAME_INSTANCE_ID
 
 ### FIXME  with game_view_url(view, datamanager=dm)
-HOME_URL = reverse(pychronia_game.views.homepage, kwargs={"game_instance_id": TEST_GAME_INSTANCE_ID, "game_username":"guest"})
+HOME_URL = neutral_url_reverse(pychronia_game.views.homepage)
 
 AJAX_HEADERS = dict(HTTP_X_REQUESTED_WITH='XMLHttpRequest')
 
