@@ -1979,7 +1979,7 @@ class TextMessagingCore(BaseDataManager):
     def get_message_viewer_url_or_none(self, msg_id): # FIXME - where shall this method actually be ?
         if not msg_id:
             return None
-        return game_view_url('pychronia_game.views.view_single_message', datamanager=self)
+        return game_view_url('pychronia_game.views.view_single_message', datamanager=self, msg_id=msg_id)
 
 
     @readonly_method

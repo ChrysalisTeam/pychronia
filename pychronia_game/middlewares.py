@@ -126,7 +126,7 @@ class AuthenticationMiddleware(object):
 
         if url_username:
             # about every request will go through that system, when we use username-including URLs
-            request.POST.setdefault(authentication.IMPERSONATION_TARGET_POST_VARIABLE, view_kwargs["game_username"])  # only if NOT ALREADY SET
+            request.POST.setdefault(authentication.IMPERSONATION_TARGET_POST_VARIABLE, url_username)  # only if NOT ALREADY SET
 
         authentication.try_authenticating_with_session(request)
 

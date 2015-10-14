@@ -469,8 +469,8 @@ class TestUtilities(BaseGameTestCase):
 
                                 hello
                                 
-                                <a href="/TeStiNg/">good1</a>
-                                <a href="/TeStiNg/view_sales/">good2</a>
+                                <a href="/TeStiNg/guest/">good1</a>
+                                <a href="/TeStiNg/guest/view_sales/">good2</a>
                                 
                                 [ GAME_PAGE_LINK "bad\"string" "view_sales" ]
                                 """).strip()
@@ -522,7 +522,7 @@ class TestUtilities(BaseGameTestCase):
                             <h2>hi</h2>
                             <p>lokons</p>
                             <p>rodents</p>
-                            <p><a href="/TeStiNg/encyclopedia/?search=gerbils">gerbils</a></p>
+                            <p><a href="/TeStiNg/guest/encyclopedia/?search=gerbils">gerbils</a></p>
                             <p>ugly</p>
                             <p>TeStiNg</p>
                             <p>hi<br />you</p>
@@ -1645,19 +1645,19 @@ class TestDatamanager(BaseGameTestCase):
         # generation of entry links
         res = _generate_encyclopedia_links("animals lokons lokonsu", self.dm)
         expected = """<a href="@@@?search=animals">animals</a> lokons lokonsu"""
-        expected = expected.replace("@@@", neutral_url_reverse(views.view_encyclopedia))
+        expected = expected.replace("@@@", game_view_url(views.view_encyclopedia, datamanager=self.dm))
         assert res == expected
 
         res = _generate_encyclopedia_links(u"""wu\\gly_é gerbil \n lokongerbil dummy gerb\nil <a href="#">lokon\n</a> lokons""", self.dm)
         print (repr(res))
         expected = u'wu\\gly_é <a href="@@@?search=gerbil">gerbil</a> \n lokongerbil dummy gerb\nil <a href="#">lokon\n</a> lokons'
-        expected = expected.replace("@@@", neutral_url_reverse(views.view_encyclopedia))
+        expected = expected.replace("@@@", game_view_url(views.view_encyclopedia, datamanager=self.dm))
         assert res == expected
 
         res = _generate_encyclopedia_links(u"""i<à hi""", self.dm)
         print (repr(res))
-        expected = u'<a href="/TeStiNg/encyclopedia/?search=i%3C%C3%A0">i&lt;\xe0</a> hi'
-        expected = expected.replace("@@@", neutral_url_reverse(views.view_encyclopedia))
+        expected = u'<a href="/TeStiNg/guest/encyclopedia/?search=i%3C%C3%A0">i&lt;\xe0</a> hi'
+        expected = expected.replace("@@@", game_view_url(views.view_encyclopedia, datamanager=self.dm))
         assert res == expected
 
 
@@ -2018,7 +2018,7 @@ class TestDatamanager(BaseGameTestCase):
         res = _generate_messaging_links(sample, self.dm)
 
         # the full email is well linked, not the incomplete one
-        assert res == u' Hello <a href="/TeStiNg/messages/compose/?recipient=h%C3%A9lloaaxsjjs%40gma%C3%AFl.fr">h\xe9lloaaxsjjs@gma\xefl.fr</a>. please write to h\xe9rb\xe8rt@h\xe9l\xe9nia.'
+        assert res == u' Hello <a href="/TeStiNg/guest/messages/compose/?recipient=h%C3%A9lloaaxsjjs%40gma%C3%AFl.fr">h\xe9lloaaxsjjs@gma\xefl.fr</a>. please write to h\xe9rb\xe8rt@h\xe9l\xe9nia.'
 
 
         expected_res = [{'description': 'Simon Bladstaffulovza - whatever', 'avatar': os.path.normpath('images/avatars/guy1.png'), 'address': u'guy1@pangea.com', 'color': '#0033CC', 'gamemaster_hints': 'This is guy1, actually agent SHA1.'},
@@ -3966,16 +3966,15 @@ class TestHttpRequests(BaseGameTestCase):
         response = self.client.post(login_page, data=dict(secret_username=master_login, secret_password=self.dm.get_global_parameter("master_password")))
 
         self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, ROOT_GAME_URL + "/")
+        self.assertRedirects(response, ROOT_GAME_URL + "/master/")
 
         assert self.client.session[SESSION_TICKET_KEY] == {'game_instance_id': TEST_GAME_INSTANCE_ID, 'impersonation_target': None,
-                                                                'impersonation_writability': None, 'game_username': master_login}
+                                                                'impersonation_writability': False, 'game_username': master_login}
 
         self.assertTrue(self.client.cookies["sessionid"])
 
 
     def _player_auth(self, username):
-
 
         login_page = neutral_url_reverse("pychronia_game.views.login")
         response = self.client.get(login_page) # to set preliminary cookies
@@ -3984,7 +3983,7 @@ class TestHttpRequests(BaseGameTestCase):
         response = self.client.post(login_page, data=dict(secret_username=username, secret_password=self.dm.get_character_properties(username)["password"]))
 
         self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, ROOT_GAME_URL + "/")
+        self.assertRedirects(response, ROOT_GAME_URL + "/" + username + "/")
 
         assert self.client.session[SESSION_TICKET_KEY] == {'game_instance_id': TEST_GAME_INSTANCE_ID, 'impersonation_target': None,
                                                                 'impersonation_writability': None, 'game_username': username}
@@ -4301,7 +4300,9 @@ class TestHttpRequests(BaseGameTestCase):
 
             response = self.client.get(url_base + "?search=gerbil")
             assert response.status_code == 302
-            assert neutral_url_reverse(views.view_encyclopedia, article_id="gerbil_species") in response['Location']
+            assert game_view_url(views.view_encyclopedia,
+                                 datamanager=self.dm,
+                                 article_id="gerbil_species") in response['Location']
 
             if login == "guy1":
                 assert ("gerbil_species" in self.dm.get_character_known_article_ids()) == game_state
