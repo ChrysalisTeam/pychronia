@@ -19,9 +19,7 @@ class MenuEntry:
 
         if view:
             view_kwargs = view_kwargs if view_kwargs else {}
-            view_kwargs.update(dict(game_instance_id=request.datamanager.game_instance_id,
-                                    game_username=request.datamanager.username))
-            self.url = reverse(view, kwargs=view_kwargs)
+            self.url = game_view_url(view, datamanager=request.datamanager, **view_kwargs)
         else:
             self.url = None
 

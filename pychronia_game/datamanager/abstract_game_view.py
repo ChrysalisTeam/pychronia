@@ -24,7 +24,7 @@ from django.shortcuts import redirect
 
 '''
 REDIRECTION TO LOGIN PAGE - not used ATM
-            url = reverse("pychronia_game.views.login", kwargs=dict(game_instance_id=dm.game_instance_id))
+            url = reverse/game_view_url("pychronia_game.views.login", kwargs=dict(game_instance_id=dm.game_instance_id))
             qs = urllib.urlencode(dict(next=request.build_absolute_uri()))
             return HttpResponseRedirect("%s?%s" % (url, qs))
 '''
@@ -36,7 +36,7 @@ def transform_usage_error(caller, self, request, *args, **kwargs):
     if an exception is encountered.
     """
     dm = request.datamanager
-    return_to_home_url = reverse("pychronia_game-homepage", kwargs=dict(game_instance_id=request.datamanager.game_instance_id))
+    return_to_home_url = game_view_url("pychronia_game-homepage", datamanager=dm)
     return_to_home = HttpResponseRedirect(return_to_home_url)
     assert urlresolvers.resolve(return_to_home_url)
     try:

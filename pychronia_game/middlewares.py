@@ -127,7 +127,7 @@ class AuthenticationMiddleware(object):
 
         if url_username and request.datamanager.username != url_username:
             # we redirect to the proper url prefix, so that current "effective username" is well kept during navigation
-            corrected_url = reverse(view_func, kwargs=dict(game_instance_id=request.datamanager.game_instance_id, game_username=url_username))
+            corrected_url = game_view_url(view_func, datamanager=request.datamanager)
             return HttpResponseRedirect(corrected_url)
 
         return None

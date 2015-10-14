@@ -510,9 +510,7 @@ def compose_message(request, template_name='messaging/compose.html'):
                 assert len([message for message in request.datamanager.messaging_data["messages_queued"] if message["id"] == sent_msg_id]) == 1
                 target_view = "pychronia_game.views.all_queued_messages"
 
-        conversations_url = reverse(target_view,
-                                    kwargs=dict(game_instance_id=request.datamanager.game_instance_id,
-                                                game_username=request.datamanager.username,))
+        conversations_url = game_view_url(target_view, datamanager=request.datamanager)
         conversations_url += '?' + urllib.urlencode(dict(message_sent="1"))
         return HttpResponseRedirect(redirect_to=conversations_url)
 

@@ -206,8 +206,10 @@ def hash_url_path(url_path):
     return url_hash
     '''
 
-#def game_view_url(view, datamanager):
-#    return reverse(view kwargs=dict(game_instance_id=self.dm.game_instance_id)
+def game_view_url(view, datamanager, **kwargs):
+    return reverse(view, kwargs=dict(game_instance_id=datamanager.game_instance_id,
+                                     game_username=datamanager.username,
+                                     **kwargs))
 
 
 def game_file_url(url):

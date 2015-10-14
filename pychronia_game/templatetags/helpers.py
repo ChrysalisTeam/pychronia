@@ -156,8 +156,7 @@ def _generate_encyclopedia_links(html_snippet, datamanager, excluded_link=None):
         matched_str = match.group(0)
         assert matched_str
         # detecting here WHICH keyword triggered the match would be possible, but expensive... let's postpone that
-        link = reverse("pychronia_game.views.view_encyclopedia",
-                       kwargs={"game_instance_id": datamanager.game_instance_id})
+        link = game_view_url("pychronia_game.views.view_encyclopedia", datamanager=datamanager)
         link += "?search=%s" % urllib.quote_plus(matched_str.encode("utf8"), safe=b"")
         return dict(href=link)
     regex = autolinker.join_regular_expressions_as_disjunction(keywords_mapping.keys(), as_words=True)
@@ -179,8 +178,7 @@ def _generate_messaging_links(html_snippet, datamanager):
     if __debug__: datamanager.notify_event("GENERATE_MESSAGING_LINKS")
     def email_link_attr_generator(match):
         matched_str = match.group(0)
-        link = reverse("pychronia_game.views.compose_message",
-                       kwargs={"game_instance_id": datamanager.game_instance_id})
+        link = game_view_url("pychronia_game.views.compose_message", datamanager=datamanager)
         link += "?recipient=%s" % urllib.quote_plus(matched_str.encode("utf8"), safe=b"")
         return dict(href=link)
     regex = r"\b[-_\w.]+@\w+\.\w+\b"
@@ -199,7 +197,7 @@ def _generate_site_links(html_snippet, datamanager):
         if "." not in matched_str:
             matched_str = "pychronia_game.views." + matched_str
         try:
-            link = reverse(matched_str, kwargs={"game_instance_id": datamanager.game_instance_id})
+            link = game_view_url(matched_str, datamanager=datamanager)
             return dict(href=link)
         except Exception:
             logging.warning("Error in generate_site_links for match %r", matched_str, exc_info=True)
