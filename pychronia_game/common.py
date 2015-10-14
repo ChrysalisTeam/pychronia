@@ -219,12 +219,13 @@ def game_file_url(url):
     url = url.strip()
     assert url
 
-    abs_prefixes = ["http://", "https://", "/"]
+    abs_prefixes = ["http://", "https://"]  # we do NOT consider that "/my-url/" is absolute, here
     for pref in abs_prefixes:
         if url.startswith(pref):
             return url # URL SHALL NOT BE MODIFIED
 
     rel_path = url.replace("\\", "/") # some external libs use os.path methods to create urls.......
+    rel_path = rel_path.lstrip("/")  # IMPORTANT
     url_hash = hash_url_path(rel_path)
     full_url = config.GAME_FILES_URL + url_hash + "/" + rel_path
 
