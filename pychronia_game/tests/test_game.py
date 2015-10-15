@@ -4281,7 +4281,7 @@ class TestHttpRequests(BaseGameTestCase):
             elif login == "master":
                 self._master_auth()
             else:
-                pass # remain GUEST
+                self._logout()  # get back to GUEST
 
             response = self.client.get(url_base)
             assert response.status_code == 200
@@ -4444,7 +4444,29 @@ class TestHttpRequests(BaseGameTestCase):
         self.assertRedirects(response, expected_url=ROOT_GAME_URL + "/master/")
 
 
+    def ______test_game_username_embeddedd_in_url(self):
+        
+        self._reset_django_db()
+        
+        self._player_auth("guy4")
 
+        response = self.client.get(ROOT_GAME_URL + "/any/", follow=False)
+        assert response.status_code == 200  # no redirection, the site keeps the fake username "any" in navigation
+        html = response.content.decode("utf8")
+        assert "guy4" in html   # no problem with authentication
+        
+        response = self.client.get(ROOT_GAME_URL + "/guy1/", follow=False)
+        self.assertRedirects(response, expected_url=ROOT_GAME_URL + "/guy4/")  # impersonation refused
+        
+        self.dm.propose_friendship("guy1", "guy4")
+        self.dm.propose_friendship("guy4", "guy1")  # sealed!
+
+        response = self.client.get(ROOT_GAME_URL + "/guy1/", follow=False)
+        assert response.status_code == 200  # no redirection
+        html = response.content.decode("utf8")
+        assert "guy4" in html   # impersonation OK
+
+        AAAAAA
 
 class TestGameViewSystem(BaseGameTestCase):
 
