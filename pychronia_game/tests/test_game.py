@@ -4425,6 +4425,26 @@ class TestHttpRequests(BaseGameTestCase):
         assert "clear_saved_content();  // we do cleanup localstorage, since email was sent" in html
 
 
+    def test_game_homepage_without_username(self):
+
+        self._reset_django_db()
+        url = ROOT_GAME_URL + "/"  # homepage without game username in it
+
+        response = self.client.get(url, follow=False)
+        self.assertRedirects(response, expected_url=ROOT_GAME_URL + "/guest/")  # this auto-checks the target URL for us!
+
+        self._player_auth("guy1")
+
+        response = self.client.get(url, follow=False)
+        self.assertRedirects(response, expected_url=ROOT_GAME_URL + "/guy1/")
+
+        self._master_auth()
+
+        response = self.client.get(url, follow=False)
+        self.assertRedirects(response, expected_url=ROOT_GAME_URL + "/master/")
+
+
+
 
 class TestGameViewSystem(BaseGameTestCase):
 

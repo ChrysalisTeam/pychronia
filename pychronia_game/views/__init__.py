@@ -62,6 +62,13 @@ from .admin_views import (admin_dashboard, webradio_management, gamemaster_manua
 #### Here are the views that don't belong to any particular category ####
 
 
+def game_homepage_without_username(request):
+    """
+    Simple redirection when homepage URL lacks the "game_username" part.
+    """
+    username_homepage = game_view_url("pychronia_game-homepage", datamanager=request.datamanager)
+    return HttpResponseRedirect(redirect_to=username_homepage)
+
 
 def serve_game_file(request, hash="", path="", **kwargs):
 
