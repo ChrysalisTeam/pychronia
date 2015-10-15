@@ -469,7 +469,8 @@ class CharacterHandling(BaseDataManager): # TODO REFINE
 
         assert game_data["character_properties"]
 
-        reserved_names = [game_data["global_parameters"][reserved] for reserved in ["master_login", "anonymous_login"]]
+        from pychronia_game.authentication import UNIVERSAL_URL_USERNAME, TEMP_URL_USERNAME  # let's not conflict with these
+        reserved_names = [game_data["global_parameters"][reserved] for reserved in ["master_login", "anonymous_login"]] + [UNIVERSAL_URL_USERNAME, TEMP_URL_USERNAME]
 
         for (name, character) in game_data["character_properties"].items():
 

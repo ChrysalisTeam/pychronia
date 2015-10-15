@@ -23,7 +23,7 @@ from pychronia_game.datamanager import *
 from pychronia_game.datamanager.datamanager_modules import *
 from pychronia_game.authentication import (try_authenticating_with_credentials, try_authenticating_with_session, logout_session,
                                            SESSION_TICKET_KEY_TEMPLATE, IMPERSONATION_TARGET_POST_VARIABLE,
-                                           IMPERSONATION_WRITABILITY_POST_VARIABLE, NEUTRAL_URL_USERNAME)
+                                           IMPERSONATION_WRITABILITY_POST_VARIABLE, UNIVERSAL_URL_USERNAME)
 import pychronia_game.middlewares
 import pychronia_game.views
 from pychronia_game.datamanager.abstract_game_view import AbstractGameView, register_view
@@ -43,7 +43,7 @@ ORIGINAL_CONFIG_INSTALLED_APPS = config.INSTALLED_APPS[:]
 
 
 def neutral_url_reverse(view, **more_kwargs):
-    kwargs = {"game_instance_id": TEST_GAME_INSTANCE_ID, "game_username": NEUTRAL_URL_USERNAME}
+    kwargs = {"game_instance_id": TEST_GAME_INSTANCE_ID, "game_username": UNIVERSAL_URL_USERNAME}
     kwargs.update(more_kwargs)
     return reverse(view, kwargs=kwargs)
 

@@ -118,10 +118,11 @@ class AuthenticationMiddleware(object):
         if not hasattr(request, 'session'):
             raise RuntimeError("The game authentication middleware requires session middleware to be installed. Edit your MIDDLEWARE_CLASSES setting to insert 'django.contrib.sessions.middleware.SessionMiddleware'.")
 
+
         url_username = None
         if view_kwargs.has_key("game_username"):
             url_username = view_kwargs["game_username"]
-            if url_username == authentication.NEUTRAL_URL_USERNAME:
+            if url_username == authentication.UNIVERSAL_URL_USERNAME:
                 url_username = None  # this is used for username-neutral urls, especially in tests
             del view_kwargs["game_username"]  # don't interfere with final view
 
