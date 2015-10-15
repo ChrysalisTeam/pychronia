@@ -3986,7 +3986,7 @@ class TestHttpRequests(BaseGameTestCase):
         #print("-------------->", html)
 
         # if HTTP 200 is received here (with error notifications), note that users like guy4 are DISABLED!
-        self.assertEqual(response.status_code, 302)  
+        self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, ROOT_GAME_URL + "/" + username + "/")
 
         assert self.client.session[SESSION_TICKET_KEY] == {'game_instance_id': TEST_GAME_INSTANCE_ID, 'impersonation_target': None,
@@ -4448,28 +4448,34 @@ class TestHttpRequests(BaseGameTestCase):
         self.assertRedirects(response, expected_url=ROOT_GAME_URL + "/master/")
 
 
-    def test_game_username_embeddedd_in_url(self):
-        
+    def test_game_username_embedded_in_url(self):
+
         self._reset_django_db()
-        
+
         self._player_auth("guy3")
 
-        response = self.client.get(ROOT_GAME_URL + "/any/", follow=False)
+        response = self.client.get(ROOT_GAME_URL + "/anyuser/", follow=False)  # SPECIAL token
         assert response.status_code == 200  # no redirection, the site keeps the fake username "any" in navigation
         html = response.content.decode("utf8")
         assert "CURRENT_USERNAME=guy3" in html  # authentication OK
         assert "CURRENT_REAL_USERNAME=guy3" in html
-        
+
         response = self.client.get(ROOT_GAME_URL + "/guy1/", follow=False)
         self.assertRedirects(response, expected_url=ROOT_GAME_URL + "/guy3/")  # impersonation refused
-        
+
+        response = self.client.get(ROOT_GAME_URL + "/redirect/", follow=False)
+        self.assertRedirects(response, expected_url=ROOT_GAME_URL + "/guy3/")  # standard redirection system
+
+        response = self.client.get(ROOT_GAME_URL + "/badusername/", follow=False)
+        self.assertRedirects(response, expected_url=ROOT_GAME_URL + "/guest/")  # error - unrecognized username leads to ession reset (anti-cheat)
+
+        self._player_auth("guy3")
         self.dm.propose_friendship("guy1", "guy3")
         self.dm.propose_friendship("guy3", "guy1")  # sealed!
-
         response = self.client.get(ROOT_GAME_URL + "/guy1/", follow=False)
         assert response.status_code == 200  # no redirection
         html = response.content.decode("utf8")
-        assert "CURRENT_USERNAME=guy1" in html  # impersonation OK
+        assert "CURRENT_USERNAME=guy1" in html  # NOW impersonation is OK
         assert "CURRENT_REAL_USERNAME=guy3" in html
 
 

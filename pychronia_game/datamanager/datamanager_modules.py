@@ -897,7 +897,7 @@ class PlayerAuthentication(BaseDataManager):
         if game_username and game_username not in _available_logins:
             raise AbnormalUsageError(_("Invalid instance username: '%s'") % game_username)
         if requested_impersonation_target and requested_impersonation_target not in _available_logins:
-            raise AbnormalUsageError(_("Invalid requested impersonation target: %s") % requested_impersonation_target)
+            raise AbnormalUsageError(_("Invalid requested impersonation target: %s") % requested_impersonation_target)  # might be typos when manipulating URLs
 
         is_superuser = False
         if not game_username: # instance-local authentication COMPLETELY HIDES the fact one is a django superuser
