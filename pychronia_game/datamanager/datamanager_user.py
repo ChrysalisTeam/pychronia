@@ -125,14 +125,20 @@ class GameUser(object):
     def add_message(self, message):
         if self._is_user_messaging_possible(context=message):
             messages.success(self.datamanager.request, message) # shared between all game instances...
+        if config.DEBUG:
+            self.datamanager.logger.info('Game user info-notification displayed: "%s"', message)
 
     def add_warning(self, message):
         if self._is_user_messaging_possible(context=message):
             messages.warning(self.datamanager.request, message) # shared between all game instances...
+        if config.DEBUG:
+            self.datamanager.logger.warning('Game user warning-notification displayed: %s"', message)
 
     def add_error(self, message):
         if self._is_user_messaging_possible(context=message):
             messages.error(self.datamanager.request, message) # shared between all game instances...
+        if config.DEBUG:
+            self.datamanager.logger.error('Game user error-notification displayed: %s"', message)
 
     def get_notifications(self):
         """

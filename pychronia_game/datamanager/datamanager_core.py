@@ -84,6 +84,7 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
 
         self.game_instance_id = game_instance_id
 
+        # FIXME TODO - add more info, like current usernames, into logger!!
         self._inner_logger = logging.getLogger("pychronia_game") #FIXME
         self.logger = logging.LoggerAdapter(self._inner_logger, dict(game_instance_id=game_instance_id))
 

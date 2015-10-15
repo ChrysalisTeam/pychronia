@@ -883,7 +883,7 @@ class PlayerAuthentication(BaseDataManager):
             assert game_username  # of course
             requested_impersonation_target = None
             requested_impersonation_writability = False  # for security, we reset that too
-            self.logger.info("-------------> RESET WRITABILITY game_username=%s" % game_username)
+            ###self.logger.info("-------------> RESET WRITABILITY game_username=%s" % game_username)
         else:
             pass # we let submitted requested_impersonation_target continue
 
