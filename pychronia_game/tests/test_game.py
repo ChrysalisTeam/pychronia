@@ -3993,7 +3993,7 @@ class TestHttpRequests(BaseGameTestCase):
 
     def _logout(self):
 
-        login_page = neutral_url_reverse("pychronia_game.views.login")
+        login_page = game_view_url(view, datamanager)("pychronia_game.views.login")
         logout_page = neutral_url_reverse("pychronia_game.views.logout")
         response = self.client.get(logout_page, follow=False)
 
@@ -4319,7 +4319,7 @@ class TestHttpRequests(BaseGameTestCase):
         self._player_auth("guy1")
         self.dm.set_permission("guy1", views.wiretapping_management.get_access_permission_name(), is_present=False)  # else, would override is_game_view_activated()!
 
-        url_home = neutral_url_reverse("pychronia_game-homepage")
+        url_home = neutral_url_reverse("pychronia_game-homepage")  # for ANY game-username
 
         url = neutral_url_reverse(views.wiretapping_management)
 
@@ -4333,7 +4333,7 @@ class TestHttpRequests(BaseGameTestCase):
         # HTML ACCESS DENIED #
         response = self.client.get(url)
         # Nope - no login page anymore - self.assertRedirects(response, expected_url=u"http://testserver/TeStiNg/login/?next=http%3A%2F%2Ftestserver%2FTeStiNg%2Fability%2Fwiretapping_management%2F")
-        self.assertRedirects(response, expected_url=url_home)
+        self.assertRedirects(response, expected_url=neutral_url_reverse("pychronia_game-homepage", game_username="guy1"))  # HOME of guy1!
 
         # ACCESS OK, in ajax or not #
         self.dm.set_permission("guy1", views.wiretapping_management.get_access_permission_name(), is_present=True)
@@ -4362,7 +4362,7 @@ class TestHttpRequests(BaseGameTestCase):
 
         # HTML ACCESS DENIED #
         response = self.client.get(url)
-        self.assertRedirects(response, expected_url=url_home)
+        self.assertRedirects(response, expected_url=neutral_url_reverse("pychronia_game-homepage", game_username="guy1"))
 
 
 
@@ -4383,7 +4383,7 @@ class TestHttpRequests(BaseGameTestCase):
             assert response.status_code == 400 # HttpResponseBadRequest
 
             response = self.client.get(url)
-            self.assertRedirects(response, expected_url=url_home) # redirect with user error message
+            self.assertRedirects(response, expected_url=neutral_url_reverse("pychronia_game-homepage", game_username="guy1")) # redirect with user error message
 
 
             EXCEPTION = random.choice((ValueError, RuntimeError))
