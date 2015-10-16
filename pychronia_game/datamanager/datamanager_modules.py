@@ -917,7 +917,7 @@ class PlayerAuthentication(BaseDataManager):
             if not is_observer and (is_superuser or (game_username and self.is_master(game_username))):
                 pass # OK, writability control authorized
             else:
-                self.logger.critical("Attempt at controlling impersonation writability (%s) by non-privileged player %r", requested_impersonation_writability, game_username)
+                # nope - may happen if wrong url, see above - self.logger.critical("Attempt at controlling impersonation writability (%s) by non-privileged player %r", requested_impersonation_writability, game_username)
                 requested_impersonation_writability = None # we just reset that flag for now, no exception raised
 
         return dict(is_superuser=is_superuser,

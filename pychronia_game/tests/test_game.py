@@ -4485,6 +4485,65 @@ class TestHttpRequests(BaseGameTestCase):
         assert "CURRENT_REAL_USERNAME=guy3" in html
 
 
+
+    def test_http_complex_message_posting(self):
+
+        self._reset_django_db()
+
+        self._set_user(self.dm.master_login)  # for local DM
+        self._master_auth() # for client cookies
+
+        parent_msg_id = self.dm.post_message("guy2@pangea.com",
+                                             recipient_emails=["guy1@pangea.com"],
+                                             subject="PARENT", body="qsdqsd")
+        transferred_msg_id = self.dm.post_message("guy3@pangea.com",
+                                             recipient_emails=["guy2@pangea.com"],
+                                             subject="TRANSFERRED", body="qsdqsd")
+
+        base_parameters = dict(
+                            _ability_form="pychronia_game.views.messaging_views.MessageComposeForm",
+                            attachment="/files/e797ff6b/personal_files/_common_files_/Ninja-cat.mp4",
+                            body="sdfsdfsdfsdf",
+                            delay_h="-1",
+                            mask_recipients="on",
+                            parent_id=str(parent_msg_id),
+                            recipients="emilos.loakim@anthropia.pg",
+                            sender="contact@akaris.pg",
+                            subject="test message complex",
+                            transferred_msg=str(transferred_msg_id),
+                            use_template="mind_opening_instructions_oracle",  # from test fixtures
+                         )
+
+        url = game_view_url("pychronia_game.views.compose_message", datamanager=self.dm)
+
+        parameters = base_parameters.copy()
+        response = self.client.post(url, data=parameters, follow=False)
+        #print("@@@@@@", response.content)
+        assert response.status_code == 302  # redirect
+        self.assertRedirects(response, expected_url=game_view_url("pychronia_game.views.all_dispatched_messages", datamanager=self.dm) + "?message_sent=1")
+
+        parameters = base_parameters.copy()
+        parameters["delay_h"] = "1.2"
+        response = self.client.post(url, data=parameters, follow=False)
+        #print("@@@@@@", response.content)
+        assert response.status_code == 302  # redirect
+        self.assertRedirects(response, expected_url=game_view_url("pychronia_game.views.all_queued_messages", datamanager=self.dm) + "?message_sent=1")
+
+
+        self._set_user("guy2")
+        self._player_auth("guy2")
+        url = game_view_url("pychronia_game.views.compose_message", datamanager=self.dm) # now with player username
+
+        parameters = base_parameters.copy()  # too many parameters for a player, but they'll just be ignored without errors
+        parameters["delay_h"] = "1.2"  # will be ignored too
+        response = self.client.post(url, data=parameters, follow=False)
+        #print("@@@@@@", response.content)
+        assert response.status_code == 302  # redirect
+        self.assertRedirects(response, expected_url=game_view_url("pychronia_game.views.standard_conversations", datamanager=self.dm) + "?message_sent=1")
+
+
+
+
 class TestGameViewSystem(BaseGameTestCase):
 
 
@@ -5073,8 +5132,6 @@ class TestGameViewSystem(BaseGameTestCase):
         assert res.status_code == 200 # access allowed
 
         assert runic_translation.has_user_accessed_view(runic_translation.datamanager)
-
-
 
 
 
