@@ -124,12 +124,12 @@ class AuthenticationMiddleware(object):
             raw_url_game_username = view_kwargs["game_username"]
             del view_kwargs["game_username"]  # don't interfere with final view
 
-
+        url_game_username = None
         if raw_url_game_username and raw_url_game_username not in (authentication.UNIVERSAL_URL_USERNAME, authentication.TEMP_URL_USERNAME):
-            # about every request will go through that system, when we use username-including URLs
-            request.POST.setdefault(authentication.IMPERSONATION_TARGET_POST_VARIABLE, raw_url_game_username)  # only if NOT ALREADY SET
+            url_game_username = raw_url_game_username  # WILL be transmitted for potential impersonation
 
-        authentication.try_authenticating_with_session(request)
+        authentication.try_authenticating_with_session(request, url_game_username=url_game_username)
+        del url_game_username
 
         if raw_url_game_username and raw_url_game_username not in (request.datamanager.username, authentication.UNIVERSAL_URL_USERNAME):
             # we redirect to the proper url prefix, so that current "effective username" is well kept during navigation (but not for UNIVERSAL_URL_USERNAME)

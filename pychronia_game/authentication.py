@@ -101,7 +101,7 @@ def compute_enforced_login_token(game_instance_id, login, is_observer=False):
     
 
 
-def try_authenticating_with_session(request):
+def try_authenticating_with_session(request, url_game_username=None):
     """
     This function lets exceptions flow...
     """
@@ -131,7 +131,7 @@ def try_authenticating_with_session(request):
 
     try:
         res = datamanager.authenticate_with_session_data(session_ticket=session_ticket, # may be None
-                                                           requested_impersonation_target=requested_impersonation_target,
+                                                           requested_impersonation_target=requested_impersonation_target or url_game_username,  # priority to POST data
                                                            requested_impersonation_writability=requested_impersonation_writability,
                                                            django_user=request.user) # can be anonymous
         #print("NEW AUTHENTICATION DATA IN SESSION", res)
