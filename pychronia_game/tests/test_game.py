@@ -4466,6 +4466,12 @@ class TestHttpRequests(BaseGameTestCase):
         response = self.client.get(ROOT_GAME_URL + "/redirect/", follow=False)
         self.assertRedirects(response, expected_url=ROOT_GAME_URL + "/guy3/")  # standard redirection system
 
+        msg_id = self.dm.post_message("guy2@pangea.com",
+                                         recipient_emails=["guy1@pangea.com"],
+                                         subject="subj22323", body="qsdqsd")
+        response = self.client.get(ROOT_GAME_URL + "/redirect/messages/view_single_message/%s/" % msg_id, follow=False)
+        self.assertRedirects(response, expected_url=ROOT_GAME_URL + "/guy3/messages/view_single_message/%s/" % msg_id)  # works also with url-keywords
+
         response = self.client.get(ROOT_GAME_URL + "/badusername/", follow=False)
         self.assertRedirects(response, expected_url=ROOT_GAME_URL + "/guest/")  # error - unrecognized username leads to ession reset (anti-cheat)
 

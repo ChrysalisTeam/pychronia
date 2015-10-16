@@ -133,7 +133,10 @@ class AuthenticationMiddleware(object):
 
         if raw_url_game_username and raw_url_game_username not in (request.datamanager.username, authentication.UNIVERSAL_URL_USERNAME):
             # we redirect to the proper url prefix, so that current "effective username" is well kept during navigation (but not for UNIVERSAL_URL_USERNAME)
-            corrected_url = game_view_url(view_func, datamanager=request.datamanager)
+            new_kwargs = view_kwargs.copy()  # additional URL parts like "msg_id"
+            new_kwargs["game_instance_id"] = request.datamanager.game_instance_id
+            new_kwargs["game_username"] = request.datamanager.username  # important
+            corrected_url = reverse(view_func, args=view_args, kwargs=new_kwargs)
             return HttpResponseRedirect(corrected_url)
 
         return None
