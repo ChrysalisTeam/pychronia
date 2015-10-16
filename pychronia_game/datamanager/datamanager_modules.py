@@ -877,20 +877,24 @@ class PlayerAuthentication(BaseDataManager):
         is_observer = session_ticket.get("is_observer", False)
 
         # first, we compute the impersonation we REALLY want #
+        force_reset_writability = False
         if requested_impersonation_target is None: # means "use legacy one"
             requested_impersonation_target = session_ticket.get("impersonation_target", None)
         elif (requested_impersonation_target in ("",  # special case "delete current impersonation target"
                                                  game_username)):  # means "just stay as real authenticated user"
             assert game_username  # of course
             requested_impersonation_target = None
-            requested_impersonation_writability = False  # for security, we reset that too
+            force_reset_writability = True  # for security, we reset that too
             ###self.logger.info("-------------> RESET WRITABILITY game_username=%s" % game_username)
         else:
             pass # we let submitted requested_impersonation_target continue
 
-        requested_impersonation_writability = (requested_impersonation_writability
-                                               if requested_impersonation_writability is not None
-                                               else session_ticket.get("impersonation_writability", None))
+        if force_reset_writability:
+            requested_impersonation_writability = None
+        else:
+            requested_impersonation_writability = (requested_impersonation_writability
+                                                   if requested_impersonation_writability is not None
+                                                   else session_ticket.get("impersonation_writability", None))
 
         # we reset session if session/request data is abnormal
         _available_logins = self.get_available_logins()
@@ -917,7 +921,7 @@ class PlayerAuthentication(BaseDataManager):
             if not is_observer and (is_superuser or (game_username and self.is_master(game_username))):
                 pass # OK, writability control authorized
             else:
-                # nope - may happen if wrong url, see above - self.logger.critical("Attempt at controlling impersonation writability (%s) by non-privileged player %r", requested_impersonation_writability, game_username)
+                self.logger.critical("Attempt at controlling impersonation writability (%s) by non-privileged player %r", requested_impersonation_writability, game_username)
                 requested_impersonation_writability = None # we just reset that flag for now, no exception raised
 
         return dict(is_superuser=is_superuser,

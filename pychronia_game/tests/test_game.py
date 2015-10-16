@@ -3338,7 +3338,7 @@ class TestDatamanager(BaseGameTestCase):
                                              django_user=None) # no django staff user here
             assert session_ticket == {'game_instance_id': TEST_GAME_INSTANCE_ID,
                                       'impersonation_target': None,
-                                      'impersonation_writability': False,  # RESET
+                                      'impersonation_writability': None,  # RESET
                                       'game_username': master_login}
             assert self.dm.user.username == master_login
             assert self.dm.user.has_write_access # always if not impersonation
@@ -3358,7 +3358,7 @@ class TestDatamanager(BaseGameTestCase):
                                                      requested_impersonation_writability=writability,
                                                      django_user=django_user)
             assert session_ticket == {'game_instance_id': TEST_GAME_INSTANCE_ID, 'impersonation_target': anonymous_login,
-                                      'impersonation_writability': writability if writability is not None else False,  # if None, we remember previous value
+                                      'impersonation_writability': writability if writability is not None else None,  # if None, we remember previous value
                                       'game_username': master_login}
 
             assert self.dm.user.username == anonymous_login
@@ -3379,7 +3379,7 @@ class TestDatamanager(BaseGameTestCase):
                                              django_user=django_user)
             assert session_ticket == {'game_instance_id': TEST_GAME_INSTANCE_ID,
                                       'impersonation_target': None,
-                                      'impersonation_writability': False, # RESET
+                                      'impersonation_writability': None, # RESET
                                       'game_username': master_login}
 
             assert self.dm.user.username == master_login
@@ -3969,7 +3969,7 @@ class TestHttpRequests(BaseGameTestCase):
         self.assertRedirects(response, ROOT_GAME_URL + "/master/")
 
         assert self.client.session[SESSION_TICKET_KEY] == {'game_instance_id': TEST_GAME_INSTANCE_ID, 'impersonation_target': None,
-                                                                'impersonation_writability': False, 'game_username': master_login}
+                                                                'impersonation_writability': None, 'game_username': master_login}
 
         self.assertTrue(self.client.cookies["sessionid"])
 
