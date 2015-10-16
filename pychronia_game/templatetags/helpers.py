@@ -65,19 +65,28 @@ def random_id():
 @register.tag(name="game_view_url")
 def game_view_url_tag(parser, token):
     """
-    Only works if a "game_instance_id" template variable is available (use request processors for that).
+    Only works if a "game_instance_id" and "game_username" template variables are available (use request processors for that).
     """
     #print ("PARSING IN GAMLEURL", token.contents, "\n")
+    redirector = False
+    content = token.contents
+
+    if " redirector" in content:
+        redirector = True
+        content = content.replace(" redirector", "")
+
     sep = " as "
-    parts = token.contents.split(sep) # beware of alternate form of url tag
+    parts = content.rsplit(sep, 1) # beware of alternate form of url tag
+    from pychronia_game.authentication import TEMP_URL_USERNAME  # FIXME - move that to a better place
+    new_content = parts[0] + " game_instance_id=game_instance_id game_username=%s" % ("game_username" if not redirector else "'%s'" % TEMP_URL_USERNAME)
     if len(parts) > 1:
-        new_content = " as ".join(parts[:-1]) + " game_instance_id=game_instance_id game_username=game_username" + sep + parts[-1]
-    else:
-        new_content = parts[0] + " game_instance_id=game_instance_id game_username=game_username"
+        assert len(parts) == 2
+        new_content += sep + parts[1]
 
     token.contents = new_content # we thus injected template vars "game instance id" and "game username"
     url_node = default_url_tag(parser, token)
     return url_node
+
 
 @register.simple_tag(takes_context=True, name="game_file_url")
 def game_file_url_tag(context, a="", b="", c="", d="", e="", f="", varname=None):

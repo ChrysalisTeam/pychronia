@@ -46,7 +46,7 @@
                 {% endif %}
 
                 {% if message.id %}
-                    {% assign name="msg_link" %}{% game_view_url "pychronia_game.views.view_single_message" msg_id=message.id %}{% endassign %}
+                    {% assign name="msg_link" %}{% game_view_url "pychronia_game.views.view_single_message" msg_id=message.id redirector %}{% endassign %}
                     {% usekwacro shareable_link_font msg_link %}
                 {% endif %}
 
