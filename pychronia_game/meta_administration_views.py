@@ -167,7 +167,7 @@ def activate_instance(request):
         session_token_display = urlencode({authentication.ENFORCED_SESSION_TICKET_NAME: authentication_token})
 
         import pychronia_game.views
-        target_url = settings.SITE_DOMAIN + game_view_url(pychronia_game.views.homepage, datamanager=request.datamanager)
+        target_url = settings.SITE_DOMAIN + reverse(pychronia_game.views.homepage, kwargs=dict(game_instance_id=game_instance_id, game_username=master_login))
         target_url += "?" + session_token_display
 
         content = _("In case you don't get properly redirected, please copy this link into our URL bar: %(target_url)s") % SDICT(target_url=target_url)

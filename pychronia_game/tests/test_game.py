@@ -4454,6 +4454,9 @@ class TestHttpRequests(BaseGameTestCase):
 
         self._player_auth("guy3")
 
+        weird_url = reverse(views.login, kwargs=dict(game_instance_id="moN_in-stance.&moi", game_username="loyd.-george_s"))
+        assert weird_url == "/moN_in-stance.%26moi/loyd.-george_s/login/"  # special characters well accepted
+
         response = self.client.get(ROOT_GAME_URL + "/anyuser/", follow=False)  # SPECIAL token
         assert response.status_code == 200  # no redirection, the site keeps the fake username "any" in navigation
         html = response.content.decode("utf8")

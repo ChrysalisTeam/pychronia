@@ -29,6 +29,8 @@ GAMEMASTER_HINTS in:
 FEATURES
 ------------
 
+BUG OBSERVER MODE", aucune" impersonation fails
+
 is use_template well protected against users ??
 
 # FIXME TODO - add more info, like current usernames, into logger!!
