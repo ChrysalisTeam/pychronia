@@ -234,7 +234,7 @@ def manage_instances(request):
                 login = request.POST["login"].strip()
                 is_observer = bool(request.POST.get("is_observer"))
                 authentication_token = authentication.compute_enforced_login_token(game_instance_id=game_instance_id, login=login, is_observer=is_observer)
-                messages.add_message(request, messages.INFO, _(u"Auto-connection token for 'instance=%(instance)s, login=%(login)s and is_observer=%(is_observer)s' is displayed below") %
+                messages.add_message(request, messages.INFO, _(u"Auto-connection token for instance=%(game_instance_id)s, login=%(login)s and is_observer=%(is_observer)s is displayed below") %
                                                                SDICT(game_instance_id=game_instance_id, login=login, is_observer=is_observer))
                 session_token_display = urlencode({authentication.ENFORCED_SESSION_TICKET_NAME: authentication_token})
             else:

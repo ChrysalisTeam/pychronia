@@ -30,6 +30,7 @@ FEATURES
 ------------
 
 BUG OBSERVER MODE", aucune" impersonation fails
+-> add test for "" string in requested_impersonation and backed url
 
 is use_template well protected against users ??
 

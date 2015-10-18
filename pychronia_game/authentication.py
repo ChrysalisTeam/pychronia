@@ -129,9 +129,12 @@ def try_authenticating_with_session(request, url_game_username=None):
     else:
         requested_impersonation_target = requested_impersonation_writability = None
 
+    # priority to POST data, but ebware of special (requested_impersonation_target=="") case
+    final_requested_impersonation_target = requested_impersonation_target if requested_impersonation_target is not None else url_game_username
+    
     try:
         res = datamanager.authenticate_with_session_data(session_ticket=session_ticket, # may be None
-                                                           requested_impersonation_target=requested_impersonation_target or url_game_username,  # priority to POST data
+                                                           requested_impersonation_target=final_requested_impersonation_target,
                                                            requested_impersonation_writability=requested_impersonation_writability,
                                                            django_user=request.user) # can be anonymous
         #print("NEW AUTHENTICATION DATA IN SESSION", res)
