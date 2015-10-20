@@ -481,7 +481,7 @@ def compose_message(request, template_name='messaging/compose.html'):
                 transferred_msg = form.cleaned_data["transferred_msg"]
 
                 parent_id = form.cleaned_data.get("parent_id", None)
-                use_template = form.cleaned_data.get("use_template", None)
+                use_template = form.cleaned_data.get("use_template", None)  # standard players might have it one day
 
                 # sender_email and one of the recipient_emails can be the same email, we don't care !
                 sent_msg_id = request.datamanager.post_message(sender_email, recipient_emails, subject, body,

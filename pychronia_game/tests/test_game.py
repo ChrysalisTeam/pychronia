@@ -3031,6 +3031,17 @@ class TestDatamanager(BaseGameTestCase):
         assert not request.datamanager.user.has_write_access # NO write, especially for impersonated username
 
 
+        request = self.factory.post(home_url, data={request_var: "",  # quitting authenticated mode
+                                                    IMPERSONATION_TARGET_POST_VARIABLE: "guy1",
+                                                    IMPERSONATION_WRITABILITY_POST_VARIABLE: True})
+        request.datamanager = self.dm
+        try_authenticating_with_session(request)
+        assert request.datamanager.user.username == "guest" # impersonation
+        assert request.datamanager.user.real_username == "guest"
+        assert not request.datamanager.user.is_observer
+        assert request.datamanager.user.has_write_access
+
+
 
     @for_core_module(PlayerAuthentication)
     def test_observer_authentication(self):
@@ -4486,6 +4497,23 @@ class TestHttpRequests(BaseGameTestCase):
         html = response.content.decode("utf8")
         assert "CURRENT_USERNAME=guy1" in html  # NOW impersonation is OK
         assert "CURRENT_REAL_USERNAME=guy3" in html
+
+        data = {IMPERSONATION_TARGET_POST_VARIABLE: "", IMPERSONATION_WRITABILITY_POST_VARIABLE: random.choice(("true", "false", "", "None"))}
+        response = self.client.post(ROOT_GAME_URL + "/guy1/", data=data, follow=False)  # we target impersonated URL
+        assert response.status_code == 302  # logged out
+        self.assertRedirects(response, expected_url=ROOT_GAME_URL + "/guy3/")
+
+        # let's test concurrent redirections, to check that nothing breaks
+        self._player_auth("guy3")
+        data = None
+        if random.choice((True, False)):  # whatever this data
+            data = {IMPERSONATION_TARGET_POST_VARIABLE: "", IMPERSONATION_WRITABILITY_POST_VARIABLE: random.choice(("true", "false", "", "None"))}
+        response = self.client.post(ROOT_GAME_URL + "/guy2/logout/", data=data, follow=False)  # forbidden url
+        assert response.status_code == 302  # game_username was corrected in URL
+        self.assertRedirects(response, expected_url=ROOT_GAME_URL + "/guy3/logout/", fetch_redirect_response=False)
+        response = self.client.post(ROOT_GAME_URL + "/guy3/logout/", data=data, follow=False)  # forbidden url
+        assert response.status_code == 302  # NOW we really logout
+        self.assertRedirects(response, expected_url=ROOT_GAME_URL + "/guest/login/", fetch_redirect_response=True)
 
 
 
