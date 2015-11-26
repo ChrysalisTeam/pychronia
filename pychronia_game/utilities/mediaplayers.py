@@ -168,6 +168,7 @@ def generate_audio_player(files, titles=None, artists=None, autostart=False):
         "titles": ",".join(titles) if titles else "",
         "artists": ",".join(artists) if artists else "",
         "autostart": "yes" if autostart else "no",
+        "max-width": "100%"
     }
 
     return _mp3_template % dict(options=json.dumps(options), unikid=unikid)
@@ -200,7 +201,7 @@ def generate_image_viewer(imageurl, width=300, height=300, preset=None, align=""
                     logging.critical("generate_image_viewer preset selection failed for %s/%s", imageurl, preset, exc_info=True)
                     pass
             if not thumb:  #we fallback to default options
-                options = { 
+                options = {
                            'autocrop': False, # remove useless whitespace
                            'crop': False, # no cropping at all,thumb must fit in both W and H
                            'size': (width, height), # one of these can be 0
