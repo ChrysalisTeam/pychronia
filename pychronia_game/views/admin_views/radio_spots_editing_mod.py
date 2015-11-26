@@ -2,6 +2,7 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import time
 from django import forms
 
 from pychronia_game.common import *
@@ -80,23 +81,31 @@ class RadioSpotsEditing(AbstractDataTableManagement):
         text = text.replace("\n", "").replace("\r", "") # TTS engine will stop sound mixing when a newline is encountered, so we remove them all
 
         if not config.ACAPELA_CLIENT_ARGS:
-            raise RuntimeError("Text-to-speech engine is not configured")
+            if not config.DEBUG:
+                raise RuntimeError("Text-to-speech engine is not configured")
+            else:
+                self.logger.warning("Generating DUMMY mp3 link for voice=%r and text=%r", voice, text)
+                sound_url = "http://dummy_test_url_%d.mp3" % int(time.time())
 
-        tts = AcapelaClient(**config.ACAPELA_CLIENT_ARGS)
+        else:
 
-        self.logger.info("Generating TTS sample for voice=%r and text=%r", voice, text)
+            tts = AcapelaClient(**config.ACAPELA_CLIENT_ARGS)
 
-        try:
-            #res = {'alt_sound_size': None, 'sound_size': u'6799', 'sound_time': u'805.75', 'sound_id': u'289920127_cffb8f40d9f30', 'alt_sound_url': None, 'sound_url': u'http://vaas.acapela-group.com/MESSAGES/009086065076095086065065083/EVAL_4775608/sounds/289920127_cffb8f40d9f30.mp3', 'warning': u'', 'get_count': 0}
-            res = tts.create_sample(voice=voice, text=text, response_type="INFO")
-        except EnvironmentError, e:
-            self.logger.critical("TTS generation failed for %s/%r: %r", voice, text, e)
-            raise # OK for AJAX request
+            self.logger.info("Generating TTS sample for voice=%r and text=%r", voice, text)
 
-        self.logger.info("TTS generation successful: %r", res)
+            try:
+                #res = {'alt_sound_size': None, 'sound_size': u'6799', 'sound_time': u'805.75', 'sound_id': u'289920127_cffb8f40d9f30', 'alt_sound_url': None, 'sound_url': u'http://vaas.acapela-group.com/MESSAGES/009086065076095086065065083/EVAL_4775608/sounds/289920127_cffb8f40d9f30.mp3', 'warning': u'', 'get_count': 0}
+                res = tts.create_sample(voice=voice, text=text, response_type="INFO")
+            except EnvironmentError, e:
+                self.logger.critical("TTS generation failed for %s/%r: %r", voice, text, e)
+                raise # OK for AJAX request
 
-        html_player = mediaplayers.build_proper_viewer(res["sound_url"], autostart=True)
+            self.logger.info("TTS generation successful: %r", res)
 
-        return dict(sound_url=res["sound_url"],
+            sound_url = res["sound_url"]
+
+        html_player = mediaplayers.build_proper_viewer(sound_url, autostart=True)
+
+        return dict(sound_url=sound_url,
                     mediaplayer=html_player)
 
