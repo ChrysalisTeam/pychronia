@@ -14,15 +14,18 @@
     function generate_tts_sample(target_id) {
         var text = $('#id_'+target_id+'_text').val().trim();
         if (text){
-            $('#id_'+target_id+'_sound_preview').html("{{ _("Generating sound...")|escape|escapejs }}");
+            $('#id_'+target_id+'_sound_preview').html("<div style=\"margin: 20px auto;\">{{ _("Generating sound...")|escape|escapejs }}</div>");
             $.post("",
                    { _action_: "generate_tts_sample", text: text},
                    function(answer){
                        $('#id_'+target_id+'_sound_preview').html(answer.mediaplayer);
                        $('#id_'+target_id+'_url_or_file').val(answer.sound_url);
+                       $('#id_'+target_id+'_download_link').attr('href', answer.sound_url);
                    },
                    'json'
-                 );
+                 ).error(function(){
+                     $('#id_'+target_id+'_sound_preview').html("");
+                 });
         } else {
             $.jnotify("{{ _("Text field must be filled.")|escapejs }}", "warning");
         }
@@ -66,6 +69,11 @@
         <a name="entry-{{ identifier|slugify }}"><h2>{{ identifier|default:_("NEW ENTRY") }}</h2></a>
         <form id="update_form" action="#entry-{{ identifier|slugify }}" method="post" autocomplete="off">
             {{ form.as_p }}
+
+            {% if form.url_or_file.value %}
+                <a id="id_{{ identifier|slugify }}_download_link" href="{{form.url_or_file.value}}" style="padding-left: 20px; float: left; line-height: 56px">[{% trans "LINK" %}]</a>
+            {% endif %}
+
             <div id="id_{{ identifier|slugify }}_sound_preview" align="center">
                 {% if form.url_or_file.value %}
                     {{ form.url_or_file.value|mediaplayer }}
