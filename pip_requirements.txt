@@ -53,6 +53,11 @@ django-zodb==0.3dev
 
 easy-thumbnails==2.2
 
+# for rst->pdf builders
+jinja2==2.8
+jinja-macro-tags==0.1
+
+
 odict==1.5.1
 
 # for relstorage mainly
