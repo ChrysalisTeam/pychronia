@@ -3404,6 +3404,21 @@ class TestDatamanager(BaseGameTestCase):
             assert not self.dm.user.has_notifications() # IMPORTANT - no error message
 
 
+            # SPECIAL CASE - ensure that empty session "game_username" is not a problem when resetting impersonation
+            _special_session_ticket = {'game_instance_id': TEST_GAME_INSTANCE_ID,
+                                     'impersonation_target': random.choice((player_login, anonymous_login, None)),
+                                     'is_superuser': False,
+                                     'impersonation_writability': None,
+                                     'game_username': None,
+                                     'is_observer': random.choice((True, False))}
+            self.dm.authenticate_with_session_data(_special_session_ticket,
+                                                 requested_impersonation_target="",  # THIS sometimes crashed
+                                                 requested_impersonation_writability=random.choice((True, False, None)),
+                                                 django_user=django_user)
+            assert not _special_session_ticket["impersonation_target"]
+            assert not _special_session_ticket["impersonation_writability"]
+
+
 
     @for_core_module(PlayerAuthentication)
     def test_impersonation_by_character(self):
