@@ -111,6 +111,7 @@ def try_authenticating_with_session(request, url_game_username=None):
 
     potential_session_ticket = _lookup_enforced_session_or_none(request)
     if potential_session_ticket:
+        logging.warning("Using ENFORCED session ticket: %r", potential_session_ticket)
         session_ticket = potential_session_ticket
     del potential_session_ticket
 

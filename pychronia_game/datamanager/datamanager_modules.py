@@ -871,6 +871,7 @@ class PlayerAuthentication(BaseDataManager):
         assert session_ticket.get("game_instance_id") == self.game_instance_id
         assert requested_impersonation_writability in (None, True, False) # forced by the way we extract it from request data
 
+        # BEWARE - game_username may be None, it's same as "anonymous" actually
         game_username = session_ticket.get("game_username", None) # instance-local user set via login page
         assert game_username != self.anonymous_login # would be absurd, we store "None" for this
 
@@ -882,10 +883,9 @@ class PlayerAuthentication(BaseDataManager):
             requested_impersonation_target = session_ticket.get("impersonation_target", None)
         elif (requested_impersonation_target in ("",  # special case "delete current impersonation target"
                                                  game_username)):  # means "just stay as real authenticated user"
-            assert game_username  # of course
+            # game_username *might* be None, we don't care
             requested_impersonation_target = None
             force_reset_writability = True  # for security, we reset that too
-            ###self.logger.info("-------------> RESET WRITABILITY game_username=%s" % game_username)
         else:
             pass # we let submitted requested_impersonation_target continue
 
@@ -898,13 +898,13 @@ class PlayerAuthentication(BaseDataManager):
 
         # we reset session if session/request data is abnormal
         _available_logins = self.get_available_logins()
-        if game_username and game_username not in _available_logins:
+        if game_username is not None and game_username not in _available_logins:
             raise AbnormalUsageError(_("Invalid instance username: '%s'") % game_username)
         if requested_impersonation_target and requested_impersonation_target not in _available_logins:
             raise AbnormalUsageError(_("Invalid requested impersonation target: %s") % requested_impersonation_target)  # might be typos when manipulating URLs
 
         is_superuser = False
-        if not game_username: # instance-local authentication COMPLETELY HIDES the fact one is a django superuser
+        if not game_username: # instance-local authentication COMPLETELY HIDES the fact that one is a django superuser
             if django_user and django_user.is_active and (django_user.is_staff or django_user.is_superuser):
                 is_superuser = True
 

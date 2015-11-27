@@ -37,9 +37,9 @@ class GameUser(object):
             username = _game_anonymous_login # better than None, to display in templates
 
         if username not in _available_logins:
-            raise AbnormalUsageError(_("Username %s is unknown") % username)
+            raise AbnormalUsageError(_("Username '%s' is unknown") % username)
         if impersonation_target and impersonation_target not in _available_logins:
-            raise AbnormalUsageError(_("Impersonation target %s is unknown") % impersonation_target)
+            raise AbnormalUsageError(_("Impersonation target '%s' is unknown") % impersonation_target)
 
         assert not impersonation_target or is_superuser or datamanager.can_impersonate(username, impersonation_target)
         assert not (is_superuser and username != _game_anonymous_login) # game authentication "hides" the superuser status
