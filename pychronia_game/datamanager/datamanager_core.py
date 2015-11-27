@@ -84,9 +84,23 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
 
         self.game_instance_id = game_instance_id
 
-        # FIXME TODO - add more info, like current usernames, into logger!!
+        # workaround to have DYNAMIC extra values in logger
+        datamanager_instance = self
+        class DynamicDatamanagerLoggerAdapter(dict):
+            def __getitem__(self, name):
+                try:
+                    return getattr(datamanager_instance.user, name)
+                except AttributeError:
+                    try:
+                        return getattr(datamanager_instance, name)
+                    except AttributeError as e:
+                        raise KeyError("DynamicDatamanagerLoggerAdapter couldn't find DM attribute: " + unicode(e))
+            def __iter__(self):
+                return iter(["game_instance_id", "real_username", "username", "is_observer"])
+        dm_logger_adapter = DynamicDatamanagerLoggerAdapter()
+
         self._inner_logger = logging.getLogger("pychronia_game") #FIXME
-        self.logger = logging.LoggerAdapter(self._inner_logger, dict(game_instance_id=game_instance_id))
+        self.logger = logging.LoggerAdapter(self._inner_logger, dm_logger_adapter)
 
         self._request = weakref.ref(request) if request else None # if None, user notifications won't work
 
@@ -158,7 +172,7 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
             self._load_initial_data(skip_randomizations=skip_randomizations) # traversal of each core module
         else:
             assert skip_randomizations == True
-            
+
         # NOW only we normalize and check the object tree
         # normal python types are transformed to ZODB-persistent types
         for key in self.data.keys():

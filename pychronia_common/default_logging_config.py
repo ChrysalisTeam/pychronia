@@ -10,7 +10,7 @@ pychronia_logging_config = {
             'format': '%(asctime)s [%(levelname)s] %(name)s: %(message)s'
         },
         'game_instance': {
-            'format': '%(asctime)s [%(levelname)s] %(name)s[%(game_instance_id)s]: %(message)s'
+            'format': '%(asctime)s [%(levelname)s] %(name)s[%(game_instance_id)s:%(real_username)s]: %(message)s'
         },
     },
     'handlers': {
