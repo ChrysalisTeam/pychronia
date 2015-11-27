@@ -29,17 +29,9 @@ GAMEMASTER_HINTS in:
 FEATURES
 ------------
 
-BUG OBSERVER MODE", aucune" impersonation fails
--> add test for "" string in requested_impersonation and backed url
-
-is use_template well protected against users ??
-
-# FIXME TODO - add more info, like current usernames, into logger!!
-self._inner_logger = logging.getLogger("pychronia_game") #FIXME
-self.logger = logging.LoggerAdapter(self._inner_logger, dict(game_instance_id=game_instance_id))
+FIX medias videos on website, for video / firefox
 
 
-- /DEMO/guy1/... URLS for transparent per-tab sessions (nouveau system d'impersonation)
 
 
 - enlever la homepage "enchères" inutile, amener de suite sur les persos ??
@@ -257,6 +249,10 @@ NEEDS COSMETICS
 TASKS DONE
 ---------------
 
+- /DEMO/guy1/... URLS for transparent per-tab sessions (nouveau system d'impersonation) - DONE
+- enrich DM logger with authentication data - DONE
+- is use_template well protected against users - yes, only added to MessageComposeForm for MASTER
+- BUG OBSERVER MODE "aucune" impersonation fails -> add test for "" string in requested_impersonation and backed url - OK DONE
 - TWEAK image styles and thumbs, responsive, REVIEW thumbs and image formats, for mobile too - somehow DONE
 - finish embed_image directive -> DONE with "align" parameter
 - URL Webradio Publique -> dire quelle frequence, dans admin info page - DONE
