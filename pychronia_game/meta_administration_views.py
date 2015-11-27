@@ -157,8 +157,6 @@ def activate_instance(request):
             if (metadata["creator_login"] != creator_login or metadata["creator_email"] != creator_email):
                 raise ValueError("Creator data doesn't match for game instance %(game_instance_id)s" % SDICT(game_instance_id=game_instance_id))
 
-            pass # TODO FIXME add check on existing metadata.creator_login
-
         # we retrieve the datamanager whatever its possible maintenance status
         dm = datamanager_administrator.retrieve_game_instance(game_instance_id, request=None, metadata_checker=lambda *args, **kwargs: True)
         master_login = dm.get_global_parameter("master_login")

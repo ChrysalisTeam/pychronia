@@ -42,8 +42,11 @@ class ZodbTransactionMiddleware(object):
             del view_kwargs["game_instance_id"]
 
             try:
-                # by default, checks that game is not in maintenance
-                request.datamanager = retrieve_game_instance(game_instance_id=game_instance_id, request=request)
+                update_timestamp = (request.method == "POST")  # we consider that other accesses are not meaningful
+                # by default, this checks that game is not in maintenance
+                request.datamanager = retrieve_game_instance(game_instance_id=game_instance_id,
+                                                             request=request,
+                                                             update_timestamp=update_timestamp)
             except GameMaintenanceError, e:
                 # TODO - better handling of 503 code, with dedicated template #
                 return HttpResponse(content=unicode(e) + "<br/>" + _("Please come back later."),

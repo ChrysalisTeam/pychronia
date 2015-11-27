@@ -635,6 +635,11 @@ class TestMetaAdministration(unittest.TestCase): # no django setup required ATM
         assert res["status"] == GAME_STATUSES.active == "active"
         assert res["maintenance_until"] is None
 
+        initial_last_access_time = res["last_access_time"]
+        assert initial_last_access_time  # immediately set
+
+        dm = retrieve_game_instance(game_instance_id, update_timestamp=False)
+
         time.sleep(1)
 
         dm = retrieve_game_instance(game_instance_id)
@@ -645,7 +650,18 @@ class TestMetaAdministration(unittest.TestCase): # no django setup required ATM
 
         with pytest.raises(UsageError):
             retrieve_game_instance("sqdqsd")
+
         dm = retrieve_game_instance(game_instance_id)
+
+        time.sleep(1)
+
+        res = get_all_instances_metadata()[0]
+        assert res["last_access_time"] == initial_last_access_time  # never updated so far
+
+        dm = retrieve_game_instance(game_instance_id, update_timestamp=True)
+
+        res = get_all_instances_metadata()[0]
+        assert res["last_access_time"] > initial_last_access_time  # UPDATED
 
         time.sleep(1)
 
@@ -673,7 +689,7 @@ class TestMetaAdministration(unittest.TestCase): # no django setup required ATM
         res = all_res[0]
         assert res["creator_login"] == "ze_creator_test"
         assert res["creation_time"] < res["last_access_time"] < res["last_status_change_time"]
-        assert res["accesses_count"] == 4
+        assert res["accesses_count"] == 6
         assert res["status"] != GAME_STATUSES.active
         assert res["maintenance_until"] is not None # was left as is
 
@@ -683,7 +699,6 @@ class TestMetaAdministration(unittest.TestCase): # no django setup required ATM
         assert not get_all_instances_metadata()
         with pytest.raises(UsageError):
             retrieve_game_instance(game_instance_id)
-
 
 
     def test_meta_admin_utilities(self):
