@@ -87,16 +87,19 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
         # workaround to have DYNAMIC extra values in logger
         datamanager_instance = self
         class DynamicDatamanagerLoggerAdapter(dict):
+            EXTRA_FIELDS = ["game_instance_id", "real_username", "username", "is_observer"]
             def __getitem__(self, name):
+                if name not in self.EXTRA_FIELDS:
+                    raise KeyError("DynamicDatamanagerLoggerAdapter doesn't support DM attribute %s" % name)
                 try:
                     return getattr(datamanager_instance.user, name)
                 except AttributeError:
                     try:
                         return getattr(datamanager_instance, name)
                     except AttributeError as e:
-                        raise KeyError("DynamicDatamanagerLoggerAdapter couldn't find DM attribute: " + unicode(e))
+                        return "<none>"
             def __iter__(self):
-                return iter(["game_instance_id", "real_username", "username", "is_observer"])
+                return iter(self.EXTRA_FIELDS)
         dm_logger_adapter = DynamicDatamanagerLoggerAdapter()
 
         self._inner_logger = logging.getLogger("pychronia_game") #FIXME
