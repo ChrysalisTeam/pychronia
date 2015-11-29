@@ -3065,10 +3065,12 @@ class RadioMessaging(BaseDataManager): # TODO REFINE
                     details["gamemaster_hints"] = details["gamemaster_hints"].strip()
 
                 details.setdefault("immutable", False) # we assume ANY radio spot is optional for the game, and can be edited/delete
+
+                # BOTH can be None, url will have precedence over file if both are defined
                 details.setdefault("file", None) # LOCAL file
                 if details["file"]:
                     details["file"] = utilities.find_game_file(details["file"], "audio", "radio_spots")
-                details.setdefault("url", None) # LOCAL file
+                details.setdefault("url", None) # ANY url
 
             # we DO NOT care about duplicates, which might happen when editing and reloading DB...
 
@@ -3104,7 +3106,7 @@ class RadioMessaging(BaseDataManager): # TODO REFINE
             if value["file"]:
                 utilities.check_is_game_file(value["file"])
             if value["url"]:
-                assert value["url"].startswith("http") # ROUGH check...
+                pass  # nope, don't try to check the url...
 
 
         def _sorting_key(self, item_pair):
