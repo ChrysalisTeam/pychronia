@@ -854,8 +854,6 @@ def register_view(view_object=None,
     Returns a CLASS or a METHOD, depending on the type of the wrapped object.
     """
 
-
-
     def _build_final_view_callable(real_view_object):
 
         final_view_name = str(view_name) if view_name else real_view_object.__name__
@@ -878,7 +876,6 @@ def register_view(view_object=None,
                 # we get back from proxy to AbstractGameView class
                 local_attach_to = local_attach_to.klass
                 assert issubclass(local_attach_to, AbstractGameView)
-
 
             normalized_access_args = _normalize_view_access_parameters(access=access,
                                                                        requires_character_permission=requires_character_permission,

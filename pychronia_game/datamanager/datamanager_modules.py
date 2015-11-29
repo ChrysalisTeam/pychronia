@@ -3070,8 +3070,7 @@ class RadioMessaging(BaseDataManager): # TODO REFINE
                     details["file"] = utilities.find_game_file(details["file"], "audio", "radio_spots")
                 details.setdefault("url", None) # LOCAL file
 
-            audiofiles = [value["file"] for value in self._table.values()]
-            # NOOOES - utilities.check_no_duplicates(audiofiles) # only checked at load time, next game master can do whatever he wants
+            # we DO NOT care about duplicates, which might happen when editing and reloading DB...
 
 
         def _preprocess_new_item(self, key, value):
