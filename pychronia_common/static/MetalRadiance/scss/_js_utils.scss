@@ -122,6 +122,7 @@
 
     .fancybox-inner {
         margin: auto;
+        padding: 0 10px !important;
         @include mobile-only {
             width: 100% !important;
         }

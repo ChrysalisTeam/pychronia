@@ -57,6 +57,13 @@ h3 {
 }
 
 
+h4 {
+    color: black;
+    font-size: 1.1em;
+    margin: 13px 20px 7px;  // left-aligned with paragraph first-line indent
+}
+
+
 
 @mixin drop_cap_mixin {
     &:first-letter {
