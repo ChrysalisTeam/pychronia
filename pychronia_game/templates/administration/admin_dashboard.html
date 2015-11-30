@@ -7,8 +7,8 @@
 
 {% addtoblock "definition_js" %}
 
-
        function save_widgets_order(){
+           // only works if game is WRITABLE of course
            $.post("",
                    { _action_: "save_admin_widgets_order",
                     ids_list: $('.admin_widgets').sortable('toArray')},
@@ -22,6 +22,7 @@
 
 {% addtoblock "onload_js" %}
 
+          {% if game_is_writable %}
            $( ".admin_widgets" ).sortable({
                     //connectWith: ".connectedSortable"
                     helper: "clone",
@@ -30,6 +31,7 @@
                     stop: function(event, ui) { save_widgets_order();}
                                                     //alert($('.admin_widgets').sortable('serialize', { expression: /(.+)=(.+)/ }));
            });
+           {% endif %}
 
             /* BYPASSED AT THE MOMENT - form processing done normally, not via ajax
             // fixme remove that
