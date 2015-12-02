@@ -43,8 +43,6 @@ FEATURES
 - carte du monde : un clic sur un pays/ville principal pour un zoom plus détaillé (un peu comme hurlevent wow) -> intégrer touch map prototype
 
 
-
-
 MESSAGERIE:
 - afficher les messages transférés, et le message parent (auquel on répond), INLINE
 - "sauver comme template" dans la vue "composition de nouveau message"
@@ -77,18 +75,20 @@ SCRIPT
 
 - regler les "HERE GAMEMASTER HINTS" et autres FIXME
 
-Sinon pourquoi faire une "aide" en anglais et le site en français ? => EXPLIQUER dans manuel du joueur
+
 
 - fixer l'aide de la page "dahsboard admin"
 - dire qu'on peut réordonner les forms de la page admin dashboard
 
-- "transraciations" changé en transfiliation??
 
-- expliquer "masquer les destinataires" et qu'on peut cliquer sur un contact
+- TO UPDATE SOON
+            - vous pouvez attacher un de vos fichiers personnels à un message, grâce au champ de sélection dédié
+            - si vous transférez un ancien message à un de vos contacts, ce "message transféré" pourra être lu dans une nouvelle fenêtre, grâce au lien automatiquement inséré dans le nouveau message
+
 
 - obéron keyword
 
-- dire "marquer comm lus les messages de LG périodiquement, soi même"
+- dire "marquer comme lus les messages de LG périodiquement, soi même"
 
 - cacher compétences spéciales pour PNJ <- personal permissions EVERYWHERE
 
@@ -142,6 +142,12 @@ Faire page d'introduction
 média => encyclopédie => saisir l'expression : si on écrit une phrase trop longue le message d'erreur s'affiche mais le texte sort du bloc.
    une petite croix sur la gauche ou la droite serait la bien venu ou un clic ailleurs sur le site pour refermer rapidement la bande
    ou tout simplement autoriser le clic sur le texte pour refermer. ==> EXPLIQUER DANS HELP PAGE
+
+
+- rendre les message autosaves "par effective username" - DONE
+
+- "transraciations" changé en transfiliation?? - DONE
+Sinon pourquoi faire une "aide" en anglais et le site en français ? => EXPLIQUER dans help homepage DONE
 
 
 PROMOTION
