@@ -99,7 +99,8 @@ def pychronia_template_context(request):
 
         res.update({
                 'game_instance_id': dm.game_instance_id,
-                'game_username': dm.user.username,
+                'game_real_username': dm.user.real_username,  # really logged-in user
+                'game_username': dm.user.username,  # might be impersonated
 
                 'fallback_title': request.processed_view.relevant_title(dm),
 
