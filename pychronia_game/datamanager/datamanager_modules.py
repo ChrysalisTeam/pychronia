@@ -4329,7 +4329,7 @@ class StaticPages(BaseDataManager):
 
                 details.setdefault("title", None)
                 if details["title"]:
-                    details["title"] = details["title"].strip(), details["title"]
+                    details["title"] = details["title"].strip()
 
 
         def _preprocess_new_item(self, key, value):
@@ -4347,7 +4347,7 @@ class StaticPages(BaseDataManager):
 
             utilities.check_is_bool(value["immutable"],)
 
-            if value.get("title"): # retrocompatibility layer
+            if value["title"] is not None:
                 utilities.check_is_string(value["title"], multiline=False)
                 assert value["title"] == value["title"].strip(), value["title"]
 
