@@ -878,18 +878,22 @@ class PlayerAuthentication(BaseDataManager):
         is_observer = session_ticket.get("is_observer", False)
 
         # first, we compute the impersonation we REALLY want #
-        force_reset_writability = False
+        force_reset_writability_request = False
         if requested_impersonation_target is None: # means "use legacy one"
             requested_impersonation_target = session_ticket.get("impersonation_target", None)
+        elif (game_username is None and requested_impersonation_target == self.anonymous_login):
+            # simply remain "anonymous"
+            requested_impersonation_target = None
+            force_reset_writability_request = True  # for security, we reset that too
         elif (requested_impersonation_target in ("",  # special case "delete current impersonation target"
                                                  game_username)):  # means "just stay as real authenticated user"
             # game_username *might* be None, we don't care
             requested_impersonation_target = None
-            force_reset_writability = True  # for security, we reset that too
+            force_reset_writability_request = True  # for security, we reset that too
         else:
             pass # we let submitted requested_impersonation_target continue
 
-        if force_reset_writability:
+        if force_reset_writability_request:
             requested_impersonation_writability = None
         else:
             requested_impersonation_writability = (requested_impersonation_writability
