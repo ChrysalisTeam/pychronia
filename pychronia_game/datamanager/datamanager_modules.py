@@ -4465,7 +4465,7 @@ class Encyclopedia(BaseDataManager):
         Returns the list of encyclopedia article whose keywords (primary or not) match *search_string*, 
         sorted by most relevant first.
         
-        Matching is very tolerant, as keywords needn't be separate words in the search string.
+        Matching is very tolerant, since it's case-insensitive, and keywords needn't be "separate words" in the searched string.
         """
         keywords_mapping = self.get_encyclopedia_keywords_mapping(only_primary_keywords=False)
 
