@@ -875,13 +875,18 @@ class PlayerAuthentication(BaseDataManager):
         game_username = session_ticket.get("game_username", None) # instance-local user set via login page
         assert game_username != self.anonymous_login # would be absurd, we store "None" for this
 
+        is_superuser = False
+        if not game_username: # instance-local authentication COMPLETELY HIDES the fact that one is a django superuser
+            if django_user and django_user.is_active and (django_user.is_staff or django_user.is_superuser):
+                is_superuser = True
+
         is_observer = session_ticket.get("is_observer", False)
 
         # first, we compute the impersonation we REALLY want #
         force_reset_writability_request = False
         if requested_impersonation_target is None: # means "use legacy one"
             requested_impersonation_target = session_ticket.get("impersonation_target", None)
-        elif (game_username is None and requested_impersonation_target == self.anonymous_login):
+        elif not is_superuser and (game_username is None and requested_impersonation_target == self.anonymous_login):
             # simply remain "anonymous"
             requested_impersonation_target = None
             force_reset_writability_request = True  # for security, we reset that too
@@ -906,11 +911,6 @@ class PlayerAuthentication(BaseDataManager):
             raise AbnormalUsageError(_("Invalid instance username: '%s'") % game_username)
         if requested_impersonation_target and requested_impersonation_target not in _available_logins:
             raise AbnormalUsageError(_("Invalid requested impersonation target: %s") % requested_impersonation_target)  # might be typos when manipulating URLs
-
-        is_superuser = False
-        if not game_username: # instance-local authentication COMPLETELY HIDES the fact that one is a django superuser
-            if django_user and django_user.is_active and (django_user.is_staff or django_user.is_superuser):
-                is_superuser = True
 
         if requested_impersonation_target is not None:
             # we filter out forbidden impersonation choices #

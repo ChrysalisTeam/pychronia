@@ -3166,7 +3166,9 @@ class TestDatamanager(BaseGameTestCase):
             assert not self.dm.should_display_admin_tips()
             assert not self.dm.user.is_impersonation
             assert self.dm.user.real_username == anonymous_login
-            assert self.dm.user.has_notifications() == bool(requested_impersonation_target)
+
+            must_have_notifications = bool(requested_impersonation_target and requested_impersonation_target != anonymous_login)
+            assert self.dm.user.has_notifications() == must_have_notifications
             self.dm.user.discard_notifications()
 
             # ANONYMOUS CASE
