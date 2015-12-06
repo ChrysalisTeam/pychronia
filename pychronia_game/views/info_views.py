@@ -138,7 +138,8 @@ class EncyclopediaView(AbstractGameView):
             assert dm.is_anonymous()  # we leave article_ids to []
 
         _pages = dm.static_pages
-        articles_index = ((article_id, _pages[article_id].get("title")) for article_id in article_ids)
+        articles_index = [(article_id, _pages[article_id].get("title")) for article_id in article_ids]
+        articles_index.sort(key=lambda x: x[1])  # sort by title (even is some might be None, resulting in 'identifier' to be shown instead)
         del article_ids
 
         return TemplateResponse(request=request,
