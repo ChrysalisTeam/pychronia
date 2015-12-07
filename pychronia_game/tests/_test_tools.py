@@ -205,7 +205,6 @@ def temp_datamanager(game_instance_id, request=None):
 
 
 
-
 class BaseGameTestCase(TestCase): # one day, use pytest-django module to make it cleaner
 
     """
@@ -213,13 +212,13 @@ class BaseGameTestCase(TestCase): # one day, use pytest-django module to make it
     don't forget to commit() after that !!
     """
 
+    SHARED_DM_INITIAL_DATA_TREE = None  # optimization, duplicated for each testcase
 
     def __call__(self, *args, **kwds):
         #self._reset_django_db()
         #print ("USING CONF", config.DATABASES, config.INSTALLED_APPS)
         ##return super(BaseGameTestCase, self).__call__(*args, **kwds)
         return unittest.TestCase.run(self, *args, **kwds) # we bypass test setups from django's TestCase, to use py.test instead
-
 
 
     def setUp(self):
@@ -230,12 +229,25 @@ class BaseGameTestCase(TestCase): # one day, use pytest-django module to make it
 
         reset_zodb_structure()
 
+        yaml_fixture = None
+        skip_initializations = False
+        if BaseGameTestCase.SHARED_DM_INITIAL_DATA_TREE:
+            print ("[UNIT-TESTS] Using SHARED_DM_INITIAL_DATA_TREE to speed up the DM creation")
+            yaml_fixture = copy.deepcopy(BaseGameTestCase.SHARED_DM_INITIAL_DATA_TREE)
+            skip_initializations = True
+
         # FIXME - very heavy with loading + checking, we should do it only once and copy/paste dm.data tree.
         create_game_instance(game_instance_id=TEST_GAME_INSTANCE_ID,
                              creator_login="test_creator",
                              skip_randomizations=True,  # handy to test stuffs
-                             skip_initializations=False,
-                             skip_coherency_check=True)
+                             skip_initializations=skip_initializations,
+                             skip_coherency_check=True,
+                             yaml_fixture=yaml_fixture)
+
+        if not BaseGameTestCase.SHARED_DM_INITIAL_DATA_TREE:
+            # we cache the FIRST datamanager data, for reuse
+            initial_dm = retrieve_game_instance(game_instance_id=TEST_GAME_INSTANCE_ID)
+            BaseGameTestCase.SHARED_DM_INITIAL_DATA_TREE = copy.deepcopy(initial_dm.data)
 
         try:
 
@@ -260,8 +272,9 @@ class BaseGameTestCase(TestCase): # one day, use pytest-django module to make it
             assert self.dm.connection
 
             self.dm.clear_all_event_stats()
-            self.dm.check_database_coherency() # important
-            assert self.dm.get_event_count("BASE_CHECK_DB_COHERENCY_PUBLIC_CALLED") == 1 # no bypassing because of wrong override
+            if not skip_initializations:
+                self.dm.check_database_coherency()  # thus, only done for the first testcase
+                assert self.dm.get_event_count("BASE_CHECK_DB_COHERENCY_PUBLIC_CALLED") == 1 # no bypassing because of wrong override
 
             self.dm.set_game_state(True)
             self.dm.set_activated_game_views(self.dm.get_activable_views().keys()) # QUICK ACCESS FIXTURE

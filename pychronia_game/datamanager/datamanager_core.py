@@ -169,7 +169,12 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
         # not rebind the attribute "data", else we lose ZODB support
         self.data.clear()
 
-        initial_data = utilities.load_yaml_fixture(yaml_fixture)
+        if isinstance(yaml_fixture, basestring):
+            initial_data = utilities.load_yaml_fixture(yaml_fixture)
+        else:
+            assert isinstance(yaml_fixture, PersistentMapping), yaml_fixture  # a preloaded data tree was provided
+            initial_data = yaml_fixture
+
         self.data.update(initial_data)
 
         if not skip_initializations:
