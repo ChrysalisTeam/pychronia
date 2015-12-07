@@ -29,6 +29,20 @@ GAMEMASTER_HINTS in:
 FEATURES
 ------------
 
+parler des mémos objets dans help pages
+
+CAN WE REMOVE GEMS BY OURSELVES ???? nope but we need it
+
+Ajouter les 3 gemmes spéciales dans objets !!
+
+skip_coherency_check  <- typo COHERENCE!!
+
+unit_cost vs item_cost still!!!
+
+- IMPORTANt bugfix the handling of urls and files in radio spots
+- automate the retrieval of radio spots
+
+
 - FIX medias videos on website, for video / firefox, on WINDOWS10 (use jplayer)
 
 - enlever la homepage "enchères" inutile, amener de suite sur les persos ??
