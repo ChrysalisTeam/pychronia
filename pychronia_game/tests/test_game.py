@@ -3508,10 +3508,12 @@ class TestDatamanager(BaseGameTestCase):
 
         if random.choice((True, False)):
             now = timezone.now()
+            is_superuser = True
             django_user = User(username='fakename', email='my@email.fr',
-                              is_staff=True, is_active=True, is_superuser=True,
+                              is_staff=True, is_active=True, is_superuser=is_superuser,
                               last_login=now, date_joined=now)
         else:
+            is_superuser = False
             django_user = None
 
 
@@ -3546,7 +3548,7 @@ class TestDatamanager(BaseGameTestCase):
                                              requested_impersonation_target=anonymous_login,  # THIS crashed before
                                              requested_impersonation_writability=random.choice((True, False, None)),
                                              django_user=django_user)
-        assert not _special_session_ticket["impersonation_target"]
+        assert not _special_session_ticket["impersonation_target"] or _special_session_ticket["impersonation_target"] == anonymous_login
         assert not _special_session_ticket["impersonation_writability"]
         assert not self.dm.user.has_notifications()
 
