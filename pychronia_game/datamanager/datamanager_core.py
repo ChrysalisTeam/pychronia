@@ -148,8 +148,9 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
     @transaction_watcher(always_writable=True) # might operate on broken data
     def reset_game_data(self,
                         yaml_fixture=None,
-                        skip_randomizations=False,
-                        skip_initializations=False,
+                        skip_randomizations=False,  # randomize some values in dm.data
+                        skip_initializations=False,  # used when an already-initialized fixture is used
+                        skip_coherency_check=False,
                         strict=False):
         """
         This method might raise exceptions, and leave the datamanager uninitialized.
@@ -189,7 +190,8 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
             self.logger.info("Performing setup via GAME_INITIAL_FIXTURE_SCRIPT")
             config.GAME_INITIAL_FIXTURE_SCRIPT(self)
 
-        self.check_database_coherency(strict=strict)
+        if not skip_coherency_check:
+            self.check_database_coherency(strict=strict)
 
 
 

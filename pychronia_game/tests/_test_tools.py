@@ -229,9 +229,13 @@ class BaseGameTestCase(TestCase): # one day, use pytest-django module to make it
         django.utils.translation.activate("en") # to test for error messages, just in case...
 
         reset_zodb_structure()
+
+        # FIXME - very heavy with loading + checking, we should do it only once and copy/paste dm.data tree.
         create_game_instance(game_instance_id=TEST_GAME_INSTANCE_ID,
                              creator_login="test_creator",
-                             skip_randomizations=True)  # handy to test stuffs
+                             skip_randomizations=True,  # handy to test stuffs
+                             skip_initializations=False,
+                             skip_coherency_check=True)
 
         try:
 
