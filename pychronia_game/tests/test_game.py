@@ -3548,9 +3548,13 @@ class TestDatamanager(BaseGameTestCase):
                                              requested_impersonation_target=anonymous_login,  # THIS crashed before
                                              requested_impersonation_writability=random.choice((True, False, None)),
                                              django_user=django_user)
-        assert not _special_session_ticket["impersonation_target"] or _special_session_ticket["impersonation_target"] == anonymous_login
-        assert not _special_session_ticket["impersonation_writability"]
-        assert not self.dm.user.has_notifications()
+        if django_user:
+            assert django_user.is_superuser
+            assert _special_session_ticket["impersonation_target"] == anonymous_login
+            # then "impersonation_writability" might be ANYTHING here
+        else:
+            assert not _special_session_ticket["impersonation_target"]
+            assert not _special_session_ticket["impersonation_writability"]
 
 
     @for_core_module(PlayerAuthentication)
