@@ -3122,6 +3122,11 @@ class RadioMessaging(BaseDataManager): # TODO REFINE
         def _item_can_be_edited(self, key, value):
             return not value["immutable"]
 
+        def _callback_on_any_update(self):
+            pass
+            #self._inner_datamanager.
+            
+
     radio_spots = LazyInstantiationDescriptor(RadioSpotsManager)
 
 

@@ -128,6 +128,7 @@ class DataTableManager(object):
         key, value = self._preprocess_new_item(key, value)
         self._check_item_validity(key, value)
         table[key] = value
+        self._callback_on_any_update()
 
     @transaction_watcher
     def __delitem__(self, key):
@@ -136,6 +137,11 @@ class DataTableManager(object):
         if not self._item_can_be_edited(key, table[key]):
             raise AbnormalUsageError(_("Can't delete %(type)s item with key %(key)s") % SDICT(type=self.TRANSLATABLE_ITEM_NAME, key=key))
         del table[key]
+        self._callback_on_any_update()
+
+    def _callback_on_any_update(self):
+        """Override this callback, if you need eg. to prune references to items that have been deleted."""
+        pass
 
     @readonly_method
     def copy(self):
