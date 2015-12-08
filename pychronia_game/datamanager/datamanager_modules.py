@@ -3123,12 +3123,15 @@ class RadioMessaging(BaseDataManager): # TODO REFINE
             return not value["immutable"]
 
         def _callback_on_any_update(self):
-            pass
-            #self._inner_datamanager.
-            
+            self._inner_datamanager._prune_obsolete_radio_playlist_entries()
 
     radio_spots = LazyInstantiationDescriptor(RadioSpotsManager)
 
+
+    def _prune_obsolete_radio_playlist_entries(self):
+        filtered_radio_messages = [audio_id for audio_id in self.data["global_parameters"]["pending_radio_messages"]
+                                   if audio_id in self.radio_spots]
+        self.data["global_parameters"]["pending_radio_messages"] = PersistentList(filtered_radio_messages)
 
     def _check_audio_ids(self, audio_ids):
         for audio_id in audio_ids:

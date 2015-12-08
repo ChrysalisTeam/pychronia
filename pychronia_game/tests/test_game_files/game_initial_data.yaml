@@ -392,6 +392,11 @@ audio_messages:
         text: "ambassadors eviction + nalavut council begins + alcohol exhibition"
         file: "berce.mp3"
 
+    erasable_spots:
+        title: "News diverses"
+        text: "For testing..."
+        file: "other.mp3"
+
 
 events_log:  #-> list of event dicts
     -  "time": -3 # mns

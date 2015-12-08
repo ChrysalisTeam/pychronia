@@ -2690,6 +2690,17 @@ class TestDatamanager(BaseGameTestCase):
         assert not self.dm.has_read_current_playlist("guy3")
 
 
+    def test_radio_spots_referential_integrity(self):
+
+        audio_id = "erasable_spots"
+        self.dm.set_radio_messages([audio_id])
+        assert self.dm.get_all_next_audio_messages() == [audio_id]
+
+        del self.dm.radio_spots[audio_id]  # triggers pruning of radio playlist
+
+        assert self.dm.get_all_next_audio_messages() == []
+
+
     def test_delayed_message_processing_and_basic_message_deletion(self):
 
         WANTED_FACTOR = 2 # we only double durations below
