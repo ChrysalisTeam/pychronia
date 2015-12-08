@@ -3593,14 +3593,6 @@ class MoneyItemsOwnership(BaseDataManager):
 
     # FIXME - fix forms containing gems, now (value, origin) tuples
 
-    def _compute_items_unit_cost(self, total_cost, num_gems):
-        if not total_cost:
-            return None
-        return int(math.ceil(float(total_cost / num_gems)))
-    def _compute_items_total_price(self, unit_cost, num_gems):
-        if not unit_cost:
-            return None
-        return unit_cost * num_gems # simpler
 
     def _load_initial_data(self, **kwargs):
         super(MoneyItemsOwnership, self)._load_initial_data(**kwargs)
@@ -3626,25 +3618,11 @@ class MoneyItemsOwnership(BaseDataManager):
             total_gems += [i[0] for i in character["gems"]]
             total_digital_money += character["account"]
 
-        for (name, properties) in game_data["game_items"].items():
-
-            properties.setdefault("gamemaster_hints", "")
-            if properties["gamemaster_hints"]:
-                properties["gamemaster_hints"] = properties["gamemaster_hints"].strip()
-
-            properties['unit_cost'] = self._compute_items_unit_cost(total_cost=properties['total_price'], num_gems=properties['num_items']) # works with NONE too
-            properties['owner'] = properties.get('owner', None)
-            properties["auction"] = properties.get('auction', None)
-
-            if properties["is_gem"] and not properties['owner']: # we dont recount gems appearing in character["gems"]
-                total_gems += [properties['unit_cost']] * properties["num_items"]
-
-            properties['image'] = utilities.find_game_file(properties['image'], "images")
-
         # We initialize some runtime checking parameters #
         game_data["global_parameters"]["total_digital_money"] = total_digital_money # integer
         game_data["global_parameters"]["total_gems"] = PersistentList(sorted(total_gems)) # sorted list of integer values
 
+        self.game_items._load_initial_data(**kwargs)  # important
 
 
     def _check_database_coherency(self, **kwargs):
@@ -3655,7 +3633,6 @@ class MoneyItemsOwnership(BaseDataManager):
         total_digital_money = game_data["global_parameters"]["bank_account"]
         total_gems = game_data["global_parameters"]["spent_gems"][:] # COPY!
         # print ("^^^^^^^^^^^^", "spent_gems", total_gems.count(500))
-
 
         for (name, character) in game_data["character_properties"].items():
             utilities.check_is_positive_int(character["account"], non_zero=False)
@@ -3674,13 +3651,51 @@ class MoneyItemsOwnership(BaseDataManager):
                 (gem_value, gem_origin) = gem
                 utilities.check_is_positive_int(gem_value)
                 if gem_origin is not None:
-                    assert gem_origin in game_data["game_items"]
-                    assert game_data["game_items"][gem_origin]["is_gem"]
+                    assert gem_origin in self.game_items
+                    assert self.game_items[gem_origin]["is_gem"]
                 total_gems.append(gem_value) # only value in kashes, not gem origin
             # print ("---------", name, total_gems.count(500))
 
-        assert game_data["game_items"]
-        for (name, properties) in game_data["game_items"].items():
+        ##TODO-REUSE
+        ##old_total_gems = game_data["global_parameters"]["total_gems"]
+        ##assert Counter(old_total_gems) == Counter(total_gems), (old_total_gems, total_gems)
+        ##assert old_total_gems == sorted(total_gems), "%s != %s" % (old_total_gems, total_gems)
+
+        old_total_digital_money = game_data["global_parameters"]["total_digital_money"]
+        assert old_total_digital_money == total_digital_money, "%s != %s" % (old_total_digital_money, total_digital_money)
+
+        self.game_items._check_database_coherency(**kwargs)  # important
+
+
+    class GameItemsManager(DataTableManager):
+
+        TRANSLATABLE_ITEM_NAME = ugettext_lazy("objects and gems")
+
+        def _load_initial_data(self, **kwargs):
+
+            for (name, properties) in self._table.items():
+
+                properties.setdefault("gamemaster_hints", "")
+                if properties["gamemaster_hints"]:
+                    properties["gamemaster_hints"] = properties["gamemaster_hints"].strip()
+
+                properties['unit_cost'] = self._compute_items_unit_cost(total_cost=properties['total_price'], num_gems=properties['num_items']) # works with NONE too
+                properties['owner'] = properties.get('owner', None)
+                properties["auction"] = properties.get('auction', None)
+
+                #if properties["is_gem"] and not properties['owner']: # we dont recount gems appearing in character["gems"]
+                #    total_gems += [properties['unit_cost']] * properties["num_items"]
+
+                properties['image'] = utilities.find_game_file(properties['image'], "images")
+
+        def _preprocess_new_item(self, key, value):
+            return (key, PersistentMapping(value))
+            # other params are supposed to exist in "value"
+
+        def _check_item_validity(self, key, value, strict=False):
+            (name, properties) = (key, value)
+
+            game_data = self._inner_datamanager.data
 
             if properties["gamemaster_hints"]: # optional
                 pass # utilities.check_is_restructuredtext(properties["gamemaster_hints"])
@@ -3707,39 +3722,62 @@ class MoneyItemsOwnership(BaseDataManager):
             # item might be out of auction
             assert properties['auction'] is None or isinstance(properties['auction'], basestring) and properties['auction']
 
+            """ useless now
             if properties["is_gem"] and not properties["owner"]:
                 total_gems += [properties['unit_cost']] * properties["num_items"]
                 # (">>>>>>>>>>", name, total_gems.count(500))
+            """
 
-        ##TODO-REUSE
-        ##old_total_gems = game_data["global_parameters"]["total_gems"]
-        ##assert Counter(old_total_gems) == Counter(total_gems), (old_total_gems, total_gems)
-        ##assert old_total_gems == sorted(total_gems), "%s != %s" % (old_total_gems, total_gems)
+            # we DO NOT care about duplicates, which might happen when editing and reloading DB...
 
-        old_total_digital_money = game_data["global_parameters"]["total_digital_money"]
-        assert old_total_digital_money == total_digital_money, "%s != %s" % (old_total_digital_money, total_digital_money)
+
+        def _sorting_key(self, item_pair):
+            return item_pair[0] # we sort by key, simply...
+
+        def _get_table_container(self, root):
+            return root["game_items"]
+
+        def _item_can_be_edited(self, key, value):
+            return not value["owner"]
+
+        def _callback_on_any_update(self):
+            pass
+
+
+        def _compute_items_unit_cost(self, total_cost, num_gems):
+            if not total_cost:
+                return None
+            return int(math.ceil(float(total_cost / num_gems)))
+
+        def _compute_items_total_price(self, unit_cost, num_gems):
+            if not unit_cost:
+                return None
+            return unit_cost * num_gems # simpler
+
+
+    game_items = LazyInstantiationDescriptor(GameItemsManager)
 
 
     @readonly_method
     def get_all_items(self):
-        return self.data["game_items"]
+        return self.data["game_items"]  # directly expose data
 
     @readonly_method
     def get_gem_items(self):
-        return {key: value for (key, value) in self.data["game_items"].items() if value["is_gem"]}
+        return {key: value for (key, value) in self.game_items.items() if value["is_gem"]}
 
     @readonly_method
     def get_non_gem_items(self):
-        return {key: value for (key, value) in self.data["game_items"].items() if not value["is_gem"]}
+        return {key: value for (key, value) in self.game_items.items() if not value["is_gem"]}
 
     @readonly_method
     def get_auction_items(self):
-        return {key: value for (key, value) in self.data["game_items"].items() if value["auction"]}
+        return {key: value for (key, value) in self.game_items.items() if value["auction"]}
 
     @readonly_method
     def get_item_properties(self, item_name):
         try:
-            return self.data["game_items"][item_name]
+            return self.game_items[item_name]
         except KeyError:
             raise UsageError(_("Unknown item %s") % item_name)
 
@@ -4003,7 +4041,7 @@ class Items3dViewing(BaseDataManager):
             }
 
         for (name, properties) in game_data["item_3d_settings"].items():
-            assert name in game_data["game_items"].keys(), name
+            assert name in self.game_items.keys(), name
             utilities.check_dictionary_with_template(properties, item_viewer_reference)
 
 
