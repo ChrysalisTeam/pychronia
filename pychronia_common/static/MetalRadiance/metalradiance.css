@@ -1056,7 +1056,7 @@ table.footnote {
 }
 .ui-dropdownchecklist {
   background-color: white;
-  font-size: 0.9em;
+  font-size: 0.8em;
 }
 .ui-dropdownchecklist-dropcontainer {
   border: 1px solid #aaa;
@@ -1916,14 +1916,14 @@ p {
 }
 @media (max-width: 991px) {
   p {
-    font-size: 1.1em;
-    line-height: 1.2em;
+    font-size: 1em;
+    line-height: 1.1em;
   }
 }
 @media (min-width: 992px) {
   p {
-    font-size: 1.1em;
-    line-height: 1.2em;
+    font-size: 1em;
+    line-height: 1.1em;
   }
 }
 a img {
