@@ -5572,7 +5572,7 @@ class TestActionMiddlewares(BaseGameTestCase):
                 ability.middleware_wrapped_callable1(use_gems=[(128, "several_misc_gems2"), (178, None)])
 
             # some wrong gems in input (even if a sufficient number  of them is OK)
-            with raises_with_content(UsageError, "don't possess"):
+            with raises_with_content(UsageError, "doesn't possess"):
                 ability.middleware_wrapped_callable1(use_gems=[(111, None), (125, "stuffs")])
 
             if not money_price:
