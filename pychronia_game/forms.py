@@ -13,7 +13,8 @@ from pychronia_game.datamanager.abstract_form import GAMEMASTER_HINTS_FIELD
 from pychronia_game.utilities import add_to_ordered_dict
 
 
-
+def _get_bank_choice(datamanager):
+    return (datamanager.get_global_parameter("bank_name"), '<' + _("Bank") + '>')
 
 class MoneyTransferForm(AbstractGameForm):
 
@@ -23,7 +24,7 @@ class MoneyTransferForm(AbstractGameForm):
 
         # dynamic fields here ...
         if user.is_master:
-            _money_all_character_choices = [(datamanager.get_global_parameter("bank_name"), '<' + _("Bank") + '>')] + \
+            _money_all_character_choices = [_get_bank_choice(datamanager)] + \
                                             datamanager.build_select_choices_from_character_usernames(datamanager.get_character_usernames())
 
             self.fields = add_to_ordered_dict(self.fields, 0, "sender_name", forms.ChoiceField(label=_("Sender"), choices=_money_all_character_choices))
