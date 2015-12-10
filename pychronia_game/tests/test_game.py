@@ -1503,6 +1503,23 @@ class TestDatamanager(BaseGameTestCase):
         self.assertEqual(self.dm.get_all_items(), items_old)
 
 
+        # test PURE DEBIT of gems
+
+        self.dm.transfer_object_to_character(gem_name2, "guy3")
+        gems_given = self.dm.get_character_properties("guy3")["gems"][0:2]
+        guy3_previous = copy.deepcopy(self.dm.get_character_properties("guy3"))
+
+        with pytest.raises(UsageError):
+            self.dm.debit_character_gems("guy3", gems_list=[(gems_given[0][0], "weird_origin")])
+        with pytest.raises(UsageError):
+            self.dm.debit_character_gems("guy3", gems_list=[(345, gems_given[0][1])])
+        assert self.dm.get_character_properties("guy3") == guy3_previous
+
+        self.dm.debit_character_gems("guy3", gems_list=gems_given)
+        assert self.dm.get_character_properties("guy3") != guy3_previous
+        assert len(self.dm.get_character_properties("guy3")["gems"]) == len(guy3_previous["gems"]) - 2
+
+
 
 
 

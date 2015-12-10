@@ -4007,7 +4007,7 @@ class MoneyItemsOwnership(BaseDataManager):
         """
         Completely remove some of a character's gems from the game.
         """
-        assert isinstance(gems_list, list)
+        assert isinstance(gems_list, (list, PersistentList))
         character_properties = self.get_character_properties(username)
         remaining_gems = utilities.substract_lists(character_properties["gems"], gems_list)
         if remaining_gems is None:
