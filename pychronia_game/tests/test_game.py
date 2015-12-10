@@ -1510,12 +1510,12 @@ class TestDatamanager(BaseGameTestCase):
         guy3_previous = copy.deepcopy(self.dm.get_character_properties("guy3"))
 
         with pytest.raises(UsageError):
-            self.dm.debit_character_gems("guy3", gems_list=[(gems_given[0][0], "weird_origin")])
+            self.dm.debit_character_gems("guy3", gems_choices=[(gems_given[0][0], "weird_origin")])
         with pytest.raises(UsageError):
-            self.dm.debit_character_gems("guy3", gems_list=[(345, gems_given[0][1])])
+            self.dm.debit_character_gems("guy3", gems_choices=[(345, gems_given[0][1])])
         assert self.dm.get_character_properties("guy3") == guy3_previous
 
-        self.dm.debit_character_gems("guy3", gems_list=gems_given)
+        self.dm.debit_character_gems("guy3", gems_choices=gems_given)
         assert self.dm.get_character_properties("guy3") != guy3_previous
         assert len(self.dm.get_character_properties("guy3")["gems"]) == len(guy3_previous["gems"]) - 2
 

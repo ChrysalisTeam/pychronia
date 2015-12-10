@@ -115,7 +115,8 @@ class CharactersView(AbstractGameView):
 
 
     @transaction_watcher
-    def transfer_money(self, recipient_name, amount, sender_name=None, reason=None, use_gems=()):
+    def transfer_money(self, recipient_name, amount, sender_name=None, reason=None, 
+                       use_gems=()):  # required by action middlewares
         assert amount > 0 # enforced by form system
         user = self.datamanager.user
         if not user.is_master:
@@ -130,15 +131,20 @@ class CharactersView(AbstractGameView):
 
 
     @transaction_watcher
-    def transfer_gems(self, recipient_name, gems_choices, sender_name=None, use_gems=()):
+    def transfer_gems(self, recipient_name, gems_choices, sender_name=None, 
+                      use_gems=()):  # required by action middlewares
         user = self.datamanager.user
         if not user.is_master:
             assert not sender_name, sender_name
             sender_name = user.username
-
-        self.datamanager.transfer_gems_between_characters(from_name=sender_name,
-                                                          to_name=recipient_name,
-                                                          gems_choices=gems_choices)
+        
+        assert recipient_name in self.get_character_usernames()
+        if recipient_name == self.dm.get_global_parameter("bank_name"):
+            self.datamanager.debit_character_gems(username=sender_name, gems_choices=gems_choices)
+        else:
+            self.datamanager.transfer_gems_between_characters(from_name=sender_name,
+                                                              to_name=recipient_name,
+                                                              gems_choices=gems_choices)
         return _("Gems transfer successful.")
 
 

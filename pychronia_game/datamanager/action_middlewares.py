@@ -367,7 +367,7 @@ class CostlyActionMiddleware(AbstractActionMiddleware):
         if (provided_gems_value - gems_price) >= min_gem_value:
             raise NormalUsageError(_("You provided too many gems for the value of that asset, please top off") % SDICT(gems_price=gems_price))
 
-        self.debit_character_gems(gems_list=gems_list)
+        self.debit_character_gems(gems_choices=gems_list)
 
 
     def _pay_with_money(self, character_properties, money_price):
