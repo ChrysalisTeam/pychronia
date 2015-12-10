@@ -3651,6 +3651,7 @@ class MoneyItemsOwnership(BaseDataManager):
                 (gem_value, gem_origin) = gem
                 utilities.check_is_positive_int(gem_value)
                 if gem_origin is not None:
+                    # important - we must not break that reference to an existing game item
                     assert gem_origin in self.game_items
                     assert self.game_items[gem_origin]["is_gem"]
                 total_gems.append(gem_value) # only value in kashes, not gem origin
@@ -4001,7 +4002,20 @@ class MoneyItemsOwnership(BaseDataManager):
                              visible_by=[from_name, to_name]) # event visible by both characters
 
 
-
+    @transaction_watcher
+    def debit_character_gems(self, username=CURRENT_USER, gems_list=None):
+        """
+        Completely remove some of a character's gems from the game.
+        """
+        assert isinstance(gems_list, list)
+        character_properties = self.get_character_properties(username)
+        remaining_gems = utilities.substract_lists(character_properties["gems"], gems_list)
+        if remaining_gems is None:
+            raise UsageError(_("You don't possess the gems required"))
+        else:
+            character_properties["gems"] = PersistentList(remaining_gems)
+            # we only save the values in kashes, not origins
+            self.data["global_parameters"]["spent_gems"] += [x[0] for x in gems_list]
 
 
 

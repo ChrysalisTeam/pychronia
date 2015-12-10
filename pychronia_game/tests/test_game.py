@@ -1429,9 +1429,15 @@ class TestDatamanager(BaseGameTestCase):
         self.assertEqual(self.dm.get_global_parameter("bank_account"), bank_old)
 
         # we fully test gems transfers
+        guy3_bkp = copy.deepcopy(self.dm.get_character_properties("guy3"))
+        guy1_bkp = copy.deepcopy(self.dm.get_character_properties("guy1"))
         gems_given = self.dm.get_character_properties("guy3")["gems"][0:3]
         self.dm.transfer_gems_between_characters("guy3", "guy1", gems_given)
+        assert self.dm.get_character_properties("guy3") != guy3_bkp
+        assert self.dm.get_character_properties("guy1") != guy1_bkp
         self.dm.transfer_gems_between_characters("guy1", "guy3", gems_given)
+        assert self.dm.get_character_properties("guy3") == guy3_bkp
+        assert self.dm.get_character_properties("guy1") == guy1_bkp
         self.assertRaises(UsageError, self.dm.transfer_gems_between_characters, "guy3", "guy3", gems_given) # same ids
         self.assertRaises(UsageError, self.dm.transfer_gems_between_characters, "guy3", "guy1", gems_given + [27, 32]) # not possessed
         self.assertRaises(UsageError, self.dm.transfer_gems_between_characters, "guy3", "guy1", []) # at least 1 gem needed
@@ -5549,7 +5555,7 @@ class TestActionMiddlewares(BaseGameTestCase):
                 ability.middleware_wrapped_callable1(use_gems=[(128, "several_misc_gems2"), (178, None)])
 
             # some wrong gems in input (even if a sufficient number  of them is OK)
-            with raises_with_content(AbnormalUsageError, "don't possess"):
+            with raises_with_content(UsageError, "don't possess"):
                 ability.middleware_wrapped_callable1(use_gems=[(111, None), (125, "stuffs")])
 
             if not money_price:

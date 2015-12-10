@@ -225,7 +225,7 @@ def substract_lists(available_gems, given_gems):
     available_gems = Counter(available_gems)
     given_gems = Counter(given_gems)
 
-    if given_gems & available_gems != given_gems:
+    if (given_gems & available_gems) != given_gems:
         return None # operation impossible
 
     gems_remaining = available_gems - given_gems
