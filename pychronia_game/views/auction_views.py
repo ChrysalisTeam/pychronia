@@ -138,10 +138,10 @@ class CharactersView(AbstractGameView):
             assert not sender_name, sender_name
             sender_name = user.username
         
-        assert recipient_name in self.get_character_usernames()
-        if recipient_name == self.dm.get_global_parameter("bank_name"):
+        if recipient_name == self.datamanager.get_global_parameter("bank_name"):
             self.datamanager.debit_character_gems(username=sender_name, gems_choices=gems_choices)
         else:
+            assert recipient_name in self.datamanager.get_character_usernames()
             self.datamanager.transfer_gems_between_characters(from_name=sender_name,
                                                               to_name=recipient_name,
                                                               gems_choices=gems_choices)
