@@ -29,6 +29,11 @@ GAMEMASTER_HINTS in:
 FEATURES
 ------------
 
+get_other_known_characters -> tjrs inclure les joueurs enchérisseurs dedans ?
+
+dire qu'on peut débiter gemmes mais pas en remettre, pour gamemaster
+dire aux joueurs qu'ils ne peuvent envoyer gemmes qu'aux gens "connus" (contactés par email)
+
 parler des mémos objets dans help pages
 
 CAN WE REMOVE GEMS BY OURSELVES ???? nope but we need it
@@ -246,6 +251,7 @@ OperationalError: (1203, "User pakal_anthropia already has more than 'max_user_c
 TASKS DONE
 ---------------
 
+- add "debit of gems" ability for game master - DONE
 - tester "no url nor path" in webradio spot page - ok DONE, both can be empty or set, URL is higher priority than FILE
 - objets proposés est 10665 kashes -> varie suivant qu'on est master ou impersoné, weird.... REVOIR WORDING, OK DONE
 - réparer (Dernier accès : 4 juil. 2015 04:45:36), à cause des crontasks, en page administration - OK done, maintenant updated que si VRAI POST HTTP !!

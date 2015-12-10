@@ -16,6 +16,7 @@ from pychronia_game.utilities import add_to_ordered_dict
 def _get_bank_choice(datamanager):
     return (datamanager.get_global_parameter("bank_name"), '<' + _("Bank") + '>')
 
+
 class MoneyTransferForm(AbstractGameForm):
 
     def __init__(self, datamanager, *args, **kwargs):
@@ -26,7 +27,6 @@ class MoneyTransferForm(AbstractGameForm):
         if user.is_master:
             _money_all_character_choices = [_get_bank_choice(datamanager)] + \
                                             datamanager.build_select_choices_from_character_usernames(datamanager.get_character_usernames())
-
             self.fields = add_to_ordered_dict(self.fields, 0, "sender_name", forms.ChoiceField(label=_("Sender"), choices=_money_all_character_choices))
             self.fields = add_to_ordered_dict(self.fields, 1, "recipient_name", forms.ChoiceField(label=_("Recipient"), choices=_money_all_character_choices))
         else:
@@ -36,7 +36,6 @@ class MoneyTransferForm(AbstractGameForm):
             others = datamanager.get_other_known_characters()
             others_choices = datamanager.build_select_choices_from_character_usernames(others, add_empty=True)
             self.fields = add_to_ordered_dict(self.fields, 0, "recipient_name", forms.ChoiceField(label=_("Recipient"), choices=others_choices))
-
 
 
     amount = forms.IntegerField(label=ugettext_lazy("Amount"), widget=forms.TextInput(attrs={'size':'8', 'style':'text-align:left;', 'autocomplete':'off'}),
@@ -71,7 +70,7 @@ class GemsTransferForm(AbstractGameForm, GemHandlingFormUtils):
             self.fields = add_to_ordered_dict(self.fields, 0, "sender_name", forms.ChoiceField(label=_("Sender"), choices=_character_choices))  # for now, can't send FROM bank
             self.fields = add_to_ordered_dict(self.fields, 1, "recipient_name", forms.ChoiceField(label=_("Recipient"), choices=[_get_bank_choice(datamanager)] + _character_choices))
         else:
-            others = datamanager.get_other_known_characters()
+            others = datamanager.get_other_known_characters()  # character CANNOT send gems to the Bank here
             others_choices = datamanager.build_select_choices_from_character_usernames(others, add_empty=True)
             self.fields = add_to_ordered_dict(self.fields, 1, "recipient_name", forms.ChoiceField(label=_("Recipient"), choices=others_choices))
 
