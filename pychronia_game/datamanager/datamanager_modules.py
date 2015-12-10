@@ -3987,9 +3987,8 @@ class MoneyItemsOwnership(BaseDataManager):
             raise UsageError(_("You must transfer at least one gem"))
 
         remaining_gems = utilities.substract_lists(sender_char["gems"], gems_choices)
-
         if remaining_gems is None:
-            raise UsageError(_("You don't possess the gems required"))
+            raise UsageError(_("Sender doesn't possess these gems"))
 
         remaining_gems.sort()
         sender_char["gems"] = remaining_gems
@@ -4011,7 +4010,7 @@ class MoneyItemsOwnership(BaseDataManager):
         character_properties = self.get_character_properties(username)
         remaining_gems = utilities.substract_lists(character_properties["gems"], gems_choices)
         if remaining_gems is None:
-            raise UsageError(_("You don't possess the gems required"))
+            raise UsageError(_("Sender doesn't possess these gems"))
         else:
             character_properties["gems"] = PersistentList(remaining_gems)
             # we only save the values in kashes, not origins
