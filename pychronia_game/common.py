@@ -285,7 +285,7 @@ def utctolocal(value):
 
 
 
-def render_rst_template(rst_tpl, datamanager):
+def __obsolete_render_rst_template(rst_tpl, datamanager):
     template = Template(rst_tpl)
 
     context = Context(dict(a="bbbbbbbb"))

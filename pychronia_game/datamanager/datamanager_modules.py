@@ -3601,7 +3601,7 @@ class MoneyItemsOwnership(BaseDataManager):
 
         game_data["global_parameters"].setdefault("bank_name", "bank")
         game_data["global_parameters"].setdefault("bank_account", 0) # can be negative
-        game_data["global_parameters"].setdefault("spent_gems", []) # gems used in abilities
+        game_data["global_parameters"].setdefault("spent_gems", []) # gems which were used in abilities or manually debited
 
         total_digital_money = game_data["global_parameters"]["bank_account"]
         total_gems = game_data["global_parameters"]["spent_gems"][:] # COPY
@@ -3630,9 +3630,21 @@ class MoneyItemsOwnership(BaseDataManager):
 
         game_data = self.data
 
+        def _check_gems(gems_list):
+            for gem in gems_list:
+                assert isinstance(gem, tuple) # must be hashable!!
+                (gem_value, gem_origin) = gem
+                utilities.check_is_positive_int(gem_value)
+                if gem_origin is not None:
+                    # important - we must not break that reference to an existing game item
+                    assert gem_origin in self.game_items
+                    assert self.game_items[gem_origin]["is_gem"]
+
         total_digital_money = game_data["global_parameters"]["bank_account"]
         total_gems = game_data["global_parameters"]["spent_gems"][:] # COPY!
         # print ("^^^^^^^^^^^^", "spent_gems", total_gems.count(500))
+
+        _check_gems(game_data["global_parameters"]["spent_gems"])
 
         for (name, character) in game_data["character_properties"].items():
             utilities.check_is_positive_int(character["account"], non_zero=False)
@@ -3646,21 +3658,9 @@ class MoneyItemsOwnership(BaseDataManager):
 
             #assert character["gems"] == sorted(character["gems"]), character["gems"] FIXME TEMP
 
-            for gem in character["gems"]:
-                assert isinstance(gem, tuple) # must be hashable!!
-                (gem_value, gem_origin) = gem
-                utilities.check_is_positive_int(gem_value)
-                if gem_origin is not None:
-                    # important - we must not break that reference to an existing game item
-                    assert gem_origin in self.game_items
-                    assert self.game_items[gem_origin]["is_gem"]
-                total_gems.append(gem_value) # only value in kashes, not gem origin
+            _check_gems(character["gems"])
+            total_gems += character["gems"]
             # print ("---------", name, total_gems.count(500))
-
-        ##TODO-REUSE
-        ##old_total_gems = game_data["global_parameters"]["total_gems"]
-        ##assert Counter(old_total_gems) == Counter(total_gems), (old_total_gems, total_gems)
-        ##assert old_total_gems == sorted(total_gems), "%s != %s" % (old_total_gems, total_gems)
 
         old_total_digital_money = game_data["global_parameters"]["total_digital_money"]
         assert old_total_digital_money == total_digital_money, "%s != %s" % (old_total_digital_money, total_digital_money)
@@ -4014,7 +4014,7 @@ class MoneyItemsOwnership(BaseDataManager):
         else:
             character_properties["gems"] = PersistentList(remaining_gems)
             # we only save the values in kashes, not origins
-            self.data["global_parameters"]["spent_gems"] += [x[0] for x in gems_choices]
+            self.data["global_parameters"]["spent_gems"] += gems_choices
 
 
 
