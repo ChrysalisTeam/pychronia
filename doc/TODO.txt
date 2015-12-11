@@ -29,6 +29,15 @@ GAMEMASTER_HINTS in:
 FEATURES
 ------------
 
+BUG quand errreur lors de la soumission d'une modif de spot radio qui bogue.... -> devient création de nouveau spot
+
+mettre pages de résumé des mercenaires de chaque joueur
+
+permetter de résuscuter gemmes spents
+
+factoriser <li><a href="#entry-{{ identifier|slugify }}">{{ identifier|default:_("NEW ENTRY") }}</a></li>
+Avec mutable vs immutable
+
 get_other_known_characters -> tjrs inclure les joueurs enchérisseurs dedans ?
 
 dire qu'on peut débiter gemmes mais pas en remettre, pour gamemaster
