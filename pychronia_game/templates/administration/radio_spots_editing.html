@@ -38,21 +38,7 @@
 
 
 {% block sidebar %}
-
-{% usekwacro side_panel_start frame_class="mini_frame float_left clear_left" decos="2" %}
-
-    <h2>{% trans "Entries" %}</h2>
-
-    <div class="rice_paper_rose tiny_bullets full_width" style="font-size:0.8em;">
-    <ul>
-        {% for identifier, form in forms %}
-            <li><a href="#entry-{{ identifier|slugify }}">{{ identifier|default:_("NEW ENTRY") }}</a></li>
-        {% endfor %}
-    </ul>
-    </div>
-
-{% usekwacro side_panel_end %}
-
+{% include "administration/management_index.html" %}
 {% endblock %}
 
 

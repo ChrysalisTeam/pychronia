@@ -1,0 +1,31 @@
+{% load i18n helpers kwacros%}
+{% loadkwacros "metalradiance_kwacros.html" %}
+
+
+{% usekwacro side_panel_start frame_class="mini_frame float_left clear_left" decos="2" %}
+    <h2>{% trans "Entries" %}</h2>
+
+    {% if immutable_table_items %}
+    <h3>{% trans "Mutable" %}</h3>
+    {% endif %}
+
+    <div class="rice_paper_rose tiny_bullets full_width" style="font-size:0.8em;">
+    <ul>
+        {% for identifier, form in forms %}
+            <li><a href="#entry-{{ identifier|slugify }}">{{ identifier|default:_("NEW ENTRY") }}</a></li>
+        {% endfor %}
+    </ul>
+    </div>
+
+    {% if immutable_table_items %}
+    <h3>{% trans "Immutable" %}</h3>
+    <div class="rice_paper_rose tiny_bullets full_width" style="font-size:0.8em;">
+    <ul>
+        {% for identifier, form in immutable_table_items %}
+            <li><a href="#entry-{{ identifier|slugify }}">{{ identifier }}</a></li>
+        {% endfor %}
+    </ul>
+    </div>
+    {% endif %}
+
+{% usekwacro side_panel_end %}
