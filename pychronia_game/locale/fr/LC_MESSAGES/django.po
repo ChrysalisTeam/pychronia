@@ -9,14 +9,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-12-10 22:46+0100\n"
+"POT-Creation-Date: 2015-12-11 20:14+0100\n"
 "PO-Revision-Date: 2015-12-10 22:51+0200\n"
 "Last-Translator: Pascal <chambon.pascal@gmail.com>\n"
 "Language-Team: Nothing\n"
-"Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: fr\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Generator: Virtaal 0.7.1\n"
 
@@ -598,7 +598,6 @@ msgstr ""
 "(username)s'."
 
 #: .\datamanager\datamanager_modules.py:3673
-#| msgid "Currencies and Items"
 msgid "objects and gems"
 msgstr "objets et gemmes"
 
@@ -612,7 +611,7 @@ msgid "Money amount must be positive"
 msgstr "La somme d'argent doit être positive"
 
 #: .\datamanager\datamanager_modules.py:3803
-#: .\datamanager\datamanager_modules.py:3984
+#: .\datamanager\datamanager_modules.py:3984 .\views\auction_views.py:144
 msgid "Sender and recipient must be different"
 msgstr "L'émetteur et le destinataire doivent être différents"
 
@@ -672,35 +671,39 @@ msgstr "Objet %(item_name)s transféré de %(from_name)s à %(char_name)s."
 msgid "You must transfer at least one gem"
 msgstr "Vous devez transférer au moins une gemme"
 
-#: .\datamanager\datamanager_modules.py:3992
-#: .\datamanager\datamanager_modules.py:4014
+#: .\datamanager\datamanager_modules.py:3991
+#: .\datamanager\datamanager_modules.py:4013
 msgid "Sender doesn't possess these gems"
 msgstr "L'émetteur ne possède pas ces gemmes"
 
-#: .\datamanager\datamanager_modules.py:3999
+#: .\datamanager\datamanager_modules.py:3998
 #, python-format
 msgid "Gems transferred from %(from_name)s to %(to_name)s : %(gems_choices)s."
 msgstr "Gemmes transférées de %(from_name)s à %(to_name)s : %(gems_choices)s."
 
-#: .\datamanager\datamanager_modules.py:4157
+#: .\datamanager\datamanager_modules.py:4028
+msgid "Selected gems couldn't be found among spent gems"
+msgstr "Les gemmes sélectionnées sont introuvables parmi celles dépensées"
+
+#: .\datamanager\datamanager_modules.py:4171
 #, python-format
 msgid "Unknown view names detected in the set of views to be activated: %r"
 msgstr "Noms de vues inconnus détectés dans l'ensemble des vues à activer: %r"
 
-#: .\datamanager\datamanager_modules.py:4374
+#: .\datamanager\datamanager_modules.py:4388
 msgid "static pages"
 msgstr "pages statiques"
 
-#: .\datamanager\datamanager_modules.py:4676
+#: .\datamanager\datamanager_modules.py:4690
 #, python-format
 msgid "Unknown captcha id %s"
 msgstr "Identifiant de captcha inconnu %s"
 
-#: .\datamanager\datamanager_modules.py:4680
+#: .\datamanager\datamanager_modules.py:4694
 msgid "Nope, it looked like this captcha had no known answer..."
 msgstr "Nope, il semble que ce captcha n'ait pas de réponse connue..."
 
-#: .\datamanager\datamanager_modules.py:4686
+#: .\datamanager\datamanager_modules.py:4700
 #, python-format
 msgid "Incorrect captcha answer '%s'"
 msgstr "Réponse au captcha incorrecte '%s'"
@@ -743,11 +746,11 @@ msgstr "Destinataire"
 msgid "No money available for transfer."
 msgstr "pas d'argent disponible pour transert."
 
-#: .\forms.py:42
+#: .\forms.py:41
 msgid "Amount"
 msgstr "Montant"
 
-#: .\forms.py:45
+#: .\forms.py:44
 msgid "Reason"
 msgstr "Raison"
 
@@ -882,7 +885,7 @@ msgstr "Anthropia"
 msgid "Auction"
 msgstr "Enchères"
 
-#: .\menus.py:81 .\views\auction_views.py:399
+#: .\menus.py:81 .\views\auction_views.py:405
 msgid "Auction Chatroom"
 msgstr "Chatroom d'Enchères"
 
@@ -2588,76 +2591,76 @@ msgstr "mon titre de test 1"
 msgid "my test title 2"
 msgstr "mon titre de test 2"
 
-#: .\tests\test_game.py:3790
+#: .\tests\test_game.py:3806
 msgid "Private dummy ability"
 msgstr "Compétence bidon privée"
 
-#: .\tests\test_game.py:4931
+#: .\tests\test_game.py:4947
 #, fuzzy
 msgid "test-title"
 msgstr "mon titre de test 1"
 
-#: .\tests\test_game.py:4952
+#: .\tests\test_game.py:4968
 msgid "ssss"
 msgstr "ssss"
 
-#: .\tests\test_game.py:4959 .\tests\test_game.py:4980
+#: .\tests\test_game.py:4975 .\tests\test_game.py:4996
 msgid "SSS"
 msgstr "SSS"
 
-#: .\tests\test_game.py:4963
+#: .\tests\test_game.py:4979
 msgid "DSDSF"
 msgstr "DSDSF"
 
-#: .\tests\test_game.py:4968
+#: .\tests\test_game.py:4984
 msgid "DDD"
 msgstr ""
 
-#: .\tests\test_game.py:4972
+#: .\tests\test_game.py:4988
 msgid "LJKSG"
 msgstr ""
 
-#: .\tests\test_game.py:4991
+#: .\tests\test_game.py:5007
 msgid "Hi"
 msgstr ""
 
-#: .\tests\test_game.py:4992
+#: .\tests\test_game.py:5008
 msgid "Hi2"
 msgstr ""
 
-#: .\tests\test_game.py:4994
+#: .\tests\test_game.py:5010
 msgid "Yowh1"
 msgstr ""
 
-#: .\tests\test_game.py:4995
+#: .\tests\test_game.py:5011
 msgid "Yowh2"
 msgstr ""
 
-#: .\tests\test_game.py:4996
+#: .\tests\test_game.py:5012
 msgid "Yowh3"
 msgstr ""
 
-#: .\tests\test_game.py:4997
+#: .\tests\test_game.py:5013
 msgid "Yowh4"
 msgstr ""
 
-#: .\tests\test_game.py:4999
+#: .\tests\test_game.py:5015
 msgid "Yayh1"
 msgstr ""
 
-#: .\tests\test_game.py:5000
+#: .\tests\test_game.py:5016
 msgid "Yayh2"
 msgstr ""
 
-#: .\tests\test_game.py:5001
+#: .\tests\test_game.py:5017
 msgid "Yayh3"
 msgstr ""
 
-#: .\tests\test_game.py:5002
+#: .\tests\test_game.py:5018
 msgid "Yayh4"
 msgstr ""
 
-#: .\tests\test_game.py:5004
+#: .\tests\test_game.py:5020
 msgid "Maaaster"
 msgstr ""
 
@@ -3397,57 +3400,57 @@ msgstr "Personnages"
 msgid "Money transfer successful."
 msgstr "Transfert d'argent réussi."
 
-#: .\views\auction_views.py:148
+#: .\views\auction_views.py:154
 msgid "Gems transfer successful."
 msgstr "Transfert de gemmes réussi."
 
-#: .\views\auction_views.py:157
+#: .\views\auction_views.py:163
 msgid "Artefact transfer successful."
 msgstr "Transfert d'artefact réussi."
 
-#: .\views\auction_views.py:174
+#: .\views\auction_views.py:180
 msgid "Auction Items"
 msgstr "Objets d'Enchères"
 
-#: .\views\auction_views.py:174
+#: .\views\auction_views.py:180
 msgid "All Items"
 msgstr "Tous les Objets"
 
-#: .\views\auction_views.py:183
+#: .\views\auction_views.py:189
 #, python-format
 msgid "Object successfully transferred to '%s'."
 msgstr "Objet transféré avec succès à '%s'."
 
-#: .\views\auction_views.py:185
+#: .\views\auction_views.py:191
 msgid "Improper recipient"
 msgstr "Destinataire invalide"
 
-#: .\views\auction_views.py:188
+#: .\views\auction_views.py:194
 #, python-format
 msgid "Sale successfully canceled for '%s'."
 msgstr "Vente correctement annulée pour '%s'."
 
-#: .\views\auction_views.py:234
+#: .\views\auction_views.py:240
 msgid "Auction Slideshow"
 msgstr "Diaporama d'Enchères"
 
-#: .\views\auction_views.py:234
+#: .\views\auction_views.py:240
 msgid "Items Slideshow"
 msgstr "Diaporama d'Objets"
 
-#: .\views\auction_views.py:255
+#: .\views\auction_views.py:261
 msgid "My Items"
 msgstr "Mes objets"
 
-#: .\views\auction_views.py:274
+#: .\views\auction_views.py:280
 msgid "Item 3D View"
 msgstr "Vue 3D d'Objet"
 
-#: .\views\auction_views.py:338
+#: .\views\auction_views.py:344
 msgid "Ajax Chat"
 msgstr "Chat Ajax"
 
-#: .\views\auction_views.py:371
+#: .\views\auction_views.py:377
 msgid "system"
 msgstr "Système"
 

@@ -4025,7 +4025,7 @@ class MoneyItemsOwnership(BaseDataManager):
 
         remaining_gems = utilities.substract_lists(self.data["global_parameters"]["spent_gems"], gems_choices)
         if remaining_gems is None:
-            raise UsageError(_("Selected gems couldn't be found"))
+            raise UsageError(_("Selected gems couldn't be found among spent gems"))
         else:
             self.data["global_parameters"]["spent_gems"] = PersistentList(remaining_gems)
             character_properties["gems"] += gems_choices

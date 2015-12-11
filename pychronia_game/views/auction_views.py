@@ -138,7 +138,13 @@ class CharactersView(AbstractGameView):
             assert not sender_name, sender_name
             sender_name = user.username
         
-        if recipient_name == self.datamanager.get_global_parameter("bank_name"):
+        bank_name = self.datamanager.get_global_parameter("bank_name")
+
+        if sender_name == recipient_name:
+            raise UsageError(_("Sender and recipient must be different"))
+        elif sender_name == bank_name:
+            self.datamanager.credit_character_gems(username=recipient_name, gems_choices=gems_choices)
+        elif recipient_name == bank_name:
             self.datamanager.debit_character_gems(username=sender_name, gems_choices=gems_choices)
         else:
             assert recipient_name in self.datamanager.get_character_usernames()

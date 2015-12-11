@@ -52,7 +52,7 @@ class GemsTransferForm(AbstractGameForm, GemHandlingFormUtils):
         user = datamanager.user
 
         if user.is_master:
-            available_gems = []
+            available_gems = datamanager.get_global_parameter("spent_gems")[:]  # COPY, gems taken so that we can "revive" them
             for character, properties in datamanager.get_character_sets().items():
                 available_gems += properties["gems"]
         else:
@@ -67,8 +67,9 @@ class GemsTransferForm(AbstractGameForm, GemHandlingFormUtils):
         # dynamic fields here ...
         if user.is_master:
             _character_choices = datamanager.build_select_choices_from_character_usernames(datamanager.get_character_usernames(), add_empty=True)
-            self.fields = add_to_ordered_dict(self.fields, 0, "sender_name", forms.ChoiceField(label=_("Sender"), choices=_character_choices))  # for now, can't send FROM bank
-            self.fields = add_to_ordered_dict(self.fields, 1, "recipient_name", forms.ChoiceField(label=_("Recipient"), choices=[_get_bank_choice(datamanager)] + _character_choices))
+            _character_choices.insert(1, _get_bank_choice(datamanager))  # we add the BANK as sender and recipient!
+            self.fields = add_to_ordered_dict(self.fields, 0, "sender_name", forms.ChoiceField(label=_("Sender"), choices=_character_choices))
+            self.fields = add_to_ordered_dict(self.fields, 1, "recipient_name", forms.ChoiceField(label=_("Recipient"), choices=_character_choices))
         else:
             others = datamanager.get_other_known_characters()  # character CANNOT send gems to the Bank here
             others_choices = datamanager.build_select_choices_from_character_usernames(others, add_empty=True)
