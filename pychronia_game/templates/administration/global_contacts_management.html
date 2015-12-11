@@ -49,22 +49,23 @@
 	    {% for identifier, data in immutable_table_items %}
 	    <div id="entry-{{ identifier|slugify }}" class="scroll_realistic_thin_ends center">
 
-            <p><b>{{ identifier }}</b></p>
+            <p><b><u>{{ identifier }}</u></b></p>
 
 	        <p>
-	            {% trans "Avatar:" %}
+	            <b>{% trans "Avatar:" %}</b>
 	            {% if data.avatar %}
-	               <img style="vertical-align: middle" src="{% game_file_img data.avatar alias="contact_avatar" %}"/><br/>
-	               &nbsp;&nbsp;<span class="small_text">({{data.avatar}})</span>
+	               <img style="vertical-align: middle" src="{% game_file_img data.avatar alias="contact_avatar" %}" title="{% trans "Source" %}: {{data.avatar}}"/><br/>
 	            {% else %}
 	               {% trans "None" %}
 	            {% endif %}
 	            </p>
 
-            <p>{% trans "Description" %}: {{ data.description|default:_("None") }}</p>
+            <p><b>{% trans "Description" %}:</b> {{ data.description|default:_("None") }}</p>
 
-            <p>{% trans "Gamemaster Hints" %}: {{ data.gamemaster_hints|default:_("None") }}</p>
+            <p><b>{% trans "Gamemaster Hints" %}:</b> {{ data.gamemaster_hints|default:_("None") }}</p>
 
+            {% comment %}
+            NOT YET USED BY DATAMANAGER ATM
             <p>
 	        {% if data.access_tokens == None %}
 	            PUBLIC
@@ -72,6 +73,7 @@
 	            {% trans "Allowed for" %}: {{ data.access_tokens|join:", "|default:_("No one") }}
 	        {% endif %}
             </p>
+            {% endcomment %}
 
 	    </div>
 	    {% endfor %}
