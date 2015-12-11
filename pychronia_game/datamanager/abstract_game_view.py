@@ -537,8 +537,10 @@ class AbstractGameView(object):
 
         if bound_form and bound_form.is_valid():
             with action_failure_handler(self.request, success_message=None): # only for unhandled exceptions
+                normalized_values = bound_form.get_normalized_values()
+                self.logger.info("In _do_process_form_submission normalized_values: %r", normalized_values)
                 success_message = execution_processor(action_name=action_name,
-                                                      unfiltered_params=bound_form.get_normalized_values())
+                                                      unfiltered_params=normalized_values)
                 res["result"] = action_successful = True
                 if isinstance(success_message, basestring) and success_message:
                     user.add_message(success_message)
@@ -570,6 +572,8 @@ class AbstractGameView(object):
 
         user = self.datamanager.user
         data = self.request.POST
+
+        #self.logger.debug("Processing HTML POST data: %r", data)
 
         if data.get(self._ACTION_FIELD): # manually built form
             res["result"] = False # by default
