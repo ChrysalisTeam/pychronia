@@ -4004,7 +4004,7 @@ class MoneyItemsOwnership(BaseDataManager):
     @transaction_watcher
     def debit_character_gems(self, username=CURRENT_USER, gems_choices=None):
         """
-        Completely remove some of a character's gems from the game.
+        Remove some of a character's gems from the game.
         """
         assert isinstance(gems_choices, (list, PersistentList))
         character_properties = self.get_character_properties(username)
@@ -4013,8 +4013,23 @@ class MoneyItemsOwnership(BaseDataManager):
             raise UsageError(_("Sender doesn't possess these gems"))
         else:
             character_properties["gems"] = PersistentList(remaining_gems)
-            # we only save the values in kashes, not origins
             self.data["global_parameters"]["spent_gems"] += gems_choices
+
+    @transaction_watcher
+    def credit_character_gems(self, username=CURRENT_USER, gems_choices=None):
+        """
+        Revive some gems that were previously spent.
+        """
+        assert isinstance(gems_choices, (list, PersistentList))
+        character_properties = self.get_character_properties(username)
+
+        remaining_gems = utilities.substract_lists(self.data["global_parameters"]["spent_gems"], gems_choices)
+        if remaining_gems is None:
+            raise UsageError(_("Selected gems couldn't be found"))
+        else:
+            self.data["global_parameters"]["spent_gems"] = PersistentList(remaining_gems)
+            character_properties["gems"] += gems_choices
+
 
 
 

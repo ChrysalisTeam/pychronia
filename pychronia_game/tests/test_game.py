@@ -1520,7 +1520,23 @@ class TestDatamanager(BaseGameTestCase):
         assert len(self.dm.get_character_properties("guy3")["gems"]) == len(guy3_previous["gems"]) - 2
 
 
+        # test PURE CREDIT of gems
 
+        guy3_previous2 = copy.deepcopy(self.dm.get_character_properties("guy3"))
+
+        with pytest.raises(UsageError):
+            self.dm.credit_character_gems("guy3", gems_choices=[(gems_given[0][0], "weird_origin")])
+        with pytest.raises(UsageError):
+            self.dm.credit_character_gems("guy3", gems_choices=[(345, gems_given[0][1])])
+        assert self.dm.get_character_properties("guy3") == guy3_previous2
+
+        self.dm.credit_character_gems("guy3", gems_choices=gems_given)
+        assert self.dm.get_character_properties("guy3") != guy3_previous2
+        assert self.dm.get_character_properties("guy3") == guy3_previous  # back to previous state
+        assert len(self.dm.get_character_properties("guy3")["gems"]) == len(guy3_previous2["gems"]) + 2
+
+        with pytest.raises(UsageError):  # can't do it a second time, no more of these gems in "spent_gems"!
+            self.dm.credit_character_gems("guy3", gems_choices=gems_given)
 
 
     @for_core_module(MoneyItemsOwnership)
