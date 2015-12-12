@@ -3416,14 +3416,14 @@ class TestDatamanager(BaseGameTestCase):
                                              django_user=None) # no django staff user here
             assert session_ticket == {'game_instance_id': TEST_GAME_INSTANCE_ID,
                                       'impersonation_target': None,
-                                      'impersonation_writability': None,  # RESET
+                                      'impersonation_writability': writability,  # NOT RESET
                                       'game_username': master_login}
             assert self.dm.user.username == master_login
             assert self.dm.user.has_write_access # always if not impersonation
             assert not self.dm.user.is_superuser
             assert not self.dm.user.is_impersonation
             assert not self.dm.user.impersonation_target
-            assert not self.dm.user.impersonation_writability
+            assert self.dm.user.impersonation_writability == bool(writability)
             assert self.dm.user.real_username == master_login
             assert self.dm.should_display_admin_tips()
             assert not self.dm.user.has_notifications()  # no errors, it's a standard case when using "usernames in URLs"
@@ -3457,7 +3457,7 @@ class TestDatamanager(BaseGameTestCase):
                                              django_user=django_user)
             assert session_ticket == {'game_instance_id': TEST_GAME_INSTANCE_ID,
                                       'impersonation_target': None,
-                                      'impersonation_writability': None, # RESET
+                                      'impersonation_writability': writability, # NOT RESET
                                       'game_username': master_login}
 
             assert self.dm.user.username == master_login
@@ -3465,7 +3465,7 @@ class TestDatamanager(BaseGameTestCase):
             assert not self.dm.user.is_superuser
             assert not self.dm.user.is_impersonation
             assert not self.dm.user.impersonation_target
-            assert self.dm.user.impersonation_writability == False # RESET
+            assert self.dm.user.impersonation_writability == bool(writability) # NOT RESET
             assert self.dm.user.real_username == master_login
             assert self.dm.should_display_admin_tips()
             assert not self.dm.user.has_notifications() # IMPORTANT - no error message
@@ -3578,12 +3578,14 @@ class TestDatamanager(BaseGameTestCase):
                                  'impersonation_writability': None,
                                  'game_username': None,  # ANONYMOUS
                                  'is_observer': random.choice((True, False))}
+
+        writability = random.choice((True, False, None))
         self.dm.authenticate_with_session_data(_special_session_ticket,
                                              requested_impersonation_target="",  # THIS sometimes crashed
-                                             requested_impersonation_writability=random.choice((True, False, None)),
+                                             requested_impersonation_writability=writability,
                                              django_user=django_user)
         assert not _special_session_ticket["impersonation_target"]
-        assert not _special_session_ticket["impersonation_writability"]
+        assert _special_session_ticket["impersonation_writability"] == (writability if is_superuser else None)  # reset IFF non-privileged user
         assert not self.dm.user.has_notifications()
 
 
