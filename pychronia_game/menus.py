@@ -142,7 +142,7 @@ def _generate_web_menu(request, menu_entry_generator):
                          menu_entry(_(u"Manage Characters"), views.manage_characters),
                          menu_entry(_(u"Manage Webradio Playlist"), views.webradio_management),
 
-
+                         menu_entry(_(u"Edit Game Items"), views.game_items_management),
                          menu_entry(_(u"Edit Static Pages"), views.static_pages_management),
                          menu_entry(_(u"Edit Email Contacts"), views.global_contacts_management),
                          menu_entry(_(u"Edit Radio Spots"), views.radio_spots_editing),

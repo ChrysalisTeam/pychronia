@@ -23,6 +23,9 @@ static_pages_management = StaticPagesManagement.as_view
 from .global_contacts_management_mod import GlobalContactsManagement
 global_contacts_management = GlobalContactsManagement.as_view
 
+from .game_items_management_mod import GameItemsManagement
+game_items_management = GameItemsManagement.as_view
+
 from .radio_spots_editing_mod import RadioSpotsEditing
 radio_spots_editing = RadioSpotsEditing.as_view
 
