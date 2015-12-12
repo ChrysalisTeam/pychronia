@@ -3680,9 +3680,14 @@ class MoneyItemsOwnership(BaseDataManager):
                 if properties["gamemaster_hints"]:
                     properties["gamemaster_hints"] = properties["gamemaster_hints"].strip()
 
-                properties['unit_cost'] = self._compute_items_unit_cost(total_cost=properties['total_price'], num_gems=properties['num_items']) # works with NONE too
+                properties["auction"] = properties.get('auction') or ""  # NON NULL
+
+                properties['total_price'] = properties.get('total_price') or 0  # NON NULL
+
+                if properties.get('unit_cost') is None:
+                    properties['unit_cost'] = self._compute_items_unit_cost(total_cost=properties['total_price'], num_gems=properties['num_items'])
+
                 properties['owner'] = properties.get('owner', None)
-                properties["auction"] = properties.get('auction', None)
 
                 #if properties["is_gem"] and not properties['owner']: # we dont recount gems appearing in character["gems"]
                 #    total_gems += [properties['unit_cost']] * properties["num_items"]
@@ -3690,6 +3695,7 @@ class MoneyItemsOwnership(BaseDataManager):
                 properties['image'] = utilities.find_game_file(properties['image'], "images")
 
         def _preprocess_new_item(self, key, value):
+            value.setdefault('owner', None)
             return (key, PersistentMapping(value))
             # other params are supposed to exist in "value"
 
@@ -3704,15 +3710,10 @@ class MoneyItemsOwnership(BaseDataManager):
             utilities.check_is_slug(name)
             assert isinstance(properties['is_gem'], bool)
             assert utilities.check_is_positive_int(properties['num_items'], non_zero=True)
-            if properties['total_price']:
-                assert utilities.check_is_positive_int(properties['total_price'], non_zero=True)
-                assert utilities.check_is_positive_int(properties['unit_cost'], non_zero=True)
-            else:
-                assert properties['total_price'] is None
-                assert properties['unit_cost'] is None
 
-            # OK for NONE values too ; doesn't work the other way round, due to rounding of division
-            assert properties['unit_cost'] == self._compute_items_unit_cost(total_cost=properties['total_price'], num_gems=properties['num_items'])
+            # these two values can be NON RELATED!
+            assert utilities.check_is_positive_int(properties['total_price'], non_zero=False)
+            assert utilities.check_is_positive_int(properties['unit_cost'], non_zero=False)
 
             assert properties['owner'] is None or properties['owner'] in game_data["character_properties"].keys()
 
@@ -3720,8 +3721,8 @@ class MoneyItemsOwnership(BaseDataManager):
             assert isinstance(properties['comments'], basestring) and properties['comments']
             utilities.check_is_game_file(properties['image'])
 
-            # item might be out of auction
-            assert properties['auction'] is None or isinstance(properties['auction'], basestring) and properties['auction']
+            # item might be out of auction, with auction == ""
+            assert isinstance(properties['auction'], basestring)
 
             """ useless now
             if properties["is_gem"] and not properties["owner"]:
@@ -3746,13 +3747,13 @@ class MoneyItemsOwnership(BaseDataManager):
 
 
         def _compute_items_unit_cost(self, total_cost, num_gems):
-            if not total_cost:
-                return None
+            assert total_cost >= 0
+            assert num_gems > 0
             return int(math.ceil(float(total_cost / num_gems)))
 
         def _compute_items_total_price(self, unit_cost, num_gems):
-            if not unit_cost:
-                return None
+            assert unit_cost >= 0
+            assert num_gems > 0
             return unit_cost * num_gems # simpler
 
 

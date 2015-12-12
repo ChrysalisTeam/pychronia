@@ -1387,7 +1387,7 @@ class TestDatamanager(BaseGameTestCase):
 
         # small check - NULL PRICE IS NOT A PROBLEM
         chest = self.dm.get_item_properties("sacred_chest")
-        assert chest["unit_cost"] is chest["total_price"] is None # NOT A PROBLEM
+        assert chest["unit_cost"] == chest["total_price"] == 0  # NOT A PROBLEM
 
         lg_old = copy.deepcopy(self.dm.get_character_properties("guy3"))
         nw_old = copy.deepcopy(self.dm.get_character_properties("guy1"))

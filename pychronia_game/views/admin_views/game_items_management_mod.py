@@ -11,11 +11,15 @@ from pychronia_game.datamanager.abstract_form import GAMEMASTER_HINTS_FIELD
 
 class GameItemForm(DataTableForm):
 
-    title = forms.CharField(label=ugettext_lazy("Title"))
+    auction = forms.CharField(label=ugettext_lazy("Enchère"), required=False)  # can be empty string
 
-    comments = forms.CharField(label=ugettext_lazy("Description"), widget=forms.Textarea(attrs={'rows': '2', 'cols':'40'}), required=False)
+    title = forms.CharField(label=ugettext_lazy("Title"), required=True)
 
-    is_gems = forms.BooleanField(label=_("Made of gems"), initial=False, required=False)
+    comments = forms.CharField(label=ugettext_lazy("Description"), widget=forms.Textarea(attrs={'rows': '2', 'cols':'40'}), required=True)
+
+    image = forms.CharField(label=ugettext_lazy("Image"), required=True)
+
+    is_gem = forms.BooleanField(label=_("Made of gems"), initial=False, required=False)
 
     total_price = forms.IntegerField(label=ugettext_lazy("Total cost"), min_value=0, required=True)
 
@@ -23,16 +27,9 @@ class GameItemForm(DataTableForm):
 
     unit_cost = forms.IntegerField(label=ugettext_lazy("Unit cost"), min_value=0, required=True)
 
-    auction = forms.CharField(label=ugettext_lazy("Enchère"))
-
     gamemaster_hints = GAMEMASTER_HINTS_FIELD()
 
-    """
-    def clean_subject(self):
-        data = self.cleaned_data['subject']
-        self._ensure_no_placeholder_left(data)
-        return data
-    """
+
 
 @register_view
 class GameItemsManagement(AbstractDataTableManagement):
