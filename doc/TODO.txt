@@ -15,6 +15,7 @@ crédibilité de notre Académie, qui a toujours été en pointe dans ce
 domaine.
 
 
+
 GAMEMASTER_HINTS in:
 
 	- characters
@@ -28,6 +29,21 @@ GAMEMASTER_HINTS in:
 
 FEATURES
 ------------
+
+dire comment fermer popups d'erreusren cliquant en bas d'eux
+
+Forbid upper case usernames, and normalize case in login/secret-question forms
+
+Ajouter help page for game items management
+pbn fixed notification
+
+gamemaster_manual.py -> "_mod.py" ?
+
+FIX COMPATIBLE_ACCESSES for gamemaster summaries - need a specific GAME_ADMIN_SUMMARY method instead!!
+
+BUG - la writability est RESET quand on ouvre une page de master
+
+TRADUIRE les noms des permissions
 
 BUG quand errreur lors de la soumission d'une modif de spot radio qui bogue.... -> devient création de nouveau spot
 
