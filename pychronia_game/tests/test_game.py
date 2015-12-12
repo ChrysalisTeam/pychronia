@@ -3572,12 +3572,13 @@ class TestDatamanager(BaseGameTestCase):
 
 
         # ensure that empty "game_username" in session is not a problem when resetting impersonation
+        is_observer = random.choice((True, False))
         _special_session_ticket = {'game_instance_id': TEST_GAME_INSTANCE_ID,
                                  'impersonation_target': random.choice((player_login, anonymous_login, None)),
                                  'is_superuser': False,
                                  'impersonation_writability': None,
                                  'game_username': None,  # ANONYMOUS
-                                 'is_observer': random.choice((True, False))}
+                                 'is_observer': is_observer}
 
         writability = random.choice((True, False, None))
         self.dm.authenticate_with_session_data(_special_session_ticket,
@@ -3585,7 +3586,7 @@ class TestDatamanager(BaseGameTestCase):
                                              requested_impersonation_writability=writability,
                                              django_user=django_user)
         assert not _special_session_ticket["impersonation_target"]
-        assert _special_session_ticket["impersonation_writability"] == (writability if is_superuser else None)  # reset IFF non-privileged user
+        assert _special_session_ticket["impersonation_writability"] == (writability if (is_superuser and not is_observer) else None)  # reset IFF non-privileged user
         assert not self.dm.user.has_notifications()
 
 
