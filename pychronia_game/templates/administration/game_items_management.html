@@ -17,7 +17,7 @@
 
     {% if forms %}
 
-        <h2>{% trans "Game Items" %}</h2>
+        <h2>{% trans "Free Items" %}</h2>
 
         {% for identifier, form in forms %}
         <div id="entry-{{ identifier|slugify }}" class="scroll_realistic_thin_ends center">
@@ -32,6 +32,28 @@
 
         </div>
         {% endfor %}
+
+    {% else %}
+
+
+    {% endif %}
+
+
+
+
+    {% if immutable_table_items %}
+
+        <br/>
+        <h2>{% trans "Owned Items" %}</h2>
+
+        <ul>
+        {% for identifier, data in immutable_table_items %}
+            <li id="entry-{{ identifier|slugify }}">
+                {{data.title}} {% if data.auction %}({% trans "Auction" %} {{data.auction}}){% endif %}, {% trans "owned by" %} {{data.owner|capfirst}}
+            </li>
+        {% endfor %}
+        </ul>
+
 
     {% else %}
 
