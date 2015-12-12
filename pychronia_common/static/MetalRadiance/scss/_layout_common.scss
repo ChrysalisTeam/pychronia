@@ -18,7 +18,7 @@ body .notification_panel {
 
     display: block;
     height: auto;
-    position: absolute;
+    position: fixed;  // IMPORTANT, not "absolute" - else errors are not visible when a #fragment is use in link URL
     top: 0px;
     left: 50%;
 

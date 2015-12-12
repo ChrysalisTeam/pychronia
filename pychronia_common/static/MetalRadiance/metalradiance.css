@@ -2101,7 +2101,7 @@ body .notification_panel {
   margin-left: -248px;
   display: block;
   height: auto;
-  position: absolute;
+  position: fixed;
   top: 0px;
   left: 50%;
   text-align: center;
