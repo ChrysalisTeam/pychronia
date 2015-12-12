@@ -42,32 +42,42 @@ class MercenariesHiringAbility(AbstractPartnershipAbility):
 
     TEMPLATE = "abilities/mercenaries_hiring.html"
 
-    ACCESS = UserAccess.character
+    ACCESS = UserAccess.authenticated
     REQUIRES_CHARACTER_PERMISSION = True
     REQUIRES_GLOBAL_PERMISSION = True
 
 
     def get_template_vars(self, previous_form_data=None):
 
-        #_user_profile = self.get_character_properties()
-        #gems = _user_profile["gems"]
-        #total_gems_value = sum(gem[0] for gem in gems)
-
-        # for now we don't exclude locations of already hired mercenaries
-        hiring_form = self._instantiate_game_form(new_action_name="hiring_form",
-                                             hide_on_success=False,
-                                             previous_form_data=previous_form_data)
-
-        mercenaries_locations = self.private_data["mercenaries_locations"]
-
-        #print (">>>>>>>>>>>>>>>>", self.settings)
-        return {
-                 'page_title': _("Mercenaries Management"),
-                 'settings': self.settings,
-                 'mercenaries_locations': mercenaries_locations,
-                 'hiring_form': hiring_form,
-                 'dedicated_email': self.dedicated_email,
-               }
+        if self.is_master():
+            data = self.all_private_data.items()
+            all_mercenaries_locations = sorted((k, v["mercenaries_locations"])
+                                               for (k, v) in data
+                                               if v["mercenaries_locations"])
+            return dict(page_title=_("Mercenaries of Players"),
+                        all_mercenaries_locations=all_mercenaries_locations)
+         
+        else:
+            assert self.is_character()
+            #_user_profile = self.get_character_properties()
+            #gems = _user_profile["gems"]
+            #total_gems_value = sum(gem[0] for gem in gems)
+    
+            # for now we don't exclude locations of already hired mercenaries
+            hiring_form = self._instantiate_game_form(new_action_name="hiring_form",
+                                                 hide_on_success=False,
+                                                 previous_form_data=previous_form_data)
+    
+            mercenaries_locations = self.private_data["mercenaries_locations"]
+    
+            #print (">>>>>>>>>>>>>>>>", self.settings)
+            return {
+                     'page_title': _("Mercenaries Management"),
+                     'settings': self.settings,
+                     'mercenaries_locations': mercenaries_locations,
+                     'hiring_form': hiring_form,
+                     'dedicated_email': self.dedicated_email,
+                   }
 
 
     @readonly_method

@@ -4,6 +4,24 @@
 
 {% block content %}
 
+
+{% if user.is_master %}
+
+{% if not all_mercenaries_locations %}
+<p><i>{% trans "No mercenaries have been hired so far." %}</i></p>
+{% endif %}
+
+ <dl>
+{% for username, mercenaries_locations in all_mercenaries_locations %}
+
+  <dt>{{username|capfirst}}</dt>
+  <dd>{{ mercenaries_locations|join:", " }}</dd>
+
+{% endfor %}
+</dl>
+
+{% else %}
+
 <br/>
 
 <h2>
@@ -35,4 +53,7 @@
     <p><input type="submit" name="hire_agents" value="{% trans "Hire agents" %}" /></p>
     </form>
 </div>
+
+{% endif %}
+
 {% endblock %}

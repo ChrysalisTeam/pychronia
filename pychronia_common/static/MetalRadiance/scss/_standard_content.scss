@@ -154,15 +154,18 @@ h1, h2 {
 
 dl {
     text-indent: 0;
+    margin:10px 10px;
+
+    dt {
+        margin-top: 6px;
+        font-weight: bold;
+    }
+    dd {
+        padding-left: 15px;
+    }
 }
 
-dt {
-    font-weight: bold;
-}
 
-dd {
-
-}
 
 
 hr {
