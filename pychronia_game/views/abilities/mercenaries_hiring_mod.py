@@ -53,9 +53,8 @@ class MercenariesHiringAbility(AbstractPartnershipAbility):
         all_mercenaries_locations = sorted((k, v["mercenaries_locations"])
                                            for (k, v) in data
                                            if v["mercenaries_locations"])
-        template_vars = dict(page_title=_("Mercenaries of Players"),
-                             all_mercenaries_locations=all_mercenaries_locations)
 
+        template_vars = dict(all_mercenaries_locations=all_mercenaries_locations)
         res = render_to_string("abilities/mercenaries_hiring_summary.html",
                                template_vars)
 

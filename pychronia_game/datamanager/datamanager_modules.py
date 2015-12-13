@@ -524,9 +524,8 @@ class CharacterHandling(BaseDataManager): # TODO REFINE
     @readonly_method
     def get_character_usernames(self, exclude_current=False, is_npc=None):
         """
-        We sort "players first, NPC second".
+        We sort "players first, NPC second, and then secodary sorting by username".
         """
-
         items = ((k, v) for (k, v) in self.data["character_properties"].items() if (is_npc is None) or v["is_npc"] == is_npc)
         items = sorted(items, key=lambda x: (x[1]["is_npc"], x[0]))
         res = [item[0] for item in items]
