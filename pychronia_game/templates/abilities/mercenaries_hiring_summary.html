@@ -1,0 +1,13 @@
+
+{% if not all_mercenaries_locations %}
+<p><i>{% trans "No mercenaries have been hired so far." %}</i></p>
+{% endif %}
+
+ <dl>
+{% for username, mercenaries_locations in all_mercenaries_locations %}
+
+  <dt>{{username|capfirst}}</dt>
+  <dd>{{ mercenaries_locations|join:", " }}</dd>
+
+{% endfor %}
+</dl>

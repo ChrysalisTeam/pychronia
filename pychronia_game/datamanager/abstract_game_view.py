@@ -2,25 +2,27 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import urllib
+import json
+
+from ZODB.POSException import POSError # parent of ConflictError
+
 from pychronia_game.common import *
 from pychronia_game.common import _undefined # for static checker...
-import json
+
+from django.forms import Form
 from django.http import Http404, HttpResponseRedirect, HttpResponse, \
     HttpResponseForbidden, HttpResponseBadRequest
-from django.template import loader
-
-import urllib
+from django.core import urlresolvers
+from django.utils.functional import Promise # used eg. for lazy-translated strings
+from django.shortcuts import redirect
 
 from ..datamanager import GameDataManager
 from .abstract_form import AbstractGameForm, UninstantiableFormError
 from .datamanager_tools import transaction_watcher, readonly_method
-from django.forms import Form
 
 
-from ZODB.POSException import POSError # parent of ConflictError
-from django.core import urlresolvers
-from django.utils.functional import Promise # used eg. for lazy-translated strings
-from django.shortcuts import redirect
+
 
 '''
 REDIRECTION TO LOGIN PAGE - not used ATM
@@ -760,7 +762,9 @@ class AbstractGameView(object):
     @transaction_watcher
     @transform_usage_error
     def process_admin_request(self, request, action_name):
-
+        """
+        Used to process POST mini-forms from admin dashboard view.
+        """
         assert action_name in self.ADMIN_ACTIONS # else big pb!
 
         self._before_request(request)
@@ -794,6 +798,17 @@ class AbstractGameView(object):
             return res
         finally:
             self._after_request()
+
+
+    @readonly_method
+    def get_admin_summary_html(self):
+        return self._get_admin_summary_html()
+
+    def _get_admin_summary_html(self):
+        """
+        Override this utility to return an HTML block, which will be exposed in "admin info" special page.
+        """
+        return None
 
 
 

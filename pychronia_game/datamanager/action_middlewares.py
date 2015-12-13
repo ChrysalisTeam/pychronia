@@ -263,8 +263,7 @@ class CostlyActionMiddleware(AbstractActionMiddleware):
         
     """
 
-    COMPATIBLE_ACCESSES = (UserAccess.character,
-                           UserAccess.authenticated)  # WORKAROUND for gamemaster explanation pages
+    COMPATIBLE_ACCESSES = (UserAccess.character,)
 
 
     def _lazy_setup_private_action_middleware_data(self, action_name):
@@ -418,8 +417,7 @@ class CountLimitedActionMiddleware(AbstractActionMiddleware):
         
     """
 
-    COMPATIBLE_ACCESSES = (UserAccess.character,
-                           UserAccess.authenticated)  # WORKAROUND for gamemaster explanation pages
+    COMPATIBLE_ACCESSES = (UserAccess.character,)
 
 
     def _lazy_setup_private_action_middleware_data(self, action_name):
@@ -533,8 +531,8 @@ class TimeLimitedActionMiddleware(AbstractActionMiddleware):
         last_use_times: array of datetimes
         
     """
-    COMPATIBLE_ACCESSES = (UserAccess.character,
-                           UserAccess.authenticated)  # WORKAROUND for gamemaster explanation pages
+
+    COMPATIBLE_ACCESSES = (UserAccess.character,)
 
 
     def _lazy_setup_private_action_middleware_data(self, action_name):
