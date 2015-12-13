@@ -13,7 +13,9 @@ from ._test_tools import *
 from ._dummy_abilities import *
 
 import fileservers
+from django.utils.functional import Promise # used eg. for lazy-translated strings
 from django.utils import timezone
+
 from pychronia_game.datamanager.abstract_ability import AbstractAbility
 from pychronia_game.datamanager.action_middlewares import CostlyActionMiddleware, \
     CountLimitedActionMiddleware, TimeLimitedActionMiddleware
@@ -3780,6 +3782,8 @@ class TestDatamanager(BaseGameTestCase):
         self.dm.ACTIVABLE_VIEWS_REGISTRY[random_view] = random_klass # test cleanup
 
 
+        self._set_user("master")
+
         # test admin form tokens
         assert "admin_dashboard.choose_activated_views" in self.dm.get_admin_widget_identifiers()
 
@@ -3794,6 +3798,15 @@ class TestDatamanager(BaseGameTestCase):
         assert len(components) == 2
         assert isinstance(components[0], admin_dashboard.klass)
         assert components[1] == "choose_activated_views"
+
+
+        # test HTML admin summaries of each view
+        res = self.dm.get_game_view_admin_summaries()
+        assert isinstance(res, dict) and res, res
+        for k, v in res.items():
+            assert isinstance(v["title"], Promise) and len(v["title"])
+            assert "<p>" in v["html_chunk"] or "dd" in v["html_chunk"]
+        
 
 
     @for_core_module(SpecialAbilities)

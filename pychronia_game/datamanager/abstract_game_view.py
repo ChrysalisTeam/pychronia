@@ -807,6 +807,8 @@ class AbstractGameView(object):
     def _get_admin_summary_html(self):
         """
         Override this utility to return an HTML block, which will be exposed in "admin info" special page.
+        
+        Must NOT rely on a self.request object to be present.
         """
         return None
 

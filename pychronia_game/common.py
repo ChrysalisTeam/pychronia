@@ -30,6 +30,7 @@ from django.conf import settings
 from django.utils.html import escape
 from django.utils.translation import ungettext, ugettext as _, ugettext_lazy, ugettext_noop
 from django.template.response import SimpleTemplateResponse, TemplateResponse
+from django.template.loader import render_to_string
 from django.shortcuts import render
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import user_passes_test

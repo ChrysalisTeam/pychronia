@@ -4236,6 +4236,23 @@ class GameViews(BaseDataManager):
                     return (self.instantiate_game_view(klass), action_name)
         return None
 
+    @readonly_method
+    def get_game_view_admin_summaries(self):
+        """
+        Gets a dict in format {view_name: html_chunk}, with summaries of the states 
+        """
+        chunks_dict = {}
+
+        for klass_name, klass in self.GAME_VIEWS_REGISTRY.items():
+            view = self.instantiate_game_view(self.GAME_VIEWS_REGISTRY[klass_name])
+            html_chunk = view.get_admin_summary_html()
+            if html_chunk:
+                chunks_dict[klass_name] = dict(title=view.TITLE,
+                                               html_chunk=html_chunk)
+
+        return chunks_dict
+
+
 
 @register_module
 class SpecialAbilities(BaseDataManager):

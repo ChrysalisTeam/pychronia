@@ -56,10 +56,10 @@ class MercenariesHiringAbility(AbstractPartnershipAbility):
         template_vars = dict(page_title=_("Mercenaries of Players"),
                              all_mercenaries_locations=all_mercenaries_locations)
 
-        render(self.request,
-                  "abilities/mercenaries_hiring_summary.html",
-                  template_vars)
+        res = render_to_string("abilities/mercenaries_hiring_summary.html",
+                               template_vars)
 
+        return res
 
 
     def get_template_vars(self, previous_form_data=None):
