@@ -1,6 +1,12 @@
 
 {% load i18n %}
 
+{% if not wiretapping_packs %}
+
+<p><i>{% trans "No wiretapping has been setup so far." %}</i></p>
+
+{% else %}
+
 <dl>
 {% for username, data in wiretapping_packs %}
 <dt>{{username|capfirst}}{% if data.has_confidentiality_activated %} ({% trans "confidentiality activated" %}){% endif %}</dt>
@@ -13,3 +19,6 @@
 </dd>
 {% endfor %}
 </dl>
+
+
+{% endif %}
