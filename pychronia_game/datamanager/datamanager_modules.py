@@ -3992,7 +3992,7 @@ class MoneyItemsOwnership(BaseDataManager):
         gems_choices.sort()
         recipient_char["gems"] += gems_choices
 
-        self.log_game_event(ugettext_noop("Gems transferred from %(from_name)s to %(to_name)s : %(gems_choices)s."),
+        self.log_game_event(ugettext_noop("Gems transferred from %(from_name)s to %(to_name)s: %(gems_choices)s."),
                              PersistentMapping(from_name=from_name, to_name=to_name, gems_choices=gems_choices),
                              url=None,
                              visible_by=[from_name, to_name]) # event visible by both characters
@@ -4004,6 +4004,8 @@ class MoneyItemsOwnership(BaseDataManager):
         Remove some of a character's gems from the game.
         """
         assert isinstance(gems_choices, (list, PersistentList))
+        gems_choices = PersistentList(gems_choices)
+        username = self._resolve_username(username)
         character_properties = self.get_character_properties(username)
         remaining_gems = utilities.substract_lists(character_properties["gems"], gems_choices)
         if remaining_gems is None:
@@ -4012,12 +4014,19 @@ class MoneyItemsOwnership(BaseDataManager):
             character_properties["gems"] = PersistentList(remaining_gems)
             self.data["global_parameters"]["spent_gems"] += gems_choices
 
+        self.log_game_event(ugettext_noop("Gems debited from %(username)s: %(gems_choices)s."),
+                             PersistentMapping(username=username, gems_choices=gems_choices),
+                             url=None,
+                             visible_by=[username])
+
     @transaction_watcher
     def credit_character_gems(self, username=CURRENT_USER, gems_choices=None):
         """
         Revive some gems that were previously spent.
         """
         assert isinstance(gems_choices, (list, PersistentList))
+        gems_choices = PersistentList(gems_choices)
+        username = self._resolve_username(username)
         character_properties = self.get_character_properties(username)
 
         remaining_gems = utilities.substract_lists(self.data["global_parameters"]["spent_gems"], gems_choices)
@@ -4027,7 +4036,10 @@ class MoneyItemsOwnership(BaseDataManager):
             self.data["global_parameters"]["spent_gems"] = PersistentList(remaining_gems)
             character_properties["gems"] += gems_choices
 
-
+        self.log_game_event(ugettext_noop("Gems credited to %(username)s: %(gems_choices)s."),
+                             PersistentMapping(username=username, gems_choices=gems_choices),
+                             url=None,
+                             visible_by=[username])
 
 
 @register_module
