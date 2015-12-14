@@ -502,6 +502,7 @@ def is_email(email):
     return bool(email_re.match(email))
 
 def is_absolute_url(string):
+    """We do NOT consider that "/my-url/" is absolute, here - we want a really FULL url"""
     return string.startswith(("http://", "https://"))
 
 
