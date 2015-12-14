@@ -455,7 +455,7 @@ class CharacterHandling(BaseDataManager): # TODO REFINE
         game_data = self.data
         for (name, character) in game_data["character_properties"].items():
             if character["avatar"]:
-                character["avatar"] = utilities.find_game_file(character["avatar"], "images")
+                character["avatar"] = utilities.find_game_file("images", character["avatar"])
             character.setdefault("real_life_identity", None)
             character.setdefault("real_life_email", None)
 
@@ -647,7 +647,7 @@ class DomainHandling(BaseDataManager): # TODO REFINE
         game_data = self.data
         for (name, content) in game_data["domains"].items():
             if content["national_anthem"]:
-                content["national_anthem"] = utilities.find_game_file(content["national_anthem"], "audio")
+                content["national_anthem"] = utilities.find_game_file("audio", content["national_anthem"])
 
     def _check_database_coherency(self, **kwargs):
         super(DomainHandling, self)._check_database_coherency(**kwargs)
@@ -2092,7 +2092,7 @@ class TextMessagingExternalContacts(BaseDataManager):
                 details.setdefault("immutable", True) # contacts that are necessary to gameplay CANNOT be edited/deleted
                 details.setdefault("avatar", None)
                 if details["avatar"]:
-                    details["avatar"] = utilities.find_game_file(details["avatar"], "images")
+                    details["avatar"] = utilities.find_game_file("images", details["avatar"])
                 details.setdefault("description", None)
                 details.setdefault("access_tokens", None) # PUBLIC contact
 
@@ -2867,6 +2867,7 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
             other_characters_and_nones = [self.get_character_or_none_from_email(email) for email in emails]
             return [char for char in other_characters_and_nones if char and char != username]
 
+
     # Audio notifications for new messages #
 
     @readonly_method
@@ -3077,7 +3078,7 @@ class RadioMessaging(BaseDataManager): # TODO REFINE
                 # BOTH can be None, url will have precedence over file if both are defined
                 details.setdefault("file", None) # LOCAL file
                 if details["file"]:
-                    details["file"] = utilities.find_game_file(details["file"], "audio", "radio_spots")
+                    details["file"] = utilities.find_game_file("audio", "radio_spots", details["file"])
                 details.setdefault("url", None) # ANY url
 
             # we DO NOT care about duplicates, which might happen when editing and reloading DB...
@@ -3696,7 +3697,7 @@ class MoneyItemsOwnership(BaseDataManager):
                 #if properties["is_gem"] and not properties['owner']: # we dont recount gems appearing in character["gems"]
                 #    total_gems += [properties['unit_cost']] * properties["num_items"]
 
-                properties['image'] = utilities.find_game_file(properties['image'], "images")
+                properties['image'] = utilities.find_game_file("images", properties['image'])
 
         def _preprocess_new_item(self, key, value):
             value.setdefault('owner', None)
@@ -4653,7 +4654,7 @@ class NightmareCaptchas(BaseDataManager):
             value.setdefault("image", None)
             value.setdefault("explanation", None)
             if value["image"]:
-                value["image"] = utilities.find_game_file(value["image"], "images", "captchas")
+                value["image"] = utilities.find_game_file("images", "captchas", value["image"])
 
     def _check_database_coherency(self, strict=False, **kwargs):
         super(NightmareCaptchas, self)._check_database_coherency(**kwargs)

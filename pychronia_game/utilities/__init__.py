@@ -505,11 +505,15 @@ def is_absolute_url(string):
     return string.startswith(("http://", "https://"))
 
 
-def find_game_file(filename, *rel_path_glob):
+def find_game_file(*rel_path_glob):
     """
     Returns the SINGLE file called filename, in the glob path join(*rel_path_glob).
     """
+    assert rel_path_glob, rel_path_glob
     game_files_root = config.GAME_FILES_ROOT
+
+    filename = rel_path_glob[-1]
+    rel_path_glob = rel_path_glob[:-1]
 
     if os.path.basename(filename) != filename: # we already get a relative game file path
         full_file_path = os.path.join(game_files_root, filename) # we then ignore rel_path_glob
@@ -543,13 +547,13 @@ def find_game_file(filename, *rel_path_glob):
     return rel_file_path
 
 
-def find_game_file_or_url(filename, *rel_path_glob):
+def find_game_file_or_url(*rel_path_globs):
     """
     Used for field that allow either RELATIVE local game files, or absolute (external) urls.
     """
-    if is_absolute_url (filename):
-        return filename
-    return find_game_file(filename, *rel_path_glob)
+    if len(rel_path_globs) == 1 and is_absolute_url(rel_path_globs[0]):
+        return rel_path_globs[0]
+    return find_game_file(*rel_path_globs)
 
 
 def ___complete_game_file_path(filename, *elements):
