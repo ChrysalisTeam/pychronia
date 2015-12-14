@@ -3629,7 +3629,7 @@ class TestDatamanager(BaseGameTestCase):
 
         assert not self.dm.user.is_master
 
-        self.dm.authenticate_with_credentials("master", "mypsgh")
+        self.dm.authenticate_with_credentials("MaSter", "mypsgh")  # it works
 
         assert self.dm.user.is_master
 
@@ -3685,11 +3685,11 @@ class TestDatamanager(BaseGameTestCase):
         with raises_with_content(NormalUsageError, "no secret question"):
             self.dm.process_secret_answer_attempt("guy1", "FluFFy", "guy3@pangea.com")
 
-        res = self.dm.get_secret_question("guy3")
+        res = self.dm.get_secret_question("guY3")  # case-insensitive
         self.assertTrue("pet" in res)
 
         self.assertEqual(len(self.dm.get_all_queued_messages()), 0)
-        res = self.dm.process_secret_answer_attempt("guy3", "FluFFy", "guy3@pangea.com")
+        res = self.dm.process_secret_answer_attempt("gUy3", "FluFFy", "guy3@pangea.com")  # case-insensitive
         self.assertEqual(res, "awesome2") # password
 
         msgs = self.dm.get_all_queued_messages()
@@ -3716,14 +3716,19 @@ class TestDatamanager(BaseGameTestCase):
         with pytest.raises(AbnormalUsageError):
             self.dm.process_password_change_attempt("guy1", "elixir", None) # wrong new pwd
 
-
         self.dm.process_password_change_attempt("guy1", "elixir", "newpwd")
+
         with pytest.raises(NormalUsageError):
-            self.dm.process_password_change_attempt("guy1", "elixir", "newpwd")
+            self.dm.process_password_change_attempt("guy1", "elixir", "newpwd")  # old-password not OK
 
         with pytest.raises(NormalUsageError):
             self.dm.authenticate_with_credentials("guy1", "elixir")
-        self.dm.authenticate_with_credentials("guy1", "newpwd")
+
+        self._set_user("guy3")
+        assert self.dm.username == "guy3"
+
+        self.dm.authenticate_with_credentials("GuY1", "newpwd")  # case-insensitive is OK
+        assert self.dm.username == "guy1"
 
         assert self.dm.get_character_properties("guy4")["password"] is None
         with pytest.raises(AttributeError):
@@ -3806,7 +3811,7 @@ class TestDatamanager(BaseGameTestCase):
         for k, v in res.items():
             assert isinstance(v["title"], Promise) and len(v["title"])
             assert "<p>" in v["html_chunk"] or "dd" in v["html_chunk"]
-        
+
 
 
     @for_core_module(SpecialAbilities)

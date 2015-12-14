@@ -478,6 +478,7 @@ class CharacterHandling(BaseDataManager): # TODO REFINE
             utilities.check_is_slug(name)
             assert name not in reserved_names
             assert "@" not in name # let's not mess with email addresses...
+            assert name == name.lower()  # important, for easy case-insensitive lookups
 
             utilities.check_is_bool(character["is_npc"])
 
@@ -746,8 +747,11 @@ class PlayerAuthentication(BaseDataManager):
         global_parameters = game_data["global_parameters"]
 
         utilities.check_is_slug(global_parameters["anonymous_login"])
+        assert global_parameters["anonymous_login"] == global_parameters["anonymous_login"].lower()  # important
 
         utilities.check_is_slug(global_parameters["master_login"])
+        assert global_parameters["master_login"] == global_parameters["master_login"].lower()  # important
+
         utilities.check_is_slug(global_parameters["master_password"])
         if global_parameters["master_real_email"]:
             utilities.check_is_email(global_parameters["master_real_email"])
@@ -1005,7 +1009,7 @@ class PlayerAuthentication(BaseDataManager):
         
         Username can't be "anonymous_login" of course...
         """
-        username = username.strip()
+        username = username.strip().lower()  # IMPORTANT, case-insensitive
         password = password.strip()
         if username == self.get_global_parameter("master_login"): # do not use is_master here, just in case...
             wanted_pwd = self.get_global_parameter("master_password")
@@ -1030,6 +1034,7 @@ class PlayerAuthentication(BaseDataManager):
 
     @transaction_watcher # requires game started mode
     def process_password_change_attempt(self, username, old_password, new_password):
+
         user_properties = self.get_character_properties(username)
 
         if not new_password or " " in new_password or "\n" in new_password or len(new_password) > 60:
@@ -1046,6 +1051,8 @@ class PlayerAuthentication(BaseDataManager):
         """
         Raises UsageError if username is incorrect or doesn't have a secret question setup.
         """
+        username = username.strip().lower()  # IMPORTANT, case-insensitive
+
         if username == self.get_global_parameter("master_login"):
             raise NormalUsageError(_("Game master can't recover his password through a secret question."))
         elif username not in self.get_character_usernames():
@@ -1059,6 +1066,8 @@ class PlayerAuthentication(BaseDataManager):
 
     @transaction_watcher # requires game started mode
     def process_secret_answer_attempt(self, username, secret_answer_attempt, target_email):
+
+        username = username.strip().lower()  # IMPORTANT, case-insensitive
 
         self.get_secret_question(username) # checks coherency of that call
 
