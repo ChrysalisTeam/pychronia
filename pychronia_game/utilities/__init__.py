@@ -484,19 +484,30 @@ def check_is_restructuredtext(value):
     usage_assert(advanced_restructuredtext(value)) # not a REAL check ATM...
     return True
 
-def check_is_game_file(*paths_elements):
-    assert all(not os.path.isabs(s) for s in paths_elements)
-    fullpath = os.path.join(config.GAME_FILES_ROOT, *paths_elements)
+def check_is_game_file(filename):
+    assert not os.path.isabs(filename)
+    fullpath = os.path.join(config.GAME_FILES_ROOT, filename)
     usage_assert(os.path.isfile(fullpath), fullpath)
     return True
+
+def check_is_game_file_or_url(filename):
+    """
+    Used for field that allow either RELATIVE local game files, or absolute (external) urls.
+    """
+    if is_absolute_url(filename):
+        return filename
+    return check_is_game_file(filename)
 
 def is_email(email):
     return bool(email_re.match(email))
 
+def is_absolute_url(string):
+    return string.startswith(("http://", "https://"))
+
 
 def find_game_file(filename, *rel_path_glob):
     """
-    Returns the SINGLE file called filename, in 
+    Returns the SINGLE file called filename, in the glob path join(*rel_path_glob).
     """
     game_files_root = config.GAME_FILES_ROOT
 
@@ -530,6 +541,15 @@ def find_game_file(filename, *rel_path_glob):
     rel_file_path = os.path.relpath(full_file_path, start=game_files_root)
     assert not os.path.isabs(rel_file_path)
     return rel_file_path
+
+
+def find_game_file_or_url(filename, *rel_path_glob):
+    """
+    Used for field that allow either RELATIVE local game files, or absolute (external) urls.
+    """
+    if is_absolute_url (filename):
+        return filename
+    return find_game_file(filename, *rel_path_glob)
 
 
 def ___complete_game_file_path(filename, *elements):
