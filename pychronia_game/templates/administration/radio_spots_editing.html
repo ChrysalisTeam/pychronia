@@ -19,7 +19,7 @@
                    { _action_: "generate_tts_sample", text: text},
                    function(answer){
                        $('#id_'+target_id+'_sound_preview').html(answer.mediaplayer);
-                       $('#id_'+target_id+'_url_or_file').val(answer.sound_url);
+                       $('#id_'+target_id+'_file').val(answer.sound_url);
                        $('#id_'+target_id+'_download_link').attr('href', answer.sound_url).css("display", "block");
                    },
                    'json'
@@ -56,11 +56,11 @@
         <form id="update_form" action="#entry-{{ identifier|slugify }}" method="post" autocomplete="off">
             {{ form.as_p }}
 
-            <a id="id_{{ identifier|slugify }}_download_link" href="{{form.url_or_file.value}}" style="padding-left: 20px; float: left; line-height: 50px; {% if not form.url_or_file.value %}display:none;{% endif %}">[{% trans "LINK" %}]</a>
+            <a id="id_{{ identifier|slugify }}_download_link" href="{{form.file.value|default:'#'}}" style="padding-left: 20px; float: left; line-height: 50px; {% if not form.url_or_file.value %}display:none;{% endif %}">[{% trans "LINK" %}]</a>
 
             <div id="id_{{ identifier|slugify }}_sound_preview" align="center">
-                {% if form.url_or_file.value %}
-                    {{ form.url_or_file.value|mediaplayer }}
+                {% if form.file.value %}
+                    {{ form.file.value|mediaplayer }}
                 {% else %}
                     &nbsp;
                 {% endif %}

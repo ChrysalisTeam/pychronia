@@ -261,11 +261,14 @@ def checked_game_file_path(url):
 def determine_asset_url(properties):
     if isinstance(properties, basestring):
         fileurl = game_file_url(properties) # works for both internal and external ones
-    elif properties.get("url"):
-        fileurl = properties["url"]
     elif properties.get("file"):
-        myfile = properties["file"] # MUST exist and be relative to GAME_FILES_ROOT
-        fileurl = game_file_url(myfile)
+        myfile = properties["file"]
+        if utilities.is_absolute_url(myfile):
+            fileurl = myfile
+        else:
+            fileurl = game_file_url(myfile)  # must be a local file then
+    elif properties.get("url"):
+        fileurl = properties["url"]  # LEGACY, shouldn't exist anymore
     else:
         return "#"  # now this case is possible
     return fileurl

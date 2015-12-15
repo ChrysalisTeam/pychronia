@@ -19,38 +19,10 @@ class RadioSpotForm(DataTableForm):
 
     text = forms.CharField(label=ugettext_lazy("Content"), widget=forms.Textarea(attrs={'rows': '5', 'cols':'40'}), required=True)
 
-    url_or_file = forms.CharField(label=ugettext_lazy("Url or local file"), required=True)
+    file = forms.CharField(label=ugettext_lazy("Url or local file"), required=True)
 
     gamemaster_hints = GAMEMASTER_HINTS_FIELD()
 
-
-    def __init__(self, datamanager, initial=None, **kwargs):
-        """
-        *datamanager* may also be an ability, since it proxies datamanager methods too.
-        """
-        if initial:
-            initial["url_or_file"] = initial.get("url") or initial.get("file") # URL taken first then
-        super(DataTableForm, self).__init__(datamanager=datamanager, initial=initial, **kwargs)
-
-    def clean(self):
-        cleaned_data = super(RadioSpotForm, self).clean()
-
-        data = cleaned_data.get("url_or_file")
-
-        if data:
-            if data.startswith("http://") or data.startswith("https://"):
-                cleaned_data["url"] = data
-                cleaned_data["file"] = None # ERASED
-            else:
-                try:
-                    utilities.check_is_game_file(data)
-                except UsageError:
-                    raise forms.ValidationError(_("Invalid local file path or remote url."))
-                cleaned_data["url"] = None # ERASED
-                cleaned_data["file"] = data
-
-            del cleaned_data["url_or_file"]
-        return cleaned_data
 
 
 

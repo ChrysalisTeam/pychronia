@@ -67,7 +67,6 @@ class WebradioManagement(AbstractGameView):
         result = None
 
 
-
         # manual form management, since there are hell a lot of stuffs...
         if POST.has_key("turn_radio_off"):
             result = False

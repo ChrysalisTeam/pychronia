@@ -3075,11 +3075,9 @@ class RadioMessaging(BaseDataManager): # TODO REFINE
 
                 details.setdefault("immutable", False) # we assume ANY radio spot is optional for the game, and can be edited/delete
 
-                # BOTH can be None, url will have precedence over file if both are defined
-                details.setdefault("file", None) # LOCAL file
+                details.setdefault("file", None) # LOCAL file or URL
                 if details["file"]:
-                    details["file"] = utilities.find_game_file("audio", "radio_spots", details["file"])
-                details.setdefault("url", None) # ANY url
+                    details["file"] = utilities.find_game_file_or_url("audio", "radio_spots", "*", details["file"])
 
             # we DO NOT care about duplicates, which might happen when editing and reloading DB...
 
@@ -3097,7 +3095,7 @@ class RadioMessaging(BaseDataManager): # TODO REFINE
 
             utilities.check_is_slug(key)
 
-            #utilities.check_has_keys(value, ["title", "text", "file", "url", "immutable", "gamemaster_hints"], strict=strict)
+            #utilities.check_has_keys(value, ["title", "text", "file", "immutable", "gamemaster_hints"], strict=strict)
 
             if value.get("gamemaster_hints"): # optional
                 pass # utilities.check_is_restructuredtext(value["gamemaster_hints"])
@@ -3106,16 +3104,11 @@ class RadioMessaging(BaseDataManager): # TODO REFINE
             assert value["text"] and isinstance(value["text"], basestring)
 
             assert not value["file"] or isinstance(value["file"], basestring), value["file"]
-            assert not value["url"] or isinstance(value["url"], basestring), value["url"]
 
-            # it might be that neither file nor url is set (one must then use TTS)
-            # if both are set, it's supposed to be the same sound file
-
-            # TODO - ensure no "|" in file name!!
-            if value["file"]:
-                utilities.check_is_game_file(value["file"])
-            if value["url"]:
-                pass  # nope, don't try to check the url...
+            # it might be that 'file' is None (gamemaster must then use text-to-speech generation)
+            if value["file"] is not None:
+                utilities.check_is_string(value["file"], forbidden_chars=["|"])
+                utilities.check_is_game_file_or_url(value["file"])
 
 
         def _sorting_key(self, item_pair):
