@@ -324,8 +324,9 @@
             /* prevent quick double submits */
             submissionControls.click(function (event) {
                 var myButton = $(this);
-                myButton.attr("disabled", true);
-                setTimeout(function(){myButton.attr("disabled", false);}, 3000);
+                // DELAYED disabling of button, else on some browsers form will not get submitted at all
+                setTimeout(function(){myButton.attr("disabled", true);}, 10);
+                setTimeout(function(){myButton.attr("disabled", false);}, 2000);
             });
         {% endif %}
 
