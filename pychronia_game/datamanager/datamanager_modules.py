@@ -3077,7 +3077,7 @@ class RadioMessaging(BaseDataManager): # TODO REFINE
 
                 details.setdefault("file", None) # LOCAL file or URL
                 if details["file"]:
-                    details["file"] = utilities.find_game_file_or_url("audio", "radio_spots", "*", details["file"])
+                    details["file"] = utilities.find_game_file_or_url("audio", "radio_spots", details["file"])
 
             # we DO NOT care about duplicates, which might happen when editing and reloading DB...
 
