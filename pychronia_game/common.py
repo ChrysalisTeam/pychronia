@@ -258,7 +258,7 @@ def checked_game_file_path(url):
         hash_url_path
 
 
-def determine_asset_url(properties):
+def determine_asset_url(properties, absolute=True):
     if isinstance(properties, basestring):
         fileurl = game_file_url(properties) # works for both internal and external ones
     elif properties.get("file"):
@@ -270,7 +270,11 @@ def determine_asset_url(properties):
     elif properties.get("url"):
         fileurl = properties["url"]  # LEGACY, shouldn't exist anymore
     else:
-        return "#"  # now this case is possible
+        fileurl = "#"  # now this case is possible
+
+    if absolute:
+        fileurl = config.SITE_DOMAIN + fileurl  # important for most mediaplayers
+
     return fileurl
 
 

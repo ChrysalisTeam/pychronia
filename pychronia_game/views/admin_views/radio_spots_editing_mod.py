@@ -57,7 +57,8 @@ class RadioSpotsEditing(AbstractDataTableManagement):
                 raise RuntimeError("Text-to-speech engine is not configured")
             else:
                 self.logger.warning("Generating DUMMY mp3 link for voice=%r and text=%r", voice, text)
-                sound_url = "http://dummy_test_url_%d.mp3" % int(time.time())
+                #sound_url = "http://dummy_test_url_%d.mp3" % int(time.time())
+                sound_url = "http://localhost:8000/files/f26529e7/audio/radio_spots/personal_messages/A_intro_messages.mp3"
 
         else:
 

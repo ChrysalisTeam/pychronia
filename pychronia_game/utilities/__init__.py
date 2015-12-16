@@ -510,7 +510,7 @@ def is_absolute_url(string):
 
 def find_game_file(*rel_path_glob):
     """
-    Returns the SINGLE file called filename, in the glob path join(*rel_path_glob).
+    Returns the SINGLE file called filename, in the glob path join(*rel_path_glob) and its subdirs.
     """
     assert rel_path_glob, rel_path_glob
     game_files_root = config.GAME_FILES_ROOT
