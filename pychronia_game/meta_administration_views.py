@@ -75,7 +75,7 @@ def decode_game_activation_token(activation_token):
 
 def _build_activation_url(**kwargs):
     token = compute_game_activation_token(**kwargs)
-    activation_link = settings.SITE_DOMAIN + reverse(activate_instance) + "?" + urlencode(dict(token=token))
+    activation_link = config.SITE_DOMAIN + reverse(activate_instance) + "?" + urlencode(dict(token=token))
     return activation_link
 
 
@@ -165,7 +165,7 @@ def activate_instance(request):
         session_token_display = urlencode({authentication.ENFORCED_SESSION_TICKET_NAME: authentication_token})
 
         import pychronia_game.views
-        target_url = settings.SITE_DOMAIN + reverse(pychronia_game.views.homepage, kwargs=dict(game_instance_id=game_instance_id, game_username=master_login))
+        target_url = config.SITE_DOMAIN + reverse(pychronia_game.views.homepage, kwargs=dict(game_instance_id=game_instance_id, game_username=master_login))
         target_url += "?" + session_token_display
 
         content = _("In case you don't get properly redirected, please copy this link into our URL bar: %(target_url)s") % SDICT(target_url=target_url)
