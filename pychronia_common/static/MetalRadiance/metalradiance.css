@@ -280,7 +280,7 @@ table, tbody, tfoot, thead, tr, th, td {
   border: 0;
   font-size: 100%;
   font: inherit;
-  vertical-align: baseline;
+  vertical-align: middle;
 }
 article, aside, details, figcaption, figure, footer, header, hgroup, menu,
 nav, section {
