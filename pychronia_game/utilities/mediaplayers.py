@@ -112,6 +112,7 @@ _media_player_templates = \
 
 def generate_media_player(fileurl, image="", autostart=False, width=450, height=350, **kwargs):
     # Warning - fileurl had better be an ABSOLUTE url, else some media players won't find the file !
+    assert fileurl.startswith("http")
 
     md5 = hashlib.md5()
     md5.update(fileurl.encode('ascii', 'ignore'))
@@ -168,7 +169,7 @@ def generate_audio_player(files, titles=None, artists=None, autostart=False):
         "titles": ",".join(titles) if titles else "",
         "artists": ",".join(artists) if artists else "",
         "autostart": "yes" if autostart else "no",
-        "max-width": "100%"
+        "width": "70%"
     }
 
     return _mp3_template % dict(options=json.dumps(options), unikid=unikid)
