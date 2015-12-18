@@ -554,8 +554,9 @@ def find_game_file_or_url(*rel_path_globs):
     """
     Used for field that allow either RELATIVE local game files, or absolute (external) urls.
     """
-    if len(rel_path_globs) == 1 and is_absolute_url(rel_path_globs[0]):
-        return rel_path_globs[0]
+    assert rel_path_globs
+    if is_absolute_url(rel_path_globs[-1]):
+        return rel_path_globs[-1]
     return find_game_file(*rel_path_globs)
 
 

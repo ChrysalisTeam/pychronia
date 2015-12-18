@@ -3086,6 +3086,8 @@ class RadioMessaging(BaseDataManager): # TODO REFINE
             assert "immutable" not in value
             value["immutable"] = False
             value.setdefault("gamemaster_hints", "")
+            value["title"] = value["title"].strip()
+            value["text"] = value["text"].strip()
             return (key, PersistentMapping(value))
             # other params are supposed to exist in "value"
 
@@ -3101,9 +3103,8 @@ class RadioMessaging(BaseDataManager): # TODO REFINE
                 pass # utilities.check_is_restructuredtext(value["gamemaster_hints"])
 
             utilities.check_is_string(value["title"])
-            assert value["text"] and isinstance(value["text"], basestring)
 
-            assert not value["file"] or isinstance(value["file"], basestring), value["file"]
+            assert isinstance(value["text"], basestring) and value["text"]   # might NOT be empty
 
             # it might be that 'file' is None (gamemaster must then use text-to-speech generation)
             if value["file"] is not None:

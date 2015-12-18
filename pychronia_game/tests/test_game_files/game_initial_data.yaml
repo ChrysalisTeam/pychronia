@@ -397,6 +397,11 @@ audio_messages:
         text: "For testing..."
         file: "other.mp3"
 
+    external_mp3:
+        title: "This is a test"
+        text: "Some text"
+        file: "http://localhost:8000/static/resources/libs/audioplayer/amelie.mp3"
+
 
 events_log:  #-> list of event dicts
     -  "time": -3 # mns
