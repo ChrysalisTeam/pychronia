@@ -30,19 +30,25 @@ GAMEMASTER_HINTS in:
 FEATURES
 ------------
 
+MAKE FULL URL in mediaplayer
+
+repai the "next" url of login system
+
+CHANGER SIGNATURE de  utilities.find_game_file(character["avatar"], "images")
+
+
+game_file_url doit etre retestée
+.startswith("http://") or data.startswith("https://"):  # FIX WITH UTILITIE
+def is_absolute_url(string): A TESTER
+    return string.startswith(("http://", "https://"))
 
 - allow both urls and files for avatar/item/contact ?
 
 - IMPORTANT bugfix the double handling of urls and files in radio spots
 
-get_other_known_characters -> tjrs inclure les joueurs enchérisseurs dedans ?
-
 !!! BUG quand errreur lors de la soumission d'une modif de spot radio qui bogue.... -> devient création de nouveau spot
 
-
 Ajouter help page for game items management
-
-
 
 Mettre pages de résumé des mercenaires de chaque joueur et des wiretappings - DONE
 
@@ -97,6 +103,8 @@ PAUSED BUGLETS:
 
 SCRIPT
 ----------
+
+- get_other_known_characters -> tjrs inclure les joueurs enchérisseurs dedans ? NOPE, forcer ainsi les joueurs à COMMUNIQUER!
 
 - add tags with titles to all MP3s
 
