@@ -20,7 +20,7 @@ from pychronia_game.datamanager.abstract_ability import AbstractAbility
 from pychronia_game.datamanager.action_middlewares import CostlyActionMiddleware, \
     CountLimitedActionMiddleware, TimeLimitedActionMiddleware
 from pychronia_game.common import _undefined, config, AbnormalUsageError, reverse, \
-    UsageError, checked_game_file_path, NormalUsageError
+    UsageError, checked_game_file_path, NormalUsageError, determine_asset_url
 from pychronia_game.templatetags.helpers import _generate_encyclopedia_links, \
     advanced_restructuredtext, _generate_messaging_links, _generate_site_links, \
     format_enriched_text, _generate_game_file_links, _generate_game_image_thumbnails
@@ -366,6 +366,29 @@ class TestUtilities(BaseGameTestCase):
         assert not response.content
         assert response['X-Sendfile'] == path
         _check_standard_headers(response)
+
+    
+    def test_media_url_determination(self):
+
+        res = determine_asset_url("")
+        assert res == ""
+
+        res = determine_asset_url(dict(url=None))
+        assert res == ""
+
+        for val in ("http://mystuff",
+                    dict(file="http://mystuff", url=None),
+                    dict(file=None, url="http://mystuff")):
+            res = determine_asset_url(val)
+            assert res == "http://mystuff"
+
+        for val in ("audio/musics/sample.mp3",
+                    dict(file="audio/musics/sample.mp3", url=None),
+                    dict(file=None, url="audio/musics/sample.mp3")):
+            res = determine_asset_url(val)
+            assert res == "http://localhost:8000/files/7211b1bf/audio/musics/sample.mp3"
+            res = determine_asset_url(val, absolute=False)
+            assert res == "/files/7211b1bf/audio/musics/sample.mp3"
 
 
     def test_url_protection_functions(self):

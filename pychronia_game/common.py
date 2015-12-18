@@ -259,23 +259,25 @@ def checked_game_file_path(url):
 
 
 def determine_asset_url(properties, absolute=True):
+    assert properties is not None
     if isinstance(properties, basestring):
-        fileurl = game_file_url(properties) # works for both internal and external ones
+        file_base = properties
     elif properties.get("file"):
-        myfile = properties["file"]
-        if utilities.is_absolute_url(myfile):
-            fileurl = myfile
-        else:
-            fileurl = game_file_url(myfile)  # must be a local file then
+        file_base = properties["file"]
     elif properties.get("url"):
-        fileurl = properties["url"]  # LEGACY, shouldn't exist anymore
+        file_base = properties["url"]  # mostly LEGACY attribute
     else:
-        fileurl = "#"  # now this case is possible
+        file_base = None  # now this case is possible
 
-    if absolute:
-        fileurl = config.SITE_DOMAIN + fileurl  # important for most mediaplayers
+    if not file_base:
+        return ""  # fallback value, which will often cause NO mediaplayer to be displayer
 
-    return fileurl
+    file_url = game_file_url(file_base)  # works for both absolute and relative file urls
+        
+    if absolute and not utilities.is_absolute_url(file_url):
+        file_url = config.SITE_DOMAIN + file_url  # important for most mediaplayers
+
+    return file_url
 
 
 def utctolocal(value):
