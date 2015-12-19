@@ -627,7 +627,7 @@ class TestMetaAdministration(unittest.TestCase): # no django setup required ATM
                                                               request=None,
                                                               metadata_checker=None)
         assert not dm.get_event_count("BASE_CHECK_DB_COHERENCY_PUBLIC_CALLED")
-        data_tree = dm.load_zope_database(raw_yaml_data)
+        data_tree = dm.load_zope_database_from_string(raw_yaml_data)
         assert dm.get_event_count("BASE_CHECK_DB_COHERENCY_PUBLIC_CALLED") == 1 # data well checked
 
         assert "metadata" not in data_tree # it's well ONLY the "data" part of the game instance tree

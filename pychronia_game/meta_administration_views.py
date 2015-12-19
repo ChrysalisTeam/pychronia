@@ -280,7 +280,7 @@ def edit_instance_db(request, target_instance_id):
                                                                   metadata_checker=datamanager_administrator.check_game_is_in_maintenance)
 
             try:
-                data_tree = dm.load_zope_database(yaml_input) # checks data
+                data_tree = dm.load_zope_database_from_string(yaml_input) # checks data
             except Exception as e:
                 messages.add_message(request, messages.ERROR, _(u"Data check error (%(exception)r), see details below.") % SDICT(exception=e))
                 special_message = traceback.format_exc()

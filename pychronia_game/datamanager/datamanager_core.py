@@ -322,7 +322,7 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
 
 
     @transaction_watcher
-    def load_zope_database(self, string): # TODO UNTESTED
+    def load_zope_database_from_string(self, string, strict=True):
 
         data_tree = utilities.load_data_tree_from_yaml(string, convert=True)
         assert isinstance(data_tree, PersistentMapping)
@@ -330,7 +330,7 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
         try:
             old_data = self.data
             self.data = data_tree
-            self.check_database_coherency()
+            self.check_database_coherency(strict=strict)
         except Exception:
             self.data = old_data # security about mishandlings
             raise
