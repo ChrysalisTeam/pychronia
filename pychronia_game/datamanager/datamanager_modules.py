@@ -3073,7 +3073,7 @@ class RadioMessaging(BaseDataManager): # TODO REFINE
                 if details["gamemaster_hints"]:
                     details["gamemaster_hints"] = details["gamemaster_hints"].strip()
 
-                # audio messages that are necessary to gameplay CANNOT be edited/deleted 
+                # audio messages that are necessary to gameplay CANNOT be edited/deleted
                 # (ex. new-message-notifications, victory/defeat sounds...
                 details.setdefault("immutable", True)
 
@@ -3677,6 +3677,8 @@ class MoneyItemsOwnership(BaseDataManager):
 
             for (name, properties) in self._table.items():
 
+                properties.setdefault("immutable", False)  # no items really need to be immutable ATM
+
                 properties.setdefault("gamemaster_hints", "")
                 if properties["gamemaster_hints"]:
                     properties["gamemaster_hints"] = properties["gamemaster_hints"].strip()
@@ -3696,6 +3698,8 @@ class MoneyItemsOwnership(BaseDataManager):
                 properties['image'] = utilities.find_game_file("images", properties['image'])
 
         def _preprocess_new_item(self, key, value):
+            assert "immutable" not in value
+            value["immutable"] = False
             value.setdefault('owner', None)
             return (key, PersistentMapping(value))
             # other params are supposed to exist in "value"
@@ -3704,6 +3708,8 @@ class MoneyItemsOwnership(BaseDataManager):
             (name, properties) = (key, value)
 
             game_data = self._inner_datamanager.data
+
+            utilities.check_is_bool(value["immutable"])
 
             if properties["gamemaster_hints"]: # optional
                 pass # utilities.check_is_restructuredtext(properties["gamemaster_hints"])
@@ -3741,7 +3747,7 @@ class MoneyItemsOwnership(BaseDataManager):
             return root["game_items"]
 
         def _item_can_be_edited(self, key, value):
-            return not value["owner"]
+            return not (value["owner"] or value["immutable"])
 
         def _callback_on_any_update(self):
             pass
@@ -4083,7 +4089,8 @@ class Items3dViewing(BaseDataManager):
             }
 
         for (name, properties) in game_data["item_3d_settings"].items():
-            assert name in self.game_items.keys(), name
+            #assert name in self.game_items.keys(), name
+            #assert self.game_items[name]["immutable"], name
             utilities.check_dictionary_with_template(properties, item_viewer_reference)
 
 
