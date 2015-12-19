@@ -455,7 +455,7 @@ class CharacterHandling(BaseDataManager): # TODO REFINE
         game_data = self.data
         for (name, character) in game_data["character_properties"].items():
             if character["avatar"]:
-                character["avatar"] = utilities.find_game_file("images", character["avatar"])
+                character["avatar"] = utilities.find_game_file_or_url("images", character["avatar"])
             character.setdefault("real_life_identity", None)
             character.setdefault("real_life_email", None)
 
@@ -485,7 +485,7 @@ class CharacterHandling(BaseDataManager): # TODO REFINE
             utilities.check_is_slug(character["character_color"])
 
             if character["avatar"]:
-                utilities.check_is_game_file(character["avatar"])
+                utilities.check_is_game_file_or_url(character["avatar"])
 
             if character["gamemaster_hints"]:
                 utilities.check_is_string(character["gamemaster_hints"], multiline=True)
@@ -2092,7 +2092,7 @@ class TextMessagingExternalContacts(BaseDataManager):
                 details.setdefault("immutable", True) # contacts that are necessary to gameplay CANNOT be edited/deleted
                 details.setdefault("avatar", None)
                 if details["avatar"]:
-                    details["avatar"] = utilities.find_game_file("images", details["avatar"])
+                    details["avatar"] = utilities.find_game_file_or_url("images", details["avatar"])
                 details.setdefault("description", None)
                 details.setdefault("access_tokens", None) # PUBLIC contact
 
@@ -2120,7 +2120,7 @@ class TextMessagingExternalContacts(BaseDataManager):
             if value["description"]: # optional
                 utilities.check_is_string(value["description"], multiline=False)
             if value["avatar"]: # optional
-                utilities.check_is_game_file(value["avatar"]) # FIXME improve that
+                utilities.check_is_game_file_or_url(value["avatar"])
 
             if value.get("gamemaster_hints"): # optional
                 utilities.check_is_restructuredtext(value["gamemaster_hints"])
@@ -3678,7 +3678,7 @@ class MoneyItemsOwnership(BaseDataManager):
             for (name, properties) in self._table.items():
 
                 # SAFETY, we forbid modifying initial items, for now, to avoid incoherences with abilities
-                properties.setdefault("immutable", True)  
+                properties.setdefault("immutable", True)
 
                 properties.setdefault("gamemaster_hints", "")
                 if properties["gamemaster_hints"]:
@@ -3696,7 +3696,7 @@ class MoneyItemsOwnership(BaseDataManager):
                 #if properties["is_gem"] and not properties['owner']: # we dont recount gems appearing in character["gems"]
                 #    total_gems += [properties['unit_cost']] * properties["num_items"]
 
-                properties['image'] = utilities.find_game_file("images", properties['image'])
+                properties['image'] = utilities.find_game_file_or_url("images", properties['image'])
 
         def _preprocess_new_item(self, key, value):
             assert "immutable" not in value
@@ -3727,7 +3727,7 @@ class MoneyItemsOwnership(BaseDataManager):
 
             assert isinstance(properties['title'], basestring) and properties['title']
             assert isinstance(properties['comments'], basestring) and properties['comments']
-            utilities.check_is_game_file(properties['image'])
+            utilities.check_is_game_file_or_url(properties['image'])
 
             # item might be out of auction, with auction == ""
             assert isinstance(properties['auction'], basestring)
