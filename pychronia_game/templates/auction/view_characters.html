@@ -34,7 +34,7 @@
 	    <tr class="{% cycle 'rowA' 'rowB' %}"  style="color:{{ char_details.character_color }};">
 
 		    	<td class="bigtext">
-		    	    <img style="vertical-align: middle" src="{% game_file_img char_details.avatar|default:default_contact_avatar alias="character_avatar" %}"/>
+		    	    <img style="vertical-align: middle; max-width: 100px" src="{% game_file_img char_details.avatar|default:default_contact_avatar alias="character_avatar" %}"/>
                 </td>
 
 

@@ -56,7 +56,7 @@ while the total value of items listed below is <strong>{{ total_items_price }}</
 
 	    	<td class="preview-image" >
     		    <a href="{% game_file_url item_details.image %}" class="fancybox">
-    		        <img class="thumbnail" title="{{ item_details.title }}" src="{% game_file_img item_details.image alias="item_avatar" %}"/>
+    		        <img class="thumbnail" title="{{ item_details.title }}" src="{% game_file_img item_details.image alias="item_avatar" %}" style="max-width: 150px"/>
     		    </a>
 	    	</td>
 

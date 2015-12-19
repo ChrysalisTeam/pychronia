@@ -6,7 +6,7 @@ import sys, re, logging, random, logging, json
 from datetime import datetime
 
 from pychronia_game.utilities import (mediaplayers, autolinker,
-                                      rst_directives) # important to register RST extensions
+                                      rst_directives, is_absolute_url) # important to register RST extensions
 from pychronia_game.common import exception_swallower, game_file_url as real_game_file_url, determine_asset_url, reverse, game_view_url, _
 
 import django.template
@@ -106,6 +106,8 @@ def game_file_url_tag(context, a="", b="", c="", d="", e="", f="", varname=None)
 @register.simple_tag(takes_context=False)
 def game_file_img(a="", b="", c="", d="", e="", f="", alias=None):
     rel_path = "".join((a, b, c, d, e, f))
+    if is_absolute_url(rel_path):
+        return rel_path  # might be an external URL, it can't be resized then...
     return _try_generating_thumbnail_url(rel_path=rel_path, alias=alias)
 
 
