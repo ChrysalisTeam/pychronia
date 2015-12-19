@@ -8,8 +8,8 @@ from django import forms
 from django_select2 import Select2MultipleWidget
 
 from pychronia_game.common import *
-from pychronia_game.datamanager.abstract_form import AbstractGameForm, UninstantiableFormError, GemHandlingFormUtils, autostrip
-from pychronia_game.datamanager.abstract_form import GAMEMASTER_HINTS_FIELD
+from pychronia_game.datamanager.abstract_form import (AbstractGameForm, SimpleForm, UninstantiableFormError,
+                                                      GemHandlingFormUtils, autostrip, GAMEMASTER_HINTS_FIELD)
 from pychronia_game.utilities import add_to_ordered_dict
 
 
@@ -179,14 +179,14 @@ class CharacterProfileForm(AbstractGameForm):
 
 
 
-class SimplePasswordForm(forms.Form):
+class SimplePasswordForm(SimpleForm):
     simple_password = forms.CharField(label=ugettext_lazy("Password"), required=True, widget=forms.PasswordInput)
 
-class CleartextPasswordForm(forms.Form):
+class CleartextPasswordForm(SimpleForm):
     simple_password = forms.CharField(label=ugettext_lazy("Password"), required=True, widget=forms.TextInput(attrs={"autocomplete": "off"}))
 
 
-class AuthenticationForm(forms.Form):
+class AuthenticationForm(SimpleForm):
     secret_username = forms.CharField(label=ugettext_lazy("Username"), required=True, max_length=30, widget=forms.TextInput(attrs={'autocomplete':'on'}))
     secret_password = forms.CharField(label=ugettext_lazy("Password"), required=False, max_length=30, widget=forms.PasswordInput(attrs={'autocomplete':'off'}))  # not required for "password forgotten" action
 
@@ -212,7 +212,7 @@ class PasswordChangeForm(AbstractGameForm):
 
 
 
-class SecretQuestionForm(forms.Form):
+class SecretQuestionForm(SimpleForm):
     secret_username = forms.CharField(widget=forms.HiddenInput())
     secret_answer = forms.CharField(label=ugettext_lazy("Answer"), max_length=50, widget=forms.TextInput(attrs={'autocomplete':'off'}))
     target_email = forms.EmailField(label=ugettext_lazy("Email"), max_length=50)
@@ -222,14 +222,14 @@ class SecretQuestionForm(forms.Form):
         self.fields["secret_username"].initial = username
 
 
-class RadioFrequencyForm(forms.Form):
+class RadioFrequencyForm(SimpleForm):
     frequency = forms.CharField(label=ugettext_lazy(u"Radio Frequency"), widget=forms.TextInput(attrs={'autocomplete':'off'}))
 
 
 
 
 
-class TranslationForm(forms.Form):
+class TranslationForm(SimpleForm):
     def __init__(self, datamanager, *args, **kwargs):
         super(TranslationForm, self).__init__(*args, **kwargs)
 
@@ -244,7 +244,7 @@ class TranslationForm(forms.Form):
 
 
 
-class ScanningForm(forms.Form):
+class ScanningForm(SimpleForm):
     def __init__(self, available_items, *args, **kwargs):
         super(ScanningForm, self).__init__(*args, **kwargs)
         # dynamic fields here ...
@@ -260,7 +260,7 @@ class ScanningForm(forms.Form):
 
 
 
-class ArmedInterventionForm(forms.Form):
+class ArmedInterventionForm(SimpleForm):
 
     message = forms.CharField(label=ugettext_lazy("Message"),
                               widget=forms.Textarea(attrs={'rows': '8', 'cols':'35'}))
@@ -273,7 +273,7 @@ class ArmedInterventionForm(forms.Form):
 
 
 
-class TelecomInvestigationForm(forms.Form):
+class TelecomInvestigationForm(SimpleForm):
 
     def __init__(self, datamanager, user, *args, **kwargs):
         super(TelecomInvestigationForm, self).__init__(*args, **kwargs)
@@ -315,7 +315,7 @@ class OtherCharactersForm(AbstractGameForm):
 
 
 '''
-class CharacterForm(forms.Form):
+class CharacterForm(SimpleForm):
 
     def __init__(self, datamanager, *args, **kwargs):
         super(CharacterForm, self).__init__(*args, **kwargs)

@@ -257,6 +257,10 @@ input[type=submit] {
 
 #full_content form {
 
+    p:not(.required)  label {
+       font-style: italic;
+    }
+
     select, input[type=text], input[type=email], input[type=number], input[type=tel], input[type=password] {
         min-height: 29px;
         border: 1px solid $form_input_border_color;

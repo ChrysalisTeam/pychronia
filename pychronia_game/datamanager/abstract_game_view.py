@@ -10,7 +10,6 @@ from ZODB.POSException import POSError # parent of ConflictError
 from pychronia_game.common import *
 from pychronia_game.common import _undefined # for static checker...
 
-from django.forms import Form
 from django.http import Http404, HttpResponseRedirect, HttpResponse, \
     HttpResponseForbidden, HttpResponseBadRequest
 from django.core import urlresolvers
@@ -18,9 +17,8 @@ from django.utils.functional import Promise # used eg. for lazy-translated strin
 from django.shortcuts import redirect
 
 from ..datamanager import GameDataManager
-from .abstract_form import AbstractGameForm, UninstantiableFormError
+from .abstract_form import AbstractGameForm, SimpleForm, UninstantiableFormError
 from .datamanager_tools import transaction_watcher, readonly_method
-
 
 
 
@@ -175,7 +173,7 @@ class GameViewMetaclass(type):
                         if form_class_required:
                             assert FormClass
                         if FormClass:
-                            assert issubclass(FormClass, Form), FormClass.__mro__ # not necessarily AbstractGameForm - may be managed manually
+                            assert issubclass(FormClass, SimpleForm), FormClass.__mro__ # not necessarily AbstractGameForm - may be managed manually
 
                 for_chars = (NewClass.ACCESS in (UserAccess.authenticated, UserAccess.character))
                 _check_action_registry(NewClass.GAME_ACTIONS, form_class_required=False, allow_permission_requirement=for_chars) # can be directly called via ajax/custom forms

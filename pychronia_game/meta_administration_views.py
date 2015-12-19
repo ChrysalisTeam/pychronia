@@ -21,18 +21,20 @@ from django.template import RequestContext
 from django.utils.html import escape
 from django.contrib import messages
 from django.utils.translation import ugettext as _, ugettext_lazy, ungettext
+from django import forms
+
 from pychronia_game.common import *
 from pychronia_game.datamanager import datamanager_administrator
 from django.contrib.messages import get_messages
 from pychronia_game.datamanager.datamanager_administrator import GAME_STATUSES
-from django import forms
 from pychronia_game import authentication
 from pychronia_game.utilities import encryption
+from pychronia_game.datamanager.abstract_form import SimpleForm
 from django.utils.http import urlencode
 from smtplib import SMTPException
 
 
-class GameInstanceCreationForm(forms.Form):
+class GameInstanceCreationForm(SimpleForm):
     game_instance_id = forms.SlugField(label=ugettext_lazy("Game instance ID (slug)"), required=True)
     creator_login = forms.CharField(label=ugettext_lazy("Creator login"), required=True)
     creator_email = forms.EmailField(label=ugettext_lazy("Creator email"), required=False) # only required for non-superuser

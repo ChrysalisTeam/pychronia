@@ -50,8 +50,14 @@ def autostrip(cls):
     return cls
 
 
+class SimpleForm(forms.Form):
+    """
+    Simple form class with cosmetic tweaks.
+    """
+    required_css_class = "required"
 
-class BaseAbstractGameForm(forms.Form):
+
+class BaseAbstractGameForm(SimpleForm):
     """
     Base class for forms, able to recognize their data, by adding some hidden fields.
     """
@@ -195,6 +201,7 @@ class GemPayementFormMixin(GemHandlingFormUtils):
 # Adds both auto-recognition of form class, and additional fields like payment controls
 AbstractGameForm = type("AbstractGameForm".encode("ascii"), # can't be unicode
                         (GemPayementFormMixin, BaseAbstractGameForm), {})
+assert issubclass(AbstractGameForm, SimpleForm)
 assert issubclass(AbstractGameForm, forms.Form)
 
 

@@ -2018,6 +2018,9 @@ body .ui-dropdownchecklist-dropcontainer:disabled, body .markItUp:disabled {
 input[type=submit] {
   margin-top: 25px 10px;
 }
+#full_content form p:not(.required) label {
+  font-style: italic;
+}
 #full_content form select, #full_content form input[type=text],
 #full_content form input[type=email], #full_content form input[type=number],
 #full_content form input[type=tel], #full_content form input[type=password] {
