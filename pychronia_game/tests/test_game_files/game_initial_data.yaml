@@ -396,6 +396,7 @@ audio_messages:
         title: "News diverses"
         text: "For testing..."
         file: "other.mp3"
+        immutable: false
 
     external_mp3:
         title: "This is a test"

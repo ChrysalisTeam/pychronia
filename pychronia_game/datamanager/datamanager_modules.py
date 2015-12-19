@@ -2112,7 +2112,7 @@ class TextMessagingExternalContacts(BaseDataManager):
         def _check_item_validity(self, key, value, strict=False):
             utilities.check_is_slug(key) # not necessarily an email
             utilities.check_has_keys(value, ["immutable", "avatar", "description", "access_tokens"], strict=strict)
-            utilities.check_is_bool(value["immutable"],)
+            utilities.check_is_bool(value["immutable"])
             if value["access_tokens"] is not None: # None means "public"
                 all_usernames = self._inner_datamanager.get_character_usernames()
                 for username in value["access_tokens"]:
@@ -3073,7 +3073,9 @@ class RadioMessaging(BaseDataManager): # TODO REFINE
                 if details["gamemaster_hints"]:
                     details["gamemaster_hints"] = details["gamemaster_hints"].strip()
 
-                details.setdefault("immutable", False) # we assume ANY radio spot is optional for the game, and can be edited/delete
+                # audio messages that are necessary to gameplay CANNOT be edited/deleted 
+                # (ex. new-message-notifications, victory/defeat sounds...
+                details.setdefault("immutable", True)
 
                 details.setdefault("file", None) # LOCAL file or URL
                 if details["file"]:
@@ -3097,7 +3099,7 @@ class RadioMessaging(BaseDataManager): # TODO REFINE
 
             utilities.check_is_slug(key)
 
-            #utilities.check_has_keys(value, ["title", "text", "file", "immutable", "gamemaster_hints"], strict=strict)
+            utilities.check_is_bool(value["immutable"])
 
             if value.get("gamemaster_hints"): # optional
                 pass # utilities.check_is_restructuredtext(value["gamemaster_hints"])
@@ -4448,7 +4450,7 @@ class StaticPages(BaseDataManager):
 
             utilities.check_has_keys(value, ["immutable", "categories", "content", "gamemaster_hints", "keywords"], strict=strict) # SOON -> "title" TOO!! FIXME TODO
 
-            utilities.check_is_bool(value["immutable"],)
+            utilities.check_is_bool(value["immutable"])
 
             if value["title"] is not None:
                 utilities.check_is_string(value["title"], multiline=False)

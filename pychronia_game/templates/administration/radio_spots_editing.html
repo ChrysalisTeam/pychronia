@@ -48,28 +48,68 @@
 
 {% block content %}
 
-    {% for identifier, form in forms %}
-    <div class="scroll_realistic_thin_ends center">
-        {% usekwacro deletion_button identifier %}
+    {% if forms %}
 
-        <a name="entry-{{ identifier|slugify }}"><h2>{{ identifier|default:_("NEW ENTRY") }}</h2></a>
-        <form id="update_form" action="#entry-{{ identifier|slugify }}" method="post" autocomplete="off">
-            {{ form.as_p }}
+        <h2>{% trans "Editable audio spots" %}</h2>
 
-            <a id="id_{{ identifier|slugify }}_download_link" href="{{form.file.value|default:'#'}}" style="padding-left: 20px; float: left; line-height: 50px; {% if not form.url_or_file.value %}display:none;{% endif %}">[{% trans "LINK" %}]</a>
+        {% for identifier, form in forms %}
+        <div class="scroll_realistic_thin_ends center">
+            {% usekwacro deletion_button identifier %}
 
-            <div id="id_{{ identifier|slugify }}_sound_preview" align="center">
-                {% if form.file.value %}
-                    {{ form.file.value|mediaplayer }}
-                {% else %}
-                    &nbsp;
-                {% endif %}
-            </div>
-            <input type="button" name="preview" value="{% trans "Generate Text to Speech" %}" onclick="generate_tts_sample('{{ identifier|escapejs }}'); return false;" />
-            <input type="submit" name="submit" value="{% trans "Save radio spot" %}"/>
-        </form>
-    </div>
-    {% endfor %}
+            <a name="entry-{{ identifier|slugify }}"><h2>{{ identifier|default:_("NEW ENTRY") }}</h2></a>
+            <form id="update_form" action="#entry-{{ identifier|slugify }}" method="post" autocomplete="off">
+                {{ form.as_p }}
+
+                <a id="id_{{ identifier|slugify }}_download_link" href="{{form.file.value|default:'#'}}" style="padding-left: 20px; float: left; line-height: 50px; {% if not form.url_or_file.value %}display:none;{% endif %}">[{% trans "LINK" %}]</a>
+
+                <div id="id_{{ identifier|slugify }}_sound_preview" align="center">
+                    {% if form.file.value %}
+                        {{ form.file.value|mediaplayer }}
+                    {% else %}
+                        &nbsp;
+                    {% endif %}
+                </div>
+                <input type="button" name="preview" value="{% trans "Generate Text to Speech" %}" onclick="generate_tts_sample('{{ identifier|escapejs }}'); return false;" />
+                <input type="submit" name="submit" value="{% trans "Save radio spot" %}"/>
+            </form>
+        </div>
+        {% endfor %}
+
+    {% else %}
+
+        {# nothing atm... #}
+
+    {% endif %}
+
+
+
+
+    {% if immutable_table_items %}
+
+        <h2>{% trans "Immutable audio spots" %}</h2>
+
+        {% for identifier, data in immutable_table_items %}
+        <div id="entry-{{ identifier|slugify }}" class="scroll_realistic_thin_ends center">
+
+            <p><b><u>{{ identifier }}</u></b></p>
+
+            <p><b>{% trans "Title" %}:</b> {{ data.title }}</p>
+
+            <p><b>{% trans "Content" %}:</b> {{ data.text }}</p>
+
+            <p><b>{% trans "Gamemaster Hints" %}:</b> {{ data.gamemaster_hints|default:_("None") }}</p>
+
+            <p>{{ data.file|mediaplayer }}</p>
+
+        </div>
+        {% endfor %}
+
+    {% else %}
+
+        {# nothing atm... #}
+
+    {% endif %}
+
 
 {% endblock %}
 

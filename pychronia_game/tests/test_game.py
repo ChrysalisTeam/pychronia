@@ -367,7 +367,7 @@ class TestUtilities(BaseGameTestCase):
         assert response['X-Sendfile'] == path
         _check_standard_headers(response)
 
-    
+
     def test_media_url_determination(self):
 
         res = determine_asset_url("")
@@ -2756,12 +2756,13 @@ class TestDatamanager(BaseGameTestCase):
 
     def test_radio_spots_referential_integrity(self):
 
-        audio_id = "erasable_spots"
+        with pytest.raises(AbnormalUsageError):
+            del self.dm.radio_spots["info_spots_1"]  # initial spots are, by default, immutable
+
+        audio_id = "erasable_spots"   # this one IS mutable
         self.dm.set_radio_messages([audio_id])
         assert self.dm.get_all_next_audio_messages() == [audio_id]
-
         del self.dm.radio_spots[audio_id]  # triggers pruning of radio playlist
-
         assert self.dm.get_all_next_audio_messages() == []
 
 
