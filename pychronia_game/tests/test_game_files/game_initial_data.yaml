@@ -164,7 +164,7 @@ global_parameters:
     pending_radio_messages: []
 
 
-    encyclopedia_index_visible: false
+    encyclopedia_index_visible: False
 
     friendship_minimum_duration_mn_abs: 1
 
@@ -173,8 +173,8 @@ global_parameters:
 
     password_recovery_delay_mn: 10
 
-    disable_automated_ability_responses: false
-    disable_real_email_notifications: false
+    disable_automated_ability_responses: False
+    disable_real_email_notifications: False
 
 
 locations:
@@ -221,6 +221,7 @@ game_items:
         comments:  "Beautiful."
         image: 7_misc_gems.jpg
         gamemaster_hints: "nothing to say"
+        immutable: True
 
     several_misc_gems2:
         auction: "3-E"
@@ -396,7 +397,7 @@ audio_messages:
         title: "News diverses"
         text: "For testing..."
         file: "other.mp3"
-        immutable: false
+        immutable: False
 
     external_mp3:
         title: "This is a test"
