@@ -380,7 +380,7 @@ class NovaltyTracker(BaseDataManager):
         game_data.setdefault("novelty_tracker", PersistentMapping())
 
 
-    def _check_database_coherency(self, strict=False, **kwargs):
+    def _check_database_coherency(self, **kwargs):
         super(NovaltyTracker, self)._check_database_coherency(**kwargs)
         game_data = self.data
 
@@ -3677,7 +3677,8 @@ class MoneyItemsOwnership(BaseDataManager):
 
             for (name, properties) in self._table.items():
 
-                properties.setdefault("immutable", False)  # no items really need to be immutable ATM
+                # SAFETY, we forbid modifying initial items, for now, to avoid incoherences with abilities
+                properties.setdefault("immutable", True)  
 
                 properties.setdefault("gamemaster_hints", "")
                 if properties["gamemaster_hints"]:

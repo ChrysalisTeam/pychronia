@@ -221,7 +221,6 @@ game_items:
         comments:  "Beautiful."
         image: 7_misc_gems.jpg
         gamemaster_hints: "nothing to say"
-        immutable: True
 
     several_misc_gems2:
         auction: "3-E"
