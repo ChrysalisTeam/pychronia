@@ -30,45 +30,28 @@ GAMEMASTER_HINTS in:
 FEATURES
 ------------
 
-MAKE FULL URL in mediaplayer
 
-repai the "next" url of login system
-
-CHANGER SIGNATURE de  utilities.find_game_file(character["avatar"], "images")
-
-
-game_file_url doit etre retestée
-.startswith("http://") or data.startswith("https://"):  # FIX WITH UTILITIE
-def is_absolute_url(string): A TESTER
-    return string.startswith(("http://", "https://"))
-
-- allow both urls and files for avatar/item/contact ?
-
-- IMPORTANT bugfix the double handling of urls and files in radio spots
 
 !!! BUG quand errreur lors de la soumission d'une modif de spot radio qui bogue.... -> devient création de nouveau spot
 
 Ajouter help page for game items management
-
-Mettre pages de résumé des mercenaires de chaque joueur et des wiretappings - DONE
 
 
 dire aux joueurs qu'ils ne peuvent envoyer gemmes qu'aux gens "connus" (contactés par email)
 
 parler des mémos objets dans help pages
 
-
 Ajouter les 3 gemmes spéciales dans objets !!
 
 skip_coherency_check  <- typo COHERENCE!!
 
-- automate the retrieval of radio spots
+- allow to DUPLICATE a game item, with a dedicated button
+
+- automate the retrieval of radio spots (ex. TTS) to local files
 
 - FIX medias videos on website, for video / firefox, on WINDOWS10 (use jplayer)
 
 - enlever la homepage "enchères" inutile, amener de suite sur les persos ??
-
-- ajouter formulaires de pognon dans la page character_management ?
 
 - fix support of mp4 format, and prevent nasty errors like this (JPLAYER FTW)
       File "/home/pakal/webapps/chrysalis_game/pychronia/pychronia_game/utilities/mediaplayers.py", line 146, in generate_media_player
@@ -197,6 +180,7 @@ PROMOTION
 TESTS
 ----------
 
+
 - appeler http://localhost:8000/DEMO/webradio_management/ depuis tests
 
 - tester radiospots et static pages comme le sont les global_contacts
@@ -269,6 +253,12 @@ OperationalError: (1203, "User pakal_anthropia already has more than 'max_user_c
 TASKS DONE
 ---------------
 
+- use absolute URLs in mediaplayers - DONE
+- repair the "?next=http://xxx" url of login system - DONE
+- cHANGER SIGNATURE de utilities.find_game_file(character["avatar"], "images") - DONE
+- allow both urls and local files for images of characters/items/contacts - DONE
+- bugfix the double handling of urls and files in radio spots - DONE (a single field for both, now)
+- mettre pages de résumé des mercenaires de chaque joueur et des wiretappings - DONE (nouvelle API get_admin_summary_html())
 - set top site notifications as "position: fixed" - DONE
 - Fix COMPATIBLE_ACCESSES for gamemaster summaries - need a specific GAME_ADMIN_SUMMARY method instead - DONE
 - Make login/secret-question case insensitive - DONE
@@ -529,7 +519,7 @@ CONTROVERSIAL ENHANCEMENTS
 
 - fix shaky forms when floated left in number - should be DONE now
 - convert "orbe" to masculine genre ; replace akaris by akharis !!!!!!!!!!!!!!!!!!!
-
+- ajouter formulaires de pognon dans la page character_management ?
 
 
 FUTUR ENHANCEMENTS
