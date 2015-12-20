@@ -455,7 +455,7 @@ class CharacterHandling(BaseDataManager): # TODO REFINE
         game_data = self.data
         for (name, character) in game_data["character_properties"].items():
             if character["avatar"]:
-                character["avatar"] = utilities.find_game_file_or_url("images", character["avatar"])
+                character["avatar"] = utilities.find_game_file("images", character["avatar"])  # NOT an external URL
             character.setdefault("real_life_identity", None)
             character.setdefault("real_life_email", None)
 
@@ -485,7 +485,7 @@ class CharacterHandling(BaseDataManager): # TODO REFINE
             utilities.check_is_slug(character["character_color"])
 
             if character["avatar"]:
-                utilities.check_is_game_file_or_url(character["avatar"])
+                utilities.check_is_game_file(character["avatar"])  # NOT an external URL
 
             if character["gamemaster_hints"]:
                 utilities.check_is_string(character["gamemaster_hints"], multiline=True)
