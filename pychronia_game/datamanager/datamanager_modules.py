@@ -4440,7 +4440,7 @@ class StaticPages(BaseDataManager):
                 details.setdefault("gamemaster_hints", "") # for gamemaster only
                 details["gamemaster_hints"] = details["gamemaster_hints"].strip()
 
-                details.setdefault("title", None)
+                details.setdefault("title", "")
                 if details["title"]:
                     details["title"] = details["title"].strip()
 
@@ -4460,7 +4460,7 @@ class StaticPages(BaseDataManager):
 
             utilities.check_is_bool(value["immutable"])
 
-            if value["title"] is not None:
+            if value["title"]:
                 utilities.check_is_string(value["title"], multiline=False)
                 assert value["title"] == value["title"].strip(), value["title"]
 
