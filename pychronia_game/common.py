@@ -259,8 +259,9 @@ def checked_game_file_path(url):
 
 
 def determine_asset_url(properties, absolute=True):
-    assert properties is not None
-    if isinstance(properties, basestring):
+    if properties is None:
+        file_base = properties  # let it be handled below
+    elif isinstance(properties, basestring):
         file_base = properties
     elif properties.get("file"):
         file_base = properties["file"]

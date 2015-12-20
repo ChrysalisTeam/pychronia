@@ -374,6 +374,9 @@ class TestUtilities(BaseGameTestCase):
 
     def test_media_url_determination(self):
 
+        res = determine_asset_url(None)
+        assert res == ""
+
         res = determine_asset_url("")
         assert res == ""
 
