@@ -111,7 +111,12 @@ _media_player_templates = \
 }
 
 def generate_media_player(fileurl, image="", autostart=False, width=450, height=350, **kwargs):
-    # Warning - fileurl had better be an ABSOLUTE url, else some media players won't find the file !
+    """
+    Warning - fileurl had better be an ABSOLUTE url, else some media players won't find the file !
+    
+    Returns a simple HTML link,  if file format is not supported
+    """
+
     assert fileurl.startswith("http")
 
     md5 = hashlib.md5()
@@ -137,14 +142,18 @@ def generate_media_player(fileurl, image="", autostart=False, width=450, height=
     options.update(kwargs)
 
 
-    extension = os.path.splitext(fileurl)[1][1:].lower() # we remove the dot and lower-case the extension
+    extension = os.path.splitext(fileurl)[1][1:].lower() # we remove the dot and lower-case the extension -> might result in an empty string
 
     for extensions in _media_player_templates.keys():
         if extension in extensions:
             template = _media_player_templates[extensions]
             return template % options
 
-    raise ValueError("Unsupported media type")
+    # if no extension matched, we fallback to a simple link...
+    name = os.path.basename(fileurl)
+    return '<div class="medialink">' + _("Access file") + ' <a target="_blank" href="%s">%s</a></div>' % \
+            (escape(fileurl), escape(name if name else _("here")))
+
 
 
 
@@ -245,10 +254,7 @@ def build_proper_viewer(fileurl, **kwargs): # interesting kwarg : "autostart"
     elif extension in ["jpg", "jpeg", "gif", "bmp", "png", "tif"]:
         return generate_image_viewer(fileurl, **kwargs)
     else:
-        try:
-            return generate_media_player(fileurl, **kwargs) # warning - this media player also supports mp3, so put it after the audio player !
-        except ValueError:
-            name = os.path.basename(fileurl)
-            return '<div class="medialink">' + _("Access file") + ' <a target="_blank" href="%s">%s</a></div>' % \
-                    (escape(fileurl), escape(name if name else _("here"))) # last solution - giving a simple link
+        # warning - this media player also supports mp3, so put it after the audio player !
+        return generate_media_player(fileurl, **kwargs)
+
 

@@ -93,7 +93,10 @@ class TestUtilities(BaseGameTestCase):
                     .. embed_image:: https://hisss.com/a&b.jpg
                         :alias: default
                         :align: center
-                          
+
+                    .. embed_video:: https://hi.com/cantwork.mp4
+                    
+                    .. embed_video:: https://cantwork.mp4/
                     """))
 
         assert "title1" in html and "title2" in html
@@ -109,7 +112,8 @@ class TestUtilities(BaseGameTestCase):
         for mystr in ("<img class=\"imageviewer align-center\"", "https://hisss.com/a&amp;b.jpg", "300px"): # fallback to default width/height since image url is buggy (so easy-thumbnails fails)
             assert mystr in html
 
-
+        assert 'href="https://cantwork.mp4/"' in html
+        assert 'https://cantwork.mp4/' in html
 
 
         # IMPORTANT - security measures #
