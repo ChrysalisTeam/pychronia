@@ -482,7 +482,7 @@ def check_is_positive_int(value, non_zero=True):
 def check_is_restructuredtext(value):
     from pychronia_game.templatetags.helpers import advanced_restructuredtext
     assert isinstance(value, basestring) # NOT A LIST
-    #print("LOADING RST...", repr(value[0:100]))
+    #print("LOADING RST...", repr(value[0:70]))
     usage_assert(advanced_restructuredtext(value)) # not a REAL check ATM...
     return True
 

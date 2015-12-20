@@ -16,50 +16,13 @@ domaine.
 
 
 
-GAMEMASTER_HINTS in:
-
-	- characters
-	- contacts
-	- templates
-	- radio spots
-	- game items
-	- static pages
 
 
 
 FEATURES
 ------------
 
-
-
-!!! BUG quand errreur lors de la soumission d'une modif de spot radio qui bogue.... -> devient création de nouveau spot
-
-Ajouter help page for game items management
-
-
-dire aux joueurs qu'ils ne peuvent envoyer gemmes qu'aux gens "connus" (contactés par email)
-
-parler des mémos objets dans help pages
-
-Ajouter les 3 gemmes spéciales dans objets !!
-
-skip_coherency_check  <- typo COHERENCE!!
-
-- allow to DUPLICATE a game item, with a dedicated button
-
-- automate the retrieval of radio spots (ex. TTS) to local files
-
-- FIX medias videos on website, for video / firefox, on WINDOWS10 (use jplayer)
-
-- enlever la homepage "enchères" inutile, amener de suite sur les persos ??
-
-- fix support of mp4 format, and prevent nasty errors like this (JPLAYER FTW)
-      File "/home/pakal/webapps/chrysalis_game/pychronia/pychronia_game/utilities/mediaplayers.py", line 146, in generate_media_player
-        raise ValueError("Unsupported media type")
-      ValueError: Unsupported media type
-
-- carte du monde : un clic sur un pays/ville principal pour un zoom plus détaillé (un peu comme hurlevent wow) -> intégrer touch map prototype
-
+* Ensure that "coherence" is used everywhere, after merge
 
 MESSAGERIE:
 - afficher les messages transférés, et le message parent (auquel on répond), INLINE
@@ -70,32 +33,39 @@ MESSAGERIE:
 
 
 
-PAUSED BUGLETS:
-
-- BUG si joueurs passés en pnj/non pnj avec auctionlist :
-   assert set(self._determine_basic_visibility(msg).keys()) - set([master]) <= set(msg["visible_by"].keys()), [self._determine_basic_visibility(msg).keys(), msg]
-
-- fix checks of ajax calls when impersonation changes
-  SEE EMAILS ERROR (EXTERNAL IP): Internal Server Error: /premium/messages/ajax_mark_msg_read/
-
-- fix bugs in rich text, with spaces in embed rst_directives, and
-  utilities.check_is_restructuredtext(value["content"]) which is buggy because must use rich_text instead
-  <- WONT FIX, this filter requires a valid request ??????
-
 
 
 SCRIPT
 ----------
+
+Ajouter help page for game items management
+
+dire aux joueurs qu'ils ne peuvent envoyer gemmes qu'aux gens "connus" (contactés par email)
+
+parler des mémos objets dans help pages
+
+Ajouter les 3 gemmes spéciales dans objets !!
+
+
+GAMEMASTER_HINTS in:
+
+    - characters
+    - contacts
+    - templates
+    - radio spots
+    - game items
+    - static pages
+
 
 - get_other_known_characters -> tjrs inclure les joueurs enchérisseurs dedans ? NOPE, forcer ainsi les joueurs à COMMUNIQUER!
 
 - add tags with titles to all MP3s
 
 - USE embed_image(alias, align) everywhere in fixtures, and maybe unregister image directive ?
+  (obsolete?) add GAME_IMAGE_URL in help pages, better than embed_image for now <- ??
+
 
 - regler les "HERE GAMEMASTER HINTS" et autres FIXME
-
-
 
 - fixer l'aide de la page "dahsboard admin"
 - dire qu'on peut réordonner les forms de la page admin dashboard
@@ -108,7 +78,7 @@ SCRIPT
 
 - obéron keyword
 
-- dire "marquer comme lus les messages de LG périodiquement, soi même"
+- dire "marquer comme lus les messages de LG périodiquement, soi même", au MJ
 
 - cacher compétences spéciales pour PNJ <- personal permissions EVERYWHERE
 
@@ -119,9 +89,6 @@ SCRIPT
 - mon compte (PAS "profile personnel"), ou Mon profil
 
 
-ARTICLES MANQUANTS
-- académie alifir (et image dedans) <--------
-
 - les notifications doivent etre plus explicites dans leur contenu
 
 - faire CHRONOLOGIE détaillée des évènements pour aider énigmes
@@ -131,9 +98,6 @@ ARTICLES MANQUANTS
 Toutes ces gemmes peuvent etre vendues à leur prix de reference sur le marché international, dont le cours est tres stable actuellement. Il parait d'ailleurs que notre portail Anthropia va etre connecté sous peu à une place des ventes.
 
 Ces lots sont volumineux, mais rien ne vous interdit de vous entendre pour en acheter en commun, puis vous repartir les gemmes individuelles ensuite.
-
-
-- add GAME_IMAGE_URL in help pages, better than embed_image for now <- ??
 
 - manual for TTS acapela !!
 
@@ -164,10 +128,8 @@ média => encyclopédie => saisir l'expression : si on écrit une phrase trop lo
    ou tout simplement autoriser le clic sur le texte pour refermer. ==> EXPLIQUER DANS HELP PAGE
 
 
-- rendre les message autosaves "par effective username" - DONE
-
-- "transraciations" changé en transfiliation?? - DONE
 Sinon pourquoi faire une "aide" en anglais et le site en français ? => EXPLIQUER dans help homepage DONE
+
 
 
 PROMOTION
@@ -179,6 +141,16 @@ PROMOTION
 
 TESTS
 ----------
+
+
+PAUSED BUGLETS:
+- BUG si joueurs passés en pnj/non pnj avec auctionlist :
+   assert set(self._determine_basic_visibility(msg).keys()) - set([master]) <= set(msg["visible_by"].keys()), [self._determine_basic_visibility(msg).keys(), msg]
+- fix checks of ajax calls when impersonation changes
+  SEE EMAILS ERROR (EXTERNAL IP): Internal Server Error: /premium/messages/ajax_mark_msg_read/
+- fix bugs in rich text, with spaces in embed rst_directives, and
+  utilities.check_is_restructuredtext(value["content"]) which is buggy because must use rich_text instead
+  <- WONT FIX, this filter requires a valid request ??????
 
 
 - appeler http://localhost:8000/DEMO/webradio_management/ depuis tests
@@ -253,8 +225,11 @@ OperationalError: (1203, "User pakal_anthropia already has more than 'max_user_c
 TASKS DONE
 ---------------
 
+- prevent "ValueError: Unsupported media type" for mp4 and other file formats - DONE
 - use absolute URLs in mediaplayers - DONE
 - repair the "?next=http://xxx" url of login system - DONE
+- rendre les message autosaves "par effective username" - DONE
+- "transraciations" changé en transfiliation?? - DONE
 - cHANGER SIGNATURE de utilities.find_game_file(character["avatar"], "images") - DONE
 - allow both urls and local files for images of characters/items/contacts - DONE
 - bugfix the double handling of urls and files in radio spots - DONE (a single field for both, now)
@@ -511,6 +486,7 @@ TASKS DONE
 CONTROVERSIAL ENHANCEMENTS
 -----------------------------------
 
+- enlever la homepage "enchères" inutile, amener de suite sur les persos ??
 - trier contacts par autre ordre, das "nouveau message" ?? c'est déjà par domaine...
 - permettre d'éditer les messages en attente d'envoi ? nope, mieux vaut "save as template"...
 - METTRE UN LIEN PARAMETRABLE QUAND ON GAGNE CONTRE l'IA d'échecs ?
@@ -525,9 +501,14 @@ CONTROVERSIAL ENHANCEMENTS
 FUTUR ENHANCEMENTS
 --------------------------
 
+- carte du monde : un clic sur un pays/ville principal pour un zoom plus détaillé (un peu comme hurlevent wow) -> intégrer touch map prototype
+- FIX medias videos on website, for video / firefox, on WINDOWS10 (use jplayer)
+- fix support of mp4 format and others (JPLAYER FTW)
+- automate the retrieval of radio spots (ex. TTS) to local files
+- allow to DUPLICATE a game item to the "new" form, with a dedicated button
 - Make DataTable records "editable" and "deletable/renamable", separately
-- Use "strict" param in check_coherency, to check relational fields only at YAML loading
-- Add tests to ensure that clearings tables is OK, for check_coherency(strict=false) - abilities ust be robust to that
+- Use "strict" param in check_coherence, to check relational fields only at YAML loading
+- Add tests to ensure that clearings tables is OK, for check_coherence(strict=false) - abilities ust be robust to that
 
 - TRADUIRE les noms des permissions - quite hard (autogenerated)
 - corrupt wiretapped emails, via duplication (else trouble with direct access links) ?
