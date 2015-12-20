@@ -128,13 +128,13 @@ p {
 @include mobile-only {
     p {
         font-size: 1em;
-        line-height: 1.1em;
+        line-height: 1.2em;
     }
 }
 @include desktop-only {
     p {
         font-size: 1em;
-        line-height: 1.1em;
+        line-height: 1.2em;
     }
 }
 

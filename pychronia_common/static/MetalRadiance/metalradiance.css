@@ -1917,13 +1917,13 @@ p {
 @media (max-width: 991px) {
   p {
     font-size: 1em;
-    line-height: 1.1em;
+    line-height: 1.2em;
   }
 }
 @media (min-width: 992px) {
   p {
     font-size: 1em;
-    line-height: 1.1em;
+    line-height: 1.2em;
   }
 }
 a img {
