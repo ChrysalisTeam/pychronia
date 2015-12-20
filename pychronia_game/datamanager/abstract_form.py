@@ -52,9 +52,22 @@ def autostrip(cls):
 
 class SimpleForm(forms.Form):
     """
-    Simple form class with cosmetic tweaks.
+    Simple form class with cosmetic tweaks and string stripping.
     """
     required_css_class = "required"
+
+    def clean(self):
+        """
+        We never need fields with leading/trailing spaces in that game, so we strip everything...
+        """
+        cleaned_data = super(forms.Form, self).clean()
+
+        for field in cleaned_data:
+            if isinstance(self.cleaned_data[field], basestring):
+                cleaned_data[field] = cleaned_data[field].strip() # note that Field "required=True" constraints might be already bypassed here, use autostrip instead
+
+        return cleaned_data
+
 
 
 class BaseAbstractGameForm(SimpleForm):
@@ -90,18 +103,6 @@ class BaseAbstractGameForm(SimpleForm):
         if post_data.get(cls._ability_field_name, None) == cls._get_dotted_class_name():
             return True
         return False
-
-    def clean(self):
-        """
-        We never need fields with leading/trailing spaces in that game, so we strip everything...
-        """
-        cleaned_data = super(BaseAbstractGameForm, self).clean()
-
-        for field in cleaned_data:
-            if isinstance(self.cleaned_data[field], basestring):
-                cleaned_data[field] = cleaned_data[field].strip() # note that Field "required=True" constraints might be already bypassed here, use autostrip instead
-
-        return cleaned_data
 
     def get_normalized_values(self):
         assert self.is_valid()
