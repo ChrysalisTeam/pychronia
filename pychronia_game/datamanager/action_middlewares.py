@@ -328,7 +328,7 @@ class CostlyActionMiddleware(AbstractActionMiddleware):
             else:
                 use_gems = params.get("use_gems", ())
 
-                # non-fatal coherency checks
+                # non-fatal coherence checks
                 if middleware_settings["gems_price"] and "use_gems" not in params:
                     self.logger.critical("Action %s was configured to be payable by gems, but no input field is available for this : %r", action_name, params)
                 if not middleware_settings["gems_price"] and use_gems:

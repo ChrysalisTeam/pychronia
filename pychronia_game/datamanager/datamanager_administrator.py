@@ -111,7 +111,7 @@ def create_game_instance(game_instance_id,
                          creator_email=None,
                          skip_initializations=False,
                          skip_randomizations=False,
-                         skip_coherency_check=False,
+                         skip_coherence_check=False,
                          yaml_fixture=None,
                          strict=False): # TODO here try strict=True once
     """
@@ -139,7 +139,7 @@ def create_game_instance(game_instance_id,
         dm.reset_game_data(strict=strict, 
                            skip_randomizations=skip_randomizations, 
                            skip_initializations=skip_initializations,
-                           skip_coherency_check=skip_coherency_check,
+                           skip_coherence_check=skip_coherence_check,
                            yaml_fixture=yaml_fixture)
         assert dm.is_initialized
 

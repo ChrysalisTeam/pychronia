@@ -241,7 +241,7 @@ class BaseGameTestCase(TestCase): # one day, use pytest-django module to make it
                              creator_login="test_creator",
                              skip_randomizations=True,  # handy to test stuffs
                              skip_initializations=skip_initializations,
-                             skip_coherency_check=True,
+                             skip_coherence_check=True,
                              yaml_fixture=yaml_fixture)
 
         if not BaseGameTestCase.SHARED_DM_INITIAL_DATA_TREE:
@@ -273,8 +273,8 @@ class BaseGameTestCase(TestCase): # one day, use pytest-django module to make it
 
             self.dm.clear_all_event_stats()
             if not skip_initializations:
-                self.dm.check_database_coherency()  # thus, only done for the first testcase
-                assert self.dm.get_event_count("BASE_CHECK_DB_COHERENCY_PUBLIC_CALLED") == 1 # no bypassing because of wrong override
+                self.dm.check_database_coherence()  # thus, only done for the first testcase
+                assert self.dm.get_event_count("BASE_CHECK_DB_COHERENCE_PUBLIC_CALLED") == 1 # no bypassing because of wrong override
 
             self.dm.set_game_state(True)
             self.dm.set_activated_game_views(self.dm.get_activable_views().keys()) # QUICK ACCESS FIXTURE
@@ -303,7 +303,7 @@ class BaseGameTestCase(TestCase): # one day, use pytest-django module to make it
     def tearDown(self, check=True):
         if hasattr(self, "dm"):
             if check:
-                self.dm.check_database_coherency()
+                self.dm.check_database_coherence()
             self.dm.close()
             self.dm = None
 

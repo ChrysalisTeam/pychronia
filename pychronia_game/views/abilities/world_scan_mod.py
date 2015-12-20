@@ -110,7 +110,7 @@ class WorldScanAbility(AbstractPartnershipAbility):
     @transaction_watcher
     def _add_to_scanned_locations(self, locations):
         self.data["global_parameters"]["scanned_locations"] = PersistentList(set(self.data["global_parameters"][
-                                                                                 "scanned_locations"] + locations)) # we let the _check_coherency system ensure it's OK
+                                                                                 "scanned_locations"] + locations)) # we let the _check_coherence system ensure it's OK
     '''
 
 

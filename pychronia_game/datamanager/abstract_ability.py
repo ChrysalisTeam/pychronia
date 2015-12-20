@@ -281,7 +281,7 @@ class AbstractPartnershipAbility(AbstractAbility):
         else:
             self.set_dispatched_message_state_flags(username=self.master_login, msg_id=msg_id, has_read=True)
 
-        self._last_request_msg_id = msg_id # for coherency checking
+        self._last_request_msg_id = msg_id # for coherence checking
         return msg_id
 
 
@@ -417,7 +417,7 @@ class AbstractPartnershipAbility(AbstractAbility):
         return record[field]
 
 
-    def ability_check_record_coherency(self, ability_name):
+    def ability_check_record_coherence(self, ability_name):
         record = self._ability_retrieve_record(ability_name)
         for (key, value) in record.items():
             assert isinstance(value, (int, long)), record

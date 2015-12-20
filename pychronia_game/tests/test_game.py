@@ -626,9 +626,9 @@ class TestMetaAdministration(unittest.TestCase): # no django setup required ATM
         dm = datamanager_administrator.retrieve_game_instance(game_instance_id=game_instance_id,
                                                               request=None,
                                                               metadata_checker=None)
-        assert not dm.get_event_count("BASE_CHECK_DB_COHERENCY_PUBLIC_CALLED")
+        assert not dm.get_event_count("BASE_CHECK_DB_COHERENCE_PUBLIC_CALLED")
         data_tree = dm.load_zope_database_from_string(raw_yaml_data)
-        assert dm.get_event_count("BASE_CHECK_DB_COHERENCY_PUBLIC_CALLED") == 1 # data well checked
+        assert dm.get_event_count("BASE_CHECK_DB_COHERENCE_PUBLIC_CALLED") == 1 # data well checked
 
         assert "metadata" not in data_tree # it's well ONLY the "data" part of the game instance tree
         assert "data" not in data_tree
@@ -822,7 +822,7 @@ class TestDatamanager(BaseGameTestCase):
             assert self.dm.get_event_count("BROKEN_DUMMY_FUNC_CALLED") == 3 # 3 attempts max
 
         del self.dm.get_character_properties
-        self.dm.check_database_coherency()
+        self.dm.check_database_coherence()
         self.dm.get_character_properties = broken # INSTANCE attribute, no problem
 
         for ERROR_TYPE in (UsageError, EnvironmentError, TypeError):
@@ -833,7 +833,7 @@ class TestDatamanager(BaseGameTestCase):
                 assert self.dm.get_event_count("BROKEN_DUMMY_FUNC_CALLED") == 1 # no retries in these cases
 
         del self.dm.get_character_properties
-        self.dm.check_database_coherency()
+        self.dm.check_database_coherence()
 
 
 
@@ -911,10 +911,10 @@ class TestDatamanager(BaseGameTestCase):
             assert castrated_dm.get_event_count("BASE_LOAD_INITIAL_DATA_CALLED") == 1
 
             try:
-                castrated_dm._check_database_coherency()
+                castrated_dm._check_database_coherence()
             except Exception, e:
                 transaction.abort()
-            assert castrated_dm.get_event_count("BASE_CHECK_DB_COHERENCY_PRIVATE_CALLED") == 1
+            assert castrated_dm.get_event_count("BASE_CHECK_DB_COHERENCE_PRIVATE_CALLED") == 1
 
             try:
                 report = PersistentList()
@@ -2185,7 +2185,7 @@ class TestDatamanager(BaseGameTestCase):
         self.dm.get_dispatched_message_by_id(msg_id_1)
         self.dm.permanently_delete_message(msg_id_1)
         with pytest.raises(UsageError):
-            self.dm.get_dispatched_message_by_id(msg_id_1)  # will cause trouble in global coherency check, if handling is buggy
+            self.dm.get_dispatched_message_by_id(msg_id_1)  # will cause trouble in global coherence check, if handling is buggy
 
         msg2 = self.dm.get_dispatched_message_by_id(msg_id_2)
         assert not msg2["transferred_msg"]
@@ -2824,7 +2824,7 @@ class TestDatamanager(BaseGameTestCase):
         self.assertEqual(len(self.dm.get_all_dispatched_messages()), 3)
         self.assertEqual(len(self.dm.get_all_queued_messages()), 0)
 
-        # due to the strength of coherency checks, it's about impossible to enforce a sending here here...
+        # due to the strength of coherence checks, it's about impossible to enforce a sending here here...
         self.assertEqual(self.dm.get_event_count("DELAYED_MESSAGE_ERROR"), 0)
 
 
@@ -4049,7 +4049,7 @@ class TestDatamanager(BaseGameTestCase):
         assert not self.dm.has_accessed_novelty("guy4", "dllll", category="myCat") # case sensitive category
         assert not self.dm.has_accessed_novelty("guy4", "dlllL", category="mycat") # case sensitive key
 
-        # this method's input is not checked by coherency routines, so let's ensure it's protected...
+        # this method's input is not checked by coherence routines, so let's ensure it's protected...
         with pytest.raises(AssertionError):
             self.dm.has_accessed_novelty("badusername", "qsdffsdf")
         with pytest.raises(AssertionError):
@@ -4491,7 +4491,7 @@ class TestHttpRequests(BaseGameTestCase):
                 assert ("gerbil_species" in self.dm.get_character_known_article_ids()) == game_state
                 ok += 1
 
-        assert ok == 2 # coherency of test method
+        assert ok == 2 # coherence of test method
 
 
     def test_usage_error_transformation(self):
@@ -5359,7 +5359,7 @@ class TestActionMiddlewares(BaseGameTestCase):
 
     def _flatten_explanations(self, list_of_lists_of_strings):
         """
-        Also checks for coherency of list_of_lists_of_strings.
+        Also checks for coherence of list_of_lists_of_strings.
         """
         assert isinstance(list_of_lists_of_strings, list) # may be empty
         for l in list_of_lists_of_strings:
@@ -5553,7 +5553,7 @@ class TestActionMiddlewares(BaseGameTestCase):
         assert CostlyActionMiddleware
         self.dm.commit()
 
-        self.dm.check_database_coherency() # SECURITY
+        self.dm.check_database_coherence() # SECURITY
 
 
         # misconfiguration case #
@@ -5610,7 +5610,7 @@ class TestActionMiddlewares(BaseGameTestCase):
         ability.reset_test_settings("middleware_wrapped_test_action", CostlyActionMiddleware, dict(money_price=53, gems_price=None))
         assert 18277 == ability.middleware_wrapped_callable1(use_gems=[gem_125, gem_125]) # triggers payment by money ANYWAY!
 
-        # we check data coherency
+        # we check data coherence
         props = self.dm.get_character_properties("guy4")
         new_money_value = 1000 - 2 * 3 * 15 - 53 # 2 callables * 3 use_gems values * money price, and special 53 kashes payment
         assert props["account"] == new_money_value
@@ -5625,7 +5625,7 @@ class TestActionMiddlewares(BaseGameTestCase):
         assert self._flatten_explanations(ability.get_middleware_data_explanations(action_name="middleware_wrapped_test_action"))
 
 
-        self.dm.check_database_coherency() # SECURITY
+        self.dm.check_database_coherence() # SECURITY
 
 
         # payment with gems #
@@ -5671,7 +5671,7 @@ class TestActionMiddlewares(BaseGameTestCase):
         assert ability.middleware_wrapped_callable1(use_gems=[gem_200]) # OK
         assert ability.middleware_wrapped_callable1(use_gems=[gem_125, gem_125]) # OK as long as not too many gems for the asset value
 
-        # we check data coherency
+        # we check data coherence
         props = self.dm.get_character_properties("guy4")
         assert props["account"] == new_money_value # unchanged
         utilities.assert_sets_equal(props["gems"], [gem_125] * 6 + [gem_200]) # 3 payments with 2 gems, + 2 separate payments
@@ -5683,7 +5683,7 @@ class TestActionMiddlewares(BaseGameTestCase):
         self.dm.clear_all_event_stats()
 
 
-        self.dm.check_database_coherency() # SECURITY
+        self.dm.check_database_coherence() # SECURITY
 
 
         # payment with both is possible #
@@ -5697,7 +5697,7 @@ class TestActionMiddlewares(BaseGameTestCase):
         assert ability.non_middleware_action_callable(use_gems=[gem_125])
         assert ability.non_middleware_action_callable(use_gems=[])
 
-        # we check data coherency
+        # we check data coherence
         props = self.dm.get_character_properties("guy4")
         assert props["account"] == new_money_value - 11 * 2
         utilities.assert_sets_equal(props["gems"], [gem_125] * 2) # "200 kashes" gem is out
@@ -5955,7 +5955,7 @@ class TestActionMiddlewares(BaseGameTestCase):
         self.dm.clear_all_event_stats()
 
         ability.reset_test_settings("middleware_wrapped_test_action", TimeLimitedActionMiddleware,
-                                    dict(waiting_period_mn=3, max_uses_per_period=50)) # to please coherency checking, after our rough changes
+                                    dict(waiting_period_mn=3, max_uses_per_period=50)) # to please coherence checking, after our rough changes
 
 
     def test_action_middleware_rollback_on_error(self):

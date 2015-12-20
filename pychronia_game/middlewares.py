@@ -92,8 +92,8 @@ class ZodbTransactionMiddleware(object):
             if hasattr(request, "datamanager"):
                 if config.DEBUG:
                     pass
-                    #request.datamanager.check_database_coherency() # checking after each request, then
-                    #logger.info("Pychronia debug mode: post-processing check_database_coherency() is over (might take a long time)")
+                    #request.datamanager.check_database_coherence() # checking after each request, then
+                    #logger.info("Pychronia debug mode: post-processing check_database_coherence() is over (might take a long time)")
                 request.datamanager.close()
         except Exception, e:
             # exception should NEVER flow out of response processing middlewares

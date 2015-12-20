@@ -46,8 +46,8 @@ class GameMasterManual(BaseDataManager):
             game_data["gamemaster_manual"].setdefault(key, "This is a Placeholder")
 
 
-    def _check_database_coherency(self, **kwargs):
-        super(GameMasterManual, self)._check_database_coherency(**kwargs)
+    def _check_database_coherence(self, **kwargs):
+        super(GameMasterManual, self)._check_database_coherence(**kwargs)
         return # TEMP HACK FIXME
 
         game_data = self.data
@@ -74,8 +74,8 @@ class GameGlobalParameters(BaseDataManager):
         game_data["global_parameters"]["world_map_image"] = os.path.normpath(game_data["global_parameters"]["world_map_image"])
         game_data["global_parameters"]["world_map_image_bw"] = os.path.normpath(game_data["global_parameters"]["world_map_image_bw"])
 
-    def _check_database_coherency(self, **kwargs):
-        super(GameGlobalParameters, self)._check_database_coherency(**kwargs)
+    def _check_database_coherence(self, **kwargs):
+        super(GameGlobalParameters, self)._check_database_coherence(**kwargs)
 
         game_data = self.data
         utilities.check_is_bool(game_data["global_parameters"]["game_is_started"])
@@ -195,8 +195,8 @@ class FlexibleTime(BaseDataManager): # TODO REFINE
         super(FlexibleTime, self)._load_initial_data(**kwargs)
 
 
-    def _check_database_coherency(self, **kwargs):
-        super(FlexibleTime, self)._check_database_coherency(**kwargs)
+    def _check_database_coherence(self, **kwargs):
+        super(FlexibleTime, self)._check_database_coherence(**kwargs)
         utilities.check_is_positive_float(self.get_global_parameter("game_theoretical_length_days"), non_zero=True)
 
 
@@ -262,8 +262,8 @@ class GameEvents(BaseDataManager): # TODO REFINE
         game_data["events_log"].sort(key=lambda evt: evt["time"])
 
 
-    def _check_database_coherency(self, **kwargs):
-        super(GameEvents, self)._check_database_coherency(**kwargs)
+    def _check_database_coherence(self, **kwargs):
+        super(GameEvents, self)._check_database_coherence(**kwargs)
 
         event_reference = {
             "time": datetime,
@@ -380,8 +380,8 @@ class NovaltyTracker(BaseDataManager):
         game_data.setdefault("novelty_tracker", PersistentMapping())
 
 
-    def _check_database_coherency(self, **kwargs):
-        super(NovaltyTracker, self)._check_database_coherency(**kwargs)
+    def _check_database_coherence(self, **kwargs):
+        super(NovaltyTracker, self)._check_database_coherence(**kwargs)
         game_data = self.data
 
         allowed_usernames = self.get_character_usernames() + [self.get_global_parameter("master_login")]
@@ -463,8 +463,8 @@ class CharacterHandling(BaseDataManager): # TODO REFINE
                 character["gamemaster_hints"] = character["gamemaster_hints"].strip()
 
 
-    def _check_database_coherency(self, **kwargs):
-        super(CharacterHandling, self)._check_database_coherency(**kwargs)
+    def _check_database_coherence(self, **kwargs):
+        super(CharacterHandling, self)._check_database_coherence(**kwargs)
 
         game_data = self.data
 
@@ -649,8 +649,8 @@ class DomainHandling(BaseDataManager): # TODO REFINE
             if content["national_anthem"]:
                 content["national_anthem"] = utilities.find_game_file("audio", content["national_anthem"])
 
-    def _check_database_coherency(self, **kwargs):
-        super(DomainHandling, self)._check_database_coherency(**kwargs)
+    def _check_database_coherence(self, **kwargs):
+        super(DomainHandling, self)._check_database_coherence(**kwargs)
 
         game_data = self.data
 
@@ -725,8 +725,8 @@ class PlayerAuthentication(BaseDataManager):
             self.randomize_passwords_for_players() # basic security
             assert self.data["global_parameters"]["master_login"] == old_master_login # later we might randomize master login too, for now it must NEVER change!
 
-    def _check_database_coherency(self, **kwargs):
-        super(PlayerAuthentication, self)._check_database_coherency(**kwargs)
+    def _check_database_coherence(self, **kwargs):
+        super(PlayerAuthentication, self)._check_database_coherence(**kwargs)
 
         game_data = self.data
 
@@ -1069,7 +1069,7 @@ class PlayerAuthentication(BaseDataManager):
 
         username = username.strip().lower()  # IMPORTANT, case-insensitive
 
-        self.get_secret_question(username) # checks coherency of that call
+        self.get_secret_question(username) # checks coherence of that call
 
         user_properties = self.get_character_properties(username)
 
@@ -1184,8 +1184,8 @@ class PermissionsHandling(BaseDataManager): # TODO REFINE
         for (name, domain) in game_data["domains"].items():
             domain.setdefault("permissions", PersistentList())
 
-    def _check_database_coherency(self, **kwargs):
-        super(PermissionsHandling, self)._check_database_coherency(**kwargs)
+    def _check_database_coherence(self, **kwargs):
+        super(PermissionsHandling, self)._check_database_coherence(**kwargs)
 
         for permission in self.PERMISSIONS_REGISTRY: # check all available permissions
             utilities.check_is_slug(permission)
@@ -1270,8 +1270,8 @@ class FriendshipHandling(BaseDataManager):
         game_data["friendships"].setdefault("proposed", PersistentMapping()) # mapping (proposer, recipient) => dict(proposal_date)
         game_data["friendships"].setdefault("sealed", PersistentMapping()) # mapping (proposer, accepter) => dict(proposal_date, acceptance_date)
 
-    def _check_database_coherency(self, strict=False, **kwargs):
-        super(FriendshipHandling, self)._check_database_coherency(**kwargs)
+    def _check_database_coherence(self, strict=False, **kwargs):
+        super(FriendshipHandling, self)._check_database_coherence(**kwargs)
 
         game_data = self.data
 
@@ -1496,8 +1496,8 @@ class GameInstructions(BaseDataManager):
     def _load_initial_data(self, **kwargs):
         super(GameInstructions, self)._load_initial_data(**kwargs)
 
-    def _check_database_coherency(self, **kwargs):
-        super(GameInstructions, self)._check_database_coherency(**kwargs)
+    def _check_database_coherence(self, **kwargs):
+        super(GameInstructions, self)._check_database_coherence(**kwargs)
 
         game_data = self.data
 
@@ -1548,8 +1548,8 @@ class LocationsHandling(BaseDataManager):
             pass # NOTHING ATM
 
 
-    def _check_database_coherency(self, **kwargs):
-        super(LocationsHandling, self)._check_database_coherency(**kwargs)
+    def _check_database_coherence(self, **kwargs):
+        super(LocationsHandling, self)._check_database_coherence(**kwargs)
 
         game_data = self.data
         assert game_data["locations"]
@@ -1585,8 +1585,8 @@ class OnlinePresence(BaseDataManager):
 
         self.data["global_parameters"].setdefault("online_presence_timeout_s", 600)
 
-    def _check_database_coherency(self, **kwargs):
-        super(OnlinePresence, self)._check_database_coherency(**kwargs)
+    def _check_database_coherence(self, **kwargs):
+        super(OnlinePresence, self)._check_database_coherence(**kwargs)
         for character in self.get_character_sets().values():
             assert not character["last_online_time"] or (isinstance(character["last_online_time"], datetime)
                                                          and character["last_online_time"] <= datetime.utcnow())
@@ -1692,8 +1692,8 @@ class TextMessagingCore(BaseDataManager):
 
 
 
-    def _check_database_coherency(self, strict=False, **kwargs):
-        super(TextMessagingCore, self)._check_database_coherency(strict=strict, **kwargs)
+    def _check_database_coherence(self, strict=False, **kwargs):
+        super(TextMessagingCore, self)._check_database_coherence(strict=strict, **kwargs)
 
         messaging = self.messaging_data
         message_reference = {
@@ -2050,10 +2050,10 @@ class TextMessagingExternalContacts(BaseDataManager):
 
 
 
-    def _check_database_coherency(self, strict=False, **kwargs):
-        super(TextMessagingExternalContacts, self)._check_database_coherency(strict=strict, **kwargs)
+    def _check_database_coherence(self, strict=False, **kwargs):
+        super(TextMessagingExternalContacts, self)._check_database_coherence(strict=strict, **kwargs)
 
-        self.global_contacts._check_database_coherency(strict=strict, **kwargs)
+        self.global_contacts._check_database_coherence(strict=strict, **kwargs)
 
 
     def _check_sender_email(self, sender_email):
@@ -2237,8 +2237,8 @@ class TextMessagingTemplates(BaseDataManager):
         game_data["global_parameters"]["message_template_categories"] = existing_template_categories # OVERRIDDEN and STATIC for now !
 
 
-    def _check_database_coherency(self, strict=False, **kwargs):
-        super(TextMessagingTemplates, self)._check_database_coherency(**kwargs)
+    def _check_database_coherence(self, strict=False, **kwargs):
+        super(TextMessagingTemplates, self)._check_database_coherence(**kwargs)
 
         self.data["global_parameters"].setdefault("message_template_categories", PersistentList(["unsorted"])) # FIXME TEMP FIX
 
@@ -2383,7 +2383,7 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
         self._recompute_all_address_book_via_msgs()
         assert not self._recompute_all_address_book_via_msgs()
 
-        # initial coherency check
+        # initial coherence check
         all_emails = self.get_all_existing_emails() # ALL available
 
         ''' TODO FIXME BETTER CHECK ??
@@ -2394,8 +2394,8 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
                 assert recipient_email in all_emails, (recipient_email, all_emails)
         '''
 
-    def _check_database_coherency(self, **kwargs):
-        super(TextMessagingForCharacters, self)._check_database_coherency(**kwargs)
+    def _check_database_coherence(self, **kwargs):
+        super(TextMessagingForCharacters, self)._check_database_coherence(**kwargs)
 
         # TODO - check all messages and templates with utilities.check_is_restructuredtext(value) ? What happens if invalid rst ?
 
@@ -2917,8 +2917,8 @@ class TextMessagingInterception(BaseDataManager):
             data.setdefault("wiretapping_targets", PersistentList())
             data.setdefault("confidentiality_activation_datetime", None) # UTC datetime when SSL/TLS security was bought
 
-    def _check_database_coherency(self, **kwargs):
-        super(TextMessagingInterception, self)._check_database_coherency(**kwargs)
+    def _check_database_coherence(self, **kwargs):
+        super(TextMessagingInterception, self)._check_database_coherence(**kwargs)
 
         game_data = self.data
         messaging = self.messaging_data
@@ -3047,9 +3047,9 @@ class RadioMessaging(BaseDataManager): # TODO REFINE
         super(RadioMessaging, self)._load_initial_data(**kwargs)
         self.radio_spots._load_initial_data(**kwargs)
 
-    def _check_database_coherency(self, **kwargs):
-        super(RadioMessaging, self)._check_database_coherency(**kwargs)
-        self.radio_spots._check_database_coherency(**kwargs)
+    def _check_database_coherence(self, **kwargs):
+        super(RadioMessaging, self)._check_database_coherence(**kwargs)
+        self.radio_spots._check_database_coherence(**kwargs)
 
         game_data = self.data
         value = game_data["global_parameters"]["pending_radio_messages"]
@@ -3263,8 +3263,8 @@ class Chatroom(BaseDataManager):
         game_data["global_parameters"].setdefault("chatroom_presence_timeout_s", 20)
         game_data["global_parameters"].setdefault("chatroom_timestamp_display_threshold_s", 120)
 
-    def _check_database_coherency(self, **kwargs):
-        super(Chatroom, self)._check_database_coherency(**kwargs)
+    def _check_database_coherence(self, **kwargs):
+        super(Chatroom, self)._check_database_coherence(**kwargs)
 
         game_data = self.data
 
@@ -3368,8 +3368,8 @@ class ActionScheduling(BaseDataManager):
 
 
 
-    def _check_database_coherency(self, **kwargs):
-        super(ActionScheduling, self)._check_database_coherency(**kwargs)
+    def _check_database_coherence(self, **kwargs):
+        super(ActionScheduling, self)._check_database_coherence(**kwargs)
 
         game_data = self.data
 
@@ -3472,8 +3472,8 @@ class PersonalFiles(BaseDataManager):
         super(PersonalFiles, self)._load_initial_data(**kwargs)
 
 
-    def _check_database_coherency(self, **kwargs):
-        super(PersonalFiles, self)._check_database_coherency(**kwargs)
+    def _check_database_coherence(self, **kwargs):
+        super(PersonalFiles, self)._check_database_coherence(**kwargs)
 
         # common and personal file folders
         assert os.path.isdir(os.path.join(config.GAME_FILES_ROOT, "personal_files", self.COMMON_FILES_DIRS))
@@ -3626,8 +3626,8 @@ class MoneyItemsOwnership(BaseDataManager):
         self.game_items._load_initial_data(**kwargs)  # important
 
 
-    def _check_database_coherency(self, **kwargs):
-        super(MoneyItemsOwnership, self)._check_database_coherency(**kwargs)
+    def _check_database_coherence(self, **kwargs):
+        super(MoneyItemsOwnership, self)._check_database_coherence(**kwargs)
 
         game_data = self.data
 
@@ -3666,7 +3666,7 @@ class MoneyItemsOwnership(BaseDataManager):
         old_total_digital_money = game_data["global_parameters"]["total_digital_money"]
         assert old_total_digital_money == total_digital_money, "%s != %s" % (old_total_digital_money, total_digital_money)
 
-        self.game_items._check_database_coherency(**kwargs)  # important
+        self.game_items._check_database_coherence(**kwargs)  # important
 
 
     class GameItemsManager(DataTableManager):
@@ -4061,8 +4061,8 @@ class Items3dViewing(BaseDataManager):
     def _load_initial_data(self, **kwargs):
         super(Items3dViewing, self)._load_initial_data(**kwargs)
 
-    def _check_database_coherency(self, **kwargs):
-        super(Items3dViewing, self)._check_database_coherency(**kwargs)
+    def _check_database_coherence(self, **kwargs):
+        super(Items3dViewing, self)._check_database_coherence(**kwargs)
 
         game_data = self.data
 
@@ -4164,8 +4164,8 @@ class GameViews(BaseDataManager):
         # no need to sync - it will done later in _init_from_db()
 
 
-    def _check_database_coherency(self, **kwargs):
-        super(GameViews, self)._check_database_coherency(**kwargs)
+    def _check_database_coherence(self, **kwargs):
+        super(GameViews, self)._check_database_coherence(**kwargs)
 
         game_data = self.data
         utilities.check_no_duplicates(game_data["views"]["activated_views"])
@@ -4327,8 +4327,8 @@ class SpecialAbilities(BaseDataManager):
             assert "settings" in game_data["abilities"][key] and "data" in game_data["abilities"][key]
 
 
-    def _check_database_coherency(self, strict=False, **kwargs):
-        super(SpecialAbilities, self)._check_database_coherency(**kwargs)
+    def _check_database_coherence(self, strict=False, **kwargs):
+        super(SpecialAbilities, self)._check_database_coherence(**kwargs)
 
         utilities.check_is_bool(self.get_global_parameter("disable_automated_ability_responses"))
 
@@ -4389,9 +4389,9 @@ class StaticPages(BaseDataManager):
         super(StaticPages, self)._load_initial_data(**kwargs)
         self.static_pages._load_initial_data(**kwargs)
 
-    def _check_database_coherency(self, **kwargs):
-        super(StaticPages, self)._check_database_coherency(**kwargs)
-        self.static_pages._check_database_coherency(**kwargs)
+    def _check_database_coherence(self, **kwargs):
+        super(StaticPages, self)._check_database_coherence(**kwargs)
+        self.static_pages._check_database_coherence(**kwargs)
 
 
     # bunch of standard categories #
@@ -4526,8 +4526,8 @@ class Encyclopedia(BaseDataManager):
             character.setdefault("known_article_ids", PersistentList())
 
 
-    def _check_database_coherency(self, **kwargs):
-        super(Encyclopedia, self)._check_database_coherency(**kwargs)
+    def _check_database_coherence(self, **kwargs):
+        super(Encyclopedia, self)._check_database_coherence(**kwargs)
 
         game_data = self.data
 
@@ -4660,8 +4660,8 @@ class NightmareCaptchas(BaseDataManager):
             if value["image"]:
                 value["image"] = utilities.find_game_file("images", "captchas", value["image"])
 
-    def _check_database_coherency(self, strict=False, **kwargs):
-        super(NightmareCaptchas, self)._check_database_coherency(**kwargs)
+    def _check_database_coherence(self, strict=False, **kwargs):
+        super(NightmareCaptchas, self)._check_database_coherence(**kwargs)
 
         game_data = self.data
 
@@ -4746,8 +4746,8 @@ class NightmareCaptchas(BaseDataManager):
 class NoveltyNotifications(BaseDataManager):
 
 
-    def _check_database_coherency(self, strict=False, **kwargs):
-        super(NoveltyNotifications, self)._check_database_coherency(**kwargs)
+    def _check_database_coherence(self, strict=False, **kwargs):
+        super(NoveltyNotifications, self)._check_database_coherence(**kwargs)
 
         self.data["global_parameters"].setdefault("disable_real_email_notifications", False) ## TEMP FIXME
         utilities.check_is_bool(self.get_global_parameter("disable_real_email_notifications"))

@@ -622,7 +622,7 @@ class AbstractGameView(object):
             action_success = None # unused ATM
             previous_form_data = None
 
-        assert not previous_form_data or previous_form_data.action_successful == action_success # coherency
+        assert not previous_form_data or previous_form_data.action_successful == action_success # coherence
 
         if action_success and self._redirection_url:
             return redirect(self._redirection_url)  # optimization: we do it BEFORE get_template_vars()

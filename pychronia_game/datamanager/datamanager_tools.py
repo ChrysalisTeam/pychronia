@@ -90,7 +90,7 @@ def _call_with_transaction_watcher(datamanager, always_writable, func, args, kwa
     try:
 
         res = func(*args, **kwargs)
-        #datamanager._check_database_coherency() # WARNING - quite CPU intensive,
+        #datamanager._check_database_coherence() # WARNING - quite CPU intensive,
         #to be removed later on ? TODO TODO REMOVE PAKAL !!!
         #print("COMMITTING", func.__name__, savepoint)
         datamanager.commit(savepoint)

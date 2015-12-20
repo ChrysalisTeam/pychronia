@@ -29,7 +29,7 @@ ZODB_URL = None
 
 def GAME_INITIAL_FIXTURE_SCRIPT(dm):
     """
-    Called just before conversion of initial data tree, and coherency check.
+    Called just before conversion of initial data tree, and coherence check.
     """
     logging.info("Loading special game fixture script...")
 

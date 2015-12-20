@@ -307,7 +307,7 @@ def _ensure_data_ok(datamanager):
     assert not self.is_shutdown
     
     # TO BE REMOVED !!!!!!!!!!!!!!
-    #self._check_database_coherency() # WARNING - quite CPU intensive, to be removed later on ? TODO TODO REMOVE PAKAL !!!
+    #self._check_database_coherence() # WARNING - quite CPU intensive, to be removed later on ? TODO TODO REMOVE PAKAL !!!
     if not self.is_initialized:
         raise AbnormalUsageError(_("Game databases haven't yet been initialized !"))
             
@@ -351,7 +351,7 @@ def transaction_watcher(func, self, *args, **kwargs): #@NoSelf
     try:
         savepoint = self.begin()
         res = func(self, *args, **kwargs)
-        #self._check_database_coherency() # WARNING - quite CPU intensive, 
+        #self._check_database_coherence() # WARNING - quite CPU intensive, 
         #to be removed later on ? TODO TODO REMOVE PAKAL !!!
         self.commit(savepoint)
         return res

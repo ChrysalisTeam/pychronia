@@ -150,7 +150,7 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
                         yaml_fixture=None,
                         skip_randomizations=False,  # randomize some values in dm.data
                         skip_initializations=False,  # used when an already-initialized fixture is used
-                        skip_coherency_check=False,
+                        skip_coherence_check=False,
                         strict=False):
         """
         This method might raise exceptions, and leave the datamanager uninitialized.
@@ -196,8 +196,8 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
             self.logger.info("Performing setup via GAME_INITIAL_FIXTURE_SCRIPT")
             config.GAME_INITIAL_FIXTURE_SCRIPT(self)
 
-        if not skip_coherency_check:
-            self.check_database_coherency(strict=strict)
+        if not skip_coherence_check:
+            self.check_database_coherence(strict=strict)
 
 
 
@@ -211,9 +211,9 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
 
 
     @transaction_watcher(always_writable=True) # that checking might lead to corrections
-    def check_database_coherency(self, **kwargs):
+    def check_database_coherence(self, **kwargs):
 
-        self.notify_event("BASE_CHECK_DB_COHERENCY_PUBLIC_CALLED")
+        self.notify_event("BASE_CHECK_DB_COHERENCE_PUBLIC_CALLED")
 
         game_data = self.data
 
@@ -221,7 +221,7 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
         utilities.check_object_tree(game_data, allowed_types=utilities.allowed_zodb_types, path=["game_data"])
 
 
-        self._check_database_coherency(**kwargs)
+        self._check_database_coherence(**kwargs)
 
 
 
@@ -281,8 +281,8 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
 
 
 
-    def _check_database_coherency(self, **kwargs):
-        self.notify_event("BASE_CHECK_DB_COHERENCY_PRIVATE_CALLED")
+    def _check_database_coherence(self, **kwargs):
+        self.notify_event("BASE_CHECK_DB_COHERENCE_PRIVATE_CALLED")
 
 
     @transaction_watcher
@@ -330,7 +330,7 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
         try:
             old_data = self.data
             self.data = data_tree
-            self.check_database_coherency(strict=strict)
+            self.check_database_coherence(strict=strict)
         except Exception:
             self.data = old_data # security about mishandlings
             raise
