@@ -116,7 +116,7 @@
         @extend .antique_large_decorated_frame;
         background-color: transparent;
         box-shadow: none !important; // doesn't work with transparent borders
-        border-width: 10px;
+        border-width: 30px !important;
         padding: 16px !important;  // HACK to override fancybox styles
     }
 

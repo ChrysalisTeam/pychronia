@@ -1126,7 +1126,7 @@ table.footnote {
 .fancybox-default .fancybox-outer {
   background-color: transparent;
   box-shadow: none !important;
-  border-width: 10px;
+  border-width: 30px !important;
   padding: 16px !important;
 }
 .fancybox-default .fancybox-inner {
