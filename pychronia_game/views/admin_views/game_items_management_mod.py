@@ -17,7 +17,7 @@ class GameItemForm(DataTableForm):
 
     comments = forms.CharField(label=ugettext_lazy("Description"), widget=forms.Textarea(attrs={'rows': '2', 'cols':'40'}), required=True)
 
-    image = forms.CharField(label=ugettext_lazy("Image"), required=True)
+    image = forms.CharField(label=ugettext_lazy("Image (url or local file)"), required=True)
 
     is_gem = forms.BooleanField(label=_("Made of gems"), initial=False, required=False)
 

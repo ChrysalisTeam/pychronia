@@ -11,7 +11,7 @@ from pychronia_game.datamanager.abstract_form import GAMEMASTER_HINTS_FIELD
 
 class GlobalContactForm(DataTableForm):
 
-    avatar = forms.CharField(label=ugettext_lazy("Avatar"), required=False)
+    avatar = forms.CharField(label=ugettext_lazy("Avatar (url or local file)"), required=False)
 
     description = forms.CharField(label=ugettext_lazy("Description"), widget=forms.Textarea(attrs={'rows': '2', 'cols':'40'}), required=False)
 
