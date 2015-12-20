@@ -300,7 +300,7 @@ character_properties:
         real_life_identity: "John Doe"
         real_life_email: shalk@gmail.com
         character_color : "#339933"
-        avatar: "http://localhost:8000/static/resources/MetalRadiance/img/decorations/big_deco_tr.png"
+        avatar: null
         gamemaster_hints: "This is guy2"
         is_npc: False
 
