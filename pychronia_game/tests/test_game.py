@@ -4499,8 +4499,18 @@ class TestHttpRequests(BaseGameTestCase):
         self._reset_django_db()
 
         # user is initially anonymous, we have a special redirection for access denials in this case
-        response = self.client.get(neutral_url_reverse(views.view_sales))
-        self.assertRedirects(response, expected_url=neutral_url_reverse("pychronia_game-login", game_username="guest"))
+        response = self.client.get(neutral_url_reverse(views.view_sales, game_username="guest"))  # we target "anyuser" url
+        expected_url = "http://testserver/TeStiNg/guest/login/?next=http%3A%2F%2Ftestserver%2FTeStiNg%2Fredirect%2Fview_sales%2F"
+        self.assertRedirects(response, expected_url=expected_url)
+
+        # we ensure that the "next" argument works fine through all redirections
+        response = self.client.post(expected_url, data=dict(secret_username="guy1", secret_password=self.dm.get_character_properties("guy1")["password"]), follow=True)
+        assert response.status_code == 200  # all went fine
+        self.assertRedirects(response, expected_url="http://testserver/TeStiNg/guy1/view_sales/")  # redirection chain went up to there
+
+        self._logout()
+
+        #---
 
         self._player_auth("guy1")
         self.dm.set_permission("guy1", views.wiretapping_management.get_access_permission_name(), is_present=False)  # else, would override is_game_view_activated()!
@@ -4518,7 +4528,6 @@ class TestHttpRequests(BaseGameTestCase):
 
         # HTML ACCESS DENIED #
         response = self.client.get(url)
-        # Nope - no login page anymore - self.assertRedirects(response, expected_url=u"http://testserver/TeStiNg/login/?next=http%3A%2F%2Ftestserver%2FTeStiNg%2Fability%2Fwiretapping_management%2F")
         self.assertRedirects(response, expected_url=neutral_url_reverse("pychronia_game-homepage", game_username="guy1"))  # HOME of guy1!
 
         # ACCESS OK, in ajax or not #

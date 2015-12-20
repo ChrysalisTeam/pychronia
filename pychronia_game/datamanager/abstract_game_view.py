@@ -22,12 +22,7 @@ from .datamanager_tools import transaction_watcher, readonly_method
 
 
 
-'''
-REDIRECTION TO LOGIN PAGE - not used ATM
-            url = reverse/game_view_url("pychronia_game.views.login", kwargs=dict(game_instance_id=dm.game_instance_id))
-            qs = urllib.urlencode(dict(next=request.build_absolute_uri()))
-            return HttpResponseRedirect("%s?%s" % (url, qs))
-'''
+
 
 @decorator
 def transform_usage_error(caller, self, request, *args, **kwargs):
@@ -40,8 +35,13 @@ def transform_usage_error(caller, self, request, *args, **kwargs):
     return_to_home_url = game_view_url("pychronia_game-homepage", datamanager=dm)
     return_to_home = HttpResponseRedirect(return_to_home_url)
 
+    from ..authentication import TEMP_URL_USERNAME
     return_to_login_url = game_view_url("pychronia_game-login", datamanager=dm)
-    return_to_login = HttpResponseRedirect(return_to_login_url)
+    return_to_login_next_url = request.build_absolute_uri()
+    # we do a HACK to deal with in-url usernames (except UNIVERSAL_URL_USERNAME username, which stays as is)
+    return_to_login_next_url = return_to_login_next_url.replace("/%s/" % dm.user.username, "/%s/" % TEMP_URL_USERNAME)
+    return_to_login_qs = urllib.urlencode(dict(next=return_to_login_next_url))
+    return_to_login = HttpResponseRedirect("%s?%s" % (return_to_login_url, return_to_login_qs))
 
     assert urlresolvers.resolve(return_to_home_url)
     try:
@@ -59,7 +59,7 @@ def transform_usage_error(caller, self, request, *args, **kwargs):
         else:
             dm.user.add_error(_("Access denied to page %s") % self.TITLE)
             dm.logger.warning("Access denied to page %s" % self.TITLE, exc_info=True)
-            
+
         if not request.datamanager.user.impersonation_target and request.datamanager.user.is_anonymous:
             return return_to_login  # special case for REAL anonymous users
         return return_to_home
