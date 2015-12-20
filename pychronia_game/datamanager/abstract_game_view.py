@@ -36,8 +36,13 @@ def transform_usage_error(caller, self, request, *args, **kwargs):
     if an exception is encountered.
     """
     dm = request.datamanager
+
     return_to_home_url = game_view_url("pychronia_game-homepage", datamanager=dm)
     return_to_home = HttpResponseRedirect(return_to_home_url)
+
+    return_to_login_url = game_view_url("pychronia_game-login", datamanager=dm)
+    return_to_login = HttpResponseRedirect(return_to_login_url)
+
     assert urlresolvers.resolve(return_to_home_url)
     try:
 
@@ -54,6 +59,9 @@ def transform_usage_error(caller, self, request, *args, **kwargs):
         else:
             dm.user.add_error(_("Access denied to page %s") % self.TITLE)
             dm.logger.warning("Access denied to page %s" % self.TITLE, exc_info=True)
+            
+        if not request.datamanager.user.impersonation_target and request.datamanager.user.is_anonymous:
+            return return_to_login  # special case for REAL anonymous users
         return return_to_home
 
     except (GameError, POSError), e:

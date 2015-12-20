@@ -99,11 +99,11 @@ inner_game_urlpatterns = patterns('pychronia_game.views',
 #    (r'^ajax_domotics_security/$', 'ajax_domotics_security'), # for heavy client, if used
 #    (r'^domotics_security/$', 'domotics_security'),
 
-    url(r'^login/$', 'login'),
+    url(r'^login/$', 'login', name="pychronia_game-login"),
     url(r'^secret_question/(?P<concerned_username>[^/]*)/$', 'secret_question'),
     url(r'^profile/$', 'character_profile'),
     url(r'^friendships/$', 'friendship_management'),
-    url(r'^logout/$', 'logout'),
+    url(r'^logout/$', 'logout', name="pychronia_game-logout"),
 
 
     url(r'^messages/compose/$', 'compose_message'),

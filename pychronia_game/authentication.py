@@ -130,7 +130,7 @@ def try_authenticating_with_session(request, url_game_username=None):
     else:
         requested_impersonation_target = requested_impersonation_writability = None
 
-    # priority to POST data, but ebware of special (requested_impersonation_target=="") case
+    # priority to POST data, but beware of special (requested_impersonation_target=="") case
     final_requested_impersonation_target = requested_impersonation_target if requested_impersonation_target is not None else url_game_username
     
     try:

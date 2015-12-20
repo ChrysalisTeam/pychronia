@@ -4167,7 +4167,6 @@ class TestHttpRequests(BaseGameTestCase):
 
         assert self.client.session[SESSION_TICKET_KEY] == {'game_instance_id': TEST_GAME_INSTANCE_ID, 'impersonation_target': None,
                                                                 'impersonation_writability': None, 'game_username': username}
-
         self.assertTrue(self.client.cookies["sessionid"])
 
 
@@ -4178,9 +4177,11 @@ class TestHttpRequests(BaseGameTestCase):
         response = self.client.get(logout_page, follow=False)
 
         self.assertEqual(response.status_code, 302)
-        assert not self.client.session.has_key(SESSION_TICKET_KEY)
+        #print("LOGOUT SESSION -> ", self.client.session.items())
+        assert not self.client.session.has_key(SESSION_TICKET_KEY)  # if this fails, maybe use was not authenticated (thus logout fails)
 
-        self.assertRedirects(response, login_page)  # beware - LOADS TARGET LOGIN PAGE
+        self.assertRedirects(response, login_page)  # beware - LOADS TARGET LOGIN PAGE, so MODIFIES session!
+
         assert self.client.session.has_key("testcookie")  # we get it once more thanks to the assertRedirects() above
         assert self.client.session.has_key(SESSION_TICKET_KEY)
 
@@ -4497,6 +4498,9 @@ class TestHttpRequests(BaseGameTestCase):
 
         self._reset_django_db()
 
+        # user is initially anonymous, we have a special redirection for access denials in this case
+        response = self.client.get(neutral_url_reverse(views.view_sales))
+        self.assertRedirects(response, expected_url=neutral_url_reverse("pychronia_game-login", game_username="guest"))
 
         self._player_auth("guy1")
         self.dm.set_permission("guy1", views.wiretapping_management.get_access_permission_name(), is_present=False)  # else, would override is_game_view_activated()!
@@ -4546,6 +4550,16 @@ class TestHttpRequests(BaseGameTestCase):
         response = self.client.get(url)
         self.assertRedirects(response, expected_url=neutral_url_reverse("pychronia_game-homepage", game_username="guy1"))
 
+
+        # impersonate anonymous while being logged as master #
+        response = self.client.post(url_home, data={IMPERSONATION_TARGET_POST_VARIABLE: "guest", IMPERSONATION_WRITABILITY_POST_VARIABLE: "false"})
+        #print(response.content)
+        assert "Guest" in response.content.decode("utf8")
+        assert response.status_code == 200
+
+        response = self.client.get(neutral_url_reverse(views.view_sales))
+        # NOT redirected to login page, since it's an impersonation
+        self.assertRedirects(response, expected_url=neutral_url_reverse("pychronia_game-homepage", game_username="guest"))
 
 
         self._player_auth("guy1")
