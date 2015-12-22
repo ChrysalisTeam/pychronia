@@ -273,7 +273,7 @@ class ArmedInterventionForm(SimpleForm):
 
 
 
-class TelecomInvestigationForm(SimpleForm):
+class ___TelecomInvestigationForm(SimpleForm):
 
     def __init__(self, datamanager, user, *args, **kwargs):
         super(TelecomInvestigationForm, self).__init__(*args, **kwargs)

@@ -22,6 +22,8 @@ class WiretappingTargetsForm(AbstractGameForm):
         num_slots = ability.get_wiretapping_slots_count()
         if not num_slots:
             raise UninstantiableFormError(_("No wiretapping slots available."))
+
+        other_known_characters = ability.get_other_known_characters()
         for i in range(num_slots):
             ''' PROBLEM WITH CASE SENISITIVITY
             self.fields["target_%d" % i] = forms.ChoiceField(label=_("Target %d") % i,
@@ -31,7 +33,7 @@ class WiretappingTargetsForm(AbstractGameForm):
             '''
             field_name = "target_%d" % i
             self.fields[field_name] = Select2TagsField(label=_("Target %d") % i, required=False)
-            self.fields[field_name].choice_tags = ability.get_other_known_characters()
+            self.fields[field_name].choice_tags = other_known_characters
             self.fields[field_name].max_selection_size = 1 # IMPORTANT
 
 
