@@ -58,7 +58,7 @@
         {% endif %}
 
         {% if search_results %}
-        <p><b>{% trans "Search results:" %}</b></p>
+        <p><b>{% trans "Search results for" %} "{{search_string}}"{{COLON}}</b></p>
         <ul>
             {% for article_id, article_title in search_results %}
                 <li><a href="{% game_view_url "pychronia_game.views.view_encyclopedia" current_article_id=article_id %}">{{ article_title }}</a></li>

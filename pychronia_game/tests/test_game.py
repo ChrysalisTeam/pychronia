@@ -4483,6 +4483,11 @@ class TestHttpRequests(BaseGameTestCase):
                 assert "gerbil_species" not in self.dm.get_character_known_article_ids()
                 ok += 1
 
+            response = self.client.get(url_base + "?search=badkeyword")
+            assert response.status_code == 200
+            # print(repr(response.content))
+            assert "Please use the side controls" in response.content.decode("utf8") # homepage of encylopedia
+
             response = self.client.get(url_base + "?search=animal")
             assert response.status_code == 200
             # print(repr(response.content))

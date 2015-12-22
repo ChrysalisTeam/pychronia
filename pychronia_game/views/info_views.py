@@ -87,6 +87,13 @@ class EncyclopediaView(AbstractGameView):
     REQUIRES_GLOBAL_PERMISSION = False
 
 
+    def _generate_articles_index(self, index_article_ids):
+        """index_article_ids might be None"""
+        _pages = self.datamanager.static_pages
+        index_article_ids = index_article_ids or []
+        articles_index = [(index_article_id, _pages[index_article_id].get("title")) for index_article_id in index_article_ids]
+        articles_index.sort(key=lambda x: x[1])  # sort by title (even is some might be None, resulting in 'identifier' to be shown instead)
+        return articles_index
 
     def _process_standard_request(self, request, current_article_id=None):
         """
@@ -106,9 +113,9 @@ class EncyclopediaView(AbstractGameView):
                 dm.update_character_known_article_ids(article_ids=ids_list)
                 #print ("Really IN _conditionally_update_known_article_ids", ids_list, self.datamanager.user.username)
 
+        search_string = None
+        search_results_ids = None
         entry = None  # current article data
-        index_article_ids = []  # index of encyclopedia
-        search_results_ids = None  # list of matching article ids
 
         if current_article_id:
             entry = dm.get_encyclopedia_entry(current_article_id) # entry dict or None
@@ -132,7 +139,7 @@ class EncyclopediaView(AbstractGameView):
                                                                               current_article_id=search_results_ids[0]))
 
         # NOW only retrieve article ids, since known article ids have been updated if necessary
-        index_article_ids = []
+        index_article_ids = None
         if dm.is_encyclopedia_index_visible() or dm.is_master(): # master ALWAYS sees everything
             index_article_ids = dm.get_encyclopedia_article_ids()
         elif dm.is_character():
@@ -140,17 +147,9 @@ class EncyclopediaView(AbstractGameView):
         else:
             assert dm.is_anonymous()  # we leave article_ids to []
 
-        _pages = dm.static_pages
+        articles_index = self._generate_articles_index(index_article_ids)
 
-        index_article_ids = index_article_ids or []
-        articles_index = [(index_article_id, _pages[index_article_id].get("title")) for index_article_id in index_article_ids]
-        articles_index.sort(key=lambda x: x[1])  # sort by title (even is some might be None, resulting in 'identifier' to be shown instead)
-        del index_article_ids
-
-        search_results_ids = search_results_ids or []  # fallback
-        search_results = [(search_article_id, _pages[search_article_id].get("title")) for search_article_id in search_results_ids]
-        search_results.sort(key=lambda x: x[1])  # sort by title, as above
-        del search_results_ids
+        search_results = self._generate_articles_index(search_results_ids)
 
         return TemplateResponse(request=request,
                                 template=self.TEMPLATE,
@@ -159,6 +158,7 @@ class EncyclopediaView(AbstractGameView):
                                          'articles_index': articles_index,
                                          'current_article_id': current_article_id,
                                          'entry': entry,
+                                         'search_string': search_string,
                                          'search_results': search_results
                                 })
 
