@@ -247,10 +247,11 @@ def build_proper_viewer(fileurl, **kwargs): # interesting kwarg : "autostart"
     if not fileurl:
         return ""
 
+    title = kwargs.pop("title", "")
     extension = os.path.splitext(fileurl)[1][1:].lower() # no starting dot
 
     if extension == "mp3": # fileurl may be a string of comma-separated mp3 urls - it works
-        return generate_audio_player([fileurl], **kwargs)
+        return generate_audio_player([fileurl], [title], **kwargs)
     elif extension in ["jpg", "jpeg", "gif", "bmp", "png", "tif"]:
         return generate_image_viewer(fileurl, **kwargs)
     else:

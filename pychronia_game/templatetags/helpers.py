@@ -425,9 +425,10 @@ register.filter('determine_asset_url', _determine_asset_url)
 def mediaplayer(properties, autostart="false"):
 
     fileurl = determine_asset_url(properties)
+    title = properties.get("title") if hasattr(properties, "get") else properties  # might even be None
 
     try:
-        res = mediaplayers.build_proper_viewer(fileurl, autostart=(autostart == "true"))
+        res = mediaplayers.build_proper_viewer(fileurl, title=title, autostart=(autostart == "true"))
         return mark_safe(res)
     except:
         logging.error("mediaplayer filter failed", exc_info=True)
