@@ -38,14 +38,6 @@ MESSAGERIE:
 SCRIPT
 ----------
 
-Ajouter help page for game items management
-
-dire aux joueurs qu'ils ne peuvent envoyer gemmes qu'aux gens "connus" (contactés par email)
-
-parler des mémos objets dans help pages
-
-Ajouter les 3 gemmes spéciales dans objets !!
-
 
 GAMEMASTER_HINTS in:
 
@@ -56,8 +48,6 @@ GAMEMASTER_HINTS in:
     - game items
     - static pages
 
-
-- get_other_known_characters -> tjrs inclure les joueurs enchérisseurs dedans ? NOPE, forcer ainsi les joueurs à COMMUNIQUER!
 
 - add tags with titles to all MP3s
 
@@ -225,6 +215,12 @@ OperationalError: (1203, "User pakal_anthropia already has more than 'max_user_c
 TASKS DONE
 ---------------
 
+
+- ajouter help page for game items management - DONE
+- dire aux joueurs qu'ils ne peuvent envoyer gemmes qu'aux gens "connus" (contactés par email) - DONE
+- parler des mémos objets dans help pages - DONE
+- get_other_known_characters -> tjrs inclure les joueurs enchérisseurs dedans ? NOPE, forcer ainsi les joueurs à COMMUNIQUER
+- ajouter les 3 gemmes spéciales dans objets !! - DONE
 - prevent "ValueError: Unsupported media type" for mp4 and other file formats - DONE
 - use absolute URLs in mediaplayers - DONE
 - repair the "?next=http://xxx" url of login system - DONE
