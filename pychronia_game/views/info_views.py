@@ -77,8 +77,8 @@ class EncyclopediaView(AbstractGameView):
 
     # Place here dashboard forms that don't have their own containing view! #
     ADMIN_ACTIONS = dict(set_encyclopedia_index_visibility=dict(title=ugettext_lazy("Set encyclopedia index visibility"),
-                                                      form_class=EnyclopediaIndexVisibilityForm,
-                                                      callback="set_encyclopedia_index_visibility"))
+                                                                  form_class=EnyclopediaIndexVisibilityForm,
+                                                                  callback="set_encyclopedia_index_visibility"))
 
     TEMPLATE = "information/encyclopedia.html"
 
@@ -88,7 +88,7 @@ class EncyclopediaView(AbstractGameView):
 
 
 
-    def _process_standard_request(self, request, article_id=None):
+    def _process_standard_request(self, request, current_article_id=None):
         """
         We bypass standard GameView processing here.
         """
@@ -105,50 +105,59 @@ class EncyclopediaView(AbstractGameView):
             if dm.is_character() and dm.is_game_writable():  # not for master or anonymous!!
                 dm.update_character_known_article_ids(article_ids=ids_list)
                 #print ("Really IN _conditionally_update_known_article_ids", ids_list, self.datamanager.user.username)
-        article_ids = []  # index of encyclopedia
-        entry = None  # current article
-        search_results = None  # list of matching article ids
 
-        if article_id:
-            entry = dm.get_encyclopedia_entry(article_id) # entry dict or None
+        entry = None  # current article data
+        index_article_ids = []  # index of encyclopedia
+        search_results_ids = None  # list of matching article ids
+
+        if current_article_id:
+            entry = dm.get_encyclopedia_entry(current_article_id) # entry dict or None
             if not entry:
-                dm.user.add_error(_("Sorry, no encyclopedia article has been found for id '%s'") % article_id)
+                dm.user.add_error(_("Sorry, no encyclopedia article has been found for id '%s'") % current_article_id)
             else:
-                _conditionally_update_known_article_ids([article_id])
+                _conditionally_update_known_article_ids([current_article_id])
         else:
             search_string = request.REQUEST.get("search")  # needn't appear in browser history, but GET needed for encyclopedia links
             if search_string:
-                search_results = dm.get_encyclopedia_matches(search_string)
-                if not search_results:
+                search_results_ids = dm.get_encyclopedia_matches(search_string)
+                if not search_results_ids:
                     dm.user.add_error(_("Sorry, no matching encyclopedia article has been found for '%s'") % search_string)
                 else:
-                    assert not isinstance(search_results, basestring) # already a list
-                    _conditionally_update_known_article_ids(search_results)
-                    if len(search_results) == 1:
+                    assert not isinstance(search_results_ids, basestring) # already a list
+                    _conditionally_update_known_article_ids(search_results_ids)
+                    if len(search_results_ids) == 1:
                         dm.user.add_message(_("Your search has led to a single article, below."))
                         return HttpResponseRedirect(redirect_to=game_view_url("pychronia_game.views.view_encyclopedia",
                                                                               datamanager=dm,
-                                                                              article_id=search_results[0]))
+                                                                              current_article_id=search_results_ids[0]))
 
         # NOW only retrieve article ids, since known article ids have been updated if necessary
+        index_article_ids = []
         if dm.is_encyclopedia_index_visible() or dm.is_master(): # master ALWAYS sees everything
-            article_ids = dm.get_encyclopedia_article_ids()
+            index_article_ids = dm.get_encyclopedia_article_ids()
         elif dm.is_character():
-            article_ids = dm.get_character_known_article_ids()
+            index_article_ids = dm.get_character_known_article_ids()
         else:
             assert dm.is_anonymous()  # we leave article_ids to []
 
         _pages = dm.static_pages
-        articles_index = [(article_id, _pages[article_id].get("title")) for article_id in article_ids]
+
+        index_article_ids = index_article_ids or []
+        articles_index = [(index_article_id, _pages[index_article_id].get("title")) for index_article_id in index_article_ids]
         articles_index.sort(key=lambda x: x[1])  # sort by title (even is some might be None, resulting in 'identifier' to be shown instead)
-        del article_ids
+        del index_article_ids
+
+        search_results_ids = search_results_ids or []  # fallback
+        search_results = [(search_article_id, _pages[search_article_id].get("title")) for search_article_id in search_results_ids]
+        search_results.sort(key=lambda x: x[1])  # sort by title, as above
+        del search_results_ids
 
         return TemplateResponse(request=request,
                                 template=self.TEMPLATE,
                                 context={
                                          'page_title': _("Pangea Encyclopedia"),
                                          'articles_index': articles_index,
-                                         'current_article_id': article_id,
+                                         'current_article_id': current_article_id,
                                          'entry': entry,
                                          'search_results': search_results
                                 })

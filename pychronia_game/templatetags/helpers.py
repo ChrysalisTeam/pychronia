@@ -268,6 +268,8 @@ def format_enriched_text(datamanager, content, initial_header_level=None, report
     """
     assert isinstance(content, basestring)
 
+    #print(">>>format_enriched_text", content[:30], "----", excluded_link)
+
     content = content.replace("[INSTANCE_ID]", datamanager.game_instance_id) # handy to build URLs manually
 
     with exception_swallower():

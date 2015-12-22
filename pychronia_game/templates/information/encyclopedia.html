@@ -26,7 +26,7 @@
             <h2>{% trans "Index" %}</h2>
             <ul>
                 {% for article_id, article_title in articles_index %}
-                    <li><a href="{% game_view_url "pychronia_game.views.view_encyclopedia" article_id=article_id %}">{{ article_title|default:article_id }}</a></li>
+                    <li><a href="{% game_view_url "pychronia_game.views.view_encyclopedia" current_article_id=article_id %}">{{ article_title|default:article_id }}</a></li>
                 {% endfor %}
             </ul>
         </div>
@@ -60,18 +60,19 @@
         {% if search_results %}
         <p><b>{% trans "Search results:" %}</b></p>
         <ul>
-            {% for article_id in search_results %}
-                <li><a href="{% game_view_url "pychronia_game.views.view_encyclopedia" article_id=article_id %}">{{ article_id|capfirst }}</a></li>
+            {% for article_id, article_title in search_results %}
+                <li><a href="{% game_view_url "pychronia_game.views.view_encyclopedia" current_article_id=article_id %}">{{ article_title }}</a></li>
             {% endfor %}
         </ul>
         {% endif %}
 
         {% if not entry and not search_results %}
 
+            <p>
             {% blocktrans %}
                 Please use the side controls to find whatever science you still lack.
             {% endblocktrans %}
-
+            </p>
 
             <div class="post-it full_width" style="font-size:0.8em;">
                 <strong>{% trans "System Notification" %}</strong>

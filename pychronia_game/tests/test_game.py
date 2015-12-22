@@ -4474,7 +4474,7 @@ class TestHttpRequests(BaseGameTestCase):
             response = self.client.get(url_base)
             assert response.status_code == 200
 
-            url = neutral_url_reverse(views.view_encyclopedia, article_id="lokon")
+            url = neutral_url_reverse(views.view_encyclopedia, current_article_id="lokon")
             response = self.client.get(url)
             assert response.status_code == 200
             assert "animals" in response.content.decode("utf8")
@@ -4492,7 +4492,7 @@ class TestHttpRequests(BaseGameTestCase):
             assert response.status_code == 302
             assert game_view_url(views.view_encyclopedia,
                                  datamanager=self.dm,
-                                 article_id="gerbil_species") in response['Location']
+                                 current_article_id="gerbil_species") in response['Location']
 
             if login == "guy1":
                 assert ("gerbil_species" in self.dm.get_character_known_article_ids()) == game_state
