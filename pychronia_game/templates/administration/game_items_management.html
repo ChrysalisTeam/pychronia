@@ -51,7 +51,7 @@
         <ul>
         {% for identifier, data in immutable_table_items %}
             <li id="entry-{{ identifier|slugify }}">
-                {{data.title}} {% if data.auction %}({% trans "Auction" %} {{data.auction}}){% endif %}, {% trans "owned by" %} {{data.owner|capfirst}}
+                {{data.title}}{% if data.auction %} ({% trans "Auction" %} {{data.auction}}){% endif %}, {% trans "owned by" %} {{data.owner|capfirst}}
             </li>
         {% endfor %}
         </ul>
