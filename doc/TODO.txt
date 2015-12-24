@@ -22,6 +22,10 @@ domaine.
 FEATURES
 ------------
 
+IMPOTRANT - unit-test modifiability/deletability, whatever read-only input, fo 4 eCMS admin pages
+
+FIX the 3s anti-spam system on "page backwards" access
+
 * Ensure that "coherence" is used everywhere, after merge
 
 MESSAGERIE:
@@ -30,7 +34,6 @@ MESSAGERIE:
 - review le fonctionnement des templates
 - différents auto saves, par utilisateur impersoné , dans la vue "composition de nouveau message"
 - support du raw-text en plus de restructuredtext
-
 
 
 
