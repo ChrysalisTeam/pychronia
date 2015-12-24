@@ -17,7 +17,7 @@
     {% for identifier, form in forms %}
     <div class="scroll_realistic_thin_ends center">
 
-        {% usekwacro deletion_button identifier %}
+        {% usekwacro deletion_button identifier undeletable_identifiers %}
 
         <a name="entry-{{ identifier|slugify }}"><h2>{{ identifier|default:_("NEW ENTRY") }}</h2></a>
         {% if identifier %}<div class="float-right"><a href="{% game_view_url "pychronia_game.views.view_static_page" page_id=identifier %}">{% trans "Direct Access Link For Article" %}</a></div>{% endif %}

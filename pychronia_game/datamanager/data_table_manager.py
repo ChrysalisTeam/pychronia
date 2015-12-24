@@ -99,7 +99,7 @@ class DataTableManager(object):
         """
         items_gen = self._table.items()
         if mutability is not None:
-            items_gen = ((k, v) for (k, v) in items_gen if bool(self._item_can_be_deleted(k, v)) == bool(mutability))
+            items_gen = ((k, v) for (k, v) in items_gen if bool(self._item_can_be_modified(k, v)) == bool(mutability))
 
         if as_sorted_list:
             data = list(items_gen)
@@ -113,6 +113,12 @@ class DataTableManager(object):
             import json
             json.dumps(data)  # compatibility test
         return data
+
+    @readonly_method
+    def get_undeletable_identifiers(self):
+        items_gen = self._table.items()
+        items_gen = (k for (k, v) in items_gen if not self._item_can_be_deleted(k, v))
+        return set(items_gen)
 
     @readonly_method
     def __len__(self):

@@ -3748,6 +3748,9 @@ class MoneyItemsOwnership(BaseDataManager):
         def _get_table_container(self, root):
             return root["game_items"]
 
+        def _item_can_be_modified(self, key, value):
+            return not (value["owner"])  # can't change values then
+
         def _item_can_be_deleted(self, key, value):
             return not (value["owner"] or value["immutable"])
 

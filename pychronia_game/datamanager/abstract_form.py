@@ -213,13 +213,21 @@ class DataTableForm(AbstractGameForm):
 
     BAD_ID_MSG = ugettext_lazy("Identifier must contain no space")
 
-    def __init__(self, datamanager, initial=None, **kwargs):
+    def __init__(self, datamanager, initial=None, undeletable_identifiers=None, **kwargs):
 
         if initial:
             assert "previous_identifier" not in initial
             initial["previous_identifier"] = initial["identifier"]
-
+        
         super(DataTableForm, self).__init__(datamanager, initial=initial, **kwargs)
+        
+        if initial and undeletable_identifiers:
+            assert isinstance(undeletable_identifiers, set), undeletable_identifiers
+            if initial["identifier"] in undeletable_identifiers:
+                # not very secure, but DataTable protections will take care of hacking attempts
+                self.fields['identifier'].widget.attrs['readonly'] = True
+
+        
 
 
     def clean_previous_identifier(self):

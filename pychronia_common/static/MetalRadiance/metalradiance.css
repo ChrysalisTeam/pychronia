@@ -2018,6 +2018,9 @@ body .ui-dropdownchecklist-dropcontainer:disabled, body .markItUp:disabled {
 input[type=submit] {
   margin-top: 25px 10px;
 }
+input[readonly=True] {
+  background-color: lightgrey !important;
+}
 #full_content form p:not(.required) label {
   font-style: italic;
 }
