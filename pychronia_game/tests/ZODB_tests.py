@@ -3,7 +3,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 
-import unittest
+import unittest, copy
 import ZODB
 import transaction
 from ZODB import DB
@@ -56,6 +56,25 @@ class TestZODB(TestCase):
     def tearDown(self):
         self.conn.close()
         self.db.close()
+
+
+    def test_mapping_copy(self):
+
+        a = PersistentMapping(dict(a=3, b=5))
+        b = a.copy()
+        c = copy.copy(a)
+
+        assert a == b
+        assert a == c
+        assert a is not b
+        assert a is not c
+        assert b is not c
+
+        del a["a"]
+        assert b["a"]  # NOT impacted
+        assert c["a"]  # NOT impacted
+
+
 
     def test_savepoints(self):
         """

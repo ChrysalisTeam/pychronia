@@ -2103,7 +2103,8 @@ class TextMessagingExternalContacts(BaseDataManager):
 
         def _preprocess_new_item(self, key, value):
             assert "immutable" not in value
-            value["immutable"] = False # always, else new entry can't even be deleted later on
+            print("_preprocess_new_item", key, self._table.get(key, {}))
+            value["immutable"] = self._table.get(key, {}).get("immutable", False) # new entries are mutable by default
             value.setdefault("access_tokens", None)
             value.setdefault("gamemaster_hints", "")
             return (key, PersistentMapping(value))
@@ -2132,8 +2133,8 @@ class TextMessagingExternalContacts(BaseDataManager):
         def _get_table_container(self, root):
             return root["messaging"]["globally_registered_contacts"]
 
-        def _item_can_be_edited(self, key, value):
-            return (True if not value.get("immutable") else False)
+        def _item_can_be_deleted(self, key, value):
+            return not value["immutable"]
 
     global_contacts = LazyInstantiationDescriptor(GloballyRegisteredContactsManager)
 
@@ -3086,7 +3087,7 @@ class RadioMessaging(BaseDataManager): # TODO REFINE
 
         def _preprocess_new_item(self, key, value):
             assert "immutable" not in value
-            value["immutable"] = False
+            value["immutable"] = self._table.get(key, {}).get("immutable", False) # new entries are mutable by default
             value.setdefault("gamemaster_hints", "")
             value["title"] = value["title"].strip()
             value["text"] = value["text"].strip()
@@ -3120,7 +3121,7 @@ class RadioMessaging(BaseDataManager): # TODO REFINE
         def _get_table_container(self, root):
             return root["audio_messages"]
 
-        def _item_can_be_edited(self, key, value):
+        def _item_can_be_deleted(self, key, value):
             return not value["immutable"]
 
         def _callback_on_any_update(self):
@@ -3700,7 +3701,7 @@ class MoneyItemsOwnership(BaseDataManager):
 
         def _preprocess_new_item(self, key, value):
             assert "immutable" not in value
-            value["immutable"] = False
+            value["immutable"] = self._table.get(key, {}).get("immutable", False) # new entries are mutable by default
             value.setdefault('owner', None)
             return (key, PersistentMapping(value))
             # other params are supposed to exist in "value"
@@ -3747,7 +3748,7 @@ class MoneyItemsOwnership(BaseDataManager):
         def _get_table_container(self, root):
             return root["game_items"]
 
-        def _item_can_be_edited(self, key, value):
+        def _item_can_be_deleted(self, key, value):
             return not (value["owner"] or value["immutable"])
 
         def _callback_on_any_update(self):
@@ -4447,7 +4448,7 @@ class StaticPages(BaseDataManager):
 
         def _preprocess_new_item(self, key, value):
             assert "immutable" not in value
-            value["immutable"] = False
+            value["immutable"] = self._table.get(key, {}).get("immutable", True) # new entries are mutable by default
             value.setdefault("gamemaster_hints", "")
             return (key, PersistentMapping(value))
             # other params are supposed to exist in "value"
@@ -4492,7 +4493,7 @@ class StaticPages(BaseDataManager):
         def _get_table_container(self, root):
             return root["static_pages"]
 
-        def _item_can_be_edited(self, key, value):
+        def _item_can_be_deleted(self, key, value):
             return not value["immutable"]
 
     static_pages = LazyInstantiationDescriptor(StaticPagesManager)

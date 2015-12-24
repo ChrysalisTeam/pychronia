@@ -1953,14 +1953,18 @@ class TestDatamanager(BaseGameTestCase):
         assert sorted(container.keys()) == sorted(container.get_all_data().keys())
         assert fixture_key in [i[0] for i in container.get_all_data(as_sorted_list=True)]
 
-        res = container[fixture_key]
-        assert res["immutable"]
+        assert container[fixture_key]["immutable"]
+
+        _tmp = utilities.safe_copy(container[fixture_key])
+        del _tmp["immutable"]
+
+        assert container[fixture_key]["immutable"]
+        container[fixture_key] = _tmp # key already existing, but modifying in-place is OK
+        self.dm.commit()
+
+        assert container[fixture_key]["immutable"]  # remains immutable
         with pytest.raises(UsageError):
-            container[fixture_key] = good_content.copy() # already existing
-        with pytest.raises(UsageError):
-            container[fixture_key] = good_content.copy() # immutable
-        with pytest.raises(UsageError):
-            del container[fixture_key] # immutable
+            del container[fixture_key] # key can't be DELETED/MOVED
         assert fixture_key in container
 
 
@@ -1991,7 +1995,7 @@ class TestDatamanager(BaseGameTestCase):
             container[contact] = good_content.copy()
 
             assert contact in container
-            res = copy.copy(container[contact])
+            res = utilities.safe_copy(container[contact])
             assert res["immutable"] == False
             del res["immutable"]
             assert res == good_content
@@ -2000,7 +2004,7 @@ class TestDatamanager(BaseGameTestCase):
                 container[contact] = {"avatar": 11} # bad content
             container[contact] = {"avatar": None, "description": None}
 
-            res = copy.copy(container[contact])
+            res = utilities.safe_copy(container[contact])
             assert res["immutable"] == False
             del res["immutable"]
             assert res == {"avatar": None, "description": None, "access_tokens": None, "gamemaster_hints": ""}
