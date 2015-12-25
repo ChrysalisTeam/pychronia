@@ -407,7 +407,7 @@ audio_messages:
         title: "News diverses"
         text: "For testing..."
         file: "other.mp3"
-        immutable: False
+        initial: False
 
     external_mp3:
         title: "This is a test"
@@ -445,13 +445,13 @@ messaging:
 
         judicators2@akaris.com: {}
 
-        othercontact@anything.fr: {immutable: False}
+        othercontact@anything.fr: {initial: False}
 
         master@administration.com: {}
 
-        everyone@chars.com: {immutable: True}
+        everyone@chars.com: {initial: True}
 
-        "[auction-list]@pangea.com": {immutable: True}
+        "[auction-list]@pangea.com": {initial: True}
 
         "translator-robot@hightech.com": {}
 

@@ -2089,7 +2089,7 @@ class TextMessagingExternalContacts(BaseDataManager):
                 if details is None:
                     details = PersistentMapping()
                     self._table[identifier] = details
-                details.setdefault("immutable", True) # contacts that are necessary to gameplay CANNOT be edited/deleted
+                details.setdefault("initial", True) # contacts that are necessary to gameplay CANNOT be edited/deleted
                 details.setdefault("avatar", None)
                 if details["avatar"]:
                     details["avatar"] = utilities.find_game_file_or_url("images", details["avatar"])
@@ -2102,9 +2102,9 @@ class TextMessagingExternalContacts(BaseDataManager):
 
 
         def _preprocess_new_item(self, key, value):
-            assert "immutable" not in value
+            assert "initial" not in value
             print("_preprocess_new_item", key, self._table.get(key, {}))
-            value["immutable"] = self._table.get(key, {}).get("immutable", False) # new entries are mutable by default
+            value["initial"] = self._table.get(key, {}).get("initial", False) # new entries are mutable by default
             value.setdefault("access_tokens", None)
             value.setdefault("gamemaster_hints", "")
             return (key, PersistentMapping(value))
@@ -2112,8 +2112,8 @@ class TextMessagingExternalContacts(BaseDataManager):
 
         def _check_item_validity(self, key, value, strict=False):
             utilities.check_is_slug(key) # not necessarily an email
-            utilities.check_has_keys(value, ["immutable", "avatar", "description", "access_tokens"], strict=strict)
-            utilities.check_is_bool(value["immutable"])
+            utilities.check_has_keys(value, ["initial", "avatar", "description", "access_tokens"], strict=strict)
+            utilities.check_is_bool(value["initial"])
             if value["access_tokens"] is not None: # None means "public"
                 all_usernames = self._inner_datamanager.get_character_usernames()
                 for username in value["access_tokens"]:
@@ -2134,7 +2134,7 @@ class TextMessagingExternalContacts(BaseDataManager):
             return root["messaging"]["globally_registered_contacts"]
 
         def _item_can_be_deleted(self, key, value):
-            return not value["immutable"]
+            return not value["initial"]
 
     global_contacts = LazyInstantiationDescriptor(GloballyRegisteredContactsManager)
 
@@ -2454,7 +2454,7 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
         # special mailing list
         ml_address = self.get_global_parameter("all_players_mailing_list")
         ml_props = self.global_contacts[ml_address] # MUST exist
-        assert ml_props["immutable"]
+        assert ml_props["initial"]
 
 
     """
@@ -3076,7 +3076,7 @@ class RadioMessaging(BaseDataManager): # TODO REFINE
 
                 # audio messages that are necessary to gameplay CANNOT be edited/deleted
                 # (ex. new-message-notifications, victory/defeat sounds...
-                details.setdefault("immutable", True)
+                details.setdefault("initial", True)
 
                 details.setdefault("file", None) # LOCAL file or URL
                 if details["file"]:
@@ -3086,8 +3086,8 @@ class RadioMessaging(BaseDataManager): # TODO REFINE
 
 
         def _preprocess_new_item(self, key, value):
-            assert "immutable" not in value
-            value["immutable"] = self._table.get(key, {}).get("immutable", False) # new entries are mutable by default
+            assert "initial" not in value
+            value["initial"] = self._table.get(key, {}).get("initial", False) # new entries are mutable by default
             value.setdefault("gamemaster_hints", "")
             value["title"] = value["title"].strip()
             value["text"] = value["text"].strip()
@@ -3100,7 +3100,7 @@ class RadioMessaging(BaseDataManager): # TODO REFINE
 
             utilities.check_is_slug(key)
 
-            utilities.check_is_bool(value["immutable"])
+            utilities.check_is_bool(value["initial"])
 
             if value.get("gamemaster_hints"): # optional
                 pass # utilities.check_is_restructuredtext(value["gamemaster_hints"])
@@ -3122,7 +3122,7 @@ class RadioMessaging(BaseDataManager): # TODO REFINE
             return root["audio_messages"]
 
         def _item_can_be_deleted(self, key, value):
-            return not value["immutable"]
+            return not value["initial"]
 
         def _callback_on_any_update(self):
             self._inner_datamanager._prune_obsolete_radio_playlist_entries()
@@ -3679,7 +3679,7 @@ class MoneyItemsOwnership(BaseDataManager):
             for (name, properties) in self._table.items():
 
                 # SAFETY, we forbid modifying initial items, for now, to avoid incoherences with abilities
-                properties.setdefault("immutable", True)
+                properties.setdefault("initial", True)
 
                 properties.setdefault("gamemaster_hints", "")
                 if properties["gamemaster_hints"]:
@@ -3700,8 +3700,8 @@ class MoneyItemsOwnership(BaseDataManager):
                 properties['image'] = utilities.find_game_file_or_url("images", properties['image'])
 
         def _preprocess_new_item(self, key, value):
-            assert "immutable" not in value
-            value["immutable"] = self._table.get(key, {}).get("immutable", False) # new entries are mutable by default
+            assert "initial" not in value
+            value["initial"] = self._table.get(key, {}).get("initial", False) # new entries are mutable by default
             value.setdefault('owner', None)
             return (key, PersistentMapping(value))
             # other params are supposed to exist in "value"
@@ -3711,7 +3711,7 @@ class MoneyItemsOwnership(BaseDataManager):
 
             game_data = self._inner_datamanager.data
 
-            utilities.check_is_bool(value["immutable"])
+            utilities.check_is_bool(value["initial"])
 
             if properties["gamemaster_hints"]: # optional
                 pass # utilities.check_is_restructuredtext(properties["gamemaster_hints"])
@@ -3752,7 +3752,7 @@ class MoneyItemsOwnership(BaseDataManager):
             return not (value["owner"])  # can't change values then
 
         def _item_can_be_deleted(self, key, value):
-            return not (value["owner"] or value["immutable"])
+            return not (value["owner"] or value["initial"])
 
         def _callback_on_any_update(self):
             pass
@@ -4095,7 +4095,7 @@ class Items3dViewing(BaseDataManager):
 
         for (name, properties) in game_data["item_3d_settings"].items():
             #assert name in self.game_items.keys(), name
-            #assert self.game_items[name]["immutable"], name
+            #assert self.game_items[name]["initial"], name
             utilities.check_dictionary_with_template(properties, item_viewer_reference)
 
 
@@ -4433,7 +4433,7 @@ class StaticPages(BaseDataManager):
         def _load_initial_data(self, **kwargs):
 
             for identifier, details in self._table.items():
-                details.setdefault("immutable", False) # we assume ANY static page is optional for the game, and can be edited/deleted
+                details.setdefault("initial", False) # we assume ANY static page is optional for the game, and can be edited/deleted
 
                 details.setdefault("categories", []) # distinguishes possibles uses of static pages
                 details["categories"] = [details["categories"]] if isinstance(details["categories"], basestring) else details["categories"]
@@ -4450,8 +4450,8 @@ class StaticPages(BaseDataManager):
 
 
         def _preprocess_new_item(self, key, value):
-            assert "immutable" not in value
-            value["immutable"] = self._table.get(key, {}).get("immutable", False) # new entries are mutable by default
+            assert "initial" not in value
+            value["initial"] = self._table.get(key, {}).get("initial", False) # new entries are mutable by default
             value.setdefault("gamemaster_hints", "")
             return (key, PersistentMapping(value))
             # other params are supposed to exist in "value"
@@ -4460,9 +4460,9 @@ class StaticPages(BaseDataManager):
             utilities.check_is_slug(key)
             assert key.lower() == key # handy
 
-            utilities.check_has_keys(value, ["immutable", "categories", "content", "gamemaster_hints", "keywords"], strict=strict) # SOON -> "title" TOO!! FIXME TODO
+            utilities.check_has_keys(value, ["initial", "categories", "content", "gamemaster_hints", "keywords"], strict=strict) # SOON -> "title" TOO!! FIXME TODO
 
-            utilities.check_is_bool(value["immutable"])
+            utilities.check_is_bool(value["initial"])
 
             if value["title"]:
                 utilities.check_is_string(value["title"], multiline=False)
@@ -4497,7 +4497,7 @@ class StaticPages(BaseDataManager):
             return root["static_pages"]
 
         def _item_can_be_deleted(self, key, value):
-            return not value["immutable"]
+            return not value["initial"]
 
     static_pages = LazyInstantiationDescriptor(StaticPagesManager)
 

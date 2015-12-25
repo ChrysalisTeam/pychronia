@@ -257,7 +257,7 @@ class AbstractPartnershipAbility(AbstractAbility):
         email = self.dedicated_email
         utilities.check_is_email(email)
         contact = self.datamanager.global_contacts[email]
-        assert contact["immutable"] # else game master might break all
+        assert contact["initial"] # else game master might break all
 
         result_delay = self.auto_answer_delay_mn
         if result_delay is not None:

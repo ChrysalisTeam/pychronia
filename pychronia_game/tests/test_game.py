@@ -1652,7 +1652,7 @@ class TestDatamanager(BaseGameTestCase):
 
         new_id = "newid"
         new_item = utilities.safe_copy(container[mutable_entry])
-        del new_item["immutable"]
+        del new_item["initial"]
         container[new_id] = new_item
         self.dm.commit()
         assert new_id not in container.get_undeletable_identifiers()
@@ -1661,7 +1661,7 @@ class TestDatamanager(BaseGameTestCase):
 
         assert mutable_entry in container.get_undeletable_identifiers()
         new_item = utilities.safe_copy(container[mutable_entry])
-        del new_item["immutable"]
+        del new_item["initial"]
         container[mutable_entry] = utilities.safe_copy(new_item)
         self.dm.commit()
         assert mutable_entry in container.get_undeletable_identifiers()  # unchanged deletability for existing entry
@@ -1997,16 +1997,16 @@ class TestDatamanager(BaseGameTestCase):
         assert sorted(container.keys()) == sorted(container.get_all_data().keys())
         assert fixture_key in [i[0] for i in container.get_all_data(as_sorted_list=True)]
 
-        assert container[fixture_key]["immutable"]
+        assert container[fixture_key]["initial"]
 
         _tmp = utilities.safe_copy(container[fixture_key])
-        del _tmp["immutable"]
+        del _tmp["initial"]
 
-        assert container[fixture_key]["immutable"]
+        assert container[fixture_key]["initial"]
         container[fixture_key] = _tmp # key already existing, but modifying in-place is OK
         self.dm.commit()
 
-        assert container[fixture_key]["immutable"]  # remains immutable
+        assert container[fixture_key]["initial"]  # remains undeletable
         with pytest.raises(UsageError):
             del container[fixture_key] # key can't be DELETED/MOVED
         assert fixture_key in container
@@ -2040,8 +2040,8 @@ class TestDatamanager(BaseGameTestCase):
 
             assert contact in container
             res = utilities.safe_copy(container[contact])
-            assert res["immutable"] == False
-            del res["immutable"]
+            assert res["initial"] == False
+            del res["initial"]
             assert res == good_content
 
             with pytest.raises(UsageError):
@@ -2049,8 +2049,8 @@ class TestDatamanager(BaseGameTestCase):
             container[contact] = {"avatar": None, "description": None}
 
             res = utilities.safe_copy(container[contact])
-            assert res["immutable"] == False
-            del res["immutable"]
+            assert res["initial"] == False
+            del res["initial"]
             assert res == {"avatar": None, "description": None, "access_tokens": None, "gamemaster_hints": ""}
 
             assert contact in container
@@ -2081,7 +2081,7 @@ class TestDatamanager(BaseGameTestCase):
 
             new_id = "newid"
             new_entry = utilities.safe_copy(container["[auction-list]@pangea.com"])
-            del new_entry["immutable"]
+            del new_entry["initial"]
             container[new_id] = new_entry
             self.dm.commit()
 
@@ -2091,7 +2091,7 @@ class TestDatamanager(BaseGameTestCase):
 
             assert undeletable_entry in container.get_undeletable_identifiers()
             new_item = utilities.safe_copy(container[undeletable_entry])
-            del new_item["immutable"]
+            del new_item["initial"]
             container[undeletable_entry] = utilities.safe_copy(new_item)
             self.dm.commit()
             assert undeletable_entry in container.get_undeletable_identifiers()  # unchanged deletability for existing entry
@@ -2744,7 +2744,7 @@ class TestDatamanager(BaseGameTestCase):
         self.assertEqual(username, "guy3")
 
         properties = self.dm.get_audio_message_properties(audio_id)
-        self.assertEqual(set(properties.keys()), set(["title", "text", "file", "immutable", "gamemaster_hints"]))
+        self.assertEqual(set(properties.keys()), set(["title", "text", "file", "initial", "gamemaster_hints"]))
 
         # self.assertEqual(properties["new_messages_notification_for_user"], "guy3")
         # self.assertEqual(self.dm.get_audio_message_properties("request_for_report_teldorium")["new_messages_notification_for_user"], None)
@@ -2858,7 +2858,7 @@ class TestDatamanager(BaseGameTestCase):
 
         new_id = "newid"
         new_item = utilities.safe_copy(container[mutable_entry])
-        del new_item["immutable"]
+        del new_item["initial"]
         container[new_id] = new_item
         self.dm.commit()
 
@@ -2867,7 +2867,7 @@ class TestDatamanager(BaseGameTestCase):
         assert new_id not in container.get_all_data(mutability=False)
 
         new_item = utilities.safe_copy(container[mutable_entry])
-        del new_item["immutable"]
+        del new_item["initial"]
         container[mutable_entry] = utilities.safe_copy(new_item)
         self.dm.commit()
         assert mutable_entry in container.get_undeletable_identifiers()  # unchanged deletability for existing entry
@@ -4039,7 +4039,7 @@ class TestDatamanager(BaseGameTestCase):
 
         new_id = "newid"  # create a new page
         new_item = utilities.safe_copy(container[mutable_entry])
-        del new_item["immutable"]
+        del new_item["initial"]
         container[new_id] = new_item
         self.dm.commit()
 
