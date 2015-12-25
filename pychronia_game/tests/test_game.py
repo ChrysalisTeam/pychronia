@@ -2021,14 +2021,19 @@ class TestDatamanager(BaseGameTestCase):
                 container[contact]
 
 
-            # mutability control
-            immutable_entry = "[auction-list]@pangea.com"
-            assert immutable_entry in container.get_all_data()
-            assert immutable_entry in container.get_all_data(mutability=False)
-            assert immutable_entry not in container.get_all_data(mutability=True)
-            assert immutable_entry in [k for k, v in container.get_all_data(as_sorted_list=True)]
-            assert immutable_entry in [k for k, v in container.get_all_data(as_sorted_list=True, mutability=False)]
-            assert immutable_entry not in [k for k, v in container.get_all_data(as_sorted_list=True, mutability=True)]
+            # mutability control #
+            # NOTE that currently ALL CONTACTS are MUTABLE (but some are undeletable) #
+
+            assert not container.get_all_data(mutability=False)
+
+            undeletable_entry = "[auction-list]@pangea.com"
+            assert undeletable_entry in container.get_all_data()
+            assert undeletable_entry not in container.get_all_data(mutability=False)
+            assert undeletable_entry in container.get_all_data(mutability=True)
+            assert undeletable_entry in [k for k, v in container.get_all_data(as_sorted_list=True)]
+            assert undeletable_entry not in [k for k, v in container.get_all_data(as_sorted_list=True, mutability=False)]
+            assert undeletable_entry in [k for k, v in container.get_all_data(as_sorted_list=True, mutability=True)]
+            assert undeletable_entry in container.get_undeletable_identifiers()
 
             mutable_entry = "othercontact@anything.fr"
             assert mutable_entry in container.get_all_data()
