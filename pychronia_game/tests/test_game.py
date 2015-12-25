@@ -1412,7 +1412,6 @@ class TestDatamanager(BaseGameTestCase):
 
 
 
-
     @for_core_module(MoneyItemsOwnership)
     def test_item_transfers(self):
         self._reset_messages()
@@ -1591,14 +1590,15 @@ class TestDatamanager(BaseGameTestCase):
             assert it["auction"]
 
         items_old = copy.deepcopy(self.dm.get_all_items())
-        gem_names = [key for key, value in items_old.items() if value["is_gem"] and value["num_items"] >= 3] # we only take numerous groups
-        auction_object_names = [key for key, value in items_old.items() if not value["is_gem"] and value["auction"]]
-        no_auction_object_names = [key for key, value in items_old.items() if not value["is_gem"] and not value["auction"]]
+        gem_names = sorted([key for key, value in items_old.items() if value["is_gem"] and value["num_items"] >= 3]) # we only take numerous groups
+        auction_object_names = sorted([key for key, value in items_old.items() if not value["is_gem"] and value["auction"]])
+        no_auction_object_names = sorted([key for key, value in items_old.items() if not value["is_gem"] and not value["auction"]])
 
         gem_name1 = gem_names[0]
         gem_name2 = gem_names[1]
         object_name_auction = auction_object_names[0]
         object_name_no_auction = no_auction_object_names[0]
+        object_name_free = no_auction_object_names[1]
 
         self.dm.transfer_object_to_character(gem_name1, "guy2")
         self.dm.transfer_object_to_character(gem_name2, "guy2")
@@ -1623,6 +1623,41 @@ class TestDatamanager(BaseGameTestCase):
         assert self.dm.get_user_artefacts("guy3").keys() == [object_name_auction]
         assert self.dm.get_user_artefacts("guy4").keys() == [object_name_no_auction]
 
+
+        # mutability control #
+        # NOTE that currently ALL ITEMS are MUTABLE iff they are not OWNED (and initial ones are undeletable) #
+
+        container = self.dm.game_items
+
+        unmodifiable_entry = object_name_auction  # OWNED by guy3
+        assert unmodifiable_entry in container.get_all_data()
+        assert unmodifiable_entry in container.get_all_data(mutability=False)
+        assert unmodifiable_entry not in container.get_all_data(mutability=True)
+        assert unmodifiable_entry in [k for k, v in container.get_all_data(as_sorted_list=True)]
+        assert unmodifiable_entry in [k for k, v in container.get_all_data(as_sorted_list=True, mutability=False)]
+        assert unmodifiable_entry not in [k for k, v in container.get_all_data(as_sorted_list=True, mutability=True)]
+        assert unmodifiable_entry in container.get_undeletable_identifiers()  # ALSO not deletable of course
+
+        mutable_entry = object_name_free
+        assert mutable_entry in container.get_all_data()
+        assert mutable_entry in container.get_all_data(mutability=True)
+        assert mutable_entry not in container.get_all_data(mutability=False)
+        assert mutable_entry in [k for k, v in container.get_all_data(as_sorted_list=True)]
+        assert mutable_entry not in [k for k, v in container.get_all_data(as_sorted_list=True, mutability=False)]
+        assert mutable_entry in [k for k, v in container.get_all_data(as_sorted_list=True, mutability=True)]
+        assert mutable_entry not in [k for k, v in container.get_all_data(as_sorted_list=True, mutability=False)]
+
+        assert len(container.get_all_data()) == len(container.get_undeletable_identifiers())  # ALL undeletable initially
+
+        new_id = "newid"
+        new_item = utilities.safe_copy(container[mutable_entry])
+        del new_item["immutable"]
+        container[new_id] = new_item
+        self.dm.commit()
+
+        assert new_id not in container.get_undeletable_identifiers()
+        assert new_id in container.get_all_data(mutability=True)
+        assert new_id not in container.get_all_data(mutability=False)
 
 
     @for_core_module(PersonalFiles)

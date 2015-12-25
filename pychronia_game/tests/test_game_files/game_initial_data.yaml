@@ -211,6 +211,17 @@ game_items:
         image: sacred_chest.jpg
         gamemaster_hints: "used to: xxxx"
 
+    dummy_item:
+        auction: null
+        is_gem: False
+        num_items: 1
+        total_price: 1
+        locations: banal_gems_locations
+        title: "Dummy Item"
+        comments:  "Blablabla"
+        image: sacred_chest.jpg
+        gamemaster_hints: "used to: xxxx"
+
     several_misc_gems:
         auction: "3-D"
         is_gem: True
