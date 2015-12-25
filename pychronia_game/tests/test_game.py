@@ -2070,14 +2070,15 @@ class TestDatamanager(BaseGameTestCase):
             assert undeletable_entry in [k for k, v in container.get_all_data(as_sorted_list=True, mutability=True)]
             assert undeletable_entry in container.get_undeletable_identifiers()
 
-            mutable_entry = "othercontact@anything.fr"
-            assert mutable_entry in container.get_all_data()
-            assert mutable_entry in container.get_all_data(mutability=True)
-            assert mutable_entry not in container.get_all_data(mutability=False)
-            assert mutable_entry in [k for k, v in container.get_all_data(as_sorted_list=True)]
-            assert mutable_entry not in [k for k, v in container.get_all_data(as_sorted_list=True, mutability=False)]
-            assert mutable_entry in [k for k, v in container.get_all_data(as_sorted_list=True, mutability=True)]
-            assert mutable_entry not in [k for k, v in container.get_all_data(as_sorted_list=True, mutability=False)]
+            new_id = "newid"
+            new_entry = utilities.safe_copy(container["[auction-list]@pangea.com"])
+            del new_entry["immutable"]
+            container[new_id] = new_entry
+            self.dm.commit()
+
+            assert new_id in container.get_all_data(mutability=True)
+            assert new_id not in container.get_all_data(mutability=False)
+            assert new_id not in container.get_undeletable_identifiers()
 
 
     '''        
