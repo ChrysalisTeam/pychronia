@@ -4451,7 +4451,7 @@ class StaticPages(BaseDataManager):
 
         def _preprocess_new_item(self, key, value):
             assert "immutable" not in value
-            value["immutable"] = self._table.get(key, {}).get("immutable", True) # new entries are mutable by default
+            value["immutable"] = self._table.get(key, {}).get("immutable", False) # new entries are mutable by default
             value.setdefault("gamemaster_hints", "")
             return (key, PersistentMapping(value))
             # other params are supposed to exist in "value"

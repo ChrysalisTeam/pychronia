@@ -2818,6 +2818,37 @@ class TestDatamanager(BaseGameTestCase):
         assert self.dm.get_all_next_audio_messages() == []
 
 
+
+        # mutability control #
+        # NOTE that currently ALL radio spots are MUTABLE #
+
+        container = self.dm.radio_spots
+
+        assert not container.get_all_data(mutability=False)
+
+        mutable_entry = "intro_audio_messages"
+        assert mutable_entry in container.get_all_data()
+        assert mutable_entry in container.get_all_data(mutability=True)
+        assert mutable_entry not in container.get_all_data(mutability=False)
+        assert mutable_entry in [k for k, v in container.get_all_data(as_sorted_list=True)]
+        assert mutable_entry not in [k for k, v in container.get_all_data(as_sorted_list=True, mutability=False)]
+        assert mutable_entry in [k for k, v in container.get_all_data(as_sorted_list=True, mutability=True)]
+        assert mutable_entry not in [k for k, v in container.get_all_data(as_sorted_list=True, mutability=False)]
+
+        assert len(container.get_all_data()) == len(container.get_undeletable_identifiers())  # ALL undeletable initially
+
+        new_id = "newid"
+        new_item = utilities.safe_copy(container[mutable_entry])
+        del new_item["immutable"]
+        container[new_id] = new_item
+        self.dm.commit()
+
+        assert new_id not in container.get_undeletable_identifiers()
+        assert new_id in container.get_all_data(mutability=True)
+        assert new_id not in container.get_all_data(mutability=False)
+
+
+
     def test_delayed_message_processing_and_basic_message_deletion(self):
 
         WANTED_FACTOR = 2 # we only double durations below
@@ -3971,6 +4002,27 @@ class TestDatamanager(BaseGameTestCase):
         assert self.dm.has_user_accessed_static_page(EXISTING_HELP_PAGE)
         self.dm.mark_static_page_as_accessed(EXISTING_HELP_PAGE)
         assert self.dm.has_user_accessed_static_page(EXISTING_HELP_PAGE)
+
+
+
+        # mutability control #
+        # NOTE that ALL static pages are currently modifiable and deletable #
+
+        container = self.dm.static_pages
+
+        mutable_entry = "top-homepage"
+
+        new_id = "newid"  # create a new page
+        new_item = utilities.safe_copy(container[mutable_entry])
+        del new_item["immutable"]
+        container[new_id] = new_item
+        self.dm.commit()
+
+        assert mutable_entry in container.get_all_data()
+        assert mutable_entry in container.get_all_data(mutability=True)
+
+        assert not container.get_all_data(mutability=False)
+        assert not container.get_undeletable_identifiers()
 
 
 
