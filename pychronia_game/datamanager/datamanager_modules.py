@@ -3672,7 +3672,7 @@ class MoneyItemsOwnership(BaseDataManager):
 
     class GameItemsManager(DataTableManager):
 
-        TRANSLATABLE_ITEM_NAME = ugettext_lazy("objects and gems")
+        TRANSLATABLE_ITEM_NAME = ugettext_lazy("objects/gems")
 
         def _load_initial_data(self, **kwargs):
 

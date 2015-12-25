@@ -1646,6 +1646,7 @@ class TestDatamanager(BaseGameTestCase):
         assert mutable_entry not in [k for k, v in container.get_all_data(as_sorted_list=True, mutability=False)]
         assert mutable_entry in [k for k, v in container.get_all_data(as_sorted_list=True, mutability=True)]
         assert mutable_entry not in [k for k, v in container.get_all_data(as_sorted_list=True, mutability=False)]
+        assert mutable_entry in container.get_undeletable_identifiers()  # undeletable because initial
 
         assert len(container.get_all_data()) == len(container.get_undeletable_identifiers())  # ALL undeletable initially
 
@@ -1654,10 +1655,18 @@ class TestDatamanager(BaseGameTestCase):
         del new_item["immutable"]
         container[new_id] = new_item
         self.dm.commit()
-
         assert new_id not in container.get_undeletable_identifiers()
         assert new_id in container.get_all_data(mutability=True)
         assert new_id not in container.get_all_data(mutability=False)
+
+        assert mutable_entry in container.get_undeletable_identifiers()
+        new_item = utilities.safe_copy(container[mutable_entry])
+        del new_item["immutable"]
+        container[mutable_entry] = utilities.safe_copy(new_item)
+        self.dm.commit()
+        assert mutable_entry in container.get_undeletable_identifiers()  # unchanged deletability for existing entry
+
+
 
 
     @for_core_module(PersonalFiles)
@@ -2079,6 +2088,16 @@ class TestDatamanager(BaseGameTestCase):
             assert new_id in container.get_all_data(mutability=True)
             assert new_id not in container.get_all_data(mutability=False)
             assert new_id not in container.get_undeletable_identifiers()
+
+            assert undeletable_entry in container.get_undeletable_identifiers()
+            new_item = utilities.safe_copy(container[undeletable_entry])
+            del new_item["immutable"]
+            container[undeletable_entry] = utilities.safe_copy(new_item)
+            self.dm.commit()
+            assert undeletable_entry in container.get_undeletable_identifiers()  # unchanged deletability for existing entry
+
+
+
 
 
     '''        
@@ -2820,7 +2839,7 @@ class TestDatamanager(BaseGameTestCase):
 
 
         # mutability control #
-        # NOTE that currently ALL radio spots are MUTABLE #
+        # NOTE that currently ALL radio spots are MUTABLE (but initial ones are undeletable)#
 
         container = self.dm.radio_spots
 
@@ -2834,7 +2853,7 @@ class TestDatamanager(BaseGameTestCase):
         assert mutable_entry not in [k for k, v in container.get_all_data(as_sorted_list=True, mutability=False)]
         assert mutable_entry in [k for k, v in container.get_all_data(as_sorted_list=True, mutability=True)]
         assert mutable_entry not in [k for k, v in container.get_all_data(as_sorted_list=True, mutability=False)]
-
+        assert mutable_entry in container.get_undeletable_identifiers()
         assert len(container.get_all_data()) == len(container.get_undeletable_identifiers())  # ALL undeletable initially
 
         new_id = "newid"
@@ -2846,6 +2865,12 @@ class TestDatamanager(BaseGameTestCase):
         assert new_id not in container.get_undeletable_identifiers()
         assert new_id in container.get_all_data(mutability=True)
         assert new_id not in container.get_all_data(mutability=False)
+
+        new_item = utilities.safe_copy(container[mutable_entry])
+        del new_item["immutable"]
+        container[mutable_entry] = utilities.safe_copy(new_item)
+        self.dm.commit()
+        assert mutable_entry in container.get_undeletable_identifiers()  # unchanged deletability for existing entry
 
 
 
