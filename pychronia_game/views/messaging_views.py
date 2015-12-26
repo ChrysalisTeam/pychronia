@@ -2,6 +2,9 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import urllib
+from pprint import pprint
+
 from pychronia_game.common import *
 from pychronia_game.datamanager import AbstractGameView, register_view, VISIBILITY_REASONS, AbstractGameForm
 from django import forms
@@ -10,7 +13,7 @@ from pychronia_game.utilities.select2_extensions import Select2TagsField
 from django.core.exceptions import ValidationError
 from pychronia_game.templatetags.helpers import format_enriched_text
 from pychronia_game import utilities
-import urllib
+
 
 
 """
@@ -242,6 +245,8 @@ def _determine_template_display_context(datamanager, template_id, template):
 def _determine_message_display_context(datamanager, msg, is_pending):
     """
     Useful for both pending and dispatched messages.
+    
+    If "is_pending" is True, this means the message is queued for sending.
     """
     assert msg
     assert msg["id"]
@@ -518,6 +523,18 @@ def compose_message(request, template_name='messaging/compose.html'):
     user_contacts = request.datamanager.get_sorted_user_contacts() # properly SORTED list
     contacts_display = request.datamanager.get_contacts_display_properties(user_contacts) # DICT FIELDS: address avatar description
 
+    parent_messages = ()
+    parent_msg_id = request.GET.get("parent_id", None)
+    if parent_msg_id:
+        try:
+            _parent_msg = request.datamanager.get_dispatched_message_by_id(msg_id=parent_msg_id)  # even if archived...
+            # for now, only the DIRECT parent is displayed...
+            parent_messages = _determine_message_list_display_context(request.datamanager, messages=[_parent_msg], is_pending=False)
+        except UsageError as e:
+            request.datamanager.logger.error("Ignoring invalid parent_id %s in message composition view", parent_msg_id, exc_info=True)
+
+    pprint(parent_messages)
+
     return render(request,
                   template_name,
                     {
@@ -526,6 +543,7 @@ def compose_message(request, template_name='messaging/compose.html'):
                      'mode': "compose", # TODO DELETE THIS
                      'contacts_display': contacts_display,
                      'message_sent': message_sent, # to destroy saved content
+                     'parent_messages': parent_messages,
                     })
 
 
