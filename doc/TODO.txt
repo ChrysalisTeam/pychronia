@@ -22,8 +22,6 @@ domaine.
 FEATURES
 ------------
 
-IMPOTRANT - unit-test modifiability/deletability, whatever read-only input, fo 4 eCMS admin pages
-
 FIX the 3s anti-spam system on "page backwards" access
 
 * Ensure that "coherence" is used everywhere, after merge
@@ -218,7 +216,7 @@ OperationalError: (1203, "User pakal_anthropia already has more than 'max_user_c
 TASKS DONE
 ---------------
 
-
+- unit-test the modifiability/deletability of all data-table items - DONE
 - ajouter help page for game items management - DONE
 - dire aux joueurs qu'ils ne peuvent envoyer gemmes qu'aux gens "connus" (contactés par email) - DONE
 - parler des mémos objets dans help pages - DONE
@@ -349,7 +347,7 @@ TASKS DONE
 - merge "help_pages" and "content" static page categories into same category DONE
 - check that character and item gamemaster_hints are well displayed and protected DONE
 - add avatars to characters view DONE
-- add avatar display to immutable blocks in contacts management
+- add avatar display to "immutable" blocks in contacts management
 - add slight typography via docutils/RST - DONE
 - remove "logout" link when impersonation by super user DONE
 - add "transfer" functionality to messaging system DONE
