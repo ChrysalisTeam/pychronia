@@ -173,7 +173,7 @@
 
         $(".multichecklist").dropdownchecklist({minWidth: "150px", maxDropHeight: "300px", emptyText: "<i>...</i>"});
 
-        $('.fancybox').fancybox({
+        var fancyBoxDefaults = {
             margin: 50,
             padding: 50,
             maxWidth: 960,
@@ -196,7 +196,9 @@
                 }
             }
 
-        });
+        };
+        window.fancyBoxDefaults = fancyBoxDefaults;  // EXPORTED
+        $('.fancybox').fancybox(fancyBoxDefaults);
 
 
 
