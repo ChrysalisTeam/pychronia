@@ -137,6 +137,9 @@ class MessageComposeForm(AbstractGameForm):
 
         # we build dynamic fields from the data we gathered #
 
+        default_use_restructuredtext = user.is_master  # by default, players use raw text
+        self.fields = utilities.add_to_ordered_dict(self.fields, 2, "use_restructuredtext", forms.BooleanField(label=ugettext_lazy("Use markup language (RestructuredText)"), initial=default_use_restructuredtext, required=False))
+
         if user.is_master:
 
             sender = Select2TagsField(label=ugettext_lazy("Sender"), required=True, initial=([sender] if sender else [])) # initial MUST be a 1-item list!
@@ -156,7 +159,6 @@ class MessageComposeForm(AbstractGameForm):
 
         else:
             pass # no sender or delay_mn fields!
-
 
         available_recipients = datamanager.get_sorted_user_contacts()  # current username should not be "anonymous", since it's used only in member areas !
         self.fields["recipients"].initial = list(recipients)  # prevents ZODB types...
@@ -472,6 +474,9 @@ def compose_message(request, template_name='messaging/compose.html'):
                 else:
                     sender_email = request.datamanager.get_character_email()
                     delay_h = 0
+
+                use_restructuredtext = form.cleaned_data["use_restructuredtext"]
+
                 sending_date = datetime.utcnow() + timedelta(hours=delay_h)
                 assert isinstance(sending_date, datetime)
                 del delay_h
