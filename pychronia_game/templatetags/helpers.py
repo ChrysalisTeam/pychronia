@@ -17,6 +17,7 @@ from django.utils.http import urlencode
 from django.core.serializers import serialize
 from django.db.models.query import QuerySet
 from django.template.defaultfilters import stringfilter
+from django.template.defaultfilters import linebreaks
 
 import urllib
 from textwrap import dedent
@@ -260,7 +261,7 @@ def advanced_restructuredtext(value,
 
 
 
-def format_enriched_text(datamanager, content, initial_header_level=None, report_level=None, excluded_link=None):
+def format_enriched_text(datamanager, content, initial_header_level=None, report_level=None, excluded_link=None, text_format=None):
     """
     Converts RST content to HTML and adds encyclopedia links.
     
@@ -270,6 +271,9 @@ def format_enriched_text(datamanager, content, initial_header_level=None, report
 
     #print(">>>format_enriched_text", content[:30], "----", excluded_link)
 
+    # we leave RestructuredRext as the DEFAULT format for game contents
+    text_format = text_format or datamanager.AVAILABLE_TEXT_FORMATS.rst
+
     content = content.replace("[INSTANCE_ID]", datamanager.game_instance_id) # handy to build URLs manually
 
     with exception_swallower():
@@ -277,7 +281,11 @@ def format_enriched_text(datamanager, content, initial_header_level=None, report
     with exception_swallower():
         content = _generate_game_image_thumbnails(content, datamanager) # BEFORE html
 
-    html = advanced_restructuredtext(content, initial_header_level=initial_header_level, report_level=report_level)
+    if text_format == datamanager.AVAILABLE_TEXT_FORMATS.rst:
+        html = advanced_restructuredtext(content, initial_header_level=initial_header_level, report_level=report_level)
+    else:
+        assert text_format in (None, datamanager.AVAILABLE_TEXT_FORMATS.raw)
+        html = linebreaks(content)  # only adds <p> and <br> tags
 
     #print(">>>format_enriched_text>>>>>", html)
     with exception_swallower():
@@ -294,13 +302,15 @@ def format_enriched_text(datamanager, content, initial_header_level=None, report
 
 
 @register.simple_tag(takes_context=True)
-def rich_text(context, content, initial_header_level=None, report_level=None, excluded_link=None):
+def rich_text(context, content, initial_header_level=None, report_level=None, excluded_link=None, text_format=None):
     """
     Converts to enriched html the restructuredtext content of the variable.
     """
     request = context.get('request')
     report_level = report_level if report_level is not None else 5 # FIXME - by default we DO NOT display RST syntax errors!
-    result = format_enriched_text(request.datamanager, content, initial_header_level=initial_header_level, report_level=report_level, excluded_link=excluded_link)
+    result = format_enriched_text(request.datamanager, content, initial_header_level=initial_header_level,
+                                  report_level=report_level, excluded_link=excluded_link,
+                                  text_format=text_format)
 
     content_id = str(random.randint(1, 10000000000))
     html = render_to_string('utilities/rich_text.html', {'content_id':content_id,
