@@ -476,6 +476,7 @@ def compose_message(request, template_name='messaging/compose.html'):
                     delay_h = 0
 
                 use_restructuredtext = form.cleaned_data["use_restructuredtext"]
+                body_format = "rst" if use_restructuredtext else "raw"
 
                 sending_date = datetime.utcnow() + timedelta(hours=delay_h)
                 assert isinstance(sending_date, datetime)
@@ -497,7 +498,8 @@ def compose_message(request, template_name='messaging/compose.html'):
                 sent_msg_id = request.datamanager.post_message(sender_email, recipient_emails, subject, body,
                                                               attachment=attachment, transferred_msg=transferred_msg,
                                                               date_or_delay_mn=sending_date, mask_recipients=mask_recipients,
-                                                              parent_id=parent_id, use_template=use_template)
+                                                              parent_id=parent_id, use_template=use_template,
+                                                              body_format=body_format)
                 assert sent_msg_id
                 message_sent = True
                 form = MessageComposeForm(request)  # new empty form

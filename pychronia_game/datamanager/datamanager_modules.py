@@ -1626,6 +1626,7 @@ class OnlinePresence(BaseDataManager):
 @register_module
 class TextMessagingCore(BaseDataManager):
 
+    AVAILABLE_TEXT_FORMATS = Enum(("raw", "rst"))
 
     @property
     def messaging_data(self):
@@ -1658,7 +1659,9 @@ class TextMessagingCore(BaseDataManager):
 
             msg["sender_email"], msg["recipient_emails"] = self._normalize_message_addresses(msg["sender_email"], msg["recipient_emails"])
 
-            msg ["body"] = utilities.load_multipart_rst(msg["body"])
+            msg["body"] = utilities.load_multipart_rst(msg["body"])
+
+            msg.setdefault("body_format", self.AVAILABLE_TEXT_FORMATS.rst)  # beware, initial content is considered as RICH TEXT
 
             msg["attachment"] = msg.get("attachment", None)
             if msg["attachment"]:
@@ -1669,7 +1672,6 @@ class TextMessagingCore(BaseDataManager):
 
             if isinstance(msg["sent_at"], (long, int)): # offset in minutes
                 msg["sent_at"] = self.compute_effective_remote_datetime(msg["sent_at"])
-
 
             msg["transferred_msg"] = msg.get("transferred_msg", None)
             if msg["transferred_msg"]:
@@ -1709,7 +1711,7 @@ class TextMessagingCore(BaseDataManager):
 
                              "sent_at": datetime,
                              "is_certified": bool, # for messages sent via automated processes
-
+                             "body_format": basestring,
                              "id": basestring,
                              "group_id": basestring,
                              }
@@ -1734,6 +1736,8 @@ class TextMessagingCore(BaseDataManager):
                 for recipient in msg["recipient_emails"]:
                     utilities.check_is_email(recipient)
                 utilities.check_no_duplicates(msg["recipient_emails"])
+
+                utilities.check_is_in_set(msg["body_format"], self.AVAILABLE_TEXT_FORMATS)
 
                 if msg["body"]: # might be empty
                     pass #utilities.check_is_restructuredtext(msg["body"]) - there might be formatting errors in new emails...
@@ -1802,7 +1806,8 @@ class TextMessagingCore(BaseDataManager):
     def _build_new_message(self, sender_email, recipient_emails, subject, body,
                            attachment=None, transferred_msg=None,
                            date_or_delay_mn=None, is_certified=False,
-                           parent_id=None, mask_recipients=False, **kwargs):
+                           parent_id=None, mask_recipients=False,
+                           body_format="rst", **kwargs):
         """
         Beware, if a delay, date_or_delay_mn is treated as FLEXIBLE TIME.
         
@@ -1813,6 +1818,7 @@ class TextMessagingCore(BaseDataManager):
         TODO - is_certified is unused ATM.
         """
         # TOP LEVEL HERE - no parent call #
+        assert body_format in self.AVAILABLE_TEXT_FORMATS
         assert not hasattr(super(TextMessagingCore, self), "_build_new_message")
 
         sender_email, recipient_emails = self._normalize_message_addresses(sender_email, recipient_emails) # sender and recipient may be the same !
@@ -1859,6 +1865,7 @@ class TextMessagingCore(BaseDataManager):
                               "is_certified": is_certified,
                               "id": new_id,
                               "group_id": group_id if group_id else new_id, # msg might start a new conversation
+                              "body_format": body_format
                               })
         return msg
 
