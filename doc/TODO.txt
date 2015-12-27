@@ -22,17 +22,18 @@ domaine.
 FEATURES
 ------------
 
+AFFICHER MESSAGE TRANSFERED INLINE
+
 FIX the 3s anti-spam system on "page backwards" access
 
 * Ensure that "coherence" is used everywhere, after merge
 
+
 MESSAGERIE:
-- afficher les messages transférés, et le message parent (auquel on répond), INLINE
+- afficher les messages transférés INLINE
 - "sauver comme template" dans la vue "composition de nouveau message"
 - review le fonctionnement des templates
-- différents auto saves, par utilisateur impersoné , dans la vue "composition de nouveau message"
 - support du raw-text en plus de restructuredtext
-
 
 
 
@@ -216,6 +217,8 @@ OperationalError: (1203, "User pakal_anthropia already has more than 'max_user_c
 TASKS DONE
 ---------------
 
+- afficher le message parent (auquel on répond) dans la page "new message", inline - DONE
+- différents auto saves, par utilisateur impersoné, dans la vue "composition de nouveau message" - DONE
 - unit-test the modifiability/deletability of all data-table items - DONE
 - ajouter help page for game items management - DONE
 - dire aux joueurs qu'ils ne peuvent envoyer gemmes qu'aux gens "connus" (contactés par email) - DONE
