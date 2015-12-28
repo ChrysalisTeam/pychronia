@@ -11,7 +11,7 @@ from pychronia_game.datamanager.abstract_form import GAMEMASTER_HINTS_FIELD
 
 class GameItemForm(DataTableForm):
 
-    auction = forms.CharField(label=ugettext_lazy("Enchère"), required=False)  # can be empty string
+    auction = forms.CharField(label=ugettext_lazy("Auction"), required=False)  # can be empty string
 
     title = forms.CharField(label=ugettext_lazy("Title"), required=True)
 

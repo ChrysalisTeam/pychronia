@@ -9,14 +9,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-12-28 18:46+0100\n"
+"POT-Creation-Date: 2015-12-28 19:01+0100\n"
 "PO-Revision-Date: 2015-12-28 18:57+0200\n"
 "Last-Translator: Pascal <chambon.pascal@gmail.com>\n"
 "Language-Team: Nothing\n"
-"Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: fr\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Generator: Virtaal 0.7.1\n"
 
@@ -599,7 +599,6 @@ msgstr ""
 "(username)s'."
 
 #: .\datamanager\datamanager_modules.py:3682
-#| msgid "objects and gems"
 msgid "objects/gems"
 msgstr "objets/gemmes"
 
@@ -680,15 +679,11 @@ msgstr "L'émetteur ne possède pas ces gemmes"
 
 #: .\datamanager\datamanager_modules.py:4018
 #, python-format
-#| msgid ""
-#| "Gems transferred from %(from_name)s to %(to_name)s : %(gems_choices)s."
 msgid "Gems transferred from %(from_name)s to %(to_name)s: %(gems_choices)s."
 msgstr "Gemmes transférées de %(from_name)s à %(to_name)s : %(gems_choices)s."
 
 #: .\datamanager\datamanager_modules.py:4040
 #, python-format
-#| msgid ""
-#| "Gems transferred from %(from_name)s to %(to_name)s : %(gems_choices)s."
 msgid "Gems debited from %(username)s: %(gems_choices)s."
 msgstr "Gemmes débitées de %(username)s : %(gems_choices)s."
 
@@ -698,8 +693,6 @@ msgstr "Les gemmes sélectionnées sont introuvables parmi celles dépensées"
 
 #: .\datamanager\datamanager_modules.py:4062
 #, python-format
-#| msgid ""
-#| "Gems transferred from %(from_name)s to %(to_name)s : %(gems_choices)s."
 msgid "Gems credited to %(username)s: %(gems_choices)s."
 msgstr "Gemmes créditées à %(username)s : %(gems_choices)s."
 
@@ -900,6 +893,7 @@ msgid "Anthropia"
 msgstr "Anthropia"
 
 #: .\menus.py:73 .\templates\administration\game_items_management.html:54
+#: .\views\admin_views\game_items_management_mod.py:14
 msgid "Auction"
 msgstr "Enchères"
 
@@ -1401,7 +1395,6 @@ msgid "No mercenaries have been hired so far."
 msgstr "Aucun mercenaire n'a été engagé jusqu'à présent."
 
 #: .\templates\abilities\mercenaries_hiring_summary.html:14
-#| msgid "Mercenaries Hiring"
 msgid "Mercenaries:"
 msgstr "Mercenaires :"
 
@@ -1481,18 +1474,15 @@ msgid "Are you sure you want to purchase a spying slot?"
 msgstr "Êtes-vous sûr de vouloir acheter un kit d'espionnage ?"
 
 #: .\templates\abilities\wiretapping_management_summary.html:6
-#| msgid "No mercenaries have been hired so far."
 msgid "No wiretapping has been setup so far."
 msgstr "Aucune mise sur écoute n'a été installée jusqu'à présent."
 
 #: .\templates\abilities\wiretapping_management_summary.html:12
 #: .\templates\abilities\wiretapping_management_summary.html:17
-#| msgid "Confidentiality system activated."
 msgid "confidentiality activated"
 msgstr "Confidentialité activée."
 
 #: .\templates\abilities\wiretapping_management_summary.html:14
-#| msgid "Your wiretapping targets"
 msgid "Wiretapping targets:"
 msgstr "Cibles de mise sur écoute :"
 
@@ -1595,12 +1585,10 @@ msgid "No events have yet been recorded."
 msgstr "Aucun événement enregistré."
 
 #: .\templates\administration\game_items_management.html:21
-#| msgid "Items"
 msgid "Free Items"
 msgstr "Objets Libres"
 
 #: .\templates\administration\game_items_management.html:49
-#| msgid "My Items"
 msgid "Owned Items"
 msgstr "Objets Possédés"
 
@@ -1644,7 +1632,6 @@ msgid "Text field must be filled."
 msgstr "Le champ texte doit être rempli."
 
 #: .\templates\administration\radio_spots_editing.html:53
-#| msgid "Edit Radio Spots"
 msgid "Editable audio spots"
 msgstr "Spots radio éditables"
 
@@ -1661,7 +1648,6 @@ msgid "Save radio spot"
 msgstr "Sauver le spot radio"
 
 #: .\templates\administration\radio_spots_editing.html:90
-#| msgid "Standalone radio spots"
 msgid "Immutable audio spots"
 msgstr "Spots radio immuables"
 
@@ -2062,7 +2048,6 @@ msgid "Keywords"
 msgstr "Mots-clefs"
 
 #: .\templates\information\encyclopedia.html:61
-#| msgid "Search results:"
 msgid "Search results for"
 msgstr "Résultats de recherche pour"
 
@@ -2313,12 +2298,10 @@ msgid "MESSAGE TRANSFERRED: click to view in other window."
 msgstr "MESSAGE TRANSFÉRÉ: cliquer pour le voir dans une autre fenêtre."
 
 #: .\templates\messaging\compose.html:208
-#| msgid "Preview Message Body"
 msgid "Preview Message Body As Restructuredtext"
 msgstr "Prévisualiser le Corps du Message en RestructuredText"
 
 #: .\templates\messaging\compose.html:213
-#| msgid "Parent message ID:"
 msgid "Parent Message"
 msgstr "Message Parent"
 
@@ -3357,12 +3340,7 @@ msgstr "désactivé"
 msgid "External email notifications well %(new_state)s."
 msgstr "Notifications email externes bien mises en état %(new_state)s."
 
-#: .\views\admin_views\game_items_management_mod.py:14
-msgid "Enchère"
-msgstr ""
-
 #: .\views\admin_views\game_items_management_mod.py:20
-#| msgid "Url or local file"
 msgid "Image (url or local file)"
 msgstr "Image (url ou fichier local)"
 
@@ -3371,7 +3349,6 @@ msgid "Made of gems"
 msgstr "Constitué de gemmes"
 
 #: .\views\admin_views\game_items_management_mod.py:24
-#| msgid "Total"
 msgid "Total cost"
 msgstr "Coût total"
 
@@ -3380,17 +3357,14 @@ msgid "Count of items"
 msgstr "Nombre d'articles"
 
 #: .\views\admin_views\game_items_management_mod.py:37
-#| msgid "Contacts Management"
 msgid "Game Items Management"
 msgstr "Gestion des Objets du Jeu"
 
 #: .\views\admin_views\game_items_management_mod.py:40
-#| msgid "Submit item"
 msgid "Submit an item"
 msgstr "Soumettre un article"
 
 #: .\views\admin_views\game_items_management_mod.py:43
-#| msgid "Delete a contact"
 msgid "Delete an item"
 msgstr "Supprimer un article"
 
@@ -3399,7 +3373,6 @@ msgid "Master Manual"
 msgstr "Manuel du Maître de Jeu"
 
 #: .\views\admin_views\global_contacts_management_mod.py:14
-#| msgid "Url or local file"
 msgid "Avatar (url or local file)"
 msgstr "Avatar (url ou fichier local)"
 
@@ -3416,7 +3389,6 @@ msgid "Delete a contact"
 msgstr "Supprimer un contact"
 
 #: .\views\admin_views\radio_spots_editing_mod.py:22
-#| msgid "Url or local file"
 msgid "File (url or local file)"
 msgstr "Fichier (url ou fichier local)"
 
