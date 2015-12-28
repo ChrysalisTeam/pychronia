@@ -10,8 +10,9 @@ import traceback
 import collections
 import copy
 import math
-
+from smtplib import SMTPException
 from contextlib import contextmanager
+
 from django.conf import settings
 from django.core.mail import mail_admins, send_mail
 from django.http import Http404, HttpResponseRedirect, HttpResponse, \
@@ -22,16 +23,17 @@ from django.utils.html import escape
 from django.contrib import messages
 from django.utils.translation import ugettext as _, ugettext_lazy, ungettext
 from django import forms
+from django.contrib.messages import get_messages
+from django.utils.http import urlencode
 
 from pychronia_game.common import *
 from pychronia_game.datamanager import datamanager_administrator
-from django.contrib.messages import get_messages
 from pychronia_game.datamanager.datamanager_administrator import GAME_STATUSES
 from pychronia_game import authentication
 from pychronia_game.utilities import encryption
 from pychronia_game.datamanager.abstract_form import SimpleForm
-from django.utils.http import urlencode
-from smtplib import SMTPException
+
+
 
 
 class GameInstanceCreationForm(SimpleForm):

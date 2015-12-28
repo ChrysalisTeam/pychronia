@@ -195,6 +195,8 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
         if config.GAME_INITIAL_FIXTURE_SCRIPT and not skip_initializations:
             self.logger.info("Performing setup via GAME_INITIAL_FIXTURE_SCRIPT")
             config.GAME_INITIAL_FIXTURE_SCRIPT(self)
+        else:
+            self.logger.info("Skipping setup via GAME_INITIAL_FIXTURE_SCRIPT")
 
         if not skip_coherence_check:
             self.check_database_coherence(strict=strict)

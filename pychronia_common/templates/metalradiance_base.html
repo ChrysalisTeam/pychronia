@@ -169,7 +169,7 @@
 
     {% block notification_banners %}
         {% if notifications %}
-        <div class="notification_panel {{ notification_type|default:"mixed" }}">
+        <div class="notification_panel {{ notification_type|default:"mixed" }}" title="{% trans "Click on the border of this notification panel to close it." %}">
             <div class="notification_panel_decorations">
                 <div class="notification_panel_content">
                    {% for message in notifications %}
