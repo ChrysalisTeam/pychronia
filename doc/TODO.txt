@@ -26,14 +26,10 @@ AFFICHER MESSAGE TRANSFERED INLINE
 
 FIX the 3s anti-spam system on "page backwards" access
 
-* Ensure that "coherence" is used everywhere, after merge
-
 
 MESSAGERIE:
-- afficher les messages transférés INLINE
+- afficher les messages transférés INLINE (FANCYBOX ?)
 - "sauver comme template" dans la vue "composition de nouveau message"
-- review le fonctionnement des templates
-- support du raw-text en plus de restructuredtext
 
 
 
@@ -97,7 +93,6 @@ Ces lots sont volumineux, mais rien ne vous interdit de vous entendre pour en ac
 
 - journée de rame en aval de ENDROIT_PRECIS_XXXX??. <TODO>
 
-- add main missing items (WIP)
 - add enough content for game startup
 
 - ajouter des details cruciaux à TOUTES runes !!!!
@@ -118,7 +113,6 @@ Faire page d'introduction
 média => encyclopédie => saisir l'expression : si on écrit une phrase trop longue le message d'erreur s'affiche mais le texte sort du bloc.
    une petite croix sur la gauche ou la droite serait la bien venu ou un clic ailleurs sur le site pour refermer rapidement la bande
    ou tout simplement autoriser le clic sur le texte pour refermer. ==> EXPLIQUER DANS HELP PAGE
-
 
 Sinon pourquoi faire une "aide" en anglais et le site en français ? => EXPLIQUER dans help homepage DONE
 
@@ -217,6 +211,8 @@ OperationalError: (1203, "User pakal_anthropia already has more than 'max_user_c
 TASKS DONE
 ---------------
 
+- support du raw-text en plus de restructuredtext, pour les messages texte - DONE
+- ensure that "coherence" is used everywhere instead of "coherency" - DONE
 - afficher le message parent (auquel on répond) dans la page "new message", inline - DONE
 - différents auto saves, par utilisateur impersoné, dans la vue "composition de nouveau message" - DONE
 - unit-test the modifiability/deletability of all data-table items - DONE
@@ -230,7 +226,7 @@ TASKS DONE
 - repair the "?next=http://xxx" url of login system - DONE
 - rendre les message autosaves "par effective username" - DONE
 - "transraciations" changé en transfiliation?? - DONE
-- cHANGER SIGNATURE de utilities.find_game_file(character["avatar"], "images") - DONE
+- changer SIGNATURE de utilities.find_game_file(character["avatar"], "images") - DONE
 - allow both urls and local files for images of characters/items/contacts - DONE
 - bugfix the double handling of urls and files in radio spots - DONE (a single field for both, now)
 - mettre pages de résumé des mercenaires de chaque joueur et des wiretappings - DONE (nouvelle API get_admin_summary_html())
