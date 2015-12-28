@@ -88,7 +88,7 @@
 
     <br/><br/>
 
-    <div id="session_token_form" class="form_scroll_medium" align="center" style="width: 60% !important; margin: auto;">
+    <div id="session_token_form" class="form_scroll_medium" align="center" style="margin: auto;">
         <h2>{% trans "Get Autoconnect Token" %}</h2>
         {% if session_token_display %}
             <strong>{% trans "Result of computation" %}{{COLON}}</strong>
@@ -103,7 +103,7 @@
     </div><br/><br/>
 
 
-    <div id="game_creation_form" class="form_scroll_medium" align="center" style="width: 70%; margin: auto;">
+    <div id="game_creation_form" class="form_scroll_medium" align="center" style="margin: auto;">
         <h2>{% trans "New Game Instance" %}</h2>
         <form action="#game_creation_form" method="post" class="meta_admin_button" autocomplete="off">
             {{ game_creation_form.as_p }}
