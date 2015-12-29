@@ -4694,10 +4694,11 @@ class NightmareCaptchas(BaseDataManager):
                 utilities.check_is_game_file(value["image"])
             if value["explanation"]:
                 utilities.check_is_restructuredtext(value["explanation"])
-
             if value["answer"] is not None: # None means "no answers" (sadistic)
                 utilities.check_is_slug(value["answer"])
                 assert "\n" not in value["answer"]
+
+            assert (value["answer"] is not None) == bool(value["explanation"]), value  # let's be coherent
 
 
     def _get_captcha_data(self, captcha_id):
@@ -4741,7 +4742,7 @@ class NightmareCaptchas(BaseDataManager):
         value = self.data["nightmare_captchas"][captcha_id]
 
         if not value["answer"]:
-            raise NormalUsageError(_("Nope, it looked like this captcha had no known answer..."))
+            raise NormalUsageError(_("Nope, it looks like this captcha had no known answer..."))
 
         normalized_attempt = attempt.strip().lower().replace(" ", "")
         normalized_answer = value["answer"].lower() # necessarily slug, but not always lowercase
@@ -4749,6 +4750,7 @@ class NightmareCaptchas(BaseDataManager):
         if normalized_attempt != normalized_answer:
             raise NormalUsageError(_("Incorrect captcha answer '%s'") % attempt)
 
+        assert value["explanation"], repr(value["explanation"])
         return value["explanation"]
 
 

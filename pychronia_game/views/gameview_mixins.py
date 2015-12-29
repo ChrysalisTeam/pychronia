@@ -44,6 +44,7 @@ class AbstractCaptchaProtectedView(AbstractGameView):
             try:
                 #print (">>>>>>>>", captcha_id, attempt)
                 explanation = request.datamanager.check_captcha_answer_attempt(captcha_id=captcha_id, attempt=attempt)
+                assert explanation, repr(explanation)  # necessarily, if "answer" wasn't null in DB
                 request.datamanager.user.add_message(_("Captcha check successful."))
                 request.datamanager.user.add_message(explanation) # to please users...
                 return True
