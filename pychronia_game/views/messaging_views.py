@@ -354,7 +354,7 @@ def messages_templates(request, template_name='messaging/messages.html'):
 @register_view(access=UserAccess.authenticated, requires_global_permission=False, title=ugettext_lazy("Conversations"))
 def standard_conversations(request, template_name='messaging/conversation.html'):
 
-    CONVERSATIONS_LIMIT = 30
+    CONVERSATIONS_LIMIT = 40
 
     display_all_conversations = bool(request.GET.get("display_all", None) == "1")
 
