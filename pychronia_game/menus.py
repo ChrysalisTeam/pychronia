@@ -108,8 +108,9 @@ def _generate_web_menu(request, menu_entry_generator):
             menu_entry(_(u"Abilities"), views.ability_introduction, # FIXME
                        (
 
-                        menu_entry(view=views.wiretapping_management),
                         menu_entry(view=views.mercenaries_hiring),
+                        menu_entry(view=views.wiretapping_management),
+
                         menu_entry(view=views.house_locking),
 
                         menu_entry(view=views.runic_translation),
@@ -133,10 +134,10 @@ def _generate_web_menu(request, menu_entry_generator):
                         # menu_entry(_(u"World Scans"), view=views.scanning_management),
                       )),
 
-            menu_entry(_(u"Admin"), views.admin_dashboard,
+            menu_entry(_(u"Admin"), views.game_events,
                        (
-                         menu_entry(_(u"Dashboard"), views.admin_dashboard),
                          menu_entry(_(u"Game Events"), views.game_events, forced_visibility=(True if user.is_master else False)),
+                         menu_entry(_(u"Dashboard"), views.admin_dashboard),
                          menu_entry(_(u"Admin Information"), view=views.admin_information),
 
                          menu_entry(_(u"Manage Characters"), views.manage_characters),
