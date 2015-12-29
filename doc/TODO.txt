@@ -36,6 +36,9 @@ MESSAGERIE:
 SCRIPT
 ----------
 
+- regler les "HERE GAMEMASTER HINTS" et autres FIXME
+
+- ajouter personnage fantôme pour tests live
 
 GAMEMASTER_HINTS in:
 
@@ -47,26 +50,14 @@ GAMEMASTER_HINTS in:
     - static pages
 
 
+- compléter les aides des 4 contenus éditables
+
 - add tags with titles to all MP3s
 
 - USE embed_image(alias, align) everywhere in fixtures, and maybe unregister image directive ?
   (obsolete?) add GAME_IMAGE_URL in help pages, better than embed_image for now <- ??
 
 
-- regler les "HERE GAMEMASTER HINTS" et autres FIXME
-
-- fixer l'aide de la page "dahsboard admin"
-- dire qu'on peut réordonner les forms de la page admin dashboard
-
-
-- TO UPDATE SOON
-            - vous pouvez attacher un de vos fichiers personnels à un message, grâce au champ de sélection dédié
-            - si vous transférez un ancien message à un de vos contacts, ce "message transféré" pourra être lu dans une nouvelle fenêtre, grâce au lien automatiquement inséré dans le nouveau message
-
-
-- obéron keyword
-
-- dire "marquer comme lus les messages de LG périodiquement, soi même", au MJ
 
 - cacher compétences spéciales pour PNJ <- personal permissions EVERYWHERE
 
@@ -74,14 +65,11 @@ GAMEMASTER_HINTS in:
 
 - update abilities settings and prices
 
-- mon compte (PAS "profile personnel"), ou Mon profil
 
-
-- les notifications doivent etre plus explicites dans leur contenu
 
 - faire CHRONOLOGIE détaillée des évènements pour aider énigmes
 
-- message answer does NOT mark "read" the parent message - YEP, à documenter
+
 
 Toutes ces gemmes peuvent etre vendues à leur prix de reference sur le marché international, dont le cours est tres stable actuellement. Il parait d'ailleurs que notre portail Anthropia va etre connecté sous peu à une place des ventes.
 
@@ -211,6 +199,10 @@ OperationalError: (1203, "User pakal_anthropia already has more than 'max_user_c
 TASKS DONE
 ---------------
 
+- dire "marquer comme lus les messages de LG périodiquement, soi même", au MJ - DONE
+- message answer does NOT mark "read" the parent message, à documenter - DONE
+- fixer l'aide de la page "dahsboard admin" - DONE
+- dire qu'on peut réordonner les forms de la page admin dashboard - DONE
 - support du raw-text en plus de restructuredtext, pour les messages texte - DONE
 - ensure that "coherence" is used everywhere instead of "coherency" - DONE
 - afficher le message parent (auquel on répond) dans la page "new message", inline - DONE
@@ -482,6 +474,7 @@ TASKS DONE
 CONTROVERSIAL ENHANCEMENTS
 -----------------------------------
 
+- mon compte (PAS "profile personnel"), ou Mon profil - bof
 - enlever la homepage "enchères" inutile, amener de suite sur les persos ??
 - trier contacts par autre ordre, das "nouveau message" ?? c'est déjà par domaine...
 - permettre d'éditer les messages en attente d'envoi ? nope, mieux vaut "save as template"...
@@ -496,6 +489,12 @@ CONTROVERSIAL ENHANCEMENTS
 
 FUTUR ENHANCEMENTS
 --------------------------
+
+- les notifications doivent etre plus explicites dans leur contenu !?
+- TO UPDATE when behaviour is changed, in the future
+            - références nombreuses aux "messages parents pas automatiquement marqués comme lus"
+            - vous pouvez attacher un de vos fichiers personnels à un message, grâce au champ de sélection dédié
+            - si vous transférez un ancien message à un de vos contacts, ce "message transféré" pourra être lu dans une nouvelle fenêtre, grâce au lien automatiquement inséré dans le nouveau message
 
 - carte du monde : un clic sur un pays/ville principal pour un zoom plus détaillé (un peu comme hurlevent wow) -> intégrer touch map prototype
 - FIX medias videos on website, for video / firefox, on WINDOWS10 (use jplayer)
