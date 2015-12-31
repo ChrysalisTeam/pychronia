@@ -100,7 +100,7 @@ class WiretappingAbility(AbstractAbility):
 
     ACCESS = UserAccess.character
     REQUIRES_CHARACTER_PERMISSION = True
-    REQUIRES_GLOBAL_PERMISSION = True # FIXME
+    REQUIRES_GLOBAL_PERMISSION = True
 
     EXTRA_PERMISSIONS = ["purchase_confidentiality_protection"] # NOT YET ACTIVATED
 
