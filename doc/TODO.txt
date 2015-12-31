@@ -22,6 +22,8 @@ domaine.
 FEATURES
 ------------
 
+Normaliser LINE-HEIGHT à 1.1 partout
+
 AFFICHER MESSAGE TRANSFERED INLINE
 
 FIX the 3s anti-spam system on "page backwards" access
@@ -38,7 +40,7 @@ SCRIPT
 
 - regler les "HERE GAMEMASTER HINTS" et autres FIXME
 
-- ajouter personnage fantôme pour tests live
+
 
 GAMEMASTER_HINTS in:
 
@@ -58,28 +60,13 @@ GAMEMASTER_HINTS in:
   (obsolete?) add GAME_IMAGE_URL in help pages, better than embed_image for now <- ??
 
 
-
-- cacher compétences spéciales pour PNJ <- personal permissions EVERYWHERE
-
 - explain about static page "titles" usage
 
 - update abilities settings and prices
 
-
-
 - faire CHRONOLOGIE détaillée des évènements pour aider énigmes
 
-
-
-Toutes ces gemmes peuvent etre vendues à leur prix de reference sur le marché international, dont le cours est tres stable actuellement. Il parait d'ailleurs que notre portail Anthropia va etre connecté sous peu à une place des ventes.
-
-Ces lots sont volumineux, mais rien ne vous interdit de vous entendre pour en acheter en commun, puis vous repartir les gemmes individuelles ensuite.
-
 - manual for TTS acapela !!
-
-- add all avatar images
-
-- journée de rame en aval de ENDROIT_PRECIS_XXXX??. <TODO>
 
 - add enough content for game startup
 
@@ -199,6 +186,7 @@ OperationalError: (1203, "User pakal_anthropia already has more than 'max_user_c
 TASKS DONE
 ---------------
 
+- ajouter personnage fantôme pour tests live - DONE (username=Emogladys)
 - dire "marquer comme lus les messages de LG périodiquement, soi même", au MJ - DONE
 - message answer does NOT mark "read" the parent message, à documenter - DONE
 - fixer l'aide de la page "dahsboard admin" - DONE
