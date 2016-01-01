@@ -17,7 +17,9 @@
 
     {% if forms %}
 
+        {% if immutable_table_items %}
 	    <h2>{% trans "Editable contacts" %}</h2>
+        {% endif %}
 
 	    {% for identifier, form in forms %}
 	    <div id="entry-{{ identifier|slugify }}" class="scroll_realistic_thin_ends center">
