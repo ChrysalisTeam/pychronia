@@ -3965,6 +3965,8 @@ class MoneyItemsOwnership(BaseDataManager):
     def get_available_items_for_user(self, username=CURRENT_USER, auction_only=False):
         """
         Both items and artefacts.
+        
+        Also works for master.
         """
         username = self._resolve_username(username)
 

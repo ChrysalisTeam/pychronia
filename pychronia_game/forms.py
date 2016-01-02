@@ -101,6 +101,7 @@ class ArtefactTransferForm(AbstractGameForm):
 
         artefacts = datamanager.get_user_artefacts() # dicts
         artefacts_choices = [(name, value["title"]) for (name, value) in artefacts.items()]
+        artefacts_choices.sort(key=lambda x: x[1])  # sorted by title
         self.fields["artefact_name"].choices = [("", _("None"))] + artefacts_choices
 
         others = datamanager.get_other_known_characters()
