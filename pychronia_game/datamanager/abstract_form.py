@@ -35,9 +35,9 @@ def form_field_unjsonify(value):
 
 
 
-def autostrip(cls):
+def autostrip_form_charfields(cls):
     """
-    Marks all CharField entries of that form class as "auto-stripping".
+    Marks all CharField entries of that form class as "auto-stripping", BEFORE validation.
     
     Does NOT work with dynamically created fields though.
     """
@@ -46,7 +46,7 @@ def autostrip(cls):
         def get_clean_func(original_clean):
             return lambda value: original_clean(value and value.strip())
         clean_func = get_clean_func(getattr(field_object, 'clean'))
-        setattr(field_object, 'clean', clean_func)
+        setattr(field_object, 'clean', clean_func)  # we set it on FIELD, not FORM
     return cls
 
 
@@ -64,7 +64,8 @@ class SimpleForm(forms.Form):
 
         for field in cleaned_data:
             if isinstance(self.cleaned_data[field], basestring):
-                cleaned_data[field] = cleaned_data[field].strip() # note that Field "required=True" constraints might be already bypassed here, use autostrip instead
+                # note that Field "required=True" constraints might be already passed here, use autostrip() instead to prevent "space-only" inputs
+                cleaned_data[field] = cleaned_data[field].strip()
 
         return cleaned_data
 

@@ -9,7 +9,7 @@ from django_select2 import Select2MultipleWidget
 
 from pychronia_game.common import *
 from pychronia_game.datamanager.abstract_form import (AbstractGameForm, SimpleForm, UninstantiableFormError,
-                                                      GemHandlingFormUtils, autostrip, GAMEMASTER_HINTS_FIELD)
+                                                      GemHandlingFormUtils, autostrip_form_charfields, GAMEMASTER_HINTS_FIELD)
 from pychronia_game.utilities import add_to_ordered_dict
 
 
@@ -145,7 +145,7 @@ class DropdownMultiSelect(forms.SelectMultiple):
     """
 
 
-@autostrip
+@autostrip_form_charfields
 class CharacterProfileForm(AbstractGameForm):
     """
     CHAR fields are auto-stripped thanks to that base class.
