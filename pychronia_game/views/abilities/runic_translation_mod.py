@@ -101,7 +101,7 @@ class RunicTranslationAbility(AbstractPartnershipAbility):
         real_rune_tokens = cls._tokenize_rune_message(real_rune_string)
         translated_tokens = cls._tokenize_rune_message(translated_string)
 
-        assert len(real_rune_tokens) == len(translated_tokens), "Mismatch between rune an real tokens"
+        assert len(real_rune_tokens) == len(translated_tokens), "Mismatch between runes and real tokens"
         assert len(set(real_rune_tokens)) == len(real_rune_tokens), "No unicity of real rune tokens"  # rune phrases must be unique in the message, to allow proper translation
 
         translator = PersistentMapping(zip(real_rune_tokens, translated_tokens))
