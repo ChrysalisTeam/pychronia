@@ -41,7 +41,6 @@ SCRIPT
 - regler les "HERE GAMEMASTER HINTS" et autres FIXME
 
 
-
 GAMEMASTER_HINTS in:
 
     - characters
@@ -52,15 +51,10 @@ GAMEMASTER_HINTS in:
     - static pages
 
 
-- compléter les aides des 4 contenus éditables
-
 - add tags with titles to all MP3s
 
 - USE embed_image(alias, align) everywhere in fixtures, and maybe unregister image directive ?
   (obsolete?) add GAME_IMAGE_URL in help pages, better than embed_image for now <- ??
-
-
-- explain about static page "titles" usage
 
 - update abilities settings and prices
 
@@ -68,29 +62,30 @@ GAMEMASTER_HINTS in:
 
 - manual for TTS acapela !!
 
-- add enough content for game startup
-
-- ajouter des details cruciaux à TOUTES runes !!!!
 
 Faire page d'introduction
 	- situation de l'univers
 	- situation géopolitique
 	- bestaire des ennemis ?
 
-- add description of partners in instruction page !
+- add enough content for game startup
 
-- clarifier règles absolues : pas de vol d'argent, pas de triche, emails uniquement valables à l'intérieur du site (dans INTRO "out game" du jeu)
+- add description of partners in intro/instruction page !
 
 - ajouter instructions ou systèmes pour éviter abus de mercenaires ? -> distribution progressive d'argent, à detailler
 
-- ajouter <instructions> possibilité échange objets archéologiques et lots entiers de gemmes (gamemaster must be aware of that)!
+- ajouter des details cruciaux à TOUTES runes !!!!
 
 média => encyclopédie => saisir l'expression : si on écrit une phrase trop longue le message d'erreur s'affiche mais le texte sort du bloc.
-   une petite croix sur la gauche ou la droite serait la bien venu ou un clic ailleurs sur le site pour refermer rapidement la bande
+
+une petite croix sur la gauche ou la droite serait la bien venu ou un clic ailleurs sur le site pour refermer rapidement la bande
    ou tout simplement autoriser le clic sur le texte pour refermer. ==> EXPLIQUER DANS HELP PAGE
 
-Sinon pourquoi faire une "aide" en anglais et le site en français ? => EXPLIQUER dans help homepage DONE
 
+- clarifier règles absolues : pas de vol d'argent, pas de triche, emails uniquement valables à l'intérieur du site (dans INTRO "out game" du jeu)
+            Distinction RP/HRP
+            --------------------
+            - il est possible d'utiliser d'autres moyens de communication que ceux du portail : vrais emails, sms, Skype... ces communications sont toutes traitées comme si les joueurs se parlaient "de visu", dans un endroit discret.
 
 
 PROMOTION
@@ -103,6 +98,7 @@ PROMOTION
 TESTS
 ----------
 
+TESTER mask recipients
 
 PAUSED BUGLETS:
 - BUG si joueurs passés en pnj/non pnj avec auctionlist :
@@ -186,6 +182,11 @@ OperationalError: (1203, "User pakal_anthropia already has more than 'max_user_c
 TASKS DONE
 ---------------
 
+
+- ajouter <instructions> possibilité échange objets archéologiques et lots entiers de gemmes (pour gamemaster) - DONE
+- pourquoi faire une "aide" en anglais et le site en français ? EXPLIQUER dans help homepage - DONE
+- compléter les aides des 4 contenus éditables - DONE
+- explain about static page "titles" usage - DONE
 - ajouter personnage fantôme pour tests live - DONE (username=Emogladys)
 - dire "marquer comme lus les messages de LG périodiquement, soi même", au MJ - DONE
 - message answer does NOT mark "read" the parent message, à documenter - DONE
@@ -198,6 +199,9 @@ TASKS DONE
 - unit-test the modifiability/deletability of all data-table items - DONE
 - ajouter help page for game items management - DONE
 - dire aux joueurs qu'ils ne peuvent envoyer gemmes qu'aux gens "connus" (contactés par email) - DONE
+- reverifier ORBE dans le gamemaster manuel - DONE
+- dire "perches tendues" partout aux joueurs - DONE
+- dire aux joueurs de tenter, etre proactifs - DONE
 - parler des mémos objets dans help pages - DONE
 - get_other_known_characters -> tjrs inclure les joueurs enchérisseurs dedans ? NOPE, forcer ainsi les joueurs à COMMUNIQUER
 - ajouter les 3 gemmes spéciales dans objets !! - DONE
@@ -237,9 +241,7 @@ TASKS DONE
 - BUG SELECT2 - OK UPDATED to latest version:
     $(hashedSelector).select2({"closeOnSelect": false, "placeholder": ""});
     <script type="text/javascript">
-        jQuery(function ($) {
-            $(hashedSelector).select2({"closeOnSelect": false, "placeholder": ""});
-        });
+        jQuery(function ($) {$(hashedSelector).select2({"closeOnSelect": false, "placeholder": ""});});
     </script>
 - BUG si % dans message - FIXED with asserts and checks
       File "/home/pakal/webapps/chrysalis_game/pychronia/pychronia_game/views/profile_views.py", line 329, in game_events
@@ -473,6 +475,7 @@ CONTROVERSIAL ENHANCEMENTS
 - fix shaky forms when floated left in number - should be DONE now
 - convert "orbe" to masculine genre ; replace akaris by akharis !!!!!!!!!!!!!!!!!!!
 - ajouter formulaires de pognon dans la page character_management ?
+
 
 
 FUTUR ENHANCEMENTS
