@@ -341,12 +341,11 @@
 
 
 
-
 {% block html_title %}
     {% if page_title %}
-        {% trans "Anthropia" %} - {{ page_title}}
+        {{ page_title }} - {% trans "Anthropia" %} {{ game_instance_id|capfirst }}
     {% elif fallback_title %}
-        {% trans "Anthropia" %} - {{ fallback_title}}
+        {{ fallback_title }} - {% trans "Anthropia" %} {{ game_instance_id|capfirst }}
     {% else %}
         {% trans "Welcome to Anthropia" %}
     {% endif %}
