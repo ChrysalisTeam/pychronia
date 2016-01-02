@@ -4,19 +4,19 @@
 # Pakal, 2010.
 # Pakal, 2010.
 # Pakal <pythoniks@gmail.com>, 2010.
-# Pascal <chambon.pascal@gmail.com>, 2013, 2014, 2015.
+# Pascal <chambon.pascal@gmail.com>, 2013, 2014, 2015, 2016.
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-12-28 19:01+0100\n"
-"PO-Revision-Date: 2015-12-28 18:57+0200\n"
+"POT-Creation-Date: 2016-01-02 20:12+0100\n"
+"PO-Revision-Date: 2016-01-02 20:14+0200\n"
 "Last-Translator: Pascal <chambon.pascal@gmail.com>\n"
 "Language-Team: Nothing\n"
+"Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: fr\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Generator: Virtaal 0.7.1\n"
 
@@ -71,41 +71,41 @@ msgstr "Entrée '%s' correctement détruite"
 msgid "Hints for Game Master"
 msgstr "Indices pour Maître de Jeu"
 
-#: .\datamanager\abstract_form.py:128
+#: .\datamanager\abstract_form.py:129
 #, python-format
 msgid "Gem of %(cost)d¤ (%(origin)s)"
 msgstr "Gemme à %(cost)d¤ (%(origin)s)"
 
-#: .\datamanager\abstract_form.py:130
+#: .\datamanager\abstract_form.py:131
 #, python-format
 msgid "Gem of %d¤ (unknown origin)"
 msgstr "Gemme de %d¤ (origine inconnue)"
 
-#: .\datamanager\abstract_form.py:154
+#: .\datamanager\abstract_form.py:155
 msgid "Pay with money"
 msgstr "Payer en argent"
 
-#: .\datamanager\abstract_form.py:165
+#: .\datamanager\abstract_form.py:166
 msgid "Or pay with gems"
 msgstr "Ou payer en gemmes"
 
-#: .\datamanager\abstract_form.py:186
+#: .\datamanager\abstract_form.py:187
 msgid "Wrong data submitted"
 msgstr "Mauvaises données soumises"
 
-#: .\datamanager\abstract_form.py:193
+#: .\datamanager\abstract_form.py:194
 msgid "You must choose between money and gems, for payment."
 msgstr "Vous devez choisir entre argent et gemmes, pour le paiement."
 
-#: .\datamanager\abstract_form.py:211
+#: .\datamanager\abstract_form.py:212
 msgid "Initial identifier"
 msgstr "Identifiant initial"
 
-#: .\datamanager\abstract_form.py:212
+#: .\datamanager\abstract_form.py:213
 msgid "Identifier"
 msgstr "Identifiant"
 
-#: .\datamanager\abstract_form.py:214
+#: .\datamanager\abstract_form.py:215
 msgid "Identifier must contain no space"
 msgstr "L'identifiant ne doit pas contenir d'espace"
 
@@ -390,12 +390,12 @@ msgstr "Non identifié"
 #: .\templates\abilities\wiretapping_management.html:41
 #: .\templates\administration\character_management.html:20
 #: .\templates\administration\character_management.html:34
-#: .\templates\administration\global_contacts_management.html:59
-#: .\templates\administration\global_contacts_management.html:63
+#: .\templates\administration\global_contacts_management.html:61
 #: .\templates\administration\global_contacts_management.html:65
+#: .\templates\administration\global_contacts_management.html:67
 #: .\templates\administration\radio_spots_editing.html:101
 #: .\templates\auction\view_characters.html:79
-#: .\templates\auction\view_characters.html:93 .\templates\base_main.html:400
+#: .\templates\auction\view_characters.html:93 .\templates\base_main.html:399
 #: .\templates\messaging\compose.html:153
 #: .\templates\meta_administration\manage_instances.html:22
 #: .\templates\profile\character_profile.html:18
@@ -705,16 +705,17 @@ msgstr "Noms de vues inconnus détectés dans l'ensemble des vues à activer: %r
 msgid "static pages"
 msgstr "pages statiques"
 
-#: .\datamanager\datamanager_modules.py:4740
+#: .\datamanager\datamanager_modules.py:4741
 #, python-format
 msgid "Unknown captcha id %s"
 msgstr "Identifiant de captcha inconnu %s"
 
-#: .\datamanager\datamanager_modules.py:4744
-msgid "Nope, it looked like this captcha had no known answer..."
-msgstr "Nope, il semble que ce captcha n'ait pas de réponse connue..."
+#: .\datamanager\datamanager_modules.py:4745
+#| msgid "Nope, it looked like this captcha had no known answer..."
+msgid "Nope, it looks like this captcha had no known answer..."
+msgstr "Nope, il semble que ce captcha n'avait pas de réponse connue..."
 
-#: .\datamanager\datamanager_modules.py:4750
+#: .\datamanager\datamanager_modules.py:4751
 #, python-format
 msgid "Incorrect captcha answer '%s'"
 msgstr "Réponse au captcha incorrecte '%s'"
@@ -887,8 +888,8 @@ msgstr "Sélectionnez votre artefact..."
 msgid "User"
 msgstr "Utilisateur"
 
-#: .\menus.py:69 .\templates\base_main.html:347
-#: .\templates\base_main.html.py:349
+#: .\menus.py:69 .\templates\base_main.html:346
+#: .\templates\base_main.html.py:348
 msgid "Anthropia"
 msgstr "Anthropia"
 
@@ -917,67 +918,67 @@ msgstr "Mes conversations"
 msgid "Abilities"
 msgstr "Compétences"
 
-#: .\menus.py:136
+#: .\menus.py:137
 msgid "Admin"
 msgstr "Admin"
-
-#: .\menus.py:138
-msgid "Dashboard"
-msgstr "Tableau de bord"
 
 #: .\menus.py:139
 msgid "Game Events"
 msgstr "Evènements"
 
-#: .\menus.py:140 .\views\admin_views\admin_information_mod.py:19
+#: .\menus.py:140
+msgid "Dashboard"
+msgstr "Tableau de bord"
+
+#: .\menus.py:141 .\views\admin_views\admin_information_mod.py:19
 msgid "Admin Information"
 msgstr "Informations Admin"
 
-#: .\menus.py:142 .\views\admin_views\__init__.py:57
+#: .\menus.py:143 .\views\admin_views\__init__.py:57
 msgid "Manage Characters"
 msgstr "Gérer les personnages"
 
-#: .\menus.py:143
+#: .\menus.py:144
 msgid "Manage Webradio Playlist"
 msgstr "Gérer la Playlist Webradio"
 
-#: .\menus.py:145
+#: .\menus.py:146
 msgid "Edit Game Items"
 msgstr "Editer les objets du jeu"
 
-#: .\menus.py:146
+#: .\menus.py:147
 msgid "Edit Static Pages"
 msgstr "Editer les Pages Statiques"
 
-#: .\menus.py:147
+#: .\menus.py:148
 msgid "Edit Email Contacts"
 msgstr "Editer les Contacts"
 
-#: .\menus.py:148
+#: .\menus.py:149
 msgid "Edit Radio Spots"
 msgstr "Editer les Spots Radio"
 
-#: .\menus.py:150
+#: .\menus.py:151
 msgid "View Master Manual"
 msgstr "Manuel du Maître de Jeu"
 
-#: .\menus.py:152 .\views\admin_views\__init__.py:38
+#: .\menus.py:153 .\views\admin_views\__init__.py:38
 msgid "View Database"
 msgstr "Voir les Données"
 
-#: .\menus.py:156
+#: .\menus.py:157
 msgid "Profile"
 msgstr "Profil"
 
-#: .\menus.py:162
+#: .\menus.py:163
 msgid "System Events"
 msgstr "Évènements Système"
 
-#: .\menus.py:163
+#: .\menus.py:164
 msgid "Log Out"
 msgstr "Fermer la session"
 
-#: .\menus.py:167
+#: .\menus.py:168
 msgid "Log In"
 msgstr "Se connecter"
 
@@ -1355,7 +1356,7 @@ msgstr "Réinitialiser"
 
 #: .\templates\abilities\house_locking.html:63
 #: .\templates\administration\game_items_management.html:31
-#: .\templates\administration\global_contacts_management.html:30
+#: .\templates\administration\global_contacts_management.html:32
 #: .\templates\administration\static_pages_management.html:26
 #: .\templates\profile\friendship_management.html:44
 #: .\templates\utilities\bug_report.html:25
@@ -1500,7 +1501,7 @@ msgstr "Modifiable"
 
 #: .\templates\administration\_sidebar_management_index.html:15
 #: .\templates\administration\game_items_management.html:28
-#: .\templates\administration\global_contacts_management.html:27
+#: .\templates\administration\global_contacts_management.html:29
 #: .\templates\administration\radio_spots_editing.html:60
 #: .\templates\administration\static_pages_management.html:22
 msgid "NEW ENTRY"
@@ -1596,29 +1597,29 @@ msgstr "Objets Possédés"
 msgid "owned by"
 msgstr "possédé par"
 
-#: .\templates\administration\global_contacts_management.html:20
+#: .\templates\administration\global_contacts_management.html:21
 msgid "Editable contacts"
 msgstr "Contacts modifiables"
 
-#: .\templates\administration\global_contacts_management.html:47
+#: .\templates\administration\global_contacts_management.html:49
 msgid "Immutable contacts"
 msgstr "Contacts non modifiables"
 
-#: .\templates\administration\global_contacts_management.html:55
+#: .\templates\administration\global_contacts_management.html:57
 msgid "Avatar:"
 msgstr "Avatar :"
 
-#: .\templates\administration\global_contacts_management.html:57
+#: .\templates\administration\global_contacts_management.html:59
 msgid "Source"
 msgstr "Source"
 
-#: .\templates\administration\global_contacts_management.html:63
+#: .\templates\administration\global_contacts_management.html:65
 #: .\views\admin_views\game_items_management_mod.py:18
 #: .\views\admin_views\global_contacts_management_mod.py:16
 msgid "Description"
 msgstr "Description"
 
-#: .\templates\administration\global_contacts_management.html:65
+#: .\templates\administration\global_contacts_management.html:67
 #: .\templates\administration\radio_spots_editing.html:101
 msgid "Gamemaster Hints"
 msgstr "Indices pour le Maître"
@@ -1916,75 +1917,75 @@ msgstr "Rapport d'erreur correctement envoyé."
 msgid "Application error (please consider reporting that bug)"
 msgstr "Erreur applicative (veuillez considérer signaler ce bogue)"
 
-#: .\templates\base_main.html:351
+#: .\templates\base_main.html:350
 msgid "Welcome to Anthropia"
 msgstr "Bienvenue sur Anthropia"
 
-#: .\templates\base_main.html:397
+#: .\templates\base_main.html:396
 msgid "Take the identity of another user."
 msgstr "Prendre l'identité d'un autre utilisateur"
 
-#: .\templates\base_main.html:398
+#: .\templates\base_main.html:397
 msgid "Impersonation:"
 msgstr "Usurpation:"
 
-#: .\templates\base_main.html:418
+#: .\templates\base_main.html:417
 msgid "Whether or not you can modify the game during impersonations."
 msgstr "Si vous pouvez ou non modifier le jeu durant l'usurpation d'identité."
 
-#: .\templates\base_main.html:419
+#: .\templates\base_main.html:418
 msgid "Writability:"
 msgstr "Modifiabilité:"
 
-#: .\templates\base_main.html:421
+#: .\templates\base_main.html:420
 msgid "Read-only"
 msgstr "Lecture-seule"
 
-#: .\templates\base_main.html:422
+#: .\templates\base_main.html:421
 msgid "Writable"
 msgstr "Modifiable"
 
-#: .\templates\base_main.html:459
+#: .\templates\base_main.html:458
 msgid "Your current user login."
 msgstr "Votre identifiant utilisateur actuel."
 
-#: .\templates\base_main.html:460
+#: .\templates\base_main.html:459
 msgid "Effective identity"
 msgstr "Identité effective"
 
-#: .\templates\base_main.html:468
+#: .\templates\base_main.html:467
 msgid "Novelties"
 msgstr "Nouveautés"
 
-#: .\templates\base_main.html:472
+#: .\templates\base_main.html:471
 msgid "No Notifications"
 msgstr "Pas de Notifications"
 
-#: .\templates\base_main.html:476
+#: .\templates\base_main.html:475
 msgid "New menu entries are available for you!"
 msgstr "Nouvelles entrées de menu disponibles !"
 
-#: .\templates\base_main.html:479
+#: .\templates\base_main.html:478
 msgid "New text messages are available for you!"
 msgstr "De nouveaux messages email sont disponibles !"
 
-#: .\templates\base_main.html:482
+#: .\templates\base_main.html:481
 msgid "There are people in the live chat room!"
 msgstr "Il y a des utilisateurs dans le salon de discussion !"
 
-#: .\templates\base_main.html:497
+#: .\templates\base_main.html:496
 msgid "Pangea webradio is currently ONLINE"
 msgstr "Radio Pangéa est actuellement EN LIGNE."
 
-#: .\templates\base_main.html:504
+#: .\templates\base_main.html:503
 msgid "Pangea webradio is currently OFFLINE"
 msgstr "Radio Pangée est actuellement HORS LIGNE."
 
-#: .\templates\base_main.html:523
+#: .\templates\base_main.html:522
 msgid "Unexisting help page:"
 msgstr "Page d'aide inexistante:"
 
-#: .\templates\base_main.html:524
+#: .\templates\base_main.html:523
 msgid ""
 "Unfortunately, no additional information about the current webpage is "
 "available"
@@ -1992,7 +1993,7 @@ msgstr ""
 "Malheureusement, aucune information supplémentaire n'est disponible pour la "
 "page web actuelle"
 
-#: .\templates\base_main.html:547
+#: .\templates\base_main.html:546
 msgid ""
 "\n"
 "                Online user:\n"
@@ -2009,15 +2010,15 @@ msgstr[1] ""
 "\n"
 "                En ligne:              "
 
-#: .\templates\base_main.html:554
+#: .\templates\base_main.html:553
 msgid "No users currently online."
 msgstr "Pas d'utilisateurs actuellement en ligne."
 
-#: .\templates\base_main.html:564
+#: .\templates\base_main.html:563
 msgid "Interface : "
 msgstr "Interface : "
 
-#: .\templates\base_main.html:580 .\templates\utilities\bug_report.html:5
+#: .\templates\base_main.html:579 .\templates\utilities\bug_report.html:5
 #: .\views\__init__.py:149
 msgid "Bug Report"
 msgstr "Rapporter un bogue"
@@ -2034,24 +2035,30 @@ msgstr "Décoder l'Archive"
 msgid "Search"
 msgstr "Chercher"
 
-#: .\templates\information\encyclopedia.html:15
+#: .\templates\information\encyclopedia.html:13
+msgid "Type here sequences of keywords to find matching encyclopedia articles."
+msgstr ""
+"Tapez ici des mots-clefs pour trouver des articles encyclopédiques "
+"correspondants."
+
+#: .\templates\information\encyclopedia.html:16
 msgid "Enter phrase here..."
 msgstr "Saisissez l'expression ici..."
 
-#: .\templates\information\encyclopedia.html:26
+#: .\templates\information\encyclopedia.html:27
 msgid "Index"
 msgstr "Index"
 
-#: .\templates\information\encyclopedia.html:52
+#: .\templates\information\encyclopedia.html:53
 #: .\views\admin_views\static_pages_management_mod.py:21
 msgid "Keywords"
 msgstr "Mots-clefs"
 
-#: .\templates\information\encyclopedia.html:61
+#: .\templates\information\encyclopedia.html:62
 msgid "Search results for"
 msgstr "Résultats de recherche pour"
 
-#: .\templates\information\encyclopedia.html:72
+#: .\templates\information\encyclopedia.html:73
 msgid ""
 "\n"
 "                Please use the side controls to find whatever science you "
@@ -2062,19 +2069,28 @@ msgstr ""
 "                Veuillez utilisez les contrôles latéraux pour accéder à la "
 "science qui vous manque."
 
-#: .\templates\information\encyclopedia.html:78
+#: .\templates\information\encyclopedia.html:79
 #: .\templates\information\personal_folder.html:42
 msgid "System Notification"
 msgstr "Notification Système"
 
-#: .\templates\information\encyclopedia.html:81
+#: .\templates\information\encyclopedia.html:82
+#| msgid ""
+#| "\n"
+#| "                        Due to a very unfortunate overclocking attempt on "
+#| "our data servers,\n"
+#| "                        encyclopedia indexes have been entirely lost. We "
+#| "apologize for the inconvenience\n"
+#| "                        and do our best to get them back from backups.\n"
+#| "                    "
 msgid ""
 "\n"
 "                        Due to a very unfortunate overclocking attempt on "
 "our data servers,\n"
 "                        encyclopedia indexes have been entirely lost. We "
 "apologize for the inconvenience\n"
-"                        and do our best to get them back from backups.\n"
+"                        and do our best to restore them from backups. The "
+"Alifir Academy.\n"
 "                    "
 msgstr ""
 "\n"
@@ -2083,9 +2099,9 @@ msgstr ""
 "    \t            les index de l'encyclopédie ont été entièrement perdus. "
 "Nous sommes désolés du contretemps\n"
 "    \t            et faisons notre mieux pour les récupérer dans des "
-"archives."
+"archives. L'Académie d'Alifir."
 
-#: .\templates\information\encyclopedia.html:87
+#: .\templates\information\encyclopedia.html:88
 msgid ""
 "\n"
 "                        Following the last database crash, we've managed to "
@@ -2169,7 +2185,7 @@ msgstr "De :"
 
 #: .\templates\messaging\_single_message.html:30
 #: .\templates\messaging\_templates.html:93
-#: .\templates\messaging\single_message.html:154
+#: .\templates\messaging\single_message.html:153
 msgid "To:"
 msgstr "A :"
 
@@ -2410,15 +2426,15 @@ msgstr "Déplier ce message"
 msgid "Intercepted by"
 msgstr "Intercepté par"
 
-#: .\templates\messaging\single_message.html:157
+#: .\templates\messaging\single_message.html:156
 msgid "undisclosed recipients list"
 msgstr "liste des destinataires masquée"
 
-#: .\templates\messaging\single_message.html:178
+#: .\templates\messaging\single_message.html:177
 msgid "The recipients list is masked for all viewers except the sender."
 msgstr "La liste des destinataires est masquée pour tous excepté l'émetteur."
 
-#: .\templates\messaging\single_message.html:200
+#: .\templates\messaging\single_message.html:199
 msgid "MESSAGE TRANSFERRED: click to view."
 msgstr "MESSAGE TRANSFÉRÉ: cliquer pour le voir."
 
@@ -3170,7 +3186,7 @@ msgid "Confidentiality system properly activated."
 msgstr "Système de confidentialité correctement activé."
 
 #: .\views\abilities\world_scan_mod.py:22
-#: .\views\abilities\world_scan_mod.py:51
+#: .\views\abilities\world_scan_mod.py:50
 msgid "World Scan"
 msgstr "Scan Mondial"
 
@@ -3178,17 +3194,17 @@ msgstr "Scan Mondial"
 msgid "Choose world scan model"
 msgstr "Choisir cible du scan mondial"
 
-#: .\views\abilities\world_scan_mod.py:127
+#: .\views\abilities\world_scan_mod.py:126
 msgid "Please scan the world according to the features of this object."
 msgstr ""
 "Veuillez scanner la planète en fonction des caractéristiques de cet objet."
 
-#: .\views\abilities\world_scan_mod.py:155
+#: .\views\abilities\world_scan_mod.py:154
 #, python-format
 msgid "Automated scanning request sent for item '%(item_title)s'."
 msgstr "Requête de scan envoyée pour l'objet '%(item_title)s'."
 
-#: .\views\abilities\world_scan_mod.py:160
+#: .\views\abilities\world_scan_mod.py:159
 msgid "World scan submission in progress, the result will be emailed to you."
 msgstr ""
 "Requête de scan mondial bien envoyée, le résultat vous sera communiqué par "
@@ -3437,20 +3453,20 @@ msgstr "Enregistrer la playlist radio"
 msgid "Radio playlist was emptied, it contained: %(playlist)s"
 msgstr "La liste de lecture radio a été vidée, elle contenait: %(playlist)s"
 
-#: .\views\admin_views\webradio_management_mod.py:55
+#: .\views\admin_views\webradio_management_mod.py:56
 msgid "Web Radio Management"
 msgstr "Gestion de la Radio Web"
 
-#: .\views\admin_views\webradio_management_mod.py:73
+#: .\views\admin_views\webradio_management_mod.py:74
 msgid "Web Radio has been turned OFF."
 msgstr "La Radio Web a été éteinte."
 
-#: .\views\admin_views\webradio_management_mod.py:78
+#: .\views\admin_views\webradio_management_mod.py:79
 msgid "Web Radio has been turned ON."
 msgstr "La Radio Web a été allumée."
 
-#: .\views\admin_views\webradio_management_mod.py:83
-#: .\views\admin_views\webradio_management_mod.py:90
+#: .\views\admin_views\webradio_management_mod.py:84
+#: .\views\admin_views\webradio_management_mod.py:91
 msgid "Player notifications have been enqueued."
 msgstr "Les notifications aux joueurs ont été mises en liste de lecture."
 
@@ -3533,19 +3549,19 @@ msgstr "Chat Ajax"
 msgid "system"
 msgstr "Système"
 
-#: .\views\gameview_mixins.py:47
+#: .\views\gameview_mixins.py:48
 msgid "Captcha check successful."
 msgstr "Vérification captcha réussie."
 
-#: .\views\gameview_mixins.py:51
+#: .\views\gameview_mixins.py:52
 msgid "Captcha check failed."
 msgstr "Vérification captcha ratée."
 
-#: .\views\gameview_mixins.py:64
+#: .\views\gameview_mixins.py:65
 msgid "Security Check"
 msgstr "Vérification de sécurité"
 
-#: .\views\gameview_mixins.py:80
+#: .\views\gameview_mixins.py:81
 msgid "Security Captcha"
 msgstr "Captcha de Sécurité"
 
