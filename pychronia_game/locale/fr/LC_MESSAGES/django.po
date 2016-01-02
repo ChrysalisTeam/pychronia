@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-01-02 20:12+0100\n"
-"PO-Revision-Date: 2016-01-02 20:14+0200\n"
+"POT-Creation-Date: 2016-01-02 21:29+0100\n"
+"PO-Revision-Date: 2016-01-02 21:30+0200\n"
 "Last-Translator: Pascal <chambon.pascal@gmail.com>\n"
 "Language-Team: Nothing\n"
 "Language: fr\n"
@@ -711,7 +711,6 @@ msgid "Unknown captcha id %s"
 msgstr "Identifiant de captcha inconnu %s"
 
 #: .\datamanager\datamanager_modules.py:4745
-#| msgid "Nope, it looked like this captcha had no known answer..."
 msgid "Nope, it looks like this captcha had no known answer..."
 msgstr "Nope, il semble que ce captcha n'avait pas de réponse connue..."
 
@@ -2075,14 +2074,6 @@ msgid "System Notification"
 msgstr "Notification Système"
 
 #: .\templates\information\encyclopedia.html:82
-#| msgid ""
-#| "\n"
-#| "                        Due to a very unfortunate overclocking attempt on "
-#| "our data servers,\n"
-#| "                        encyclopedia indexes have been entirely lost. We "
-#| "apologize for the inconvenience\n"
-#| "                        and do our best to get them back from backups.\n"
-#| "                    "
 msgid ""
 "\n"
 "                        Due to a very unfortunate overclocking attempt on "
@@ -2447,12 +2438,12 @@ msgid "Create Game"
 msgstr "Créer une Partie"
 
 #: .\templates\meta_administration\create_instance.html:15
-#: .\templates\meta_administration\manage_instances.html:107
+#: .\templates\meta_administration\manage_instances.html:93
 msgid "New Game Instance"
 msgstr "Nouvelle Instance de Jeu"
 
 #: .\templates\meta_administration\create_instance.html:18
-#: .\templates\meta_administration\manage_instances.html:110
+#: .\templates\meta_administration\manage_instances.html:96
 msgid "Create game instance"
 msgstr "Créer instance de jeu"
 
@@ -2537,27 +2528,28 @@ msgstr "Sauvegarde avec commentaire"
 msgid "Are you sure you want to delete this game instance?"
 msgstr "Voulez-vous vraiment supprimer définitivement cette instance de jeu ?"
 
-#: .\templates\meta_administration\manage_instances.html:92
+#: .\templates\meta_administration\manage_instances.html:105
 msgid "Get Autoconnect Token"
 msgstr "Jeton d'Auto-connexion"
 
-#: .\templates\meta_administration\manage_instances.html:94
+#: .\templates\meta_administration\manage_instances.html:107
 msgid "Result of computation"
 msgstr "Résultat du calcul"
 
-#: .\templates\meta_administration\manage_instances.html:98
-msgid "INSTANCE_ID"
-msgstr "INSTANCE_ID"
+#: .\templates\meta_administration\manage_instances.html:111
+#| msgid "INSTANCE_ID"
+msgid "GAME INSTANCE ID"
+msgstr "IDENTIFIANT DE PARTIE"
 
-#: .\templates\meta_administration\manage_instances.html:99
+#: .\templates\meta_administration\manage_instances.html:112
 msgid "USERNAME"
 msgstr "IDENTIFIANT"
 
-#: .\templates\meta_administration\manage_instances.html:100
+#: .\templates\meta_administration\manage_instances.html:113
 msgid "Observer Mode (read-only)"
 msgstr "Mode Observateur (lecture seule)"
 
-#: .\templates\meta_administration\manage_instances.html:101
+#: .\templates\meta_administration\manage_instances.html:114
 msgid "Compute Token"
 msgstr "Calculer Jeton"
 

@@ -88,20 +88,6 @@
 
     <br/><br/>
 
-    <div id="session_token_form" class="form_scroll_medium" align="center" style="margin: auto;">
-        <h2>{% trans "Get Autoconnect Token" %}</h2>
-        {% if session_token_display %}
-            <strong>{% trans "Result of computation" %}{{COLON}}</strong>
-            <span style="font-size: 0.8em; word-break: break-all">{{ session_token_display }}</span>
-        {% endif %}
-        <form action="#session_token_form" method="post" class="meta_admin_button">
-            <p><input type="text" name="game_instance_id" placeholder="{% trans "INSTANCE_ID" %}" /></p>
-            <p><input type="text" name="login" placeholder="{% trans "USERNAME" %}" /></p>
-            <p><input type="checkbox" name="is_observer" checked /> {% trans "Observer Mode (read-only)" %}</p>
-            <p><input type="submit" name="compute_enforced_session_ticket" value="{{ _("Compute Token")}}" /></p>
-        </form>
-    </div><br/><br/>
-
 
     <div id="game_creation_form" class="form_scroll_medium" align="center" style="margin: auto;">
         <h2>{% trans "New Game Instance" %}</h2>
@@ -109,7 +95,28 @@
             {{ game_creation_form.as_p }}
             <p><input type="submit" name="create_game_instance" value="{{ _("Create game instance")}}" /></p>
         </form>
-    </div><br/><br/>
+    </div>
+
+
+    <br/><br/>
+
+
+    <div id="session_token_form" class="form_scroll_medium" align="center" style="margin: auto;">
+        <h2>{% trans "Get Autoconnect Token" %}</h2>
+        {% if session_token_display %}
+            <strong>{% trans "Result of computation" %}{{COLON}}</strong>
+            <span style="font-size: 0.8em; word-break: break-all">{{ session_token_display }}</span>
+        {% endif %}
+        <form action="#session_token_form" method="post" class="meta_admin_button">
+            <p><input type="text" name="game_instance_id" placeholder="{% trans "GAME INSTANCE ID" %}" /></p>
+            <p><input type="text" name="login" placeholder="{% trans "USERNAME" %}" /></p>
+            <p><input type="checkbox" name="is_observer" checked /> {% trans "Observer Mode (read-only)" %}</p>
+            <p><input type="submit" name="compute_enforced_session_ticket" value="{{ _("Compute Token")}}" /></p>
+        </form>
+    </div>
+
+
+    <br/><br/>
 
 
 
