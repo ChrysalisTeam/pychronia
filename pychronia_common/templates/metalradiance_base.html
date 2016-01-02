@@ -366,7 +366,7 @@
 
 
     function default_ajax_error_handler(jqXHR, extStatus, errorThrown) {
-        msg = "Server communication problem - " + extStatus
+        msg = "Server communication problem - " + extStatus;
         if (errorThrown) {
             msg += " (" + errorThrown + ")";
         }
