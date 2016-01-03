@@ -551,6 +551,7 @@ def compose_message(request, template_name='messaging/compose.html'):
                      'contacts_display': contacts_display,
                      'message_sent': message_sent, # to destroy saved content
                      'parent_messages': parent_messages,
+                     'contact_cache': _build_contact_display_cache(request.datamanager)
                     })
 
 
