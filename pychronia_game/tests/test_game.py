@@ -109,7 +109,7 @@ class TestUtilities(BaseGameTestCase):
         for mystr in ("<object", "mediaplayer", "https://hi.com/a&amp;b.flv"): # AT LEAST html-escaped, but urlescaping could be necessary for some media types
             assert mystr in html
 
-        for mystr in ("<img class=\"imageviewer align-center\"", "https://hisss.com/a&amp;b.jpg", "300px"): # fallback to default width/height since image url is buggy (so easy-thumbnails fails)
+        for mystr in ("<img class=\"imageviewer align-center\"", "https://hisss.com/a&amp;b.jpg", "500px"): # fallback to default width/height since image url is buggy (so easy-thumbnails fails)
             assert mystr in html
 
         assert 'href="https://cantwork.mp4/"' in html
