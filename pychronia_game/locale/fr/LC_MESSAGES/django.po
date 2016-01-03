@@ -2953,7 +2953,7 @@ msgstr ""
 #: .\views\abilities\chess_challenge_mod.py:48
 #, python-format
 msgid "Chess AI has been defeated by user '%(winner)s'."
-msgstr "LI.A d'échecs a été battue par l'utilisateur '%(winner)s'."
+msgstr "L'I.A d'échecs a été battue par l'utilisateur '%(winner)s'."
 
 #: .\views\abilities\djinn_chat_mod.py:7
 msgid "Chat with Djinn"

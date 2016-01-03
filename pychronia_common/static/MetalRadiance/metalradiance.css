@@ -1092,7 +1092,7 @@ table.footnote {
 .jnotify-container .jnotify-notification .jnotify-message {
   font-size: 0.9em;
   line-height: 1 em;
-  padding: 15px;
+  padding: 15px 30px;
 }
 .jnotify-container .jnotify-notification a.jnotify-close {
   font-size: 1.8em !important;
