@@ -66,10 +66,11 @@ def manage_characters(request, template_name='administration/character_managemen
     def _prefix(idx):
         return "form%s" % idx
 
-
-    form_validation_failed = False
+    form_validation_failed = None  # TERNARY
 
     if request.method == "POST":
+
+        form_validation_failed = False
 
         for idx, (username, __character_data) in enumerate(characters_items):
 
@@ -150,7 +151,7 @@ def manage_characters(request, template_name='administration/character_managemen
             character_forms.append(form)
 
 
-    if not form_validation_failed:
+    if not form_validation_failed:  # i.e if None or False
 
         character_forms = []
 
