@@ -4333,7 +4333,8 @@ class TestHttpRequests(BaseGameTestCase):
         root_game_url_with_username = ROOT_GAME_URL + "/" + self.dm.master_login
 
         # these urls and their post data might easily change, beware !
-        special_urls = {root_game_url_with_username + "/item3dview/sacred_chest/": None,
+        special_urls = {
+                        root_game_url_with_username + "/item3dview/sacred_chest/": None,
                         neutral_url_reverse(views.view_static_page, page_id="lokon"): None,
                         # FIXME NOT YET READYROOT_GAME_URL + "/djinn/": {"djinn": "Pay Rhuss"},
                         ##### FIXME LATER config.MEDIA_URL + "Burned/default_styles.css": None,
@@ -4343,6 +4344,7 @@ class TestHttpRequests(BaseGameTestCase):
                         root_game_url_with_username + "/secret_question/guy3/": dict(secret_answer="Fluffy", target_email="guy3@pangea.com"),
                         root_game_url_with_username + "/public_webradio/": dict(frequency=self.dm.get_global_parameter("pangea_radio_frequency")),
                         neutral_url_reverse(views.view_help_page, keyword="help-homepage"): None,
+                        root_game_url_with_username + "/view_media/?autostart=true&url=%2Ffiles%2Fe65701d5%2Fpersonal_files%2F_common_files_%2Fgraphs.gif": None,
                         }
 
         for url, value in special_urls.items():

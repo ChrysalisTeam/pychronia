@@ -117,7 +117,8 @@ def generate_media_player(fileurl, image="", autostart=False, width=450, height=
     Returns a simple HTML link,  if file format is not supported
     """
 
-    assert fileurl.startswith("http")
+    # NOT ALWAYS ABSOLUTE URLS, eg. for personal documents these are "/my/file.mp4" URLs - 
+    assert fileurl.startswith("http") or fileurl.startswith("/"), fileurl
 
     md5 = hashlib.md5()
     md5.update(fileurl.encode('ascii', 'ignore'))
