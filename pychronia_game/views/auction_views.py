@@ -253,7 +253,6 @@ def auction_items_slideshow(request, template_name='auction/items_slideshow.html
                      'items': sorted_items,
                      'items_3D_settings': None,
                      'gems_may_be_memo': False,
-
                     })
 
 
@@ -266,12 +265,15 @@ def personal_items_slideshow(request, template_name='auction/items_slideshow.htm
     items = request.datamanager.get_available_items_for_user()
     items_3D_settings = request.datamanager.get_items_3d_settings()
 
+    items_3D_titles = sorted(items[k]["title"] for k in items_3D_settings.keys() if k in items)
+
     sorted_items = _sorted_game_items(items)
 
     return render(request,
                   template_name,
                     {
                      'items': sorted_items,
+                     'items_3D_titles': items_3D_titles,
                      'items_3D_settings': items_3D_settings,
                      'gems_may_be_memo': True,
                     })

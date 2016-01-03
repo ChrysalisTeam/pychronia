@@ -9,14 +9,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-01-02 21:29+0100\n"
-"PO-Revision-Date: 2016-01-02 21:30+0200\n"
+"POT-Creation-Date: 2016-01-03 14:27+0100\n"
+"PO-Revision-Date: 2016-01-03 14:22+0200\n"
 "Last-Translator: Pascal <chambon.pascal@gmail.com>\n"
 "Language-Team: Nothing\n"
-"Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: fr\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Generator: Virtaal 0.7.1\n"
 
@@ -385,7 +385,7 @@ msgstr "identifiant utilisateur inconnu %s"
 msgid "Unidentified"
 msgstr "Non identifié"
 
-#: .\datamanager\datamanager_modules.py:596 .\forms.py:104
+#: .\datamanager\datamanager_modules.py:596 .\forms.py:105
 #: .\templates\abilities\mercenaries_hiring.html:16
 #: .\templates\abilities\wiretapping_management.html:41
 #: .\templates\administration\character_management.html:20
@@ -394,6 +394,7 @@ msgstr "Non identifié"
 #: .\templates\administration\global_contacts_management.html:65
 #: .\templates\administration\global_contacts_management.html:67
 #: .\templates\administration\radio_spots_editing.html:101
+#: .\templates\auction\items_slideshow.html:43
 #: .\templates\auction\view_characters.html:79
 #: .\templates\auction\view_characters.html:93 .\templates\base_main.html:399
 #: .\templates\messaging\compose.html:153
@@ -612,7 +613,7 @@ msgid "Money amount must be positive"
 msgstr "La somme d'argent doit être positive"
 
 #: .\datamanager\datamanager_modules.py:3823
-#: .\datamanager\datamanager_modules.py:4004 .\views\auction_views.py:144
+#: .\datamanager\datamanager_modules.py:4006 .\views\auction_views.py:144
 msgid "Sender and recipient must be different"
 msgstr "L'émetteur et le destinataire doivent être différents"
 
@@ -668,53 +669,53 @@ msgstr ""
 msgid "Item %(item_name)s transferred from %(from_name)s to %(char_name)s."
 msgstr "Objet %(item_name)s transféré de %(from_name)s à %(char_name)s."
 
-#: .\datamanager\datamanager_modules.py:4007
+#: .\datamanager\datamanager_modules.py:4009
 msgid "You must transfer at least one gem"
 msgstr "Vous devez transférer au moins une gemme"
 
-#: .\datamanager\datamanager_modules.py:4011
-#: .\datamanager\datamanager_modules.py:4035
+#: .\datamanager\datamanager_modules.py:4013
+#: .\datamanager\datamanager_modules.py:4037
 msgid "Sender doesn't possess these gems"
 msgstr "L'émetteur ne possède pas ces gemmes"
 
-#: .\datamanager\datamanager_modules.py:4018
+#: .\datamanager\datamanager_modules.py:4020
 #, python-format
 msgid "Gems transferred from %(from_name)s to %(to_name)s: %(gems_choices)s."
 msgstr "Gemmes transférées de %(from_name)s à %(to_name)s : %(gems_choices)s."
 
-#: .\datamanager\datamanager_modules.py:4040
+#: .\datamanager\datamanager_modules.py:4042
 #, python-format
 msgid "Gems debited from %(username)s: %(gems_choices)s."
 msgstr "Gemmes débitées de %(username)s : %(gems_choices)s."
 
-#: .\datamanager\datamanager_modules.py:4057
+#: .\datamanager\datamanager_modules.py:4059
 msgid "Selected gems couldn't be found among spent gems"
 msgstr "Les gemmes sélectionnées sont introuvables parmi celles dépensées"
 
-#: .\datamanager\datamanager_modules.py:4062
+#: .\datamanager\datamanager_modules.py:4064
 #, python-format
 msgid "Gems credited to %(username)s: %(gems_choices)s."
 msgstr "Gemmes créditées à %(username)s : %(gems_choices)s."
 
-#: .\datamanager\datamanager_modules.py:4204
+#: .\datamanager\datamanager_modules.py:4206
 #, python-format
 msgid "Unknown view names detected in the set of views to be activated: %r"
 msgstr "Noms de vues inconnus détectés dans l'ensemble des vues à activer: %r"
 
-#: .\datamanager\datamanager_modules.py:4438
+#: .\datamanager\datamanager_modules.py:4440
 msgid "static pages"
 msgstr "pages statiques"
 
-#: .\datamanager\datamanager_modules.py:4741
+#: .\datamanager\datamanager_modules.py:4743
 #, python-format
 msgid "Unknown captcha id %s"
 msgstr "Identifiant de captcha inconnu %s"
 
-#: .\datamanager\datamanager_modules.py:4745
+#: .\datamanager\datamanager_modules.py:4747
 msgid "Nope, it looks like this captcha had no known answer..."
 msgstr "Nope, il semble que ce captcha n'avait pas de réponse connue..."
 
-#: .\datamanager\datamanager_modules.py:4751
+#: .\datamanager\datamanager_modules.py:4753
 #, python-format
 msgid "Incorrect captcha answer '%s'"
 msgstr "Réponse au captcha incorrecte '%s'"
@@ -773,117 +774,117 @@ msgstr "Gemmes"
 msgid "Artefact"
 msgstr "Artefact"
 
-#: .\forms.py:155
+#: .\forms.py:156
 msgid "Is NPC"
 msgstr "Non Joueur"
 
-#: .\forms.py:157
+#: .\forms.py:158
 msgid "Official name"
 msgstr "Nom officiel"
 
-#: .\forms.py:158
+#: .\forms.py:159
 msgid "Official role"
 msgstr "Rôle officiel"
 
-#: .\forms.py:160
+#: .\forms.py:161
 msgid "Real life identity"
 msgstr "Identité vie réelle"
 
-#: .\forms.py:161
+#: .\forms.py:162
 msgid "Real life email"
 msgstr "Email vie réelle"
 
-#: .\forms.py:165
+#: .\forms.py:166
 msgid "Allegiances"
 msgstr "Allégeance"
 
-#: .\forms.py:166
+#: .\forms.py:167
 msgid "Permissions"
 msgstr "Permissions"
 
-#: .\forms.py:168
+#: .\forms.py:169
 msgid "Extra Goods"
 msgstr "Biens Supplémentaires"
 
-#: .\forms.py:183 .\forms.py:186 .\forms.py:191
+#: .\forms.py:184 .\forms.py:187 .\forms.py:192
 msgid "Password"
 msgstr "Mot de passe"
 
-#: .\forms.py:190
+#: .\forms.py:191
 msgid "Username"
 msgstr "Utilisateur"
 
-#: .\forms.py:197
+#: .\forms.py:198
 msgid "Current password"
 msgstr "Mot de passe actuel"
 
-#: .\forms.py:198
+#: .\forms.py:199
 msgid "New password"
 msgstr "Nouveau mot de passe"
 
-#: .\forms.py:199
+#: .\forms.py:200
 msgid "New password (again)"
 msgstr "Nouveau mot de passe (confirmation)"
 
-#: .\forms.py:208 .\views\profile_views.py:178
+#: .\forms.py:209 .\views\profile_views.py:178
 msgid "New passwords not matching"
 msgstr "Les nouveaux mots de passe ne correspondent pas."
 
-#: .\forms.py:217
+#: .\forms.py:218
 msgid "Answer"
 msgstr "Réponse"
 
-#: .\forms.py:218
+#: .\forms.py:219
 msgid "Email"
 msgstr "Email"
 
-#: .\forms.py:226
+#: .\forms.py:227
 msgid "Radio Frequency"
 msgstr "Fréquence Radio"
 
-#: .\forms.py:242 .\forms.py:302 .\tests\_dummy_abilities.py:20
+#: .\forms.py:243 .\forms.py:303 .\tests\_dummy_abilities.py:20
 msgid "Object"
 msgstr "Objet"
 
-#: .\forms.py:243 .\tests\_dummy_abilities.py:21
+#: .\forms.py:244 .\tests\_dummy_abilities.py:21
 #: .\views\abilities\runic_translation_mod.py:31
 msgid "Transcription"
 msgstr "Transcription"
 
-#: .\forms.py:251
+#: .\forms.py:252
 msgid "< Use Description Instead >"
 msgstr "< Utiliser la Description >"
 
-#: .\forms.py:254
+#: .\forms.py:255
 msgid "Reference Object"
 msgstr "Objet de Référence"
 
-#: .\forms.py:256
+#: .\forms.py:257
 msgid "Or Description"
 msgstr "Ou Description"
 
-#: .\forms.py:265 .\templates\administration\game_events.html:16
+#: .\forms.py:266 .\templates\administration\game_events.html:16
 #: .\views\abilities\__telecom_investigation_mod.py:116
 msgid "Message"
 msgstr "Message"
 
-#: .\forms.py:272 .\views\abilities\mercenaries_hiring_mod.py:26
+#: .\forms.py:273 .\views\abilities\mercenaries_hiring_mod.py:26
 msgid "Location"
 msgstr "Lieu"
 
-#: .\forms.py:284
+#: .\forms.py:285
 msgid "Name"
 msgstr "Nom"
 
-#: .\forms.py:296
+#: .\forms.py:297
 msgid "No artefacts currently owned."
 msgstr "Vous ne possédez pas d'artefacts."
 
-#: .\forms.py:301
+#: .\forms.py:302
 msgid "Select your artefact..."
 msgstr "Sélectionnez votre artefact..."
 
-#: .\forms.py:314
+#: .\forms.py:315
 msgid "User"
 msgstr "Utilisateur"
 
@@ -897,7 +898,7 @@ msgstr "Anthropia"
 msgid "Auction"
 msgstr "Enchères"
 
-#: .\menus.py:81 .\views\auction_views.py:405
+#: .\menus.py:81 .\views\auction_views.py:407
 msgid "Auction Chatroom"
 msgstr "Chatroom d'Enchères"
 
@@ -1324,23 +1325,23 @@ msgstr "Votre victoire a bien été enregistrée!"
 msgid "Victory registration, retrying..."
 msgstr "Enregistrement de la victoire, retentative..."
 
-#: .\templates\abilities\chess_challenge.html:40
+#: .\templates\abilities\chess_challenge.html:41
 msgid "You won this game! Sending data to server..."
 msgstr "Vous avez gagné cette partie ! Envoi des données au serveur..."
 
-#: .\templates\abilities\chess_challenge.html:45
+#: .\templates\abilities\chess_challenge.html:47
 msgid "You lost this game!"
 msgstr "Vous avez perdu cette partie !"
 
-#: .\templates\abilities\chess_challenge.html:115
+#: .\templates\abilities\chess_challenge.html:117
 msgid "Your new colour:"
 msgstr "Votre nouvelle couleur:"
 
-#: .\templates\abilities\chess_challenge.html:120
+#: .\templates\abilities\chess_challenge.html:122
 msgid "This will reset your current game, are you sure?"
 msgstr "Cela réinitialisera votre partie actuelle, êtes-vous sûr ?"
 
-#: .\templates\abilities\chess_challenge.html:121
+#: .\templates\abilities\chess_challenge.html:123
 msgid "Create New Game"
 msgstr "Créer une Nouvelle Partie"
 
@@ -1567,8 +1568,8 @@ msgstr "Paramètres des personnages"
 msgid "Send Real Emails to Characters"
 msgstr "Envoyer de Vrais Emails aux Personnages"
 
-#: .\templates\administration\character_management.html:47
-#: .\templates\administration\character_management.html:61
+#: .\templates\administration\character_management.html:49
+#: .\templates\administration\character_management.html:63
 msgid "Update characters"
 msgstr "Mettre à jour les personnages"
 
@@ -1733,28 +1734,32 @@ msgid "No objects to be shown"
 msgstr "Pas d'objets à montrer"
 
 #: .\templates\auction\items_slideshow.html:43
+msgid "Items with 3D visualization below"
+msgstr "Objets avec visualisation 3D ci-dessous"
+
+#: .\templates\auction\items_slideshow.html:49
 msgid "Please wait while loading..."
 msgstr "Veuillez patienter durant le chargement..."
 
-#: .\templates\auction\items_slideshow.html:88
+#: .\templates\auction\items_slideshow.html:94
 msgid "Count"
 msgstr "Nombre"
 
-#: .\templates\auction\items_slideshow.html:93
+#: .\templates\auction\items_slideshow.html:99
 #: .\views\admin_views\game_items_management_mod.py:28
 msgid "Unit cost"
 msgstr "Prix unitaire"
 
-#: .\templates\auction\items_slideshow.html:93
-#: .\templates\auction\items_slideshow.html:98
+#: .\templates\auction\items_slideshow.html:99
+#: .\templates\auction\items_slideshow.html:104
 msgid "kashes"
 msgstr "kashes"
 
-#: .\templates\auction\items_slideshow.html:98
+#: .\templates\auction\items_slideshow.html:104
 msgid "Total Estimated Value"
 msgstr "Valeur Totale Estimée"
 
-#: .\templates\auction\items_slideshow.html:108
+#: .\templates\auction\items_slideshow.html:114
 msgid ""
 "Please note that this record is just a memo, these gems may already have "
 "been transferred to someone else, individually or not."
@@ -2537,7 +2542,6 @@ msgid "Result of computation"
 msgstr "Résultat du calcul"
 
 #: .\templates\meta_administration\manage_instances.html:111
-#| msgid "INSTANCE_ID"
 msgid "GAME INSTANCE ID"
 msgstr "IDENTIFIANT DE PARTIE"
 
@@ -2677,79 +2681,79 @@ msgstr "mon titre de test 2"
 msgid "Private dummy ability"
 msgstr "Compétence bidon privée"
 
-#: .\tests\test_game.py:5149
+#: .\tests\test_game.py:5151
 msgid "test-title"
 msgstr "test-titre"
 
-#: .\tests\test_game.py:5170
+#: .\tests\test_game.py:5172
 msgid "ssss"
 msgstr "ssss"
 
-#: .\tests\test_game.py:5177 .\tests\test_game.py:5198
+#: .\tests\test_game.py:5179 .\tests\test_game.py:5200
 msgid "SSS"
 msgstr "SSS"
 
-#: .\tests\test_game.py:5181
+#: .\tests\test_game.py:5183
 msgid "DSDSF"
 msgstr "DSDSF"
 
-#: .\tests\test_game.py:5186
+#: .\tests\test_game.py:5188
 msgid "DDD"
 msgstr ""
 
-#: .\tests\test_game.py:5190
+#: .\tests\test_game.py:5192
 msgid "LJKSG"
 msgstr ""
 
-#: .\tests\test_game.py:5209
+#: .\tests\test_game.py:5211
 msgid "Hi"
 msgstr ""
 
-#: .\tests\test_game.py:5210
+#: .\tests\test_game.py:5212
 msgid "Hi2"
 msgstr ""
 
-#: .\tests\test_game.py:5212
+#: .\tests\test_game.py:5214
 msgid "Yowh1"
 msgstr ""
 
-#: .\tests\test_game.py:5213
+#: .\tests\test_game.py:5215
 msgid "Yowh2"
 msgstr ""
 
-#: .\tests\test_game.py:5214
+#: .\tests\test_game.py:5216
 msgid "Yowh3"
 msgstr ""
 
-#: .\tests\test_game.py:5215
+#: .\tests\test_game.py:5217
 msgid "Yowh4"
 msgstr ""
 
-#: .\tests\test_game.py:5217
+#: .\tests\test_game.py:5219
 msgid "Yayh1"
 msgstr ""
 
-#: .\tests\test_game.py:5218
+#: .\tests\test_game.py:5220
 msgid "Yayh2"
 msgstr ""
 
-#: .\tests\test_game.py:5219
+#: .\tests\test_game.py:5221
 msgid "Yayh3"
 msgstr ""
 
-#: .\tests\test_game.py:5220
+#: .\tests\test_game.py:5222
 msgid "Yayh4"
 msgstr ""
 
-#: .\tests\test_game.py:5222
+#: .\tests\test_game.py:5224
 msgid "Maaaster"
 msgstr ""
 
-#: .\utilities\mediaplayers.py:154
+#: .\utilities\mediaplayers.py:155
 msgid "Access file"
 msgstr "Accéder au fichier"
 
-#: .\utilities\mediaplayers.py:155
+#: .\utilities\mediaplayers.py:156
 msgid "here"
 msgstr "ici"
 
@@ -3525,19 +3529,19 @@ msgstr "Diaporama d'Enchères"
 msgid "Items Slideshow"
 msgstr "Diaporama d'Objets"
 
-#: .\views\auction_views.py:261
+#: .\views\auction_views.py:260
 msgid "My Items"
 msgstr "Mes objets"
 
-#: .\views\auction_views.py:280
+#: .\views\auction_views.py:282
 msgid "Item 3D View"
 msgstr "Vue 3D d'Objet"
 
-#: .\views\auction_views.py:344
+#: .\views\auction_views.py:346
 msgid "Ajax Chat"
 msgstr "Chat Ajax"
 
-#: .\views\auction_views.py:377
+#: .\views\auction_views.py:379
 msgid "system"
 msgstr "Système"
 
