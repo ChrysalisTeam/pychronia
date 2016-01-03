@@ -186,7 +186,7 @@ def generate_audio_player(files, titles=None, artists=None, autostart=False):
 
 
 
-def generate_image_viewer(imageurl, width=300, height=300, preset=None, align="", **kwargs):
+def generate_image_viewer(imageurl, width=500, height=400, preset=None, align="", **kwargs):
     """
     Generates an image thumbnail linking to the original image.
     
