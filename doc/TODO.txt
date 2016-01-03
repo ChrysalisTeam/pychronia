@@ -22,11 +22,30 @@ domaine.
 FEATURES
 ------------
 
+Rendre la page "messages interceptés" activable ??
+
+Mieux indiquer superuser/observer sur la page
+
+MONTRER QUAND JEU EST EN PAUSE Pour gamemaster ??
+
+
+TRADUIRE
+body = dedent("""
+        The password corresponding to your login %(username)s is '%(password)s'.
+        Please keep it carefully and do not share it with anyone else.
+       """) % SDICT(username=username, password=password)
+
+Garnet: Vous êtes ami avec cet utilisateur depuis __trop__ peu de temps (impossible de briser l'amitié pour l'instant).  -> a ameliorer
+
+A TRADUIRE : subject = "Deep Analysis Request - item \"%s\"" % item_title
+
+
 Normaliser LINE-HEIGHT à 1.1 partout
 
 AFFICHER MESSAGE TRANSFERED INLINE
 
 FIX the 3s anti-spam system on "page backwards" access
+-> surtout /ability/house_locking/ a pbs avec buttons
 
 
 MESSAGERIE:
@@ -37,6 +56,9 @@ MESSAGERIE:
 
 SCRIPT
 ----------
+
+chercher FIXMES
+
 
 - regler les "HERE GAMEMASTER HINTS" et autres FIXME
 
@@ -182,7 +204,7 @@ OperationalError: (1203, "User pakal_anthropia already has more than 'max_user_c
 TASKS DONE
 ---------------
 
-
+- autolister les objets 3D pour le MJ : statue de Bartzar, amphore, coffre rouillé, et grimoire sur piédestal - DONE
 - ajouter <instructions> possibilité échange objets archéologiques et lots entiers de gemmes (pour gamemaster) - DONE
 - pourquoi faire une "aide" en anglais et le site en français ? EXPLIQUER dans help homepage - DONE
 - compléter les aides des 4 contenus éditables - DONE
