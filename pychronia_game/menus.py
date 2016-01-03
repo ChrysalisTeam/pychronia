@@ -160,7 +160,7 @@ def _generate_web_menu(request, menu_entry_generator):
                         menu_entry(view=views.friendship_management, forced_visibility=(True if user.is_character else False)), # character only
                         menu_entry(view=views.personal_folder),
                         menu_entry(view=views.personal_items_slideshow),
-                        menu_entry(_(u"System Events"), views.game_events, forced_visibility=(True if user.is_character else False)),
+                        menu_entry(_(u"System Events"), views.game_events, forced_visibility=(None if user.is_character else False)),  # might be globally invisible
                         menu_entry(_(u"Log Out"), views.logout, forced_visibility=not user.is_impersonation),
                         ),
                        forced_visibility=(False if not user.is_authenticated else True)),
