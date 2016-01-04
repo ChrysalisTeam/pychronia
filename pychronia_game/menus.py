@@ -152,7 +152,8 @@ def _generate_web_menu(request, menu_entry_generator):
 
                          menu_entry(_(u"View Database"), views.manage_databases),
 
-                      )),
+                       ),
+                      forced_visibility=(True if user.is_master else False)),
 
             menu_entry(_(u"Profile"), (views.character_profile if user.is_character else views.personal_folder),
                        (
