@@ -4,7 +4,6 @@ h1 {
 
     @include header_common;
     font-size: 2em;
-    line-height: normal;
     color: $title_gold;
     margin-bottom: 20px;
 
@@ -29,7 +28,6 @@ h2 {
 
     @include header_common;
     font-size: 1.7em;
-    line-height: normal;
     color: $title_white;
 
     &:before {
@@ -128,13 +126,11 @@ p {
 @include mobile-only {
     p {
         font-size: 1em;
-        line-height: 1.2em;
     }
 }
 @include desktop-only {
     p {
         font-size: 1em;
-        line-height: 1.2em;
     }
 }
 

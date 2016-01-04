@@ -287,7 +287,7 @@ nav, section {
   display: block;
 }
 body {
-  line-height: 1;
+  line-height: normal;
 }
 blockquote, q {
   quotes: none;
@@ -706,31 +706,24 @@ img.center {
 }
 .biggest_text {
   font-size: 2em;
-  line-height: 2.5em;
 }
 .bigger_text {
   font-size: 1.5em;
-  line-height: 1.7em;
 }
 .big_text {
   font-size: 1.25em;
-  line-height: 1.4em;
 }
 .normal_text {
   font-size: 1em;
-  line-height: 1.2em;
 }
 .small_text {
   font-size: 0.85em;
-  line-height: 1em;
 }
 .smaller_text {
   font-size: 0.75em;
-  line-height: 0.9em;
 }
 .smallest_text {
   font-size: 0.5em;
-  line-height: 0.7em;
 }
 .bold {
   font-weight: bold;
@@ -757,7 +750,6 @@ body {
   height: 100%;
   overflow: auto;
   font-size: 100%;
-  line-height: 120%;
   font-family: Arial, Helvetica, sans-serif;
   background-color: black;
   image-rendering: -moz-crisp-edges;
@@ -790,7 +782,6 @@ body {
   color: #8E0D0D;
   font-size: 1em;
   font-style: italic;
-  line-height: normal;
   width: 95%;
 }
 .missing-content > * {
@@ -868,7 +859,6 @@ table.realtable a:active {
     font-size: 1.1em;
     font-family: Arial;
     font-weight: normal;
-    line-height: 1.3em;
   }
 }
 @media (min-width: 992px) {
@@ -881,7 +871,6 @@ table.realtable a:active {
     border: 0px solid #000000;
     border-width: 0px 0px 1px 1px;
     font-size: 1.3em;
-    line-height: 1.3em;
     font-weight: bold;
   }
   table.realtable thead th:first-child {
@@ -899,7 +888,6 @@ table.realtable a:active {
     font-size: 1.1em;
     font-family: Arial;
     font-weight: normal;
-    line-height: 1.3em;
   }
 }
 .stick_bottom_left {
@@ -1091,7 +1079,6 @@ table.footnote {
 }
 .jnotify-container .jnotify-notification .jnotify-message {
   font-size: 0.9em;
-  line-height: 1 em;
   padding: 15px 30px;
 }
 .jnotify-container .jnotify-notification a.jnotify-close {
@@ -1820,7 +1807,6 @@ h1 {
   text-align: center;
   letter-spacing: 0px;
   font-size: 2em;
-  line-height: normal;
   color: #F8D85B;
   margin-bottom: 20px;
 }
@@ -1846,7 +1832,6 @@ h2 {
   text-align: center;
   letter-spacing: 0px;
   font-size: 1.7em;
-  line-height: normal;
   color: white;
 }
 h2:before {
@@ -1914,13 +1899,11 @@ p {
 @media (max-width: 991px) {
   p {
     font-size: 1em;
-    line-height: 1.2em;
   }
 }
 @media (min-width: 992px) {
   p {
     font-size: 1em;
-    line-height: 1.2em;
   }
 }
 a img {
@@ -2156,7 +2139,6 @@ body .notification_panel .notification_panel_decorations .notification_panel_con
     color: #ffeaa3;
     min-width: 400px;
     font-size: 110%;
-    line-height: 130%;
   }
   body a:link {
     color: #62CB4B;
@@ -2274,7 +2256,6 @@ body .notification_panel .notification_panel_decorations .notification_panel_con
     font-size: 20px;
     color: #fecd2b;
     text-decoration: none;
-    line-height: 27px;
     padding: 0px 10px;
     -webkit-text-stroke: inherit;
   }
@@ -2290,7 +2271,6 @@ body .notification_panel .notification_panel_decorations .notification_panel_con
     border-top: 2px solid #9D8126;
     margin: 20px 0 0;
     padding: 20px 0 0;
-    line-height: 15px;
     overflow: hidden;
     width: 100% !important;
   }
@@ -2616,7 +2596,6 @@ body .notification_panel .notification_panel_decorations .notification_panel_con
     color: white;
   }
   #full_content .main_sidebar {
-    line-height: 15px;
     padding: 10px;
     margin: 0;
     overflow: hidden;
@@ -2685,7 +2664,6 @@ body .notification_panel .notification_panel_decorations .notification_panel_con
     vertical-align: top;
     color: white;
     font-size: 12px;
-    line-height: 14px;
   }
   #up_footer_wrapper img {
     vertical-align: middle !important;

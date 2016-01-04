@@ -368,7 +368,6 @@ body .notification_panel {
 
     .main_sidebar { // container for miniframes
         ///@extend .clearfix;
-        line-height: 15px;
         padding: 10px;
         margin: 0; //-3px 0px 0px;
         overflow: hidden; // important, since jquery-sticky affects wrong widths because of box-sizing...
@@ -447,7 +446,6 @@ body .notification_panel {
     color: $white_text_color;
 
     font-size: 12px;
-    line-height: 14px;
 
     img {
         vertical-align: middle !important;
