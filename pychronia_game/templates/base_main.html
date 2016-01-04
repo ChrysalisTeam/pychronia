@@ -453,9 +453,26 @@
 
 
 {% block carving_left %}
-<div title="{% trans "Your current user login." %}">{# Use class="marquee" to make it scroll! #}
-<span class="mobile-only">{% trans "Effective identity" %} - </span>
-{{ user.username|capfirst }}
+<div>{# Use class="marquee" to make it scroll! #}
+
+    {% if not user.is_superuser %}
+        <span title="{% trans "User is a superuser (authenticated as Django Admin)" %}">{% fontawesome_icon "mortar-board" large=False %}</span>
+    {% endif %}
+
+    {% if not user.is_observer %}
+        <span title="{% trans "User is authenticated as an observer" %}">{% fontawesome_icon "eye" large=False %}</span>
+    {% endif %}
+
+    {% if user.is_impersonation %}
+        <span title="{% trans "Impersonation is taking place" %}">{% fontawesome_icon "user-secret" large=False %}</span>
+    {% else %}
+        <span title="{% trans "No impersonation is currently taking place" %}">{% fontawesome_icon "user" large=False %}</span>
+    {% endif %}
+
+    <span class="mobile-only">{% trans "Effective identity" %} - </span>
+
+    <span title="{% trans "Your current user login" %}">{{ user.username|capfirst }}</span>
+
 </div>
 {% endblock %}
 
