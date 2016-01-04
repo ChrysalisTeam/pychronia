@@ -10,7 +10,7 @@
     {% usekwacro side_panel_start frame_class="mini_frame float_left clear_left" decos="3" %}
 
         <h2>{% trans "Search" %}</h2>
-        <p>{% trans "Type here sequences of keywords to find matching encyclopedia articles." %}</p>
+        <p class="smaller_text">{% trans "Type here sequences of keywords to find matching encyclopedia articles." %}</p>
         <form action="{% game_view_url "pychronia_game.views.view_encyclopedia" %}" method="get" autocomplete="on"
               onsubmit="if ($('#search').data('activated') !== 'true' || $.trim($('#search').attr('value')) === '') {return false;}">
             <input id="search" type="text" name="search" size="25" maxlength="50" value="{% trans "Enter phrase here..." %}"
