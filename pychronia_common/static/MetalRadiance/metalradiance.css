@@ -1743,9 +1743,9 @@ input.digit {
 }
 .message_operations {
   position: absolute;
-  width: 100%;
+  width: 90%;
+  left: 5%;
   top: -70px;
-  left: 5px;
 }
 .message_operations a {
   margin-right: 10px;
