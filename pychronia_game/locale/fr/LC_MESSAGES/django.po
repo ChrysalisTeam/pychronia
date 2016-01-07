@@ -9,14 +9,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-01-03 14:27+0100\n"
-"PO-Revision-Date: 2016-01-03 14:22+0200\n"
+"POT-Creation-Date: 2016-01-07 22:23+0100\n"
+"PO-Revision-Date: 2016-01-07 22:51+0200\n"
 "Last-Translator: Pascal <chambon.pascal@gmail.com>\n"
 "Language-Team: Nothing\n"
+"Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: fr\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Generator: Virtaal 0.7.1\n"
 
@@ -46,6 +46,10 @@ msgstr "Le logger de l'avaleur d'exceptions est cassé !!!"
 #: .\context_processors.py:31
 msgid ":"
 msgstr " :"
+
+#: .\context_processors.py:49
+msgid "Game is currently paused for players."
+msgstr "le jeu est actuellement en pause pour les joueurs."
 
 #: .\datamanager\abstract_data_table_view.py:56
 #, python-format
@@ -863,7 +867,7 @@ msgstr "Objet de Référence"
 msgid "Or Description"
 msgstr "Ou Description"
 
-#: .\forms.py:266 .\templates\administration\game_events.html:16
+#: .\forms.py:266 .\templates\administration\game_events.html:15
 #: .\views\abilities\__telecom_investigation_mod.py:116
 msgid "Message"
 msgstr "Message"
@@ -966,19 +970,19 @@ msgstr "Manuel du Maître de Jeu"
 msgid "View Database"
 msgstr "Voir les Données"
 
-#: .\menus.py:157
+#: .\menus.py:158
 msgid "Profile"
 msgstr "Profil"
 
-#: .\menus.py:163
+#: .\menus.py:164
 msgid "System Events"
 msgstr "Évènements Système"
 
-#: .\menus.py:164
+#: .\menus.py:165
 msgid "Log Out"
 msgstr "Fermer la session"
 
-#: .\menus.py:168
+#: .\menus.py:169
 msgid "Log In"
 msgstr "Se connecter"
 
@@ -1573,15 +1577,15 @@ msgstr "Envoyer de Vrais Emails aux Personnages"
 msgid "Update characters"
 msgstr "Mettre à jour les personnages"
 
-#: .\templates\administration\game_events.html:15
+#: .\templates\administration\game_events.html:14
 msgid "Time"
 msgstr "Temps"
 
-#: .\templates\administration\game_events.html:32
+#: .\templates\administration\game_events.html:31
 msgid "Visibility"
 msgstr "Visibilité"
 
-#: .\templates\administration\game_events.html:49
+#: .\templates\administration\game_events.html:48
 msgid "No events have yet been recorded."
 msgstr "Aucun événement enregistré."
 
@@ -1949,47 +1953,71 @@ msgstr "Lecture-seule"
 msgid "Writable"
 msgstr "Modifiable"
 
-#: .\templates\base_main.html:458
-msgid "Your current user login."
-msgstr "Votre identifiant utilisateur actuel."
+#: .\templates\base_main.html:461
+msgid "User is a superuser (authenticated as Django Admin)"
+msgstr ""
 
-#: .\templates\base_main.html:459
+#: .\templates\base_main.html:463
+#, fuzzy
+#| msgid "Your impersonation is in read-only mode."
+msgid "User impersonation is ongoing"
+msgstr "Votre usurpation d'identité est en lecture seule."
+
+#: .\templates\base_main.html:465
+#, fuzzy
+#| msgid "Your impersonation is in read-only mode."
+msgid "No impersonation is currently ongoing"
+msgstr "Votre usurpation d'identité est en lecture seule."
+
+#: .\templates\base_main.html:470
+msgid "User is authenticated as an observer (read-only access)"
+msgstr ""
+
+#: .\templates\base_main.html:472
+msgid "Page is in read-only mode (no modification is allowed)"
+msgstr ""
+
+#: .\templates\base_main.html:476
 msgid "Effective identity"
 msgstr "Identité effective"
 
-#: .\templates\base_main.html:467
+#: .\templates\base_main.html:478
+msgid "Currently active username"
+msgstr ""
+
+#: .\templates\base_main.html:486
 msgid "Novelties"
 msgstr "Nouveautés"
 
-#: .\templates\base_main.html:471
+#: .\templates\base_main.html:490
 msgid "No Notifications"
 msgstr "Pas de Notifications"
 
-#: .\templates\base_main.html:475
+#: .\templates\base_main.html:494
 msgid "New menu entries are available for you!"
 msgstr "Nouvelles entrées de menu disponibles !"
 
-#: .\templates\base_main.html:478
+#: .\templates\base_main.html:497
 msgid "New text messages are available for you!"
 msgstr "De nouveaux messages email sont disponibles !"
 
-#: .\templates\base_main.html:481
+#: .\templates\base_main.html:500
 msgid "There are people in the live chat room!"
 msgstr "Il y a des utilisateurs dans le salon de discussion !"
 
-#: .\templates\base_main.html:496
+#: .\templates\base_main.html:515
 msgid "Pangea webradio is currently ONLINE"
 msgstr "Radio Pangéa est actuellement EN LIGNE."
 
-#: .\templates\base_main.html:503
+#: .\templates\base_main.html:522
 msgid "Pangea webradio is currently OFFLINE"
 msgstr "Radio Pangée est actuellement HORS LIGNE."
 
-#: .\templates\base_main.html:522
+#: .\templates\base_main.html:541
 msgid "Unexisting help page:"
 msgstr "Page d'aide inexistante:"
 
-#: .\templates\base_main.html:523
+#: .\templates\base_main.html:542
 msgid ""
 "Unfortunately, no additional information about the current webpage is "
 "available"
@@ -1997,7 +2025,7 @@ msgstr ""
 "Malheureusement, aucune information supplémentaire n'est disponible pour la "
 "page web actuelle"
 
-#: .\templates\base_main.html:546
+#: .\templates\base_main.html:565
 msgid ""
 "\n"
 "                Online user:\n"
@@ -2014,15 +2042,15 @@ msgstr[1] ""
 "\n"
 "                En ligne:              "
 
-#: .\templates\base_main.html:553
+#: .\templates\base_main.html:572
 msgid "No users currently online."
 msgstr "Pas d'utilisateurs actuellement en ligne."
 
-#: .\templates\base_main.html:563
+#: .\templates\base_main.html:582
 msgid "Interface : "
 msgstr "Interface : "
 
-#: .\templates\base_main.html:579 .\templates\utilities\bug_report.html:5
+#: .\templates\base_main.html:598 .\templates\utilities\bug_report.html:5
 #: .\views\__init__.py:149
 msgid "Bug Report"
 msgstr "Rapporter un bogue"
@@ -2547,7 +2575,7 @@ msgstr "IDENTIFIANT DE PARTIE"
 
 #: .\templates\meta_administration\manage_instances.html:112
 msgid "USERNAME"
-msgstr "IDENTIFIANT"
+msgstr "NOM D'UTILISATEUR"
 
 #: .\templates\meta_administration\manage_instances.html:113
 msgid "Observer Mode (read-only)"
@@ -3206,45 +3234,45 @@ msgstr ""
 "Requête de scan mondial bien envoyée, le résultat vous sera communiqué par "
 "email."
 
-#: .\views\admin_views\__init__.py:133
+#: .\views\admin_views\__init__.py:134
 #, python-format
 msgid "Attributes of user \"%(username)s\" have been modified:"
 msgstr "Des attributs de l'utilisateur \"%(username)s\" ont été modifiés :"
 
-#: .\views\admin_views\__init__.py:177
+#: .\views\admin_views\__init__.py:178
 msgid "Some character updates failed (see below)."
 msgstr "Certaines modifications de personnages ont échoué (CF ci-dessous)."
 
-#: .\views\admin_views\__init__.py:179
+#: .\views\admin_views\__init__.py:180
 msgid "Characters were properly updated."
 msgstr "Les personnages ont été mis à jour avec succès."
 
-#: .\views\admin_views\__init__.py:205
+#: .\views\admin_views\__init__.py:206
 msgid "Character Identities"
 msgstr "Identité des Personnages"
 
-#: .\views\admin_views\__init__.py:233
+#: .\views\admin_views\__init__.py:234
 msgid "Database Operations"
 msgstr "Opérations de base de données"
 
-#: .\views\admin_views\__init__.py:245
+#: .\views\admin_views\__init__.py:246
 msgid "Error - no operation specified"
 msgstr "Erreur - pas d'opération spécifiée"
 
-#: .\views\admin_views\__init__.py:248
+#: .\views\admin_views\__init__.py:249
 #, python-format
 msgid "Error : %r"
 msgstr "Erreur : %r"
 
-#: .\views\admin_views\__init__.py:251
+#: .\views\admin_views\__init__.py:252
 msgid "Fail Test"
 msgstr "Test d'Echec"
 
-#: .\views\admin_views\__init__.py:258
+#: .\views\admin_views\__init__.py:259
 msgid "Mail sent"
 msgstr "Mail envoyé"
 
-#: .\views\admin_views\__init__.py:265
+#: .\views\admin_views\__init__.py:266
 msgid "Media Display Test"
 msgstr "Test d'affichage des média"
 
@@ -3804,23 +3832,23 @@ msgstr "Message envoyé avec succès."
 msgid "Errors in message fields."
 msgstr "Erreur dans les champs du message."
 
-#: .\views\messaging_views.py:611
+#: .\views\messaging_views.py:612
 msgid "View Single Message"
 msgstr "Voir Message Seul"
 
-#: .\views\messaging_views.py:635
+#: .\views\messaging_views.py:636
 msgid "The requested message doesn't exist."
 msgstr "Le message demandé n'existe pas."
 
-#: .\views\messaging_views.py:643
+#: .\views\messaging_views.py:644
 msgid "Single Message"
 msgstr "Message Unique"
 
-#: .\views\messaging_views.py:651
+#: .\views\messaging_views.py:652
 msgid "Message Preview"
 msgstr "Aperçu du Message"
 
-#: .\views\messaging_views.py:654
+#: .\views\messaging_views.py:655
 msgid "No content submitted for display"
 msgstr "Pas de contenu envoyé pour affichage"
 
@@ -4023,6 +4051,9 @@ msgstr "Évènements Système"
 #: .\views\profile_views.py:357 .\views\profile_views.py:366
 msgid "Instructions"
 msgstr "Instructions"
+
+#~ msgid "Your current user login."
+#~ msgstr "Votre identifiant utilisateur actuel."
 
 #~| msgid "Mercenaries Hiring"
 #~ msgid "Mercenaries of Players"
