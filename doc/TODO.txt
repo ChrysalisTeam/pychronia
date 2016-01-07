@@ -22,12 +22,6 @@ domaine.
 FEATURES
 ------------
 
-Rendre la page "messages interceptés" activable ??
-
-Mieux indiquer superuser/observer sur la page
-
-MONTRER QUAND JEU EST EN PAUSE Pour gamemaster ??
-
 
 TRADUIRE
 body = dedent("""
@@ -40,7 +34,6 @@ Garnet: Vous êtes ami avec cet utilisateur depuis __trop__ peu de temps (imposs
 A TRADUIRE : subject = "Deep Analysis Request - item \"%s\"" % item_title
 
 
-Normaliser LINE-HEIGHT à 1.1 partout
 
 AFFICHER MESSAGE TRANSFERED INLINE
 
@@ -204,6 +197,9 @@ OperationalError: (1203, "User pakal_anthropia already has more than 'max_user_c
 TASKS DONE
 ---------------
 
+- normaliser LINE-HEIGHT à "normal" partout - DONE
+- mettre message quand jeu est en pause, pour gamemaster - DONE
+- mieux indiquer superuser/observer sur la page, via icônes - DONE
 - autolister les objets 3D pour le MJ : statue de Bartzar, amphore, coffre rouillé, et grimoire sur piédestal - DONE
 - ajouter <instructions> possibilité échange objets archéologiques et lots entiers de gemmes (pour gamemaster) - DONE
 - pourquoi faire une "aide" en anglais et le site en français ? EXPLIQUER dans help homepage - DONE
@@ -497,7 +493,7 @@ CONTROVERSIAL ENHANCEMENTS
 - fix shaky forms when floated left in number - should be DONE now
 - convert "orbe" to masculine genre ; replace akaris by akharis !!!!!!!!!!!!!!!!!!!
 - ajouter formulaires de pognon dans la page character_management ?
-
+- rendre la page "messages interceptés" activable ?? bad idea, let it be ALWAYS there
 
 
 FUTUR ENHANCEMENTS
