@@ -610,7 +610,7 @@ def ___outbox(request, template_name='messaging/messages.html'):
 
 
 @register_view(access=UserAccess.anonymous, requires_global_permission=False, title=ugettext_lazy("View Single Message"))
-def view_single_message(request, msg_id, template_name='messaging/view_single_message.html'):
+def view_single_message(request, msg_id, template_name='messaging/view_single_message.html', popup_template_name='messaging/single_message.html'):
     """
     Meant to be used in event logging or for message transfer.
     
@@ -620,6 +620,8 @@ def view_single_message(request, msg_id, template_name='messaging/view_single_me
     message = None
     ctx = None
     is_queued = False
+
+    popup_mode = (request.GET.get("popup") == "1")
 
     messages = [msg for msg in request.datamanager.get_all_dispatched_messages() if msg["id"] == msg_id]
     if messages:
@@ -638,15 +640,25 @@ def view_single_message(request, msg_id, template_name='messaging/view_single_me
     if message:
         ctx = _determine_message_display_context(request.datamanager, message, is_pending=is_queued)
 
-    return render(request,
-                  template_name,
-                    {
-                     'page_title': _("Single Message"),
-                     'is_queued': is_queued,
-                     'ctx': ctx,
-                     'message': message,
-                     'contact_cache': _build_contact_display_cache(request.datamanager),
-                    })
+    if popup_mode:
+        return render(request,
+                      popup_template_name,
+                        {
+                         'ctx': None,  # no operation possible
+                         'message': message,
+                         'contact_cache': _build_contact_display_cache(request.datamanager),
+                         'no_background': True,
+                        })
+    else:
+        return render(request,
+                      template_name,
+                        {
+                         'page_title': _("Single Message"),
+                         'is_queued': is_queued,
+                         'ctx': ctx,
+                         'message': message,
+                         'contact_cache': _build_contact_display_cache(request.datamanager),
+                        })
 
 
 @register_view(access=UserAccess.anonymous, requires_global_permission=False, title=ugettext_lazy("Message Preview"))
