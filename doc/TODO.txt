@@ -34,15 +34,11 @@ Garnet: Vous êtes ami avec cet utilisateur depuis __trop__ peu de temps (imposs
 A TRADUIRE : subject = "Deep Analysis Request - item \"%s\"" % item_title
 
 
-
-AFFICHER MESSAGE TRANSFERED INLINE
-
 FIX the 3s anti-spam system on "page backwards" access
 -> surtout /ability/house_locking/ a pbs avec buttons
 
 
 MESSAGERIE:
-- afficher les messages transférés INLINE (FANCYBOX ?)
 - "sauver comme template" dans la vue "composition de nouveau message"
 
 
@@ -197,6 +193,7 @@ OperationalError: (1203, "User pakal_anthropia already has more than 'max_user_c
 TASKS DONE
 ---------------
 
+- afficher message transfered inline, and test recursive transferred messages -> OK it works fine, clsoes previous fancybox - DONE
 - normaliser LINE-HEIGHT à "normal" partout - DONE
 - mettre message quand jeu est en pause, pour gamemaster - DONE
 - mieux indiquer superuser/observer sur la page, via icônes - DONE
