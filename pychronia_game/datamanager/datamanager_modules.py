@@ -2208,7 +2208,8 @@ class TextMessagingTemplates(BaseDataManager):
 
         if isinstance(messaging["manual_messages_templates"], list): # to simplify exchanges with dispatched emails, we allow list fixtures
             for idx, t in enumerate(messaging["manual_messages_templates"]):
-                assert ("id" in t), t
+                ## DISABLED TEMPORARILY assert ("id" in t), t
+                t.setdefault("id", random.randint(10000000, 100000000))
                 t.setdefault("order", idx * 10)
             messaging["manual_messages_templates"] = dict((t["id"], t) for t in messaging["manual_messages_templates"]) # indexed by ID
 
@@ -2219,7 +2220,8 @@ class TextMessagingTemplates(BaseDataManager):
             for msg in msg_list:
 
                 msg.setdefault("categories", ["unsorted"]) # to FILTER for gamemaster
-                existing_template_categories.update(msg["categories"])
+
+                msg["categories"] = [c.replace(" ", "_") for c in msg["categories"]]  # slugify them
 
                 msg.setdefault("gamemaster_hints", "")
                 if msg["gamemaster_hints"]:
@@ -2237,6 +2239,8 @@ class TextMessagingTemplates(BaseDataManager):
 
                 if "id" in msg:
                     del msg["id"] # cleanup
+
+                existing_template_categories.update(msg["categories"])
 
         # complete_messages_templates(game_data["automated_messages_templates"], is_manual=False)
         _normalize_messages_templates(messaging["manual_messages_templates"].values())
@@ -2258,7 +2262,7 @@ class TextMessagingTemplates(BaseDataManager):
 
         #FIXME - BEWARE group_id not used yet, but it will be someday!!!
 
-        template_fields = set("sender_email recipient_emails subject body attachment transferred_msg is_used is_ignored parent_id gamemaster_hints categories sent_at group_id order".split())
+        template_fields = set("sender_email recipient_emails subject body attachment transferred_msg is_used is_ignored parent_id gamemaster_hints categories sent_at group_id order mask_recipients".split())
 
         for msg in messaging["manual_messages_templates"].values():
 
