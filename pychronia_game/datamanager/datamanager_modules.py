@@ -3088,6 +3088,8 @@ class RadioMessaging(BaseDataManager): # TODO REFINE
 
             for identifier, details in self._table.items():
 
+                assert "url" not in details, details  # LEGACY format, not used anymore
+
                 details.setdefault("gamemaster_hints", "")
                 if details["gamemaster_hints"]:
                     details["gamemaster_hints"] = details["gamemaster_hints"].strip()
@@ -3115,6 +3117,8 @@ class RadioMessaging(BaseDataManager): # TODO REFINE
         def _check_item_validity(self, key, value, strict=False):
 
             #print ("RADIOSPOT IS", key, value)
+
+            assert "url" not in value, value  # LEGACY format, not used anymore
 
             utilities.check_is_slug(key)
 
