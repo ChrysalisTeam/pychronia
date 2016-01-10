@@ -23,6 +23,9 @@ FEATURES
 ------------
 
 
+
+https://pixabay.com/fr/chute-d-eau-noir-et-blanc-sc%C3%A9nique-936592/
+
 TRADUIRE
 body = dedent("""
         The password corresponding to your login %(username)s is '%(password)s'.
@@ -87,16 +90,14 @@ Faire page d'introduction
 
 - ajouter des details cruciaux à TOUTES runes !!!!
 
-média => encyclopédie => saisir l'expression : si on écrit une phrase trop longue le message d'erreur s'affiche mais le texte sort du bloc.
 
 une petite croix sur la gauche ou la droite serait la bien venu ou un clic ailleurs sur le site pour refermer rapidement la bande
    ou tout simplement autoriser le clic sur le texte pour refermer. ==> EXPLIQUER DANS HELP PAGE
 
 
 - clarifier règles absolues : pas de vol d'argent, pas de triche, emails uniquement valables à l'intérieur du site (dans INTRO "out game" du jeu)
-            Distinction RP/HRP
-            --------------------
-            - il est possible d'utiliser d'autres moyens de communication que ceux du portail : vrais emails, sms, Skype... ces communications sont toutes traitées comme si les joueurs se parlaient "de visu", dans un endroit discret.
+
+
 
 
 PROMOTION
@@ -193,6 +194,8 @@ OperationalError: (1203, "User pakal_anthropia already has more than 'max_user_c
 TASKS DONE
 ---------------
 
+- média => encyclopédie => saisir l'expression : si on écrit une phrase trop longue le message d'erreur s'affiche mais le texte sort du bloc - FIXEd with maxlength
+- create missing template msg ids from slugified subjects - DONE
 - afficher message transfered inline, and test recursive transferred messages -> OK it works fine, clsoes previous fancybox - DONE
 - normaliser LINE-HEIGHT à "normal" partout - DONE
 - mettre message quand jeu est en pause, pour gamemaster - DONE
