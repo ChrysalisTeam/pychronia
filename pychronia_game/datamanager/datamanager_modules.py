@@ -3502,7 +3502,8 @@ class PersonalFiles(BaseDataManager):
         # common and personal file folders
         assert os.path.isdir(os.path.join(config.GAME_FILES_ROOT, "personal_files", self.COMMON_FILES_DIRS))
         for name in (self.data["character_properties"].keys() + [self.data["global_parameters"]["master_login"]]):
-            assert os.path.isdir(os.path.join(config.GAME_FILES_ROOT, "personal_files", name)), name
+            folder_path = os.path.join(config.GAME_FILES_ROOT, "personal_files", name)
+            assert os.path.isdir(folder_path), folder_path
             assert name != self.COMMON_FILES_DIRS # reserved
 
     @readonly_method
