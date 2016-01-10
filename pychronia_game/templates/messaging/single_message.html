@@ -196,7 +196,7 @@
 
         {% if message.transferred_msg %}
         <div align="center">
-            <b><a target="_blank" data-fancybox-type="iframe" class="fancybox" href="{{SITE_DOMAIN}}{% game_view_url "pychronia_game.views.view_single_message" msg_id=message.transferred_msg %}?popup=1">
+            <b><a target="_blank" class="fancybox-ajax" href="{{SITE_DOMAIN}}{% game_view_url "pychronia_game.views.view_single_message" msg_id=message.transferred_msg %}?popup=1">
                 {% trans "MESSAGE TRANSFERRED: click to view." %} {# transferred message might have been deleted by game master, but so be it... #}
             </a></b>
         </div>
