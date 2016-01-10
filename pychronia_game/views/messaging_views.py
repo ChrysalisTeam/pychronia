@@ -649,17 +649,20 @@ def view_single_message(request, msg_id, template_name='messaging/view_single_me
             message = messages[0]
             is_queued = True
         else:
-            user.add_error(_("The requested message doesn't exist."))
+            if not popup_mode:
+                user.add_error(_("The requested message doesn't exist."))
 
     if message:
         ctx = _determine_message_display_context(request.datamanager, message, is_pending=is_queued)
 
     if popup_mode:
+        if not message:
+            return HttpResponse(_("Message couldn't be found."))
         return render(request,
                       popup_template_name,
                         {
                          'ctx': None,  # no operation possible
-                         'message': message,
+                         'message': message,  # SHALL NOT be empty
                          'contact_cache': _build_contact_display_cache(request.datamanager),
                          'no_background': True,
                         })
@@ -670,7 +673,7 @@ def view_single_message(request, msg_id, template_name='messaging/view_single_me
                          'page_title': _("Single Message"),
                          'is_queued': is_queued,
                          'ctx': ctx,
-                         'message': message,
+                         'message': message,  # might be None here
                          'contact_cache': _build_contact_display_cache(request.datamanager),
                         })
 
