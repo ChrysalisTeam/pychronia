@@ -2,7 +2,8 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
-import string
+import string, random
+
 from pychronia_game.common import *
 from pychronia_game.common import _, ugettext_lazy, ugettext_noop, _undefined # mainly to shut up the static checker...
 from pychronia_game import utilities
@@ -2208,8 +2209,12 @@ class TextMessagingTemplates(BaseDataManager):
 
         if isinstance(messaging["manual_messages_templates"], list): # to simplify exchanges with dispatched emails, we allow list fixtures
             for idx, t in enumerate(messaging["manual_messages_templates"]):
-                ## DISABLED TEMPORARILY assert ("id" in t), t
-                t.setdefault("id", random.randint(10000000, 100000000))
+                if "id" not in t:
+                    if "subject" in t:
+                        fallback_id = t["subject"].replace(" ", "_")  # somehow slugified subject
+                    else:
+                        fallback_id = random.randint(10000000, 100000000)
+                    t["id"] = fallback_id
                 t.setdefault("order", idx * 10)
             messaging["manual_messages_templates"] = dict((t["id"], t) for t in messaging["manual_messages_templates"]) # indexed by ID
 
@@ -2221,7 +2226,7 @@ class TextMessagingTemplates(BaseDataManager):
 
                 msg.setdefault("categories", ["unsorted"]) # to FILTER for gamemaster
 
-                msg["categories"] = [c.replace(" ", "_") for c in msg["categories"]]  # slugify them
+                msg["categories"] = [c.replace(" ", "_") for c in msg["categories"]]  # somehow slugify them
 
                 msg.setdefault("gamemaster_hints", "")
                 if msg["gamemaster_hints"]:
@@ -2236,6 +2241,7 @@ class TextMessagingTemplates(BaseDataManager):
                 msg["is_used"] = msg.get("is_used", False)
                 msg["is_ignored"] = msg.get("is_ignored", False)
                 msg["parent_id"] = msg.get("parent_id", None)
+                msg["mask_recipients"] = msg.get("mask_recipients", False)
 
                 if "id" in msg:
                     del msg["id"] # cleanup
@@ -2302,6 +2308,7 @@ class TextMessagingTemplates(BaseDataManager):
                 except UsageError as e:
                     pass  # message might have been deleted by game master, we ignore this
 
+            utilities.check_is_bool(msg["mask_recipients"])
             utilities.check_is_bool(msg["is_used"])
             utilities.check_is_bool(msg["is_ignored"])
 
