@@ -3118,7 +3118,8 @@ class RadioMessaging(BaseDataManager): # TODO REFINE
 
             #print ("RADIOSPOT IS", key, value)
 
-            assert "url" not in value, value  # LEGACY format, not used anymore
+            radio_spot_fields = set("initial gamemaster_hints title text file".split())
+            assert set(value.keys()) == radio_spot_fields, (set(value.keys()) - radio_spot_fields, key)
 
             utilities.check_is_slug(key)
 
