@@ -148,23 +148,30 @@ def view_help_page(request, keyword, template_name='utilities/help_page.html'):
 
 @register_view(access=UserAccess.anonymous, requires_global_permission=False, title=ugettext_lazy("Bug Report"))
 def bug_report_treatment(request):
-    report_data = request.REQUEST.get("report_data", "[no report_data]")
-    location = request.build_absolute_uri()
+
+    if request.method != "POST":
+        return HttpResponse("KO - bug not reported")
+
+    report_data = request.POST.get("report_data", "[no report_data]")
+    location = request.POST.get("location", "[no location]")
+
     """
     from django.views import debug
     res = debug.technical_500_response(request, None, None, None)
     print (res.content)
     """
-
+    dm = request.datamanager
     message = dedent("""
                     Bug report submitted by player %(username)s.
                     
                     URL: %(location)s
                     
                     Message: %(report_data)s
-                    """) % dict(username=request.datamanager.user.username,
+                    """) % dict(username=dm.user.username,
                                 location=location,
                                 report_data=report_data)
+
+    dm.logger.warning("Submitting pychronia bug report by email:\n%r", message)
 
     mail_admins("Pychronia Bug Report", message=message, html_message=None) # we don't know if it REALLY sends stuffs...
 

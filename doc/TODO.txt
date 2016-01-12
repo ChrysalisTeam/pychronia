@@ -22,6 +22,7 @@ domaine.
 FEATURES
 ------------
 
+Fix saut à la ligen dans Impersonation : Archbishop.Baazel (english), en haut
 
 
 https://pixabay.com/fr/chute-d-eau-noir-et-blanc-sc%C3%A9nique-936592/

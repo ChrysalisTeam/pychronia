@@ -4340,6 +4340,8 @@ class TestHttpRequests(BaseGameTestCase):
                         ##### FIXME LATER config.MEDIA_URL + "Burned/default_styles.css": None,
                         game_file_url("images/attachments/image1.png"): None,
                         game_file_url("encrypted/guy2_report/evans/orb.jpg"): None,
+                        root_game_url_with_username + "/bug_report/": None,
+                        root_game_url_with_username + "/bug_report/": dict(location="http://mondomaine", report_data="ceci est un message"),
                         root_game_url_with_username + "/messages/view_single_message/%s/" % msg_id: None,
                         root_game_url_with_username + "/messages/view_single_message/UNEXISTING_MSG/": None,
                         root_game_url_with_username + "/messages/view_single_message/%s/?popup=1" % msg_id: None,
