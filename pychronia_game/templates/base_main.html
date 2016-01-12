@@ -535,7 +535,7 @@
 
 {% block right_big_icon_panel %}
 {% if content_blocks.help_page.data %}
-<a href="{% game_view_url "pychronia_game.views.view_help_page" keyword=content_blocks.help_page.name %}" class="fancybox" title="{{ page_title }}">
+<a href="{% game_view_url "pychronia_game.views.view_help_page" keyword=content_blocks.help_page.name %}" class="fancybox-ajax" title="{{ page_title }}">
 <div class="big_icon_panel">
     <div class="positioner">
         <img src="{{ STATIC_URL }}MetalRadiance/img/icons/question_mark.png"/>{% if signal_new_help_page %}<span class="novelty_mark">!</span>{% endif %}
