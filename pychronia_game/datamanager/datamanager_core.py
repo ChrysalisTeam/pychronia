@@ -65,14 +65,7 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
 
     # no transaction manager - special case
     def __init__(self, game_instance_id, game_root=None, request=None, **kwargs):
-        '''
-        self.storage = FileStorage.FileStorage(config.ZODB_FILE)
-        self.db = DB(self.storage)
-        self.pack_database(days=1)
-        self.connection = self.db.open()
-        self.connection.root()
 
-        '''
         assert game_root is not None # it's actually game DATA, no METADATA is included here!
 
         super(BaseDataManager, self).__init__(**kwargs)
@@ -137,11 +130,13 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
         """
 
         if self.data is not None:
-
-            assert not self.connection or not self.connection._registered_objects # else problem, pending changes created by views!
+            # we close the ZODB connection attached to our data root
+            assert not self.connection or not self.connection._registered_objects  # else problem, pending changes created by views!
+            self.data = None
+        if self.connection:
             self.connection.close()
             self.connection = None
-            self.data = None
+            
 
 
 
