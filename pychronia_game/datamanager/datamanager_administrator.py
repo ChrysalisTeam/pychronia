@@ -58,6 +58,7 @@ def _get_zodb_connection():
     return connection
 
 def _get_game_instances_mapping():
+    # this connection will get attached to all ZODB objects, and thus auto-closed by the Datamanager after request processing
     connection = _get_zodb_connection()
     game_instances = connection.root()[GAME_INSTANCES_MOUNT_POINT]
     return game_instances
