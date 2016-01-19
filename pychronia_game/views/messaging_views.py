@@ -623,12 +623,13 @@ def ___outbox(request, template_name='messaging/messages.html'):
 '''
 
 
-@register_view(access=UserAccess.anonymous, requires_global_permission=False, title=ugettext_lazy("View Single Message"))
+@register_view(access=UserAccess.authenticated, requires_global_permission=False, title=ugettext_lazy("View Single Message"))
 def view_single_message(request, msg_id, template_name='messaging/view_single_message.html', popup_template_name='messaging/single_message.html'):
     """
     Meant to be used in event logging or for message transfer.
     
-    On purpose, NO AUTHORIZATION CHECK is done here (msg_ids are random enough).
+    On purpose, NO PERMISSION CHECK is done here (msg_ids are random enough), 
+    however user must be authenticated (required by some messaging utilities like for "message display context").
     """
     user = request.datamanager.user
     message = None
