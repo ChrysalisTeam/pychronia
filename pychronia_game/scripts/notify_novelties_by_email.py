@@ -36,7 +36,7 @@ def execute():
         instance_id = metadata["instance_id"]
 
         if metadata["status"] != "active":
-            logging.info("Skipping external notifications on obsolete game instance %s", instance_id)
+            logging.info("Skipping external notifications on obsolete game instance '%s'", instance_id)
             continue
 
         assert metadata["status"] == "active"
@@ -47,6 +47,9 @@ def execute():
 
             all_notifications = dm.get_characters_external_notifications()
             master_email = dm.get_global_parameter("master_real_email")
+
+            if all_notifications:
+                logging.info("Starting notification of novelties, by emails, for players of game instance '%s'", instance_id)
 
             for pack in all_notifications:
                 username, real_email = pack["username"], pack["real_email"]
@@ -73,8 +76,7 @@ def execute():
                               fail_silently=False)
 
                 try:
-                    logging.info("""Sending novelty notification from '%(from_email)s' to %(recipient_list)r : "%(subject)s"\n%(message)s
-                                 """, params)
+                    logging.info("""Sending novelty notification from '%(from_email)s' to %(recipient_list)r : "%(subject)s"\n%(message)s""", params)
                     send_mail(**params)
                 except (SMTPException, EnvironmentError), e:
                     logging.error("Couldn't send external notification email to %s", real_email, exc_info=True)
@@ -84,11 +86,10 @@ def execute():
                     successes += 1
 
         except Exception, e:
-            logging.critical("Error during external notifications processing on game instance '%s'", instance_id, exc_info=True)
-        else:
-            logging.info("Properly notified, by emails, characters from all instances about their novelties.")
+            logging.critical("Pathological error during external notifications processing on game instance '%s'", instance_id, exc_info=True)
 
-        return (idx, successes, errors)
+    return (idx, successes, errors)
+
 
 if __name__ == "__main__":
     execute()
