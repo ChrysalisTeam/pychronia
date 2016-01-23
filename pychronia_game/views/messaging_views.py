@@ -107,18 +107,22 @@ class MessageComposeForm(AbstractGameForm):
                 subject = msg["subject"]  # always retrieved here (but might be prefixed)
 
                 if visibility_reason == VISIBILITY_REASONS.sender: # we simply recontact recipients (even if we were one of the recipients too)
-                    sender = msg["sender_email"] # for master
-                    recipients = msg["recipient_emails"]
+                    if user.is_master:
+                        sender = msg["sender_email"] # for master
+                    recipients = msg["recipient_emails"]  # even if "mask_recipients" is activated, since we're the sender
 
                     if _("Bis:") not in msg["subject"]:
                         subject = _("Bis:") + " " + subject
                     # don't resend attachment! #
 
                 elif visibility_reason == VISIBILITY_REASONS.recipient: # we reply to a message
-                    sender = msg["recipient_emails"][0] if len(msg["recipient_emails"]) == 1 else None # let the sender empty even for master, if we're not sure which recipient we represent
+                    if user.is_master:
+                        sender = msg["recipient_emails"][0] if len(msg["recipient_emails"]) == 1 else None # let the sender empty for master, if we're not sure which recipient we represent
                     recipients = [msg["sender_email"]]
-                    my_email = datamanager.get_character_email() if user.is_character else None
-                    recipients += [_email for _email in msg["recipient_emails"] if _email != my_email and _email != sender]  # works OK if my_email is None (i.e game master) or sender is None
+                    if user.is_master or not msg["mask_recipients"]:  # IMPORTANT - else spoilers!!
+                        my_email = datamanager.get_character_email() if user.is_character else None
+                        # works OK if my_email is None (i.e game master) or sender is None
+                        recipients += [_email for _email in msg["recipient_emails"] if _email != my_email and _email != sender]
                     if _("Re:") not in msg["subject"]:
                         subject = _("Re:") + " " + subject
                     # don't resend attachment, here too! #
@@ -554,7 +558,7 @@ def compose_message(request, template_name='messaging/compose.html'):
         except UsageError as e:
             request.datamanager.logger.error("Ignoring invalid parent_id %s in message composition view", parent_msg_id, exc_info=True)
 
-    pprint(parent_messages)
+    #pprint(parent_messages)
 
     return render(request,
                   template_name,
