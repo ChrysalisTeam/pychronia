@@ -22,7 +22,26 @@ domaine.
 FEATURES
 ------------
 
-LOG 500 errrors too in middleware !!!
+- masquer par défaut les archivés dans "messages transmis"
+
+- pouvoir changer secret question & password des persos
+
+- investiguer lenteurs de messagerie
+
+
+
+SETUP:
+- OSX -> mysql-python with homebrew
+- install django_oursql
+- django_select2: pb with git, update it
+
+- fix nasty bug where masked recipients can be spoiled by replying to an email
+
+
+Ah bon, je n'avais pas vu je pensais que seul le mj avait accès à une page du type événement, sinon je viens de me faire avoir par un petit truc inattendu, j'ai envoyé un message dans le passé depuis le compte d'émilos et ceux qui l'avaient sur écoute récemment l'ont tous reçu... J'avais pas pensé que la mise sur écoute était indépendante du temps (ça parait logique maintenant mais bon).
+
+
+LOG 500 errrors too in middleware !!! CF LOGGING setting.
 
 2a01:e34:ec14:a1f0:ddb6:8ad3:9f46:79f7 - - [16/Jan/2016:01:08:30 +0000] "POST /tpk/topaz/messages/ajax_set_dispatched_message_state_flags/ HTTP/1.0" 500 69 "http://pangeaweb.org/tpk/topaz/messages/conversations/" "Mozilla/5.0 (Windows NT 6.3; WOW64; rv:43.0) Gecko/20100101 Firefox/43.0"
   File "/home/pakal/webapps/chrysalis_game/pychronia/dependencies/relstorage/adapters/locker.py", line 117, in hold_commit_lock
@@ -69,6 +88,9 @@ MESSAGERIE:
 
 SCRIPT
 ----------
+
+mettre gamemaster hints sur encre sympathique et marchemin vierge
+
 
 chercher FIXMES
 
