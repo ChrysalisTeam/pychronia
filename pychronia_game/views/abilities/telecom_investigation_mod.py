@@ -48,9 +48,51 @@ class TelecomInvestigationAbility(AbstractAbility):
                }
 
 
-    
-    @staticmethod
-    def process_telecom_investigation(self):
+
+    def extract_all_user_emails(self, target_username):
+        
+        #target_name = self.get_official_name(target_username)
+        
+        result = []
+        visibility_reasons = None
+        archived=None
+        
+        #Recuperation des mails qui sont liés au contact et qui ne sont pas archivé
+        result += self.get_user_related_messages(target_username, visibility_reasons, archived)
+        
+        #rajout des mails qui sont archivés
+        archived is not None
+        result += self.get_user_related_messages(target_username, visibility_reasons, archived)
+        
+        return result
+
+    @transaction_watcher
+    def process_telecom_investigation(self, target_username, use_gems=()):
+        
+        ##username = self.datamanager.user.username
+        target_name = self.get_official_name(target_username)
+        
+        user_email = self.get_character_email()
+        remote_email = "investigator@spies.com"
+        
+        
+        
+        #request e-mail:
+        subject = _("Investigation Request - %(target_name)s") % dict(target_name=target_name)
+        
+        body = _("Please look for anything you can find about this person.")
+        self.post_message(user_email, remote_email, subject, body, date_or_delay_mn=0)
+        
+        #answer e-mail:
+        subject = _('<Inquiry Results for %(target_name)s>') % dict(target_name=target_name)
+
+        
+        #A verifier le body !!!
+        
+        body = str(self.extract_all_user_emails(target_username))
+        
+        msg_id = self.post_message(remote_email, user_email, subject, body, date_or_delay_mn=0)
+
+        #ajouter délai avec self.get_global_parameter("telecom_investigation_delays") - IMPLEMENTER LES INVESTIGATION DELAYS DANS LES SETTINGS
+
         return _("Telecom is in process, you will receive an e-mail with the intercepted messages soon!")
-
-
