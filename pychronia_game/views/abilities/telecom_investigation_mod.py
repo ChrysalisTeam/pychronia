@@ -50,21 +50,35 @@ class TelecomInvestigationAbility(AbstractAbility):
 
 
     def extract_all_user_emails(self, target_username):
-        
         #target_name = self.get_official_name(target_username)
         
         result = []
+        messages = "\n"
         visibility_reasons = None
         archived=None
         
         #Recuperation des mails qui sont liés au contact et qui ne sont pas archivé
         result += self.get_user_related_messages(target_username, visibility_reasons, archived)
         
+        #mise en page:
+        
+        result = result[0]
+        messages += "**" + _("Message") + "**" + "\n\n" + _("From: ") + result["sender_email"] + "\n\n"
+        + _("To: ") + str(result["recipient_emails"]) + "\n\n"
+        + _("Subject: ")       + result["subject"] + "\n\n"
+                                                                                                            
+
+
         #rajout des mails qui sont archivés
         archived is not None
-        result += self.get_user_related_messages(target_username, visibility_reasons, archived)
+        result = self.get_user_related_messages(target_username, visibility_reasons, archived)
+        result = result[0]
+        messages += "**" + _("Message") + "**" + "\n\n" + _("From: ") + result["sender_email"] + "\n\n"
+        + _("To: ") + str(result["recipient_emails"]) + "\n\n"
+        + _("Subject: ") + result["subject"] + "\n\n"
+
+        return messages
         
-        return result
 
     @transaction_watcher
     def process_telecom_investigation(self, target_username, use_gems=()):
@@ -84,12 +98,12 @@ class TelecomInvestigationAbility(AbstractAbility):
         self.post_message(user_email, remote_email, subject, body, date_or_delay_mn=0)
         
         #answer e-mail:
-        subject = _('<Inquiry Results for %(target_name)s>') % dict(target_name=target_name)
+        subject = _('<Investigation Results for %(target_name)s>') % dict(target_name=target_name)
 
         
         #A verifier le body !!!
         
-        body = str(self.extract_all_user_emails(target_username))
+        body = self.extract_all_user_emails(target_username)
         
         msg_id = self.post_message(remote_email, user_email, subject, body, date_or_delay_mn=0)
 
