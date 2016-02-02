@@ -49,46 +49,35 @@ class TelecomInvestigationAbility(AbstractAbility):
 
 
 
-    def extract_all_user_emails(self, target_username):
-        #target_name = self.get_official_name(target_username)
-        
-        result = []
-        messages = "\n"
+    def extract_conversation_summary(self, target_username):
+    
         visibility_reasons = None
         archived=None
-        
-        #Recuperation des mails qui sont liés au contact et qui ne sont pas archivé
-        result += self.get_user_related_messages(target_username, visibility_reasons, archived)
-        
-        #mise en page:
-        
-        result = result[0]
-        messages += "**" + _("Message") + "**" + "\n\n" + _("From: ") + result["sender_email"] + "\n\n"
-        + _("To: ") + str(result["recipient_emails"]) + "\n\n"
-        + _("Subject: ")       + result["subject"] + "\n\n"
-                                                                                                            
-
-
-        #rajout des mails qui sont archivés
-        archived is not None
+        conversations = "\n"
+    
         result = self.get_user_related_messages(target_username, visibility_reasons, archived)
-        result = result[0]
-        messages += "**" + _("Message") + "**" + "\n\n" + _("From: ") + result["sender_email"] + "\n\n"
-        + _("To: ") + str(result["recipient_emails"]) + "\n\n"
-        + _("Subject: ") + result["subject"] + "\n\n"
-
-        return messages
+    
+        conv = self.sort_messages_by_conversations(result)
+    
+        for i in range (0, len(conv)):
+            conversations += ("**" + _("Conversation number %(numero)s :") % dict(numero=(i+1)) + "**" + "\n\n")
+            recipient_num = len(conv[i][0]["recipient_emails"])
+            for j in range(0, recipient_num):
+                conversations += ( _("Parcticipants :  ") + conv[i][0]["sender_email"] + _(" ; ") + str(conv[i][0]["recipient_emails"][j]) + "\n\n")
+            conversations += ( _("Subject of conversation :  ") + conv[i][0]["subject"] + "\n\n")
+            num = len(conv[i])
+            conversations += ( _("Number of messages exchanged :  ") + str(num) + "\n\n")
+            conversations += ( _("First sent message :  ") + str(conv[i][0]["sent_at"]) + "\n\n")
+            conversations += ( _("Last sent message :  ") +  str(conv[i][num-1]["sent_at"]) + "\n\n")
         
+        return conversations
 
     @transaction_watcher
     def process_telecom_investigation(self, target_username, use_gems=()):
         
-        ##username = self.datamanager.user.username
         target_name = self.get_official_name(target_username)
-        
         user_email = self.get_character_email()
         remote_email = "investigator@spies.com"
-        
         
         
         #request e-mail:
@@ -99,11 +88,8 @@ class TelecomInvestigationAbility(AbstractAbility):
         
         #answer e-mail:
         subject = _('<Investigation Results for %(target_name)s>') % dict(target_name=target_name)
-
         
-        #A verifier le body !!!
-        
-        body = self.extract_all_user_emails(target_username)
+        body = self.extract_conversation_summary(target_username)
         
         msg_id = self.post_message(remote_email, user_email, subject, body, date_or_delay_mn=0)
 
