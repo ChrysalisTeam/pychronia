@@ -64,11 +64,11 @@ class TelecomInvestigationAbility(AbstractAbility):
             recipient_num = len(conv[i][0]["recipient_emails"])
             for j in range(0, recipient_num):
                 conversations += ( _("Parcticipants :  ") + conv[i][0]["sender_email"] + _(" ; ") + str(conv[i][0]["recipient_emails"][j]) + "\n\n")
-            conversations += ( _("Subject of conversation :  ") + conv[i][0]["subject"] + "\n\n")
             num = len(conv[i])
+            conversations += ( _("Subject of conversation :  ") + conv[i][num-1]["subject"] + "\n\n")
             conversations += ( _("Number of messages exchanged :  ") + str(num) + "\n\n")
-            conversations += ( _("First sent message :  ") + str(conv[i][0]["sent_at"]) + "\n\n")
-            conversations += ( _("Last sent message :  ") +  str(conv[i][num-1]["sent_at"]) + "\n\n")
+            conversations += ( _("First sent message :  ") + str(conv[i][num-1]["sent_at"]) + "\n\n")
+            conversations += ( _("Last sent message :  ") +  str(conv[i][0]["sent_at"]) + "\n\n")
         
         return conversations
 
