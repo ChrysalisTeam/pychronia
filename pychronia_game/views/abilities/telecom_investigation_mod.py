@@ -65,19 +65,6 @@ class TelecomInvestigationAbility(AbstractAbility):
             context_list = []
             
         else:
-            """for i in range (0, len(conv)):
-                num = len(conv[i])
-                recipient_num = len(conv[i][0]["recipient_emails"])
-                #conversations += ("**" + _("Conversation number %(numero)s :") % dict(numero=(i+1)) + "**" + "\n\n")
-                conversations += ( _(" %(sujet)s :") % dict(sujet=conv[i][num-1]["subject"]) + "\n\n")
-                for j in range(0, recipient_num):
-                    conversations += ( _("Parcticipants :  ") + conv[i][0]["sender_email"] + _(" ; ") + str(conv[i][0]["recipient_emails"][j]) + "\n\n")
-                #conversations += ( _("Subject of conversation :  ") + conv[i][num-1]["subject"] + "\n\n")
-                conversations += ( _("Number of messages exchanged :  ") + str(num) + "\n\n")
-                conversations += ( _("First sent message :  ") + str(conv[i][num-1]["sent_at"]) + "\n\n")
-                conversations += ( _("Last sent message :  ") +  str(conv[i][0]["sent_at"]) + "\n\n")
-                conversations += ("\n\n")"""
-                    
             for i in range (0, len(conv)):
                 num = len(conv[i])
                 recipient_num = len(conv[i][0]["recipient_emails"])
