@@ -59,34 +59,35 @@ class TelecomInvestigationAbility(AbstractAbility):
     
         result = self.get_user_related_messages(target_username, visibility_reasons, archived)
     
-        conv = self.sort_messages_by_conversations(result)
+        conversations = self.sort_messages_by_conversations(result)
         context_list=[]
         
-        if conv == []:
-            context_list = []
+    
+        for conversation in conversations:
             
-        else:
-            for i in range (0, len(conv)):
-                num = len(conv[i])
-                recipient_num = len(conv[i][0]["recipient_emails"])
-                subject = conv[i][num-1]["subject"]
-                first_message = conv[i][num-1]["sent_at"].date()
-                last_message = conv[i][0]["sent_at"].date()
-                sender = conv[i][0]["sender_email"]
-                for j in range (0, recipient_num):
-                    recipients = conv[i][0]["recipient_emails"][j]
-                context = {"subject" : subject, "messages" : num, "sender" : sender, "recipients" : recipients, "first_message" : first_message, "last_message" : last_message}
-                context_list = context_list + [context]
+            messages_count = len(conversation)
+            subject = conversation[-1]["subject"]
+            first_message_date = conversation[-1]["sent_at"].date()
+            last_message_date = conversation[0]["sent_at"].date()
+            sender = conversation[0]["sender_email"]
+            
+            for message in conversation:
+                
+                recipients = message["recipient_emails"]
+                participants = set(recipients) | set([sender])
         
-            return context_list
+            context = {"subject" : subject, "messages" : messages_count, "participants" : (", ".join(str(e) for e in participants)),  "first_message" : first_message_date, "last_message" :last_message_date}
+            context_list.append(context)
+        
+        return context_list
 
     def conversation_formatting(self,context_list):
         body=""
         if context_list == None:
-            body = _("La cible n'a aucune conversation!")
+            body = _("Target has no conversation!")
         else:
-            for i in range (0, len(context_list)):
-                body += render_to_string("abilities/telecom_summary_format.html", context_list[i])
+            for context in context_list:
+                body += render_to_string("abilities/telecom_summary_format.html", context)
         return body
 
     @transaction_watcher
@@ -110,6 +111,8 @@ class TelecomInvestigationAbility(AbstractAbility):
         context_list = self.extract_conversation_summary(target_username)
         
         body = self.conversation_formatting(context_list)
+        #body = str(self.extract_conversation_summary(target_username))
+        
         
         msg_id = self.post_message(remote_email, user_email, subject, body, date_or_delay_mn=0)
 
