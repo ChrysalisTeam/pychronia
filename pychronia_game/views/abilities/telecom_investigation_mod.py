@@ -92,7 +92,7 @@ class TelecomInvestigationAbility(AbstractAbility):
     @transaction_watcher
     def process_telecom_investigation(self, target_username, use_gems=()):
         
-        body2=""
+        username = self.get_official_name()
         target_name = self.get_official_name(target_username)
         user_email = self.get_character_email()
         remote_email = "investigator@spies.com"
@@ -114,5 +114,7 @@ class TelecomInvestigationAbility(AbstractAbility):
         msg_id = self.post_message(remote_email, user_email, subject, body, date_or_delay_mn=0)
 
         #ajouter délai avec self.get_global_parameter("telecom_investigation_delays") - IMPLEMENTER LES INVESTIGATION DELAYS DANS LES SETTINGS
+        
+        self.log_game_event(ugettext_noop("Player '%(user)s' has ran a telecom investigation on '%(target_name)s'."), PersistentMapping(user = username, target_name = target_name), visible_by=None)
 
         return _("Telecom is in process, you will receive an e-mail with the intercepted messages soon!")

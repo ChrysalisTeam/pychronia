@@ -37,7 +37,7 @@ from django.forms.fields import Field
 from django.core.urlresolvers import resolve, NoReverseMatch
 from pychronia_game.views import friendship_management
 from pychronia_game.views.abilities import house_locking, \
-    wiretapping_management, runic_translation, artificial_intelligence_mod
+    wiretapping_management, runic_translation, artificial_intelligence_mod, telecom_investigation_mod
 from django.contrib.auth.models import User
 from pychronia_game.authentication import clear_all_sessions
 from pychronia_game.utilities.mediaplayers import generate_image_viewer
