@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function
 from __future__ import unicode_literals
+from datetime import datetime
 
 from pychronia_game.common import *
 from pychronia_game.datamanager.abstract_ability import AbstractAbility
@@ -69,8 +70,8 @@ class TelecomInvestigationAbility(AbstractAbility):
                 num = len(conv[i])
                 recipient_num = len(conv[i][0]["recipient_emails"])
                 subject = conv[i][num-1]["subject"]
-                first_message = conv[i][num-1]["sent_at"]
-                last_message = conv[i][0]["sent_at"]
+                first_message = conv[i][num-1]["sent_at"].date()
+                last_message = conv[i][0]["sent_at"].date()
                 sender = conv[i][0]["sender_email"]
                 for j in range (0, recipient_num):
                     recipients = conv[i][0]["recipient_emails"][j]
