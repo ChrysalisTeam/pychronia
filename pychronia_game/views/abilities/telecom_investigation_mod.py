@@ -69,7 +69,7 @@ class TelecomInvestigationAbility(AbstractAbility):
             subject = conversation[-1]["subject"]
             first_message_date = conversation[-1]["sent_at"].date()
             last_message_date = conversation[0]["sent_at"].date()
-            sender = conversation[0]["sender_email"]
+            sender = conversation[-1]["sender_email"]
             
             for message in conversation:
                 
@@ -83,7 +83,7 @@ class TelecomInvestigationAbility(AbstractAbility):
 
     def conversation_formatting(self,context_list):
         body=""
-        if context_list == None:
+        if context_list == []:
             body = _("Target has no conversation!")
         else:
             for context in context_list:
@@ -111,7 +111,7 @@ class TelecomInvestigationAbility(AbstractAbility):
         context_list = self.extract_conversation_summary(target_username)
         
         body = self.conversation_formatting(context_list)
-        #body = str(self.extract_conversation_summary(target_username))
+        #body = str(len(self.extract_conversation_summary(target_username)))
         
         
         msg_id = self.post_message(remote_email, user_email, subject, body, date_or_delay_mn=0)

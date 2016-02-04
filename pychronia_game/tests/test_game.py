@@ -6671,7 +6671,6 @@ class TestSpecialAbilities(BaseGameTestCase):
         assert response.status_code == 200
         '''
 
-
     def __test_telecom_investigations(self):
 
         FIXME
