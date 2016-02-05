@@ -47,11 +47,11 @@ from .messaging_views import (ajax_set_message_template_state_flags, ajax_set_di
 
 from .abilities import (house_locking, runic_translation, wiretapping_management, artificial_intelligence,
                         mercenaries_hiring, matter_analysis, world_scan, chess_challenge, geoip_location,
-                        business_escrow, black_market, ability_introduction) # telecom_investigation
+                        business_escrow, black_market, ability_introduction, telecom_investigation)
 
 from .admin_views import (admin_dashboard, webradio_management, gamemaster_manual,
                           manage_databases, static_pages_management, global_contacts_management,
-                          radio_spots_editing, admin_information,
+                          game_items_management, radio_spots_editing, admin_information,
                           manage_characters, CHARACTERS_IDENTITIES,
                           DATABASE_OPERATIONS, FAIL_TEST, MEDIA_TEST)
 
@@ -61,6 +61,13 @@ from .admin_views import (admin_dashboard, webradio_management, gamemaster_manua
 
 #### Here are the views that don't belong to any particular category ####
 
+
+def game_homepage_without_username(request):
+    """
+    Simple redirection when homepage URL lacks the "game_username" part.
+    """
+    username_homepage = game_view_url("pychronia_game-homepage", datamanager=request.datamanager)
+    return HttpResponseRedirect(redirect_to=username_homepage)
 
 
 def serve_game_file(request, hash="", path="", **kwargs):
@@ -141,23 +148,30 @@ def view_help_page(request, keyword, template_name='utilities/help_page.html'):
 
 @register_view(access=UserAccess.anonymous, requires_global_permission=False, title=ugettext_lazy("Bug Report"))
 def bug_report_treatment(request):
-    report_data = request.REQUEST.get("report_data", "[no report_data]")
-    location = request.build_absolute_uri()
+
+    if request.method != "POST":
+        return HttpResponse("KO - bug not reported")
+
+    report_data = request.POST.get("report_data", "[no report_data]")
+    location = request.POST.get("location", "[no location]")
+
     """
     from django.views import debug
     res = debug.technical_500_response(request, None, None, None)
     print (res.content)
     """
-
+    dm = request.datamanager
     message = dedent("""
                     Bug report submitted by player %(username)s.
                     
                     URL: %(location)s
                     
                     Message: %(report_data)s
-                    """) % dict(username=request.datamanager.user.username,
+                    """) % dict(username=dm.user.username,
                                 location=location,
                                 report_data=report_data)
+
+    dm.logger.warning("Submitting pychronia bug report by email:\n%r", message)
 
     mail_admins("Pychronia Bug Report", message=message, html_message=None) # we don't know if it REALLY sends stuffs...
 

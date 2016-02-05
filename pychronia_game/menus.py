@@ -19,8 +19,7 @@ class MenuEntry:
 
         if view:
             view_kwargs = view_kwargs if view_kwargs else {}
-            view_kwargs.update(dict(game_instance_id=request.datamanager.game_instance_id))
-            self.url = reverse(view, kwargs=view_kwargs)
+            self.url = game_view_url(view, datamanager=request.datamanager, **view_kwargs)
         else:
             self.url = None
 
@@ -109,8 +108,9 @@ def _generate_web_menu(request, menu_entry_generator):
             menu_entry(_(u"Abilities"), views.ability_introduction, # FIXME
                        (
 
-                        menu_entry(view=views.wiretapping_management),
                         menu_entry(view=views.mercenaries_hiring),
+                        menu_entry(view=views.wiretapping_management),
+
                         menu_entry(view=views.house_locking),
 
                         menu_entry(view=views.runic_translation),
@@ -123,6 +123,7 @@ def _generate_web_menu(request, menu_entry_generator):
 
                         menu_entry(view=views.business_escrow),
                         menu_entry(view=views.black_market),
+                        menu_entry(view=views.telecom_investigation),
 
                         ##menu_entry(_(u"Telecom Investigation"), view=views.telecom_investigation),
                         # menu_entry(_(u"Agents Hiring"), view=views.network_management),
@@ -134,16 +135,16 @@ def _generate_web_menu(request, menu_entry_generator):
                         # menu_entry(_(u"World Scans"), view=views.scanning_management),
                       )),
 
-            menu_entry(_(u"Admin"), views.admin_dashboard,
+            menu_entry(_(u"Admin"), views.game_events,
                        (
-                         menu_entry(_(u"Dashboard"), views.admin_dashboard),
                          menu_entry(_(u"Game Events"), views.game_events, forced_visibility=(True if user.is_master else False)),
+                         menu_entry(_(u"Dashboard"), views.admin_dashboard),
                          menu_entry(_(u"Admin Information"), view=views.admin_information),
 
                          menu_entry(_(u"Manage Characters"), views.manage_characters),
                          menu_entry(_(u"Manage Webradio Playlist"), views.webradio_management),
 
-
+                         menu_entry(_(u"Edit Game Items"), views.game_items_management),
                          menu_entry(_(u"Edit Static Pages"), views.static_pages_management),
                          menu_entry(_(u"Edit Email Contacts"), views.global_contacts_management),
                          menu_entry(_(u"Edit Radio Spots"), views.radio_spots_editing),
@@ -152,7 +153,8 @@ def _generate_web_menu(request, menu_entry_generator):
 
                          menu_entry(_(u"View Database"), views.manage_databases),
 
-                      )),
+                       ),
+                      forced_visibility=(True if user.is_master else False)),
 
             menu_entry(_(u"Profile"), (views.character_profile if user.is_character else views.personal_folder),
                        (
@@ -160,7 +162,7 @@ def _generate_web_menu(request, menu_entry_generator):
                         menu_entry(view=views.friendship_management, forced_visibility=(True if user.is_character else False)), # character only
                         menu_entry(view=views.personal_folder),
                         menu_entry(view=views.personal_items_slideshow),
-                        menu_entry(_(u"System Events"), views.game_events, forced_visibility=(True if user.is_character else False)),
+                        menu_entry(_(u"System Events"), views.game_events, forced_visibility=(None if user.is_character else False)),  # might be globally invisible
                         menu_entry(_(u"Log Out"), views.logout, forced_visibility=not user.is_impersonation),
                         ),
                        forced_visibility=(False if not user.is_authenticated else True)),
@@ -308,7 +310,7 @@ def _ensure_data_ok(datamanager):
     assert not self.is_shutdown
     
     # TO BE REMOVED !!!!!!!!!!!!!!
-    #self._check_database_coherency() # WARNING - quite CPU intensive, to be removed later on ? TODO TODO REMOVE PAKAL !!!
+    #self._check_database_coherence() # WARNING - quite CPU intensive, to be removed later on ? TODO TODO REMOVE PAKAL !!!
     if not self.is_initialized:
         raise AbnormalUsageError(_("Game databases haven't yet been initialized !"))
             
@@ -352,7 +354,7 @@ def transaction_watcher(func, self, *args, **kwargs): #@NoSelf
     try:
         savepoint = self.begin()
         res = func(self, *args, **kwargs)
-        #self._check_database_coherency() # WARNING - quite CPU intensive, 
+        #self._check_database_coherence() # WARNING - quite CPU intensive, 
         #to be removed later on ? TODO TODO REMOVE PAKAL !!!
         self.commit(savepoint)
         return res
