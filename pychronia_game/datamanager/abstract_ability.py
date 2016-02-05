@@ -252,12 +252,12 @@ class AbstractPartnershipAbility(AbstractAbility):
     def check_data_sanity(self, strict=False):
         super(AbstractPartnershipAbility, self).check_data_sanity(strict=strict)
 
-        assert self.ACCESS == UserAccess.character # ONLY TYPE supported ATM
+        assert self.ACCESS in (UserAccess.character, UserAccess.authenticated)  # WORKAROUND
 
         email = self.dedicated_email
         utilities.check_is_email(email)
         contact = self.datamanager.global_contacts[email]
-        assert contact["immutable"] # else game master might break all
+        assert contact["initial"] # else game master might break all
 
         result_delay = self.auto_answer_delay_mn
         if result_delay is not None:
@@ -281,7 +281,7 @@ class AbstractPartnershipAbility(AbstractAbility):
         else:
             self.set_dispatched_message_state_flags(username=self.master_login, msg_id=msg_id, has_read=True)
 
-        self._last_request_msg_id = msg_id # for coherency checking
+        self._last_request_msg_id = msg_id # for coherence checking
         return msg_id
 
 
@@ -417,7 +417,7 @@ class AbstractPartnershipAbility(AbstractAbility):
         return record[field]
 
 
-    def ability_check_record_coherency(self, ability_name):
+    def ability_check_record_coherence(self, ability_name):
         record = self._ability_retrieve_record(ability_name)
         for (key, value) in record.items():
             assert isinstance(value, (int, long)), record

@@ -43,11 +43,12 @@ class WebradioManagement(AbstractGameView):
         players_with_new_messages = self.datamanager.get_pending_new_message_notifications()
 
 
-        all_new_message_notifications = self.datamanager.get_all_new_message_notification_sounds()
+        ## UNUSED ATM - LATER ON - all_new_message_notifications = self.datamanager.get_all_new_message_notification_sounds()
 
         # we filter out numerous "new emails" messages, which can be summoned in batch anyway
         all_audio_messages = self.datamanager.get_all_available_audio_messages().items()
-        special_audio_messages = [msg for msg in all_audio_messages if msg[0] not in all_new_message_notifications]
+        special_audio_messages = all_audio_messages
+        # NOPE - we don't use "new_message_notifications" atm - special_audio_messages = [msg for msg in all_audio_messages if msg[0] not in all_new_message_notifications]
 
         special_audio_messages.sort(key=lambda x: x[0])
 
@@ -65,7 +66,6 @@ class WebradioManagement(AbstractGameView):
         request = self.request
         POST = request.POST
         result = None
-
 
 
         # manual form management, since there are hell a lot of stuffs...

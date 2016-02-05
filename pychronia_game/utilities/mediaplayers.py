@@ -111,7 +111,14 @@ _media_player_templates = \
 }
 
 def generate_media_player(fileurl, image="", autostart=False, width=450, height=350, **kwargs):
-    # Warning - fileurl had better be an ABSOLUTE url, else some media players won't find the file !
+    """
+    Warning - fileurl had better be an ABSOLUTE url, else some media players won't find the file !
+    
+    Returns a simple HTML link,  if file format is not supported
+    """
+
+    # NOT ALWAYS ABSOLUTE URLS, eg. for personal documents these are "/my/file.mp4" URLs - 
+    assert fileurl.startswith("http") or fileurl.startswith("/"), fileurl
 
     md5 = hashlib.md5()
     md5.update(fileurl.encode('ascii', 'ignore'))
@@ -136,14 +143,18 @@ def generate_media_player(fileurl, image="", autostart=False, width=450, height=
     options.update(kwargs)
 
 
-    extension = os.path.splitext(fileurl)[1][1:].lower() # we remove the dot and lower-case the extension
+    extension = os.path.splitext(fileurl)[1][1:].lower() # we remove the dot and lower-case the extension -> might result in an empty string
 
     for extensions in _media_player_templates.keys():
         if extension in extensions:
             template = _media_player_templates[extensions]
             return template % options
 
-    raise ValueError("Unsupported media type")
+    # if no extension matched, we fallback to a simple link...
+    name = os.path.basename(fileurl)
+    return '<div class="medialink">' + _("Access file") + ' <a target="_blank" href="%s">%s</a></div>' % \
+            (escape(fileurl), escape(name if name else _("here")))
+
 
 
 
@@ -168,14 +179,17 @@ def generate_audio_player(files, titles=None, artists=None, autostart=False):
         "titles": ",".join(titles) if titles else "",
         "artists": ",".join(artists) if artists else "",
         "autostart": "yes" if autostart else "no",
+        "width": "70%"
     }
 
     return _mp3_template % dict(options=json.dumps(options), unikid=unikid)
 
 
 
-def generate_image_viewer(imageurl, width=300, height=300, preset=None, align="", **kwargs):
+def generate_image_viewer(imageurl, width=500, height=400, preset=None, align="", **kwargs):
     """
+    Generates an image thumbnail linking to the original image.
+    
     Align, if not empty, can be center/left/right.
     """
 
@@ -200,7 +214,7 @@ def generate_image_viewer(imageurl, width=300, height=300, preset=None, align=""
                     logging.critical("generate_image_viewer preset selection failed for %s/%s", imageurl, preset, exc_info=True)
                     pass
             if not thumb:  #we fallback to default options
-                options = { 
+                options = {
                            'autocrop': False, # remove useless whitespace
                            'crop': False, # no cropping at all,thumb must fit in both W and H
                            'size': (width, height), # one of these can be 0
@@ -236,17 +250,15 @@ def build_proper_viewer(fileurl, **kwargs): # interesting kwarg : "autostart"
     if not fileurl:
         return ""
 
+    title = kwargs.pop("title", "")
     extension = os.path.splitext(fileurl)[1][1:].lower() # no starting dot
 
     if extension == "mp3": # fileurl may be a string of comma-separated mp3 urls - it works
-        return generate_audio_player([fileurl], **kwargs)
+        return generate_audio_player([fileurl], [title], **kwargs)
     elif extension in ["jpg", "jpeg", "gif", "bmp", "png", "tif"]:
         return generate_image_viewer(fileurl, **kwargs)
     else:
-        try:
-            return generate_media_player(fileurl, **kwargs) # warning - this media player also supports mp3, so put it after the audio player !
-        except ValueError:
-            name = os.path.basename(fileurl)
-            return '<div class="medialink">' + _("Access file") + ' <a target="_blank" href="%s">%s</a></div>' % \
-                    (escape(fileurl), escape(name if name else _("here"))) # last solution - giving a simple link
+        # warning - this media player also supports mp3, so put it after the audio player !
+        return generate_media_player(fileurl, **kwargs)
+
 

@@ -58,6 +58,7 @@ def _get_zodb_connection():
     return connection
 
 def _get_game_instances_mapping():
+    # this connection will get attached to all ZODB objects, and thus auto-closed by the Datamanager after request processing
     connection = _get_zodb_connection()
     game_instances = connection.root()[GAME_INSTANCES_MOUNT_POINT]
     return game_instances
@@ -111,6 +112,7 @@ def create_game_instance(game_instance_id,
                          creator_email=None,
                          skip_initializations=False,
                          skip_randomizations=False,
+                         skip_coherence_check=False,
                          yaml_fixture=None,
                          strict=False): # TODO here try strict=True once
     """
@@ -135,8 +137,11 @@ def create_game_instance(game_instance_id,
                              request=None) # no user messages possible here
 
         assert not dm.is_initialized
-        dm.reset_game_data(strict=strict, skip_initializations=skip_initializations,
-                           skip_randomizations=skip_randomizations, yaml_fixture=yaml_fixture)
+        dm.reset_game_data(strict=strict, 
+                           skip_randomizations=skip_randomizations, 
+                           skip_initializations=skip_initializations,
+                           skip_coherence_check=skip_coherence_check,
+                           yaml_fixture=yaml_fixture)
         assert dm.is_initialized
 
         game_instances[game_instance_id] = game_root # NOW only we link data to ZODB
@@ -199,10 +204,12 @@ def delete_game_instance(game_instance_id):
 
 
 @zodb_transaction
-def _fetch_available_game_data(game_instance_id, metadata_checker):
+def _fetch_available_game_data(game_instance_id, metadata_checker, update_timestamp):
     """
     The callable metadata_checker, if provided, is called with a copy of instance metadata, 
     and may raise errors or return false to forbid creation of datamanager instance.
+    
+    Parameter "update_timestamp" is a boolean.
     """
 
     game_root = _get_game_instances_mapping().get(game_instance_id)
@@ -219,7 +226,8 @@ def _fetch_available_game_data(game_instance_id, metadata_checker):
             raise GameMaintenanceError(_("Metadata check didn't allow access to instance."))
 
     game_metadata["accesses_count"] += 1
-    game_metadata["last_access_time"] = datetime.utcnow()
+    if update_timestamp:
+        game_metadata["last_access_time"] = datetime.utcnow()
 
     game_data = game_root["data"] # we don't care about game STATUS, we fetch it anyway
     return game_data
@@ -241,11 +249,13 @@ def check_game_is_in_maintenance(game_instance_id, game_metadata):
 
 
 # NO transaction management here!
-def retrieve_game_instance(game_instance_id, request=None, metadata_checker=check_game_not_in_maintenance):
+def retrieve_game_instance(game_instance_id, request=None, metadata_checker=check_game_not_in_maintenance, update_timestamp=False):
     """
     If metadata_checker is None, checks on instance availability are skipped.
     """
-    game_data = _fetch_available_game_data(game_instance_id=game_instance_id, metadata_checker=metadata_checker)
+    game_data = _fetch_available_game_data(game_instance_id=game_instance_id,
+                                           metadata_checker=metadata_checker,
+                                           update_timestamp=update_timestamp)
     dm = GameDataManager(game_instance_id=game_instance_id,
                          game_root=game_data,
                          request=request)

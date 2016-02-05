@@ -41,7 +41,9 @@ def login(request, template_name='profile/login.html'):
             if request.POST.get("password_forgotten", None): # password recovery system
                 with action_failure_handler(request, success_message=None):
                     request.datamanager.get_secret_question(username)  # check that it's OK
-                    return HttpResponseRedirect(reverse(secret_question, kwargs=dict(game_instance_id=request.datamanager.game_instance_id, concerned_username=username)))
+                    return HttpResponseRedirect(game_view_url(secret_question,
+                                                              datamanager=request.datamanager,
+                                                              concerned_username=username))
 
             else:  # normal authentication
                 with action_failure_handler(request, _("You've been successfully logged in.")):  # message won't be seen because of redirect...
@@ -49,7 +51,7 @@ def login(request, template_name='profile/login.html'):
                     if next_url:
                         _target_url = next_url
                     else:
-                        _target_url = reverse("pychronia_game-homepage", kwargs=dict(game_instance_id=request.datamanager.game_instance_id))
+                        _target_url = game_view_url("pychronia_game-homepage", datamanager=request.datamanager)
                     return HttpResponseRedirect(_target_url) # handy
 
     else:
@@ -73,7 +75,7 @@ def logout(request):
 
     user = request.datamanager.user  # better to take user only NOW, after logout
     user.add_message(_("You've been successfully logged out."))
-    return HttpResponseRedirect(reverse(login, kwargs=dict(game_instance_id=request.datamanager.game_instance_id)))
+    return HttpResponseRedirect(game_view_url(login, datamanager=request.datamanager))
 
 
 
@@ -88,7 +90,7 @@ def secret_question(request, concerned_username, template_name='profile/secret_q
         secret_question = request.datamanager.get_secret_question(concerned_username)
     except UsageError:
         request.datamanager.user.add_error(_("You must provide a valid username to recover your password"))
-        return HttpResponseRedirect(reverse("pychronia_game-homepage", kwargs=dict(game_instance_id=request.datamanager.game_instance_id)))
+        return HttpResponseRedirect(game_view_url("pychronia_game-homepage", datamanager=request.datamanager))
 
 
     if request.method == "POST" and request.POST.get("recover", None):

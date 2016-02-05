@@ -41,7 +41,6 @@
 
     {% if message_categories %}
     <div class="scroll_yellow_flat center medium_width">
-        <a {% if not selected_category %}style="font-weight: bold"{% endif %} href="{% game_view_url "pychronia_game.views.messages_templates" %}">{% trans "ALL" %}</a>&nbsp;
         {% for cat in message_categories %}<a {% if cat == selected_category %}style="font-weight: bold"{% endif %} href="{% game_view_url "pychronia_game.views.messages_templates" %}?category={{ cat|urlencode }}">{{ cat }}</a>&nbsp; {% endfor %}
     </div>
     {% endif %}
@@ -50,7 +49,6 @@
 
         <div style="text-align:center;">
             <i>{% trans "No messages yet." %}</i>
-
         </div>
 
     {% else %}
@@ -65,7 +63,7 @@
             {% endif %}
             {% endcomment %}
 
-            {% include "messaging/single_message.html" with ctx=ctx message=message is_first=1 counter=1 %}
+            {% include "messaging/single_message.html" with ctx=ctx message=message is_first=1 %}
         {% endfor %}
 
     {% endif %}

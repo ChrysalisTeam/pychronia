@@ -11,6 +11,9 @@ IMPERSONATION_TARGET_POST_VARIABLE = "_set_impersonation_target_"
 IMPERSONATION_WRITABILITY_POST_VARIABLE = "_set_impersonation_writability_"
 ENFORCED_SESSION_TICKET_NAME = "session_ticket"
 
+TEMP_URL_USERNAME = "redirect"  # with this as placeholder in URL, user will get redirected to proper URL without error
+UNIVERSAL_URL_USERNAME = "anyuser"  # with this as placeholder in URL, no redirection will occur, session will not be URL-backed
+
 """
 Django Notes
 
@@ -98,7 +101,7 @@ def compute_enforced_login_token(game_instance_id, login, is_observer=False):
     
 
 
-def try_authenticating_with_session(request):
+def try_authenticating_with_session(request, url_game_username=None):
     """
     This function lets exceptions flow...
     """
@@ -108,6 +111,7 @@ def try_authenticating_with_session(request):
 
     potential_session_ticket = _lookup_enforced_session_or_none(request)
     if potential_session_ticket:
+        logging.warning("Using ENFORCED session ticket: %r", potential_session_ticket)
         session_ticket = potential_session_ticket
     del potential_session_ticket
 
@@ -126,9 +130,12 @@ def try_authenticating_with_session(request):
     else:
         requested_impersonation_target = requested_impersonation_writability = None
 
+    # priority to POST data, but beware of special (requested_impersonation_target=="") case
+    final_requested_impersonation_target = requested_impersonation_target if requested_impersonation_target is not None else url_game_username
+    
     try:
         res = datamanager.authenticate_with_session_data(session_ticket=session_ticket, # may be None
-                                                           requested_impersonation_target=requested_impersonation_target,
+                                                           requested_impersonation_target=final_requested_impersonation_target,
                                                            requested_impersonation_writability=requested_impersonation_writability,
                                                            django_user=request.user) # can be anonymous
         #print("NEW AUTHENTICATION DATA IN SESSION", res)

@@ -64,7 +64,7 @@ inner_game_urlpatterns = patterns('pychronia_game.views',
     url(r'^pages/(?P<page_id>[^/]*)/$', 'view_static_page'),
 
     url(r'^encyclopedia/$', 'view_encyclopedia'),
-    url(r'^encyclopedia/(?P<article_id>[^/]*)/$', 'view_encyclopedia'),
+    url(r'^encyclopedia/(?P<current_article_id>[^/]*)/$', 'view_encyclopedia'),
 
     url(r'^manual/(?P<keyword>[^/]*)/$', 'view_help_page'),
 
@@ -75,6 +75,7 @@ inner_game_urlpatterns = patterns('pychronia_game.views',
     url(r'^static_pages_management/$', 'static_pages_management'),
     url(r'^global_contacts_management/$', 'global_contacts_management'),
     url(r'^radio_spots_editing/$', 'radio_spots_editing'),
+    url(r'^game_items_management/$', 'game_items_management'),
     url(r'^admin_information/$', 'admin_information'),
     url(r'^master_manual/$', 'gamemaster_manual'),
 
@@ -98,11 +99,11 @@ inner_game_urlpatterns = patterns('pychronia_game.views',
 #    (r'^ajax_domotics_security/$', 'ajax_domotics_security'), # for heavy client, if used
 #    (r'^domotics_security/$', 'domotics_security'),
 
-    url(r'^login/$', 'login'),
+    url(r'^login/$', 'login', name="pychronia_game-login"),
     url(r'^secret_question/(?P<concerned_username>[^/]*)/$', 'secret_question'),
     url(r'^profile/$', 'character_profile'),
     url(r'^friendships/$', 'friendship_management'),
-    url(r'^logout/$', 'logout'),
+    url(r'^logout/$', 'logout', name="pychronia_game-logout"),
 
 
     url(r'^messages/compose/$', 'compose_message'),
@@ -130,7 +131,7 @@ inner_game_urlpatterns = patterns('pychronia_game.views',
     url(r'^ability/admin_dashboard/$', 'admin_dashboard'),
     url(r'^ability/network_management/$', 'mercenaries_hiring'),
     url(r'^ability/matter_analysis/$', 'matter_analysis'),
-    ##url(r'^ability/telecom_investigation/$', 'telecom_investigation'),
+    url(r'^ability/telecom_investigation/$', 'telecom_investigation'),
     url(r'^ability/world_scan/$', 'world_scan'),
     url(r'^ability/artificial_intelligence/$', 'artificial_intelligence'),
     url(r'^ability/chess_challenge/$', 'chess_challenge'),
@@ -171,7 +172,8 @@ game_admin_urlpatterns = patterns('pychronia_game.meta_administration_views',
 urlpatterns = patterns('',
         url(r'^', include(game_admin_urlpatterns)),
         url(r'^', include(support_urlpatterns)),
-        url(r'^(?P<game_instance_id>\w+)/', include(inner_game_urlpatterns)),
+        url(r'^(?P<game_instance_id>\w+)/$', 'pychronia_game.views.game_homepage_without_username'),
+        url(r'^(?P<game_instance_id>[^/]+)/(?P<game_username>[^/]+)/', include(inner_game_urlpatterns)),  # beware - accept all kinds of characters here!
 )
 
 

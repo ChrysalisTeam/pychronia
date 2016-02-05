@@ -10,8 +10,9 @@ import traceback
 import collections
 import copy
 import math
-
+from smtplib import SMTPException
 from contextlib import contextmanager
+
 from django.conf import settings
 from django.core.mail import mail_admins, send_mail
 from django.http import Http404, HttpResponseRedirect, HttpResponse, \
@@ -21,18 +22,21 @@ from django.template import RequestContext
 from django.utils.html import escape
 from django.contrib import messages
 from django.utils.translation import ugettext as _, ugettext_lazy, ungettext
+from django import forms
+from django.contrib.messages import get_messages
+from django.utils.http import urlencode
+
 from pychronia_game.common import *
 from pychronia_game.datamanager import datamanager_administrator
-from django.contrib.messages import get_messages
 from pychronia_game.datamanager.datamanager_administrator import GAME_STATUSES
-from django import forms
 from pychronia_game import authentication
 from pychronia_game.utilities import encryption
-from django.utils.http import urlencode
-from smtplib import SMTPException
+from pychronia_game.datamanager.abstract_form import SimpleForm
 
 
-class GameInstanceCreationForm(forms.Form):
+
+
+class GameInstanceCreationForm(SimpleForm):
     game_instance_id = forms.SlugField(label=ugettext_lazy("Game instance ID (slug)"), required=True)
     creator_login = forms.CharField(label=ugettext_lazy("Creator login"), required=True)
     creator_email = forms.EmailField(label=ugettext_lazy("Creator email"), required=False) # only required for non-superuser
@@ -75,7 +79,7 @@ def decode_game_activation_token(activation_token):
 
 def _build_activation_url(**kwargs):
     token = compute_game_activation_token(**kwargs)
-    activation_link = settings.SITE_DOMAIN + reverse(activate_instance) + "?" + urlencode(dict(token=token))
+    activation_link = config.SITE_DOMAIN + reverse(activate_instance) + "?" + urlencode(dict(token=token))
     return activation_link
 
 
@@ -157,8 +161,6 @@ def activate_instance(request):
             if (metadata["creator_login"] != creator_login or metadata["creator_email"] != creator_email):
                 raise ValueError("Creator data doesn't match for game instance %(game_instance_id)s" % SDICT(game_instance_id=game_instance_id))
 
-            pass # TODO FIXME add check on existing metadata.creator_login
-
         # we retrieve the datamanager whatever its possible maintenance status
         dm = datamanager_administrator.retrieve_game_instance(game_instance_id, request=None, metadata_checker=lambda *args, **kwargs: True)
         master_login = dm.get_global_parameter("master_login")
@@ -167,7 +169,8 @@ def activate_instance(request):
         session_token_display = urlencode({authentication.ENFORCED_SESSION_TICKET_NAME: authentication_token})
 
         import pychronia_game.views
-        target_url = settings.SITE_DOMAIN + reverse(pychronia_game.views.homepage, kwargs=dict(game_instance_id=game_instance_id)) + "?" + session_token_display
+        target_url = config.SITE_DOMAIN + reverse(pychronia_game.views.homepage, kwargs=dict(game_instance_id=game_instance_id, game_username=master_login))
+        target_url += "?" + session_token_display
 
         content = _("In case you don't get properly redirected, please copy this link into our URL bar: %(target_url)s") % SDICT(target_url=target_url)
         return HttpResponseRedirect(target_url, content=content)
@@ -233,7 +236,7 @@ def manage_instances(request):
                 login = request.POST["login"].strip()
                 is_observer = bool(request.POST.get("is_observer"))
                 authentication_token = authentication.compute_enforced_login_token(game_instance_id=game_instance_id, login=login, is_observer=is_observer)
-                messages.add_message(request, messages.INFO, _(u"Auto-connection token for 'instance=%(instance)s, login=%(login)s and is_observer=%(is_observer)s' is displayed below") %
+                messages.add_message(request, messages.INFO, _(u"Auto-connection token for instance=%(game_instance_id)s, login=%(login)s and is_observer=%(is_observer)s is displayed below") %
                                                                SDICT(game_instance_id=game_instance_id, login=login, is_observer=is_observer))
                 session_token_display = urlencode({authentication.ENFORCED_SESSION_TICKET_NAME: authentication_token})
             else:
@@ -281,7 +284,7 @@ def edit_instance_db(request, target_instance_id):
                                                                   metadata_checker=datamanager_administrator.check_game_is_in_maintenance)
 
             try:
-                data_tree = dm.load_zope_database(yaml_input) # checks data
+                data_tree = dm.load_zope_database_from_string(yaml_input) # checks data
             except Exception as e:
                 messages.add_message(request, messages.ERROR, _(u"Data check error (%(exception)r), see details below.") % SDICT(exception=e))
                 special_message = traceback.format_exc()

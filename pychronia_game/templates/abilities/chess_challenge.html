@@ -37,11 +37,13 @@ P4wn_display.prototype.move = function(start, end, promotion){
             if (this.players[state.to_play] == 'computer') {
                 // previous player is assumed to be human
                 //alert("HUMAN WON");
+                console.log("Chess game won by Human");
                 $.jnotify("{% trans "You won this game! Sending data to server..." %}", "success");
                 notify_chess_player_victory();
             }
             else {
                 // DO NOTHING alert("COMPUTER WON");
+                 console.log("Chess game won by Computer");
                 $.jnotify("{% trans "You lost this game!" %}");
             }
         }

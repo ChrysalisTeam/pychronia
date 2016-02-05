@@ -1,0 +1,24 @@
+
+{% load i18n %}
+
+{% if not wiretapping_packs %}
+
+<p><i>{% trans "No wiretapping has been setup so far." %}</i></p>
+
+{% else %}
+
+<dl>
+{% for username, data in wiretapping_packs %}
+<dt>{{username|capfirst}}{% if data.has_confidentiality_activated %} ({% trans "confidentiality activated" %}){% endif %}</dt>
+<dd>
+{% trans "Wiretapping targets:" %}
+{% for target in data.current_targets %}
+{{target|capfirst}}
+{% if target in data.broken_wiretapping_targets %} ({% trans "confidentiality activated" %}){% endif %}{% if not forloop.last %}, {% endif %}
+{% endfor %}
+</dd>
+{% endfor %}
+</dl>
+
+
+{% endif %}

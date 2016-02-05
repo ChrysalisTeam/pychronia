@@ -32,5 +32,10 @@ class AdminInformation(AbstractGameView):
 
         folders_info = self.datamanager.get_all_encrypted_folders_info()
 
+        # we sort these by view identifier, for now
+        admin_summaries = self.datamanager.get_game_view_admin_summaries()
+        admin_summaries = sorted(admin_summaries.items(), key=lambda x: x[0])
+
         return dict(global_parameters=global_parameters,
-                    folders_info=sorted(folders_info.items()))
+                    folders_info=sorted(folders_info.items()),
+                    admin_summaries=admin_summaries)

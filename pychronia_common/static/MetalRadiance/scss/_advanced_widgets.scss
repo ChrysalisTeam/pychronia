@@ -1,18 +1,7 @@
 
 
-/* widgets visible onl by admins and masters */
+/* widgets visible only by admins and masters */
 
-
-
-/*
-    font-size: 2em;
-    line-height: normal;
-
-    font-family: kingthings_calligraphica_light;
-    margin: 8px;
-    padding: 6px;
-    width: 50%;
-*/
 
 .file_url_block
 {
@@ -44,8 +33,6 @@
     color: $dark_red;
     font-size: 1em;
     font-style: italic;
-    line-height: normal;
-
 
     width: 95%;
 }
@@ -121,7 +108,6 @@ table.realtable {
             font-size:1.1em;
             font-family:Arial;
             font-weight:normal;
-            line-height:1.3em;
         }
     }
 
@@ -138,7 +124,6 @@ table.realtable {
             border:0px solid #000000; // special border
             border-width:0px 0px 1px 1px;
             font-size:1.3em;
-            line-height:1.3em;
             font-weight:bold;
         }
 
@@ -159,7 +144,6 @@ table.realtable {
             font-size:1.1em;
             font-family:Arial;
             font-weight:normal;
-            line-height:1.3em;
         }
 
     }

@@ -2,32 +2,27 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from pychronia_game.common import *
-from pychronia_game.common import _undefined # for static checker...
-import json
-from django.http import Http404, HttpResponseRedirect, HttpResponse, \
-    HttpResponseForbidden, HttpResponseBadRequest
-from django.template import loader
-
 import urllib
-
-from ..datamanager import GameDataManager
-from .abstract_form import AbstractGameForm, UninstantiableFormError
-from .datamanager_tools import transaction_watcher, readonly_method
-from django.forms import Form
-
+import json
 
 from ZODB.POSException import POSError # parent of ConflictError
+
+from pychronia_game.common import *
+from pychronia_game.common import _undefined # for static checker...
+
+from django.http import Http404, HttpResponseRedirect, HttpResponse, \
+    HttpResponseForbidden, HttpResponseBadRequest
 from django.core import urlresolvers
 from django.utils.functional import Promise # used eg. for lazy-translated strings
 from django.shortcuts import redirect
 
-'''
-REDIRECTION TO LOGIN PAGE - not used ATM
-            url = reverse("pychronia_game.views.login", kwargs=dict(game_instance_id=dm.game_instance_id))
-            qs = urllib.urlencode(dict(next=request.build_absolute_uri()))
-            return HttpResponseRedirect("%s?%s" % (url, qs))
-'''
+from ..datamanager import GameDataManager
+from .abstract_form import AbstractGameForm, SimpleForm, UninstantiableFormError
+from .datamanager_tools import transaction_watcher, readonly_method
+
+
+
+
 
 @decorator
 def transform_usage_error(caller, self, request, *args, **kwargs):
@@ -36,8 +31,18 @@ def transform_usage_error(caller, self, request, *args, **kwargs):
     if an exception is encountered.
     """
     dm = request.datamanager
-    return_to_home_url = reverse("pychronia_game-homepage", kwargs=dict(game_instance_id=request.datamanager.game_instance_id))
+
+    return_to_home_url = game_view_url("pychronia_game-homepage", datamanager=dm)
     return_to_home = HttpResponseRedirect(return_to_home_url)
+
+    from ..authentication import TEMP_URL_USERNAME
+    return_to_login_url = game_view_url("pychronia_game-login", datamanager=dm)
+    return_to_login_next_url = request.build_absolute_uri()
+    # we do a HACK to deal with in-url usernames (except UNIVERSAL_URL_USERNAME username, which stays as is)
+    return_to_login_next_url = return_to_login_next_url.replace("/%s/" % dm.user.username, "/%s/" % TEMP_URL_USERNAME)
+    return_to_login_qs = urllib.urlencode(dict(next=return_to_login_next_url))
+    return_to_login = HttpResponseRedirect("%s?%s" % (return_to_login_url, return_to_login_qs))
+
     assert urlresolvers.resolve(return_to_home_url)
     try:
 
@@ -54,6 +59,9 @@ def transform_usage_error(caller, self, request, *args, **kwargs):
         else:
             dm.user.add_error(_("Access denied to page %s") % self.TITLE)
             dm.logger.warning("Access denied to page %s" % self.TITLE, exc_info=True)
+
+        if not request.datamanager.user.impersonation_target and request.datamanager.user.is_anonymous:
+            return return_to_login  # special case for REAL anonymous users
         return return_to_home
 
     except (GameError, POSError), e:
@@ -173,7 +181,7 @@ class GameViewMetaclass(type):
                         if form_class_required:
                             assert FormClass
                         if FormClass:
-                            assert issubclass(FormClass, Form), FormClass.__mro__ # not necessarily AbstractGameForm - may be managed manually
+                            assert issubclass(FormClass, SimpleForm), FormClass.__mro__ # not necessarily AbstractGameForm - may be managed manually
 
                 for_chars = (NewClass.ACCESS in (UserAccess.authenticated, UserAccess.character))
                 _check_action_registry(NewClass.GAME_ACTIONS, form_class_required=False, allow_permission_requirement=for_chars) # can be directly called via ajax/custom forms
@@ -300,7 +308,7 @@ class AbstractGameView(object):
             if user.has_permission(cls.get_access_permission_name()):
                 return AccessResult.available  # OVERRIDE: even if not view_is_globally_available, this user has access then!
             elif view_is_globally_available:
-                return AccessResult.permission_required  # thus menu entry will be disable but VISIBKLE
+                return AccessResult.permission_required  # thus menu entry will be disable but VISIBLE
 
         if not view_is_globally_available:
             return AccessResult.globally_forbidden # EVEN for game master ATM
@@ -537,8 +545,10 @@ class AbstractGameView(object):
 
         if bound_form and bound_form.is_valid():
             with action_failure_handler(self.request, success_message=None): # only for unhandled exceptions
+                normalized_values = bound_form.get_normalized_values()
+                self.logger.info("In _do_process_form_submission normalized_values: %r", normalized_values)
                 success_message = execution_processor(action_name=action_name,
-                                                      unfiltered_params=bound_form.get_normalized_values())
+                                                      unfiltered_params=normalized_values)
                 res["result"] = action_successful = True
                 if isinstance(success_message, basestring) and success_message:
                     user.add_message(success_message)
@@ -570,6 +580,8 @@ class AbstractGameView(object):
 
         user = self.datamanager.user
         data = self.request.POST
+
+        #self.logger.debug("Processing HTML POST data: %r", data)
 
         if data.get(self._ACTION_FIELD): # manually built form
             res["result"] = False # by default
@@ -610,7 +622,7 @@ class AbstractGameView(object):
             action_success = None # unused ATM
             previous_form_data = None
 
-        assert not previous_form_data or previous_form_data.action_successful == action_success # coherency
+        assert not previous_form_data or previous_form_data.action_successful == action_success # coherence
 
         if action_success and self._redirection_url:
             return redirect(self._redirection_url)  # optimization: we do it BEFORE get_template_vars()
@@ -756,7 +768,9 @@ class AbstractGameView(object):
     @transaction_watcher
     @transform_usage_error
     def process_admin_request(self, request, action_name):
-
+        """
+        Used to process POST mini-forms from admin dashboard view.
+        """
         assert action_name in self.ADMIN_ACTIONS # else big pb!
 
         self._before_request(request)
@@ -790,6 +804,19 @@ class AbstractGameView(object):
             return res
         finally:
             self._after_request()
+
+
+    @readonly_method
+    def get_admin_summary_html(self):
+        return self._get_admin_summary_html()
+
+    def _get_admin_summary_html(self):
+        """
+        Override this utility to return an HTML block, which will be exposed in "admin info" special page.
+        
+        Must NOT rely on a self.request object to be present.
+        """
+        return None
 
 
 
@@ -854,8 +881,6 @@ def register_view(view_object=None,
     Returns a CLASS or a METHOD, depending on the type of the wrapped object.
     """
 
-
-
     def _build_final_view_callable(real_view_object):
 
         final_view_name = str(view_name) if view_name else real_view_object.__name__
@@ -878,7 +903,6 @@ def register_view(view_object=None,
                 # we get back from proxy to AbstractGameView class
                 local_attach_to = local_attach_to.klass
                 assert issubclass(local_attach_to, AbstractGameView)
-
 
             normalized_access_args = _normalize_view_access_parameters(access=access,
                                                                        requires_character_permission=requires_character_permission,

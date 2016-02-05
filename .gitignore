@@ -13,6 +13,7 @@
 
 .vagrant
 
+.cache
 thumbs/
 /bits and pieces of old pychronia.py
 savegames

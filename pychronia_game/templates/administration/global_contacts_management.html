@@ -6,31 +6,9 @@
 
 {# BEWARE - SOME CONTACTS ARE IMMUTABLE #}
 
+
 {% block sidebar %}
-
-{% usekwacro side_panel_start frame_class="mini_frame float_left clear_left" decos="2" %}
-    <h2>{% trans "Entries" %}</h2>
-
-    <h3>{% trans "Mutable" %}</h3>
-    <div class="rice_paper_rose tiny_bullets full_width" style="font-size:0.8em;">
-    <ul>
-        {% for identifier, form in forms %}
-            <li><a href="#entry-{{ identifier|slugify }}">{{ identifier|default:_("NEW ENTRY") }}</a></li>
-        {% endfor %}
-    </ul>
-    </div>
-
-    <h3>{% trans "Immutable" %}</h3>
-    <div class="rice_paper_rose tiny_bullets full_width" style="font-size:0.8em;">
-    <ul>
-        {% for identifier, form in immutable_table_items %}
-            <li><a href="#entry-{{ identifier|slugify }}">{{ identifier }}</a></li>
-        {% endfor %}
-    </ul>
-    </div>
-
-{% usekwacro side_panel_end %}
-
+{% include "administration/_sidebar_management_index.html" %}
 {% endblock %}
 
 
@@ -39,12 +17,14 @@
 
     {% if forms %}
 
+        {% if immutable_table_items %}
 	    <h2>{% trans "Editable contacts" %}</h2>
+        {% endif %}
 
 	    {% for identifier, form in forms %}
 	    <div id="entry-{{ identifier|slugify }}" class="scroll_realistic_thin_ends center">
 
-	        {% usekwacro deletion_button identifier %}
+	        {% usekwacro deletion_button identifier undeletable_identifiers %}
 
 	        <a name="entry-{{ identifier|slugify }}"><h2>{{ identifier|default:_("NEW ENTRY") }}</h2></a>
 	        <form id="update_form" action="#entry-{{ identifier|slugify }}" method="post" autocomplete="off">
@@ -57,7 +37,7 @@
 
     {% else %}
 
-
+        {# nothing atm... #}
 
     {% endif %}
 
@@ -71,22 +51,23 @@
 	    {% for identifier, data in immutable_table_items %}
 	    <div id="entry-{{ identifier|slugify }}" class="scroll_realistic_thin_ends center">
 
-            <p><b>{{ identifier }}</b></p>
+            <p><b><u>{{ identifier }}</u></b></p>
 
 	        <p>
-	            {% trans "Avatar:" %}
+	            <b>{% trans "Avatar:" %}</b>
 	            {% if data.avatar %}
-	               <img style="vertical-align: middle" src="{% game_file_img data.avatar alias="contact_avatar" %}"/><br/>
-	               &nbsp;&nbsp;<span class="small_text">({{data.avatar}})</span>
+	               <img style="vertical-align: middle" src="{% game_file_img data.avatar alias="contact_avatar" %}" title="{% trans "Source" %}: {{data.avatar}}"/><br/>
 	            {% else %}
 	               {% trans "None" %}
 	            {% endif %}
-	            </p>
+	        </p>
 
-            <p>{% trans "Description" %}: {{ data.description|default:_("None") }}</p>
+            <p><b>{% trans "Description" %}:</b> {{ data.description|default:_("None") }}</p>
 
-            <p>{% trans "Gamemaster Hints" %}: {{ data.gamemaster_hints|default:_("None") }}</p>
+            <p><b>{% trans "Gamemaster Hints" %}:</b> {{ data.gamemaster_hints|default:_("None") }}</p>
 
+            {% comment %}
+            NOT YET USED BY DATAMANAGER ATM
             <p>
 	        {% if data.access_tokens == None %}
 	            PUBLIC
@@ -94,13 +75,14 @@
 	            {% trans "Allowed for" %}: {{ data.access_tokens|join:", "|default:_("No one") }}
 	        {% endif %}
             </p>
+            {% endcomment %}
 
 	    </div>
 	    {% endfor %}
 
 	{% else %}
 
-
+        {# nothing atm... #}
 
     {% endif %}
 

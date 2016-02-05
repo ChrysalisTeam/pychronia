@@ -66,8 +66,8 @@ class ImageEmbedDirective(rst.Directive):
                        '", "'.join(self.align_h_values)))
 
         code = generate_image_viewer(imageurl=self.arguments[0],
-                                     preset=self.options.get("alias", "default"),
-                                     align=self.options.get("align", "")) # BEWARE - we expect that "default" preset to exist in settings!
+                                     preset=self.options.get("alias", "default"), # BEWARE - we expect that "default" preset to exist in settings!
+                                     align=self.options.get("align", ""))
         return [nodes.raw('', code, format='html')]
 
 

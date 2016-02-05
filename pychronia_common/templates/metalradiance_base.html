@@ -38,9 +38,6 @@
 
 
 
-
-
-
     <link href="{{ STATIC_URL }}MetalRadiance/metalradiance.css" rel="stylesheet" type="text/css" /><!-- MUST BE LAST -->
 
 
@@ -61,7 +58,7 @@
     <script src="{{ STATIC_URL }}libs/jquery-jplayer-2.3.0/jquery.jplayer.min.js" type="text/javascript"></script>
     <script src="{{ STATIC_URL }}libs/jquery-jplayer-2.3.0/add-on/jplayer.playlist.min.js" type="text/javascript"></script>
     <script src="{{ STATIC_URL }}libs/jnotify/lib/jquery.jnotify.js" type="text/javascript"></script>
-    <script src="{{ STATIC_URL }}libs/hammer.js" type="text/javascript"></script>
+    <!-- only if jquery.mmenu swipe-to-open is needed - script src="{{ STATIC_URL }}libs/hammer.js" type="text/javascript"></script-->
     <script src="{{ STATIC_URL }}libs/jquery-mmenu/dist/core/js/jquery.mmenu.min.all.js" type="text/javascript"></script>
 
 
@@ -169,7 +166,7 @@
 
     {% block notification_banners %}
         {% if notifications %}
-        <div class="notification_panel {{ notification_type|default:"mixed" }}">
+        <div class="notification_panel {{ notification_type|default:"mixed" }}" title="{% trans "Click on the border of this notification panel to close it." %}">
             <div class="notification_panel_decorations">
                 <div class="notification_panel_content">
                    {% for message in notifications %}
@@ -369,7 +366,7 @@
 
 
     function default_ajax_error_handler(jqXHR, extStatus, errorThrown) {
-        msg = "Server communication problem - " + extStatus
+        msg = "Server communication problem - " + extStatus;
         if (errorThrown) {
             msg += " (" + errorThrown + ")";
         }
@@ -391,8 +388,18 @@
     {% render_block "definition_js" %}
 
 
-
-
+    var launchPulsationOnAdminNotes = function(prefix) {
+           /* Signal that parts of the page are for admins only */
+           $(prefix + " .admin-note").not(prefix + " .admin-note .admin-note").pulsate({
+                              color: "#9D8126",                       // set the color of the pulse
+                              reach: 4,                              // how far the pulse goes in px
+                              speed: 1000,                            // how long one pulse takes in ms
+                              pause: 500,                               // how long the pause between pulses is in ms
+                              glow: true,                             // if the glow should be shown too
+                              repeat: true,                           // will repeat forever if true, if given a number will repeat for that many times
+                              onHover: false                          // if true only pulsate if user hovers over the element
+                            });
+    };
 
 
     var INIT_JS = function() {
@@ -413,16 +420,17 @@
                                            titleLink: null
                                        },
                                        // options : http://mmenu.frebsite.nl/documentation/options/
-                                       dragOpen: {
+                                       /* DO NOT enable swip-to-open, it might interfere with mobile touch-scrolling
+                                        dragOpen: {
                                            open: $.mmenu.support.touch  // only on touch devices
-                                       }
+                                       }*/
                                     },
                                     {
                                        // configuration : http://mmenu.frebsite.nl/documentation/options/configuration.html
                                        clone: true
                                     });
-            var API = $("#full_header").data( "mmenu" );
-            //API.open();
+            //var mmenuApi = $("#full_header").data( "mmenu" );
+            //mmenuApi.open();
 
             $('#menulist').dropmenu(
                 {
@@ -448,16 +456,8 @@
                 }
             */
 
-           /* sign that parts of the page are for admins only */
-           $(".admin-note").not(".admin-note .admin-note").pulsate({
-                              color: "#9D8126",                       // set the color of the pulse
-                              reach: 4,                              // how far the pulse goes in px
-                              speed: 1000,                            // how long one pulse takes in ms
-                              pause: 500,                               // how long the pause between pulses is in ms
-                              glow: true,                             // if the glow should be shown too
-                              repeat: true,                           // will repeat forever if true, if given a number will repeat for that many times
-                              onHover: false                          // if true only pulsate if user hovers over the element
-                            });
+
+           launchPulsationOnAdminNotes("body");
 
            /*
            $("form").disabler({ // FIXME - ALL disabled container must have an ID !! Let's create it on demand!!

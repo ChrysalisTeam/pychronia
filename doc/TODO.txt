@@ -15,147 +15,132 @@ crédibilité de notre Académie, qui a toujours été en pointe dans ce
 domaine.
 
 
-GAMEMASTER_HINTS in:
 
-	- characters
-	- contacts
-	- templates
-	- radio spots
-	- game items
-	- static pages
 
 
 
 FEATURES
 ------------
 
-- /DEMO/guy1/... URLS for transparent per-tab sessions (nouveau system d'impersonation)
+- masquer par défaut les archivés dans "messages transmis"
 
+- pouvoir changer secret question & password des persos
 
-- enlever la homepage "enchères" inutile, amener de suite sur les persos ??
-
-- ajouter formulaires de pognon dans la page character_management ?
-
-- corrupt wiretapped emails, via duplication (else trouble with direct access links)
-
-- METTRE UN LIEN PARAMETRABLE QUAND ON GAGNE CONTRE l'IA d'échecs!!!!!
-
-- allow to wiretap ANY email address? nope dans le "future enhancement"
-
-
-- fix support of mp4 format, and prevent nasty errors like this (JPLAYER FTW)
-      File "/home/pakal/webapps/chrysalis_game/pychronia/pychronia_game/utilities/mediaplayers.py", line 146, in generate_media_player
-        raise ValueError("Unsupported media type")
-      ValueError: Unsupported media type
-
-
-- BUG si joueurs passés en pnj/non pnj avec auctionlist :
-   assert set(self._determine_basic_visibility(msg).keys()) - set([master]) <= set(msg["visible_by"].keys()), [self._determine_basic_visibility(msg).keys(), msg]
-
-
-- carte du monde : un clic sur un pays/ville principal pour un zoom plus détaillé (un peu comme hurlevent wow) -> intégrer touch map prototype
-
-
-- fix checks of ajax calls when impersonation changes
-  SEE EMAILS ERROR (EXTERNAL IP): Internal Server Error: /premium/messages/ajax_mark_msg_read/
-
-
-- trier contacts par ordre logique ?? déjà par domaine...
-
-- permettre d'éditer les messages en attente d'envoi ? nope, mieux vaut "save as template"...
-
-
-- réparer (Dernier accès : 4 juil. 2015 04:45:36), à cause des crontasks, en page administration
-
-- tester "no url nor path" in webradio spot page
-
-
-- fix bugs in rich text, with spaces in embed rst_directives, and
-  utilities.check_is_restructuredtext(value["content"]) which is buggy because must use rich_text instead
-  <- WONT FIX, this filter requires a valid request ??????
+- investiguer lenteurs de messagerie
 
 
 
+SETUP:
+- OSX -> mysql-python with homebrew
+- install django_oursql
+- django_select2: pb with git, update it
 
+- fix nasty bug where masked recipients can be spoiled by replying to an email
+
+
+Ah bon, je n'avais pas vu je pensais que seul le mj avait accès à une page du type événement, sinon je viens de me faire avoir par un petit truc inattendu, j'ai envoyé un message dans le passé depuis le compte d'émilos et ceux qui l'avaient sur écoute récemment l'ont tous reçu... J'avais pas pensé que la mise sur écoute était indépendante du temps (ça parait logique maintenant mais bon).
+
+
+LOG 500 errrors too in middleware !!! CF LOGGING setting.
+
+2a01:e34:ec14:a1f0:ddb6:8ad3:9f46:79f7 - - [16/Jan/2016:01:08:30 +0000] "POST /tpk/topaz/messages/ajax_set_dispatched_message_state_flags/ HTTP/1.0" 500 69 "http://pangeaweb.org/tpk/topaz/messages/conversations/" "Mozilla/5.0 (Windows NT 6.3; WOW64; rv:43.0) Gecko/20100101 Firefox/43.0"
+  File "/home/pakal/webapps/chrysalis_game/pychronia/dependencies/relstorage/adapters/locker.py", line 117, in hold_commit_lock
+    raise StorageError("Unable to acquire commit lock")
+StorageError: Unable to acquire commit lock
+
+
+Investigate ZODB connection pool how works
+
+FIX android
+- grey background is in FRONT!!
+- touch to scroll VS jquery.mmenu
+- fix "notification_panel in mobile mode (and NOT PUT IT SO OFTEN)
+
+Quelques points d'attention dont je me souviens:
+- faire périodiquement le tour du "tableau de bord" pour voir s'il n'y a pas des vues qui mériteraient d'être activée ; pareil pour les "permissions personnelles des joueurs"
+- penser à dévoiler peu à peu les articles encyclopédiques via leur "premier mot clef" glissé dans des emails
+
+
+Fix saut à la ligen dans Impersonation : Archbishop.Baazel (english), en haut
+
+
+https://pixabay.com/fr/chute-d-eau-noir-et-blanc-sc%C3%A9nique-936592/
+
+TRADUIRE
+body = dedent("""
+        The password corresponding to your login %(username)s is '%(password)s'.
+        Please keep it carefully and do not share it with anyone else.
+       """) % SDICT(username=username, password=password)
+
+Garnet: Vous êtes ami avec cet utilisateur depuis __trop__ peu de temps (impossible de briser l'amitié pour l'instant).  -> a ameliorer
+
+A TRADUIRE : subject = "Deep Analysis Request - item \"%s\"" % item_title
+
+
+FIX the 3s anti-spam system on "page backwards" access
+-> surtout /ability/house_locking/ a pbs avec buttons
+
+
+MESSAGERIE:
+- "sauver comme template" dans la vue "composition de nouveau message"
 
 
 
 SCRIPT
 ----------
 
-- add tags with titles to all MP3s
+mettre gamemaster hints sur encre sympathique et marchemin vierge
 
-- USE embed_image(alias, align) everywhere in fixtures, and maybe unregister image directive ??
 
-- objets proposés est 10665 kashes -> varie suivant qu'on est master ou impersoné, weird.... REVOIR WORDING
+chercher FIXMES
+
 
 - regler les "HERE GAMEMASTER HINTS" et autres FIXME
 
-Sinon pourquoi faire une "aide" en anglais et le site en français ? => EXPLIQUER dans manuel du joueur
 
-- fixer l'aide de la page "dahsboard admin"
-- dire qu'on peut réordonner les forms de la page admin dashboard
+GAMEMASTER_HINTS in:
 
-- "transraciations" changé en transfiliation??
+    - characters
+    - contacts
+    - templates
+    - radio spots
+    - game items
+    - static pages
 
-- expliquer "masquer les destinataires" et qu'on peut cliquer sur un contact
 
-- obéron keyword
+- add tags with titles to all MP3s
 
-- dire "marquer comm lus les messages de LG périodiquement, soi même"
-
-- cacher compétences spéciales pour PNJ <- personal permissions EVERYWHERE
-
-- explain about static page "titles" usage
+- USE embed_image(alias, align) everywhere in fixtures, and maybe unregister image directive ?
+  (obsolete?) add GAME_IMAGE_URL in help pages, better than embed_image for now <- ??
 
 - update abilities settings and prices
 
-- mon compte (PAS "profile personnel"), ou Mon profil
-
-
-ARTICLES MANQUANTS
-- académie alifir (et image dedans) <--------
-
-- les notifications doivent etre plus explicites dans leur contenu
-
 - faire CHRONOLOGIE détaillée des évènements pour aider énigmes
-
-- message answer does NOT mark "read" the parent message - YEP, à documenter
-
-Toutes ces gemmes peuvent etre vendues à leur prix de reference sur le marché international, dont le cours est tres stable actuellement. Il parait d'ailleurs que notre portail Anthropia va etre connecté sous peu à une place des ventes.
-
-Ces lots sont volumineux, mais rien ne vous interdit de vous entendre pour en acheter en commun, puis vous repartir les gemmes individuelles ensuite.
-
-
-- add GAME_IMAGE_URL in help pages, better than embed_image for now <- ??
 
 - manual for TTS acapela !!
 
-- add all avatar images
-
-- journée de rame en aval de ENDROIT_PRECIS_XXXX??. <TODO>
-
-- add main missing items (WIP)
-- add enough content for game startup
-
-- ajouter des details cruciaux à TOUTES runes !!!!
 
 Faire page d'introduction
 	- situation de l'univers
 	- situation géopolitique
 	- bestaire des ennemis ?
 
-- add description of partners in instruction page !
+- add enough content for game startup
 
-- clarifier règles absolues : pas de vol d'argent, pas de triche, emails uniquement valables à l'intérieur du site (dans INTRO "out game" du jeu)
+- add description of partners in intro/instruction page !
 
 - ajouter instructions ou systèmes pour éviter abus de mercenaires ? -> distribution progressive d'argent, à detailler
 
-- ajouter <instructions> possibilité échange objets archéologiques et lots entiers de gemmes (gamemaster must be aware of that)!
+- ajouter des details cruciaux à TOUTES runes !!!!
 
-média => encyclopédie => saisir l'expression : si on écrit une phrase trop longue le message d'erreur s'affiche mais le texte sort du bloc.
-   une petite croix sur la gauche ou la droite serait la bien venu ou un clic ailleurs sur le site pour refermer rapidement la bande
+
+une petite croix sur la gauche ou la droite serait la bien venu ou un clic ailleurs sur le site pour refermer rapidement la bande
    ou tout simplement autoriser le clic sur le texte pour refermer. ==> EXPLIQUER DANS HELP PAGE
+
+
+- clarifier règles absolues : pas de vol d'argent, pas de triche, emails uniquement valables à l'intérieur du site (dans INTRO "out game" du jeu)
+
+
 
 
 PROMOTION
@@ -167,6 +152,18 @@ PROMOTION
 
 TESTS
 ----------
+
+TESTER mask recipients
+
+PAUSED BUGLETS:
+- BUG si joueurs passés en pnj/non pnj avec auctionlist :
+   assert set(self._determine_basic_visibility(msg).keys()) - set([master]) <= set(msg["visible_by"].keys()), [self._determine_basic_visibility(msg).keys(), msg]
+- fix checks of ajax calls when impersonation changes
+  SEE EMAILS ERROR (EXTERNAL IP): Internal Server Error: /premium/messages/ajax_mark_msg_read/
+- fix bugs in rich text, with spaces in embed rst_directives, and
+  utilities.check_is_restructuredtext(value["content"]) which is buggy because must use rich_text instead
+  <- WONT FIX, this filter requires a valid request ??????
+
 
 - appeler http://localhost:8000/DEMO/webradio_management/ depuis tests
 
@@ -237,16 +234,61 @@ OperationalError: (1203, "User pakal_anthropia already has more than 'max_user_c
 
 
 
-NEEDS COSMETICS
------------------
-
-
-
-
-
 TASKS DONE
 ---------------
 
+- média => encyclopédie => saisir l'expression : si on écrit une phrase trop longue le message d'erreur s'affiche mais le texte sort du bloc - FIXEd with maxlength
+- create missing template msg ids from slugified subjects - DONE
+- afficher message transfered inline, and test recursive transferred messages -> OK it works fine, clsoes previous fancybox - DONE
+- normaliser LINE-HEIGHT à "normal" partout - DONE
+- mettre message quand jeu est en pause, pour gamemaster - DONE
+- mieux indiquer superuser/observer sur la page, via icônes - DONE
+- autolister les objets 3D pour le MJ : statue de Bartzar, amphore, coffre rouillé, et grimoire sur piédestal - DONE
+- ajouter <instructions> possibilité échange objets archéologiques et lots entiers de gemmes (pour gamemaster) - DONE
+- pourquoi faire une "aide" en anglais et le site en français ? EXPLIQUER dans help homepage - DONE
+- compléter les aides des 4 contenus éditables - DONE
+- explain about static page "titles" usage - DONE
+- ajouter personnage fantôme pour tests live - DONE (username=Emogladys)
+- dire "marquer comme lus les messages de LG périodiquement, soi même", au MJ - DONE
+- message answer does NOT mark "read" the parent message, à documenter - DONE
+- fixer l'aide de la page "dahsboard admin" - DONE
+- dire qu'on peut réordonner les forms de la page admin dashboard - DONE
+- support du raw-text en plus de restructuredtext, pour les messages texte - DONE
+- ensure that "coherence" is used everywhere instead of "coherency" - DONE
+- afficher le message parent (auquel on répond) dans la page "new message", inline - DONE
+- différents auto saves, par utilisateur impersoné, dans la vue "composition de nouveau message" - DONE
+- unit-test the modifiability/deletability of all data-table items - DONE
+- ajouter help page for game items management - DONE
+- dire aux joueurs qu'ils ne peuvent envoyer gemmes qu'aux gens "connus" (contactés par email) - DONE
+- reverifier ORBE dans le gamemaster manuel - DONE
+- dire "perches tendues" partout aux joueurs - DONE
+- dire aux joueurs de tenter, etre proactifs - DONE
+- parler des mémos objets dans help pages - DONE
+- get_other_known_characters -> tjrs inclure les joueurs enchérisseurs dedans ? NOPE, forcer ainsi les joueurs à COMMUNIQUER
+- ajouter les 3 gemmes spéciales dans objets !! - DONE
+- prevent "ValueError: Unsupported media type" for mp4 and other file formats - DONE
+- use absolute URLs in mediaplayers - DONE
+- repair the "?next=http://xxx" url of login system - DONE
+- rendre les message autosaves "par effective username" - DONE
+- "transraciations" changé en transfiliation?? - DONE
+- changer SIGNATURE de utilities.find_game_file(character["avatar"], "images") - DONE
+- allow both urls and local files for images of characters/items/contacts - DONE
+- bugfix the double handling of urls and files in radio spots - DONE (a single field for both, now)
+- mettre pages de résumé des mercenaires de chaque joueur et des wiretappings - DONE (nouvelle API get_admin_summary_html())
+- set top site notifications as "position: fixed" - DONE
+- Fix COMPATIBLE_ACCESSES for gamemaster summaries - need a specific GAME_ADMIN_SUMMARY method instead - DONE
+- Make login/secret-question case insensitive - DONE
+- Débit et crédit des gemmes externes - DONE
+- Factoriser sidebar-index des pages de management radio/contacts/pages/items - DONE
+- BUG, la writability est RESET quand on ouvre une page de master - FIXED
+- add "debit of gems" ability for game master - DONE
+- tester "no url nor path" in webradio spot page - ok DONE, both can be empty or set, URL is higher priority than FILE
+- objets proposés est 10665 kashes -> varie suivant qu'on est master ou impersoné, weird.... REVOIR WORDING, OK DONE
+- réparer (Dernier accès : 4 juil. 2015 04:45:36), à cause des crontasks, en page administration - OK done, maintenant updated que si VRAI POST HTTP !!
+- /DEMO/guy1/... URLS for transparent per-tab sessions (nouveau system d'impersonation) - DONE
+- enrich DM logger with authentication data - DONE
+- is use_template well protected against users - yes, only added to MessageComposeForm for MASTER
+- BUG OBSERVER MODE "aucune" impersonation fails -> add test for "" string in requested_impersonation and backed url - OK DONE
 - TWEAK image styles and thumbs, responsive, REVIEW thumbs and image formats, for mobile too - somehow DONE
 - finish embed_image directive -> DONE with "align" parameter
 - URL Webradio Publique -> dire quelle frequence, dans admin info page - DONE
@@ -260,9 +302,7 @@ TASKS DONE
 - BUG SELECT2 - OK UPDATED to latest version:
     $(hashedSelector).select2({"closeOnSelect": false, "placeholder": ""});
     <script type="text/javascript">
-        jQuery(function ($) {
-            $(hashedSelector).select2({"closeOnSelect": false, "placeholder": ""});
-        });
+        jQuery(function ($) {$(hashedSelector).select2({"closeOnSelect": false, "placeholder": ""});});
     </script>
 - BUG si % dans message - FIXED with asserts and checks
       File "/home/pakal/webapps/chrysalis_game/pychronia/pychronia_game/views/profile_views.py", line 329, in game_events
@@ -349,7 +389,7 @@ TASKS DONE
 - merge "help_pages" and "content" static page categories into same category DONE
 - check that character and item gamemaster_hints are well displayed and protected DONE
 - add avatars to characters view DONE
-- add avatar display to immutable blocks in contacts management
+- add avatar display to "immutable" blocks in contacts management
 - add slight typography via docutils/RST - DONE
 - remove "logout" link when impersonation by super user DONE
 - add "transfer" functionality to messaging system DONE
@@ -485,15 +525,40 @@ TASKS DONE
 CONTROVERSIAL ENHANCEMENTS
 -----------------------------------
 
+- mon compte (PAS "profile personnel"), ou Mon profil - bof
+- enlever la homepage "enchères" inutile, amener de suite sur les persos ??
+- trier contacts par autre ordre, das "nouveau message" ?? c'est déjà par domaine...
+- permettre d'éditer les messages en attente d'envoi ? nope, mieux vaut "save as template"...
+- METTRE UN LIEN PARAMETRABLE QUAND ON GAGNE CONTRE l'IA d'échecs ?
 - improve encrypted folders, put password in GET url ?
 - randomize master login in PlayerAuthentication._load_initial_data() DANGEROUS FOR NOW ?
 
-
 - fix shaky forms when floated left in number - should be DONE now
 - convert "orbe" to masculine genre ; replace akaris by akharis !!!!!!!!!!!!!!!!!!!
+- ajouter formulaires de pognon dans la page character_management ?
+- rendre la page "messages interceptés" activable ?? bad idea, let it be ALWAYS there
+
+
 FUTUR ENHANCEMENTS
 --------------------------
 
+- les notifications doivent etre plus explicites dans leur contenu !?
+- TO UPDATE when behaviour is changed, in the future
+            - références nombreuses aux "messages parents pas automatiquement marqués comme lus"
+            - vous pouvez attacher un de vos fichiers personnels à un message, grâce au champ de sélection dédié
+            - si vous transférez un ancien message à un de vos contacts, ce "message transféré" pourra être lu dans une nouvelle fenêtre, grâce au lien automatiquement inséré dans le nouveau message
+
+- carte du monde : un clic sur un pays/ville principal pour un zoom plus détaillé (un peu comme hurlevent wow) -> intégrer touch map prototype
+- FIX medias videos on website, for video / firefox, on WINDOWS10 (use jplayer)
+- fix support of mp4 format and others (JPLAYER FTW)
+- automate the retrieval of radio spots (ex. TTS) to local files
+- allow to DUPLICATE a game item to the "new" form, with a dedicated button
+- Make DataTable records "editable" and "deletable/renamable", separately
+- Use "strict" param in check_coherence, to check relational fields only at YAML loading
+- Add tests to ensure that clearings tables is OK, for check_coherence(strict=false) - abilities ust be robust to that
+
+- TRADUIRE les noms des permissions - quite hard (autogenerated)
+- corrupt wiretapped emails, via duplication (else trouble with direct access links) ?
 - permetter de modifier les OBJETS (ex. cloner)
 - système pour créer partie - WIP, quasi fini mais plus tard, pour l'instant en manuel
 - make ALL gamemaster_hints editable (items too)
@@ -539,7 +604,7 @@ FUTUR ENHANCEMENTS
 	- nightmare captcha ?
 - make better use of html tag titles, of '#' anchors (with id or name of tags)...
 - normalize is_character as both bool and method, in DM and User instances ? (tricky)
-- improve wiretapping - must not be only on characters, but also external emails
+- improve wiretapping - must not be only on characters, but also external emails !
 - add standard 404 and 500 templates, + custom 403 in latest django etc.
 
 

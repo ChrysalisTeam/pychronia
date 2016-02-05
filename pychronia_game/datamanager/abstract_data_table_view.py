@@ -21,7 +21,7 @@ class AbstractDataTableManagement(AbstractGameView):
         raise NotImplementedError("get_data_table_instance")
 
 
-    def instantiate_table_form(self, table_item=None, previous_form_data=None):
+    def instantiate_table_form(self, table_item=None, previous_form_data=None, undeletable_identifiers=None):
         """
         If not table_item and not previous_form_data, it's necessarily the "new entry" form.
         """
@@ -36,9 +36,10 @@ class AbstractDataTableManagement(AbstractGameView):
             idx = ""
 
         res = self._instantiate_game_form(new_action_name="submit_item",
-                                     previous_form_data=previous_form_data,
-                                     initial_data=initial_data,
-                                     form_options=dict(auto_id="id_%s_%%s" % slugify(idx))) # needed by select2 to wrap fields
+                                         previous_form_data=previous_form_data,
+                                         initial_data=initial_data,
+                                         form_options=dict(auto_id="id_%s_%%s" % slugify(idx),  # needed by select2 to wrap fields
+                                                           undeletable_identifiers=undeletable_identifiers))
 
         return res
 
@@ -91,8 +92,7 @@ class AbstractDataTableManagement(AbstractGameView):
         table = self.get_data_table_instance()
         mutable_table_items = table.get_all_data(as_sorted_list=True, mutability=True)
         immutable_table_items = table.get_all_data(as_sorted_list=True, mutability=False)
-
-
+        undeletable_identifiers = table.get_undeletable_identifiers()
 
         forms = [("", self.instantiate_table_form(previous_form_data=(previous_form_data if concerned_identifier == "" else None)))] # form for new table entry
 
@@ -101,10 +101,13 @@ class AbstractDataTableManagement(AbstractGameView):
             transfered_table_item = (table_key, table_value) # even if previous_form_data is set for that entry
             transfered_previous_form_data = previous_form_data if (concerned_identifier and concerned_identifier == table_key) else None
 
-            new_form = self.instantiate_table_form(table_item=transfered_table_item, previous_form_data=transfered_previous_form_data)
+            new_form = self.instantiate_table_form(table_item=transfered_table_item,
+                                                   previous_form_data=transfered_previous_form_data,
+                                                   undeletable_identifiers=undeletable_identifiers)
             forms.append((table_key, new_form))
 
         return dict(immutable_table_items=immutable_table_items,
+                    undeletable_identifiers=undeletable_identifiers,
                     forms=forms)
 
 

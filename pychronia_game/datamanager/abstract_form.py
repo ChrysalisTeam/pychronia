@@ -35,9 +35,9 @@ def form_field_unjsonify(value):
 
 
 
-def autostrip(cls):
+def autostrip_form_charfields(cls):
     """
-    Marks all CharField entries of that form class as "auto-stripping".
+    Marks all CharField entries of that form class as "auto-stripping", BEFORE validation.
     
     Does NOT work with dynamically created fields though.
     """
@@ -46,12 +46,32 @@ def autostrip(cls):
         def get_clean_func(original_clean):
             return lambda value: original_clean(value and value.strip())
         clean_func = get_clean_func(getattr(field_object, 'clean'))
-        setattr(field_object, 'clean', clean_func)
+        setattr(field_object, 'clean', clean_func)  # we set it on FIELD, not FORM
     return cls
 
 
+class SimpleForm(forms.Form):
+    """
+    Simple form class with cosmetic tweaks and string stripping.
+    """
+    required_css_class = "required"
 
-class BaseAbstractGameForm(forms.Form):
+    def clean(self):
+        """
+        We never need fields with leading/trailing spaces in that game, so we strip everything...
+        """
+        cleaned_data = super(forms.Form, self).clean()
+
+        for field in cleaned_data:
+            if isinstance(self.cleaned_data[field], basestring):
+                # note that Field "required=True" constraints might be already passed here, use autostrip() instead to prevent "space-only" inputs
+                cleaned_data[field] = cleaned_data[field].strip()
+
+        return cleaned_data
+
+
+
+class BaseAbstractGameForm(SimpleForm):
     """
     Base class for forms, able to recognize their data, by adding some hidden fields.
     """
@@ -84,18 +104,6 @@ class BaseAbstractGameForm(forms.Form):
         if post_data.get(cls._ability_field_name, None) == cls._get_dotted_class_name():
             return True
         return False
-
-    def clean(self):
-        """
-        We never need fields with leading/trailing spaces in that game, so we strip everything...
-        """
-        cleaned_data = super(BaseAbstractGameForm, self).clean()
-
-        for field in cleaned_data:
-            if isinstance(self.cleaned_data[field], basestring):
-                cleaned_data[field] = cleaned_data[field].strip() # note that Field "required=True" constraints might be already bypassed here, use autostrip instead
-
-        return cleaned_data
 
     def get_normalized_values(self):
         assert self.is_valid()
@@ -195,6 +203,7 @@ class GemPayementFormMixin(GemHandlingFormUtils):
 # Adds both auto-recognition of form class, and additional fields like payment controls
 AbstractGameForm = type("AbstractGameForm".encode("ascii"), # can't be unicode
                         (GemPayementFormMixin, BaseAbstractGameForm), {})
+assert issubclass(AbstractGameForm, SimpleForm)
 assert issubclass(AbstractGameForm, forms.Form)
 
 
@@ -205,13 +214,21 @@ class DataTableForm(AbstractGameForm):
 
     BAD_ID_MSG = ugettext_lazy("Identifier must contain no space")
 
-    def __init__(self, datamanager, initial=None, **kwargs):
+    def __init__(self, datamanager, initial=None, undeletable_identifiers=None, **kwargs):
 
         if initial:
             assert "previous_identifier" not in initial
             initial["previous_identifier"] = initial["identifier"]
-
+        
         super(DataTableForm, self).__init__(datamanager, initial=initial, **kwargs)
+        
+        if initial and undeletable_identifiers:
+            assert isinstance(undeletable_identifiers, set), undeletable_identifiers
+            if initial["identifier"] in undeletable_identifiers:
+                # not very secure, but DataTable protections will take care of hacking attempts
+                self.fields['identifier'].widget.attrs['readonly'] = True
+
+        
 
 
     def clean_previous_identifier(self):

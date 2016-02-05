@@ -2,6 +2,9 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import urllib
+from pprint import pprint
+
 from pychronia_game.common import *
 from pychronia_game.datamanager import AbstractGameView, register_view, VISIBILITY_REASONS, AbstractGameForm
 from django import forms
@@ -10,7 +13,7 @@ from pychronia_game.utilities.select2_extensions import Select2TagsField
 from django.core.exceptions import ValidationError
 from pychronia_game.templatetags.helpers import format_enriched_text
 from pychronia_game import utilities
-import urllib
+
 
 
 """
@@ -60,6 +63,7 @@ class MessageComposeForm(AbstractGameForm):
         attachment = url_data.get("attachment")
         transferred_msg = url_data.get("transferred_msg", "")
         parent_id = url_data.get("parent_id", "")
+        mask_recipients = (url_data.get("mask_recipients", "") == "1")
 
         datamanager = request.datamanager
         user = request.datamanager.user
@@ -81,6 +85,7 @@ class MessageComposeForm(AbstractGameForm):
                 else:
                     sender = tpl["sender_email"] or sender
                     recipients = tpl["recipient_emails"] or recipients
+                    mask_recipients = tpl["mask_recipients"]
                     subject = tpl["subject"] or subject
                     body = tpl["body"] or body
                     attachment = tpl["attachment"] or attachment
@@ -102,18 +107,22 @@ class MessageComposeForm(AbstractGameForm):
                 subject = msg["subject"]  # always retrieved here (but might be prefixed)
 
                 if visibility_reason == VISIBILITY_REASONS.sender: # we simply recontact recipients (even if we were one of the recipients too)
-                    sender = msg["sender_email"] # for master
-                    recipients = msg["recipient_emails"]
+                    if user.is_master:
+                        sender = msg["sender_email"] # for master
+                    recipients = msg["recipient_emails"]  # even if "mask_recipients" is activated, since we're the sender
 
                     if _("Bis:") not in msg["subject"]:
                         subject = _("Bis:") + " " + subject
                     # don't resend attachment! #
 
                 elif visibility_reason == VISIBILITY_REASONS.recipient: # we reply to a message
-                    sender = msg["recipient_emails"][0] if len(msg["recipient_emails"]) == 1 else None # let the sender empty even for master, if we're not sure which recipient we represent
+                    if user.is_master:
+                        sender = msg["recipient_emails"][0] if len(msg["recipient_emails"]) == 1 else None # let the sender empty for master, if we're not sure which recipient we represent
                     recipients = [msg["sender_email"]]
-                    my_email = datamanager.get_character_email() if user.is_character else None
-                    recipients += [_email for _email in msg["recipient_emails"] if _email != my_email and _email != sender]  # works OK if my_email is None (i.e game master) or sender is None
+                    if user.is_master or not msg["mask_recipients"]:  # IMPORTANT - else spoilers!!
+                        my_email = datamanager.get_character_email() if user.is_character else None
+                        # works OK if my_email is None (i.e game master) or sender is None
+                        recipients += [_email for _email in msg["recipient_emails"] if _email != my_email and _email != sender]
                     if _("Re:") not in msg["subject"]:
                         subject = _("Re:") + " " + subject
                     # don't resend attachment, here too! #
@@ -133,6 +142,9 @@ class MessageComposeForm(AbstractGameForm):
 
 
         # we build dynamic fields from the data we gathered #
+
+        default_use_restructuredtext = user.is_master  # by default, players use raw text
+        self.fields = utilities.add_to_ordered_dict(self.fields, 2, "use_restructuredtext", forms.BooleanField(label=ugettext_lazy("Use markup language (RestructuredText)"), initial=default_use_restructuredtext, required=False))
 
         if user.is_master:
 
@@ -154,10 +166,11 @@ class MessageComposeForm(AbstractGameForm):
         else:
             pass # no sender or delay_mn fields!
 
-
         available_recipients = datamanager.get_sorted_user_contacts()  # current username should not be "anonymous", since it's used only in member areas !
         self.fields["recipients"].initial = list(recipients)  # prevents ZODB types...
         self.fields["recipients"].choice_tags = available_recipients
+
+        self.fields["mask_recipients"].initial = mask_recipients
 
         self.fields["subject"].initial = subject
         self.fields["body"].initial = body
@@ -242,6 +255,8 @@ def _determine_template_display_context(datamanager, template_id, template):
 def _determine_message_display_context(datamanager, msg, is_pending):
     """
     Useful for both pending and dispatched messages.
+    
+    If "is_pending" is True, this means the message is queued for sending.
     """
     assert msg
     assert msg["id"]
@@ -325,17 +340,27 @@ def ajax_force_email_sending(request):
 @register_view(access=UserAccess.master, title=ugettext_lazy("Message Templates"))
 def messages_templates(request, template_name='messaging/messages.html'):
 
+    NO_CATEGORY_PLACEHOLDER = "[NONE]"
+    ALL_CATEGORIES_PLACEHOLDER = "[ALL]"
+
     message_template_categories = request.datamanager.get_global_parameter("message_template_categories") # already sorted, ATM
+    message_template_categories = [NO_CATEGORY_PLACEHOLDER] + message_template_categories + [ALL_CATEGORIES_PLACEHOLDER]
 
     selected_category = request.GET.get("category")
     if selected_category and selected_category not in message_template_categories:
         request.datamanager.user.add_error(_("Unknown template category '%(category)s'") % SDICT(category=selected_category))
         selected_category = None
 
-    templates = request.datamanager.get_messages_templates().items() # PAIRS (template_id, template_dict)
-    templates.sort(key=lambda msg: (msg[1]["order"], msg[0]))  # we sort by order and then template name
-    enriched_templates = [(_determine_template_display_context(request.datamanager, template_id=tpl[0], template=tpl[1]), tpl[1])
-                          for tpl in templates if (not selected_category or selected_category in tpl[1]["categories"])]
+    selected_category = selected_category or NO_CATEGORY_PLACEHOLDER
+
+    if not selected_category or selected_category == NO_CATEGORY_PLACEHOLDER:
+        enriched_templates = []  # security, because too many placeholders
+    else:
+        templates = request.datamanager.get_messages_templates().items() # PAIRS (template_id, template_dict)
+        templates.sort(key=lambda msg: (msg[1]["order"], msg[0]))  # we sort by order and then template name
+        enriched_templates = [(_determine_template_display_context(request.datamanager, template_id=tpl[0], template=tpl[1]), tpl[1])
+                              for tpl in templates if (selected_category == ALL_CATEGORIES_PLACEHOLDER or selected_category in tpl[1]["categories"])]
+
     return render(request,
                   template_name,
                   dict(messages=enriched_templates,
@@ -347,7 +372,7 @@ def messages_templates(request, template_name='messaging/messages.html'):
 @register_view(access=UserAccess.authenticated, requires_global_permission=False, title=ugettext_lazy("Conversations"))
 def standard_conversations(request, template_name='messaging/conversation.html'):
 
-    CONVERSATIONS_LIMIT = 30
+    CONVERSATIONS_LIMIT = 40
 
     display_all_conversations = bool(request.GET.get("display_all", None) == "1")
 
@@ -467,6 +492,10 @@ def compose_message(request, template_name='messaging/compose.html'):
                 else:
                     sender_email = request.datamanager.get_character_email()
                     delay_h = 0
+
+                use_restructuredtext = form.cleaned_data["use_restructuredtext"]
+                body_format = "rst" if use_restructuredtext else "raw"
+
                 sending_date = datetime.utcnow() + timedelta(hours=delay_h)
                 assert isinstance(sending_date, datetime)
                 del delay_h
@@ -481,13 +510,14 @@ def compose_message(request, template_name='messaging/compose.html'):
                 transferred_msg = form.cleaned_data["transferred_msg"]
 
                 parent_id = form.cleaned_data.get("parent_id", None)
-                use_template = form.cleaned_data.get("use_template", None)
+                use_template = form.cleaned_data.get("use_template", None)  # standard players might have it one day
 
                 # sender_email and one of the recipient_emails can be the same email, we don't care !
                 sent_msg_id = request.datamanager.post_message(sender_email, recipient_emails, subject, body,
                                                               attachment=attachment, transferred_msg=transferred_msg,
                                                               date_or_delay_mn=sending_date, mask_recipients=mask_recipients,
-                                                              parent_id=parent_id, use_template=use_template)
+                                                              parent_id=parent_id, use_template=use_template,
+                                                              body_format=body_format)
                 assert sent_msg_id
                 message_sent = True
                 form = MessageComposeForm(request)  # new empty form
@@ -510,14 +540,25 @@ def compose_message(request, template_name='messaging/compose.html'):
                 assert len([message for message in request.datamanager.messaging_data["messages_queued"] if message["id"] == sent_msg_id]) == 1
                 target_view = "pychronia_game.views.all_queued_messages"
 
-        conversations_url = reverse(target_view,
-                                    kwargs=dict(game_instance_id=request.datamanager.game_instance_id))
+        conversations_url = game_view_url(target_view, datamanager=request.datamanager)
         conversations_url += '?' + urllib.urlencode(dict(message_sent="1"))
         return HttpResponseRedirect(redirect_to=conversations_url)
 
 
     user_contacts = request.datamanager.get_sorted_user_contacts() # properly SORTED list
     contacts_display = request.datamanager.get_contacts_display_properties(user_contacts) # DICT FIELDS: address avatar description
+
+    parent_messages = ()
+    parent_msg_id = request.GET.get("parent_id", None)
+    if parent_msg_id:
+        try:
+            _parent_msg = request.datamanager.get_dispatched_message_by_id(msg_id=parent_msg_id)  # even if archived...
+            # for now, only the DIRECT parent is displayed...
+            parent_messages = _determine_message_list_display_context(request.datamanager, messages=[_parent_msg], is_pending=False)
+        except UsageError as e:
+            request.datamanager.logger.error("Ignoring invalid parent_id %s in message composition view", parent_msg_id, exc_info=True)
+
+    #pprint(parent_messages)
 
     return render(request,
                   template_name,
@@ -527,6 +568,8 @@ def compose_message(request, template_name='messaging/compose.html'):
                      'mode': "compose", # TODO DELETE THIS
                      'contacts_display': contacts_display,
                      'message_sent': message_sent, # to destroy saved content
+                     'parent_messages': parent_messages,
+                     'contact_cache': _build_contact_display_cache(request.datamanager)
                     })
 
 
@@ -584,17 +627,20 @@ def ___outbox(request, template_name='messaging/messages.html'):
 '''
 
 
-@register_view(access=UserAccess.anonymous, requires_global_permission=False, title=ugettext_lazy("View Single Message"))
-def view_single_message(request, msg_id, template_name='messaging/view_single_message.html'):
+@register_view(access=UserAccess.authenticated, requires_global_permission=False, title=ugettext_lazy("View Single Message"))
+def view_single_message(request, msg_id, template_name='messaging/view_single_message.html', popup_template_name='messaging/single_message.html'):
     """
     Meant to be used in event logging or for message transfer.
     
-    On purpose, NO AUTHORIZATION CHECK is done here (msg_ids are random enough).
+    On purpose, NO PERMISSION CHECK is done here (msg_ids are random enough), 
+    however user must be authenticated (required by some messaging utilities like for "message display context").
     """
     user = request.datamanager.user
     message = None
     ctx = None
     is_queued = False
+
+    popup_mode = (request.GET.get("popup") == "1")
 
     messages = [msg for msg in request.datamanager.get_all_dispatched_messages() if msg["id"] == msg_id]
     if messages:
@@ -608,20 +654,33 @@ def view_single_message(request, msg_id, template_name='messaging/view_single_me
             message = messages[0]
             is_queued = True
         else:
-            user.add_error(_("The requested message doesn't exist."))
+            if not popup_mode:
+                user.add_error(_("The requested message doesn't exist."))
 
     if message:
         ctx = _determine_message_display_context(request.datamanager, message, is_pending=is_queued)
 
-    return render(request,
-                  template_name,
-                    {
-                     'page_title': _("Single Message"),
-                     'is_queued': is_queued,
-                     'ctx': ctx,
-                     'message': message,
-                     'contact_cache': _build_contact_display_cache(request.datamanager),
-                    })
+    if popup_mode:
+        if not message:
+            return HttpResponse(_("Message couldn't be found."))
+        return render(request,
+                      popup_template_name,
+                        {
+                         'ctx': None,  # no operation possible
+                         'message': message,  # SHALL NOT be empty
+                         'contact_cache': _build_contact_display_cache(request.datamanager),
+                         'no_background': True,
+                        })
+    else:
+        return render(request,
+                      template_name,
+                        {
+                         'page_title': _("Single Message"),
+                         'is_queued': is_queued,
+                         'ctx': ctx,
+                         'message': message,  # might be None here
+                         'contact_cache': _build_contact_display_cache(request.datamanager),
+                        })
 
 
 @register_view(access=UserAccess.anonymous, requires_global_permission=False, title=ugettext_lazy("Message Preview"))

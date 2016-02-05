@@ -21,11 +21,11 @@
 </div>
 -->
 
-<div id="{{ ctx.display_id }}" class="email_message {% if ctx.has_read or ctx.is_used %}read{% else %}unread{% endif %} {% if ctx.has_starred %}starred{% else %}unstarred{% endif %} {% if ctx.has_archived %}archived{% else %}unarchived{% endif %} {% if ctx.is_ignored %}ignored{% else %}unignored{% endif %} {% if not is_first %}cover_previous{% endif %}">
+<div id="{{ ctx.display_id }}" class="email_message {% if not no_background%}{% if ctx.has_read or ctx.is_used %}read{% else %}unread{% endif %}{% endif %}  {% if ctx.has_starred %}starred{% else %}unstarred{% endif %} {% if ctx.has_archived %}archived{% else %}unarchived{% endif %} {% if ctx.is_ignored %}ignored{% else %}unignored{% endif %} {% if not is_first %}cover_previous{% endif %}">
 
     <div>
 
-        {% if game_is_writable %}
+        {% if game_is_writable and ctx%}
             <div class="message_operations">
 
                 {# BEWARE - a valid 'message.id' is implied by some of these ctx flags! #}
@@ -46,7 +46,7 @@
                 {% endif %}
 
                 {% if message.id %}
-                    {% assign name="msg_link" %}{% game_view_url "pychronia_game.views.view_single_message" msg_id=message.id %}{% endassign %}
+                    {% assign name="msg_link" %}{% game_view_url "pychronia_game.views.view_single_message" msg_id=message.id redirector %}{% endassign %}
                     {% usekwacro shareable_link_font msg_link %}
                 {% endif %}
 
@@ -77,8 +77,9 @@
                     <a title="{% trans "Delete" %}" href="#" onclick="permanently_delete_message('{{ message.id|escapejs }}'); return false;" >{% fontawesome_icon "trash" %}</a>
                 {% endif %}
 
-
+                {% if ctx %}
                 <img class="collapse_icon" style="float: right" title="{% trans "Collapse this message" %}" onclick="$('#{{ ctx.display_id|escapejs }}').addClass('collapsed');" src="{{ STATIC_URL }}MetalRadiance/img/icons/collapse_green.png"/>
+                {% endif %}
 
             </div>
         {% endif %}
@@ -148,7 +149,6 @@
 
             {% if message.recipient_emails %}
 
-
             <tr>
             <td><strong>{% trans "To:" %}</strong></td>
             <td>
@@ -189,15 +189,17 @@
             </p>
             {% endif %}
 
-            {% rich_text message.body %}
+            {% rich_text message.body text_format=message.body_format %}
 
         </div>
 
 
         {% if message.transferred_msg %}
-            <a target="_blank" href="{% game_view_url "pychronia_game.views.view_single_message" msg_id=message.transferred_msg %}">
+        <div align="center">
+            <b><a target="_blank" class="fancybox-ajax" href="{{SITE_DOMAIN}}{% game_view_url "pychronia_game.views.view_single_message" msg_id=message.transferred_msg %}?popup=1">
                 {% trans "MESSAGE TRANSFERRED: click to view." %} {# transferred message might have been deleted by game master, but so be it... #}
-            </a>
+            </a></b>
+        </div>
         {% endif %}
 
         {% if message.attachment %}

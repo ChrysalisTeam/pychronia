@@ -142,7 +142,7 @@ function InitChatWindow(ChatMessagesUrl, CanChat, ProcessResponseCallback){
     	   if (post_request_in_progress) return false;
 
     		// If user clicks to send a message on a empty message box, then don't do anything.
-    		msg = $.trim($("#msg").val())
+    		msg = $.trim($("#msg").val());
     		if(msg == "") return false;
 
     		post_request_in_progress = true;

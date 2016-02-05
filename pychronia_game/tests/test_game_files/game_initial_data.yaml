@@ -164,7 +164,7 @@ global_parameters:
     pending_radio_messages: []
 
 
-    encyclopedia_index_visible: false
+    encyclopedia_index_visible: False
 
     friendship_minimum_duration_mn_abs: 1
 
@@ -173,8 +173,8 @@ global_parameters:
 
     password_recovery_delay_mn: 10
 
-    disable_automated_ability_responses: false
-    disable_real_email_notifications: false
+    disable_automated_ability_responses: False
+    disable_real_email_notifications: False
 
 
 locations:
@@ -211,6 +211,17 @@ game_items:
         image: sacred_chest.jpg
         gamemaster_hints: "used to: xxxx"
 
+    dummy_item:
+        auction: null
+        is_gem: False
+        num_items: 1
+        total_price: 1
+        locations: banal_gems_locations
+        title: "Dummy Item"
+        comments:  "Blablabla"
+        image: sacred_chest.jpg
+        gamemaster_hints: "used to: xxxx"
+
     several_misc_gems:
         auction: "3-D"
         is_gem: True
@@ -230,7 +241,7 @@ game_items:
         locations: banal_gems_locations
         title: "Gems again"
         comments:  "Beautiful again."
-        image: 8_named_gems.jpg
+        image: "http://localhost:8000/static/resources/MetalRadiance/img/decorations/big_deco_tr.png"
         gamemaster_hints: null
 
 
@@ -392,6 +403,17 @@ audio_messages:
         text: "ambassadors eviction + nalavut council begins + alcohol exhibition"
         file: "berce.mp3"
 
+    erasable_spots:
+        title: "News diverses"
+        text: "For testing..."
+        file: "other.mp3"
+        initial: False
+
+    external_mp3:
+        title: "This is a test"
+        text: "Some text"
+        file: "http://localhost:8000/static/resources/libs/audioplayer/amelie.mp3"
+
 
 events_log:  #-> list of event dicts
     -  "time": -3 # mns
@@ -418,17 +440,18 @@ messaging:
             description: "the terrible judicators"
             access_tokens: ["guy1", "guy2"]
 
-        judicators1@akaris.com: {}
+        judicators1@akaris.com:
+            avatar: "http://localhost:8000/static/resources/MetalRadiance/img/decorations/big_deco_tr.png"
 
         judicators2@akaris.com: {}
 
-        othercontact@anything.fr: {immutable: False}
+        othercontact@anything.fr: {initial: False}
 
         master@administration.com: {}
 
-        everyone@chars.com: {immutable: True}
+        everyone@chars.com: {initial: True}
 
-        "[auction-list]@pangea.com": {immutable: True}
+        "[auction-list]@pangea.com": {initial: True}
 
         "translator-robot@hightech.com": {}
 
@@ -628,6 +651,7 @@ nightmare_captchas:
     text: "Decipher this!"
     image: "unreadable.jpg"
     answer: "muwuwvuv"
+    explanation: "because that's it"
 
 
 

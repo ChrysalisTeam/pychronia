@@ -32,12 +32,10 @@ function preview_message() {
                {content: rst},
                function(answer) {
                       answer = answer.trim(); // shouldn't be empty, since input was not...
-                   $.fancybox({content: answer, // answer must be HTML here
-                                autoSize: true,
-                                padding: 20,
-                                maxWidth: 600
-                                   });
 
+                    var fancyBoxCustomOptions = $.extend({'content': answer},
+                                                          window.fancyBoxDefaults);
+                    $.fancybox(fancyBoxCustomOptions);
                });
     } else {
         $.jnotify("{{ _("Nothing to preview.")|escapejs }}", "warning")
@@ -150,7 +148,7 @@ if(!block_autosave) {
 {% usekwacro side_panel_start frame_class="mini_frame float_left clear_left" decos="3" %}
     <h2>{% trans "Contacts" %}</h2>
 
-    <div class="rice_paper_rose full_width center inner_center tiny_bullets small_text" style="line-height: 1.5em; cursor: pointer;">
+    <div class="rice_paper_rose full_width center tiny_bullets small_text" style="line-height: 1.5em; cursor: pointer;">
         {% if not contacts_display %}
             {% trans "None" %}
         {% else %}
@@ -205,12 +203,18 @@ if(!block_autosave) {
         </p>
         {% endif %}
 
-
         {{ message_form.as_p }}
 
-
-        <p><input type="button" name="preview" value="{% trans "Preview Message Body" %}" onclick="preview_message();" /></p>
+        <p><input type="button" name="preview" value="{% trans "Preview Message Body As Restructuredtext" %}" onclick="preview_message();" /></p>
         <p><input type="submit" name="send_message" value="{% trans "Send Message" %}" onclick="save_current_content(); return true;" /></p>
+
+        <br/><br/>
+
+        <h2>{% trans "Parent Message" %}</h2>
+
+        {% for ctx, message in parent_messages reversed %}
+            {% include "messaging/single_message.html" with ctx=ctx message=message is_first=forloop.first %}
+        {% endfor %}
 
         </form>
 

@@ -39,11 +39,14 @@ def pychronia_template_context(request):
         dm = request.datamanager
 
         ### dm.user.add_warning("THIS IZ A TEST")
+        display_admin_tips = dm.should_display_admin_tips()
 
         # WARNING - must be BEFORE messages retrieval!
         writability_data = dm.determine_actual_game_writability()
         if writability_data["reason"] and not request.is_ajax():
             dm.user.add_warning(writability_data["reason"]) # a reason for no-writability most probably
+        elif not dm.is_game_started() and display_admin_tips:
+            dm.user.add_warning(_("Game is currently paused for players."))
 
         online_users = dm.get_online_users() # usernames are fine // to test: (dm.get_character_usernames() * 2)
         menus = menus_module.generate_filtered_menu(request) # might be None
@@ -99,14 +102,15 @@ def pychronia_template_context(request):
 
         res.update({
                 'game_instance_id': dm.game_instance_id,
-
+                'game_real_username': dm.user.real_username,  # really logged-in user
+                'game_username': dm.user.username,  # might be impersonated
                 'fallback_title': request.processed_view.relevant_title(dm),
 
                 'user': dm.user,
                 'impersonation_capabilities': impersonation_capabilities,
                 'game_is_writable': writability_data["writable"],
                 'disable_widgets': not writability_data["writable"] and not request.processed_view.ALWAYS_ALLOW_POST,
-                'display_admin_tips': dm.should_display_admin_tips(),
+                'display_admin_tips': display_admin_tips,
                 'menus': menus.submenus if menus else [], # we ignore root entry
 
                 'online_users': online_users,

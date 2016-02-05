@@ -1,7 +1,7 @@
 {% load i18n helpers %}
 
 {% if form %}
-<div class="scroll_yellow_rolled {{ class }}" style="max-width:280px; display: inline-block; vertical-align: top;">
+<div class="scroll_yellow_rolled {{ class }}" style="width:280px; display: inline-block; vertical-align: top; text-align: left;">
     <form id="{% random_id %}" action="{{ form.target_url }}" method="post" autocomplete="on">
     <h3>{{ title }}</h3>
     {{ form.as_p }}

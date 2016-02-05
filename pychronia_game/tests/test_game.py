@@ -13,12 +13,14 @@ from ._test_tools import *
 from ._dummy_abilities import *
 
 import fileservers
+from django.utils.functional import Promise # used eg. for lazy-translated strings
 from django.utils import timezone
+
 from pychronia_game.datamanager.abstract_ability import AbstractAbility
 from pychronia_game.datamanager.action_middlewares import CostlyActionMiddleware, \
     CountLimitedActionMiddleware, TimeLimitedActionMiddleware
 from pychronia_game.common import _undefined, config, AbnormalUsageError, reverse, \
-    UsageError, checked_game_file_path, NormalUsageError
+    UsageError, checked_game_file_path, NormalUsageError, determine_asset_url
 from pychronia_game.templatetags.helpers import _generate_encyclopedia_links, \
     advanced_restructuredtext, _generate_messaging_links, _generate_site_links, \
     format_enriched_text, _generate_game_file_links, _generate_game_image_thumbnails
@@ -35,7 +37,7 @@ from django.forms.fields import Field
 from django.core.urlresolvers import resolve, NoReverseMatch
 from pychronia_game.views import friendship_management
 from pychronia_game.views.abilities import house_locking, \
-    wiretapping_management, runic_translation, artificial_intelligence_mod
+    wiretapping_management, runic_translation, artificial_intelligence_mod, telecom_investigation_mod
 from django.contrib.auth.models import User
 from pychronia_game.authentication import clear_all_sessions
 from pychronia_game.utilities.mediaplayers import generate_image_viewer
@@ -44,6 +46,7 @@ from pychronia_game.datamanager.abstract_form import AbstractGameForm, GemPayeme
 from ZODB.POSException import POSError
 from pychronia_game.meta_administration_views import compute_game_activation_token, \
     decode_game_activation_token
+from types import *
 
 
 
@@ -91,7 +94,10 @@ class TestUtilities(BaseGameTestCase):
                     .. embed_image:: https://hisss.com/a&b.jpg
                         :alias: default
                         :align: center
-                          
+
+                    .. embed_video:: https://hi.com/cantwork.mp4
+                    
+                    .. embed_video:: https://cantwork.mp4/
                     """))
 
         assert "title1" in html and "title2" in html
@@ -104,10 +110,11 @@ class TestUtilities(BaseGameTestCase):
         for mystr in ("<object", "mediaplayer", "https://hi.com/a&amp;b.flv"): # AT LEAST html-escaped, but urlescaping could be necessary for some media types
             assert mystr in html
 
-        for mystr in ("<img class=\"imageviewer align-center\"", "https://hisss.com/a&amp;b.jpg", "300px"): # fallback to default width/height since image url is buggy (so easy-thumbnails fails)
+        for mystr in ("<img class=\"imageviewer align-center\"", "https://hisss.com/a&amp;b.jpg", "500px"): # fallback to default width/height since image url is buggy (so easy-thumbnails fails)
             assert mystr in html
 
-
+        assert 'href="https://cantwork.mp4/"' in html
+        assert 'https://cantwork.mp4/' in html
 
 
         # IMPORTANT - security measures #
@@ -366,6 +373,32 @@ class TestUtilities(BaseGameTestCase):
         _check_standard_headers(response)
 
 
+    def test_media_url_determination(self):
+
+        res = determine_asset_url(None)
+        assert res == ""
+
+        res = determine_asset_url("")
+        assert res == ""
+
+        res = determine_asset_url(dict(url=None))
+        assert res == ""
+
+        for val in ("http://mystuff",
+                    dict(file="http://mystuff", url=None),
+                    dict(file=None, url="http://mystuff")):
+            res = determine_asset_url(val)
+            assert res == "http://mystuff"
+
+        for val in ("audio/musics/sample.mp3",
+                    dict(file="audio/musics/sample.mp3", url=None),
+                    dict(file=None, url="audio/musics/sample.mp3")):
+            res = determine_asset_url(val)
+            assert res == "http://localhost:8000/files/7211b1bf/audio/musics/sample.mp3"
+            res = determine_asset_url(val, absolute=False)
+            assert res == "/files/7211b1bf/audio/musics/sample.mp3"
+
+
     def test_url_protection_functions(self):
 
         hash = hash_url_path("whatever/shtiff/kk.mp3?sssj=33")
@@ -469,8 +502,8 @@ class TestUtilities(BaseGameTestCase):
 
                                 hello
                                 
-                                <a href="/TeStiNg/">good1</a>
-                                <a href="/TeStiNg/view_sales/">good2</a>
+                                <a href="/TeStiNg/guest/">good1</a>
+                                <a href="/TeStiNg/guest/view_sales/">good2</a>
                                 
                                 [ GAME_PAGE_LINK "bad\"string" "view_sales" ]
                                 """).strip()
@@ -522,7 +555,7 @@ class TestUtilities(BaseGameTestCase):
                             <h2>hi</h2>
                             <p>lokons</p>
                             <p>rodents</p>
-                            <p><a href="/TeStiNg/encyclopedia/?search=gerbils">gerbils</a></p>
+                            <p><a href="/TeStiNg/guest/encyclopedia/?search=gerbils">gerbils</a></p>
                             <p>ugly</p>
                             <p>TeStiNg</p>
                             <p>hi<br />you</p>
@@ -601,9 +634,9 @@ class TestMetaAdministration(unittest.TestCase): # no django setup required ATM
         dm = datamanager_administrator.retrieve_game_instance(game_instance_id=game_instance_id,
                                                               request=None,
                                                               metadata_checker=None)
-        assert not dm.get_event_count("BASE_CHECK_DB_COHERENCY_PUBLIC_CALLED")
-        data_tree = dm.load_zope_database(raw_yaml_data)
-        assert dm.get_event_count("BASE_CHECK_DB_COHERENCY_PUBLIC_CALLED") == 1 # data well checked
+        assert not dm.get_event_count("BASE_CHECK_DB_COHERENCE_PUBLIC_CALLED")
+        data_tree = dm.load_zope_database_from_string(raw_yaml_data)
+        assert dm.get_event_count("BASE_CHECK_DB_COHERENCE_PUBLIC_CALLED") == 1 # data well checked
 
         assert "metadata" not in data_tree # it's well ONLY the "data" part of the game instance tree
         assert "data" not in data_tree
@@ -635,6 +668,11 @@ class TestMetaAdministration(unittest.TestCase): # no django setup required ATM
         assert res["status"] == GAME_STATUSES.active == "active"
         assert res["maintenance_until"] is None
 
+        initial_last_access_time = res["last_access_time"]
+        assert initial_last_access_time  # immediately set
+
+        dm = retrieve_game_instance(game_instance_id, update_timestamp=False)
+
         time.sleep(1)
 
         dm = retrieve_game_instance(game_instance_id)
@@ -645,7 +683,18 @@ class TestMetaAdministration(unittest.TestCase): # no django setup required ATM
 
         with pytest.raises(UsageError):
             retrieve_game_instance("sqdqsd")
+
         dm = retrieve_game_instance(game_instance_id)
+
+        time.sleep(1)
+
+        res = get_all_instances_metadata()[0]
+        assert res["last_access_time"] == initial_last_access_time  # never updated so far
+
+        dm = retrieve_game_instance(game_instance_id, update_timestamp=True)
+
+        res = get_all_instances_metadata()[0]
+        assert res["last_access_time"] > initial_last_access_time  # UPDATED
 
         time.sleep(1)
 
@@ -673,7 +722,7 @@ class TestMetaAdministration(unittest.TestCase): # no django setup required ATM
         res = all_res[0]
         assert res["creator_login"] == "ze_creator_test"
         assert res["creation_time"] < res["last_access_time"] < res["last_status_change_time"]
-        assert res["accesses_count"] == 4
+        assert res["accesses_count"] == 6
         assert res["status"] != GAME_STATUSES.active
         assert res["maintenance_until"] is not None # was left as is
 
@@ -683,7 +732,6 @@ class TestMetaAdministration(unittest.TestCase): # no django setup required ATM
         assert not get_all_instances_metadata()
         with pytest.raises(UsageError):
             retrieve_game_instance(game_instance_id)
-
 
 
     def test_meta_admin_utilities(self):
@@ -782,7 +830,7 @@ class TestDatamanager(BaseGameTestCase):
             assert self.dm.get_event_count("BROKEN_DUMMY_FUNC_CALLED") == 3 # 3 attempts max
 
         del self.dm.get_character_properties
-        self.dm.check_database_coherency()
+        self.dm.check_database_coherence()
         self.dm.get_character_properties = broken # INSTANCE attribute, no problem
 
         for ERROR_TYPE in (UsageError, EnvironmentError, TypeError):
@@ -793,7 +841,7 @@ class TestDatamanager(BaseGameTestCase):
                 assert self.dm.get_event_count("BROKEN_DUMMY_FUNC_CALLED") == 1 # no retries in these cases
 
         del self.dm.get_character_properties
-        self.dm.check_database_coherency()
+        self.dm.check_database_coherence()
 
 
 
@@ -871,10 +919,10 @@ class TestDatamanager(BaseGameTestCase):
             assert castrated_dm.get_event_count("BASE_LOAD_INITIAL_DATA_CALLED") == 1
 
             try:
-                castrated_dm._check_database_coherency()
+                castrated_dm._check_database_coherence()
             except Exception, e:
                 transaction.abort()
-            assert castrated_dm.get_event_count("BASE_CHECK_DB_COHERENCY_PRIVATE_CALLED") == 1
+            assert castrated_dm.get_event_count("BASE_CHECK_DB_COHERENCE_PRIVATE_CALLED") == 1
 
             try:
                 report = PersistentList()
@@ -1365,14 +1413,13 @@ class TestDatamanager(BaseGameTestCase):
 
 
 
-
     @for_core_module(MoneyItemsOwnership)
     def test_item_transfers(self):
         self._reset_messages()
 
         # small check - NULL PRICE IS NOT A PROBLEM
         chest = self.dm.get_item_properties("sacred_chest")
-        assert chest["unit_cost"] is chest["total_price"] is None # NOT A PROBLEM
+        assert chest["unit_cost"] == chest["total_price"] == 0  # NOT A PROBLEM
 
         lg_old = copy.deepcopy(self.dm.get_character_properties("guy3"))
         nw_old = copy.deepcopy(self.dm.get_character_properties("guy1"))
@@ -1414,9 +1461,15 @@ class TestDatamanager(BaseGameTestCase):
         self.assertEqual(self.dm.get_global_parameter("bank_account"), bank_old)
 
         # we fully test gems transfers
+        guy3_bkp = copy.deepcopy(self.dm.get_character_properties("guy3"))
+        guy1_bkp = copy.deepcopy(self.dm.get_character_properties("guy1"))
         gems_given = self.dm.get_character_properties("guy3")["gems"][0:3]
         self.dm.transfer_gems_between_characters("guy3", "guy1", gems_given)
+        assert self.dm.get_character_properties("guy3") != guy3_bkp
+        assert self.dm.get_character_properties("guy1") != guy1_bkp
         self.dm.transfer_gems_between_characters("guy1", "guy3", gems_given)
+        assert self.dm.get_character_properties("guy3") == guy3_bkp
+        assert self.dm.get_character_properties("guy1") == guy1_bkp
         self.assertRaises(UsageError, self.dm.transfer_gems_between_characters, "guy3", "guy3", gems_given) # same ids
         self.assertRaises(UsageError, self.dm.transfer_gems_between_characters, "guy3", "guy1", gems_given + [27, 32]) # not possessed
         self.assertRaises(UsageError, self.dm.transfer_gems_between_characters, "guy3", "guy1", []) # at least 1 gem needed
@@ -1482,7 +1535,40 @@ class TestDatamanager(BaseGameTestCase):
         self.assertEqual(self.dm.get_all_items(), items_old)
 
 
+        # test PURE DEBIT of gems
 
+        self.dm.transfer_object_to_character(gem_name2, "guy3")
+        gems_given = self.dm.get_character_properties("guy3")["gems"][0:2]
+        guy3_previous = copy.deepcopy(self.dm.get_character_properties("guy3"))
+
+        with pytest.raises(UsageError):
+            self.dm.debit_character_gems("guy3", gems_choices=[(gems_given[0][0], "weird_origin")])
+        with pytest.raises(UsageError):
+            self.dm.debit_character_gems("guy3", gems_choices=[(345, gems_given[0][1])])
+        assert self.dm.get_character_properties("guy3") == guy3_previous
+
+        self.dm.debit_character_gems("guy3", gems_choices=gems_given)
+        assert self.dm.get_character_properties("guy3") != guy3_previous
+        assert len(self.dm.get_character_properties("guy3")["gems"]) == len(guy3_previous["gems"]) - 2
+
+
+        # test PURE CREDIT of gems
+
+        guy3_previous2 = copy.deepcopy(self.dm.get_character_properties("guy3"))
+
+        with pytest.raises(UsageError):
+            self.dm.credit_character_gems("guy3", gems_choices=[(gems_given[0][0], "weird_origin")])
+        with pytest.raises(UsageError):
+            self.dm.credit_character_gems("guy3", gems_choices=[(345, gems_given[0][1])])
+        assert self.dm.get_character_properties("guy3") == guy3_previous2
+
+        self.dm.credit_character_gems("guy3", gems_choices=gems_given)
+        assert self.dm.get_character_properties("guy3") != guy3_previous2
+        assert self.dm.get_character_properties("guy3") == guy3_previous  # back to previous state
+        assert len(self.dm.get_character_properties("guy3")["gems"]) == len(guy3_previous2["gems"]) + 2
+
+        with pytest.raises(UsageError):  # can't do it a second time, no more of these gems in "spent_gems"!
+            self.dm.credit_character_gems("guy3", gems_choices=gems_given)
 
 
     @for_core_module(MoneyItemsOwnership)
@@ -1505,14 +1591,15 @@ class TestDatamanager(BaseGameTestCase):
             assert it["auction"]
 
         items_old = copy.deepcopy(self.dm.get_all_items())
-        gem_names = [key for key, value in items_old.items() if value["is_gem"] and value["num_items"] >= 3] # we only take numerous groups
-        auction_object_names = [key for key, value in items_old.items() if not value["is_gem"] and value["auction"]]
-        no_auction_object_names = [key for key, value in items_old.items() if not value["is_gem"] and not value["auction"]]
+        gem_names = sorted([key for key, value in items_old.items() if value["is_gem"] and value["num_items"] >= 3]) # we only take numerous groups
+        auction_object_names = sorted([key for key, value in items_old.items() if not value["is_gem"] and value["auction"]])
+        no_auction_object_names = sorted([key for key, value in items_old.items() if not value["is_gem"] and not value["auction"]])
 
         gem_name1 = gem_names[0]
         gem_name2 = gem_names[1]
         object_name_auction = auction_object_names[0]
         object_name_no_auction = no_auction_object_names[0]
+        object_name_free = no_auction_object_names[1]
 
         self.dm.transfer_object_to_character(gem_name1, "guy2")
         self.dm.transfer_object_to_character(gem_name2, "guy2")
@@ -1536,6 +1623,50 @@ class TestDatamanager(BaseGameTestCase):
         assert self.dm.get_user_artefacts("guy2") == {} # gems NOT included
         assert self.dm.get_user_artefacts("guy3").keys() == [object_name_auction]
         assert self.dm.get_user_artefacts("guy4").keys() == [object_name_no_auction]
+
+
+        # mutability control #
+        # NOTE that currently ALL ITEMS are MUTABLE iff they are not OWNED (and initial ones are undeletable) #
+
+        container = self.dm.game_items
+
+        unmodifiable_entry = object_name_auction  # OWNED by guy3
+        assert unmodifiable_entry in container.get_all_data()
+        assert unmodifiable_entry in container.get_all_data(mutability=False)
+        assert unmodifiable_entry not in container.get_all_data(mutability=True)
+        assert unmodifiable_entry in [k for k, v in container.get_all_data(as_sorted_list=True)]
+        assert unmodifiable_entry in [k for k, v in container.get_all_data(as_sorted_list=True, mutability=False)]
+        assert unmodifiable_entry not in [k for k, v in container.get_all_data(as_sorted_list=True, mutability=True)]
+        assert unmodifiable_entry in container.get_undeletable_identifiers()  # ALSO not deletable of course
+
+        mutable_entry = object_name_free
+        assert mutable_entry in container.get_all_data()
+        assert mutable_entry in container.get_all_data(mutability=True)
+        assert mutable_entry not in container.get_all_data(mutability=False)
+        assert mutable_entry in [k for k, v in container.get_all_data(as_sorted_list=True)]
+        assert mutable_entry not in [k for k, v in container.get_all_data(as_sorted_list=True, mutability=False)]
+        assert mutable_entry in [k for k, v in container.get_all_data(as_sorted_list=True, mutability=True)]
+        assert mutable_entry not in [k for k, v in container.get_all_data(as_sorted_list=True, mutability=False)]
+        assert mutable_entry in container.get_undeletable_identifiers()  # undeletable because initial
+
+        assert len(container.get_all_data()) == len(container.get_undeletable_identifiers())  # ALL undeletable initially
+
+        new_id = "newid"
+        new_item = utilities.safe_copy(container[mutable_entry])
+        del new_item["initial"]
+        container[new_id] = new_item
+        self.dm.commit()
+        assert new_id not in container.get_undeletable_identifiers()
+        assert new_id in container.get_all_data(mutability=True)
+        assert new_id not in container.get_all_data(mutability=False)
+
+        assert mutable_entry in container.get_undeletable_identifiers()
+        new_item = utilities.safe_copy(container[mutable_entry])
+        del new_item["initial"]
+        container[mutable_entry] = utilities.safe_copy(new_item)
+        self.dm.commit()
+        assert mutable_entry in container.get_undeletable_identifiers()  # unchanged deletability for existing entry
+
 
 
 
@@ -1645,19 +1776,19 @@ class TestDatamanager(BaseGameTestCase):
         # generation of entry links
         res = _generate_encyclopedia_links("animals lokons lokonsu", self.dm)
         expected = """<a href="@@@?search=animals">animals</a> lokons lokonsu"""
-        expected = expected.replace("@@@", reverse(views.view_encyclopedia, kwargs=dict(game_instance_id=self.dm.game_instance_id)))
+        expected = expected.replace("@@@", game_view_url(views.view_encyclopedia, datamanager=self.dm))
         assert res == expected
 
         res = _generate_encyclopedia_links(u"""wu\\gly_é gerbil \n lokongerbil dummy gerb\nil <a href="#">lokon\n</a> lokons""", self.dm)
         print (repr(res))
         expected = u'wu\\gly_é <a href="@@@?search=gerbil">gerbil</a> \n lokongerbil dummy gerb\nil <a href="#">lokon\n</a> lokons'
-        expected = expected.replace("@@@", reverse(views.view_encyclopedia, kwargs=dict(game_instance_id=self.dm.game_instance_id)))
+        expected = expected.replace("@@@", game_view_url(views.view_encyclopedia, datamanager=self.dm))
         assert res == expected
 
         res = _generate_encyclopedia_links(u"""i<à hi""", self.dm)
         print (repr(res))
-        expected = u'<a href="/TeStiNg/encyclopedia/?search=i%3C%C3%A0">i&lt;\xe0</a> hi'
-        expected = expected.replace("@@@", reverse(views.view_encyclopedia, kwargs=dict(game_instance_id=self.dm.game_instance_id)))
+        expected = u'<a href="/TeStiNg/guest/encyclopedia/?search=i%3C%C3%A0">i&lt;\xe0</a> hi'
+        expected = expected.replace("@@@", game_view_url(views.view_encyclopedia, datamanager=self.dm))
         assert res == expected
 
 
@@ -1867,14 +1998,18 @@ class TestDatamanager(BaseGameTestCase):
         assert sorted(container.keys()) == sorted(container.get_all_data().keys())
         assert fixture_key in [i[0] for i in container.get_all_data(as_sorted_list=True)]
 
-        res = container[fixture_key]
-        assert res["immutable"]
+        assert container[fixture_key]["initial"]
+
+        _tmp = utilities.safe_copy(container[fixture_key])
+        del _tmp["initial"]
+
+        assert container[fixture_key]["initial"]
+        container[fixture_key] = _tmp # key already existing, but modifying in-place is OK
+        self.dm.commit()
+
+        assert container[fixture_key]["initial"]  # remains undeletable
         with pytest.raises(UsageError):
-            container[fixture_key] = good_content.copy() # already existing
-        with pytest.raises(UsageError):
-            container[fixture_key] = good_content.copy() # immutable
-        with pytest.raises(UsageError):
-            del container[fixture_key] # immutable
+            del container[fixture_key] # key can't be DELETED/MOVED
         assert fixture_key in container
 
 
@@ -1905,18 +2040,18 @@ class TestDatamanager(BaseGameTestCase):
             container[contact] = good_content.copy()
 
             assert contact in container
-            res = copy.copy(container[contact])
-            assert res["immutable"] == False
-            del res["immutable"]
+            res = utilities.safe_copy(container[contact])
+            assert res["initial"] == False
+            del res["initial"]
             assert res == good_content
 
             with pytest.raises(UsageError):
                 container[contact] = {"avatar": 11} # bad content
             container[contact] = {"avatar": None, "description": None}
 
-            res = copy.copy(container[contact])
-            assert res["immutable"] == False
-            del res["immutable"]
+            res = utilities.safe_copy(container[contact])
+            assert res["initial"] == False
+            del res["initial"]
             assert res == {"avatar": None, "description": None, "access_tokens": None, "gamemaster_hints": ""}
 
             assert contact in container
@@ -1931,23 +2066,39 @@ class TestDatamanager(BaseGameTestCase):
                 container[contact]
 
 
-            # mutability control
-            immutable_entry = "[auction-list]@pangea.com"
-            assert immutable_entry in container.get_all_data()
-            assert immutable_entry in container.get_all_data(mutability=False)
-            assert immutable_entry not in container.get_all_data(mutability=True)
-            assert immutable_entry in [k for k, v in container.get_all_data(as_sorted_list=True)]
-            assert immutable_entry in [k for k, v in container.get_all_data(as_sorted_list=True, mutability=False)]
-            assert immutable_entry not in [k for k, v in container.get_all_data(as_sorted_list=True, mutability=True)]
+            # mutability control #
+            # NOTE that currently ALL CONTACTS are MUTABLE (but some are undeletable) #
 
-            mutable_entry = "othercontact@anything.fr"
-            assert mutable_entry in container.get_all_data()
-            assert mutable_entry in container.get_all_data(mutability=True)
-            assert mutable_entry not in container.get_all_data(mutability=False)
-            assert mutable_entry in [k for k, v in container.get_all_data(as_sorted_list=True)]
-            assert mutable_entry not in [k for k, v in container.get_all_data(as_sorted_list=True, mutability=False)]
-            assert mutable_entry in [k for k, v in container.get_all_data(as_sorted_list=True, mutability=True)]
-            assert mutable_entry not in [k for k, v in container.get_all_data(as_sorted_list=True, mutability=False)]
+            assert not container.get_all_data(mutability=False)
+
+            undeletable_entry = "[auction-list]@pangea.com"
+            assert undeletable_entry in container.get_all_data()
+            assert undeletable_entry not in container.get_all_data(mutability=False)
+            assert undeletable_entry in container.get_all_data(mutability=True)
+            assert undeletable_entry in [k for k, v in container.get_all_data(as_sorted_list=True)]
+            assert undeletable_entry not in [k for k, v in container.get_all_data(as_sorted_list=True, mutability=False)]
+            assert undeletable_entry in [k for k, v in container.get_all_data(as_sorted_list=True, mutability=True)]
+            assert undeletable_entry in container.get_undeletable_identifiers()
+
+            new_id = "newid"
+            new_entry = utilities.safe_copy(container["[auction-list]@pangea.com"])
+            del new_entry["initial"]
+            container[new_id] = new_entry
+            self.dm.commit()
+
+            assert new_id in container.get_all_data(mutability=True)
+            assert new_id not in container.get_all_data(mutability=False)
+            assert new_id not in container.get_undeletable_identifiers()
+
+            assert undeletable_entry in container.get_undeletable_identifiers()
+            new_item = utilities.safe_copy(container[undeletable_entry])
+            del new_item["initial"]
+            container[undeletable_entry] = utilities.safe_copy(new_item)
+            self.dm.commit()
+            assert undeletable_entry in container.get_undeletable_identifiers()  # unchanged deletability for existing entry
+
+
+
 
 
     '''        
@@ -2018,7 +2169,7 @@ class TestDatamanager(BaseGameTestCase):
         res = _generate_messaging_links(sample, self.dm)
 
         # the full email is well linked, not the incomplete one
-        assert res == u' Hello <a href="/TeStiNg/messages/compose/?recipient=h%C3%A9lloaaxsjjs%40gma%C3%AFl.fr">h\xe9lloaaxsjjs@gma\xefl.fr</a>. please write to h\xe9rb\xe8rt@h\xe9l\xe9nia.'
+        assert res == u' Hello <a href="/TeStiNg/guest/messages/compose/?recipient=h%C3%A9lloaaxsjjs%40gma%C3%AFl.fr">h\xe9lloaaxsjjs@gma\xefl.fr</a>. please write to h\xe9rb\xe8rt@h\xe9l\xe9nia.'
 
 
         expected_res = [{'description': 'Simon Bladstaffulovza - whatever', 'avatar': os.path.normpath('images/avatars/guy1.png'), 'address': u'guy1@pangea.com', 'color': '#0033CC', 'gamemaster_hints': 'This is guy1, actually agent SHA1.'},
@@ -2106,7 +2257,7 @@ class TestDatamanager(BaseGameTestCase):
         self.dm.get_dispatched_message_by_id(msg_id_1)
         self.dm.permanently_delete_message(msg_id_1)
         with pytest.raises(UsageError):
-            self.dm.get_dispatched_message_by_id(msg_id_1)  # will cause trouble in global coherency check, if handling is buggy
+            self.dm.get_dispatched_message_by_id(msg_id_1)  # will cause trouble in global coherence check, if handling is buggy
 
         msg2 = self.dm.get_dispatched_message_by_id(msg_id_2)
         assert not msg2["transferred_msg"]
@@ -2594,7 +2745,7 @@ class TestDatamanager(BaseGameTestCase):
         self.assertEqual(username, "guy3")
 
         properties = self.dm.get_audio_message_properties(audio_id)
-        self.assertEqual(set(properties.keys()), set(["title", "text", "file", "url", "immutable", "gamemaster_hints"]))
+        self.assertEqual(set(properties.keys()), set(["title", "text", "file", "initial", "gamemaster_hints"]))
 
         # self.assertEqual(properties["new_messages_notification_for_user"], "guy3")
         # self.assertEqual(self.dm.get_audio_message_properties("request_for_report_teldorium")["new_messages_notification_for_user"], None)
@@ -2675,6 +2826,55 @@ class TestDatamanager(BaseGameTestCase):
         assert not self.dm.has_read_current_playlist("guy3")
 
 
+    def test_radio_spots_referential_integrity(self):
+
+        with pytest.raises(AbnormalUsageError):
+            del self.dm.radio_spots["info_spots_1"]  # initial spots are, by default, immutable
+
+        audio_id = "erasable_spots"   # this one IS mutable
+        self.dm.set_radio_messages([audio_id])
+        assert self.dm.get_all_next_audio_messages() == [audio_id]
+        del self.dm.radio_spots[audio_id]  # triggers pruning of radio playlist
+        assert self.dm.get_all_next_audio_messages() == []
+
+
+
+        # mutability control #
+        # NOTE that currently ALL radio spots are MUTABLE (but initial ones are undeletable)#
+
+        container = self.dm.radio_spots
+
+        assert not container.get_all_data(mutability=False)
+
+        mutable_entry = "intro_audio_messages"
+        assert mutable_entry in container.get_all_data()
+        assert mutable_entry in container.get_all_data(mutability=True)
+        assert mutable_entry not in container.get_all_data(mutability=False)
+        assert mutable_entry in [k for k, v in container.get_all_data(as_sorted_list=True)]
+        assert mutable_entry not in [k for k, v in container.get_all_data(as_sorted_list=True, mutability=False)]
+        assert mutable_entry in [k for k, v in container.get_all_data(as_sorted_list=True, mutability=True)]
+        assert mutable_entry not in [k for k, v in container.get_all_data(as_sorted_list=True, mutability=False)]
+        assert mutable_entry in container.get_undeletable_identifiers()
+        assert len(container.get_all_data()) == len(container.get_undeletable_identifiers())  # ALL undeletable initially
+
+        new_id = "newid"
+        new_item = utilities.safe_copy(container[mutable_entry])
+        del new_item["initial"]
+        container[new_id] = new_item
+        self.dm.commit()
+
+        assert new_id not in container.get_undeletable_identifiers()
+        assert new_id in container.get_all_data(mutability=True)
+        assert new_id not in container.get_all_data(mutability=False)
+
+        new_item = utilities.safe_copy(container[mutable_entry])
+        del new_item["initial"]
+        container[mutable_entry] = utilities.safe_copy(new_item)
+        self.dm.commit()
+        assert mutable_entry in container.get_undeletable_identifiers()  # unchanged deletability for existing entry
+
+
+
     def test_delayed_message_processing_and_basic_message_deletion(self):
 
         WANTED_FACTOR = 2 # we only double durations below
@@ -2733,7 +2933,7 @@ class TestDatamanager(BaseGameTestCase):
         self.assertEqual(len(self.dm.get_all_dispatched_messages()), 3)
         self.assertEqual(len(self.dm.get_all_queued_messages()), 0)
 
-        # due to the strength of coherency checks, it's about impossible to enforce a sending here here...
+        # due to the strength of coherence checks, it's about impossible to enforce a sending here here...
         self.assertEqual(self.dm.get_event_count("DELAYED_MESSAGE_ERROR"), 0)
 
 
@@ -2815,7 +3015,7 @@ class TestDatamanager(BaseGameTestCase):
 
         OTHER_SESSION_TICKET_KEY = SESSION_TICKET_KEY_TEMPLATE % "my_other_test_game_id"
 
-        home_url = reverse(views.homepage, kwargs={"game_instance_id": TEST_GAME_INSTANCE_ID})
+        home_url = neutral_url_reverse(views.homepage)
 
         master_login = self.dm.get_global_parameter("master_login")
         master_password = self.dm.get_global_parameter("master_password")
@@ -2950,7 +3150,7 @@ class TestDatamanager(BaseGameTestCase):
         request_var = "session_ticket"
 
         username = random.choice(("guy3", "master"))
-        home_url = reverse(views.homepage, kwargs={"game_instance_id": TEST_GAME_INSTANCE_ID})
+        home_url = neutral_url_reverse(views.homepage)
 
         token = authentication.compute_enforced_login_token(self.dm.game_instance_id, username)
         request = self.factory.post(home_url, data={request_var : token})
@@ -3029,6 +3229,17 @@ class TestDatamanager(BaseGameTestCase):
         assert request.datamanager.user.real_username == "master"
         assert request.datamanager.user.is_observer
         assert not request.datamanager.user.has_write_access # NO write, especially for impersonated username
+
+
+        request = self.factory.post(home_url, data={request_var: "",  # quitting authenticated mode
+                                                    IMPERSONATION_TARGET_POST_VARIABLE: "guy1",
+                                                    IMPERSONATION_WRITABILITY_POST_VARIABLE: True})
+        request.datamanager = self.dm
+        try_authenticating_with_session(request)
+        assert request.datamanager.user.username == "guest" # impersonation
+        assert request.datamanager.user.real_username == "guest"
+        assert not request.datamanager.user.is_observer
+        assert request.datamanager.user.has_write_access
 
 
 
@@ -3140,7 +3351,9 @@ class TestDatamanager(BaseGameTestCase):
             assert not self.dm.should_display_admin_tips()
             assert not self.dm.user.is_impersonation
             assert self.dm.user.real_username == anonymous_login
-            assert self.dm.user.has_notifications() == bool(requested_impersonation_target)
+
+            must_have_notifications = bool(requested_impersonation_target and requested_impersonation_target != anonymous_login)
+            assert self.dm.user.has_notifications() == must_have_notifications
             self.dm.user.discard_notifications()
 
             # ANONYMOUS CASE
@@ -3338,14 +3551,14 @@ class TestDatamanager(BaseGameTestCase):
                                              django_user=None) # no django staff user here
             assert session_ticket == {'game_instance_id': TEST_GAME_INSTANCE_ID,
                                       'impersonation_target': None,
-                                      'impersonation_writability': False,  # RESET
+                                      'impersonation_writability': writability,  # NOT RESET
                                       'game_username': master_login}
             assert self.dm.user.username == master_login
             assert self.dm.user.has_write_access # always if not impersonation
             assert not self.dm.user.is_superuser
             assert not self.dm.user.is_impersonation
             assert not self.dm.user.impersonation_target
-            assert not self.dm.user.impersonation_writability
+            assert self.dm.user.impersonation_writability == bool(writability)
             assert self.dm.user.real_username == master_login
             assert self.dm.should_display_admin_tips()
             assert not self.dm.user.has_notifications()  # no errors, it's a standard case when using "usernames in URLs"
@@ -3358,7 +3571,7 @@ class TestDatamanager(BaseGameTestCase):
                                                      requested_impersonation_writability=writability,
                                                      django_user=django_user)
             assert session_ticket == {'game_instance_id': TEST_GAME_INSTANCE_ID, 'impersonation_target': anonymous_login,
-                                      'impersonation_writability': writability if writability is not None else False,  # if None, we remember previous value
+                                      'impersonation_writability': writability if writability is not None else None,  # if None, we remember previous value
                                       'game_username': master_login}
 
             assert self.dm.user.username == anonymous_login
@@ -3379,7 +3592,7 @@ class TestDatamanager(BaseGameTestCase):
                                              django_user=django_user)
             assert session_ticket == {'game_instance_id': TEST_GAME_INSTANCE_ID,
                                       'impersonation_target': None,
-                                      'impersonation_writability': False, # RESET
+                                      'impersonation_writability': writability, # NOT RESET
                                       'game_username': master_login}
 
             assert self.dm.user.username == master_login
@@ -3387,11 +3600,10 @@ class TestDatamanager(BaseGameTestCase):
             assert not self.dm.user.is_superuser
             assert not self.dm.user.is_impersonation
             assert not self.dm.user.impersonation_target
-            assert self.dm.user.impersonation_writability == False # RESET
+            assert self.dm.user.impersonation_writability == bool(writability) # NOT RESET
             assert self.dm.user.real_username == master_login
             assert self.dm.should_display_admin_tips()
             assert not self.dm.user.has_notifications() # IMPORTANT - no error message
-
 
 
     @for_core_module(PlayerAuthentication)
@@ -3477,6 +3689,63 @@ class TestDatamanager(BaseGameTestCase):
 
 
     @for_core_module(PlayerAuthentication)
+    def test_impersonation_by_anonymous(self):
+
+        if random.choice((True, False)):
+            now = timezone.now()
+            is_superuser = True
+            django_user = User(username='fakename', email='my@email.fr',
+                              is_staff=True, is_active=True, is_superuser=is_superuser,
+                              last_login=now, date_joined=now)
+        else:
+            is_superuser = False
+            django_user = None
+
+
+        player_login = "guy1"
+        anonymous_login = self.dm.get_global_parameter("anonymous_login")
+
+
+        # ensure that empty "game_username" in session is not a problem when resetting impersonation
+        is_observer = random.choice((True, False))
+        _special_session_ticket = {'game_instance_id': TEST_GAME_INSTANCE_ID,
+                                 'impersonation_target': random.choice((player_login, anonymous_login, None)),
+                                 'is_superuser': False,
+                                 'impersonation_writability': None,
+                                 'game_username': None,  # ANONYMOUS
+                                 'is_observer': is_observer}
+
+        writability = random.choice((True, False, None))
+        self.dm.authenticate_with_session_data(_special_session_ticket,
+                                             requested_impersonation_target="",  # THIS sometimes crashed
+                                             requested_impersonation_writability=writability,
+                                             django_user=django_user)
+        assert not _special_session_ticket["impersonation_target"]
+        assert _special_session_ticket["impersonation_writability"] == (writability if (is_superuser and not is_observer) else None)  # reset IFF non-privileged user
+        assert not self.dm.user.has_notifications()
+
+
+        # ensure that the side-effect "anonymous impersonating anonymous" is well dealt with
+        _special_session_ticket = {'game_instance_id': TEST_GAME_INSTANCE_ID,
+                                 'impersonation_target': random.choice((player_login, anonymous_login, None)),
+                                 'is_superuser': False,
+                                 'impersonation_writability': random.choice((True, False, None)),
+                                 'game_username': None,  # ANONYMOUS
+                                 'is_observer': random.choice((True, False))}
+        self.dm.authenticate_with_session_data(_special_session_ticket,
+                                             requested_impersonation_target=anonymous_login,  # THIS crashed before
+                                             requested_impersonation_writability=random.choice((True, False, None)),
+                                             django_user=django_user)
+        if django_user:
+            assert django_user.is_superuser
+            assert _special_session_ticket["impersonation_target"] == anonymous_login
+            # then "impersonation_writability" might be ANYTHING here
+        else:
+            assert not _special_session_ticket["impersonation_target"]
+            assert not _special_session_ticket["impersonation_writability"]
+
+
+    @for_core_module(PlayerAuthentication)
     def test_master_credentials_reset(self):
 
         self.dm.authenticate_with_credentials("master", "ultimate")
@@ -3493,7 +3762,7 @@ class TestDatamanager(BaseGameTestCase):
 
         assert not self.dm.user.is_master
 
-        self.dm.authenticate_with_credentials("master", "mypsgh")
+        self.dm.authenticate_with_credentials("MaSter", "mypsgh")  # it works
 
         assert self.dm.user.is_master
 
@@ -3549,11 +3818,11 @@ class TestDatamanager(BaseGameTestCase):
         with raises_with_content(NormalUsageError, "no secret question"):
             self.dm.process_secret_answer_attempt("guy1", "FluFFy", "guy3@pangea.com")
 
-        res = self.dm.get_secret_question("guy3")
+        res = self.dm.get_secret_question("guY3")  # case-insensitive
         self.assertTrue("pet" in res)
 
         self.assertEqual(len(self.dm.get_all_queued_messages()), 0)
-        res = self.dm.process_secret_answer_attempt("guy3", "FluFFy", "guy3@pangea.com")
+        res = self.dm.process_secret_answer_attempt("gUy3", "FluFFy", "guy3@pangea.com")  # case-insensitive
         self.assertEqual(res, "awesome2") # password
 
         msgs = self.dm.get_all_queued_messages()
@@ -3580,14 +3849,19 @@ class TestDatamanager(BaseGameTestCase):
         with pytest.raises(AbnormalUsageError):
             self.dm.process_password_change_attempt("guy1", "elixir", None) # wrong new pwd
 
-
         self.dm.process_password_change_attempt("guy1", "elixir", "newpwd")
+
         with pytest.raises(NormalUsageError):
-            self.dm.process_password_change_attempt("guy1", "elixir", "newpwd")
+            self.dm.process_password_change_attempt("guy1", "elixir", "newpwd")  # old-password not OK
 
         with pytest.raises(NormalUsageError):
             self.dm.authenticate_with_credentials("guy1", "elixir")
-        self.dm.authenticate_with_credentials("guy1", "newpwd")
+
+        self._set_user("guy3")
+        assert self.dm.username == "guy3"
+
+        self.dm.authenticate_with_credentials("GuY1", "newpwd")  # case-insensitive is OK
+        assert self.dm.username == "guy1"
 
         assert self.dm.get_character_properties("guy4")["password"] is None
         with pytest.raises(AttributeError):
@@ -3646,6 +3920,8 @@ class TestDatamanager(BaseGameTestCase):
         self.dm.ACTIVABLE_VIEWS_REGISTRY[random_view] = random_klass # test cleanup
 
 
+        self._set_user("master")
+
         # test admin form tokens
         assert "admin_dashboard.choose_activated_views" in self.dm.get_admin_widget_identifiers()
 
@@ -3660,6 +3936,15 @@ class TestDatamanager(BaseGameTestCase):
         assert len(components) == 2
         assert isinstance(components[0], admin_dashboard.klass)
         assert components[1] == "choose_activated_views"
+
+
+        # test HTML admin summaries of each view
+        res = self.dm.get_game_view_admin_summaries()
+        assert isinstance(res, dict) and res, res
+        for k, v in res.items():
+            assert isinstance(v["title"], Promise) and len(v["title"])
+            assert "<p>" in v["html_chunk"] or "dd" in v["html_chunk"]
+
 
 
     @for_core_module(SpecialAbilities)
@@ -3743,6 +4028,27 @@ class TestDatamanager(BaseGameTestCase):
         assert self.dm.has_user_accessed_static_page(EXISTING_HELP_PAGE)
         self.dm.mark_static_page_as_accessed(EXISTING_HELP_PAGE)
         assert self.dm.has_user_accessed_static_page(EXISTING_HELP_PAGE)
+
+
+
+        # mutability control #
+        # NOTE that ALL static pages are currently modifiable and deletable #
+
+        container = self.dm.static_pages
+
+        mutable_entry = "top-homepage"
+
+        new_id = "newid"  # create a new page
+        new_item = utilities.safe_copy(container[mutable_entry])
+        del new_item["initial"]
+        container[new_id] = new_item
+        self.dm.commit()
+
+        assert mutable_entry in container.get_all_data()
+        assert mutable_entry in container.get_all_data(mutability=True)
+
+        assert not container.get_all_data(mutability=False)
+        assert not container.get_undeletable_identifiers()
 
 
 
@@ -3873,7 +4179,7 @@ class TestDatamanager(BaseGameTestCase):
         assert not self.dm.has_accessed_novelty("guy4", "dllll", category="myCat") # case sensitive category
         assert not self.dm.has_accessed_novelty("guy4", "dlllL", category="mycat") # case sensitive key
 
-        # this method's input is not checked by coherency routines, so let's ensure it's protected...
+        # this method's input is not checked by coherence routines, so let's ensure it's protected...
         with pytest.raises(AssertionError):
             self.dm.has_accessed_novelty("badusername", "qsdffsdf")
         with pytest.raises(AssertionError):
@@ -3959,14 +4265,14 @@ class TestHttpRequests(BaseGameTestCase):
     def _master_auth(self):
 
         master_login = self.dm.get_global_parameter("master_login")
-        login_page = reverse("pychronia_game.views.login", kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID))
+        login_page = neutral_url_reverse("pychronia_game.views.login")
         response = self.client.get(login_page) # to set preliminary cookies
         self.assertEqual(response.status_code, 200)
 
         response = self.client.post(login_page, data=dict(secret_username=master_login, secret_password=self.dm.get_global_parameter("master_password")))
 
         self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, ROOT_GAME_URL + "/")
+        self.assertRedirects(response, ROOT_GAME_URL + "/master/")
 
         assert self.client.session[SESSION_TICKET_KEY] == {'game_instance_id': TEST_GAME_INSTANCE_ID, 'impersonation_target': None,
                                                                 'impersonation_writability': None, 'game_username': master_login}
@@ -3976,33 +4282,37 @@ class TestHttpRequests(BaseGameTestCase):
 
     def _player_auth(self, username):
 
-
-        login_page = reverse("pychronia_game.views.login", kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID))
+        login_page = neutral_url_reverse("pychronia_game.views.login")
         response = self.client.get(login_page) # to set preliminary cookies
         self.assertEqual(response.status_code, 200)
 
         response = self.client.post(login_page, data=dict(secret_username=username, secret_password=self.dm.get_character_properties(username)["password"]))
 
+        #html = response.content.decode("utf8")
+        #print("-------------->", html)
+
+        # if HTTP 200 is received here (with error notifications), note that users like guy4 are DISABLED!
         self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, ROOT_GAME_URL + "/")
+        self.assertRedirects(response, ROOT_GAME_URL + "/" + username + "/")
 
         assert self.client.session[SESSION_TICKET_KEY] == {'game_instance_id': TEST_GAME_INSTANCE_ID, 'impersonation_target': None,
                                                                 'impersonation_writability': None, 'game_username': username}
-
         self.assertTrue(self.client.cookies["sessionid"])
 
 
     def _logout(self):
 
-        login_page = reverse("pychronia_game.views.login", kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID))
-        logout_page = reverse("pychronia_game.views.logout", kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID))
+        login_page = neutral_url_reverse("pychronia_game.views.login", game_username="guest")
+        logout_page = neutral_url_reverse("pychronia_game.views.logout")
         response = self.client.get(logout_page, follow=False)
 
         self.assertEqual(response.status_code, 302)
-        assert not self.client.session.has_key(SESSION_TICKET_KEY)
+        #print("LOGOUT SESSION -> ", self.client.session.items())
+        assert not self.client.session.has_key(SESSION_TICKET_KEY)  # if this fails, maybe use was not authenticated (thus logout fails)
 
-        self.assertRedirects(response, login_page) # beware - LOADS TARGET LOGIN PAGE
-        assert self.client.session.has_key("testcookie") # we get it once more thanks to the assertRedirects() above
+        self.assertRedirects(response, login_page)  # beware - LOADS TARGET LOGIN PAGE, so MODIFIES session!
+
+        assert self.client.session.has_key("testcookie")  # we get it once more thanks to the assertRedirects() above
         assert self.client.session.has_key(SESSION_TICKET_KEY)
 
 
@@ -4021,17 +4331,26 @@ class TestHttpRequests(BaseGameTestCase):
         assert msg_id != initial_msg_id
         assert len(msg_id) == len(initial_msg_id) # simple translation
 
+        root_game_url_with_username = ROOT_GAME_URL + "/" + self.dm.master_login
+
         # these urls and their post data might easily change, beware !
-        special_urls = {ROOT_GAME_URL + "/item3dview/sacred_chest/": None,
-                        reverse(views.view_static_page, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID, page_id="lokon")): None,
+        special_urls = {
+                        root_game_url_with_username + "/item3dview/sacred_chest/": None,
+                        neutral_url_reverse(views.view_static_page, page_id="lokon"): None,
                         # FIXME NOT YET READYROOT_GAME_URL + "/djinn/": {"djinn": "Pay Rhuss"},
                         ##### FIXME LATER config.MEDIA_URL + "Burned/default_styles.css": None,
                         game_file_url("images/attachments/image1.png"): None,
                         game_file_url("encrypted/guy2_report/evans/orb.jpg"): None,
-                        ROOT_GAME_URL + "/messages/view_single_message/%s/" % msg_id: None,
-                        ROOT_GAME_URL + "/secret_question/guy3/": dict(secret_answer="Fluffy", target_email="guy3@pangea.com"),
-                        ROOT_GAME_URL + "/public_webradio/": dict(frequency=self.dm.get_global_parameter("pangea_radio_frequency")),
-                        reverse(views.view_help_page, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID, keyword="help-homepage")): None,
+                        root_game_url_with_username + "/bug_report/": None,
+                        root_game_url_with_username + "/bug_report/": dict(location="http://mondomaine", report_data="ceci est un message"),
+                        root_game_url_with_username + "/messages/view_single_message/%s/" % msg_id: None,
+                        root_game_url_with_username + "/messages/view_single_message/UNEXISTING_MSG/": None,
+                        root_game_url_with_username + "/messages/view_single_message/%s/?popup=1" % msg_id: None,
+                        root_game_url_with_username + "/messages/view_single_message/UNEXISTING_MSG/?popup=1": None,
+                        root_game_url_with_username + "/secret_question/guy3/": dict(secret_answer="Fluffy", target_email="guy3@pangea.com"),
+                        root_game_url_with_username + "/public_webradio/": dict(frequency=self.dm.get_global_parameter("pangea_radio_frequency")),
+                        neutral_url_reverse(views.view_help_page, keyword="help-homepage"): None,
+                        root_game_url_with_username + "/view_media/?autostart=true&url=%2Ffiles%2Fe65701d5%2Fpersonal_files%2F_common_files_%2Fgraphs.gif": None,
                         }
 
         for url, value in special_urls.items():
@@ -4096,7 +4415,7 @@ class TestHttpRequests(BaseGameTestCase):
                 if name in skipped_views_lowercase or "ajax" in name or "dummy" in name:
                     results.append(0)
                     continue
-                url = reverse(view_class.as_view, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID))
+                url = neutral_url_reverse(view_class.as_view)
                 response = self.client.get(url)
                 # print response.content
                 self.assertEqual(response.status_code, 200, name + " | " + url + " | " + str(response.status_code))
@@ -4197,7 +4516,7 @@ class TestHttpRequests(BaseGameTestCase):
 
         def test_views(views):
             for view in views:
-                url = reverse(view, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID))
+                url = neutral_url_reverse(view)
                 response = self.client.get(url)
                 # print response.content
                 self.assertEqual(response.status_code, 200, view + " | " + url + " | " + str(response.status_code))
@@ -4239,29 +4558,24 @@ class TestHttpRequests(BaseGameTestCase):
 
         # TODO FIXME - use Http403 exceptions instead, when new django version is out !!
 
-        url = reverse(views.view_help_page, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID,
-                                                        keyword=""))
+        url = neutral_url_reverse(views.view_help_page, keyword="")
         response = self.client.get(url)
         assert response.status_code == 404
 
-        url = reverse(views.view_help_page, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID,
-                                                        keyword="qsd8778GAVVV"))
+        url = neutral_url_reverse(views.view_help_page, keyword="qsd8778GAVVV")
         response = self.client.get(url)
         assert response.status_code == 404
 
-        url = reverse(views.view_help_page, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID,
-                                                        keyword="help-homepage"))
+        url = neutral_url_reverse(views.view_help_page, keyword="help-homepage")
         response = self.client.get(url)
         assert response.status_code == 200
 
         assert self.dm.get_categorized_static_page(self.dm.HELP_CATEGORY, "help-runic_translation")
-        url = reverse(views.view_help_page, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID,
-                                                        keyword="help-runic_translation"))
+        url = neutral_url_reverse(views.view_help_page, keyword="help-runic_translation")
         response = self.client.get(url)
         assert response.status_code == 404 # ACCESS FORBIDDEN
 
-        url = reverse(views.view_help_page, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID,
-                                                        keyword="help-chatroom"))
+        url = neutral_url_reverse(views.view_help_page, keyword="help-chatroom")
         response = self.client.get(url)
         assert response.status_code == 404 # view always available, but no help text available for it
 
@@ -4272,7 +4586,7 @@ class TestHttpRequests(BaseGameTestCase):
 
         self._reset_django_db()
 
-        url_base = reverse(views.view_encyclopedia, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID))
+        url_base = neutral_url_reverse(views.view_encyclopedia)
 
         for login in ("master", "guy1", None):
 
@@ -4285,13 +4599,12 @@ class TestHttpRequests(BaseGameTestCase):
             elif login == "master":
                 self._master_auth()
             else:
-                pass # remain GUEST
+                self._logout()  # get back to GUEST
 
             response = self.client.get(url_base)
             assert response.status_code == 200
 
-            url = reverse(views.view_encyclopedia, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID,
-                                                               article_id="lokon"))
+            url = neutral_url_reverse(views.view_encyclopedia, current_article_id="lokon")
             response = self.client.get(url)
             assert response.status_code == 200
             assert "animals" in response.content.decode("utf8")
@@ -4300,6 +4613,11 @@ class TestHttpRequests(BaseGameTestCase):
                 assert "gerbil_species" not in self.dm.get_character_known_article_ids()
                 ok += 1
 
+            response = self.client.get(url_base + "?search=badkeyword")
+            assert response.status_code == 200
+            # print(repr(response.content))
+            assert "Please use the side controls" in response.content.decode("utf8") # homepage of encylopedia
+
             response = self.client.get(url_base + "?search=animal")
             assert response.status_code == 200
             # print(repr(response.content))
@@ -4307,26 +4625,41 @@ class TestHttpRequests(BaseGameTestCase):
 
             response = self.client.get(url_base + "?search=gerbil")
             assert response.status_code == 302
-            assert reverse(views.view_encyclopedia, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID, article_id="gerbil_species")) in response['Location']
+            assert game_view_url(views.view_encyclopedia,
+                                 datamanager=self.dm,
+                                 current_article_id="gerbil_species") in response['Location']
 
             if login == "guy1":
                 assert ("gerbil_species" in self.dm.get_character_known_article_ids()) == game_state
                 ok += 1
 
-        assert ok == 2 # coherency of test method
+        assert ok == 2 # coherence of test method
 
 
     def test_usage_error_transformation(self):
 
         self._reset_django_db()
 
+        # user is initially anonymous, we have a special redirection for access denials in this case
+        response = self.client.get(neutral_url_reverse(views.view_sales, game_username="guest"))  # we target "anyuser" url
+        expected_url = "http://testserver/TeStiNg/guest/login/?next=http%3A%2F%2Ftestserver%2FTeStiNg%2Fredirect%2Fview_sales%2F"
+        self.assertRedirects(response, expected_url=expected_url)
+
+        # we ensure that the "next" argument works fine through all redirections
+        response = self.client.post(expected_url, data=dict(secret_username="guy1", secret_password=self.dm.get_character_properties("guy1")["password"]), follow=True)
+        assert response.status_code == 200  # all went fine
+        self.assertRedirects(response, expected_url="http://testserver/TeStiNg/guy1/view_sales/")  # redirection chain went up to there
+
+        self._logout()
+
+        #---
 
         self._player_auth("guy1")
         self.dm.set_permission("guy1", views.wiretapping_management.get_access_permission_name(), is_present=False)  # else, would override is_game_view_activated()!
 
-        url_home = reverse("pychronia_game-homepage", kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID))
+        url_home = neutral_url_reverse("pychronia_game-homepage")  # for ANY game-username
 
-        url = reverse(views.wiretapping_management, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID))
+        url = neutral_url_reverse(views.wiretapping_management)
 
         self.dm.set_activated_game_views([])  # for wiretapping, character permissions are the most important anyway
         assert not self.dm.is_game_view_activated("wiretapping")
@@ -4337,8 +4670,7 @@ class TestHttpRequests(BaseGameTestCase):
 
         # HTML ACCESS DENIED #
         response = self.client.get(url)
-        # Nope - no login page anymore - self.assertRedirects(response, expected_url=u"http://testserver/TeStiNg/login/?next=http%3A%2F%2Ftestserver%2FTeStiNg%2Fability%2Fwiretapping_management%2F")
-        self.assertRedirects(response, expected_url=url_home)
+        self.assertRedirects(response, expected_url=neutral_url_reverse("pychronia_game-homepage", game_username="guy1"))  # HOME of guy1!
 
         # ACCESS OK, in ajax or not #
         self.dm.set_permission("guy1", views.wiretapping_management.get_access_permission_name(), is_present=True)
@@ -4367,8 +4699,18 @@ class TestHttpRequests(BaseGameTestCase):
 
         # HTML ACCESS DENIED #
         response = self.client.get(url)
-        self.assertRedirects(response, expected_url=url_home)
+        self.assertRedirects(response, expected_url=neutral_url_reverse("pychronia_game-homepage", game_username="guy1"))
 
+
+        # impersonate anonymous while being logged as master #
+        response = self.client.post(url_home, data={IMPERSONATION_TARGET_POST_VARIABLE: "guest", IMPERSONATION_WRITABILITY_POST_VARIABLE: "false"})
+        #print(response.content)
+        assert "Guest" in response.content.decode("utf8")
+        assert response.status_code == 200
+
+        response = self.client.get(neutral_url_reverse(views.view_sales))
+        # NOT redirected to login page, since it's an impersonation
+        self.assertRedirects(response, expected_url=neutral_url_reverse("pychronia_game-homepage", game_username="guest"))
 
 
         self._player_auth("guy1")
@@ -4388,7 +4730,7 @@ class TestHttpRequests(BaseGameTestCase):
             assert response.status_code == 400 # HttpResponseBadRequest
 
             response = self.client.get(url)
-            self.assertRedirects(response, expected_url=url_home) # redirect with user error message
+            self.assertRedirects(response, expected_url=neutral_url_reverse("pychronia_game-homepage", game_username="guy1")) # redirect with user error message
 
 
             EXCEPTION = random.choice((ValueError, RuntimeError))
@@ -4409,7 +4751,7 @@ class TestHttpRequests(BaseGameTestCase):
 
         self._player_auth("guy1")
 
-        url = reverse(views.compose_message, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID))
+        url = neutral_url_reverse(views.compose_message)
 
         params = dict(_ability_form="pychronia_game.views.messaging_views.MessageComposeForm",
                       body="Ceci est le body!",
@@ -4426,6 +4768,140 @@ class TestHttpRequests(BaseGameTestCase):
 
         assert "conversation" in html  # we got redirected
         assert "clear_saved_content();  // we do cleanup localstorage, since email was sent" in html
+
+
+    def test_game_homepage_without_username(self):
+
+        self._reset_django_db()
+        url = ROOT_GAME_URL + "/"  # homepage without game username in it
+
+        response = self.client.get(url, follow=False)
+        self.assertRedirects(response, expected_url=ROOT_GAME_URL + "/guest/")  # this auto-checks the target URL for us!
+
+        self._player_auth("guy1")
+
+        response = self.client.get(url, follow=False)
+        self.assertRedirects(response, expected_url=ROOT_GAME_URL + "/guy1/")
+
+        self._master_auth()
+
+        response = self.client.get(url, follow=False)
+        self.assertRedirects(response, expected_url=ROOT_GAME_URL + "/master/")
+
+
+    def test_game_username_embedded_in_url(self):
+
+        self._reset_django_db()
+
+        self._player_auth("guy3")
+
+        weird_url = reverse(views.login, kwargs=dict(game_instance_id="moN_in-stance.&moi", game_username="loyd.-george_s"))
+        assert weird_url == "/moN_in-stance.%26moi/loyd.-george_s/login/"  # special characters well accepted
+
+        response = self.client.get(ROOT_GAME_URL + "/anyuser/", follow=False)  # SPECIAL token
+        assert response.status_code == 200  # no redirection, the site keeps the fake username "any" in navigation
+        html = response.content.decode("utf8")
+        assert "CURRENT_USERNAME=guy3" in html  # authentication OK
+        assert "CURRENT_REAL_USERNAME=guy3" in html
+
+        response = self.client.get(ROOT_GAME_URL + "/guy1/", follow=False)
+        self.assertRedirects(response, expected_url=ROOT_GAME_URL + "/guy3/")  # impersonation refused
+
+        response = self.client.get(ROOT_GAME_URL + "/redirect/", follow=False)
+        self.assertRedirects(response, expected_url=ROOT_GAME_URL + "/guy3/")  # standard redirection system
+
+        msg_id = self.dm.post_message("guy2@pangea.com",
+                                         recipient_emails=["guy1@pangea.com"],
+                                         subject="subj22323", body="qsdqsd")
+        response = self.client.get(ROOT_GAME_URL + "/redirect/messages/view_single_message/%s/" % msg_id, follow=False)
+        self.assertRedirects(response, expected_url=ROOT_GAME_URL + "/guy3/messages/view_single_message/%s/" % msg_id)  # works also with url-keywords
+
+        response = self.client.get(ROOT_GAME_URL + "/badusername/", follow=False)
+        self.assertRedirects(response, expected_url=ROOT_GAME_URL + "/guest/")  # error - unrecognized username leads to ession reset (anti-cheat)
+
+        self._player_auth("guy3")
+        self.dm.propose_friendship("guy1", "guy3")
+        self.dm.propose_friendship("guy3", "guy1")  # sealed!
+        response = self.client.get(ROOT_GAME_URL + "/guy1/", follow=False)
+        assert response.status_code == 200  # no redirection
+        html = response.content.decode("utf8")
+        assert "CURRENT_USERNAME=guy1" in html  # NOW impersonation is OK
+        assert "CURRENT_REAL_USERNAME=guy3" in html
+
+        data = {IMPERSONATION_TARGET_POST_VARIABLE: "", IMPERSONATION_WRITABILITY_POST_VARIABLE: random.choice(("true", "false", "", "None"))}
+        response = self.client.post(ROOT_GAME_URL + "/guy1/", data=data, follow=False)  # we target impersonated URL
+        assert response.status_code == 302  # logged out
+        self.assertRedirects(response, expected_url=ROOT_GAME_URL + "/guy3/")
+
+        # let's test concurrent redirections, to check that nothing breaks
+        self._player_auth("guy3")
+        data = None
+        if random.choice((True, False)):  # whatever this data
+            data = {IMPERSONATION_TARGET_POST_VARIABLE: "", IMPERSONATION_WRITABILITY_POST_VARIABLE: random.choice(("true", "false", "", "None"))}
+        response = self.client.post(ROOT_GAME_URL + "/guy2/logout/", data=data, follow=False)  # forbidden url
+        assert response.status_code == 302  # game_username was corrected in URL
+        self.assertRedirects(response, expected_url=ROOT_GAME_URL + "/guy3/logout/", fetch_redirect_response=False)
+        response = self.client.post(ROOT_GAME_URL + "/guy3/logout/", data=data, follow=False)  # forbidden url
+        assert response.status_code == 302  # NOW we really logout
+        self.assertRedirects(response, expected_url=ROOT_GAME_URL + "/guest/login/", fetch_redirect_response=True)
+
+
+
+    def test_http_complex_message_posting(self):
+
+        self._reset_django_db()
+
+        self._set_user(self.dm.master_login)  # for local DM
+        self._master_auth() # for client cookies
+
+        parent_msg_id = self.dm.post_message("guy2@pangea.com",
+                                             recipient_emails=["guy1@pangea.com"],
+                                             subject="PARENT", body="qsdqsd")
+        transferred_msg_id = self.dm.post_message("guy3@pangea.com",
+                                             recipient_emails=["guy2@pangea.com"],
+                                             subject="TRANSFERRED", body="qsdqsd")
+
+        base_parameters = dict(
+                            _ability_form="pychronia_game.views.messaging_views.MessageComposeForm",
+                            attachment="/files/e797ff6b/personal_files/_common_files_/Ninja-cat.mp4",
+                            body="sdfsdfsdfsdf",
+                            delay_h="-1",
+                            mask_recipients="on",
+                            parent_id=str(parent_msg_id),
+                            recipients="emilos.loakim@anthropia.pg",
+                            sender="contact@akaris.pg",
+                            subject="test message complex",
+                            transferred_msg=str(transferred_msg_id),
+                            use_template="mind_opening_instructions_oracle",  # from test fixtures
+                         )
+
+        url = game_view_url("pychronia_game.views.compose_message", datamanager=self.dm)
+
+        parameters = base_parameters.copy()
+        response = self.client.post(url, data=parameters, follow=False)
+        #print("@@@@@@", response.content)
+        assert response.status_code == 302  # redirect
+        self.assertRedirects(response, expected_url=game_view_url("pychronia_game.views.all_dispatched_messages", datamanager=self.dm) + "?message_sent=1")
+
+        parameters = base_parameters.copy()
+        parameters["delay_h"] = "1.2"
+        response = self.client.post(url, data=parameters, follow=False)
+        #print("@@@@@@", response.content)
+        assert response.status_code == 302  # redirect
+        self.assertRedirects(response, expected_url=game_view_url("pychronia_game.views.all_queued_messages", datamanager=self.dm) + "?message_sent=1")
+
+
+        self._set_user("guy2")
+        self._player_auth("guy2")
+        url = game_view_url("pychronia_game.views.compose_message", datamanager=self.dm) # now with player username
+
+        parameters = base_parameters.copy()  # too many parameters for a player, but they'll just be ignored without errors
+        parameters["delay_h"] = "1.2"  # will be ignored too
+        response = self.client.post(url, data=parameters, follow=False)
+        #print("@@@@@@", response.content)
+        assert response.status_code == 302  # redirect
+        self.assertRedirects(response, expected_url=game_view_url("pychronia_game.views.standard_conversations", datamanager=self.dm) + "?message_sent=1")
+
 
 
 
@@ -4874,7 +5350,7 @@ class TestGameViewSystem(BaseGameTestCase):
 
     def test_per_action_user_permissions(self):
 
-        view_url = reverse(views.wiretapping_management, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID))
+        view_url = neutral_url_reverse(views.wiretapping_management)
 
         # ACTIONS that require personal permissions
         request1 = self.factory.post(view_url, data=dict(_action_="purchase_confidentiality_protection")) # direct call
@@ -4922,7 +5398,7 @@ class TestGameViewSystem(BaseGameTestCase):
         self.dm.transfer_money_between_characters(bank_name, "guy1", amount=1000)
 
         # BEWARE - below we use another datamanager !!
-        view_url = reverse(views.wiretapping_management, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID))
+        view_url = neutral_url_reverse(views.wiretapping_management)
 
         # first a "direct action" html call
         request = self.factory.post(view_url, data=dict(_action_="purchase_wiretapping_slot", qsdhqsdh="33"))
@@ -4995,7 +5471,7 @@ class TestGameViewSystem(BaseGameTestCase):
 
     def test_gameview_novelty_tracking(self):
 
-        view_url = reverse(views.runic_translation, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID)) # access == character only
+        view_url = neutral_url_reverse(views.runic_translation)  # access == character only
 
         # first a "direct action" html call
         request = self.factory.post(view_url)
@@ -5020,14 +5496,12 @@ class TestGameViewSystem(BaseGameTestCase):
 
 
 
-
-
 class TestActionMiddlewares(BaseGameTestCase):
 
 
     def _flatten_explanations(self, list_of_lists_of_strings):
         """
-        Also checks for coherency of list_of_lists_of_strings.
+        Also checks for coherence of list_of_lists_of_strings.
         """
         assert isinstance(list_of_lists_of_strings, list) # may be empty
         for l in list_of_lists_of_strings:
@@ -5221,7 +5695,7 @@ class TestActionMiddlewares(BaseGameTestCase):
         assert CostlyActionMiddleware
         self.dm.commit()
 
-        self.dm.check_database_coherency() # SECURITY
+        self.dm.check_database_coherence() # SECURITY
 
 
         # misconfiguration case #
@@ -5278,7 +5752,7 @@ class TestActionMiddlewares(BaseGameTestCase):
         ability.reset_test_settings("middleware_wrapped_test_action", CostlyActionMiddleware, dict(money_price=53, gems_price=None))
         assert 18277 == ability.middleware_wrapped_callable1(use_gems=[gem_125, gem_125]) # triggers payment by money ANYWAY!
 
-        # we check data coherency
+        # we check data coherence
         props = self.dm.get_character_properties("guy4")
         new_money_value = 1000 - 2 * 3 * 15 - 53 # 2 callables * 3 use_gems values * money price, and special 53 kashes payment
         assert props["account"] == new_money_value
@@ -5293,7 +5767,7 @@ class TestActionMiddlewares(BaseGameTestCase):
         assert self._flatten_explanations(ability.get_middleware_data_explanations(action_name="middleware_wrapped_test_action"))
 
 
-        self.dm.check_database_coherency() # SECURITY
+        self.dm.check_database_coherence() # SECURITY
 
 
         # payment with gems #
@@ -5324,7 +5798,7 @@ class TestActionMiddlewares(BaseGameTestCase):
                 ability.middleware_wrapped_callable1(use_gems=[(128, "several_misc_gems2"), (178, None)])
 
             # some wrong gems in input (even if a sufficient number  of them is OK)
-            with raises_with_content(AbnormalUsageError, "don't possess"):
+            with raises_with_content(UsageError, "doesn't possess"):
                 ability.middleware_wrapped_callable1(use_gems=[(111, None), (125, "stuffs")])
 
             if not money_price:
@@ -5339,7 +5813,7 @@ class TestActionMiddlewares(BaseGameTestCase):
         assert ability.middleware_wrapped_callable1(use_gems=[gem_200]) # OK
         assert ability.middleware_wrapped_callable1(use_gems=[gem_125, gem_125]) # OK as long as not too many gems for the asset value
 
-        # we check data coherency
+        # we check data coherence
         props = self.dm.get_character_properties("guy4")
         assert props["account"] == new_money_value # unchanged
         utilities.assert_sets_equal(props["gems"], [gem_125] * 6 + [gem_200]) # 3 payments with 2 gems, + 2 separate payments
@@ -5351,7 +5825,7 @@ class TestActionMiddlewares(BaseGameTestCase):
         self.dm.clear_all_event_stats()
 
 
-        self.dm.check_database_coherency() # SECURITY
+        self.dm.check_database_coherence() # SECURITY
 
 
         # payment with both is possible #
@@ -5365,7 +5839,7 @@ class TestActionMiddlewares(BaseGameTestCase):
         assert ability.non_middleware_action_callable(use_gems=[gem_125])
         assert ability.non_middleware_action_callable(use_gems=[])
 
-        # we check data coherency
+        # we check data coherence
         props = self.dm.get_character_properties("guy4")
         assert props["account"] == new_money_value - 11 * 2
         utilities.assert_sets_equal(props["gems"], [gem_125] * 2) # "200 kashes" gem is out
@@ -5623,14 +6097,14 @@ class TestActionMiddlewares(BaseGameTestCase):
         self.dm.clear_all_event_stats()
 
         ability.reset_test_settings("middleware_wrapped_test_action", TimeLimitedActionMiddleware,
-                                    dict(waiting_period_mn=3, max_uses_per_period=50)) # to please coherency checking, after our rough changes
+                                    dict(waiting_period_mn=3, max_uses_per_period=50)) # to please coherence checking, after our rough changes
 
 
     def test_action_middleware_rollback_on_error(self):
 
         self.dm.update_permissions("guy1", PersistentList(self.dm.PERMISSIONS_REGISTRY))
 
-        view_url = reverse(views.world_scan, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID))
+        view_url = neutral_url_reverse(views.world_scan)
         request = self.factory.post(view_url, data=dict(_action_="scan_form", item_name="statue")) # has no scanning settings
         request.datamanager._set_user("guy1")
 
@@ -5670,7 +6144,7 @@ class TestActionMiddlewares(BaseGameTestCase):
 
         self.dm.update_permissions("guy1", PersistentList(self.dm.PERMISSIONS_REGISTRY))
 
-        view_url = reverse(views.world_scan, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID))
+        view_url = neutral_url_reverse(views.world_scan)
 
         request = self.factory.post(view_url, data=dict(_action_="scan_form", item_name="sacred_chest"))
         world_scan = request.datamanager.instantiate_ability("world_scan")
@@ -6186,7 +6660,7 @@ class TestSpecialAbilities(BaseGameTestCase):
 
 
         ''' does not work, needs authentication
-        url = reverse(views.world_scan, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID))
+        url = sssss(views.world_scan, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID))
 
         self._set_user("guy1")
 
@@ -6197,7 +6671,242 @@ class TestSpecialAbilities(BaseGameTestCase):
         response = self.client.get(url)
         assert response.status_code == 200
         '''
+    
+    def test_telecom_investigations(self):
+        
+        all_characters = self.dm.get_character_usernames()
+        
+        characters_with_conversations = self.dm.get_character_usernames()
+        characters_with_conversations.remove("my_npc")
+        
+        telecom = self.dm.instantiate_ability("telecom_investigation")
+        telecom.perform_lazy_initializations()
+        self._reset_messages()
+        
+        
+        # message initialization
+        
+        email_guy1 = self.dm.get_character_email("guy1")
+        email_guy2 = self.dm.get_character_email("guy2")
+        email_guy3 = self.dm.get_character_email("guy3")
+        email_guy4 = self.dm.get_character_email("guy4")
+        email_external = sorted(self.dm.global_contacts.keys())[0]
+        
+        msg_id1 = self.dm.post_message(sender_email = email_guy1, recipient_emails = email_external, subject = "test", body = "test")
+        msg1 = self.dm.get_dispatched_message_by_id(msg_id1)
+        
+        msg_id2 = self.dm.post_message(sender_email = email_guy3, recipient_emails = email_guy4, subject = "test2", body = "test2")
+        msg2 = self.dm.get_dispatched_message_by_id(msg_id2)
+        
+        time.sleep(1)
+        
+        msg_id3 = self.dm.post_message(sender_email = email_guy4, recipient_emails = email_guy3, subject = msg2["subject"], body = "test3", parent_id = msg_id2)
+        msg3 = self.dm.get_dispatched_message_by_id(msg_id3)
+        
+        msg_id4 = self.dm.post_message(sender_email = email_guy1, recipient_emails = email_guy2, subject = "sujet", body = "mon message")
+        msg4 = self.dm.get_dispatched_message_by_id(msg_id4)
+        
+        
+        # testing extract_conversation_summary utility:
+        
+        assert telecom.extract_conversation_summary("guy4")
+        conversation_summary = telecom.extract_conversation_summary("guy4")
+        
+        assert type(conversation_summary) is ListType
+        
+        
+        # guy4 has 2 conversations, we must have len = 2, therefore:
+        
+        conversation_summary = telecom.extract_conversation_summary("guy4")
+        self.assertEqual(len(conversation_summary), 2)
+        
+        # NPC doesn't have any conversations, therefore:
+        
+        conversation_summary = telecom.extract_conversation_summary("my_npc")
+        self.assertEqual(conversation_summary, [])
+        
+        
+        for character in all_characters:
+            
+            conversation_summary = telecom.extract_conversation_summary(character)
+            all_character_messages = self.dm.get_user_related_messages(character, None, None)
+            conversations_by_character = self.dm.sort_messages_by_conversations(all_character_messages)
+            self.assertEqual(len(conversation_summary),len(conversations_by_character))
+        
+        # time check:
+        
+        
+        conversation_summary = telecom.extract_conversation_summary("guy4")
+        for conversation in conversation_summary:
+            
+            first_message_date = conversation["first_message"]
+            last_message_date = conversation["last_message"]
+            assert not first_message_date > last_message_date
+        
+        
+        for character in all_characters:
+            
+            conversation_summary = telecom.extract_conversation_summary(character)
+            for conversation in conversation_summary:
+                
+                first_message_date = conversation["first_message"]
+                last_message_date = conversation["last_message"]
+                assert not first_message_date > last_message_date
+        
+        
+        # testing conversation_formatting utility:
+        
+        
+        context_list = telecom.extract_conversation_summary("guy4")
+        assert telecom.conversation_formatting(context_list)
+        conversation_formatting = telecom.conversation_formatting(context_list)
+        
+        assert type(conversation_formatting) is UnicodeType
+        
+        
+        for character in characters_with_conversations :
+            
+            context_list = telecom.extract_conversation_summary(character)
+            assert telecom.conversation_formatting(character)
+            assert telecom.conversation_formatting(context_list) != "Target has no conversation!"
+                
+                
+        context_list = telecom.extract_conversation_summary("my_npc")
+        self.assertEqual(telecom.conversation_formatting(context_list), "Target has no conversation!")
+                
+                
+        #Checking the body contents:
+                
+        context_list = telecom.extract_conversation_summary("guy4")
+        conversation_formatting = telecom.conversation_formatting(context_list)
+                
+        self.assertTrue("test" in conversation_formatting)
+        self.assertTrue("test2" in conversation_formatting)
+        self.assertTrue("Participants" in conversation_formatting)
+        self.assertTrue("guy4@pangea.com" in conversation_formatting)
+        self.assertTrue("guy3@pangea.com" in conversation_formatting)
+        self.assertTrue("[auction-list]@pangea.com" in conversation_formatting)
+        self.assertTrue("1 messages" in conversation_formatting)
+        self.assertTrue("2 messages" in conversation_formatting)
+        self.assertFalse("sujet" in conversation_formatting)
+        self.assertFalse("mon message" in conversation_formatting)
+        self.assertFalse("4 messages" in conversation_formatting)
+        self.assertFalse("guy2@pangea.com" in conversation_formatting)
+                
+                
+        for character in characters_with_conversations:
+                    
+            context_list = telecom.extract_conversation_summary(character)
+            conversation_formatting = telecom.conversation_formatting(context_list)
+            all_character_messages = self.dm.get_user_related_messages(character, None, None)
+            conversations_by_character = self.dm.sort_messages_by_conversations(all_character_messages)
+                                    
+            for conversation in conversations_by_character:
+                
+                for message in conversation:
+                                            
+                    self.assertTrue(message["subject"] in conversation_formatting) #watch out with response emails that have "RE" in subject; assert becomes false
+                    self.assertTrue(message["sender_email"] in conversation_formatting)
+                    self.assertTrue(", ".join(str(e) for e in message["recipient_emails"]) in conversation_formatting)
+                    self.assertTrue("%(X)s messages" % dict(X=len(conversation)))
+                                                    
+                                                    
+        # testing end to end ability:
+                                                    
+        all_other_characters = all_characters
+        self._set_user("guy1")
+        all_other_characters.remove(self.dm.get_username_from_official_name(self.dm.get_official_name()))
 
+        assert type(telecom.process_telecom_investigation("guy2")) is UnicodeType
+    
+    
+        for character in all_other_characters:
+            
+            assert telecom.process_telecom_investigation(character)
+            self.assertEqual(telecom.process_telecom_investigation(character), "Telecom is in process, you will receive an e-mail with the intercepted messages soon!")
+    
+        # checking amount of e-mails during process:
+        
+        initial_length_sent_msgs = len(self.dm.get_all_dispatched_messages())
+        
+        self.assertEqual(len(self.dm.get_all_dispatched_messages()), initial_length_sent_msgs + 0)
+        
+        telecom.process_telecom_investigation("guy4")
+        
+        msgs = self.dm.get_all_dispatched_messages()
+        
+        self.assertEqual(len(msgs), initial_length_sent_msgs + 2)
+        # we have a "+2" because there are 2 sent messages : one for requesting the investigation and one for displaying the investigation results.
+        
+        
+        self._reset_messages()
+        
+        for character in all_other_characters:
+            
+            initial_length_sent_msgs = len(self.dm.get_all_dispatched_messages())
+            telecom.process_telecom_investigation(character)
+            msgs = self.dm.get_all_dispatched_messages()
+            self.assertEqual(len(msgs), initial_length_sent_msgs + 2)
+        
+        
+        # checking the e-mail subject, body and participants:
+        
+        self._reset_messages()
+        telecom.process_telecom_investigation("guy4")
+        
+        
+        # investigation request e-mail:
+        
+        msgs = self.dm.get_all_dispatched_messages()
+        msg = msgs[-2]
+        self.assertEqual(msg["sender_email"],"guy1@pangea.com")
+        self.assertEqual(msg["recipient_emails"], ["investigator@spies.com"])
+        self.assertEqual(msg["body"], "Please look for anything you can find about this person.")
+        self.assertEqual(msg["subject"], "Investigation Request - Kha")
+        
+        
+        # investigation results e-mail:
+        
+        context_list = telecom.extract_conversation_summary("guy4")
+        body = telecom.conversation_formatting(context_list)
+        
+        msg = msgs[-1]
+        self.assertEqual(msg["sender_email"], "investigator@spies.com")
+        assert msg["recipient_emails"] == [u'guy1@pangea.com']
+        self.assertEqual(msg["body"], body)
+        self.assertEqual(msg["subject"], "<Investigation Results for Kha>")
+        
+        
+        # test for all users except "ourself":
+        
+        for character in all_other_characters:
+            self._reset_messages()
+            telecom.process_telecom_investigation(character)
+            target_name = self.dm.get_official_name(character)
+            msgs = self.dm.get_all_dispatched_messages()
+            
+            
+            # investigation request e-mail:
+            
+            msg = msgs[-2]
+            assert msg["sender_email"] == "guy1@pangea.com"
+            assert msg["recipient_emails"] == ["investigator@spies.com"]
+            assert msg["body"] == "Please look for anything you can find about this person."
+            assert msg["subject"] == (("Investigation Request - %(target_name)s") % dict(target_name=target_name))
+            
+            
+            # investigation results e-mail:
+            
+            context_list = telecom.extract_conversation_summary(character)
+            body = telecom.conversation_formatting(context_list)
+            
+            msg = msgs[-1]
+            assert msg["sender_email"] == "investigator@spies.com"
+            assert msg["recipient_emails"] == [u'guy1@pangea.com']
+            assert msg["body"] == body
+            assert msg["subject"] == (("<Investigation Results for %(target_name)s>") % dict(target_name=target_name))
+    
+    
 
     def __test_telecom_investigations(self):
 
@@ -6658,7 +7367,7 @@ class TestAdminActions(BaseGameTestCase):
 
     def test_admin_dashboard_interface(self):
 
-        dashboard_url = reverse(views.admin_dashboard, kwargs={"game_instance_id": TEST_GAME_INSTANCE_ID})
+        dashboard_url = neutral_url_reverse(views.admin_dashboard)
         def gen_request():
             return self.factory.post(dashboard_url, dict(target_form_id="admin_dashboard.set_game_pause_state",
                                                         is_paused="1",

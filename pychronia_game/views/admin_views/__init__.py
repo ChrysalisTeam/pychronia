@@ -23,13 +23,16 @@ static_pages_management = StaticPagesManagement.as_view
 from .global_contacts_management_mod import GlobalContactsManagement
 global_contacts_management = GlobalContactsManagement.as_view
 
+from .game_items_management_mod import GameItemsManagement
+game_items_management = GameItemsManagement.as_view
+
 from .radio_spots_editing_mod import RadioSpotsEditing
 radio_spots_editing = RadioSpotsEditing.as_view
 
 from .admin_information_mod import AdminInformation
 admin_information = AdminInformation.as_view
 
-from .gamemaster_manual import gamemaster_manual
+from .gamemaster_manual_mod import gamemaster_manual
 
 
 @register_view(access=UserAccess.master, title=ugettext_lazy("View Database"))
@@ -63,10 +66,11 @@ def manage_characters(request, template_name='administration/character_managemen
     def _prefix(idx):
         return "form%s" % idx
 
-
-    form_validation_failed = False
+    form_validation_failed = None  # TERNARY
 
     if request.method == "POST":
+
+        form_validation_failed = False
 
         for idx, (username, __character_data) in enumerate(characters_items):
 
@@ -147,7 +151,7 @@ def manage_characters(request, template_name='administration/character_managemen
             character_forms.append(form)
 
 
-    if not form_validation_failed:
+    if not form_validation_failed:  # i.e if None or False
 
         character_forms = []
 
