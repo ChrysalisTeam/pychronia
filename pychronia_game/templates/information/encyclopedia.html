@@ -10,6 +10,7 @@
     {% usekwacro side_panel_start frame_class="mini_frame float_left clear_left" decos="3" %}
 
         <h2>{% trans "Search" %}</h2>
+        <p class="smaller_text">{% trans "Type here sequences of keywords to find matching encyclopedia articles." %}</p>
         <form action="{% game_view_url "pychronia_game.views.view_encyclopedia" %}" method="get" autocomplete="on"
               onsubmit="if ($('#search').data('activated') !== 'true' || $.trim($('#search').attr('value')) === '') {return false;}">
             <input id="search" type="text" name="search" size="25" maxlength="50" value="{% trans "Enter phrase here..." %}"
@@ -26,7 +27,7 @@
             <h2>{% trans "Index" %}</h2>
             <ul>
                 {% for article_id, article_title in articles_index %}
-                    <li><a href="{% game_view_url "pychronia_game.views.view_encyclopedia" article_id=article_id %}">{{ article_title|default:article_id }}</a></li>
+                    <li><a href="{% game_view_url "pychronia_game.views.view_encyclopedia" current_article_id=article_id %}">{{ article_title|default:article_id }}</a></li>
                 {% endfor %}
             </ul>
         </div>
@@ -58,20 +59,21 @@
         {% endif %}
 
         {% if search_results %}
-        <p><b>{% trans "Search results:" %}</b></p>
+        <p><b>{% trans "Search results for" %} "{{search_string}}"{{COLON}}</b></p>
         <ul>
-            {% for article_id in search_results %}
-                <li><a href="{% game_view_url "pychronia_game.views.view_encyclopedia" article_id=article_id %}">{{ article_id|capfirst }}</a></li>
+            {% for article_id, article_title in search_results %}
+                <li><a href="{% game_view_url "pychronia_game.views.view_encyclopedia" current_article_id=article_id %}">{{ article_title }}</a></li>
             {% endfor %}
         </ul>
         {% endif %}
 
         {% if not entry and not search_results %}
 
+            <p>
             {% blocktrans %}
                 Please use the side controls to find whatever science you still lack.
             {% endblocktrans %}
-
+            </p>
 
             <div class="post-it full_width" style="font-size:0.8em;">
                 <strong>{% trans "System Notification" %}</strong>
@@ -80,7 +82,7 @@
                     {% blocktrans %}
                         Due to a very unfortunate overclocking attempt on our data servers,
                         encyclopedia indexes have been entirely lost. We apologize for the inconvenience
-                        and do our best to get them back from backups.
+                        and do our best to restore them from backups. The Alifir Academy.
                     {% endblocktrans %}
                 {% else %}
                     {% blocktrans %}

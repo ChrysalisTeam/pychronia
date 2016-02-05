@@ -38,6 +38,12 @@
 
 {% else %}
 
+    {% if display_admin_tips %}
+    <p class="admin-note">
+        <b>{% trans "Items with 3D visualization below" %}{{COLON}} {{items_3D_titles|join:", "|default:_("None")}}
+    </p>
+    {% endif %}
+
     <div id="domslideshow" style="display: none;">
 
         <div id="loading_msg">{% trans "Please wait while loading..." %}</div>
@@ -61,7 +67,7 @@
 
 
                   {% with items_3D_settings|dict_get:item_name as settings %}
-                    {% if settings%}
+                    {% if settings %}
 
                         <div class="item_display" align="center" style="max-width: {{ settings.image_width }}px; max-height: {{ settings.image_height }}px;">
                             <iframe src="{% game_view_url "pychronia_game.views.item_3d_view" item=item_name %}"

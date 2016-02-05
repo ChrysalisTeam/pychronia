@@ -6,6 +6,14 @@
 
 {% block content %}
 
+    {% for identifier, data in admin_summaries %}
+    <h2>{{data.title}}</h2>
+
+    {{data.html_chunk}}
+    <br/>
+    {% endfor %}
+
+
     <h2>{% trans "Public Webradio" %}</h2>
     <p>
         {% trans "Public Webradio URL" %}{{COLON}}
@@ -14,8 +22,8 @@
         </a><br/>
         {% trans "Frequency" %}{{COLON}} {{ global_parameters.pangea_radio_frequency }}
     </p>
-
     <br/>
+
 
     <h2>{% trans "Encrypted Folders" %}</h2>
 
@@ -41,6 +49,8 @@
     {% else %}
         <p class="inner_center">{% trans "No encrypted folders are currently configured." %}</p>
     {% endif %}
+    <br/>
+
 {% endblock %}
 
 

@@ -20,13 +20,17 @@
 
 
 
-{% kwacro deletion_button del_id %}
+{% kwacro deletion_button del_id undeletable_identifiers %}
     {% if del_id %}
-    <form action="" method="post" class="form_deletion_button">
-        <input type="hidden" name="_action_" value="delete_item"/>
-        <input type="hidden" name="deleted_item" value="{{ del_id }}"/>
-        <input type="submit" name="delete" value="{% trans "Delete" %}" onclick="return confirm('{{ _("Are you sure you want to delete this entry?")|escapejs }}');"/>
-    </form>
+        {% if del_id not in undeletable_identifiers %}
+        <form action="" method="post" class="form_deletion_button">
+            <input type="hidden" name="_action_" value="delete_item"/>
+            <input type="hidden" name="deleted_item" value="{{ del_id }}"/>
+            <input type="submit" name="delete" value="{% trans "Delete" %}" onclick="return confirm('{{ _("Are you sure you want to delete this entry?")|escapejs }}');"/>
+        </form>
+        {% else %}
+        <p><i>{% trans "This item cannot be moved or deleted." %}</i></p>
+        {% endif %}
     {% endif %}
 {% endkwacro %}
 

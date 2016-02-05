@@ -328,18 +328,16 @@ class CostlyActionMiddleware(AbstractActionMiddleware):
             else:
                 use_gems = params.get("use_gems", ())
 
-                # non-fatal coherency checks
+                # non-fatal coherence checks
                 if middleware_settings["gems_price"] and "use_gems" not in params:
                     self.logger.critical("Action %s was configured to be payable by gems, but no input field is available for this : %r", action_name, params)
                 if not middleware_settings["gems_price"] and use_gems:
                     self.logger.critical("Action %s was configured to be NOT payable by gems, but gems were sent via input field", action_name)
                     use_gems = ()
 
-                character_properties = self.get_character_properties()
-
                 if use_gems or not middleware_settings["money_price"]:
                     gems_price = middleware_settings["gems_price"]
-                    self._pay_with_gems(character_properties, gems_price, use_gems)
+                    self._pay_with_gems(gems_price, use_gems)
                     self.log_game_event(ugettext_noop("A payment of %(cost)s¤ was issued with gems %(gems_list)s for service '%(service)s'"),
                                          PersistentMapping(cost=gems_price, service=action_name, gems_list=unicode(use_gems)),
                                          url=None,
@@ -347,6 +345,7 @@ class CostlyActionMiddleware(AbstractActionMiddleware):
 
                 else:
                     money_price = middleware_settings["money_price"]
+                    character_properties = self.get_character_properties()
                     self._pay_with_money(character_properties, money_price)
                     self.log_game_event(ugettext_noop("A payment of %(cost)s¤ was issued with money, for service '%(service)s'"),
                                          PersistentMapping(cost=money_price, service=action_name),
@@ -356,7 +355,7 @@ class CostlyActionMiddleware(AbstractActionMiddleware):
         return super(CostlyActionMiddleware, self)._process_action_through_middlewares(action_name=action_name, method=method, params=params)
 
 
-    def _pay_with_gems(self, character_properties, gems_price, gems_list):
+    def _pay_with_gems(self, gems_price, gems_list):
         assert gems_price
         gems_values = [i[0] for i in gems_list] if gems_list else []
 
@@ -368,14 +367,7 @@ class CostlyActionMiddleware(AbstractActionMiddleware):
         if (provided_gems_value - gems_price) >= min_gem_value:
             raise NormalUsageError(_("You provided too many gems for the value of that asset, please top off") % SDICT(gems_price=gems_price))
 
-        # we don't care if the player has given too many gems
-        remaining_gems = utilities.substract_lists(character_properties["gems"], gems_list)
-
-        if remaining_gems is None:
-            raise AbnormalUsageError(_("You don't possess the gems required")) # shouldn't happen since we use a form
-        else:
-            character_properties["gems"] = PersistentList(remaining_gems)
-            self.data["global_parameters"]["spent_gems"] += [x[0] for x in gems_list] # only value in kashes, not origin
+        self.debit_character_gems(gems_choices=gems_list)
 
 
     def _pay_with_money(self, character_properties, money_price):
@@ -539,6 +531,7 @@ class TimeLimitedActionMiddleware(AbstractActionMiddleware):
         last_use_times: array of datetimes
         
     """
+
     COMPATIBLE_ACCESSES = (UserAccess.character,)
 
 

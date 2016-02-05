@@ -20,7 +20,7 @@
 
     {% for ctx, template in templates %}
         <div>
-            {% include "messaging/single_message.html" with ctx=ctx message=template is_first=1 counter=1 %}
+            {% include "messaging/single_message.html" with ctx=ctx message=template is_first=1 %}
         </div>
     {% endfor %}
 

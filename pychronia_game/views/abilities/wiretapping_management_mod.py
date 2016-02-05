@@ -10,6 +10,7 @@ from django.forms.fields import ChoiceField
 from django.core.exceptions import ValidationError
 from pychronia_game.utilities.select2_extensions import Select2TagsField
 
+
 class WiretappingTargetsForm(AbstractGameForm):
     def __init__(self, ability, *args, **kwargs):
         super(WiretappingTargetsForm, self).__init__(ability, *args, **kwargs)
@@ -21,6 +22,8 @@ class WiretappingTargetsForm(AbstractGameForm):
         num_slots = ability.get_wiretapping_slots_count()
         if not num_slots:
             raise UninstantiableFormError(_("No wiretapping slots available."))
+
+        other_known_characters = ability.get_other_known_characters()
         for i in range(num_slots):
             ''' PROBLEM WITH CASE SENISITIVITY
             self.fields["target_%d" % i] = forms.ChoiceField(label=_("Target %d") % i,
@@ -30,7 +33,7 @@ class WiretappingTargetsForm(AbstractGameForm):
             '''
             field_name = "target_%d" % i
             self.fields[field_name] = Select2TagsField(label=_("Target %d") % i, required=False)
-            self.fields[field_name].choice_tags = ability.get_other_known_characters()
+            self.fields[field_name].choice_tags = other_known_characters
             self.fields[field_name].max_selection_size = 1 # IMPORTANT
 
 
@@ -97,9 +100,32 @@ class WiretappingAbility(AbstractAbility):
 
     ACCESS = UserAccess.character
     REQUIRES_CHARACTER_PERMISSION = True
-    REQUIRES_GLOBAL_PERMISSION = True # FIXME
+    REQUIRES_GLOBAL_PERMISSION = True
 
     EXTRA_PERMISSIONS = ["purchase_confidentiality_protection"] # NOT YET ACTIVATED
+
+
+
+    def _get_admin_summary_html(self):
+        assert self.is_master()
+
+        usernames = self.get_character_usernames()
+
+        wiretapping_packs = []
+        for username in usernames:
+            current_targets = self.get_wiretapping_targets(username=username)
+            has_confidentiality_activated = self.get_confidentiality_protection_status(username=username)
+            if not current_targets and not has_confidentiality_activated:
+                continue
+            data = dict(has_confidentiality_activated=has_confidentiality_activated,
+                        current_targets=current_targets,
+                        broken_wiretapping_targets=list(self.determine_broken_wiretapping_data(username=username).keys()),)
+            wiretapping_packs.append((username, data))
+
+        template_vars = dict(wiretapping_packs=wiretapping_packs)
+        res = render_to_string("abilities/wiretapping_management_summary.html",
+                               template_vars)
+        return res
 
 
     @readonly_method

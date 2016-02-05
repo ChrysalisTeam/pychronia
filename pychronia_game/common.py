@@ -30,6 +30,7 @@ from django.conf import settings
 from django.utils.html import escape
 from django.utils.translation import ungettext, ugettext as _, ugettext_lazy, ugettext_noop
 from django.template.response import SimpleTemplateResponse, TemplateResponse
+from django.template.loader import render_to_string
 from django.shortcuts import render
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import user_passes_test
@@ -154,10 +155,10 @@ def action_failure_handler(request, success_message=ugettext_lazy("Operation suc
         #import traceback
         #traceback.print_exc()
         # we must locate this serious error, as often (eg. assertion errors) there is no specific message attached...
-        
+
         if isinstance(e, ConflictError) and request.datamanager.is_under_top_level_wrapping():
             raise  # we let upper level handle the retry!
-        
+
         msg = _("Unexpected exception caught in action_failure_handler - %r") % e
         logger.critical(msg, exc_info=True)
         if config.DEBUG:
@@ -206,12 +207,28 @@ def hash_url_path(url_path):
     return url_hash
     '''
 
+def game_view_url(view, datamanager, **kwargs):
+    return reverse(view, kwargs=dict(game_instance_id=datamanager.game_instance_id,
+                                     game_username=datamanager.username,
+                                     **kwargs))
 
-def game_file_url(rel_path):
-    rel_path = rel_path.replace("\\", "/") # some external libs use os.path methods to create urls.......
-    rel_path = rel_path.lstrip("/") # IMPORTANT
+
+def game_file_url(url):
+    """
+    If URL is relative, complete it with the secret hash and make it absolute. 
+    """
+    url = url.strip()
+    assert url
+
+    if utilities.is_absolute_url(url):
+        return url
+
+    rel_path = url.replace("\\", "/") # some external libs use os.path methods to create urls.......
+    rel_path = rel_path.lstrip("/")  # IMPORTANT
     url_hash = hash_url_path(rel_path)
-    return config.GAME_FILES_URL + url_hash + "/" + rel_path
+    full_url = config.GAME_FILES_URL + url_hash + "/" + rel_path
+
+    return full_url  # url starting with / and containing security token
 
 
 _game_files_url_prefix = urlparse(config.GAME_FILES_URL).path
@@ -241,17 +258,27 @@ def checked_game_file_path(url):
         hash_url_path
 
 
-def determine_asset_url(properties):
-    if isinstance(properties, basestring):
-        fileurl = utilities.complete_game_file_url(properties) # works for both internal and external ones
-    elif properties.get("url"):
-        fileurl = properties["url"]
+def determine_asset_url(properties, absolute=True):
+    if properties is None:
+        file_base = properties  # let it be handled below
+    elif isinstance(properties, basestring):
+        file_base = properties
     elif properties.get("file"):
-        myfile = properties["file"] # MUST exist and be relative to GAME_FILES_ROOT
-        fileurl = game_file_url(myfile)
+        file_base = properties["file"]
+    elif properties.get("url"):
+        file_base = properties["url"]  # mostly LEGACY attribute
     else:
-        return "#"  # now this case is possible
-    return fileurl
+        file_base = None  # now this case is possible
+
+    if not file_base:
+        return ""  # fallback value, which will often cause NO mediaplayer to be displayer
+
+    file_url = game_file_url(file_base)  # works for both absolute and relative file urls
+        
+    if absolute and not utilities.is_absolute_url(file_url):
+        file_url = config.SITE_DOMAIN + file_url  # important for most mediaplayers
+
+    return file_url
 
 
 def utctolocal(value):
@@ -267,7 +294,7 @@ def utctolocal(value):
 
 
 
-def render_rst_template(rst_tpl, datamanager):
+def __obsolete_render_rst_template(rst_tpl, datamanager):
     template = Template(rst_tpl)
 
     context = Context(dict(a="bbbbbbbb"))

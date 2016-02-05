@@ -15,7 +15,7 @@
 		<tr>
 			<td style="text-align: left">
 			    <center>
-    			    <a href="{% url 'pychronia_game.views.homepage' game_instance_id=meta.instance_id %}" ><b>{{ meta.instance_id }}</b></a><br/><br/>
+    			    <a href="{% url 'pychronia_game.views.homepage' game_instance_id=meta.instance_id game_username="redirector" %}" ><b>{{ meta.instance_id }}</b></a><br/><br/>
     			</center>
 
     			{% trans "Creator Login:" %} {{ meta.creator_login }}<br/>
@@ -88,28 +88,35 @@
 
     <br/><br/>
 
-    <div id="session_token_form_id" class="form_scroll_medium" align="center" style="width: 60% !important; margin: auto;">
+
+    <div id="game_creation_form" class="form_scroll_medium" align="center" style="margin: auto;">
+        <h2>{% trans "New Game Instance" %}</h2>
+        <form action="#game_creation_form" method="post" class="meta_admin_button" autocomplete="off">
+            {{ game_creation_form.as_p }}
+            <p><input type="submit" name="create_game_instance" value="{{ _("Create game instance")}}" /></p>
+        </form>
+    </div>
+
+
+    <br/><br/>
+
+
+    <div id="session_token_form" class="form_scroll_medium" align="center" style="margin: auto;">
         <h2>{% trans "Get Autoconnect Token" %}</h2>
         {% if session_token_display %}
             <strong>{% trans "Result of computation" %}{{COLON}}</strong>
             <span style="font-size: 0.8em; word-break: break-all">{{ session_token_display }}</span>
         {% endif %}
-        <form action="#session_token_form_id" method="post" class="meta_admin_button">
-            <p><input type="text" name="game_instance_id" value="{% trans "INSTANCE_ID" %}" /></p>
-            <p><input type="text" name="login" value="{% trans "USERNAME" %}" /></p>
-            <p><input type="checkbox" name="is_observer" value="ON" /> {% trans "Observer Mode" %}</p>
+        <form action="#session_token_form" method="post" class="meta_admin_button">
+            <p><input type="text" name="game_instance_id" placeholder="{% trans "GAME INSTANCE ID" %}" /></p>
+            <p><input type="text" name="login" placeholder="{% trans "USERNAME" %}" /></p>
+            <p><input type="checkbox" name="is_observer" checked /> {% trans "Observer Mode (read-only)" %}</p>
             <p><input type="submit" name="compute_enforced_session_ticket" value="{{ _("Compute Token")}}" /></p>
         </form>
-    </div><br/><br/>
+    </div>
 
 
-    <div id="game_creation_form_id" class="form_scroll_medium" align="center" style="width: 70%; margin: auto;">
-        <h2>{% trans "New Game Instance" %}</h2>
-        <form action="#" method="post" class="meta_admin_button" autocomplete="off">
-            {{ game_creation_form.as_p }}
-            <p><input type="submit" name="create_game_instance" value="{{ _("Create game instance")}}" /></p>
-        </form>
-    </div><br/><br/>
+    <br/><br/>
 
 
 

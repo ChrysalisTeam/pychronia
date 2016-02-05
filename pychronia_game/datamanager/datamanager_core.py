@@ -65,14 +65,7 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
 
     # no transaction manager - special case
     def __init__(self, game_instance_id, game_root=None, request=None, **kwargs):
-        '''
-        self.storage = FileStorage.FileStorage(config.ZODB_FILE)
-        self.db = DB(self.storage)
-        self.pack_database(days=1)
-        self.connection = self.db.open()
-        self.connection.root()
 
-        '''
         assert game_root is not None # it's actually game DATA, no METADATA is included here!
 
         super(BaseDataManager, self).__init__(**kwargs)
@@ -84,8 +77,26 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
 
         self.game_instance_id = game_instance_id
 
+        # workaround to have DYNAMIC extra values in logger
+        datamanager_instance = self
+        class DynamicDatamanagerLoggerAdapter(dict):
+            EXTRA_FIELDS = ["game_instance_id", "real_username", "username", "is_observer"]
+            def __getitem__(self, name):
+                if name not in self.EXTRA_FIELDS:
+                    raise KeyError("DynamicDatamanagerLoggerAdapter doesn't support DM attribute %s" % name)
+                try:
+                    return getattr(datamanager_instance.user, name)
+                except AttributeError:
+                    try:
+                        return getattr(datamanager_instance, name)
+                    except AttributeError as e:
+                        return "<none>"
+            def __iter__(self):
+                return iter(self.EXTRA_FIELDS)
+        dm_logger_adapter = DynamicDatamanagerLoggerAdapter()
+
         self._inner_logger = logging.getLogger("pychronia_game") #FIXME
-        self.logger = logging.LoggerAdapter(self._inner_logger, dict(game_instance_id=game_instance_id))
+        self.logger = logging.LoggerAdapter(self._inner_logger, dm_logger_adapter)
 
         self._request = weakref.ref(request) if request else None # if None, user notifications won't work
 
@@ -119,19 +130,22 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
         """
 
         if self.data is not None:
-
-            assert not self.connection or not self.connection._registered_objects # else problem, pending changes created by views!
+            # we close the ZODB connection attached to our data root
+            assert not self.connection or not self.connection._registered_objects  # else problem, pending changes created by views!
+            self.data = None
+        if self.connection:
             self.connection.close()
             self.connection = None
-            self.data = None
+            
 
 
 
     @transaction_watcher(always_writable=True) # might operate on broken data
     def reset_game_data(self,
                         yaml_fixture=None,
-                        skip_randomizations=False,
-                        skip_initializations=False,
+                        skip_randomizations=False,  # randomize some values in dm.data
+                        skip_initializations=False,  # used when an already-initialized fixture is used
+                        skip_coherence_check=False,
                         strict=False):
         """
         This method might raise exceptions, and leave the datamanager uninitialized.
@@ -143,21 +157,27 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
         if not yaml_fixture:
             yaml_fixture = config.GAME_INITIAL_DATA_PATH
 
-        self.logger.info("Resetting game data for instance '%s' with fixture '%s'", self.game_instance_id, yaml_fixture)
+        self.logger.info("Resetting game data for instance '%s' with fixture '%s'",
+                         self.game_instance_id, yaml_fixture if isinstance(yaml_fixture, basestring) else "<data-tree>")
         #print "RESETTING DATABASE !"
 
         # ZODB reset - warning, we must replace content of dictionary "data",
         # not rebind the attribute "data", else we lose ZODB support
         self.data.clear()
 
-        initial_data = utilities.load_yaml_fixture(yaml_fixture)
+        if isinstance(yaml_fixture, basestring):
+            initial_data = utilities.load_yaml_fixture(yaml_fixture)
+        else:
+            assert isinstance(yaml_fixture, PersistentMapping), yaml_fixture  # a preloaded data tree was provided
+            initial_data = yaml_fixture
+
         self.data.update(initial_data)
 
         if not skip_initializations:
             self._load_initial_data(skip_randomizations=skip_randomizations) # traversal of each core module
         else:
             assert skip_randomizations == True
-            
+
         # NOW only we normalize and check the object tree
         # normal python types are transformed to ZODB-persistent types
         for key in self.data.keys():
@@ -170,8 +190,11 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
         if config.GAME_INITIAL_FIXTURE_SCRIPT and not skip_initializations:
             self.logger.info("Performing setup via GAME_INITIAL_FIXTURE_SCRIPT")
             config.GAME_INITIAL_FIXTURE_SCRIPT(self)
+        else:
+            self.logger.info("Skipping setup via GAME_INITIAL_FIXTURE_SCRIPT")
 
-        self.check_database_coherency(strict=strict)
+        if not skip_coherence_check:
+            self.check_database_coherence(strict=strict)
 
 
 
@@ -185,9 +208,9 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
 
 
     @transaction_watcher(always_writable=True) # that checking might lead to corrections
-    def check_database_coherency(self, **kwargs):
+    def check_database_coherence(self, **kwargs):
 
-        self.notify_event("BASE_CHECK_DB_COHERENCY_PUBLIC_CALLED")
+        self.notify_event("BASE_CHECK_DB_COHERENCE_PUBLIC_CALLED")
 
         game_data = self.data
 
@@ -195,7 +218,7 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
         utilities.check_object_tree(game_data, allowed_types=utilities.allowed_zodb_types, path=["game_data"])
 
 
-        self._check_database_coherency(**kwargs)
+        self._check_database_coherence(**kwargs)
 
 
 
@@ -255,8 +278,8 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
 
 
 
-    def _check_database_coherency(self, **kwargs):
-        self.notify_event("BASE_CHECK_DB_COHERENCY_PRIVATE_CALLED")
+    def _check_database_coherence(self, **kwargs):
+        self.notify_event("BASE_CHECK_DB_COHERENCE_PRIVATE_CALLED")
 
 
     @transaction_watcher
@@ -296,7 +319,7 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
 
 
     @transaction_watcher
-    def load_zope_database(self, string): # TODO UNTESTED
+    def load_zope_database_from_string(self, string, strict=True):
 
         data_tree = utilities.load_data_tree_from_yaml(string, convert=True)
         assert isinstance(data_tree, PersistentMapping)
@@ -304,7 +327,7 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
         try:
             old_data = self.data
             self.data = data_tree
-            self.check_database_coherency()
+            self.check_database_coherence(strict=strict)
         except Exception:
             self.data = old_data # security about mishandlings
             raise

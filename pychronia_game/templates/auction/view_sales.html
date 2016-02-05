@@ -7,16 +7,16 @@
 
 <p>
 {% blocktrans %}
-There are altogether <strong>{{ total_gems_number }}</strong> gems and <strong>{{ total_archaeological_objects_number }}</strong> archeological objects at auction.
+There are altogether <strong>{{ total_gems_number }}</strong> gems and <strong>{{ total_archaeological_objects_number }}</strong> archeological objects listed below.
 {% endblocktrans %}
 </p>
 
 {% if display_admin_tips %}
 <p class="admin-note">
 {% blocktrans %}
-Players begin the game with a total of
+Players currently have a total of
 <strong>{{ total_bank_account_available }}</strong> kashes in their bank accounts,
-while the total value of proposed items is <strong>{{ total_items_price }}</strong> kashes.
+while the total value of items listed below is <strong>{{ total_items_price }}</strong> kashes.
 {% endblocktrans %}
 </p>
 {% endif %}
@@ -56,7 +56,7 @@ while the total value of proposed items is <strong>{{ total_items_price }}</stro
 
 	    	<td class="preview-image" >
     		    <a href="{% game_file_url item_details.image %}" class="fancybox">
-    		        <img class="thumbnail" title="{{ item_details.title }}" src="{% game_file_img item_details.image alias="item_avatar" %}"/>
+    		        <img class="thumbnail" title="{{ item_details.title }}" src="{% game_file_img item_details.image alias="item_avatar" %}" style="max-width: 150px"/>
     		    </a>
 	    	</td>
 

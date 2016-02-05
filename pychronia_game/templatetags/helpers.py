@@ -6,8 +6,8 @@ import sys, re, logging, random, logging, json
 from datetime import datetime
 
 from pychronia_game.utilities import (mediaplayers, autolinker,
-                                      rst_directives) # important to register RST extensions
-from pychronia_game.common import exception_swallower, game_file_url as real_game_file_url, determine_asset_url, reverse, _
+                                      rst_directives, is_absolute_url) # important to register RST extensions
+from pychronia_game.common import exception_swallower, game_file_url as real_game_file_url, determine_asset_url, reverse, game_view_url, _
 
 import django.template
 from django.templatetags.future import url as default_url_tag
@@ -17,6 +17,7 @@ from django.utils.http import urlencode
 from django.core.serializers import serialize
 from django.db.models.query import QuerySet
 from django.template.defaultfilters import stringfilter
+from django.template.defaultfilters import linebreaks
 
 import urllib
 from textwrap import dedent
@@ -62,25 +63,34 @@ def random_id():
     """Tag to generate random ids in HTML tags, just to please javascript utilities."""
     return "uuid-" + str(random.randint(1000000, 1000000000))
 
-@register.tag
-def game_view_url(parser, token):
+@register.tag(name="game_view_url")
+def game_view_url_tag(parser, token):
     """
-    Only works if a "game_instance_id" template variable is available (use request processors for that).
+    Only works if a "game_instance_id" and "game_username" template variables are available (use request processors for that).
     """
     #print ("PARSING IN GAMLEURL", token.contents, "\n")
-    sep = " as "
-    parts = token.contents.split(sep) # beware of alternate form of url tag
-    if len(parts) > 1:
-        new_content = " as ".join(parts[:-1]) + " game_instance_id=game_instance_id" + sep + parts[-1]
-    else:
-        new_content = parts[0] + " game_instance_id=game_instance_id"
+    redirector = False
+    content = token.contents
 
-    token.contents = new_content # we thus injected template var "game instance id"
+    if " redirector" in content:
+        redirector = True
+        content = content.replace(" redirector", "")
+
+    sep = " as "
+    parts = content.rsplit(sep, 1) # beware of alternate form of url tag
+    from pychronia_game.authentication import TEMP_URL_USERNAME  # FIXME - move that to a better place
+    new_content = parts[0] + " game_instance_id=game_instance_id game_username=%s" % ("game_username" if not redirector else "'%s'" % TEMP_URL_USERNAME)
+    if len(parts) > 1:
+        assert len(parts) == 2
+        new_content += sep + parts[1]
+
+    token.contents = new_content # we thus injected template vars "game instance id" and "game username"
     url_node = default_url_tag(parser, token)
     return url_node
 
-@register.simple_tag(takes_context=True)
-def game_file_url(context, a="", b="", c="", d="", e="", f="", varname=None):
+
+@register.simple_tag(takes_context=True, name="game_file_url")
+def game_file_url_tag(context, a="", b="", c="", d="", e="", f="", varname=None):
     """
     Here "varname" is the varuiable under which to store the result, if any.
     """
@@ -97,6 +107,8 @@ def game_file_url(context, a="", b="", c="", d="", e="", f="", varname=None):
 @register.simple_tag(takes_context=False)
 def game_file_img(a="", b="", c="", d="", e="", f="", alias=None):
     rel_path = "".join((a, b, c, d, e, f))
+    if is_absolute_url(rel_path):
+        return rel_path  # might be an external URL, it can't be resized then...
     return _try_generating_thumbnail_url(rel_path=rel_path, alias=alias)
 
 
@@ -156,8 +168,7 @@ def _generate_encyclopedia_links(html_snippet, datamanager, excluded_link=None):
         matched_str = match.group(0)
         assert matched_str
         # detecting here WHICH keyword triggered the match would be possible, but expensive... let's postpone that
-        link = reverse("pychronia_game.views.view_encyclopedia",
-                       kwargs={"game_instance_id": datamanager.game_instance_id})
+        link = game_view_url("pychronia_game.views.view_encyclopedia", datamanager=datamanager)
         link += "?search=%s" % urllib.quote_plus(matched_str.encode("utf8"), safe=b"")
         return dict(href=link)
     regex = autolinker.join_regular_expressions_as_disjunction(keywords_mapping.keys(), as_words=True)
@@ -179,8 +190,7 @@ def _generate_messaging_links(html_snippet, datamanager):
     if __debug__: datamanager.notify_event("GENERATE_MESSAGING_LINKS")
     def email_link_attr_generator(match):
         matched_str = match.group(0)
-        link = reverse("pychronia_game.views.compose_message",
-                       kwargs={"game_instance_id": datamanager.game_instance_id})
+        link = game_view_url("pychronia_game.views.compose_message", datamanager=datamanager)
         link += "?recipient=%s" % urllib.quote_plus(matched_str.encode("utf8"), safe=b"")
         return dict(href=link)
     regex = r"\b[-_\w.]+@\w+\.\w+\b"
@@ -199,7 +209,7 @@ def _generate_site_links(html_snippet, datamanager):
         if "." not in matched_str:
             matched_str = "pychronia_game.views." + matched_str
         try:
-            link = reverse(matched_str, kwargs={"game_instance_id": datamanager.game_instance_id})
+            link = game_view_url(matched_str, datamanager=datamanager)
             return dict(href=link)
         except Exception:
             logging.warning("Error in generate_site_links for match %r", matched_str, exc_info=True)
@@ -251,13 +261,18 @@ def advanced_restructuredtext(value,
 
 
 
-def format_enriched_text(datamanager, content, initial_header_level=None, report_level=None, excluded_link=None):
+def format_enriched_text(datamanager, content, initial_header_level=None, report_level=None, excluded_link=None, text_format=None):
     """
     Converts RST content to HTML and adds encyclopedia links.
     
     *excluded_link* is the ENCYCLOPEDIA article_id in which we currently are, if any.
     """
     assert isinstance(content, basestring)
+
+    #print(">>>format_enriched_text", content[:30], "----", excluded_link)
+
+    # we leave RestructuredRext as the DEFAULT format for game contents
+    text_format = text_format or datamanager.AVAILABLE_TEXT_FORMATS.rst
 
     content = content.replace("[INSTANCE_ID]", datamanager.game_instance_id) # handy to build URLs manually
 
@@ -266,7 +281,11 @@ def format_enriched_text(datamanager, content, initial_header_level=None, report
     with exception_swallower():
         content = _generate_game_image_thumbnails(content, datamanager) # BEFORE html
 
-    html = advanced_restructuredtext(content, initial_header_level=initial_header_level, report_level=report_level)
+    if text_format == datamanager.AVAILABLE_TEXT_FORMATS.rst:
+        html = advanced_restructuredtext(content, initial_header_level=initial_header_level, report_level=report_level)
+    else:
+        assert text_format in (None, datamanager.AVAILABLE_TEXT_FORMATS.raw)
+        html = linebreaks(content)  # only adds <p> and <br> tags
 
     #print(">>>format_enriched_text>>>>>", html)
     with exception_swallower():
@@ -283,13 +302,15 @@ def format_enriched_text(datamanager, content, initial_header_level=None, report
 
 
 @register.simple_tag(takes_context=True)
-def rich_text(context, content, initial_header_level=None, report_level=None, excluded_link=None):
+def rich_text(context, content, initial_header_level=None, report_level=None, excluded_link=None, text_format=None):
     """
     Converts to enriched html the restructuredtext content of the variable.
     """
     request = context.get('request')
     report_level = report_level if report_level is not None else 5 # FIXME - by default we DO NOT display RST syntax errors!
-    result = format_enriched_text(request.datamanager, content, initial_header_level=initial_header_level, report_level=report_level, excluded_link=excluded_link)
+    result = format_enriched_text(request.datamanager, content, initial_header_level=initial_header_level,
+                                  report_level=report_level, excluded_link=excluded_link,
+                                  text_format=text_format)
 
     content_id = str(random.randint(1, 10000000000))
     html = render_to_string('utilities/rich_text.html', {'content_id':content_id,
@@ -414,9 +435,10 @@ register.filter('determine_asset_url', _determine_asset_url)
 def mediaplayer(properties, autostart="false"):
 
     fileurl = determine_asset_url(properties)
+    title = properties.get("title") if hasattr(properties, "get") else properties  # might even be None
 
     try:
-        res = mediaplayers.build_proper_viewer(fileurl, autostart=(autostart == "true"))
+        res = mediaplayers.build_proper_viewer(fileurl, title=title, autostart=(autostart == "true"))
         return mark_safe(res)
     except:
         logging.error("mediaplayer filter failed", exc_info=True)

@@ -2,8 +2,8 @@
 
 
 # BEWARE - on windows, use MSI instead for these few packages #
-MySQL-python==1.2.4
-Pillow==2.7.0
+MySQL-python>=1.2.4
+Pillow>=2.7.0
 
 
 beautifulsoup4==4.3.2
@@ -52,6 +52,11 @@ djangocms-text-ckeditor==2.4.3
 django-zodb==0.3dev
 
 easy-thumbnails==2.2
+
+# for rst->pdf builders
+jinja2==2.8
+jinja-macro-tags==0.1
+
 
 odict==1.5.1
 

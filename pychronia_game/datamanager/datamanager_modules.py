@@ -2,7 +2,8 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
-import string
+import string, random
+
 from pychronia_game.common import *
 from pychronia_game.common import _, ugettext_lazy, ugettext_noop, _undefined # mainly to shut up the static checker...
 from pychronia_game import utilities
@@ -46,8 +47,8 @@ class GameMasterManual(BaseDataManager):
             game_data["gamemaster_manual"].setdefault(key, "This is a Placeholder")
 
 
-    def _check_database_coherency(self, **kwargs):
-        super(GameMasterManual, self)._check_database_coherency(**kwargs)
+    def _check_database_coherence(self, **kwargs):
+        super(GameMasterManual, self)._check_database_coherence(**kwargs)
         return # TEMP HACK FIXME
 
         game_data = self.data
@@ -74,8 +75,8 @@ class GameGlobalParameters(BaseDataManager):
         game_data["global_parameters"]["world_map_image"] = os.path.normpath(game_data["global_parameters"]["world_map_image"])
         game_data["global_parameters"]["world_map_image_bw"] = os.path.normpath(game_data["global_parameters"]["world_map_image_bw"])
 
-    def _check_database_coherency(self, **kwargs):
-        super(GameGlobalParameters, self)._check_database_coherency(**kwargs)
+    def _check_database_coherence(self, **kwargs):
+        super(GameGlobalParameters, self)._check_database_coherence(**kwargs)
 
         game_data = self.data
         utilities.check_is_bool(game_data["global_parameters"]["game_is_started"])
@@ -158,13 +159,14 @@ class CurrentUserHandling(BaseDataManager):
         return username
 
 
-    @readonly_method # TODO FIXME TEST THIS UTIL!!
+    @readonly_method
     def determine_actual_game_writability(self):
         if not self.user.has_write_access:
             assert self.user.is_impersonation or self.user.is_observer # only cases ATM
             return dict(writable=False,
                         reason=_("Your impersonation is in read-only mode."))
         else:
+            # game can be written #
             if self.is_master() or self.is_game_started(): # master is NOT impacted by game state
                 return dict(writable=True,
                             reason=_("Beware, your impersonation is in writable mode.") if self.user.is_impersonation else None)
@@ -194,8 +196,8 @@ class FlexibleTime(BaseDataManager): # TODO REFINE
         super(FlexibleTime, self)._load_initial_data(**kwargs)
 
 
-    def _check_database_coherency(self, **kwargs):
-        super(FlexibleTime, self)._check_database_coherency(**kwargs)
+    def _check_database_coherence(self, **kwargs):
+        super(FlexibleTime, self)._check_database_coherence(**kwargs)
         utilities.check_is_positive_float(self.get_global_parameter("game_theoretical_length_days"), non_zero=True)
 
 
@@ -261,8 +263,8 @@ class GameEvents(BaseDataManager): # TODO REFINE
         game_data["events_log"].sort(key=lambda evt: evt["time"])
 
 
-    def _check_database_coherency(self, **kwargs):
-        super(GameEvents, self)._check_database_coherency(**kwargs)
+    def _check_database_coherence(self, **kwargs):
+        super(GameEvents, self)._check_database_coherence(**kwargs)
 
         event_reference = {
             "time": datetime,
@@ -379,8 +381,8 @@ class NovaltyTracker(BaseDataManager):
         game_data.setdefault("novelty_tracker", PersistentMapping())
 
 
-    def _check_database_coherency(self, strict=False, **kwargs):
-        super(NovaltyTracker, self)._check_database_coherency(**kwargs)
+    def _check_database_coherence(self, **kwargs):
+        super(NovaltyTracker, self)._check_database_coherence(**kwargs)
         game_data = self.data
 
         allowed_usernames = self.get_character_usernames() + [self.get_global_parameter("master_login")]
@@ -454,7 +456,7 @@ class CharacterHandling(BaseDataManager): # TODO REFINE
         game_data = self.data
         for (name, character) in game_data["character_properties"].items():
             if character["avatar"]:
-                character["avatar"] = utilities.find_game_file(character["avatar"], "images")
+                character["avatar"] = utilities.find_game_file("images", character["avatar"])  # NOT an external URL
             character.setdefault("real_life_identity", None)
             character.setdefault("real_life_email", None)
 
@@ -462,27 +464,29 @@ class CharacterHandling(BaseDataManager): # TODO REFINE
                 character["gamemaster_hints"] = character["gamemaster_hints"].strip()
 
 
-    def _check_database_coherency(self, **kwargs):
-        super(CharacterHandling, self)._check_database_coherency(**kwargs)
+    def _check_database_coherence(self, **kwargs):
+        super(CharacterHandling, self)._check_database_coherence(**kwargs)
 
         game_data = self.data
 
         assert game_data["character_properties"]
 
-        reserved_names = [game_data["global_parameters"][reserved] for reserved in ["master_login", "anonymous_login"]]
+        from pychronia_game.authentication import UNIVERSAL_URL_USERNAME, TEMP_URL_USERNAME  # let's not conflict with these
+        reserved_names = [game_data["global_parameters"][reserved] for reserved in ["master_login", "anonymous_login"]] + [UNIVERSAL_URL_USERNAME, TEMP_URL_USERNAME]
 
         for (name, character) in game_data["character_properties"].items():
 
             utilities.check_is_slug(name)
             assert name not in reserved_names
             assert "@" not in name # let's not mess with email addresses...
+            assert name == name.lower()  # important, for easy case-insensitive lookups
 
             utilities.check_is_bool(character["is_npc"])
 
             utilities.check_is_slug(character["character_color"])
 
             if character["avatar"]:
-                utilities.check_is_game_file(character["avatar"])
+                utilities.check_is_game_file(character["avatar"])  # NOT an external URL
 
             if character["gamemaster_hints"]:
                 utilities.check_is_string(character["gamemaster_hints"], multiline=True)
@@ -522,9 +526,8 @@ class CharacterHandling(BaseDataManager): # TODO REFINE
     @readonly_method
     def get_character_usernames(self, exclude_current=False, is_npc=None):
         """
-        We sort "players first, NPC second".
+        We sort "players first, NPC second, and then secodary sorting by username".
         """
-
         items = ((k, v) for (k, v) in self.data["character_properties"].items() if (is_npc is None) or v["is_npc"] == is_npc)
         items = sorted(items, key=lambda x: (x[1]["is_npc"], x[0]))
         res = [item[0] for item in items]
@@ -645,10 +648,10 @@ class DomainHandling(BaseDataManager): # TODO REFINE
         game_data = self.data
         for (name, content) in game_data["domains"].items():
             if content["national_anthem"]:
-                content["national_anthem"] = utilities.find_game_file(content["national_anthem"], "audio")
+                content["national_anthem"] = utilities.find_game_file("audio", content["national_anthem"])
 
-    def _check_database_coherency(self, **kwargs):
-        super(DomainHandling, self)._check_database_coherency(**kwargs)
+    def _check_database_coherence(self, **kwargs):
+        super(DomainHandling, self)._check_database_coherence(**kwargs)
 
         game_data = self.data
 
@@ -723,8 +726,8 @@ class PlayerAuthentication(BaseDataManager):
             self.randomize_passwords_for_players() # basic security
             assert self.data["global_parameters"]["master_login"] == old_master_login # later we might randomize master login too, for now it must NEVER change!
 
-    def _check_database_coherency(self, **kwargs):
-        super(PlayerAuthentication, self)._check_database_coherency(**kwargs)
+    def _check_database_coherence(self, **kwargs):
+        super(PlayerAuthentication, self)._check_database_coherence(**kwargs)
 
         game_data = self.data
 
@@ -745,8 +748,11 @@ class PlayerAuthentication(BaseDataManager):
         global_parameters = game_data["global_parameters"]
 
         utilities.check_is_slug(global_parameters["anonymous_login"])
+        assert global_parameters["anonymous_login"] == global_parameters["anonymous_login"].lower()  # important
 
         utilities.check_is_slug(global_parameters["master_login"])
+        assert global_parameters["master_login"] == global_parameters["master_login"].lower()  # important
+
         utilities.check_is_slug(global_parameters["master_password"])
         if global_parameters["master_real_email"]:
             utilities.check_is_email(global_parameters["master_real_email"])
@@ -870,38 +876,41 @@ class PlayerAuthentication(BaseDataManager):
         assert session_ticket.get("game_instance_id") == self.game_instance_id
         assert requested_impersonation_writability in (None, True, False) # forced by the way we extract it from request data
 
+        # BEWARE - game_username may be None, it's same as "anonymous" actually
         game_username = session_ticket.get("game_username", None) # instance-local user set via login page
         assert game_username != self.anonymous_login # would be absurd, we store "None" for this
+
+        is_superuser = False
+        if not game_username: # instance-local authentication COMPLETELY HIDES the fact that one is a django superuser
+            if django_user and django_user.is_active and (django_user.is_staff or django_user.is_superuser):
+                is_superuser = True
 
         is_observer = session_ticket.get("is_observer", False)
 
         # first, we compute the impersonation we REALLY want #
         if requested_impersonation_target is None: # means "use legacy one"
             requested_impersonation_target = session_ticket.get("impersonation_target", None)
+        elif not is_superuser and (game_username is None and requested_impersonation_target == self.anonymous_login):
+            # simply remain "anonymous"
+            requested_impersonation_target = None
         elif (requested_impersonation_target in ("",  # special case "delete current impersonation target"
                                                  game_username)):  # means "just stay as real authenticated user"
-            assert game_username  # of course
+            # game_username *might* be None, we don't care
             requested_impersonation_target = None
-            requested_impersonation_writability = False  # for security, we reset that too
-            self.logger.info("-------------> RESET WRITABILITY game_username=%s" % game_username)
         else:
             pass # we let submitted requested_impersonation_target continue
 
+        # now that impersonation is per-tab, we NEVER force-reset impersonation writability
         requested_impersonation_writability = (requested_impersonation_writability
                                                if requested_impersonation_writability is not None
                                                else session_ticket.get("impersonation_writability", None))
 
         # we reset session if session/request data is abnormal
         _available_logins = self.get_available_logins()
-        if game_username and game_username not in _available_logins:
+        if game_username is not None and game_username not in _available_logins:
             raise AbnormalUsageError(_("Invalid instance username: '%s'") % game_username)
         if requested_impersonation_target and requested_impersonation_target not in _available_logins:
-            raise AbnormalUsageError(_("Invalid requested impersonation target: %s") % requested_impersonation_target)
-
-        is_superuser = False
-        if not game_username: # instance-local authentication COMPLETELY HIDES the fact one is a django superuser
-            if django_user and django_user.is_active and (django_user.is_staff or django_user.is_superuser):
-                is_superuser = True
+            raise AbnormalUsageError(_("Invalid requested impersonation target: %s") % requested_impersonation_target)  # might be typos when manipulating URLs
 
         if requested_impersonation_target is not None:
             # we filter out forbidden impersonation choices #
@@ -1001,7 +1010,7 @@ class PlayerAuthentication(BaseDataManager):
         
         Username can't be "anonymous_login" of course...
         """
-        username = username.strip()
+        username = username.strip().lower()  # IMPORTANT, case-insensitive
         password = password.strip()
         if username == self.get_global_parameter("master_login"): # do not use is_master here, just in case...
             wanted_pwd = self.get_global_parameter("master_password")
@@ -1026,6 +1035,7 @@ class PlayerAuthentication(BaseDataManager):
 
     @transaction_watcher # requires game started mode
     def process_password_change_attempt(self, username, old_password, new_password):
+
         user_properties = self.get_character_properties(username)
 
         if not new_password or " " in new_password or "\n" in new_password or len(new_password) > 60:
@@ -1042,6 +1052,8 @@ class PlayerAuthentication(BaseDataManager):
         """
         Raises UsageError if username is incorrect or doesn't have a secret question setup.
         """
+        username = username.strip().lower()  # IMPORTANT, case-insensitive
+
         if username == self.get_global_parameter("master_login"):
             raise NormalUsageError(_("Game master can't recover his password through a secret question."))
         elif username not in self.get_character_usernames():
@@ -1056,7 +1068,9 @@ class PlayerAuthentication(BaseDataManager):
     @transaction_watcher # requires game started mode
     def process_secret_answer_attempt(self, username, secret_answer_attempt, target_email):
 
-        self.get_secret_question(username) # checks coherency of that call
+        username = username.strip().lower()  # IMPORTANT, case-insensitive
+
+        self.get_secret_question(username) # checks coherence of that call
 
         user_properties = self.get_character_properties(username)
 
@@ -1171,8 +1185,8 @@ class PermissionsHandling(BaseDataManager): # TODO REFINE
         for (name, domain) in game_data["domains"].items():
             domain.setdefault("permissions", PersistentList())
 
-    def _check_database_coherency(self, **kwargs):
-        super(PermissionsHandling, self)._check_database_coherency(**kwargs)
+    def _check_database_coherence(self, **kwargs):
+        super(PermissionsHandling, self)._check_database_coherence(**kwargs)
 
         for permission in self.PERMISSIONS_REGISTRY: # check all available permissions
             utilities.check_is_slug(permission)
@@ -1257,8 +1271,8 @@ class FriendshipHandling(BaseDataManager):
         game_data["friendships"].setdefault("proposed", PersistentMapping()) # mapping (proposer, recipient) => dict(proposal_date)
         game_data["friendships"].setdefault("sealed", PersistentMapping()) # mapping (proposer, accepter) => dict(proposal_date, acceptance_date)
 
-    def _check_database_coherency(self, strict=False, **kwargs):
-        super(FriendshipHandling, self)._check_database_coherency(**kwargs)
+    def _check_database_coherence(self, strict=False, **kwargs):
+        super(FriendshipHandling, self)._check_database_coherence(**kwargs)
 
         game_data = self.data
 
@@ -1483,8 +1497,8 @@ class GameInstructions(BaseDataManager):
     def _load_initial_data(self, **kwargs):
         super(GameInstructions, self)._load_initial_data(**kwargs)
 
-    def _check_database_coherency(self, **kwargs):
-        super(GameInstructions, self)._check_database_coherency(**kwargs)
+    def _check_database_coherence(self, **kwargs):
+        super(GameInstructions, self)._check_database_coherence(**kwargs)
 
         game_data = self.data
 
@@ -1535,8 +1549,8 @@ class LocationsHandling(BaseDataManager):
             pass # NOTHING ATM
 
 
-    def _check_database_coherency(self, **kwargs):
-        super(LocationsHandling, self)._check_database_coherency(**kwargs)
+    def _check_database_coherence(self, **kwargs):
+        super(LocationsHandling, self)._check_database_coherence(**kwargs)
 
         game_data = self.data
         assert game_data["locations"]
@@ -1572,8 +1586,8 @@ class OnlinePresence(BaseDataManager):
 
         self.data["global_parameters"].setdefault("online_presence_timeout_s", 600)
 
-    def _check_database_coherency(self, **kwargs):
-        super(OnlinePresence, self)._check_database_coherency(**kwargs)
+    def _check_database_coherence(self, **kwargs):
+        super(OnlinePresence, self)._check_database_coherence(**kwargs)
         for character in self.get_character_sets().values():
             assert not character["last_online_time"] or (isinstance(character["last_online_time"], datetime)
                                                          and character["last_online_time"] <= datetime.utcnow())
@@ -1613,6 +1627,7 @@ class OnlinePresence(BaseDataManager):
 @register_module
 class TextMessagingCore(BaseDataManager):
 
+    AVAILABLE_TEXT_FORMATS = Enum(("raw", "rst"))
 
     @property
     def messaging_data(self):
@@ -1645,18 +1660,19 @@ class TextMessagingCore(BaseDataManager):
 
             msg["sender_email"], msg["recipient_emails"] = self._normalize_message_addresses(msg["sender_email"], msg["recipient_emails"])
 
-            msg ["body"] = utilities.load_multipart_rst(msg["body"])
+            msg["body"] = utilities.load_multipart_rst(msg["body"])
+
+            msg.setdefault("body_format", self.AVAILABLE_TEXT_FORMATS.rst)  # beware, initial content is considered as RICH TEXT
 
             msg["attachment"] = msg.get("attachment", None)
             if msg["attachment"]:
-                msg["attachment"] = utilities.complete_game_file_url(msg["attachment"])
+                msg["attachment"] = game_file_url(msg["attachment"])
 
             msg["is_certified"] = msg.get("is_certified", False)
             msg["mask_recipients"] = msg.get("mask_recipients", False)
 
             if isinstance(msg["sent_at"], (long, int)): # offset in minutes
                 msg["sent_at"] = self.compute_effective_remote_datetime(msg["sent_at"])
-
 
             msg["transferred_msg"] = msg.get("transferred_msg", None)
             if msg["transferred_msg"]:
@@ -1679,8 +1695,8 @@ class TextMessagingCore(BaseDataManager):
 
 
 
-    def _check_database_coherency(self, strict=False, **kwargs):
-        super(TextMessagingCore, self)._check_database_coherency(strict=strict, **kwargs)
+    def _check_database_coherence(self, strict=False, **kwargs):
+        super(TextMessagingCore, self)._check_database_coherence(strict=strict, **kwargs)
 
         messaging = self.messaging_data
         message_reference = {
@@ -1696,7 +1712,7 @@ class TextMessagingCore(BaseDataManager):
 
                              "sent_at": datetime,
                              "is_certified": bool, # for messages sent via automated processes
-
+                             "body_format": basestring,
                              "id": basestring,
                              "group_id": basestring,
                              }
@@ -1721,6 +1737,8 @@ class TextMessagingCore(BaseDataManager):
                 for recipient in msg["recipient_emails"]:
                     utilities.check_is_email(recipient)
                 utilities.check_no_duplicates(msg["recipient_emails"])
+
+                utilities.check_is_in_set(msg["body_format"], self.AVAILABLE_TEXT_FORMATS)
 
                 if msg["body"]: # might be empty
                     pass #utilities.check_is_restructuredtext(msg["body"]) - there might be formatting errors in new emails...
@@ -1789,7 +1807,8 @@ class TextMessagingCore(BaseDataManager):
     def _build_new_message(self, sender_email, recipient_emails, subject, body,
                            attachment=None, transferred_msg=None,
                            date_or_delay_mn=None, is_certified=False,
-                           parent_id=None, mask_recipients=False, **kwargs):
+                           parent_id=None, mask_recipients=False,
+                           body_format="rst", **kwargs):
         """
         Beware, if a delay, date_or_delay_mn is treated as FLEXIBLE TIME.
         
@@ -1800,6 +1819,7 @@ class TextMessagingCore(BaseDataManager):
         TODO - is_certified is unused ATM.
         """
         # TOP LEVEL HERE - no parent call #
+        assert body_format in self.AVAILABLE_TEXT_FORMATS
         assert not hasattr(super(TextMessagingCore, self), "_build_new_message")
 
         sender_email, recipient_emails = self._normalize_message_addresses(sender_email, recipient_emails) # sender and recipient may be the same !
@@ -1846,6 +1866,7 @@ class TextMessagingCore(BaseDataManager):
                               "is_certified": is_certified,
                               "id": new_id,
                               "group_id": group_id if group_id else new_id, # msg might start a new conversation
+                              "body_format": body_format
                               })
         return msg
 
@@ -1979,8 +2000,7 @@ class TextMessagingCore(BaseDataManager):
     def get_message_viewer_url_or_none(self, msg_id): # FIXME - where shall this method actually be ?
         if not msg_id:
             return None
-        return reverse('pychronia_game.views.view_single_message',
-                        kwargs=dict(msg_id=msg_id, game_instance_id=self.game_instance_id))
+        return game_view_url('pychronia_game.views.view_single_message', datamanager=self, msg_id=msg_id)
 
 
     @readonly_method
@@ -2038,10 +2058,10 @@ class TextMessagingExternalContacts(BaseDataManager):
 
 
 
-    def _check_database_coherency(self, strict=False, **kwargs):
-        super(TextMessagingExternalContacts, self)._check_database_coherency(strict=strict, **kwargs)
+    def _check_database_coherence(self, strict=False, **kwargs):
+        super(TextMessagingExternalContacts, self)._check_database_coherence(strict=strict, **kwargs)
 
-        self.global_contacts._check_database_coherency(strict=strict, **kwargs)
+        self.global_contacts._check_database_coherence(strict=strict, **kwargs)
 
 
     def _check_sender_email(self, sender_email):
@@ -2077,10 +2097,10 @@ class TextMessagingExternalContacts(BaseDataManager):
                 if details is None:
                     details = PersistentMapping()
                     self._table[identifier] = details
-                details.setdefault("immutable", True) # contacts that are necessary to gameplay CANNOT be edited/deleted
+                details.setdefault("initial", True) # contacts that are necessary to gameplay CANNOT be edited/deleted
                 details.setdefault("avatar", None)
                 if details["avatar"]:
-                    details["avatar"] = utilities.find_game_file(details["avatar"], "images")
+                    details["avatar"] = utilities.find_game_file_or_url("images", details["avatar"])
                 details.setdefault("description", None)
                 details.setdefault("access_tokens", None) # PUBLIC contact
 
@@ -2090,8 +2110,9 @@ class TextMessagingExternalContacts(BaseDataManager):
 
 
         def _preprocess_new_item(self, key, value):
-            assert "immutable" not in value
-            value["immutable"] = False # always, else new entry can't even be deleted later on
+            assert "initial" not in value
+            print("_preprocess_new_item", key, self._table.get(key, {}))
+            value["initial"] = self._table.get(key, {}).get("initial", False) # new entries are mutable by default
             value.setdefault("access_tokens", None)
             value.setdefault("gamemaster_hints", "")
             return (key, PersistentMapping(value))
@@ -2099,8 +2120,8 @@ class TextMessagingExternalContacts(BaseDataManager):
 
         def _check_item_validity(self, key, value, strict=False):
             utilities.check_is_slug(key) # not necessarily an email
-            utilities.check_has_keys(value, ["immutable", "avatar", "description", "access_tokens"], strict=strict)
-            utilities.check_is_bool(value["immutable"],)
+            utilities.check_has_keys(value, ["initial", "avatar", "description", "access_tokens"], strict=strict)
+            utilities.check_is_bool(value["initial"])
             if value["access_tokens"] is not None: # None means "public"
                 all_usernames = self._inner_datamanager.get_character_usernames()
                 for username in value["access_tokens"]:
@@ -2108,7 +2129,7 @@ class TextMessagingExternalContacts(BaseDataManager):
             if value["description"]: # optional
                 utilities.check_is_string(value["description"], multiline=False)
             if value["avatar"]: # optional
-                utilities.check_is_game_file(value["avatar"]) # FIXME improve that
+                utilities.check_is_game_file_or_url(value["avatar"])
 
             if value.get("gamemaster_hints"): # optional
                 utilities.check_is_restructuredtext(value["gamemaster_hints"])
@@ -2120,8 +2141,8 @@ class TextMessagingExternalContacts(BaseDataManager):
         def _get_table_container(self, root):
             return root["messaging"]["globally_registered_contacts"]
 
-        def _item_can_be_edited(self, key, value):
-            return (True if not value.get("immutable") else False)
+        def _item_can_be_deleted(self, key, value):
+            return not value["initial"]
 
     global_contacts = LazyInstantiationDescriptor(GloballyRegisteredContactsManager)
 
@@ -2188,7 +2209,12 @@ class TextMessagingTemplates(BaseDataManager):
 
         if isinstance(messaging["manual_messages_templates"], list): # to simplify exchanges with dispatched emails, we allow list fixtures
             for idx, t in enumerate(messaging["manual_messages_templates"]):
-                assert ("id" in t), t
+                if "id" not in t:
+                    if "subject" in t:
+                        fallback_id = t["subject"].replace(" ", "_")  # somehow slugified subject
+                    else:
+                        fallback_id = random.randint(10000000, 100000000)
+                    t["id"] = fallback_id
                 t.setdefault("order", idx * 10)
             messaging["manual_messages_templates"] = dict((t["id"], t) for t in messaging["manual_messages_templates"]) # indexed by ID
 
@@ -2199,7 +2225,8 @@ class TextMessagingTemplates(BaseDataManager):
             for msg in msg_list:
 
                 msg.setdefault("categories", ["unsorted"]) # to FILTER for gamemaster
-                existing_template_categories.update(msg["categories"])
+
+                msg["categories"] = [c.replace(" ", "_") for c in msg["categories"]]  # somehow slugify them
 
                 msg.setdefault("gamemaster_hints", "")
                 if msg["gamemaster_hints"]:
@@ -2214,9 +2241,12 @@ class TextMessagingTemplates(BaseDataManager):
                 msg["is_used"] = msg.get("is_used", False)
                 msg["is_ignored"] = msg.get("is_ignored", False)
                 msg["parent_id"] = msg.get("parent_id", None)
+                msg["mask_recipients"] = msg.get("mask_recipients", False)
 
                 if "id" in msg:
                     del msg["id"] # cleanup
+
+                existing_template_categories.update(msg["categories"])
 
         # complete_messages_templates(game_data["automated_messages_templates"], is_manual=False)
         _normalize_messages_templates(messaging["manual_messages_templates"].values())
@@ -2225,8 +2255,8 @@ class TextMessagingTemplates(BaseDataManager):
         game_data["global_parameters"]["message_template_categories"] = existing_template_categories # OVERRIDDEN and STATIC for now !
 
 
-    def _check_database_coherency(self, strict=False, **kwargs):
-        super(TextMessagingTemplates, self)._check_database_coherency(**kwargs)
+    def _check_database_coherence(self, strict=False, **kwargs):
+        super(TextMessagingTemplates, self)._check_database_coherence(**kwargs)
 
         self.data["global_parameters"].setdefault("message_template_categories", PersistentList(["unsorted"])) # FIXME TEMP FIX
 
@@ -2238,7 +2268,7 @@ class TextMessagingTemplates(BaseDataManager):
 
         #FIXME - BEWARE group_id not used yet, but it will be someday!!!
 
-        template_fields = set("sender_email recipient_emails subject body attachment transferred_msg is_used is_ignored parent_id gamemaster_hints categories sent_at group_id order".split())
+        template_fields = set("sender_email recipient_emails subject body attachment transferred_msg is_used is_ignored parent_id gamemaster_hints categories sent_at group_id order mask_recipients".split())
 
         for msg in messaging["manual_messages_templates"].values():
 
@@ -2278,6 +2308,7 @@ class TextMessagingTemplates(BaseDataManager):
                 except UsageError as e:
                     pass  # message might have been deleted by game master, we ignore this
 
+            utilities.check_is_bool(msg["mask_recipients"])
             utilities.check_is_bool(msg["is_used"])
             utilities.check_is_bool(msg["is_ignored"])
 
@@ -2371,7 +2402,7 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
         self._recompute_all_address_book_via_msgs()
         assert not self._recompute_all_address_book_via_msgs()
 
-        # initial coherency check
+        # initial coherence check
         all_emails = self.get_all_existing_emails() # ALL available
 
         ''' TODO FIXME BETTER CHECK ??
@@ -2382,8 +2413,8 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
                 assert recipient_email in all_emails, (recipient_email, all_emails)
         '''
 
-    def _check_database_coherency(self, **kwargs):
-        super(TextMessagingForCharacters, self)._check_database_coherency(**kwargs)
+    def _check_database_coherence(self, **kwargs):
+        super(TextMessagingForCharacters, self)._check_database_coherence(**kwargs)
 
         # TODO - check all messages and templates with utilities.check_is_restructuredtext(value) ? What happens if invalid rst ?
 
@@ -2441,7 +2472,7 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
         # special mailing list
         ml_address = self.get_global_parameter("all_players_mailing_list")
         ml_props = self.global_contacts[ml_address] # MUST exist
-        assert ml_props["immutable"]
+        assert ml_props["initial"]
 
 
     """
@@ -2855,6 +2886,7 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
             other_characters_and_nones = [self.get_character_or_none_from_email(email) for email in emails]
             return [char for char in other_characters_and_nones if char and char != username]
 
+
     # Audio notifications for new messages #
 
     @readonly_method
@@ -2904,8 +2936,8 @@ class TextMessagingInterception(BaseDataManager):
             data.setdefault("wiretapping_targets", PersistentList())
             data.setdefault("confidentiality_activation_datetime", None) # UTC datetime when SSL/TLS security was bought
 
-    def _check_database_coherency(self, **kwargs):
-        super(TextMessagingInterception, self)._check_database_coherency(**kwargs)
+    def _check_database_coherence(self, **kwargs):
+        super(TextMessagingInterception, self)._check_database_coherence(**kwargs)
 
         game_data = self.data
         messaging = self.messaging_data
@@ -3034,9 +3066,9 @@ class RadioMessaging(BaseDataManager): # TODO REFINE
         super(RadioMessaging, self)._load_initial_data(**kwargs)
         self.radio_spots._load_initial_data(**kwargs)
 
-    def _check_database_coherency(self, **kwargs):
-        super(RadioMessaging, self)._check_database_coherency(**kwargs)
-        self.radio_spots._check_database_coherency(**kwargs)
+    def _check_database_coherence(self, **kwargs):
+        super(RadioMessaging, self)._check_database_coherence(**kwargs)
+        self.radio_spots._check_database_coherence(**kwargs)
 
         game_data = self.data
         value = game_data["global_parameters"]["pending_radio_messages"]
@@ -3056,24 +3088,29 @@ class RadioMessaging(BaseDataManager): # TODO REFINE
 
             for identifier, details in self._table.items():
 
+                assert "url" not in details, details  # LEGACY format, not used anymore
+
                 details.setdefault("gamemaster_hints", "")
                 if details["gamemaster_hints"]:
                     details["gamemaster_hints"] = details["gamemaster_hints"].strip()
 
-                details.setdefault("immutable", False) # we assume ANY radio spot is optional for the game, and can be edited/delete
-                details.setdefault("file", None) # LOCAL file
-                if details["file"]:
-                    details["file"] = utilities.find_game_file(details["file"], "audio", "radio_spots")
-                details.setdefault("url", None) # LOCAL file
+                # audio messages that are necessary to gameplay CANNOT be edited/deleted
+                # (ex. new-message-notifications, victory/defeat sounds...
+                details.setdefault("initial", True)
 
-            audiofiles = [value["file"] for value in self._table.values()]
-            # NOOOES - utilities.check_no_duplicates(audiofiles) # only checked at load time, next game master can do whatever he wants
+                details.setdefault("file", None) # LOCAL file or URL
+                if details["file"]:
+                    details["file"] = utilities.find_game_file_or_url("audio", "radio_spots", details["file"])
+
+            # we DO NOT care about duplicates, which might happen when editing and reloading DB...
 
 
         def _preprocess_new_item(self, key, value):
-            assert "immutable" not in value
-            value["immutable"] = False
+            assert "initial" not in value
+            value["initial"] = self._table.get(key, {}).get("initial", False) # new entries are mutable by default
             value.setdefault("gamemaster_hints", "")
+            value["title"] = value["title"].strip()
+            value["text"] = value["text"].strip()
             return (key, PersistentMapping(value))
             # other params are supposed to exist in "value"
 
@@ -3081,27 +3118,24 @@ class RadioMessaging(BaseDataManager): # TODO REFINE
 
             #print ("RADIOSPOT IS", key, value)
 
+            radio_spot_fields = set("initial gamemaster_hints title text file".split())
+            assert set(value.keys()) == radio_spot_fields, (set(value.keys()) - radio_spot_fields, key)
+
             utilities.check_is_slug(key)
 
-            #utilities.check_has_keys(value, ["title", "text", "file", "url", "immutable", "gamemaster_hints"], strict=strict)
+            utilities.check_is_bool(value["initial"])
 
             if value.get("gamemaster_hints"): # optional
                 pass # utilities.check_is_restructuredtext(value["gamemaster_hints"])
 
             utilities.check_is_string(value["title"])
-            assert value["text"] and isinstance(value["text"], basestring)
 
-            assert not value["file"] or isinstance(value["file"], basestring), value["file"]
-            assert not value["url"] or isinstance(value["url"], basestring), value["url"]
+            assert isinstance(value["text"], basestring) and value["text"]   # might NOT be empty
 
-            # it might be that neither file nor url is set (one must then use TTS)
-            # if both are set, it's supposed to be the same sound file
-
-            # TODO - ensure no "|" in file name!!
-            if value["file"]:
-                utilities.check_is_game_file(value["file"])
-            if value["url"]:
-                assert value["url"].startswith("http") # ROUGH check...
+            # it might be that 'file' is None (gamemaster must then use text-to-speech generation)
+            if value["file"] is not None:
+                utilities.check_is_string(value["file"], forbidden_chars=["|"])
+                utilities.check_is_game_file_or_url(value["file"])
 
 
         def _sorting_key(self, item_pair):
@@ -3110,11 +3144,19 @@ class RadioMessaging(BaseDataManager): # TODO REFINE
         def _get_table_container(self, root):
             return root["audio_messages"]
 
-        def _item_can_be_edited(self, key, value):
-            return not value["immutable"]
+        def _item_can_be_deleted(self, key, value):
+            return not value["initial"]
+
+        def _callback_on_any_update(self):
+            self._inner_datamanager._prune_obsolete_radio_playlist_entries()
 
     radio_spots = LazyInstantiationDescriptor(RadioSpotsManager)
 
+
+    def _prune_obsolete_radio_playlist_entries(self):
+        filtered_radio_messages = [audio_id for audio_id in self.data["global_parameters"]["pending_radio_messages"]
+                                   if audio_id in self.radio_spots]
+        self.data["global_parameters"]["pending_radio_messages"] = PersistentList(filtered_radio_messages)
 
     def _check_audio_ids(self, audio_ids):
         for audio_id in audio_ids:
@@ -3245,8 +3287,8 @@ class Chatroom(BaseDataManager):
         game_data["global_parameters"].setdefault("chatroom_presence_timeout_s", 20)
         game_data["global_parameters"].setdefault("chatroom_timestamp_display_threshold_s", 120)
 
-    def _check_database_coherency(self, **kwargs):
-        super(Chatroom, self)._check_database_coherency(**kwargs)
+    def _check_database_coherence(self, **kwargs):
+        super(Chatroom, self)._check_database_coherence(**kwargs)
 
         game_data = self.data
 
@@ -3350,8 +3392,8 @@ class ActionScheduling(BaseDataManager):
 
 
 
-    def _check_database_coherency(self, **kwargs):
-        super(ActionScheduling, self)._check_database_coherency(**kwargs)
+    def _check_database_coherence(self, **kwargs):
+        super(ActionScheduling, self)._check_database_coherence(**kwargs)
 
         game_data = self.data
 
@@ -3454,13 +3496,14 @@ class PersonalFiles(BaseDataManager):
         super(PersonalFiles, self)._load_initial_data(**kwargs)
 
 
-    def _check_database_coherency(self, **kwargs):
-        super(PersonalFiles, self)._check_database_coherency(**kwargs)
+    def _check_database_coherence(self, **kwargs):
+        super(PersonalFiles, self)._check_database_coherence(**kwargs)
 
         # common and personal file folders
         assert os.path.isdir(os.path.join(config.GAME_FILES_ROOT, "personal_files", self.COMMON_FILES_DIRS))
         for name in (self.data["character_properties"].keys() + [self.data["global_parameters"]["master_login"]]):
-            assert os.path.isdir(os.path.join(config.GAME_FILES_ROOT, "personal_files", name)), name
+            folder_path = os.path.join(config.GAME_FILES_ROOT, "personal_files", name)
+            assert os.path.isdir(folder_path), folder_path
             assert name != self.COMMON_FILES_DIRS # reserved
 
     @readonly_method
@@ -3576,14 +3619,6 @@ class MoneyItemsOwnership(BaseDataManager):
 
     # FIXME - fix forms containing gems, now (value, origin) tuples
 
-    def _compute_items_unit_cost(self, total_cost, num_gems):
-        if not total_cost:
-            return None
-        return int(math.ceil(float(total_cost / num_gems)))
-    def _compute_items_total_price(self, unit_cost, num_gems):
-        if not unit_cost:
-            return None
-        return unit_cost * num_gems # simpler
 
     def _load_initial_data(self, **kwargs):
         super(MoneyItemsOwnership, self)._load_initial_data(**kwargs)
@@ -3592,7 +3627,7 @@ class MoneyItemsOwnership(BaseDataManager):
 
         game_data["global_parameters"].setdefault("bank_name", "bank")
         game_data["global_parameters"].setdefault("bank_account", 0) # can be negative
-        game_data["global_parameters"].setdefault("spent_gems", []) # gems used in abilities
+        game_data["global_parameters"].setdefault("spent_gems", []) # gems which were used in abilities or manually debited
 
         total_digital_money = game_data["global_parameters"]["bank_account"]
         total_gems = game_data["global_parameters"]["spent_gems"][:] # COPY
@@ -3609,36 +3644,33 @@ class MoneyItemsOwnership(BaseDataManager):
             total_gems += [i[0] for i in character["gems"]]
             total_digital_money += character["account"]
 
-        for (name, properties) in game_data["game_items"].items():
-
-            properties.setdefault("gamemaster_hints", "")
-            if properties["gamemaster_hints"]:
-                properties["gamemaster_hints"] = properties["gamemaster_hints"].strip()
-
-            properties['unit_cost'] = self._compute_items_unit_cost(total_cost=properties['total_price'], num_gems=properties['num_items']) # works with NONE too
-            properties['owner'] = properties.get('owner', None)
-            properties["auction"] = properties.get('auction', None)
-
-            if properties["is_gem"] and not properties['owner']: # we dont recount gems appearing in character["gems"]
-                total_gems += [properties['unit_cost']] * properties["num_items"]
-
-            properties['image'] = utilities.find_game_file(properties['image'], "images")
-
         # We initialize some runtime checking parameters #
         game_data["global_parameters"]["total_digital_money"] = total_digital_money # integer
         game_data["global_parameters"]["total_gems"] = PersistentList(sorted(total_gems)) # sorted list of integer values
 
+        self.game_items._load_initial_data(**kwargs)  # important
 
 
-    def _check_database_coherency(self, **kwargs):
-        super(MoneyItemsOwnership, self)._check_database_coherency(**kwargs)
+    def _check_database_coherence(self, **kwargs):
+        super(MoneyItemsOwnership, self)._check_database_coherence(**kwargs)
 
         game_data = self.data
+
+        def _check_gems(gems_list):
+            for gem in gems_list:
+                assert isinstance(gem, tuple) # must be hashable!!
+                (gem_value, gem_origin) = gem
+                utilities.check_is_positive_int(gem_value)
+                if gem_origin is not None:
+                    # important - we must not break that reference to an existing game item
+                    assert gem_origin in self.game_items
+                    assert self.game_items[gem_origin]["is_gem"]
 
         total_digital_money = game_data["global_parameters"]["bank_account"]
         total_gems = game_data["global_parameters"]["spent_gems"][:] # COPY!
         # print ("^^^^^^^^^^^^", "spent_gems", total_gems.count(500))
 
+        _check_gems(game_data["global_parameters"]["spent_gems"])
 
         for (name, character) in game_data["character_properties"].items():
             utilities.check_is_positive_int(character["account"], non_zero=False)
@@ -3652,18 +3684,58 @@ class MoneyItemsOwnership(BaseDataManager):
 
             #assert character["gems"] == sorted(character["gems"]), character["gems"] FIXME TEMP
 
-            for gem in character["gems"]:
-                assert isinstance(gem, tuple) # must be hashable!!
-                (gem_value, gem_origin) = gem
-                utilities.check_is_positive_int(gem_value)
-                if gem_origin is not None:
-                    assert gem_origin in game_data["game_items"]
-                    assert game_data["game_items"][gem_origin]["is_gem"]
-                total_gems.append(gem_value) # only value in kashes, not gem origin
+            _check_gems(character["gems"])
+            total_gems += character["gems"]
             # print ("---------", name, total_gems.count(500))
 
-        assert game_data["game_items"]
-        for (name, properties) in game_data["game_items"].items():
+        old_total_digital_money = game_data["global_parameters"]["total_digital_money"]
+        assert old_total_digital_money == total_digital_money, "%s != %s" % (old_total_digital_money, total_digital_money)
+
+        self.game_items._check_database_coherence(**kwargs)  # important
+
+
+    class GameItemsManager(DataTableManager):
+
+        TRANSLATABLE_ITEM_NAME = ugettext_lazy("objects/gems")
+
+        def _load_initial_data(self, **kwargs):
+
+            for (name, properties) in self._table.items():
+
+                # SAFETY, we forbid modifying initial items, for now, to avoid incoherences with abilities
+                properties.setdefault("initial", True)
+
+                properties.setdefault("gamemaster_hints", "")
+                if properties["gamemaster_hints"]:
+                    properties["gamemaster_hints"] = properties["gamemaster_hints"].strip()
+
+                properties["auction"] = properties.get('auction') or ""  # NON NULL
+
+                properties['total_price'] = properties.get('total_price') or 0  # NON NULL
+
+                if properties.get('unit_cost') is None:
+                    properties['unit_cost'] = self._compute_items_unit_cost(total_cost=properties['total_price'], num_gems=properties['num_items'])
+
+                properties['owner'] = properties.get('owner', None)
+
+                #if properties["is_gem"] and not properties['owner']: # we dont recount gems appearing in character["gems"]
+                #    total_gems += [properties['unit_cost']] * properties["num_items"]
+
+                properties['image'] = utilities.find_game_file_or_url("images", properties['image'])
+
+        def _preprocess_new_item(self, key, value):
+            assert "initial" not in value
+            value["initial"] = self._table.get(key, {}).get("initial", False) # new entries are mutable by default
+            value.setdefault('owner', None)
+            return (key, PersistentMapping(value))
+            # other params are supposed to exist in "value"
+
+        def _check_item_validity(self, key, value, strict=False):
+            (name, properties) = (key, value)
+
+            game_data = self._inner_datamanager.data
+
+            utilities.check_is_bool(value["initial"])
 
             if properties["gamemaster_hints"]: # optional
                 pass # utilities.check_is_restructuredtext(properties["gamemaster_hints"])
@@ -3671,58 +3743,79 @@ class MoneyItemsOwnership(BaseDataManager):
             utilities.check_is_slug(name)
             assert isinstance(properties['is_gem'], bool)
             assert utilities.check_is_positive_int(properties['num_items'], non_zero=True)
-            if properties['total_price']:
-                assert utilities.check_is_positive_int(properties['total_price'], non_zero=True)
-                assert utilities.check_is_positive_int(properties['unit_cost'], non_zero=True)
-            else:
-                assert properties['total_price'] is None
-                assert properties['unit_cost'] is None
 
-            # OK for NONE values too ; doesn't work the other way round, due to rounding of division
-            assert properties['unit_cost'] == self._compute_items_unit_cost(total_cost=properties['total_price'], num_gems=properties['num_items'])
+            # these two values can be NON RELATED!
+            assert utilities.check_is_positive_int(properties['total_price'], non_zero=False)
+            assert utilities.check_is_positive_int(properties['unit_cost'], non_zero=False)
 
             assert properties['owner'] is None or properties['owner'] in game_data["character_properties"].keys()
 
             assert isinstance(properties['title'], basestring) and properties['title']
             assert isinstance(properties['comments'], basestring) and properties['comments']
-            utilities.check_is_game_file(properties['image'])
+            utilities.check_is_game_file_or_url(properties['image'])
 
-            # item might be out of auction
-            assert properties['auction'] is None or isinstance(properties['auction'], basestring) and properties['auction']
+            # item might be out of auction, with auction == ""
+            assert isinstance(properties['auction'], basestring)
 
+            """ useless now
             if properties["is_gem"] and not properties["owner"]:
                 total_gems += [properties['unit_cost']] * properties["num_items"]
                 # (">>>>>>>>>>", name, total_gems.count(500))
+            """
 
-        ##TODO-REUSE
-        ##old_total_gems = game_data["global_parameters"]["total_gems"]
-        ##assert Counter(old_total_gems) == Counter(total_gems), (old_total_gems, total_gems)
-        ##assert old_total_gems == sorted(total_gems), "%s != %s" % (old_total_gems, total_gems)
+            # we DO NOT care about duplicates, which might happen when editing and reloading DB...
 
-        old_total_digital_money = game_data["global_parameters"]["total_digital_money"]
-        assert old_total_digital_money == total_digital_money, "%s != %s" % (old_total_digital_money, total_digital_money)
+
+        def _sorting_key(self, item_pair):
+            return item_pair[0] # we sort by key, simply...
+
+        def _get_table_container(self, root):
+            return root["game_items"]
+
+        def _item_can_be_modified(self, key, value):
+            return not (value["owner"])  # can't change values then
+
+        def _item_can_be_deleted(self, key, value):
+            return not (value["owner"] or value["initial"])
+
+        def _callback_on_any_update(self):
+            pass
+
+
+        def _compute_items_unit_cost(self, total_cost, num_gems):
+            assert total_cost >= 0
+            assert num_gems > 0
+            return int(math.ceil(float(total_cost / num_gems)))
+
+        def _compute_items_total_price(self, unit_cost, num_gems):
+            assert unit_cost >= 0
+            assert num_gems > 0
+            return unit_cost * num_gems # simpler
+
+
+    game_items = LazyInstantiationDescriptor(GameItemsManager)
 
 
     @readonly_method
     def get_all_items(self):
-        return self.data["game_items"]
+        return self.data["game_items"]  # directly expose data
 
     @readonly_method
     def get_gem_items(self):
-        return {key: value for (key, value) in self.data["game_items"].items() if value["is_gem"]}
+        return {key: value for (key, value) in self.game_items.items() if value["is_gem"]}
 
     @readonly_method
     def get_non_gem_items(self):
-        return {key: value for (key, value) in self.data["game_items"].items() if not value["is_gem"]}
+        return {key: value for (key, value) in self.game_items.items() if not value["is_gem"]}
 
     @readonly_method
     def get_auction_items(self):
-        return {key: value for (key, value) in self.data["game_items"].items() if value["auction"]}
+        return {key: value for (key, value) in self.game_items.items() if value["auction"]}
 
     @readonly_method
     def get_item_properties(self, item_name):
         try:
-            return self.data["game_items"][item_name]
+            return self.game_items[item_name]
         except KeyError:
             raise UsageError(_("Unknown item %s") % item_name)
 
@@ -3889,6 +3982,8 @@ class MoneyItemsOwnership(BaseDataManager):
     def get_available_items_for_user(self, username=CURRENT_USER, auction_only=False):
         """
         Both items and artefacts.
+        
+        Also works for master.
         """
         username = self._resolve_username(username)
 
@@ -3931,23 +4026,62 @@ class MoneyItemsOwnership(BaseDataManager):
             raise UsageError(_("You must transfer at least one gem"))
 
         remaining_gems = utilities.substract_lists(sender_char["gems"], gems_choices)
-
         if remaining_gems is None:
-            raise UsageError(_("You don't possess the gems required"))
+            raise UsageError(_("Sender doesn't possess these gems"))
 
         remaining_gems.sort()
         sender_char["gems"] = remaining_gems
         gems_choices.sort()
         recipient_char["gems"] += gems_choices
 
-        self.log_game_event(ugettext_noop("Gems transferred from %(from_name)s to %(to_name)s : %(gems_choices)s."),
+        self.log_game_event(ugettext_noop("Gems transferred from %(from_name)s to %(to_name)s: %(gems_choices)s."),
                              PersistentMapping(from_name=from_name, to_name=to_name, gems_choices=gems_choices),
                              url=None,
                              visible_by=[from_name, to_name]) # event visible by both characters
 
 
+    @transaction_watcher
+    def debit_character_gems(self, username=CURRENT_USER, gems_choices=None):
+        """
+        Remove some of a character's gems from the game.
+        """
+        assert isinstance(gems_choices, (list, PersistentList))
+        gems_choices = PersistentList(gems_choices)
+        username = self._resolve_username(username)
+        character_properties = self.get_character_properties(username)
+        remaining_gems = utilities.substract_lists(character_properties["gems"], gems_choices)
+        if remaining_gems is None:
+            raise UsageError(_("Sender doesn't possess these gems"))
+        else:
+            character_properties["gems"] = PersistentList(remaining_gems)
+            self.data["global_parameters"]["spent_gems"] += gems_choices
 
+        self.log_game_event(ugettext_noop("Gems debited from %(username)s: %(gems_choices)s."),
+                             PersistentMapping(username=username, gems_choices=gems_choices),
+                             url=None,
+                             visible_by=[username])
 
+    @transaction_watcher
+    def credit_character_gems(self, username=CURRENT_USER, gems_choices=None):
+        """
+        Revive some gems that were previously spent.
+        """
+        assert isinstance(gems_choices, (list, PersistentList))
+        gems_choices = PersistentList(gems_choices)
+        username = self._resolve_username(username)
+        character_properties = self.get_character_properties(username)
+
+        remaining_gems = utilities.substract_lists(self.data["global_parameters"]["spent_gems"], gems_choices)
+        if remaining_gems is None:
+            raise UsageError(_("Selected gems couldn't be found among spent gems"))
+        else:
+            self.data["global_parameters"]["spent_gems"] = PersistentList(remaining_gems)
+            character_properties["gems"] += gems_choices
+
+        self.log_game_event(ugettext_noop("Gems credited to %(username)s: %(gems_choices)s."),
+                             PersistentMapping(username=username, gems_choices=gems_choices),
+                             url=None,
+                             visible_by=[username])
 
 
 @register_module
@@ -3957,8 +4091,8 @@ class Items3dViewing(BaseDataManager):
     def _load_initial_data(self, **kwargs):
         super(Items3dViewing, self)._load_initial_data(**kwargs)
 
-    def _check_database_coherency(self, **kwargs):
-        super(Items3dViewing, self)._check_database_coherency(**kwargs)
+    def _check_database_coherence(self, **kwargs):
+        super(Items3dViewing, self)._check_database_coherence(**kwargs)
 
         game_data = self.data
 
@@ -3986,7 +4120,8 @@ class Items3dViewing(BaseDataManager):
             }
 
         for (name, properties) in game_data["item_3d_settings"].items():
-            assert name in game_data["game_items"].keys(), name
+            #assert name in self.game_items.keys(), name
+            #assert self.game_items[name]["initial"], name
             utilities.check_dictionary_with_template(properties, item_viewer_reference)
 
 
@@ -4059,8 +4194,8 @@ class GameViews(BaseDataManager):
         # no need to sync - it will done later in _init_from_db()
 
 
-    def _check_database_coherency(self, **kwargs):
-        super(GameViews, self)._check_database_coherency(**kwargs)
+    def _check_database_coherence(self, **kwargs):
+        super(GameViews, self)._check_database_coherence(**kwargs)
 
         game_data = self.data
         utilities.check_no_duplicates(game_data["views"]["activated_views"])
@@ -4144,6 +4279,23 @@ class GameViews(BaseDataManager):
                     return (self.instantiate_game_view(klass), action_name)
         return None
 
+    @readonly_method
+    def get_game_view_admin_summaries(self):
+        """
+        Gets a dict in format {view_name: html_chunk}, with summaries of the states 
+        """
+        chunks_dict = {}
+
+        for klass_name, klass in self.GAME_VIEWS_REGISTRY.items():
+            view = self.instantiate_game_view(self.GAME_VIEWS_REGISTRY[klass_name])
+            html_chunk = view.get_admin_summary_html()
+            if html_chunk:
+                chunks_dict[klass_name] = dict(title=view.TITLE,
+                                               html_chunk=html_chunk)
+
+        return chunks_dict
+
+
 
 @register_module
 class SpecialAbilities(BaseDataManager):
@@ -4205,8 +4357,8 @@ class SpecialAbilities(BaseDataManager):
             assert "settings" in game_data["abilities"][key] and "data" in game_data["abilities"][key]
 
 
-    def _check_database_coherency(self, strict=False, **kwargs):
-        super(SpecialAbilities, self)._check_database_coherency(**kwargs)
+    def _check_database_coherence(self, strict=False, **kwargs):
+        super(SpecialAbilities, self)._check_database_coherence(**kwargs)
 
         utilities.check_is_bool(self.get_global_parameter("disable_automated_ability_responses"))
 
@@ -4267,9 +4419,9 @@ class StaticPages(BaseDataManager):
         super(StaticPages, self)._load_initial_data(**kwargs)
         self.static_pages._load_initial_data(**kwargs)
 
-    def _check_database_coherency(self, **kwargs):
-        super(StaticPages, self)._check_database_coherency(**kwargs)
-        self.static_pages._check_database_coherency(**kwargs)
+    def _check_database_coherence(self, **kwargs):
+        super(StaticPages, self)._check_database_coherence(**kwargs)
+        self.static_pages._check_database_coherence(**kwargs)
 
 
     # bunch of standard categories #
@@ -4307,7 +4459,7 @@ class StaticPages(BaseDataManager):
         def _load_initial_data(self, **kwargs):
 
             for identifier, details in self._table.items():
-                details.setdefault("immutable", False) # we assume ANY static page is optional for the game, and can be edited/deleted
+                details.setdefault("initial", False) # we assume ANY static page is optional for the game, and can be edited/deleted
 
                 details.setdefault("categories", []) # distinguishes possibles uses of static pages
                 details["categories"] = [details["categories"]] if isinstance(details["categories"], basestring) else details["categories"]
@@ -4318,14 +4470,14 @@ class StaticPages(BaseDataManager):
                 details.setdefault("gamemaster_hints", "") # for gamemaster only
                 details["gamemaster_hints"] = details["gamemaster_hints"].strip()
 
-                details.setdefault("title", None)
+                details.setdefault("title", "")
                 if details["title"]:
-                    details["title"] = details["title"].strip(), details["title"]
+                    details["title"] = details["title"].strip()
 
 
         def _preprocess_new_item(self, key, value):
-            assert "immutable" not in value
-            value["immutable"] = False
+            assert "initial" not in value
+            value["initial"] = self._table.get(key, {}).get("initial", False) # new entries are mutable by default
             value.setdefault("gamemaster_hints", "")
             return (key, PersistentMapping(value))
             # other params are supposed to exist in "value"
@@ -4334,11 +4486,11 @@ class StaticPages(BaseDataManager):
             utilities.check_is_slug(key)
             assert key.lower() == key # handy
 
-            utilities.check_has_keys(value, ["immutable", "categories", "content", "gamemaster_hints", "keywords"], strict=strict) # SOON -> "title" TOO!! FIXME TODO
+            utilities.check_has_keys(value, ["initial", "categories", "content", "gamemaster_hints", "keywords"], strict=strict) # SOON -> "title" TOO!! FIXME TODO
 
-            utilities.check_is_bool(value["immutable"],)
+            utilities.check_is_bool(value["initial"])
 
-            if value.get("title"): # retrocompatibility layer
+            if value["title"]:
                 utilities.check_is_string(value["title"], multiline=False)
                 assert value["title"] == value["title"].strip(), value["title"]
 
@@ -4370,8 +4522,8 @@ class StaticPages(BaseDataManager):
         def _get_table_container(self, root):
             return root["static_pages"]
 
-        def _item_can_be_edited(self, key, value):
-            return not value["immutable"]
+        def _item_can_be_deleted(self, key, value):
+            return not value["initial"]
 
     static_pages = LazyInstantiationDescriptor(StaticPagesManager)
 
@@ -4404,8 +4556,8 @@ class Encyclopedia(BaseDataManager):
             character.setdefault("known_article_ids", PersistentList())
 
 
-    def _check_database_coherency(self, **kwargs):
-        super(Encyclopedia, self)._check_database_coherency(**kwargs)
+    def _check_database_coherence(self, **kwargs):
+        super(Encyclopedia, self)._check_database_coherence(**kwargs)
 
         game_data = self.data
 
@@ -4456,7 +4608,7 @@ class Encyclopedia(BaseDataManager):
         Returns the list of encyclopedia article whose keywords (primary or not) match *search_string*, 
         sorted by most relevant first.
         
-        Matching is very tolerant, as keywords needn't be separate words in the search string.
+        Matching is very tolerant, since it's case-insensitive, and keywords needn't be "separate words" in the searched string.
         """
         keywords_mapping = self.get_encyclopedia_keywords_mapping(only_primary_keywords=False)
 
@@ -4536,10 +4688,10 @@ class NightmareCaptchas(BaseDataManager):
             value.setdefault("image", None)
             value.setdefault("explanation", None)
             if value["image"]:
-                value["image"] = utilities.find_game_file(value["image"], "images", "captchas")
+                value["image"] = utilities.find_game_file("images", "captchas", value["image"])
 
-    def _check_database_coherency(self, strict=False, **kwargs):
-        super(NightmareCaptchas, self)._check_database_coherency(**kwargs)
+    def _check_database_coherence(self, strict=False, **kwargs):
+        super(NightmareCaptchas, self)._check_database_coherence(**kwargs)
 
         game_data = self.data
 
@@ -4561,10 +4713,11 @@ class NightmareCaptchas(BaseDataManager):
                 utilities.check_is_game_file(value["image"])
             if value["explanation"]:
                 utilities.check_is_restructuredtext(value["explanation"])
-
             if value["answer"] is not None: # None means "no answers" (sadistic)
                 utilities.check_is_slug(value["answer"])
                 assert "\n" not in value["answer"]
+
+            assert (value["answer"] is not None) == bool(value["explanation"]), value  # let's be coherent
 
 
     def _get_captcha_data(self, captcha_id):
@@ -4608,7 +4761,7 @@ class NightmareCaptchas(BaseDataManager):
         value = self.data["nightmare_captchas"][captcha_id]
 
         if not value["answer"]:
-            raise NormalUsageError(_("Nope, it looked like this captcha had no known answer..."))
+            raise NormalUsageError(_("Nope, it looks like this captcha had no known answer..."))
 
         normalized_attempt = attempt.strip().lower().replace(" ", "")
         normalized_answer = value["answer"].lower() # necessarily slug, but not always lowercase
@@ -4616,6 +4769,7 @@ class NightmareCaptchas(BaseDataManager):
         if normalized_attempt != normalized_answer:
             raise NormalUsageError(_("Incorrect captcha answer '%s'") % attempt)
 
+        assert value["explanation"], repr(value["explanation"])
         return value["explanation"]
 
 
@@ -4624,8 +4778,8 @@ class NightmareCaptchas(BaseDataManager):
 class NoveltyNotifications(BaseDataManager):
 
 
-    def _check_database_coherency(self, strict=False, **kwargs):
-        super(NoveltyNotifications, self)._check_database_coherency(**kwargs)
+    def _check_database_coherence(self, strict=False, **kwargs):
+        super(NoveltyNotifications, self)._check_database_coherence(**kwargs)
 
         self.data["global_parameters"].setdefault("disable_real_email_notifications", False) ## TEMP FIXME
         utilities.check_is_bool(self.get_global_parameter("disable_real_email_notifications"))

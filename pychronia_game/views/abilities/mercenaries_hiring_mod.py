@@ -47,8 +47,23 @@ class MercenariesHiringAbility(AbstractPartnershipAbility):
     REQUIRES_GLOBAL_PERMISSION = True
 
 
+    def _get_admin_summary_html(self):
+        assert self.is_master()
+        data = self.all_private_data.items()
+        all_mercenaries_locations = sorted((k, v["mercenaries_locations"])
+                                           for (k, v) in data
+                                           if v["mercenaries_locations"])
+
+        template_vars = dict(all_mercenaries_locations=all_mercenaries_locations)
+        res = render_to_string("abilities/mercenaries_hiring_summary.html",
+                               template_vars)
+
+        return res
+
+
     def get_template_vars(self, previous_form_data=None):
 
+        assert self.is_character()
         #_user_profile = self.get_character_properties()
         #gems = _user_profile["gems"]
         #total_gems_value = sum(gem[0] for gem in gems)

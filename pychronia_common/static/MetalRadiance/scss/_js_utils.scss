@@ -25,7 +25,7 @@
 
 .ui-dropdownchecklist {
     background-color: white;
-    font-size: 0.9em;
+    font-size: 0.8em;
 }
 
 .ui-dropdownchecklist-dropcontainer {
@@ -73,8 +73,7 @@
         }
         .jnotify-message {
             font-size: 0.9em;
-            line-height: 1 em;
-            padding: 15px;
+            padding: 15px 30px;
         }
         a.jnotify-close {
             font-size: 1.8em !important;  // enlarge the cross
@@ -116,12 +115,13 @@
         @extend .antique_large_decorated_frame;
         background-color: transparent;
         box-shadow: none !important; // doesn't work with transparent borders
-        border-width: 10px;
+        border-width: 30px !important;
         padding: 16px !important;  // HACK to override fancybox styles
     }
 
     .fancybox-inner {
         margin: auto;
+        padding: 0 10px !important;
         @include mobile-only {
             width: 100% !important;
         }

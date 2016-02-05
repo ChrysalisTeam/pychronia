@@ -34,7 +34,6 @@ class WorldScanAbility(AbstractPartnershipAbility):
     REQUIRES_GLOBAL_PERMISSION = True
 
 
-
     def get_template_vars(self, previous_form_data=None):
 
         try:
@@ -110,7 +109,7 @@ class WorldScanAbility(AbstractPartnershipAbility):
     @transaction_watcher
     def _add_to_scanned_locations(self, locations):
         self.data["global_parameters"]["scanned_locations"] = PersistentList(set(self.data["global_parameters"][
-                                                                                 "scanned_locations"] + locations)) # we let the _check_coherency system ensure it's OK
+                                                                                 "scanned_locations"] + locations)) # we let the _check_coherence system ensure it's OK
     '''
 
 
@@ -134,9 +133,9 @@ class WorldScanAbility(AbstractPartnershipAbility):
         locations = self._compute_scanning_result_or_none(item_name) # might raise if item is not analysable
         if locations:
             locations_found = ", ".join(locations)
-    
+
             subject = "<World Scan Result - %(item)s>" % SDICT(item=item_title)
-    
+
             body = dedent("""
                     Below is the result of the scanning operation which has been performed according to the documents you sent.
                     Please note that these results might be incomplete or erroneous, depending on the accuracy of the information available.
@@ -148,7 +147,7 @@ class WorldScanAbility(AbstractPartnershipAbility):
                                      body=body,
                                      attachment=None)
             del subject, body
-            
+
         best_msg_id = self._process_standard_exchange_with_partner(request_msg_data=request_msg_data,
                                                                    response_msg_data=response_msg_data)
 

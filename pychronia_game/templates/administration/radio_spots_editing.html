@@ -14,15 +14,18 @@
     function generate_tts_sample(target_id) {
         var text = $('#id_'+target_id+'_text').val().trim();
         if (text){
-            $('#id_'+target_id+'_sound_preview').html("{{ _("Generating sound...")|escape|escapejs }}");
+            $('#id_'+target_id+'_sound_preview').html("<div style=\"margin: 20px auto;\">{{ _("Generating sound...")|escape|escapejs }}</div>");
             $.post("",
                    { _action_: "generate_tts_sample", text: text},
                    function(answer){
                        $('#id_'+target_id+'_sound_preview').html(answer.mediaplayer);
-                       $('#id_'+target_id+'_url_or_file').val(answer.sound_url);
+                       $('#id_'+target_id+'_file').val(answer.sound_url);
+                       $('#id_'+target_id+'_download_link').attr('href', answer.sound_url).css("display", "block");
                    },
                    'json'
-                 );
+                 ).error(function(){
+                     $('#id_'+target_id+'_sound_preview').html("");
+                 });
         } else {
             $.jnotify("{{ _("Text field must be filled.")|escapejs }}", "warning");
         }
@@ -35,21 +38,7 @@
 
 
 {% block sidebar %}
-
-{% usekwacro side_panel_start frame_class="mini_frame float_left clear_left" decos="2" %}
-
-    <h2>{% trans "Entries" %}</h2>
-
-    <div class="rice_paper_rose tiny_bullets full_width" style="font-size:0.8em;">
-    <ul>
-        {% for identifier, form in forms %}
-            <li><a href="#entry-{{ identifier|slugify }}">{{ identifier|default:_("NEW ENTRY") }}</a></li>
-        {% endfor %}
-    </ul>
-    </div>
-
-{% usekwacro side_panel_end %}
-
+{% include "administration/_sidebar_management_index.html" %}
 {% endblock %}
 
 
@@ -59,25 +48,69 @@
 
 {% block content %}
 
-    {% for identifier, form in forms %}
-    <div class="scroll_realistic_thin_ends center">
-        {% usekwacro deletion_button identifier %}
+    {% if forms %}
 
-        <a name="entry-{{ identifier|slugify }}"><h2>{{ identifier|default:_("NEW ENTRY") }}</h2></a>
-        <form id="update_form" action="#entry-{{ identifier|slugify }}" method="post" autocomplete="off">
-            {{ form.as_p }}
-            <div id="id_{{ identifier|slugify }}_sound_preview" align="center">
-                {% if form.url_or_file.value %}
-                    {{ form.url_or_file.value|mediaplayer }}
-                {% else %}
-                    &nbsp;
-                {% endif %}
-            </div>
-            <input type="button" name="preview" value="{% trans "Generate Text to Speech" %}" onclick="generate_tts_sample('{{ identifier|escapejs }}'); return false;" />
-            <input type="submit" name="submit" value="{% trans "Save radio spot" %}"/>
-        </form>
-    </div>
-    {% endfor %}
+        <h2>{% trans "Editable audio spots" %}</h2>
+
+        {% for identifier, form in forms %}
+        <div class="scroll_realistic_thin_ends center">
+
+            {% usekwacro deletion_button identifier undeletable_identifiers %}
+
+            <a name="entry-{{ identifier|slugify }}"><h2>{{ identifier|default:_("NEW ENTRY") }}</h2></a>
+            <form id="update_form" action="#entry-{{ identifier|slugify }}" method="post" autocomplete="off">
+                {{ form.as_p }}
+
+                <a id="id_{{ identifier|slugify }}_download_link" href="{{form.file.value|default:'#'}}" style="padding-left: 20px; float: left; line-height: 50px; {% if not form.url_or_file.value %}display:none;{% endif %}">[{% trans "LINK" %}]</a>
+
+                <div id="id_{{ identifier|slugify }}_sound_preview" align="center">
+                    {% if form.file.value %}
+                        {{ form.file.value|mediaplayer }}
+                    {% else %}
+                        &nbsp;
+                    {% endif %}
+                </div>
+                <input type="button" name="preview" value="{% trans "Generate Text to Speech" %}" onclick="generate_tts_sample('{{ identifier|escapejs }}'); return false;" />
+                <input type="submit" name="submit" value="{% trans "Save radio spot" %}"/>
+            </form>
+        </div>
+        {% endfor %}
+
+    {% else %}
+
+        {# nothing atm... #}
+
+    {% endif %}
+
+
+
+
+    {% if immutable_table_items %}
+
+        <h2>{% trans "Immutable audio spots" %}</h2>
+
+        {% for identifier, data in immutable_table_items %}
+        <div id="entry-{{ identifier|slugify }}" class="scroll_realistic_thin_ends center">
+
+            <p><b><u>{{ identifier }}</u></b></p>
+
+            <p><b>{% trans "Title" %}:</b> {{ data.title }}</p>
+
+            <p><b>{% trans "Content" %}:</b> {{ data.text }}</p>
+
+            <p><b>{% trans "Gamemaster Hints" %}:</b> {{ data.gamemaster_hints|default:_("None") }}</p>
+
+            <p>{{ data.file|mediaplayer }}</p>
+
+        </div>
+        {% endfor %}
+
+    {% else %}
+
+        {# nothing atm... #}
+
+    {% endif %}
+
 
 {% endblock %}
 

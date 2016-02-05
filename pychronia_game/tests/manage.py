@@ -4,6 +4,7 @@ import os, sys, warnings
 
 #warnings.resetwarnings() # SHOW ALL
 
+# equivalent of " set DJANGO_SETTINGS_MODULE=pychronia_game.tests.persistent_mode_settings " on windows shell
 os.environ["DJANGO_SETTINGS_MODULE"] = settings_module = "pychronia_game.tests.persistent_mode_settings" # with DB not in temp dir
 import setup_pychronia_env  # only AFTER setting this DJANGO_SETTINGS_MODULE
 

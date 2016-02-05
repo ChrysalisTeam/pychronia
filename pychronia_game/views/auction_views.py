@@ -115,7 +115,8 @@ class CharactersView(AbstractGameView):
 
 
     @transaction_watcher
-    def transfer_money(self, recipient_name, amount, sender_name=None, reason=None, use_gems=()):
+    def transfer_money(self, recipient_name, amount, sender_name=None, reason=None, 
+                       use_gems=()):  # required by action middlewares
         assert amount > 0 # enforced by form system
         user = self.datamanager.user
         if not user.is_master:
@@ -130,15 +131,26 @@ class CharactersView(AbstractGameView):
 
 
     @transaction_watcher
-    def transfer_gems(self, recipient_name, gems_choices, sender_name=None, use_gems=()):
+    def transfer_gems(self, recipient_name, gems_choices, sender_name=None, 
+                      use_gems=()):  # required by action middlewares
         user = self.datamanager.user
         if not user.is_master:
             assert not sender_name, sender_name
             sender_name = user.username
+        
+        bank_name = self.datamanager.get_global_parameter("bank_name")
 
-        self.datamanager.transfer_gems_between_characters(from_name=sender_name,
-                                                          to_name=recipient_name,
-                                                          gems_choices=gems_choices)
+        if sender_name == recipient_name:
+            raise UsageError(_("Sender and recipient must be different"))
+        elif sender_name == bank_name:
+            self.datamanager.credit_character_gems(username=recipient_name, gems_choices=gems_choices)
+        elif recipient_name == bank_name:
+            self.datamanager.debit_character_gems(username=sender_name, gems_choices=gems_choices)
+        else:
+            assert recipient_name in self.datamanager.get_character_usernames()
+            self.datamanager.transfer_gems_between_characters(from_name=sender_name,
+                                                              to_name=recipient_name,
+                                                              gems_choices=gems_choices)
         return _("Gems transfer successful.")
 
 
@@ -241,7 +253,6 @@ def auction_items_slideshow(request, template_name='auction/items_slideshow.html
                      'items': sorted_items,
                      'items_3D_settings': None,
                      'gems_may_be_memo': False,
-
                     })
 
 
@@ -254,12 +265,15 @@ def personal_items_slideshow(request, template_name='auction/items_slideshow.htm
     items = request.datamanager.get_available_items_for_user()
     items_3D_settings = request.datamanager.get_items_3d_settings()
 
+    items_3D_titles = sorted(items[k]["title"] for k in items_3D_settings.keys() if k in items)
+
     sorted_items = _sorted_game_items(items)
 
     return render(request,
                   template_name,
                     {
                      'items': sorted_items,
+                     'items_3D_titles': items_3D_titles,
                      'items_3D_settings': items_3D_settings,
                      'gems_may_be_memo': True,
                     })

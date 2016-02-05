@@ -11,9 +11,9 @@
 <script type="text/javascript">
     $('#lk_{{content_id}}').click(function(e){
         e.preventDefault();
-        $.fancybox({
-                'content' : $("#fb_{{content_id}}").html()
-            });
+        var fancyBoxCustomOptions = $.extend({'content' : $("#fb_{{content_id}}").html()},
+                                              window.fancyBoxDefaults);
+        $.fancybox(fancyBoxCustomOptions);
     });
 </script>
 {% endif %}

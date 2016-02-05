@@ -11,6 +11,7 @@ from django.core.exceptions import MiddlewareNotUsed
 
 from . import authentication
 from pychronia_game.datamanager.datamanager_administrator import retrieve_game_instance
+from django.http.response import HttpResponseRedirect
 
 settings = None
 del settings # use config instead
@@ -41,8 +42,11 @@ class ZodbTransactionMiddleware(object):
             del view_kwargs["game_instance_id"]
 
             try:
-                # by default, checks that game is not in maintenance
-                request.datamanager = retrieve_game_instance(game_instance_id=game_instance_id, request=request)
+                update_timestamp = (request.method == "POST")  # we consider that other accesses are not meaningful
+                # by default, this checks that game is not in maintenance
+                request.datamanager = retrieve_game_instance(game_instance_id=game_instance_id,
+                                                             request=request,
+                                                             update_timestamp=update_timestamp)
             except GameMaintenanceError, e:
                 # TODO - better handling of 503 code, with dedicated template #
                 return HttpResponse(content=unicode(e) + "<br/>" + _("Please come back later."),
@@ -88,8 +92,8 @@ class ZodbTransactionMiddleware(object):
             if hasattr(request, "datamanager"):
                 if config.DEBUG:
                     pass
-                    #request.datamanager.check_database_coherency() # checking after each request, then
-                    #logger.info("Pychronia debug mode: post-processing check_database_coherency() is over (might take a long time)")
+                    #request.datamanager.check_database_coherence() # checking after each request, then
+                    #logger.info("Pychronia debug mode: post-processing check_database_coherence() is over (might take a long time)")
                 request.datamanager.close()
         except Exception, e:
             # exception should NEVER flow out of response processing middlewares
@@ -117,7 +121,26 @@ class AuthenticationMiddleware(object):
         if not hasattr(request, 'session'):
             raise RuntimeError("The game authentication middleware requires session middleware to be installed. Edit your MIDDLEWARE_CLASSES setting to insert 'django.contrib.sessions.middleware.SessionMiddleware'.")
 
-        authentication.try_authenticating_with_session(request)
+
+        raw_url_game_username = None
+        if view_kwargs.has_key("game_username"):
+            raw_url_game_username = view_kwargs["game_username"]
+            del view_kwargs["game_username"]  # don't interfere with final view
+
+        url_game_username = None
+        if raw_url_game_username and raw_url_game_username not in (authentication.UNIVERSAL_URL_USERNAME, authentication.TEMP_URL_USERNAME):
+            url_game_username = raw_url_game_username  # WILL be transmitted for potential impersonation
+
+        authentication.try_authenticating_with_session(request, url_game_username=url_game_username)
+        del url_game_username
+
+        if raw_url_game_username and raw_url_game_username not in (request.datamanager.username, authentication.UNIVERSAL_URL_USERNAME):
+            # we redirect to the proper url prefix, so that current "effective username" is well kept during navigation (but not for UNIVERSAL_URL_USERNAME)
+            new_kwargs = view_kwargs.copy()  # additional URL parts like "msg_id"
+            new_kwargs["game_instance_id"] = request.datamanager.game_instance_id
+            new_kwargs["game_username"] = request.datamanager.username  # important
+            corrected_url = reverse(view_func, args=view_args, kwargs=new_kwargs)
+            return HttpResponseRedirect(corrected_url)
 
         return None
 

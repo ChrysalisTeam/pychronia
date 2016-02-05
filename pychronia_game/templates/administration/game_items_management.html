@@ -1,0 +1,74 @@
+{% extends "base_two_columns.html" %}
+
+{% load i18n helpers kwacros %}
+{% loadkwacros "metalradiance_kwacros.html" %}
+
+
+{# BEWARE - OWNED ITEMS ARE IMMUTABLE #}
+
+
+{% block sidebar %}
+{% include "administration/_sidebar_management_index.html" %}
+{% endblock %}
+
+
+
+{% block content %}
+
+
+    {% if forms %}
+
+        <h2>{% trans "Free Items" %}</h2>
+
+        {% for identifier, form in forms %}
+        <div id="entry-{{ identifier|slugify }}" class="scroll_realistic_thin_ends center">
+
+            {% usekwacro deletion_button identifier undeletable_identifiers %}
+
+            <a name="entry-{{ identifier|slugify }}"><h2>{{ identifier|default:_("NEW ENTRY") }}</h2></a>
+            <form id="update_form" action="#entry-{{ identifier|slugify }}" method="post" autocomplete="off">
+                {{ form.as_p }}
+                <input type="submit" name="submit" value="{% trans "Submit" %}"/>
+            </form>
+
+        </div>
+        {% endfor %}
+
+    {% else %}
+
+        {# nothing atm... #}
+
+    {% endif %}
+
+
+
+
+    {% if immutable_table_items %}
+
+        <br/>
+        <h2>{% trans "Owned Items" %}</h2>
+
+        <ul>
+        {% for identifier, data in immutable_table_items %}
+            <li id="entry-{{ identifier|slugify }}">
+                {{data.title}}{% if data.auction %} ({% trans "Auction" %} {{data.auction}}){% endif %}, {% trans "owned by" %} {{data.owner|capfirst}}
+            </li>
+        {% endfor %}
+        </ul>
+
+    {% else %}
+
+        {# nothing atm... #}
+
+    {% endif %}
+
+
+{% endblock %}
+
+
+
+{% block activate_floating_menu %}
+{# we disable sticky behaviour of menu #}
+{% endblock %}
+
+

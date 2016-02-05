@@ -23,7 +23,7 @@ class DataTableManager(object):
         # NO NEED TO CALL UPPER CLASS !
         raise NotImplementedError("_load_initial_data")
 
-    def _check_database_coherency(self, strict=False, **kwargs):
+    def _check_database_coherence(self, strict=False, **kwargs):
         # NO NEED TO CALL UPPER CLASS !
         for key, value in self._table.items():
             self._check_item_validity(key, value)
@@ -57,11 +57,19 @@ class DataTableManager(object):
         """
         raise NotImplementedError("_get_table_container")
 
-    def _item_can_be_edited(self, key, value):
+    def _item_can_be_modified(self, key, value):
         """
-        Returns True iff item can be safely modified and removed from list.
+        Returns True iff the fields of this entry can be modified in-place.
         """
-        raise NotImplementedError("_item_can_be_edited")
+        return True
+
+    def _item_can_be_deleted(self, key, value):
+        """
+        Returns True iff this entry can be deleted from dict.
+        
+        Non-deletable items can't be "moved" either, since it's actually a delete+recreate operation.
+        """
+        raise NotImplementedError("_item_can_be_deleted")
 
 
     def __init__(self, datamanager):
@@ -91,19 +99,26 @@ class DataTableManager(object):
         """
         items_gen = self._table.items()
         if mutability is not None:
-            items_gen = ((k, v) for (k, v) in items_gen if bool(self._item_can_be_edited(k, v)) == bool(mutability))
-        if not as_sorted_list:
-            data = dict(items_gen)
-        else:
+            items_gen = ((k, v) for (k, v) in items_gen if bool(self._item_can_be_modified(k, v)) == bool(mutability))
+
+        if as_sorted_list:
             data = list(items_gen)
             data.sort(key=self._sorting_key)
+        else:
+            data = dict(items_gen)
 
         data = utilities.convert_object_tree(data, type_mapping=utilities.zodb_to_python_types)
-        if __debug__: 
+        if __debug__:
             utilities.check_object_tree(data, allowed_types=utilities.allowed_python_types, path=[])
             import json
             json.dumps(data)  # compatibility test
         return data
+
+    @readonly_method
+    def get_undeletable_identifiers(self):
+        items_gen = self._table.items()
+        items_gen = (k for (k, v) in items_gen if not self._item_can_be_deleted(k, v))
+        return set(items_gen)
 
     @readonly_method
     def __len__(self):
@@ -117,25 +132,30 @@ class DataTableManager(object):
     def __getitem__(self, key):
         table = self._table
         self._check_item_is_in_table(table, key)
-        return table[key]
+        return table[key]  # dict(table[key].items())  # never the original one
 
     @transaction_watcher
     def __setitem__(self, key, value):
         table = self._table
-        if key in table and not self._item_can_be_edited(key, table[key]):
+        if key in table and not self._item_can_be_modified(key, table[key]):
             raise AbnormalUsageError(_("Can't modify %(type)s item with key %(key)s") % SDICT(type=self.TRANSLATABLE_ITEM_NAME, key=key))
-        ###value = {k: v for (k, v) in value.items() if k in self.INPUT_FIELDS} # we filter out useless values
         key, value = self._preprocess_new_item(key, value)
         self._check_item_validity(key, value)
         table[key] = value
+        self._callback_on_any_update()
 
     @transaction_watcher
     def __delitem__(self, key):
         table = self._table
         self._check_item_is_in_table(table, key)
-        if not self._item_can_be_edited(key, table[key]):
+        if not self._item_can_be_deleted(key, table[key]):
             raise AbnormalUsageError(_("Can't delete %(type)s item with key %(key)s") % SDICT(type=self.TRANSLATABLE_ITEM_NAME, key=key))
         del table[key]
+        self._callback_on_any_update()
+
+    def _callback_on_any_update(self):
+        """Override this callback, if you need eg. to prune references to items that have been deleted."""
+        pass
 
     @readonly_method
     def copy(self):

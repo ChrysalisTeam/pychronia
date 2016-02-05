@@ -24,7 +24,7 @@
             </strong>
             </div>
 
-            {% include "messaging/single_message.html" with ctx=ctx message=message is_first=1 counter=1 %}
+            {% include "messaging/single_message.html" with ctx=ctx message=message is_first=1 %}
         {% else %}
 
             <p>{% trans "No content available..." %}</p>

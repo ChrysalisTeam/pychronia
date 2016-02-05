@@ -173,14 +173,14 @@
 
         $(".multichecklist").dropdownchecklist({minWidth: "150px", maxDropHeight: "300px", emptyText: "<i>...</i>"});
 
-        $('.fancybox').fancybox({
+        var fancyBoxDefaults = {
             margin: 50,
             padding: 50,
+            minWidth: 460,
             maxWidth: 960,
             openEffect: 'none', // 'elastic', 'fade' or 'none'
             closeEffect: 'none', // 'elastic', 'fade' or 'none'
             autoSize: true,
-
             helpers:  {
                 overlay: {
                     speedIn: 0,
@@ -196,7 +196,16 @@
                 }
             }
 
-        });
+        };
+        window.fancyBoxDefaults = fancyBoxDefaults;  // EXPORTED
+
+        // auto-fancybox using miscellaneous means (eg. local anchors)
+        $('.fancybox').fancybox(fancyBoxDefaults);
+
+        // auto-fancybox with forced ajax (else their HREF/URL might be misinterpreted, eg. if containing "?", and they require global JS variables")
+        var fancyBoxCustomOptions = $.extend({type: 'ajax'}, window.fancyBoxDefaults);
+        $('.fancybox-ajax').fancybox(fancyBoxCustomOptions);
+
 
 
 
@@ -324,8 +333,9 @@
             /* prevent quick double submits */
             submissionControls.click(function (event) {
                 var myButton = $(this);
-                myButton.attr("disabled", true);
-                setTimeout(function(){myButton.attr("disabled", false);}, 3000);
+                // DELAYED disabling of button, else on some browsers form will not get submitted at all
+                setTimeout(function(){myButton.attr("disabled", true);}, 10);
+                setTimeout(function(){myButton.attr("disabled", false);}, 1000);
             });
         {% endif %}
 
@@ -338,12 +348,11 @@
 
 
 
-
 {% block html_title %}
     {% if page_title %}
-        {% trans "Anthropia" %} - {{ page_title}}
+        {{ page_title }} - {% trans "Anthropia" %} {{ game_instance_id|capfirst }}
     {% elif fallback_title %}
-        {% trans "Anthropia" %} - {{ fallback_title}}
+        {{ fallback_title }} - {% trans "Anthropia" %} {{ game_instance_id|capfirst }}
     {% else %}
         {% trans "Welcome to Anthropia" %}
     {% endif %}
@@ -451,9 +460,28 @@
 
 
 {% block carving_left %}
-<div title="{% trans "Your current user login." %}">{# Use class="marquee" to make it scroll! #}
-<span class="mobile-only">{% trans "Effective identity" %} - </span>
-{{ user.username|capfirst }}
+<div style="cursor:help">{# Use class="marquee" to make it scroll! #}
+
+    {% if user.is_superuser %}
+        <span title="{% trans "User is a superuser (authenticated as Django Admin)" %}">{% fontawesome_icon "mortar-board" large=False %}</span>
+    {% elif user.is_impersonation %}
+        <span title="{% trans "User impersonation is ongoing" %}">{% fontawesome_icon "user-secret" large=False %}</span>
+    {% elif user.is_authenticated %}
+        <span title="{% trans "No impersonation is currently ongoing" %}">{% fontawesome_icon "user" large=False %}</span>
+    {# else, user is a PURE anonymous user, we display no icon here #}
+    {% endif %}
+
+    {% if user.is_observer %}
+        <span title="{% trans "User is authenticated as an observer (read-only access)" %}">{% fontawesome_icon "eye" large=False %}</span>
+    {% elif not user.has_write_access %}
+        <span title="{% trans "Page is in read-only mode (no modification is allowed)" %}">{% fontawesome_icon "eye" large=False %}</span>
+    {# else, simply no "read-only" icon #}
+    {% endif %}
+
+    <span class="mobile-only">{% trans "Effective identity" %}{{COLON}} </span>
+
+    <span title="{% trans "Currently active username" %}">{{ user.username|capfirst }}</span>
+
 </div>
 {% endblock %}
 
@@ -507,7 +535,7 @@
 
 {% block right_big_icon_panel %}
 {% if content_blocks.help_page.data %}
-<a href="{% game_view_url "pychronia_game.views.view_help_page" keyword=content_blocks.help_page.name %}" class="fancybox fancybox.ajax" title="{{ page_title }}">
+<a href="{% game_view_url "pychronia_game.views.view_help_page" keyword=content_blocks.help_page.name %}" class="fancybox-ajax" title="{{ page_title }}">
 <div class="big_icon_panel">
     <div class="positioner">
         <img src="{{ STATIC_URL }}MetalRadiance/img/icons/question_mark.png"/>{% if signal_new_help_page %}<span class="novelty_mark">!</span>{% endif %}
@@ -573,6 +601,7 @@
 
 {% block low_footer_content %}
     <a id="bug_report_link" href="#bug_report_panel" class="fancybox" onclick="display_bug_report_panel(); return false;" >{% trans "Bug Report" %}</a>
+    <!--CURRENT_REAL_USERNAME={{ user.real_username }} CURRENT_USERNAME={{ user.username }} - info for unit-testing-->
 {% endblock %}
 
 

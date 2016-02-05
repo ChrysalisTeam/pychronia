@@ -88,7 +88,7 @@ allowed_python_types = ATOMIC_PYTHON_TYPES + (tuple, dict, list)
 def usage_assert(value, comment=None):
     from pychronia_game.common import UsageError
     if not value:
-        raise UsageError("Check failed: %r (comment: %s)" % (value, comment))
+        raise UsageError("Check failed: %r (comment: '%s')" % (value, comment))
     return True
 
 class Enum(set):
@@ -225,7 +225,7 @@ def substract_lists(available_gems, given_gems):
     available_gems = Counter(available_gems)
     given_gems = Counter(given_gems)
 
-    if given_gems & available_gems != given_gems:
+    if (given_gems & available_gems) != given_gems:
         return None # operation impossible
 
     gems_remaining = available_gems - given_gems
@@ -406,10 +406,12 @@ def check_is_lazy_translation(value):
     usage_assert(isinstance(value, Promise), type(value))
     return True
 
-def check_is_string(value, multiline=True):
+def check_is_string(value, multiline=True, forbidden_chars=None):
     usage_assert(isinstance(value, basestring) and value, value)
     if not multiline:
         usage_assert("\n" not in value)
+    if forbidden_chars:
+        usage_assert(not any(x in value for x in forbidden_chars))
     return True
 
 def check_is_float(value):
@@ -437,6 +439,10 @@ def check_is_slug(value):
 
 def check_is_bool(value):
     usage_assert(isinstance(value, bool), value)
+    return True
+
+def check_is_in_set(value, main_set):
+    usage_assert(value in main_set, (value, main_set))
     return True
 
 def check_is_subset(value, main_set):
@@ -480,25 +486,41 @@ def check_is_positive_int(value, non_zero=True):
 def check_is_restructuredtext(value):
     from pychronia_game.templatetags.helpers import advanced_restructuredtext
     assert isinstance(value, basestring) # NOT A LIST
-    #print("LOADING RST...", repr(value[0:100]))
+    #print("LOADING RST...", repr(value[0:70]))
     usage_assert(advanced_restructuredtext(value)) # not a REAL check ATM...
     return True
 
-def check_is_game_file(*paths_elements):
-    assert all(not os.path.isabs(s) for s in paths_elements)
-    fullpath = os.path.join(config.GAME_FILES_ROOT, *paths_elements)
+def check_is_game_file(filename):
+    assert not os.path.isabs(filename)
+    fullpath = os.path.join(config.GAME_FILES_ROOT, filename)
     usage_assert(os.path.isfile(fullpath), fullpath)
     return True
+
+def check_is_game_file_or_url(filename):
+    """
+    Used for field that allow either RELATIVE local game files, or absolute (external) urls.
+    """
+    if is_absolute_url(filename):
+        return filename
+    return check_is_game_file(filename)
 
 def is_email(email):
     return bool(email_re.match(email))
 
+def is_absolute_url(string):
+    """We do NOT consider that "/my-url/" is absolute, here - we want a really FULL url"""
+    return string.startswith(("http://", "https://"))
 
-def find_game_file(filename, *rel_path_glob):
+
+def find_game_file(*rel_path_glob):
     """
-    Returns the SINGLE file called filename, in 
+    Returns the SINGLE file called filename, in the glob path join(*rel_path_glob) and its subdirs.
     """
+    assert rel_path_glob, rel_path_glob
     game_files_root = config.GAME_FILES_ROOT
+
+    filename = rel_path_glob[-1]
+    rel_path_glob = rel_path_glob[:-1]
 
     if os.path.basename(filename) != filename: # we already get a relative game file path
         full_file_path = os.path.join(game_files_root, filename) # we then ignore rel_path_glob
@@ -532,6 +554,16 @@ def find_game_file(filename, *rel_path_glob):
     return rel_file_path
 
 
+def find_game_file_or_url(*rel_path_globs):
+    """
+    Used for field that allow either RELATIVE local game files, or absolute (external) urls.
+    """
+    assert rel_path_globs
+    if is_absolute_url(rel_path_globs[-1]):
+        return rel_path_globs[-1]
+    return find_game_file(*rel_path_globs)
+
+
 def ___complete_game_file_path(filename, *elements):
     """
     Now SUPERSEDED by find_game_file().
@@ -542,14 +574,7 @@ def ___complete_game_file_path(filename, *elements):
         return os.path.join(*(elements + (filename,)))
     return filename # already contains dirs...
 
-def complete_game_file_url(fileurl):
-    assert fileurl
-    abs_prefixes = ["http://", "https://", "/"]
-    for pref in abs_prefixes:
-        if fileurl.startswith(pref):
-            return fileurl # URL SHALL NOT BE MODIFIED
-    from pychronia_game.common import game_file_url
-    return game_file_url(fileurl) # url starting with / and containing security token
+
 
 def _make_elements_hashable(sequence):
     # mass conversion here, eg. for gems that are sequences of unhashable lists

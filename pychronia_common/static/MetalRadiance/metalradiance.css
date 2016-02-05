@@ -264,10 +264,17 @@
 html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6,
 p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn,
 em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var,
-b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend,
-table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas,
-details, embed, figure, figcaption, footer, header, hgroup, menu, nav,
-output, ruby, section, summary, time, mark, audio, video {
+center, dl, dt, dd, fieldset, form, label, legend, caption, article, aside,
+canvas, details, embed, figure, figcaption, footer, header, hgroup, menu,
+nav, output, ruby, section, summary, time, mark, audio, video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline;
+}
+table, tbody, tfoot, thead, tr, th, td {
   margin: 0;
   padding: 0;
   border: 0;
@@ -280,10 +287,7 @@ nav, section {
   display: block;
 }
 body {
-  line-height: 1;
-}
-ol, ul {
-  list-style: none;
+  line-height: normal;
 }
 blockquote, q {
   quotes: none;
@@ -702,31 +706,24 @@ img.center {
 }
 .biggest_text {
   font-size: 2em;
-  line-height: 2.5em;
 }
 .bigger_text {
   font-size: 1.5em;
-  line-height: 1.7em;
 }
 .big_text {
   font-size: 1.25em;
-  line-height: 1.4em;
 }
 .normal_text {
   font-size: 1em;
-  line-height: 1.2em;
 }
 .small_text {
   font-size: 0.85em;
-  line-height: 1em;
 }
 .smaller_text {
   font-size: 0.75em;
-  line-height: 0.9em;
 }
 .smallest_text {
   font-size: 0.5em;
-  line-height: 0.7em;
 }
 .bold {
   font-weight: bold;
@@ -753,7 +750,6 @@ body {
   height: 100%;
   overflow: auto;
   font-size: 100%;
-  line-height: 120%;
   font-family: Arial, Helvetica, sans-serif;
   background-color: black;
   image-rendering: -moz-crisp-edges;
@@ -786,7 +782,6 @@ body {
   color: #8E0D0D;
   font-size: 1em;
   font-style: italic;
-  line-height: normal;
   width: 95%;
 }
 .missing-content > * {
@@ -864,7 +859,6 @@ table.realtable a:active {
     font-size: 1.1em;
     font-family: Arial;
     font-weight: normal;
-    line-height: 1.3em;
   }
 }
 @media (min-width: 992px) {
@@ -877,7 +871,6 @@ table.realtable a:active {
     border: 0px solid #000000;
     border-width: 0px 0px 1px 1px;
     font-size: 1.3em;
-    line-height: 1.3em;
     font-weight: bold;
   }
   table.realtable thead th:first-child {
@@ -895,7 +888,6 @@ table.realtable a:active {
     font-size: 1.1em;
     font-family: Arial;
     font-weight: normal;
-    line-height: 1.3em;
   }
 }
 .stick_bottom_left {
@@ -1049,7 +1041,7 @@ table.footnote {
 }
 .ui-dropdownchecklist {
   background-color: white;
-  font-size: 0.9em;
+  font-size: 0.8em;
 }
 .ui-dropdownchecklist-dropcontainer {
   border: 1px solid #aaa;
@@ -1087,8 +1079,7 @@ table.footnote {
 }
 .jnotify-container .jnotify-notification .jnotify-message {
   font-size: 0.9em;
-  line-height: 1 em;
-  padding: 15px;
+  padding: 15px 30px;
 }
 .jnotify-container .jnotify-notification a.jnotify-close {
   font-size: 1.8em !important;
@@ -1119,11 +1110,12 @@ table.footnote {
 .fancybox-default .fancybox-outer {
   background-color: transparent;
   box-shadow: none !important;
-  border-width: 10px;
+  border-width: 30px !important;
   padding: 16px !important;
 }
 .fancybox-default .fancybox-inner {
   margin: auto;
+  padding: 0 10px !important;
 }
 @media (max-width: 991px) {
   .fancybox-default .fancybox-inner {
@@ -1751,9 +1743,9 @@ input.digit {
 }
 .message_operations {
   position: absolute;
-  width: 100%;
+  width: 90%;
+  left: 5%;
   top: -70px;
-  left: 5px;
 }
 .message_operations a {
   margin-right: 10px;
@@ -1815,7 +1807,6 @@ h1 {
   text-align: center;
   letter-spacing: 0px;
   font-size: 2em;
-  line-height: normal;
   color: #F8D85B;
   margin-bottom: 20px;
 }
@@ -1841,7 +1832,6 @@ h2 {
   text-align: center;
   letter-spacing: 0px;
   font-size: 1.7em;
-  line-height: normal;
   color: white;
 }
 h2:before {
@@ -1863,6 +1853,11 @@ h3 {
   font-size: 1.3em;
   text-shadow: 1px 1px 0px black, -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black;
   margin: 14px 5px 7px;
+}
+h4 {
+  color: black;
+  font-size: 1.1em;
+  margin: 13px 20px 7px;
 }
 .drop_cap, .drop-cap, .dropcap {
   text-indent: 0 !important;
@@ -1903,14 +1898,12 @@ p {
 }
 @media (max-width: 991px) {
   p {
-    font-size: 1.1em;
-    line-height: 1.2em;
+    font-size: 1em;
   }
 }
 @media (min-width: 992px) {
   p {
-    font-size: 1.1em;
-    line-height: 1.2em;
+    font-size: 1em;
   }
 }
 a img {
@@ -1922,9 +1915,14 @@ h1 a:link, h1 a:visited, h1 a:hover, h2 a:link, h2 a:visited, h2 a:hover {
 }
 dl {
   text-indent: 0;
+  margin: 10px 10px;
 }
-dt {
+dl dt {
+  margin-top: 6px;
   font-weight: bold;
+}
+dl dd {
+  padding-left: 15px;
 }
 hr {
   border-color: #9D8126;
@@ -1999,6 +1997,12 @@ body .ui-dropdownchecklist-dropcontainer:disabled, body .markItUp:disabled {
 }
 input[type=submit] {
   margin-top: 25px 10px;
+}
+input[readonly=True] {
+  background-color: lightgrey !important;
+}
+#full_content form p:not(.required) label {
+  font-style: italic;
 }
 #full_content form select, #full_content form input[type=text],
 #full_content form input[type=email], #full_content form input[type=number],
@@ -2083,7 +2087,7 @@ body .notification_panel {
   margin-left: -248px;
   display: block;
   height: auto;
-  position: absolute;
+  position: fixed;
   top: 0px;
   left: 50%;
   text-align: center;
@@ -2135,7 +2139,6 @@ body .notification_panel .notification_panel_decorations .notification_panel_con
     color: #ffeaa3;
     min-width: 400px;
     font-size: 110%;
-    line-height: 130%;
   }
   body a:link {
     color: #62CB4B;
@@ -2253,7 +2256,6 @@ body .notification_panel .notification_panel_decorations .notification_panel_con
     font-size: 20px;
     color: #fecd2b;
     text-decoration: none;
-    line-height: 27px;
     padding: 0px 10px;
     -webkit-text-stroke: inherit;
   }
@@ -2269,7 +2271,6 @@ body .notification_panel .notification_panel_decorations .notification_panel_con
     border-top: 2px solid #9D8126;
     margin: 20px 0 0;
     padding: 20px 0 0;
-    line-height: 15px;
     overflow: hidden;
     width: 100% !important;
   }
@@ -2595,7 +2596,6 @@ body .notification_panel .notification_panel_decorations .notification_panel_con
     color: white;
   }
   #full_content .main_sidebar {
-    line-height: 15px;
     padding: 10px;
     margin: 0;
     overflow: hidden;
@@ -2664,7 +2664,6 @@ body .notification_panel .notification_panel_decorations .notification_panel_con
     vertical-align: top;
     color: white;
     font-size: 12px;
-    line-height: 14px;
   }
   #up_footer_wrapper img {
     vertical-align: middle !important;

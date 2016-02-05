@@ -4,7 +4,6 @@ h1 {
 
     @include header_common;
     font-size: 2em;
-    line-height: normal;
     color: $title_gold;
     margin-bottom: 20px;
 
@@ -29,7 +28,6 @@ h2 {
 
     @include header_common;
     font-size: 1.7em;
-    line-height: normal;
     color: $title_white;
 
     &:before {
@@ -54,6 +52,13 @@ h3 {
     font-size: 1.3em;
     text-shadow: 1px 1px 0px black, -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black;
     margin: 14px 5px 7px;
+}
+
+
+h4 {
+    color: black;
+    font-size: 1.1em;
+    margin: 13px 20px 7px;  // left-aligned with paragraph first-line indent
 }
 
 
@@ -120,14 +125,12 @@ p {
 
 @include mobile-only {
     p {
-        font-size: 1.1em;
-        line-height: 1.2em;
+        font-size: 1em;
     }
 }
 @include desktop-only {
     p {
-        font-size: 1.1em;
-        line-height: 1.2em;
+        font-size: 1em;
     }
 }
 
@@ -147,15 +150,18 @@ h1, h2 {
 
 dl {
     text-indent: 0;
+    margin:10px 10px;
+
+    dt {
+        margin-top: 6px;
+        font-weight: bold;
+    }
+    dd {
+        padding-left: 15px;
+    }
 }
 
-dt {
-    font-weight: bold;
-}
 
-dd {
-
-}
 
 
 hr {
@@ -245,7 +251,15 @@ input[type=submit] {
     margin-top: 25px 10px;
 }
 
+input[readonly=True] {
+    background-color: lightgrey !important;
+}
+
 #full_content form {
+
+    p:not(.required)  label {
+       font-style: italic;
+    }
 
     select, input[type=text], input[type=email], input[type=number], input[type=tel], input[type=password] {
         min-height: 29px;

@@ -42,6 +42,8 @@
             <a href="mailto:{{ characters_emails|join:"," }}">{% trans "Send Real Emails to Characters" %}</a>
         </p>
 
+        <br/>
+
         <form action="{% game_view_url "pychronia_game.views.manage_characters" %}" method="post" autocomplete="off">
 
         <input type="submit" name="update_character" value="{% trans "Update characters" %}" />
