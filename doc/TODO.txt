@@ -22,6 +22,88 @@ domaine.
 FEATURES
 ------------
 
+ERROR (EXTERNAL IP): Internal Server Error: /tpk/topaz/ability/world_scan/
+>>> self._ability_data = weakref.ref(self.datamanager.get_ability_data(self.NAME))  # DANGEROUS
+Internal Server Error: /tpk/topaz/ability/world_scan/
+Traceback (most recent call last):
+  File "/home/pakal/webapps/chrysalis_game/ENV/lib/python2.7/site-packages/django/core/handlers/base.py", line 111, in get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/home/pakal/webapps/chrysalis_game/pychronia/pychronia_game/datamanager/abstract_game_view.py", line 96, in __call__
+    return self.klass(request.datamanager)(request, *args, **kwargs) # we execute new instance of underlying class, without parameters
+  File "<string>", line 2, in __call__
+  File "/home/pakal/webapps/chrysalis_game/pychronia/pychronia_game/datamanager/abstract_game_view.py", line 49, in transform_usage_error
+    return caller(self, request, *args, **kwargs)
+  File "<string>", line 2, in __call__
+  File "/home/pakal/webapps/chrysalis_game/pychronia/pychronia_game/datamanager/datamanager_tools.py", line 128, in _conditional_method_wrapper
+    return _execute_under_toplevel_zodb_conflict_solver(datamanager=datamanager, completed_func=completed_func)
+  File "/home/pakal/webapps/chrysalis_game/pychronia/pychronia_game/datamanager/datamanager_tools.py", line 34, in _execute_under_toplevel_zodb_conflict_solver
+    return completed_func()
+  File "/home/pakal/webapps/chrysalis_game/pychronia/pychronia_game/datamanager/datamanager_tools.py", line 58, in _call_checked_readonly_method
+    return func(*args, **kwargs)
+  File "/home/pakal/webapps/chrysalis_game/pychronia/pychronia_game/datamanager/abstract_game_view.py", line 693, in __call__
+    response = self._process_standard_request(request, *args, **kwargs)
+  File "/home/pakal/webapps/chrysalis_game/pychronia/pychronia_game/datamanager/abstract_ability.py", line 104, in _process_standard_request
+    return super(AbstractAbility, self)._process_standard_request(request, *args, **kwargs)
+  File "/home/pakal/webapps/chrysalis_game/pychronia/pychronia_game/datamanager/abstract_game_view.py", line 654, in _process_standard_request
+    return self._auto_process_request()
+  File "/home/pakal/webapps/chrysalis_game/pychronia/pychronia_game/datamanager/abstract_game_view.py", line 647, in _auto_process_request
+    return self._process_html_request()
+  File "/home/pakal/webapps/chrysalis_game/pychronia/pychronia_game/datamanager/abstract_game_view.py", line 630, in _process_html_request
+    template_vars = self.get_template_vars(previous_form_data)
+  File "/home/pakal/webapps/chrysalis_game/pychronia/pychronia_game/views/abilities/world_scan_mod.py", line 43, in get_template_vars
+    propagate_errors=True,)
+  File "/home/pakal/webapps/chrysalis_game/pychronia/pychronia_game/datamanager/abstract_game_view.py", line 455, in _instantiate_game_form
+    ** all_params)
+  File "/home/pakal/webapps/chrysalis_game/pychronia/pychronia_game/datamanager/abstract_ability.py", line 67, in _common_instantiate_form
+    final_form_options = self.get_game_form_extra_params(action_name=new_action_name)
+  File "<string>", line 2, in get_game_form_extra_params
+  File "/home/pakal/webapps/chrysalis_game/pychronia/pychronia_game/datamanager/datamanager_tools.py", line 126, in _conditional_method_wrapper
+    return completed_func()
+  File "/home/pakal/webapps/chrysalis_game/pychronia/pychronia_game/datamanager/datamanager_tools.py", line 58, in _call_checked_readonly_method
+    return func(*args, **kwargs)
+  File "/home/pakal/webapps/chrysalis_game/pychronia/pychronia_game/datamanager/action_middlewares.py", line 241, in get_game_form_extra_params
+    return self._get_game_form_extra_params(action_name=action_name)
+  File "/home/pakal/webapps/chrysalis_game/pychronia/pychronia_game/datamanager/action_middlewares.py", line 388, in _get_game_form_extra_params
+    if self.is_action_middleware_activated(action_name, CostlyActionMiddleware):
+  File "/home/pakal/webapps/chrysalis_game/pychronia/pychronia_game/datamanager/action_middlewares.py", line 171, in is_action_middleware_activated
+    action_name in self.settings["middlewares"] and
+  File "/home/pakal/webapps/chrysalis_game/pychronia/pychronia_game/datamanager/abstract_ability.py", line 124, in settings
+    return self._ability_data()["settings"]
+TypeError: 'NoneType' object has no attribute '__getitem__'
+
+
+
+
+ENCRYPTED FOLDER - accès interdit à view_media pour anonymous !!!
+
+ERROR (EXTERNAL IP): Internal Server Error: /tpk/anonymous/messages/view_single_message/343_5b38/
+Internal Server Error: /tpk/anonymous/messages/view_single_message/343_5b38/
+Traceback (most recent call last):
+  File "/home/pakal/webapps/chrysalis_game/ENV/lib/python2.7/site-packages/django/core/handlers/base.py", line 111, in get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/home/pakal/webapps/chrysalis_game/pychronia/pychronia_game/datamanager/abstract_game_view.py", line 96, in __call__
+    return self.klass(request.datamanager)(request, *args, **kwargs) # we execute new instance of underlying class, without parameters
+  File "<string>", line 2, in __call__
+  File "/home/pakal/webapps/chrysalis_game/pychronia/pychronia_game/datamanager/abstract_game_view.py", line 49, in transform_usage_error
+    return caller(self, request, *args, **kwargs)
+  File "<string>", line 2, in __call__
+  File "/home/pakal/webapps/chrysalis_game/pychronia/pychronia_game/datamanager/datamanager_tools.py", line 128, in _conditional_method_wrapper
+    return _execute_under_toplevel_zodb_conflict_solver(datamanager=datamanager, completed_func=completed_func)
+  File "/home/pakal/webapps/chrysalis_game/pychronia/pychronia_game/datamanager/datamanager_tools.py", line 34, in _execute_under_toplevel_zodb_conflict_solver
+    return completed_func()
+  File "/home/pakal/webapps/chrysalis_game/pychronia/pychronia_game/datamanager/datamanager_tools.py", line 58, in _call_checked_readonly_method
+    return func(*args, **kwargs)
+  File "/home/pakal/webapps/chrysalis_game/pychronia/pychronia_game/datamanager/abstract_game_view.py", line 693, in __call__
+    response = self._process_standard_request(request, *args, **kwargs)
+  File "/home/pakal/webapps/chrysalis_game/pychronia/pychronia_game/views/messaging_views.py", line 656, in view_single_message
+    ctx = _determine_message_display_context(request.datamanager, message, is_pending=is_queued)
+  File "/home/pakal/webapps/chrysalis_game/pychronia/pychronia_game/views/messaging_views.py", line 259, in _determine_message_display_context
+    assert datamanager.is_authenticated()
+AssertionError
+
+
+
+
 - masquer par défaut les archivés dans "messages transmis"
 
 - pouvoir changer secret question & password des persos
@@ -89,7 +171,7 @@ MESSAGERIE:
 SCRIPT
 ----------
 
-mettre gamemaster hints sur encre sympathique et marchemin vierge
+mettre gamemaster hints sur encre sympathique et parchemin vierge
 
 
 chercher FIXMES
