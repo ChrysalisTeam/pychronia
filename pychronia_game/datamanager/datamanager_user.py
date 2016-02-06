@@ -2,7 +2,7 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
-
+import weakref
 from pychronia_game.common import *
 from django.contrib import messages
 
@@ -25,6 +25,7 @@ class GameUser(object):
         
         Observers may never WRITE the game.
         """
+        assert datamanager
         assert impersonation_writability in (None, True, False)
         impersonation_writability = bool(impersonation_writability) # we don't care about genesis details here, None => False
         # data normalization #
@@ -70,6 +71,7 @@ class GameUser(object):
         assert len([item for item in (self.is_master, self.is_character, self.is_anonymous) if item]) == 1
         assert self.is_superuser or datamanager.is_master(self._real_username) or not self.impersonation_writability # normal players can NEVER impersonate with write access
 
+        # weakref only for garbage collection - should never become None while in use
         self._datamanager = weakref.ref(datamanager)
 
         assert self._effective_username
@@ -78,7 +80,7 @@ class GameUser(object):
 
     @property
     def datamanager(self):
-        return self._datamanager()
+        return self._datamanager()  # shall be non-None
 
     @property
     def is_observer(self):

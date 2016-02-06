@@ -3,7 +3,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import sys, os, math, random, traceback, hashlib, logging, types, base64, re
-import types, contextlib, collections, time, glob, copy, weakref, atexit, inspect
+import types, contextlib, collections, time, glob, copy, atexit, inspect
 from datetime import datetime, timedelta
 
 from contextlib import contextmanager, closing, nested

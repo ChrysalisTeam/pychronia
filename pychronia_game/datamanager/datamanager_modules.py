@@ -2708,7 +2708,9 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
         assert None not in visibility_reasons
         def msg_filter(msg):
             return msg["visible_by"].get(username) in visibility_reasons and (archived is None or ((username in msg["has_archived"]) == archived))
-        return [msg for msg in all_messages if msg_filter(msg)]
+        res = [msg for msg in all_messages if msg_filter(msg)]
+        assert sorted(res, key=lambda msg: msg["sent_at"]) == res  # still well sorted by date ASC
+        return res
 
 
     @readonly_method
@@ -2720,7 +2722,8 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
         Returns non-ZODB structures!
         """
         del self # static method actually
-        assert sorted(messages, key=lambda msg: msg["sent_at"]) == messages # msgs must be naturally well sorted first, in DATE ASC order
+        # msgs must be naturally well sorted first, in DATE ASC order
+        assert sorted(messages, key=lambda msg: msg["sent_at"]) == messages
 
         groups = OrderedDict()
         for msg in reversed(messages): # important
@@ -3498,6 +3501,8 @@ class PersonalFiles(BaseDataManager):
 
     def _check_database_coherence(self, **kwargs):
         super(PersonalFiles, self)._check_database_coherence(**kwargs)
+
+        # TODO CHECK LOWERCASENESS OF SECRET FOLDERS AND NO SPACE
 
         # common and personal file folders
         assert os.path.isdir(os.path.join(config.GAME_FILES_ROOT, "personal_files", self.COMMON_FILES_DIRS))
@@ -4386,7 +4391,7 @@ class SpecialAbilities(BaseDataManager):
         Helper to easily load any ability through the datamanager.
         """
         def __init__(self, datamanager):
-            self.__datamanager = weakref.ref(datamanager)
+            self.__datamanager = weak___ref.ref(datamanager)
 
         @property
         def _datamanager(self):

@@ -2,6 +2,8 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import weakref
+
 from pychronia_game.common import *
 from .datamanager_tools import *
 
@@ -98,7 +100,7 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
         self._inner_logger = logging.getLogger("pychronia_game") #FIXME
         self.logger = logging.LoggerAdapter(self._inner_logger, dm_logger_adapter)
 
-        self._request = weakref.ref(request) if request else None # if None, user notifications won't work
+        self._request = weakref.ref(request) if request else None  # if None, user notifications won't work
 
         self.data = game_root # can be empty, here
         self.connection = game_root._p_jar # can be empty, for transient persistent objects

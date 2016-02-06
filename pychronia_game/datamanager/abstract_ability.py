@@ -51,7 +51,6 @@ class AbstractAbility(AbstractAbilityBasesAdapter):
 
     def __init__(self, request, *args, **kwargs):
         super(AbstractAbility, self,).__init__(request, *args, **kwargs)
-        self._ability_data = weakref.ref(self.datamanager.get_ability_data(self.NAME))
 
     @property
     def datamanager(self):
@@ -116,12 +115,13 @@ class AbstractAbility(AbstractAbilityBasesAdapter):
 
     @property
     def ability_data(self):
-        return self._ability_data() # could be None
+        # DO NOT keep weakrefs on such data subtrees, ZODB client might prune them on commit
+        return self.datamanager.get_ability_data(self.NAME)
 
 
     @property
     def settings(self):
-        return self._ability_data()["settings"]
+        return self.ability_data["settings"]
 
 
     @property
@@ -131,7 +131,7 @@ class AbstractAbility(AbstractAbilityBasesAdapter):
         whereas authenticated ones have their one data slot).
         """
         private_key = self._get_private_key()
-        return self._ability_data()["data"][private_key]
+        return self.ability_data["data"][private_key]
 
 
     def _get_private_key(self):
@@ -140,7 +140,7 @@ class AbstractAbility(AbstractAbilityBasesAdapter):
 
     @property
     def all_private_data(self):
-        return self._ability_data()["data"]
+        return self.ability_data["data"]
 
 
     def get_ability_parameter(self, name):
