@@ -211,6 +211,11 @@ class PasswordChangeForm(AbstractGameForm):
         # Always return the full collection of cleaned data.
         return cleaned_data
 
+class SecretQuestionChangeForm(AbstractGameForm):
+    
+    new_question = forms.CharField(label=ugettext_lazy("New secret question"), required=True, widget=forms.TextInput)
+    new_answer = forms.CharField(label=ugettext_lazy("New secret answer"), required=True, widget=forms.TextInput)
+
 
 
 class SecretQuestionForm(SimpleForm):

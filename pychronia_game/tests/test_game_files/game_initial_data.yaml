@@ -286,8 +286,8 @@ character_properties:
         domains: ["akaris"]
         password: elixir
         account: 1000
-        secret_question: null
-        secret_answer: null
+        secret_question: "Qui est ton pere?"
+        secret_answer: "Papa"
         address_book: ["belasquez@akaris.com", "baazel@akaris.com"]
         new_messages_notification: info_spots_1
         official_name: "Simon Bladstaffulovza"

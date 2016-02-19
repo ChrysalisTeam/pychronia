@@ -1046,6 +1046,16 @@ class PlayerAuthentication(BaseDataManager):
 
         user_properties["password"] = new_password
 
+    @transaction_watcher
+    def process_secret_question_change_attempt(self, username, new_question, new_answer):
+        
+    user_properties = self.get_character_properties(username)
+        
+    if not new_question or "\n" in new_question:
+        raise AbnormalUsageError(_("Invalid new question submitted"))
+        
+    if not new_answer or "\n" in new answer:
+        raise AbnormalUsageError(_("Invalid new answer submitted"))
 
     @readonly_method
     def get_secret_question(self, username):

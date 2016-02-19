@@ -37,6 +37,19 @@
         </table>
         </form>
 
+        <h2>{% trans "Secret Question Change" %}</strong></h2>
+
+        <form action="{{ question_change_form.url }}" method="post" autocomplete="off">
+        <table class="realtable">
+        {{ question_change_form.as_table }}
+        <tr>
+            <td colspan="2">
+                <input type="submit" name="recover" value="{% trans "Change Secret Question" %}" />
+            </td>
+        </tr>
+        </table>
+        </form>
+
 {% endblock %}
 
 
