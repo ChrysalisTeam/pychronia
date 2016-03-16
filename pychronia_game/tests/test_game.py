@@ -6752,49 +6752,47 @@ class TestSpecialAbilities(BaseGameTestCase):
                 assert not first_message_date > last_message_date
 
 
-        # test conversation_formatting utility:
+        # test format_conversation_summary utility:
 
         context_list = telecom.extract_conversation_summary("guy4")
-        assert telecom.conversation_formatting(context_list)
-        conversation_formatting = telecom.conversation_formatting(context_list)
+        assert telecom.format_conversation_summary(context_list)
+        conversation_summary = telecom.format_conversation_summary(context_list)
 
-        assert type(conversation_formatting) is UnicodeType
+        assert type(conversation_summary) is UnicodeType
 
+        fallback_message = "No conversations found in target data."
 
         for character in characters_with_conversations :
-
             context_list = telecom.extract_conversation_summary(character)
-            assert telecom.conversation_formatting(character)
-            assert telecom.conversation_formatting(context_list) != "Target has no conversation!"
-
+            assert telecom.format_conversation_summary(context_list) != fallback_message
 
         context_list = telecom.extract_conversation_summary("my_npc")
-        self.assertEqual(telecom.conversation_formatting(context_list), "Target has no conversation!")
+        self.assertEqual(telecom.format_conversation_summary(context_list), fallback_message)
 
 
         # check the body contents:
 
         context_list = telecom.extract_conversation_summary("guy4")
-        conversation_formatting = telecom.conversation_formatting(context_list)
+        conversation_summary = telecom.format_conversation_summary(context_list)
 
-        self.assertTrue("test" in conversation_formatting)
-        self.assertTrue("test2" in conversation_formatting)
-        self.assertTrue("Participants" in conversation_formatting)
-        self.assertTrue("guy4@pangea.com" in conversation_formatting)
-        self.assertTrue("guy3@pangea.com" in conversation_formatting)
-        self.assertTrue("[auction-list]@pangea.com" in conversation_formatting)
-        self.assertTrue("1 messages" in conversation_formatting)
-        self.assertTrue("2 messages" in conversation_formatting)
-        self.assertFalse("sujet" in conversation_formatting)
-        self.assertFalse("mon message" in conversation_formatting)
-        self.assertFalse("4 messages" in conversation_formatting)
-        self.assertFalse("guy2@pangea.com" in conversation_formatting)
+        self.assertTrue("test" in conversation_summary)
+        self.assertTrue("test2" in conversation_summary)
+        self.assertTrue("Participants" in conversation_summary)
+        self.assertTrue("guy4@pangea.com" in conversation_summary)
+        self.assertTrue("guy3@pangea.com" in conversation_summary)
+        self.assertTrue("[auction-list]@pangea.com" in conversation_summary)
+        self.assertTrue("1 messages" in conversation_summary)
+        self.assertTrue("2 messages" in conversation_summary)
+        self.assertFalse("sujet" in conversation_summary)
+        self.assertFalse("mon message" in conversation_summary)
+        self.assertFalse("4 messages" in conversation_summary)
+        self.assertFalse("guy2@pangea.com" in conversation_summary)
 
 
         for character in characters_with_conversations:
 
             context_list = telecom.extract_conversation_summary(character)
-            conversation_formatting = telecom.conversation_formatting(context_list)
+            conversation_summary = telecom.format_conversation_summary(context_list)
             all_character_messages = self.dm.get_user_related_messages(character, None, None)
             conversations_by_character = self.dm.sort_messages_by_conversations(all_character_messages)
 
@@ -6802,9 +6800,9 @@ class TestSpecialAbilities(BaseGameTestCase):
 
                 for message in conversation:
 
-                    self.assertTrue(message["subject"] in conversation_formatting) #watch out with response emails that have "RE" in subject; assert becomes false
-                    self.assertTrue(message["sender_email"] in conversation_formatting)
-                    self.assertTrue(", ".join(str(e) for e in message["recipient_emails"]) in conversation_formatting)
+                    self.assertTrue(message["subject"] in conversation_summary) #watch out with response emails that have "RE" in subject; assert becomes false
+                    self.assertTrue(message["sender_email"] in conversation_summary)
+                    self.assertTrue(", ".join(str(e) for e in message["recipient_emails"]) in conversation_summary)
                     self.assertTrue("%(X)s messages" % dict(X=len(conversation)))
 
 
@@ -6865,7 +6863,7 @@ class TestSpecialAbilities(BaseGameTestCase):
         # investigation results e-mail:
 
         context_list = telecom.extract_conversation_summary("guy4")
-        body = telecom.conversation_formatting(context_list)
+        body = telecom.format_conversation_summary(context_list)
 
         msg = msgs[-1]
         self.assertEqual(msg["sender_email"], "investigator@spies.com")
@@ -6895,7 +6893,7 @@ class TestSpecialAbilities(BaseGameTestCase):
             # investigation result e-mail:
 
             context_list = telecom.extract_conversation_summary(character)
-            body = telecom.conversation_formatting(context_list)
+            body = telecom.format_conversation_summary(context_list)
 
             msg = msgs[-1]
             assert msg["sender_email"] == "investigator@spies.com"
