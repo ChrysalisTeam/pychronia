@@ -6672,7 +6672,7 @@ class TestSpecialAbilities(BaseGameTestCase):
         assert response.status_code == 200
         '''
 
-    def test_telecom_investigations(self):
+    def test_telecom_investigation(self):
 
         all_characters = self.dm.get_character_usernames()
 
@@ -6707,7 +6707,7 @@ class TestSpecialAbilities(BaseGameTestCase):
         msg4 = self.dm.get_dispatched_message_by_id(msg_id4)
 
 
-        # testing extract_conversation_summary utility:
+        # test extract_conversation_summary utility
 
         assert telecom.extract_conversation_summary("guy4")
         conversation_summary = telecom.extract_conversation_summary("guy4")
@@ -6716,7 +6716,6 @@ class TestSpecialAbilities(BaseGameTestCase):
 
 
         # guy4 has 2 conversations, we must have len = 2, therefore:
-
         conversation_summary = telecom.extract_conversation_summary("guy4")
         self.assertEqual(len(conversation_summary), 2)
 
@@ -6734,7 +6733,6 @@ class TestSpecialAbilities(BaseGameTestCase):
             self.assertEqual(len(conversation_summary), len(conversations_by_character))
 
         # time check:
-
 
         conversation_summary = telecom.extract_conversation_summary("guy4")
         for conversation in conversation_summary:
@@ -6754,8 +6752,7 @@ class TestSpecialAbilities(BaseGameTestCase):
                 assert not first_message_date > last_message_date
 
 
-        # testing conversation_formatting utility:
-
+        # test conversation_formatting utility:
 
         context_list = telecom.extract_conversation_summary("guy4")
         assert telecom.conversation_formatting(context_list)
@@ -6775,7 +6772,7 @@ class TestSpecialAbilities(BaseGameTestCase):
         self.assertEqual(telecom.conversation_formatting(context_list), "Target has no conversation!")
 
 
-        #Checking the body contents:
+        # check the body contents:
 
         context_list = telecom.extract_conversation_summary("guy4")
         conversation_formatting = telecom.conversation_formatting(context_list)
@@ -6811,7 +6808,7 @@ class TestSpecialAbilities(BaseGameTestCase):
                     self.assertTrue("%(X)s messages" % dict(X=len(conversation)))
 
 
-        # testing end to end ability:
+        # test end-to-end ability:
 
         all_other_characters = all_characters
         self._set_user("guy1")
@@ -6825,7 +6822,7 @@ class TestSpecialAbilities(BaseGameTestCase):
             assert telecom.process_telecom_investigation(character)
             self.assertEqual(telecom.process_telecom_investigation(character), "Telecom is in process, you will receive an e-mail with the intercepted messages soon!")
 
-        # checking amount of e-mails during process:
+        # check amount of e-mails during process:
 
         initial_length_sent_msgs = len(self.dm.get_all_dispatched_messages())
 
@@ -6895,7 +6892,7 @@ class TestSpecialAbilities(BaseGameTestCase):
             assert msg["subject"] == (("Investigation Request - %(target_name)s") % dict(target_name=target_name))
 
 
-            # investigation results e-mail:
+            # investigation result e-mail:
 
             context_list = telecom.extract_conversation_summary(character)
             body = telecom.conversation_formatting(context_list)
@@ -6908,7 +6905,7 @@ class TestSpecialAbilities(BaseGameTestCase):
 
 
 
-    def __test_telecom_investigations(self):
+    def __OLD_test_telecom_investigations(self):
 
         FIXME
 
