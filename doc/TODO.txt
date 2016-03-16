@@ -22,6 +22,12 @@ domaine.
 FEATURES
 ------------
 
+Bug report submitted by player emogladys.
+URL: http://pangeaweb.org/tpk/emogladys/messages/compose/
+Message: Bonjour !
+J'ai intercepté le message d'un joueur, son destinataire était masqué mais ça a quand même ajouté son destinataire dans mes contacts.
+
+
 ERROR (EXTERNAL IP): Internal Server Error: /tpk/topaz/ability/world_scan/
 >>> self._ability_data = weakref.ref(self.datamanager.get_ability_data(self.NAME))  # DANGEROUS
 Internal Server Error: /tpk/topaz/ability/world_scan/
