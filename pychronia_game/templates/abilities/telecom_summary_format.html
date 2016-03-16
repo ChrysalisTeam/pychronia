@@ -1,11 +1,11 @@
-
+{% load i18n %}
 ============
 {{subject}}
 ============
 
-Participants : {{participants}}
+[% trans "Participants" %}{{COLON}} {{participants}}
 
 
-{{messages}} messages exchanged between {{first_message}} and {{last_message}}
+{% blocktrans %}{{messages}} messages exchanged between {{first_message}} and {{last_message}}.{% endblocktrans %}
 
 ------------
