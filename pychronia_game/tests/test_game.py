@@ -8,6 +8,7 @@ import tempfile
 import shutil
 import inspect
 from pprint import pprint
+from types import *
 
 from ._test_tools import *
 from ._dummy_abilities import *
@@ -37,7 +38,7 @@ from django.forms.fields import Field
 from django.core.urlresolvers import resolve, NoReverseMatch
 from pychronia_game.views import friendship_management
 from pychronia_game.views.abilities import house_locking, \
-    wiretapping_management, runic_translation, artificial_intelligence_mod
+    wiretapping_management, runic_translation, artificial_intelligence_mod, telecom_investigation_mod
 from django.contrib.auth.models import User
 from pychronia_game.authentication import clear_all_sessions
 from pychronia_game.utilities.mediaplayers import generate_image_viewer
@@ -6670,6 +6671,241 @@ class TestSpecialAbilities(BaseGameTestCase):
         response = self.client.get(url)
         assert response.status_code == 200
         '''
+
+    def test_telecom_investigations(self):
+
+        all_characters = self.dm.get_character_usernames()
+
+        characters_with_conversations = self.dm.get_character_usernames()
+        characters_with_conversations.remove("my_npc")
+
+        telecom = self.dm.instantiate_ability("telecom_investigation")
+        telecom.perform_lazy_initializations()
+        self._reset_messages()
+
+
+        # message initialization
+
+        email_guy1 = self.dm.get_character_email("guy1")
+        email_guy2 = self.dm.get_character_email("guy2")
+        email_guy3 = self.dm.get_character_email("guy3")
+        email_guy4 = self.dm.get_character_email("guy4")
+        email_external = sorted(self.dm.global_contacts.keys())[0]
+
+        msg_id1 = self.dm.post_message(sender_email=email_guy1, recipient_emails=email_external, subject="test", body="test")
+        msg1 = self.dm.get_dispatched_message_by_id(msg_id1)
+
+        msg_id2 = self.dm.post_message(sender_email=email_guy3, recipient_emails=email_guy4, subject="test2", body="test2")
+        msg2 = self.dm.get_dispatched_message_by_id(msg_id2)
+
+        time.sleep(1)
+
+        msg_id3 = self.dm.post_message(sender_email=email_guy4, recipient_emails=email_guy3, subject=msg2["subject"], body="test3", parent_id=msg_id2)
+        msg3 = self.dm.get_dispatched_message_by_id(msg_id3)
+
+        msg_id4 = self.dm.post_message(sender_email=email_guy1, recipient_emails=email_guy2, subject="sujet", body="mon message")
+        msg4 = self.dm.get_dispatched_message_by_id(msg_id4)
+
+
+        # testing extract_conversation_summary utility:
+
+        assert telecom.extract_conversation_summary("guy4")
+        conversation_summary = telecom.extract_conversation_summary("guy4")
+
+        assert type(conversation_summary) is ListType
+
+
+        # guy4 has 2 conversations, we must have len = 2, therefore:
+
+        conversation_summary = telecom.extract_conversation_summary("guy4")
+        self.assertEqual(len(conversation_summary), 2)
+
+        # NPC doesn't have any conversations, therefore:
+
+        conversation_summary = telecom.extract_conversation_summary("my_npc")
+        self.assertEqual(conversation_summary, [])
+
+
+        for character in all_characters:
+
+            conversation_summary = telecom.extract_conversation_summary(character)
+            all_character_messages = self.dm.get_user_related_messages(character, None, None)
+            conversations_by_character = self.dm.sort_messages_by_conversations(all_character_messages)
+            self.assertEqual(len(conversation_summary), len(conversations_by_character))
+
+        # time check:
+
+
+        conversation_summary = telecom.extract_conversation_summary("guy4")
+        for conversation in conversation_summary:
+
+            first_message_date = conversation["first_message"]
+            last_message_date = conversation["last_message"]
+            assert not first_message_date > last_message_date
+
+
+        for character in all_characters:
+
+            conversation_summary = telecom.extract_conversation_summary(character)
+            for conversation in conversation_summary:
+
+                first_message_date = conversation["first_message"]
+                last_message_date = conversation["last_message"]
+                assert not first_message_date > last_message_date
+
+
+        # testing conversation_formatting utility:
+
+
+        context_list = telecom.extract_conversation_summary("guy4")
+        assert telecom.conversation_formatting(context_list)
+        conversation_formatting = telecom.conversation_formatting(context_list)
+
+        assert type(conversation_formatting) is UnicodeType
+
+
+        for character in characters_with_conversations :
+
+            context_list = telecom.extract_conversation_summary(character)
+            assert telecom.conversation_formatting(character)
+            assert telecom.conversation_formatting(context_list) != "Target has no conversation!"
+
+
+        context_list = telecom.extract_conversation_summary("my_npc")
+        self.assertEqual(telecom.conversation_formatting(context_list), "Target has no conversation!")
+
+
+        #Checking the body contents:
+
+        context_list = telecom.extract_conversation_summary("guy4")
+        conversation_formatting = telecom.conversation_formatting(context_list)
+
+        self.assertTrue("test" in conversation_formatting)
+        self.assertTrue("test2" in conversation_formatting)
+        self.assertTrue("Participants" in conversation_formatting)
+        self.assertTrue("guy4@pangea.com" in conversation_formatting)
+        self.assertTrue("guy3@pangea.com" in conversation_formatting)
+        self.assertTrue("[auction-list]@pangea.com" in conversation_formatting)
+        self.assertTrue("1 messages" in conversation_formatting)
+        self.assertTrue("2 messages" in conversation_formatting)
+        self.assertFalse("sujet" in conversation_formatting)
+        self.assertFalse("mon message" in conversation_formatting)
+        self.assertFalse("4 messages" in conversation_formatting)
+        self.assertFalse("guy2@pangea.com" in conversation_formatting)
+
+
+        for character in characters_with_conversations:
+
+            context_list = telecom.extract_conversation_summary(character)
+            conversation_formatting = telecom.conversation_formatting(context_list)
+            all_character_messages = self.dm.get_user_related_messages(character, None, None)
+            conversations_by_character = self.dm.sort_messages_by_conversations(all_character_messages)
+
+            for conversation in conversations_by_character:
+
+                for message in conversation:
+
+                    self.assertTrue(message["subject"] in conversation_formatting) #watch out with response emails that have "RE" in subject; assert becomes false
+                    self.assertTrue(message["sender_email"] in conversation_formatting)
+                    self.assertTrue(", ".join(str(e) for e in message["recipient_emails"]) in conversation_formatting)
+                    self.assertTrue("%(X)s messages" % dict(X=len(conversation)))
+
+
+        # testing end to end ability:
+
+        all_other_characters = all_characters
+        self._set_user("guy1")
+        all_other_characters.remove(self.dm.get_username_from_official_name(self.dm.get_official_name()))
+
+        assert type(telecom.process_telecom_investigation("guy2")) is UnicodeType
+
+
+        for character in all_other_characters:
+
+            assert telecom.process_telecom_investigation(character)
+            self.assertEqual(telecom.process_telecom_investigation(character), "Telecom is in process, you will receive an e-mail with the intercepted messages soon!")
+
+        # checking amount of e-mails during process:
+
+        initial_length_sent_msgs = len(self.dm.get_all_dispatched_messages())
+
+        self.assertEqual(len(self.dm.get_all_dispatched_messages()), initial_length_sent_msgs + 0)
+
+        telecom.process_telecom_investigation("guy4")
+
+        msgs = self.dm.get_all_dispatched_messages()
+
+        self.assertEqual(len(msgs), initial_length_sent_msgs + 2)
+        # we have a "+2" because there are 2 sent messages : one for requesting the investigation and one for displaying the investigation results.
+
+
+        self._reset_messages()
+
+        for character in all_other_characters:
+
+            initial_length_sent_msgs = len(self.dm.get_all_dispatched_messages())
+            telecom.process_telecom_investigation(character)
+            msgs = self.dm.get_all_dispatched_messages()
+            self.assertEqual(len(msgs), initial_length_sent_msgs + 2)
+
+
+        # checking the e-mail subject, body and participants:
+
+        self._reset_messages()
+        telecom.process_telecom_investigation("guy4")
+
+
+        # investigation request e-mail:
+
+        msgs = self.dm.get_all_dispatched_messages()
+        msg = msgs[-2]
+        self.assertEqual(msg["sender_email"], "guy1@pangea.com")
+        self.assertEqual(msg["recipient_emails"], ["investigator@spies.com"])
+        self.assertEqual(msg["body"], "Please look for anything you can find about this person.")
+        self.assertEqual(msg["subject"], "Investigation Request - Kha")
+
+
+        # investigation results e-mail:
+
+        context_list = telecom.extract_conversation_summary("guy4")
+        body = telecom.conversation_formatting(context_list)
+
+        msg = msgs[-1]
+        self.assertEqual(msg["sender_email"], "investigator@spies.com")
+        assert msg["recipient_emails"] == [u'guy1@pangea.com']
+        self.assertEqual(msg["body"], body)
+        self.assertEqual(msg["subject"], "<Investigation Results for Kha>")
+
+
+        # test for all users except "ourself":
+
+        for character in all_other_characters:
+            self._reset_messages()
+            telecom.process_telecom_investigation(character)
+            target_name = self.dm.get_official_name(character)
+            msgs = self.dm.get_all_dispatched_messages()
+
+
+            # investigation request e-mail:
+
+            msg = msgs[-2]
+            assert msg["sender_email"] == "guy1@pangea.com"
+            assert msg["recipient_emails"] == ["investigator@spies.com"]
+            assert msg["body"] == "Please look for anything you can find about this person."
+            assert msg["subject"] == (("Investigation Request - %(target_name)s") % dict(target_name=target_name))
+
+
+            # investigation results e-mail:
+
+            context_list = telecom.extract_conversation_summary(character)
+            body = telecom.conversation_formatting(context_list)
+
+            msg = msgs[-1]
+            assert msg["sender_email"] == "investigator@spies.com"
+            assert msg["recipient_emails"] == [u'guy1@pangea.com']
+            assert msg["body"] == body
+            assert msg["subject"] == (("<Investigation Results for %(target_name)s>") % dict(target_name=target_name))
+
 
 
     def __test_telecom_investigations(self):

@@ -123,6 +123,7 @@ def _generate_web_menu(request, menu_entry_generator):
 
                         menu_entry(view=views.business_escrow),
                         menu_entry(view=views.black_market),
+                        menu_entry(view=views.telecom_investigation),
 
                         ##menu_entry(_(u"Telecom Investigation"), view=views.telecom_investigation),
                         # menu_entry(_(u"Agents Hiring"), view=views.network_management),
