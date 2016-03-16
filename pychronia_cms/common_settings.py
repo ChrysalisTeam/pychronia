@@ -170,19 +170,19 @@ CMS_TEMPLATES = (
    ('cms_one_column.html', ugettext('One column')),
    ('cms_two_columns.html', ugettext('Two columns')),
 )
-CMS_URL_OVERWRITE = True
-CMS_MENU_TITLE_OVERWRITE = True
-CMS_REDIRECTS = True # handy for "dummy" menu entries
-CMS_SEO_FIELDS = True # page metadata etc.
+CMS_URL_OVERWRITE = True # DEPRECATED
+CMS_MENU_TITLE_OVERWRITE = True # DEPRECATED
+CMS_REDIRECTS = True # handy for "dummy" menu entries # DEPRECATED, use django.contrib.redirects instead
+CMS_SEO_FIELDS = True # page metadata etc. # DEPRECATED
 
-CMS_SOFTROOT = False # no need to cut the menu in sections
+CMS_SOFTROOT = False # no need to cut the menu in sections  # DEPRECATED
 CMS_PUBLIC_FOR = "all" # not restricted to "staff"
 CMS_PERMISSION = False # no fine grained restrictions ATM
 CMS_TEMPLATE_INHERITANCE = True
 CMS_PLACEHOLDER_CONF = {} # unused atm
 CMS_PLUGIN_CONTEXT_PROCESSORS = []
 CMS_PLUGIN_PROCESSORS = []
-PLACEHOLDER_FRONTEND_EDITING = True
+PLACEHOLDER_FRONTEND_EDITING = True  # DEPRECATED
 
 CMS_MULTILINGUAL_PATCH_REVERSE = False
 '''
