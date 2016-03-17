@@ -717,8 +717,8 @@ class PlayerAuthentication(BaseDataManager):
         super(PlayerAuthentication, self)._load_initial_data(skip_randomizations=skip_randomizations, **kwargs)
 
         for character in self.get_character_sets().values():
-            character.setdefault("secret_question", None)
-            character.setdefault("secret_answer", None)
+            character.setdefault("secret_question", "")
+            character.setdefault("secret_answer", "")
             character["secret_answer"] = character["secret_answer"] if not character["secret_answer"] else character["secret_answer"].strip().lower()
 
         if not skip_randomizations:
@@ -732,14 +732,15 @@ class PlayerAuthentication(BaseDataManager):
         game_data = self.data
 
         for character in self.get_character_sets().values():
+
             if character["password"]: # might be None==disabled
                 utilities.check_is_slug(character["password"])
-            if not character["secret_question"]:
+
+            if not character["secret_question"]:  # null or empty string...
                 assert not character["secret_answer"]
             else:
                 utilities.check_is_string(character["secret_question"])
-                utilities.check_is_slug(character["secret_answer"])
-                assert character["secret_answer"] == character["secret_answer"].lower()
+                utilities.check_is_string(character["secret_answer"])
 
         utilities.check_no_duplicates([c["password"] for c in self.get_character_sets().values() if c["password"]])
 
@@ -1110,6 +1111,23 @@ class PlayerAuthentication(BaseDataManager):
 
         else:
             raise NormalUsageError(_("Wrong answer supplied."))
+
+
+
+    @transaction_watcher
+    def update_secret_question_and_answer(self, username=CURRENT_USER, secret_question="", secret_answer=""):
+
+        user_properties = self.get_character_properties(username)
+
+        if not isinstance(secret_question, unicode) or not isinstance(secret_answer, unicode):
+            raise AbnormalUsageError(_("Invalid new secret question or secret answer submitted"))
+
+        data = [secret_question, secret_answer]
+        if not (all(data) or not any(data)):
+            raise AbnormalUsageError(_("Secret question and secret answer must be both set or both empty"))
+
+        user_properties["secret_question"] = secret_question
+        user_properties["secret_answer"] = secret_answer
 
 
 
