@@ -103,7 +103,7 @@ abilities:
     telecom_investigation:
         settings:
             dedicated_email: "investigator@spies.com"
-            result_delay: [2, 3]
+            result_delay: null  # required by unit-tests atm...
 
     world_scan:
         settings:
