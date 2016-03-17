@@ -6818,7 +6818,7 @@ class TestSpecialAbilities(BaseGameTestCase):
         for character in all_other_characters:
 
             assert telecom.process_telecom_investigation(character)
-            self.assertEqual(telecom.process_telecom_investigation(character), "Telecom is in process, you will receive an e-mail with the intercepted messages soon!")
+            self.assertEqual(telecom.process_telecom_investigation(character), "Telecom investigation is in process, you will receive an e-mail with the intercepted messages soon!")
 
         # check amount of e-mails during process:
 

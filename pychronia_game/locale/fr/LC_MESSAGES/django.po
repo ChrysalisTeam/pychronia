@@ -9,14 +9,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-01-10 15:55+0100\n"
-"PO-Revision-Date: 2016-01-10 15:55+0200\n"
+"POT-Creation-Date: 2016-03-17 12:57+0100\n"
+"PO-Revision-Date: 2016-03-17 12:59+0200\n"
 "Last-Translator: Pascal <chambon.pascal@gmail.com>\n"
 "Language-Team: Nothing\n"
+"Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: fr\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Generator: Virtaal 0.7.1\n"
 
@@ -313,40 +313,40 @@ msgstr "Impossible de modifier l'objet de type %(type)s avec la clef %(key)s"
 msgid "Can't delete %(type)s item with key %(key)s"
 msgstr "Impossible de détruire l'objet de type %(type)s avec la clef %(key)s"
 
-#: .\datamanager\datamanager_administrator.py:123
+#: .\datamanager\datamanager_administrator.py:124
 msgid "Already existing instance"
 msgstr "Instance déjà existante"
 
-#: .\datamanager\datamanager_administrator.py:165
-#: .\datamanager\datamanager_administrator.py:185
-#: .\datamanager\datamanager_administrator.py:198
-#: .\datamanager\datamanager_administrator.py:217
-#: .\datamanager\datamanager_administrator.py:270
-#: .\datamanager\datamanager_administrator.py:332
+#: .\datamanager\datamanager_administrator.py:166
+#: .\datamanager\datamanager_administrator.py:186
+#: .\datamanager\datamanager_administrator.py:199
+#: .\datamanager\datamanager_administrator.py:218
+#: .\datamanager\datamanager_administrator.py:271
+#: .\datamanager\datamanager_administrator.py:333
 #, python-format
 msgid "Unexisting instance %r"
 msgstr "Instance inexistante %r"
 
-#: .\datamanager\datamanager_administrator.py:200
+#: .\datamanager\datamanager_administrator.py:201
 #, python-format
 msgid "Can't delete active instance %r"
 msgstr "Impossible de détruire l'instance active %r"
 
-#: .\datamanager\datamanager_administrator.py:225
+#: .\datamanager\datamanager_administrator.py:226
 msgid "Metadata check didn't allow access to instance."
 msgstr "Les vérifications de métadonnées ont interdit l'accès à l'instance."
 
-#: .\datamanager\datamanager_administrator.py:241
+#: .\datamanager\datamanager_administrator.py:242
 #, python-format
 msgid "Instance %s is in maintenance."
 msgstr "L'instance %s est en maintenance."
 
-#: .\datamanager\datamanager_administrator.py:246
+#: .\datamanager\datamanager_administrator.py:247
 #, python-format
 msgid "Instance %s is NOT in maintenance."
 msgstr "L'instance %s n'est PAS en maintenance."
 
-#: .\datamanager\datamanager_administrator.py:276
+#: .\datamanager\datamanager_administrator.py:277
 #, python-format
 msgid "Wrong new game status %(status)s for %(instance_id)r"
 msgstr "Mauvais nouveau statut %(status)s pour %(instance_id)r"
@@ -400,7 +400,7 @@ msgstr "Non identifié"
 #: .\templates\administration\radio_spots_editing.html:101
 #: .\templates\auction\items_slideshow.html:43
 #: .\templates\auction\view_characters.html:79
-#: .\templates\auction\view_characters.html:93 .\templates\base_main.html:400
+#: .\templates\auction\view_characters.html:93 .\templates\base_main.html:406
 #: .\templates\messaging\compose.html:153
 #: .\templates\meta_administration\manage_instances.html:22
 #: .\templates\profile\character_profile.html:18
@@ -539,37 +539,37 @@ msgstr "contact"
 msgid "Unexisting template id %r"
 msgstr "Identifiant de modèle %r inexistant"
 
-#: .\datamanager\datamanager_modules.py:2774
+#: .\datamanager\datamanager_modules.py:2777
 msgid "Unidentified contact"
 msgstr "Contact non identifié"
 
-#: .\datamanager\datamanager_modules.py:2996
+#: .\datamanager\datamanager_modules.py:2999
 #, python-format
 msgid "Unknown target username '%(target)s'"
 msgstr "Utilisateur cible inconnu '%(target)s'"
 
-#: .\datamanager\datamanager_modules.py:3085
+#: .\datamanager\datamanager_modules.py:3088
 msgid "radio spots"
 msgstr "spots radio"
 
-#: .\datamanager\datamanager_modules.py:3163
+#: .\datamanager\datamanager_modules.py:3167
 #, python-format
 msgid "Unknown radio message identifier - %(audio_id)s"
 msgstr "Identifiant de message radio inconnu - %(audio_id)s"
 
-#: .\datamanager\datamanager_modules.py:3210
+#: .\datamanager\datamanager_modules.py:3214
 msgid "Unknown radio frequency"
 msgstr "Fréquence radio inconnue"
 
-#: .\datamanager\datamanager_modules.py:3341
+#: .\datamanager\datamanager_modules.py:3345
 msgid "Only authenticated users may chat"
 msgstr "Seuls les utilisateurs authentifiés peuvent chatter"
 
-#: .\datamanager\datamanager_modules.py:3349
+#: .\datamanager\datamanager_modules.py:3353
 msgid "Chat message can't be empty"
 msgstr "Le message de chat ne peut être vide"
 
-#: .\datamanager\datamanager_modules.py:3465
+#: .\datamanager\datamanager_modules.py:3469
 #, python-format
 msgid ""
 "Only strings representing DataManager methods can be scheduled as delayed "
@@ -578,7 +578,7 @@ msgstr ""
 "Seules les chaines de caractère représentant des méthodes du DataManager "
 "peuvent être planifiées comme actions temporisées, et non %(function)s"
 
-#: .\datamanager\datamanager_modules.py:3468
+#: .\datamanager\datamanager_modules.py:3472
 #, python-format
 msgid ""
 "You can only register a callable object as a delayed action, not a %"
@@ -587,15 +587,15 @@ msgstr ""
 "Vous ne pouvez enregistrer que les objets appelables en tant qu'actions "
 "temporisées, non %(function)r"
 
-#: .\datamanager\datamanager_modules.py:3522
+#: .\datamanager\datamanager_modules.py:3529
 msgid "This encrypted archive doesn't exist."
 msgstr "Cette archive encodée n'existe pas."
 
-#: .\datamanager\datamanager_modules.py:3528
+#: .\datamanager\datamanager_modules.py:3535
 msgid "Wrong password for this encrypted folder."
 msgstr "Mauvais mot de passe pour cette archive chiffrée."
 
-#: .\datamanager\datamanager_modules.py:3540
+#: .\datamanager\datamanager_modules.py:3547
 #, python-format
 msgid ""
 "Encrypted folder '%(folder)s/%(password)s' accessed by user '%(username)s'."
@@ -603,33 +603,33 @@ msgstr ""
 "Dossier chiffré '%(folder)s/%(password)s' ouvert par l'utilisateur '%"
 "(username)s'."
 
-#: .\datamanager\datamanager_modules.py:3697
+#: .\datamanager\datamanager_modules.py:3704
 msgid "objects/gems"
 msgstr "objets/gemmes"
 
-#: .\datamanager\datamanager_modules.py:3818
+#: .\datamanager\datamanager_modules.py:3825
 #, python-format
 msgid "Unknown item %s"
 msgstr "Élément inconnu %s"
 
-#: .\datamanager\datamanager_modules.py:3835
+#: .\datamanager\datamanager_modules.py:3842
 msgid "Money amount must be positive"
 msgstr "La somme d'argent doit être positive"
 
-#: .\datamanager\datamanager_modules.py:3838
-#: .\datamanager\datamanager_modules.py:4021 .\views\auction_views.py:144
+#: .\datamanager\datamanager_modules.py:3845
+#: .\datamanager\datamanager_modules.py:4028 .\views\auction_views.py:144
 msgid "Sender and recipient must be different"
 msgstr "L'émetteur et le destinataire doivent être différents"
 
-#: .\datamanager\datamanager_modules.py:3849
+#: .\datamanager\datamanager_modules.py:3856
 msgid "Bank doesn't have enough money available"
 msgstr "La banque n'a plus assez d'argent en réserve"
 
-#: .\datamanager\datamanager_modules.py:3854
+#: .\datamanager\datamanager_modules.py:3861
 msgid "Sender doesn't have enough money"
 msgstr "L'émetteur n'a pas assez d'argent"
 
-#: .\datamanager\datamanager_modules.py:3866
+#: .\datamanager\datamanager_modules.py:3873
 #, python-format
 msgid ""
 "Bank operation: %(amount)s kashes transferred from %(from_name)s to %"
@@ -638,88 +638,88 @@ msgstr ""
 "Opération bancaire: %(amount)s kashes transférés de %(from_name)s à %"
 "(to_name)s."
 
-#: .\datamanager\datamanager_modules.py:3868
+#: .\datamanager\datamanager_modules.py:3875
 #, python-format
 msgid "Reason: %(reason)s"
 msgstr "Raison : %(reason)s"
 
-#: .\datamanager\datamanager_modules.py:3893
+#: .\datamanager\datamanager_modules.py:3900
 msgid ""
 "Impossible to free item, some gems from this package have already been used"
 msgstr ""
 "Impossible de libérer l'objet, des gemmes de ce lot ont déjà été utilisées"
 
-#: .\datamanager\datamanager_modules.py:3924
+#: .\datamanager\datamanager_modules.py:3931
 #, python-format
 msgid "Unknown user name '%s'"
 msgstr "Identifiant utilisateur inconnu '%s'"
 
-#: .\datamanager\datamanager_modules.py:3928
+#: .\datamanager\datamanager_modules.py:3935
 msgid "no one"
 msgstr "personne"
 
-#: .\datamanager\datamanager_modules.py:3932
+#: .\datamanager\datamanager_modules.py:3939
 #, python-format
 msgid "This object doesn't belong to %s"
 msgstr "Cet objet n'appartient pas à %s"
 
-#: .\datamanager\datamanager_modules.py:3935
+#: .\datamanager\datamanager_modules.py:3942
 msgid "Impossible to have same origin and destination for item transfer"
 msgstr ""
 "Impossible d'avoir même origine et destination pour le transfert d'objet"
 
-#: .\datamanager\datamanager_modules.py:3945
+#: .\datamanager\datamanager_modules.py:3952
 #, python-format
 msgid "Item %(item_name)s transferred from %(from_name)s to %(char_name)s."
 msgstr "Objet %(item_name)s transféré de %(from_name)s à %(char_name)s."
 
-#: .\datamanager\datamanager_modules.py:4024
+#: .\datamanager\datamanager_modules.py:4031
 msgid "You must transfer at least one gem"
 msgstr "Vous devez transférer au moins une gemme"
 
-#: .\datamanager\datamanager_modules.py:4028
-#: .\datamanager\datamanager_modules.py:4052
+#: .\datamanager\datamanager_modules.py:4035
+#: .\datamanager\datamanager_modules.py:4059
 msgid "Sender doesn't possess these gems"
 msgstr "L'émetteur ne possède pas ces gemmes"
 
-#: .\datamanager\datamanager_modules.py:4035
+#: .\datamanager\datamanager_modules.py:4042
 #, python-format
 msgid "Gems transferred from %(from_name)s to %(to_name)s: %(gems_choices)s."
 msgstr "Gemmes transférées de %(from_name)s à %(to_name)s : %(gems_choices)s."
 
-#: .\datamanager\datamanager_modules.py:4057
+#: .\datamanager\datamanager_modules.py:4064
 #, python-format
 msgid "Gems debited from %(username)s: %(gems_choices)s."
 msgstr "Gemmes débitées de %(username)s : %(gems_choices)s."
 
-#: .\datamanager\datamanager_modules.py:4074
+#: .\datamanager\datamanager_modules.py:4081
 msgid "Selected gems couldn't be found among spent gems"
 msgstr "Les gemmes sélectionnées sont introuvables parmi celles dépensées"
 
-#: .\datamanager\datamanager_modules.py:4079
+#: .\datamanager\datamanager_modules.py:4086
 #, python-format
 msgid "Gems credited to %(username)s: %(gems_choices)s."
 msgstr "Gemmes créditées à %(username)s : %(gems_choices)s."
 
-#: .\datamanager\datamanager_modules.py:4221
+#: .\datamanager\datamanager_modules.py:4228
 #, python-format
 msgid "Unknown view names detected in the set of views to be activated: %r"
 msgstr "Noms de vues inconnus détectés dans l'ensemble des vues à activer: %r"
 
-#: .\datamanager\datamanager_modules.py:4455
+#: .\datamanager\datamanager_modules.py:4462
 msgid "static pages"
 msgstr "pages statiques"
 
-#: .\datamanager\datamanager_modules.py:4758
+#: .\datamanager\datamanager_modules.py:4765
 #, python-format
 msgid "Unknown captcha id %s"
 msgstr "Identifiant de captcha inconnu %s"
 
-#: .\datamanager\datamanager_modules.py:4762
+#: .\datamanager\datamanager_modules.py:4769
 msgid "Nope, it looks like this captcha had no known answer..."
 msgstr "Nope, il semble que ce captcha n'avait pas de réponse connue..."
 
-#: .\datamanager\datamanager_modules.py:4768
+#: .\datamanager\datamanager_modules.py:4775
 #, python-format
 msgid "Incorrect captcha answer '%s'"
 msgstr "Réponse au captcha incorrecte '%s'"
@@ -736,12 +736,12 @@ msgstr "Fonctionnalité non accessible pour le moment"
 msgid "Couldn't solve 'concurrent access' conflict on the resource"
 msgstr "Impossible de résoudre le conflit d'accès concurrent à la ressource"
 
-#: .\datamanager\datamanager_user.py:40
+#: .\datamanager\datamanager_user.py:41
 #, python-format
 msgid "Username '%s' is unknown"
 msgstr "Identifiant utilisateur '%s' inconnu"
 
-#: .\datamanager\datamanager_user.py:42
+#: .\datamanager\datamanager_user.py:43
 #, python-format
 msgid "Impersonation target '%s' is unknown"
 msgstr "Cible d'usurpation d'identité '%s' inconnue"
@@ -750,7 +750,7 @@ msgstr "Cible d'usurpation d'identité '%s' inconnue"
 msgid "Bank"
 msgstr "Banque"
 
-#: .\forms.py:30 .\forms.py:71 .\views\messaging_views.py:147
+#: .\forms.py:30 .\forms.py:71 .\views\messaging_views.py:151
 msgid "Sender"
 msgstr "Emetteur"
 
@@ -892,8 +892,8 @@ msgstr "Sélectionnez votre artefact..."
 msgid "User"
 msgstr "Utilisateur"
 
-#: .\menus.py:69 .\templates\base_main.html:347
-#: .\templates\base_main.html.py:349
+#: .\menus.py:69 .\templates\base_main.html:353
+#: .\templates\base_main.html.py:355
 msgid "Anthropia"
 msgstr "Anthropia"
 
@@ -922,67 +922,67 @@ msgstr "Mes conversations"
 msgid "Abilities"
 msgstr "Compétences"
 
-#: .\menus.py:137
+#: .\menus.py:138
 msgid "Admin"
 msgstr "Admin"
 
-#: .\menus.py:139
+#: .\menus.py:140
 msgid "Game Events"
 msgstr "Evènements"
 
-#: .\menus.py:140
+#: .\menus.py:141
 msgid "Dashboard"
 msgstr "Tableau de bord"
 
-#: .\menus.py:141 .\views\admin_views\admin_information_mod.py:19
+#: .\menus.py:142 .\views\admin_views\admin_information_mod.py:19
 msgid "Admin Information"
 msgstr "Informations Admin"
 
-#: .\menus.py:143 .\views\admin_views\__init__.py:57
+#: .\menus.py:144 .\views\admin_views\__init__.py:57
 msgid "Manage Characters"
 msgstr "Gérer les personnages"
 
-#: .\menus.py:144
+#: .\menus.py:145
 msgid "Manage Webradio Playlist"
 msgstr "Gérer la Playlist Webradio"
 
-#: .\menus.py:146
+#: .\menus.py:147
 msgid "Edit Game Items"
 msgstr "Editer les objets du jeu"
 
-#: .\menus.py:147
+#: .\menus.py:148
 msgid "Edit Static Pages"
 msgstr "Editer les Pages Statiques"
 
-#: .\menus.py:148
+#: .\menus.py:149
 msgid "Edit Email Contacts"
 msgstr "Editer les Contacts"
 
-#: .\menus.py:149
+#: .\menus.py:150
 msgid "Edit Radio Spots"
 msgstr "Editer les Spots Radio"
 
-#: .\menus.py:151
+#: .\menus.py:152
 msgid "View Master Manual"
 msgstr "Manuel du Maître de Jeu"
 
-#: .\menus.py:153 .\views\admin_views\__init__.py:38
+#: .\menus.py:154 .\views\admin_views\__init__.py:38
 msgid "View Database"
 msgstr "Voir les Données"
 
-#: .\menus.py:158
+#: .\menus.py:159
 msgid "Profile"
 msgstr "Profil"
 
-#: .\menus.py:164
+#: .\menus.py:165
 msgid "System Events"
 msgstr "Évènements Système"
 
-#: .\menus.py:165
+#: .\menus.py:166
 msgid "Log Out"
 msgstr "Fermer la session"
 
-#: .\menus.py:169
+#: .\menus.py:170
 msgid "Log In"
 msgstr "Se connecter"
 
@@ -1414,6 +1414,15 @@ msgstr "Lancer l'Investigation"
 #: .\templates\abilities\telecom_investigation.html:16
 msgid "No telecom investigation possible at the moment."
 msgstr "Pas d'investigation télécom possible pour le moment"
+
+#: .\templates\abilities\telecom_summary_format.html:9
+#, python-format
+msgid ""
+"%(messages_count)s messages exchanged between %(first_message_date)s and %"
+"(last_message_date)s."
+msgstr ""
+"%(messages_count)s messages échangés entre %(first_message_date)s et %"
+"(last_message_date)s."
 
 #: .\templates\abilities\wiretapping_management.html:7
 msgid "Your protections"
@@ -1925,96 +1934,96 @@ msgstr "Rapport d'erreur correctement envoyé."
 msgid "Application error (please consider reporting that bug)"
 msgstr "Erreur applicative (veuillez considérer signaler ce bogue)"
 
-#: .\templates\base_main.html:351
+#: .\templates\base_main.html:357
 msgid "Welcome to Anthropia"
 msgstr "Bienvenue sur Anthropia"
 
-#: .\templates\base_main.html:397
+#: .\templates\base_main.html:403
 msgid "Take the identity of another user."
 msgstr "Prendre l'identité d'un autre utilisateur"
 
-#: .\templates\base_main.html:398
+#: .\templates\base_main.html:404
 msgid "Impersonation:"
 msgstr "Usurpation:"
 
-#: .\templates\base_main.html:418
+#: .\templates\base_main.html:424
 msgid "Whether or not you can modify the game during impersonations."
 msgstr "Si vous pouvez ou non modifier le jeu durant l'usurpation d'identité."
 
-#: .\templates\base_main.html:419
+#: .\templates\base_main.html:425
 msgid "Writability:"
 msgstr "Modifiabilité:"
 
-#: .\templates\base_main.html:421
+#: .\templates\base_main.html:427
 msgid "Read-only"
 msgstr "Lecture-seule"
 
-#: .\templates\base_main.html:422
+#: .\templates\base_main.html:428
 msgid "Writable"
 msgstr "Modifiable"
 
-#: .\templates\base_main.html:462
+#: .\templates\base_main.html:468
 msgid "User is a superuser (authenticated as Django Admin)"
 msgstr "L'utilisateur est super-utilisateur (authentifié comme Admin Django)"
 
-#: .\templates\base_main.html:464
+#: .\templates\base_main.html:470
 msgid "User impersonation is ongoing"
 msgstr "Une usurpation d'identité est en cours"
 
-#: .\templates\base_main.html:466
+#: .\templates\base_main.html:472
 msgid "No impersonation is currently ongoing"
 msgstr "Aucune usurpation d'identité n'est en cours"
 
-#: .\templates\base_main.html:471
+#: .\templates\base_main.html:477
 msgid "User is authenticated as an observer (read-only access)"
 msgstr ""
 "L'utilisateur est authentifié comme observateur (accès en lecture seule)"
 
-#: .\templates\base_main.html:473
+#: .\templates\base_main.html:479
 msgid "Page is in read-only mode (no modification is allowed)"
 msgstr "La page est en lecture seule (aucune modification n'est autorisée)"
 
-#: .\templates\base_main.html:477
+#: .\templates\base_main.html:483
 msgid "Effective identity"
 msgstr "Identité effective"
 
-#: .\templates\base_main.html:479
+#: .\templates\base_main.html:485
 msgid "Currently active username"
 msgstr "Identifiant utilisateur actuellement actif"
 
-#: .\templates\base_main.html:487
+#: .\templates\base_main.html:493
 msgid "Novelties"
 msgstr "Nouveautés"
 
-#: .\templates\base_main.html:491
+#: .\templates\base_main.html:497
 msgid "No Notifications"
 msgstr "Pas de Notifications"
 
-#: .\templates\base_main.html:495
+#: .\templates\base_main.html:501
 msgid "New menu entries are available for you!"
 msgstr "Nouvelles entrées de menu disponibles !"
 
-#: .\templates\base_main.html:498
+#: .\templates\base_main.html:504
 msgid "New text messages are available for you!"
 msgstr "De nouveaux messages email sont disponibles !"
 
-#: .\templates\base_main.html:501
+#: .\templates\base_main.html:507
 msgid "There are people in the live chat room!"
 msgstr "Il y a des utilisateurs dans le salon de discussion !"
 
-#: .\templates\base_main.html:516
+#: .\templates\base_main.html:522
 msgid "Pangea webradio is currently ONLINE"
 msgstr "Radio Pangéa est actuellement EN LIGNE."
 
-#: .\templates\base_main.html:523
+#: .\templates\base_main.html:529
 msgid "Pangea webradio is currently OFFLINE"
 msgstr "Radio Pangée est actuellement HORS LIGNE."
 
-#: .\templates\base_main.html:542
+#: .\templates\base_main.html:548
 msgid "Unexisting help page:"
 msgstr "Page d'aide inexistante:"
 
-#: .\templates\base_main.html:543
+#: .\templates\base_main.html:549
 msgid ""
 "Unfortunately, no additional information about the current webpage is "
 "available"
@@ -2022,7 +2031,7 @@ msgstr ""
 "Malheureusement, aucune information supplémentaire n'est disponible pour la "
 "page web actuelle"
 
-#: .\templates\base_main.html:566
+#: .\templates\base_main.html:572
 msgid ""
 "\n"
 "                Online user:\n"
@@ -2039,15 +2048,15 @@ msgstr[1] ""
 "\n"
 "                En ligne:              "
 
-#: .\templates\base_main.html:573
+#: .\templates\base_main.html:579
 msgid "No users currently online."
 msgstr "Pas d'utilisateurs actuellement en ligne."
 
-#: .\templates\base_main.html:583
+#: .\templates\base_main.html:589
 msgid "Interface : "
 msgstr "Interface : "
 
-#: .\templates\base_main.html:599 .\templates\utilities\bug_report.html:5
+#: .\templates\base_main.html:605 .\templates\utilities\bug_report.html:5
 #: .\views\__init__.py:149
 msgid "Bug Report"
 msgstr "Rapporter un bogue"
@@ -2349,7 +2358,7 @@ msgstr ""
 "Désolé, l'envoi de messages numériques est actuellement désactivé pour "
 "maintenance."
 
-#: .\templates\messaging\conversation.html:10 .\views\messaging_views.py:368
+#: .\templates\messaging\conversation.html:10 .\views\messaging_views.py:372
 msgid "Conversations"
 msgstr "Conversations"
 
@@ -2698,75 +2707,75 @@ msgstr "mon titre de test 1"
 msgid "my test title 2"
 msgstr "mon titre de test 2"
 
-#: .\tests\test_game.py:3959
+#: .\tests\test_game.py:3960
 msgid "Private dummy ability"
 msgstr "Compétence bidon privée"
 
-#: .\tests\test_game.py:5152
+#: .\tests\test_game.py:5157
 msgid "test-title"
 msgstr "test-titre"
 
-#: .\tests\test_game.py:5173
+#: .\tests\test_game.py:5178
 msgid "ssss"
 msgstr "ssss"
 
-#: .\tests\test_game.py:5180 .\tests\test_game.py:5201
+#: .\tests\test_game.py:5185 .\tests\test_game.py:5206
 msgid "SSS"
 msgstr "SSS"
 
-#: .\tests\test_game.py:5184
+#: .\tests\test_game.py:5189
 msgid "DSDSF"
 msgstr "DSDSF"
 
-#: .\tests\test_game.py:5189
+#: .\tests\test_game.py:5194
 msgid "DDD"
 msgstr ""
 
-#: .\tests\test_game.py:5193
+#: .\tests\test_game.py:5198
 msgid "LJKSG"
 msgstr ""
 
-#: .\tests\test_game.py:5212
+#: .\tests\test_game.py:5217
 msgid "Hi"
 msgstr ""
 
-#: .\tests\test_game.py:5213
+#: .\tests\test_game.py:5218
 msgid "Hi2"
 msgstr ""
 
-#: .\tests\test_game.py:5215
+#: .\tests\test_game.py:5220
 msgid "Yowh1"
 msgstr ""
 
-#: .\tests\test_game.py:5216
+#: .\tests\test_game.py:5221
 msgid "Yowh2"
 msgstr ""
 
-#: .\tests\test_game.py:5217
+#: .\tests\test_game.py:5222
 msgid "Yowh3"
 msgstr ""
 
-#: .\tests\test_game.py:5218
+#: .\tests\test_game.py:5223
 msgid "Yowh4"
 msgstr ""
 
-#: .\tests\test_game.py:5220
+#: .\tests\test_game.py:5225
 msgid "Yayh1"
 msgstr ""
 
-#: .\tests\test_game.py:5221
+#: .\tests\test_game.py:5226
 msgid "Yayh2"
 msgstr ""
 
-#: .\tests\test_game.py:5222
+#: .\tests\test_game.py:5227
 msgid "Yayh3"
 msgstr ""
 
-#: .\tests\test_game.py:5223
+#: .\tests\test_game.py:5228
 msgid "Yayh4"
 msgstr ""
 
-#: .\tests\test_game.py:5225
+#: .\tests\test_game.py:5230
 msgid "Maaaster"
 msgstr ""
 
@@ -2860,6 +2869,8 @@ msgstr ""
 
 #: .\views\abilities\__telecom_investigation_mod.py:21
 #: .\views\abilities\__telecom_investigation_mod.py:56
+#: .\views\abilities\telecom_investigation_mod.py:20
+#: .\views\abilities\telecom_investigation_mod.py:48
 msgid "Telecom Investigation"
 msgstr "Analyses Télécom"
 
@@ -3143,6 +3154,43 @@ msgid ""
 msgstr ""
 "Transcription de runes bien envoyée, le résultat vous sera communiqué par "
 "email."
+
+#: .\views\abilities\telecom_investigation_mod.py:23
+msgid "Process Telecom Investigation"
+msgstr "Lancer les Analyses Télécom"
+
+#: .\views\abilities\telecom_investigation_mod.py:90
+msgid "No conversations found in target data."
+msgstr "Aucune conversation trouvée dans les données ciblées."
+
+#: .\views\abilities\telecom_investigation_mod.py:109
+#, python-format
+msgid "Investigation Request - %(target_name)s"
+msgstr "Requête d'investigation - %(target_name)s"
+
+#: .\views\abilities\telecom_investigation_mod.py:111
+msgid "Please look for anything you can find about this person."
+msgstr ""
+"Veuillez nous indiquer tout ce que vous pourriez découvrir sur cet individu."
+
+#: .\views\abilities\telecom_investigation_mod.py:115
+#, python-format
+msgid "<Investigation Results for %(target_name)s>"
+msgstr "<Résultats d'Investigation pour %(target_name)s>"
+
+#: .\views\abilities\telecom_investigation_mod.py:125
+#, python-format
+msgid "Telecom investigation launched on target '%(target_name)s'."
+msgstr "Requête d'investigation lancée sur la cible '%(target_name)s'."
+
+#: .\views\abilities\telecom_investigation_mod.py:130
+#| msgid ""
+#| "Telecom investigation is in process, you'll receive the result by email."
+msgid ""
+"Telecom investigation is in process, you will receive an e-mail with the "
+"intercepted messages soon!"
+msgstr ""
+"Investigation Télécom en cours, vous recevrez bientôt le résultat par email!"
 
 #: .\views\abilities\wiretapping_management_mod.py:24
 msgid "No wiretapping slots available."
@@ -3732,116 +3780,121 @@ msgstr "Modèle de message %s non trouvé"
 msgid "Parent message %s not found"
 msgstr "Message parent %s non trouvé"
 
-#: .\views\messaging_views.py:113 .\views\messaging_views.py:114
+#: .\views\messaging_views.py:114 .\views\messaging_views.py:115
 msgid "Bis:"
 msgstr "Bis:"
 
-#: .\views\messaging_views.py:122 .\views\messaging_views.py:123
+#: .\views\messaging_views.py:126 .\views\messaging_views.py:127
 msgid "Re:"
 msgstr "Re:"
 
-#: .\views\messaging_views.py:128
+#: .\views\messaging_views.py:132
 msgid "Access to initial message forbidden."
 msgstr "Accès au message initial interdit."
 
-#: .\views\messaging_views.py:143
+#: .\views\messaging_views.py:147
 msgid "Use markup language (RestructuredText)"
 msgstr "Utiliser des balises (RestructuredText)"
 
-#: .\views\messaging_views.py:160
+#: .\views\messaging_views.py:164
 msgid "Sending delay in hours (eg. 2.4)"
 msgstr "Délai d'envoi en heures (ex. 2.4)"
 
-#: .\views\messaging_views.py:184
+#: .\views\messaging_views.py:188
 msgid "Placeholder remaining in text"
 msgstr "Marqueur de substitution restant dans le texte"
 
-#: .\views\messaging_views.py:302
+#: .\views\messaging_views.py:306
 msgid "Dispatched Messages"
 msgstr "Messages Transmis"
 
-#: .\views\messaging_views.py:308
+#: .\views\messaging_views.py:312
 msgid "All Dispatched Messages"
 msgstr "Messages Transmis"
 
-#: .\views\messaging_views.py:313
+#: .\views\messaging_views.py:317
 msgid "Pending Messages"
 msgstr "Messages en Attente"
 
-#: .\views\messaging_views.py:319
+#: .\views\messaging_views.py:323
 msgid "All Queued Messages"
 msgstr "Messages en Attente"
 
-#: .\views\messaging_views.py:323
+#: .\views\messaging_views.py:327
 msgid "Force Message Sending"
 msgstr "Forcer Envoi du Message"
 
-#: .\views\messaging_views.py:336
+#: .\views\messaging_views.py:340
 msgid "Message Templates"
 msgstr "Modèles de message"
 
-#: .\views\messaging_views.py:347
+#: .\views\messaging_views.py:351
 #, python-format
 msgid "Unknown template category '%(category)s'"
 msgstr "Catégorie de modèle inconnue '%(category)s'"
 
-#: .\views\messaging_views.py:394
+#: .\views\messaging_views.py:398
 msgid "All My Conversations"
 msgstr "Toutes Mes Conversations"
 
-#: .\views\messaging_views.py:394
+#: .\views\messaging_views.py:398
 msgid "My Recent Conversations"
 msgstr "Mes Conversations Récentes"
 
-#: .\views\messaging_views.py:400 .\views\messaging_views.py:408
+#: .\views\messaging_views.py:404 .\views\messaging_views.py:412
 msgid "Intercepted Messages"
 msgstr "Messages Interceptés"
 
-#: .\views\messaging_views.py:412 .\views\messaging_views.py:420
+#: .\views\messaging_views.py:416 .\views\messaging_views.py:424
 msgid "Archived Messages"
 msgstr "Messages Archivés"
 
-#: .\views\messaging_views.py:425
+#: .\views\messaging_views.py:429
 msgid "Set Template Boolean Flags"
 msgstr "Régler les paramètres booléens des modèles"
 
-#: .\views\messaging_views.py:441
+#: .\views\messaging_views.py:445
 msgid "Set Message Boolean Flags"
 msgstr "Régler les paramètres booléens des messages"
 
-#: .\views\messaging_views.py:458
+#: .\views\messaging_views.py:462
 msgid "Delete Message"
 msgstr "Effacer Message"
 
-#: .\views\messaging_views.py:470 .\views\messaging_views.py:562
+#: .\views\messaging_views.py:474 .\views\messaging_views.py:566
 msgid "Compose Message"
 msgstr "Nouveau Message"
 
-#: .\views\messaging_views.py:482
+#: .\views\messaging_views.py:486
 msgid "Message successfully sent."
 msgstr "Message envoyé avec succès."
 
-#: .\views\messaging_views.py:521
+#: .\views\messaging_views.py:525
 msgid "Errors in message fields."
 msgstr "Erreur dans les champs du message."
 
-#: .\views\messaging_views.py:626
+#: .\views\messaging_views.py:630
 msgid "View Single Message"
 msgstr "Voir Message Seul"
 
-#: .\views\messaging_views.py:652
+#: .\views\messaging_views.py:658
 msgid "The requested message doesn't exist."
 msgstr "Le message demandé n'existe pas."
 
-#: .\views\messaging_views.py:670
+#: .\views\messaging_views.py:665
+#| msgid "Message template %s not found"
+msgid "Message couldn't be found."
+msgstr "Message non trouvé."
+
+#: .\views\messaging_views.py:678
 msgid "Single Message"
 msgstr "Message Unique"
 
-#: .\views\messaging_views.py:678
+#: .\views\messaging_views.py:686
 msgid "Message Preview"
 msgstr "Aperçu du Message"
 
-#: .\views\messaging_views.py:681
+#: .\views\messaging_views.py:689
 msgid "No content submitted for display"
 msgstr "Pas de contenu envoyé pour affichage"
 

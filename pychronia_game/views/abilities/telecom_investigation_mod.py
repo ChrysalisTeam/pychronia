@@ -75,7 +75,7 @@ class TelecomInvestigationAbility(AbstractAbility):
                 participants = set(recipients) | set([sender])
 
             context = {"subject": subject,
-                       "messages": messages_count,
+                       "messages_count": messages_count,
                        "participants": ", ".join(str(e) for e in participants),
                        "first_message_date": django_formats.date_format(first_message_date, "SHORT_DATE_FORMAT"),
                        "last_message_date": django_formats.date_format(last_message_date, "SHORT_DATE_FORMAT")}
@@ -127,4 +127,4 @@ class TelecomInvestigationAbility(AbstractAbility):
                             url=self.get_message_viewer_url_or_none(best_msg_id),
                             visible_by=[self.username])
 
-        return _("Telecom is in process, you will receive an e-mail with the intercepted messages soon!")
+        return _("Telecom investigation is in process, you will receive an e-mail with the intercepted messages soon!")
