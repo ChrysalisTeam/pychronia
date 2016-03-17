@@ -1124,7 +1124,7 @@ class PlayerAuthentication(BaseDataManager):
 
         data = [secret_question, secret_answer]
         if not (all(data) or not any(data)):
-            raise AbnormalUsageError(_("Secret question and secret answer must be both set or both empty"))
+            raise NormalUsageError(_("Secret question and secret answer must be both set or both empty"))
 
         user_properties["secret_question"] = secret_question
         user_properties["secret_answer"] = secret_answer

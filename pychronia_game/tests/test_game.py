@@ -3835,6 +3835,31 @@ class TestDatamanager(BaseGameTestCase):
         self.assertRaises(dm_module.UsageError, self.dm.process_secret_answer_attempt, "guy3", "MiLoU", "bademail@sciences.com")
         self.assertEqual(len(self.dm.get_all_queued_messages()), 1) # untouched
 
+        
+        self.assertRaises(dm_module.AbnormalUsageError, self.dm.update_secret_question_and_answer, "guy3",
+                          secret_question=random.choice((33, None, False)), secret_answer="myanswer")
+        self.assertRaises(dm_module.AbnormalUsageError, self.dm.update_secret_question_and_answer, "guy3",
+                          secret_question="myquestion", secret_answer=random.choice((33, None, False)))
+        self.assertRaises(dm_module.NormalUsageError, self.dm.update_secret_question_and_answer, "guy3",
+                          secret_question="myquestion", secret_answer="")  # all or nothing!
+        self.assertRaises(dm_module.NormalUsageError, self.dm.update_secret_question_and_answer, "guy3",
+                          secret_question="", secret_answer="myanswer")  # all or nothing!
+
+        self.dm.update_secret_question_and_answer("guy3", secret_question="My Question is this", secret_answer="My Answer")
+        data = self.dm.get_character_properties("guy3")
+        assert data["secret_question"]
+        assert data["secret_answer"]
+        res = self.dm.process_secret_answer_attempt("Guy3", " My answeR ", "guy2@pangea.com")  # case-insensitive
+        self.assertEqual(res, "awesome2")  # guy3's password was returned
+
+        self.dm.update_secret_question_and_answer("guy3", secret_question="", secret_answer="")
+        data = self.dm.get_character_properties("guy3")
+        assert not data["secret_question"]
+        assert not data["secret_answer"]
+        
+        with pytest.raises(UsageError):
+            self.dm.process_secret_answer_attempt("Guy3", " My answeR ", "guy2@pangea.com")
+
 
         # password change
 
