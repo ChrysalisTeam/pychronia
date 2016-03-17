@@ -1,11 +1,9 @@
-{% load i18n %}
+{% load i18n replace %}
 ====================================================================================================================
 {{subject}}
 ====================================================================================================================
 
-[% trans "Participants" %}{{COLON}} {{participants}}
+<b>{% trans "Participants" %}</b> - {% replace search="@" replacement="\\@" use_regexp=0 %}{{participants}}{% endreplace %}
 
+{% blocktrans %}{{messages_count}} message(s) exchanged between {{first_message_date}} and {{last_message_date}}.{% endblocktrans %}
 
-{% blocktrans %}{{messages_count}} messages exchanged between {{first_message_date}} and {{last_message_date}}.{% endblocktrans %}
-
-------------

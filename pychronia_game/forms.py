@@ -304,14 +304,13 @@ class ArtefactForm(AbstractGameForm):
 
 
 
-class OtherCharactersForm(AbstractGameForm):
-
+class OtherKnownCharactersForm(AbstractGameForm):
 
     def __init__(self, datamanager, *args, **kwargs):
-        super(OtherCharactersForm, self).__init__(datamanager=datamanager, *args, **kwargs)
+        super(OtherKnownCharactersForm, self).__init__(datamanager=datamanager, *args, **kwargs)
 
-        usernames = datamanager.get_character_usernames(exclude_current=True)
-        usernames_choices = datamanager.build_select_choices_from_character_usernames(usernames)
+        usernames = datamanager.get_other_known_characters()
+        usernames_choices = [("", _("Select an acquaintance..."))] + datamanager.build_select_choices_from_character_usernames(usernames)
         self.fields['target_username'] = forms.ChoiceField(label=_("User"), choices=usernames_choices)
 
 

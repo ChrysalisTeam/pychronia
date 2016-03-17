@@ -6690,17 +6690,15 @@ class TestSpecialAbilities(BaseGameTestCase):
         email_guy2 = self.dm.get_character_email("guy2")
         email_guy3 = self.dm.get_character_email("guy3")
         email_guy4 = self.dm.get_character_email("guy4")
-        email_external = sorted(self.dm.global_contacts.keys())[0]
+        email_external = self.dm.get_global_parameter("all_players_mailing_list")
 
-        msg_id1 = self.dm.post_message(sender_email=email_guy1, recipient_emails=email_external, subject="test", body="test")
+        msg_id1 = self.dm.post_message(sender_email=email_guy1, recipient_emails=email_external, subject="test_1", body="test")
         msg1 = self.dm.get_dispatched_message_by_id(msg_id1)
 
-        msg_id2 = self.dm.post_message(sender_email=email_guy3, recipient_emails=email_guy4, subject="test2", body="test2")
+        msg_id2 = self.dm.post_message(sender_email=email_guy3, recipient_emails=email_guy4, subject="test_2", body="test2")
         msg2 = self.dm.get_dispatched_message_by_id(msg_id2)
-
         time.sleep(1)
-
-        msg_id3 = self.dm.post_message(sender_email=email_guy4, recipient_emails=email_guy3, subject=msg2["subject"], body="test3", parent_id=msg_id2)
+        msg_id3 = self.dm.post_message(sender_email=email_guy4, recipient_emails=email_guy1, subject=msg2["subject"], body="test3", parent_id=msg_id2)
         msg3 = self.dm.get_dispatched_message_by_id(msg_id3)
 
         msg_id4 = self.dm.post_message(sender_email=email_guy1, recipient_emails=email_guy2, subject="sujet", body="mon message")
@@ -6709,47 +6707,30 @@ class TestSpecialAbilities(BaseGameTestCase):
 
         # test extract_conversation_summary utility
 
-        assert telecom.extract_conversation_summary("guy4")
         conversation_summary = telecom.extract_conversation_summary("guy4")
+        assert conversation_summary
+        assert isinstance(conversation_summary, list)
 
-        assert type(conversation_summary) is ListType
 
-
-        # guy4 has 2 conversations, we must have len = 2, therefore:
+        # guy4 has 2 conversations:
         conversation_summary = telecom.extract_conversation_summary("guy4")
         self.assertEqual(len(conversation_summary), 2)
 
-        # NPC doesn't have any conversations, therefore:
-
+        # my_npc doesn't have any conversations, therefore:
         conversation_summary = telecom.extract_conversation_summary("my_npc")
         self.assertEqual(conversation_summary, [])
 
 
         for character in all_characters:
-
             conversation_summary = telecom.extract_conversation_summary(character)
             all_character_messages = self.dm.get_user_related_messages(character, None, None)
             conversations_by_character = self.dm.sort_messages_by_conversations(all_character_messages)
             self.assertEqual(len(conversation_summary), len(conversations_by_character))
 
-        # time check:
-
-        conversation_summary = telecom.extract_conversation_summary("guy4")
-        for conversation in conversation_summary:
-
-            first_message_date = conversation["first_message_date"]
-            last_message_date = conversation["last_message_date"]
-            assert not first_message_date > last_message_date
-
-
-        for character in all_characters:
-
-            conversation_summary = telecom.extract_conversation_summary(character)
             for conversation in conversation_summary:
-
                 first_message_date = conversation["first_message_date"]
                 last_message_date = conversation["last_message_date"]
-                assert not first_message_date > last_message_date
+                assert first_message_date <= last_message_date
 
 
         # test format_conversation_summary utility:
@@ -6775,18 +6756,22 @@ class TestSpecialAbilities(BaseGameTestCase):
         context_list = telecom.extract_conversation_summary("guy4")
         conversation_summary = telecom.format_conversation_summary(context_list)
 
-        self.assertTrue("test" in conversation_summary)
-        self.assertTrue("test2" in conversation_summary)
+        print("---conversation_summary-->\n")
+        print(conversation_summary)
+
+        self.assertTrue("test_1" in conversation_summary)
+        self.assertTrue("test_2" in conversation_summary)
         self.assertTrue("Participants" in conversation_summary)
-        self.assertTrue("guy4@pangea.com" in conversation_summary)
-        self.assertTrue("guy3@pangea.com" in conversation_summary)
-        self.assertTrue("[auction-list]@pangea.com" in conversation_summary)
-        self.assertTrue("1 messages" in conversation_summary)
-        self.assertTrue("2 messages" in conversation_summary)
+        self.assertTrue("guy4\\@pangea.com" in conversation_summary)
+        self.assertTrue("guy3\\@pangea.com" in conversation_summary)
+        self.assertTrue("guy1\\@pangea.com" in conversation_summary)
+        self.assertTrue("[auction-list]\\@pangea.com" in conversation_summary)
+        self.assertTrue("1 message(s)" in conversation_summary)
+        self.assertTrue("2 message(s)" in conversation_summary)
         self.assertFalse("sujet" in conversation_summary)
         self.assertFalse("mon message" in conversation_summary)
-        self.assertFalse("4 messages" in conversation_summary)
-        self.assertFalse("guy2@pangea.com" in conversation_summary)
+        self.assertFalse("4 message(s)" in conversation_summary)
+        self.assertFalse("guy2\\@pangea.com" in conversation_summary)
 
 
         for character in characters_with_conversations:
@@ -6800,9 +6785,9 @@ class TestSpecialAbilities(BaseGameTestCase):
 
                 for message in conversation:
 
-                    self.assertTrue(message["subject"] in conversation_summary) #watch out with response emails that have "RE" in subject; assert becomes false
-                    self.assertTrue(message["sender_email"] in conversation_summary)
-                    self.assertTrue(", ".join(str(e) for e in message["recipient_emails"]) in conversation_summary)
+                    self.assertTrue(message["subject"] in conversation_summary) # watch out with response emails that have "RE" in subject; assert becomes false
+                    self.assertTrue(message["sender_email"].replace("@", "\\@") in conversation_summary)
+                    self.assertTrue(", ".join(e.replace("@", "\\@") for e in message["recipient_emails"]) in conversation_summary)
                     self.assertTrue("%(X)s messages" % dict(X=len(conversation)))
 
 
@@ -6850,7 +6835,7 @@ class TestSpecialAbilities(BaseGameTestCase):
         telecom.process_telecom_investigation("guy4")
 
 
-        # investigation request e-mail:
+        # investigate request e-mail:
 
         msgs = self.dm.get_all_dispatched_messages()
         msg = msgs[-2]
@@ -6860,7 +6845,7 @@ class TestSpecialAbilities(BaseGameTestCase):
         self.assertEqual(msg["subject"], "Investigation Request - Kha")
 
 
-        # investigation results e-mail:
+        # investigate result e-mail:
 
         context_list = telecom.extract_conversation_summary("guy4")
         body = telecom.format_conversation_summary(context_list)

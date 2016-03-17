@@ -8,7 +8,7 @@ from pychronia_game.datamanager.abstract_ability import AbstractAbility
 from pychronia_game.datamanager.abstract_game_view import register_view
 from pychronia_game.datamanager.datamanager_tools import readonly_method, \
     transaction_watcher
-from pychronia_game.forms import OtherCharactersForm
+from pychronia_game.forms import OtherKnownCharactersForm
 from django.utils.html import strip_tags
 from django.utils import formats as django_formats
 from django.template.loader import render_to_string
@@ -21,7 +21,7 @@ class TelecomInvestigationAbility(AbstractAbility):
     NAME = "telecom_investigation"
 
     GAME_ACTIONS = dict(investigation_form=dict(title=ugettext_lazy("Process Telecom Investigation"),
-                                               form_class=OtherCharactersForm,
+                                               form_class=OtherKnownCharactersForm,
                                                callback="process_telecom_investigation"))
 
     TEMPLATE = "abilities/telecom_investigation.html"
@@ -41,42 +41,37 @@ class TelecomInvestigationAbility(AbstractAbility):
         pass # nothing to do
 
     def get_template_vars(self, previous_form_data=None):
-        translation_form = self._instantiate_game_form(new_action_name="investigation_form",
-                                                       hide_on_success=False,
-                                                      previous_form_data=previous_form_data)
+        investigation_form = self._instantiate_game_form(new_action_name="investigation_form",
+                                                         hide_on_success=False,
+                                                         previous_form_data=previous_form_data)
         return {
                  'page_title': _("Telecom Investigation"),
-                 "investigation_form": translation_form,
+                 "investigation_form": investigation_form,
                }
 
 
     def extract_conversation_summary(self, target_username):
 
-        visibility_reasons = None
-        archived = None
-
-        result = self.get_user_related_messages(target_username, visibility_reasons, archived)
+        result = self.get_user_related_messages(target_username, visibility_reasons=None, archived=None)
 
         conversations = self.sort_messages_by_conversations(result)
         context_list = []
 
-
         for conversation in conversations:
-
             messages_count = len(conversation)
             subject = conversation[-1]["subject"]
             first_message_date = conversation[-1]["sent_at"]
             last_message_date = conversation[0]["sent_at"]
-            sender = conversation[-1]["sender_email"]
 
+            participants = set()  # set of EMAIL ADDRESSES
             for message in conversation:
-
-                recipients = message["recipient_emails"]
-                participants = set(recipients) | set([sender])
+                participants.add(message["sender_email"])
+                participants.update(message["recipient_emails"])
+            participants = sorted(participants)
 
             context = {"subject": subject,
                        "messages_count": messages_count,
-                       "participants": ", ".join(str(e) for e in participants),
+                       "participants": ", ".join(participants),
                        "first_message_date": django_formats.date_format(first_message_date, "SHORT_DATE_FORMAT"),
                        "last_message_date": django_formats.date_format(last_message_date, "SHORT_DATE_FORMAT")}
             context_list.append(context)
@@ -91,7 +86,7 @@ class TelecomInvestigationAbility(AbstractAbility):
         else:
             for context in context_list:
                 html.append(render_to_string("abilities/telecom_summary_format.html", context))
-        return "\n".join(html)
+        return "\n\n-----\n\n".join(html)
 
 
     @transaction_watcher

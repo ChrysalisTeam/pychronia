@@ -2826,6 +2826,9 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
 
     @readonly_method
     def get_character_address_book(self, username=CURRENT_USER):
+        """
+        Address boook CAN include the email address of his owner.
+        """
         username = self._resolve_username(username)
         props = self.get_character_properties(username)
         return props["address_book"] # not sorted

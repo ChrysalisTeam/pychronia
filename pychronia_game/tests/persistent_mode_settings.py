@@ -78,7 +78,7 @@ def GAME_INITIAL_FIXTURE_SCRIPT(dm):
     
     time.sleep(1)
     
-    msg_id8 = dm.post_message(sender_email=email_guy4, recipient_emails=email_guy3, subject = "RE:%s" % msg7["subject"], body="T'as raison ils sont si doux", parent_id=msg_id7)
+    msg_id8 = dm.post_message(sender_email=email_guy4, recipient_emails=[email_guy3], subject="RE:%s" % msg7["subject"], body="T'as raison ils sont si doux", parent_id=msg_id7)
     msg8 = dm.get_dispatched_message_by_id(msg_id8)
 
     tpl = dm.get_message_template("feedback_akaris_threats_geoip")
