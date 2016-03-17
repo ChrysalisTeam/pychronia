@@ -26,9 +26,10 @@ class TelecomInvestigationAbility(AbstractPartnershipAbility):
 
     TEMPLATE = "abilities/telecom_investigation.html"
 
-    ACCESS = UserAccess.authenticated
-    REQUIRES_CHARACTER_PERMISSION = False
-    REQUIRES_GLOBAL_PERMISSION = False
+    ACCESS = UserAccess.character
+    REQUIRES_CHARACTER_PERMISSION = True
+    REQUIRES_GLOBAL_PERMISSION = True
+
 
     @classmethod
     def _setup_ability_settings(cls, settings):
