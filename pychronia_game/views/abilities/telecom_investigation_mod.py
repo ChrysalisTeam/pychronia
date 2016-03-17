@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 from datetime import datetime
 
 from pychronia_game.common import *
-from pychronia_game.datamanager.abstract_ability import AbstractAbility
+from pychronia_game.datamanager.abstract_ability import AbstractPartnershipAbility
 from pychronia_game.datamanager.abstract_game_view import register_view
 from pychronia_game.datamanager.datamanager_tools import readonly_method, \
     transaction_watcher
@@ -15,7 +15,7 @@ from django.template.loader import render_to_string
 
 
 @register_view
-class TelecomInvestigationAbility(AbstractAbility):
+class TelecomInvestigationAbility(AbstractPartnershipAbility):
 
     TITLE = ugettext_lazy("Telecom Investigation")
     NAME = "telecom_investigation"
@@ -49,7 +49,7 @@ class TelecomInvestigationAbility(AbstractAbility):
                  "investigation_form": investigation_form,
                }
 
-
+    @readonly_method
     def extract_conversation_summary(self, target_username):
 
         result = self.get_user_related_messages(target_username, visibility_reasons=None, archived=None)
@@ -78,7 +78,7 @@ class TelecomInvestigationAbility(AbstractAbility):
 
         return context_list
 
-
+    @readonly_method
     def format_conversation_summary(self, context_list):
         html = []
         if context_list == []:
@@ -94,7 +94,7 @@ class TelecomInvestigationAbility(AbstractAbility):
 
         target_official_name = self.get_official_name(target_username)
         user_email = self.get_character_email()
-        remote_email = "investigator@spies.com"
+        remote_email = self.dedicated_email
 
         # NOTE : we do not use _process_standard_exchange_with_partner() for this ability,
         # since game master can't do that extract by himself, if we cancel autoresponses
@@ -112,7 +112,7 @@ class TelecomInvestigationAbility(AbstractAbility):
 
         body = self.format_conversation_summary(context_list)
 
-        best_msg_id = self.post_message(remote_email, user_email, subject, body, date_or_delay_mn=0)
+        best_msg_id = self.post_message(remote_email, user_email, subject, body, date_or_delay_mn=self.auto_answer_delay_mn)
 
         #ajouter délai avec self.get_global_parameter("telecom_investigation_delays") - IMPLEMENTER LES INVESTIGATION DELAYS DANS LES SETTINGS
 

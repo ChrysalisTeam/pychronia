@@ -90,7 +90,6 @@ abilities:
                         money_price: 115
                         gems_price: 234
 
-
     matter_analysis:
         settings:
             dedicated_email: "physicslab@alifir-academy.com"
@@ -100,6 +99,11 @@ abilities:
                 # NO GEMS ATM HERE
                 #several_misc_gems: "analysis of several_misc_gems"
                 #several_misc_gems2: "analysis of several_misc_gems2"
+
+    telecom_investigation:
+        settings:
+            dedicated_email: "investigator@spies.com"
+            result_delay: [2, 3]
 
     world_scan:
         settings:
@@ -460,6 +464,8 @@ messaging:
         "physicslab@alifir-academy.com": {}
 
         "mercenaries@brotherhood.pg": {}
+
+        "investigator@spies.com": {}
 
 
     messages_dispatched:  #-> list of messages processed
