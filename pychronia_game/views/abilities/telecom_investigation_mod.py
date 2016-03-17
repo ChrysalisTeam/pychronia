@@ -10,6 +10,7 @@ from pychronia_game.datamanager.datamanager_tools import readonly_method, \
     transaction_watcher
 from pychronia_game.forms import OtherCharactersForm
 from django.utils.html import strip_tags
+from django.utils import formats as django_formats
 from django.template.loader import render_to_string
 
 
@@ -64,8 +65,8 @@ class TelecomInvestigationAbility(AbstractAbility):
 
             messages_count = len(conversation)
             subject = conversation[-1]["subject"]
-            first_message_date = conversation[-1]["sent_at"].date()
-            last_message_date = conversation[0]["sent_at"].date()
+            first_message_date = conversation[-1]["sent_at"]
+            last_message_date = conversation[0]["sent_at"]
             sender = conversation[-1]["sender_email"]
 
             for message in conversation:
@@ -73,7 +74,11 @@ class TelecomInvestigationAbility(AbstractAbility):
                 recipients = message["recipient_emails"]
                 participants = set(recipients) | set([sender])
 
-            context = {"subject" : subject, "messages" : messages_count, "participants" : (", ".join(str(e) for e in participants)), "first_message" : first_message_date, "last_message" :last_message_date}
+            context = {"subject": subject,
+                       "messages": messages_count,
+                       "participants": ", ".join(str(e) for e in participants),
+                       "first_message_date": django_formats.date_format(first_message_date, "SHORT_DATE_FORMAT"),
+                       "last_message_date": django_formats.date_format(last_message_date, "SHORT_DATE_FORMAT")}
             context_list.append(context)
 
         return context_list
@@ -97,25 +102,29 @@ class TelecomInvestigationAbility(AbstractAbility):
         user_email = self.get_character_email()
         remote_email = "investigator@spies.com"
 
-        ### TODO USE NEW UTILITIES FOR REQUEST AND RESPONSE MESSAGES ###
+        # NOTE : we do not use _process_standard_exchange_with_partner() for this ability,
+        # since game master can't do that extract by himself, if we cancel autoresponses
 
-        #request e-mail:
+        # request e-mail:
         subject = _("Investigation Request - %(target_name)s") % dict(target_name=target_name)
 
         body = _("Please look for anything you can find about this person.")
         self.post_message(user_email, remote_email, subject, body, date_or_delay_mn=0)
 
-        #answer e-mail:
+        # answer e-mail:
         subject = _('<Investigation Results for %(target_name)s>') % dict(target_name=target_name)
 
         context_list = self.extract_conversation_summary(target_username)
 
         body = self.format_conversation_summary(context_list)
 
-        msg_id = self.post_message(remote_email, user_email, subject, body, date_or_delay_mn=0)
+        best_msg_id = self.post_message(remote_email, user_email, subject, body, date_or_delay_mn=0)
 
         #ajouter délai avec self.get_global_parameter("telecom_investigation_delays") - IMPLEMENTER LES INVESTIGATION DELAYS DANS LES SETTINGS
 
-        self.log_game_event(ugettext_noop("Player '%(user)s' has run a telecom investigation on '%(target_name)s'."), PersistentMapping(user=username, target_name=target_name), visible_by=None)
+        self.log_game_event(ugettext_noop("Telecom investigation launched on target '%(target_name)s'."),
+                            PersistentMapping(target_name=target_name),
+                            url=self.get_message_viewer_url_or_none(best_msg_id),
+                            visible_by=[self.username])
 
         return _("Telecom is in process, you will receive an e-mail with the intercepted messages soon!")

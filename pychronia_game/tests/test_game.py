@@ -6737,8 +6737,8 @@ class TestSpecialAbilities(BaseGameTestCase):
         conversation_summary = telecom.extract_conversation_summary("guy4")
         for conversation in conversation_summary:
 
-            first_message_date = conversation["first_message"]
-            last_message_date = conversation["last_message"]
+            first_message_date = conversation["first_message_date"]
+            last_message_date = conversation["last_message_date"]
             assert not first_message_date > last_message_date
 
 
@@ -6747,8 +6747,8 @@ class TestSpecialAbilities(BaseGameTestCase):
             conversation_summary = telecom.extract_conversation_summary(character)
             for conversation in conversation_summary:
 
-                first_message_date = conversation["first_message"]
-                last_message_date = conversation["last_message"]
+                first_message_date = conversation["first_message_date"]
+                last_message_date = conversation["last_message_date"]
                 assert not first_message_date > last_message_date
 
 
