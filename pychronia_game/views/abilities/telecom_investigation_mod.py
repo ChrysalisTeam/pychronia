@@ -92,8 +92,7 @@ class TelecomInvestigationAbility(AbstractAbility):
     @transaction_watcher
     def process_telecom_investigation(self, target_username, use_gems=()):
 
-        username = self.get_official_name()
-        target_name = self.get_official_name(target_username)
+        target_official_name = self.get_official_name(target_username)
         user_email = self.get_character_email()
         remote_email = "investigator@spies.com"
 
@@ -101,13 +100,13 @@ class TelecomInvestigationAbility(AbstractAbility):
         # since game master can't do that extract by himself, if we cancel autoresponses
 
         # request e-mail:
-        subject = _("Investigation Request - %(target_name)s") % dict(target_name=target_name)
+        subject = _("Telecom Investigation Request - %(target_name)s") % dict(target_name=target_official_name)
 
         body = _("Please look for anything you can find about this person.")
         self.post_message(user_email, remote_email, subject, body, date_or_delay_mn=0)
 
         # answer e-mail:
-        subject = _('<Investigation Results for %(target_name)s>') % dict(target_name=target_name)
+        subject = _('Telecom Investigation Results - %(target_name)s') % dict(target_name=target_official_name)
 
         context_list = self.extract_conversation_summary(target_username)
 
@@ -118,7 +117,7 @@ class TelecomInvestigationAbility(AbstractAbility):
         #ajouter délai avec self.get_global_parameter("telecom_investigation_delays") - IMPLEMENTER LES INVESTIGATION DELAYS DANS LES SETTINGS
 
         self.log_game_event(ugettext_noop("Telecom investigation launched on target '%(target_name)s'."),
-                            PersistentMapping(target_name=target_name),
+                            PersistentMapping(target_name=target_official_name),
                             url=self.get_message_viewer_url_or_none(best_msg_id),
                             visible_by=[self.username])
 

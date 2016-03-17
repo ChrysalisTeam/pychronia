@@ -1,9 +1,8 @@
 {% load i18n replace %}
-====================================================================================================================
-{{subject}}
-====================================================================================================================
 
-<b>{% trans "Participants" %}</b> - {% replace search="@" replacement="\\@" use_regexp=0 %}{{participants}}{% endreplace %}
+**{% trans "Subject" %}** - {{subject}}
+
+**{% trans "Participants" %}** - {% replace search="@" replacement="\\@" use_regexp=0 %}{{participants}}{% endreplace %}
 
 {% blocktrans %}{{messages_count}} message(s) exchanged between {{first_message_date}} and {{last_message_date}}.{% endblocktrans %}
 

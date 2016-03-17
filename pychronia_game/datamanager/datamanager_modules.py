@@ -585,7 +585,7 @@ class CharacterHandling(BaseDataManager): # TODO REFINE
         Returns display names (combining logins and official names) for these characters
         """
         _chars_data = self.get_character_sets()
-        visible_names = [username + u" (%s)" % (_chars_data[username]["official_name"] or _("Unidentified"))
+        visible_names = [username.capitalize() + u" (%s)" % (_chars_data[username]["official_name"] or _("Unidentified"))
                          for username in usernames]
         return visible_names
 
