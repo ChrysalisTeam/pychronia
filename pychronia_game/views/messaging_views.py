@@ -32,7 +32,7 @@ class MessageComposeForm(AbstractGameForm):
 
     recipients = Select2TagsField(label=ugettext_lazy("Recipients"), required=True)
 
-    mask_recipients = forms.BooleanField(label=ugettext_lazy("Mask recipients"), initial=False, required=False)
+    #mask_recipients = forms.BooleanField(label=ugettext_lazy("Mask recipients"), initial=False, required=False)
 
     subject = forms.CharField(label=ugettext_lazy("Subject"), widget=forms.TextInput(attrs={'size':'35'}), required=True)
 
@@ -63,7 +63,7 @@ class MessageComposeForm(AbstractGameForm):
         attachment = url_data.get("attachment")
         transferred_msg = url_data.get("transferred_msg", "")
         parent_id = url_data.get("parent_id", "")
-        mask_recipients = (url_data.get("mask_recipients", "") == "1")
+        #mask_recipients = (url_data.get("mask_recipients", "") == "1")
 
         datamanager = request.datamanager
         user = request.datamanager.user
@@ -85,7 +85,7 @@ class MessageComposeForm(AbstractGameForm):
                 else:
                     sender = tpl["sender_email"] or sender
                     recipients = tpl["recipient_emails"] or recipients
-                    mask_recipients = tpl["mask_recipients"]
+                    #mask_recipients = tpl["mask_recipients"]
                     subject = tpl["subject"] or subject
                     body = tpl["body"] or body
                     attachment = tpl["attachment"] or attachment
@@ -119,12 +119,12 @@ class MessageComposeForm(AbstractGameForm):
                     if user.is_master:
                         sender = msg["recipient_emails"][0] if len(msg["recipient_emails"]) == 1 else None # let the sender empty for master, if we're not sure which recipient we represent
                     recipients = [msg["sender_email"]]
-                    if user.is_master or not msg["mask_recipients"]:  # IMPORTANT - else spoilers!!
-                        my_email = datamanager.get_character_email() if user.is_character else None
-                        # works OK if my_email is None (i.e game master) or sender is None
-                        recipients += [_email for _email in msg["recipient_emails"] if _email != my_email and _email != sender]
-                    if _("Re:") not in msg["subject"]:
-                        subject = _("Re:") + " " + subject
+                    my_email = datamanager.get_character_email() if user.is_character else None
+                    # works OK if my_email is None (i.e game master) or sender is None
+                    recipients += [_email for _email in msg["recipient_emails"] if _email != my_email and _email != sender]
+                    response_prefix = _("Re:")
+                    if response_prefix not in msg["subject"]:
+                        subject = response_prefix + " " + subject
                     # don't resend attachment, here too! #
 
                 else: # visibility reason is None, or another visibility case (eg. interception)
@@ -170,7 +170,7 @@ class MessageComposeForm(AbstractGameForm):
         self.fields["recipients"].initial = list(recipients)  # prevents ZODB types...
         self.fields["recipients"].choice_tags = available_recipients
 
-        self.fields["mask_recipients"].initial = mask_recipients
+        #self.fields["mask_recipients"].initial = mask_recipients
 
         self.fields["subject"].initial = subject
         self.fields["body"].initial = body
@@ -502,7 +502,7 @@ def compose_message(request, template_name='messaging/compose.html'):
 
                 # we parse the list of emails
                 recipient_emails = form.cleaned_data["recipients"]
-                mask_recipients = form.cleaned_data["mask_recipients"]
+                #mask_recipients = form.cleaned_data["mask_recipients"]
 
                 subject = form.cleaned_data["subject"]
                 body = form.cleaned_data["body"]
@@ -515,7 +515,7 @@ def compose_message(request, template_name='messaging/compose.html'):
                 # sender_email and one of the recipient_emails can be the same email, we don't care !
                 sent_msg_id = request.datamanager.post_message(sender_email, recipient_emails, subject, body,
                                                               attachment=attachment, transferred_msg=transferred_msg,
-                                                              date_or_delay_mn=sending_date, mask_recipients=mask_recipients,
+                                                              date_or_delay_mn=sending_date,
                                                               parent_id=parent_id, use_template=use_template,
                                                               body_format=body_format)
                 assert sent_msg_id

@@ -1845,7 +1845,7 @@ class TestDatamanager(BaseGameTestCase):
         self.assertEqual(tpl["is_ignored"], False)
 
         msg_id4 = self.dm.post_message(email("guy3"), email("guy1"), subject="ssd", body="qsdqsd",
-                                       use_template=tpl_id, mask_recipients=True, transferred_msg=msg_id2,
+                                       use_template=tpl_id, transferred_msg=msg_id2,
                                        attachment="/urlbidon")
 
         msg = self.dm.get_dispatched_message_by_id(msg_id4)
@@ -1866,7 +1866,7 @@ class TestDatamanager(BaseGameTestCase):
 
         print (new_tpl)
         assert new_tpl == {u'body': u'qsdqsd', 'gamemaster_hints': u'',
-                           u'mask_recipients': True, u'recipient_emails': [u'guy1@pangea.com'],
+                           u'recipient_emails': [u'guy1@pangea.com'],
                            u'transferred_msg': u'1_1ef3', u'attachment': None, u'sender_email': u'guy3@pangea.com',
                            u'categories': [u'unsorted'], u'subject': u'ssd', u'attachment': u'/urlbidon'}
 
@@ -2362,8 +2362,7 @@ class TestDatamanager(BaseGameTestCase):
         msgs = self.dm.get_all_dispatched_messages()
         self.assertEqual(len(msgs), 1)
         msg = msgs[0]
-        assert not msg["mask_recipients"]  # default value
-        # we now check that MATSER doesn't appear in get_characters_for_visibility_reason() output
+        # we now check that MASTER doesn't appear in get_characters_for_visibility_reason() output
         assert self.dm.get_characters_for_visibility_reason(msg, visibility_reason=VISIBILITY_REASONS.interceptor) == []
         assert self.dm.get_characters_for_visibility_reason(msg, visibility_reason=VISIBILITY_REASONS.sender) == []
         assert self.dm.get_characters_for_visibility_reason(msg, visibility_reason=VISIBILITY_REASONS.recipient) == []
@@ -2532,9 +2531,6 @@ class TestDatamanager(BaseGameTestCase):
         assert MASTER not in c["visible_by"]
         assert d["visible_by"][MASTER] == VISIBILITY_REASONS.sender # takes precedence!
 
-        assert all(not x["mask_recipients"] for x in self.dm.get_all_dispatched_messages())
-
-
         # test that we can initialize boolean fields as we wish
         self.dm.post_message(**{
             "sender_email": "guy4@pangea.com",
@@ -2555,11 +2551,11 @@ class TestDatamanager(BaseGameTestCase):
         assert msg["has_archived"] == ["guy4"]
 
 
-    def test_message_recipients_masking(self):
+    def _____test_message_recipients_masking(self):
 
         self._reset_messages()
 
-        self.dm.post_message("guy2@pangea.com", "guy1@pangea.com", subject="AAA", body="BBBBB", mask_recipients=True)
+        self.dm.post_message("guy2@pangea.com", "guy1@pangea.com", subject="AAA", body="BBBBB")
 
         (msg,) = self.dm.get_all_dispatched_messages()
 
@@ -3835,7 +3831,7 @@ class TestDatamanager(BaseGameTestCase):
         self.assertRaises(dm_module.UsageError, self.dm.process_secret_answer_attempt, "guy3", "MiLoU", "bademail@sciences.com")
         self.assertEqual(len(self.dm.get_all_queued_messages()), 1) # untouched
 
-        
+
         self.assertRaises(dm_module.AbnormalUsageError, self.dm.update_secret_question_and_answer, "guy3",
                           secret_question=random.choice((33, None, False)), secret_answer="myanswer")
         self.assertRaises(dm_module.AbnormalUsageError, self.dm.update_secret_question_and_answer, "guy3",
@@ -3856,7 +3852,7 @@ class TestDatamanager(BaseGameTestCase):
         data = self.dm.get_character_properties("guy3")
         assert not data["secret_question"]
         assert not data["secret_answer"]
-        
+
         with pytest.raises(UsageError):
             self.dm.process_secret_answer_attempt("Guy3", " My answeR ", "guy2@pangea.com")
 
@@ -4891,7 +4887,6 @@ class TestHttpRequests(BaseGameTestCase):
                             attachment="/files/e797ff6b/personal_files/_common_files_/Ninja-cat.mp4",
                             body="sdfsdfsdfsdf",
                             delay_h="-1",
-                            mask_recipients="on",
                             parent_id=str(parent_msg_id),
                             recipients="emilos.loakim@anthropia.pg",
                             sender="contact@akaris.pg",

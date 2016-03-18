@@ -152,32 +152,21 @@
             <tr>
             <td><strong>{% trans "To:" %}</strong></td>
             <td>
-                {% if message.mask_recipients and not ctx.force_recipients_display and not display_admin_tips %}
-                    <i>&lt; {% trans "undisclosed recipients list" %} &gt;</i>
-                {% else %}
-                    {% for recipient_email in message.recipient_emails %}
-                        {% with contact=contact_cache|dict_get:recipient_email %}
-                            {% include "utilities/contact_display.html" with address=recipient_email contact=contact compose_link=True %}
-                        {% endwith %}
-                        <!--{% if not forloop.first %}, {% endif %}
-                        <a href="{% game_view_url "pychronia_game.views.compose_message" %}?recipient={{ recipient_email|urlencode }}">
-                        <span style="color:{% usercolor recipient_email %};">{{ recipient_email }}</span>
-                        </a>-->
-                    {% endfor %}
-                {% endif %}
+                {% for recipient_email in message.recipient_emails %}
+                    {% with contact=contact_cache|dict_get:recipient_email %}
+                        {% include "utilities/contact_display.html" with address=recipient_email contact=contact compose_link=True %}
+                    {% endwith %}
+                    <!--{% if not forloop.first %}, {% endif %}
+                    <a href="{% game_view_url "pychronia_game.views.compose_message" %}?recipient={{ recipient_email|urlencode }}">
+                    <span style="color:{% usercolor recipient_email %};">{{ recipient_email }}</span>
+                    </a>-->
+                {% endfor %}
             </td>
             </tr>
 
             {% endif %}
 
         </table>
-
-        {% if message.mask_recipients and ctx.force_recipients_display or message.mask_recipients and display_admin_tips %}
-            <p {% if display_admin_tips %}class="admin-note"{% endif %}>
-                <b>{% trans "The recipients list is masked for all viewers except the sender." %} {# even if master, no need for admin-note, we just simulate "I'm the sender" #}</b>
-            </p>
-        {% endif %}
-
 
         <br/>
 

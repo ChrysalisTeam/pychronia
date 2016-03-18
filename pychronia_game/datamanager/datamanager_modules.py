@@ -1687,7 +1687,6 @@ class TextMessagingCore(BaseDataManager):
                 msg["attachment"] = game_file_url(msg["attachment"])
 
             msg["is_certified"] = msg.get("is_certified", False)
-            msg["mask_recipients"] = msg.get("mask_recipients", False)
 
             if isinstance(msg["sent_at"], (long, int)): # offset in minutes
                 msg["sent_at"] = self.compute_effective_remote_datetime(msg["sent_at"])
@@ -1721,7 +1720,6 @@ class TextMessagingCore(BaseDataManager):
                              "sender_email": basestring, # only initial one
                              "recipient_emails": PersistentList, # only initial, theoretical ones
                              "visible_by": PersistentMapping, # mapping usernames (including master_login) to translatable (ugettext_noop'ed) string "reason of visibility" or None (if obvious)
-                             "mask_recipients": bool,  # equivalent of "full black-carbon-copy", even for current user
 
                              "subject": basestring,
                              "body": basestring,
@@ -1825,14 +1823,11 @@ class TextMessagingCore(BaseDataManager):
     def _build_new_message(self, sender_email, recipient_emails, subject, body,
                            attachment=None, transferred_msg=None,
                            date_or_delay_mn=None, is_certified=False,
-                           parent_id=None, mask_recipients=False,
-                           body_format="rst", **kwargs):
+                           parent_id=None, body_format="rst", **kwargs):
         """
         Beware, if a delay, date_or_delay_mn is treated as FLEXIBLE TIME.
         
         sender_email can be in recipient_emails too.
-        
-        mask_recipients is the equivalent of "full BCC", bo one can see the list of recipients
         
         TODO - is_certified is unused ATM.
         """
@@ -1875,7 +1870,6 @@ class TextMessagingCore(BaseDataManager):
         msg = PersistentMapping({
                               "sender_email": sender_email,
                               "recipient_emails": recipient_emails,
-                              "mask_recipients": mask_recipients,
                               "subject": subject,
                               "body": body,
                               "attachment": attachment, # None or string, a valid URL
@@ -2259,7 +2253,6 @@ class TextMessagingTemplates(BaseDataManager):
                 msg["is_used"] = msg.get("is_used", False)
                 msg["is_ignored"] = msg.get("is_ignored", False)
                 msg["parent_id"] = msg.get("parent_id", None)
-                msg["mask_recipients"] = msg.get("mask_recipients", False)
 
                 if "id" in msg:
                     del msg["id"] # cleanup
@@ -2285,7 +2278,7 @@ class TextMessagingTemplates(BaseDataManager):
         messaging = self.messaging_data
 
         #FIXME - BEWARE group_id not used yet, but it will be someday!!!
-
+        #FIXME REMOVE masked_recipients, compatibility layer for old fixtures!
         template_fields = set("sender_email recipient_emails subject body attachment transferred_msg is_used is_ignored parent_id gamemaster_hints categories sent_at group_id order mask_recipients".split())
 
         for msg in messaging["manual_messages_templates"].values():
@@ -2326,7 +2319,6 @@ class TextMessagingTemplates(BaseDataManager):
                 except UsageError as e:
                     pass  # message might have been deleted by game master, we ignore this
 
-            utilities.check_is_bool(msg["mask_recipients"])
             utilities.check_is_bool(msg["is_used"])
             utilities.check_is_bool(msg["is_ignored"])
 
@@ -2373,7 +2365,7 @@ class TextMessagingTemplates(BaseDataManager):
         res = dict(categories=["unsorted"],
                    gamemaster_hints="")
 
-        copied_fields = "sender_email recipient_emails mask_recipients subject body attachment transferred_msg".split()
+        copied_fields = "sender_email recipient_emails subject body attachment transferred_msg".split()
         res.update({k: utilities.safe_copy(v) for (k, v) in msg.items() if k in copied_fields and v is not None})  # beware copy()
 
         return res
