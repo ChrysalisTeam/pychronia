@@ -33,6 +33,7 @@ django-cms==3.0.12
 
 django-contrib-comments==1.5
 
+django-polymorphic==0.7.2
 django-filer==0.9.9
 
 django-request==1.2.0
@@ -52,6 +53,9 @@ djangocms-text-ckeditor==2.4.3
 django-zodb==0.3dev
 
 easy-thumbnails==2.2
+
+# for cmsplugin-gallery
+django-inline-ordering>=0.1.1
 
 # for rst->pdf builders
 jinja2==2.8
