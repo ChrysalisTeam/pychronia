@@ -10,7 +10,7 @@ import functools
 
 
 def begin_transaction_with_autoreconnect():
-    from _mysql_exceptions import OperationalError, InterfaceError
+    from pymysql import OperationalError, InterfaceError  # replaces MySQLdb
     disconnected_exceptions = (
         OperationalError,
         InterfaceError,

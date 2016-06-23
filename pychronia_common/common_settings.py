@@ -8,6 +8,13 @@ try:
 except ImportError:
     pass
 
+try:
+    import pymysql
+    pymysql.install_as_MySQLdb()  # drop-in replacement
+except ImportError:
+    pass
+
+
 
 import pychronia_common.default_logging_config # base handlers
 

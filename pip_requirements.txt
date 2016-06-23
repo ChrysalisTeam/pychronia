@@ -1,8 +1,9 @@
 
 
+###MySQL-python>=1.2.4
 
-# BEWARE - on windows, use MSI instead for these few packages #
-MySQL-python>=1.2.4
+PyMySQL==0.7.3
+
 Pillow>=2.7.0
 
 
@@ -16,7 +17,7 @@ decorator==3.4.0
 Django==1.7.6
 
 #Django-Select2==4.2.2 OUTDATED - think about periodically updating the tag below
-git+https://github.com/applegrew/django-select2#b9400e235b7c047eb73ba0cfcb581a5dcf9153d2
+git+https://github.com/applegrew/django-select2@b9400e235b7c047eb73ba0cfcb581a5dcf9153d2
 
 django-admin-jqueryui==1.8.22
 django-appconf==1.0.1
@@ -72,6 +73,7 @@ pip-tools
 
 pytz
 
+# pip might fail with "autoconf error" for pycrypto, in this case install it manually via setup.py
 pycrypto==2.6.1  # no much used ATM
 
 python-memcached==1.53
@@ -85,7 +87,7 @@ requests==2.5.3
 Sphinx==1.2
 
 ZEO==4.1.0
-ZODB==4.1.0
+ZODB==4.3.1
 
 
 # django-sentry==1.13.5  # might be useful
