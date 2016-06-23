@@ -63,17 +63,20 @@ class TestZODB(TestCase):
         a = PersistentMapping(dict(a=3, b=5))
         b = a.copy()
         c = copy.copy(a)
+        d = copy.deepcopy(a)
 
         assert a == b
         assert a == c
+        assert a == d
         assert a is not b
         assert a is not c
         assert b is not c
+        assert a is not d
 
         del a["a"]
         assert b["a"]  # NOT impacted
-        assert c["a"]  # NOT impacted
-
+        assert "a" not in c, c  # BUG, is impacted!
+        assert d["a"]  # NOT impacted
 
 
     def test_savepoints(self):
