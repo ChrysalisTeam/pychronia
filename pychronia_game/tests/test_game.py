@@ -2557,20 +2557,6 @@ class TestDatamanager(BaseGameTestCase):
         assert msg["has_archived"] == ["guy4"]
 
 
-    def _____test_message_recipients_masking(self):
-
-        self._reset_messages()
-
-        self.dm.post_message("guy2@pangea.com", "guy1@pangea.com", subject="AAA", body="BBBBB")
-
-        (msg,) = self.dm.get_all_dispatched_messages()
-
-        assert msg["mask_recipients"]  # important
-
-        assert msg["visible_by"]["guy2"] == VISIBILITY_REASONS.sender
-        assert msg["visible_by"]["guy1"] == VISIBILITY_REASONS.recipient
-
-
     def test_time_shifts_on_message_posting(self):
 
         self._reset_messages()
@@ -4775,6 +4761,7 @@ class TestHttpRequests(BaseGameTestCase):
     def test_message_composition(self):
 
         self._reset_django_db()
+        self._reset_messages()
 
         self._player_auth("guy1")
 
@@ -4795,6 +4782,51 @@ class TestHttpRequests(BaseGameTestCase):
 
         assert "conversation" in html  # we got redirected
         assert "clear_saved_content();  // we do cleanup localstorage, since email was sent" in html
+
+        msgs = self.dm.get_all_dispatched_messages()
+        assert len(msgs) == 1, msgs
+        assert msgs[0]["body"] == "Ceci est le body!", msgs[0]
+
+
+        # new we test the "mask recipients" feature #
+
+        self.dm.set_wiretapping_targets("guy4", ["guy3"])
+
+        enforced_parent_id = random.choice((True, False))
+        parent_id = ""  # for HTTP
+        if enforced_parent_id:
+            parent_id = msgs[0]["id"]
+
+        delay_h = random.choice(("", "0.0005"))
+
+        params["parent_id"] = parent_id
+        params["mask_recipients"] = True
+        params["delay_h"] = delay_h
+
+        response = self.client.post(url, data=params, follow=True)
+        #print("@@@@@@", response.content)
+        assert response.status_code == 200
+
+        time.sleep(1)  # in case message sending was delayed, we must dispatch them now
+        res = self.dm.process_periodic_tasks()
+        self.assertEqual(res["messages_dispatched"], 2 if delay_h else 0)
+
+        msgs = self.dm.get_all_dispatched_messages()
+        assert len(msgs) == 3, msgs  # 2 new messages for masked recipients
+        msg1, msg2, msg3 = msgs
+
+        conversations = self.dm.sort_messages_by_conversations(msgs)
+        if enforced_parent_id:
+            assert len(conversations) == 1
+            assert len(conversations[0]) == 3
+        else:
+            assert len(conversations) == 2
+            assert len(conversations[0]) == 2
+            assert len(conversations[1]) == 1
+
+        assert msg2["visible_by"] == {u'guy2': 'recipient', u'guy1': 'sender'}
+        # wiretapping works on and only on the concerned "separated" message
+        assert msg3["visible_by"] == {u'guy3': 'recipient', u'guy1': 'sender', 'guy4': 'interceptor'}
 
 
     def test_game_homepage_without_username(self):

@@ -2750,7 +2750,7 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
             groups.setdefault(msg["group_id"], [])
             groups[msg["group_id"]].append(msg)
 
-        return groups.values()
+        return groups.values()  # SORTED
 
 
     @readonly_method
