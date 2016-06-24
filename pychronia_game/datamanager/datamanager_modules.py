@@ -1089,12 +1089,12 @@ class PlayerAuthentication(BaseDataManager):
 
             password = user_properties["password"]
 
-            subject = "<Password Recovery System>"
+            subject = _("<Password Recovery System>")
 
-            body = dedent("""
+            body = dedent(_("""
                     The password corresponding to your login %(username)s is '%(password)s'.
                     Please keep it carefully and do not share it with anyone else.
-                   """) % SDICT(username=username, password=password)
+                   """)) % SDICT(username=username, password=password)
 
             attachment = None
 

@@ -226,15 +226,15 @@ class RunicTranslationAbility(AbstractPartnershipAbility):
             item_title = item_name or _("unknown")
             del item_name
 
-            subject = "<Rune Translation Result>"
-            body = dedent("""
+            subject = _("<Rune Translation Result>")
+            body = dedent(_("""
                             Below is the output of the automated translation process for the runes of the targeted object.
                             Please note that any error in the decoding of runes may lead to important errors in the translation result.
     
                             Runes transcription: "%(original)s"
     
                             Translation result: "%(translation)s"
-                          """) % SDICT(original=transcription, translation=translation)
+                          """)) % SDICT(original=transcription, translation=translation)
 
             response_msg_data = dict(subject=subject,
                                      body=body,

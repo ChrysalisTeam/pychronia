@@ -84,7 +84,7 @@ class MatterAnalysisAbility(AbstractPartnershipAbility):
         item_title = self.get_item_properties(item_name)["title"]
 
         # dummy request email, to allow wiretapping
-        subject = "Deep Analysis Request - item \"%s\"" % item_title
+        subject = _('Deep Analysis Request - item "%s"') % item_title
         body = _("Please analyse the physical and biological properties of this item.")
         request_msg_data = dict(subject=subject,
                                 body=body)

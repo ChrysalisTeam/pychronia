@@ -122,7 +122,7 @@ class WorldScanAbility(AbstractPartnershipAbility):
         item_title = self.get_item_properties(item_name)["title"]
 
         # dummy request email, to allow wiretapping
-        subject = "Scanning Request - \"%s\"" % item_title
+        subject = _('<Scanning Request - "%s">') % item_title
         body = _("Please scan the world according to the features of this object.")
         request_msg_data = dict(subject=subject,
                                 body=body)
@@ -134,14 +134,14 @@ class WorldScanAbility(AbstractPartnershipAbility):
         if locations:
             locations_found = ", ".join(locations)
 
-            subject = "<World Scan Result - %(item)s>" % SDICT(item=item_title)
+            subject = _("<World Scan Result - %(item)s>") % SDICT(item=item_title)
 
-            body = dedent("""
+            body = dedent(_("""
                     Below is the result of the scanning operation which has been performed according to the documents you sent.
                     Please note that these results might be incomplete or erroneous, depending on the accuracy of the information available.
     
                     Potential locations of similar items: %(locations_found)s
-                    """) % SDICT(locations_found=locations_found)
+                    """)) % SDICT(locations_found=locations_found)
 
             response_msg_data = dict(subject=subject,
                                      body=body,
