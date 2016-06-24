@@ -32,7 +32,9 @@ $('html').on('mousemove', function(e){
 });
 
 $(document).ready(function(){
-                  
+
+    $('map').imageMapResize();
+
     $section = $('section').first();
     $section.find('.panzoom').panzoom({
                                         $zoomIn: $section.find(".zoom-in"),
@@ -48,6 +50,7 @@ $(document).ready(function(){
                     e.preventDefault();
                     var delta = e.delta || e.originalEvent.wheelDelta;
                     var zoomOut = delta ? delta < 0 : e.originalEvent.deltaY > 0;
+                    //console.log("we panzoom wheel", delta, zoomOut);
                     $panzoom.panzoom('zoom', zoomOut, {
                         increment: .05,
                         focal: e,

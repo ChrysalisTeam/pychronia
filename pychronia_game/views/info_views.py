@@ -34,11 +34,15 @@ class DynamicWorldMapView(AbstractGameView):
     ACCESS = UserAccess.anonymous
     REQUIRES_CHARACTER_PERMISSION = False
     REQUIRES_GLOBAL_PERMISSION = False
-    
+
     
     def get_template_vars(self, previous_form_data=None):
         all_location = self.datamanager.get_locations()
-        return dict(all_locations=all_location)
+        world_map = self.datamanager.get_global_parameter("world_map_image")
+        summary_fallback = _("No description")
+        return dict(all_locations=all_location,
+                    world_map_image=world_map,
+                    summary_fallback=summary_fallback)
 
 view_world_map_dynamic = DynamicWorldMapView.as_view
 
