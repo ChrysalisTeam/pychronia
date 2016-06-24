@@ -4111,7 +4111,7 @@ class TestDatamanager(BaseGameTestCase):
         self._set_user("guy1")
         events = self.dm.get_game_events() # for guy1
         self.assertEqual(len(events), 1)
-        self.assertEqual(events[0]["message"], "hello there 2") # only one authorized
+        self.assertEqual(events[0]["message"], "hello there 2") # authorized
 
         self._set_user("guy4")
         events = self.dm.get_game_events() # for guy4

@@ -370,7 +370,7 @@ def view_media(request, template_name='utilities/view_media.html'):
 
 
 
-@register_view(access=UserAccess.anonymous, requires_global_permission=False, title=ugettext_lazy("Encrypted Folder"))  # anonymous because links in emails must NEVER be broken
+@register_view(access=UserAccess.authenticated, requires_global_permission=False, title=ugettext_lazy("Encrypted Folder"))
 def encrypted_folder(request, folder, entry_template_name="information/encrypted_folder.html", display_template_name='information/personal_folder.html'):
 
     if not request.datamanager.encrypted_folder_exists(folder):
