@@ -1564,7 +1564,7 @@ class LocationsHandling(BaseDataManager):
 
         game_data = self.data
         for (name, properties) in game_data["locations"].items():
-            pass # NOTHING ATM
+            properties.setdefault("summary", None)
 
 
     def _check_database_coherence(self, **kwargs):
@@ -1575,6 +1575,16 @@ class LocationsHandling(BaseDataManager):
         for (name, properties) in game_data["locations"].items():
 
             utilities.check_is_slug(name)
+
+            if properties["summary"] is not None:
+                utilities.check_is_string(properties["summary"])
+
+            geolocation = properties["geolocation"]
+            utilities.check_is_list(geolocation)
+            # location is shown as a circle or a square:
+            utilities.usage_assert(len(geolocation) in (3, 4), geolocation)
+            for num in geolocation:
+                utilities.check_is_positive_int(num)
 
             ''' DEPRECATED
             if properties["spy_message"] is not None:

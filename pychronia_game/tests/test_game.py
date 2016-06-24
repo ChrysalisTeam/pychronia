@@ -1148,8 +1148,14 @@ class TestDatamanager(BaseGameTestCase):
         assert self.dm.get_character_usernames(exclude_current=True) == self.dm.get_character_usernames() # no crash if not a proper character currently set
 
 
+    def test_get_locations(self):
+        
+        cities = self.dm.get_locations()
 
+        assert "Akta" in cities
+        assert "Holdamis" in cities
 
+        assert sorted(cities["Akta"].keys()) == ["geolocation", "summary"]
 
 
     @for_core_module(DomainHandling)

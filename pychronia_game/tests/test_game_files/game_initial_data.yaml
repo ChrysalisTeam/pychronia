@@ -183,11 +183,23 @@ global_parameters:
 
 locations:
 
-    Baynon:
-        spy_message: "This city is famous for its jewelry industry and its huge archeological museum. It seems no Akarith has ever been so deep into the 'miscreant continent'."
-    Alifir:
-        spy_message: "People here are very healthy, but quite ignorant. They don't know anything about thye Great Atomic Chaos that took place in Midolia."
+   # we only put a small subset of locations here, in dev/test environment
 
+    Akta:
+        summary: Ville d'Akta
+        geolocation: [768,1572,819,1594]
+
+    Alifir:
+        summary:
+        geolocation: [869,1228,10]
+
+    Baynon:
+        summary: "ceci est un résumé"
+        geolocation: [1257,1380,10]
+
+    Holdamis:
+        summary:
+        geolocation: [502,1065,10]
 
 
 
