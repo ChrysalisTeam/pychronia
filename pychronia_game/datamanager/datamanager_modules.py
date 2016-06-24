@@ -1821,7 +1821,10 @@ class TextMessagingCore(BaseDataManager):
         msg = self._build_new_message(*args, **kwargs)
         sent_at = msg["sent_at"]
 
-        if sent_at > datetime.utcnow():
+        is_future_msg = (sent_at > datetime.utcnow())
+
+        self.logger.info("Posting %s message %r", "future" if is_future_msg else "past", msg)
+        if is_future_msg:
             self.messaging_data["messages_queued"].append(msg)
             self.messaging_data["messages_queued"].sort(key=lambda msg: msg["sent_at"]) # python sorting is stable !
         else:
