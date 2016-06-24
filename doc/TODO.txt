@@ -22,6 +22,21 @@ domaine.
 FEATURES
 ------------
 
+/*! Image Map Resizer
+ *  Desc: Resize HTML imageMap to scaled image.
+ *  Copyright: (c) 2014-15 David J. Bradshaw - dave@bradshaw.net
+ *  License: MIT
+ */
+
+/**
+ * @license jquery.panzoom.js v@VERSION
+ * Updated: @DATE
+ * Add pan and zoom functionality to any element
+ * Copyright (c) 2013 timmy willison
+ * Released under the MIT license
+ * https://github.com/timmywil/jquery.panzoom/blob/master/MIT-License.txt
+ */
+
 Bug report submitted by player emogladys.
 URL: http://pangeaweb.org/tpk/emogladys/messages/compose/
 Message: Bonjour !
@@ -40,7 +55,7 @@ J'ai intercepté le message d'un joueur, son destinataire était masqué mais ç
     */
 
     /*
-    // Dangerous form disabler (problems on page-backward)
+    // Dangerous form disabler
     $("form").disabler({
         // FIXME - ALL disabled container must have an ID !! Let's create it on demand!!
         disable : true
