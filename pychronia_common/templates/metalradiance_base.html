@@ -22,8 +22,7 @@
             {# * { behavior: url('{{ STATIC_URL }}libs/css3pie/PIE.htc'); } #}
         </style>
         <![endif]-->
-
-        <!--link media="screen and (max-width: 991px)" rel="stylesheet" href="slidebars/slidebars.css" UNUSED-->
+        
         <link href="{{ STATIC_URL }}MetalRadiance/metalradiance.css" rel="stylesheet" type="text/css" /><!-- MUST BE LAST -->
 
     {% endaddtoblock %}
@@ -308,18 +307,6 @@
         <!-- jQuery -->
 		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 
-		<!-- Slidebars -->
-		<script src="slidebars/slidebars.js"></script>
-		<script>
-			(function($) {
-				$(document).ready(function() {
-					$.slidebars({
-						disableOver: 600,
-						hideControlClasses: true
-					});
-				});
-			}) (jQuery);
-		</script>{% endblock %}
         <div class="clearfixer">&nbsp;</div>
     </div>
 
