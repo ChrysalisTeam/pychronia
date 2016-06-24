@@ -12,8 +12,8 @@ from pychronia_game.datamanager.abstract_form import AbstractGameForm
 from django import forms as django_forms
 
 
-@register_view(access=UserAccess.anonymous, requires_global_permission=False, title=ugettext_lazy("World Map"))
-def view_world_map(request, template_name='information/world_map.html'):
+@register_view(access=UserAccess.anonymous, requires_global_permission=False, title=ugettext_lazy("Static World Map"))
+def view_world_map_static(request, template_name='information/world_map_static.html'):
 
     return render(request,
                   template_name,
@@ -23,8 +23,24 @@ def view_world_map(request, template_name='information/world_map.html'):
                     })
 
 
+@register_view
+class DynamicWorldMapView(AbstractGameView):
+    
+    TITLE = ugettext_lazy("Dynamic World Map")
+    NAME = "view_world_map"
+    
+    TEMPLATE = "information/world_map_dynamic.html"
+    
+    ACCESS = UserAccess.anonymous
+    REQUIRES_CHARACTER_PERMISSION = False
+    REQUIRES_GLOBAL_PERMISSION = False
+    
+    
+    def get_template_vars(self, previous_form_data=None):
+        all_location = self.datamanager.get_locations()
+        return dict(all_locations=all_location)
 
-
+view_world_map_dynamic = DynamicWorldMapView.as_view
 
 
 @register_view

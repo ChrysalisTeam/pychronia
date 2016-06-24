@@ -87,8 +87,8 @@ def _generate_web_menu(request, menu_entry_generator):
                          menu_entry(view=views.view_encyclopedia),
 
                          menu_entry(view=views.personal_webradio_page),
-                         menu_entry(view=views.view_world_map),
-
+                         menu_entry(view=views.view_world_map_static),
+                         menu_entry(view=views.view_world_map_dynamic),
                          # menu_entry(_(u"__EncryptedFolder__"), view=views.encrypted_folder, view_kwargs=dict(folder="guy2_report"), forced_visibility=(False if not user.is_master else None)), # TODO REMOVE ME
                          # menu_entry(_(u"__PublicWebradio__"), view=views.public_webradio, forced_visibility=(False if not user.is_master else None)), # TODO REMOVE ME
 

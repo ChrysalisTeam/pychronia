@@ -33,7 +33,8 @@ inner_game_urlpatterns = patterns('pychronia_game.views',
 
     ##url(r'^instructions/$', 'instructions'), # FIXME - deprecated ?
 
-    url(r'^world_map/$', 'view_world_map'),
+    url(r'^world_map_static/$', 'view_world_map_static'),
+    url(r'^world_map_dynamic/$', 'view_world_map_dynamic'),
     #(r'^radio_messages/$', 'personal_radio_messages_listing'),
 
     url(r'^view_media/$', 'view_media'),
