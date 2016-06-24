@@ -2272,6 +2272,38 @@ class TestDatamanager(BaseGameTestCase):
         assert msg3["transferred_msg"] == msg_id_1  # STILL present
 
 
+    def test_getting_and_reply_for_queued_messages(self):
+
+        # mostly useful for "mask_recipients", to group pending msgs in a same conversation
+
+        self._reset_messages()
+
+        msg_id_1 = self.dm.post_message("guy2@pangea.com",
+                                        recipient_emails=["secret-services@masslavia.com", "guy1@pangea.com"],
+                                        subject="subj1", body="INITIAL MESSAGE 1",
+                                        date_or_delay_mn=1)
+        msg_id_2 = self.dm.post_message("guy1@pangea.com",
+                                        recipient_emails=["secret-services@masslavia.com", "guy2@pangea.com"],
+                                        subject="subj2", body="INITIAL MESSAGE 2",
+                                        date_or_delay_mn=1, parent_id=msg_id_1)
+
+        assert not self.dm.get_all_dispatched_messages()
+        msgs = self.dm.get_all_queued_messages()
+        assert len(msgs) == 2
+
+        with pytest.raises(UsageError):
+            self.dm.get_queued_message_by_id("XYZ")
+
+        assert msgs == [self.dm.get_queued_message_by_id(msg_id_1),
+                        self.dm.get_queued_message_by_id(msg_id_2)]
+
+        msg1, msg2 = msgs
+        assert msg1["group_id"] == msg2["group_id"]
+        for msg in msgs:
+            for field in self.dm.EMAIL_BOOLEAN_FIELDS_FOR_USERS:
+                assert not msg[field]
+
+
     def test_mailing_list_special_case(self):
 
         ml = self.dm.get_global_parameter("all_players_mailing_list")
@@ -4824,7 +4856,7 @@ class TestHttpRequests(BaseGameTestCase):
         msg1, msg2, msg3 = msgs
 
         conversations = self.dm.sort_messages_by_conversations(msgs)
-        print("Conversations:", conversations)
+        #print("Conversations:", conversations)
         if enforced_parent_id:
             assert len(conversations) == 1
             assert len(conversations[0]) == 3

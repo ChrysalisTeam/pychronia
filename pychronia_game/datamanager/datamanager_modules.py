@@ -1864,10 +1864,16 @@ class TextMessagingCore(BaseDataManager):
         if parent_id:
             # we IMMEDIATELY set the parent as answered, even if date_or_delay_mn is in the future
             try:
-                parent_msg = self.get_dispatched_message_by_id(parent_id)
+                try:
+                    parent_msg = self.get_dispatched_message_by_id(parent_id)
+                except UsageError:
+                    parent_msg = self.get_queued_message_by_id(parent_id)
+                else:
+                    # if the parent message is DISPATCHED, we can tweak its state
+                    sender_username = self.get_username_from_email(sender_email) # character, or fallback to master
+                    self._set_dispatched_message_state_flags(username=sender_username, msg_id=parent_id, has_replied=True)
+                    # do not touch the READ state though - must be done MANUALLY
                 group_id = parent_msg["group_id"]
-                sender_username = self.get_username_from_email(sender_email) # character, or fallback to master
-                self._set_dispatched_message_state_flags(username=sender_username, msg_id=parent_id, has_replied=True)  # do not touch the READ state - must be done MANUALLY
             except UsageError as e:
                 self.logger.error(e, exc_info=True)  # something ugly happened to messaging history ? let it be...
 
@@ -2042,8 +2048,17 @@ class TextMessagingCore(BaseDataManager):
         msgs = [message for message in self.messaging_data["messages_dispatched"] if message["id"] == msg_id]
         assert len(msgs) <= 1, "len(msgs) must be < 1"
         if not msgs:
-            raise UsageError(_("Unknown message id '%s'" % msg_id))
+            raise UsageError(_("Unknown dispatched message id '%s'" % msg_id))
         return msgs[0]
+
+    @readonly_method
+    def get_queued_message_by_id(self, msg_id):
+        msgs = [message for message in self.messaging_data["messages_queued"] if message["id"] == msg_id]
+        assert len(msgs) <= 1, "len(msgs) must be < 1"
+        if not msgs:
+            raise UsageError(_("Unknown queued message id '%s'" % msg_id))
+        return msgs[0]
+
 
     ''' DEPRECATED
     @transaction_watcher
