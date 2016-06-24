@@ -1,69 +1,107 @@
+{% extends "metalradiance_scaffold.html" %}
 {% load sekizai_tags kwacros i18n %}
 {% load cms_tags %}{# might be a dummy version, to replace that of django-cms #}
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-    <title>{% block html_title %}{% trans "Welcome" %}{% endblock %}</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    {% render_block "meta" %}
+{% block sekizai_calls %}
+    {{ block.super }}
 
-    {# <!--meta http-equiv="X-UA-Compatible" content="IE=EmulateIE9"-->emulate IE9 in quirks or normal mode, for IE10 to enable pie.htc behavior... TOO BUGGY #}
+    {% addtoblock "css" %}
+        {# <link href="{{ STATIC_URL }}libs/fasw.transitions/transition.css" rel="stylesheet" type="text/css"/> #}
+        <link href="{{ STATIC_URL }}FontAwesome/css/font-awesome.css" type="text/css" rel="stylesheet" />
+        <link href="{{ STATIC_URL }}libs/fancybox/jquery.fancybox.css" rel="stylesheet" type="text/css" />
+        <link href="{{ STATIC_URL }}libs/jquery-jplayer-2.3.0/blue.monday/jplayer.blue.monday.css" rel="stylesheet" type="text/css"/>
+        <link href="{{ STATIC_URL }}libs/jquery-mmenu/dist/core/css/jquery.mmenu.all.css" type="text/css" rel="stylesheet" />
 
-    <link href="{{ STATIC_URL }}img/favicon_diamond.png" rel="shortcut icon" type="image/png" />
-    <link href="{{ STATIC_URL }}libs/fancybox/jquery.fancybox.css" rel="stylesheet" type="text/css" />
-    <link href="{{ STATIC_URL }}libs/fasw.transitions/transition.css" rel="stylesheet" type="text/css"/>
-    <link href="{{ STATIC_URL }}libs/jquery-jplayer-2.3.0/blue.monday/jplayer.blue.monday.css" rel="stylesheet" type="text/css"/>
-    <link href="{{ STATIC_URL }}libs/jquery-mmenu/dist/core/css/jquery.mmenu.all.css" type="text/css" rel="stylesheet" />
-    <link href="{{ STATIC_URL }}FontAwesome/css/font-awesome.css" type="text/css" rel="stylesheet" />
+        <!--[if lte IE 9]> {# remove that old stuff asap... #}
+        <style>
+            {# force fallback for font colors when text shadows are not working well #}
+            ul.dropmenu span, ul.dropmenu a, h1, h2, h3 {
+                color: black !important;
+            }
+            {# we may use Css3PIE to improve a little CSS3 support in Internet Explorer, but it's buggy it seems... #}
+            {# * { behavior: url('{{ STATIC_URL }}libs/css3pie/PIE.htc'); } #}
+        </style>
+        <![endif]-->
 
-    <!--[if lte IE 9]>
+        <!--link media="screen and (max-width: 991px)" rel="stylesheet" href="slidebars/slidebars.css" UNUSED-->
+        <link href="{{ STATIC_URL }}MetalRadiance/metalradiance.css" rel="stylesheet" type="text/css" /><!-- MUST BE LAST -->
 
-    <style>
-        {# force fallback for font colors when text shadows are not working well #}
-        ul.dropmenu span, ul.dropmenu a, h1, h2, h3 {
-            color: black !important;
+    {% endaddtoblock %}
+
+
+    {% addtoblock "js" %}
+
+        <script src="{{ STATIC_URL }}libs/jquery.cookie.js" type="text/javascript"></script>
+        <script src="{{ STATIC_URL }}libs/jquery-storage/jquery.storage.js" type="text/javascript"></script>
+        <script src="{{ STATIC_URL }}libs/jquery-ui/jquery-ui-1.10.0.custom.js" type="text/javascript"></script>
+        <script src="{{ STATIC_URL }}libs/jquery.dropmenu-1.1.4-edited.js" type="text/javascript"></script>
+        <script src="{{ STATIC_URL }}libs/jquery.doubletaptogo.js" type="text/javascript"></script>
+        <script src="{{ STATIC_URL }}libs/fancybox/jquery.fancybox.js" type="text/javascript"></script>
+        <script src="{{ STATIC_URL }}libs/jquery-pulsate/jquery.pulsate.js" type="text/javascript"></script>
+        <script src="{{ STATIC_URL }}libs/jquery-jplayer-2.3.0/jquery.jplayer.min.js" type="text/javascript"></script>
+        <script src="{{ STATIC_URL }}libs/jquery-jplayer-2.3.0/add-on/jplayer.playlist.min.js" type="text/javascript"></script>
+        <script src="{{ STATIC_URL }}libs/jquery.css3finalize-v3.x.js" type="text/javascript"></script>
+        <script src="{{ STATIC_URL }}libs/jquery-mmenu/dist/core/js/jquery.mmenu.min.all.js" type="text/javascript"></script>
+        <script src="{{ STATIC_URL }}libs/audioplayer/audio-player.js" type="text/javascript"></script>
+
+        <!--script src="{{ STATIC_URL }}libs/jquery-disabler/jquery-disabler.js" type="text/javascript"></script DISABLED-->
+        <!--script src="{{ STATIC_URL }}libs/fasw.transitions/fasw.transitions.js" type="text/javascript"></script DISABLED-->
+        <!-- only if jquery.mmenu swipe-to-open is needed - script src="{{ STATIC_URL }}libs/hammer.js" type="text/javascript"></script-->
+
+    {% endaddtoblock %}
+
+
+    {% addtoblock "definition_js" %}
+
+        var JS_TIMER_START = setTimeout(function(){}, 0);
+
+        function clear_all_js_timeouts() {
+            var maxId = setTimeout(function(){}, 0);
+            var i;
+            for(i=JS_TIMER_START; i <= maxId; i+=1) {
+                //console.log("CLEARING TIMER "  + i);
+                clearTimeout(i);
+            }
+            JS_TIMER_START = i; // value of the FIRST next timer created
         }
 
-        {# we may use Css3PIE to improve a little CSS3 support in Internet Explorer, but i's buggy it seems... #}
-        {# * { behavior: url('{{ STATIC_URL }}libs/css3pie/PIE.htc'); } #}
-    </style>
+        /* Utilities to batch-abort pending ajax requests */
+        var xhrPool = [];
+        $(document).ajaxSend(function(e, jqXHR, options){
+            xhrPool.push(jqXHR);
+        });
+        $(document).ajaxComplete(function(e, jqXHR, options) {
+            xhrPool = $.grep(xhrPool, function(x){return x!=jqXHR});
+        });
+        var abort_pending_ajax_requests = function() {
+            $.each(xhrPool, function(idx, jqXHR) {
+                jqXHR.abort();
+            });
+        };
 
-    <![endif]-->
+        /*
+        // system necessary if we use fast-transitions one day
+        var oldbeforeunload = window.onbeforeunload;
+        window.onbeforeunload = function() {
+            var r = oldbeforeunload ? oldbeforeunload() : undefined;
+            if (r == undefined) {
+                // only cancel requests if there is no prompt to stay on the page
+                // if there is a prompt, it will likely give the requests enough time to finish
+                abort_pending_ajax_requests();
+            }
+        return r;
+        }
+        function CLEANUP_PENDING_JS_WORKFLOWS () {
+            abort_pending_ajax_requests(); // beware, might trigger completion events anyway
+            clear_all_js_timeouts();
+        }
+        */
 
-    <link href="{{ STATIC_URL }}libs/jnotify/css/jquery.jnotify-alt.css" rel="stylesheet" type="text/css" />
-
-    {% render_block "css" %}
-
-
-
-    <link href="{{ STATIC_URL }}MetalRadiance/metalradiance.css" rel="stylesheet" type="text/css" /><!-- MUST BE LAST -->
-
-
-    <!--link media="screen and (max-width: 991px)" rel="stylesheet" href="slidebars/slidebars.css"-->
-
-    <script src="{{ STATIC_URL }}libs/jquery-1.9.1.js" type="text/javascript"></script>
-    <script src="{{ STATIC_URL }}libs/jquery-migrate-1.1.0.min.js" type="text/javascript"></script>
-    <script src="{{ STATIC_URL }}libs/jquery.cookie.js" type="text/javascript"></script>
-    <script src="{{ STATIC_URL }}libs/jquery-storage/jquery.storage.js" type="text/javascript"></script>
-    <script src="{{ STATIC_URL }}libs/jquery-ui/jquery-ui-1.10.0.custom.js" type="text/javascript"></script>
-    <script src="{{ STATIC_URL }}libs/jquery.dropmenu-1.1.4-edited.js" type="text/javascript"></script>
-    <script src="{{ STATIC_URL }}libs/jquery.doubletaptogo.js" type="text/javascript"></script>
-    <script src="{{ STATIC_URL }}libs/fancybox/jquery.fancybox.js" type="text/javascript"></script>
-    <script src="{{ STATIC_URL }}libs/jquery.css3finalize-v3.x.js" type="text/javascript"></script>
-    <script src="{{ STATIC_URL }}libs/jquery-pulsate/jquery.pulsate.js" type="text/javascript"></script>
-    <script src="{{ STATIC_URL }}libs/jquery-disabler/jquery-disabler.js" type="text/javascript"></script>
-    <script src="{{ STATIC_URL }}libs/fasw.transitions/fasw.transitions.js" type="text/javascript"></script>
-    <script src="{{ STATIC_URL }}libs/jquery-jplayer-2.3.0/jquery.jplayer.min.js" type="text/javascript"></script>
-    <script src="{{ STATIC_URL }}libs/jquery-jplayer-2.3.0/add-on/jplayer.playlist.min.js" type="text/javascript"></script>
-    <script src="{{ STATIC_URL }}libs/jnotify/lib/jquery.jnotify.js" type="text/javascript"></script>
-    <!-- only if jquery.mmenu swipe-to-open is needed - script src="{{ STATIC_URL }}libs/hammer.js" type="text/javascript"></script-->
-    <script src="{{ STATIC_URL }}libs/jquery-mmenu/dist/core/js/jquery.mmenu.min.all.js" type="text/javascript"></script>
+    {% endaddtoblock %}
 
 
-    <script src="{{ STATIC_URL }}libs/audioplayer/audio-player.js" type="text/javascript"></script>
-    <script type="text/javascript">
+    {% addtoblock "onload_js" %}
+
         AudioPlayer.setup("{{ STATIC_URL }}libs/audioplayer/player.swf", {
             width: 290,
             height: 24,
@@ -86,74 +124,57 @@
             animation: "no", // shrinking/extending of the player
             initialvolume: "60"
         });
-    </script>
 
-    {% render_block "js" %}
+        $('#menulist').dropmenu(
+            {
+                effect          : "none", //  "slide", "fade", or "none" - BEWARE, ANIMATIONS CREATE A MINIBUG WITH MENU HOVER EVENT
+                speed           : "fast", //  "normal", "fast", "slow", 100, 1000, etc
+                timeout         : 300,
+                nbsp            : true,
+                maxWidth        : 250
+            }
+        );
+
+        $( '#menulist li:has(ul)' ).doubleTapToGo();  // to make menu work on touch-devices
+
+        $("#full_header").mmenu({
+                                   navbar: {
+                                       add: true,
+                                       title: "{{ _('Controls')|escapejs }}",
+                                       titleLink: null
+                                   },
+                                   // options : http://mmenu.frebsite.nl/documentation/options/
+                                   /* DO NOT enable swip-to-open, it might interfere with mobile touch-scrolling
+                                    dragOpen: {
+                                       open: $.mmenu.support.touch  // only on touch devices
+                                   }*/
+                                },
+                                {
+                                   // configuration : http://mmenu.frebsite.nl/documentation/options/configuration.html
+                                   clone: true
+                                });
+        //var mmenuApi = $("#full_header").data( "mmenu" );
+        //mmenuApi.open();
 
 
-    <script defer language="javascript" type="text/javascript">
-        /* here put JS that must be executed only on PAGE LOAD, not fast transitions */
-        var JS_TIMER_START = setTimeout(function(){}, 0);
-
-
-      var xhrPool = [];
-      $(document).ajaxSend(function(e, jqXHR, options){
-        xhrPool.push(jqXHR);
-      });
-      $(document).ajaxComplete(function(e, jqXHR, options) {
-        xhrPool = $.grep(xhrPool, function(x){return x!=jqXHR});
-      });
-      var abort_pending_ajax_requests = function() {
-        $.each(xhrPool, function(idx, jqXHR) {
-          jqXHR.abort();
+        $(".notification_panel").css( 'cursor', 'pointer' ); // TODO PUT THAT IN CSS FILES
+        $(".notification_panel_content").css( 'cursor', 'auto' );
+        $(".notification_panel").click(function() {
+        $(this).slideUp();
         });
-      };
+        $(".notification_panel_content").click(function(event) {
+        event.stopPropagation();
+        });
 
-       /*
-      var oldbeforeunload = window.onbeforeunload;
-      window.onbeforeunload = function() {
-        var r = oldbeforeunload ? oldbeforeunload() : undefined;
-        if (r == undefined) {
-          // only cancel requests if there is no prompt to stay on the page
-          // if there is a prompt, it will likely give the requests enough time to finish
-          abort_pending_ajax_requests();
-        }
-        return r;
-      }*/
+    {% endaddtoblock %}
+
+{% endblock sekizai_calls %}
 
 
 
-     function clear_all_js_timeouts() {
+{% block body_attributes %}class="full_background"{% endblock %}
 
-         var maxId = setTimeout(function(){}, 0);
-         var i;
-
-         for(i=JS_TIMER_START; i <= maxId; i+=1) {
-            //console.log("CLEARING TIMER "  + i);
-            clearTimeout(i);
-        }
-
-        JS_TIMER_START = i; // value of the FIRST next timer created
-     }
-
-
-    function CLEANUP_PENDING_JS_WORKFLOWS () {
-        abort_pending_ajax_requests(); // beware, might trigger completion events anyway
-        clear_all_js_timeouts();
-    }
-
-    </script>
-
-
-    {% block html_headers %}
-    {% endblock %}
-
-    {% block sekizai_calls %}
-        <!-- block solely used to place sekizai calls in sub-templates, must always call "block.super" -->
-    {% endblock %}
-
-</head>
-<body {% if not use_parallax %}class="full_background"{% endif %}>
+{% block full_body %}
 
     {% cms_toolbar %}
 
@@ -344,203 +365,4 @@
     </div>
     {% endblock %}
 
-
-
-    <script language="javascript" type="text/javascript">
-        // listen for scroll it suppose to fixed the menu when scrolling
-   /*     var positionElementInPage = $('.marble_menu').offset().top;
-        $(window).scroll(
-            function() {
-                if ($(window).scrollTop() >= positionElementInPage) {
-                    // fixed
-                    $('.marble_menu').addClass("floatable");
-                } else {
-                    // relative
-                    $('.marble_menu').removeClass("floatable");
-                }
-            }
-        ); */
-    </script>
-
-    <script language="javascript" type="text/javascript">
-
-
-    function default_ajax_error_handler(jqXHR, extStatus, errorThrown) {
-        msg = "Server communication problem - " + extStatus;
-        if (errorThrown) {
-            msg += " (" + errorThrown + ")";
-        }
-        $.jnotify(msg, "error", 2000);
-    }
-
-
-    String.prototype.format = String.prototype.f = function() {
-        var s = this,
-            i = arguments.length;
-
-        while (i--) {
-            s = s.replace(new RegExp('\\{' + i + '\\}', 'gm'), arguments[i]);
-        }
-        return s;
-    };
-
-
-    {% render_block "definition_js" %}
-
-
-    var launchPulsationOnAdminNotes = function(prefix) {
-           /* Signal that parts of the page are for admins only */
-           $(prefix + " .admin-note").not(prefix + " .admin-note .admin-note").pulsate({
-                              color: "#9D8126",                       // set the color of the pulse
-                              reach: 4,                              // how far the pulse goes in px
-                              speed: 1000,                            // how long one pulse takes in ms
-                              pause: 500,                               // how long the pause between pulses is in ms
-                              glow: true,                             // if the glow should be shown too
-                              repeat: true,                           // will repeat forever if true, if given a number will repeat for that many times
-                              onHover: false                          // if true only pulsate if user hovers over the element
-                            });
-    };
-
-
-    var INIT_JS = function() {
-
-            if (typeof my_fast_transitions == 'undefined' && 0) {  // JS PAGE TRANSITIONS DISABLED ATM
-                my_fast_transitions = new ft({ /* data-ftrans attr must be set to slide/slideup/slidedown/fade/flip/pop */
-                        "navB" : "",   //Effect for navigation button, leave it empty to disable it
-                        "but" : false,           //Flag to enable transitions on button, false by default
-                        "cBa" : INIT_JS,      //callback function, with newly defined body
-                }); // nifty javascript transitions between pages
-            }
-
-
-            $("#full_header").mmenu({
-                                       navbar: {
-                                           add: true,
-                                           title: "{{ _('Controls')|escapejs }}",
-                                           titleLink: null
-                                       },
-                                       // options : http://mmenu.frebsite.nl/documentation/options/
-                                       /* DO NOT enable swip-to-open, it might interfere with mobile touch-scrolling
-                                        dragOpen: {
-                                           open: $.mmenu.support.touch  // only on touch devices
-                                       }*/
-                                    },
-                                    {
-                                       // configuration : http://mmenu.frebsite.nl/documentation/options/configuration.html
-                                       clone: true
-                                    });
-            //var mmenuApi = $("#full_header").data( "mmenu" );
-            //mmenuApi.open();
-
-            $('#menulist').dropmenu(
-                {
-                    effect          : "none",       //  "slide", "fade", or "none" - BEWARE, ANIMATIONS CREATE A MINIBUG WITH MENU HOVER EVENT
-                    speed           : "fast", //  "normal", "fast", "slow", 100, 1000, etc
-                    timeout         : 300,
-                    nbsp            : true,
-                    maxWidth        : 250
-                }
-            );
-
-            $( '#menulist li:has(ul)' ).doubleTapToGo();  // to make menu work on touch-devices
-
-            /* only half working parralax system
-
-            window.onscroll = function() {
-
-                    var speed = 0.6;
-                    var posX = Math.floor(window.pageXOffset * speed);
-                    var posY = Math.floor(window.pageYOffset * speed);
-
-                    $("body").css("background-position", posX + "px " + posY + "px");
-                }
-            */
-
-
-           launchPulsationOnAdminNotes("body");
-
-           /*
-           $("form").disabler({ // FIXME - ALL disabled container must have an ID !! Let's create it on demand!!
-              disable : true
-            });*/
-
-
-        // $.ajaxError(handler(event, jqXHR, ajaxSettings, thrownError)) - NO, we want it to be OVERRIDDEN by individual ajax settings
-        $.ajaxSetup({
-                    error: default_ajax_error_handler
-                    });
-
-
-        {% comment %}
-            jNotify Usage:
-            $.jnotify(message, [options]);
-            $.jnotify(message, delay);
-            $.jnotify(message, sticky);
-            $.jnotify(message, type, [delay/sticky]); // success/warning/error or nothing (grey)
-        {% endcomment %}
-
-         jnotify_options = {
-              // define core settings
-              type: "",                                  // if a type is specified, then an additional class of classNotification
-                                                          // + type is created for each notification
-              delay: 3500,                              // the default time to show each notification (in milliseconds)
-              sticky: false,                             // determines if the message should be considered "sticky" (user
-                                                          // must manually close notification)
-              closeLabel: "&times;",                     // the HTML to use for the "Close" link
-              showClose: true,                           // determines if the "Close" link should be shown if notification is also sticky
-              fadeSpeed: 600,                           // the speed to fade messages out (in milliseconds)
-              slideSpeed: 250,                           // the speed used to slide messages out (in milliseconds)
-
-              // define the class statements
-              classContainer: "jnotify-container",       // className to use for the outer most container--this is where all the
-                                                          // notifications appear
-              classNotification: "jnotify-notification", // className of the individual notification containers
-              classBackground: "jnotify-background",     // className of the background layer for each notification container
-              assClose: "jnotify-close",               // className to use for the "Close" link
-              classMessage: "jnotify-message",           // className to use for the actual notification text container--this is
-                                                          // where the message is actually written
-
-              // event handlers
-              init: null,                                // callback that occurs when the main jnotify container is created
-              create: null,                              // callback that occurs when when the note is created (occurs just before
-                                                          // appearing in DOM)
-              beforeRemove: null,                        // callback that occurs when before the notification starts to fade away
-              remove: null,                              // callback that occurs when notification is removed
-              transition: null                          // allows you to overwrite how the transitions between messages are handled
-                                                          // receives the following arguments:
-                                                          //   container - jQuery object containing the notification
-                                                          //   message   - jQuery object of the actual message
-                                                          //   count     - the number of items left in queue
-                                                          //   callback  - a function you must execute once your transition has executed
-                                                          //   options   - the options used for this jnotify instance
-        };
-
-        $.jnotify.setup(jnotify_options);
-
-        /* TESTS of JNOTIFY
-        $.jnotify("mehello", "success", true);
-        $.jnotify("mehello", "warning", true);
-        $.jnotify("mehello", "error", true);
-        $.jnotify("mehello", "", true);*/
-
-
-        $(".notification_panel").css( 'cursor', 'pointer' );
-        $(".notification_panel_content").css( 'cursor', 'auto' );
-        $(".notification_panel").click(function() {
-            $(this).slideUp();
-        });
-        $(".notification_panel_content").click(function(event) {
-            event.stopPropagation();
-        });
-
-
-        {% render_block "onload_js" %}
-
-    };
-
-    $(document).ready(INIT_JS); // only called on full page loading, not on ajax-based fast-transitions
-    </script>
-
-    {% block body_bottom %}{% endblock %}
-</body>
-</html>
+{% endblock full_body %}

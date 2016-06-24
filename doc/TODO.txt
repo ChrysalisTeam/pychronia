@@ -28,6 +28,50 @@ Message: Bonjour !
 J'ai intercepté le message d'un joueur, son destinataire était masqué mais ça a quand même ajouté son destinataire dans mes contacts.
 
 
+    /* only half working parallax system
+    window.onscroll = function() {
+
+    var speed = 0.6;
+    var posX = Math.floor(window.pageXOffset * speed);
+    var posY = Math.floor(window.pageYOffset * speed);
+
+    $("body").css("background-position", posX + "px " + posY + "px");
+    }
+    */
+
+    /*
+    // Dangerous form disabler (problems on page-backward)
+    $("form").disabler({
+        // FIXME - ALL disabled container must have an ID !! Let's create it on demand!!
+        disable : true
+    });
+    */
+
+    if (typeof my_fast_transitions == 'undefined' && 0) {  // JS PAGE TRANSITIONS DISABLED ATM
+        my_fast_transitions = new ft({ /* data-ftrans attr must be set to slide/slideup/slidedown/fade/flip/pop */
+                "navB" : "",   //Effect for navigation button, leave it empty to disable it
+                "but" : false,           //Flag to enable transitions on button, false by default
+                "cBa" : INIT_JS,      //callback function, with newly defined body
+        }); // nifty javascript transitions between pages
+    }
+
+    <script language="javascript" type="text/javascript">
+        // listen for scroll, it's supposed to fixed the menu when scrolling
+       /*  var positionElementInPage = $('.marble_menu').offset().top;
+        $(window).scroll(
+            function() {
+                if ($(window).scrollTop() >= positionElementInPage) {
+                    // fixed
+                    $('.marble_menu').addClass("floatable");
+                } else {
+                    // relative
+                    $('.marble_menu').removeClass("floatable");
+                }
+            }
+        ); */
+    </script>
+
+
 ERROR (EXTERNAL IP): Internal Server Error: /tpk/topaz/ability/world_scan/
 >>> self._ability_data = weakref.ref(self.datamanager.get_ability_data(self.NAME))  # DANGEROUS
 Internal Server Error: /tpk/topaz/ability/world_scan/

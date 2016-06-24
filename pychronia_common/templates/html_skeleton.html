@@ -1,0 +1,40 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+{% load sekizai_tags kwacros i18n cms_tags %}
+<head>
+    
+    <title>{% block html_title %}{% trans "Welcome" %}{% endblock %}</title>
+    
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="minimum-scale=1.0, width=device-width, maximum-scale=1.0, user-scalable=no" >
+        
+    {% render_block "meta" %}
+    {% render_block "css" %}
+    {% render_block "js" %}
+    
+    {% block html_headers %}
+    {% endblock %}
+    
+</head>
+
+<body {% block body_attributes %}{% endblock %}>
+    
+    {% block full_body %}
+    {% endblock %}
+    
+    <script language="javascript" type="text/javascript">
+        {% render_block "definition_js" %}
+
+        var INIT_JS = function() {
+            {% render_block "onload_js" %}
+        };
+        $(document).ready(INIT_JS); // only called on full page loading, not on ajax-based fast-transitions
+    </script>
+
+    {% block sekizai_calls %}
+        {# block solely used to place sekizai calls in sub-templates, must always call "block.super" #}
+    {% endblock %}
+
+</body>
+
+</html>
