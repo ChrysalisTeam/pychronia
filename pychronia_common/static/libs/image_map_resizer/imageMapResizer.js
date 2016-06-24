@@ -46,9 +46,10 @@
         }
 
         function addEventListeners(){
-            image.addEventListener('onload',  resizeMap, false); //Detect late image loads in IE11
+            image.addEventListener('load',  resizeMap, false); //Detect late image loads in IE11
             window.addEventListener('focus',  resizeMap, false); //Cope with window being resized whilst on another tab
             window.addEventListener('resize', debounce,  false);
+            window.addEventListener('readystatechange', resizeMap,  false);
             document.addEventListener('fullscreenchange', resizeMap,  false);
         }
 
@@ -80,17 +81,27 @@
 
 
     function factory(){
-        function init(element){
+        function chkMap(element){
             if(!element.tagName) {
                 throw new TypeError('Object is not a valid DOM element');
             } else if ('MAP' !== element.tagName.toUpperCase()) {
                 throw new TypeError('Expected <MAP> tag, found <'+element.tagName+'>.');
             }
-
-            scaleImageMap.call(element);
         }
 
+        function init(element){
+            if (element){
+                chkMap(element);
+                scaleImageMap.call(element);
+                maps.push(element);
+            }
+        }
+
+        var maps;
+
         return function imageMapResizeF(target){
+            maps = [];  // Only return maps from this call
+
             switch (typeof(target)){
                 case 'undefined':
                 case 'string':
@@ -102,8 +113,11 @@
                 default:
                     throw new TypeError('Unexpected data type ('+typeof target+').');
             }
+
+            return maps;
         };
     }
+
 
     if (typeof define === 'function' && define.amd) {
         define([],factory);

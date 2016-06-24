@@ -8,22 +8,22 @@ var $section ;
 var $panzoom ;
     
 $('html').on('mousemove', function(e){
-    
-    var percentWidth= (e.offsetX / width)*100;
-    var percentHeight= (e.offsetY / height)*100;
-
-    if($(e.target).attr("class")=='cardRef'){
-        //console.log("cardref");
-        $("#small_infobulle").html($(e.target).attr('alt'));
-        $("#small_infobulle").css('visibility','visible');
-        $("#small_infobulle").css('top',''+e.clientY+'px');
-        $("#small_infobulle").css('left',''+e.clientX+'px');
+    //console.log("Pointer mousemove to", e.target);
+    if($(e.target).attr("class")=='coords-ref'){
+        //console.log("Pointer at coords-ref");
+        var tooltip = $("#world-map-tooltip");
+        tooltip.html($(e.target).attr('alt'));
+        tooltip.css('visibility','visible');
+        tooltip.css('top',''+e.clientY+'px');
+        tooltip.css('left',''+(e.clientX+5)+'px');
 
         $(e.target).on('mouseleave',function(){
-            $("#small_infobulle").css('visibility','hidden');
+            tooltip.css('visibility','hidden');
         });
     };
 
+    // var percentWidth= (e.offsetX / width)*100;
+    // var percentHeight= (e.offsetY / height)*100;
     //    $("#text").html('offsetX: '+e.offsetX+' offsetY: '+e.offsetY+
     //            'clientX: '+e.clientX+' clientY: '+e.clientY+
     //        ' width '+width+' height '+height+' percentWidth '+percentWidth+' percentHeight '+percentHeight+' newwidth' +newWidth+' newheight' +newHeight);
@@ -36,27 +36,24 @@ $(document).ready(function(){
     var minScale = 1, maxScale = 3, increment = 0.1;
 
     $('map').imageMapResize();
+    //$('map')[0]._resize();
 
-    $section = $('section').first();
-    $section.find('.panzoom').panzoom({
-                                        $zoomIn: $section.find(".zoom-in"),
-                                        $zoomOut: $section.find(".zoom-out"),
-                                        $reset: $section.find(".reset"),
-                                        increment: 3*increment,
-                                        minScale: minScale,
-                                        maxScale: maxScale,
-                                      });
+    var panzoom = $('.panzoom');
+    panzoom.panzoom({
+                    $zoomIn: $(".zoom-buttons .zoom-in"),
+                    $zoomOut: $(".zoom-buttons .zoom-out"),
+                    $reset: $(".zoom-buttons .reset"),
+                    increment: 3*increment,
+                    minScale: minScale,
+                    maxScale: maxScale
+                   });
 
-
-    $section = $('#focal');
-    $panzoom = $section.find('.panzoom').panzoom();
-
-    $panzoom.parent().on('mousewheel.focal', function(e) {
+    panzoom.parent().on('mousewheel.focal', function(e) {
                     e.preventDefault();
                     var delta = e.delta || e.originalEvent.wheelDelta;
                     var zoomOut = delta ? delta < 0 : e.originalEvent.deltaY > 0;
                     //console.log("we panzoom wheel", delta, zoomOut);
-                    $panzoom.panzoom('zoom', zoomOut, {
+                    panzoom.panzoom('zoom', zoomOut, {
                         focal: e,
                         transition: true,
                         increment: increment,

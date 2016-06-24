@@ -13,7 +13,7 @@
     {% addtoblock "js" %}
     <script src="{{ STATIC_URL }}libs/jquery.mousewheel.js" type="text/javascript"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}libs/jquery.panzoom.js"/></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}libs/image_map_resizer/imageMapResizer.min.js"/></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}libs/image_map_resizer/imageMapResizer.js"/></script>
     <script type="text/javascript" src="{{ STATIC_URL }}libs/interactive_world_map/js/main.js"/></script>
     {% endaddtoblock %}
 
@@ -35,35 +35,36 @@
 
 {% block full_body %}
 
-<div id="small_infobulle"></div>
+<div id="world-map-tooltip"></div>
 
 <div class="Vcentering">
 
-    <div class="placeholder Hcentering">
+    <div class="map-external-wrapper Hcentering">
 
-        <section id="focal" class="conteneurCarte">
-            <div class="buttons">
+        <section id="focal" class="map-container">
+            <div class="zoom-buttons">
                 <button class="zoom-in">{%  trans "Zoom In" %}</button>
-                <button class="zoom-out">{%  trans "Zoom out" %}Zoom Out</button>
+                <button class="zoom-out">{%  trans "Zoom out" %}</button>
                 <button class="reset">{%  trans "Reset" %}</button>
             </div>
             
-            <div id="pan-parent" class="parent">
+            <div class="panzoom-parent">
                 
-                <div class="panzoom carteMonde">
+                <div class="panzoom dynamic-world-map">
 
                     <img src="{% game_file_url world_map_image %}" usemap="#planetmap" id="imagemap">
-                        <map id="map" name="planetmap">
+                        <map class="overlay-map" name="planetmap">
                             {% for place, data in all_locations.items %}
                             
                                 {% if data.geolocation|length = 4 %}
 
-                                    <area id="{{place}}_rect" shape="rect"
-                                        class="cardRef" coords="{{data.geolocation|join:","}}" alt="{{data.summary|default:summary_fallback}}" href="#{{place}}_rect">
+                                    <area id="{{place}}" shape="rect"
+                                        class="coords-ref" coords="{{data.geolocation|join:","}}" alt="{{data.summary|default:summary_fallback}}" href="#{{place}}">
 
                                 {% else %}
 
-                                    <area id="{{place}}_circle" shape="circle" class="cardRef" coords="{{data.geolocation|join:","}}" alt="{{data.summary|default:summary_fallback}}" href="#{{place}}_circle">
+                                    <area id="{{place}}" shape="circle" 
+                                        class="coords-ref" coords="{{data.geolocation|join:","}}" alt="{{data.summary|default:summary_fallback}}" href="#{{place}}">
 
                                 {% endif %}
 

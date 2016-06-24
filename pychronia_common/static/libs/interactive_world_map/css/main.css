@@ -6,21 +6,15 @@
  Purpose of the stylesheet follows.
  */
 
-root {
-    display: block;
-}
-
 html{
     background-color: #50A3DE;
 }
+
 body{
     position:absolute;
     width:100%;
     height:100%;
     margin:0;
-    
-    
-    
 }
 
 .Vcentering{
@@ -32,40 +26,37 @@ body{
 }
 .Hcentering{
     /* Safari, Opera, and Chrome */
-    display:-webkit-box;
-    -webkit-box-pack:center;
+    display: -webkit-box;
+    -webkit-box-pack: center;
     -webkit-box-orient: horizontal;
-    -webkit-box-align:stretch;
-    
+    -webkit-box-align: stretch;
+
 }
 
-.buttons{
+.zoom-buttons{
     background-color: transparent;
     z-index: 100;
-    position:absolute;
-    
+    position: absolute;
 }
-.conteneurCarte{
+
+.map-container{
     width:100%;
     height:100%;
     overflow:hidden;
-    
-    
-}
-#pan-parent{
-    width:100%;
-    height:100%;
-    
 }
 
-.carteMonde{
-    
+.panzoom-parent{
+    width:100%;
+    height:100%;
+}
+
+.dynamic-world-map{
     width: 100%;
     height:100%;
     text-align:center;
-    
 }
-#small_infobulle{
+
+#world-map-tooltip{
     width:auto;
     height:auto;
     
@@ -82,32 +73,26 @@ body{
     left:0px;
     z-index:3000;
 }
+
 .panzoom{
-    
     margin:0 px;
-    
     /*left:25%;*/
     /*    -webkit-transform:  matrix(.2,0,0,.2,0,0);*/
     /*    -webkit-transform-origin:  0 0;*/
-    
 }
+
 .panzoom img{
     max-width: 100%;
     max-height: 100%;
-    
-    
 }
-.placeholder{
+
+.map-external-wrapper{
     /*    margin:auto;*/
-    width:100%;
-    height:100%;
-    position:absolute;
-    
-    
+    width: 100%;
+    height: 100%;
+    position: absolute;
 }
-#text{
-    position:absolute;
-    top:0px;
-    left:0px;
-    z-index:3000;
+
+img.map, map area{
+    //outline: 1px solid red;
 }
