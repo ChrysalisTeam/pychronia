@@ -33,13 +33,18 @@ $('html').on('mousemove', function(e){
 
 $(document).ready(function(){
 
+    var minScale = 1, maxScale = 3, increment = 0.1;
+
     $('map').imageMapResize();
 
     $section = $('section').first();
     $section.find('.panzoom').panzoom({
                                         $zoomIn: $section.find(".zoom-in"),
                                         $zoomOut: $section.find(".zoom-out"),
-                                        $reset: $section.find(".reset")
+                                        $reset: $section.find(".reset"),
+                                        increment: 3*increment,
+                                        minScale: minScale,
+                                        maxScale: maxScale,
                                       });
 
 
@@ -52,11 +57,11 @@ $(document).ready(function(){
                     var zoomOut = delta ? delta < 0 : e.originalEvent.deltaY > 0;
                     //console.log("we panzoom wheel", delta, zoomOut);
                     $panzoom.panzoom('zoom', zoomOut, {
-                        increment: .05,
                         focal: e,
-                        minScale: 1,
-                        maxScale: 3,
                         transition: true,
+                        increment: increment,
+                        minScale: minScale,
+                        maxScale: maxScale,
                     });
                 });
 
