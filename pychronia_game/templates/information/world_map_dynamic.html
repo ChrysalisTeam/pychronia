@@ -28,6 +28,11 @@
 {% endblock %}
 
 
+{% block html_title %}
+    {% include "utilities/auto_html_title.html" %}
+{% endblock %}
+
+
 {% block full_body %}
 
 <div id="small_infobulle"></div>
@@ -38,9 +43,9 @@
 
         <section id="focal" class="conteneurCarte">
             <div class="buttons">
-                <button class="zoom-in">Zoom In</button>
-                <button class="zoom-out">Zoom Out</button>
-                <button class="reset">Reset</button>
+                <button class="zoom-in">{%  trans "Zoom In" %}</button>
+                <button class="zoom-out">{%  trans "Zoom out" %}Zoom Out</button>
+                <button class="reset">{%  trans "Reset" %}</button>
             </div>
             
             <div id="pan-parent" class="parent">
