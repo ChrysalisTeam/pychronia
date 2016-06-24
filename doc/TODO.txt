@@ -3,102 +3,33 @@ TODO LIST CHRYSALIS
 =========================
 
 
-PARTIE EN COURS
-==================
-
-Avis à tous les membres de l'Académie, et affiliés.
-Nous venons d'apprendre que la Faculté d'Imuo allait sortir d'ici peu
-une Intelligence Artificelle de jeu d'échecs, qu'ils qualifient de
-"révolutionnaire".
-Si tel était vraiment le cas, ce serait un coup dur pour la
-crédibilité de notre Académie, qui a toujours été en pointe dans ce
-domaine.
-
-
-
-
-
-
 FEATURES
 ------------
 
-/*! Image Map Resizer
- *  Desc: Resize HTML imageMap to scaled image.
- *  Copyright: (c) 2014-15 David J. Bradshaw - dave@bradshaw.net
- *  License: MIT
- */
-
-/**
- * @license jquery.panzoom.js v@VERSION
- * Updated: @DATE
- * Add pan and zoom functionality to any element
- * Copyright (c) 2013 timmy willison
- * Released under the MIT license
- * https://github.com/timmywil/jquery.panzoom/blob/master/MIT-License.txt
- */
-
+PROBLEM WITH MASKED RECIPIENTS!!
 Bug report submitted by player emogladys.
 URL: http://pangeaweb.org/tpk/emogladys/messages/compose/
 Message: Bonjour !
 J'ai intercepté le message d'un joueur, son destinataire était masqué mais ça a quand même ajouté son destinataire dans mes contacts.
-
-
-ERROR (EXTERNAL IP): Internal Server Error: /tpk/anonymous/messages/view_single_message/343_5b38/
-Internal Server Error: /tpk/anonymous/messages/view_single_message/343_5b38/
-Traceback (most recent call last):
-  File "/home/pakal/webapps/chrysalis_game/ENV/lib/python2.7/site-packages/django/core/handlers/base.py", line 111, in get_response
-    response = wrapped_callback(request, *callback_args, **callback_kwargs)
-  File "/home/pakal/webapps/chrysalis_game/pychronia/pychronia_game/datamanager/abstract_game_view.py", line 96, in __call__
-    return self.klass(request.datamanager)(request, *args, **kwargs) # we execute new instance of underlying class, without parameters
-  File "<string>", line 2, in __call__
-  File "/home/pakal/webapps/chrysalis_game/pychronia/pychronia_game/datamanager/abstract_game_view.py", line 49, in transform_usage_error
-    return caller(self, request, *args, **kwargs)
-  File "<string>", line 2, in __call__
-  File "/home/pakal/webapps/chrysalis_game/pychronia/pychronia_game/datamanager/datamanager_tools.py", line 128, in _conditional_method_wrapper
-    return _execute_under_toplevel_zodb_conflict_solver(datamanager=datamanager, completed_func=completed_func)
-  File "/home/pakal/webapps/chrysalis_game/pychronia/pychronia_game/datamanager/datamanager_tools.py", line 34, in _execute_under_toplevel_zodb_conflict_solver
-    return completed_func()
-  File "/home/pakal/webapps/chrysalis_game/pychronia/pychronia_game/datamanager/datamanager_tools.py", line 58, in _call_checked_readonly_method
-    return func(*args, **kwargs)
-  File "/home/pakal/webapps/chrysalis_game/pychronia/pychronia_game/datamanager/abstract_game_view.py", line 693, in __call__
-    response = self._process_standard_request(request, *args, **kwargs)
-  File "/home/pakal/webapps/chrysalis_game/pychronia/pychronia_game/views/messaging_views.py", line 656, in view_single_message
-    ctx = _determine_message_display_context(request.datamanager, message, is_pending=is_queued)
-  File "/home/pakal/webapps/chrysalis_game/pychronia/pychronia_game/views/messaging_views.py", line 259, in _determine_message_display_context
-    assert datamanager.is_authenticated()
-AssertionError
-
-
+- fix nasty bug where masked recipients can be spoiled by replying to an email
 
 
 - masquer par défaut les archivés dans "messages transmis"
-
-- pouvoir changer secret question & password des persos
 
 - investiguer lenteurs de messagerie
 
 
 
-SETUP:
-- OSX -> mysql-python with homebrew
-- install django_oursql
-- django_select2: pb with git, update it
-
-- fix nasty bug where masked recipients can be spoiled by replying to an email
-
-
 Ah bon, je n'avais pas vu je pensais que seul le mj avait accès à une page du type événement, sinon je viens de me faire avoir par un petit truc inattendu, j'ai envoyé un message dans le passé depuis le compte d'émilos et ceux qui l'avaient sur écoute récemment l'ont tous reçu... J'avais pas pensé que la mise sur écoute était indépendante du temps (ça parait logique maintenant mais bon).
 
 
-LOG 500 errrors too in middleware !!! CF LOGGING setting.
+LOG 500 errors too in middleware !!! CF LOGGING setting.
 
 2a01:e34:ec14:a1f0:ddb6:8ad3:9f46:79f7 - - [16/Jan/2016:01:08:30 +0000] "POST /tpk/topaz/messages/ajax_set_dispatched_message_state_flags/ HTTP/1.0" 500 69 "http://pangeaweb.org/tpk/topaz/messages/conversations/" "Mozilla/5.0 (Windows NT 6.3; WOW64; rv:43.0) Gecko/20100101 Firefox/43.0"
   File "/home/pakal/webapps/chrysalis_game/pychronia/dependencies/relstorage/adapters/locker.py", line 117, in hold_commit_lock
     raise StorageError("Unable to acquire commit lock")
 StorageError: Unable to acquire commit lock
 
-
-Investigate ZODB connection pool how works
 
 FIX android
 - grey background is in FRONT!!
@@ -110,25 +41,7 @@ Quelques points d'attention dont je me souviens:
 - penser à dévoiler peu à peu les articles encyclopédiques via leur "premier mot clef" glissé dans des emails
 
 
-Fix saut à la ligen dans Impersonation : Archbishop.Baazel (english), en haut
-
-
 https://pixabay.com/fr/chute-d-eau-noir-et-blanc-sc%C3%A9nique-936592/
-
-TRADUIRE
-body = dedent("""
-        The password corresponding to your login %(username)s is '%(password)s'.
-        Please keep it carefully and do not share it with anyone else.
-       """) % SDICT(username=username, password=password)
-
-Garnet: Vous êtes ami avec cet utilisateur depuis __trop__ peu de temps (impossible de briser l'amitié pour l'instant).  -> a ameliorer
-
-A TRADUIRE : subject = "Deep Analysis Request - item \"%s\"" % item_title
-
-
-FIX the 3s anti-spam system on "page backwards" access
--> surtout /ability/house_locking/ a pbs avec buttons
-
 
 MESSAGERIE:
 - "sauver comme template" dans la vue "composition de nouveau message"
@@ -138,6 +51,16 @@ MESSAGERIE:
 
 SCRIPT
 ----------
+
+
+Avis à tous les membres de l'Académie, et affiliés.
+Nous venons d'apprendre que la Faculté d'Imuo allait sortir d'ici peu
+une Intelligence Artificelle de jeu d'échecs, qu'ils qualifient de
+"révolutionnaire".
+Si tel était vraiment le cas, ce serait un coup dur pour la
+crédibilité de notre Académie, qui a toujours été en pointe dans ce
+domaine.
+
 
 mettre gamemaster hints sur encre sympathique et parchemin vierge
 
@@ -181,12 +104,9 @@ Faire page d'introduction
 - ajouter des details cruciaux à TOUTES runes !!!!
 
 
-une petite croix sur la gauche ou la droite serait la bien venu ou un clic ailleurs sur le site pour refermer rapidement la bande
-   ou tout simplement autoriser le clic sur le texte pour refermer. ==> EXPLIQUER DANS HELP PAGE
-
+NOTIFICATION : une petite croix sur la gauche ou la droite serait la bien venu ou un clic ailleurs sur le site pour refermer rapidement la bande ou tout simplement autoriser le clic sur le texte pour refermer. ==> EXPLIQUER DANS HELP PAGE
 
 - clarifier règles absolues : pas de vol d'argent, pas de triche, emails uniquement valables à l'intérieur du site (dans INTRO "out game" du jeu)
-
 
 
 
@@ -241,6 +161,18 @@ PAUSED BUGLETS:
 TASKS DONE
 ---------------
 
+- SETUP: switch to pymysql for compatibility - DONE
+- FIX the 3s anti-spam system on "page backwards" access - DONE 1s now
+  -> surtout /ability/house_locking/ a pbs avec buttons
+- Fix saut à la ligne dans Impersonation : Archbishop.Baazel (english), en haut - NOT REPRODUCED
+- A TRADUIRE : subject = "Deep Analysis Request - item \"%s\"" % item_title - DONE
+- Pouvoir changer secret question & password des persos - DONE
+- Fix access permission - DONE:
+  ERROR (EXTERNAL IP): Internal Server Error: /tpk/anonymous/messages/view_single_message/343_5b38/
+  Internal Server Error: /tpk/anonymous/messages/view_single_message/343_5b38/
+  File "/home/pakal/webapps/chrysalis_game/pychronia/pychronia_game/views/messaging_views.py", line 259, in _determine_message_display_context
+    assert datamanager.is_authenticated()
+    AssertionError
 - ENCRYPTED FOLDER to be restricted to authenticated, because view_media is too - DONE
 - investigate sql handles on webfaction relstorage - DONE
   File "/home/pakal/webapps/chrysalis_game/ENV/lib/python2.7/site-packages/MySQLdb/connections.py", line 187, in __init__

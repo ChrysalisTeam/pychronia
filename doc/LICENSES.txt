@@ -130,6 +130,9 @@ Fancybox2
 fasw.transitions
     GNU General Public License, version 3
 
+jquery.imageMapResizer
+    MIT
+
 jquery-jnotify
     Apache License
 
@@ -138,6 +141,9 @@ jquery-jplayer
 
 jquery-marquee
     No license information
+
+jquery.panzoom.js
+    MIT
 
 jquery-storage
     Attribution, no warranties (BSD style)
