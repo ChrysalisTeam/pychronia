@@ -12,8 +12,6 @@
 {% endaddtoblock %}
 
 
-
-
 {% addtoblock "css" %}
 
     <!-- no need - link href="{{ STATIC_URL }}libs/jquery-ui/ui.dropdownchecklist.css" rel="stylesheet" type="text/css" /-->
@@ -22,7 +20,6 @@
     {% import_django_select2_css %}
 
 {% endaddtoblock %}
-
 
 
 {% addtoblock "js" %}
@@ -56,9 +53,6 @@
     {% import_django_select2_js %}
 
 {% endaddtoblock %}
-
-
-
 
 
 {% addtoblock "definition_js" %}
@@ -96,7 +90,6 @@
     }
 
 
-
     function save_radio_playlist() {
        $.post("",
                { _action_: "save_radio_playlist",
@@ -104,7 +97,6 @@
                function(answer) {  }
              );
     }
-
 
     function clear_radio_playlist() {
         $("#current_playlist").empty();
@@ -261,56 +253,6 @@
         {% endif %}
 
 
-
-
-
-
-
-
-        /* ADD GLOBAL AJAX ERROR HANDLERS (all executed on error)
-        FIXME
-        $(document).ajaxError( handler(event, jqXHR, ajaxSettings, thrownError) )
-
-        jQuery.ajax({
-            ...,
-            complete: function(event, XHR, ajaxSettings, thrownError) {
-            if (XHR.status == 200) { // success
-            } elseif (XHR.status == 500) { // Internal Server Error
-            } elseif (XHR.status == 404) { // File Not found
-            }
-            });
-
-        */
-
-        /*
-        $(function() {
-            $.ajaxSetup({
-                error: function(jqXHR, exception) {
-                    if (jqXHR.status === 0) {
-                        alert('Not connect.\n Verify Network.');
-                    } else if (jqXHR.status == 404) {
-                        alert('Requested page not found. [404]');
-                    } else if (jqXHR.status == 500) {
-                        alert('Internal Server Error [500].');
-                    } else if (exception === 'parsererror') {
-                        alert('Requested JSON parse failed.');
-                    } else if (exception === 'timeout') {
-                        alert('Time out error.');
-                    } else if (exception === 'abort') {
-                        alert('Ajax request aborted.');
-                    } else {
-                        alert('Uncaught Error.\n' + jqXHR.responseText);
-                    }
-                }
-            });
-        });
-
-        $("div.log").ajaxError(function(event, jqXHR, ajaxSettings, thrownError) {
-              $(this).text( "Triggered ajaxError handler." );
-            });
-       */
-
-
 		$('.marquee').marquee({
 		    //speed in milliseconds of the marquee
 		    speed: 6000,
@@ -344,7 +286,6 @@
 
 
 {% endblock %}
-
 
 
 
