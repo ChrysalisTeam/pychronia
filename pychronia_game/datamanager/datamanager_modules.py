@@ -1865,7 +1865,7 @@ class TextMessagingCore(BaseDataManager):
                 group_id = parent_msg["group_id"]
                 sender_username = self.get_username_from_email(sender_email) # character, or fallback to master
                 self._set_dispatched_message_state_flags(username=sender_username, msg_id=parent_id, has_replied=True)  # do not touch the READ state - must be done MANUALLY
-            except UsageError, e:
+            except UsageError as e:
                 self.logger.error(e, exc_info=True)  # something ugly happened to messaging history ? let it be...
 
         msgs_count = len(self.messaging_data["messages_dispatched"]) + len(self.messaging_data["messages_queued"])

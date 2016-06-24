@@ -32,7 +32,7 @@ class MessageComposeForm(AbstractGameForm):
 
     recipients = Select2TagsField(label=ugettext_lazy("Recipients"), required=True)
 
-    #mask_recipients = forms.BooleanField(label=ugettext_lazy("Mask recipients"), initial=False, required=False)
+    mask_recipients = forms.BooleanField(label=ugettext_lazy("Mask recipients"), initial=False, required=False)
 
     subject = forms.CharField(label=ugettext_lazy("Subject"), widget=forms.TextInput(attrs={'size':'35'}), required=True)
 
@@ -63,20 +63,19 @@ class MessageComposeForm(AbstractGameForm):
         attachment = url_data.get("attachment")
         transferred_msg = url_data.get("transferred_msg", "")
         parent_id = url_data.get("parent_id", "")
-        #mask_recipients = (url_data.get("mask_recipients", "") == "1")
+        mask_recipients = (url_data.get("mask_recipients", "") == "1")
 
         datamanager = request.datamanager
         user = request.datamanager.user
 
         # TODO - extract these decisions tables to a separate method and test it thoroughly #
 
-
         if user.is_master: # only master has templates ATM
 
             use_template = url_data.get("use_template", "")
             if use_template:
 
-                # non-empty template fields override parent message fields #
+                # non-empty template fields override query-string and parent-message fields #
 
                 try:
                     tpl = datamanager.get_message_template(use_template)
@@ -85,7 +84,7 @@ class MessageComposeForm(AbstractGameForm):
                 else:
                     sender = tpl["sender_email"] or sender
                     recipients = tpl["recipient_emails"] or recipients
-                    #mask_recipients = tpl["mask_recipients"]
+                    mask_recipients = tpl["mask_recipients"] or mask_recipients
                     subject = tpl["subject"] or subject
                     body = tpl["body"] or body
                     attachment = tpl["attachment"] or attachment
@@ -109,7 +108,7 @@ class MessageComposeForm(AbstractGameForm):
                 if visibility_reason == VISIBILITY_REASONS.sender: # we simply recontact recipients (even if we were one of the recipients too)
                     if user.is_master:
                         sender = msg["sender_email"] # for master
-                    recipients = msg["recipient_emails"]  # even if "mask_recipients" is activated, since we're the sender
+                    recipients = msg["recipient_emails"]
 
                     if _("Bis:") not in msg["subject"]:
                         subject = _("Bis:") + " " + subject
@@ -170,7 +169,7 @@ class MessageComposeForm(AbstractGameForm):
         self.fields["recipients"].initial = list(recipients)  # prevents ZODB types...
         self.fields["recipients"].choice_tags = available_recipients
 
-        #self.fields["mask_recipients"].initial = mask_recipients
+        self.fields["mask_recipients"].initial = mask_recipients
 
         self.fields["subject"].initial = subject
         self.fields["body"].initial = body
@@ -477,7 +476,7 @@ def compose_message(request, template_name='messaging/compose.html'):
     user = request.datamanager.user
     message_sent = False
     form = None
-    sent_msg_id = None
+    latest_sent_msg_id = None
 
     if request.method == "POST":
         form = MessageComposeForm(request, data=request.POST)
@@ -502,7 +501,8 @@ def compose_message(request, template_name='messaging/compose.html'):
 
                 # we parse the list of emails
                 recipient_emails = form.cleaned_data["recipients"]
-                #mask_recipients = form.cleaned_data["mask_recipients"]
+                assert recipient_emails, recipient_emails
+                mask_recipients = form.cleaned_data["mask_recipients"]
 
                 subject = form.cleaned_data["subject"]
                 body = form.cleaned_data["body"]
@@ -513,12 +513,23 @@ def compose_message(request, template_name='messaging/compose.html'):
                 use_template = form.cleaned_data.get("use_template", None)  # standard players might have it one day
 
                 # sender_email and one of the recipient_emails can be the same email, we don't care !
-                sent_msg_id = request.datamanager.post_message(sender_email, recipient_emails, subject, body,
-                                                              attachment=attachment, transferred_msg=transferred_msg,
-                                                              date_or_delay_mn=sending_date,
-                                                              parent_id=parent_id, use_template=use_template,
-                                                              body_format=body_format)
-                assert sent_msg_id
+                post_message = request.datamanager.post_message
+                params = dict(sender_email=sender_email, subject=subject, body=body,
+                              attachment=attachment, transferred_msg=transferred_msg,
+                              date_or_delay_mn=sending_date,
+                              use_template=use_template,
+                              body_format=body_format)
+
+                if mask_recipients:
+                    # to avoid headaches with displays and message wiretapping, we separate all messages when sending
+                    for recipient in recipient_emails:
+                        latest_sent_msg_id = post_message(recipient_emails=[recipient], parent_id=parent_id, **params)
+                        if not parent_id:
+                            parent_id = latest_sent_msg_id  # in this case the first message becomes the parent of the conversation
+                else:
+                    latest_sent_msg_id = post_message(recipient_emails=recipient_emails, parent_id=parent_id, **params)
+                assert latest_sent_msg_id, latest_sent_msg_id
+
                 message_sent = True
                 form = MessageComposeForm(request)  # new empty form
         else:
@@ -527,17 +538,18 @@ def compose_message(request, template_name='messaging/compose.html'):
         form = MessageComposeForm(request)
 
 
-    if sent_msg_id:
+    if latest_sent_msg_id:
         # we redirect towards the most probable view
         if not request.datamanager.is_master():
             target_view = "pychronia_game.views.standard_conversations"
         else:
             try:
-                msg = request.datamanager.get_dispatched_message_by_id(sent_msg_id)
+                msg = request.datamanager.get_dispatched_message_by_id(latest_sent_msg_id)
                 del msg
                 target_view = "pychronia_game.views.all_dispatched_messages"
             except UsageError:
-                assert len([message for message in request.datamanager.messaging_data["messages_queued"] if message["id"] == sent_msg_id]) == 1
+                assert len([message for message in request.datamanager.messaging_data["messages_queued"]
+                                    if message["id"] == latest_sent_msg_id]) == 1
                 target_view = "pychronia_game.views.all_queued_messages"
 
         conversations_url = game_view_url(target_view, datamanager=request.datamanager)
