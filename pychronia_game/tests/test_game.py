@@ -4797,7 +4797,9 @@ class TestHttpRequests(BaseGameTestCase):
         if enforced_parent_id:
             parent_id = msgs[0]["id"]
 
-        delay_h = random.choice(("", "0.0005"))
+        delay_h = random.choice(("", "0.0002"))
+        if delay_h:
+            self._master_auth()  # else delay_h is not taken into account
 
         params["parent_id"] = parent_id
         params["mask_recipients"] = True
@@ -4807,7 +4809,13 @@ class TestHttpRequests(BaseGameTestCase):
         #print("@@@@@@", response.content)
         assert response.status_code == 200
 
-        time.sleep(1)  # in case message sending was delayed, we must dispatch them now
+        queued_msgs = self.dm.get_all_queued_messages()
+        if delay_h:
+            assert len(queued_msgs) == 2
+        else:
+            assert len(queued_msgs) == 0
+
+        time.sleep(1.1)  # in case message sending was delayed, we must dispatch them now
         res = self.dm.process_periodic_tasks()
         self.assertEqual(res["messages_dispatched"], 2 if delay_h else 0)
 
@@ -4816,6 +4824,7 @@ class TestHttpRequests(BaseGameTestCase):
         msg1, msg2, msg3 = msgs
 
         conversations = self.dm.sort_messages_by_conversations(msgs)
+        print("Conversations:", conversations)
         if enforced_parent_id:
             assert len(conversations) == 1
             assert len(conversations[0]) == 3
