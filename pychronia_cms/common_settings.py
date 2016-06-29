@@ -96,17 +96,20 @@ MIGRATION_MODULES.update({
 TEMPLATE_CONTEXT_PROCESSORS = TEMPLATE_CONTEXT_PROCESSORS + ("cms.context_processors.cms_settings",) # for CMS_MEDIA_URL etc.
 
 
-MIDDLEWARE_CLASSES += (
-'debug_toolbar.middleware.DebugToolbarMiddleware',
-'django.middleware.clickjacking.XFrameOptionsMiddleware',
-'django.middleware.csrf.CsrfViewMiddleware',
-# #'cms.middleware.multilingual.MultilingualURLMiddleware', OBSOLETE
-'cms.middleware.page.CurrentPageMiddleware',
-'cms.middleware.user.CurrentUserMiddleware',
-'request.middleware.RequestMiddleware',
-'cms.middleware.toolbar.ToolbarMiddleware',
-'cms.middleware.language.LanguageCookieMiddleware',
-)
+MIDDLEWARE_CLASSES = \
+    ('django.middleware.cache.UpdateCacheMiddleware',) + \
+    MIDDLEWARE_CLASSES + (
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    # #'cms.middleware.multilingual.MultilingualURLMiddleware', OBSOLETE
+    'cms.middleware.page.CurrentPageMiddleware',
+    'cms.middleware.user.CurrentUserMiddleware',
+    'request.middleware.RequestMiddleware',
+    'cms.middleware.toolbar.ToolbarMiddleware',
+    'cms.middleware.language.LanguageCookieMiddleware',
+    'django.middleware.cache.FetchFromCacheMiddleware',
+    )
 
 
 # global django overrides, easier than overridding models get_absolute_url() methods
