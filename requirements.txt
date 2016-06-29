@@ -51,6 +51,8 @@ djangocms-snippet==1.4
 
 djangocms-text-ckeditor==2.4.3
 
+git+https://github.com/pakal/cmsplugin-rst/
+
 django-zodb==0.3dev
 
 easy-thumbnails==2.2
