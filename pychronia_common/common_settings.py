@@ -192,7 +192,8 @@ MESSAGE_LEVEL = message_constants.DEBUG # minimum recorded level
 
 
 ## DJANGO CONTRIB RST CONF ##
-RESTRUCTUREDTEXT_INITIALIZER = """
+
+CMSPLUGIN_RST_CONTENT_PREFIX = """
 
 .. |nbsp| unicode:: 0xA0 
    :trim:
@@ -203,11 +204,7 @@ RESTRUCTUREDTEXT_INITIALIZER = """
    
 """
 
-RESTRUCTUREDTEXT_FILTER_SETTINGS = {"initial_header_level": 2, # minimum "h2" when rendered to html
-                                    "doctitle_xform": False, # important, to have even lone titles stay in the html fragment
-                                    "sectsubtitle_xform": False,
-                                    'file_insertion_enabled': False,  # SECURITY MEASURE (file hacking)
-                                    'raw_enabled': False, # SECURITY MEASURE (script tag)
+CMSPLUGIN_RST_SETTINGS_OVERRIDES = {"initial_header_level": 2, # minimum "h2" when rendered to html
                                     'smart_quotes': "alt"}
                                     #"'language_code': "fr" ## SEEMS BROKEN!
 

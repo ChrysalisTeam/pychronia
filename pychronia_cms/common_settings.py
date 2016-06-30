@@ -154,7 +154,7 @@ REQUEST_ONLY_ERRORS = False
 ## DJANGO CONTRIB RST CONF ##
 # on the public portal, only superuser write RST docs
 # so we trust him for "raw" directive (not file insertion though)
-RESTRUCTUREDTEXT_FILTER_SETTINGS["raw_enabled"] = True
+CMSPLUGIN_RST_SETTINGS_OVERRIDES["raw_enabled"] = True
 
 
 CMS_LANGUAGES = {

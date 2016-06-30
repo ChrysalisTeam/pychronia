@@ -248,7 +248,7 @@ def advanced_restructuredtext(value,
             raise template.TemplateSyntaxError("Error in 'restructuredtext' filter: The Python docutils library isn't installed.")
         return force_unicode(value)
     else:
-        docutils_settings = getattr(settings, "RESTRUCTUREDTEXT_FILTER_SETTINGS", {}).copy() # VERY IMPORTANT - copy it!!!
+        docutils_settings = getattr(settings, "CMSPLUGIN_RST_SETTINGS_OVERRIDES", {}).copy() # VERY IMPORTANT - copy it!!!
         if initial_header_level is not None:
             docutils_settings.update(initial_header_level=initial_header_level)
         if report_level is not None:
