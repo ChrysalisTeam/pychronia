@@ -6,13 +6,13 @@ TODO LIST CHRYSALIS
 FEATURES
 ------------
 
-PROBLEM WITH MASKED RECIPIENTS!!
-Bug report submitted by player emogladys.
-URL: http://pangeaweb.org/tpk/emogladys/messages/compose/
-Message: Bonjour !
-J'ai intercepté le message d'un joueur, son destinataire était masqué mais ça a quand même ajouté son destinataire dans mes contacts.
-- fix nasty bug where masked recipients can be spoiled by replying to an email
+Talk about period and comma in number field, in help
 
+Add advanced search to message viewing pages (subject/to/from)
+
+
+Messages comprimés : De : amethyst@anthropia.pg   (24 juin 2016)
+--> rajouter "à"
 
 - masquer par défaut les archivés dans "messages transmis"
 
@@ -161,6 +161,9 @@ PAUSED BUGLETS:
 TASKS DONE
 ---------------
 
+- PROBLEMS WITH MASKED RECIPIENTS - REIMPLEMENTED
+    - J'ai intercepté le message d'un joueur, son destinataire était masqué mais ça a quand même ajouté son destinataire dans mes contacts.
+    - fix nasty bug where masked recipients can be spoiled by replying to an email
 - SETUP: switch to pymysql for compatibility - DONE
 - FIX the 3s anti-spam system on "page backwards" access - DONE 1s now
   -> surtout /ability/house_locking/ a pbs avec buttons
