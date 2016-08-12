@@ -219,6 +219,16 @@ def _generate_site_links(html_snippet, datamanager):
     return html_res
 
 
+DOCUTILS_RENDERER_SETTINGS_DEFAULTS = {
+    "initial_header_level": 1,
+    # important, to have even lone titles stay in the html fragment:
+    "doctitle_xform": False,
+    # we also disable the promotion of lone subsection title to a subtitle:
+    "sectsubtitle_xform": False,
+    'file_insertion_enabled': False,  # SECURITY MEASURE (file hacking)
+    'raw_enabled': False,  # SECURITY MEASURE (script tag)
+    'report_level': 2,  # report warnings and above, by default
+}
 
 def advanced_restructuredtext(value,
                               initial_header_level=None,
@@ -248,14 +258,16 @@ def advanced_restructuredtext(value,
             raise template.TemplateSyntaxError("Error in 'restructuredtext' filter: The Python docutils library isn't installed.")
         return force_unicode(value)
     else:
-        docutils_settings = getattr(settings, "CMSPLUGIN_RST_SETTINGS_OVERRIDES", {}).copy() # VERY IMPORTANT - copy it!!!
+        docutils_settings = DOCUTILS_RENDERER_SETTINGS_DEFAULTS.copy()
+        _docutils_overrides = getattr(settings, "CMSPLUGIN_RST_SETTINGS_OVERRIDES", {}).copy() # VERY IMPORTANT - copy it!!!
+        docutils_settings.update(_docutils_overrides)
         if initial_header_level is not None:
             docutils_settings.update(initial_header_level=initial_header_level)
         if report_level is not None:
             docutils_settings.update(report_level=report_level)
-        #print(">><<", docutils_settings, file=sys.stderr)
+        #print(">><<", docutils_settings, value, file=sys.stderr)
         parts = publish_parts(source=smart_str(value), writer_name="html4css1", settings_overrides=docutils_settings)
-        return mark_safe(force_unicode(parts["fragment"]))
+        return mark_safe(force_unicode(parts["html_body"]))
 
 
 

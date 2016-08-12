@@ -538,6 +538,7 @@ class TestUtilities(BaseGameTestCase):
                     
                     hi[BR]you
                     """)
+
         html = format_enriched_text(self.dm, rst, initial_header_level=2, report_level=5, excluded_link=u"wu\\gly_é")
 
         assert self.dm.get_event_count("GENERATE_MESSAGING_LINKS") == 1
@@ -551,6 +552,7 @@ class TestUtilities(BaseGameTestCase):
 
         #print("------->", html)
         assert html.strip() == dedent("""
+                            <div class="document">
                             <div class="section" id="hi">
                             <h2>hi</h2>
                             <p>lokons</p>
@@ -559,6 +561,7 @@ class TestUtilities(BaseGameTestCase):
                             <p>ugly</p>
                             <p>TeStiNg</p>
                             <p>hi<br />you</p>
+                            </div>
                             </div>""").strip()
 
 
@@ -577,6 +580,7 @@ class TestUtilities(BaseGameTestCase):
 
         # beware, there are smart quotes in the results!
         assert html == dedent("""
+                                <div class="document">
                                 <div class="section" id="hello">
                                 <h2>hello</h2>
                                 <div class="system-message">
@@ -586,6 +590,7 @@ class TestUtilities(BaseGameTestCase):
                                 .. baddirective:: aaa
                                 
                                 </pre>
+                                </div>
                                 </div>
                                 </div>
                                 """).strip()

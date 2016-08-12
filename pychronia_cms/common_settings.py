@@ -304,10 +304,10 @@ WYM_STYLES = ",\n".join([
 #See http://docs.cksource.com/ckeditor_api/symbols/CKEDITOR.config.html for all settings
 
 CKEDITOR_SETTINGS = {
-            'language': '{{ language }}',
-            'skin': 'moono',
+            #'language': '{{ language }}',
+            #'skin': 'moono',
             'height': '320px',
-            'toolbar': 'CMS',
+            #'toolbar': 'CMS',
             'toolbar_CMS': [
                 ['Undo', 'Redo'],
                 ['cmsplugins', '-', 'ShowBlocks'],
@@ -321,8 +321,8 @@ CKEDITOR_SETTINGS = {
                 ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Table'],
                 ['Source']
             ],
-            'toolbarCanCollapse': False,
-            'extraPlugins': 'cmsplugins'
+            #'toolbarCanCollapse': False,
+            #'extraPlugins': 'cmsplugins'
 }
 
 
