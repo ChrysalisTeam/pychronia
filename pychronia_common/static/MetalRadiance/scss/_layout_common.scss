@@ -62,6 +62,7 @@ body .notification_panel {
             position: absolute;
             right: 15px;
             bottom: 4px;
+            text-decoration: none;  // fallback
             text-decoration: blink;
             border: none !important;
           }

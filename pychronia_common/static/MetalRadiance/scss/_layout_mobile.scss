@@ -29,12 +29,27 @@ body {
 }
 
 #mm-full_header {
+
+    div {
+        margin: 12px 0;
+    }
+
     // jquery.mmenu clone of header
     #mm-site_title {
         display: none;
     }
     #mm-notification_table {
         margin: 10px 0;
+    }
+
+    .motto {
+        select {
+          display: block;
+        }
+    }
+
+    .carving img {
+        vertical-align: middle;
     }
 }
 
@@ -59,6 +74,7 @@ body {
             margin: 0px auto 0px;
             height: 74px;
             background: url("img/backgrounds/mobile/header.jpg") no-repeat top center;
+
             .notification_panel {
                 display: none;
             }

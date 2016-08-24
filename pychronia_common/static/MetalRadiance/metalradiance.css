@@ -2125,6 +2125,7 @@ body .notification_panel .notification_panel_decorations .notification_panel_con
   position: absolute;
   right: 15px;
   bottom: 4px;
+  text-decoration: none;
   text-decoration: blink;
   border: none !important;
 }
@@ -2185,11 +2186,20 @@ body .notification_panel .notification_panel_decorations .notification_panel_con
   .mm-menu .mm-navbar a {
     font-weight: bold;
   }
+  #mm-full_header div {
+    margin: 12px 0;
+  }
   #mm-full_header #mm-site_title {
     display: none;
   }
   #mm-full_header #mm-notification_table {
     margin: 10px 0;
+  }
+  #mm-full_header .motto select {
+    display: block;
+  }
+  #mm-full_header .carving img {
+    vertical-align: middle;
   }
   #full_header {
     width: 100%;
