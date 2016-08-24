@@ -164,7 +164,7 @@ class CurrentUserHandling(BaseDataManager):
         if not self.user.has_write_access:
             assert self.user.is_impersonation or self.user.is_observer # only cases ATM
             return dict(writable=False,
-                        reason=_("Your impersonation is in read-only mode."))
+                        reason=None) # USELESS: _("Your impersonation is in read-only mode."))
         else:
             # game can be written #
             if self.is_master() or self.is_game_started(): # master is NOT impacted by game state

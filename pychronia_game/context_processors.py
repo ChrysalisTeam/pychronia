@@ -43,10 +43,11 @@ def pychronia_template_context(request):
 
         # WARNING - must be BEFORE messages retrieval!
         writability_data = dm.determine_actual_game_writability()
-        if writability_data["reason"] and not request.is_ajax():
-            dm.user.add_warning(writability_data["reason"]) # a reason for no-writability most probably
-        elif not dm.is_game_started() and display_admin_tips:
-            dm.user.add_warning(_("Game is currently paused for players."))
+        if not request.is_ajax():
+            if writability_data["reason"]:
+                dm.user.add_warning(writability_data["reason"]) # a reason for no-writability most probably
+            elif (not dm.is_game_started()) and display_admin_tips:
+                dm.user.add_warning(_("Game is currently paused for players."))
 
         online_users = dm.get_online_users() # usernames are fine // to test: (dm.get_character_usernames() * 2)
         menus = menus_module.generate_filtered_menu(request) # might be None
