@@ -26,6 +26,7 @@
 .post-it {
     @include dark-texts;
     padding: 4px;
+    background-color: $light_yellow;
     border-color: transparent;
     border-style: solid;
     border-width: 4px 4px 6px;

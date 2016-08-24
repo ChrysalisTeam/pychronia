@@ -1309,6 +1309,7 @@ table.footnote {
 .post-it, .missing-content {
   color: black;
   padding: 4px;
+  background-color: #D3C469;
   border-color: transparent;
   border-style: solid;
   border-width: 4px 4px 6px;
@@ -1768,7 +1769,7 @@ input.digit {
 .contact_display {
   margin: 1px 1px;
   border: solid 1px #9D8126;
-  width: 214px;
+  width: 218px;
   display: inline-block;
 }
 .contact_display img {
@@ -2241,7 +2242,7 @@ body .notification_panel .notification_panel_decorations .notification_panel_con
     text-align: center;
     padding: 6px 0;
     overflow: visible;
-    background-color: transparent;
+    background-color: #1C120B;
     border-color: #775F13;
     border-style: ridge;
     border-width: 14px;
