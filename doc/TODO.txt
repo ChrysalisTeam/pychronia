@@ -11,14 +11,12 @@ Talk about period and comma in number field, in help
 Add advanced search to message viewing pages (subject/to/from)
 
 
-Messages comprimés : De : amethyst@anthropia.pg   (24 juin 2016)
---> rajouter "à"
 
 - masquer par défaut les archivés dans "messages transmis"
 
 - investiguer lenteurs de messagerie
 
-
+- BETTER EXPOSE HISTORIES LOG EVENTS
 
 Ah bon, je n'avais pas vu je pensais que seul le mj avait accès à une page du type événement, sinon je viens de me faire avoir par un petit truc inattendu, j'ai envoyé un message dans le passé depuis le compte d'émilos et ceux qui l'avaient sur écoute récemment l'ont tous reçu... J'avais pas pensé que la mise sur écoute était indépendante du temps (ça parait logique maintenant mais bon).
 
@@ -161,6 +159,7 @@ PAUSED BUGLETS:
 TASKS DONE
 ---------------
 
+- compléter l'affichage des messages "collapsed" avec les destinataires - DONE
 - PROBLEMS WITH MASKED RECIPIENTS - REIMPLEMENTED
     - J'ai intercepté le message d'un joueur, son destinataire était masqué mais ça a quand même ajouté son destinataire dans mes contacts.
     - fix nasty bug where masked recipients can be spoiled by replying to an email

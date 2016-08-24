@@ -90,8 +90,11 @@
         <img class="collapse_icon" style="float:right" title="{% trans "Expand this message" %}" onclick="$('#{{ ctx.display_id|escapejs }}').removeClass('collapsed');" src="{{ STATIC_URL }}MetalRadiance/img/icons/expand_green.png"/>
 
         <p style="color:{% usercolor message.sender_email %};">
-            <strong><i>{{ message.subject }}</i></strong><br/>
-            <strong>{% trans "From:" %}</strong> {{ message.sender_email }} &nbsp; {% if message.sent_at %}({{ message.sent_at|utctolocal|date:"SHORT_DATE_FORMAT" }}){% endif %}
+            <strong><i>{{ message.subject }}</i></strong>
+            {% if message.sent_at %} &nbsp; ({{ message.sent_at|utctolocal|date:"SHORT_DATE_FORMAT" }}){% endif %}
+            <br/>
+            <strong>{% trans "From:" %}</strong> {{ message.sender_email }} <br/>
+            <strong>{% trans "To:" %}</strong> {{ message.recipient_emails|join:", " }} <br/>
         </p>
 
     </div>
