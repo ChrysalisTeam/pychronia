@@ -24,7 +24,8 @@ from pychronia_game.common import _undefined, config, AbnormalUsageError, revers
     UsageError, checked_game_file_path, NormalUsageError, determine_asset_url
 from pychronia_game.templatetags.helpers import _generate_encyclopedia_links, \
     advanced_restructuredtext, _generate_messaging_links, _generate_site_links, \
-    format_enriched_text, _generate_game_file_links, _generate_game_image_thumbnails
+    format_enriched_text, _generate_game_file_links, _generate_game_image_thumbnails, \
+    rich_text
 from pychronia_game import views, utilities, authentication
 from pychronia_game.utilities import autolinker
 from django.test.client import RequestFactory
@@ -181,6 +182,36 @@ class TestUtilities(BaseGameTestCase):
         assert 'class="problematic"' in html # spans remain though
 
 
+    def test_rich_text_tag_caching(self):
+        
+        count = 100
+        context = {"request": self.request}
+        contents = ["wsdfsdzrygfhfbvbh\n\n"*i for i in range(count)]
+
+        start = time.time()
+        for content in contents:
+            rich_text(context, content=content, text_format="rst")
+        delay1 = time.time() - start  # NO CACHE
+
+        start = time.time()
+        for content in contents:
+            rich_text(context, content=content, text_format=None)
+        delay2 = time.time() - start  # NO CACHE
+
+        start = time.time()
+        for content in contents:
+            rich_text(context, content=content, text_format=None)
+        delay_cache_hits1 = time.time() - start
+
+        start = time.time()
+        for content in range(count):
+            rich_text(context, content="qfdsfqd\nsqdfsqdff\n\nfsdfsdfsdfsdfsdfdsfsd")
+        delay_cache_hits2 = time.time() - start
+
+        assert delay1 > 10 * delay_cache_hits1
+        assert delay2 > 10 * delay_cache_hits1
+        assert delay1 > 10 * delay_cache_hits2
+        assert delay2 > 10 * delay_cache_hits2
 
 
     def test_sphinx_publisher_settings(self) :
