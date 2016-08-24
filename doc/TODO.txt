@@ -6,27 +6,16 @@ TODO LIST CHRYSALIS
 FEATURES
 ------------
 
-Talk about period and comma in number field, in help
 
 Add advanced search to message viewing pages (subject/to/from)
 
-
-
-- masquer par défaut les archivés dans "messages transmis"
+- masquer par défaut les archivés dans "messages transmis" ??
 
 - investiguer lenteurs de messagerie
 
-- BETTER EXPOSE HISTORIES LOG EVENTS
+MESSAGERIE:
+- "sauver comme template" dans la vue "composition de nouveau message"
 
-Ah bon, je n'avais pas vu je pensais que seul le mj avait accès à une page du type événement, sinon je viens de me faire avoir par un petit truc inattendu, j'ai envoyé un message dans le passé depuis le compte d'émilos et ceux qui l'avaient sur écoute récemment l'ont tous reçu... J'avais pas pensé que la mise sur écoute était indépendante du temps (ça parait logique maintenant mais bon).
-
-
-LOG 500 errors too in middleware !!! CF LOGGING setting.
-
-2a01:e34:ec14:a1f0:ddb6:8ad3:9f46:79f7 - - [16/Jan/2016:01:08:30 +0000] "POST /tpk/topaz/messages/ajax_set_dispatched_message_state_flags/ HTTP/1.0" 500 69 "http://pangeaweb.org/tpk/topaz/messages/conversations/" "Mozilla/5.0 (Windows NT 6.3; WOW64; rv:43.0) Gecko/20100101 Firefox/43.0"
-  File "/home/pakal/webapps/chrysalis_game/pychronia/dependencies/relstorage/adapters/locker.py", line 117, in hold_commit_lock
-    raise StorageError("Unable to acquire commit lock")
-StorageError: Unable to acquire commit lock
 
 
 FIX android
@@ -39,16 +28,24 @@ Quelques points d'attention dont je me souviens:
 - penser à dévoiler peu à peu les articles encyclopédiques via leur "premier mot clef" glissé dans des emails
 
 
-https://pixabay.com/fr/chute-d-eau-noir-et-blanc-sc%C3%A9nique-936592/
-
-MESSAGERIE:
-- "sauver comme template" dans la vue "composition de nouveau message"
 
 
 
 
 SCRIPT
 ----------
+
+https://pixabay.com/fr/chute-d-eau-noir-et-blanc-sc%C3%A9nique-936592/
+
+
+- BETTER EXPOSE HISTORIES LOG EVENTS
+
+
+Ah bon, je n'avais pas vu je pensais que seul le mj avait accès à une page du type événement, sinon je viens de me faire avoir par un petit truc inattendu, j'ai envoyé un message dans le passé depuis le compte d'émilos et ceux qui l'avaient sur écoute récemment l'ont tous reçu... J'avais pas pensé que la mise sur écoute était indépendante du temps (ça parait logique maintenant mais bon).
+
+
+
+Talk about period and comma in number field, in help
 
 
 Avis à tous les membres de l'Académie, et affiliés.
@@ -118,7 +115,7 @@ PROMOTION
 TESTS
 ----------
 
-TESTER mask recipients
+TESTER multi recipients done ?
 
 PAUSED BUGLETS:
 - BUG si joueurs passés en pnj/non pnj avec auctionlist :
@@ -159,6 +156,7 @@ PAUSED BUGLETS:
 TASKS DONE
 ---------------
 
+- LOG http500 errors to console too, with traceback - DONE
 - compléter l'affichage des messages "collapsed" avec les destinataires - DONE
 - PROBLEMS WITH MASKED RECIPIENTS - REIMPLEMENTED
     - J'ai intercepté le message d'un joueur, son destinataire était masqué mais ça a quand même ajouté son destinataire dans mes contacts.
@@ -553,6 +551,11 @@ FUTUR ENHANCEMENTS
 - improve wiretapping - must not be only on characters, but also external emails !
 - add standard 404 and 500 templates, + custom 403 in latest django etc.
 
+A SUIVRE, PTET PB DE QUOTA MYSQL:
+2a01:e34:ec14:a1f0:ddb6:8ad3:9f46:79f7 - - [16/Jan/2016:01:08:30 +0000] "POST /tpk/topaz/messages/ajax_set_dispatched_message_state_flags/ HTTP/1.0" 500 69 "http://pangeaweb.org/tpk/topaz/messages/conversations/" "Mozilla/5.0 (Windows NT 6.3; WOW64; rv:43.0) Gecko/20100101 Firefox/43.0"
+  File "/home/pakal/webapps/chrysalis_game/pychronia/dependencies/relstorage/adapters/locker.py", line 117, in hold_commit_lock
+    raise StorageError("Unable to acquire commit lock")
+StorageError: Unable to acquire commit lock
 
 
 
