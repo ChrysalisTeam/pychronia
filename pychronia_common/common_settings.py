@@ -93,7 +93,7 @@ IGNORABLE_404_URLS = (# ONLY SOON IN 1.5
 
 
 
-# List of callables that know how to import templates from various sources.
+# List of callables that know how to import templates from various sources
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader',
@@ -159,6 +159,17 @@ MIGRATION_MODULES = {
 }
 
 TEST_RUNNER = 'django.test.runner.DiscoverRunner'
+
+
+# use a basic in-process cache by default
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'pychronia-cache',
+    }
+}
+# cache key prefix
+KEY_PREFIX = "pychronia"
 
 
 ## activate django-sentry if present ##

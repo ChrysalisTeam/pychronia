@@ -2,7 +2,7 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
-import sys, re, logging, random, logging, json
+import sys, re, logging, random, logging, json, hashlib
 from datetime import datetime
 
 from pychronia_game.utilities import (mediaplayers, autolinker,
@@ -18,6 +18,7 @@ from django.core.serializers import serialize
 from django.db.models.query import QuerySet
 from django.template.defaultfilters import stringfilter
 from django.template.defaultfilters import linebreaks
+from django.core.cache import cache
 
 import urllib
 from textwrap import dedent
@@ -32,6 +33,8 @@ register = django.template.Library() # IMPORTANT, module-level object used by te
 
 
 GAME_LOCAL_TZ = config.GAME_LOCAL_TZ # real timezone object
+
+FRAGMENT_CACHING_TIMOUT_S = 3600  # we cache for 1h by default
 
 
 def _try_generating_thumbnail_url(rel_path, alias=None):
@@ -317,14 +320,33 @@ def format_enriched_text(datamanager, content, initial_header_level=None, report
 def rich_text(context, content, initial_header_level=None, report_level=None, excluded_link=None, text_format=None):
     """
     Converts to enriched html the restructuredtext content of the variable.
+    
+    Note that "excluded_link" is the ID of the excluded article.
     """
     request = context.get('request')
     report_level = report_level if report_level is not None else 5 # FIXME - by default we DO NOT display RST syntax errors!
-    result = format_enriched_text(request.datamanager, content, initial_header_level=initial_header_level,
-                                  report_level=report_level, excluded_link=excluded_link,
-                                  text_format=text_format)
+
+    extra_params = dict(initial_header_level=initial_header_level,
+                        report_level=report_level, 
+                        excluded_link=excluded_link,
+                        text_format=text_format)
+    def _generate_enriched_text():
+        return format_enriched_text(request.datamanager, content, **extra_params)
+    
+    # NOOOO too slow: content_hash = hashlib.md5(content.encode("ascii", "replace")).hexdigest()[:30]
+    content_hash = abs(hash(content))
+
+    fragment_cache_key = "%s_%s_%s" % (content_hash, len(content), "_".join(str(x[1]) for x in sorted(extra_params.items())))
+    #print("Using rich_text fragment_cache_key:", fragment_cache_key)
+
+    # TODO - use get_or_set() when using Django>1.9
+    result = cache.get(fragment_cache_key)
+    if result is None:
+        result = _generate_enriched_text()
+        cache.set(fragment_cache_key, result, FRAGMENT_CACHING_TIMOUT_S)
 
     content_id = str(random.randint(1, 10000000000))
+
     html = render_to_string('utilities/rich_text.html', {'content_id':content_id,
                                                          'source': content,
                                                          'result': result,
