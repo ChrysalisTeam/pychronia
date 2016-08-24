@@ -318,7 +318,7 @@
 /* P4WN customization */
 
 .p4wn-board {
-    float: none;
+    float: none !important;
 
     table * {
         line-height: 8px;

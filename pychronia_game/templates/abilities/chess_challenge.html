@@ -120,14 +120,14 @@ P4WN_PROMOTION_INTS = [P4_QUEEN, P4_ROOK, P4_KNIGHT, P4_BISHOP];
             <option value="black">black</option>
         </select>
         <input type="submit" class="" onclick="return confirm('{{ _("This will reset your current game, are you sure?")|escapejs }}')"
-               value="{% trans "Create New Game" %}" style="width: auto !important;" />
+               value="{% trans "Create New Game" %}" style="width: auto !important; margin: 4px 0 !important;" />
     </form>
     </div>
 
     <br/><br/>
 
     {% if game_is_writable %}
-    <div align="center">
+    <div id="chess_panel_outer" align="center">
        <div id="chess_panel"></div>
     </div>
     {% endif %}
