@@ -6,6 +6,7 @@ PyMySQL==0.7.3
 
 Pillow>=2.7.0
 
+logging_tree
 
 beautifulsoup4==4.3.2
 

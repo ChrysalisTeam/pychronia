@@ -2745,7 +2745,8 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
         visibility_reasons = visibility_reasons or VISIBILITY_REASONS  # by default, ANY visibility reason is OK
         assert None not in visibility_reasons
         def msg_filter(msg):
-            return msg["visible_by"].get(username) in visibility_reasons and (archived is None or ((username in msg["has_archived"]) == archived))
+            return (msg["visible_by"].get(username) in visibility_reasons and
+                    (archived is None or ((username in msg["has_archived"]) == archived)))
         res = [msg for msg in all_messages if msg_filter(msg)]
         assert sorted(res, key=lambda msg: msg["sent_at"]) == res  # still well sorted by date ASC
         return res

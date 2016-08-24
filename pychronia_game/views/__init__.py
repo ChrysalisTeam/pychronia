@@ -56,7 +56,11 @@ from .admin_views import (admin_dashboard, webradio_management, gamemaster_manua
                           DATABASE_OPERATIONS, FAIL_TEST, MEDIA_TEST)
 
 
-
+# USEFUL TO DEBUG LOGGING
+if False:
+    import logging_tree
+    print("DUMPING LOGGING TREE")
+    logging_tree.printout()
 
 
 #### Here are the views that don't belong to any particular category ####

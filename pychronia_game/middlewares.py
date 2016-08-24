@@ -68,7 +68,7 @@ class ZodbTransactionMiddleware(object):
             logger = logging
 
         if not isinstance(exception, Http404):
-            logger.critical("Exception occurred in view - %r" % exception)
+            logger.critical("Exception occurred in view - %r" % exception, exc_info=True)
 
         # we let the exception propagate anyway
         pass

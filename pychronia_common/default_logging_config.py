@@ -5,6 +5,14 @@ import logging.config
 pychronia_logging_config = {
     'version': 1,
     'disable_existing_loggers': False,
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse',
+        },
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        },
+    },
     'formatters': {
         'standard': {
             'format': '%(asctime)s [%(levelname)s] %(name)s: %(message)s'
@@ -22,6 +30,11 @@ pychronia_logging_config = {
             'class':'logging.StreamHandler',
             'formatter': 'game_instance',
         },
+        'mail_admins': {
+            'level': 'ERROR',
+            'filters': ['require_debug_false'],
+            'class': 'django.utils.log.AdminEmailHandler'
+        }
     },
     'loggers': {
         '': {
@@ -34,11 +47,23 @@ pychronia_logging_config = {
             'level': 'INFO',
             'propagate': False
         },
+
+        'django.request': {
+            'handlers': ['mail_admins'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
+        'django.security': {
+            'handlers': ['mail_admins'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
         'django.db.backends': {
             'handlers': [],
             'level': 'WARNING',
             'propagate': False
         },
+
         'txn': { # ZODB transactions
             'handlers': [],
             'level': 'WARNING',
