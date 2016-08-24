@@ -183,7 +183,7 @@ class TestUtilities(BaseGameTestCase):
 
 
     def test_rich_text_tag_caching(self):
-        
+
         count = 100
         context = {"request": self.request}
         contents = ["wsdfsdzrygfhfbvbh\n\n"*i for i in range(count)]
@@ -1058,13 +1058,13 @@ class TestDatamanager(BaseGameTestCase):
         self._set_user(random.choice(("master", "guy2")), impersonation_target="guy1", impersonation_writability=False)
         res = self.dm.determine_actual_game_writability()
         assert not res["writable"]
-        assert res["reason"] # IMPERSONATION
+        assert res["reason"] is None # IMPERSONATION (no message)
         assert not self.dm.is_game_writable()
 
         self._set_user(None, impersonation_target="master", impersonation_writability=False, is_superuser=True)
         res = self.dm.determine_actual_game_writability()
         assert not res["writable"]
-        assert res["reason"] # IMPERSONATION
+        assert res["reason"] is None # IMPERSONATION (no message)
         assert not self.dm.is_game_writable()
 
         self._set_user("master", impersonation_target="guy1", impersonation_writability=True)
@@ -1185,7 +1185,7 @@ class TestDatamanager(BaseGameTestCase):
 
 
     def test_get_locations(self):
-        
+
         cities = self.dm.get_locations()
 
         assert "Akta" in cities
