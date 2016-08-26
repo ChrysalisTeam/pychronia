@@ -12,13 +12,23 @@
 
     <div class="rice_paper_rose full_width center tiny_bullets small_text">
         {% if messages %}
-        <ul>
-            {% for ctx, message in messages %}
-                <li>
-                    <a class="{% if ctx.has_read == False or ctx.is_ignored == False and ctx.is_used == False %}bold{% endif %} {% if ctx.is_used == True %}italic{% endif %} {% if ctx.is_ignored == True %}line-through{% endif %}" href="#{{ ctx.display_id }}" >{{ message.subject }}</a>&nbsp;{% if ctx.has_starred %}{% fontawesome_icon "star" large=False %}{% endif %}
-                </li>
-            {% endfor %}
-        </ul>
+
+            {% if not display_all %}
+            <div align="center"><b><a href="?display_all=1">{% trans "Display All Messages" %}</a></b></div>
+            {% endif %}
+
+            <ul>
+                {% for ctx, message in messages %}
+                    <li>
+                        <a class="{% if ctx.has_read == False or ctx.is_ignored == False and ctx.is_used == False %}bold{% endif %} {% if ctx.is_used == True %}italic{% endif %} {% if ctx.is_ignored == True %}line-through{% endif %}" href="#{{ ctx.display_id }}" >{{ message.subject }}</a>&nbsp;{% if ctx.has_starred %}{% fontawesome_icon "star" large=False %}{% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+
+            {% if not display_all %}
+            <div align="center" style="font-size: 2em"><b>...</b></div>
+            {% endif %}
+
         {% else %}
             <p>{% trans "No messages yet." %}</p>
         {% endif %}

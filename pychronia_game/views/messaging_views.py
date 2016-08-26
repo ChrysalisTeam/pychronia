@@ -306,10 +306,15 @@ def _build_contact_display_cache(datamanager):
 def all_dispatched_messages(request, template_name='messaging/messages.html'):
     messages = list(reversed(request.datamanager.get_all_dispatched_messages()))
     enriched_messages = _determine_message_list_display_context(request.datamanager, messages=messages, is_pending=False)
+
+    display_all, messages = _limit_displayed_messages(messages_list=enriched_messages,
+                                                      query_parameters=request.GET)
+
     return render(request,
                   template_name,
-                  dict(page_title=_("All Dispatched Messages"),
-                       messages=enriched_messages,
+                  dict(page_title=_("All Dispatched Messages") if display_all else _("Recent Dispatched Messages"),
+                       display_all=display_all,
+                       messages=messages,
                        contact_cache=_build_contact_display_cache(request.datamanager)))
 
 
@@ -320,7 +325,7 @@ def all_queued_messages(request, template_name='messaging/messages.html'):
     return render(request,
                   template_name,
                   dict(page_title=_("All Queued Messages"),
-                       messages=enriched_messages,
+                       messages=enriched_messages,  # no need to LIMIT the display of these queued messages...
                        contact_cache=_build_contact_display_cache(request.datamanager)))
 
 @register_view(attach_to=all_queued_messages, title=ugettext_lazy("Force Message Sending"))
@@ -416,10 +421,15 @@ def intercepted_messages(request, template_name='messaging/messages.html'):
     messages = request.datamanager.get_user_related_messages(visibility_reasons=visibility_reasons, archived=False)  # no LIMIT for now...
     messages = list(reversed(messages))
     enriched_messages = _determine_message_list_display_context(request.datamanager, messages=messages, is_pending=False)
+
+    display_all, messages = _limit_displayed_messages(messages_list=enriched_messages,
+                                                      query_parameters=request.GET)
+
     return render(request,
                   template_name,
-                  dict(page_title=_("Intercepted Messages"),
-                       messages=enriched_messages,
+                  dict(page_title=_("All Intercepted Messages") if display_all else _("Recent Intercepted Messages"),
+                       display_all=display_all,
+                       messages=messages,
                        contact_cache=_build_contact_display_cache(request.datamanager)))
 
 @register_view(access=UserAccess.authenticated, requires_global_permission=False, title=ugettext_lazy("Archived Messages"))  # ALSO for master
@@ -428,10 +438,15 @@ def all_archived_messages(request, template_name='messaging/messages.html'):
     messages = request.datamanager.get_user_related_messages(visibility_reasons=visibility_reasons, archived=True)  # no LIMIT for now...
     messages = list(reversed(messages))
     enriched_messages = _determine_message_list_display_context(request.datamanager, messages=messages, is_pending=False)
+
+    display_all, messages = _limit_displayed_messages(messages_list=enriched_messages,
+                                                      query_parameters=request.GET)
+
     return render(request,
                   template_name,
-                  dict(page_title=_("Archived Messages"),
-                       messages=enriched_messages,
+                  dict(page_title=_("All Archived Messages") if display_all else _("Recent Archived Messages"),
+                       display_all=display_all,
+                       messages=messages,
                        contact_cache=_build_contact_display_cache(request.datamanager)))
 
 

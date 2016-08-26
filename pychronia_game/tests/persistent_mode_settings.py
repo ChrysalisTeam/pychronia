@@ -59,12 +59,19 @@ def GAME_INITIAL_FIXTURE_SCRIPT(dm):
     email_guy4 = dm.get_character_email(player_name_quater)
     email_external = sorted(dm.global_contacts.keys())[0]
 
-    # first, spam emails to fill messaging pages
-    for i in range(300):
-        dm.post_message(sender_email=email_guy3, recipient_emails=email_guy4, subject="Flood %s" % i,
-                              body="Ceci est le message %s" % i)
-
     dm.set_wiretapping_targets(player_name_ter, [player_name])
+
+    # first, spam emails to fill messaging pages
+    for i in range(100):
+        # will be intercepted by player_name_ter
+        _msg_id = dm.post_message(sender_email=email_guy4, recipient_emails=email_guy1, subject="Flood %s" % i,
+                                  body="Ceci est le message %s" % i)
+
+        if i%2:
+            dm.set_dispatched_message_state_flags(username=player_name,
+                                                  msg_id=_msg_id,
+                                                  has_archived=True)
+
 
     msg_id1 = dm.post_message(sender_email=email_guy1, recipient_emails=email_guy2, subject="NULL TEST", body="hello", transferred_msg="UNEXISTING_TRANSFERRED_MSG_SYZH")  # wrong transferred_msg shouldn't fail
     msg1 = dm.get_dispatched_message_by_id(msg_id1)
