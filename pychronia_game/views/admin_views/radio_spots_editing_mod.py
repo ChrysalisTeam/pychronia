@@ -30,7 +30,7 @@ class RadioSpotForm(DataTableForm):
 @register_view
 class RadioSpotsEditing(AbstractDataTableManagement):
 
-    TITLE = ugettext_lazy("Radio Spots Editing")
+    TITLE = ugettext_lazy("Edit Radio Spots")
     NAME = "radio_spots_editing"
 
     GAME_ACTIONS = dict(submit_item=dict(title=ugettext_lazy("Submit radio spot"),

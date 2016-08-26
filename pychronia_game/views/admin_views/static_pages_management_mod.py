@@ -31,7 +31,7 @@ class StaticPageForm(DataTableForm):
 @register_view
 class StaticPagesManagement(AbstractDataTableManagement):
 
-    TITLE = ugettext_lazy("Static Pages Editing")
+    TITLE = ugettext_lazy("Edit Static Pages")
     NAME = "static_pages_management"
 
     GAME_ACTIONS = dict(submit_item=dict(title=ugettext_lazy("Submit a static page"),

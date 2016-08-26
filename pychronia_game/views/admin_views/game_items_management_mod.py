@@ -34,7 +34,7 @@ class GameItemForm(DataTableForm):
 @register_view
 class GameItemsManagement(AbstractDataTableManagement):
 
-    TITLE = ugettext_lazy("Game Items Management")
+    TITLE = ugettext_lazy("Edit Game Items")
     NAME = "game_items_management"
 
     GAME_ACTIONS = dict(submit_item=dict(title=ugettext_lazy("Submit an item"),

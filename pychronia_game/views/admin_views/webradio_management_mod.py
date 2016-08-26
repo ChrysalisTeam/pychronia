@@ -10,7 +10,7 @@ from pychronia_game.datamanager import register_view, AbstractGameView
 @register_view
 class WebradioManagement(AbstractGameView):
 
-    TITLE = ugettext_lazy("Webradio Management")
+    TITLE = ugettext_lazy("Manage Webradio Playlist")
     NAME = "webradio_management"
 
     GAME_ACTIONS = dict(save_radio_playlist=dict(title=ugettext_lazy("Save radio playlist"),

@@ -390,7 +390,8 @@ def _limit_displayed_messages(messages_list, query_parameters):
     return display_all, messages_list
 
 
-@register_view(access=UserAccess.authenticated, requires_global_permission=False, title=ugettext_lazy("Conversations"))
+@register_view(access=UserAccess.authenticated, requires_global_permission=False,
+               title=ugettext_lazy("Conversations"), title_for_master=ugettext_lazy("NPC Conversations"))
 def standard_conversations(request, template_name='messaging/conversation.html'):
 
     visibility_reasons = (VISIBILITY_REASONS.sender, VISIBILITY_REASONS.recipient)  # we EXCLUDE intercepted messages from this
@@ -432,7 +433,8 @@ def intercepted_messages(request, template_name='messaging/messages.html'):
                        messages=messages,
                        contact_cache=_build_contact_display_cache(request.datamanager)))
 
-@register_view(access=UserAccess.authenticated, requires_global_permission=False, title=ugettext_lazy("Archived Messages"))  # ALSO for master
+@register_view(access=UserAccess.authenticated, requires_global_permission=False,
+               title=ugettext_lazy("Archived Messages"), title_for_master=ugettext_lazy("NPC Archived Messages") )  # ALSO for master
 def all_archived_messages(request, template_name='messaging/messages.html'):
     visibility_reasons = VISIBILITY_REASONS  # in this archive, we list ALL messages, even intercepted
     messages = request.datamanager.get_user_related_messages(visibility_reasons=visibility_reasons, archived=True)  # no LIMIT for now...

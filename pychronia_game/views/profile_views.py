@@ -68,7 +68,7 @@ def login(request, template_name='profile/login.html'):
                     })
 
 
-@register_view(access=UserAccess.authenticated, requires_global_permission=False, title=ugettext_lazy("Logout"), always_allow_post=True)
+@register_view(access=UserAccess.authenticated, requires_global_permission=False, title=ugettext_lazy("Log Out"), always_allow_post=True)
 def logout(request):
 
     logout_session(request)
@@ -323,7 +323,9 @@ friendship_management = FriendshipManagementView.as_view
 
 
 
-@register_view(access=UserAccess.authenticated, title=ugettext_lazy("System Events"))
+@register_view(access=UserAccess.authenticated,
+               title=ugettext_lazy("System Events"),
+               title_for_master= ugettext_lazy("Game Events"))
 def game_events(request, template_name='administration/game_events.html'):
 
     events = request.datamanager.get_game_events() # FILTERS by current user

@@ -9,13 +9,17 @@ from pychronia_game import views
 
 class MenuEntry:
 
-    def __init__(self, request, title=None, view=None, submenus=None, view_kwargs=None, forced_visibility=None):
-        assert isinstance(title, unicode) or view
+    def __init__(self, request, title=None, view=None, submenus=None,
+                 view_kwargs=None, forced_visibility=None, title_suffix=None):
+        assert isinstance(title, unicode) or view, (title, view)
         assert view or submenus
         assert view or not view_kwargs
         assert forced_visibility is None or isinstance(forced_visibility, bool)
 
         self.title = title or view.relevant_title(request.datamanager)
+
+        if title_suffix:
+            self.title += NBSP + title_suffix
 
         if view:
             view_kwargs = view_kwargs if view_kwargs else {}
@@ -52,7 +56,7 @@ def _generate_web_menu(request, menu_entry_generator):
 
 
     if user.is_authenticated and (not processed_view or processed_view.NAME != views.standard_conversations.NAME):
-        unread_msgs_count = datamanager.get_unread_messages_count()
+        ##unread_msgs_count = datamanager.get_unread_messages_count()
         standard_conversations_suffix = u"" ### TODO FIXME NBSP + u"(%d)" % unread_msgs_count
     else:
         standard_conversations_suffix = u""
@@ -61,7 +65,7 @@ def _generate_web_menu(request, menu_entry_generator):
     if user.is_authenticated and (not processed_view or processed_view.NAME != views.chatroom.NAME):
         # same for chatroom
         num_chatters = len(request.datamanager.get_chatting_users(exclude_current=True))
-        chatroom_suffix = NBSP + u"(%d)" % num_chatters
+        chatroom_suffix = u"(%d)" % num_chatters
     else:
         chatroom_suffix = u""
 
@@ -78,7 +82,8 @@ def _generate_web_menu(request, menu_entry_generator):
                            menu_entry(view=views.view_characters),
                            menu_entry(view=views.view_sales),
                            menu_entry(view=views.auction_items_slideshow),
-                           menu_entry(_(u"Auction Chatroom") + chatroom_suffix, view=views.chatroom),
+                           menu_entry(title_suffix=chatroom_suffix,
+                                      view=views.chatroom),
                            # menu_entry(_(u"Radio Messages"), views.personal_radio_messages_listing), # TODO INTEGRATE TO INFO PAGES ???
                        )),
 
@@ -98,7 +103,7 @@ def _generate_web_menu(request, menu_entry_generator):
                       (
                          menu_entry(view=views.all_dispatched_messages), # master only
                          menu_entry(view=views.all_queued_messages), # master only
-                         menu_entry(_(u"My conversations") + standard_conversations_suffix, view=views.standard_conversations), # suffix is the count of unread MESSAGES
+                         menu_entry(title_suffix=standard_conversations_suffix, view=views.standard_conversations), # suffix is the count of unread MESSAGES
                          menu_entry(view=views.intercepted_messages),
                          menu_entry(view=views.all_archived_messages),
                          menu_entry(view=views.messages_templates), # master only
@@ -107,7 +112,6 @@ def _generate_web_menu(request, menu_entry_generator):
 
             menu_entry(_(u"Abilities"), views.ability_introduction, # FIXME
                        (
-
                         menu_entry(view=views.mercenaries_hiring),
                         menu_entry(view=views.wiretapping_management),
 
@@ -137,37 +141,43 @@ def _generate_web_menu(request, menu_entry_generator):
 
             menu_entry(_(u"Admin"), views.game_events,
                        (
-                         menu_entry(_(u"Game Events"), views.game_events, forced_visibility=(True if user.is_master else False)),
-                         menu_entry(_(u"Dashboard"), views.admin_dashboard),
-                         menu_entry(_(u"Admin Information"), view=views.admin_information),
+                         menu_entry(view=views.game_events,
+                                    forced_visibility=(True if user.is_master else False)),
+                         menu_entry(view=views.admin_dashboard),
+                         menu_entry(view=views.admin_information),
 
-                         menu_entry(_(u"Manage Characters"), views.manage_characters),
-                         menu_entry(_(u"Manage Webradio Playlist"), views.webradio_management),
+                         menu_entry(view=views.manage_characters),
+                         menu_entry(view=views.webradio_management),
 
-                         menu_entry(_(u"Edit Game Items"), views.game_items_management),
-                         menu_entry(_(u"Edit Static Pages"), views.static_pages_management),
-                         menu_entry(_(u"Edit Email Contacts"), views.global_contacts_management),
-                         menu_entry(_(u"Edit Radio Spots"), views.radio_spots_editing),
+                         menu_entry(view=views.game_items_management),
+                         menu_entry(view=views.static_pages_management),
+                         menu_entry(view=views.global_contacts_management),
+                         menu_entry(view=views.radio_spots_editing),
 
-                         menu_entry(_(u"View Master Manual"), views.gamemaster_manual),
+                         menu_entry(view=views.gamemaster_manual),
 
-                         menu_entry(_(u"View Database"), views.manage_databases),
+                         menu_entry(view=views.manage_databases),
 
                        ),
                       forced_visibility=(True if user.is_master else False)),
 
             menu_entry(_(u"Profile"), (views.character_profile if user.is_character else views.personal_folder),
                        (
-                        menu_entry(view=views.character_profile, forced_visibility=(True if user.is_character else False)), # character only
-                        menu_entry(view=views.friendship_management, forced_visibility=(True if user.is_character else False)), # character only
+                        menu_entry(view=views.character_profile,
+                                   forced_visibility=(True if user.is_character else False)), # character only
+                        menu_entry(view=views.friendship_management,
+                                   forced_visibility=(True if user.is_character else False)), # character only
                         menu_entry(view=views.personal_folder),
                         menu_entry(view=views.personal_items_slideshow),
-                        menu_entry(_(u"System Events"), views.game_events, forced_visibility=(None if user.is_character else False)),  # might be globally invisible
-                        menu_entry(_(u"Log Out"), views.logout, forced_visibility=not user.is_impersonation),
+                        menu_entry(view=views.game_events,
+                                    forced_visibility=(None if user.is_character else False)),  # might be globally invisible
+                        menu_entry(view=views.logout,
+                                   forced_visibility=not user.is_impersonation),
                         ),
                        forced_visibility=(False if not user.is_authenticated else True)),
 
-           menu_entry(_(u"Log In"), views.login, forced_visibility=(False if (user.is_authenticated or user.is_impersonation) else True)),
+           menu_entry(view=views.login,
+                      forced_visibility=(False if (user.is_authenticated or user.is_impersonation) else True)),
 
         ))
 
