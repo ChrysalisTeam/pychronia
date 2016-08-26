@@ -6,40 +6,26 @@ TODO LIST CHRYSALIS
 FEATURES
 ------------
 
-
 Add advanced search to message viewing pages (subject/to/from)
-
-- masquer par défaut les archivés dans "messages transmis" ??
-
-- investiguer lenteurs de messagerie
 
 MESSAGERIE:
 - "sauver comme template" dans la vue "composition de nouveau message"
 
 
 
-FIX android
-- grey background is in FRONT!!
-- touch to scroll VS jquery.mmenu
-- fix "notification_panel in mobile mode (and NOT PUT IT SO OFTEN)
+SCRIPT
+----------
+
+- masquer par défaut les archivés dans "messages transmis" ??
+  ou bien PLUTOT expliciter que mes conversations et messages transmis == PNJ ONLY
+
+https://pixabay.com/fr/chute-d-eau-noir-et-blanc-sc%C3%A9nique-936592/
 
 Quelques points d'attention dont je me souviens:
 - faire périodiquement le tour du "tableau de bord" pour voir s'il n'y a pas des vues qui mériteraient d'être activée ; pareil pour les "permissions personnelles des joueurs"
 - penser à dévoiler peu à peu les articles encyclopédiques via leur "premier mot clef" glissé dans des emails
 
-
-
-
-
-
-SCRIPT
-----------
-
-https://pixabay.com/fr/chute-d-eau-noir-et-blanc-sc%C3%A9nique-936592/
-
-
 - BETTER EXPOSE HISTORIES LOG EVENTS
-
 
 Ah bon, je n'avais pas vu je pensais que seul le mj avait accès à une page du type événement, sinon je viens de me faire avoir par un petit truc inattendu, j'ai envoyé un message dans le passé depuis le compte d'émilos et ceux qui l'avaient sur écoute récemment l'ont tous reçu... J'avais pas pensé que la mise sur écoute était indépendante du temps (ça parait logique maintenant mais bon).
 
@@ -156,6 +142,12 @@ PAUSED BUGLETS:
 TASKS DONE
 ---------------
 
+- limiter les messages dans CHAQUE vue de messaging (pas que dans conversation) - DONE
+- add template-loader and rst-fragment caching - DONE
+- FIX mobile display
+    - missing background colors when background-image fails
+    - fix "notification_panel in mobile mode (and NOT PUT IT SO OFTEN)
+- Fix BG colors in mobile style - DONE
 - LOG http500 errors to console too, with traceback - DONE
 - compléter l'affichage des messages "collapsed" avec les destinataires - DONE
 - PROBLEMS WITH MASKED RECIPIENTS - REIMPLEMENTED
