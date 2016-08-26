@@ -368,12 +368,25 @@ def messages_templates(request, template_name='messaging/messages.html'):
                        selected_category=selected_category))
 
 
+def _limit_displayed_messages(messages_list, query_parameters):
+    """
+    *messages_list* may also consiste of conversations.
+    """
+
+    DEFAULT_MESSAGES_LIMIT = 40
+    display_all = bool(query_parameters.get("display_all", None) == "1")
+
+    if len(messages_list) <= DEFAULT_MESSAGES_LIMIT:
+        display_all = True  # it makes no sense to "limit" then...
+
+    if not display_all:
+        messages_list = messages_list[0:DEFAULT_MESSAGES_LIMIT]
+
+    return display_all, messages_list
+
+
 @register_view(access=UserAccess.authenticated, requires_global_permission=False, title=ugettext_lazy("Conversations"))
 def standard_conversations(request, template_name='messaging/conversation.html'):
-
-    CONVERSATIONS_LIMIT = 40
-
-    display_all_conversations = bool(request.GET.get("display_all", None) == "1")
 
     visibility_reasons = (VISIBILITY_REASONS.sender, VISIBILITY_REASONS.recipient)  # we EXCLUDE intercepted messages from this
     messages = request.datamanager.get_user_related_messages(visibility_reasons=visibility_reasons, archived=False)  # for current master or character
@@ -382,11 +395,8 @@ def standard_conversations(request, template_name='messaging/conversation.html')
     enriched_messages = _determine_message_list_display_context(request.datamanager, messages=_grouped_messages, is_pending=False)
     del _grouped_messages
 
-    if len(enriched_messages) <= CONVERSATIONS_LIMIT:
-        display_all_conversations = True # it makes no sense to "limit" then...
-
-    if not display_all_conversations:
-        enriched_messages = enriched_messages[0:CONVERSATIONS_LIMIT] # we arbitrarily limit to 15 recent conversations
+    display_all, messages = _limit_displayed_messages(messages_list=enriched_messages,
+                                                      query_parameters=request.GET)
 
     dm = request.datamanager
     if dm.is_game_writable() and dm.is_character():
@@ -394,9 +404,9 @@ def standard_conversations(request, template_name='messaging/conversation.html')
 
     return render(request,
                   template_name,
-                  dict(page_title=_("All My Conversations") if display_all_conversations else _("My Recent Conversations"),
-                       display_all_conversations=display_all_conversations,
-                       conversations=enriched_messages,
+                  dict(page_title=_("All My Conversations") if display_all else _("My Recent Conversations"),
+                       display_all=display_all,
+                       conversations=messages,
                        contact_cache=_build_contact_display_cache(request.datamanager)))
 
 

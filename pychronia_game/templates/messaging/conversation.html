@@ -12,7 +12,7 @@
         {% if conversations %}
 
 
-            {% if not display_all_conversations %}
+            {% if not display_all %}
             <div align="center"><b><a href="?display_all=1">{% trans "Display All Conversations" %}</a></b></div>
             {% endif %}
 
@@ -34,7 +34,7 @@
                 {% endfor %}
             </ul>
 
-            {% if not display_all_conversations %}
+            {% if not display_all %}
             <div align="center" style="font-size: 2em"><b>...</b></div>
             {% endif %}
 
