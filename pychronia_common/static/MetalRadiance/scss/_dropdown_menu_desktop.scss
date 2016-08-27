@@ -6,7 +6,7 @@ ul.dropmenu {
 	padding: 0;
 	height: 35px;
 	line-height: 35px;
-  position: relative;
+	position: relative;
 
 
     /* 		All items 			*/
@@ -20,6 +20,8 @@ ul.dropmenu {
             display: block; white-space: nowrap;
 
             @include header_common;
+
+            text-align: left;
 
             font-size: 25px; // MAX 31px, needs to be PRECISE, so no em.
 
