@@ -22,6 +22,14 @@ from pychronia_game import utilities
 
 """
 
+FILTERABLE_MSG_FIELDS = [
+    ("body", ugettext_lazy("Body")),
+    ("subject", ugettext_lazy("Subject")),
+    ("sender_email", ugettext_lazy("Sender")),
+    ("recipients_email", ugettext_lazy("Recipients")),
+]
+
+
 class MessageComposeForm(AbstractGameForm):
     """
     A form for text-based messages.
@@ -315,6 +323,7 @@ def all_dispatched_messages(request, template_name='messaging/messages.html'):
                   dict(page_title=_("All Dispatched Messages") if display_all else _("Recent Dispatched Messages"),
                        display_all=display_all,
                        messages=messages,
+                       filterable_msg_fields=FILTERABLE_MSG_FIELDS,
                        contact_cache=_build_contact_display_cache(request.datamanager)))
 
 
@@ -413,6 +422,7 @@ def standard_conversations(request, template_name='messaging/conversation.html')
                   dict(page_title=_("All My Conversations") if display_all else _("My Recent Conversations"),
                        display_all=display_all,
                        conversations=messages,
+                       filterable_msg_fields=FILTERABLE_MSG_FIELDS,
                        contact_cache=_build_contact_display_cache(request.datamanager)))
 
 
@@ -431,6 +441,7 @@ def intercepted_messages(request, template_name='messaging/messages.html'):
                   dict(page_title=_("All Intercepted Messages") if display_all else _("Recent Intercepted Messages"),
                        display_all=display_all,
                        messages=messages,
+                       filterable_msg_fields=FILTERABLE_MSG_FIELDS,
                        contact_cache=_build_contact_display_cache(request.datamanager)))
 
 @register_view(access=UserAccess.authenticated, requires_global_permission=False,
@@ -449,6 +460,7 @@ def all_archived_messages(request, template_name='messaging/messages.html'):
                   dict(page_title=_("All Archived Messages") if display_all else _("Recent Archived Messages"),
                        display_all=display_all,
                        messages=messages,
+                       filterable_msg_fields=FILTERABLE_MSG_FIELDS,
                        contact_cache=_build_contact_display_cache(request.datamanager)))
 
 

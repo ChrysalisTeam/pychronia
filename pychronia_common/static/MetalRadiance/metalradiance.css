@@ -1609,6 +1609,11 @@ input.digit {
   text-align: left;
   margin: 20px 5px;
 }
+.message_global_controls input, .message_global_controls select {
+  vertical-align: middle !important;
+  display: initial !important;
+  width: initial !important;
+}
 .email_message.unread {
   color: black;
   position: relative;
@@ -1805,11 +1810,11 @@ h1 {
   color: #f8d85b;
   font-family: black_chancery, serif;
   margin: 2px;
-  text-align: center;
   letter-spacing: 0px;
   font-size: 2em;
   color: #F8D85B;
   margin-bottom: 20px;
+  text-align: center;
 }
 h1:before {
   top: 12px;
@@ -1830,10 +1835,10 @@ h2 {
   color: #f8d85b;
   font-family: black_chancery, serif;
   margin: 2px;
-  text-align: center;
   letter-spacing: 0px;
   font-size: 1.7em;
   color: white;
+  text-align: center;
 }
 h2:before {
   top: 0px;
@@ -2337,7 +2342,7 @@ body .notification_panel .notification_panel_decorations .notification_panel_con
     text-decoration: none;
     line-height: 27px;
     padding: 0px 6px;
-    text-align: center;
+    text-align: left;
     float: none;
   }
   #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu a:hover {
@@ -2828,8 +2833,8 @@ body .notification_panel .notification_panel_decorations .notification_panel_con
     color: #f8d85b;
     font-family: black_chancery, serif;
     margin: 2px;
-    text-align: center;
     letter-spacing: 0px;
+    text-align: left;
     font-size: 25px;
     margin: 0;
     padding: 0px 4px;

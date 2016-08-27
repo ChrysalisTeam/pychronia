@@ -19,7 +19,27 @@ $(setupMessagesDisplay);  // init at document "loaded" state
 </script>
 
 <div class="message_global_controls">
-<button class="pretty_button" title="{% trans "Expand all messages" %}" onclick="unfoldAllMessages();">{% trans "Unfold All" %}</button>
-<button class="pretty_button" title="{% trans "Expand unread/unused messages, fold others" %}" onclick="smartUnfoldMessages();">{% trans "Smart Fold" %}</button>
-<button class="pretty_button" title="{% trans "Fold all messages" %}" onclick="foldAllMessages();">{% trans "Fold All" %}</button>
+    <button class="pretty_button" title="{% trans "Expand all messages" %}" onclick="unfoldAllMessages();">{% trans "Unfold All" %}</button>
+    <button class="pretty_button" title="{% trans "Expand unread/unused messages, fold others" %}" onclick="smartUnfoldMessages();">{% trans "Smart Fold" %}</button>
+    <button class="pretty_button" title="{% trans "Fold all messages" %}" onclick="foldAllMessages();">{% trans "Fold All" %}</button>
 </div>
+
+{% if filterable_msg_fields %}
+<div class="message_global_controls">
+    <form id="msg_filter_form" action="#" method="get">
+        <select id="filter_field" name="filter_field" title="{% trans "Message field in which to search for fragment." %}">
+            {% for value, label in filterable_msg_fields %}
+            <option value="{{ value }}" {% if filter_field == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+        </select>
+
+        {# <span>{% trans "contains" %}</span> #}
+
+        <input type="text" id="filter_text" name="filter_text" value="{{ filter_text }}" size="12"
+               title="{% trans "Text fragment to be searched for." %}"/>
+
+        <input type="submit" name="" value="{% trans "Search" %}"/>
+    </form>
+</div>
+{% endif %}
+

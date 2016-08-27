@@ -78,7 +78,14 @@ input.digit
 .message_global_controls {
   text-align: left;
   margin: 20px 5px;
+
+    input, select {
+        vertical-align: middle !important;
+        display: initial !important;
+        width: initial !important;
+    }
 }
+
 
 @mixin email_base {
     @include dark-texts;
