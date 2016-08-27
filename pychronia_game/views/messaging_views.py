@@ -407,7 +407,7 @@ def _limit_displayed_messages(messages_list, query_parameters):
 
 @register_view(access=UserAccess.authenticated, requires_global_permission=False,
                title=ugettext_lazy("Conversations"), title_for_master=ugettext_lazy("NPC Conversations"))
-def standard_conversations(request, template_name='messaging/conversation.html'):
+def standard_conversations(request, template_name='messaging/messages.html'):
 
     visibility_reasons = (VISIBILITY_REASONS.sender, VISIBILITY_REASONS.recipient)  # we EXCLUDE intercepted messages from this
     messages = request.datamanager.get_user_related_messages(visibility_reasons=visibility_reasons, archived=False)  # for current master or character
@@ -428,6 +428,7 @@ def standard_conversations(request, template_name='messaging/conversation.html')
                   template_name,
                   dict(page_title=_("All My Conversations") if display_all else _("My Recent Conversations"),
                        contact_cache=_build_contact_display_cache(request.datamanager),
+                       as_conversations=True,  #IMPORTANT
                        **variables))
 
 

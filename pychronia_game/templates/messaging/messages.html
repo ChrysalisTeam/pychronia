@@ -8,7 +8,7 @@
 {% block sidebar %}
 
     {% usekwacro side_panel_start frame_class="mini_frame float_left clear_left" decos="2" %}
-    <h2>{% trans "Messages" %}</h2>
+    <h2>{% if as_conversations %}{% trans "Conversations" %}{% else %}{% trans "Messages" %}{% endif %}</h2>
 
     <div class="rice_paper_rose full_width center tiny_bullets small_text">
         {% if messages %}
@@ -18,11 +18,36 @@
             {% endif %}
 
             <ul>
+            {% if as_conversations %}
+
+                {% for message_list in messages %}
+
+                    {% with message_list|last as last %}
+                        <li {% if message_list|has_unread_msg %}class="bold"{% endif %}><a
+                                href="#{{ last.1.id }}">{{ last.1.subject }}</a>&nbsp;{% if message_list|has_starred_msg %}
+                            {% fontawesome_icon "star" large=False %}{% endif %}</li>
+                    {% endwith %}
+
+                    {% comment %}
+                        {% for ctx, message in message_list %}
+                            {% if forloop.last %}
+                                <li {% if ctx.has_read == False %}class="bold"{% endif %}><a
+                                        href="#{{ message.id }}">{{ message.subject }}</a></li>
+                            {% endif %}
+                        {% endfor %}
+                    {% endcomment %}
+
+                {% endfor %}
+
+            {% else %}
+
                 {% for ctx, message in messages %}
                     <li>
                         <a class="{% if ctx.has_read == False or ctx.is_ignored == False and ctx.is_used == False %}bold{% endif %} {% if ctx.is_used == True %}italic{% endif %} {% if ctx.is_ignored == True %}line-through{% endif %}" href="#{{ ctx.display_id }}" >{{ message.subject }}</a>&nbsp;{% if ctx.has_starred %}{% fontawesome_icon "star" large=False %}{% endif %}
                     </li>
                 {% endfor %}
+
+            {% endif %}
             </ul>
 
             {% if not display_all %}
@@ -65,16 +90,33 @@
 
     {% else %}
 
-        {% for ctx, message in messages %}
+        {% if as_conversations %}
 
-            {% comment %}
-            {% if not forloop.first %}
-                <hr/>
-            {% endif %}
-            {% endcomment %}
+            {% for message_list in messages %}
+                <div>
+                    <div class="messaging_conversation">
+                        {% for ctx, message in message_list reversed %}
+                            {% include "messaging/single_message.html" with ctx=ctx message=message is_first=forloop.first %}
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endfor %}
 
-            {% include "messaging/single_message.html" with ctx=ctx message=message is_first=1 %}
-        {% endfor %}
+        {% else %}
+
+            {% for ctx, message in messages %}
+
+                {% comment %}
+                    {% if not forloop.first %}
+                        <hr/>
+                    {% endif %}
+                {% endcomment %}
+
+                {% include "messaging/single_message.html" with ctx=ctx message=message is_first=1 %}
+            {% endfor %}
+
+
+        {% endif %}
 
     {% endif %}
 
