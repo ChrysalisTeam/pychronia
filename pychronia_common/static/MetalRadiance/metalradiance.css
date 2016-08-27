@@ -1613,6 +1613,7 @@ input.digit {
   vertical-align: middle !important;
   display: initial !important;
   width: initial !important;
+  min-height: initial !important;
 }
 .email_message.unread {
   color: black;

@@ -9,14 +9,14 @@
     {% usekwacro side_panel_start frame_class="mini_frame float_left clear_left" decos="3" %}
     <h2>{% trans "Conversations" %}</h2>
     <div class="rice_paper_rose full_width center tiny_bullets small_text">
-        {% if conversations %}
+        {% if messages %}
 
             {% if not display_all %}
             <div align="center"><b><a href="?display_all=1">{% trans "Display All Conversations" %}</a></b></div>
             {% endif %}
 
             <ul>
-                {% for message_list in conversations %}
+                {% for message_list in messages %}
 
                 {% with message_list|last as last %}
                     <li {% if message_list|has_unread_msg %}class="bold"{% endif %}><a href="#{{ last.1.id }}" >{{ last.1.subject }}</a>&nbsp;{% if message_list|has_starred_msg %}{% fontawesome_icon "star" large=False %}{% endif %}</li>
@@ -53,15 +53,15 @@
 
     {{ block.super }}
 
-	{% if not conversations %}
+    {% include "messaging/global_message_controls.html" %}
+
+	{% if not messages %}
     	<div style="text-align:center;">
-        	<i>{% trans "No messages yet." %}</i>
+        	<i>{% trans "No messages to be displayed." %}</i>
     	</div>
 	{% else %}
 
-	    {% include "messaging/global_message_controls.html" %}
-
-		{% for message_list in conversations %}
+		{% for message_list in messages %}
 			<div>
 
 			    <!--h3 class="{% if forloop.first %}firstTitle{% else %}otherTitle{% endif %}"><a href="#">{{ message.subject }}</a></h-->

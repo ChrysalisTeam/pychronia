@@ -55,6 +55,8 @@
     </div>
     {% endif %}
 
+    {% include "messaging/global_message_controls.html" %}
+
     {% if not messages %}
 
         <div style="text-align:center;">
@@ -62,8 +64,6 @@
         </div>
 
     {% else %}
-
-        {% include "messaging/global_message_controls.html" %}
 
         {% for ctx, message in messages %}
 
