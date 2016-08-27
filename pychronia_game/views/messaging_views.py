@@ -26,7 +26,7 @@ FILTERABLE_MSG_FIELDS = [
     ("body", ugettext_lazy("Body")),
     ("subject", ugettext_lazy("Subject")),
     ("sender_email", ugettext_lazy("Sender")),
-    ("recipients_email", ugettext_lazy("Recipients")),
+    ("recipient_emails", ugettext_lazy("Recipients")),
 ]
 
 
@@ -381,7 +381,46 @@ def messages_templates(request, template_name='messaging/messages.html'):
                        selected_category=selected_category))
 
 
-def _limit_displayed_messages(messages_list, query_parameters):
+def _filter_messages(messages_list, filter_field, filter_text, as_conversations):
+
+    assert isinstance(filter_field, basestring)
+    assert isinstance(filter_text, basestring)
+
+    filter_text = filter_text.lower()  # case-insensitive search
+
+    def _filter_flat_msgs_list(msgs):
+        res = []
+        for ctx, msg in msgs:
+            assert all(x[0] in msg for x in FILTERABLE_MSG_FIELDS), msg  # coherence
+            field_value = msg[filter_field]
+            # we normalize if it's a list, eg. "recipients_emails"
+            field_value = "|".join(field_value) if not isinstance(field_value, basestring) else field_value
+            if filter_text in field_value.lower():
+                res.append((ctx, msg))
+        return res
+
+    if not messages_list:
+        return messages_list
+
+    if not filter_text or (filter_field not in (x[0] for x in FILTERABLE_MSG_FIELDS)):
+        # TODO - log an error ? or useless ?
+        return messages_list
+
+    if as_conversations:
+        # case of CONVERSATIONS
+        new_messages_list = []
+        for conversation in messages_list:
+            if _filter_flat_msgs_list(conversation):
+                # we add the WHOLE conversation!
+                new_messages_list.append(conversation)
+    else:
+        new_messages_list = _filter_flat_msgs_list(messages_list)
+
+    return new_messages_list
+
+
+
+def _limit_displayed_messages(messages_list, query_parameters, as_conversations=False):
     """
     *messages_list* may also consiste of conversations.
     """
@@ -389,17 +428,23 @@ def _limit_displayed_messages(messages_list, query_parameters):
     DEFAULT_MESSAGES_LIMIT = 40
     display_all = bool(query_parameters.get("display_all", None) == "1")
 
+    # do some filtering first if necessary
     filter_field = query_parameters.get("filter_field", "")
     filter_text = query_parameters.get("filter_text", "")
 
-    if len(messages_list) <= DEFAULT_MESSAGES_LIMIT:
-        display_all = True  # it makes no sense to "limit" then...
+    filtered_messages_list = _filter_messages(messages_list,
+                                              filter_field=filter_field,
+                                              filter_text=filter_text,
+                                              as_conversations=as_conversations)
 
+    # then limit messages if necessary
+    if len(filtered_messages_list) <= DEFAULT_MESSAGES_LIMIT:
+        display_all = True  # it makes no sense to "limit" then...
     if not display_all:
-        messages_list = messages_list[0:DEFAULT_MESSAGES_LIMIT]
+        filtered_messages_list = filtered_messages_list[0:DEFAULT_MESSAGES_LIMIT]
 
     return dict(display_all=display_all,
-                messages=messages_list,
+                messages=filtered_messages_list,
                 filterable_msg_fields=FILTERABLE_MSG_FIELDS,
                 filter_field=filter_field,
                 filter_text=filter_text)
@@ -416,8 +461,11 @@ def standard_conversations(request, template_name='messaging/messages.html'):
     enriched_messages = _determine_message_list_display_context(request.datamanager, messages=_grouped_messages, is_pending=False)
     del _grouped_messages
 
+    as_conversations = True
+
     variables = _limit_displayed_messages(messages_list=enriched_messages,
-                                          query_parameters=request.GET)
+                                          query_parameters=request.GET,
+                                          as_conversations=as_conversations)
     display_all = variables["display_all"]
 
     dm = request.datamanager
@@ -428,7 +476,7 @@ def standard_conversations(request, template_name='messaging/messages.html'):
                   template_name,
                   dict(page_title=_("All My Conversations") if display_all else _("My Recent Conversations"),
                        contact_cache=_build_contact_display_cache(request.datamanager),
-                       as_conversations=True,  #IMPORTANT
+                       as_conversations=as_conversations,  #IMPORTANT
                        **variables))
 
 
