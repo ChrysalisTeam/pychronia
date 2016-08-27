@@ -383,10 +383,10 @@ def messages_templates(request, template_name='messaging/messages.html'):
 
 def _filter_messages(messages_list, filter_field, filter_text, as_conversations):
 
-    assert isinstance(filter_field, basestring)
-    assert isinstance(filter_text, basestring)
+    assert isinstance(filter_field, basestring), filter_field
+    assert isinstance(filter_text, basestring), filter_text
 
-    filter_text = filter_text.lower()  # case-insensitive search
+    filter_text = filter_text.strip().lower()  # case-insensitive search
 
     def _filter_flat_msgs_list(msgs):
         res = []

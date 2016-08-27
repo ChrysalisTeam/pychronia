@@ -40,6 +40,7 @@ from django.core.urlresolvers import resolve, NoReverseMatch
 from pychronia_game.views import friendship_management
 from pychronia_game.views.abilities import house_locking, \
     wiretapping_management, runic_translation, artificial_intelligence_mod, telecom_investigation_mod
+from pychronia_game.views.messaging_views import _filter_messages
 from django.contrib.auth.models import User
 from pychronia_game.authentication import clear_all_sessions
 from pychronia_game.utilities.mediaplayers import generate_image_viewer
@@ -7256,6 +7257,98 @@ class TestSpecialAbilities(BaseGameTestCase):
 
 
 class TestGameViews(BaseGameTestCase):
+
+    def test_messages_display_filtering(self):
+
+        msg1_id = self.dm.post_message("guy2@pangea.com",
+                                        recipient_emails=["guy1@pangea.com"],
+                                        subject="subj22323", body="qsdqsd ooo")
+        msg1 = self.dm.get_dispatched_message_by_id(msg1_id)
+
+        msg2_id = self.dm.post_message("guy1@pangea.com",
+                                    recipient_emails=["guy3@pangea.com", "guy4@pangea.com"],
+                                    subject="This Is Cool", body="some aWesome text in body")
+        msg2 = self.dm.get_dispatched_message_by_id(msg2_id)
+
+        messages_list = []
+        res = _filter_messages(messages_list=messages_list,
+                               filter_field="body",
+                               filter_text="a",
+                               as_conversations=False)
+        assert res == []
+
+
+        messages_list = [(None, msg1), (None, msg2)]  # no need for real display contexts
+
+        res = _filter_messages(messages_list=messages_list,
+                               filter_field="",  # IGNORED filtering
+                               filter_text="a",
+                               as_conversations=False)
+        assert res == messages_list
+
+        res = _filter_messages(messages_list=messages_list,
+                               filter_field="body",
+                               filter_text="",  # IGNORED filtering
+                               as_conversations=False)
+        assert res == messages_list
+
+        res = _filter_messages(messages_list=messages_list,
+                               filter_field="sdfsdfsdf",  # IGNORED filtering
+                               filter_text="s",
+                               as_conversations=False)
+        assert res == messages_list
+
+        res = _filter_messages(messages_list=messages_list,
+                               filter_field="body",
+                               filter_text=" awesome ",
+                               as_conversations=False)
+        assert res == [(None, msg2)]
+
+        res = _filter_messages(messages_list=messages_list,
+                               filter_field="subject",
+                               filter_text=" 323",
+                               as_conversations=False)
+        assert res == [(None, msg1)]
+
+        res = _filter_messages(messages_list=messages_list,
+                               filter_field="sender_email",
+                               filter_text="Guy2@",
+                               as_conversations=False)
+        assert res == [(None, msg1)]
+
+        res = _filter_messages(messages_list=messages_list,
+                               filter_field="recipient_emails",
+                               filter_text="4@pangea",
+                               as_conversations=False)
+        assert res == [(None, msg2)]
+
+        res = _filter_messages(messages_list=messages_list,
+                               filter_field="body",
+                               filter_text="O",
+                               as_conversations=False)
+        assert res == [(None, msg1), (None, msg2)]
+
+        res = _filter_messages(messages_list=messages_list,
+                               filter_field="body",
+                               filter_text="dfgqdfgqfgqdfgd",
+                               as_conversations=False)
+        assert res == []
+
+
+        messages_list = [[(None, msg1), (None, msg2)]]  # conversations
+
+        res = _filter_messages(messages_list=messages_list,
+                               filter_field="subject",
+                               filter_text="cOOl",
+                               as_conversations=True)
+        assert res == [[(None, msg1), (None, msg2)]]  # whole conversation gets included
+
+        res = _filter_messages(messages_list=messages_list,
+                               filter_field="body",
+                               filter_text = "dfgqdfgqfgqdfgd",
+                               as_conversations =True)
+        assert res == []
+
 
 
     def test_3D_items_display(self):
