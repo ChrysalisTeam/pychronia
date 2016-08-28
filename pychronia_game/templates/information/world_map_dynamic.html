@@ -43,9 +43,10 @@
 
         <section id="focal" class="map-container">
             <div class="zoom-buttons">
-                <button class="zoom-in">{%  trans "Zoom In" %}</button>
-                <button class="zoom-out">{%  trans "Zoom out" %}</button>
-                <button class="reset">{%  trans "Reset" %}</button>
+                <button class="return" onclick="window.location.href='{% game_view_url "pychronia_game.views.homepage" %}'">{% trans "Return To Site" %}</button>
+                <button class="zoom-in">{% trans "Zoom In" %}</button>
+                <button class="zoom-out">{% trans "Zoom out" %}</button>
+                <button class="reset">{% trans "Reset" %}</button>
             </div>
             
             <div class="panzoom-parent">

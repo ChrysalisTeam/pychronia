@@ -6,6 +6,7 @@
     <div class="section">{% rich_text article_data.content excluded_link=excluded_link initial_header_level=initial_header_level %}</div>
 
     {% if display_admin_tips and article_data.gamemaster_hints %}
+    <br/>
     <div class="admin-note">
         {% rich_text article_data.gamemaster_hints excluded_link=excluded_link initial_header_level=initial_header_level %}
     </div>

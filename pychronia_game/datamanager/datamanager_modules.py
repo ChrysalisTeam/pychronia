@@ -4521,6 +4521,8 @@ class StaticPages(BaseDataManager):
                 if details["title"]:
                     details["title"] = details["title"].strip()
 
+                details["content"] = utilities.load_multipart_rst(details["content"])
+
 
         def _preprocess_new_item(self, key, value):
             assert "initial" not in value

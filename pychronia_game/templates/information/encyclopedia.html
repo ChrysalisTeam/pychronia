@@ -15,7 +15,7 @@
               onsubmit="if ($('#search').data('activated') !== 'true' || $.trim($('#search').attr('value')) === '') {return false;}">
             <input id="search" type="text" name="search" size="25" maxlength="50" value="{% trans "Enter phrase here..." %}"
                    onclick="if ($('#search').data('activated') !== 'true') {this.value=''; $('#search').data('activated', 'true');}"/>
-            <input type="submit" value="Fetch"/>
+            <input type="submit" value="{% trans "Fetch" %}"/>
         </form>
 
     {% usekwacro side_panel_end %}
@@ -82,7 +82,7 @@
                     {% blocktrans %}
                         Due to a very unfortunate overclocking attempt on our data servers,
                         encyclopedia indexes have been entirely lost. We apologize for the inconvenience
-                        and do our best to restore them from backups. The Alifir Academy.
+                        and do our best to restore them from backups. <i>The Alifir Academy.</i>
                     {% endblocktrans %}
                 {% else %}
                     {% blocktrans %}
