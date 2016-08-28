@@ -79,6 +79,7 @@ def _generate_web_menu(request, menu_entry_generator):
                            ###menu_entry(_(u"Home"), views.homepage),
                            ###menu_entry(_(u"Opening"), views.opening),
                            ###menu_entry(_(u"Instructions"), views.instructions),
+                           menu_entry(view=views.homepage),
                            menu_entry(view=views.view_characters),
                            menu_entry(view=views.view_sales),
                            menu_entry(view=views.auction_items_slideshow),
@@ -110,8 +111,10 @@ def _generate_web_menu(request, menu_entry_generator):
                          menu_entry(view=views.compose_message),
                       )),
 
-            menu_entry(_(u"Abilities"), views.ability_introduction, # FIXME
+            menu_entry(_(u"Abilities"), views.ability_introduction,
                        (
+                        menu_entry(view=views.ability_introduction),
+
                         menu_entry(view=views.mercenaries_hiring),
                         menu_entry(view=views.wiretapping_management),
 
