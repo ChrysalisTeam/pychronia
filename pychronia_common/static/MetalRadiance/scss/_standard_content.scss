@@ -90,7 +90,7 @@ h4 {
     text-align: justify;
     overflow: hidden; // for drop caps
     text-decoration: none; // underline, overline, line-through, blink or inherit
-    text-indent: 20px;
+    text-indent: 0;  // else too many problems with widow lines...
 
     /* useful and little known properties */
     word-spacing: normal; // or length measure

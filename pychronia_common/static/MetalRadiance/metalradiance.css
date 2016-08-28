@@ -1006,6 +1006,7 @@ div .important p.admonition-title, div .warning p.admonition-title {
 div .hint, div .note, div .tip, div .admonition {
   border: medium ridge;
   border-color: #B89215;
+  clear: both;
 }
 div .hint p.admonition-title, div .note p.admonition-title,
 div .tip p.admonition-title, div .admonition p.admonition-title {
@@ -1880,7 +1881,7 @@ h4 {
   text-align: justify;
   overflow: hidden;
   text-decoration: none;
-  text-indent: 20px;
+  text-indent: 0;
   word-spacing: normal;
   word-wrap: break-word;
   word-break: normal;
