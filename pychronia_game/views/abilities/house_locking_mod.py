@@ -35,7 +35,7 @@ class HouseLockingAbility(AbstractAbility):
     def get_template_vars(self, previous_form_data=None):
         are_doors_open = self.are_house_doors_open()
         return {
-                'page_title': _("Doors Security Management"),
+                'page_title': _("Manor Security Management"),
                 'are_doors_open': are_doors_open
                }
 
