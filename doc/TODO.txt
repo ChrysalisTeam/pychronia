@@ -16,15 +16,15 @@ SCRIPT
 - fix les noms du menu (CAPITAL CASE)
 - donner limitations prix etc à nouveau telecom_investigation
 
+- marquer qui est PJ ou NON
 
+- MARQUER dans leur description LES OBJETS DISPOS EN 3D : statue de Bartzar, amphore, coffre rouillé, et grimoire sur piédestal
 
 Traduction de Runes Antiques:
 "FIXME - add reference here, or BETTER, PROGRAMATICALLY!!!"
 
 
 - remplir les descriptions des villes.
-
-https://pixabay.com/fr/chute-d-eau-noir-et-blanc-sc%C3%A9nique-936592/
 
 Quelques points d'attention dont je me souviens:
 - faire périodiquement le tour du "tableau de bord" pour voir s'il n'y a pas des vues qui mériteraient d'être activée ; pareil pour les "permissions personnelles des joueurs"
@@ -33,7 +33,7 @@ Quelques points d'attention dont je me souviens:
 
 - BETTER EXPOSE HISTORIES LOG EVENTS (say in manual)
 
-- MARQUER dans leur description LES OBJETS DISPOS EN 3D !!
+
 
 
 Avis à tous les membres de l'Académie, et affiliés.
@@ -59,9 +59,6 @@ GAMEMASTER_HINTS in:
     - game items
     - static pages
 
-
-- USE embed_image(alias, align) everywhere in fixtures, and maybe unregister image directive ?
-  (obsolete?) add GAME_IMAGE_URL in help pages, better than embed_image for now <- ??
 
 - update abilities settings and prices
 
@@ -140,7 +137,7 @@ PAUSED BUGLETS:
 TASKS DONE
 ---------------
 
-
+- USE embed_image(alias, align) everywhere in fixtures - NOPE BAD IDEA
 - add tags with titles to all MP3s - DONE
 - scripts: expliciter que mes conversations et messages archivés == PNJ ONLY - DONE
 - "je n'avais pas vu je pensais que seul le mj avait accès à une page du type événement" - DONE
