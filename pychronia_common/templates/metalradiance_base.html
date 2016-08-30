@@ -95,11 +95,7 @@
         }
         */
 
-    {% endaddtoblock %}
-
-
-    {% addtoblock "onload_js" %}
-
+        /* Needed IMMEDIATELY, since tags are generated via "onload" scripts */
         AudioPlayer.setup("{{ STATIC_URL }}libs/audioplayer/player.swf", {
             width: 290,
             height: 24,
@@ -122,6 +118,11 @@
             animation: "no", // shrinking/extending of the player
             initialvolume: "60"
         });
+
+    {% endaddtoblock %}
+
+
+    {% addtoblock "onload_js" %}
 
         $('#menulist').dropmenu(
             {

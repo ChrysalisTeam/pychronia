@@ -166,7 +166,7 @@ def generate_media_player(fileurl, image="", autostart=False, width=450, height=
 _mp3_template = """
 <p id="%(unikid)s">MP3 Flayer should appear here</p>
 <script type="text/javascript">  
-AudioPlayer.embed("%(unikid)s", %(options)s);  
+$(function(){AudioPlayer.embed("%(unikid)s", %(options)s)});
 </script>  
 """
 def generate_audio_player(files, titles=None, artists=None, autostart=False):
