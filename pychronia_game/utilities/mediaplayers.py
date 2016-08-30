@@ -227,7 +227,7 @@ def generate_image_viewer(imageurl, width=500, height=400, preset=None, align=""
 
     options = \
     {
-        "title": "Image Viewer",
+        "title": "",  # no title for now
         "id": myhash,
         "imageurl": escape(imageurl),
         "thumburl": escape(thumburl),
