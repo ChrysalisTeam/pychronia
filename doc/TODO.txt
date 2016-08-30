@@ -6,28 +6,34 @@ TODO LIST CHRYSALIS
 FEATURES
 ------------
 
+- add cmsplugin-rst and its treatment of FR punctuation!!
 
-
+- automatiquement marquer comme lus les messages (et update help-standard_conversations) alors.
 
 SCRIPT
 ----------
 
-- convert "orbe" to masculine genre ; replace akaris by akharis !!!!!!!!!!!!!!!!!!!
+- fix les noms du menu (CAPITAL CASE)
+- donner limitations prix etc à nouveau telecom_investigation
 
-- masquer par défaut les archivés dans "messages transmis" ??
-  ou bien PLUTOT expliciter que mes conversations et messages transmis == PNJ ONLY
+
+
+Traduction de Runes Antiques:
+"FIXME - add reference here, or BETTER, PROGRAMATICALLY!!!"
+
+
+- remplir les descriptions des villes.
 
 https://pixabay.com/fr/chute-d-eau-noir-et-blanc-sc%C3%A9nique-936592/
 
 Quelques points d'attention dont je me souviens:
 - faire périodiquement le tour du "tableau de bord" pour voir s'il n'y a pas des vues qui mériteraient d'être activée ; pareil pour les "permissions personnelles des joueurs"
+- bien signaler aux joueurs les nouvelles vues, compétences spéciales, ou opportunités diverses que vous activez sur le portail
 - penser à dévoiler peu à peu les articles encyclopédiques via leur "premier mot clef" glissé dans des emails
 
-- BETTER EXPOSE HISTORIES LOG EVENTS
+- BETTER EXPOSE HISTORIES LOG EVENTS (say in manual)
 
-Ah bon, je n'avais pas vu je pensais que seul le mj avait accès à une page du type événement, sinon je viens de me faire avoir par un petit truc inattendu, j'ai envoyé un message dans le passé depuis le compte d'émilos et ceux qui l'avaient sur écoute récemment l'ont tous reçu... J'avais pas pensé que la mise sur écoute était indépendante du temps (ça parait logique maintenant mais bon).
-
-Talk about period and comma in number field, in help
+- MARQUER dans leur description LES OBJETS DISPOS EN 3D !!
 
 
 Avis à tous les membres de l'Académie, et affiliés.
@@ -40,7 +46,6 @@ domaine.
 
 
 mettre gamemaster hints sur encre sympathique et parchemin vierge
-
 
 - regler les "HERE GAMEMASTER HINTS" et autres FIXME / TODO
 
@@ -55,8 +60,6 @@ GAMEMASTER_HINTS in:
     - static pages
 
 
-- add tags with titles to all MP3s
-
 - USE embed_image(alias, align) everywhere in fixtures, and maybe unregister image directive ?
   (obsolete?) add GAME_IMAGE_URL in help pages, better than embed_image for now <- ??
 
@@ -66,22 +69,21 @@ GAMEMASTER_HINTS in:
 
 - manual for TTS acapela !!
 
+#TODO ADD LOOKUP OF CONF VALUE VIA TAGS in STATIC MANUAL STUFFS ?
 
 Faire page d'introduction
 	- situation de l'univers
 	- situation géopolitique
 	- bestaire des ennemis ?
-
-- add enough content for game startup
-
 - add description of partners in intro/instruction page !
+- add enough content for game startup
 
 - ajouter instructions ou systèmes pour éviter abus de mercenaires ? -> distribution progressive d'argent, à detailler
 
 - ajouter des details cruciaux à TOUTES runes !!!!
 
+#FIXME où parle t on des balises d'email ? dans manual ?
 
-NOTIFICATIONS EN TOP DE PAGE : une petite croix sur la gauche ou la droite serait la bien venu ou un clic ailleurs sur le site pour refermer rapidement la bande ou tout simplement autoriser le clic sur le texte pour refermer. ==> EXPLIQUER DANS HELP PAGE
 
 - clarifier règles absolues : pas de vol d'argent, pas de triche, emails uniquement valables à l'intérieur du site (dans INTRO "out game" du jeu)
 
@@ -138,6 +140,13 @@ PAUSED BUGLETS:
 TASKS DONE
 ---------------
 
+
+- add tags with titles to all MP3s - DONE
+- scripts: expliciter que mes conversations et messages archivés == PNJ ONLY - DONE
+- "je n'avais pas vu je pensais que seul le mj avait accès à une page du type événement" - DONE
+- Talk about period and comma in number field, in help - DONE
+- sinon je viens de me faire avoir par un petit truc inattendu, j'ai envoyé un message dans le passé depuis le compte d'émilos et ceux qui l'avaient sur écoute récemment l'ont tous reçu... J'avais pas pensé que la mise sur écoute était indépendante du temps (ça parait logique maintenant mais bon) - DONE
+- NOTIFICATIONS EN TOP DE PAGE : une petite croix sur la gauche ou la droite serait la bien venu ou un clic ailleurs sur le site pour refermer rapidement la bande ou tout simplement autoriser le clic sur le texte pour refermer. ==> EXPLIQUER DANS HELP PAGE - DONE
 - Add advanced search to message viewing pages (subject/body/to/from contains <string>) - DONE
 - limiter les messages dans CHAQUE vue de messaging (pas que dans conversation) - DONE
 - add template-loader and rst-fragment caching - DONE
@@ -246,7 +255,7 @@ TASKS DONE
 - réparer le "sujet" des mails répondus 2fois, qui ne se sette pas. OK DONE
 - handle readonly state in mobile design - DONE
 - fix 3 scrolls on view_characters page : width 280px max - DONE
-- renommer ACHARIS en AKARIS partout, dans code et scripts
+- renommer ACHARIS en AKARIS partout, dans code et scripts - DONE
 - mask recipients of message : NOT if we're sender or game master
 - make "attach to" feature to delegate permissions (ex. for dependent ajax views) - DONE
 - infobulles put brackets around them when they are GAME MASTER SECRET - DONE
