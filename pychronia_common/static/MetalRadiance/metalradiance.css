@@ -595,7 +595,7 @@ ul.auto-toc {
 }
 .pretty_text p, p.pretty_text {
   text-align: justify;
-  text-indent: 15px;
+  text-indent: 0;
 }
 .pretty_text img {
   border-radius: 6px;
@@ -1620,7 +1620,7 @@ input.digit {
   color: black;
   position: relative;
   min-width: 150px;
-  padding: 0 2px;
+  padding: 0 6px;
   margin-left: -20px;
   margin-right: -20px;
   background-image: none;
@@ -1647,7 +1647,7 @@ input.digit {
   color: black;
   position: relative;
   min-width: 150px;
-  padding: 0 2px;
+  padding: 0 6px;
   margin-left: -20px;
   margin-right: -20px;
   background-image: none;
@@ -1676,7 +1676,7 @@ input.digit {
   color: black;
   position: relative;
   min-width: 150px;
-  padding: 0 2px;
+  padding: 0 6px;
   margin-left: -20px;
   margin-right: -20px;
   background-image: none;
@@ -1702,7 +1702,7 @@ input.digit {
   color: black;
   position: relative;
   min-width: 150px;
-  padding: 0 2px;
+  padding: 0 6px;
   margin-left: -20px;
   margin-right: -20px;
   background-image: none;
@@ -1807,6 +1807,9 @@ input.digit {
   overflow: auto;
   text-align: left;
 }
+h1 a, h1 span, h2 a, h2 span, h3 a, h3 span, h4 a, h4 span {
+  color: inherit !important;
+}
 h1 {
   text-shadow: 1px 1px 0 black, -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black;
   color: #f8d85b;
@@ -1894,6 +1897,7 @@ b, strong {
 }
 pre {
   white-space: pre-wrap;
+  font-family: Consolas, monospace !important;
 }
 div, span, p {
   background-color: transparent;

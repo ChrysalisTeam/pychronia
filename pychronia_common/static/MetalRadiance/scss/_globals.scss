@@ -116,7 +116,7 @@ $scroll_text_color: black;
 
 @mixin pretty_text {
     text-align: justify;
-    text-indent: 15px;
+    text-indent: 0;  // else, quickly ugly...
 }
 
 @mixin light-texts {
