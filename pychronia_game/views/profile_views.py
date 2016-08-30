@@ -325,7 +325,7 @@ friendship_management = FriendshipManagementView.as_view
 
 @register_view(access=UserAccess.authenticated,
                title=ugettext_lazy("System Events"),
-               title_for_master= ugettext_lazy("Game Events"))
+               title_for_master= ugettext_lazy("All Game Events"))
 def game_events(request, template_name='administration/game_events.html'):
 
     events = request.datamanager.get_game_events() # FILTERS by current user

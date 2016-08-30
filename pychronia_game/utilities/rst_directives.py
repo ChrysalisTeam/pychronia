@@ -2,11 +2,13 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import os
+
 from docutils import nodes
 from docutils.parsers.rst import directives
 from docutils.parsers import rst
 
-from .mediaplayers import generate_audio_player, generate_media_player, generate_image_viewer
+from .mediaplayers import generate_audio_player, generate_media_player, generate_image_viewer, get_medium_title_from_url
 
 
 class AudioEmbedDirective(rst.Directive):
@@ -18,7 +20,9 @@ class AudioEmbedDirective(rst.Directive):
     has_content = False
 
     def run(self):
-        code = generate_audio_player(files=[self.arguments[0]])
+        file_url = self.arguments[0]
+        title = get_medium_title_from_url(file_url)
+        code = generate_audio_player(files=[file_url], titles=[title])
         return [nodes.raw('', code, format='html')]
 
 directives.register_directive("embed_audio", AudioEmbedDirective)

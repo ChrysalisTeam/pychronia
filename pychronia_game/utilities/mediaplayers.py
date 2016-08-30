@@ -242,6 +242,11 @@ def generate_image_viewer(imageurl, width=500, height=400, preset=None, align=""
     return template % options
 
 
+def get_medium_title_from_url(file_url):
+    basename = os.path.basename(file_url)
+    return os.path.splitext(basename)[0]
+
+
 
 def build_proper_viewer(fileurl, **kwargs): # interesting kwarg : "autostart"
 
@@ -250,7 +255,7 @@ def build_proper_viewer(fileurl, **kwargs): # interesting kwarg : "autostart"
     if not fileurl:
         return ""
 
-    title = kwargs.pop("title", "")
+    title = kwargs.pop("title", "") or get_medium_title_from_url(fileurl)
     extension = os.path.splitext(fileurl)[1][1:].lower() # no starting dot
 
     if extension == "mp3": # fileurl may be a string of comma-separated mp3 urls - it works
