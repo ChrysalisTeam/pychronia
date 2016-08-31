@@ -55,7 +55,13 @@
                     {{ char_details.official_role }} <br/>
 
 	    		    {% if display_admin_tips and char_details.gamemaster_hints %}
-	    		        <p class="admin-note"><i>{{ char_details.gamemaster_hints }}</i></p>
+	    		        <p class="admin-note">
+                            <i>
+                            {% if char_details.is_npc %}{% trans "NPC" %}{% else %}{% trans "Player" %}{% endif %}
+                            -
+                            {{ char_details.gamemaster_hints }}
+                            </i>
+                        </p>
 	    		    {% endif %}
 
 		    	</td>
