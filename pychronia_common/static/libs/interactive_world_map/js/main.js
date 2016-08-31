@@ -9,10 +9,11 @@ var $panzoom ;
     
 $('html').on('mousemove', function(e){
     //console.log("Pointer mousemove to", e.target);
-    if($(e.target).attr("class")=='coords-ref'){
+    var target = $(e.target);
+    if(target.attr("class")=='coords-ref' && target.attr('alt') !== ""){
         //console.log("Pointer at coords-ref");
         var tooltip = $("#world-map-tooltip");
-        tooltip.html($(e.target).attr('alt'));
+        tooltip.html(target.attr('alt'));
         tooltip.css('visibility','visible');
         tooltip.css('top',''+e.clientY+'px');
         tooltip.css('left',''+(e.clientX+5)+'px');

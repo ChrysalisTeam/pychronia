@@ -39,7 +39,7 @@ class DynamicWorldMapView(AbstractGameView):
     def get_template_vars(self, previous_form_data=None):
         all_location = self.datamanager.get_locations()
         world_map = self.datamanager.get_global_parameter("world_map_image")
-        summary_fallback = _("No description")
+        summary_fallback = "" ##_("No description")
         return dict(all_locations=all_location,
                     world_map_image=world_map,
                     summary_fallback=summary_fallback)
