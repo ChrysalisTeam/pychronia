@@ -628,7 +628,7 @@ def check_dictionary_with_template(my_dict, template, strict=False):
     if strict:
         assert_sets_equal(my_dict.keys(), template.keys())
     else:
-        usage_assert(set(template.keys()) <= set(my_dict.keys()), comment=set(template.keys()) - set(my_dict.keys()))
+        usage_assert(set(template.keys()) <= set(my_dict.keys()), comment=(set(template.keys()) - set(my_dict.keys()), my_dict))
 
     for key in template.keys():
         #print("WE VALIDATE MORE PRECISELY", key, my_dict[key], template[key])

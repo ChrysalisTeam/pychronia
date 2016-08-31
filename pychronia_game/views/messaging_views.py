@@ -598,17 +598,17 @@ def compose_message(request, template_name='messaging/compose.html'):
                 subject = form.cleaned_data["subject"]
                 body = form.cleaned_data["body"]
                 attachment = form.cleaned_data["attachment"]
-                transferred_msg = form.cleaned_data["transferred_msg"]
+                transferred_msg = form.cleaned_data["transferred_msg"] or None
 
-                parent_id = form.cleaned_data.get("parent_id", None)
-                use_template = form.cleaned_data.get("use_template", None)  # standard players might have it one day
+                parent_id = form.cleaned_data.get("parent_id", None) or None
+                use_template = form.cleaned_data.get("use_template", None) or None  # standard players might have it one day
 
                 # sender_email and one of the recipient_emails can be the same email, we don't care !
                 post_message = request.datamanager.post_message
                 params = dict(sender_email=sender_email, subject=subject, body=body,
                               attachment=attachment, transferred_msg=transferred_msg,
                               date_or_delay_mn=sending_date,
-                              use_template=use_template,
+                              template_id=use_template,
                               body_format=body_format)
 
                 if mask_recipients:

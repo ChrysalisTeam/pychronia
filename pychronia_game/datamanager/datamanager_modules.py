@@ -1715,6 +1715,8 @@ class TextMessagingCore(BaseDataManager):
             else:
                 msg["group_id"] = msg["id"]
 
+            msg.setdefault("template_id", None)
+
         # important - initial sorting #
         messaging["messages_dispatched"].sort(key=lambda msg: msg["sent_at"])
         messaging["messages_queued"].sort(key=lambda msg: msg["sent_at"])
@@ -1741,6 +1743,7 @@ class TextMessagingCore(BaseDataManager):
                              "body_format": basestring,
                              "id": basestring,
                              "group_id": basestring,
+                             "template_id": (types.NoneType, basestring)
                              }
 
         def _check_message_list(msg_list):
@@ -1778,6 +1781,9 @@ class TextMessagingCore(BaseDataManager):
                         assert self.get_dispatched_message_by_id(msg_id=msg["transferred_msg"]) # must ALREADY be dispatched
                     except UsageError as e:
                         pass  # message might have been deleted by game master, we ignore this
+
+                if msg["template_id"]:
+                    self.get_message_template(msg["template_id"])
 
             all_ids = [msg["id"] for msg in msg_list]
             utilities.check_no_duplicates(all_ids)
@@ -1836,7 +1842,8 @@ class TextMessagingCore(BaseDataManager):
     def _build_new_message(self, sender_email, recipient_emails, subject, body,
                            attachment=None, transferred_msg=None,
                            date_or_delay_mn=None, is_certified=False,
-                           parent_id=None, body_format="rst", **kwargs):
+                           parent_id=None, body_format="rst",
+                           template_id=None, **kwargs):
         """
         Beware, if a delay, date_or_delay_mn is treated as FLEXIBLE TIME.
         
@@ -1897,7 +1904,8 @@ class TextMessagingCore(BaseDataManager):
                               "is_certified": is_certified,
                               "id": new_id,
                               "group_id": group_id if group_id else new_id, # msg might start a new conversation
-                              "body_format": body_format
+                              "body_format": body_format,
+                              "template_id": template_id
                               })
         return msg
 
