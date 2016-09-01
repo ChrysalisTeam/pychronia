@@ -20,6 +20,8 @@ from django.template.defaultfilters import stringfilter
 from django.template.defaultfilters import linebreaks
 from django.core.cache import cache
 
+from cmsplugin_rst.utils import french_insecable
+
 import urllib
 from textwrap import dedent
 from easy_thumbnails.templatetags.thumbnail import thumbnail_url
@@ -233,6 +235,7 @@ DOCUTILS_RENDERER_SETTINGS_DEFAULTS = {
     'report_level': 2,  # report warnings and above, by default
 }
 
+
 def advanced_restructuredtext(value,
                               initial_header_level=None,
                               report_level=None): # report
@@ -308,8 +311,11 @@ def format_enriched_text(datamanager, content, initial_header_level=None, report
     with exception_swallower():
         html = _generate_messaging_links(html, datamanager)
     with exception_swallower():
-        html = _generate_site_links(html, datamanager) # o
+        html = _generate_site_links(html, datamanager)
+    with exception_swallower():  #FIXME - make it depend on game language, one day
+        html = french_insecable(html)  # handles non-breaking spaces, especially
 
+    # note that conf-enforced RST roles might be used too (|BR|, |NBSP|)...
     html = html.replace("[BR]", "<br />") # line breaks, handy for vertical spacing
     html = html.replace("[NBSP]", unichr(160)) # non-breaking spaces, handy for punctuation mainly
 

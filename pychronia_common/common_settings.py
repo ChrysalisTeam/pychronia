@@ -116,16 +116,16 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 
 # no need for CSRF by default
 MIDDLEWARE_CLASSES = (
-'django.middleware.gzip.GZipMiddleware',
-'pychronia_common.middlewares.ReverseProxyFixer',
-# TODO Later 'django.middleware.http.ConditionalGetMiddleware', # checks E-tag and last-modification-time to avoid sending data
-#'django.middleware.common.BrokenLinkEmailsMiddleware', FIXME - ONLY SOON IN 1.5
-'sessionprofile.middleware.SessionProfileMiddleware', # to bridge auth with PHPBB
-'django.contrib.sessions.middleware.SessionMiddleware',
-'django.middleware.locale.LocaleMiddleware',
-'django.contrib.messages.middleware.MessageMiddleware',
-'django.middleware.common.CommonMiddleware',
-'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.middleware.gzip.GZipMiddleware',
+    'pychronia_common.middlewares.ReverseProxyFixer',
+    # TODO Later 'django.middleware.http.ConditionalGetMiddleware', # checks E-tag and last-modification-time to avoid sending data
+    #'django.middleware.common.BrokenLinkEmailsMiddleware', FIXME - ONLY SOON IN 1.5
+    'sessionprofile.middleware.SessionProfileMiddleware', # to bridge auth with PHPBB
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
 )
 
 
@@ -151,7 +151,6 @@ INSTALLED_APPS = [
     'templateaddons', # assign and headers tags
     'django_select2', # advanced select box
     'easy_thumbnails',
-
 ]
 
 MIGRATION_MODULES = {
