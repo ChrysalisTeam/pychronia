@@ -335,7 +335,7 @@
 {% if impersonation_capabilities.display_impersonation_target_shortcut %}
 	<div class="motto">
 		<form action="" method="POST" title="{% trans "Take the identity of another user." %}">
-        {% trans "Impersonation:" %}
+        {% trans "Identity:" %}
 		<select name="{{ impersonation_capabilities.impersonation_target_post_variable }}" onchange="this.form.submit()">
 			<option value="">{% trans "None" %}</option>
 			{% for target in impersonation_capabilities.impersonation_targets %}
