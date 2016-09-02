@@ -6,23 +6,33 @@ TODO LIST CHRYSALIS
 FEATURES
 ------------
 
-- add cmsplugin-rst and its treatment of FR punctuation!!
+
 
 - automatiquement marquer comme lus les messages (et update help-standard_conversations) alors.
+
+- sauver nom du template utilisé dans msg envoyé - DONE
+
+
 
 SCRIPT
 ----------
 
-- fix les noms du menu (CAPITAL CASE)
+- quid si pas url ni file dans webradio active playlist ???
+
+- fix les noms du menu (CAPITAL CASE) dans PO FILES
+
 - donner limitations prix etc à nouveau telecom_investigation
 
-- marquer qui est PJ ou NON
+- mettre gamemaster hints sur encre sympathique et parchemin vierge
+
+
 
 - MARQUER dans leur description LES OBJETS DISPOS EN 3D : statue de Bartzar, amphore, coffre rouillé, et grimoire sur piédestal
 
 Traduction de Runes Antiques:
 "FIXME - add reference here, or BETTER, PROGRAMATICALLY!!!"
 
+#FIXME BR |BR| {{BR}} varianst too much...
 
 - remplir les descriptions des villes.
 
@@ -45,7 +55,6 @@ crédibilité de notre Académie, qui a toujours été en pointe dans ce
 domaine.
 
 
-mettre gamemaster hints sur encre sympathique et parchemin vierge
 
 - regler les "HERE GAMEMASTER HINTS" et autres FIXME / TODO
 
@@ -137,6 +146,9 @@ PAUSED BUGLETS:
 TASKS DONE
 ---------------
 
+- add cmsplugin-rst and its treatment of FR punctuation - DONE
+- enlever les "pas de descriptions" sur dynamic workd map - DONE
+- marquer qui est PJ ou NON dans la page des personnages - DONE
 - USE embed_image(alias, align) everywhere in fixtures - NOPE BAD IDEA
 - add tags with titles to all MP3s - DONE
 - scripts: expliciter que mes conversations et messages archivés == PNJ ONLY - DONE
