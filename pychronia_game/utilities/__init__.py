@@ -323,8 +323,21 @@ def load_multipart_rst(val):
     return u"\n\n".join(val) # we assume a sequence of strings dedicated to restructuredtext format!
 
 
-# IMPORTANT - globally registered encoder for unicode strings
+# IMPORTANT - globally registered encoder for unicode strings and OrderedDict #
 yaml.add_representer(unicode, lambda dumper, value: dumper.represent_scalar(u'tag:yaml.org,2002:str', value))
+
+_mapping_tag = yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG
+
+def dict_representer(dumper, data):
+    return dumper.represent_dict(data.iteritems())
+
+def dict_constructor(loader, node):
+    return collections.OrderedDict(loader.construct_pairs(node))
+
+yaml.add_representer(collections.OrderedDict, dict_representer)
+yaml.add_constructor(_mapping_tag, dict_constructor)
+
+
 
 def dump_data_tree_to_yaml(data_tree, convert=True, **kwargs):
     """
