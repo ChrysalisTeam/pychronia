@@ -3164,6 +3164,7 @@ class RadioMessaging(BaseDataManager): # TODO REFINE
             value.setdefault("gamemaster_hints", "")
             value["title"] = value["title"].strip()
             value["text"] = value["text"].strip()
+            value["file"] = value["file"].strip() if value["file"] else None
             return (key, PersistentMapping(value))
             # other params are supposed to exist in "value"
 
