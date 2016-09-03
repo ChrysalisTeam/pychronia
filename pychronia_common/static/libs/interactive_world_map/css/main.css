@@ -58,6 +58,7 @@ body{
 
 #world-map-tooltip{
     width:auto;
+    max-width: 300px;
     height:auto;
     
     visibility:hidden;

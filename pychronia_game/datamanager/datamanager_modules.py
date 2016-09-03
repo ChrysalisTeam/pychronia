@@ -1577,7 +1577,7 @@ class LocationsHandling(BaseDataManager):
             utilities.check_is_slug(name)
 
             if properties["summary"] is not None:
-                utilities.check_is_string(properties["summary"])
+                utilities.check_is_string(properties["summary"], empty=True)
 
             geolocation = properties["geolocation"]
             utilities.check_is_list(geolocation)
