@@ -9,7 +9,7 @@
         <div style="margin:auto; max-width:500px;">
         <b>
         <ul>
-            <li>{% trans "Money:" %} {{ character_properties.account }} ¤</li>
+            <li>{% trans "Money:" %} {{ character_properties.account }}¤</li>
             <li>{% trans "Gems:" %}
                     {% if user_gems %}
                         {{ user_gems|list_sum }}¤ {% trans "total" %}

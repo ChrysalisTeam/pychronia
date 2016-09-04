@@ -333,6 +333,7 @@ def all_queued_messages(request, template_name='messaging/messages.html'):
     return render(request,
                   template_name,
                   dict(page_title=_("All Queued Messages"),
+                       display_all=True,
                        messages=enriched_messages,  # no need to LIMIT the display of these queued messages...
                        contact_cache=_build_contact_display_cache(request.datamanager)))
 
@@ -376,6 +377,7 @@ def messages_templates(request, template_name='messaging/messages.html'):
     return render(request,
                   template_name,
                   dict(messages=enriched_templates,
+                       display_all=True,
                        contact_cache=_build_contact_display_cache(request.datamanager),
                        message_categories=message_template_categories,
                        selected_category=selected_category))
