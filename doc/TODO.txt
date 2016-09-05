@@ -6,33 +6,35 @@ TODO LIST CHRYSALIS
 FEATURES
 ------------
 
+Turrol Imagdir
 
+Khaal ??
+jaben minroche -> magnus
+minrochia.pg -> magnus
+Darian-> autre nom (trop proche de dorian)
+
+
+- si pas autoresponse, alors les mailer au MJ !!
 
 - automatiquement marquer comme lus les messages (et update help-standard_conversations) alors.
-
-- sauver nom du template utilisé dans msg envoyé - DONE
 
 
 
 SCRIPT
 ----------
 
-- quid si pas url ni file dans webradio active playlist ???
-
 - fix les noms du menu (CAPITAL CASE) dans PO FILES
 
-- donner limitations prix etc à nouveau telecom_investigation
+- update abilities settings and prices
 
-- mettre gamemaster hints sur encre sympathique et parchemin vierge
-
-
+- dire pas faire screenshare en tant que gamemaster, mais lg plutot
 
 - MARQUER dans leur description LES OBJETS DISPOS EN 3D : statue de Bartzar, amphore, coffre rouillé, et grimoire sur piédestal
 
 Traduction de Runes Antiques:
 "FIXME - add reference here, or BETTER, PROGRAMATICALLY!!!"
 
-#FIXME BR |BR| {{BR}} varianst too much...
+#FIXME BR |BR| {{BR}} variants too much...
 
 - remplir les descriptions des villes.
 
@@ -43,24 +45,10 @@ Quelques points d'attention dont je me souviens:
 
 - BETTER EXPOSE HISTORIES LOG EVENTS (say in manual)
 
-
-
-
-Avis à tous les membres de l'Académie, et affiliés.
-Nous venons d'apprendre que la Faculté d'Imuo allait sortir d'ici peu
-une Intelligence Artificelle de jeu d'échecs, qu'ils qualifient de
-"révolutionnaire".
-Si tel était vraiment le cas, ce serait un coup dur pour la
-crédibilité de notre Académie, qui a toujours été en pointe dans ce
-domaine.
-
-
-
 - regler les "HERE GAMEMASTER HINTS" et autres FIXME / TODO
 
 
 GAMEMASTER_HINTS in:
-
     - characters
     - contacts
     - templates
@@ -68,8 +56,6 @@ GAMEMASTER_HINTS in:
     - game items
     - static pages
 
-
-- update abilities settings and prices
 
 - faire CHRONOLOGIE détaillée des évènements pour aider énigmes
 
@@ -146,6 +132,15 @@ PAUSED BUGLETS:
 TASKS DONE
 ---------------
 
+
+- donner limitations prix etc à nouveau telecom_investigation - DONE
+- mettre gamemaster hints sur encre sympathique et parchemin vierge - DONE
+- créer contacts emails initiaux manquants, avec leurs avatars - DONE
+- fix bug avec trait sous menu - DONE
+- fix alignement des panels sidebar et normaux - DONE
+- rendre "file/url" de radio spot optionnel dans l'interface admin - DONE
+- quid si pas url ni file dans webradio active playlist - la RADIO s'arrête simplement !
+- sauver nom du template utilisé dans msg envoyé - DONE
 - add cmsplugin-rst and its treatment of FR punctuation - DONE
 - enlever les "pas de descriptions" sur dynamic workd map - DONE
 - marquer qui est PJ ou NON dans la page des personnages - DONE
