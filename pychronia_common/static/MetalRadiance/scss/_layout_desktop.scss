@@ -303,7 +303,7 @@ body .notification_panel {
                 border-style: solid;
                 border-color:transparent;
                 border-width: 18px 52px 20px 55px;
-                border-image: url('#{$IMGS}backgrounds/menu_border.png') 18 52 20 55 fill round stretch;
+                border-image: url('#{$IMGS}backgrounds/menu_border.png') 18 52 20 55 fill stretch stretch;  // BEWARE - using "round" horizontally makes a buggy thin line appear on top/bottom box extremities
                 image-rendering: optimizequality;
             }
 
@@ -368,7 +368,7 @@ body .notification_panel {
 
     .main_sidebar { // container for miniframes
         ///@extend .clearfix;
-        padding: 10px;
+        padding: 8px 10px 10px;
         margin: 0; //-3px 0px 0px;
         overflow: hidden; // important, since jquery-sticky affects wrong widths because of box-sizing...
         width: auto !important;

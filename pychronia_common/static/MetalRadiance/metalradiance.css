@@ -1892,6 +1892,9 @@ h4 {
   quotes: none;
   text-overflow: ellipsis;
 }
+em {
+  font-style: italic;
+}
 b, strong {
   font-weight: bolder;
 }
@@ -2576,7 +2579,7 @@ body .notification_panel .notification_panel_decorations .notification_panel_con
     border-style: solid;
     border-color: transparent;
     border-width: 18px 52px 20px 55px;
-    border-image: url('img/backgrounds/menu_border.png') 18 52 20 55 fill round stretch;
+    border-image: url('img/backgrounds/menu_border.png') 18 52 20 55 fill stretch stretch;
     image-rendering: optimizequality;
   }
   #menu-bar {
@@ -2618,7 +2621,7 @@ body .notification_panel .notification_panel_decorations .notification_panel_con
     color: white;
   }
   #full_content .main_sidebar {
-    padding: 10px;
+    padding: 8px 10px 10px;
     margin: 0;
     overflow: hidden;
     width: auto !important;
