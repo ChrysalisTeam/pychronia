@@ -37,12 +37,12 @@ msgstr "Une erreur interne est survenue"
 #: .\common.py:187 .\common.py:192 .\utilities\__init__.py:747
 #: .\utilities\__init__.py:752
 #, python-format
-msgid "Unexpected exception occurred in exception swallower context : %r !"
-msgstr "Exception inattendue dans le contexte de l'avaleur d'exceptions : %r !"
+msgid "Unexpected exception occurred in exception swallower context : %r!"
+msgstr "Exception inattendue dans le contexte de l'avaleur d'exceptions : %r !"
 
 #: .\common.py:189 .\utilities\__init__.py:749
-msgid "Exception Swallower logging is broken !!!"
-msgstr "Le logger de l'avaleur d'exceptions est cassé !!!"
+msgid "Exception Swallower logging is broken!!!"
+msgstr "Le logger de l'avaleur d'exceptions est cassé !!!"
 
 #: .\context_processors.py:31
 msgid ":"
@@ -1314,11 +1314,11 @@ msgstr "Enregistrement de la victoire, retentative..."
 
 #: .\templates\abilities\chess_challenge.html:41
 msgid "You won this game! Sending data to server..."
-msgstr "Vous avez gagné cette partie ! Envoi des données au serveur..."
+msgstr "Vous avez gagné cette partie ! Envoi des données au serveur..."
 
 #: .\templates\abilities\chess_challenge.html:47
 msgid "You lost this game!"
-msgstr "Vous avez perdu cette partie !"
+msgstr "Vous avez perdu cette partie !"
 
 #: .\templates\abilities\chess_challenge.html:117
 msgid "Your new colour:"
@@ -2000,15 +2000,15 @@ msgstr "Pas de Notifications"
 
 #: .\templates\base_main.html:436
 msgid "New menu entries are available for you!"
-msgstr "Nouvelles entrées de menu disponibles !"
+msgstr "Nouvelles entrées de menu disponibles !"
 
 #: .\templates\base_main.html:439
 msgid "New text messages are available for you!"
-msgstr "De nouveaux messages email sont disponibles !"
+msgstr "De nouveaux messages email sont disponibles !"
 
 #: .\templates\base_main.html:442
 msgid "There are people in the live chat room!"
-msgstr "Il y a des utilisateurs dans le salon de discussion !"
+msgstr "Il y a des utilisateurs dans le salon de discussion !"
 
 #: .\templates\base_main.html:457
 msgid "Pangea webradio is currently ONLINE"
@@ -2439,7 +2439,7 @@ msgstr "Messages"
 #: .\templates\messaging\messages.html:17
 #| msgid "Dispatched Messages"
 msgid "Display All Messages"
-msgstr "Tous Messages Expédiés"
+msgstr "Afficher Tous les Messages"
 
 #: .\templates\messaging\messages.html:59
 #| msgid "No messages yet."
@@ -2673,8 +2673,8 @@ msgid "Further information is available in your mailbox."
 msgstr "Des informations supplémentaires vous attendent dans votre messagerie."
 
 #: .\templates\profile\login.html:17
-msgid "Log Me In !"
-msgstr "Authentifiez moi !"
+msgid "Log Me In!"
+msgstr "Authentifiez moi !"
 
 #: .\templates\profile\login.html:22
 msgid "Forgot password ?"
@@ -3288,7 +3288,7 @@ msgstr "Cible %d"
 
 #: .\views\abilities\wiretapping_management_mod.py:85
 msgid "Wiretapping"
-msgstr "Mises sur Ecoute"
+msgstr "Mise sur Ecoute"
 
 #: .\views\abilities\wiretapping_management_mod.py:88
 msgid "Choose wiretapping targets"
@@ -3398,7 +3398,7 @@ msgstr "Voir les Données"
 
 #: .\views\admin_views\__init__.py:57
 msgid "Manage Characters"
-msgstr "Gérer les personnages"
+msgstr "Gérer les Personnages"
 
 #: .\views\admin_views\__init__.py:143
 #, python-format
@@ -3480,7 +3480,7 @@ msgstr "Email réel du Maître (optionnel)"
 
 #: .\views\admin_views\admin_dashboard_mod.py:87
 msgid "Admin Dashboard"
-msgstr "Tableau de bord Admin"
+msgstr "Tableau de Bord Admin"
 
 #: .\views\admin_views\admin_dashboard_mod.py:90
 msgid "Save admin widgets' order"
@@ -3568,7 +3568,7 @@ msgstr "Nombre d'articles"
 
 #: .\views\admin_views\game_items_management_mod.py:37
 msgid "Edit Game Items"
-msgstr "Editer les objets du jeu"
+msgstr "Editer les Objets du Jeu"
 
 #: .\views\admin_views\game_items_management_mod.py:40
 msgid "Submit an item"
@@ -3729,7 +3729,7 @@ msgstr "Diaporama d'Objets"
 
 #: .\views\auction_views.py:260
 msgid "My Items"
-msgstr "Mes objets"
+msgstr "Mes Objets"
 
 #: .\views\auction_views.py:282
 msgid "Item 3D View"
@@ -3939,11 +3939,11 @@ msgstr "Marqueur de substitution restant dans le texte"
 
 #: .\views\messaging_views.py:313
 msgid "Dispatched Messages"
-msgstr "Messages Transmis"
+msgstr "Messages Expédiés"
 
 #: .\views\messaging_views.py:324
 msgid "All Dispatched Messages"
-msgstr "Messages Transmis"
+msgstr "Tous les Messages Expédiés"
 
 #: .\views\messaging_views.py:324
 #| msgid "Dispatched Messages"
@@ -3964,7 +3964,7 @@ msgstr "Forcer Envoi du Message"
 
 #: .\views\messaging_views.py:353
 msgid "Message Templates"
-msgstr "Modèles de message"
+msgstr "Modèles de Messages"
 
 #: .\views\messaging_views.py:364
 #, python-format
@@ -4264,7 +4264,7 @@ msgstr "Évènements Système"
 #: .\views\profile_views.py:328
 #| msgid "Game events"
 msgid "All Game Events"
-msgstr "Tous Événements du Jeu"
+msgstr "Tous les Evénements du Jeu"
 
 #: .\views\profile_views.py:359 .\views\profile_views.py:368
 msgid "Instructions"
@@ -4280,7 +4280,7 @@ msgstr "Instructions"
 #~ msgstr "Evènements"
 
 #~ msgid "Dashboard"
-#~ msgstr "Tableau de bord"
+#~ msgstr "Tableau de Bord"
 
 #~ msgid "System Events"
 #~ msgstr "Évènements Système"
