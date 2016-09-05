@@ -419,14 +419,14 @@ def check_is_lazy_translation(value):
     usage_assert(isinstance(value, Promise), type(value))
     return True
 
-def check_is_string(value, multiline=True, forbidden_chars=None, empty=False):
-    usage_assert(isinstance(value, basestring), value)
+def check_is_string(value, multiline=True, forbidden_chars=None, empty=False, comment=None):
+    usage_assert(isinstance(value, basestring), value or comment)
     if not empty:
-        usage_assert(value, value)
+        usage_assert(value, comment)
     if not multiline:
-        usage_assert("\n" not in value)
+        usage_assert("\n" not in value, comment)
     if forbidden_chars:
-        usage_assert(not any(x in value for x in forbidden_chars))
+        usage_assert(not any(x in value for x in forbidden_chars), comment)
     return True
 
 def check_is_float(value):

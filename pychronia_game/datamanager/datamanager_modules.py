@@ -2323,7 +2323,7 @@ class TextMessagingTemplates(BaseDataManager):
 
             utilities.check_is_int(msg["order"])  # important - order of messages
 
-            utilities.check_is_string(msg["subject"], multiline=False) # necessary for sidebar menu
+            utilities.check_is_string(msg["subject"], multiline=False, comment=msg) # necessary for sidebar menu
 
             msg.setdefault("categories", PersistentList(["unsorted"])) # FIXME TEMP FIX
             assert isinstance(msg["categories"], PersistentList)
