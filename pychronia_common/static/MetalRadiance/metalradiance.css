@@ -993,23 +993,29 @@ table.realtable a:active {
   text-align: center;
   display: block;
 }
-div .attention, div .caution, div .danger, div .error, div .important,
-div .warning {
+.document div .attention, .document div .caution, .document div .danger,
+.document div .error, .document div .important, .document div .warning {
   border: medium ridge;
   border-color: #B89215;
-}
-div .attention p.admonition-title, div .caution p.admonition-title,
-div .danger p.admonition-title, div .error p.admonition-title,
-div .important p.admonition-title, div .warning p.admonition-title {
-  color: #8E0D0D;
-}
-div .hint, div .note, div .tip, div .admonition {
-  border: medium ridge;
-  border-color: #B89215;
+  background-color: initial;
   clear: both;
 }
-div .hint p.admonition-title, div .note p.admonition-title,
-div .tip p.admonition-title, div .admonition p.admonition-title {
+.document div .attention p.admonition-title,
+.document div .caution p.admonition-title,
+.document div .danger p.admonition-title, .document div .error p.admonition-title,
+.document div .important p.admonition-title,
+.document div .warning p.admonition-title {
+  color: #8E0D0D;
+}
+.document div .hint, .document div .note, .document div .tip,
+.document div .admonition {
+  border: medium ridge;
+  border-color: #B89215;
+  background-color: initial;
+  clear: both;
+}
+.document div .hint p.admonition-title, .document div .note p.admonition-title,
+.document div .tip p.admonition-title, .document div .admonition p.admonition-title {
   color: #408232;
 }
 .section h1, .section h2 {
@@ -1861,14 +1867,14 @@ h2:after {
 }
 h3 {
   color: white;
-  font-size: 1.3em;
+  font-size: 1.4em;
   text-shadow: 1px 1px 0px black, -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black;
-  margin: 14px 5px 7px;
+  margin: 15px 5px 7px;
 }
 h4 {
   color: black;
-  font-size: 1.1em;
-  margin: 13px 20px 7px;
+  font-size: 1.3em;
+  margin: 14px 20px 6px;
 }
 .drop_cap, .drop-cap, .dropcap {
   text-indent: 0 !important;

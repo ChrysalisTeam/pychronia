@@ -1,7 +1,6 @@
 
 
-div {
-
+.document div {
 
     .attention, .caution, .danger, .error, .important, .warning {
         p.admonition-title {
@@ -9,6 +8,8 @@ div {
         }
         border: medium ridge; // or groove
         border-color: $outline_gold;
+        background-color: initial;
+        clear: both;
     }
 
     .hint, .note, .tip, .admonition {
@@ -17,6 +18,7 @@ div {
         }
         border: medium ridge; // or groove
         border-color: $outline_gold;
+        background-color: initial;
         clear: both;
     }
 
