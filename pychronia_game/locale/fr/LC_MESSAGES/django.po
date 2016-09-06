@@ -10,14 +10,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-09-05 11:36+0200\n"
+"POT-Creation-Date: 2016-09-06 15:33+0200\n"
 "PO-Revision-Date: 2016-09-05 11:44+0200\n"
 "Last-Translator: Pascal Chambon <chambon.pascal@gmail.com>\n"
 "Language-Team: Pascal Chambon\n"
-"Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: fr\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Generator: Virtaal 0.7.0\n"
 
@@ -36,11 +36,14 @@ msgstr "Une erreur interne est survenue"
 
 #: .\common.py:187 .\common.py:192 .\utilities\__init__.py:747
 #: .\utilities\__init__.py:752
-#, python-format
+#, fuzzy, python-format
+#| msgid "Unexpected exception occurred in exception swallower context : %r!"
 msgid "Unexpected exception occurred in exception swallower context : %r!"
 msgstr "Exception inattendue dans le contexte de l'avaleur d'exceptions : %r !"
 
 #: .\common.py:189 .\utilities\__init__.py:749
+#, fuzzy
+#| msgid "Exception Swallower logging is broken!!!"
 msgid "Exception Swallower logging is broken!!!"
 msgstr "Le logger de l'avaleur d'exceptions est cassé !!!"
 
@@ -364,29 +367,29 @@ msgstr "destinataire"
 msgid "interceptor"
 msgstr "intercepteur"
 
-#: .\datamanager\datamanager_modules.py:103
+#: .\datamanager\datamanager_modules.py:108
 #, python-format
 msgid "Unexisting setting %s"
 msgstr "Paramètre inexistant %s"
 
-#: .\datamanager\datamanager_modules.py:172
+#: .\datamanager\datamanager_modules.py:177
 msgid "Beware, your impersonation is in writable mode."
 msgstr "Attention, votre usurpation d'identité est en mode écriture."
 
-#: .\datamanager\datamanager_modules.py:176
+#: .\datamanager\datamanager_modules.py:181
 msgid "Website currently in read-only mode, for maintenance."
 msgstr "Site web actuellement en lecture seule, pour maintenance."
 
-#: .\datamanager\datamanager_modules.py:563
+#: .\datamanager\datamanager_modules.py:568
 #, python-format
 msgid "Unknown username %s"
 msgstr "identifiant utilisateur inconnu %s"
 
-#: .\datamanager\datamanager_modules.py:588
+#: .\datamanager\datamanager_modules.py:593
 msgid "Unidentified"
 msgstr "Non identifié"
 
-#: .\datamanager\datamanager_modules.py:597 .\forms.py:105
+#: .\datamanager\datamanager_modules.py:602 .\forms.py:105
 #: .\templates\abilities\mercenaries_hiring.html:16
 #: .\templates\abilities\wiretapping_management.html:41
 #: .\templates\administration\character_management.html:20
@@ -405,72 +408,72 @@ msgstr "Non identifié"
 msgid "None"
 msgstr "Aucun(e)"
 
-#: .\datamanager\datamanager_modules.py:613
+#: .\datamanager\datamanager_modules.py:618
 #, python-format
 msgid "Wrong email %s"
 msgstr "Mauvais email %s"
 
-#: .\datamanager\datamanager_modules.py:689
+#: .\datamanager\datamanager_modules.py:694
 #, python-format
 msgid "Wrong domain name %s"
 msgstr "Mauvais nom de domaine %s"
 
-#: .\datamanager\datamanager_modules.py:912
+#: .\datamanager\datamanager_modules.py:917
 #, python-format
 msgid "Invalid instance username: '%s'"
 msgstr "Identifiant utilisateur invalide dans l'instance : '%s'"
 
-#: .\datamanager\datamanager_modules.py:914
+#: .\datamanager\datamanager_modules.py:919
 #, python-format
 msgid "Invalid requested impersonation target: %s"
 msgstr "Cible d'usurpation demandée invalide : %s"
 
-#: .\datamanager\datamanager_modules.py:922
+#: .\datamanager\datamanager_modules.py:927
 #, python-format
 msgid "Unauthorized user impersonation detected: %s"
 msgstr "Usurpation d'identité non autorisée détectée: %s"
 
-#: .\datamanager\datamanager_modules.py:966
-#: .\datamanager\datamanager_modules.py:969
+#: .\datamanager\datamanager_modules.py:971
+#: .\datamanager\datamanager_modules.py:974
 #, python-format
 msgid "Invalid session ticket: %s"
 msgstr "Ticket de session invalide: %s"
 
-#: .\datamanager\datamanager_modules.py:1032
+#: .\datamanager\datamanager_modules.py:1037
 msgid "Wrong password"
 msgstr "Mauvais mot de passe"
 
-#: .\datamanager\datamanager_modules.py:1043
+#: .\datamanager\datamanager_modules.py:1048
 msgid "Invalid new password submitted"
 msgstr "Mauvais nouveau mot de passe soumis"
 
-#: .\datamanager\datamanager_modules.py:1046
+#: .\datamanager\datamanager_modules.py:1051
 msgid "Wrong current password submitted"
 msgstr "Mauvais mot de passe actuel soumis"
 
-#: .\datamanager\datamanager_modules.py:1059
+#: .\datamanager\datamanager_modules.py:1064
 msgid "Game master can't recover his password through a secret question."
 msgstr ""
 "Le Maître du jeu ne peut récupérer son mot de passe via une question secrète."
 
-#: .\datamanager\datamanager_modules.py:1061
+#: .\datamanager\datamanager_modules.py:1066
 msgid "Invalid username."
 msgstr "Identifiant utilisateur invalide."
 
-#: .\datamanager\datamanager_modules.py:1065
+#: .\datamanager\datamanager_modules.py:1070
 msgid "That user has no secret question set up."
 msgstr "Cet utilisateur n'a pas de question secrète configurée."
 
-#: .\datamanager\datamanager_modules.py:1085
+#: .\datamanager\datamanager_modules.py:1090
 #, python-format
 msgid "Right answer, but invalid email address %s."
 msgstr "Bonne réponse, mais mauvaise adresse email %s."
 
-#: .\datamanager\datamanager_modules.py:1092
+#: .\datamanager\datamanager_modules.py:1097
 msgid "<Password Recovery System>"
 msgstr "<Récupération du Mot de Passe>"
 
-#: .\datamanager\datamanager_modules.py:1094
+#: .\datamanager\datamanager_modules.py:1099
 #, python-format
 msgid ""
 "\n"
@@ -486,51 +489,51 @@ msgstr ""
 "                    Gardez le précieusement et ne le partagez avec personne "
 "d'autre."
 
-#: .\datamanager\datamanager_modules.py:1105
+#: .\datamanager\datamanager_modules.py:1110
 #, python-format
 msgid "Password of %(username)s has been recovered by %(target_email)s."
 msgstr "Le mot de passe de %(username)s a été récupéré par %(target_email)s. "
 
-#: .\datamanager\datamanager_modules.py:1113
+#: .\datamanager\datamanager_modules.py:1118
 msgid "Wrong answer supplied."
 msgstr "Mauvaise réponse fournie."
 
-#: .\datamanager\datamanager_modules.py:1123
+#: .\datamanager\datamanager_modules.py:1128
 msgid "Invalid new secret question or secret answer submitted"
 msgstr "Question ou réponse secrète invalide soumise"
 
-#: .\datamanager\datamanager_modules.py:1127
+#: .\datamanager\datamanager_modules.py:1132
 msgid "Secret question and secret answer must be both set or both empty"
 msgstr ""
 "La question et la réponse secrète doivent être tous deux vides ou tous deux "
 "non-vides"
 
-#: .\datamanager\datamanager_modules.py:1354
+#: .\datamanager\datamanager_modules.py:1359
 #, python-format
 msgid "Forbidden friendship proposal: %(username)s -> %(recipient)s"
 msgstr "Proposition d'amitié interdite: %(username)s -> %(recipient)s"
 
-#: .\datamanager\datamanager_modules.py:1356
+#: .\datamanager\datamanager_modules.py:1361
 #, python-format
 msgid "User %s can't be friend with himself"
 msgstr "L'utilisateur %s ne peut être ami avec lui-même"
 
-#: .\datamanager\datamanager_modules.py:1358
+#: .\datamanager\datamanager_modules.py:1363
 #, python-format
 msgid "Already existing friendship between %(username)s and %(recipient)s"
 msgstr "Amitié déjà existante entre %(username)s et %(recipient)s"
 
-#: .\datamanager\datamanager_modules.py:1363
+#: .\datamanager\datamanager_modules.py:1368
 #, python-format
 msgid "%(username)s has already requested the friendship of %(recipient)s"
 msgstr "%(username)s a déjà demandé l'amitié de %(recipient)s"
 
-#: .\datamanager\datamanager_modules.py:1410
+#: .\datamanager\datamanager_modules.py:1415
 #, python-format
 msgid "Unexisting friendship: %(username1)s<->%(username1)s"
 msgstr "Amitié inexistante: %(username1)s<->%(username1)s"
 
-#: .\datamanager\datamanager_modules.py:1499
+#: .\datamanager\datamanager_modules.py:1504
 msgid ""
 "That friendship is too young to be terminated - please respect the waiting "
 "period"
@@ -538,72 +541,70 @@ msgstr ""
 "Cette amitié est trop jeune pour être annulée - veuillez respecter la "
 "période de jachère."
 
-#: .\datamanager\datamanager_modules.py:1868
+#: .\datamanager\datamanager_modules.py:1873
 msgid "Sender, recipient, and subject of the message mustn't be empty"
 msgstr "L'émetteur, destinataire et sujet du message ne doivent pas être vides"
 
-#: .\datamanager\datamanager_modules.py:1949
+#: .\datamanager\datamanager_modules.py:1954
 #, python-format
 msgid "Email address %s is invalid"
 msgstr "L'adresse email %s est invalide"
 
-#: .\datamanager\datamanager_modules.py:2059
+#: .\datamanager\datamanager_modules.py:2064
 #, python-format
-#| msgid "Unknown message id '%s'"
 msgid "Unknown dispatched message id '%s'"
 msgstr "Identifiant de message expédié inconnu '%s'"
 
-#: .\datamanager\datamanager_modules.py:2067
+#: .\datamanager\datamanager_modules.py:2072
 #, python-format
-#| msgid "Unknown message id '%s'"
 msgid "Unknown queued message id '%s'"
 msgstr "Identifiant de message en attente inconnu '%s'"
 
-#: .\datamanager\datamanager_modules.py:2132
+#: .\datamanager\datamanager_modules.py:2137
 #, python-format
 msgid "Mailbox %s has rejected your email"
 msgstr "La boîte aux lettres %s a rejeté votre email"
 
-#: .\datamanager\datamanager_modules.py:2141
+#: .\datamanager\datamanager_modules.py:2146
 msgid "contact"
 msgstr "contact"
 
-#: .\datamanager\datamanager_modules.py:2384
+#: .\datamanager\datamanager_modules.py:2389
 #, python-format
 msgid "Unexisting template id %r"
 msgstr "Identifiant de modèle %r inexistant"
 
-#: .\datamanager\datamanager_modules.py:2824
+#: .\datamanager\datamanager_modules.py:2829
 msgid "Unidentified contact"
 msgstr "Contact non identifié"
 
-#: .\datamanager\datamanager_modules.py:3049
+#: .\datamanager\datamanager_modules.py:3054
 #, python-format
 msgid "Unknown target username '%(target)s'"
 msgstr "Utilisateur cible inconnu '%(target)s'"
 
-#: .\datamanager\datamanager_modules.py:3138
+#: .\datamanager\datamanager_modules.py:3143
 msgid "radio spots"
 msgstr "spots radio"
 
-#: .\datamanager\datamanager_modules.py:3218
+#: .\datamanager\datamanager_modules.py:3223
 #, python-format
 msgid "Unknown radio message identifier - %(audio_id)s"
 msgstr "Identifiant de message radio inconnu - %(audio_id)s"
 
-#: .\datamanager\datamanager_modules.py:3265
+#: .\datamanager\datamanager_modules.py:3270
 msgid "Unknown radio frequency"
 msgstr "Fréquence radio inconnue"
 
-#: .\datamanager\datamanager_modules.py:3396
+#: .\datamanager\datamanager_modules.py:3401
 msgid "Only authenticated users may chat"
 msgstr "Seuls les utilisateurs authentifiés peuvent chatter"
 
-#: .\datamanager\datamanager_modules.py:3404
+#: .\datamanager\datamanager_modules.py:3409
 msgid "Chat message can't be empty"
 msgstr "Le message de chat ne peut être vide"
 
-#: .\datamanager\datamanager_modules.py:3520
+#: .\datamanager\datamanager_modules.py:3525
 #, python-format
 msgid ""
 "Only strings representing DataManager methods can be scheduled as delayed "
@@ -612,7 +613,7 @@ msgstr ""
 "Seules les chaines de caractère représentant des méthodes du DataManager "
 "peuvent être planifiées comme actions temporisées, et non %(function)s"
 
-#: .\datamanager\datamanager_modules.py:3523
+#: .\datamanager\datamanager_modules.py:3528
 #, python-format
 msgid ""
 "You can only register a callable object as a delayed action, not a %"
@@ -621,15 +622,15 @@ msgstr ""
 "Vous ne pouvez enregistrer que les objets appelables en tant qu'actions "
 "temporisées, non %(function)r"
 
-#: .\datamanager\datamanager_modules.py:3580
+#: .\datamanager\datamanager_modules.py:3585
 msgid "This encrypted archive doesn't exist."
 msgstr "Cette archive encodée n'existe pas."
 
-#: .\datamanager\datamanager_modules.py:3586
+#: .\datamanager\datamanager_modules.py:3591
 msgid "Wrong password for this encrypted folder."
 msgstr "Mauvais mot de passe pour cette archive chiffrée."
 
-#: .\datamanager\datamanager_modules.py:3598
+#: .\datamanager\datamanager_modules.py:3603
 #, python-format
 msgid ""
 "Encrypted folder '%(folder)s/%(password)s' accessed by user '%(username)s'."
@@ -637,33 +638,33 @@ msgstr ""
 "Dossier chiffré '%(folder)s/%(password)s' ouvert par l'utilisateur '%"
 "(username)s'."
 
-#: .\datamanager\datamanager_modules.py:3755
+#: .\datamanager\datamanager_modules.py:3760
 msgid "objects/gems"
 msgstr "objets/gemmes"
 
-#: .\datamanager\datamanager_modules.py:3876
+#: .\datamanager\datamanager_modules.py:3881
 #, python-format
 msgid "Unknown item %s"
 msgstr "Élément inconnu %s"
 
-#: .\datamanager\datamanager_modules.py:3893
+#: .\datamanager\datamanager_modules.py:3898
 msgid "Money amount must be positive"
 msgstr "La somme d'argent doit être positive"
 
-#: .\datamanager\datamanager_modules.py:3896
-#: .\datamanager\datamanager_modules.py:4079 .\views\auction_views.py:144
+#: .\datamanager\datamanager_modules.py:3901
+#: .\datamanager\datamanager_modules.py:4084 .\views\auction_views.py:144
 msgid "Sender and recipient must be different"
 msgstr "L'émetteur et le destinataire doivent être différents"
 
-#: .\datamanager\datamanager_modules.py:3907
+#: .\datamanager\datamanager_modules.py:3912
 msgid "Bank doesn't have enough money available"
 msgstr "La banque n'a plus assez d'argent en réserve"
 
-#: .\datamanager\datamanager_modules.py:3912
+#: .\datamanager\datamanager_modules.py:3917
 msgid "Sender doesn't have enough money"
 msgstr "L'émetteur n'a pas assez d'argent"
 
-#: .\datamanager\datamanager_modules.py:3924
+#: .\datamanager\datamanager_modules.py:3929
 #, python-format
 msgid ""
 "Bank operation: %(amount)s kashes transferred from %(from_name)s to %"
@@ -672,88 +673,88 @@ msgstr ""
 "Opération bancaire: %(amount)s kashes transférés de %(from_name)s à %"
 "(to_name)s."
 
-#: .\datamanager\datamanager_modules.py:3926
+#: .\datamanager\datamanager_modules.py:3931
 #, python-format
 msgid "Reason: %(reason)s"
 msgstr "Raison : %(reason)s"
 
-#: .\datamanager\datamanager_modules.py:3951
+#: .\datamanager\datamanager_modules.py:3956
 msgid ""
 "Impossible to free item, some gems from this package have already been used"
 msgstr ""
 "Impossible de libérer l'objet, des gemmes de ce lot ont déjà été utilisées"
 
-#: .\datamanager\datamanager_modules.py:3982
+#: .\datamanager\datamanager_modules.py:3987
 #, python-format
 msgid "Unknown user name '%s'"
 msgstr "Identifiant utilisateur inconnu '%s'"
 
-#: .\datamanager\datamanager_modules.py:3986
+#: .\datamanager\datamanager_modules.py:3991
 msgid "no one"
 msgstr "personne"
 
-#: .\datamanager\datamanager_modules.py:3990
+#: .\datamanager\datamanager_modules.py:3995
 #, python-format
 msgid "This object doesn't belong to %s"
 msgstr "Cet objet n'appartient pas à %s"
 
-#: .\datamanager\datamanager_modules.py:3993
+#: .\datamanager\datamanager_modules.py:3998
 msgid "Impossible to have same origin and destination for item transfer"
 msgstr ""
 "Impossible d'avoir même origine et destination pour le transfert d'objet"
 
-#: .\datamanager\datamanager_modules.py:4003
+#: .\datamanager\datamanager_modules.py:4008
 #, python-format
 msgid "Item %(item_name)s transferred from %(from_name)s to %(char_name)s."
 msgstr "Objet %(item_name)s transféré de %(from_name)s à %(char_name)s."
 
-#: .\datamanager\datamanager_modules.py:4082
+#: .\datamanager\datamanager_modules.py:4087
 msgid "You must transfer at least one gem"
 msgstr "Vous devez transférer au moins une gemme"
 
-#: .\datamanager\datamanager_modules.py:4086
-#: .\datamanager\datamanager_modules.py:4110
+#: .\datamanager\datamanager_modules.py:4091
+#: .\datamanager\datamanager_modules.py:4115
 msgid "Sender doesn't possess these gems"
 msgstr "L'émetteur ne possède pas ces gemmes"
 
-#: .\datamanager\datamanager_modules.py:4093
+#: .\datamanager\datamanager_modules.py:4098
 #, python-format
 msgid "Gems transferred from %(from_name)s to %(to_name)s: %(gems_choices)s."
 msgstr "Gemmes transférées de %(from_name)s à %(to_name)s : %(gems_choices)s."
 
-#: .\datamanager\datamanager_modules.py:4115
+#: .\datamanager\datamanager_modules.py:4120
 #, python-format
 msgid "Gems debited from %(username)s: %(gems_choices)s."
 msgstr "Gemmes débitées de %(username)s : %(gems_choices)s."
 
-#: .\datamanager\datamanager_modules.py:4132
+#: .\datamanager\datamanager_modules.py:4137
 msgid "Selected gems couldn't be found among spent gems"
 msgstr "Les gemmes sélectionnées sont introuvables parmi celles dépensées"
 
-#: .\datamanager\datamanager_modules.py:4137
+#: .\datamanager\datamanager_modules.py:4142
 #, python-format
 msgid "Gems credited to %(username)s: %(gems_choices)s."
 msgstr "Gemmes créditées à %(username)s : %(gems_choices)s."
 
-#: .\datamanager\datamanager_modules.py:4279
+#: .\datamanager\datamanager_modules.py:4284
 #, python-format
 msgid "Unknown view names detected in the set of views to be activated: %r"
 msgstr "Noms de vues inconnus détectés dans l'ensemble des vues à activer: %r"
 
-#: .\datamanager\datamanager_modules.py:4513
+#: .\datamanager\datamanager_modules.py:4518
 msgid "static pages"
 msgstr "pages statiques"
 
-#: .\datamanager\datamanager_modules.py:4818
+#: .\datamanager\datamanager_modules.py:4823
 #, python-format
 msgid "Unknown captcha id %s"
 msgstr "Identifiant de captcha inconnu %s"
 
-#: .\datamanager\datamanager_modules.py:4822
+#: .\datamanager\datamanager_modules.py:4827
 msgid "Nope, it looks like this captcha had no known answer..."
 msgstr "Nope, il semble que ce captcha n'avait pas de réponse connue..."
 
-#: .\datamanager\datamanager_modules.py:4828
+#: .\datamanager\datamanager_modules.py:4833
 #, python-format
 msgid "Incorrect captcha answer '%s'"
 msgstr "Réponse au captcha incorrecte '%s'"
@@ -1814,7 +1815,6 @@ msgid "Password:"
 msgstr "Mot de passe :"
 
 #: .\templates\auction\view_characters.html:60
-#| msgid "Is NPC"
 msgid "NPC"
 msgstr "PNJ"
 
@@ -1941,7 +1941,6 @@ msgid "Take the identity of another user."
 msgstr "Prendre l'identité d'un autre utilisateur"
 
 #: .\templates\base_main.html:339
-#| msgid "Identity"
 msgid "Identity:"
 msgstr "Identité:"
 
@@ -2058,7 +2057,7 @@ msgstr "Interface : "
 #: .\templates\base_main.html:540 .\templates\utilities\bug_report.html:5
 #: .\views\__init__.py:153
 msgid "Bug Report"
-msgstr "Rapporter un bogue"
+msgstr "Rapporter un Bogue"
 
 #: .\templates\base_meta_administration.html:5
 msgid "Meta-Administration"
@@ -2116,15 +2115,6 @@ msgid "System Notification"
 msgstr "Notification Système"
 
 #: .\templates\information\encyclopedia.html:82
-#| msgid ""
-#| "\n"
-#| "                        Due to a very unfortunate overclocking attempt on "
-#| "our data servers,\n"
-#| "                        encyclopedia indexes have been entirely lost. We "
-#| "apologize for the inconvenience\n"
-#| "                        and do our best to restore them from backups. The "
-#| "Alifir Academy.\n"
-#| "                    "
 msgid ""
 "\n"
 "                        Due to a very unfortunate overclocking attempt on "
@@ -2235,7 +2225,6 @@ msgid "No messages yet."
 msgstr "Aucun message actuellement."
 
 #: .\templates\messaging\__conversation.html:61
-#| msgid "No messages yet."
 msgid "No messages to be displayed."
 msgstr "Aucun message à afficher."
 
@@ -2403,7 +2392,6 @@ msgid "Text fragment to be searched for (case insensitive)."
 msgstr "Fragment de texte à chercher (insensible à la casse)."
 
 #: .\templates\messaging\global_message_controls.html:38
-#| msgid "Files"
 msgctxt "action"
 msgid "Filter"
 msgstr "Filtrer"
@@ -2437,12 +2425,10 @@ msgid "Messages"
 msgstr "Messages"
 
 #: .\templates\messaging\messages.html:17
-#| msgid "Dispatched Messages"
 msgid "Display All Messages"
 msgstr "Afficher Tous les Messages"
 
 #: .\templates\messaging\messages.html:59
-#| msgid "No messages yet."
 msgid "No messages."
 msgstr "Aucun message."
 
@@ -2452,7 +2438,6 @@ msgid "Category"
 msgstr "Catégorie"
 
 #: .\templates\messaging\messages.html:89
-#| msgid "No messages yet."
 msgid "No messages to display."
 msgstr "Aucun message à afficher."
 
@@ -2925,12 +2910,11 @@ msgstr ""
 #: .\views\abilities\telecom_investigation_mod.py:20
 #: .\views\abilities\telecom_investigation_mod.py:49
 msgid "Telecom Investigation"
-msgstr "Analyses Télécom"
+msgstr "Analyse Télécom"
 
 #: .\views\abilities\__telecom_investigation_mod.py:24
-#, fuzzy
 msgid "Process telecom investigation"
-msgstr "Analyses Télécom"
+msgstr ""
 
 #: .\views\abilities\__telecom_investigation_mod.py:116
 msgid "From: "
@@ -3073,7 +3057,6 @@ msgid "Unlock house doors"
 msgstr "Déverrouiller les portes de la maison"
 
 #: .\views\abilities\house_locking_mod.py:38
-#| msgid "Doors Security Management"
 msgid "Manor Security Management"
 msgstr "Sécurité des Portes du Manoir"
 
@@ -3108,7 +3091,7 @@ msgstr "Portes déjà déverrouillées."
 
 #: .\views\abilities\matter_analysis_mod.py:29
 msgid "Biophysical Analysis"
-msgstr "Analyse Biophysique"
+msgstr "Expertise Biophysique"
 
 #: .\views\abilities\matter_analysis_mod.py:32
 msgid "Process object analysis"
@@ -3135,7 +3118,7 @@ msgstr ""
 #: .\views\abilities\matter_analysis_mod.py:97
 #, python-format
 msgid "<Deep Matter Analysis Report - %(item_title)s>"
-msgstr "<Rapport d'analyse profonde de matière - %(item_title)s>"
+msgstr "<Rapport d'analyse de matière - %(item_title)s>"
 
 #: .\views\abilities\matter_analysis_mod.py:107
 #, python-format
@@ -3946,7 +3929,6 @@ msgid "All Dispatched Messages"
 msgstr "Tous les Messages Expédiés"
 
 #: .\views\messaging_views.py:324
-#| msgid "Dispatched Messages"
 msgid "Recent Dispatched Messages"
 msgstr "Messages Expédiés Récemment"
 
@@ -3972,7 +3954,6 @@ msgid "Unknown template category '%(category)s'"
 msgstr "Catégorie de modèle inconnue '%(category)s'"
 
 #: .\views\messaging_views.py:456
-#| msgid "Conversations"
 msgid "NPC Conversations"
 msgstr "PNJ Conversations"
 
@@ -3989,12 +3970,10 @@ msgid "Intercepted Messages"
 msgstr "Messages Interceptés"
 
 #: .\views\messaging_views.py:498
-#| msgid "Intercepted Messages"
 msgid "All Intercepted Messages"
 msgstr "Tous Messages Interceptés"
 
 #: .\views\messaging_views.py:498
-#| msgid "Intercepted Messages"
 msgid "Recent Intercepted Messages"
 msgstr "Messages Interceptés Récents"
 
@@ -4003,17 +3982,14 @@ msgid "Archived Messages"
 msgstr "Messages Archivés"
 
 #: .\views\messaging_views.py:503
-#| msgid "Archived Messages"
 msgid "NPC Archived Messages"
 msgstr "PNJ Messages Archivés"
 
 #: .\views\messaging_views.py:516
-#| msgid "Archived Messages"
 msgid "All Archived Messages"
 msgstr "Tous Messages Archivés"
 
 #: .\views\messaging_views.py:516
-#| msgid "Archived Messages"
 msgid "Recent Archived Messages"
 msgstr "Messages Archivés Récents"
 
@@ -4262,7 +4238,6 @@ msgid "System Events"
 msgstr "Évènements Système"
 
 #: .\views\profile_views.py:328
-#| msgid "Game events"
 msgid "All Game Events"
 msgstr "Tous les Evénements du Jeu"
 
