@@ -109,6 +109,16 @@ $scroll_text_color: black;
     font-style: normal;
 }
 
+@font-face {
+  font-family: "open_sans";
+  src: url("#{$IMGS}fonts/open_sans/OpenSans-Regular.eot");
+  src: url("#{$IMGS}fonts/open_sans/OpenSans-Regular.eot?#iefix") format("embedded-opentype"),
+  url("#{$IMGS}fonts/open_sans/OpenSans-Regular.woff") format("woff"),
+  url("#{$IMGS}fonts/open_sans/OpenSans-Regular.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
 
 @mixin text_shadow($bgcolor: black) {
     text-shadow: 1px 1px 0 $bgcolor, -1px -1px 0 $bgcolor, 1px -1px 0 $bgcolor, -1px 1px 0 $bgcolor;

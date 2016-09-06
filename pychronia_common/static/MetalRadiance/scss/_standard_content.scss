@@ -320,6 +320,8 @@ button.pretty_button {
 .section img, // typical of restructuredtext images
 img.content {
     max-width: 100%;
+    margin-top: 15px;
+    margin-bottom: 15px;
     @include mobile-only {
         // TODO - how to prevent image from taking 80% of width, and thus compressing texts?
     }

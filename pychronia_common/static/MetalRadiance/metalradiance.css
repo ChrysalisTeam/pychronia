@@ -593,6 +593,15 @@ ul.auto-toc {
   font-weight: normal;
   font-style: normal;
 }
+@font-face {
+  font-family: "open_sans";
+  src: url("img/fonts/open_sans/OpenSans-Regular.eot");
+  src: url("img/fonts/open_sans/OpenSans-Regular.eot?#iefix") format("embedded-opentype"),
+    url("img/fonts/open_sans/OpenSans-Regular.woff") format("woff"),
+    url("img/fonts/open_sans/OpenSans-Regular.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
 .pretty_text p, p.pretty_text {
   text-align: justify;
   text-indent: 0;
@@ -750,7 +759,7 @@ body {
   height: 100%;
   overflow: auto;
   font-size: 100%;
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: open_sans, Arial, Helvetica, sans-serif;
   background-color: black;
   image-rendering: -moz-crisp-edges;
   word-spacing: normal;
@@ -2066,6 +2075,8 @@ button.pretty_button {
 }
 .section img, img.content {
   max-width: 100%;
+  margin-top: 15px;
+  margin-bottom: 15px;
 }
 .entry-body {
   overflow: visible;
