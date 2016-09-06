@@ -34,7 +34,9 @@ VISIBILITY_REASONS = Enum([ugettext_noop("sender"),
 @register_module
 class GameMasterManual(BaseDataManager):
 
-    GAMEMASTER_MANUAL_PARTS = ("common_content", "pdf_prefix", "html_prefix")
+    GAMEMASTER_MANUAL_PARTS = ("pdf_prefix", "html_prefix",
+                               "truncation_message", "public_content",
+                               "spoiler_content")
 
     def ____FIXME_USELESS__load_initial_data(self, **kwargs):
         super(GameMasterManual, self)._load_initial_data(**kwargs)
@@ -49,20 +51,23 @@ class GameMasterManual(BaseDataManager):
 
     def _check_database_coherence(self, **kwargs):
         super(GameMasterManual, self)._check_database_coherence(**kwargs)
-        return # TEMP HACK FIXME
 
         game_data = self.data
+
+        assert 0 < game_data["gamemaster_manual"]["version"] < 10
 
         for key in self.GAMEMASTER_MANUAL_PARTS:
             utilities.check_is_string(game_data["gamemaster_manual"][key])
 
-        utilities.check_is_restructuredtext(game_data["gamemaster_manual"]["common_content"])
+        utilities.check_is_restructuredtext(game_data["gamemaster_manual"]["public_content"] +
+                                            "\n\n" +
+                                            game_data["gamemaster_manual"]["spoiler_content"])
 
 
     @readonly_method
     def get_gamemaster_manual_for_html(self):
         gamemaster_manual = self.data["gamemaster_manual"]
-        return "\n".join([
+        return "\n\n".join([
             gamemaster_manual["html_prefix"],
             gamemaster_manual["public_content"],
             gamemaster_manual["spoiler_content"]

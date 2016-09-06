@@ -808,7 +808,7 @@ class TestDatamanager(BaseGameTestCase):
 
     def test_public_method_wrapping(self):
 
-        # TODO FIXME - extend this check action methods of all ABILITIES !!! FIXME
+        # TODO FIXME - extend this to check action methods of all ABILITIES !!! FIXME
 
 
         special_methods = """begin rollback commit close check_no_pending_transaction is_in_writing_transaction
