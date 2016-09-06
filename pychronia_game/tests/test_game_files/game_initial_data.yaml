@@ -675,6 +675,8 @@ nightmare_captchas:
 
 gamemaster_manual:
 
+    version: 0.1
+
     pdf_prefix: |
 
         PDF prefix here
@@ -684,12 +686,18 @@ gamemaster_manual:
         .. contents:: Sommaire
            :depth: 2
 
-    common_content: |
+    truncation_message: |
+
+        Le manuel est tronqué à partir d'ici !
+
+    public_content: |
 
         Introduction
         ===============
 
         lalalala manual of game master
 
+    spoiler_content: |
 
+        Ceci est plein de spoilers !!
 ...

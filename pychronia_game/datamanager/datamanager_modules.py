@@ -61,7 +61,12 @@ class GameMasterManual(BaseDataManager):
 
     @readonly_method
     def get_gamemaster_manual_for_html(self):
-        return self.data["gamemaster_manual"]["html_prefix"] + "\n\n" + self.data["gamemaster_manual"]["common_content"]
+        gamemaster_manual = self.data["gamemaster_manual"]
+        return "\n".join([
+            gamemaster_manual["html_prefix"],
+            gamemaster_manual["public_content"],
+            gamemaster_manual["spoiler_content"]
+            ])
 
 
 @register_module
