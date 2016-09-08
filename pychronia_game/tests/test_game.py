@@ -6411,6 +6411,14 @@ class TestSpecialAbilities(BaseGameTestCase):
 
         assert runic_translation._get_closest_item_name_or_none("sa to | ta ka") == "statue" # not always sacred_chest, as we check
 
+
+
+
+    #def _test_ability_standard_email_exchanges(self, launcher):
+
+
+
+
         self._set_user("guy1")
         runic_translation.process_translation(transcription_attempt)
 
@@ -6435,10 +6443,20 @@ class TestSpecialAbilities(BaseGameTestCase):
 
         runic_translation.process_translation(transcription_attempt)
         msgs = self.dm.get_all_dispatched_messages()
-        self.assertEqual(len(msgs), 2) # REQUEST is well generated
-        msg = msgs[-1]
-        assert "master" not in msg["has_read"] # needs answer by game master
+        self.assertEqual(len(msgs), 3) # REQUEST is well generated as well as info for gamemaster
+
+        msg = msgs[-2]  # REQUEST
+        assert msg["sender_email"] == 'guy1@pangea.com'
+        assert msg["recipient_emails"] == ["translator-robot@hightech.com"]
+        assert "master" in msg["has_read"]
+        assert "master" not in msg["has_starred"]
+
+        msg = msgs[-1]  # WARNING FOR MASTER
+        assert msg["sender_email"] == "translator-robot@hightech.com"
+        assert msg["recipient_emails"] == ["translator-robot@hightech.com"]
+        assert "master" not in msg["has_read"]  # needs answer by game master
         assert "master" in msg["has_starred"]
+
         msgs = self.dm.get_all_queued_messages()
         self.assertEqual(len(msgs), 1) # unchanged, no additional RESPONSE
 
@@ -6446,12 +6464,16 @@ class TestSpecialAbilities(BaseGameTestCase):
         runic_translation.commit()
         assert runic_translation._get_closest_item_name_or_none("sa to | ta ka") == None  # no items available at all
 
+        disable_automated_ability_responses = random.choice((True, False))
+        self.dm.set_global_parameter("disable_automated_ability_responses",
+                                     disable_automated_ability_responses)
 
-        self.dm.set_global_parameter("disable_automated_ability_responses", False)
-        runic_translation.process_translation(transcription_attempt)
+        runic_translation.process_translation(transcription_attempt)  # CANNOT generate a response
         msgs = self.dm.get_all_dispatched_messages()
-        self.assertEqual(len(msgs), 3) # REQUEST is well generated
+        self.assertEqual(len(msgs), 4) # REQUEST is well generated, but no (even WIP) response
         msg = msgs[-1]
+        assert msg["sender_email"] == 'guy1@pangea.com'
+        assert msg["recipient_emails"] == ["translator-robot@hightech.com"]
         assert "master" not in msg["has_read"] # needs answer by game master
         assert "master" in msg["has_starred"]
         msgs = self.dm.get_all_queued_messages()
