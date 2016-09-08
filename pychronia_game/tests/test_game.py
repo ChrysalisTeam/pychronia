@@ -6414,8 +6414,14 @@ class TestSpecialAbilities(BaseGameTestCase):
 
         def ability_action():
             return runic_translation.process_translation(transcription_attempt)
+        def request_msg_checker(msg):
+            self.assertTrue(transcription_attempt.strip() in msg["body"], (transcription_attempt, msg["body"]))
+            self.assertTrue("runes" in msg["body"].lower(), msg=msg)
+            assert "Below is the output" not in msg["body"], msg["body"]
         def response_msg_checker(msg):
             self.assertTrue(transcription_attempt.strip() in msg["body"], (transcription_attempt, msg["body"]))
+            self.assertTrue("translation" in msg["body"].lower(), msg=msg)
+            assert "Below is the output" in msg["body"], msg["body"]
         def ability_breaker():
             runic_translation.settings["references"] = utilities.PersistentMapping()
             runic_translation.commit()
@@ -6424,6 +6430,7 @@ class TestSpecialAbilities(BaseGameTestCase):
 
         self._test_ability_standard_email_exchanges(ability_instance=runic_translation,
                                                     ability_action=ability_action,
+                                                    request_msg_checker=request_msg_checker,
                                                     response_msg_checker=response_msg_checker,
                                                     ability_breaker=ability_breaker)
 
@@ -6431,6 +6438,7 @@ class TestSpecialAbilities(BaseGameTestCase):
     def _test_ability_standard_email_exchanges(self,
                                                ability_instance,
                                                ability_action,
+                                               request_msg_checker,
                                                response_msg_checker,
                                                ability_breaker):
 
@@ -6438,6 +6446,7 @@ class TestSpecialAbilities(BaseGameTestCase):
         assert not self.dm.get_all_dispatched_messages()
 
         self._set_user("guy1")
+        self.dm.set_global_parameter("disable_automated_ability_responses", False)
 
         ability_action()
 
@@ -6445,7 +6454,6 @@ class TestSpecialAbilities(BaseGameTestCase):
         self.assertEqual(len(msgs), 1)
         msg = msgs[0]
         self.assertEqual(msg["recipient_emails"], ["guy1@pangea.com"])
-        self.assertTrue("translation" in msg["body"].lower())
         assert "master" not in msg["has_read"]
         assert "master" not in msg["has_starred"]
 
@@ -6453,7 +6461,7 @@ class TestSpecialAbilities(BaseGameTestCase):
         self.assertEqual(len(msgs), 1)
         msg = msgs[0]
         self.assertEqual(msg["sender_email"], "guy1@pangea.com")
-        response_msg_checker(msg)
+        request_msg_checker(msg)
         self.assertTrue(self.dm.get_global_parameter("master_login") in msg["has_read"])
         assert "master" in msg["has_read"] # useless request
         assert "master" not in msg["has_starred"]
@@ -6469,12 +6477,14 @@ class TestSpecialAbilities(BaseGameTestCase):
         assert msg["recipient_emails"] == [ability_instance.dedicated_email]
         assert "master" in msg["has_read"]
         assert "master" not in msg["has_starred"]
+        request_msg_checker(msg)
 
         msg = msgs[-1]  # WARNING FOR MASTER
         assert msg["sender_email"] == ability_instance.dedicated_email
         assert msg["recipient_emails"] == [ability_instance.dedicated_email]
         assert "master" not in msg["has_read"]  # needs answer by game master
         assert "master" in msg["has_starred"]
+        response_msg_checker(msg)
 
         msgs = self.dm.get_all_queued_messages()
         self.assertEqual(len(msgs), 1) # unchanged, no additional RESPONSE
@@ -6493,6 +6503,7 @@ class TestSpecialAbilities(BaseGameTestCase):
         assert msg["recipient_emails"] == [ability_instance.dedicated_email]
         assert "master" not in msg["has_read"] # needs answer by game master
         assert "master" in msg["has_starred"]
+        request_msg_checker(msg)
         msgs = self.dm.get_all_queued_messages()
         self.assertEqual(len(msgs), 1) # unchanged, no additional RESPONSE
 
@@ -6766,56 +6777,29 @@ class TestSpecialAbilities(BaseGameTestCase):
 
         # ##self.assertEqual(self.dm.get_global_parameter("scanned_locations"), [])
 
-        self.assertEqual(len(self.dm.get_all_dispatched_messages()), 0)
-        self.assertEqual(len(self.dm.get_all_queued_messages()), 0)
-
-        # AUTOMATED SCAN #
-        scanner.process_world_scan_submission("sacred_chest")
-        # print datetime.utcnow(), "----", self.dm.data["scheduled_actions"]
 
 
-        msgs = self.dm.get_all_queued_messages()
-        self.assertEqual(len(msgs), 1)
-        msg = msgs[0]
-        # print(">>>>>>", msg)
-        self.assertEqual(msg["recipient_emails"], ["guy1@pangea.com"])
-        self.assertTrue("scanning" in msg["body"].lower())
-        # print(msg["body"])
-        self.assertTrue("Alifir" in msg["body"])
-        assert "master" not in msg["has_read"]
-        assert "master" not in msg["has_starred"]
+        def ability_action():
+            return scanner.process_world_scan_submission("sacred_chest")
 
-        msgs = self.dm.get_all_dispatched_messages()
-        self.assertEqual(len(msgs), 1)
-        msg = msgs[0]
-        self.assertEqual(msg["sender_email"], "guy1@pangea.com")
-        self.assertTrue("scan" in msg["body"])
-        self.assertTrue(self.dm.get_global_parameter("master_login") in msg["has_read"])
-        assert "master" in msg["has_read"]
-        assert "master" not in msg["has_starred"]
+        def request_msg_checker(msg):
+            self.assertTrue("please scan" in msg["body"].lower(), msg=msg)
 
-        self.dm.set_global_parameter("disable_automated_ability_responses", True)
-        scanner.process_world_scan_submission("sacred_chest")
-        msgs = self.dm.get_all_dispatched_messages()
-        self.assertEqual(len(msgs), 2) # REQUEST is well generated
-        msg = msgs[-1]
-        assert "master" not in msg["has_read"] # needs answer
-        assert "master" in msg["has_starred"]
-        msgs = self.dm.get_all_queued_messages()
-        self.assertEqual(len(msgs), 1) # unchanged, no additional RESPONSE
+        def response_msg_checker(msg):
+            self.assertTrue("scanning" in msg["body"].lower(), msg=msg)
+            self.assertTrue("Alifir" in msg["body"], msg=msg)
 
-        self.dm.set_global_parameter("disable_automated_ability_responses", False)
-        scanner.process_world_scan_submission("statue")  # has no locations specified
-        msgs = self.dm.get_all_dispatched_messages()
-        self.assertEqual(len(msgs), 3) # REQUEST is well generated
-        msg = msgs[-1]
-        pprint(msg)
-        assert "master" not in msg["has_read"] # needs answer by game master
-        assert "master" in msg["has_starred"]
-        msgs = self.dm.get_all_queued_messages()
-        self.assertEqual(len(msgs), 1) # unchanged, no additional RESPONSE
+        def ability_breaker():
+            scanner.settings["item_locations"] = utilities.PersistentMapping()
+            scanner.commit()
+            assert scanner._compute_scanning_result_or_none(
+                "sacred_chest") == None  # no reference items available at all
 
-
+        self._test_ability_standard_email_exchanges(ability_instance=scanner,
+                                                    ability_action=ability_action,
+                                                    request_msg_checker=request_msg_checker,
+                                                    response_msg_checker=response_msg_checker,
+                                                    ability_breaker=ability_breaker)
 
         res = self.dm.process_periodic_tasks()
 
@@ -6831,11 +6815,6 @@ class TestSpecialAbilities(BaseGameTestCase):
         # ##scanned_locations = self.dm.get_global_parameter("scanned_locations")
         # ##self.assertTrue("Alifir" in scanned_locations, scanned_locations)
 
-
-
-
-
-
         ''' does not work, needs authentication
         url = sssss(views.world_scan, kwargs=dict(game_instance_id=TEST_GAME_INSTANCE_ID))
 
@@ -6848,6 +6827,7 @@ class TestSpecialAbilities(BaseGameTestCase):
         response = self.client.get(url)
         assert response.status_code == 200
         '''
+
 
     def test_telecom_investigation(self):
 
@@ -7169,53 +7149,27 @@ class TestSpecialAbilities(BaseGameTestCase):
         with pytest.raises(AssertionError):
             analyser.process_object_analysis("several_misc_gems") # no gems allowed here
 
-        self.assertEqual(len(self.dm.get_all_dispatched_messages()), 0)
-        self.assertEqual(len(self.dm.get_all_queued_messages()), 0)
 
-        # AUTOMATED SCAN #
-        analyser.process_object_analysis("sacred_chest")
+        def ability_action():
+            analyser.process_object_analysis("sacred_chest")
 
+        def request_msg_checker(msg):
+            self.assertTrue("Please analyse" in msg["body"], msg=msg)
 
-        msgs = self.dm.get_all_queued_messages()
-        self.assertEqual(len(msgs), 1)
-        msg = msgs[0]
-        # print(">>>>>>", msg)
-        self.assertEqual(msg["recipient_emails"], ["guy1@pangea.com"])
-        self.assertTrue("*sacred* chest" in msg["body"].lower())
-        assert "master" not in msg["has_read"]
-        assert "master" not in msg["has_starred"]
+        def response_msg_checker(msg):
+            self.assertTrue("*sacred* chest" in msg["body"].lower(), msg=msg)
 
-        msgs = self.dm.get_all_dispatched_messages()
-        self.assertEqual(len(msgs), 1)
-        msg = msgs[0]
-        self.assertEqual(msg["sender_email"], "guy1@pangea.com")
-        self.assertTrue("Please analyse" in msg["body"])
-        self.assertTrue(self.dm.get_global_parameter("master_login") in msg["has_read"])
-        assert "master" in msg["has_read"]
-        assert "master" not in msg["has_starred"]
+        def ability_breaker():
+            analyser.settings["reports"] = utilities.PersistentMapping()
+            analyser.commit()
+            assert analyser._compute_analysis_result_or_none(
+                "sacred_chest") == None  # no reference items available at all
 
-
-        self.dm.set_global_parameter("disable_automated_ability_responses", True)
-
-        analyser.process_object_analysis("sacred_chest")
-        msgs = self.dm.get_all_dispatched_messages()
-        self.assertEqual(len(msgs), 2) # REQUEST is well generated
-        msg = msgs[-1]
-        assert "master" not in msg["has_read"]
-        assert "master" in msg["has_starred"]
-        msgs = self.dm.get_all_queued_messages()
-        self.assertEqual(len(msgs), 1) # unchanged, no additional RESPONSE
-
-        self.dm.set_global_parameter("disable_automated_ability_responses", False)
-        analyser.process_object_analysis("statue")
-        msgs = self.dm.get_all_dispatched_messages()
-        self.assertEqual(len(msgs), 3) # REQUEST is well generated
-        msg = msgs[-1]
-        assert "master" not in msg["has_read"]
-        assert "master" in msg["has_starred"]
-        msgs = self.dm.get_all_queued_messages()
-        self.assertEqual(len(msgs), 1) # unchanged, no additional RESPONSE
-
+        self._test_ability_standard_email_exchanges(ability_instance=analyser,
+                                                    ability_action=ability_action,
+                                                    request_msg_checker=request_msg_checker,
+                                                    response_msg_checker=response_msg_checker,
+                                                    ability_breaker=ability_breaker)
 
         res = self.dm.process_periodic_tasks()
 
@@ -7227,13 +7181,6 @@ class TestSpecialAbilities(BaseGameTestCase):
 
         self.assertEqual(self.dm.get_event_count("DELAYED_ACTION_ERROR"), 0)
         self.assertEqual(self.dm.get_event_count("DELAYED_MESSAGE_ERROR"), 0)
-
-
-
-
-
-
-
 
 
 
