@@ -66,9 +66,6 @@ class MatterAnalysisAbility(AbstractPartnershipAbility):
     def _compute_analysis_result_or_none(self, item_name):
         assert not self.get_item_properties(item_name)["is_gem"], item_name
 
-        if self.get_global_parameter("disable_automated_ability_responses"):
-            return _("Result will be sent to you in a short while...") # should actually NOT be sent to user
-
         report = self.settings["reports"].get(item_name, None)
 
         return report  # might be None

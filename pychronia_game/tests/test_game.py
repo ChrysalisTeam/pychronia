@@ -6337,6 +6337,10 @@ class TestSpecialAbilities(BaseGameTestCase):
 
         # TODO - NEED TO WEBTEST BLOCKING OF GEMS NUT NOT NON-OWNED ITEMS
 
+        assert self.dm.data["abilities"]["runic_translation"]["settings"]["result_delay"]
+        self.dm.data["abilities"]["runic_translation"]["settings"]["result_delay"] = 0.03 / 45  # flexible time!
+        self.dm.commit()
+
         assert not self.dm.get_global_parameter("disable_automated_ability_responses")
 
         runic_translation = self.dm.instantiate_ability("runic_translation")
@@ -6506,6 +6510,18 @@ class TestSpecialAbilities(BaseGameTestCase):
         request_msg_checker(msg)
         msgs = self.dm.get_all_queued_messages()
         self.assertEqual(len(msgs), 1) # unchanged, no additional RESPONSE
+
+        res = self.dm.process_periodic_tasks()
+
+        assert res == {"messages_dispatched": 0, "actions_executed": 0}
+
+        time.sleep(3)  # tests are supposed to patch ability->result_delay to make it tiny
+
+        self.assertEqual(self.dm.process_periodic_tasks(), {"messages_dispatched": 1, "actions_executed": 0})
+
+        self.assertEqual(self.dm.get_event_count("DELAYED_ACTION_ERROR"), 0)
+        self.assertEqual(self.dm.get_event_count("DELAYED_MESSAGE_ERROR"), 0)
+
 
 
     @for_ability(house_locking)
@@ -6800,17 +6816,6 @@ class TestSpecialAbilities(BaseGameTestCase):
                                                     request_msg_checker=request_msg_checker,
                                                     response_msg_checker=response_msg_checker,
                                                     ability_breaker=ability_breaker)
-
-        res = self.dm.process_periodic_tasks()
-
-        assert res == {"messages_dispatched": 0, "actions_executed": 0}
-
-        time.sleep(3)
-
-        self.assertEqual(self.dm.process_periodic_tasks(), {"messages_dispatched": 1, "actions_executed": 0})
-
-        self.assertEqual(self.dm.get_event_count("DELAYED_ACTION_ERROR"), 0)
-        self.assertEqual(self.dm.get_event_count("DELAYED_MESSAGE_ERROR"), 0)
 
         # ##scanned_locations = self.dm.get_global_parameter("scanned_locations")
         # ##self.assertTrue("Alifir" in scanned_locations, scanned_locations)
@@ -7171,16 +7176,6 @@ class TestSpecialAbilities(BaseGameTestCase):
                                                     response_msg_checker=response_msg_checker,
                                                     ability_breaker=ability_breaker)
 
-        res = self.dm.process_periodic_tasks()
-
-        assert res == {"messages_dispatched": 0, "actions_executed": 0}
-
-        time.sleep(3)
-
-        self.assertEqual(self.dm.process_periodic_tasks(), {"messages_dispatched": 1, "actions_executed": 0})
-
-        self.assertEqual(self.dm.get_event_count("DELAYED_ACTION_ERROR"), 0)
-        self.assertEqual(self.dm.get_event_count("DELAYED_MESSAGE_ERROR"), 0)
 
 
 
