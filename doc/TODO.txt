@@ -7,29 +7,36 @@ FEATURES
 ------------
 
 Turrol Imagdir
-
 Khaal ??
 jaben minroche -> magnus
 minrochia.pg -> magnus
 Darian-> autre nom (trop proche de dorian)
 
+FIXME TODO INTERCANGER CES DEUx lOCALISATIONS ??
 
-- si pas autoresponse, alors les mailer au MJ !!
+- FIX check_restructuredtext with better func (handle game_file_url too) pour video en commentaire dans le yaml
 
-- automatiquement marquer comme lus les messages (et update help-standard_conversations) alors.
+- MARQUER dans leur description LES OBJETS DISPOS EN 3D : statue de Bartzar, amphore, coffre rouillé, et grimoire sur piédestal
+
+- AJOUTER PDF aux documents personnels du MJ ou en lien !!
+
 
 
 
 SCRIPT
 ----------
 
-- fix les noms du menu (CAPITAL CASE) dans PO FILES
+.. DIRE turrol / jaben minroche / MAGNUS NOW, pesonnage standalone
+
+.. DIRE : on a infobulle sur les contacts messaging
+
+.. TODO FIXME - GLOBE est féminin!!!!!!!!!!
+
+"analyse biophysique",  wording à normaliser partout
+
+- regler les "HERE GAMEMASTER HINTS" et autres FIXME/TODO, dans YAML spécifiquement
 
 - update abilities settings and prices
-
-- dire pas faire screenshare en tant que gamemaster, mais lg plutot
-
-- MARQUER dans leur description LES OBJETS DISPOS EN 3D : statue de Bartzar, amphore, coffre rouillé, et grimoire sur piédestal
 
 Traduction de Runes Antiques:
 "FIXME - add reference here, or BETTER, PROGRAMATICALLY!!!"
@@ -39,13 +46,12 @@ Traduction de Runes Antiques:
 - remplir les descriptions des villes.
 
 Quelques points d'attention dont je me souviens:
+- dire pas faire screenshare en tant que gamemaster, mais lg plutot
 - faire périodiquement le tour du "tableau de bord" pour voir s'il n'y a pas des vues qui mériteraient d'être activée ; pareil pour les "permissions personnelles des joueurs"
 - bien signaler aux joueurs les nouvelles vues, compétences spéciales, ou opportunités diverses que vous activez sur le portail
 - penser à dévoiler peu à peu les articles encyclopédiques via leur "premier mot clef" glissé dans des emails
 
 - BETTER EXPOSE HISTORIES LOG EVENTS (say in manual)
-
-- regler les "HERE GAMEMASTER HINTS" et autres FIXME / TODO
 
 
 GAMEMASTER_HINTS in:
@@ -76,15 +82,13 @@ Faire page d'introduction
 
 #FIXME où parle t on des balises d'email ? dans manual ?
 
-
 - clarifier règles absolues : pas de vol d'argent, pas de triche, emails uniquement valables à l'intérieur du site (dans INTRO "out game" du jeu)
-
 
 
 PROMOTION
 --------------
 
-- change facebook logo and put background image on it
+- change facebook page logo and put background image on it
 
 
 
@@ -132,7 +136,11 @@ PAUSED BUGLETS:
 TASKS DONE
 ---------------
 
-
+- make public and private manuals (stopping at chapter "le final") - DONE
+- si pas autoresponse autorisée, alors la mailer au MJ pour review - DONE
+- automatiquement marquer comme lus les messages parents répondus/recontactés (et update help-standard_conversations) alors - DONE
+- improve font of site and pdf with OpenSans - DONE
+- corriger les noms des menus (CAPITAL CASE) dans PO FILES, et non-breaking spaces - DONE
 - donner limitations prix etc à nouveau telecom_investigation - DONE
 - mettre gamemaster hints sur encre sympathique et parchemin vierge - DONE
 - créer contacts emails initiaux manquants, avec leurs avatars - DONE
@@ -491,7 +499,7 @@ FUTUR ENHANCEMENTS
 - separate "public" and "private" GAME MASTER MANUAL !!
 - les notifications doivent etre plus explicites dans leur contenu !?
 - TO UPDATE when behaviour is changed, in the future
-            - références nombreuses aux "messages parents pas automatiquement marqués comme lus"
+            - références nombreuses aux "messages parents pas automatiquement marqués comme lus" - DONE
             - vous pouvez attacher un de vos fichiers personnels à un message, grâce au champ de sélection dédié
             - si vous transférez un ancien message à un de vos contacts, ce "message transféré" pourra être lu dans une nouvelle fenêtre, grâce au lien automatiquement inséré dans le nouveau message
 
@@ -500,7 +508,7 @@ FUTUR ENHANCEMENTS
 - fix support of mp4 format and others (JPLAYER FTW)
 - automate the retrieval of radio spots (ex. TTS) to local files
 - allow to DUPLICATE a game item to the "new" form, with a dedicated button
-  -> permettre de modifier les OBJETS (ex. cloner)
+  -> permettre de modifier les OBJETS (ex. cloner) pas d"jà fait ?
 - Make DataTable records "editable" and "deletable/renamable", separately
 - Use "strict" param in check_coherence, to check relational fields only at YAML loading
 - Add tests to ensure that clearing tables is OK, for check_coherence(strict=false) - abilities must be robust to that
@@ -510,19 +518,19 @@ FUTUR ENHANCEMENTS
 
 - système pour créer partie - WIP, quasi fini mais plus tard, pour l'instant en manuel
 
-- make ALL gamemaster_hints editable (items too)
+- make ALL gamemaster_hints editable (items too) - done ??
 - dire quand AUTRE perso (ami) a nouveaux messages/autres ?
-- make impersonation per-browser-tab! -> sessionStorage ou url rewriting!!!
+- make impersonation per-browser-tab in URL - DONE
 
 - enforce placeholder detection ({{ PUT NAME HERE }}) everywhere, not only in message sending form.
 - restaurer et compléter les djinns, valeurs par défaut si pas de réponses surtout
-- add answer to ALL captchas ?
+- add answer to ALL captchas ? NOPE
 - add and describe faction-inherited permissions
 - display admin tips, enigmas and other data in each competence (only visible in DB dump currently)
 - restore "personal audio messages" feature for gamemaster (per player sending)
 - display admin tips with UserAccess and all kinds of permissions required, for each page
 
-- add typography fixer like in https://code.google.com/p/markdown-typografix/source/browse/mdx_typografix/__init__.py
+- add typography fixer like in https://code.google.com/p/markdown-typografix/source/browse/mdx_typografix/__init__.py - DONE with cmsplugin_rst for punctuation!
 
 - improve compatibility with IE 10+ (menus are buggy) --> red\9 HACK
 - reorganize top headers of game (motto left=real, motto right=impersonation, carvings=GAME_DATA)
@@ -537,7 +545,7 @@ FUTUR ENHANCEMENTS
 - better handling of 503 (maintenance) state on both cms and instance
 - add real automated "geoip localization" ability
 - memorize "real player authentications", to know who really hacks accounts -> already wip?
-- rethink and repair telecom archive investigation
+- rethink and repair telecom archive investigation - DONE
 - add to specific index any (external) visualized document in "personal files"
 - add RST context summary to all forms, especially admin ones ??? not needed right ATM
 - allow accumulation of visibility reasons, to have both sender and recipient together in msg for same user? useless I guess...
