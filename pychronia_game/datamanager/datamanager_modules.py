@@ -1888,8 +1888,10 @@ class TextMessagingCore(BaseDataManager):
                 else:
                     # if the parent message is DISPATCHED, we can tweak its state
                     sender_username = self.get_username_from_email(sender_email) # character, or fallback to master
+
+                    # marked read and replied/recontacted
                     self._set_dispatched_message_state_flags(username=sender_username, msg_id=parent_id,
-                                                             has_replied=True, has_read=True)  # MARKED READ TOO
+                                                             has_replied=True, has_read=True)
                 group_id = parent_msg["group_id"]
             except UsageError as e:
                 self.logger.error(e, exc_info=True)  # something ugly happened to messaging history ? let it be...
@@ -2422,6 +2424,7 @@ class TextMessagingTemplates(BaseDataManager):
 @register_module
 class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
 
+    # has_replied is also used for "recontact recipients" action
     EMAIL_BOOLEAN_FIELDS_FOR_USERS = ("has_read", "has_replied", "has_starred", "has_archived")
 
     def _load_initial_data(self, **kwargs):

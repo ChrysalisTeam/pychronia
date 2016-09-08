@@ -1879,9 +1879,9 @@ class TestDatamanager(BaseGameTestCase):
 
         msg = self.dm.get_dispatched_message_by_id(msg_id) # replied-to message impacted
         self.assertEqual(len(msg["has_replied"]), 4)
-        self.assertEqual(sorted(msg["has_replied"]), [u'guy2', u'guy3', u'master', u'my_npc'])
+        self.assertEqual(sorted(msg["has_replied"]), [u'guy2', u'guy3', u'master', u'my_npc'])  # also means "has recontacted"
 
-        # parent message automatically marked as read for all repliers too
+        # parent message automatically marked as read for all repliers/recontacters too
         self.assertEqual(msg["has_read"], [u'guy1', u'guy2', u'guy3', u'my_npc', u'master'])
 
         ######
