@@ -6412,15 +6412,34 @@ class TestSpecialAbilities(BaseGameTestCase):
         assert runic_translation._get_closest_item_name_or_none("sa to | ta ka") == "statue" # not always sacred_chest, as we check
 
 
+        def ability_action():
+            return runic_translation.process_translation(transcription_attempt)
+        def response_msg_checker(msg):
+            self.assertTrue(transcription_attempt.strip() in msg["body"], (transcription_attempt, msg["body"]))
+        def ability_breaker():
+            runic_translation.settings["references"] = utilities.PersistentMapping()
+            runic_translation.commit()
+            assert runic_translation._get_closest_item_name_or_none(
+                "sa to | ta ka") == None  # no reference items available at all
+
+        self._test_ability_standard_email_exchanges(ability_instance=runic_translation,
+                                                    ability_action=ability_action,
+                                                    response_msg_checker=response_msg_checker,
+                                                    ability_breaker=ability_breaker)
 
 
-    #def _test_ability_standard_email_exchanges(self, launcher):
+    def _test_ability_standard_email_exchanges(self,
+                                               ability_instance,
+                                               ability_action,
+                                               response_msg_checker,
+                                               ability_breaker):
 
-
-
+        assert not self.dm.get_all_queued_messages()
+        assert not self.dm.get_all_dispatched_messages()
 
         self._set_user("guy1")
-        runic_translation.process_translation(transcription_attempt)
+
+        ability_action()
 
         msgs = self.dm.get_all_queued_messages()
         self.assertEqual(len(msgs), 1)
@@ -6434,51 +6453,48 @@ class TestSpecialAbilities(BaseGameTestCase):
         self.assertEqual(len(msgs), 1)
         msg = msgs[0]
         self.assertEqual(msg["sender_email"], "guy1@pangea.com")
-        self.assertTrue(transcription_attempt.strip() in msg["body"], (transcription_attempt, msg["body"]))
+        response_msg_checker(msg)
         self.assertTrue(self.dm.get_global_parameter("master_login") in msg["has_read"])
         assert "master" in msg["has_read"] # useless request
         assert "master" not in msg["has_starred"]
 
         self.dm.set_global_parameter("disable_automated_ability_responses", True)
 
-        runic_translation.process_translation(transcription_attempt)
+        ability_action()
         msgs = self.dm.get_all_dispatched_messages()
         self.assertEqual(len(msgs), 3) # REQUEST is well generated as well as info for gamemaster
 
         msg = msgs[-2]  # REQUEST
         assert msg["sender_email"] == 'guy1@pangea.com'
-        assert msg["recipient_emails"] == ["translator-robot@hightech.com"]
+        assert msg["recipient_emails"] == [ability_instance.dedicated_email]
         assert "master" in msg["has_read"]
         assert "master" not in msg["has_starred"]
 
         msg = msgs[-1]  # WARNING FOR MASTER
-        assert msg["sender_email"] == "translator-robot@hightech.com"
-        assert msg["recipient_emails"] == ["translator-robot@hightech.com"]
+        assert msg["sender_email"] == ability_instance.dedicated_email
+        assert msg["recipient_emails"] == [ability_instance.dedicated_email]
         assert "master" not in msg["has_read"]  # needs answer by game master
         assert "master" in msg["has_starred"]
 
         msgs = self.dm.get_all_queued_messages()
         self.assertEqual(len(msgs), 1) # unchanged, no additional RESPONSE
 
-        runic_translation.settings["references"] = utilities.PersistentMapping()
-        runic_translation.commit()
-        assert runic_translation._get_closest_item_name_or_none("sa to | ta ka") == None  # no items available at all
+        ability_breaker()
 
-        disable_automated_ability_responses = random.choice((True, False))
+        disable_automated_ability_responses = random.choice((True, False))  # doesn't matter
         self.dm.set_global_parameter("disable_automated_ability_responses",
                                      disable_automated_ability_responses)
 
-        runic_translation.process_translation(transcription_attempt)  # CANNOT generate a response
+        ability_action()  # CANNOT generate a response
         msgs = self.dm.get_all_dispatched_messages()
         self.assertEqual(len(msgs), 4) # REQUEST is well generated, but no (even WIP) response
         msg = msgs[-1]
         assert msg["sender_email"] == 'guy1@pangea.com'
-        assert msg["recipient_emails"] == ["translator-robot@hightech.com"]
+        assert msg["recipient_emails"] == [ability_instance.dedicated_email]
         assert "master" not in msg["has_read"] # needs answer by game master
         assert "master" in msg["has_starred"]
         msgs = self.dm.get_all_queued_messages()
         self.assertEqual(len(msgs), 1) # unchanged, no additional RESPONSE
-
 
 
     @for_ability(house_locking)
