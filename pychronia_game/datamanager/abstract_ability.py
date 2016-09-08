@@ -264,7 +264,7 @@ class AbstractPartnershipAbility(AbstractAbility):
             utilities.check_is_range_or_num(result_delay)
 
 
-    def _send_processing_request(self, subject, body, requires_manual_answer=False):
+    def _send_processing_request(self, subject, body, mark_as_read_by_master=True):
         """
         Returns the new message ID.
         """
@@ -276,9 +276,7 @@ class AbstractPartnershipAbility(AbstractAbility):
                                    attachment=None,
                                    date_or_delay_mn=None, # immediate
                                    parent_id=None)
-        if requires_manual_answer:
-            pass
-        else:
+        if mark_as_read_by_master:
             self.set_dispatched_message_state_flags(username=self.master_login, msg_id=msg_id, has_read=True)
 
         self._last_request_msg_id = msg_id # for coherence checking
@@ -302,34 +300,68 @@ class AbstractPartnershipAbility(AbstractAbility):
         return msg_id
 
 
+    def _send_processing_result_to_master(self, parent_id, subject, body, attachment=None):
+        """
+        Returns the new message ID.
+        """
+
+        assert parent_id == self._last_request_msg_id  # ATM always true
+
+        warning_msg = _("*Below is the output of the automated ability processing, for recipient %(recipient)s. Please review it, modify it, and mail it manually to the user, with a proper delay.*")
+
+        body_prefix = warning_msg + "\n\n-------\n\n"
+
+        msg_id = self.post_message(sender_email=self.dedicated_email,
+                                   recipient_emails=[self.dedicated_email],
+                                   subject=subject,
+                                   body=body_prefix + body,
+                                   attachment=attachment,
+                                   date_or_delay_mn=0,  # IMPORTANT, dispatched NOW
+                                   parent_id=parent_id)
+
+        self.set_dispatched_message_state_flags(username=self.master_login,
+                                                msg_id=msg_id,
+                                                has_starred=True,
+                                                has_read=False)
+        return msg_id
+
+
+
     def _process_standard_exchange_with_partner(self, request_msg_data, response_msg_data=None):
         """
         Workflow from a standard request message, and (potentially) its auto-response.
         """
+        assert request_msg_data, request_msg_data
 
         auto_response_disabled = self.get_global_parameter("disable_automated_ability_responses")
 
         auto_response_must_occur = response_msg_data and not auto_response_disabled
 
         request_msg_id = self._send_processing_request(subject=request_msg_data["subject"],
-                                                      body=request_msg_data["body"],
-                                                      requires_manual_answer=not auto_response_must_occur)
+                                                       body=request_msg_data["body"],
+                                                       mark_as_read_by_master=bool(response_msg_data))
         assert self.get_dispatched_message_by_id(request_msg_id)  # immediately sent
 
         response_msg_id = None
-        if auto_response_must_occur:
+
+
+        if not response_msg_data:
+            # we use the request message to warn game master about action required
+            self.set_dispatched_message_state_flags(username=self.master_login,
+                                                    msg_id=request_msg_id,
+                                                    has_starred=True)
+        elif auto_response_disabled:
+            response_msg_id = self._send_processing_result_to_master(parent_id=request_msg_id,
+                                                                    subject=response_msg_data["subject"],
+                                                                    body=response_msg_data["body"],
+                                                                    attachment=response_msg_data["attachment"])
+        else:
+            # we have a response message, and we are allowed to send it directly to character
             response_msg_id = self._send_back_processing_result(parent_id=request_msg_id,
                                                                  subject=response_msg_data["subject"],
                                                                  body=response_msg_data["body"],
                                                                  attachment=response_msg_data["attachment"])
-        else:
-            # we notify gamemaster that he MUST answer the request by himself
-            self.set_dispatched_message_state_flags(username=self.master_login,
-                                                    msg_id=request_msg_id,
-                                                    has_starred=True)
 
-
-        return (response_msg_id or request_msg_id)
 
 
 
