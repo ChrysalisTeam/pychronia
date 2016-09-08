@@ -1888,8 +1888,8 @@ class TextMessagingCore(BaseDataManager):
                 else:
                     # if the parent message is DISPATCHED, we can tweak its state
                     sender_username = self.get_username_from_email(sender_email) # character, or fallback to master
-                    self._set_dispatched_message_state_flags(username=sender_username, msg_id=parent_id, has_replied=True)
-                    # do not touch the READ state though - must be done MANUALLY
+                    self._set_dispatched_message_state_flags(username=sender_username, msg_id=parent_id,
+                                                             has_replied=True, has_read=True)  # MARKED READ TOO
                 group_id = parent_msg["group_id"]
             except UsageError as e:
                 self.logger.error(e, exc_info=True)  # something ugly happened to messaging history ? let it be...
@@ -2564,6 +2564,8 @@ class TextMessagingForCharacters(BaseDataManager): # TODO REFINE
         self._update_address_book(msg=frozen_msg)
         #print (">>>>>>>>>>>", frozen_msg["visible_by"])
         characters = set(self.get_character_usernames())
+
+        # can't use get_characters_for_visibility_reason() since it's a negation here
         target_characters = [username for username, reason in frozen_msg["visible_by"].items()
                                       if reason != VISIBILITY_REASONS.sender and username in characters] # thus we remove master_login and sender
 

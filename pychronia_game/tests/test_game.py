@@ -1870,16 +1870,19 @@ class TestDatamanager(BaseGameTestCase):
         # no strict checks on sender/recipient of original message, when using parent_id feature
         msg_id2 = self.dm.post_message(email("guy2"), email("guy1"), subject="ssd", body="qsdqsd", parent_id=msg_id, delay_mn= -2)
         msg_id3 = self.dm.post_message(email("guy3"), email("guy2"), subject="ssd", body="qsdqsd", parent_id=msg_id)
+        msg_id4 = self.dm.post_message(email("my_npc"), email("guy2"), subject="ssd", body="qsdqsd", parent_id=msg_id)
+        msg_id4 = self.dm.post_message("judicators@akaris.com", email("guy2"), subject="ssd", body="qsdqsd", parent_id=msg_id)
 
         msg = self.dm.get_dispatched_message_by_id(msg_id2) # new message isn't impacted by parent_id
         self.assertFalse(msg["has_replied"])
-        self.assertEqual(msg["has_read"], ["guy2"]) # SENDER auto registered
+        self.assertEqual(msg["has_read"], ["guy2"]) # SENDER only gets auto registered
 
         msg = self.dm.get_dispatched_message_by_id(msg_id) # replied-to message impacted
-        self.assertEqual(len(msg["has_replied"]), 2)
-        self.assertTrue("guy2" in msg["has_replied"])
-        self.assertTrue("guy3" in msg["has_replied"])
-        self.assertEqual(msg["has_read"], ["guy1"]) # read state of parent messages do NOT autochange, still only sender is in here
+        self.assertEqual(len(msg["has_replied"]), 4)
+        self.assertEqual(sorted(msg["has_replied"]), [u'guy2', u'guy3', u'master', u'my_npc'])
+
+        # parent message automatically marked as read for all repliers too
+        self.assertEqual(msg["has_read"], [u'guy1', u'guy2', u'guy3', u'my_npc', u'master'])
 
         ######
 
