@@ -6445,6 +6445,11 @@ class TestSpecialAbilities(BaseGameTestCase):
                                                request_msg_checker,
                                                response_msg_checker,
                                                ability_breaker):
+        """
+        *ability_breaker* is a callback which make the ability unable
+        to compute a response for the standard *ability_action* (so the
+        gamemaster must write the response by itself).
+        """
 
         assert not self.dm.get_all_queued_messages()
         assert not self.dm.get_all_dispatched_messages()
@@ -6493,23 +6498,27 @@ class TestSpecialAbilities(BaseGameTestCase):
         msgs = self.dm.get_all_queued_messages()
         self.assertEqual(len(msgs), 1) # unchanged, no additional RESPONSE
 
-        ability_breaker()
 
-        disable_automated_ability_responses = random.choice((True, False))  # doesn't matter
-        self.dm.set_global_parameter("disable_automated_ability_responses",
-                                     disable_automated_ability_responses)
+        if ability_breaker:  # because some abilities ALWAYS have a response to a request
 
-        ability_action()  # CANNOT generate a response
-        msgs = self.dm.get_all_dispatched_messages()
-        self.assertEqual(len(msgs), 4) # REQUEST is well generated, but no (even WIP) response
-        msg = msgs[-1]
-        assert msg["sender_email"] == 'guy1@pangea.com'
-        assert msg["recipient_emails"] == [ability_instance.dedicated_email]
-        assert "master" not in msg["has_read"] # needs answer by game master
-        assert "master" in msg["has_starred"]
-        request_msg_checker(msg)
-        msgs = self.dm.get_all_queued_messages()
-        self.assertEqual(len(msgs), 1) # unchanged, no additional RESPONSE
+            ability_breaker()
+
+            disable_automated_ability_responses = random.choice((True, False))  # doesn't matter
+            self.dm.set_global_parameter("disable_automated_ability_responses",
+                                         disable_automated_ability_responses)
+
+            ability_action()  # CANNOT generate a response
+            msgs = self.dm.get_all_dispatched_messages()
+            self.assertEqual(len(msgs), 4) # REQUEST is well generated, but no (even WIP) response
+            msg = msgs[-1]
+            assert msg["sender_email"] == 'guy1@pangea.com'
+            assert msg["recipient_emails"] == [ability_instance.dedicated_email]
+            assert "master" not in msg["has_read"] # needs answer by game master
+            assert "master" in msg["has_starred"]
+            request_msg_checker(msg)
+            msgs = self.dm.get_all_queued_messages()
+            self.assertEqual(len(msgs), 1) # unchanged, no additional RESPONSE
+
 
         res = self.dm.process_periodic_tasks()
 
@@ -6836,6 +6845,10 @@ class TestSpecialAbilities(BaseGameTestCase):
 
     def test_telecom_investigation(self):
 
+        assert self.dm.data["abilities"]["telecom_investigation"]["settings"]["result_delay"]
+        self.dm.data["abilities"]["telecom_investigation"]["settings"]["result_delay"] = 0.03 / 45  # flexible time!
+        self.dm.commit()
+
         all_characters = self.dm.get_character_usernames()
 
         characters_with_conversations = self.dm.get_character_usernames()
@@ -6961,90 +6974,33 @@ class TestSpecialAbilities(BaseGameTestCase):
 
         assert type(telecom.process_telecom_investigation("guy2")) is UnicodeType
 
-
         for character in all_other_characters:
             assert telecom.process_telecom_investigation(character)
             self.assertTrue("in process" in telecom.process_telecom_investigation(character))
 
-        # check amount of e-mails during process:
 
-        initial_length_sent_msgs = len(self.dm.get_all_dispatched_messages())
-
-        self.assertEqual(len(self.dm.get_all_dispatched_messages()), initial_length_sent_msgs + 0)
-
-        telecom.process_telecom_investigation("guy4")
-
-        msgs = self.dm.get_all_dispatched_messages()
-
-        self.assertEqual(len(msgs), initial_length_sent_msgs + 2)
-        # we have a "+2" because there are 2 sent messages : one for requesting the investigation and one for displaying the investigation results.
-
+        # test automated messaging
 
         self._reset_messages()
 
-        for character in all_other_characters:
+        def ability_action():
+            return telecom.process_telecom_investigation("guy4")
 
-            initial_length_sent_msgs = len(self.dm.get_all_dispatched_messages())
-            telecom.process_telecom_investigation(character)
-            msgs = self.dm.get_all_dispatched_messages()
-            self.assertEqual(len(msgs), initial_length_sent_msgs + 2)
+        def request_msg_checker(msg):
+            self.assertTrue("Investigation Request" in msg["subject"])
+            self.assertTrue("please look" in msg["body"].lower(), msg=msg)
 
+        def response_msg_checker(msg):
+            self.assertTrue("-----" in msg["body"].lower(), msg=msg)
+            context_list = telecom.extract_conversation_summary("guy4")
+            expected_body = telecom.format_conversation_summary(context_list)
+            assert expected_body in msg["body"], msg
 
-        # checking the e-mail subject, body and participants:
-
-        self._reset_messages()
-        telecom.process_telecom_investigation("guy4")
-
-
-        # investigate request e-mail:
-
-        msgs = self.dm.get_all_dispatched_messages()
-        msg = msgs[-2]
-        self.assertEqual(msg["sender_email"], "guy1@pangea.com")
-        self.assertEqual(msg["recipient_emails"], ["investigator@spies.com"])
-        self.assertEqual(msg["body"], "Please look for anything you can find about this person.")
-        self.assertTrue("Investigation Request" in msg["subject"])
-
-
-        # investigate result e-mail:
-
-        context_list = telecom.extract_conversation_summary("guy4")
-        body = telecom.format_conversation_summary(context_list)
-
-        msg = msgs[-1]
-        self.assertEqual(msg["sender_email"], "investigator@spies.com")
-        assert msg["recipient_emails"] == [u'guy1@pangea.com']
-        self.assertEqual(msg["body"], body)
-        self.assertTrue("Investigation Results" in msg["subject"])
-
-
-        # test for all users except "ourself":
-
-        for character in all_other_characters:
-            self._reset_messages()
-            telecom.process_telecom_investigation(character)
-            target_name = self.dm.get_official_name(character)
-            msgs = self.dm.get_all_dispatched_messages()
-
-
-            # investigation request e-mail:
-
-            msg = msgs[-2]
-            assert msg["sender_email"] == "guy1@pangea.com"
-            assert msg["recipient_emails"] == ["investigator@spies.com"]
-            assert msg["body"] == "Please look for anything you can find about this person."
-
-
-            # investigation result e-mail:
-
-            context_list = telecom.extract_conversation_summary(character)
-            body = telecom.format_conversation_summary(context_list)
-
-            msg = msgs[-1]
-            assert msg["sender_email"] == "investigator@spies.com"
-            assert msg["recipient_emails"] == [u'guy1@pangea.com']
-            assert msg["body"] == body
-
+        self._test_ability_standard_email_exchanges(ability_instance=telecom,
+                                                    ability_action=ability_action,
+                                                    request_msg_checker=request_msg_checker,
+                                                    response_msg_checker=response_msg_checker,
+                                                    ability_breaker=None)  # ALWAYS a response available for now!
 
     def __OLD_test_telecom_investigations(self):
 

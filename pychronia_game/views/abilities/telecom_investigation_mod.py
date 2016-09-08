@@ -94,28 +94,24 @@ class TelecomInvestigationAbility(AbstractPartnershipAbility):
     def process_telecom_investigation(self, target_username, use_gems=()):
 
         target_official_name = self.get_official_name(target_username)
-        user_email = self.get_character_email()
-        remote_email = self.dedicated_email
 
-        # NOTE : we do not use _process_standard_exchange_with_partner() for this ability,
-        # since game master can't do that extract by himself, if we cancel autoresponses
-
-        # request e-mail:
+        # request e-mail
         subject = _("Telecom Investigation Request - %(target_name)s") % dict(target_name=target_official_name)
-
         body = _("Please look for anything you can find about this person.")
-        self.post_message(user_email, remote_email, subject, body, date_or_delay_mn=0)
+        request_msg_data = dict(subject=subject,
+                                 body=body)
 
-        # answer e-mail:
+        # response e-mail
         subject = _('Telecom Investigation Results - %(target_name)s') % dict(target_name=target_official_name)
+        _context_list = self.extract_conversation_summary(target_username)
+        body = self.format_conversation_summary(_context_list)
+        response_msg_data = dict(subject=subject,
+                                 body=body,
+                                 attachment=None)
+        del subject, body
 
-        context_list = self.extract_conversation_summary(target_username)
-
-        body = self.format_conversation_summary(context_list)
-
-        best_msg_id = self.post_message(remote_email, user_email, subject, body, date_or_delay_mn=self.auto_answer_delay_mn)
-
-        #ajouter délai avec self.get_global_parameter("telecom_investigation_delays") - IMPLEMENTER LES INVESTIGATION DELAYS DANS LES SETTINGS
+        best_msg_id = self._process_standard_exchange_with_partner(request_msg_data=request_msg_data,
+                                                                    response_msg_data=response_msg_data)
 
         self.log_game_event(ugettext_noop("Telecom investigation launched on target '%(target_name)s'."),
                             PersistentMapping(target_name=target_official_name),
