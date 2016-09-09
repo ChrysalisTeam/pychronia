@@ -237,23 +237,43 @@ def view_sales(request, template_name='auction/view_sales.html'):
 
 
 
+def _get_items_slideshow_common_data(dm, items):
+
+    items_3d_settings = dm.get_items_3d_settings()
+
+    items_3d_titles = sorted(items[k]["title"] for k in items_3d_settings.keys() if k in items)
+
+    sorted_items = _sorted_game_items(items)
+
+    return {
+              'items': sorted_items,
+              'items_3d_titles': items_3d_titles,
+              'items_3d_settings': items_3d_settings,
+            }
+
+
 @register_view(access=UserAccess.authenticated, title=ugettext_lazy("Auction Slideshow"), title_for_master=ugettext_lazy("Items Slideshow"))
 def auction_items_slideshow(request, template_name='auction/items_slideshow.html'):
     """
     Contains ALL auction items, WITHOUT 3D viewers.
     """
-    items = (request.datamanager.get_auction_items()
-             if not request.datamanager.is_master()
-             else request.datamanager.get_all_items()) # master can see EVERYTHING, but without 3D
-    sorted_items = _sorted_game_items(items)
+
+    dm = request.datamanager
+
+    # master can see EVERYTHING here, but without 3D
+    items = (dm.get_auction_items()
+             if not dm.is_master()
+             else dm.get_all_items())
+
+    common_data = _get_items_slideshow_common_data(dm, items=items)
 
     return render(request,
                   template_name,
-                    {
-                     'items': sorted_items,
-                     'items_3D_settings': None,
-                     'gems_may_be_memo': False,
-                    })
+                    dict(
+                     gems_may_be_memo=False,
+                     allow_3d_visualization=False,
+                     **common_data
+                    ))
 
 
 
@@ -262,21 +282,19 @@ def personal_items_slideshow(request, template_name='auction/items_slideshow.htm
     """
     Contains both auction and external items, all necessarily owned by user hismelf.
     """
-    items = request.datamanager.get_available_items_for_user()
-    items_3D_settings = request.datamanager.get_items_3d_settings()
+    dm = request.datamanager
 
-    items_3D_titles = sorted(items[k]["title"] for k in items_3D_settings.keys() if k in items)
+    items = dm.get_available_items_for_user()
 
-    sorted_items = _sorted_game_items(items)
+    common_data = _get_items_slideshow_common_data(dm, items=items)
 
     return render(request,
                   template_name,
-                    {
-                     'items': sorted_items,
-                     'items_3D_titles': items_3D_titles,
-                     'items_3D_settings': items_3D_settings,
-                     'gems_may_be_memo': True,
-                    })
+                  dict(
+                      gems_may_be_memo=True,
+                      allow_3d_visualization=True,
+                      **common_data
+                  ))
 
 
 @register_view(access=UserAccess.authenticated, requires_global_permission=False, title=ugettext_lazy("Item 3D View"))

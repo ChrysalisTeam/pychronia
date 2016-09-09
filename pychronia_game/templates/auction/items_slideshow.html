@@ -40,7 +40,10 @@
 
     {% if display_admin_tips %}
     <p class="admin-note">
-        <b>{% trans "Items with 3D visualization below" %}{{COLON}} {{items_3D_titles|join:", "|default:_("None")}}
+        <b>{% if allow_3d_visualization %}{% trans "3D visualization is enabled on this page." %}
+        {% else %}{% trans "3D visualization is disabled on this page." %}
+        {% endif %}</b><br/>
+        {% trans "Items with 3D data available" %}{{COLON}} {{items_3d_titles|join:", "|default:_("None")}}.
     </p>
     {% endif %}
 
@@ -66,12 +69,12 @@
                 <div align="center">
 
 
-                  {% with items_3D_settings|dict_get:item_name as settings %}
-                    {% if settings %}
+                  {% with items_3d_settings|dict_get:item_name as settings_3d %}
+                    {% if allow_3d_visualization and settings_3d %}
 
-                        <div class="item_display" align="center" style="max-width: {{ settings.image_width }}px; max-height: {{ settings.image_height }}px;">
+                        <div class="item_display" align="center" style="max-width: {{ settings_3d.image_width }}px; max-height: {{ settings_3d.image_height }}px;">
                             <iframe src="{% game_view_url "pychronia_game.views.item_3d_view" item=item_name %}"
-                            width="{{ settings.image_width }}" height="{{ settings.image_height }}"
+                            width="{{ settings_3d.image_width }}" height="{{ settings_3d.image_height }}"
                             scrolling="no" marginheight="0" marginwidth="0" frameborder="0">
                                 <p>Error - your browser is not able to display IFrames.</p>
                             </iframe>
@@ -80,8 +83,6 @@
                     {% else %}
                         <img class="item_display slideshow_image" src="{% game_file_url item_details.image %}"/>
                     {% endif %}
-
-                  {% endwith %}
 
 
                     <blockquote class="marble_panel antic">
@@ -115,6 +116,12 @@
                         </p>
                         {% endif %}
 
+                        {% if settings_3d %}
+                        <p>
+                            <i>{% trans "3D visualization is available for this object." %}</i>
+                        </p>
+                        {% endif %}
+
                         {% if display_admin_tips and item_details.gamemaster_hints %}
                         <p class="admin-note">
                             {{ item_details.gamemaster_hints }}
@@ -123,6 +130,8 @@
 
 
                     </blockquote>
+
+                  {% endwith %}
 
                 </div>
 
