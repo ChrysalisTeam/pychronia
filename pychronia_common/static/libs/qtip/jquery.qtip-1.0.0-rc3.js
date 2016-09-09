@@ -1051,7 +1051,7 @@
             if(show) self.elements.tooltip.css({ visiblity: 'hidden' }).show();
             dimensions = {
                height: self.elements.tooltip.outerHeight(),
-               width: self.elements.tooltip.outerWidth()
+               width: self.elements.tooltip.outerWidth() + 5  // PYCHRONIA HACK for too small tooltips
             };
             if(show) self.elements.tooltip.css({ visiblity: 'visible' }).hide();
 
