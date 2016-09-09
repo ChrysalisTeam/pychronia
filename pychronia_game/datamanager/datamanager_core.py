@@ -321,7 +321,12 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
 
 
     @transaction_watcher
-    def load_zope_database_from_string(self, string, strict=True):
+    def load_zope_database_from_string(self, string, strict=False):
+        """
+        *strict* must be False by default, because the game backup might
+        contains eg. badly formatted RST mails or static pages edited
+        by the gamemaster.
+        """
 
         data_tree = utilities.load_data_tree_from_yaml(string, convert=True)
         assert isinstance(data_tree, PersistentMapping)

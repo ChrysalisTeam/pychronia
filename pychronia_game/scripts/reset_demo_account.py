@@ -15,7 +15,7 @@ def execute():
     try:
         change_game_instance_status(DEMO_NAME, new_status="terminated")
         delete_game_instance(DEMO_NAME)
-    except UsageError, e:
+    except UsageError as e:
         print "Exception swallowed:", e
     create_game_instance(game_instance_id=DEMO_NAME, creator_login="dummy_creator")
 

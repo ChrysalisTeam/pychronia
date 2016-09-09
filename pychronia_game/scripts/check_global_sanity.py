@@ -16,8 +16,8 @@ def execute():
         instance_id = metadata["instance_id"]
         dm = retrieve_game_instance(instance_id)
         try:
-            dm.check_database_coherence(strict=True)
-        except Exception, e:
+            dm.check_database_coherence()  # NO strict mode enforced
+        except Exception as e:
             result = False
             logging.critical("Error during checking of game instance '%s'", instance_id, exc_info=True)
         else:

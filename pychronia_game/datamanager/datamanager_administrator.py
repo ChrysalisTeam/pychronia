@@ -114,9 +114,12 @@ def create_game_instance(game_instance_id,
                          skip_randomizations=False,
                          skip_coherence_check=False,
                          yaml_fixture=None,
-                         strict=False): # TODO here try strict=True once
+                         strict=True):
     """
     Returns nothing. Raises UsageError if already existing game id.
+
+    We use *strict* mode by default, because initial yaml fixtures are supposed
+    to be robust (even regarding restructuredtext formatting).
     """
     game_instances = _get_game_instances_mapping()
 
