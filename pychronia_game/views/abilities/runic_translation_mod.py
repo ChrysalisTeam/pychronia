@@ -268,16 +268,16 @@ class RunicTranslationAbility(AbstractPartnershipAbility):
         references = settings["references"]
 
         if strict:
-            utilities.check_num_keys(settings, 3)
+            utilities.check_num_custom_settings(settings, 4)  # with dedicated email
 
         for (name, properties) in references.items():
             if strict:
-                utilities.check_num_keys(properties, 2)
+                utilities.check_num_custom_settings(properties, 2)
             assert name in self.get_all_items().keys(), name
             utilities.check_is_string(properties["decoding"])
             utilities.check_is_string(properties["translation"])
             assert self._build_translation_dictionary(properties["decoding"], properties["translation"])  # we ensure tokens are well matching
 
-        if strict:
-            assert not any(self.all_private_data)
+        assert not any(x for x in self.all_private_data.values()
+                       if set(x.keys()) - set(["middlewares"]))
 

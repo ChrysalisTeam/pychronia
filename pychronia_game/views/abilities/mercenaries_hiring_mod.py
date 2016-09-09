@@ -136,7 +136,7 @@ class MercenariesHiringAbility(AbstractPartnershipAbility):
         for data in self.all_private_data.values():
 
             if strict:
-                utilities.check_num_keys(data, 1)
+                utilities.check_num_custom_settings(data, 1)
 
             utilities.check_no_duplicates(data["mercenaries_locations"])
 

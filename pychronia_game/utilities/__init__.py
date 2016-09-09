@@ -480,10 +480,14 @@ def check_has_keys(value, keys, strict=False):
     for key in keys:
         usage_assert(key in actual_keys, (key, actual_keys))
 
-
 def check_num_keys(value, num):
     usage_assert(len(value.keys()) == num, (value, num))
     return True
+
+def check_num_custom_settings(value, num):
+    if "middlewares" in value:
+        num += 1  # not counted by default
+    return check_num_keys(value, num)
 
 def check_is_positive_float(value, non_zero=True):
     check_is_float(value)
@@ -658,6 +662,10 @@ def check_dictionary_with_template(my_dict, template, strict=False):
         validate_value(my_dict[key], template[key])
 
 
+def check_settings_dictionary_with_template(my_dict, template, strict=False):
+    my_dict = safe_copy(my_dict)
+    my_dict.pop("middlewares", None)  # may or nor exist
+    return check_dictionary_with_template(my_dict, template, strict=strict)
 
 
 def recursive_dict_sum(d1, d2):

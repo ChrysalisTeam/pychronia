@@ -131,6 +131,6 @@ class MatterAnalysisAbility(AbstractPartnershipAbility):
         _reference = dict(
                             reports=reports_checker,
                          )
-        utilities.check_dictionary_with_template(settings, _reference, strict=False)
+        utilities.check_settings_dictionary_with_template(settings, _reference, strict=False)
 
 

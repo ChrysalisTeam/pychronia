@@ -98,7 +98,7 @@ class HouseLockingAbility(AbstractAbility):
         assert 2 <= len(password) <= 6
 
         if strict:
-            utilities.check_num_keys(settings, 1)
+            utilities.check_num_custom_settings(settings, 2)
         assert isinstance(settings["house_doors_are_open"], bool)
 
 

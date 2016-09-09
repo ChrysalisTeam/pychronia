@@ -292,7 +292,7 @@ class BaseGameTestCase(TestCase): # one day, use pytest-django module to make it
 
             # NO NEED TO COMMIT - transaction watcher should do it all #
 
-        except Exception, e:
+        except Exception as e:
             print(">>>>>>>>>", repr(e))
             self.tearDown(check=False) # cleanup of connection
             raise
@@ -303,7 +303,7 @@ class BaseGameTestCase(TestCase): # one day, use pytest-django module to make it
     def tearDown(self, check=True):
         if hasattr(self, "dm"):
             if check:
-                self.dm.check_database_coherence()
+                self.dm.check_database_coherence(strict=True)  # not even RST errors are allowed here!
             self.dm.close()
             self.dm = None
 

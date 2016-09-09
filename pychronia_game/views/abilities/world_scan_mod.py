@@ -87,10 +87,10 @@ class WorldScanAbility(AbstractPartnershipAbility):
             assert scan_set_name in settings["scanning_sets"].keys()
 
         if strict:
-            assert set(settings["item_locations"].keys()) == set(all_locations)
-            utilities.check_num_keys(settings, 3)
+            utilities.check_num_custom_settings(settings, 4)  # with dedicated email
 
-            assert not any(self.all_private_data)
+        assert not any(x for x in self.all_private_data.values()
+                       if set(x.keys()) - set(["middlewares"]))
 
 
 

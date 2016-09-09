@@ -225,7 +225,7 @@ class WiretappingAbility(AbstractAbility):
         _settings_reference = dict(
                                     max_wiretapping_targets=partial(utilities.check_is_positive_int, non_zero=False)
                                   )
-        utilities.check_dictionary_with_template(settings, _settings_reference, strict=strict)
+        utilities.check_settings_dictionary_with_template(settings, _settings_reference, strict=strict)
 
         for username, data in self.all_private_data.items():
             assert len(self.get_wiretapping_targets(username=username)) <= data["max_wiretapping_targets"]
