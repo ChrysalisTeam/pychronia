@@ -23,8 +23,9 @@ class DataTableManager(object):
         # NO NEED TO CALL UPPER CLASS !
         raise NotImplementedError("_load_initial_data")
 
-    def _check_database_coherence(self, strict=False, **kwargs):
+    def _check_database_coherence(self, **kwargs):
         # NO NEED TO CALL UPPER CLASS !
+        strict = kwargs.get("strict", False)
         for key, value in self._table.items():
             self._check_item_validity(key, value)
 

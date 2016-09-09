@@ -52,6 +52,7 @@ class GameMasterManual(BaseDataManager):
     def _check_database_coherence(self, **kwargs):
         super(GameMasterManual, self)._check_database_coherence(**kwargs)
 
+        strict = kwargs.get("strict", False)
         game_data = self.data
 
         assert 0 < game_data["gamemaster_manual"]["version"] < 10
@@ -61,7 +62,8 @@ class GameMasterManual(BaseDataManager):
 
         utilities.check_is_restructuredtext(game_data["gamemaster_manual"]["public_content"] +
                                             "\n\n" +
-                                            game_data["gamemaster_manual"]["spoiler_content"])
+                                            game_data["gamemaster_manual"]["spoiler_content"],
+                                            strict=strict)
 
 
     @readonly_method
@@ -1292,17 +1294,19 @@ class PermissionsHandling(BaseDataManager): # TODO REFINE
 class FriendshipHandling(BaseDataManager):
 
 
-    def _load_initial_data(self, strict=False, **kwargs):
+    def _load_initial_data(self, **kwargs):
         super(FriendshipHandling, self)._load_initial_data(**kwargs)
+        strict = kwargs.get("strict", False)
         game_data = self.data
         game_data.setdefault("friendships", PersistentMapping())
         game_data["friendships"].setdefault("proposed", PersistentMapping()) # mapping (proposer, recipient) => dict(proposal_date)
         game_data["friendships"].setdefault("sealed", PersistentMapping()) # mapping (proposer, accepter) => dict(proposal_date, acceptance_date)
 
-    def _check_database_coherence(self, strict=False, **kwargs):
+    def _check_database_coherence(self, **kwargs):
         super(FriendshipHandling, self)._check_database_coherence(**kwargs)
 
         game_data = self.data
+        strict = kwargs.get("strict", False)
 
         delay = self.get_global_parameter("friendship_minimum_duration_mn_abs") # NOT a flexible delay!!
         utilities.check_is_positive_int(delay, non_zero=True)
@@ -1734,9 +1738,10 @@ class TextMessagingCore(BaseDataManager):
 
 
 
-    def _check_database_coherence(self, strict=False, **kwargs):
-        super(TextMessagingCore, self)._check_database_coherence(strict=strict, **kwargs)
+    def _check_database_coherence(self, **kwargs):
+        super(TextMessagingCore, self)._check_database_coherence(**kwargs)
 
+        strict = kwargs.get("strict", False)
         messaging = self.messaging_data
         message_reference = {
                              "sender_email": basestring, # only initial one
@@ -1779,8 +1784,9 @@ class TextMessagingCore(BaseDataManager):
 
                 utilities.check_is_in_set(msg["body_format"], self.AVAILABLE_TEXT_FORMATS)
 
-                if msg["body"]: # might be empty
-                    pass #utilities.check_is_restructuredtext(msg["body"]) - there might be formatting errors in new emails...
+                if strict and msg["body"]: # body might be empty
+                    # note that there might be formatting errors in new emails...
+                    utilities.check_is_restructuredtext(msg["body"], strict=strict)
 
                 if msg["attachment"]:
                     assert msg["attachment"].startswith("/") or msg["attachment"].startswith("http")
@@ -2118,10 +2124,10 @@ class TextMessagingExternalContacts(BaseDataManager):
 
 
 
-    def _check_database_coherence(self, strict=False, **kwargs):
-        super(TextMessagingExternalContacts, self)._check_database_coherence(strict=strict, **kwargs)
+    def _check_database_coherence(self, **kwargs):
+        super(TextMessagingExternalContacts, self)._check_database_coherence(**kwargs)
 
-        self.global_contacts._check_database_coherence(strict=strict, **kwargs)
+        self.global_contacts._check_database_coherence(**kwargs)
 
 
     def _check_sender_email(self, sender_email):
@@ -2191,8 +2197,8 @@ class TextMessagingExternalContacts(BaseDataManager):
             if value["avatar"]: # optional
                 utilities.check_is_game_file_or_url(value["avatar"])
 
-            if value.get("gamemaster_hints"): # optional
-                utilities.check_is_restructuredtext(value["gamemaster_hints"])
+            if strict and value.get("gamemaster_hints"): # optional
+                utilities.check_is_restructuredtext(value["gamemaster_hints"], strict=strict)
 
 
         def _sorting_key(self, item_pair):
@@ -2314,9 +2320,10 @@ class TextMessagingTemplates(BaseDataManager):
         game_data["global_parameters"]["message_template_categories"] = existing_template_categories # OVERRIDDEN and STATIC for now !
 
 
-    def _check_database_coherence(self, strict=False, **kwargs):
+    def _check_database_coherence(self, **kwargs):
         super(TextMessagingTemplates, self)._check_database_coherence(**kwargs)
 
+        strict = kwargs.get("strict", False)
         self.data["global_parameters"].setdefault("message_template_categories", PersistentList(["unsorted"])) # FIXME TEMP FIX
 
         existing_template_categories = self.get_global_parameter("message_template_categories")
@@ -2345,7 +2352,7 @@ class TextMessagingTemplates(BaseDataManager):
                 assert cat in existing_template_categories, cat
 
             if msg.get("gamemaster_hints"): # optional
-                utilities.check_is_restructuredtext(msg["gamemaster_hints"])
+                utilities.check_is_restructuredtext(msg["gamemaster_hints"], strict=strict)
 
             if msg["sender_email"]:
                 utilities.check_is_email(msg["sender_email"])
@@ -2354,8 +2361,9 @@ class TextMessagingTemplates(BaseDataManager):
 
             if msg["subject"]:
                 utilities.check_is_string(msg["subject"])
+
             if msg["body"]: # might be empty
-                pass #utilities.check_is_restructuredtext(msg["body"])
+                utilities.check_is_restructuredtext(msg["body"], strict=strict)
 
             if msg["attachment"]:
                 assert msg["attachment"].startswith("/") or msg["attachment"].startswith("http")
@@ -3195,7 +3203,7 @@ class RadioMessaging(BaseDataManager): # TODO REFINE
             utilities.check_is_bool(value["initial"])
 
             if value.get("gamemaster_hints"): # optional
-                pass # utilities.check_is_restructuredtext(value["gamemaster_hints"])
+                utilities.check_is_restructuredtext(value["gamemaster_hints"], strict=strict)
 
             utilities.check_is_string(value["title"])
 
@@ -3725,6 +3733,7 @@ class MoneyItemsOwnership(BaseDataManager):
     def _check_database_coherence(self, **kwargs):
         super(MoneyItemsOwnership, self)._check_database_coherence(**kwargs)
 
+        strict = kwargs.get("strict", False)
         game_data = self.data
 
         def _check_gems(gems_list):
@@ -3751,7 +3760,7 @@ class MoneyItemsOwnership(BaseDataManager):
 
             assert isinstance(character["extra_goods"], basestring)
             if character["extra_goods"]:
-                utilities.check_is_restructuredtext(character["extra_goods"])
+                utilities.check_is_restructuredtext(character["extra_goods"], strict=strict)
 
             #assert character["gems"] == sorted(character["gems"]), character["gems"] FIXME TEMP
 
@@ -3809,7 +3818,7 @@ class MoneyItemsOwnership(BaseDataManager):
             utilities.check_is_bool(value["initial"])
 
             if properties["gamemaster_hints"]: # optional
-                pass # utilities.check_is_restructuredtext(properties["gamemaster_hints"])
+                utilities.check_is_restructuredtext(properties["gamemaster_hints"], strict=strict)
 
             utilities.check_is_slug(name)
             assert isinstance(properties['is_gem'], bool)
@@ -4428,9 +4437,10 @@ class SpecialAbilities(BaseDataManager):
             assert "settings" in game_data["abilities"][key] and "data" in game_data["abilities"][key]
 
 
-    def _check_database_coherence(self, strict=False, **kwargs):
+    def _check_database_coherence(self, **kwargs):
         super(SpecialAbilities, self)._check_database_coherence(**kwargs)
 
+        strict = kwargs.get("strict", False)
         utilities.check_is_bool(self.get_global_parameter("disable_automated_ability_responses"))
 
         for name in self.ABILITIES_REGISTRY.keys():
@@ -4567,7 +4577,7 @@ class StaticPages(BaseDataManager):
                 utilities.check_is_string(value["title"], multiline=False)
                 assert value["title"] == value["title"].strip(), value["title"]
 
-            utilities.check_is_restructuredtext(value["content"])
+            utilities.check_is_restructuredtext(value["content"], strict=strict)
 
             utilities.check_is_list(value["categories"])
             for category in (value["categories"]):
@@ -4578,7 +4588,7 @@ class StaticPages(BaseDataManager):
                 utilities.check_is_string(keyword, multiline=False)
 
             if value.get("gamemaster_hints"): # optional
-                utilities.check_is_restructuredtext(value["gamemaster_hints"])
+                utilities.check_is_restructuredtext(value["gamemaster_hints"], strict=strict)
 
 
         def _sorting_key(self, item_pair):
@@ -4763,9 +4773,10 @@ class NightmareCaptchas(BaseDataManager):
             if value["image"]:
                 value["image"] = utilities.find_game_file("images", "captchas", value["image"])
 
-    def _check_database_coherence(self, strict=False, **kwargs):
+    def _check_database_coherence(self, **kwargs):
         super(NightmareCaptchas, self)._check_database_coherence(**kwargs)
 
+        strict = kwargs.get("strict", False)
         game_data = self.data
 
         assert game_data["nightmare_captchas"] # else random choice would nastily fail
@@ -4781,11 +4792,11 @@ class NightmareCaptchas(BaseDataManager):
             assert not value.get("id") # to ensure no pollution exists by utility methods
             assert value["text"] or value["image"]
             if value["text"]:
-                utilities.check_is_restructuredtext(value["text"])
+                utilities.check_is_restructuredtext(value["text"], strict=strict)
             if value["image"]:
                 utilities.check_is_game_file(value["image"])
             if value["explanation"]:
-                utilities.check_is_restructuredtext(value["explanation"])
+                utilities.check_is_restructuredtext(value["explanation"], strict=strict)
             if value["answer"] is not None: # None means "no answers" (sadistic)
                 utilities.check_is_slug(value["answer"])
                 assert "\n" not in value["answer"]
@@ -4851,9 +4862,10 @@ class NightmareCaptchas(BaseDataManager):
 class NoveltyNotifications(BaseDataManager):
 
 
-    def _check_database_coherence(self, strict=False, **kwargs):
+    def _check_database_coherence(self, **kwargs):
         super(NoveltyNotifications, self)._check_database_coherence(**kwargs)
 
+        strict = kwargs.get("strict", False)
         self.data["global_parameters"].setdefault("disable_real_email_notifications", False) ## TEMP FIXME
         utilities.check_is_bool(self.get_global_parameter("disable_real_email_notifications"))
 

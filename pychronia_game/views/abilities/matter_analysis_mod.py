@@ -125,7 +125,7 @@ class MatterAnalysisAbility(AbstractPartnershipAbility):
         def reports_checker(reports):
             utilities.assert_set_smaller_or_equal(reports.keys(), self.get_non_gem_items().keys()) # some items might have no analysis data
             for body in reports.values():
-                utilities.check_is_restructuredtext(body)
+                utilities.check_is_restructuredtext(body, strict=strict)
             return True
 
         _reference = dict(

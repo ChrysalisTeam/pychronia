@@ -1781,7 +1781,7 @@ class TestDatamanager(BaseGameTestCase):
     @for_core_module(Encyclopedia)
     def test_encyclopedia_api_and_keywords(self):
 
-        utilities.check_is_restructuredtext(self.dm.get_encyclopedia_entry(" gerbiL_speCies ")["content"])# tolerant fetching
+        utilities.check_is_restructuredtext(self.dm.get_encyclopedia_entry(" gerbiL_speCies ")["content"], strict=True)# tolerant fetching
         assert self.dm.get_encyclopedia_entry("qskiqsjdqsid") is None
         assert "gerbil_species" in self.dm.get_encyclopedia_article_ids()
 
@@ -4090,7 +4090,7 @@ class TestDatamanager(BaseGameTestCase):
         EXISTING_HELP_PAGE = "help-homepage"
 
         block = self.dm.get_categorized_static_page(category="content", name="help-view_encyclopedia")
-        utilities.check_is_restructuredtext(block["content"])
+        utilities.check_is_restructuredtext(block["content"], strict=True)
 
         assert self.dm.get_categorized_static_page(category="content", name="qskiqsjdqsid") is None
         assert self.dm.get_categorized_static_page(category="badcategory", name="help-view_encyclopedia") is None
