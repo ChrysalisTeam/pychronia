@@ -8,6 +8,7 @@
 {% block content %}
 
     <div class="section">
+        {# this restucturedtext might contain "raw" directives, but it's OK, they are just ignored on display #}
         {% rich_text gamemaster_manual %}
     </div>
 

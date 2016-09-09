@@ -330,7 +330,9 @@ def rich_text(context, content, initial_header_level=None, report_level=None, ex
     Note that "excluded_link" is the ID of the excluded article.
     """
     request = context.get('request')
-    report_level = report_level if report_level is not None else 5 # FIXME - by default we DO NOT display RST syntax errors!
+
+    # BEWARE - by default we DO NOT display RST syntax errors!
+    report_level = report_level if report_level is not None else 5
 
     extra_params = dict(initial_header_level=initial_header_level,
                         report_level=report_level, 
