@@ -329,6 +329,14 @@ def format_enriched_text(datamanager, content, initial_header_level=None, report
 
 
 @register.simple_tag(takes_context=True)
+def render_restructuredtext(context, content, initial_header_level=None, report_level=None):
+    html = advanced_restructuredtext(content, initial_header_level=initial_header_level, report_level=report_level)
+    with exception_swallower():  # FIXME - make it depend on game language, one day
+        html = french_insecable(html)  # handles non-breaking spaces, especially
+    return mark_safe(html)
+
+
+@register.simple_tag(takes_context=True)
 def rich_text(context, content, initial_header_level=None, report_level=None, excluded_link=None, text_format=None):
     """
     Converts to enriched html the restructuredtext content of the variable.
