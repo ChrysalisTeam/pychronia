@@ -53,7 +53,7 @@ directives.register_directive("embed_video", VideoEmbedDirective)
 
 class ImageEmbedDirective(rst.Directive):
     """
-    This directive is currently mostly useless, use ".. image::" and GAME_IMAGE_URL instead!
+    This directive is currently mostly useless, use ".. image::" and GAME_THUMBNAIL_URL instead!
     """
     required_arguments = 1
     optional_arguments = 0

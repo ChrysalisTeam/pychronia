@@ -508,7 +508,7 @@ def check_is_restructuredtext(value, strict):
     assert isinstance(value, basestring) # NOT A LIST
     #print("LOADING RST...", repr(value[0:70]))
 
-    regex = r"""\[\s*(GAME_FILE_URL|GAME_IMAGE_URL).+?\s*]"""
+    regex = r"""\[\s*(GAME_FILE_URL|GAME_THUMBNAIL_URL).+?\s*]"""
     sanitized_value = re.sub(regex, "http://dummy_check_is_restructuredtext_url/file.flv", value)
 
     with io.StringIO() as warning_stream:

@@ -484,13 +484,13 @@ class TestUtilities(BaseGameTestCase):
 
         rst = dedent(r"""
         
-                    [   GAME_IMAGE_URL 'world_map.jpg'   'default' ] here
+                    [   GAME_THUMBNAIL_URL 'world_map.jpg'   'default' ] here
                     
-                    .. image:: picture.jpeg [GAME_IMAGE_URL "world_map.jpg" 'badalias' ]
+                    .. image:: picture.jpeg [GAME_THUMBNAIL_URL "world_map.jpg" 'badalias' ]
                 
-                        [GAME_IMAGE_URL 'aa bb/cc']
+                        [GAME_THUMBNAIL_URL 'aa bb/cc']
                         
-                        [GAME_IMAGE_URL "bad
+                        [GAME_THUMBNAIL_URL "bad
                         path.jpg]
                     """)
 
@@ -503,9 +503,9 @@ class TestUtilities(BaseGameTestCase):
                                     
                                     .. image:: picture.jpeg /files/3ab7d512/world_map.jpg
                                     
-                                        [GAME_IMAGE_URL 'aa bb/cc']
+                                        [GAME_THUMBNAIL_URL 'aa bb/cc']
                                     
-                                        [GAME_IMAGE_URL "bad
+                                        [GAME_THUMBNAIL_URL "bad
                                         path.jpg]
                                     """).strip()
 
