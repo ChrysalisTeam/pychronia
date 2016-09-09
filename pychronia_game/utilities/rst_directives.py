@@ -21,6 +21,7 @@ class AudioEmbedDirective(rst.Directive):
 
     def run(self):
         file_url = self.arguments[0]
+        #print("=========AudioEmbedDirective=========>", file_url)
         title = get_medium_title_from_url(file_url)
         code = generate_audio_player(files=[file_url], titles=[title])
         return [nodes.raw('', code, format='html')]
@@ -40,7 +41,9 @@ class VideoEmbedDirective(rst.Directive):
     has_content = False
 
     def run(self):
-        code = generate_media_player(fileurl=self.arguments[0],
+        file_url = self.arguments[0]
+        #print("=========VideoEmbedDirective=========>", file_url)
+        code = generate_media_player(fileurl=file_url,
                                      **self.options) # not present if not valued
         return [nodes.raw('', code, format='html')]
 
@@ -63,6 +66,8 @@ class ImageEmbedDirective(rst.Directive):
 
     def run(self):
 
+        file_url = self.arguments[0]
+
         if 'align' in self.options:
             if self.options['align'] not in self.align_h_values:
                 raise self.error(
@@ -71,7 +76,8 @@ class ImageEmbedDirective(rst.Directive):
                     % (self.name, self.options['align'],
                        '", "'.join(self.align_h_values)))
 
-        code = generate_image_viewer(imageurl=self.arguments[0],
+        #print("=========ImageEmbedDirective=========>", file_url)
+        code = generate_image_viewer(imageurl=file_url,
                                      preset=self.options.get("alias", "default"), # BEWARE - we expect that "default" preset to exist in settings!
                                      align=self.options.get("align", ""))
         return [nodes.raw('', code, format='html')]
