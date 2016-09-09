@@ -61,6 +61,9 @@ class TestUtilities(BaseGameTestCase):
         return unittest.TestCase.run(self, *args, **kwds) # we bypass test setups from django's TestCase, to use py.test instead
         '''
     def test_restructuredtext_handling(self):
+
+        self._reset_django_db()  # to have thumbnails tables
+
         from docutils.utils import SystemMessage
 
         restructuredtext = advanced_restructuredtext # we use our own version
@@ -74,6 +77,9 @@ class TestUtilities(BaseGameTestCase):
                         """) # too short underline
 
         assert "title1" in restructuredtext("""title1\n=======\n\naaa""") # thx to our conf, title1 stays in html fragment
+
+
+        game_img_url = game_file_url("images/avatars/guy1.png")
 
         html = restructuredtext(dedent("""
                     title1
@@ -97,10 +103,14 @@ class TestUtilities(BaseGameTestCase):
                         :alias: default
                         :align: center
 
+                    .. embed_image:: %(game_img_url)s
+                        :alias: small_width
+                        :align: left
+
                     .. embed_video:: https://hi.com/cantwork.mp4
                     
                     .. embed_video:: https://cantwork.mp4/
-                    """))
+                    """ % dict(game_img_url=game_img_url)))
 
         assert "title1" in html and "title2" in html
 
@@ -112,7 +122,11 @@ class TestUtilities(BaseGameTestCase):
         for mystr in ("<object", "mediaplayer", "https://hi.com/a&amp;b.flv"): # AT LEAST html-escaped, but urlescaping could be necessary for some media types
             assert mystr in html
 
-        for mystr in ("<img class=\"imageviewer align-center\"", "https://hisss.com/a&amp;b.jpg", "500px"): # fallback to default width/height since image url is buggy (so easy-thumbnails fails)
+        for mystr in ("<img class=\"imageviewer align-center\"", "https://hisss.com/a&amp;b.jpg", "max-width: 500px"):
+            # fallback to default width/height since image url is external (so easy-thumbnails fails)
+            assert mystr in html
+
+        for mystr in ("avatars/guy1.png", "/files/", "left", "max-width: 128px;"):
             assert mystr in html
 
         assert 'href="https://cantwork.mp4/"' in html

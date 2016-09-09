@@ -206,7 +206,6 @@ def generate_image_viewer(imageurl, width=500, height=400, preset=None, align=""
         try:
             # this url is actually a local game file
             thumbnailer = get_game_thumbnailer(rel_path)
-            thumb = None
             if preset:
                 try:
                     thumb = thumbnailer[preset]
@@ -236,7 +235,7 @@ def generate_image_viewer(imageurl, width=500, height=400, preset=None, align=""
         "classes": "align-%s" % align if align else "",
     }
 
-    template = ("""<a href="%(imageurl)s"><img class="imageviewer %(classes)s" src="%(thumburl)s" title="%(title)s"id="%(id)s" """ +
+    template = ("""<a href="%(imageurl)s"><img class="imageviewer %(classes)s" src="%(thumburl)s" title="%(title)s" id="%(id)s" """ +
                """style="max-width: %(width)spx; max-height:%(height)spx"/></a>""")
 
     return template % options
