@@ -6,27 +6,20 @@ TODO LIST CHRYSALIS
 FEATURES
 ------------
 
-Turrol Imagdir
-Khaal ??
-jaben minroche -> magnus
-minrochia.pg -> magnus
-Darian-> autre nom (trop proche de dorian)
+- AJOUTER PDF aux documents personnels du MJ ou en lien !! avec check de version !
 
-FIXME TODO INTERCANGER CES DEUx lOCALISATIONS ??
-
-- FIX check_restructuredtext with better func (handle game_file_url too) pour video en commentaire dans le yaml
-
-- MARQUER dans leur description LES OBJETS DISPOS EN 3D : statue de Bartzar, amphore, coffre rouillé, et grimoire sur piédestal
-
-- AJOUTER PDF aux documents personnels du MJ ou en lien !!
-
-
+ATTENTION trou de sécurité car les joueurs peuvent utiliser GAME_FILE_URL ????
 
 
 SCRIPT
 ----------
 
-.. DIRE turrol / jaben minroche / MAGNUS NOW, pesonnage standalone
+ANTIDOTER les contenus de jeu et le gamemaster manual.
+
+Khaal ??
+Turrol Imagdir / jaben minroche -> magnus
+minrochia.pg -> magnus
+Darian-> autre nom (trop proche de dorian)
 
 .. DIRE : on a infobulle sur les contacts messaging
 
@@ -45,6 +38,9 @@ Traduction de Runes Antiques:
 
 - remplir les descriptions des villes.
 
+- faire CHRONOLOGIE détaillée des évènements pour aider énigmes
+
+Puis checklist:
 Quelques points d'attention dont je me souviens:
 - dire pas faire screenshare en tant que gamemaster, mais lg plutot
 - faire périodiquement le tour du "tableau de bord" pour voir s'il n'y a pas des vues qui mériteraient d'être activée ; pareil pour les "permissions personnelles des joueurs"
@@ -62,12 +58,9 @@ GAMEMASTER_HINTS in:
     - game items
     - static pages
 
-
-- faire CHRONOLOGIE détaillée des évènements pour aider énigmes
-
 - manual for TTS acapela !!
 
-#TODO ADD LOOKUP OF CONF VALUE VIA TAGS in STATIC MANUAL STUFFS ?
+#TODO ADD LOOKUP OF CONF VALUE VIA TAGS in STATIC MANUAL STUFFS ? nope useless
 
 Faire page d'introduction
 	- situation de l'univers
@@ -80,9 +73,10 @@ Faire page d'introduction
 
 - ajouter des details cruciaux à TOUTES runes !!!!
 
-#FIXME où parle t on des balises d'email ? dans manual ?
+#FIXME où parle t on des balises d'email ? dans manual ? marchent-elles vraiment ??
 
 - clarifier règles absolues : pas de vol d'argent, pas de triche, emails uniquement valables à l'intérieur du site (dans INTRO "out game" du jeu)
+
 
 
 PROMOTION
@@ -105,12 +99,9 @@ PAUSED BUGLETS:
 - fix bugs in rich text, with spaces in embed rst_directives, and
   utilities.check_is_restructuredtext(value["content"]) which is buggy because must use rich_text instead
   <- WONT FIX, this filter requires a valid request ??????
-
 - appeler http://localhost:8000/DEMO/webradio_management/ depuis tests
-
 - tester radiospots et static pages comme le sont les global_contacts
 - tester les utilitaires DataTable et son form+view
-
 - checker que les formulaires et le compose_message ne listent PAS les gens inconnus via address book
 - checker le bon display des PJ only dans la page des enchérisseurs
 - vérifier les displays du cas "destinataires masqués"
@@ -136,6 +127,8 @@ PAUSED BUGLETS:
 TASKS DONE
 ---------------
 
+- MARQUER automatiquement dans leur description LES OBJETS DISPOS EN 3D - DONE
+- fix "strict" checking of data and retsructuredtext, at game instance creation - DONE
 - make public and private manuals (stopping at chapter "le final") - DONE
 - si pas autoresponse autorisée, alors la mailer au MJ pour review - DONE
 - automatiquement marquer comme lus les messages parents répondus/recontactés (et update help-standard_conversations) alors - DONE
