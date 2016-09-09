@@ -252,7 +252,8 @@ def build_proper_viewer(fileurl, **kwargs): # interesting kwarg : "autostart"
     # we try to provide the best player for this media type
 
     if not fileurl:
-        return ""
+        message = _("No media file available")
+        return """<span class="mediaplayer_fallback">{%s}<i></i></span>""" % escape(message)
 
     title = kwargs.pop("title", "") or get_medium_title_from_url(fileurl)
     extension = os.path.splitext(fileurl)[1][1:].lower() # no starting dot
