@@ -225,6 +225,7 @@ def _generate_site_links(html_snippet, datamanager):
 
 
 DOCUTILS_RENDERER_SETTINGS_DEFAULTS = {
+    "debug": False,  # verbose output
     "initial_header_level": 1,
     # important, to have even lone titles stay in the html fragment:
     "doctitle_xform": False,
@@ -232,13 +233,14 @@ DOCUTILS_RENDERER_SETTINGS_DEFAULTS = {
     "sectsubtitle_xform": False,
     'file_insertion_enabled': False,  # SECURITY MEASURE (file hacking)
     'raw_enabled': False,  # SECURITY MEASURE (script tag)
-    'report_level': 2,  # report warnings and above, by default
+    'report_level': 2,  # report warnings and above by default, in advanced_restructuredtext()
 }
 
 
 def advanced_restructuredtext(value,
                               initial_header_level=None,
-                              report_level=None): # report
+                              report_level=None,
+                              warning_stream=None): # sys.stderr by default
     '''
     *value* is the text to parse as restructuredtext.
     
@@ -271,6 +273,10 @@ def advanced_restructuredtext(value,
             docutils_settings.update(initial_header_level=initial_header_level)
         if report_level is not None:
             docutils_settings.update(report_level=report_level)
+
+        if warning_stream:
+            docutils_settings.update(warning_stream=warning_stream)
+
         #print(">><<", docutils_settings, value, file=sys.stderr)
         parts = publish_parts(source=smart_str(value), writer_name="html4css1", settings_overrides=docutils_settings)
         return mark_safe(force_unicode(parts["html_body"]))

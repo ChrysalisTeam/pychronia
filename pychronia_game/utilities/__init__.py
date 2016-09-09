@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 
 ### NO import from pychronia_game.common, else circular import !! ###
 
+import io
 import sys, os, collections, logging, inspect, types, traceback, re, glob, copy
 import yaml, random, contextlib
 from collections import Counter, OrderedDict
@@ -498,11 +499,18 @@ def check_is_positive_int(value, non_zero=True):
         usage_assert(value != 0)
     return True
 
-def check_is_restructuredtext(value):
+def check_is_restructuredtext(value, strict):
     from pychronia_game.templatetags.helpers import advanced_restructuredtext
     assert isinstance(value, basestring) # NOT A LIST
     #print("LOADING RST...", repr(value[0:70]))
-    usage_assert(advanced_restructuredtext(value)) # not a REAL check ATM...
+
+    with io.StringIO() as warning_stream:
+        output = advanced_restructuredtext(value, report_level=1, warning_stream=warning_stream)
+        usage_assert(output)
+        warnings = warning_stream.getvalue()
+        if strict and warnings:
+            raise ValueError("Restructuredtext format errors for %s...\n%s" % (repr(value[0:70]), warnings))
+
     return True
 
 def check_is_game_file(filename):
