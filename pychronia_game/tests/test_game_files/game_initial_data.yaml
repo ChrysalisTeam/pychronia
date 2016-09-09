@@ -697,6 +697,16 @@ gamemaster_manual:
 
         lalalala manual of game master
 
+        The RAW tag below will be safely stripped for web display.
+
+        .. raw:: pdf
+
+            PageBreak
+
+        lulululu
+
+
+
     spoiler_content: |
 
         Ceci est plein de spoilers !!

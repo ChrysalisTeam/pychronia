@@ -34,20 +34,25 @@ VISIBILITY_REASONS = Enum([ugettext_noop("sender"),
 @register_module
 class GameMasterManual(BaseDataManager):
 
-    GAMEMASTER_MANUAL_PARTS = ("pdf_prefix", "html_prefix",
+    GAMEMASTER_ALL_MANUAL_PARTS = ("pdf_prefix", "html_prefix",
                                "truncation_message", "public_content",
                                "spoiler_content")
 
-    def ____FIXME_USELESS__load_initial_data(self, **kwargs):
+    GAMEMASTER_WEB_MANUAL_PARTS = ("html_prefix", "public_content", "spoiler_content")
+
+    assert set(GAMEMASTER_WEB_MANUAL_PARTS) < set(GAMEMASTER_ALL_MANUAL_PARTS)
+
+    def _load_initial_data(self, **kwargs):
         super(GameMasterManual, self)._load_initial_data(**kwargs)
 
         game_data = self.data
 
-        game_data.setdefault("gamemaster_manual", {})
+        gamemaster_manual = game_data["gamemaster_manual"]
 
-        for key in self.GAMEMASTER_MANUAL_PARTS:
-            game_data["gamemaster_manual"].setdefault(key, "This is a Placeholder")
-
+        for key in self.GAMEMASTER_WEB_MANUAL_PARTS:
+            old_content = gamemaster_manual[key]
+            new_content = old_content.replace(".. raw::", ".. DISABLED_RAW_TAG")
+            gamemaster_manual[key] = new_content
 
     def _check_database_coherence(self, **kwargs):
         super(GameMasterManual, self)._check_database_coherence(**kwargs)
@@ -57,23 +62,31 @@ class GameMasterManual(BaseDataManager):
 
         assert 0 < game_data["gamemaster_manual"]["version"] < 10
 
-        for key in self.GAMEMASTER_MANUAL_PARTS:
+        for key in self.GAMEMASTER_ALL_MANUAL_PARTS:
             utilities.check_is_string(game_data["gamemaster_manual"][key])
 
-        utilities.check_is_restructuredtext(game_data["gamemaster_manual"]["public_content"] +
-                                            "\n\n" +
-                                            game_data["gamemaster_manual"]["spoiler_content"],
+        full_content = self._get_gamemaster_manual_for_html(game_data["gamemaster_manual"])
+
+
+        if __debug__ and False:
+            with open("DEBUG_GAMEMASTER_RST.rst", "w") as f:
+                f.write(full_content.encode("ascii", "replace"))
+
+        utilities.check_is_restructuredtext(full_content,
                                             strict=strict)
 
-
-    @readonly_method
-    def get_gamemaster_manual_for_html(self):
-        gamemaster_manual = self.data["gamemaster_manual"]
+    @staticmethod
+    def _get_gamemaster_manual_for_html(gamemaster_manual):
         return "\n\n".join([
             gamemaster_manual["html_prefix"],
             gamemaster_manual["public_content"],
             gamemaster_manual["spoiler_content"]
-            ])
+        ])
+
+    @readonly_method
+    def get_gamemaster_manual_for_html(self):
+        gamemaster_manual = self.data["gamemaster_manual"]
+        return self._get_gamemaster_manual_for_html(gamemaster_manual)
 
 
 @register_module
