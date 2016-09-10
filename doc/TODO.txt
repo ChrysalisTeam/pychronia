@@ -98,6 +98,7 @@ PAUSED BUGLETS:
   utilities.check_is_restructuredtext(value["content"]) which is buggy because must use rich_text instead
   <- WONT FIX, this filter requires a valid request ??????
 - appeler http://localhost:8000/DEMO/webradio_management/ depuis tests
+- tester templates 100% vides bien "utilisables"
 - tester radiospots et static pages comme le sont les global_contacts
 - tester les utilitaires DataTable et son form+view
 - checker que les formulaires et le compose_message ne listent PAS les gens inconnus via address book

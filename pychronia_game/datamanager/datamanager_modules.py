@@ -2247,6 +2247,8 @@ class TextMessagingTemplates(BaseDataManager):
                 msg["sender_email"], msg["recipient_emails"] = self._normalize_message_addresses(
                     msg.get("sender_email", ""), msg.get("recipient_emails", []))
 
+                msg["mask_recipients"] = msg.get("mask_recipients", None)
+
                 msg["subject"] = msg.get("subject", "")
                 msg["body"] = utilities.load_multipart_rst(msg.get("body", ""))
                 msg["attachment"] = msg.get("attachment", None)
@@ -2307,6 +2309,9 @@ class TextMessagingTemplates(BaseDataManager):
                 utilities.check_is_email(msg["sender_email"])
             for recipient in msg["recipient_emails"]:
                 utilities.check_is_email(recipient)
+
+            if msg["mask_recipients"]:
+                utilities.check_is_bool(msg["mask_recipients"])
 
             if msg["subject"]:
                 utilities.check_is_string(msg["subject"])
