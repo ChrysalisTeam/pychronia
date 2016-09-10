@@ -6,9 +6,7 @@ TODO LIST CHRYSALIS
 FEATURES
 ------------
 
-- AJOUTER PDF aux documents personnels du MJ ou en lien !! avec check de version !
-
-ATTENTION trou de sécurité car les joueurs peuvent utiliser GAME_FILE_URL ????
+ATTENTION trou de sécurité car les joueurs peuvent utiliser GAME_FILE_URL en rst OU raw text ????
 
 
 SCRIPT
@@ -127,6 +125,7 @@ PAUSED BUGLETS:
 TASKS DONE
 ---------------
 
+- AJOUTER PDF aux documents personnels du MJ, avec check de version - DONE
 - MARQUER automatiquement dans leur description LES OBJETS DISPOS EN 3D - DONE
 - fix "strict" checking of data and retsructuredtext, at game instance creation - DONE
 - make public and private manuals (stopping at chapter "le final") - DONE

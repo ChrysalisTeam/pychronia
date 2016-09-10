@@ -60,7 +60,11 @@ class GameMasterManual(BaseDataManager):
         strict = kwargs.get("strict", False)
         game_data = self.data
 
-        assert 0 < game_data["gamemaster_manual"]["version"] < 10
+        version = game_data["gamemaster_manual"]["version"]
+        assert 0 < version < 10
+
+        gamemaster_pdf = "auction_manual_v%.01f.pdf" % version
+        self._check_is_personal_file(username=self.master_login, filename=gamemaster_pdf)
 
         for key in self.GAMEMASTER_ALL_MANUAL_PARTS:
             utilities.check_is_string(game_data["gamemaster_manual"][key])
@@ -3655,6 +3659,11 @@ class PersonalFiles(BaseDataManager):
                 continue # empty folder
             folders_info[f] = sorted(pwds)
         return folders_info
+
+
+    def _check_is_personal_file(self, username, filename):
+        full_path = os.path.join("personal_files", username, filename)
+        utilities.check_is_game_file(full_path)
 
 
     @readonly_method
