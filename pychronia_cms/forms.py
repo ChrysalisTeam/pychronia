@@ -9,16 +9,12 @@ from userprofiles.forms import RegistrationForm as DefaultRegistrationForm
 from pychronia_cms.models import Profile
 
 
-
-
 # OUTDATED - DOESN'T SUPPORT DJANGO1.7 DUE TO SORTEDICT
 
 class RegistrationForm(DefaultRegistrationForm):
-
     antibot_check = forms.CharField(label=_('How much is "2 * 7" (in digits)?'), required=True)
 
     def clean_antibot_check(self):
-
         antibot_check = self.cleaned_data['antibot_check'].strip().lower()
 
         if antibot_check != "14" and antibot_check != "fourteen":
@@ -26,10 +22,8 @@ class RegistrationForm(DefaultRegistrationForm):
 
         return antibot_check
 
-
     def save_profile(self, new_user, *args, **kwargs):
         """
         Called by RegistrationForm.save().
         """
         Profile.objects.get_or_create(user=new_user)
-

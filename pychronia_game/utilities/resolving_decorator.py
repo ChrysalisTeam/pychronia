@@ -1,4 +1,3 @@
-
 import types, inspect, functools
 from decorator import decorator
 from functools import partial
@@ -50,8 +49,6 @@ def resolving_decorator(caller, func=None):
         final_func = decorator(caller_wrapper, func)
         assert final_func.__name__ == func.__name__
         return final_func
-
-
 
 
 def resolve_call_args(flattened_func, *args, **kwargs):
@@ -112,7 +109,6 @@ def flatten_function_signature(func):
 
     pos_arg_values = [getattr(old_code_object, name) for name in pos_arg_names]
 
-
     #defaults = old_function.__defaults__
     argcount = pos_arg_values[0]
     assert isinstance(argcount, (int, long))
@@ -139,9 +135,9 @@ def flatten_function_signature(func):
     new_function = types.FunctionType(new_code_object,
                                       old_function.__globals__,
                                       old_function.__name__,
-                                      (), # defaults are useless, since they must be resolved before by inspect.getcallargs()
+                                      (),
+                                      # defaults are useless, since they must be resolved before by inspect.getcallargs()
                                       old_function.__closure__)
-
 
     new_function.original_function = old_function
     new_function.resolve_call_args = functools.partial(inspect.getcallargs, old_function)
@@ -151,7 +147,6 @@ def flatten_function_signature(func):
     return new_function
 
 
-
 if __name__ == "__main__":
 
     # testing with normal functions and nested functions #
@@ -159,14 +154,16 @@ if __name__ == "__main__":
     def f(a, b=3, c=8, *d, **e):
         return locals()
 
+
     def gen(aa, bb):
         def f(a, b=3, c=8, *d, **e):
             cc = (aa, bb)
             return locals()
+
         return f
 
-    for old_function in (f, gen(1, 2)):
 
+    for old_function in (f, gen(1, 2)):
         new_function = flatten_function_signature(old_function)
         assert new_function.original_function == old_function
 
@@ -177,28 +174,32 @@ if __name__ == "__main__":
         assert res1 == res2, (res1, res2)
 
 
-
     @resolving_decorator
     def inject_session(func, **all_kwargs):
         if not all_kwargs["session"]:
             all_kwargs["session"] = "<SESSION>"
         return func(**all_kwargs)
 
+
     @inject_session
     def func1(session):
         return session
+
 
     @inject_session
     def func2(a, session=None):
         return session
 
+
     @inject_session
     def func3(a, *session):
         return session
 
+
     @inject_session
     def func4(a, **session):
         return session
+
 
     assert func1(None) == "<SESSION>"
     assert func1(4) == 4
@@ -210,6 +211,3 @@ if __name__ == "__main__":
     assert func4(1, my=8) == dict(my=8)
 
     print "All tests OK"
-
-
-

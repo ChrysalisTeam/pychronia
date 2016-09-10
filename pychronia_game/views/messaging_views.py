@@ -14,8 +14,6 @@ from django.core.exceptions import ValidationError
 from pychronia_game.templatetags.helpers import format_enriched_text
 from pychronia_game import utilities
 
-
-
 """
     categories = Select2TagsField(label=ugettext_lazy("Categories"), required=False)
     keywords = Select2TagsField(label=ugettext_lazy("Keywords"), required=False)
@@ -42,18 +40,17 @@ class MessageComposeForm(AbstractGameForm):
 
     mask_recipients = forms.BooleanField(label=ugettext_lazy("Mask recipients"), initial=False, required=False)
 
-    subject = forms.CharField(label=ugettext_lazy("Subject"), widget=forms.TextInput(attrs={'size':'35'}), required=True)
+    subject = forms.CharField(label=ugettext_lazy("Subject"), widget=forms.TextInput(attrs={'size': '35'}),
+                              required=True)
 
-    body = forms.CharField(label=ugettext_lazy("Body"), widget=forms.Textarea(attrs={'rows': '8', 'cols':'35'}), required=False)
+    body = forms.CharField(label=ugettext_lazy("Body"), widget=forms.Textarea(attrs={'rows': '8', 'cols': '35'}),
+                           required=False)
 
     attachment = Select2TagsField(label=ugettext_lazy("Attachment"), required=False)
-
 
     transferred_msg = forms.CharField(required=False, widget=forms.HiddenInput())
 
     parent_id = forms.CharField(required=False, widget=forms.HiddenInput())
-
-
 
     def __init__(self, request, *args, **kwargs):
         super(MessageComposeForm, self).__init__(request.datamanager, *args, **kwargs)
@@ -78,7 +75,7 @@ class MessageComposeForm(AbstractGameForm):
 
         # TODO - extract these decisions tables to a separate method and test it thoroughly #
 
-        if user.is_master: # only master has templates ATM
+        if user.is_master:  # only master has templates ATM
 
             use_template = url_data.get("use_template", "")
             if use_template:
@@ -98,8 +95,8 @@ class MessageComposeForm(AbstractGameForm):
                     attachment = tpl["attachment"] or attachment
                     transferred_msg = tpl["transferred_msg"] or transferred_msg
                     parent_id = tpl["parent_id"] or parent_id
-            self.fields["use_template"] = forms.CharField(required=False, initial=(use_template or None), widget=forms.HiddenInput())
-
+            self.fields["use_template"] = forms.CharField(required=False, initial=(use_template or None),
+                                                          widget=forms.HiddenInput())
 
         if parent_id:
             # we transfer data from the parent email, to help user save time #
@@ -113,32 +110,33 @@ class MessageComposeForm(AbstractGameForm):
 
                 subject = msg["subject"]  # always retrieved here (but might be prefixed)
 
-                if visibility_reason == VISIBILITY_REASONS.sender: # we simply recontact recipients (even if we were one of the recipients too)
+                if visibility_reason == VISIBILITY_REASONS.sender:  # we simply recontact recipients (even if we were one of the recipients too)
                     if user.is_master:
-                        sender = msg["sender_email"] # for master
+                        sender = msg["sender_email"]  # for master
                     recipients = msg["recipient_emails"]
 
                     if _("Bis:") not in msg["subject"]:
                         subject = _("Bis:") + " " + subject
-                    # don't resend attachment! #
+                        # don't resend attachment! #
 
-                elif visibility_reason == VISIBILITY_REASONS.recipient: # we reply to a message
+                elif visibility_reason == VISIBILITY_REASONS.recipient:  # we reply to a message
                     if user.is_master:
-                        sender = msg["recipient_emails"][0] if len(msg["recipient_emails"]) == 1 else None # let the sender empty for master, if we're not sure which recipient we represent
+                        sender = msg["recipient_emails"][0] if len(msg[
+                                                                       "recipient_emails"]) == 1 else None  # let the sender empty for master, if we're not sure which recipient we represent
                     recipients = [msg["sender_email"]]
                     my_email = datamanager.get_character_email() if user.is_character else None
                     # works OK if my_email is None (i.e game master) or sender is None
-                    recipients += [_email for _email in msg["recipient_emails"] if _email != my_email and _email != sender]
+                    recipients += [_email for _email in msg["recipient_emails"] if
+                                   _email != my_email and _email != sender]
                     response_prefix = _("Re:")
                     if response_prefix not in msg["subject"]:
                         subject = response_prefix + " " + subject
-                    # don't resend attachment, here too! #
+                        # don't resend attachment, here too! #
 
-                else: # visibility reason is None, or another visibility case (eg. interception)
+                else:  # visibility reason is None, or another visibility case (eg. interception)
                     self.logger.warning("Access to forbidden message parent_id %s was attempted", parent_id)
                     user.add_error(_("Access to initial message forbidden."))
                     parent_id = None
-
 
         if transferred_msg:
             try:
@@ -147,16 +145,19 @@ class MessageComposeForm(AbstractGameForm):
                 datamanager.logger.warning("Unknown transferred_msg id %r encountered in url", transferred_msg)
                 transferred_msg = ""
 
-
         # we build dynamic fields from the data we gathered #
 
         default_use_restructuredtext = user.is_master  # by default, players use raw text
-        self.fields = utilities.add_to_ordered_dict(self.fields, 2, "use_restructuredtext", forms.BooleanField(label=ugettext_lazy("Use markup language (RestructuredText)"), initial=default_use_restructuredtext, required=False))
+        self.fields = utilities.add_to_ordered_dict(self.fields, 2, "use_restructuredtext", forms.BooleanField(
+            label=ugettext_lazy("Use markup language (RestructuredText)"), initial=default_use_restructuredtext,
+            required=False))
 
         if user.is_master:
 
-            sender = Select2TagsField(label=ugettext_lazy("Sender"), required=True, initial=([sender] if sender else [])) # initial MUST be a 1-item list!
-            master_emails = datamanager.global_contacts.keys() + datamanager.get_character_emails(is_npc=True) # PLAYERS EMAILS are not included!
+            sender = Select2TagsField(label=ugettext_lazy("Sender"), required=True,
+                                      initial=([sender] if sender else []))  # initial MUST be a 1-item list!
+            master_emails = datamanager.global_contacts.keys() + datamanager.get_character_emails(
+                is_npc=True)  # PLAYERS EMAILS are not included!
             sender.choice_tags = datamanager.sort_email_addresses_list(master_emails)
             assert sender.max_selection_size is not None
             sender.max_selection_size = 1
@@ -168,10 +169,12 @@ class MessageComposeForm(AbstractGameForm):
             _delay_values_minutes_choices = zip(_delay_values_minutes, _delay_values_minutes_labels)
            self.fields = add_to_ordered_dict(self.fields, 2, "delay_mn", forms.ChoiceField(label=_("Sending delay"), choices=_delay_values_minutes_choices, initial="0"))
             '''
-            self.fields = utilities.add_to_ordered_dict(self.fields, 2, "delay_h", forms.FloatField(label=_("Sending delay in hours (eg. 2.4)"), initial=0))
+            self.fields = utilities.add_to_ordered_dict(self.fields, 2, "delay_h",
+                                                        forms.FloatField(label=_("Sending delay in hours (eg. 2.4)"),
+                                                                         initial=0))
 
         else:
-            pass # no sender or delay_mn fields!
+            pass  # no sender or delay_mn fields!
 
         available_recipients = datamanager.get_sorted_user_contacts()  # current username should not be "anonymous", since it's used only in member areas !
         self.fields["recipients"].initial = list(recipients)  # prevents ZODB types...
@@ -182,13 +185,12 @@ class MessageComposeForm(AbstractGameForm):
         self.fields["subject"].initial = subject
         self.fields["body"].initial = body
 
-        self.fields["attachment"].initial = [attachment] if attachment else None # BEWARE HERE, a list!!
+        self.fields["attachment"].initial = [attachment] if attachment else None  # BEWARE HERE, a list!!
         self.fields["attachment"].choice_tags = datamanager.get_personal_files(absolute_urls=False)
         self.fields["attachment"].max_selection_size = 1
 
         self.fields["parent_id"].initial = parent_id
         self.fields["transferred_msg"].initial = transferred_msg
-
 
     def _ensure_no_placeholder_left(self, value):
         if re.search(r"{{\s*[\w ]+\s*}}", value, re.IGNORECASE | re.UNICODE):
@@ -207,13 +209,11 @@ class MessageComposeForm(AbstractGameForm):
     def clean_sender(self):
         # called only for master
         data = self.cleaned_data['sender']
-        return data[0] # MUST exist if we're here
-
+        return data[0]  # MUST exist if we're here
 
     def clean_attachment(self):
         data = self.cleaned_data['attachment']
-        return data[0] if data else None # MUST exist if we're here
-
+        return data[0] if data else None  # MUST exist if we're here
 
     def clean_transferred_msg(self):
         transferred_msg = self.cleaned_data['transferred_msg']
@@ -222,7 +222,8 @@ class MessageComposeForm(AbstractGameForm):
                 self._datamanager.get_dispatched_message_by_id(msg_id=transferred_msg)
             except UsageError:
                 # really abnormal, since __init__ should have filtered out that hidden fields value at the beginning of process
-                self._datamanager.logger.critical("Unknown transferred_msg id %r encountered in post data", transferred_msg)
+                self._datamanager.logger.critical("Unknown transferred_msg id %r encountered in post data",
+                                                  transferred_msg)
                 transferred_msg = None
         return transferred_msg or None
 
@@ -240,24 +241,25 @@ def _determine_template_display_context(datamanager, template_id, template):
     """
     assert datamanager.is_master()
     ctx = dict(
-                template_id=template_id, # allow use as template
-                is_used=template["is_used"],
-                is_ignored=template["is_ignored"],
-                has_read=None, # no buttons at all for that
-                visibility_reason=None,
-                intercepted_by=None,
-                can_transfer=False,
-                has_starred=None,  # useless for now
-                has_archived=None,
-                can_reply=False,
-                can_recontact=False,
-                can_force_sending=False,
-                can_permanently_delete=False,
-                display_id=template_id, # USED IN UI controls!
-                force_recipients_display=False, # useless, since we're MASTER here...
-                )
+        template_id=template_id,  # allow use as template
+        is_used=template["is_used"],
+        is_ignored=template["is_ignored"],
+        has_read=None,  # no buttons at all for that
+        visibility_reason=None,
+        intercepted_by=None,
+        can_transfer=False,
+        has_starred=None,  # useless for now
+        has_archived=None,
+        can_reply=False,
+        can_recontact=False,
+        can_force_sending=False,
+        can_permanently_delete=False,
+        display_id=template_id,  # USED IN UI controls!
+        force_recipients_display=False,  # useless, since we're MASTER here...
+    )
     _check_message_display_context(ctx, msg=template)
     return ctx
+
 
 def _determine_message_display_context(datamanager, msg, is_pending):
     """
@@ -269,27 +271,29 @@ def _determine_message_display_context(datamanager, msg, is_pending):
     assert msg["id"]
     assert datamanager.is_authenticated()
     username = datamanager.user.username
-    visibility_reason = msg["visible_by"].get(username, None) # one of VISIBILITY_REASONS, or None
+    visibility_reason = msg["visible_by"].get(username, None)  # one of VISIBILITY_REASONS, or None
 
     ctx = dict(
-                template_id=None,
-                is_used=None, # for templates only
-                is_ignored=None,
-                has_read=(username in msg["has_read"]) if not is_pending else None,
-                visibility_reason=visibility_reason,
-                intercepted_by=datamanager.get_characters_for_visibility_reason(msg, visibility_reason=VISIBILITY_REASONS.interceptor) if datamanager.is_master() else None,
-                can_transfer=True if not is_pending else None,
-                has_starred=(username in msg["has_starred"]) if not is_pending else None,
-                has_archived=(username in msg["has_archived"]) if not is_pending else None,
-                can_reply=(visibility_reason == VISIBILITY_REASONS.recipient) if not is_pending else None,
-                can_recontact=(visibility_reason == VISIBILITY_REASONS.sender) if not is_pending else None,
-                can_force_sending=is_pending,
-                can_permanently_delete=datamanager.is_master(),
-                display_id=msg["id"], # USED IN UI controls!
-                force_recipients_display=(visibility_reason == VISIBILITY_REASONS.sender),
-                )
+        template_id=None,
+        is_used=None,  # for templates only
+        is_ignored=None,
+        has_read=(username in msg["has_read"]) if not is_pending else None,
+        visibility_reason=visibility_reason,
+        intercepted_by=datamanager.get_characters_for_visibility_reason(msg,
+                                                                        visibility_reason=VISIBILITY_REASONS.interceptor) if datamanager.is_master() else None,
+        can_transfer=True if not is_pending else None,
+        has_starred=(username in msg["has_starred"]) if not is_pending else None,
+        has_archived=(username in msg["has_archived"]) if not is_pending else None,
+        can_reply=(visibility_reason == VISIBILITY_REASONS.recipient) if not is_pending else None,
+        can_recontact=(visibility_reason == VISIBILITY_REASONS.sender) if not is_pending else None,
+        can_force_sending=is_pending,
+        can_permanently_delete=datamanager.is_master(),
+        display_id=msg["id"],  # USED IN UI controls!
+        force_recipients_display=(visibility_reason == VISIBILITY_REASONS.sender),
+    )
     _check_message_display_context(ctx, msg=msg)
     return ctx
+
 
 def _determine_message_list_display_context(datamanager, messages, is_pending):
     """
@@ -298,7 +302,8 @@ def _determine_message_list_display_context(datamanager, messages, is_pending):
     if not messages:
         res = []
     elif isinstance(messages[0], (list, tuple)):
-        res = [[(_determine_message_display_context(datamanager, msg, is_pending=is_pending), msg) for msg in msg_list] for msg_list in messages] # conversations
+        res = [[(_determine_message_display_context(datamanager, msg, is_pending=is_pending), msg) for msg in msg_list]
+               for msg_list in messages]  # conversations
     else:
         res = [(_determine_message_display_context(datamanager, msg, is_pending=is_pending), msg) for msg in messages]
     return res
@@ -309,11 +314,11 @@ def _build_contact_display_cache(datamanager):
     return datamanager.get_contacts_display_properties(all_contacts, as_dict=True)
 
 
-
 @register_view(access=UserAccess.master, title=ugettext_lazy("Dispatched Messages"))
 def all_dispatched_messages(request, template_name='messaging/messages.html'):
     messages = list(reversed(request.datamanager.get_all_dispatched_messages()))
-    enriched_messages = _determine_message_list_display_context(request.datamanager, messages=messages, is_pending=False)
+    enriched_messages = _determine_message_list_display_context(request.datamanager, messages=messages,
+                                                                is_pending=False)
 
     variables = _limit_displayed_messages(messages_list=enriched_messages,
                                           query_parameters=request.GET)
@@ -322,7 +327,7 @@ def all_dispatched_messages(request, template_name='messaging/messages.html'):
     return render(request,
                   template_name,
                   dict(page_title=_("All Dispatched Messages") if display_all else _("Recent Dispatched Messages"),
-                       contact_cache=_build_contact_display_cache(request.datamanager,),
+                       contact_cache=_build_contact_display_cache(request.datamanager, ),
                        **variables))
 
 
@@ -337,6 +342,7 @@ def all_queued_messages(request, template_name='messaging/messages.html'):
                        messages=enriched_messages,  # no need to LIMIT the display of these queued messages...
                        contact_cache=_build_contact_display_cache(request.datamanager)))
 
+
 @register_view(attach_to=all_queued_messages, title=ugettext_lazy("Force Message Sending"))
 def ajax_force_email_sending(request):
     # to be used by AJAX
@@ -349,19 +355,19 @@ def ajax_force_email_sending(request):
     # in case of error, a "500" code will be returned
 
 
-
 @register_view(access=UserAccess.master, title=ugettext_lazy("Message Templates"))
 def messages_templates(request, template_name='messaging/messages.html'):
-
     NO_CATEGORY_PLACEHOLDER = "[NONE]"
     ALL_CATEGORIES_PLACEHOLDER = "[ALL]"
 
-    message_template_categories = request.datamanager.get_global_parameter("message_template_categories") # already sorted, ATM
+    message_template_categories = request.datamanager.get_global_parameter(
+        "message_template_categories")  # already sorted, ATM
     message_template_categories = [NO_CATEGORY_PLACEHOLDER] + message_template_categories + [ALL_CATEGORIES_PLACEHOLDER]
 
     selected_category = request.GET.get("category")
     if selected_category and selected_category not in message_template_categories:
-        request.datamanager.user.add_error(_("Unknown template category '%(category)s'") % SDICT(category=selected_category))
+        request.datamanager.user.add_error(
+            _("Unknown template category '%(category)s'") % SDICT(category=selected_category))
         selected_category = None
 
     selected_category = selected_category or NO_CATEGORY_PLACEHOLDER
@@ -369,10 +375,12 @@ def messages_templates(request, template_name='messaging/messages.html'):
     if not selected_category or selected_category == NO_CATEGORY_PLACEHOLDER:
         enriched_templates = []  # security, because too many placeholders
     else:
-        templates = request.datamanager.get_messages_templates().items() # PAIRS (template_id, template_dict)
+        templates = request.datamanager.get_messages_templates().items()  # PAIRS (template_id, template_dict)
         templates.sort(key=lambda msg: (msg[1]["order"], msg[0]))  # we sort by order and then template name
-        enriched_templates = [(_determine_template_display_context(request.datamanager, template_id=tpl[0], template=tpl[1]), tpl[1])
-                              for tpl in templates if (selected_category == ALL_CATEGORIES_PLACEHOLDER or selected_category in tpl[1]["categories"])]
+        enriched_templates = [
+            (_determine_template_display_context(request.datamanager, template_id=tpl[0], template=tpl[1]), tpl[1])
+            for tpl in templates if
+            (selected_category == ALL_CATEGORIES_PLACEHOLDER or selected_category in tpl[1]["categories"])]
 
     return render(request,
                   template_name,
@@ -384,7 +392,6 @@ def messages_templates(request, template_name='messaging/messages.html'):
 
 
 def _filter_messages(messages_list, filter_field, filter_text, as_conversations):
-
     assert isinstance(filter_field, basestring), filter_field
     assert isinstance(filter_text, basestring), filter_text
 
@@ -421,7 +428,6 @@ def _filter_messages(messages_list, filter_field, filter_text, as_conversations)
     return new_messages_list
 
 
-
 def _limit_displayed_messages(messages_list, query_parameters, as_conversations=False):
     """
     *messages_list* may also consiste of conversations.
@@ -455,12 +461,14 @@ def _limit_displayed_messages(messages_list, query_parameters, as_conversations=
 @register_view(access=UserAccess.authenticated, requires_global_permission=False,
                title=ugettext_lazy("Conversations"), title_for_master=ugettext_lazy("NPC Conversations"))
 def standard_conversations(request, template_name='messaging/messages.html'):
-
-    visibility_reasons = (VISIBILITY_REASONS.sender, VISIBILITY_REASONS.recipient)  # we EXCLUDE intercepted messages from this
-    messages = request.datamanager.get_user_related_messages(visibility_reasons=visibility_reasons, archived=False)  # for current master or character
+    visibility_reasons = (
+    VISIBILITY_REASONS.sender, VISIBILITY_REASONS.recipient)  # we EXCLUDE intercepted messages from this
+    messages = request.datamanager.get_user_related_messages(visibility_reasons=visibility_reasons,
+                                                             archived=False)  # for current master or character
 
     _grouped_messages = request.datamanager.sort_messages_by_conversations(messages)
-    enriched_messages = _determine_message_list_display_context(request.datamanager, messages=_grouped_messages, is_pending=False)
+    enriched_messages = _determine_message_list_display_context(request.datamanager, messages=_grouped_messages,
+                                                                is_pending=False)
     del _grouped_messages
 
     as_conversations = True
@@ -482,12 +490,15 @@ def standard_conversations(request, template_name='messaging/messages.html'):
                        **variables))
 
 
-@register_view(access=UserAccess.character, requires_global_permission=False, title=ugettext_lazy("Intercepted Messages"))  # master doesn't INTERCEPT messages...
+@register_view(access=UserAccess.character, requires_global_permission=False,
+               title=ugettext_lazy("Intercepted Messages"))  # master doesn't INTERCEPT messages...
 def intercepted_messages(request, template_name='messaging/messages.html'):
     visibility_reasons = [VISIBILITY_REASONS.interceptor]  # we EXCLUDE intercepted messages from this
-    messages = request.datamanager.get_user_related_messages(visibility_reasons=visibility_reasons, archived=False)  # no LIMIT for now...
+    messages = request.datamanager.get_user_related_messages(visibility_reasons=visibility_reasons,
+                                                             archived=False)  # no LIMIT for now...
     messages = list(reversed(messages))
-    enriched_messages = _determine_message_list_display_context(request.datamanager, messages=messages, is_pending=False)
+    enriched_messages = _determine_message_list_display_context(request.datamanager, messages=messages,
+                                                                is_pending=False)
 
     variables = _limit_displayed_messages(messages_list=enriched_messages,
                                           query_parameters=request.GET)
@@ -499,13 +510,17 @@ def intercepted_messages(request, template_name='messaging/messages.html'):
                        contact_cache=_build_contact_display_cache(request.datamanager),
                        **variables))
 
+
 @register_view(access=UserAccess.authenticated, requires_global_permission=False,
-               title=ugettext_lazy("Archived Messages"), title_for_master=ugettext_lazy("NPC Archived Messages") )  # ALSO for master
+               title=ugettext_lazy("Archived Messages"),
+               title_for_master=ugettext_lazy("NPC Archived Messages"))  # ALSO for master
 def all_archived_messages(request, template_name='messaging/messages.html'):
     visibility_reasons = VISIBILITY_REASONS  # in this archive, we list ALL messages, even intercepted
-    messages = request.datamanager.get_user_related_messages(visibility_reasons=visibility_reasons, archived=True)  # no LIMIT for now...
+    messages = request.datamanager.get_user_related_messages(visibility_reasons=visibility_reasons,
+                                                             archived=True)  # no LIMIT for now...
     messages = list(reversed(messages))
-    enriched_messages = _determine_message_list_display_context(request.datamanager, messages=messages, is_pending=False)
+    enriched_messages = _determine_message_list_display_context(request.datamanager, messages=messages,
+                                                                is_pending=False)
 
     variables = _limit_displayed_messages(messages_list=enriched_messages,
                                           query_parameters=request.GET)
@@ -556,16 +571,14 @@ def ajax_permanently_delete_message(request):
     # to be used by AJAX
     msg_id = request.REQUEST.get("id", None)
 
-    request.datamanager.permanently_delete_message(msg_id=msg_id) # should never fail
+    request.datamanager.permanently_delete_message(msg_id=msg_id)  # should never fail
 
     return HttpResponse("OK")
     # in case of error, an HTTP error code will be returned
 
 
-
 @register_view(attach_to=standard_conversations, title=ugettext_lazy("Compose Message"))
 def compose_message(request, template_name='messaging/compose.html'):
-
     user = request.datamanager.user
     message_sent = False
     form = None
@@ -603,7 +616,8 @@ def compose_message(request, template_name='messaging/compose.html'):
                 transferred_msg = form.cleaned_data["transferred_msg"] or None
 
                 parent_id = form.cleaned_data.get("parent_id", None) or None
-                use_template = form.cleaned_data.get("use_template", None) or None  # standard players might have it one day
+                use_template = form.cleaned_data.get("use_template",
+                                                     None) or None  # standard players might have it one day
 
                 # sender_email and one of the recipient_emails can be the same email, we don't care !
                 post_message = request.datamanager.post_message
@@ -630,7 +644,6 @@ def compose_message(request, template_name='messaging/compose.html'):
     else:
         form = MessageComposeForm(request)
 
-
     if latest_sent_msg_id:
         # we redirect towards the most probable view
         if not request.datamanager.is_master():
@@ -642,16 +655,16 @@ def compose_message(request, template_name='messaging/compose.html'):
                 target_view = "pychronia_game.views.all_dispatched_messages"
             except UsageError:
                 assert len([message for message in request.datamanager.messaging_data["messages_queued"]
-                                    if message["id"] == latest_sent_msg_id]) == 1
+                            if message["id"] == latest_sent_msg_id]) == 1
                 target_view = "pychronia_game.views.all_queued_messages"
 
         conversations_url = game_view_url(target_view, datamanager=request.datamanager)
         conversations_url += '?' + urllib.urlencode(dict(message_sent="1"))
         return HttpResponseRedirect(redirect_to=conversations_url)
 
-
-    user_contacts = request.datamanager.get_sorted_user_contacts() # properly SORTED list
-    contacts_display = request.datamanager.get_contacts_display_properties(user_contacts) # DICT FIELDS: address avatar description
+    user_contacts = request.datamanager.get_sorted_user_contacts()  # properly SORTED list
+    contacts_display = request.datamanager.get_contacts_display_properties(
+        user_contacts)  # DICT FIELDS: address avatar description
 
     parent_messages = ()
     parent_msg_id = request.GET.get("parent_id", None)
@@ -659,23 +672,25 @@ def compose_message(request, template_name='messaging/compose.html'):
         try:
             _parent_msg = request.datamanager.get_dispatched_message_by_id(msg_id=parent_msg_id)  # even if archived...
             # for now, only the DIRECT parent is displayed...
-            parent_messages = _determine_message_list_display_context(request.datamanager, messages=[_parent_msg], is_pending=False)
+            parent_messages = _determine_message_list_display_context(request.datamanager, messages=[_parent_msg],
+                                                                      is_pending=False)
         except UsageError as e:
-            request.datamanager.logger.error("Ignoring invalid parent_id %s in message composition view", parent_msg_id, exc_info=True)
+            request.datamanager.logger.error("Ignoring invalid parent_id %s in message composition view", parent_msg_id,
+                                             exc_info=True)
 
     #pprint(parent_messages)
 
     return render(request,
                   template_name,
-                    {
-                     'page_title': _("Compose Message"),
-                     'message_form': form,
-                     'mode': "compose", # TODO DELETE THIS
-                     'contacts_display': contacts_display,
-                     'message_sent': message_sent, # to destroy saved content
-                     'parent_messages': parent_messages,
-                     'contact_cache': _build_contact_display_cache(request.datamanager)
-                    })
+                  {
+                      'page_title': _("Compose Message"),
+                      'message_form': form,
+                      'mode': "compose",  # TODO DELETE THIS
+                      'contacts_display': contacts_display,
+                      'message_sent': message_sent,  # to destroy saved content
+                      'parent_messages': parent_messages,
+                      'contact_cache': _build_contact_display_cache(request.datamanager)
+                  })
 
 
 '''
@@ -732,8 +747,10 @@ def ___outbox(request, template_name='messaging/messages.html'):
 '''
 
 
-@register_view(access=UserAccess.authenticated, requires_global_permission=False, title=ugettext_lazy("View Single Message"))
-def view_single_message(request, msg_id, template_name='messaging/view_single_message.html', popup_template_name='messaging/single_message.html'):
+@register_view(access=UserAccess.authenticated, requires_global_permission=False,
+               title=ugettext_lazy("View Single Message"))
+def view_single_message(request, msg_id, template_name='messaging/view_single_message.html',
+                        popup_template_name='messaging/single_message.html'):
     """
     Meant to be used in event logging or for message transfer.
     
@@ -770,32 +787,33 @@ def view_single_message(request, msg_id, template_name='messaging/view_single_me
             return HttpResponse(_("Message couldn't be found."))
         return render(request,
                       popup_template_name,
-                        {
-                         'ctx': None,  # no operation possible
-                         'message': message,  # SHALL NOT be empty
-                         'contact_cache': _build_contact_display_cache(request.datamanager),
-                         'no_background': True,
-                        })
+                      {
+                          'ctx': None,  # no operation possible
+                          'message': message,  # SHALL NOT be empty
+                          'contact_cache': _build_contact_display_cache(request.datamanager),
+                          'no_background': True,
+                      })
     else:
         return render(request,
                       template_name,
-                        {
-                         'page_title': _("Single Message"),
-                         'is_queued': is_queued,
-                         'ctx': ctx,
-                         'message': message,  # might be None here
-                         'contact_cache': _build_contact_display_cache(request.datamanager),
-                        })
+                      {
+                          'page_title': _("Single Message"),
+                          'is_queued': is_queued,
+                          'ctx': ctx,
+                          'message': message,  # might be None here
+                          'contact_cache': _build_contact_display_cache(request.datamanager),
+                      })
 
 
 @register_view(access=UserAccess.anonymous, requires_global_permission=False, title=ugettext_lazy("Message Preview"))
 def preview_message(request):
+    rst = request.REQUEST.get("content", _("No content submitted for display"))  # we take from both GET and POST
 
-    rst = request.REQUEST.get("content", _("No content submitted for display")) # we take from both GET and POST
+    html = format_enriched_text(request.datamanager, rst, initial_header_level=2,
+                                report_level=1).strip()  # we let ALL debug output here!!
 
-    html = format_enriched_text(request.datamanager, rst, initial_header_level=2, report_level=1).strip() # we let ALL debug output here!!
+    return HttpResponse(html)  # only a snippet of html, no html/head/body tags - might be EMPTY
 
-    return HttpResponse(html) # only a snippet of html, no html/head/body tags - might be EMPTY
 
 '''
 @register_view(access=UserAccess.authenticated, title=ugettext_lazy("sssss"))
@@ -816,4 +834,3 @@ def ___intercepted_messages(request, template_name='messaging/messages.html'):
                     })
 
 '''
-

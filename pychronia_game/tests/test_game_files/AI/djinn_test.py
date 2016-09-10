@@ -1,20 +1,15 @@
-
-
 import os, sys, glob, random, time
 
 
-
 def ___disabled_broken_ai_test():
-
     DIRECTORY = os.path.abspath(os.path.dirname(__file__))
     sys.path.append(os.path.join(os.path.dirname(os.path.dirname(DIRECTORY)), "minilibs"))
 
     import aimllib
 
-
     BRAIN_FILE = os.path.join(DIRECTORY, "botbrain.brn")
 
-    kernelfile = None#BRAIN_FILE
+    kernelfile = None  #BRAIN_FILE
 
     aimlfiles = []
     aimlfiles += glob.glob(os.path.join(DIRECTORY, "common_aiml", "*", "*.aiml"))
@@ -27,7 +22,6 @@ def ___disabled_broken_ai_test():
     kernel.saveBrain(BRAIN_FILE)
     print ">>>>>>> dumped brain !"
 
-
     aimlfiles += glob.glob(os.path.join(DIRECTORY, "djinn_specific_aiml", "*.aiml"))
 
     sys.stdout.write("Connecting to www.djinns.from.heaven.com\n")
@@ -39,11 +33,7 @@ def ___disabled_broken_ai_test():
 
     kernel.bootstrap(brainFile=kernelfile, learnFiles=aimlfiles)
 
-
-
-
     print "\n"
-
 
     print "*** Welcome to the shrine of the Oracles, young zealot ! ***"
 

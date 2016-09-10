@@ -4,7 +4,8 @@ from __future__ import unicode_literals
 
 import threading
 from pychronia_game.common import *
-from pychronia_game.datamanager import readonly_method, transaction_watcher, register_view, AbstractAbility, AbstractGameForm
+from pychronia_game.datamanager import readonly_method, transaction_watcher, register_view, AbstractAbility, \
+    AbstractGameForm
 from django import forms
 from django.http import Http404
 from ConfigParser import ConfigParser
@@ -19,30 +20,27 @@ class DjinnContactForm(AbstractGameForm):
 
 """
 
-djinn_singleton_lock = threading.Lock() # cfor oncurrent access to singleton
+djinn_singleton_lock = threading.Lock()  # cfor oncurrent access to singleton
 
 
 class DjinnContactForm(AbstractGameForm):
     djinn_name = forms.CharField(label=ugettext_lazy("Djinn"), required=True)
 
 
-
 @register_view
 class ArtificialIntelligenceAbility(AbstractAbility):
-
     TITLE = ugettext_lazy("Chat with Djinns")
     NAME = "artificial_intelligence"
 
     GAME_ACTIONS = dict(process_user_sentence=dict(title=ugettext_lazy("Respond to user input"),
-                                                          form_class=None,
-                                                          callback="process_user_sentence"))
+                                                   form_class=None,
+                                                   callback="process_user_sentence"))
 
     TEMPLATE = "abilities/artificial_intelligence.html"
 
     ACCESS = UserAccess.character
     REQUIRES_CHARACTER_PERMISSION = True
     REQUIRES_GLOBAL_PERMISSION = True
-
 
     @classmethod
     def _setup_ability_settings(cls, settings):
@@ -53,7 +51,7 @@ class ArtificialIntelligenceAbility(AbstractAbility):
 
         for bot_name in settings["specific_bot_properties"].keys():
             bot_session = private_data.setdefault(bot_name, PersistentMapping())
-            bot_session.setdefault("_inputStack", PersistentList()) # always empty between bot requests !
+            bot_session.setdefault("_inputStack", PersistentList())  # always empty between bot requests !
             bot_session.setdefault("_inputHistory", PersistentList())
             bot_session.setdefault("_outputHistory", PersistentList())
 
@@ -68,20 +66,19 @@ class ArtificialIntelligenceAbility(AbstractAbility):
 
         for key, value in settings["common_bot_properties"].items():
             utilities.check_is_string(key)
-            if value: # may be empty
+            if value:  # may be empty
                 utilities.check_is_string(value)
 
         for bot_name, bot_props in settings["specific_bot_properties"].items():
             utilities.check_is_string(bot_name)
             assert bot_name.strip() == bot_name, bot_name
-            utilities.check_is_dict(bot_props) # nothing precise about what's here ATM
-
+            utilities.check_is_dict(bot_props)  # nothing precise about what's here ATM
 
         for data in self.all_private_data.values():
             for bot_name in settings["specific_bot_properties"].keys():
                 bot_session = data[bot_name]
-                utilities.check_has_keys(bot_session, ["_inputStack", "_inputHistory", "_outputHistory"], strict=False) # other session values may exist
-
+                utilities.check_has_keys(bot_session, ["_inputStack", "_inputHistory", "_outputHistory"],
+                                         strict=False)  # other session values may exist
 
     def _process_html_post_data(self):
         """We prevent default form handling and error reporting."""
@@ -89,13 +86,12 @@ class ArtificialIntelligenceAbility(AbstractAbility):
         assert self.request.method == "POST"
         return dict(result=None, form_data=None)
 
-
     def _get_entrance_template_vars(self):
         return {
-                'page_title': _("Djinns' Temple"),
-                'selected_djinn': None,
-                'bot_max_answers': self.settings["bot_max_answers"],
-               }
+            'page_title': _("Djinns' Temple"),
+            'selected_djinn': None,
+            'bot_max_answers': self.settings["bot_max_answers"],
+        }
 
     def _get_djinn_template_vars(self, selected_bot):
 
@@ -108,24 +104,20 @@ class ArtificialIntelligenceAbility(AbstractAbility):
                 sentences.append(history[1][i])  # output
 
         return {
-                'page_title': _("%s's Shrine") % selected_bot,
-                'selected_djinn': selected_bot,
-                'history': sentences,
-               }
-
+            'page_title': _("%s's Shrine") % selected_bot,
+            'selected_djinn': selected_bot,
+            'history': sentences,
+        }
 
     def get_template_vars(self, previous_form_data=None):
         selected_bot = self.request.POST.get("target_djinn_name", None)
-        if selected_bot is not None: # post var was sent
-            selected_bot = selected_bot.strip() # normalize
+        if selected_bot is not None:  # post var was sent
+            selected_bot = selected_bot.strip()  # normalize
             if selected_bot in self.get_bot_names():
-                return self._get_djinn_template_vars(selected_bot=selected_bot) # success, talk with a djinn
+                return self._get_djinn_template_vars(selected_bot=selected_bot)  # success, talk with a djinn
             else:
                 self.user.add_error(_("Unknown djinn name '%s'") % selected_bot)
-        return self._get_entrance_template_vars() # page to choose wanted djinn
-
-
-
+        return self._get_entrance_template_vars()  # page to choose wanted djinn
 
     @readonly_method
     def get_bot_names(self):
@@ -133,14 +125,12 @@ class ArtificialIntelligenceAbility(AbstractAbility):
 
     @readonly_method
     def get_bot_session(self, bot_name):
-        return self.private_data[bot_name] # specific to the current user
+        return self.private_data[bot_name]  # specific to the current user
 
     @readonly_method
     def get_bot_history(self, bot_name):
         bot_session = self.get_bot_session(bot_name)
         return (bot_session["_inputHistory"], bot_session["_outputHistory"])
-
-
 
     @transaction_watcher
     def get_bot_response(self, bot_name, input):
@@ -149,31 +139,32 @@ class ArtificialIntelligenceAbility(AbstractAbility):
         # we use only the "global session" of bot kernel, in the following calls !
 
         if not DJINN_PROXY_IS_INITIALIZED:
-            _activate_djinn_proxy() # might still remain None, though
+            _activate_djinn_proxy()  # might still remain None, though
             assert DJINN_PROXY_IS_INITIALIZED
 
-        djinn_proxy = DJINN_PROXY # SINGLETON instance ATM
+        djinn_proxy = DJINN_PROXY  # SINGLETON instance ATM
 
         if not djinn_proxy:
             return _("[DJINN IS OFFLINE]")
 
         with djinn_singleton_lock:
 
-            bot_session = self.get_bot_session(bot_name) # we load previous session
+            bot_session = self.get_bot_session(bot_name)  # we load previous session
             djinn_proxy.setSessionData(bot_session)
 
             # heavy, we override the personality of the target bot
             for (predicate, value) in self.settings["common_bot_properties"].items():
-                djinn_proxy.setBotPredicate(predicate, value) # hobbies and tastes
+                djinn_proxy.setBotPredicate(predicate, value)  # hobbies and tastes
 
             # we change the bot personality #
-            djinn_proxy.setBotPredicate("name", bot_name) # to use <bot name="name"/>
-            djinn_proxy.setPredicate("botName", bot_name) # to use in <condition> tag
+            djinn_proxy.setBotPredicate("name", bot_name)  # to use <bot name="name"/>
+            djinn_proxy.setPredicate("botName", bot_name)  # to use in <condition> tag
 
-            djinn_proxy.setPredicate("name", self.username) # who is talking to him ?
+            djinn_proxy.setPredicate("name", self.username)  # who is talking to him ?
 
             if "?" in input:
-                djinn_proxy.setPredicate("topic", "")  # WARNING - a hack to help the bot get away from its "persistent ideas", as long as A.I. doesn't work very well...
+                djinn_proxy.setPredicate("topic",
+                                         "")  # WARNING - a hack to help the bot get away from its "persistent ideas", as long as A.I. doesn't work very well...
                 djinn_proxy.setPredicate("orbType", "")
 
             (inputs, outputs) = self.get_bot_history(bot_name)
@@ -187,8 +178,9 @@ class ArtificialIntelligenceAbility(AbstractAbility):
                 res = djinn_proxy.respond(input)
                 # print ("DJINN REQUEST %r => %r" % (input, res))
                 data = djinn_proxy.getSessionData()
-                data = utilities.convert_object_tree(data, utilities.python_to_zodb_types) # FIXME, is it really useful ??
-                self.private_data.update(data) # we save current session in ZODB
+                data = utilities.convert_object_tree(data,
+                                                     utilities.python_to_zodb_types)  # FIXME, is it really useful ??
+                self.private_data.update(data)  # we save current session in ZODB
 
             # we simulate answer delay
             delay_ms = self.settings["bots_answer_delays_ms"]
@@ -198,17 +190,14 @@ class ArtificialIntelligenceAbility(AbstractAbility):
 
             return res
 
-
     def process_user_sentence(self, djinn_name, message, use_gems=()):
 
         if djinn_name not in self.get_bot_names():
-            raise Http404 # pathological
+            raise Http404  # pathological
 
-        res = self.get_bot_response(bot_name=djinn_name, input=message) # in case of error, a "500" code will be returned
+        res = self.get_bot_response(bot_name=djinn_name,
+                                    input=message)  # in case of error, a "500" code will be returned
         return dict(response=res)
-
-
-
 
         '''
 
@@ -295,15 +284,16 @@ class DjinnProxy(object):
         # we do not use session IDs, so that we keep an unique history for all chats with a specific bot !
         self.bot_kernel = None
 
-        import aiml # lazily loaded
+        import aiml  # lazily loaded
 
         # MONKEY PATCHING #
         def setSessionData(self, data, sessionID="_global"):
             self._sessions[sessionID] = data
+
         aiml.Kernel.setSessionData = setSessionData
 
         kernel = aiml.Kernel()
-        kernel.verbose(False) # DEBUG OUTPUT
+        kernel.verbose(False)  # DEBUG OUTPUT
         kernel.bootstrap(
             brainFile=os.path.join(config.GAME_FILES_ROOT, "AI", "botbrain.brn"),
             learnFiles=glob.glob(os.path.join(config.GAME_FILES_ROOT, "AI", "djinn_specific_aiml", "*.aiml"))
@@ -340,7 +330,6 @@ class DjinnProxy(object):
                 for k, v in parser.items(s):
                     subbers[s][k] = v
 
-
     def respond(self, input):
         return self.bot_kernel.respond(input)
 
@@ -351,13 +340,13 @@ class DjinnProxy(object):
         return self.bot_kernel.getSessionData()
 
     def setBotPredicate(self, key, value):
-        self.bot_kernel.setBotPredicate(key, value) # we change the bot personality
+        self.bot_kernel.setBotPredicate(key, value)  # we change the bot personality
 
     def getBotPredicate(self, key):
         return self.bot_kernel.getBotPredicate(key)
 
     def setPredicate(self, key, value):
-        self.bot_kernel.setPredicate(key, value) # we change the context of conversation
+        self.bot_kernel.setPredicate(key, value)  # we change the context of conversation
 
     def getPredicate(self, key):
         return self.bot_kernel.getPredicate(key)
@@ -366,13 +355,14 @@ class DjinnProxy(object):
 DJINN_PROXY_IS_INITIALIZED = False
 DJINN_PROXY = None
 
+
 def _activate_djinn_proxy():
     global DJINN_PROXY, DJINN_PROXY_IS_INITIALIZED, _activate_djinn_proxy
     # singleton instance #
     if config.ACTIVATE_AIML_BOTS:
-        DJINN_PROXY = DjinnProxy() # beware in prod, memory-consuming !
+        DJINN_PROXY = DjinnProxy()  # beware in prod, memory-consuming !
     else:
         DJINN_PROXY = None
         logging.warning("AI bots not initialized, so as to preserve memory")
     DJINN_PROXY_IS_INITIALIZED = True
-    del _activate_djinn_proxy # SECURITY
+    del _activate_djinn_proxy  # SECURITY

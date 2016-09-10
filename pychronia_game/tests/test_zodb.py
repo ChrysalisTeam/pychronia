@@ -2,7 +2,6 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
-
 import unittest, copy
 import ZODB
 import transaction
@@ -19,7 +18,6 @@ pool = multiprocessing.pool.ThreadPool(3)
 
 
 def transfer_list_value(db, origin, target):
-
     conn = db.open()
     root = conn.root
 
@@ -32,7 +30,6 @@ def transfer_list_value(db, origin, target):
 
 
 def delete_container(db, name):
-
     conn = db.open()
     root = conn.root
 
@@ -43,23 +40,16 @@ def delete_container(db, name):
     conn.close()
 
 
-
-
-
 class TestZODB(TestCase):
-
     def setUp(self):
         self.db = DB(None)
         self.conn = self.db.open()
-
 
     def tearDown(self):
         self.conn.close()
         self.db.close()
 
-
     def test_mapping_copy(self):
-
         a = PersistentMapping(dict(a=3, b=5))
         b = a.copy()
         c = copy.copy(a)
@@ -77,7 +67,6 @@ class TestZODB(TestCase):
         assert b["a"]  # NOT impacted
         assert "a" not in c, c  # BUG, is impacted!
         assert d["a"]  # NOT impacted
-
 
     def test_savepoints(self):
         """
@@ -105,7 +94,7 @@ class TestZODB(TestCase):
 
         root.ex = 5
 
-        s2.rollback() # again
+        s2.rollback()  # again
 
         self.assertEqual(root.ex, 3)
 
@@ -124,7 +113,7 @@ class TestZODB(TestCase):
 
         self.assertEqual(root.ex, 6)
 
-        self.assertRaises(Exception, s1.rollback) # invalidated by commit
+        self.assertRaises(Exception, s1.rollback)  # invalidated by commit
 
         root.ex = 7
 
@@ -143,9 +132,6 @@ class TestZODB(TestCase):
 
         # commit was well for the whole transaction, not just s3
         self.assertEqual(root.ex, 9)
-
-
-
 
     def test_conflict_errors(self):
         """
@@ -169,21 +155,18 @@ class TestZODB(TestCase):
         root.dummy1 = PersistentList([9])
         transaction.commit()
 
-
         # basic conflict on root #
 
         pool.apply(delete_container, args=(self.db, "dummy1"))
 
         root.dummy2 = 5
 
-        self.assertRaises(ConflictError, transaction.commit) # conflict !!
-        self.assertRaises(TransactionFailedError, transaction.commit) # transaction broken
+        self.assertRaises(ConflictError, transaction.commit)  # conflict !!
+        self.assertRaises(TransactionFailedError, transaction.commit)  # transaction broken
 
         transaction.abort()
 
-        self.assertFalse(hasattr(root, "dummy2")) # rolled back
-
-
+        self.assertFalse(hasattr(root, "dummy2"))  # rolled back
 
         # no conflict when a branch gets detached while leaf is updated
 
@@ -195,9 +178,7 @@ class TestZODB(TestCase):
 
         transaction.commit()
 
-        self.assertFalse(hasattr(root, "stuff")) # update lost
-
-
+        self.assertFalse(hasattr(root, "stuff"))  # update lost
 
         # without readCurrent() - lost update #
 
@@ -210,9 +191,7 @@ class TestZODB(TestCase):
 
         transaction.commit()
 
-        self.assertEqual(root.target, PersistentList([13])) # we lost [3]
-
-
+        self.assertEqual(root.target, PersistentList([13]))  # we lost [3]
 
         # with readCurrent() and container update - ReadConflictError raised! #
 
@@ -220,8 +199,8 @@ class TestZODB(TestCase):
         root.origin = PersistentList([17])
         transaction.commit()
 
-        res = conn.readCurrent(root.target) # container object selected !!
-        assert res is None # no return value expected
+        res = conn.readCurrent(root.target)  # container object selected !!
+        assert res is None  # no return value expected
 
         value = root.target
 
@@ -231,28 +210,26 @@ class TestZODB(TestCase):
 
         self.assertRaises(Exception, transaction.commit)
 
-        self.assertEqual(root.target, PersistentList([17])) # auto refreshing occurred
-        self.assertFalse(hasattr(root, "othertarget")) # auto refreshing occurred
+        self.assertEqual(root.target, PersistentList([17]))  # auto refreshing occurred
+        self.assertFalse(hasattr(root, "othertarget"))  # auto refreshing occurred
 
-        self.assertRaises(Exception, transaction.commit) # but transaction still broken
+        self.assertRaises(Exception, transaction.commit)  # but transaction still broken
 
         transaction.abort()
-        transaction.commit() # now all is ok once again
-
-
+        transaction.commit()  # now all is ok once again
 
         # with readCurrent() and container deletion - somehow lost update! #
 
         value = root.origin[0]
 
-        res = conn.readCurrent(root.origin) # container object selected !!
-        assert res is None # no return value expected
+        res = conn.readCurrent(root.origin)  # container object selected !!
+        assert res is None  # no return value expected
 
         pool.apply(delete_container, args=(self.db, "origin"))
 
-        root.target[0] = value # we use a value whose origin has now been deleted in other thread
+        root.target[0] = value  # we use a value whose origin has now been deleted in other thread
 
-        transaction.commit() # here it's OK, the deleted object still remains in the DB history even if unreachable
+        transaction.commit()  # here it's OK, the deleted object still remains in the DB history even if unreachable
 
 
 if __name__ == '__main__':

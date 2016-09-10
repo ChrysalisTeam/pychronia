@@ -12,11 +12,7 @@ from pychronia_game.datamanager.datamanager_tools import transaction_watcher, \
 from pychronia_game.datamanager.abstract_ability import AbstractPartnershipAbility
 
 
-
-
-
 class AgentsHiringForm(AbstractGameForm):
-
     def __init__(self, datamanager, *args, **kwargs):
         super(AgentsHiringForm, self).__init__(datamanager, *args, **kwargs)
 
@@ -26,26 +22,19 @@ class AgentsHiringForm(AbstractGameForm):
         self.fields["location"] = forms.ChoiceField(label=ugettext_lazy(u"Location"), choices=_location_choices)
 
 
-
-
-
-
-
 class MercenariesHiringAbility(AbstractPartnershipAbility):
-
     TITLE = ugettext_lazy("Mercenaries Hiring")
     NAME = "mercenaries_hiring"
 
     GAME_ACTIONS = dict(hiring_form=dict(title=ugettext_lazy("Hire mercenaries"),
-                                                      form_class=AgentsHiringForm,
-                                                      callback="hire_remote_agent"))
+                                         form_class=AgentsHiringForm,
+                                         callback="hire_remote_agent"))
 
     TEMPLATE = "abilities/mercenaries_hiring.html"
 
     ACCESS = UserAccess.character
     REQUIRES_CHARACTER_PERMISSION = True
     REQUIRES_GLOBAL_PERMISSION = True
-
 
     def _get_admin_summary_html(self):
         assert self.is_master()
@@ -60,7 +49,6 @@ class MercenariesHiringAbility(AbstractPartnershipAbility):
 
         return res
 
-
     def get_template_vars(self, previous_form_data=None):
 
         assert self.is_character()
@@ -70,30 +58,28 @@ class MercenariesHiringAbility(AbstractPartnershipAbility):
 
         # for now we don't exclude locations of already hired mercenaries
         hiring_form = self._instantiate_game_form(new_action_name="hiring_form",
-                                             hide_on_success=False,
-                                             previous_form_data=previous_form_data)
+                                                  hide_on_success=False,
+                                                  previous_form_data=previous_form_data)
 
         mercenaries_locations = self.private_data["mercenaries_locations"]
 
         #print (">>>>>>>>>>>>>>>>", self.settings)
         return {
-                 'page_title': _("Mercenaries Management"),
-                 'settings': self.settings,
-                 'mercenaries_locations': mercenaries_locations,
-                 'hiring_form': hiring_form,
-                 'dedicated_email': self.dedicated_email,
-               }
-
+            'page_title': _("Mercenaries Management"),
+            'settings': self.settings,
+            'mercenaries_locations': mercenaries_locations,
+            'hiring_form': hiring_form,
+            'dedicated_email': self.dedicated_email,
+        }
 
     @readonly_method
     def has_remote_agent(self, location):
         assert location in self.datamanager.get_locations()
         return location in self.private_data["mercenaries_locations"]
 
-
     @transaction_watcher
     def hire_remote_agent(self, location,
-                                use_gems=()): # intercepted by action middlewares
+                          use_gems=()):  # intercepted by action middlewares
         assert location in self.datamanager.get_locations()
 
         if self.has_remote_agent(location):
@@ -104,22 +90,19 @@ class MercenariesHiringAbility(AbstractPartnershipAbility):
         ### self._process_spy_activation(location) # USELESS ?
 
         self.log_game_event(ugettext_noop("Mercenary hired in %(location)s"),
-                             PersistentMapping(location=location),
-                             url=None,
-                             visible_by=[self.username])
+                            PersistentMapping(location=location),
+                            url=None,
+                            visible_by=[self.username])
 
         return _("Mercenaries have been successfully hired")
 
-
-
     @classmethod
     def _setup_ability_settings(cls, settings):
-        pass # nothing to do
+        pass  # nothing to do
 
     def _setup_private_ability_data(self, private_data):
 
         private_data.setdefault("mercenaries_locations", PersistentList())
-
 
     def _check_data_sanity(self, strict=False):
 
@@ -142,9 +125,6 @@ class MercenariesHiringAbility(AbstractPartnershipAbility):
 
             all_locations = self.datamanager.get_locations().keys()
             assert set(data["mercenaries_locations"]) <= set(all_locations), data["mercenaries_locations"]
-
-
-
 
 
 '''

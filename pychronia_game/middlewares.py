@@ -2,7 +2,6 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
-
 from pychronia_game.common import *
 from django.http import Http404, HttpResponse
 import django.core.mail as mail
@@ -14,13 +13,12 @@ from pychronia_game.datamanager.datamanager_administrator import retrieve_game_i
 from django.http.response import HttpResponseRedirect
 
 settings = None
-del settings # use config instead
+del settings  # use config instead
 
 assert logging
 
 
 class ZodbTransactionMiddleware(object):
-
     def process_request(self, request):
         # on exception : normal 500 handling takes place
         pass
@@ -28,9 +26,10 @@ class ZodbTransactionMiddleware(object):
     def process_view(self, request, view_func, view_args, view_kwargs):
         # on exception : normal 500 handling takes place
 
-        assert hasattr(request, 'session'), "The game authentication middleware requires session middleware to be installed. Edit your MIDDLEWARE_CLASSES setting to insert 'django.contrib.sessions.middleware.SessionMiddleware'."
+        assert hasattr(request,
+                       'session'), "The game authentication middleware requires session middleware to be installed. Edit your MIDDLEWARE_CLASSES setting to insert 'django.contrib.sessions.middleware.SessionMiddleware'."
 
-        request.process_view = None # GameView instance will attach itself here on execution
+        request.process_view = None  # GameView instance will attach itself here on execution
 
         if __debug__: request.start_time = time.time()
 
@@ -52,13 +51,12 @@ class ZodbTransactionMiddleware(object):
                 return HttpResponse(content=unicode(e) + "<br/>" + _("Please come back later."),
                                     status=503)
             except UsageError:
-                raise Http404 # unexisting instance
+                raise Http404  # unexisting instance
 
             if not request.datamanager.is_initialized:
                 raise RuntimeError("ZodbTransactionMiddleware - Game data isn't in initialized state")
 
             return None
-
 
     def process_exception(self, request, exception):
         # on exception : normal 500 handling takes place
@@ -73,7 +71,6 @@ class ZodbTransactionMiddleware(object):
         # we let the exception propagate anyway
         pass
 
-
     def process_response(self, request, response):
         # on exception : no response handling occurs, a simple traceback is output !
 
@@ -84,7 +81,7 @@ class ZodbTransactionMiddleware(object):
 
         if __debug__ and hasattr(request, "start_time"):
             url = request.get_full_path()
-            if not url.startswith(config.GAME_FILES_URL): # we don't care about media files here
+            if not url.startswith(config.GAME_FILES_URL):  # we don't care about media files here
                 delay = time.time() - request.start_time
                 logger.info("Pychronia request took %.3f seconds for url %r" % (delay, url))
 
@@ -102,25 +99,22 @@ class ZodbTransactionMiddleware(object):
         return response
 
 
-
-
 class AuthenticationMiddleware(object):
-
     def process_view(self, request, view_func, view_args, view_kwargs):
 
         if not hasattr(request, "datamanager"):
-            return None # not a valid game instance
+            return None  # not a valid game instance
 
         ## Screw the immutability of these QueryDicts, we need FREEDOM ##
         request._post = request.POST.copy()
         request._get = request.GET.copy()
         if hasattr(request, "_request"):
-            del request._request # force regeneration of MergeDict
+            del request._request  # force regeneration of MergeDict
         assert request._post._mutable and request._get._mutable
 
         if not hasattr(request, 'session'):
-            raise RuntimeError("The game authentication middleware requires session middleware to be installed. Edit your MIDDLEWARE_CLASSES setting to insert 'django.contrib.sessions.middleware.SessionMiddleware'.")
-
+            raise RuntimeError(
+                "The game authentication middleware requires session middleware to be installed. Edit your MIDDLEWARE_CLASSES setting to insert 'django.contrib.sessions.middleware.SessionMiddleware'.")
 
         raw_url_game_username = None
         if view_kwargs.has_key("game_username"):
@@ -128,13 +122,15 @@ class AuthenticationMiddleware(object):
             del view_kwargs["game_username"]  # don't interfere with final view
 
         url_game_username = None
-        if raw_url_game_username and raw_url_game_username not in (authentication.UNIVERSAL_URL_USERNAME, authentication.TEMP_URL_USERNAME):
+        if raw_url_game_username and raw_url_game_username not in (
+        authentication.UNIVERSAL_URL_USERNAME, authentication.TEMP_URL_USERNAME):
             url_game_username = raw_url_game_username  # WILL be transmitted for potential impersonation
 
         authentication.try_authenticating_with_session(request, url_game_username=url_game_username)
         del url_game_username
 
-        if raw_url_game_username and raw_url_game_username not in (request.datamanager.username, authentication.UNIVERSAL_URL_USERNAME):
+        if raw_url_game_username and raw_url_game_username not in (
+        request.datamanager.username, authentication.UNIVERSAL_URL_USERNAME):
             # we redirect to the proper url prefix, so that current "effective username" is well kept during navigation (but not for UNIVERSAL_URL_USERNAME)
             new_kwargs = view_kwargs.copy()  # additional URL parts like "msg_id"
             new_kwargs["game_instance_id"] = request.datamanager.game_instance_id
@@ -145,21 +141,18 @@ class AuthenticationMiddleware(object):
         return None
 
 
-
-
 class PeriodicProcessingMiddleware(object):
-
     def process_view(self, request, view_func, view_args, view_kwargs):
 
         if not hasattr(request, "datamanager"):
-            return None # not a valid game instance
+            return None  # not a valid game instance
 
         datamanager = request.datamanager
 
         # tasks that must be done BEFORE the user request is processed
         try:
-            if datamanager.is_game_writable(): # important
-                datamanager.process_periodic_tasks() # eg. to send pending emails
+            if datamanager.is_game_writable():  # important
+                datamanager.process_periodic_tasks()  # eg. to send pending emails
         except Exception, e:
             try:
                 msg = "PeriodicProcessingMiddleware error : %r" % e
@@ -168,5 +161,3 @@ class PeriodicProcessingMiddleware(object):
             except:
                 pass
         return None
-
-

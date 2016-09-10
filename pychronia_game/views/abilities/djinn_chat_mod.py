@@ -1,12 +1,13 @@
-
-FIXME TODO
+FIXME
+TODO
 BROKEN
 
 DEAD
+
+
 # TODO - redo this as special ability
 @register_view(title=ugettext_lazy("Chat with Djinn"))  # (access=UserAccess.character)#(permission="contact_djinns")
 def chat_with_djinn(request, template_name='specific_operations/chat_with_djinn.html'):
-
     bot_name = request.POST.get("djinn", None)
 
     # TODO BAD - add security here !!!!!!!!!!
@@ -28,14 +29,15 @@ def chat_with_djinn(request, template_name='specific_operations/chat_with_djinn.
 
     return render(request,
                   template_name,
-                    {
-                     'page_title': _("Djinn Communication"),
-                     'bot_name': bot_name,
-                     'history': sentences
-                    })
+                  {
+                      'page_title': _("Djinn Communication"),
+                      'bot_name': bot_name,
+                      'history': sentences
+                  })
 
 
-@register_view(attach_to=chat_with_djinn, title=ugettext_lazy("Consult Djinn"))  # access=UserAccess.character)(permission="contact_djinns")
+@register_view(attach_to=chat_with_djinn,
+               title=ugettext_lazy("Consult Djinn"))  # access=UserAccess.character)(permission="contact_djinns")
 def ajax_consult_djinns(request):
     user = request.datamanager.user
     message = request.REQUEST.get("message", "")
@@ -53,7 +55,6 @@ def ajax_consult_djinns(request):
 # TODO - redo this as special ability
 @register_view  # (access=UserAccess.character)#(permission="contact_djinns")
 def contact_djinns(request, template_name='specific_operations/contact_djinns.html'):
-
     user = request.datamanager.user
 
     bots_properties = request.datamanager.get_bots_properties()
@@ -63,7 +64,8 @@ def contact_djinns(request, template_name='specific_operations/contact_djinns.ht
         # team_gems = None
     else:
         domain = request.datamanager.get_character_properties()["domain"]
-        available_bots = [bot_name for bot_name in bots_properties.keys() if request.datamanager.is_bot_accessible(bot_name, domain)]
+        available_bots = [bot_name for bot_name in bots_properties.keys() if
+                          request.datamanager.is_bot_accessible(bot_name, domain)]
         # team_gems = request.datamanager.get_team_gems_count(domain)
 
     if available_bots:
@@ -76,11 +78,10 @@ def contact_djinns(request, template_name='specific_operations/contact_djinns.ht
 
     return render(request,
                   template_name,
-                    {
-                     'page_title': _("Shrine of Oracles"),
-                     'djinn_form': djinn_form,
-                     'all_bots': all_bots,
-                     # 'team_gems': team_gems,
-                     'bots_max_answers': request.datamanager.get_global_parameter("bots_max_answers")
-                    })
-
+                  {
+                      'page_title': _("Shrine of Oracles"),
+                      'djinn_form': djinn_form,
+                      'all_bots': all_bots,
+                      # 'team_gems': team_gems,
+                      'bots_max_answers': request.datamanager.get_global_parameter("bots_max_answers")
+                  })

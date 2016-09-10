@@ -1,23 +1,27 @@
 
-
 ul.dropmenu {
 
-	margin: 0;
-	padding: 0;
-	height: 35px;
-	line-height: 35px;
-	position: relative;
-
+    margin: 0;
+    padding: 0;
+    height: 35px;
+    line-height: 35px;
+    position: relative;
 
     /* 		All items 			*/
 
     & > li {
 
-        display: inline-block; list-style: none outside none; position: relative; margin: 0px; padding: 0px; float: none; // styles pushed by JS dropdown system
+        display: inline-block;
+        list-style: none outside none;
+        position: relative;
+        margin: 0px;
+        padding: 0px;
+        float: none; // styles pushed by JS dropdown system
 
         a, span { // every descendant, too
 
-            display: block; white-space: nowrap;
+            display: block;
+            white-space: nowrap;
 
             @include header_common;
 
@@ -36,9 +40,9 @@ ul.dropmenu {
         }
 
         span {
-          // INACTIVE menu entry
-           color: $black_text_color !important;
-           text-shadow: 1px 1px 0 white, -1px -1px 0 white, 1px -1px 0 white, -1px 1px 0 white !important;
+            // INACTIVE menu entry
+            color: $black_text_color !important;
+            text-shadow: 1px 1px 0 white, -1px -1px 0 white, 1px -1px 0 white, -1px 1px 0 white !important;
         }
 
         /* all sublevels are in metal&glass tubes */
@@ -61,8 +65,7 @@ ul.dropmenu {
             image-rendering: optimizequality;
         }
 
-
-	    /* specifically for top-level links */
+        /* specifically for top-level links */
 
         & {
             border-width: 0;
@@ -81,7 +84,6 @@ ul.dropmenu {
             margin: 4px 4px;
         }*/
 
-
         a.hover, span.hover {
             color: $title_white_highlight;
             //outline: $medium_yellow solid 1px; // FAILED!!!!
@@ -94,8 +96,6 @@ ul.dropmenu {
         a.hover.selected, span.hover.selected {
             //todo
         }
-
-
 
         /*      Submenus            */
 
@@ -117,7 +117,6 @@ ul.dropmenu {
             border-image: url('#{$IMGS}backgrounds/dropdown_menu.png') 4 3 fill stretch;
             image-rendering: optimizequality;
         }
-
 
         /*		Subitems			*/
 

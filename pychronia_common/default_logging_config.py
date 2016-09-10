@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging.config
 
-
 pychronia_logging_config = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -23,11 +22,11 @@ pychronia_logging_config = {
     },
     'handlers': {
         'default': {
-            'class':'logging.StreamHandler',
+            'class': 'logging.StreamHandler',
             'formatter': 'standard',
         },
         'game_instance': {
-            'class':'logging.StreamHandler',
+            'class': 'logging.StreamHandler',
             'formatter': 'game_instance',
         },
         'mail_admins': {
@@ -64,7 +63,7 @@ pychronia_logging_config = {
             'propagate': False
         },
 
-        'txn': { # ZODB transactions
+        'txn': {  # ZODB transactions
             'handlers': [],
             'level': 'WARNING',
             'propagate': False
@@ -73,9 +72,8 @@ pychronia_logging_config = {
     }
 }
 
-
 logging.config.dictConfig(pychronia_logging_config)
-logging.disable(logging.DEBUG) # global limit
+logging.disable(logging.DEBUG)  # global limit
 
 '''
 DEFAULT_LOGGING = {

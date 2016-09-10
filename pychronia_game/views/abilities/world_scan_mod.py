@@ -11,6 +11,7 @@ from pychronia_game.datamanager.datamanager_tools import transaction_watcher, \
     readonly_method
 from pychronia_game.datamanager.abstract_game_view import register_view
 
+
 # TODO - change "scanning" to "scan" everywhere!!!
 
 
@@ -18,14 +19,13 @@ from pychronia_game.datamanager.abstract_game_view import register_view
 
 @register_view
 class WorldScanAbility(AbstractPartnershipAbility):
-
     TITLE = ugettext_lazy("World Scan")
 
     NAME = "world_scan"
 
     GAME_ACTIONS = dict(scan_form=dict(title=ugettext_lazy("Choose world scan model"),
-                                              form_class=ArtefactForm,
-                                              callback="process_world_scan_submission"))
+                                       form_class=ArtefactForm,
+                                       callback="process_world_scan_submission"))
 
     TEMPLATE = "abilities/world_scan.html"
 
@@ -33,27 +33,23 @@ class WorldScanAbility(AbstractPartnershipAbility):
     REQUIRES_CHARACTER_PERMISSION = True
     REQUIRES_GLOBAL_PERMISSION = True
 
-
     def get_template_vars(self, previous_form_data=None):
 
         try:
             scan_form = self._instantiate_game_form(new_action_name="scan_form",
-                                                      hide_on_success=False,
-                                                      previous_form_data=previous_form_data,
-                                                      propagate_errors=True,)
+                                                    hide_on_success=False,
+                                                    previous_form_data=previous_form_data,
+                                                    propagate_errors=True, )
             specific_message = None
         except UninstantiableFormError, e:
             scan_form = None
             specific_message = unicode(e)
 
         return {
-                 'page_title': _("World Scan"),
-                 'scan_form': scan_form,
-                 'specific_message': specific_message,  # TODO FIXME DISPLAY THIS
-               }
-
-
-
+            'page_title': _("World Scan"),
+            'scan_form': scan_form,
+            'specific_message': specific_message,  # TODO FIXME DISPLAY THIS
+        }
 
     @classmethod
     def _setup_ability_settings(cls, settings):
@@ -66,7 +62,6 @@ class WorldScanAbility(AbstractPartnershipAbility):
 
     def _setup_private_ability_data(self, private_data):
         pass  # at the moment we don't care about the history of scans performed
-
 
     def _check_data_sanity(self, strict=False):
 
@@ -81,7 +76,8 @@ class WorldScanAbility(AbstractPartnershipAbility):
             for location in scan_set:
                 assert location in all_locations, location
 
-        assert utilities.assert_set_smaller_or_equal(settings["item_locations"].keys(), all_artefact_items) # some items might have no scanning locations
+        assert utilities.assert_set_smaller_or_equal(settings["item_locations"].keys(),
+                                                     all_artefact_items)  # some items might have no scanning locations
         for (item_name, scan_set_name) in settings["item_locations"].items():
             utilities.check_is_slug(item_name)  # in case it's NOT a valid item name, in unstrict mode...
             assert scan_set_name in settings["scanning_sets"].keys()
@@ -92,8 +88,6 @@ class WorldScanAbility(AbstractPartnershipAbility):
         assert not any(x for x in self.all_private_data.values()
                        if set(x.keys()) - set(["middlewares"]))
 
-
-
     @readonly_method
     def _compute_scanning_result_or_none(self, item_name):
         assert not self.get_item_properties(item_name)["is_gem"], item_name
@@ -101,7 +95,7 @@ class WorldScanAbility(AbstractPartnershipAbility):
         scanning_set_name = self.settings["item_locations"].get(item_name, None)
         if scanning_set_name is None:
             return None
-        locations = self.settings["scanning_sets"][scanning_set_name] # MUST exist
+        locations = self.settings["scanning_sets"][scanning_set_name]  # MUST exist
         return locations  # list of city names, migh tbe empty
 
     '''
@@ -111,7 +105,6 @@ class WorldScanAbility(AbstractPartnershipAbility):
         self.data["global_parameters"]["scanned_locations"] = PersistentList(set(self.data["global_parameters"][
                                                                                  "scanned_locations"] + locations)) # we let the _check_coherence system ensure it's OK
     '''
-
 
     @transaction_watcher
     def process_world_scan_submission(self, item_name, use_gems=()):
@@ -130,7 +123,7 @@ class WorldScanAbility(AbstractPartnershipAbility):
 
         # answer email
         response_msg_data = None
-        locations = self._compute_scanning_result_or_none(item_name) # might raise if item is not analysable
+        locations = self._compute_scanning_result_or_none(item_name)  # might raise if item is not analysable
         if locations:
             locations_found = ", ".join(locations)
 
@@ -152,13 +145,11 @@ class WorldScanAbility(AbstractPartnershipAbility):
                                                                    response_msg_data=response_msg_data)
 
         self.log_game_event(ugettext_noop("Automated scanning request sent for item '%(item_title)s'."),
-                             PersistentMapping(item_title=item_title),
-                             url=self.get_message_viewer_url_or_none(best_msg_id),  # best_msg_id might be None
-                             visible_by=[self.username])
+                            PersistentMapping(item_title=item_title),
+                            url=self.get_message_viewer_url_or_none(best_msg_id),  # best_msg_id might be None
+                            visible_by=[self.username])
 
         return _("World scan submission in progress, the result will be emailed to you.")
-
-
 
         """ Canceled for now - manual response by gamemaster, from a description of the object...
         else:

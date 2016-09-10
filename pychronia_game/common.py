@@ -18,7 +18,7 @@ from collections import Counter
 
 import yaml, pyparsing
 
-import ZODB # must be first !
+import ZODB  # must be first !
 from ZODB.POSException import ConflictError
 
 import transaction
@@ -42,13 +42,10 @@ from . import utilities
 from .utilities import config, SDICT, Enum
 from .utilities.encryption import unicode_decrypt, unicode_encrypt, hash
 
-
 _undefined = object()
-
 
 # decorator to be applied on views
 superuser_required = user_passes_test(lambda u: u.is_superuser)
-
 
 NBSP = "\u00a0"  # unicode equivalent of &nbsp;
 
@@ -58,20 +55,20 @@ class UserAccess:
     Enumeration attached to game views, to define the kind of users that can access them.
     """
     anonymous = "anonymous"
-    authenticated = "authenticated" # both players and masters
+    authenticated = "authenticated"  # both players and masters
     character = "character"
     master = "master"
     enum_values = (anonymous, authenticated, character, master)
 
 
-class AccessResult: # result of global computation
+class AccessResult:  # result of global computation
     """
     Result of a computation between a view's access permissions and a current user.
     """
-    globally_forbidden = "globally_forbidden" # eg. view disabled by the master
-    authentication_required = "authentication_required" # eg. wrong kind of user logged in
-    permission_required = "permission_required" # character permissions are lacking
-    available = "available" # visible and executable
+    globally_forbidden = "globally_forbidden"  # eg. view disabled by the master
+    authentication_required = "authentication_required"  # eg. wrong kind of user logged in
+    permission_required = "permission_required"  # character permissions are lacking
+    available = "available"  # visible and executable
 
 
 # FIXME USE THAT
@@ -82,14 +79,11 @@ class AvailablePermissions:
     pass
 
 
-
-
 class GameError(Exception):
     def __init__(self, *args, **kwargs):
         if self.__class__ == GameError:
             raise NotImplementedError("This is an abstract error class")
         super(GameError, self).__init__(*args, **kwargs)
-
 
 
 class AccessDeniedError(GameError):
@@ -113,6 +107,7 @@ class AuthenticationRequiredError(AccessDeniedError):
     """
     pass
 
+
 class PermissionRequiredError(AccessDeniedError):
     """
     Raised if additional character privileges are required.
@@ -120,21 +115,19 @@ class PermissionRequiredError(AccessDeniedError):
     pass
 
 
-
-
 class UsageError(GameError):
     """
     Base class for command workflow errors.
     """
-    pass # FIXME - make this class pure abstract !!!
+    pass  # FIXME - make this class pure abstract !!!
+
 
 class NormalUsageError(UsageError):
     pass
 
+
 class AbnormalUsageError(UsageError):
     pass
-
-
 
 
 @contextmanager
@@ -166,9 +159,8 @@ def action_failure_handler(request, success_message=ugettext_lazy("Operation suc
         else:
             user.add_error(_("An internal error occurred"))
     else:
-        if success_message: # might be left empty sometimes, if another message is ready elsewhere
+        if success_message:  # might be left empty sometimes, if another message is ready elsewhere
             user.add_message(success_message)
-
 
 
 @contextlib.contextmanager
@@ -192,13 +184,12 @@ def exception_swallower():
             raise RuntimeError(_("Unexpected exception occurred in exception swallower context : %r !") % e)
 
 
-
 def hash_url_path(url_path):
     """
     Only accepts relative url paths.
     """
     assert not url_path.startswith("/")
-    url_hash = hash(url_path.lstrip("/"), length=8) # in prod, we remove the possible "/" anyway
+    url_hash = hash(url_path.lstrip("/"), length=8)  # in prod, we remove the possible "/" anyway
     assert url_hash == url_hash.lower()
     return url_hash
     '''
@@ -206,6 +197,7 @@ def hash_url_path(url_path):
     url_hash = base64.b32encode(hash)[:8].lower()
     return url_hash
     '''
+
 
 def game_view_url(view, datamanager, **kwargs):
     return reverse(view, kwargs=dict(game_instance_id=datamanager.game_instance_id,
@@ -223,7 +215,7 @@ def game_file_url(url):
     if utilities.is_absolute_url(url):
         return url
 
-    rel_path = url.replace("\\", "/") # some external libs use os.path methods to create urls.......
+    rel_path = url.replace("\\", "/")  # some external libs use os.path methods to create urls.......
     rel_path = rel_path.lstrip("/")  # IMPORTANT
     url_hash = hash_url_path(rel_path)
     full_url = config.GAME_FILES_URL + url_hash + "/" + rel_path
@@ -232,6 +224,8 @@ def game_file_url(url):
 
 
 _game_files_url_prefix = urlparse(config.GAME_FILES_URL).path
+
+
 def checked_game_file_path(url):
     """
     Returns a relative (without leading /) file path, or None if the given 
@@ -252,7 +246,7 @@ def checked_game_file_path(url):
     else:
         hash, url_path = (match_obj.group("hash"), match_obj.group("path"))
         if hash == hash_url_path(url_path):
-            return url_path # path has NO leading /
+            return url_path  # path has NO leading /
         # FIXME, log error
         return None
         hash_url_path
@@ -274,7 +268,7 @@ def determine_asset_url(properties, absolute=True):
         return ""  # fallback value, which will often cause NO mediaplayer to be displayer
 
     file_url = game_file_url(file_base)  # works for both absolute and relative file urls
-        
+
     if absolute and not utilities.is_absolute_url(file_url):
         file_url = config.SITE_DOMAIN + file_url  # important for most mediaplayers
 
@@ -287,11 +281,10 @@ def utctolocal(value):
     """
     import pytz
     if not value:
-        pass ## return "@@%r@@" % value  # if we need to debug troubles
+        pass  ## return "@@%r@@" % value  # if we need to debug troubles
     now_utc = pytz.utc.localize(value)
     local_time = now_utc.astimezone(config.GAME_LOCAL_TZ)
     return local_time
-
 
 
 def __obsolete_render_rst_template(rst_tpl, datamanager):
@@ -306,9 +299,6 @@ def __obsolete_render_rst_template(rst_tpl, datamanager):
     return rst_text
 
 
-
 __all__ = [key for key in globals().copy() if not key.startswith("_")]
-__all__ += ["_", "ugettext_lazy", "ugettext_noop", "_undefined"] # we add translation shortcuts and _undefined placeholder for default function args
-
-
-
+__all__ += ["_", "ugettext_lazy", "ugettext_noop",
+            "_undefined"]  # we add translation shortcuts and _undefined placeholder for default function args

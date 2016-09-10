@@ -7,16 +7,18 @@ from django.utils.translation import ugettext_lazy
 from django.core.exceptions import ValidationError
 
 
-class Select2TagsWidget(Select2Mixin, MultipleSelect2HiddenInput): ##SpecialHiddenInput): ###forms.HiddenInput): ###MultipleSelect2HiddenInput):
+class Select2TagsWidget(Select2Mixin,
+                        MultipleSelect2HiddenInput):  ##SpecialHiddenInput): ###forms.HiddenInput): ###MultipleSelect2HiddenInput):
 
     input_type = 'text'  # additional security...
 
     def init_options(self):
-        self.options.update({"closeOnSelect": True, # maximumSelectionSize buggy when not closeOnSelect, so we workaround...
-                             "maximumSelectionSize":-1, # overridden by form field
-                             "separator": '*START*django_select2.MULTISEPARATOR*END*',
-                             "tokenSeparators": [",", ";"], # spaces are NOT separators
-                             "tags": []}) # overridden by field
+        self.options.update(
+            {"closeOnSelect": True,  # maximumSelectionSize buggy when not closeOnSelect, so we workaround...
+             "maximumSelectionSize": -1,  # overridden by form field
+             "separator": '*START*django_select2.MULTISEPARATOR*END*',
+             "tokenSeparators": [",", ";"],  # spaces are NOT separators
+             "tags": []})  # overridden by field
 
     def set_choice_tags(self, tags):
         self.options["tags"] = tags
@@ -40,7 +42,6 @@ class Select2TagsWidget(Select2Mixin, MultipleSelect2HiddenInput): ##SpecialHidd
             return js
 
 
-
 class Select2TagsField(HeavySelect2MultipleChoiceField):
     widget = Select2TagsWidget
 
@@ -50,8 +51,8 @@ class Select2TagsField(HeavySelect2MultipleChoiceField):
 
     def __init__(self, **kwargs):
 
-        choice_tags = kwargs.pop("choice_tags", []) # done first
-        max_selection_size = kwargs.pop("max_selection_size", -1) # done first
+        choice_tags = kwargs.pop("choice_tags", [])  # done first
+        max_selection_size = kwargs.pop("max_selection_size", -1)  # done first
 
         if kwargs.get('widget', None) is None:
             # we override the nasty behaviour of HeavySelect2MultipleChoiceField mixins
@@ -60,15 +61,13 @@ class Select2TagsField(HeavySelect2MultipleChoiceField):
 
         super(Select2TagsField, self).__init__(**kwargs)
 
-        self.choice_tags = choice_tags # triggers property
-        self.max_selection_size = max_selection_size # triggers property
-
+        self.choice_tags = choice_tags  # triggers property
+        self.max_selection_size = max_selection_size  # triggers property
 
     def __deepcopy__(self, memo):
         result = super(Select2TagsField, self).__deepcopy__(memo)
-        result._choice_tags = copy.deepcopy(self._choice_tags, memo) # in case it's modified in place by end user
+        result._choice_tags = copy.deepcopy(self._choice_tags, memo)  # in case it's modified in place by end user
         return result
-
 
     '''
     def coerce_value(self, value):
@@ -88,7 +87,6 @@ class Select2TagsField(HeavySelect2MultipleChoiceField):
             if len(value) > self.max_selection_size:
                 raise ValidationError(self.error_messages['too_many'])
 
-
     def _get_choice_tags(self):
         return self._choice_tags
 
@@ -99,7 +97,6 @@ class Select2TagsField(HeavySelect2MultipleChoiceField):
         self.widget.set_choice_tags(self._choice_tags)
 
     choice_tags = property(_get_choice_tags, _set_choice_tags)
-
 
     def _get_max_selection_size(self):
         return self._max_selection_size

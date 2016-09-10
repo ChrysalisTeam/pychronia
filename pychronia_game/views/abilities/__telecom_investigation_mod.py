@@ -9,21 +9,20 @@ from pychronia_game.datamanager.datamanager_tools import readonly_method, \
     transaction_watcher
 from pychronia_game.forms import OtherCharactersForm
 
-
-BROKEN ATM 
+BROKEN
+ATM
 
 
 # TODO - make randomness constant between retries, thanks to game_random_seed parameter #
 
 @register_view
 class TelecomInvestigationAbility(AbstractAbility):
-
     TITLE = ugettext_lazy("Telecom Investigation")
     NAME = "telecom_investigation"
 
     GAME_ACTIONS = dict(investigation_form=dict(title=ugettext_lazy("Process telecom investigation"),
-                                              form_class=OtherCharactersForm,
-                                              callback="process_telecom_investigation"))
+                                                form_class=OtherCharactersForm,
+                                                callback="process_telecom_investigation"))
 
     TEMPLATE = "abilities/telecom_investigation.html"
 
@@ -31,35 +30,30 @@ class TelecomInvestigationAbility(AbstractAbility):
     REQUIRES_CHARACTER_PERMISSION = True
     REQUIRES_GLOBAL_PERMISSION = True
 
-
     @classmethod
     def _setup_ability_settings(cls, settings):
-        pass # nothing to do
+        pass  # nothing to do
 
     def _setup_private_ability_data(self, private_data):
-        pass # nothing to do
+        pass  # nothing to do
 
     def _check_data_sanity(self, strict=False):
-        pass # nothing to do
-
-
+        pass  # nothing to do
 
     def get_template_vars(self, previous_form_data=None):
 
         translation_form = self._instantiate_game_form(new_action_name="investigation_form",
-                                                  hide_on_success=False,
-                                                  previous_form_data=previous_form_data)
+                                                       hide_on_success=False,
+                                                       previous_form_data=previous_form_data)
 
-        translation_delay = (2, 3) # FIXME TODO self.get_ability_parameter("result_delay")  # TODO - translate this
+        translation_delay = (2, 3)  # FIXME TODO self.get_ability_parameter("result_delay")  # TODO - translate this
 
         return {
-                 'page_title': _("Telecom Investigation"),
-                 "investigation_form": translation_form,
-                 'min_delay_mn': translation_delay[0],
-                 'max_delay_mn': translation_delay[1],
-               }
-
-
+            'page_title': _("Telecom Investigation"),
+            "investigation_form": translation_form,
+            'min_delay_mn': translation_delay[0],
+            'max_delay_mn': translation_delay[1],
+        }
 
     @staticmethod
     def _corrupt_text_parts(text, corrupted_chunks_lengths, key_phrase=""):
@@ -90,7 +84,6 @@ class TelecomInvestigationAbility(AbstractAbility):
 
         return " ".join(result)
 
-
     @readonly_method
     def _get_corrupted_introduction(self, target_username, key_phrase):
         # Words of "key_phrase" will NECESSARILY be found in final corrupted message, if they exist in original message
@@ -108,7 +101,8 @@ class TelecomInvestigationAbility(AbstractAbility):
                             team_introductions]
             result += "\n\n------------\n\n".join(intro_chunks)
 
-        instructions = [msg for msg in self.get_all_dispatched_messages() if msg["id"] == "instructions_" + target_username]
+        instructions = [msg for msg in self.get_all_dispatched_messages() if
+                        msg["id"] == "instructions_" + target_username]
         if instructions:
             if raw_team_intro:
                 result += "\n\n------------\n\n"
@@ -122,7 +116,6 @@ class TelecomInvestigationAbility(AbstractAbility):
 
         return result
 
-
     @transaction_watcher
     def process_telecom_investigation(self, target_username, use_gems=()):
 
@@ -135,14 +128,12 @@ class TelecomInvestigationAbility(AbstractAbility):
         remote_email = "investigator@special.com"  # dummy domain too
         local_email = self.get_character_email()
 
-
         # request email to allow interception
 
         subject = _("Investigation Request for character %(target_official_name)s") % \
                   SDICT(target_official_name=target_official_name)
         body = _("Please let me know anything you may discover about this individual.")
         self.post_message(local_email, remote_email, subject, body, date_or_delay_mn=0)
-
 
         # answer email
 
@@ -157,9 +148,9 @@ class TelecomInvestigationAbility(AbstractAbility):
                                    date_or_delay_mn=self.get_global_parameter("telecom_investigation_delays"))
 
         self.log_game_event(ugettext_noop('Character inquiry opened into %(target_official_name)s'),
-                             PersistentMapping(target_official_name=target_official_name),
-                             url=self.get_message_viewer_url_or_none(msg_id),
-                             visible_by=None)
+                            PersistentMapping(target_official_name=target_official_name),
+                            url=self.get_message_viewer_url_or_none(msg_id),
+                            visible_by=None)
 
         return _("Telecom investigation is in process, you'll receive the result by email.")
 

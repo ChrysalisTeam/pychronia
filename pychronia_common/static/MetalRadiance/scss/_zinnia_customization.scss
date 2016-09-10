@@ -11,7 +11,7 @@
     @extend .clearfix;
     @extend .scroll_realistic_thin_ends;
 
-  // we remove the excess of margin inside frame
+    // we remove the excess of margin inside frame
     margin-left: -30px;
     margin-right: -30px;
 
@@ -23,7 +23,7 @@
 
 ul.paginator {
     list-style-image: none !important;
-    list-style-type: none  !important;
+    list-style-type: none !important;
     li {
         display: inline !important;
         margin: 0px 5px;

@@ -58,7 +58,7 @@ def try_authenticating_with_credentials(request, username, password):
     session_ticket = datamanager.authenticate_with_credentials(username, password)
 
     instance_key = instance_session_key(request.datamanager.game_instance_id)
-    request.session[instance_key] = session_ticket # overrides
+    request.session[instance_key] = session_ticket  # overrides
     _enrich_request_metadata_with_instance_session_ticket(request, session_ticket=session_ticket)
 
 
@@ -71,20 +71,21 @@ def _lookup_enforced_session_or_none(request):
         if login_data:
             try:
                 login_data = login_data.encode("ascii", "strict")
-                login_data = encryption.unicode_decrypt(login_data) # decode using site's SECRET_KEY
+                login_data = encryption.unicode_decrypt(login_data)  # decode using site's SECRET_KEY
             except (TypeError, ValueError, UnicodeError), e:
                 logging.warning("Error when trying to decode enforced ticket: %r" % e)
             else:
                 data_list = login_data.split("|")
-                if len(data_list) == 2: # LEGACY
+                if len(data_list) == 2:  # LEGACY
                     enforced_instance_id, enforced_login = data_list
                 else:
                     assert len(data_list) == 3, data_list
                     enforced_instance_id, enforced_login, is_observer_str = data_list
-                    is_observer = bool(is_observer_str) # should be "observer"
+                    is_observer = bool(is_observer_str)  # should be "observer"
                     del is_observer_str
                 if enforced_instance_id != request.datamanager.game_instance_id:
-                    logging.warning("Wrong game instance id in enforced ticket: %s should contain %s instead", login_data, request.datamanager.game_instance_id)
+                    logging.warning("Wrong game instance id in enforced ticket: %s should contain %s instead",
+                                    login_data, request.datamanager.game_instance_id)
                 else:
                     session_ticket = dict(game_instance_id=enforced_instance_id,
                                           game_username=enforced_login,
@@ -98,7 +99,6 @@ def compute_enforced_login_token(game_instance_id, login, is_observer=False):
     assert is_observer in (True, False)
     login_data = "%s|%s|%s" % (game_instance_id, login, "observer" if is_observer else "")
     return encryption.unicode_encrypt(login_data)
-    
 
 
 def try_authenticating_with_session(request, url_game_username=None):
@@ -119,42 +119,44 @@ def try_authenticating_with_session(request, url_game_username=None):
     if IMPERSONATION_TARGET_POST_VARIABLE in request.POST or IMPERSONATION_WRITABILITY_POST_VARIABLE in request.POST:
 
         # Beware here, pop() on QueryDict would return a LIST always
-        requested_impersonation_target = request.POST.get(IMPERSONATION_TARGET_POST_VARIABLE, None) # beware, != "" here
-        requested_impersonation_writability = request.POST.get(IMPERSONATION_WRITABILITY_POST_VARIABLE, None) # ternary value
+        requested_impersonation_target = request.POST.get(IMPERSONATION_TARGET_POST_VARIABLE,
+                                                          None)  # beware, != "" here
+        requested_impersonation_writability = request.POST.get(IMPERSONATION_WRITABILITY_POST_VARIABLE,
+                                                               None)  # ternary value
         if requested_impersonation_writability is not None:
             requested_impersonation_writability = True if requested_impersonation_writability.strip().lower() == "true" else False
 
-        request.POST.clear() # thanks to our middleware that made it mutable...
-        request.method = "GET" # dirty, isn't it ?
+        request.POST.clear()  # thanks to our middleware that made it mutable...
+        request.method = "GET"  # dirty, isn't it ?
 
     else:
         requested_impersonation_target = requested_impersonation_writability = None
 
     # priority to POST data, but beware of special (requested_impersonation_target=="") case
     final_requested_impersonation_target = requested_impersonation_target if requested_impersonation_target is not None else url_game_username
-    
+
     try:
-        res = datamanager.authenticate_with_session_data(session_ticket=session_ticket, # may be None
-                                                           requested_impersonation_target=final_requested_impersonation_target,
-                                                           requested_impersonation_writability=requested_impersonation_writability,
-                                                           django_user=request.user) # can be anonymous
+        res = datamanager.authenticate_with_session_data(session_ticket=session_ticket,  # may be None
+                                                         requested_impersonation_target=final_requested_impersonation_target,
+                                                         requested_impersonation_writability=requested_impersonation_writability,
+                                                         django_user=request.user)  # can be anonymous
         #print("NEW AUTHENTICATION DATA IN SESSION", res)
         request.session[instance_key] = res  # this refreshes expiry time, and ensures we properly modify session
 
     except UsageError, e:
         # invalid session data, or request vars...
         logging.critical("Error in try_authenticating_with_session with locals %r" % repr(locals()), exc_info=True)
-        request.session[instance_key] = None # important cleanup!
-        pass # thus, if error, we let the anonymous user be...
+        request.session[instance_key] = None  # important cleanup!
+        pass  # thus, if error, we let the anonymous user be...
 
     _enrich_request_metadata_with_instance_session_ticket(request, session_ticket=session_ticket)
 
     try:
-        request.session.save() # force IMMEDIATE saving, to avoid lost updates between web and ajax (eg. chatroom) requests
+        request.session.save()  # force IMMEDIATE saving, to avoid lost updates between web and ajax (eg. chatroom) requests
     except DatabaseError, e:
-        logging.warning("Immediate saving of django session failed (%r), it's expected during unit-tests when DB is not setup...", e)
-
-
+        logging.warning(
+            "Immediate saving of django session failed (%r), it's expected during unit-tests when DB is not setup...",
+            e)
 
 
 '''
@@ -225,11 +227,3 @@ def game_authenticated_required(func):
     wrapped.game_authenticated_required = True
     return wrapped
 '''
-
-
-
-
-
-
-
-

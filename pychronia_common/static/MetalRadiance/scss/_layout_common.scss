@@ -1,12 +1,10 @@
 
-
 .grey_layer {
     margin: 0;
     padding: 0;
     background: url("#{$IMGS}backgrounds/vertical_grey_2x2.png") repeat scroll 0 0 transparent;
     position: relative; // important to appear in front of absolutely positioned parallax divs
 }
-
 
 body .notification_panel {
 
@@ -18,7 +16,7 @@ body .notification_panel {
 
     display: block;
     height: auto;
-    position: fixed;  // IMPORTANT, not "absolute" - else errors are not visible when a #fragment is use in link URL
+    position: fixed; // IMPORTANT, not "absolute" - else errors are not visible when a #fragment is use in link URL
     top: 0px;
     left: 50%;
 
@@ -39,10 +37,10 @@ body .notification_panel {
         .notification_panel_content {
             opacity: 1;
             overflow: visible;
-        p {
-            margin: 4px 0;
+            p {
+                margin: 4px 0;
+            }
         }
-       }
     }
 }
 
@@ -62,22 +60,20 @@ body .notification_panel {
             position: absolute;
             right: 15px;
             bottom: 4px;
-            text-decoration: none;  // fallback
+            text-decoration: none; // fallback
             text-decoration: blink;
             border: none !important;
-          }
+        }
     }
 }
-
-
 
 #bug_report_panel {
 
     color: black;
 
     textarea {
-      resize: none;
-      width: 100%;
+        resize: none;
+        width: 100%;
     }
 }
 

@@ -1,7 +1,4 @@
-
 /*  Wrapping of text in scrolls and plates  */
-
-
 
 .outlined {
     outline: $medium_yellow ridge 2px;
@@ -33,7 +30,6 @@
     border-image: url('#{$IMGS}backgrounds/post-it.png') 4 4 6 fill stretch;
     image-rendering: optimizequality;
 }
-
 
 .scroll_realistic {
     @include dark-texts;
@@ -80,7 +76,6 @@
     image-rendering: optimizequality;
 }
 
-
 .antique_marble_frame {
     padding: 5px;
     border-color: transparent;
@@ -104,7 +99,7 @@
     }
 }
 
-@include desktop-only{
+@include desktop-only {
     .decorated_golden_frame {
         border-color: transparent;
         border-style: solid;
@@ -142,9 +137,9 @@
     }
 }
 
-@include mobile-only{
+@include mobile-only {
     .carved_square_frame_gold, .carved_square_frame_silver {
-        display:none;
+        display: none;
     }
 }
 

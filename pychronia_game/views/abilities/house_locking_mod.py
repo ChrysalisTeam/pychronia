@@ -11,18 +11,17 @@ from pychronia_game.datamanager import readonly_method, \
 
 @register_view
 class HouseLockingAbility(AbstractAbility):
-
     #TITLE = ugettext_lazy("Manor Security")
 
     TITLE = ugettext_lazy("Manor Security")
     NAME = "house_locking"
 
     GAME_ACTIONS = dict(lock=dict(title=ugettext_lazy("Lock house doors"),
-                                              form_class=None,
-                                              callback="lock_house_doors"),
+                                  form_class=None,
+                                  callback="lock_house_doors"),
                         unlock=dict(title=ugettext_lazy("Unlock house doors"),
-                                              form_class=None,
-                                              callback="try_unlocking_house_doors"))
+                                    form_class=None,
+                                    callback="try_unlocking_house_doors"))
 
     TEMPLATE = "abilities/house_locking.html"
 
@@ -30,19 +29,16 @@ class HouseLockingAbility(AbstractAbility):
     REQUIRES_CHARACTER_PERMISSION = True
     REQUIRES_GLOBAL_PERMISSION = True
 
-
-
     def get_template_vars(self, previous_form_data=None):
         are_doors_open = self.are_house_doors_open()
         return {
-                'page_title': _("Manor Security Management"),
-                'are_doors_open': are_doors_open
-               }
+            'page_title': _("Manor Security Management"),
+            'are_doors_open': are_doors_open
+        }
 
     @readonly_method
     def are_house_doors_open(self):
         return self.settings["house_doors_are_open"]
-
 
     @transaction_watcher
     def lock_house_doors(self, use_gems=()):
@@ -57,7 +53,6 @@ class HouseLockingAbility(AbstractAbility):
 
         assert False, "lock_house_doors"
 
-
     @transaction_watcher
     def try_unlocking_house_doors(self, password, use_gems=()):
 
@@ -67,7 +62,8 @@ class HouseLockingAbility(AbstractAbility):
             if password.strip() == expected_password.strip():
                 self.settings["house_doors_are_open"] = True
                 self.user.add_message(_("House doors successfully unlocked."))
-                self.log_game_event(ugettext_noop("House doors have been successfully unlocked with password."), visible_by=None)
+                self.log_game_event(ugettext_noop("House doors have been successfully unlocked with password."),
+                                    visible_by=None)
                 return True
             else:
                 self.user.add_error(_("Wrong password."))
@@ -78,15 +74,12 @@ class HouseLockingAbility(AbstractAbility):
 
         assert False, "try_unlocking_house_doors"
 
-
     @classmethod
     def _setup_ability_settings(cls, settings):
         settings.setdefault("house_doors_are_open", True)
 
-
     def _setup_private_ability_data(self, private_data):
         pass
-
 
     def _check_data_sanity(self, strict=False):
 
@@ -100,8 +93,6 @@ class HouseLockingAbility(AbstractAbility):
         if strict:
             utilities.check_num_custom_settings(settings, 2)
         assert isinstance(settings["house_doors_are_open"], bool)
-
-
 
 
 '''

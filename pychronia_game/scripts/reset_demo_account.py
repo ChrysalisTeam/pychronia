@@ -1,15 +1,15 @@
- #!/usr/bin/env python
- # -*- coding: utf-8 -*-
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 import os
 import sys
 
 import setup_pychronia_env
-import pychronia_game.models # initializes everything
+import pychronia_game.models  # initializes everything
 from pychronia_game.datamanager.datamanager_administrator import delete_game_instance, create_game_instance, \
-        change_game_instance_status, UsageError
-
+    change_game_instance_status, UsageError
 
 DEMO_NAME = "DEMO"
+
 
 def execute():
     try:
@@ -22,4 +22,3 @@ def execute():
 
 if __name__ == "__main__":
     execute()
-

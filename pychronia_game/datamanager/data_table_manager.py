@@ -7,7 +7,6 @@ from pychronia_game.common import *
 from .datamanager_tools import *
 
 
-
 class DataTableManager(object):
     """
     Put an instance of this class as an attribute of a datamanager class, 
@@ -15,7 +14,7 @@ class DataTableManager(object):
     a (ZODB) dict of data items.
     """
 
-    TRANSLATABLE_ITEM_NAME = None # must be a lazy-translatable string
+    TRANSLATABLE_ITEM_NAME = None  # must be a lazy-translatable string
 
     #####INPUT_FIELDS = [] # list of fields allowed in the data dict
 
@@ -28,7 +27,6 @@ class DataTableManager(object):
         strict = kwargs.get("strict", False)
         for key, value in self._table.items():
             self._check_item_validity(key, value)
-
 
     def _preprocess_new_item(self, key, value):
         """
@@ -72,9 +70,8 @@ class DataTableManager(object):
         """
         raise NotImplementedError("_item_can_be_deleted")
 
-
     def __init__(self, datamanager):
-        self._inner_datamanager = datamanager # do not change name -> used by decorators!
+        self._inner_datamanager = datamanager  # do not change name -> used by decorators!
         assert self.TRANSLATABLE_ITEM_NAME
 
     @property
@@ -84,12 +81,15 @@ class DataTableManager(object):
     @classmethod
     def _check_item_is_in_table(cls, table, key):
         if key not in table:
-            raise AbnormalUsageError(_("Couldn't find %(type)s item with key %(key)s") % SDICT(type=cls.TRANSLATABLE_ITEM_NAME, key=key))
+            raise AbnormalUsageError(
+                _("Couldn't find %(type)s item with key %(key)s") % SDICT(type=cls.TRANSLATABLE_ITEM_NAME, key=key))
 
     @classmethod
     def _check_item_is_not_in_table(cls, table, key):
         if key in table:
-            raise AbnormalUsageError(_("Items of type %(type)s with key %(key)s already exists") % SDICT(type=cls.TRANSLATABLE_ITEM_NAME, key=key))
+            raise AbnormalUsageError(
+                _("Items of type %(type)s with key %(key)s already exists") % SDICT(type=cls.TRANSLATABLE_ITEM_NAME,
+                                                                                    key=key))
 
     @readonly_method
     def get_all_data(self, as_sorted_list=False, mutability=None):
@@ -139,7 +139,8 @@ class DataTableManager(object):
     def __setitem__(self, key, value):
         table = self._table
         if key in table and not self._item_can_be_modified(key, table[key]):
-            raise AbnormalUsageError(_("Can't modify %(type)s item with key %(key)s") % SDICT(type=self.TRANSLATABLE_ITEM_NAME, key=key))
+            raise AbnormalUsageError(
+                _("Can't modify %(type)s item with key %(key)s") % SDICT(type=self.TRANSLATABLE_ITEM_NAME, key=key))
         key, value = self._preprocess_new_item(key, value)
         self._check_item_validity(key, value)
         table[key] = value
@@ -150,7 +151,8 @@ class DataTableManager(object):
         table = self._table
         self._check_item_is_in_table(table, key)
         if not self._item_can_be_deleted(key, table[key]):
-            raise AbnormalUsageError(_("Can't delete %(type)s item with key %(key)s") % SDICT(type=self.TRANSLATABLE_ITEM_NAME, key=key))
+            raise AbnormalUsageError(
+                _("Can't delete %(type)s item with key %(key)s") % SDICT(type=self.TRANSLATABLE_ITEM_NAME, key=key))
         del table[key]
         self._callback_on_any_update()
 
@@ -161,12 +163,11 @@ class DataTableManager(object):
     @readonly_method
     def copy(self):
         """Shallow copy"""
-        return dict(**self._table) # thus no WRITE on dict
+        return dict(**self._table)  # thus no WRITE on dict
 
     # transaction watching here would make no sense
     def __getattr__(self, name):
-        return getattr(self._table, name) # for methods like keys()... don't use copy() as it's MODIFYING object
-
+        return getattr(self._table, name)  # for methods like keys()... don't use copy() as it's MODIFYING object
 
 
 class LazyInstantiationDescriptor(object):
@@ -174,18 +175,9 @@ class LazyInstantiationDescriptor(object):
     Used to place a special attribute in datamanager modules, 
     proxying to a new instance of DataTableManager on attribute access.
     """
+
     def __init__(self, target_klass):
         self.target_klass = target_klass
 
     def __get__(self, obj, objtype):
         return self.target_klass(datamanager=obj)
-
-
-
-
-
-
-
-
-
-

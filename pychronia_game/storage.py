@@ -18,10 +18,11 @@ class ProtectedGameFileSystemStorage(FileSystemStorage):
         location = config.GAME_FILES_ROOT
         assert location.endswith(os.sep), location
         super(ProtectedGameFileSystemStorage, self).__init__(location=location,
-                                                             base_url=None) # useless here
+                                                             base_url=None)  # useless here
 
     def url(self, name):
         return game_file_url(name)
+
 
 protected_game_file_system_storage = ProtectedGameFileSystemStorage()
 

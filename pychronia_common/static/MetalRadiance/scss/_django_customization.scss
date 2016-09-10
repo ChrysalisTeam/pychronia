@@ -1,7 +1,4 @@
-
-
 /* classes used by django standard or contrib modules like newforms, django-userprofiles... */
-
 
 /* django forms */
 .errorlist {
@@ -12,13 +9,11 @@
     padding: 0;
 }
 
-
 /* forms of django-userprofiles */
 .bare_forms form {
     max-width: 400px;
-    margin:auto
+    margin: auto
 }
-
 
 /* django-filer for django-cms */
 .filer_image_link {

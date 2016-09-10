@@ -9,27 +9,32 @@ from django.http import Http404, HttpResponse
 from pychronia_game.utilities import mediaplayers
 from django.core.mail import send_mail
 
-
 from .admin_dashboard_mod import AdminDashboardAbility
 
 admin_dashboard = AdminDashboardAbility.as_view
 
 from .webradio_management_mod import WebradioManagement
+
 webradio_management = WebradioManagement.as_view
 
 from .static_pages_management_mod import StaticPagesManagement
+
 static_pages_management = StaticPagesManagement.as_view
 
 from .global_contacts_management_mod import GlobalContactsManagement
+
 global_contacts_management = GlobalContactsManagement.as_view
 
 from .game_items_management_mod import GameItemsManagement
+
 game_items_management = GameItemsManagement.as_view
 
 from .radio_spots_editing_mod import RadioSpotsEditing
+
 radio_spots_editing = RadioSpotsEditing.as_view
 
 from .admin_information_mod import AdminInformation
+
 admin_information = AdminInformation.as_view
 
 from .gamemaster_manual_mod import gamemaster_manual
@@ -37,7 +42,6 @@ from .gamemaster_manual_mod import gamemaster_manual
 
 @register_view(access=UserAccess.master, title=ugettext_lazy("View Database"))
 def manage_databases(request, template_name='administration/database_management.html'):
-
     ''' OBSOLETE
     if request.method == "POST":
         if request.POST.has_key("pack_database"):
@@ -49,14 +53,13 @@ def manage_databases(request, template_name='administration/database_management.
 
     return render(request,
                   template_name,
-                    {
-                     'formatted_data': formatted_data,
-                    })
+                  {
+                      'formatted_data': formatted_data,
+                  })
 
 
 @register_view(access=UserAccess.master, title=ugettext_lazy("Manage Characters"))
 def manage_characters(request, template_name='administration/character_management.html'):
-
     dm = request.datamanager
 
     characters_items = sorted(dm.get_character_sets().items(), key=lambda x: (x[1]["is_npc"], x[0]))
@@ -88,26 +91,26 @@ def manage_characters(request, template_name='administration/character_managemen
                 permissions = form.cleaned_data["permissions"]
                 real_life_identity = form.cleaned_data["real_life_identity"].strip() or None
                 real_life_email = form.cleaned_data["real_life_email"].strip() or None
-                gamemaster_hints = form.cleaned_data["gamemaster_hints"].strip() # may be an empty string !
+                gamemaster_hints = form.cleaned_data["gamemaster_hints"].strip()  # may be an empty string !
                 extra_goods = form.cleaned_data["extra_goods"]
                 secret_question = form.cleaned_data["secret_question"]
                 secret_answer = form.cleaned_data["secret_answer"]
 
-                assert official_name == official_name.strip() # auto-stripping
+                assert official_name == official_name.strip()  # auto-stripping
                 assert official_role == official_role.strip()
 
                 with action_failure_handler(request, success_message=None):
 
-                    assert not dm.is_in_writing_transaction() # each call below will be separately atomic
+                    assert not dm.is_in_writing_transaction()  # each call below will be separately atomic
 
                     previous_data = copy.deepcopy(dm.get_character_properties(username=target_username))
 
                     dm.update_official_character_data(username=target_username,
-                                                        official_name=official_name,
-                                                        official_role=official_role,
-                                                        gamemaster_hints=gamemaster_hints,
-                                                        extra_goods=extra_goods,
-                                                        is_npc=is_npc)
+                                                      official_name=official_name,
+                                                      official_role=official_role,
+                                                      gamemaster_hints=gamemaster_hints,
+                                                      extra_goods=extra_goods,
+                                                      is_npc=is_npc)
 
                     dm.update_secret_question_and_answer(username=target_username,
                                                          secret_question=secret_question,
@@ -119,14 +122,14 @@ def manage_characters(request, template_name='administration/character_managemen
                     dm.update_permissions(username=target_username,
                                           permissions=permissions)
                     dm.update_real_life_data(username=target_username,
-                                            real_life_identity=real_life_identity,
-                                            real_life_email=real_life_email)
+                                             real_life_identity=real_life_identity,
+                                             real_life_email=real_life_email)
 
                     new_data = dm.get_character_properties(username=target_username)
 
                     utilities.assert_sets_equal(previous_data.keys(), new_data.keys())
 
-                    successful_character_updates_count += 1 # NOW ONLY, we know that forms are OK and that updates really worked
+                    successful_character_updates_count += 1  # NOW ONLY, we know that forms are OK and that updates really worked
 
                     with exception_swallower():  # we don't want this advanced logging to mess with the game
 
@@ -134,9 +137,11 @@ def manage_characters(request, template_name='administration/character_managemen
                             if isinstance(a, (list, PersistentList, tuple)):
                                 return sorted(a) == sorted(b)  # handle damn allegiances, permissions etc.
                             return a == b
+
                         # we create a list of tuples (key, old_value, new_value) ONLY for modified fields
                         all_changes = [(k, previous_data[k], new_data[k])
-                                       for k in sorted(new_data.keys()) if not _is_equivalent(previous_data[k], new_data[k])]
+                                       for k in sorted(new_data.keys()) if
+                                       not _is_equivalent(previous_data[k], new_data[k])]
 
                         if all_changes:
 
@@ -145,20 +150,21 @@ def manage_characters(request, template_name='administration/character_managemen
                             additional_details = ""
                             for change_triplet in all_changes:
                                 additional_details += """~ %s: "%s" => "%s"\n""" % change_triplet
-                            additional_details = re.sub(r"\bu'", "'", additional_details)  # WORKAROUND for ugly "unicode" prefixes of python2
-                            additional_details = additional_details.replace("%", "%%") # security against rogue placeholders
+                            additional_details = re.sub(r"\bu'", "'",
+                                                        additional_details)  # WORKAROUND for ugly "unicode" prefixes of python2
+                            additional_details = additional_details.replace("%",
+                                                                            "%%")  # security against rogue placeholders
 
                             dm.log_game_event(message,
                                               substitutions=PersistentMapping(username=target_username),
                                               additional_details=additional_details,
                                               url=None,
-                                              visible_by=None) # only for game master
-
+                                              visible_by=None)  # only for game master
 
             character_forms.append(form)
 
-
-    form_validation_failed = None if not character_updates_were_attempted else (successful_character_updates_count != len(characters_items))
+    form_validation_failed = None if not character_updates_were_attempted else (
+    successful_character_updates_count != len(characters_items))
 
     if not form_validation_failed:  # i.e if None or False
 
@@ -166,26 +172,26 @@ def manage_characters(request, template_name='administration/character_managemen
 
         for idx, (username, character_data) in enumerate(characters_items):
             f = forms.CharacterProfileForm(
-                                    datamanager=dm,
-                                    prefix=_prefix(idx),
-                                    initial=dict(target_username=username,
-                                                 official_name=character_data["official_name"],
-                                                 official_role=character_data["official_role"],
-                                                 allegiances=character_data["domains"],
-                                                 permissions=character_data["permissions"],
-                                                 real_life_identity=character_data["real_life_identity"],
-                                                 real_life_email=character_data["real_life_email"],
-                                                 gamemaster_hints=character_data["gamemaster_hints"],
-                                                 is_npc=character_data["is_npc"],
-                                                 extra_goods=character_data["extra_goods"],
-                                                 secret_question=character_data["secret_question"],
-                                                 secret_answer=character_data["secret_answer"],)
-                                    )
+                datamanager=dm,
+                prefix=_prefix(idx),
+                initial=dict(target_username=username,
+                             official_name=character_data["official_name"],
+                             official_role=character_data["official_role"],
+                             allegiances=character_data["domains"],
+                             permissions=character_data["permissions"],
+                             real_life_identity=character_data["real_life_identity"],
+                             real_life_email=character_data["real_life_email"],
+                             gamemaster_hints=character_data["gamemaster_hints"],
+                             is_npc=character_data["is_npc"],
+                             extra_goods=character_data["extra_goods"],
+                             secret_question=character_data["secret_question"],
+                             secret_answer=character_data["secret_answer"], )
+            )
             character_forms.append(f)
 
     assert len(character_forms) == len(characters_items), [character_forms, characters_items]
 
-    if form_validation_failed == True :
+    if form_validation_failed == True:
         dm.user.add_error(_("Some character updates failed (see below)."))
     elif form_validation_failed == False:
         dm.user.add_message(_("Characters were properly updated."))
@@ -202,21 +208,16 @@ def manage_characters(request, template_name='administration/character_managemen
 
     return render(request,
                   template_name,
-                    dict(
-                         character_forms=character_forms,
-                         sealed_friendships=sealed_friendships,
-                         proposed_friendships=proposed_friendships,
-                         characters_emails=characters_emails,
-                         ))
-
-
-
-
+                  dict(
+                      character_forms=character_forms,
+                      sealed_friendships=sealed_friendships,
+                      proposed_friendships=proposed_friendships,
+                      characters_emails=characters_emails,
+                  ))
 
 
 @register_view(access=UserAccess.master, title=ugettext_lazy("Character Identities"))
 def CHARACTERS_IDENTITIES(request):
-
     user = request.datamanager.user
 
     char_sets = request.datamanager.get_character_sets().items()
@@ -240,11 +241,8 @@ def CHARACTERS_IDENTITIES(request):
     return response
 
 
-
-
 @register_view(access=UserAccess.master, title=ugettext_lazy("Database Operations"))
 def DATABASE_OPERATIONS(request):
-
     if not config.DEBUG:
         raise Http404
 
@@ -262,7 +260,6 @@ def DATABASE_OPERATIONS(request):
 
 @register_view(access=UserAccess.master, title=ugettext_lazy("Fail Test"))
 def FAIL_TEST(request):
-
     raise IOError("Dummy error to test email sending")
 
     try:
@@ -273,26 +270,16 @@ def FAIL_TEST(request):
         # return HttpResponse(repr(e))
 
 
-
 @register_view(access=UserAccess.master, title=ugettext_lazy("Media Display Test"))
 def MEDIA_TEST(request):
-
     return render(request,
                   "administration/media_test.html",
-                    {
-                     'audioplayer': mediaplayers.generate_audio_player([game_file_url("test_samples/music.mp3")]),
-                     'videoplayers': ["<p>%s</p>" % extension +
-                                      mediaplayers.generate_media_player(game_file_url("test_samples/video." + extension),
-                                                                         game_file_url('test_samples/image.jpg'))
-                                      for extensions in mediaplayers._media_player_templates
-                                      for extension in extensions]
-                    })
-
-
-
-
-
-
-
-
-
+                  {
+                      'audioplayer': mediaplayers.generate_audio_player([game_file_url("test_samples/music.mp3")]),
+                      'videoplayers': ["<p>%s</p>" % extension +
+                                       mediaplayers.generate_media_player(
+                                           game_file_url("test_samples/video." + extension),
+                                           game_file_url('test_samples/image.jpg'))
+                                       for extensions in mediaplayers._media_player_templates
+                                       for extension in extensions]
+                  })

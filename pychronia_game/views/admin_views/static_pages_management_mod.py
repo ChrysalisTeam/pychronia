@@ -10,17 +10,17 @@ from pychronia_game.utilities.select2_extensions import Select2TagsField
 from django import forms
 
 
-
 class StaticPageForm(DataTableForm):
-
     title = forms.CharField(label=ugettext_lazy("Title"), required=False)
 
     categories = Select2TagsField(label=ugettext_lazy("Categories"), required=False,
-                                  choice_tags=sorted(set([StaticPages.CONTENT_CATEGORY, StaticPages.HELP_CATEGORY, Encyclopedia.ENCYCLOPEDIA_CATEGORY])))
+                                  choice_tags=sorted(set([StaticPages.CONTENT_CATEGORY, StaticPages.HELP_CATEGORY,
+                                                          Encyclopedia.ENCYCLOPEDIA_CATEGORY])))
 
     keywords = Select2TagsField(label=ugettext_lazy("Keywords"), required=False)
 
-    content = forms.CharField(label=ugettext_lazy("Content"), widget=forms.Textarea(attrs={'rows': '8', 'cols':'40'}), required=True)
+    content = forms.CharField(label=ugettext_lazy("Content"), widget=forms.Textarea(attrs={'rows': '8', 'cols': '40'}),
+                              required=True)
 
     gamemaster_hints = GAMEMASTER_HINTS_FIELD()
 
@@ -30,30 +30,20 @@ class StaticPageForm(DataTableForm):
 
 @register_view
 class StaticPagesManagement(AbstractDataTableManagement):
-
     TITLE = ugettext_lazy("Edit Static Pages")
     NAME = "static_pages_management"
 
     GAME_ACTIONS = dict(submit_item=dict(title=ugettext_lazy("Submit a static page"),
-                                                          form_class=StaticPageForm,
-                                                          callback="submit_item"),
+                                         form_class=StaticPageForm,
+                                         callback="submit_item"),
                         delete_item=dict(title=ugettext_lazy("Delete a static page"),
-                                                          form_class=None,
-                                                          callback="delete_item"))
+                                         form_class=None,
+                                         callback="delete_item"))
 
     TEMPLATE = "administration/static_pages_management.html"
 
-
     def get_data_table_instance(self):
         return self.datamanager.static_pages
-
-
-
-
-
-
-
-
 
 
 ''' USELESS

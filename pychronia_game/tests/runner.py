@@ -2,14 +2,16 @@
 
 import sys, os, warnings
 
-root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__)))) # CHRYSALIS/ root dir
+root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))  # CHRYSALIS/ root dir
 sys.path.insert(0, root)
 sys.path.insert(0, os.path.join(root, "dependencies"))
 #print ">>>>>>>", sys.path
 
-os.environ["DJANGO_SETTINGS_MODULE"] = settings_module = "pychronia_game.tests.persistent_mode_settings" # with DB not in temp dir
+os.environ[
+    "DJANGO_SETTINGS_MODULE"] = settings_module = "pychronia_game.tests.persistent_mode_settings"  # with DB not in temp dir
 
 import django
+
 django.setup()
 from django.core.management import execute_from_command_line
 from django.conf import settings
@@ -18,7 +20,6 @@ from django.conf import settings
 from django.core.management import call_command
 call_command('my_command', 'foo', bar='baz')
 """
-
 
 if __name__ == "__main__":
 
@@ -35,8 +36,9 @@ if __name__ == "__main__":
     elif "reset_zodb" in arguments:
         if os.path.exists(settings.ZODB_FILE):
             os.remove(settings.ZODB_FILE)
-        import pychronia_game.models # initializes everything
+        import pychronia_game.models  # initializes everything
         from pychronia_game.datamanager.datamanager_administrator import reset_zodb_structure, create_game_instance
+
         reset_zodb_structure()
 
         if "use_fixture" in arguments:
@@ -64,14 +66,13 @@ if __name__ == "__main__":
 
     elif "pack_file" in arguments:
         from pychronia_game import utilities
+
         assert utilities.config.ZODB_FILE
-        DB = utilities.open_zodb_file(utilities.config.ZODB_FILE) # only works if we use a local ZODB file
+        DB = utilities.open_zodb_file(utilities.config.ZODB_FILE)  # only works if we use a local ZODB file
         DB.pack(days=1)
         print "Successfully packed ZODB items older than 1 day in %s" % utilities.config.ZODB_FILE
 
     else:
-        sys.argv[1:] = ("runserver 127.0.0.1:8000 --settings=%s" % settings_module).split() # beware, with auto-reload this is applied twice...
+        sys.argv[1:] = (
+        "runserver 127.0.0.1:8000 --settings=%s" % settings_module).split()  # beware, with auto-reload this is applied twice...
         execute_from_command_line()
-
-
-

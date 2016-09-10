@@ -10,12 +10,12 @@ from pychronia_game.datamanager.abstract_form import GAMEMASTER_HINTS_FIELD
 
 
 class GameItemForm(DataTableForm):
-
     auction = forms.CharField(label=ugettext_lazy("Auction"), required=False)  # can be empty string
 
     title = forms.CharField(label=ugettext_lazy("Title"), required=True)
 
-    comments = forms.CharField(label=ugettext_lazy("Description"), widget=forms.Textarea(attrs={'rows': '2', 'cols':'40'}), required=True)
+    comments = forms.CharField(label=ugettext_lazy("Description"),
+                               widget=forms.Textarea(attrs={'rows': '2', 'cols': '40'}), required=True)
 
     image = forms.CharField(label=ugettext_lazy("Image (url or local file)"), required=True)
 
@@ -30,24 +30,19 @@ class GameItemForm(DataTableForm):
     gamemaster_hints = GAMEMASTER_HINTS_FIELD()
 
 
-
 @register_view
 class GameItemsManagement(AbstractDataTableManagement):
-
     TITLE = ugettext_lazy("Edit Game Items")
     NAME = "game_items_management"
 
     GAME_ACTIONS = dict(submit_item=dict(title=ugettext_lazy("Submit an item"),
-                                                          form_class=GameItemForm,
-                                                          callback="submit_item"),
+                                         form_class=GameItemForm,
+                                         callback="submit_item"),
                         delete_item=dict(title=ugettext_lazy("Delete an item"),
-                                                          form_class=None,
-                                                          callback="delete_item"))
+                                         form_class=None,
+                                         callback="delete_item"))
 
     TEMPLATE = "administration/game_items_management.html"
 
-
     def get_data_table_instance(self):
         return self.datamanager.game_items
-
-

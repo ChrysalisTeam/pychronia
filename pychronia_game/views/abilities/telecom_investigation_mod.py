@@ -16,13 +16,12 @@ from django.template.loader import render_to_string
 
 @register_view
 class TelecomInvestigationAbility(AbstractPartnershipAbility):
-
     TITLE = ugettext_lazy("Telecom Investigation")
     NAME = "telecom_investigation"
 
     GAME_ACTIONS = dict(investigation_form=dict(title=ugettext_lazy("Process Telecom Investigation"),
-                                               form_class=OtherKnownCharactersForm,
-                                               callback="process_telecom_investigation"))
+                                                form_class=OtherKnownCharactersForm,
+                                                callback="process_telecom_investigation"))
 
     TEMPLATE = "abilities/telecom_investigation.html"
 
@@ -30,25 +29,24 @@ class TelecomInvestigationAbility(AbstractPartnershipAbility):
     REQUIRES_CHARACTER_PERMISSION = True
     REQUIRES_GLOBAL_PERMISSION = True
 
-
     @classmethod
     def _setup_ability_settings(cls, settings):
-        pass # nothing to do
+        pass  # nothing to do
 
     def _setup_private_ability_data(self, private_data):
-        pass # nothing to do
+        pass  # nothing to do
 
     def _check_data_sanity(self, strict=False):
-        pass # nothing to do
+        pass  # nothing to do
 
     def get_template_vars(self, previous_form_data=None):
         investigation_form = self._instantiate_game_form(new_action_name="investigation_form",
                                                          hide_on_success=False,
                                                          previous_form_data=previous_form_data)
         return {
-                 'page_title': _("Telecom Investigation"),
-                 "investigation_form": investigation_form,
-               }
+            'page_title': _("Telecom Investigation"),
+            "investigation_form": investigation_form,
+        }
 
     @readonly_method
     def extract_conversation_summary(self, target_username):
@@ -89,7 +87,6 @@ class TelecomInvestigationAbility(AbstractPartnershipAbility):
                 html.append(render_to_string("abilities/telecom_summary_format.html", context))
         return "\n\n-----\n\n".join(html)
 
-
     @transaction_watcher
     def process_telecom_investigation(self, target_username, use_gems=()):
 
@@ -99,7 +96,7 @@ class TelecomInvestigationAbility(AbstractPartnershipAbility):
         subject = _("Telecom Investigation Request - %(target_name)s") % dict(target_name=target_official_name)
         body = _("Please look for anything you can find about this person.")
         request_msg_data = dict(subject=subject,
-                                 body=body)
+                                body=body)
 
         # response e-mail
         subject = _('Telecom Investigation Results - %(target_name)s') % dict(target_name=target_official_name)
@@ -111,7 +108,7 @@ class TelecomInvestigationAbility(AbstractPartnershipAbility):
         del subject, body
 
         best_msg_id = self._process_standard_exchange_with_partner(request_msg_data=request_msg_data,
-                                                                    response_msg_data=response_msg_data)
+                                                                   response_msg_data=response_msg_data)
 
         self.log_game_event(ugettext_noop("Telecom investigation launched on target '%(target_name)s'."),
                             PersistentMapping(target_name=target_official_name),

@@ -1,5 +1,3 @@
-
-
 /* COMMON UTILITY DEFINITIONS */
 
 $IMGS: unquote("img/"); // use for every path relative to css file
@@ -66,59 +64,53 @@ $form_input_border_color: #aaa;
 
 $scroll_text_color: black;
 
-
 /* COMMON FONT DEFINITIONS */
 
-
 .pyscss_bug_workaround {
-  display: none; // to fix the problem with weird "};" at start of generated css file
+    display: none; // to fix the problem with weird "};" at start of generated css file
 }
-
 
 @font-face {
     font-family: "rothenburg_decorative"; // or "RothenburgDecorativeNormal";
     src: url("#{$IMGS}fonts/rothenburg_decorative/rothenbg-webfont.eot");
     src: url("#{$IMGS}fonts/rothenburg_decorative/rothenbg-webfont.eot?#iefix") format("embedded-opentype"),
-         url("#{$IMGS}fonts/rothenburg_decorative/rothenbg-webfont.woff") format("woff"),
-         url("#{$IMGS}fonts/rothenburg_decorative/rothenbg-webfont.ttf") format("truetype"),
-         url("#{$IMGS}fonts/rothenburg_decorative/rothenbg-webfont.svg#RothenburgDecorativeNormal") format("svg");
+    url("#{$IMGS}fonts/rothenburg_decorative/rothenbg-webfont.woff") format("woff"),
+    url("#{$IMGS}fonts/rothenburg_decorative/rothenbg-webfont.ttf") format("truetype"),
+    url("#{$IMGS}fonts/rothenburg_decorative/rothenbg-webfont.svg#RothenburgDecorativeNormal") format("svg");
     font-weight: normal;
     font-style: normal;
 }
-
 
 @font-face {
     font-family: "kingthings_calligraphica_light"; // or "KingthingsCalligraphicaLight"
     src: url("#{$IMGS}fonts/kingthings_calligraphica/Kingthings_Calligraphica_Light-webfont.eot");
     src: //url("#{$IMGS}fonts/kingthings_calligraphica/Kingthings_Calligraphica_Light-webfont.eot?#iefix") format("embedded-opentype"),
-         url("#{$IMGS}fonts/kingthings_calligraphica/Kingthings_Calligraphica_Light-webfont.woff") format("woff"),
-         url("#{$IMGS}fonts/kingthings_calligraphica/Kingthings_Calligraphica_Light-webfont.ttf") format("truetype"),
-         url("#{$IMGS}fonts/kingthings_calligraphica/Kingthings_Calligraphica_Light-webfont.svg#KingthingsCalligraphicaLight") format("svg");
+            url("#{$IMGS}fonts/kingthings_calligraphica/Kingthings_Calligraphica_Light-webfont.woff") format("woff"),
+            url("#{$IMGS}fonts/kingthings_calligraphica/Kingthings_Calligraphica_Light-webfont.ttf") format("truetype"),
+            url("#{$IMGS}fonts/kingthings_calligraphica/Kingthings_Calligraphica_Light-webfont.svg#KingthingsCalligraphicaLight") format("svg");
     font-weight: normal;
     font-style: normal;
 }
-
 
 @font-face {
     font-family: "black_chancery";
     src: url("#{$IMGS}fonts/black_chancery/BLKCHCRY.eot");
     src: url("#{$IMGS}fonts/black_chancery/BLKCHCRY.eot?#iefix") format("embedded-opentype"),
-         url("#{$IMGS}fonts/black_chancery/BLKCHCRY.woff") format("woff"),
-         url("#{$IMGS}fonts/black_chancery/BLKCHCRY.ttf") format("truetype");
+    url("#{$IMGS}fonts/black_chancery/BLKCHCRY.woff") format("woff"),
+    url("#{$IMGS}fonts/black_chancery/BLKCHCRY.ttf") format("truetype");
     font-weight: normal;
     font-style: normal;
 }
 
 @font-face {
-  font-family: "open_sans";
-  src: url("#{$IMGS}fonts/open_sans/OpenSans-Regular.eot");
-  src: url("#{$IMGS}fonts/open_sans/OpenSans-Regular.eot?#iefix") format("embedded-opentype"),
-  url("#{$IMGS}fonts/open_sans/OpenSans-Regular.woff") format("woff"),
-  url("#{$IMGS}fonts/open_sans/OpenSans-Regular.ttf") format("truetype");
-  font-weight: normal;
-  font-style: normal;
+    font-family: "open_sans";
+    src: url("#{$IMGS}fonts/open_sans/OpenSans-Regular.eot");
+    src: url("#{$IMGS}fonts/open_sans/OpenSans-Regular.eot?#iefix") format("embedded-opentype"),
+    url("#{$IMGS}fonts/open_sans/OpenSans-Regular.woff") format("woff"),
+    url("#{$IMGS}fonts/open_sans/OpenSans-Regular.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
 }
-
 
 @mixin text_shadow($bgcolor: black) {
     text-shadow: 1px 1px 0 $bgcolor, -1px -1px 0 $bgcolor, 1px -1px 0 $bgcolor, -1px 1px 0 $bgcolor;
@@ -126,17 +118,25 @@ $scroll_text_color: black;
 
 @mixin pretty_text {
     text-align: justify;
-    text-indent: 0;  // else, quickly ugly...
+    text-indent: 0; // else, quickly ugly...
 }
 
 @mixin light-texts {
     color: $light_orange;
     a {
         //text-shadow: 1px 1px 0 $medium_yellow, -1px -1px 0 $medium_yellow;
-        &:link { color: $bright_green; }
-        &:visited, { color: $lightest_green; }
-        &:hover { color: $light_green; }
-        &:active { color: $light_green; }
+        &:link {
+            color: $bright_green;
+        }
+        &:visited, {
+            color: $lightest_green;
+        }
+        &:hover {
+            color: $light_green;
+        }
+        &:active {
+            color: $light_green;
+        }
     }
 }
 
@@ -144,15 +144,20 @@ $scroll_text_color: black;
     color: black;
     a {
         //text-shadow: 1px 1px 0 $medium_yellow, -1px -1px 0 $medium_yellow;
-        &:link { color: $dark_green; }
-        &:visited { color: $old_green; }
-        &:hover { color: $medium_green }
-        &:active { color: $medium_green }
+        &:link {
+            color: $dark_green;
+        }
+        &:visited {
+            color: $old_green;
+        }
+        &:hover {
+            color: $medium_green
+        }
+        &:active {
+            color: $medium_green
+        }
     }
 }
-
-
-
 
 @mixin header_common {
     @include text_shadow;
@@ -162,49 +167,47 @@ $scroll_text_color: black;
     letter-spacing: 0px
 }
 
-
-
-.pretty_text p, p.pretty_text{
+.pretty_text p, p.pretty_text {
     @include pretty_text;
 }
 
 .pretty_text img {
-  border-radius: 6px;
+    border-radius: 6px;
 }
 
-
 /* COMMON BACKGROUND COLOR CLASSES */
-
 
 .bg_beige, .mixed {
     background-color: $notification_beige;
 }
+
 .bg_blue, .info {
     background-color: $notification_blue;
 }
+
 .bg_green, .success {
     background-color: $notification_green;
 }
+
 .bg_orange, .warning {
     background-color: $notification_orange;
 }
+
 .bg_red, .error {
     background-color: $notification_red;
 }
 
-
-
-
 /* COMMON POSITIONING CLASSES */
-
 
 @mixin center {
     margin-left: auto !important;
     margin-right: auto !important;
 }
+
 .center {
     @include center;
 }
+
 img.center {
     display: block; // never use that on TABLES
     @include center;
@@ -213,14 +216,14 @@ img.center {
 @mixin inner_center {
     text-align: center !important;
     & > * {
-      margin-left: auto !important;
-      margin-right: auto !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
     }
 }
+
 .inner_center {
     @include inner_center;
 }
-
 
 .left, .float_left, .float-left, .floatleft {
     float: left;
@@ -238,7 +241,6 @@ img.center {
     text-align: right !important;
 }
 
-
 .clear_both {
     clear: both;
 }
@@ -251,7 +253,6 @@ img.center {
     clear: right;
 }
 
-
 .stack_left {
     float: left;
     clear: left;
@@ -262,7 +263,6 @@ img.center {
     clear: right;
 }
 
-
 /* workaround for containers not surrounding the floating panels they contain */
 
 @mixin clearfixer {
@@ -272,20 +272,21 @@ img.center {
     height: 0;
     clear: both;
 }
+
 .clearfixer {
     @include clearfixer;
 }
 
 .clearfix {
-   &:after {
-      /* quick fix for the dumb problem of "float collapsing - better than using overflow:hidden/auto */
-      content: ".";
-      @include clearfixer;
-   }
-   * html & { height: 1px }
+    &:after {
+        /* quick fix for the dumb problem of "float collapsing - better than using overflow:hidden/auto */
+        content: ".";
+        @include clearfixer;
+    }
+    * html & {
+        height: 1px
+    }
 }
-
-
 
 /* COMMON SIZING CLASSES, with both relative and absolute sizes */
 
@@ -315,8 +316,6 @@ img.center {
     width: 250px !important;
 }
 
-
-
 .biggest_text {
     font-size: 2em;
 }
@@ -345,14 +344,14 @@ img.center {
     font-size: 0.5em;
 }
 
-
-
 .bold {
     font-weight: bold;
 }
+
 .italic {
     font-style: italic;
 }
+
 .line-through {
     text-decoration: line-through;
 }

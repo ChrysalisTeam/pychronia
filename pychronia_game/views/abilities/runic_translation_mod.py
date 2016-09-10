@@ -28,12 +28,12 @@ class TranslationForm(AbstractGameForm):
         self.fields["target_item"] = forms.ChoiceField(label=_("Object"), choices=_translatable_items_choices)
         '''
 
-        self.fields["transcription"] = forms.CharField(label=_("Transcription"), required=True, widget=forms.Textarea(attrs={'rows': '5', 'cols':'30'}))
+        self.fields["transcription"] = forms.CharField(label=_("Transcription"), required=True,
+                                                       widget=forms.Textarea(attrs={'rows': '5', 'cols': '30'}))
 
 
 @register_view
 class RunicTranslationAbility(AbstractPartnershipAbility):
-
     TITLE = ugettext_lazy("Runic Translation")
     NAME = "runic_translation"
 
@@ -43,32 +43,29 @@ class RunicTranslationAbility(AbstractPartnershipAbility):
 
     TEMPLATE = "abilities/runic_translation.html"
 
-    ACCESS = UserAccess.character # game master not welcome!
+    ACCESS = UserAccess.character  # game master not welcome!
     REQUIRES_CHARACTER_PERMISSION = True
     REQUIRES_GLOBAL_PERMISSION = True
 
     def get_template_vars(self, previous_form_data=None):
 
         translation_form = self._instantiate_game_form(new_action_name="translation_form",
-                                                  hide_on_success=False,
-                                                  previous_form_data=previous_form_data)
+                                                       hide_on_success=False,
+                                                       previous_form_data=previous_form_data)
 
         translation_delay = self.get_ability_parameter("result_delay")  # TODO - translate this
 
         return {
-                 'page_title': _("Runic translations"),
-                 "translation_form": translation_form,
-                 'min_delay_mn': translation_delay[0],
-                 'max_delay_mn': translation_delay[1],
-               }
-
-
+            'page_title': _("Runic translations"),
+            "translation_form": translation_form,
+            'min_delay_mn': translation_delay[0],
+            'max_delay_mn': translation_delay[1],
+        }
 
     @staticmethod
     def _normalize_string(string):
         # removes exceeding spaces, newlines and tabs in the string
         return " ".join(string.replace("\t", " ").replace("\n", " ").split())
-
 
     @readonly_method
     def get_translatable_items(self):
@@ -91,7 +88,8 @@ class RunicTranslationAbility(AbstractPartnershipAbility):
         #    for clause in clauses:
         #        clause.reverse()
 
-        words = [word.strip() for clause in clauses for word in clause if word.strip()]  # flattened list of 'words' (actually, groups of tokens)
+        words = [word.strip() for clause in clauses for word in clause if
+                 word.strip()]  # flattened list of 'words' (actually, groups of tokens)
 
         return words
 
@@ -102,7 +100,8 @@ class RunicTranslationAbility(AbstractPartnershipAbility):
         translated_tokens = cls._tokenize_rune_message(translated_string)
 
         assert len(real_rune_tokens) == len(translated_tokens), "Mismatch between runes and real tokens"
-        assert len(set(real_rune_tokens)) == len(real_rune_tokens), "No unicity of real rune tokens"  # rune phrases must be unique in the message, to allow proper translation
+        assert len(set(real_rune_tokens)) == len(
+            real_rune_tokens), "No unicity of real rune tokens"  # rune phrases must be unique in the message, to allow proper translation
 
         translator = PersistentMapping(zip(real_rune_tokens, translated_tokens))
         return translator
@@ -159,7 +158,6 @@ class RunicTranslationAbility(AbstractPartnershipAbility):
 
         return translated_tokens
 
-
     @readonly_method
     def _get_closest_item_name_or_none(self, decoding_attempt):
         """
@@ -175,16 +173,15 @@ class RunicTranslationAbility(AbstractPartnershipAbility):
             return None
 
         results = dict((utilities.string_similarity(decoding_attempt, translation_settings["decoding"]), item_name)
-                        for item_name, translation_settings in all_translation_settings.items())
+                       for item_name, translation_settings in all_translation_settings.items())
 
         best_score = min(results.keys())
 
-        return results[best_score] # positive integer, 0 <=> equality of compared strings
-
+        return results[best_score]  # positive integer, 0 <=> equality of compared strings
 
     @readonly_method
     def _translate_rune_message(self, item_name, rune_transcription):
-        assert item_name is None or item_name # may be unknown
+        assert item_name is None or item_name  # may be unknown
         assert rune_transcription
 
         if not item_name or item_name not in self.get_ability_parameter("references").keys():
@@ -196,10 +193,10 @@ class RunicTranslationAbility(AbstractPartnershipAbility):
 
         random_words = self.get_ability_parameter("random_translation_words").split()
         translated_tokens = self._try_translating_runes(rune_transcription, translator=translator,
-                                                        random_words=random_words, random_seed=self.get_global_parameter("game_random_seed"))
+                                                        random_words=random_words,
+                                                        random_seed=self.get_global_parameter("game_random_seed"))
 
         return " ".join(translated_tokens)
-
 
     @transaction_watcher
     def process_translation(self, transcription="", use_gems=()):
@@ -220,7 +217,8 @@ class RunicTranslationAbility(AbstractPartnershipAbility):
         # answer from laboratory
         response_msg_data = None
         item_title = None
-        item_name = self._get_closest_item_name_or_none(decoding_attempt=transcription)  # will always return non-None, unless no objects are translatable
+        item_name = self._get_closest_item_name_or_none(
+            decoding_attempt=transcription)  # will always return non-None, unless no objects are translatable
         if item_name:
             translation = self._translate_rune_message(item_name=item_name, rune_transcription=transcription)
             item_title = item_name or _("unknown")
@@ -245,12 +243,11 @@ class RunicTranslationAbility(AbstractPartnershipAbility):
                                                                    response_msg_data=response_msg_data)
 
         self.log_game_event(ugettext_noop("Translation request submitted (presumably for item '%(item_title)s')."),
-                              PersistentMapping(item_title=item_title),
-                              url=self.get_message_viewer_url_or_none(best_msg_id),  # best_msg_id might be None
-                              visible_by=[self.username])
+                            PersistentMapping(item_title=item_title),
+                            url=self.get_message_viewer_url_or_none(best_msg_id),  # best_msg_id might be None
+                            visible_by=[self.username])
 
         return _("Runic transcription successfully submitted, the result will be emailed to you.")
-
 
     @classmethod
     def _setup_ability_settings(cls, settings):
@@ -258,7 +255,6 @@ class RunicTranslationAbility(AbstractPartnershipAbility):
 
     def _setup_private_ability_data(self, private_data):
         pass  # nothing stored here at the moment
-
 
     def _check_data_sanity(self, strict=False):
 
@@ -276,8 +272,8 @@ class RunicTranslationAbility(AbstractPartnershipAbility):
             assert name in self.get_all_items().keys(), name
             utilities.check_is_string(properties["decoding"])
             utilities.check_is_string(properties["translation"])
-            assert self._build_translation_dictionary(properties["decoding"], properties["translation"])  # we ensure tokens are well matching
+            assert self._build_translation_dictionary(properties["decoding"],
+                                                      properties["translation"])  # we ensure tokens are well matching
 
         assert not any(x for x in self.all_private_data.values()
                        if set(x.keys()) - set(["middlewares"]))
-

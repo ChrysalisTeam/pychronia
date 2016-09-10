@@ -1,13 +1,13 @@
- #!/usr/bin/env python
- # -*- coding: utf-8 -*-
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 import os
 import sys
 import logging
 import setup_pychronia_env
 
-import pychronia_game.models # initializes everything
+import pychronia_game.models  # initializes everything
 from pychronia_game.datamanager.datamanager_administrator import delete_game_instance, create_game_instance, \
-     change_game_instance_status, UsageError, retrieve_game_instance, get_all_instances_metadata
+    change_game_instance_status, UsageError, retrieve_game_instance, get_all_instances_metadata
 
 
 def execute():
@@ -27,4 +27,3 @@ def execute():
 
 if __name__ == "__main__":
     execute()
-

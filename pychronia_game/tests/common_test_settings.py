@@ -8,7 +8,6 @@ import os, random
 
 ROOT_URLCONF = 'pychronia_game.tests._test_urls'
 
-
 _curdir = os.path.dirname(os.path.realpath(__file__))
 GAME_FILES_ROOT = os.path.join(_curdir, "test_game_files") + os.sep
 GAME_FILES_URL = "/files/"

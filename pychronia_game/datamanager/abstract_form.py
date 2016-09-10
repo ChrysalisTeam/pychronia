@@ -5,15 +5,13 @@ from __future__ import unicode_literals
 from django import forms
 import json
 
-
 from pychronia_game.common import *
 from django import forms
 from django.core.exceptions import ValidationError
 
-
-
-GAMEMASTER_HINTS_FIELD = lambda: forms.CharField(label=ugettext_lazy("Hints for Game Master"), widget=forms.Textarea(attrs={'rows': '2', 'cols':'40'}), required=False)
-
+GAMEMASTER_HINTS_FIELD = lambda: forms.CharField(label=ugettext_lazy("Hints for Game Master"),
+                                                 widget=forms.Textarea(attrs={'rows': '2', 'cols': '40'}),
+                                                 required=False)
 
 
 class UninstantiableFormError(Exception):
@@ -27,12 +25,13 @@ class UninstantiableFormError(Exception):
 def form_field_jsonify(value):
     """Value must be ASCII."""
     res = json.dumps(value, indent=None)
-    assert "\n" not in res # must be compact form
+    assert "\n" not in res  # must be compact form
     return res
+
+
 def form_field_unjsonify(value):
     res = json.loads(value)
     return res
-
 
 
 def autostrip_form_charfields(cls):
@@ -45,6 +44,7 @@ def autostrip_form_charfields(cls):
     for field_name, field_object in fields:
         def get_clean_func(original_clean):
             return lambda value: original_clean(value and value.strip())
+
         clean_func = get_clean_func(getattr(field_object, 'clean'))
         setattr(field_object, 'clean', clean_func)  # we set it on FIELD, not FORM
     return cls
@@ -70,7 +70,6 @@ class SimpleForm(forms.Form):
         return cleaned_data
 
 
-
 class BaseAbstractGameForm(SimpleForm):
     """
     Base class for forms, able to recognize their data, by adding some hidden fields.
@@ -83,17 +82,19 @@ class BaseAbstractGameForm(SimpleForm):
         *datamanager* may also be an ability, since it proxies datamanager methods too.
         """
 
-        kwargs.setdefault("prefix", None) # NO prefix, all forms must submit the same data names
-        kwargs.setdefault("auto_id", "id_default_%s") # in multi-form case, this one will be used for unique "bound" form
-        kwargs.setdefault("label_suffix", ":") # no <br/>, not always a better presentation
+        kwargs.setdefault("prefix", None)  # NO prefix, all forms must submit the same data names
+        kwargs.setdefault("auto_id",
+                          "id_default_%s")  # in multi-form case, this one will be used for unique "bound" form
+        kwargs.setdefault("label_suffix", ":")  # no <br/>, not always a better presentation
 
         super(BaseAbstractGameForm, self).__init__(**kwargs)
 
-        self.fields[self.__class__._ability_field_name] = forms.CharField(initial=self._get_dotted_class_name(), widget=forms.HiddenInput) # appended at the end
+        self.fields[self.__class__._ability_field_name] = forms.CharField(initial=self._get_dotted_class_name(),
+                                                                          widget=forms.HiddenInput)  # appended at the end
         self.target_url = ""  # by default we stay on the same page when submitting
 
         self._datamanager = datamanager
-        self.logger = datamanager.logger # handy
+        self.logger = datamanager.logger  # handy
 
     @classmethod
     def _get_dotted_class_name(cls):
@@ -112,17 +113,14 @@ class BaseAbstractGameForm(SimpleForm):
         return values
 
 
-
-
 class GemHandlingFormUtils(object):
-
     @staticmethod
-    def _encode_gems(gems): # gems are TUPLES
-        return [json.dumps([idx] + list(gem)) for idx, gem in enumerate(gems)] # add index to make all values different
+    def _encode_gems(gems):  # gems are TUPLES
+        return [json.dumps([idx] + list(gem)) for idx, gem in enumerate(gems)]  # add index to make all values different
 
     @staticmethod
     def _decode_gems(gems):
-        return [tuple(json.loads(gem)[1:]) for gem in gems] # back to hashable TUPLES
+        return [tuple(json.loads(gem)[1:]) for gem in gems]  # back to hashable TUPLES
 
     def _gem_display(self, gem):
         if gem[1]:
@@ -131,46 +129,45 @@ class GemHandlingFormUtils(object):
             return _("Gem of %d¤ (unknown origin)") % gem[0]
 
 
-
 class GemPayementFormMixin(GemHandlingFormUtils):
-
     def __init__(self, datamanager, *args, **kwargs):
 
         # remove and analyze specific payment parameters (which could be missing)
         payment_by_gems = kwargs.pop("payment_by_gems", False)
         payment_by_money = kwargs.pop("payment_by_money", False)
 
-
         super(GemPayementFormMixin, self).__init__(datamanager, *args, **kwargs)
-
 
         if datamanager.is_character():
 
             _gems = datamanager.get_character_properties()["gems"]
-            _gems_choices = zip(self._encode_gems(_gems), [self._gem_display(gem) for gem in _gems]) # gem is (value, origin) here
-            _gems_choices.sort(key=lambda x: x[1]) # sort by labels
+            _gems_choices = zip(self._encode_gems(_gems),
+                                [self._gem_display(gem) for gem in _gems])  # gem is (value, origin) here
+            _gems_choices.sort(key=lambda x: x[1])  # sort by labels
 
             if payment_by_money:
                 if payment_by_gems and _gems_choices:
-                    self.fields["pay_with_money"] = forms.BooleanField(label=_("Pay with money"), initial=False, required=False)
+                    self.fields["pay_with_money"] = forms.BooleanField(label=_("Pay with money"), initial=False,
+                                                                       required=False)
                 else:
-                    self.fields["pay_with_money"] = forms.BooleanField(initial=True, widget=forms.HiddenInput, required=True)
+                    self.fields["pay_with_money"] = forms.BooleanField(initial=True, widget=forms.HiddenInput,
+                                                                       required=True)
 
                 assert "pay_with_money" in self.fields
-
 
             if payment_by_gems:
 
                 if _gems_choices:
-                    self.fields["gems_list"] = forms.MultipleChoiceField(required=False, 
-                                                                         label=_("Or pay with gems"), 
+                    self.fields["gems_list"] = forms.MultipleChoiceField(required=False,
+                                                                         label=_("Or pay with gems"),
                                                                          choices=_gems_choices,
-                                                                         widget=forms.SelectMultiple(attrs={"class": "multichecklist"}))
+                                                                         widget=forms.SelectMultiple(
+                                                                             attrs={"class": "multichecklist"}))
                 else:
-                    self.fields["gems_list"] = forms.MultipleChoiceField(required=False, widget=forms.HiddenInput) # we could just
+                    self.fields["gems_list"] = forms.MultipleChoiceField(required=False,
+                                                                         widget=forms.HiddenInput)  # we could just
 
                 assert "gems_list" in self.fields
-
 
     def get_normalized_values(self):
 
@@ -190,26 +187,24 @@ class GemPayementFormMixin(GemHandlingFormUtils):
             if "use_gems" in parameters:
                 # only if we have a choice between several means of payment
                 if ((parameters["pay_with_money"] and parameters["use_gems"]) or
-                   not (parameters["pay_with_money"] or parameters["use_gems"])):
+                        not (parameters["pay_with_money"] or parameters["use_gems"])):
                     raise NormalUsageError(_("You must choose between money and gems, for payment."))
             del parameters["pay_with_money"]
 
         return parameters
 
 
-
-
 # REAL abstract base class for the game forms
 # Adds both auto-recognition of form class, and additional fields like payment controls
-AbstractGameForm = type("AbstractGameForm".encode("ascii"), # can't be unicode
+AbstractGameForm = type("AbstractGameForm".encode("ascii"),  # can't be unicode
                         (GemPayementFormMixin, BaseAbstractGameForm), {})
 assert issubclass(AbstractGameForm, SimpleForm)
 assert issubclass(AbstractGameForm, forms.Form)
 
 
 class DataTableForm(AbstractGameForm):
-
-    previous_identifier = forms.CharField(label=ugettext_lazy("Initial identifier"), widget=forms.HiddenInput(), required=False)
+    previous_identifier = forms.CharField(label=ugettext_lazy("Initial identifier"), widget=forms.HiddenInput(),
+                                          required=False)
     identifier = forms.CharField(label=ugettext_lazy("Identifier"), required=True)
 
     BAD_ID_MSG = ugettext_lazy("Identifier must contain no space")
@@ -219,17 +214,14 @@ class DataTableForm(AbstractGameForm):
         if initial:
             assert "previous_identifier" not in initial
             initial["previous_identifier"] = initial["identifier"]
-        
+
         super(DataTableForm, self).__init__(datamanager, initial=initial, **kwargs)
-        
+
         if initial and undeletable_identifiers:
             assert isinstance(undeletable_identifiers, set), undeletable_identifiers
             if initial["identifier"] in undeletable_identifiers:
                 # not very secure, but DataTable protections will take care of hacking attempts
                 self.fields['identifier'].widget.attrs['readonly'] = True
-
-        
-
 
     def clean_previous_identifier(self):
         data = self.cleaned_data['previous_identifier']
@@ -242,6 +234,3 @@ class DataTableForm(AbstractGameForm):
         if " " in data:
             raise ValidationError(self.BAD_ID_MSG)
         return data
-
-
-

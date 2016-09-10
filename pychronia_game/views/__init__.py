@@ -29,9 +29,9 @@ from .. import datamanager as dm_module
 from pychronia_game.utilities import mediaplayers
 from pychronia_game.datamanager import GameDataManager
 
-
 from .auction_views import (_build_display_data_from_viewer_settings, homepage, view_characters,
-                            view_sales, auction_items_slideshow, personal_items_slideshow, item_3d_view, ajax_chat, chatroom)
+                            view_sales, auction_items_slideshow, personal_items_slideshow, item_3d_view, ajax_chat,
+                            chatroom)
 
 from .info_views import (view_encyclopedia, view_static_page,
                          personal_webradio_popup, personal_webradio_page, get_radio_xml_conf, public_webradio,
@@ -40,10 +40,11 @@ from .info_views import (view_encyclopedia, view_static_page,
 
 from .profile_views import login, logout, secret_question, character_profile, friendship_management, game_events
 
-
-from .messaging_views import (ajax_set_message_template_state_flags, ajax_set_dispatched_message_state_flags, ajax_force_email_sending, ajax_permanently_delete_message,
+from .messaging_views import (ajax_set_message_template_state_flags, ajax_set_dispatched_message_state_flags,
+                              ajax_force_email_sending, ajax_permanently_delete_message,
                               standard_conversations, view_single_message, compose_message, preview_message,
-                              all_dispatched_messages, all_queued_messages, intercepted_messages, all_archived_messages, messages_templates)
+                              all_dispatched_messages, all_queued_messages, intercepted_messages, all_archived_messages,
+                              messages_templates)
 
 from .abilities import (house_locking, runic_translation, wiretapping_management, artificial_intelligence,
                         mercenaries_hiring, matter_analysis, world_scan, chess_challenge, geoip_location,
@@ -55,10 +56,10 @@ from .admin_views import (admin_dashboard, webradio_management, gamemaster_manua
                           manage_characters, CHARACTERS_IDENTITIES,
                           DATABASE_OPERATIONS, FAIL_TEST, MEDIA_TEST)
 
-
 # USEFUL TO DEBUG LOGGING
 if False:
     import logging_tree
+
     print("DUMPING LOGGING TREE")
     logging_tree.printout()
 
@@ -75,7 +76,6 @@ def game_homepage_without_username(request):
 
 
 def serve_game_file(request, hash="", path="", **kwargs):
-
     real_hash = hash_url_path(path)
 
     if not hash or not real_hash or hash != real_hash:
@@ -85,8 +85,6 @@ def serve_game_file(request, hash="", path="", **kwargs):
     return fileservers.serve_file(request, path=full_path)
 
 
-
-
 @register_view(access=UserAccess.anonymous, requires_global_permission=False, title=ugettext_lazy("Logo Animation"))
 def ___logo_animation(request, template_name='utilities/item_3d_viewer.html'):
     """
@@ -94,27 +92,25 @@ def ___logo_animation(request, template_name='utilities/item_3d_viewer.html'):
     so they needn't be exposed inside the YAML configuration file
     """
     viewer_settings = dict(levels=1,
-                            per_level=31,  # real total of images : 157, but we use steps
-                            index_steps=5,
-                            index_offset=0,
-                            start_level=1,
-                            file_template="openinglogo/crystal%04d.jpg",
-                            image_width=528,
-                            image_height=409,
-                            mode="object",
-                            x_coefficient=12,
-                            y_coefficient=160,
-                            autoreverse=True,
-                            rotomatic=150,  # ms between rotations
-                            music=None)
-
+                           per_level=31,  # real total of images : 157, but we use steps
+                           index_steps=5,
+                           index_offset=0,
+                           start_level=1,
+                           file_template="openinglogo/crystal%04d.jpg",
+                           image_width=528,
+                           image_height=409,
+                           mode="object",
+                           x_coefficient=12,
+                           y_coefficient=160,
+                           autoreverse=True,
+                           rotomatic=150,  # ms between rotations
+                           music=None)
 
     return render(request,
                   template_name,
-                    {
-                     'settings': _build_display_data_from_viewer_settings(viewer_settings),
-                    })
-
+                  {
+                      'settings': _build_display_data_from_viewer_settings(viewer_settings),
+                  })
 
 
 @register_view(access=UserAccess.anonymous, requires_global_permission=False, title=ugettext_lazy("View Help Page"))
@@ -131,7 +127,7 @@ def view_help_page(request, keyword, template_name='utilities/help_page.html'):
         if view_name in datamanager.get_game_views():
             token = datamanager.get_game_view_access_token(view_name)
             del view_name
-            if token == AccessResult.available: # IMPORTANT
+            if token == AccessResult.available:  # IMPORTANT
                 entry = datamanager.get_categorized_static_page(datamanager.HELP_CATEGORY, keyword)
                 if entry:
                     allowed_entry = entry
@@ -144,15 +140,14 @@ def view_help_page(request, keyword, template_name='utilities/help_page.html'):
 
     return render(request,
                   template_name,
-                    {
-                     'page_title': _("Help"),
-                     'entry': allowed_entry,
-                    })
+                  {
+                      'page_title': _("Help"),
+                      'entry': allowed_entry,
+                  })
 
 
 @register_view(access=UserAccess.anonymous, requires_global_permission=False, title=ugettext_lazy("Bug Report"))
 def bug_report_treatment(request):
-
     if request.method != "POST":
         return HttpResponse("KO - bug not reported")
 
@@ -177,13 +172,10 @@ def bug_report_treatment(request):
 
     dm.logger.warning("Submitting pychronia bug report by email:\n%r", message)
 
-    mail_admins("Pychronia Bug Report", message=message, html_message=None) # we don't know if it REALLY sends stuffs...
+    mail_admins("Pychronia Bug Report", message=message,
+                html_message=None)  # we don't know if it REALLY sends stuffs...
 
     return HttpResponse("OK - bug reported")
-
-
-
-
 
 
 '''
@@ -613,8 +605,3 @@ def __personal_radio_messages_listing(request, template_name='generic_operations
                             },
                             context_instance=RequestContext(request))
 '''
-
-
-
-
-

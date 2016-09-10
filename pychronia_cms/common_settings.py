@@ -3,26 +3,27 @@
 
 # bugfix, to prevent djangoscms.models.monkeypatch_reverse from breaking i18n_patterns standard system #
 import django.core.urlresolvers
+
 django.core.urlresolvers.reverse.cms_monkeypatched = True
 
 # bugfix for missing language prefixes in urls #
 import menus.base
-menus.base.NavigationNode._remove_current_root = lambda self, url: url
 
+menus.base.NavigationNode._remove_current_root = lambda self, url: url
 
 from pychronia_common.common_settings import *
 
-LANGUAGE_CODE = 'fr' # for now, CMS content is french only so....
+LANGUAGE_CODE = 'fr'  # for now, CMS content is french only so....
 
 INSTALLED_APPS += [
     'pychronia_cms',
 
-    'request', # stats on HTTP requests
+    'request',  # stats on HTTP requests
 
     #'userprofiles',
     #'userprofiles.contrib.profiles',
 
-    'djangocms_text_ckeditor', # must be before django-cms entry
+    'djangocms_text_ckeditor',  # must be before django-cms entry
 
     'cms',
     'mptt',
@@ -51,9 +52,9 @@ INSTALLED_APPS += [
     'cmsplugin_filer_image',
     'cmsplugin_filer_teaser',
     'cmsplugin_filer_video',
-    'jplayer', # cmsplugin too
+    'jplayer',  # cmsplugin too
 
-    'django.contrib.comments', # for zinnia blog
+    'django.contrib.comments',  # for zinnia blog
     'tagging',
     'zinnia',
     'cmsplugin_zinnia',
@@ -62,7 +63,6 @@ INSTALLED_APPS += [
 
     'debug_toolbar',
 ]
-
 
 MIGRATION_MODULES.update({
     'cms': 'cms.migrations_django',
@@ -93,28 +93,27 @@ MIGRATION_MODULES.update({
     'cmsplugin_filer_video': 'cmsplugin_filer_video.migrations_django',
 })
 
-TEMPLATE_CONTEXT_PROCESSORS = TEMPLATE_CONTEXT_PROCESSORS + ("cms.context_processors.cms_settings",) # for CMS_MEDIA_URL etc.
-
+TEMPLATE_CONTEXT_PROCESSORS = TEMPLATE_CONTEXT_PROCESSORS + (
+"cms.context_processors.cms_settings",)  # for CMS_MEDIA_URL etc.
 
 MIDDLEWARE_CLASSES = \
     ('django.middleware.cache.UpdateCacheMiddleware',) + \
     MIDDLEWARE_CLASSES + (
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    # #'cms.middleware.multilingual.MultilingualURLMiddleware', OBSOLETE
-    'cms.middleware.page.CurrentPageMiddleware',
-    'cms.middleware.user.CurrentUserMiddleware',
-    'request.middleware.RequestMiddleware',
-    'cms.middleware.toolbar.ToolbarMiddleware',
-    'cms.middleware.language.LanguageCookieMiddleware',
-    'django.middleware.cache.FetchFromCacheMiddleware',
+        'debug_toolbar.middleware.DebugToolbarMiddleware',
+        'django.middleware.clickjacking.XFrameOptionsMiddleware',
+        'django.middleware.csrf.CsrfViewMiddleware',
+        # #'cms.middleware.multilingual.MultilingualURLMiddleware', OBSOLETE
+        'cms.middleware.page.CurrentPageMiddleware',
+        'cms.middleware.user.CurrentUserMiddleware',
+        'request.middleware.RequestMiddleware',
+        'cms.middleware.toolbar.ToolbarMiddleware',
+        'cms.middleware.language.LanguageCookieMiddleware',
+        'django.middleware.cache.FetchFromCacheMiddleware',
     )
-
 
 # global django overrides, easier than overridding models get_absolute_url() methods
 ABSOLUTE_URL_OVERRIDES = {
-    'auth.user': (lambda u: "/") # access to user data, eg. u.username
+    'auth.user': (lambda u: "/")  # access to user data, eg. u.username
 }
 
 
@@ -126,17 +125,16 @@ def show_toolbar_to_superusers_only(request):
     if request.user.is_superuser:
         return True
     return False
+
+
 DEBUG_TOOLBAR_CONFIG = {
-    'SHOW_TOOLBAR_CALLBACK': show_toolbar_to_superusers_only, # only show toolbar to authenticated users
-    'SHOW_COLLAPSED' : True,
+    'SHOW_TOOLBAR_CALLBACK': show_toolbar_to_superusers_only,  # only show toolbar to authenticated users
+    'SHOW_COLLAPSED': True,
 }
 DEBUG_TOOLBAR_PATCH_SETTINGS = False  # let us configure MANUALLY
 
-
-
-FILER_IMAGE_USE_ICON = True # use django-filer icons for plugins
+FILER_IMAGE_USE_ICON = True  # use django-filer icons for plugins
 TEXT_SAVE_IMAGE_FUNCTION = 'cmsplugin_filer_image.integrations.ckeditor.create_image_plugin'
-
 
 ## DJANGO-REQUEST STATS CONF ##
 # most settings only work with dev version of module, as of 2013/06
@@ -150,12 +148,10 @@ REQUEST_IGNORE_PATHS = (
 )
 REQUEST_ONLY_ERRORS = False
 
-
 ## DJANGO CONTRIB RST CONF ##
 # on the public portal, only superuser write RST docs
 # so we trust him for "raw" directive (not file insertion though)
 CMSPLUGIN_RST_SETTINGS_OVERRIDES["raw_enabled"] = True
-
 
 CMS_LANGUAGES = {
     1: [
@@ -167,22 +163,21 @@ CMS_LANGUAGES = {
     ],
 }
 
-
 ## DJANGO CMS CONF ##
 CMS_TEMPLATES = (
-   ('cms_one_column.html', ugettext('One column')),
-   ('cms_two_columns.html', ugettext('Two columns')),
+    ('cms_one_column.html', ugettext('One column')),
+    ('cms_two_columns.html', ugettext('Two columns')),
 )
-CMS_URL_OVERWRITE = True # DEPRECATED
-CMS_MENU_TITLE_OVERWRITE = True # DEPRECATED
-CMS_REDIRECTS = True # handy for "dummy" menu entries # DEPRECATED, use django.contrib.redirects instead
-CMS_SEO_FIELDS = True # page metadata etc. # DEPRECATED
+CMS_URL_OVERWRITE = True  # DEPRECATED
+CMS_MENU_TITLE_OVERWRITE = True  # DEPRECATED
+CMS_REDIRECTS = True  # handy for "dummy" menu entries # DEPRECATED, use django.contrib.redirects instead
+CMS_SEO_FIELDS = True  # page metadata etc. # DEPRECATED
 
-CMS_SOFTROOT = False # no need to cut the menu in sections  # DEPRECATED
-CMS_PUBLIC_FOR = "all" # not restricted to "staff"
-CMS_PERMISSION = False # no fine grained restrictions ATM
+CMS_SOFTROOT = False  # no need to cut the menu in sections  # DEPRECATED
+CMS_PUBLIC_FOR = "all"  # not restricted to "staff"
+CMS_PERMISSION = False  # no fine grained restrictions ATM
 CMS_TEMPLATE_INHERITANCE = True
-CMS_PLACEHOLDER_CONF = {} # unused atm
+CMS_PLACEHOLDER_CONF = {}  # unused atm
 CMS_PLUGIN_CONTEXT_PROCESSORS = []
 CMS_PLUGIN_PROCESSORS = []
 PLACEHOLDER_FRONTEND_EDITING = True  # DEPRECATED
@@ -198,15 +193,14 @@ CMS_LANGUAGE_CONF = { # fallbacks ordering
 CMS_HIDE_UNTRANSLATED = False
 CMS_LANGUAGE_FALLBACK = False
 CMS_FRONTEND_LANGUAGES = ("fr",)
-CMS_CACHE_PREFIX = "chryscms-" # useful if multiple CMS installations
-CMS_CACHE_DURATIONS = { # in seconds
+CMS_CACHE_PREFIX = "chryscms-"  # useful if multiple CMS installations
+CMS_CACHE_DURATIONS = {  # in seconds
     'menus': 60 * 60,
     'content': 60,
     'permissions': 60 * 60,
 }
 
 CMS_MAX_PAGE_PUBLISH_REVERSIONS = 14
-
 
 ## SIMPLEGALLERY CONF ##
 CMS_SIMPLEGALLERY_THUMBNAIL_OPTIONS = {
@@ -215,7 +209,6 @@ CMS_SIMPLEGALLERY_THUMBNAIL_OPTIONS = {
     'quality': 80,
 }
 
-
 ## ORIGINAL ZINNIA CONF ##
 # note: if error "Unknown column 'zinnia_entry.content_placeholder_id' in 'field list" => python manage.py reset zinnia
 ZINNIA_ENTRY_BASE_MODEL = 'cmsplugin_zinnia.placeholder.EntryPlaceholder'
@@ -223,33 +216,27 @@ ZINNIA_PAGINATION = 10
 ZINNIA_UPLOAD_TO = "uploads/zinnia"
 ZINNIA_PROTOCOL = "http"
 ZINNIA_COPYRIGHT = "ChrysalisGame"
-ZINNIA_USE_TWITTER = False # todo later
-
+ZINNIA_USE_TWITTER = False  # todo later
 
 ## CMSPLUGIN ZINNIA CONF ##
 CMSPLUGIN_ZINNIA_HIDE_ENTRY_MENU = True
 CMSPLUGIN_ZINNIA_TEMPLATES = []
 CMSPLUGIN_ZINNIA_APP_MENUS = []
 
-
 ## CMSPLUGIN JPLAYER CONF ##
-JPLAYER_BASE_PATH = STATIC_URL + "libs/jquery-jplayer-2.3.0/" # for Jplayer SWF object mainly
-
+JPLAYER_BASE_PATH = STATIC_URL + "libs/jquery-jplayer-2.3.0/"  # for Jplayer SWF object mainly
 
 ## DJANGO REGISTRATION CONF ##
 ACCOUNT_ACTIVATION_DAYS = 7
-
 
 # OUTDATED STUFF - no django1.7 support
 ## DJANGO AUTH & USERPROFILES CONF ##
 AUTH_PROFILE_MODULE = "pychronia_cms.Profile"
 USERPROFILES_REGISTRATION_FORM = 'pychronia_cms.forms.RegistrationForm'
-USERPROFILES_USE_ACCOUNT_VERIFICATION = False # default
-USERPROFILES_AUTO_LOGIN = True # Automatically log in the user upon registration
+USERPROFILES_USE_ACCOUNT_VERIFICATION = False  # default
+USERPROFILES_AUTO_LOGIN = True  # Automatically log in the user upon registration
 USERPROFILES_USE_PROFILE = True
 USERPROFILES_PROFILE_ALLOW_EMAIL_CHANGE = True
-
-
 
 ## WYMEDITOR CONF ##
 ''' USELESS now that we have ckeditor
@@ -297,38 +284,31 @@ WYM_STYLES = ",\n".join([
 ])
 '''
 
-
-
 ## CKEDITOR SETTINGS ##
 # remember, when installing it over standard django-cms text plugins : launch python manage.py migrate djangocms_text_ckeditor 0001 --fake
 #See http://docs.cksource.com/ckeditor_api/symbols/CKEDITOR.config.html for all settings
 
 CKEDITOR_SETTINGS = {
-            #'language': '{{ language }}',
-            #'skin': 'moono',
-            'height': '320px',
-            #'toolbar': 'CMS',
-            'toolbar_CMS': [
-                ['Undo', 'Redo'],
-                ['cmsplugins', '-', 'ShowBlocks'],
-                ['Font', 'FontSize', 'Format', 'Styles'],
-                ['TextColor', 'BGColor', '-', 'PasteText', 'PasteFromWord'],
-                ['Maximize', ''],
-                '/',
-                ['Bold', 'Italic', 'Underline', '-', 'Subscript', 'Superscript', '-', 'RemoveFormat'],
-                ['CreateDiv', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock'],
-                ['Link', 'Unlink'],
-                ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Table'],
-                ['Source']
-            ],
-            #'toolbarCanCollapse': False,
-            #'extraPlugins': 'cmsplugins'
+    #'language': '{{ language }}',
+    #'skin': 'moono',
+    'height': '320px',
+    #'toolbar': 'CMS',
+    'toolbar_CMS': [
+        ['Undo', 'Redo'],
+        ['cmsplugins', '-', 'ShowBlocks'],
+        ['Font', 'FontSize', 'Format', 'Styles'],
+        ['TextColor', 'BGColor', '-', 'PasteText', 'PasteFromWord'],
+        ['Maximize', ''],
+        '/',
+        ['Bold', 'Italic', 'Underline', '-', 'Subscript', 'Superscript', '-', 'RemoveFormat'],
+        ['CreateDiv', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock'],
+        ['Link', 'Unlink'],
+        ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Table'],
+        ['Source']
+    ],
+    #'toolbarCanCollapse': False,
+    #'extraPlugins': 'cmsplugins'
 }
-
-
-
-
-
 
 '''
 ## DJANGO LOCALEURL CONF - OBSOLETE TO DELETE ASAP

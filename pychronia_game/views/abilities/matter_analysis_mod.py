@@ -25,14 +25,12 @@ class PersonalItemForm(AbstractGameForm):
 
 
 class MatterAnalysisAbility(AbstractPartnershipAbility):
-
     TITLE = ugettext_lazy("Biophysical Analysis")
     NAME = "matter_analysis"
 
     GAME_ACTIONS = dict(process_artefact=dict(title=ugettext_lazy("Process object analysis"),
-                                                      form_class=ArtefactForm,
-                                                      callback="process_object_analysis"))
-
+                                              form_class=ArtefactForm,
+                                              callback="process_object_analysis"))
 
     TEMPLATE = "abilities/matter_analysis.html"
 
@@ -40,27 +38,24 @@ class MatterAnalysisAbility(AbstractPartnershipAbility):
     REQUIRES_CHARACTER_PERMISSION = True
     REQUIRES_GLOBAL_PERMISSION = True
 
-
     def get_template_vars(self, previous_form_data=None):
 
         # for now we don't exclude objects already analysed, players just have to take care !
         try:
             item_form = self._instantiate_game_form(new_action_name="process_artefact",
-                                                 hide_on_success=False,
-                                                 previous_form_data=previous_form_data,
-                                                 propagate_errors=True)
+                                                    hide_on_success=False,
+                                                    previous_form_data=previous_form_data,
+                                                    propagate_errors=True)
             specific_message = None
         except UninstantiableFormError, e:
             item_form = None
             specific_message = unicode(e)
 
         return {
-                 'page_title': _("Deep Matter Analysis"),
-                 'item_form': item_form,
-                 'specific_message': specific_message,
-               }
-
-
+            'page_title': _("Deep Matter Analysis"),
+            'item_form': item_form,
+            'specific_message': specific_message,
+        }
 
     @readonly_method
     def _compute_analysis_result_or_none(self, item_name):
@@ -69,8 +64,6 @@ class MatterAnalysisAbility(AbstractPartnershipAbility):
         report = self.settings["reports"].get(item_name, None)
 
         return report  # might be None
-
-
 
     @transaction_watcher
     def process_object_analysis(self, item_name, use_gems=()):
@@ -102,13 +95,11 @@ class MatterAnalysisAbility(AbstractPartnershipAbility):
                                                                    response_msg_data=response_msg_data)
 
         self.log_game_event(ugettext_noop("Item '%(item_title)s' sent for deep matter analysis."),
-                             PersistentMapping(item_title=item_title),
-                             url=self.get_message_viewer_url_or_none(best_msg_id),  # best_msg_id might be None
-                             visible_by=[self.username])
+                            PersistentMapping(item_title=item_title),
+                            url=self.get_message_viewer_url_or_none(best_msg_id),  # best_msg_id might be None
+                            visible_by=[self.username])
 
         return _("Item '%s' successfully submitted, you'll receive the result by email") % item_title
-
-
 
     @classmethod
     def _setup_ability_settings(cls, settings):
@@ -117,20 +108,18 @@ class MatterAnalysisAbility(AbstractPartnershipAbility):
     def _setup_private_ability_data(self, private_data):
         pass  # nothing to do
 
-
     def _check_data_sanity(self, strict=False):
 
         settings = self.settings
 
         def reports_checker(reports):
-            utilities.assert_set_smaller_or_equal(reports.keys(), self.get_non_gem_items().keys()) # some items might have no analysis data
+            utilities.assert_set_smaller_or_equal(reports.keys(),
+                                                  self.get_non_gem_items().keys())  # some items might have no analysis data
             for body in reports.values():
                 utilities.check_is_restructuredtext(body, strict=strict)
             return True
 
         _reference = dict(
-                            reports=reports_checker,
-                         )
+            reports=reports_checker,
+        )
         utilities.check_settings_dictionary_with_template(settings, _reference, strict=False)
-
-

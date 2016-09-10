@@ -11,11 +11,8 @@ from django import forms
 from pychronia_game.datamanager.abstract_game_view import AbstractGameView
 
 
-
-
 @register_view
 class AdminInformation(AbstractGameView):
-
     TITLE = ugettext_lazy("Admin Information")
     NAME = "admin_information"
 
@@ -25,9 +22,7 @@ class AdminInformation(AbstractGameView):
     REQUIRES_CHARACTER_PERMISSION = False
     REQUIRES_GLOBAL_PERMISSION = False
 
-
     def get_template_vars(self, previous_form_data=None):
-
         global_parameters = self.datamanager.get_global_parameters()
 
         folders_info = self.datamanager.get_all_encrypted_folders_info()

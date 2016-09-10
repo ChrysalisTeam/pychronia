@@ -1,17 +1,12 @@
-
-
 /* widgets visible only by admins and masters */
 
-
-.file_url_block
-{
+.file_url_block {
     font-weight: bold;
-    font-size:0.9em;
+    font-size: 0.9em;
     margin: 10px auto;
-    padding:3px;
-    border:solid 1px $medium_yellow;
+    padding: 3px;
+    border: solid 1px $medium_yellow;
 }
-
 
 .admin-note {
     // IMPORTANT - that class is used as selector by jquery-pulsate plugin
@@ -19,7 +14,6 @@
     margin: 8px 2px;
     padding: 3px;
 }
-
 
 .missing-content {
     @extend .post-it;
@@ -37,13 +31,9 @@
     width: 95%;
 }
 
-
-
-
 @mixin form_scroll_common {
     text-align: left;
 }
-
 
 .form_scroll_thin {
     @extend .scroll_yellow_rolled;
@@ -63,7 +53,6 @@
     @include form_scroll_common;
 }
 
-
 table.realtable {
 
     border-collapse: collapse;
@@ -71,10 +60,14 @@ table.realtable {
     padding: 0px;
     width: 100%;
     box-shadow: 5px 5px 3px #888888;
-    border:1px solid #000000;
+    border: 1px solid #000000;
 
-    tr:nth-child(odd) { background-color:#eed892; }
-    tr:nth-child(even) { background-color:#F5DF8B; }
+    tr:nth-child(odd) {
+        background-color: #eed892;
+    }
+    tr:nth-child(even) {
+        background-color: #F5DF8B;
+    }
 
     @include dark-texts;
 
@@ -87,11 +80,11 @@ table.realtable {
         border: none;
 
         thead, tfoot {
-           display:none;
+            display: none;
         }
 
         tbody {
-          // we leave tbody as is
+            // we leave tbody as is
         }
 
         tr {
@@ -101,49 +94,48 @@ table.realtable {
         th, td {
             @include make-xs-column(12);
 
-            vertical-align:middle;
-            border:none;
-            text-align:center;
-            padding:4px 12px;
-            font-size:1.1em;
-            font-family:Arial;
-            font-weight:normal;
+            vertical-align: middle;
+            border: none;
+            text-align: center;
+            padding: 4px 12px;
+            font-size: 1.1em;
+            font-family: Arial;
+            font-weight: normal;
         }
     }
 
-
     @include desktop-only {
 
-        .preview-image{
-            width:160px;
+        .preview-image {
+            width: 160px;
             background-color: white;
         }
 
         thead th {
-            background-color:#E1B151;
-            border:0px solid #000000; // special border
-            border-width:0px 0px 1px 1px;
-            font-size:1.3em;
-            font-weight:bold;
+            background-color: #E1B151;
+            border: 0px solid #000000; // special border
+            border-width: 0px 0px 1px 1px;
+            font-size: 1.3em;
+            font-weight: bold;
         }
 
         thead th:first-child {
-            border-width:0px 0px 1px 0px;
+            border-width: 0px 0px 1px 0px;
         }
 
         thead th:last-child {
-            border-width:0px 0px 1px 1px;
+            border-width: 0px 0px 1px 1px;
         }
 
         th, td {
-            vertical-align:middle;
-            border:1px solid #000000;
-            border-width:1px 1px 1px 1px;
-            text-align:center;
-            padding:7px;
-            font-size:1.1em;
-            font-family:Arial;
-            font-weight:normal;
+            vertical-align: middle;
+            border: 1px solid #000000;
+            border-width: 1px 1px 1px 1px;
+            text-align: center;
+            padding: 7px;
+            font-size: 1.1em;
+            font-family: Arial;
+            font-weight: normal;
         }
 
     }

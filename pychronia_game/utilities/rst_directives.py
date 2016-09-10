@@ -12,7 +12,6 @@ from .mediaplayers import generate_audio_player, generate_media_player, generate
 
 
 class AudioEmbedDirective(rst.Directive):
-
     required_arguments = 1
     optional_arguments = 0
     final_argument_whitespace = True
@@ -26,29 +25,28 @@ class AudioEmbedDirective(rst.Directive):
         code = generate_audio_player(files=[file_url], titles=[title])
         return [nodes.raw('', code, format='html')]
 
+
 directives.register_directive("embed_audio", AudioEmbedDirective)
 
 
-
 class VideoEmbedDirective(rst.Directive):
-
     required_arguments = 1
     optional_arguments = 0
     final_argument_whitespace = True
     option_spec = {'height': directives.length_or_unitless,
                    'width': directives.length_or_percentage_or_unitless,
-                   'image': directives.unchanged} # front image url
+                   'image': directives.unchanged}  # front image url
     has_content = False
 
     def run(self):
         file_url = self.arguments[0]
         #print("=========VideoEmbedDirective=========>", file_url)
         code = generate_media_player(fileurl=file_url,
-                                     **self.options) # not present if not valued
+                                     **self.options)  # not present if not valued
         return [nodes.raw('', code, format='html')]
 
-directives.register_directive("embed_video", VideoEmbedDirective)
 
+directives.register_directive("embed_video", VideoEmbedDirective)
 
 
 class ImageEmbedDirective(rst.Directive):
@@ -78,17 +76,13 @@ class ImageEmbedDirective(rst.Directive):
 
         #print("=========ImageEmbedDirective=========>", file_url)
         code = generate_image_viewer(imageurl=file_url,
-                                     preset=self.options.get("alias", "default"), # BEWARE - we expect that "default" preset to exist in settings!
+                                     preset=self.options.get("alias", "default"),
+                                     # BEWARE - we expect that "default" preset to exist in settings!
                                      align=self.options.get("align", ""))
         return [nodes.raw('', code, format='html')]
 
 
 directives.register_directive("embed_image", ImageEmbedDirective)
-
-
-
-
-
 
 # TODO - ImageEmbedDirective which uses eaysthumbnails if possible to get final url, and reuses image node in any case
 

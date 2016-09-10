@@ -1,9 +1,6 @@
-
-
 /* styles for door locking ability */
 
-#password_display
-{
+#password_display {
     display: table-cell;
     vertical-align: middle;
     margin: 20px;
@@ -15,8 +12,7 @@
     border: solid 2px $dark_yellow;
 }
 
-input.digit
-{
+input.digit {
     width: 150px;
     height: 50px;
     padding: 0 7px;
@@ -25,14 +21,12 @@ input.digit
     background-color: $light_yellow;
 }
 
-
-
 /* styles for radio playlist management */
 
 #trashcan {
     cursor: pointer;
     margin: 20px 10px 5px;
-    height:110px;
+    height: 110px;
     background: transparent center center no-repeat url('#{$IMGS}icons/trashbin.png');
     * {
         visibility: hidden;
@@ -42,8 +36,6 @@ input.digit
 .radio_spot {
     cursor: pointer;
 }
-
-
 
 /* styles for chatroom */
 
@@ -56,7 +48,6 @@ input.digit
     background-color: transparent;
 }
 
-
 .admin_widgets {
     list-style-type: none !important;
     list-style-image: none !important;
@@ -64,20 +55,15 @@ input.digit
     margin: 10px auto;
 }
 
-
-
-
-
-
 /* styles for messaging pages */
 
 .messaging_conversation {
-  margin: 0 0 20px;
+    margin: 0 0 20px;
 }
 
 .message_global_controls {
-  text-align: left;
-  margin: 20px 5px;
+    text-align: left;
+    margin: 20px 5px;
 
     input, select {
         vertical-align: middle !important;
@@ -101,7 +87,6 @@ input.digit
     image-rendering: optimizequality;
 }
 
-
 @mixin email_uncollapsed_common {
     @include email_base;
     border-width: 79px 45px 81px 39px;
@@ -123,8 +108,6 @@ input.digit
 .email_message.read + .cover_previous, .email_message.unread + .cover_previous {
     margin-top: -60px;
 }
-
-
 
 @mixin email_collapsed_common {
     @include email_base;
@@ -157,19 +140,20 @@ input.digit
 }
 
 .email_message .collapsed_content {
-  display: none;
+    display: none;
 }
+
 .email_message.collapsed > * {
-  display: none;
+    display: none;
 }
+
 .email_message.collapsed > .collapsed_content {
-  display: initial;
+    display: initial;
 }
 
 .email_message.archived, .email_message.ignored {
-  opacity: 0.7;
+    opacity: 0.7;
 }
-
 
 /*
 .email_message.collapsed . {
@@ -189,7 +173,7 @@ input.digit
         text-decoration: none;
     }
     .fa {
-        color: $darkest_green !important;  // font-awesome icons
+        color: $darkest_green !important; // font-awesome icons
     }
 }
 
@@ -203,7 +187,7 @@ input.digit
     position: absolute;
     width: 100px;
     top: 0;
-    right:0;
+    right: 0;
 }
 
 .contact_display {
@@ -228,13 +212,11 @@ input.digit
     }
 }
 
-
-
 /* styles for djinn chat */
 
 #djinn_chat_wrapper {
-  margin: auto;
-  width: 500px;
+    margin: auto;
+    width: 500px;
 }
 
 #djinn_message_window {

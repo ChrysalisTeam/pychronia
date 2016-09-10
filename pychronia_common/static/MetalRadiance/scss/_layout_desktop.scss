@@ -1,6 +1,4 @@
 
-
-
 .parallax {
     position: absolute;
     opacity: 1;
@@ -29,15 +27,11 @@
 
 }
 
-
-
-
 body {
 
     @include dark-texts;
 
     min-width: 1000px;
-
 
     &.full_background {
         background-image: url('#{$IMGS}backgrounds/nazur_temple_75_smooth.jpg');
@@ -48,36 +42,33 @@ body {
         image-rendering: optimizequality;
     }
 
-
-    &:after
-    {
-    // put here all images to PRELOAD (eg. used in dynamic menus and hover effects)
-    content: " ";
-    background: url('#{$IMGS}backgrounds/tube_gold_small.png'),
-                url('#{$IMGS}backgrounds/tube_silver_small.png'),
-                url('#{$IMGS}backgrounds/tube_bronze_small.png'),
-                url('#{$IMGS}backgrounds/dropdown_menu.png'),
-                url("#{$IMGS}backgrounds/notification_panel_decorations.png"),
-                url("img/backgrounds/antique_large_decorated_frame.png"),
-                url("img/backgrounds/ricepaper-hue-orange.jpg"),
-                url('#{$IMGS}backgrounds/decorated_golden_frame.png'),
-                url('#{$IMGS}backgrounds/ricepaper-hue-gold.jpg');
-    background-repeat: no-repeat;
-    background-position: -1000000 - 1000000;
-    display: inline; // caching doesn't work if display==None'background-position:
+    &:after {
+        // put here all images to PRELOAD (eg. used in dynamic menus and hover effects)
+        content: " ";
+        background: url('#{$IMGS}backgrounds/tube_gold_small.png'),
+        url('#{$IMGS}backgrounds/tube_silver_small.png'),
+        url('#{$IMGS}backgrounds/tube_bronze_small.png'),
+        url('#{$IMGS}backgrounds/dropdown_menu.png'),
+        url("#{$IMGS}backgrounds/notification_panel_decorations.png"),
+        url("img/backgrounds/antique_large_decorated_frame.png"),
+        url("img/backgrounds/ricepaper-hue-orange.jpg"),
+        url('#{$IMGS}backgrounds/decorated_golden_frame.png'),
+        url('#{$IMGS}backgrounds/ricepaper-hue-gold.jpg');
+        background-repeat: no-repeat;
+        background-position: -1000000 - 1000000;
+        display: inline; // caching doesn't work if display==None'background-position:
     }
 }
-
 
 #mm-full_header {
     // jquery.mmenu clone of header
     display: none !important;
 }
+
 .mm-slideout {
     // no opening of side-menu on desktop
     transform: none !important;
 }
-
 
 body .notification_panel {
     .notification_panel_decorations {
@@ -91,7 +82,6 @@ body .notification_panel {
         opacity: 0.90;
     }
 }
-
 
 #full_header {
     width: 100%;
@@ -115,7 +105,6 @@ body .notification_panel {
             width: 1004px;
             margin: 0px auto 0px;
             padding: 13px 0 0;
-
 
             #title_table {
 
@@ -143,14 +132,12 @@ body .notification_panel {
                     }
                 }
 
-
-
                 @mixin top_labels {
                     display: table-cell;
                     vertical-align: middle;
                     height: 44px;
                 }
-                .motto{
+                .motto {
                     @include top_labels;
                     width: 225px;
 
@@ -176,12 +163,12 @@ body .notification_panel {
                     }
                 }
 
-                #site_title{
-                   @include top_labels;
-                   text-align: center;
-                   img {
-                     vertical-align: center;
-                   }
+                #site_title {
+                    @include top_labels;
+                    text-align: center;
+                    img {
+                        vertical-align: center;
+                    }
                 }
 
             }
@@ -194,39 +181,35 @@ body .notification_panel {
             padding: 5px 12px;
             table-layout: fixed;
 
-
-            &>div {
+            & > div {
                 display: table-cell;
                 vertical-align: middle;
                 height: 44px; // a bit more than background carving, to lower text
                 padding: 4px 12px;
             }
-            .carving{
+            .carving {
 
                 font-size: 17px;
                 color: $white_text_color;
 
                 .marquee {
-                  overflow: hidden;
+                    overflow: hidden;
                 }
 
                 width: 183px;
 
                 background: {
-                    image:url('#{$IMGS}backgrounds/carving1.png');
-                    repeat:no-repeat;
+                    image: url('#{$IMGS}backgrounds/carving1.png');
+                    repeat: no-repeat;
                 }
 
             }
-            .separator{
+            .separator {
 
             }
         }
     }
 }
-
-
-
 
 #full_menu {
 
@@ -234,7 +217,6 @@ body .notification_panel {
     width: 100%;
     position: relative;
     z-index: 2000; // below the title panel
-
 
     #main_menu {
 
@@ -259,12 +241,12 @@ body .notification_panel {
                 position: center;
             }
 
-
             img {
-               /* display: inline-block;
-                margin: auto;
-                position: absolute;
-                top: 0; bottom: 0; */ // aligns Vertically
+                /* display: inline-block;
+                 margin: auto;
+                 position: absolute;
+                 top: 0; bottom: 0; */
+                // aligns Vertically
                 max-height: 100%;
                 max-width: 100%;
             }
@@ -299,24 +281,20 @@ body .notification_panel {
                 background-size: 100% 100%;
                 image-rendering: optimizequality;
 
-
                 border-style: solid;
-                border-color:transparent;
+                border-color: transparent;
                 border-width: 18px 52px 20px 55px;
-                border-image: url('#{$IMGS}backgrounds/menu_border.png') 18 52 20 55 fill stretch stretch;  // BEWARE - using "round" horizontally makes a buggy thin line appear on top/bottom box extremities
+                border-image: url('#{$IMGS}backgrounds/menu_border.png') 18 52 20 55 fill stretch stretch; // BEWARE - using "round" horizontally makes a buggy thin line appear on top/bottom box extremities
                 image-rendering: optimizequality;
             }
 
         }
     }
 }
-#menu-bar{
-    display:none;
+
+#menu-bar {
+    display: none;
 }
-
-
-
-
 
 #full_content {
 
@@ -378,8 +356,7 @@ body .notification_panel {
         }
     }
 
-
-    @mixin main_frame_common{
+    @mixin main_frame_common {
         // inheritance is slightly buggy...
         position: relative;
         padding: 10px;
@@ -408,7 +385,6 @@ body .notification_panel {
         width: 960px;
     }
 
-
     .main_frame_border {
         position: relative;
 
@@ -435,8 +411,6 @@ body .notification_panel {
     }
 }
 
-
-
 #up_footer_wrapper {
 
     clear: both;
@@ -454,7 +428,7 @@ body .notification_panel {
     @mixin up_footer_common {
         margin: 0;
         display: inline-block;
-        vertical-align:top; // important to avoid mess with vertical alignment
+        vertical-align: top; // important to avoid mess with vertical alignment
         text-align: left;
         height: 131px;
         min-width: 40px;
@@ -471,7 +445,7 @@ body .notification_panel {
         border-style: solid;
 
         a {
-          color: $white_text_color !important;
+            color: $white_text_color !important;
         }
     }
 
@@ -509,7 +483,6 @@ body .notification_panel {
     }
 }
 
-
 #low_footer_wrapper {
 
     position: relative;
@@ -528,12 +501,12 @@ body .notification_panel {
         font-size: 22px;
         line-height: 26px;
 
-        position:relative;
+        position: relative;
         padding: 12px 4px 16px;
         min-width: 30px;
         height: 58px;
         display: inline-block;
-        vertical-align:top;
+        vertical-align: top;
 
         background-color: transparent;
         border-color: transparent;

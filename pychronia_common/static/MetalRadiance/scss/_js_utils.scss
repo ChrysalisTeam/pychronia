@@ -1,12 +1,10 @@
 
-
 .jp-audio {
-   * {
-     box-sizing: content-box !important;
-   }
+    * {
+        box-sizing: content-box !important;
+    }
     margin: 10px auto;
 }
-
 
 .ui-dropdownchecklist-selector-wrapper {
     min-height: 29px;
@@ -33,8 +31,6 @@
     padding: 2px;
 }
 
-
-
 .select2-container-multi .select2-choices .select2-search-field input {
     padding: 0;
     margin: 2px 2px;
@@ -46,13 +42,12 @@
 }
 
 .select2-input {
-   border: none !important;  // else ugly resizes when editing the select2 "text" input...
+    border: none !important; // else ugly resizes when editing the select2 "text" input...
 }
 
 .zoomable > img {
     border: none /* 5px ridge $dark_yellow; */
 }
-
 
 .jnotify-container {
     max-height: 400px;
@@ -76,7 +71,7 @@
             padding: 15px 30px;
         }
         a.jnotify-close {
-            font-size: 1.8em !important;  // enlarge the cross
+            font-size: 1.8em !important; // enlarge the cross
         }
     }
 
@@ -96,27 +91,24 @@
     .jnotify-notification-success .jnotify-close,
     .jnotify-notification-success .jnotify-message {
         color: #0B580A !important;
-     }
+    }
     .jnotify-notification-success .jnotify-background {
         background-color: #95CF94;
     }
 
 }
 
-
-
 .fancybox-default {
     z-index: 100000 !important; // we must be in front of dropdown menus
     background-image: url('#{$IMGS}backgrounds/ricepaper-hue-orange.jpg');
     image-rendering: optimizequality;
-
 
     .fancybox-outer {
         @extend .antique_large_decorated_frame;
         background-color: transparent;
         box-shadow: none !important; // doesn't work with transparent borders
         border-width: 30px !important;
-        padding: 16px !important;  // HACK to override fancybox styles
+        padding: 16px !important; // HACK to override fancybox styles
     }
 
     .fancybox-inner {
@@ -139,16 +131,15 @@
     }
 }
 
-
 .main_frame_border {
 
-    .markItUp  {
+    .markItUp {
         width: 95%;
         margin: auto;
         border: 1px solid $form_input_border_color;
     }
 
-    .markItUpContainer  {
+    .markItUpContainer {
         background-image: url('#{$IMGS}backgrounds/ricepaper-hue-orange.jpg');
     }
 
@@ -177,12 +168,7 @@
     }
 }
 
-
-
-
-
 /**    DOMSLIDES     **/
-
 
 .item_display {
     @extend .carved_square_frame_gold;
@@ -199,10 +185,9 @@
     }
 }
 
-
 #domslideshow {
 
-    position:relative;
+    position: relative;
     * {
         list-style-type: none;
         list-style-image: none;
@@ -225,9 +210,8 @@
         max-width: 550px;
         max-height: 750px;
         display: block;
-        margin : 0px; // already nough with border image
+        margin: 0px; // already nough with border image
     }
-
 
     blockquote {
         max-width: 600px;
@@ -235,19 +219,19 @@
     }
 
     .counter {
-        display:block;
-        position:absolute;
+        display: block;
+        position: absolute;
         top: 5px;
-        right:0;
-        font-weight:bold;
+        right: 0;
+        font-weight: bold;
         font-size: 1.3em;
-        margin:5px 10px 5px 55px;
-        padding:10px;
+        margin: 5px 10px 5px 55px;
+        padding: 10px;
 
-        li{
-            float:left;
-            padding:0 0.4em 0;
-            margin:0;
+        li {
+            float: left;
+            padding: 0 0.4em 0;
+            margin: 0;
         }
     }
 
@@ -255,65 +239,60 @@
         clear: both;
     }
 
-
     #toclist {
-        left:5px;
-        top:0px;
-        font-size:1.8em;
-        margin:5px 55px 5px 10px;
-        padding:10px;
+        left: 5px;
+        top: 0px;
+        font-size: 1.8em;
+        margin: 5px 55px 5px 10px;
+        padding: 10px;
         float: left;
     }
 
-    #toclist li{
-        text-align:right;
-        position:relative;
-        font-size:1em;
+    #toclist li {
+        text-align: right;
+        position: relative;
+        font-size: 1em;
     }
-    #toclist li a{
+    #toclist li a {
         font-weight: bold;
     }
 
-    #toclist li ul li{
-        list-style-type:none;
-        font-size:0.6em;
-        text-align:left;
-        position:relative;
+    #toclist li ul li {
+        list-style-type: none;
+        font-size: 0.6em;
+        text-align: left;
+        position: relative;
     }
-    #toclist li li a{
-        line-height:1em;
+    #toclist li li a {
+        line-height: 1em;
     }
-    #toclist li li a:hover{
-        line-height:0.7em;
-        background:#fff;
+    #toclist li li a:hover {
+        line-height: 0.7em;
+        background: #fff;
     }
-    #toclist li ul{
-        background:#DCCBB5;
-        padding:10px;
-        width:300px;
-        position:absolute;
-        top:1em;
-        border-bottom:1px solid $medium_yellow;
-        z-index:100;
+    #toclist li ul {
+        background: #DCCBB5;
+        padding: 10px;
+        width: 300px;
+        position: absolute;
+        top: 1em;
+        border-bottom: 1px solid $medium_yellow;
+        z-index: 100;
     }
     /* close TOC item */
-    #toclist li ul li#closeToc{
-        text-align:right;
-        position:relative;
-        top:4px;
+    #toclist li ul li#closeToc {
+        text-align: right;
+        position: relative;
+        top: 4px;
         //right:0px;
-        padding-right:10px;
-        padding-bottom:5px;
+        padding-right: 10px;
+        padding-bottom: 5px;
         //width:290px;
         background: #C5AE8F;
-        line-height:1em;
+        line-height: 1em;
     }
 
 }
-
-
-
-
 
 /* P4WN customization */
 
@@ -336,6 +315,7 @@
         margin-top: 20px;
     }
 }
+
 @include desktop-only {
     .p4wn-controls {
         margin-top: 20px;

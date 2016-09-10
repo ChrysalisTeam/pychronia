@@ -9,7 +9,6 @@ from __future__ import unicode_literals
 
 import os, sys, pytest, unittest, traceback
 
-
 ## TEST CONFIGURATION ##
 
 os.environ["DJANGO_SETTINGS_MODULE"] = "pychronia_game.tests.transient_mode_settings"
@@ -21,7 +20,8 @@ from pychronia_game.datamanager.datamanager_administrator import create_game_ins
 import pychronia_game.datamanager as dm_module
 from pychronia_game.datamanager import *
 from pychronia_game.datamanager.datamanager_modules import *
-from pychronia_game.authentication import (try_authenticating_with_credentials, try_authenticating_with_session, logout_session,
+from pychronia_game.authentication import (try_authenticating_with_credentials, try_authenticating_with_session,
+                                           logout_session,
                                            SESSION_TICKET_KEY_TEMPLATE, IMPERSONATION_TARGET_POST_VARIABLE,
                                            IMPERSONATION_WRITABILITY_POST_VARIABLE, UNIVERSAL_URL_USERNAME)
 import pychronia_game.middlewares
@@ -66,10 +66,12 @@ class dummyclass(object):
 def for_datamanager_base(func):
     return func
 
+
 def for_core_module(klass):
     # TODO - track proper testing of core module
     assert klass in MODULES_REGISTRY, klass
     return lambda func: func
+
 
 def for_gameview(view):
     # TODO - track proper testing of ability module
@@ -77,12 +79,12 @@ def for_gameview(view):
     assert view in GameViews.GAME_VIEWS_REGISTRY.values(), view
     return lambda func: func
 
+
 def for_ability(view):
     # TODO - track proper testing of gameview module
     view = getattr(view, "klass", view)
     assert view in SpecialAbilities.ABILITIES_REGISTRY.values(), view
     return lambda func: func
-
 
 
 TEST_GAME_INSTANCE_ID = "TeStiNg"
@@ -93,16 +95,13 @@ HOME_URL = neutral_url_reverse(pychronia_game.views.homepage)
 
 AJAX_HEADERS = dict(HTTP_X_REQUESTED_WITH='XMLHttpRequest')
 
-
 SESSION_TICKET_KEY = SESSION_TICKET_KEY_TEMPLATE % TEST_GAME_INSTANCE_ID
 
-sys.setrecursionlimit(800) # to help detect recursion problems
-
+sys.setrecursionlimit(800)  # to help detect recursion problems
 
 logging.basicConfig()
 logging.getLogger().setLevel(logging.DEBUG)
-logging.disable(logging.DEBUG) # to be commented if more output is wanted !!!
-
+logging.disable(logging.DEBUG)  # to be commented if more output is wanted !!!
 
 
 class RequestMock(RequestFactory):
@@ -110,7 +109,6 @@ class RequestMock(RequestFactory):
         """Constructs a generic request object, INCLUDING middleware modifications."""
 
         from django.core import urlresolvers
-
 
         request = RequestFactory.request(self, **request_args)
         ###pprint.pprint(request)
@@ -130,7 +128,7 @@ class RequestMock(RequestFactory):
         resolver = urlresolvers.RegexURLResolver(r'^/', urlconf)
 
         callback, callback_args, callback_kwargs = resolver.resolve(
-                            request.path_info)
+            request.path_info)
 
         # Apply view middleware
         for middleware_method in handler._view_middleware:
@@ -143,14 +141,11 @@ class RequestMock(RequestFactory):
         return request
 
 
-
 @contextlib.contextmanager
 def raises_with_content(klass, string):
     with pytest.raises(klass) as exc:
         yield exc
     assert string.lower() in unicode(exc.value).lower()
-
-
 
 
 class AutoCheckingDM(object):
@@ -161,19 +156,19 @@ class AutoCheckingDM(object):
     """
 
     def __init__(self, dm):
-        assert dm.connection # really initialized DM
-        object.__setattr__(self, "_real_dm", dm) # bypass overriding of __setattr__ below
+        assert dm.connection  # really initialized DM
+        object.__setattr__(self, "_real_dm", dm)  # bypass overriding of __setattr__ below
 
     def __getattribute__(self, name):
         real_dm = object.__getattribute__(self, "_real_dm")
         attr = getattr(real_dm, name)
         if name.startswith("_") or not isinstance(attr, types.MethodType):
-            return attr # data attribute
+            return attr  # data attribute
         else:
             # we wrap on the fly
             def _checked_method(*args, **kwargs):
-                real_dm.commit() # we commit patches made from test suite...
-                assert not real_dm.connection._registered_objects, real_dm.connection._registered_objects # BEFORE
+                real_dm.commit()  # we commit patches made from test suite...
+                assert not real_dm.connection._registered_objects, real_dm.connection._registered_objects  # BEFORE
                 try:
                     res = attr(*args, **kwargs)
                 except GameError:
@@ -183,8 +178,8 @@ class AutoCheckingDM(object):
                     traceback.print_exc()
                     raise
                 finally:
-                    if real_dm.connection: # i.e not for close() method
-                        assert not real_dm.connection._registered_objects, real_dm.connection._registered_objects # AFTER
+                    if real_dm.connection:  # i.e not for close() method
+                        assert not real_dm.connection._registered_objects, real_dm.connection._registered_objects  # AFTER
                 return res
 
             return _checked_method
@@ -204,8 +199,7 @@ def temp_datamanager(game_instance_id, request=None):
     dm.close()
 
 
-
-class BaseGameTestCase(TestCase): # one day, use pytest-django module to make it cleaner
+class BaseGameTestCase(TestCase):  # one day, use pytest-django module to make it cleaner
 
     """
     WARNING - when directly modifying "self.dm.data" content, 
@@ -218,21 +212,21 @@ class BaseGameTestCase(TestCase): # one day, use pytest-django module to make it
         #self._reset_django_db()
         #print ("USING CONF", config.DATABASES, config.INSTALLED_APPS)
         ##return super(BaseGameTestCase, self).__call__(*args, **kwds)
-        return unittest.TestCase.run(self, *args, **kwds) # we bypass test setups from django's TestCase, to use py.test instead
-
+        return unittest.TestCase.run(self, *args,
+                                     **kwds)  # we bypass test setups from django's TestCase, to use py.test instead
 
     def setUp(self):
 
         assert settings.DEBUG == True
 
-        django.utils.translation.activate("en") # to test for error messages, just in case...
+        django.utils.translation.activate("en")  # to test for error messages, just in case...
 
         reset_zodb_structure()
 
         yaml_fixture = None
         skip_initializations = False
         if BaseGameTestCase.SHARED_DM_INITIAL_DATA_TREE:
-            print ("[UNIT-TESTS] Using SHARED_DM_INITIAL_DATA_TREE to speed up the DM creation")
+            print("[UNIT-TESTS] Using SHARED_DM_INITIAL_DATA_TREE to speed up the DM creation")
             yaml_fixture = copy.deepcopy(BaseGameTestCase.SHARED_DM_INITIAL_DATA_TREE)
             skip_initializations = True
 
@@ -258,7 +252,7 @@ class BaseGameTestCase(TestCase): # one day, use pytest-django module to make it
 
             self.request = self.factory.get(HOME_URL)
             assert self.request.user
-            assert self.request.datamanager.user.datamanager.request # double linking
+            assert self.request.datamanager.user.datamanager.request  # double linking
             assert self.request.session
             assert self.request._messages is not None
             assert self.request.datamanager
@@ -274,10 +268,11 @@ class BaseGameTestCase(TestCase): # one day, use pytest-django module to make it
             self.dm.clear_all_event_stats()
             if not skip_initializations:
                 self.dm.check_database_coherence()  # thus, only done for the first testcase
-                assert self.dm.get_event_count("BASE_CHECK_DB_COHERENCE_PUBLIC_CALLED") == 1 # no bypassing because of wrong override
+                assert self.dm.get_event_count(
+                    "BASE_CHECK_DB_COHERENCE_PUBLIC_CALLED") == 1  # no bypassing because of wrong override
 
             self.dm.set_game_state(True)
-            self.dm.set_activated_game_views(self.dm.get_activable_views().keys()) # QUICK ACCESS FIXTURE
+            self.dm.set_activated_game_views(self.dm.get_activable_views().keys())  # QUICK ACCESS FIXTURE
 
             self.dm.clear_all_event_stats()
 
@@ -288,17 +283,16 @@ class BaseGameTestCase(TestCase): # one day, use pytest-django module to make it
             self.initial_msg_queue_length = len(self.dm.get_all_queued_messages())
 
             # comment this to have eclipse's autocompletion to work for datamanager anyway
-            self.dm = AutoCheckingDM(self.dm) # protection against uncommitted, pending changes
+            self.dm = AutoCheckingDM(self.dm)  # protection against uncommitted, pending changes
 
             # NO NEED TO COMMIT - transaction watcher should do it all #
 
         except Exception as e:
             print(">>>>>>>>>", repr(e))
-            self.tearDown(check=False) # cleanup of connection
+            self.tearDown(check=False)  # cleanup of connection
             raise
 
-        assert object.__getattribute__(self.dm, "_real_dm") == self.request.datamanager # WRAPPED
-
+        assert object.__getattribute__(self.dm, "_real_dm") == self.request.datamanager  # WRAPPED
 
     def tearDown(self, check=True):
         if hasattr(self, "dm"):
@@ -307,28 +301,24 @@ class BaseGameTestCase(TestCase): # one day, use pytest-django module to make it
             self.dm.close()
             self.dm = None
 
-
-
     def _set_user(self, username, **kwargs):
         """
         Here *username* might be "master" or None, too. 
         """
         self.dm._set_user(username, **kwargs)
 
-
     def _reset_messages(self):
         self.dm.messaging_data["messages_dispatched"] = PersistentList()
         self.dm.messaging_data["messages_queued"] = PersistentList()
         self.dm.commit()
 
-
     def _reset_django_db(self):
         from django.test.utils import setup_test_environment
         from django.core import management
         try:
-            management.call_command('flush', verbosity=0, interactive=False) # we try to empty tables,  if already created
+            management.call_command('flush', verbosity=0,
+                                    interactive=False)  # we try to empty tables,  if already created
         except Exception:
             management.call_command('syncdb', verbosity=1, interactive=False)
             #management.call_command('migrate', verbosity=1, interactive=False)
-        config.INSTALLED_APPS[:] = ORIGINAL_CONFIG_INSTALLED_APPS[:] # SOUTH might nastily monkey patch settings...
-
+        config.INSTALLED_APPS[:] = ORIGINAL_CONFIG_INSTALLED_APPS[:]  # SOUTH might nastily monkey patch settings...

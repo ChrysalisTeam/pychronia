@@ -1,5 +1,3 @@
-
-
 /* for foliage on small floating panel corners */
 
 @mixin small_decorations {
@@ -14,22 +12,24 @@
     bottom: 0;
     left: 0;
 }
+
 .stick_bottom_right {
     @include small_decorations;
     bottom: 0;
     right: 0;
 }
+
 .stick_top_left {
     @include small_decorations;
     top: 0;
     left: 0;
 }
+
 .stick_top_right {
     @include small_decorations;
     top: 0;
     right: 0;
 }
-
 
 /* for foliage on main content panel corners */
 
@@ -45,22 +45,24 @@
     bottom: -22px;
     left: -22px;
 }
+
 .big_stick_bottom_right {
     @include big_decorations;
     bottom: -22px;
     right: -29px;
 }
+
 .big_stick_top_left {
     @include big_decorations;
     top: -20px;
     left: -20px;
 }
+
 .big_stick_top_right {
     @include big_decorations;
     top: -17px;
     right: -25px;
 }
-
 
 /* for golden icons on main content panel corners */
 
@@ -93,7 +95,6 @@
     top: 10px;
     right: 10px;
 }
-
 
 /* we hide ALL decorations for now, in mobile mode */
 @include mobile-only {

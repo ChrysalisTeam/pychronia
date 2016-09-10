@@ -1,12 +1,12 @@
- #!/usr/bin/env python
- # -*- coding: utf-8 -*-
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 import os
 import sys
 import pprint
 import logging
 import setup_pychronia_env
 
-import pychronia_game.models # initializes everything
+import pychronia_game.models  # initializes everything
 from pychronia_game.datamanager.datamanager_administrator import UsageError, retrieve_game_instance
 from pychronia_game.utilities import dump_data_tree_to_yaml
 
@@ -31,7 +31,5 @@ def execute():
     print(">> Extract file %s successfully created" % filename)
 
 
-
 if __name__ == "__main__":
     execute()
-

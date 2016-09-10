@@ -8,36 +8,33 @@ from pychronia_game.common import *
 from .datamanager_tools import *
 
 
-
 class BaseDataManager(utilities.TechnicalEventsMixin):
-
-
     # utilities for WRITING transactions (readonly ones are implicit) #
 
     def begin(self):
         if not self._in_writing_transaction:
             self.check_no_pending_transaction()
             self._in_writing_transaction = True
-            begin_transaction_with_autoreconnect() # not really needed
-            return None # value indicating top level
+            begin_transaction_with_autoreconnect()  # not really needed
+            return None  # value indicating top level
         else:
             return transaction.savepoint()
 
     def commit(self, savepoint=None):
         if savepoint:
-            pass # savepoint needn't be committed, in ZODB
+            pass  # savepoint needn't be committed, in ZODB
         else:
             self._in_writing_transaction = False
-            transaction.commit() # top level
-            self.check_no_pending_transaction() # AFTER REAL COMMIT
+            transaction.commit()  # top level
+            self.check_no_pending_transaction()  # AFTER REAL COMMIT
 
     def rollback(self, savepoint=None):
         if savepoint:
             savepoint.rollback()
         else:
             self._in_writing_transaction = False
-            transaction.abort() # top level
-            self.check_no_pending_transaction() # AFTER REAL ROLLBACK
+            transaction.abort()  # top level
+            self.check_no_pending_transaction()  # AFTER REAL ROLLBACK
 
     def is_in_writing_transaction(self):
         return self._in_writing_transaction
@@ -46,8 +43,6 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
         assert self.connection  # else, connectionless mode, we shouldn't be using transaction API
         assert not self._in_writing_transaction, self._in_writing_transaction
         assert not self.connection._registered_objects, repr(self.connection._registered_objects)
-
-
 
     # utilities for toplevel handling of transactions (writing or not) #
 
@@ -64,25 +59,26 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
     def is_under_top_level_wrapping(self):
         return self._in_top_level_handler
 
-
     # no transaction manager - special case
     def __init__(self, game_instance_id, game_root=None, request=None, **kwargs):
 
-        assert game_root is not None # it's actually game DATA, no METADATA is included here!
+        assert game_root is not None  # it's actually game DATA, no METADATA is included here!
 
         super(BaseDataManager, self).__init__(**kwargs)
 
         self.notify_event("BASE_DATA_MANAGER_INIT_CALLED")
 
-        self._in_writing_transaction = False # for WRITING transactions only
-        self._in_top_level_handler = False # for both readonly and writing transactions, top-level conflict handler
+        self._in_writing_transaction = False  # for WRITING transactions only
+        self._in_top_level_handler = False  # for both readonly and writing transactions, top-level conflict handler
 
         self.game_instance_id = game_instance_id
 
         # workaround to have DYNAMIC extra values in logger
         datamanager_instance = self
+
         class DynamicDatamanagerLoggerAdapter(dict):
             EXTRA_FIELDS = ["game_instance_id", "real_username", "username", "is_observer"]
+
             def __getitem__(self, name):
                 if name not in self.EXTRA_FIELDS:
                     raise KeyError("DynamicDatamanagerLoggerAdapter doesn't support DM attribute %s" % name)
@@ -93,19 +89,21 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
                         return getattr(datamanager_instance, name)
                     except AttributeError as e:
                         return "<none>"
+
             def __iter__(self):
                 return iter(self.EXTRA_FIELDS)
+
         dm_logger_adapter = DynamicDatamanagerLoggerAdapter()
 
-        self._inner_logger = logging.getLogger("pychronia_game") #FIXME
+        self._inner_logger = logging.getLogger("pychronia_game")  #FIXME
         self.logger = logging.LoggerAdapter(self._inner_logger, dm_logger_adapter)
 
         self._request = weakref.ref(request) if request else None  # if None, user notifications won't work
 
-        self.data = game_root # can be empty, here
-        self.connection = game_root._p_jar # can be empty, for transient persistent objects
+        self.data = game_root  # can be empty, here
+        self.connection = game_root._p_jar  # can be empty, for transient persistent objects
 
-        self.is_initialized = bool(self.data) # empty or not
+        self.is_initialized = bool(self.data)  # empty or not
 
         if self.is_initialized:
             self.do_init_from_db()
@@ -124,7 +122,6 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
     def request(self):
         return self._request() if self._request else None
 
-
     # NO transaction_watcher here!
     def close(self):
         """
@@ -138,11 +135,8 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
         if self.connection:
             self.connection.close()
             self.connection = None
-            
 
-
-
-    @transaction_watcher(always_writable=True) # might operate on broken data
+    @transaction_watcher(always_writable=True)  # might operate on broken data
     def reset_game_data(self,
                         yaml_fixture=None,
                         skip_randomizations=False,  # randomize some values in dm.data
@@ -176,7 +170,7 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
         self.data.update(initial_data)
 
         if not skip_initializations:
-            self._load_initial_data(skip_randomizations=skip_randomizations) # traversal of each core module
+            self._load_initial_data(skip_randomizations=skip_randomizations)  # traversal of each core module
         else:
             assert skip_randomizations == True
 
@@ -198,8 +192,6 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
         if not skip_coherence_check:
             self.check_database_coherence(strict=strict)
 
-
-
     def _load_initial_data(self, **kwargs):
         """
         Overrides of this method can use standard python objects, 
@@ -208,8 +200,7 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
         """
         self.notify_event("BASE_LOAD_INITIAL_DATA_CALLED")
 
-
-    @transaction_watcher(always_writable=True) # that checking might lead to corrections
+    @transaction_watcher(always_writable=True)  # that checking might lead to corrections
     def check_database_coherence(self, **kwargs):
 
         self.notify_event("BASE_CHECK_DB_COHERENCE_PUBLIC_CALLED")
@@ -219,10 +210,7 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
         # Heavy Check !
         utilities.check_object_tree(game_data, allowed_types=utilities.allowed_zodb_types, path=["game_data"])
 
-
         self._check_database_coherence(**kwargs)
-
-
 
         ''' # TO BE REDISPATCHED #
 
@@ -278,11 +266,8 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
             spy_cost_gems spy_cost_money mercenary_cost_gems mercenary_cost_money
         '''
 
-
-
     def _check_database_coherence(self, **kwargs):
         self.notify_event("BASE_CHECK_DB_COHERENCE_PRIVATE_CALLED")
-
 
     @transaction_watcher
     def process_periodic_tasks(self, **kwargs):
@@ -296,15 +281,13 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
         self._process_periodic_tasks(report)
         return report
 
-
     def _process_periodic_tasks(self, report):
         self.notify_event("BASE_PROCESS_PERIODIC_TASK_CALLED")
-
 
     @readonly_method
     def dump_zope_database(self, **kwargs):
 
-        data_tree = copy.deepcopy(dict(self.data)) # beware - memory-intensive call
+        data_tree = copy.deepcopy(dict(self.data))  # beware - memory-intensive call
 
         """ TODO FIXME REPUT THAT ??
         # special, we remove info that is already well visible in messaging system and chatroom
@@ -314,11 +297,10 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
         """
 
         string = utilities.dump_data_tree_to_yaml(data_tree,
-                                                  default_style=">", # prevents too long lines and double "'" quotes
-                                                  ** kwargs)
+                                                  default_style=">",  # prevents too long lines and double "'" quotes
+                                                  **kwargs)
 
         return string
-
 
     @transaction_watcher
     def load_zope_database_from_string(self, string, strict=False):
@@ -336,7 +318,7 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
             self.data = data_tree
             self.check_database_coherence(strict=strict)
         except Exception:
-            self.data = old_data # security about mishandlings
+            self.data = old_data  # security about mishandlings
             raise
 
         return self.data

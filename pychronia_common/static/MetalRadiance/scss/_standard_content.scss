@@ -1,8 +1,8 @@
 
 h1, h2, h3, h4 {
-  a, span {
-    color: inherit !important;  // no link styling in headings
-  }
+    a, span {
+        color: inherit !important; // no link styling in headings
+    }
 }
 
 h1 {
@@ -29,7 +29,6 @@ h1 {
     }
 }
 
-
 h2 {
 
     @include header_common;
@@ -53,7 +52,6 @@ h2 {
     }
 }
 
-
 h3 {
     color: $title_white;
     font-size: 1.4em;
@@ -61,14 +59,11 @@ h3 {
     margin: 15px 5px 7px;
 }
 
-
 h4 {
     color: black;
     font-size: 1.3em;
-    margin: 14px 20px 6px;  // left-aligned with paragraph first-line indent
+    margin: 14px 20px 6px; // left-aligned with paragraph first-line indent
 }
-
-
 
 @mixin drop_cap_mixin {
     &:first-letter {
@@ -81,21 +76,20 @@ h4 {
         margin-top: 5px;
         // margin-left: 0em;
         // margin-right: 0em;
-   }
-   text-indent: 0 !important;
+    }
+    text-indent: 0 !important;
 }
 
 .drop_cap, .drop-cap, .dropcap {
     @include drop_cap_mixin;
 }
 
-
 // USELESS ATM - & > p:first-child:not(.post-it), & >p:first-of-type:not(.post-it), & > p.beautiful
 .justified p, .section p {
     text-align: justify;
     overflow: hidden; // for drop caps
     text-decoration: none; // underline, overline, line-through, blink or inherit
-    text-indent: 0;  // else too many problems with widow lines...
+    text-indent: 0; // else too many problems with widow lines...
 
     /* useful and little known properties */
     word-spacing: normal; // or length measure
@@ -106,9 +100,8 @@ h4 {
     text-overflow: ellipsis; // or clip or string, not inherited
 }
 
-
 em {
-  font-style: italic;
+    font-style: italic;
 }
 
 b, strong {
@@ -120,36 +113,32 @@ pre {
     font-family: Consolas, monospace !important;
 }
 
-
 div, span, p {
     background-color: transparent;
     border-color: transparent;
     overflow: visible;
 }
 
-
 p {
     margin: 8px 0 8px;
-    min-width: 200px;  // to prevent horrors with inline images, when screen gets small
+    min-width: 200px; // to prevent horrors with inline images, when screen gets small
 }
-
 
 @include mobile-only {
     p {
         font-size: 1em;
     }
 }
+
 @include desktop-only {
     p {
         font-size: 1em;
     }
 }
 
-
 a img {
     border-width: 0;
 }
-
 
 h1, h2 {
     a:link, a:visited, a:hover {
@@ -158,10 +147,9 @@ h1, h2 {
     }
 }
 
-
 dl {
     text-indent: 0;
-    margin:10px 10px;
+    margin: 10px 10px;
 
     dt {
         margin-top: 6px;
@@ -171,9 +159,6 @@ dl {
         padding-left: 15px;
     }
 }
-
-
-
 
 hr {
     border-color: $medium_yellow;
@@ -191,10 +176,7 @@ blockquote.antic, q.antic, cite.antic {
     padding: 6px;
 }
 
-
-
-ul.pretty_bullets, .pretty_bullets ul, .section ul, .realtable ul, .main_frame_content ul, .mini_frame_content ul
-{
+ul.pretty_bullets, .pretty_bullets ul, .section ul, .realtable ul, .main_frame_content ul, .mini_frame_content ul {
     li {
         margin-top: 5px;
     }
@@ -213,10 +195,12 @@ ul.pretty_bullets, .pretty_bullets ul, .section ul, .realtable ul, .main_frame_c
         }
     }
 }
+
 .no_bullets, .no_bullets * {
     list-style-type: none !important;
     list-style-image: none !important;
 }
+
 ul.no_bullets, .no_bullets ul {
     padding-left: 0 !important;
 }
@@ -226,8 +210,6 @@ ul.tiny_bullets, .tiny_bullets ul {
     list-style-image: none !important;
     list-style-type: disc !important;
 }
-
-
 
 textarea {
     resize: vertical;
@@ -239,23 +221,22 @@ textarea {
     .select2-container-multi .select2-choices, .select2-container-multi .select2-choices .select2-search-choice,
     .select2-dropdown-open.select2-drop-above .select2-choice, .select2-dropdown-open.select2-drop-above .select2-choices,
     .select2-results .select2-selection-limit,
-    .select2-drop,  // note that .select2-drop gets attached to BODY anyway
+    .select2-drop, // note that .select2-drop gets attached to BODY anyway
     .ui-dropdownchecklist-selector-wrapper, .ui-dropdownchecklist-dropcontainer,
     .markItUp {
-         color: $black_text_color;
-         background-color: $color;
-         background-image: none;
+        color: $black_text_color;
+        background-color: $color;
+        background-image: none;
 
-         &:disabled {
-             background-color: $grey_color;
-         }
+        &:disabled {
+            background-color: $grey_color;
+        }
     }
 }
 
 body {
     @include form_controls_variant(#fff7e7);
 }
-
 
 /* for ALL instances */
 input[type=submit] {
@@ -268,8 +249,8 @@ input[readonly=True] {
 
 #full_content form {
 
-    p:not(.required)  label {
-       font-style: italic;
+    p:not(.required) label {
+        font-style: italic;
     }
 
     select, input[type=text], input[type=email], input[type=number], input[type=tel], input[type=password] {
@@ -278,7 +259,7 @@ input[readonly=True] {
         padding: 1px 3px;
     }
     .select2-choices input {
-        min-height: 0;  // inner input of "fake" select2 <div> control
+        min-height: 0; // inner input of "fake" select2 <div> control
     }
 
     input[type=text], input[type=email], input[type=number], input[type=tel], input[type=password], input[type=submit], input[type=button], textarea, select, .select2-container, .markItUp {
@@ -306,7 +287,6 @@ object {
     display: block;
     margin: 20px auto;
 }
-
 
 button.pretty_button {
     background-color: #F1D68E;

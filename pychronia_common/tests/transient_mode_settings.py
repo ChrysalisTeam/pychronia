@@ -4,7 +4,6 @@ import os, tempfile, random
 
 from pychronia_common.tests.common_test_settings import *
 
-
 TEMP_DIR = tempfile.mkdtemp()
 UNICITY_STRING = str(random.randint(100000, 1000000000))
 

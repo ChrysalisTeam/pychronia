@@ -4,7 +4,6 @@ from __future__ import unicode_literals
 
 from pychronia_game.common import *
 
-
 from .datamanager_administrator import GameDataManager
 from .datamanager_tools import readonly_method, transaction_watcher
 from .abstract_game_view import GameViewMetaclass, AbstractGameView
@@ -17,21 +16,18 @@ class AbilityMetaclass(GameViewMetaclass, type):
     """
     Metaclass automatically registering the new ability (which is also a view) in a global registry.
     """
-    def __init__(NewClass, name, bases, new_dict):
 
+    def __init__(NewClass, name, bases, new_dict):
         super(AbilityMetaclass, NewClass).__init__(name, bases, new_dict)
 
         if not NewClass.__name__.startswith("Abstract"):
             GameDataManager.register_ability(NewClass)
 
 
-
-
 # we us this syntax, because we can't dynamically assign a tuple of bases in a normal "class" definition
-AbstractAbilityBases = tuple(reversed(ACTION_MIDDLEWARES)) + (AbstractGameView,) # middlewares FIRST, so that they can override game view stuffs...
+AbstractAbilityBases = tuple(reversed(ACTION_MIDDLEWARES)) + (
+AbstractGameView,)  # middlewares FIRST, so that they can override game view stuffs...
 AbstractAbilityBasesAdapter = AbilityMetaclass(str('AbstractAbilityBasesAdapter'), AbstractAbilityBases, {})
-
-
 
 """
 print (">>>>>>>>>", AbstractAbilityBases)
@@ -43,26 +39,23 @@ for _base in AbstractAbilityBases:
 
 
 class AbstractAbility(AbstractAbilityBasesAdapter):
-
     ### Uses AbstractAbilityBases metaclass ###
     ### Inherits from action middlewares and AbstractGameView ###
 
     # NOT ATM - TITLE = None # menu title, use lazy gettext when setting
 
     def __init__(self, request, *args, **kwargs):
-        super(AbstractAbility, self,).__init__(request, *args, **kwargs)
+        super(AbstractAbility, self, ).__init__(request, *args, **kwargs)
 
     @property
     def datamanager(self):
-        return self # TRICK - abilities behaves as extensions of the datamanager!!
-
-
+        return self  # TRICK - abilities behaves as extensions of the datamanager!!
 
     # can't be a classmethod anymore because we need action middleware settings
     def _common_instantiate_form(self,
-                                  new_action_name,
-                                  form_options=None,
-                                  **kwargs):
+                                 new_action_name,
+                                 form_options=None,
+                                 **kwargs):
         final_form_options = self.get_game_form_extra_params(action_name=new_action_name)
         if form_options:
             final_form_options.update(form_options)
@@ -71,10 +64,9 @@ class AbstractAbility(AbstractAbilityBasesAdapter):
                                                                      form_options=final_form_options,
                                                                      **kwargs)
 
-
-
     def _execute_game_action_with_middlewares(self, action_name, method, *args, **kwargs):
-        assert "_test_" in action_name or method.__name__ == self.GAME_ACTIONS[action_name]["callback"], (action_name, method) # only in tests it could be false
+        assert "_test_" in action_name or method.__name__ == self.GAME_ACTIONS[action_name]["callback"], (
+        action_name, method)  # only in tests it could be false
         if __debug__: self.notify_event("EXECUTE_GAME_ACTION_WITH_MIDDLEWARES")
 
         # we transform the callback method so that it only expects keyword arguments (easier to deal with, in middleware chain)
@@ -82,7 +74,6 @@ class AbstractAbility(AbstractAbilityBasesAdapter):
         params = resolving_decorator.resolve_call_args(flattened_method, *args, **kwargs)
 
         return self.process_action_through_middlewares(action_name=action_name, method=flattened_method, params=params)
-
 
     def _execute_game_action_callback(self, action_name, unfiltered_params):
         assert self.is_in_writing_transaction()
@@ -92,37 +83,31 @@ class AbstractAbility(AbstractAbilityBasesAdapter):
                                                                               unfiltered_params=unfiltered_params)
         else:
             callback_name = self.GAME_ACTIONS[action_name]["callback"]
-            (callback, relevant_args) = self._resolve_callback_callargs(callback_name=callback_name, unfiltered_params=unfiltered_params)
+            (callback, relevant_args) = self._resolve_callback_callargs(callback_name=callback_name,
+                                                                        unfiltered_params=unfiltered_params)
             return self._execute_game_action_with_middlewares(action_name=action_name, method=callback, **relevant_args)
-
-
 
     def _process_standard_request(self, request, *args, **kwargs):
         # Access checks have already been done here, so we may initialize lazy data
         self.perform_lazy_initializations()
         return super(AbstractAbility, self)._process_standard_request(request, *args, **kwargs)
 
-
-
     def __getattr__(self, name):
-        assert not name.startswith("_") # if we arrive here, it's probably a typo in an attribute fetching
+        assert not name.startswith("_")  # if we arrive here, it's probably a typo in an attribute fetching
         try:
             value = getattr(self._inner_datamanager, name)
         except AttributeError:
             raise AttributeError("Neither ability nor datamanager has attribute '%s'" % name)
         return value
 
-
     @property
     def ability_data(self):
         # DO NOT keep weakrefs on such data subtrees, ZODB client might prune them on commit
         return self.datamanager.get_ability_data(self.NAME)
 
-
     @property
     def settings(self):
         return self.ability_data["settings"]
-
 
     @property
     def private_data(self):
@@ -133,15 +118,12 @@ class AbstractAbility(AbstractAbilityBasesAdapter):
         private_key = self._get_private_key()
         return self.ability_data["data"][private_key]
 
-
     def _get_private_key(self):
-        return self._inner_datamanager.user.username # can be guest/anonymous, or a character
-
+        return self._inner_datamanager.user.username  # can be guest/anonymous, or a character
 
     @property
     def all_private_data(self):
         return self.ability_data["data"]
-
 
     def get_ability_parameter(self, name):
         try:
@@ -174,33 +156,28 @@ class AbstractAbility(AbstractAbilityBasesAdapter):
         ##print("setup_main_ability_data", cls.NAME)
         settings = ability_data.setdefault("settings", PersistentMapping())
         ability_data.setdefault("data", PersistentMapping())
-        cls._setup_ability_settings(settings=settings) # FIRST
-        cls._setup_action_middleware_settings(settings=settings) # SECOND
-
+        cls._setup_ability_settings(settings=settings)  # FIRST
+        cls._setup_action_middleware_settings(settings=settings)  # SECOND
 
     @classmethod
     def _setup_ability_settings(cls, settings):
-        pass # to be overridden
+        pass  # to be overridden
 
-
-    @transaction_watcher(always_writable=True) # lazy setup is authorized anytime
+    @transaction_watcher(always_writable=True)  # lazy setup is authorized anytime
     def perform_lazy_initializations(self):
         private_key = self._get_private_key()
         #print ("@@@@@@@@@@", self.ability_data)
         if not self.ability_data["data"].has_key(private_key):
             self.logger.warning("Setting up private data for '%s'", private_key)
             private_data = self.ability_data["data"].setdefault(private_key, PersistentMapping())
-            self._setup_private_ability_data(private_data=private_data) # FIRST
-            self._setup_private_action_middleware_data(private_data=private_data) # SECOND
-
-
+            self._setup_private_ability_data(private_data=private_data)  # FIRST
+            self._setup_private_action_middleware_data(private_data=private_data)  # SECOND
 
     def _setup_private_ability_data(self, private_data):
         """
         Not called in the case of game-level abilities
         """
-        raise NotImplementedError("_setup_private_ability_data") # to be overridden
-
+        raise NotImplementedError("_setup_private_ability_data")  # to be overridden
 
     @readonly_method
     def check_data_sanity(self, strict=False):
@@ -211,7 +188,7 @@ class AbstractAbility(AbstractAbilityBasesAdapter):
         assert isinstance(self.ability_data["data"], collections.Mapping), self.ability_data["data"]
 
         if strict:
-            assert len(self.ability_data.keys()) == 2 # prevents misconfigurations
+            assert len(self.ability_data.keys()) == 2  # prevents misconfigurations
             available_logins = self._inner_datamanager.get_available_logins()
             for name, value in self.ability_data["data"].items():
                 assert name in available_logins
@@ -220,12 +197,8 @@ class AbstractAbility(AbstractAbilityBasesAdapter):
         self._check_action_middleware_data_sanity(strict=strict)
         self._check_data_sanity(strict=strict)
 
-
     def _check_data_sanity(self, strict=False):
-        raise NotImplementedError("_check_data_sanity") # to be overridden
-
-
-
+        raise NotImplementedError("_check_data_sanity")  # to be overridden
 
 
 class AbstractPartnershipAbility(AbstractAbility):
@@ -257,12 +230,11 @@ class AbstractPartnershipAbility(AbstractAbility):
         email = self.dedicated_email
         utilities.check_is_email(email)
         contact = self.datamanager.global_contacts[email]
-        assert contact["initial"] # else game master might break all
+        assert contact["initial"]  # else game master might break all
 
         result_delay = self.auto_answer_delay_mn
         if result_delay is not None:
             utilities.check_is_range_or_num(result_delay)
-
 
     def _send_processing_request(self, subject, body, mark_as_read_by_master=True):
         """
@@ -274,21 +246,20 @@ class AbstractPartnershipAbility(AbstractAbility):
                                    subject=subject,
                                    body=body,
                                    attachment=None,
-                                   date_or_delay_mn=None, # immediate
+                                   date_or_delay_mn=None,  # immediate
                                    parent_id=None)
         if mark_as_read_by_master:
             self.set_dispatched_message_state_flags(username=self.master_login, msg_id=msg_id, has_read=True)
 
-        self._last_request_msg_id = msg_id # for coherence checking
+        self._last_request_msg_id = msg_id  # for coherence checking
         return msg_id
-
 
     def _send_back_processing_result(self, parent_id, subject, body, attachment=None):
         """
         Returns the new message ID.
         """
 
-        assert parent_id == self._last_request_msg_id # ATM always true
+        assert parent_id == self._last_request_msg_id  # ATM always true
 
         msg_id = self.post_message(sender_email=self.dedicated_email,
                                    recipient_emails=[self.get_character_email()],
@@ -299,7 +270,6 @@ class AbstractPartnershipAbility(AbstractAbility):
                                    parent_id=parent_id)
         return msg_id
 
-
     def _send_processing_result_to_master(self, parent_id, subject, body, attachment=None):
         """
         Returns the new message ID.
@@ -307,7 +277,8 @@ class AbstractPartnershipAbility(AbstractAbility):
 
         assert parent_id == self._last_request_msg_id  # ATM always true
 
-        warning_msg = _("*Below is the output of the automated ability processing, for recipient %(recipient)s. Please review it, modify it, and mail it manually to the user, with a proper delay.*")
+        warning_msg = _(
+            "*Below is the output of the automated ability processing, for recipient %(recipient)s. Please review it, modify it, and mail it manually to the user, with a proper delay.*")
 
         body_prefix = warning_msg + "\n\n-------\n\n"
 
@@ -324,8 +295,6 @@ class AbstractPartnershipAbility(AbstractAbility):
                                                 has_starred=True,
                                                 has_read=False)
         return msg_id
-
-
 
     def _process_standard_exchange_with_partner(self, request_msg_data, response_msg_data=None):
         """
@@ -344,7 +313,6 @@ class AbstractPartnershipAbility(AbstractAbility):
 
         response_msg_id = None
 
-
         if not response_msg_data:
             # we use the request message to warn game master about action required
             self.set_dispatched_message_state_flags(username=self.master_login,
@@ -352,24 +320,15 @@ class AbstractPartnershipAbility(AbstractAbility):
                                                     has_starred=True)
         elif auto_response_disabled:
             response_msg_id = self._send_processing_result_to_master(parent_id=request_msg_id,
-                                                                    subject=response_msg_data["subject"],
-                                                                    body=response_msg_data["body"],
-                                                                    attachment=response_msg_data["attachment"])
+                                                                     subject=response_msg_data["subject"],
+                                                                     body=response_msg_data["body"],
+                                                                     attachment=response_msg_data["attachment"])
         else:
             # we have a response message, and we are allowed to send it directly to character
             response_msg_id = self._send_back_processing_result(parent_id=request_msg_id,
-                                                                 subject=response_msg_data["subject"],
-                                                                 body=response_msg_data["body"],
-                                                                 attachment=response_msg_data["attachment"])
-
-
-
-
-
-
-
-
-
+                                                                subject=response_msg_data["subject"],
+                                                                body=response_msg_data["body"],
+                                                                attachment=response_msg_data["attachment"])
 
 
 '''
@@ -386,12 +345,6 @@ class AbstractPartnershipAbility(AbstractAbility):
                                                               initial_data=initial_data,
                                                               form_initializer=form_initializer) 
        '''
-
-
-
-
-
-
 
 '''
     def _check_permissions(self):

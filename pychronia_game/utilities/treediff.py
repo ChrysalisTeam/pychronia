@@ -2,7 +2,6 @@ from types import NoneType
 from datetime import datetime, timedelta
 import collections
 
-
 """
 
 opcodes:
@@ -18,32 +17,30 @@ WARNING - ATM mutable types are not supported.
 """
 
 ATOMIC_TYPES = (basestring, long, int, float, bool, tuple, set, NoneType, datetime, timedelta)
-LOOKUP_TYPES = (dict, list) # other are considered as instances, with editable attributes
+LOOKUP_TYPES = (dict, list)  # other are considered as instances, with editable attributes
 
 
-
-def my_sorted(myiter): # universal sorter, bypassing errors like comparing datetime and int
+def my_sorted(myiter):  # universal sorter, bypassing errors like comparing datetime and int
     return sorted(myiter, key=lambda s: (type(s), s))
 
-def freeze_tree(tree):
 
+def freeze_tree(tree):
     try:
         hash(tree)
         return tree
-    except TypeError: # unhashable type
-        if isinstance(tree, collections.MutableMapping): # for DICTS
-            return tuple(my_sorted((k, freeze_tree(v)) for (k, v) in tree.items())) # keys always hashable
-        elif isinstance(tree, collections.Set): # for SETS
-            return tuple(my_sorted(v for v in tree)) # their elements are always hashable
-        elif isinstance(tree, collections.MutableSequence): # for LISTS
-            return tuple(my_sorted(freeze_tree(v) for v in tree)) # we could optimize out call h
+    except TypeError:  # unhashable type
+        if isinstance(tree, collections.MutableMapping):  # for DICTS
+            return tuple(my_sorted((k, freeze_tree(v)) for (k, v) in tree.items()))  # keys always hashable
+        elif isinstance(tree, collections.Set):  # for SETS
+            return tuple(my_sorted(v for v in tree))  # their elements are always hashable
+        elif isinstance(tree, collections.MutableSequence):  # for LISTS
+            return tuple(my_sorted(freeze_tree(v) for v in tree))  # we could optimize out call h
         else:
-            return tuple(my_sorted((k, freeze_tree(v)) for (k, v) in tree.__dict__items())) # for random objects, we consider the __dict__ only
-
+            return tuple(my_sorted((k, freeze_tree(v)) for (k, v) in
+                                   tree.__dict__items()))  # for random objects, we consider the __dict__ only
 
 
 def _recurse_tree_diff(a, b, current_paths, final_opcodes):
-
     if a.__class__ != b.__class__:
         final_opcodes.append(("replace", current_paths, b))
 
@@ -53,11 +50,11 @@ def _recurse_tree_diff(a, b, current_paths, final_opcodes):
     else:
         # we transform a and b into mappings
         if isinstance(a, dict):
-            pass # a and b unchanged
+            pass  # a and b unchanged
         elif isinstance(a, (list, tuple)):
             a = dict(enumerate(a))
             b = dict(enumerate(b))
-        else: # any other kind of object
+        else:  # any other kind of object
             a = a.__dict__
             b = b.__dict__
 
@@ -79,10 +76,6 @@ def generate_tree_diff(a, b):
     return final_opcodes
 
 
-
-
-
-
 def _extract_object(root, paths):
     leaf = root
     for path_item in paths:
@@ -92,11 +85,12 @@ def _extract_object(root, paths):
             leaf = getattr(leaf, path_item)
     return leaf
 
+
 def _apply_operation(op, leaf, key, value):
     if op in ("add", "replace"):
         if isinstance(leaf, LOOKUP_TYPES):
             if isinstance(leaf, list) and len(leaf) <= key:
-                assert key == len(leaf), (op, leaf, key) # by construction!!
+                assert key == len(leaf), (op, leaf, key)  # by construction!!
                 leaf.append(value)
             else:
                 leaf[key] = value
@@ -105,7 +99,7 @@ def _apply_operation(op, leaf, key, value):
     elif op == "delete":
         if isinstance(leaf, LOOKUP_TYPES):
             if isinstance(leaf, list):
-                leaf.pop() # by construction, it'll work!!
+                leaf.pop()  # by construction, it'll work!!
             else:
                 del leaf[key]
         else:
@@ -115,7 +109,6 @@ def _apply_operation(op, leaf, key, value):
 
 
 def apply_tree_diff(root, opcodes):
-
     # special case - we replace the root object by another
     if len(opcodes) == 1 and not opcodes[0][1]:
         if opcodes[0][0] != "replace":
@@ -130,10 +123,7 @@ def apply_tree_diff(root, opcodes):
     return root
 
 
-
-
 if __name__ == "__main__":
-
     # TESTS FOR TREEDIFF #
 
     # root difference
@@ -141,10 +131,10 @@ if __name__ == "__main__":
     assert apply_tree_diff(2, opcodes) == True
 
 
-
     class TestClass(object):
         def __init__(self, **kwargs):
             self.__dict__.update(kwargs)
+
         def __eq__(self, other):
             return self.__class__ == other.__class__ and self.__dict__ == other.__dict__
 
@@ -172,20 +162,18 @@ if __name__ == "__main__":
         ('replace', ['stuffs', 'obj'], 'hello'),
         ('add', ['stuffs', 'objbis'], 77),
         ('add', ['added'], 122.11),
-        ]
+    ]
 
     new_b = apply_tree_diff(a, opcodes)
     assert new_b == b
 
-
-
     a = [{1: 76,
           (1, 2): False,
           "key": set(["yesh", "huu"])},
-          None,
-          TestClass(kkk=1.23, ml=1233L),
-          222,
-          [111, 981], ]
+         None,
+         TestClass(kkk=1.23, ml=1233L),
+         222,
+         [111, 981], ]
 
     b = [dict(A23=322,
               key={233: 23.12}),
@@ -199,13 +187,10 @@ if __name__ == "__main__":
     new_b = apply_tree_diff(a, opcodes)
     assert new_b == b
 
-
-
-
     # we test freeze_tree()
 
     initial = dict(a=3,
-                   b=[[True, u"hi", [8.6] ]],
+                   b=[[True, u"hi", [8.6]]],
                    c=set([1, 2, datetime(2000, 10, 7)]),
                    d=TestClass(k=None, m=22)
                    )
@@ -216,14 +201,4 @@ if __name__ == "__main__":
                      ('c', (1, 2, datetime(2000, 10, 7))),
                      ('d', TestClass(k=None, m=22)))
 
-
-
-
-
-
     print ">> EVERYTHING OK <<"
-
-
-
-
-
