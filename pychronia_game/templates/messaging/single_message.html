@@ -92,9 +92,16 @@
         <p style="color:{% usercolor message.sender_email %};">
             <strong><i>{{ message.subject }}</i></strong>
             {% if message.sent_at %} &nbsp; ({{ message.sent_at|utctolocal|date:"SHORT_DATE_FORMAT" }}){% endif %}
+
             <br/>
+
+            {% if message.sender_email %}
             <strong>{% trans "From:" %}</strong> {{ message.sender_email }} <br/>
+            {% endif %}
+
+            {% if message.recipient_emails %}
             <strong>{% trans "To:" %}</strong> {{ message.recipient_emails|join:", " }} <br/>
+            {% endif %}
         </p>
 
     </div>

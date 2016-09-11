@@ -2249,7 +2249,7 @@ class TextMessagingTemplates(BaseDataManager):
 
                 msg["mask_recipients"] = msg.get("mask_recipients", None)
 
-                msg["subject"] = msg.get("subject", "")
+                # msg["subject"] MUST EXIST
                 msg["body"] = utilities.load_multipart_rst(msg.get("body", ""))
                 msg["attachment"] = msg.get("attachment", None)
                 msg["transferred_msg"] = msg.get("transferred_msg", None)
@@ -2283,7 +2283,6 @@ class TextMessagingTemplates(BaseDataManager):
         messaging = self.messaging_data
 
         #FIXME - BEWARE group_id not used yet, but it will be someday!!!
-        #FIXME REMOVE masked_recipients, compatibility layer for old fixtures!
         template_fields = set(
             "sender_email recipient_emails subject body attachment transferred_msg is_used is_ignored parent_id gamemaster_hints categories sent_at group_id order mask_recipients".split())
 
@@ -2312,9 +2311,6 @@ class TextMessagingTemplates(BaseDataManager):
 
             if msg["mask_recipients"]:
                 utilities.check_is_bool(msg["mask_recipients"])
-
-            if msg["subject"]:
-                utilities.check_is_string(msg["subject"])
 
             if msg["body"]:  # might be empty
                 utilities.check_is_restructuredtext(msg["body"], strict=strict)
