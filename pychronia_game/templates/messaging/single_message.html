@@ -70,7 +70,7 @@
                 {% endif %}
 
                 {% if ctx.template_id %}
-                    <a title="{% trans "Use template" %}" href="{% game_view_url "pychronia_game.views.compose_message" %}?use_template={{ ctx.template_id|urlencode }}">{% fontawesome_icon "edit" %}</a>
+                    <a title="{% trans "Use template" %}" href="{% game_view_url "pychronia_game.views.compose_message" %}?template_id={{ ctx.template_id|urlencode }}">{% fontawesome_icon "edit" %}</a>
                 {% endif %}
 
                 {% if ctx.can_permanently_delete %}

@@ -2337,12 +2337,12 @@ class TextMessagingTemplates(BaseDataManager):
                 assert self.get_dispatched_message_by_id(msg_id=msg["parent_id"])
 
     def _build_new_message(self, *args, **kwargs):
-        use_template = kwargs.pop("use_template", None)  # we remove our specific use_template param
+        template_id = kwargs.pop("template_id", None)  # we remove our specific template_id param
         msg = super(TextMessagingTemplates, self)._build_new_message(*args, **kwargs)
 
-        if use_template:
+        if template_id:
             try:
-                tpl = self.get_message_template(use_template)
+                tpl = self.get_message_template(template_id)
                 tpl["is_used"] = True  # will stay True even if queued message is actually canceled - we don't care
             except UsageError, e:
                 self.logger.error(e, exc_info=True)  # non-fatal error

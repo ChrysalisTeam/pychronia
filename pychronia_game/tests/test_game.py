@@ -1880,8 +1880,12 @@ class TestDatamanager(BaseGameTestCase):
         self.assertEqual(tpl["is_used"], False)
         self.assertEqual(tpl["is_ignored"], False)
 
-        msg_id4 = self.dm.post_message(email("guy3"), email("guy1"), subject="ssd", body="qsdqsd",
-                                       use_template=tpl_id, transferred_msg=msg_id2,
+        msg_id4 = self.dm.post_message(email("guy3"),
+                                       email("guy1"),
+                                       subject="ssd",
+                                       body="qsdqsd",
+                                       template_id=tpl_id,
+                                       transferred_msg=msg_id2,
                                        attachment="/urlbidon")
 
         msg = self.dm.get_dispatched_message_by_id(msg_id4)
@@ -4960,7 +4964,7 @@ class TestHttpRequests(BaseGameTestCase):
             sender="contact@akaris.pg",
             subject="test message complex",
             transferred_msg=str(transferred_msg_id),
-            use_template="mind_opening_instructions_oracle",  # from test fixtures
+            template_id="mind_opening_instructions_oracle",  # from test fixtures
         )
 
         url = game_view_url("pychronia_game.views.compose_message", datamanager=self.dm)

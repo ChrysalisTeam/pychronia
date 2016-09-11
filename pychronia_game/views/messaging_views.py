@@ -77,15 +77,15 @@ class MessageComposeForm(AbstractGameForm):
 
         if user.is_master:  # only master has templates ATM
 
-            use_template = url_data.get("use_template", "")
-            if use_template:
+            template_id = url_data.get("template_id", "")
+            if template_id:
 
                 # non-empty template fields override query-string and parent-message fields #
 
                 try:
-                    tpl = datamanager.get_message_template(use_template)
+                    tpl = datamanager.get_message_template(template_id)
                 except UsageError:
-                    user.add_error(_("Message template %s not found") % use_template)
+                    user.add_error(_("Message template %s not found") % template_id)
                 else:
                     sender = tpl["sender_email"] or sender
                     recipients = tpl["recipient_emails"] or recipients
@@ -95,8 +95,8 @@ class MessageComposeForm(AbstractGameForm):
                     attachment = tpl["attachment"] or attachment
                     transferred_msg = tpl["transferred_msg"] or transferred_msg
                     parent_id = tpl["parent_id"] or parent_id
-            self.fields["use_template"] = forms.CharField(required=False, initial=(use_template or None),
-                                                          widget=forms.HiddenInput())
+            self.fields["template_id"] = forms.CharField(required=False, initial=(template_id or None),
+                                                         widget=forms.HiddenInput())
 
         if parent_id:
             # we transfer data from the parent email, to help user save time #
@@ -616,15 +616,14 @@ def compose_message(request, template_name='messaging/compose.html'):
                 transferred_msg = form.cleaned_data["transferred_msg"] or None
 
                 parent_id = form.cleaned_data.get("parent_id", None) or None
-                use_template = form.cleaned_data.get("use_template",
-                                                     None) or None  # standard players might have it one day
+                template_id = form.cleaned_data.get("template_id", None) or None  # standard players might have it one day
 
                 # sender_email and one of the recipient_emails can be the same email, we don't care !
                 post_message = request.datamanager.post_message
                 params = dict(sender_email=sender_email, subject=subject, body=body,
                               attachment=attachment, transferred_msg=transferred_msg,
                               date_or_delay_mn=sending_date,
-                              template_id=use_template,
+                              template_id=template_id,
                               body_format=body_format)
 
                 if mask_recipients:
