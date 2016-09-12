@@ -6,46 +6,21 @@ TODO LIST CHRYSALIS
 FEATURES
 ------------
 
-ATTENTION trou de sécurité car les joueurs peuvent utiliser GAME_FILE_URL en rst OU raw text ????
+ATTENTION trou de sécurité car les joueurs peuvent utiliser GAME_FILE_URL en rst OU aussi en raw text ????
 
 
 SCRIPT
 ----------
 
-ANTIDOTER les contenus de jeu et le gamemaster manual.
+- ajouter instructions ou systèmes pour éviter abus de mercenaires ? -> distribution progressive d'argent, à detailler
 
-Khaal ??
-Turrol Imagdir / jaben minroche -> magnus
-minrochia.pg -> magnus
-Darian-> autre nom (trop proche de dorian)
-
-.. DIRE : on a infobulle sur les contacts messaging
-
-.. TODO FIXME - GLOBE est féminin!!!!!!!!!!
-
-"analyse biophysique",  wording à normaliser partout
+- faire CHRONOLOGIE détaillée des évènements pour aider énigmes
 
 - regler les "HERE GAMEMASTER HINTS" et autres FIXME/TODO, dans YAML spécifiquement
 
 - update abilities settings and prices
 
-Traduction de Runes Antiques:
-"FIXME - add reference here, or BETTER, PROGRAMATICALLY!!!"
-
-#FIXME BR |BR| {{BR}} variants too much...
-
-- remplir les descriptions des villes.
-
-- faire CHRONOLOGIE détaillée des évènements pour aider énigmes
-
-Puis checklist:
-Quelques points d'attention dont je me souviens:
-- dire pas faire screenshare en tant que gamemaster, mais lg plutot
-- faire périodiquement le tour du "tableau de bord" pour voir s'il n'y a pas des vues qui mériteraient d'être activée ; pareil pour les "permissions personnelles des joueurs"
-- bien signaler aux joueurs les nouvelles vues, compétences spéciales, ou opportunités diverses que vous activez sur le portail
-- penser à dévoiler peu à peu les articles encyclopédiques via leur "premier mot clef" glissé dans des emails
-
-- BETTER EXPOSE HISTORIES LOG EVENTS (say in manual)
+- add manual for TTS acapela !!
 
 
 GAMEMASTER_HINTS in:
@@ -56,24 +31,14 @@ GAMEMASTER_HINTS in:
     - game items
     - static pages
 
-- manual for TTS acapela !!
-
-#TODO ADD LOOKUP OF CONF VALUE VIA TAGS in STATIC MANUAL STUFFS ? nope useless
-
 Faire page d'introduction
 	- situation de l'univers
-	- situation géopolitique
+	- situation géopolitique -> gazette sabarite quick
 	- bestaire des ennemis ?
-- add description of partners in intro/instruction page !
-- add enough content for game startup
+    - add description of partners in intro/instruction page !
+    - add more content for game startup
 
-- ajouter instructions ou systèmes pour éviter abus de mercenaires ? -> distribution progressive d'argent, à detailler
 
-- ajouter des details cruciaux à TOUTES runes !!!!
-
-#FIXME où parle t on des balises d'email ? dans manual ? marchent-elles vraiment ??
-
-- clarifier règles absolues : pas de vol d'argent, pas de triche, emails uniquement valables à l'intérieur du site (dans INTRO "out game" du jeu)
 
 
 
@@ -126,7 +91,16 @@ PAUSED BUGLETS:
 TASKS DONE
 ---------------
 
+- clarifier règles absolues (pas de triche, emails uniquement valables à l'intérieur du site), dans initial email - DONE
+- où parle-t-on des balises d'email ? dans manual ? marchent-elles vraiment ? OUI "balises mémo", all is OK
+- Better explain player/master "log events" page - DONE
+- "analyse biophysique", wording à normaliser partout - DONE
+- SPELLCHECK les contenus de jeu et le gamemaster manual - DONE
+- repair email templates workflow (use_template) - DONE
 - AJOUTER PDF aux documents personnels du MJ, avec check de version - DONE
+- Faire renommages de persos :
+    Turrol Imagdir / jaben minroche / minrochia.pg -> magnus
+    Darian-> autre nom (trop proche de dorian)
 - MARQUER automatiquement dans leur description LES OBJETS DISPOS EN 3D - DONE
 - fix "strict" checking of data and retsructuredtext, at game instance creation - DONE
 - make public and private manuals (stopping at chapter "le final") - DONE
@@ -234,12 +208,12 @@ TASKS DONE
 - réparer (Dernier accès : 4 juil. 2015 04:45:36), à cause des crontasks, en page administration - OK done, maintenant updated que si VRAI POST HTTP !!
 - /DEMO/guy1/... URLS for transparent per-tab sessions (nouveau system d'impersonation) - DONE
 - enrich DM logger with authentication data - DONE
-- is use_template well protected against users - yes, only added to MessageComposeForm for MASTER
+- is use_template/template_id well protected against users - yes, only added to MessageComposeForm for MASTER
 - BUG OBSERVER MODE "aucune" impersonation fails -> add test for "" string in requested_impersonation and backed url - OK DONE
 - TWEAK image styles and thumbs, responsive, REVIEW thumbs and image formats, for mobile too - somehow DONE
 - finish embed_image directive -> DONE with "align" parameter
 - URL Webradio Publique -> dire quelle frequence, dans admin info page - DONE
-- gros bug de use_template quand multiples recipients (fusionnent) - OK no more problem
+- gros bug de use_template (now template_id) quand multiples recipients (fusionnent) - OK no more problem
 - remettre formulaire après submission sur matter_analysis - DONE (hide_on_success=False)
 - agrandir zones de texte - DONE in CMS-like gamemaster pages
 "rapporter un bogue" => problème lorsqu'on agrandit un peu trop le textfield la page du site descend mais pas la fenêtre du rapport
@@ -487,19 +461,24 @@ CONTROVERSIAL ENHANCEMENTS
 FUTUR ENHANCEMENTS
 --------------------------
 
+- add all biophysics reports, runic translations,locations etc., to "admin info" page
+
+- FIXME: [BR], |BR| or {{BR}} variants are too much, in RST...
+
 - MESSAGERIE: "sauver comme template" dans la vue "composition de nouveau message" ou dans une page séparée (utiliser data table managers, attention à la liste des catégories, calculées statiquement à l'initialisation...)
+
+- TODO add lookup of conf value via tags in static manual stuffs ? nope useless ATM...
 
 - separate "public" and "private" GAME MASTER MANUAL !!
 - les notifications doivent etre plus explicites dans leur contenu !?
 - TO UPDATE when behaviour is changed, in the future
-            - références nombreuses aux "messages parents pas automatiquement marqués comme lus" - DONE
             - vous pouvez attacher un de vos fichiers personnels à un message, grâce au champ de sélection dédié
             - si vous transférez un ancien message à un de vos contacts, ce "message transféré" pourra être lu dans une nouvelle fenêtre, grâce au lien automatiquement inséré dans le nouveau message
 
 - carte du monde : un clic sur un pays/ville principal pour un zoom plus détaillé (un peu comme hurlevent wow) -> intégrer touch map prototype
 - FIX medias videos on website, for video / firefox, on WINDOWS10 (use jplayer)
 - fix support of mp4 format and others (JPLAYER FTW)
-- automate the retrieval of radio spots (ex. TTS) to local files
+- automate the retrieval of radio spots (ex. TTS) to local backup  files
 - allow to DUPLICATE a game item to the "new" form, with a dedicated button
   -> permettre de modifier les OBJETS (ex. cloner) pas d"jà fait ?
 - Make DataTable records "editable" and "deletable/renamable", separately
