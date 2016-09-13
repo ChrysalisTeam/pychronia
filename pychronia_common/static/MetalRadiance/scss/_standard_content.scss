@@ -90,6 +90,7 @@ h4 {
     overflow: hidden; // for drop caps
     text-decoration: none; // underline, overline, line-through, blink or inherit
     text-indent: 0; // else too many problems with widow lines...
+    padding: 0 3px; // necessary to workaround "sliced" letters near edges, when in italic style
 
     /* useful and little known properties */
     word-spacing: normal; // or length measure
