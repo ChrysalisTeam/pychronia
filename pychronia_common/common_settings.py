@@ -90,25 +90,38 @@ IGNORABLE_404_URLS = (  # ONLY SOON IN 1.5
 
 
 
+# Use Django templates using the new Django 1.8 TEMPLATES settings
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [
+        ],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                "django.contrib.auth.context_processors.auth",
+                "django.core.context_processors.i18n",
+                "django.core.context_processors.debug",
+                "django.core.context_processors.media",
+                "django.core.context_processors.request",
+                "django.core.context_processors.static",
+                "django.contrib.messages.context_processors.messages",
+                # note that we use our own version in pychronia-game!  FIXME what ??
+                "sekizai.context_processors.sekizai",
+            ],
+        },
+    },
+]
+
+
 # List of callables that know how to import templates from various sources
-TEMPLATE_LOADERS = (
+____TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader',
     'apptemplates.Loader',  # allows the use of {% extends "admin:admin/base.html" %}
 )
-TEMPLATE_DIRS = ()  # use absolute paths here, not relative paths.
-TEMPLATE_STRING_IF_INVALID = ""  # or "<INVALID %s>" to debug
 
-TEMPLATE_CONTEXT_PROCESSORS = (
-    "django.contrib.auth.context_processors.auth",
-    "django.core.context_processors.i18n",
-    "django.core.context_processors.debug",
-    "django.core.context_processors.media",
-    "django.core.context_processors.request",
-    "django.core.context_processors.static",
-    "django.contrib.messages.context_processors.messages",  # note that we use our own version in pychronia-game!
-    "sekizai.context_processors.sekizai",
-)
+
 
 # no need for CSRF by default
 MIDDLEWARE_CLASSES = (

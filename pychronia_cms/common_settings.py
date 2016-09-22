@@ -26,7 +26,8 @@ INSTALLED_APPS += [
     'djangocms_text_ckeditor',  # must be before django-cms entry
 
     'cms',
-    'mptt',
+    'mptt',  # now only for zinnia
+    'treebeard',
     'menus',
 
     'cmsplugin_rst',
@@ -54,7 +55,7 @@ INSTALLED_APPS += [
     'cmsplugin_filer_video',
     'jplayer',  # cmsplugin too
 
-    'django.contrib.comments',  # for zinnia blog
+    'django_comments',  # for zinnia blog
     'tagging',
     'zinnia',
     'cmsplugin_zinnia',
@@ -65,10 +66,10 @@ INSTALLED_APPS += [
 ]
 
 MIGRATION_MODULES.update({
-    'cms': 'cms.migrations_django',
-    'menus': 'menus.migrations_django',
+    'cms': 'cms.migrations',
+    'menus': 'menus.migrations',
 
-    'filer': 'filer.migrations_django',
+    'filer': 'filer.migrations',
 
     ##'reversion': 'reversion.migrations_django', - NOPE DIRECTLY USE STD MIGRATIONS
 
@@ -77,13 +78,13 @@ MIGRATION_MODULES.update({
     #'djangocms_flash': 'djangocms_flash.migrations_django',
     #'djangocms_googlemap': 'djangocms_googlemap.migrations_django',
     #'djangocms_inherit': 'djangocms_inherit.migrations_django',
-    'djangocms_link': 'djangocms_link.migrations_django',
+    'djangocms_link': 'djangocms_link.migrations',
     #'djangocms_picture': 'djangocms_picture.migrations_django',
-    'djangocms_snippet': 'djangocms_snippet.migrations_django',
+    'djangocms_snippet': 'djangocms_snippet.migrations',
     #'djangocms_teaser': 'djangocms_teaser.migrations_django',
     #'djangocms_video': 'djangocms_video.migrations_django',
 
-    'djangocms_text_ckeditor': 'djangocms_text_ckeditor.migrations_django',
+    'djangocms_text_ckeditor': 'djangocms_text_ckeditor.migrations',
 
     'cmsplugin_filer_file': 'cmsplugin_filer_file.migrations_django',
     'cmsplugin_filer_folder': 'cmsplugin_filer_folder.migrations_django',
@@ -93,8 +94,9 @@ MIGRATION_MODULES.update({
     'cmsplugin_filer_video': 'cmsplugin_filer_video.migrations_django',
 })
 
-TEMPLATE_CONTEXT_PROCESSORS = TEMPLATE_CONTEXT_PROCESSORS + (
-"cms.context_processors.cms_settings",)  # for CMS_MEDIA_URL etc.
+TEMPLATES[0]["OPTIONS"]["context_processors"].append(
+    "cms.context_processors.cms_settings"  # for CMS_MEDIA_URL etc.
+)
 
 MIDDLEWARE_CLASSES = \
     ('django.middleware.cache.UpdateCacheMiddleware',) + \
@@ -168,39 +170,40 @@ CMS_TEMPLATES = (
     ('cms_one_column.html', ugettext('One column')),
     ('cms_two_columns.html', ugettext('Two columns')),
 )
-CMS_URL_OVERWRITE = True  # DEPRECATED
-CMS_MENU_TITLE_OVERWRITE = True  # DEPRECATED
-CMS_REDIRECTS = True  # handy for "dummy" menu entries # DEPRECATED, use django.contrib.redirects instead
-CMS_SEO_FIELDS = True  # page metadata etc. # DEPRECATED
 
-CMS_SOFTROOT = False  # no need to cut the menu in sections  # DEPRECATED
-CMS_PUBLIC_FOR = "all"  # not restricted to "staff"
-CMS_PERMISSION = False  # no fine grained restrictions ATM
 CMS_TEMPLATE_INHERITANCE = True
 CMS_PLACEHOLDER_CONF = {}  # unused atm
 CMS_PLUGIN_CONTEXT_PROCESSORS = []
 CMS_PLUGIN_PROCESSORS = []
-PLACEHOLDER_FRONTEND_EDITING = True  # DEPRECATED
+CMS_UNESCAPED_RENDER_MODEL_TAGS = False
 
-CMS_MULTILINGUAL_PATCH_REVERSE = False
-'''
-CMS_LANGUAGE_CONF = { # fallbacks ordering
-    'fr': ['en'],
-    'en': ['fr'],
-}
-'''
+CMS_PUBLIC_FOR = "all"  # not restricted to "staff"
+CMS_PERMISSION = False  # no fine grained restrictions ATM
 
-CMS_HIDE_UNTRANSLATED = False
-CMS_LANGUAGE_FALLBACK = False
-CMS_FRONTEND_LANGUAGES = ("fr",)
-CMS_CACHE_PREFIX = "chryscms-"  # useful if multiple CMS installations
 CMS_CACHE_DURATIONS = {  # in seconds
     'menus': 60 * 60,
     'content': 60,
     'permissions': 60 * 60,
 }
 
-CMS_MAX_PAGE_PUBLISH_REVERSIONS = 14
+CMS_CACHE_PREFIX = "chryscms-"  # useful if multiple CMS installations
+CMS_PAGE_CACHE = True
+CMS_PLACEHOLDER_CACHE = True
+CMS_PLUGIN_CACHE = True
+
+CMS_MAX_PAGE_HISTORY_REVERSIONS = 15
+CMS_MAX_PAGE_PUBLISH_REVERSIONS = 10
+
+CMS_TOOLBARS = None  # all, by default
+CMS_TOOLBAR_ANONYMOUS_ON = True
+CMS_TOOLBAR_HIDE = False
+
+# FIXME, still needed ??
+CMS_REDIRECTS = True  # handy for "dummy" menu entries # DEPRECATED, use django.contrib.redirects instead
+
+CMS_SOFTROOT = False  # no need to cut the menu in sections  # DEPRECATED
+
+
 
 ## SIMPLEGALLERY CONF ##
 CMS_SIMPLEGALLERY_THUMBNAIL_OPTIONS = {
