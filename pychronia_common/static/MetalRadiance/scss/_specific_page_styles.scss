@@ -27,7 +27,7 @@ input.digit {
     cursor: pointer;
     margin: 20px 10px 5px;
     height: 110px;
-    background: transparent center center no-repeat url('#{$IMGS}icons/trashbin.png');
+    background: transparent url('#{$IMGS}icons/trashbin.png') no-repeat scroll center center;
     * {
         visibility: hidden;
     }

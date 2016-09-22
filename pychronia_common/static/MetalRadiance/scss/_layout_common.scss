@@ -2,7 +2,7 @@
 .grey_layer {
     margin: 0;
     padding: 0;
-    background: url("#{$IMGS}backgrounds/vertical_grey_2x2.png") repeat scroll 0 0 transparent;
+    background: transparent url("#{$IMGS}backgrounds/vertical_grey_2x2.png") repeat scroll 0 0;
     position: relative; // important to appear in front of absolutely positioned parallax divs
 }
 

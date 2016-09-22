@@ -7,7 +7,7 @@
         }
         border: medium ridge; // or groove
         border-color: $outline_gold;
-        background-color: initial;
+        background-color: transparent !important;
         clear: both;
     }
 

@@ -8,7 +8,7 @@ body {
     font-size: 110%;
 
     &.full_background {
-        background: #152421 url("img/backgrounds/mobile/body-bg.jpg") repeat-y top center;
+        background: #152421 url("img/backgrounds/mobile/body-bg.jpg") repeat-y scroll top center;
         background-size: 100% auto;
         background-attachment: scroll;
         image-rendering: optimizequality;
@@ -70,7 +70,7 @@ body {
         #full_header_center {
             margin: 0px auto 0px;
             height: 74px;
-            background: url("img/backgrounds/mobile/header.jpg") no-repeat top center;
+            background: transparent url("img/backgrounds/mobile/header.jpg") no-repeat scroll top center;
 
             .notification_panel {
                 display: none;

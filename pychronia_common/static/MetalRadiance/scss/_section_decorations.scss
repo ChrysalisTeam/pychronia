@@ -60,7 +60,7 @@
     margin: 10px;
     padding: 20px;
     border-color: transparent;
-    background: url('#{$IMGS}backgrounds/scroll_yellow_flat.png');
+    background-image: url('#{$IMGS}backgrounds/scroll_yellow_flat.png');
     background-size: 100% 100%;
     background-repeat: no-repeat;
     image-rendering: optimizequality;
@@ -70,7 +70,7 @@
     @include dark-texts;
     margin: 10px 0;
     padding: 45px 20px;
-    background: url('#{$IMGS}backgrounds/scroll_yellow_rolled.png');
+    background-image: url('#{$IMGS}backgrounds/scroll_yellow_rolled.png');
     background-size: 100% 100%;
     background-repeat: no-repeat;
     image-rendering: optimizequality;

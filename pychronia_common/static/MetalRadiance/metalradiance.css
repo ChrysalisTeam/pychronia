@@ -1006,7 +1006,7 @@ table.realtable a:active {
 .document div .error, .document div .important, .document div .warning {
   border: medium ridge;
   border-color: #B89215;
-  background-color: initial;
+  background-color: transparent !important;
   clear: both;
 }
 .document div .attention p.admonition-title,
@@ -1394,7 +1394,7 @@ table.footnote {
   margin: 10px;
   padding: 20px;
   border-color: transparent;
-  background: url('img/backgrounds/scroll_yellow_flat.png');
+  background-image: url('img/backgrounds/scroll_yellow_flat.png');
   background-size: 100% 100%;
   background-repeat: no-repeat;
   image-rendering: optimizequality;
@@ -1415,7 +1415,7 @@ table.footnote {
   color: black;
   margin: 10px 0;
   padding: 45px 20px;
-  background: url('img/backgrounds/scroll_yellow_rolled.png');
+  background-image: url('img/backgrounds/scroll_yellow_rolled.png');
   background-size: 100% 100%;
   background-repeat: no-repeat;
   image-rendering: optimizequality;
@@ -1596,7 +1596,7 @@ input.digit {
   cursor: pointer;
   margin: 20px 10px 5px;
   height: 110px;
-  background: transparent center center no-repeat url('img/icons/trashbin.png');
+  background: transparent url('img/icons/trashbin.png') no-repeat scroll center center;
 }
 #trashcan * {
   visibility: hidden;
@@ -2109,7 +2109,7 @@ ul.paginator .index {
 .grey_layer {
   margin: 0;
   padding: 0;
-  background: url("img/backgrounds/vertical_grey_2x2.png") repeat scroll 0 0 transparent;
+  background: transparent url("img/backgrounds/vertical_grey_2x2.png") repeat scroll 0 0;
   position: relative;
 }
 body .notification_panel {
@@ -2186,7 +2186,7 @@ body .notification_panel .notification_panel_decorations .notification_panel_con
     color: #55E736;
   }
   body.full_background {
-    background: #152421 url("img/backgrounds/mobile/body-bg.jpg") repeat-y top center;
+    background: #152421 url("img/backgrounds/mobile/body-bg.jpg") repeat-y scroll top center;
     background-size: 100% auto;
     background-attachment: scroll;
     image-rendering: optimizequality;
@@ -2246,7 +2246,7 @@ body .notification_panel .notification_panel_decorations .notification_panel_con
   #full_header #full_header_background #full_header_center {
     margin: 0px auto 0px;
     height: 74px;
-    background: url("img/backgrounds/mobile/header.jpg") no-repeat top center;
+    background: transparent url("img/backgrounds/mobile/header.jpg") no-repeat scroll top center;
   }
   #full_header #full_header_background #full_header_center .notification_panel {
     display: none;
@@ -2431,7 +2431,7 @@ body .notification_panel .notification_panel_decorations .notification_panel_con
   }
   body:after {
     content: " ";
-    background: url('img/backgrounds/tube_gold_small.png'),
+    background-image: url('img/backgrounds/tube_gold_small.png'),
         url('img/backgrounds/tube_silver_small.png'),
         url('img/backgrounds/tube_bronze_small.png'),
         url('img/backgrounds/dropdown_menu.png'),
@@ -2614,7 +2614,7 @@ body .notification_panel .notification_panel_decorations .notification_panel_con
     width: 270px;
     margin: 7px 10px 10px;
     overflow: visible;
-    background: transparent url('img/backgrounds/leather_derby_tiled_small.png') repeat center center;
+    background: transparent url('img/backgrounds/leather_derby_tiled_small.png') repeat scroll center center;
     background-origin: content-box;
     background-clip: padding-box;
     background-position: left top;
@@ -2650,7 +2650,7 @@ body .notification_panel .notification_panel_decorations .notification_panel_con
     position: relative;
     padding: 10px;
     margin: 7px auto 0;
-    background: transparent url('img/backgrounds/leather_bg.jpg') repeat center center;
+    background: transparent url('img/backgrounds/leather_bg.jpg') repeat scroll center center;
     background-clip: padding-box;
     border-color: #775F13;
     border-style: ridge;
@@ -2661,7 +2661,7 @@ body .notification_panel .notification_panel_decorations .notification_panel_con
     position: relative;
     padding: 10px;
     margin: 7px auto 0;
-    background: transparent url('img/backgrounds/leather_bg.jpg') repeat center center;
+    background: transparent url('img/backgrounds/leather_bg.jpg') repeat scroll center center;
     background-clip: padding-box;
     border-color: #775F13;
     border-style: ridge;
@@ -2672,7 +2672,7 @@ body .notification_panel .notification_panel_decorations .notification_panel_con
     position: relative;
     padding: 10px;
     margin: 7px auto 0;
-    background: transparent url('img/backgrounds/leather_bg.jpg') repeat center center;
+    background: transparent url('img/backgrounds/leather_bg.jpg') repeat scroll center center;
     background-clip: padding-box;
     border-color: #775F13;
     border-style: ridge;
