@@ -49,7 +49,7 @@ def manage_databases(request, template_name='administration/database_management.
                 request.datamanager.pack_database(days=1)  # safety measure - take at least one day of gap !
     '''
 
-    formatted_data = request.datamanager.dump_zope_database(width=100)
+    formatted_data = request.datamanager.dump_zope_database(width=80)
 
     return render(request,
                   template_name,

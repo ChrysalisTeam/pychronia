@@ -329,7 +329,7 @@ def edit_instance_db(request, target_instance_id):
                 special_message = _("Current DB content is displayed here for editing.")
             dm = datamanager_administrator.retrieve_game_instance(game_instance_id=target_instance_id, request=None,
                                                                   metadata_checker=datamanager_administrator.check_game_is_in_maintenance)
-            formatted_data = dm.dump_zope_database(width=90)
+            formatted_data = dm.dump_zope_database(width=80)
 
     except GameMaintenanceError, e:
         # formatted_data might remain as yaml_input
