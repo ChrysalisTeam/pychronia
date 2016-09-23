@@ -18,7 +18,9 @@
 </head>
 
 <body {% block body_attributes %}{% endblock %}>
-    
+
+    {% cms_toolbar %}{# MUST be in top-level template #}
+
     {% block full_body %}
     {% endblock %}
     

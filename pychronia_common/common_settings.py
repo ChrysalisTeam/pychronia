@@ -88,14 +88,16 @@ IGNORABLE_404_URLS = (  # ONLY SOON IN 1.5
 # TEST_RUNNER = "" # override this to use another runner, eg. for pytest
 
 
+# List of callables that know how to import templates from various sources
+____TEMPLATE_LOADERS = (
+
+)
 
 # Use Django templates using the new Django 1.8 TEMPLATES settings
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [
-        ],
-        'APP_DIRS': True,
+        'DIRS': [],
         'OPTIONS': {
             'debug': False,
             'context_processors': [
@@ -109,19 +111,14 @@ TEMPLATES = [
                 # note that we use our own version in pychronia-game!  FIXME what ??
                 "sekizai.context_processors.sekizai",
             ],
+            'loaders': [
+                'apptemplates.Loader',  # allows the use of {% extends "admin:admin/base.html" %}
+                'django.template.loaders.filesystem.Loader',
+                'django.template.loaders.app_directories.Loader',
+            ],
         },
     },
 ]
-
-
-# List of callables that know how to import templates from various sources
-____TEMPLATE_LOADERS = (
-    'django.template.loaders.filesystem.Loader',
-    'django.template.loaders.app_directories.Loader',
-    'apptemplates.Loader',  # allows the use of {% extends "admin:admin/base.html" %}
-)
-
-
 
 # no need for CSRF by default
 MIDDLEWARE_CLASSES = (
