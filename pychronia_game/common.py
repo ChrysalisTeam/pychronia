@@ -13,7 +13,6 @@ from textwrap import dedent
 from urlparse import urlparse
 
 from odict import odict as OrderedDict
-from pafo import printObject
 from collections import Counter
 
 import yaml, pyparsing
