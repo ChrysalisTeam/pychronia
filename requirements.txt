@@ -35,13 +35,16 @@ django-mptt==0.8.6
 
 django-cms==3.2.5
 
+git+https://github.com/pakal/cmsplugin-simple-gallery.git
+git+https://github.com/pakal/django-cms-jplayer.git
 
 django-contrib-comments==1.7.3
 
 django-polymorphic==1.0.1
 django-filer==1.2.5
 
-django-request==1.4
+# for quick HTTP visit stats:
+git+https://github.com/django-request/django-request.git
 
 django-reversion==1.10.2
 
