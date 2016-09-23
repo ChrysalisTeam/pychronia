@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 
-DEBUG = TEMPLATE_DEBUG = True
+DEBUG = True
 
 SITE_ID = 1
 SECRET_KEY = "19_&hjG18_77672HJg18167821j2HjGFjGjGNn"

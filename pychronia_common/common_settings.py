@@ -38,7 +38,6 @@ ADMINS = MANAGERS = ()  # admins are for 50 errors, managers for 404 errors with
 ROOT_URLCONF = None
 
 DEBUG = False
-TEMPLATE_DEBUG = False
 
 SITE_DOMAIN = None  # NO trailing slash, used to build absolute urls
 
@@ -98,6 +97,7 @@ TEMPLATES = [
         ],
         'APP_DIRS': True,
         'OPTIONS': {
+            'debug': False,
             'context_processors': [
                 "django.contrib.auth.context_processors.auth",
                 "django.core.context_processors.i18n",
@@ -161,7 +161,7 @@ INSTALLED_APPS = [
 ]
 
 MIGRATION_MODULES = {
-    'easy_thumbnails': 'easy_thumbnails.south_migrations',
+    # all common ones are standard now
 }
 
 TEST_RUNNER = 'django.test.runner.DiscoverRunner'
