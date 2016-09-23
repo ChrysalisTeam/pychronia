@@ -3,30 +3,31 @@
 # This file is distributed under the same license as the PACKAGE package.
 # Prolifik <chambon.pascal@gmail.com>, 2013.
 # Pascal <chambon.pascal@gmail.com>, 2013, 2014.
+# Pascal Chambon <chambon.pascal@gmail.com>, 2016.
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-03-07 20:55+0100\n"
-"PO-Revision-Date: 2014-01-12 17:28+0200\n"
-"Last-Translator: Pascal <chambon.pascal@gmail.com>\n"
-"Language-Team: Nothing\n"
+"POT-Creation-Date: 2016-09-23 17:12+0200\n"
+"PO-Revision-Date: 2016-09-23 17:13+0200\n"
+"Last-Translator: Pascal Chambon <chambon.pascal@gmail.com>\n"
+"Language-Team: Pascal Chambon\n"
+"Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: fr\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"X-Generator: Virtaal 0.7.1\n"
+"X-Generator: Virtaal 0.7.0\n"
 
-#: .\common_settings.py:108
+#: .\common_settings.py:125
 msgid "French"
 msgstr "Français"
 
-#: .\common_settings.py:117
+#: .\common_settings.py:133
 msgid "One column"
 msgstr "Une colonne"
 
-#: .\common_settings.py:118
+#: .\common_settings.py:134
 msgid "Two columns"
 msgstr "Deux colonnes"
 
@@ -34,7 +35,7 @@ msgstr "Deux colonnes"
 msgid "How much is \"2 * 7\" (in digits)?"
 msgstr "Combien fait \"2 x 7\" (en chiffres) ?"
 
-#: .\forms.py:22
+#: .\forms.py:21
 msgid "Improper answer to special question."
 msgstr "Mauvaise réponse à la question spéciale."
 
@@ -42,26 +43,31 @@ msgstr "Mauvaise réponse à la question spéciale."
 msgid "Chrysalis Game"
 msgstr "Chrysalis Game"
 
-#: .\templates\cms_base.html:37
+#: .\templates\cms_base.html:40
 msgid "Welcome"
 msgstr "Bienvenue"
 
-#: .\templates\cms_base.html:46
+#: .\templates\cms_base.html:49
 msgid "Visitor"
 msgstr "Visiteur"
 
-#: .\templates\cms_base.html:88
+#: .\templates\cms_base.html:91
+#| msgid ""
+#| "\n"
+#| "This site requires a fully CSS3-enabled browser like recent versions of "
+#| "Firefox, Chrome or Safari. Internet Explorer users might experience "
+#| "glitches.\n"
 msgid ""
 "\n"
-"This site requires a fully CSS3-enabled browser like recent versions of "
-"Firefox, Chrome or Safari. Internet Explorer users might experience "
-"glitches.\n"
+"This site requires a fully CSS3-enabled browser like Firefox, Chrome, Safari "
+"or Edge. Internet Explorer users might experience glitches.\n"
 msgstr ""
 "\n"
-"Ce site est prévu pour fonctionner avec un navigateur fortement compatible "
-"CSS3 comme Firefox, Chrome ou Safari.\n"
+"Site prévu pour fonctionner avec un navigateur fortement compatible CSS3 "
+"comme Firefox, Chrome, Safari, ou Edge. Bugs possibles sous Internet "
+"Explorer.\n"
 
-#: .\templates\cms_base.html:96
+#: .\templates\cms_base.html:99
 msgid ""
 "\n"
 "Game only available in French for now. Translations will arrive later.\n"
@@ -98,8 +104,8 @@ msgstr "Inscription"
 msgid "Create account"
 msgstr "Créer un compte"
 
-#: .\templates\zinnia\!!skeleton.html:32 .\templates\zinnia\!!skeleton.html:33
-#: .\templates\zinnia\!!skeleton.html:70 .\templates\zinnia\!!skeleton.html:71
+#: .\templates\zinnia\!!skeleton.html:31 .\templates\zinnia\!!skeleton.html:32
+#: .\templates\zinnia\!!skeleton.html:69 .\templates\zinnia\!!skeleton.html:70
 #: .\templates\zinnia\original_templates\sitemap.html:4
 #: .\templates\zinnia\original_templates\sitemap.html:9
 #: .\templates\zinnia\original_templates\skeleton.html:32
@@ -109,13 +115,13 @@ msgstr "Créer un compte"
 msgid "Sitemap"
 msgstr ""
 
-#: .\templates\zinnia\!!skeleton.html:37
+#: .\templates\zinnia\!!skeleton.html:36
 #: .\templates\zinnia\original_templates\base.html:17
 #: .\templates\zinnia\original_templates\skeleton.html:37
 msgid "RSS Feed of latest entries"
 msgstr ""
 
-#: .\templates\zinnia\!!skeleton.html:38
+#: .\templates\zinnia\!!skeleton.html:37
 #: .\templates\zinnia\original_templates\entry_list.html:10
 #: .\templates\zinnia\original_templates\entry_list.html:13
 #: .\templates\zinnia\original_templates\entry_list.html:16
@@ -123,41 +129,41 @@ msgstr ""
 msgid "RSS Feed"
 msgstr ""
 
-#: .\templates\zinnia\!!skeleton.html:44
+#: .\templates\zinnia\!!skeleton.html:43
 #: .\templates\zinnia\original_templates\skeleton.html:44
 #: .\templates\zinnia\original_templates\tags\search_form.html:5
 msgid "Keywords..."
 msgstr ""
 
-#: .\templates\zinnia\!!skeleton.html:62
+#: .\templates\zinnia\!!skeleton.html:61
 #: .\templates\zinnia\original_templates\skeleton.html:62
 msgid "Useful links"
 msgstr ""
 
-#: .\templates\zinnia\!!skeleton.html:65 .\templates\zinnia\!!skeleton.html:66
+#: .\templates\zinnia\!!skeleton.html:64 .\templates\zinnia\!!skeleton.html:65
 #: .\templates\zinnia\original_templates\skeleton.html:65
 #: .\templates\zinnia\original_templates\skeleton.html:66
 msgid "Blog index"
 msgstr ""
 
-#: .\templates\zinnia\!!skeleton.html:77
+#: .\templates\zinnia\!!skeleton.html:76
 #: .\templates\zinnia\original_templates\skeleton.html:77
 msgid "Search"
 msgstr ""
 
-#: .\templates\zinnia\_entry_detail.html:12
+#: .\templates\zinnia\_entry_detail.html:11
 #: .\templates\zinnia\original_templates\_entry_detail.html:22
 msgid "Written on"
 msgstr ""
 
-#: .\templates\zinnia\_entry_detail.html:17
+#: .\templates\zinnia\_entry_detail.html:16
 #: .\templates\zinnia\original_templates\_entry_detail.html:28
 #: .\templates\zinnia\original_templates\tags\recent_comments.html:6
 #: .\templates\zinnia\original_templates\tags\recent_linkbacks.html:7
 msgid "in"
 msgstr ""
 
-#: .\templates\zinnia\_entry_detail.html:20
+#: .\templates\zinnia\_entry_detail.html:19
 #: .\templates\zinnia\original_templates\_entry_detail.html:31
 #: .\templates\zinnia\original_templates\category_list.html:16
 #: .\templates\zinnia\original_templates\tags\categories.html:6
@@ -166,25 +172,25 @@ msgstr ""
 msgid "Show all entries in %(category)s"
 msgstr ""
 
-#: .\templates\zinnia\_entry_detail.html:47
+#: .\templates\zinnia\_entry_detail.html:46
 #: .\templates\zinnia\original_templates\_entry_detail.html:56
 #, python-format
 msgid "Continue reading %(object)s"
 msgstr ""
 
-#: .\templates\zinnia\_entry_detail.html:49
+#: .\templates\zinnia\_entry_detail.html:48
 #: .\templates\zinnia\original_templates\_entry_detail.html:58
 msgid "Continue reading"
 msgstr ""
 
-#: .\templates\zinnia\base.html:39
+#: .\templates\zinnia\base.html:38
 #: .\templates\zinnia\original_templates\base.html:28
 #: .\templates\zinnia\original_templates\category_list.html:6
 #: .\templates\zinnia\original_templates\sitemap.html:52
 msgid "Categories"
 msgstr ""
 
-#: .\templates\zinnia\base.html:49
+#: .\templates\zinnia\base.html:48
 #: .\templates\zinnia\original_templates\base.html:64
 #: .\templates\zinnia\original_templates\entry_archive_day.html:5
 #: .\templates\zinnia\original_templates\entry_archive_day.html:7
@@ -207,60 +213,60 @@ msgstr ""
 msgid "Archives"
 msgstr ""
 
-#: .\templates\zinnia\entry_detail_base.html:22
+#: .\templates\zinnia\entry_detail_base.html:21
 #: .\templates\zinnia\original_templates\entry_detail_base.html:22
 msgid "RSS Feed of discussions on"
 msgstr ""
 
-#: .\templates\zinnia\entry_detail_base.html:24
+#: .\templates\zinnia\entry_detail_base.html:23
 #: .\templates\zinnia\original_templates\entry_detail_base.html:24
 msgid "RSS Feed of comments on"
 msgstr ""
 
-#: .\templates\zinnia\entry_detail_base.html:26
+#: .\templates\zinnia\entry_detail_base.html:25
 #: .\templates\zinnia\original_templates\entry_detail_base.html:26
 msgid "RSS Feed of pingbacks on"
 msgstr ""
 
-#: .\templates\zinnia\entry_detail_base.html:28
+#: .\templates\zinnia\entry_detail_base.html:27
 #: .\templates\zinnia\original_templates\entry_detail_base.html:28
 msgid "RSS Feed of trackbacks on"
 msgstr ""
 
-#: .\templates\zinnia\entry_detail_base.html:46
+#: .\templates\zinnia\entry_detail_base.html:45
 #: .\templates\zinnia\original_templates\entry_detail_base.html:46
 msgid "Next entry"
 msgstr ""
 
-#: .\templates\zinnia\entry_detail_base.html:58
+#: .\templates\zinnia\entry_detail_base.html:57
 #: .\templates\zinnia\original_templates\entry_detail_base.html:58
 msgid "Previous entry"
 msgstr ""
 
-#: .\templates\zinnia\entry_detail_base.html:70
+#: .\templates\zinnia\entry_detail_base.html:69
 #: .\templates\zinnia\original_templates\entry_detail_base.html:70
 msgid "Related entries"
 msgstr ""
 
-#: .\templates\zinnia\entry_detail_base.html:82
+#: .\templates\zinnia\entry_detail_base.html:81
 #: .\templates\zinnia\original_templates\entry_detail_base.html:82
 msgid "Similar entries"
 msgstr ""
 
+#: .\templates\zinnia\entry_detail_base.html:93
 #: .\templates\zinnia\entry_detail_base.html:94
-#: .\templates\zinnia\entry_detail_base.html:95
 #: .\templates\zinnia\original_templates\entry_detail_base.html:216
 #: .\templates\zinnia\original_templates\entry_detail_base.html:217
 msgid "Edit the entry"
 msgstr ""
 
-#: .\templates\zinnia\entry_list.html:8
+#: .\templates\zinnia\entry_list.html:6
 #: .\templates\zinnia\original_templates\entry_list.html:20
 #: .\templates\zinnia\original_templates\entry_search.html:5
 msgid "Page"
 msgstr ""
 
-#: .\templates\zinnia\entry_list.html:19
+#: .\templates\zinnia\entry_list.html:17
 #: .\templates\zinnia\original_templates\entry_list.html:48
 #: .\templates\zinnia\original_templates\sitemap.html:25
 #: .\templates\zinnia\original_templates\sitemap.html:45
