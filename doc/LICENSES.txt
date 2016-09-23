@@ -39,24 +39,6 @@ Licenses of included python modules
 Python-AIML
     Attribution, no warranties (BSD style)
 
-cmsplugin_filer_image
-    BSD license
-
-cmsplugin_rst
-    Attribution, no warranties (BSD style)
-
-cmsplugin_simple_gallery
-    No license information
-
-django-jplayer
-    Attribution, no warranties (BSD style)
-
-relstorage (ZODB)
-    Zope Public License (ZPL) Version 2.1, GPL-compatible
-
-django-request
-    Attribution, no warranties (BSD style)
-
 django-login-for-phpbb/sessionprofile
     Attribution, no warranties (BSD style)
 
@@ -65,12 +47,6 @@ userprofiles
 
 django-fileservers
     Attribution, no warranties (BSD style)
-
-pafo
-    GPL V3 or later
-
-counter
-    MIT License
 
 
 
