@@ -4,8 +4,12 @@
 
 {% block html_title %}{% trans "Chrysalis Game" %}{% endblock %}
 
-
-
+{% block sekizai_calls %}
+    {{ block.super }}
+    {% addtoblock "meta" %}
+        <meta name="description" content="{% page_attribute "meta_description" %}">
+    {% endaddtoblock %}
+{% endblock %}
 
 {% block body_top %}
 
@@ -84,7 +88,7 @@
 {% block up_footer_left_content %}
 <div style="font-size: 12px; line-height: 1em;">
 {% blocktrans %}
-This site requires a fully CSS3-enabled browser like recent versions of Firefox, Chrome or Safari. Internet Explorer users might experience glitches.
+This site requires a fully CSS3-enabled browser like Firefox, Chrome, Safari or Edge. Internet Explorer users might experience glitches.
 {% endblocktrans %}
 </div>
 {% endblock %}
