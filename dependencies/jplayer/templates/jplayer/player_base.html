@@ -2,67 +2,90 @@
 {% block content %}
 
 
-	{% block player %}
-
+    {% block player %}
         <div id="jquery_jplayer_{{ player.id }}" class="jp-jplayer"></div>
+    {% endblock %}
 
-	{% endblock %}
-
-	{% block container %}
-
+    {% block container %}
 
         <div id="jp_container_{{ player.id }}" class="jp-audio">
             <div class="jp-type-playlist">
                 <div class="jp-gui jp-interface">
                     <ul class="jp-controls">
-                        <li><a href="javascript:;" class="jp-previous" tabindex="1">previous</a></li>
+                        {% block main_controls %}
                         <li><a href="javascript:;" class="jp-play" tabindex="1">play</a></li>
                         <li><a href="javascript:;" class="jp-pause" tabindex="1">pause</a></li>
-                        <li><a href="javascript:;" class="jp-next" tabindex="1">next</a></li>
                         <li><a href="javascript:;" class="jp-stop" tabindex="1">stop</a></li>
+                        {% endblock %}
+
+                        {% block track_controls %}
+                        <li><a href="javascript:;" class="jp-previous" tabindex="1">previous</a></li>
+                        <li><a href="javascript:;" class="jp-next" tabindex="1">next</a></li>
+                        {% endblock %}
+
+                       {% block volume_controls %} 
                         <li><a href="javascript:;" class="jp-mute" tabindex="1" title="mute">mute</a></li>
                         <li><a href="javascript:;" class="jp-unmute" tabindex="1" title="unmute">unmute</a></li>
                         <li><a href="javascript:;" class="jp-volume-max" tabindex="1" title="max volume">max volume</a></li>
+                        {% endblock %}
                     </ul>
+
+                    {% block progress_bar %}
                     <div class="jp-progress">
                         <div class="jp-seek-bar">
                             <div class="jp-play-bar"></div>
                         </div>
                     </div>
+                    {% endblock %}
+
+                    {% block volume_bar %}
                     <div class="jp-volume-bar">
                         <div class="jp-volume-bar-value"></div>
                     </div>
+                    {% endblock %}
+
+                    {% block time_holder %}
                     <div class="jp-time-holder">
                         <div class="jp-current-time"></div>
                         <div class="jp-duration"></div>
                     </div>
+                    {% endblock %}
+                    
+                    {% block toggles %}
                     <ul class="jp-toggles">
                         <li><a href="javascript:;" class="jp-shuffle" tabindex="1" title="shuffle">shuffle</a></li>
                         <li><a href="javascript:;" class="jp-shuffle-off" tabindex="1" title="shuffle off">shuffle off</a></li>
                         <li><a href="javascript:;" class="jp-repeat" tabindex="1" title="repeat">repeat</a></li>
                         <li><a href="javascript:;" class="jp-repeat-off" tabindex="1" title="repeat off">repeat off</a></li>
                     </ul>
+                    {% endblock %}
                 </div>
+
+                {% block playlist %}
                 <div class="jp-playlist">
                     <ul>
                         <li></li>
                     </ul>
                 </div>
+                {% endblock %}
+
+                {% block no_solution %}
                 <div class="jp-no-solution">
                     <span>Update Required</span>
                     To play the media you will need to either update your browser to a recent version or update your <a href="http://get.adobe.com/flashplayer/" target="_blank">Flash plugin</a>.
                 </div>
+                {% endblock %}
             </div>
         </div>
 
-	{% endblock %}
+    {% endblock %}
 
 
-	{% block javascript %}
+    {% block javascript %}
 
-	{% comment %}
-		<script type="text/javascript">
-		$(document).ready(function(){
+    {% comment %}
+        <script type="text/javascript">
+        $(document).ready(function(){
 	        {% block javascript_library %}
 	        if (!document.cmsPlayerLoaded){
 	            $("head").append('<scr' + 'ipt type="text/javascript" src="{{ STATIC_URL }}jplayer/js/cmsplayer.js"></scr' + 'ipt>');
@@ -70,29 +93,29 @@
 	        {% endblock %}
 		    var player = $('#jquery_jplayer_{{ player.id }}');
 			player.cmsPlayer(
-				{
-				    {% block javascript_initdata %}
-				    playlist: {{ player.get_json_playlist }},
-				    autoplay: {{ player.get_json_autoplay }},
-				    playerid: "{{ player.id }}",
-				    autonext: true,
-					cssPrefix: 'jqjp_{{ player.id }}',
-					swfPath: 'http://' + window.location.host + {{ player.get_base_path }},
-					oggSupport: {{ player.get_json_ogg_support }},
-					customCssIds: true,
-					// errorAlerts: true,
-					// warningAlerts: true,
+                {
+                    {% block javascript_initdata %}
+                    playlist: {{ player.get_json_playlist }},
+                    autoplay: {{ player.get_json_autoplay }},
+                    playerid: "{{ player.id }}",
+                    autonext: true,
+                    cssPrefix: 'jqjp_{{ player.id }}',
+                    swfPath: 'http://' + window.location.host + {{ player.get_base_path }},
+                    oggSupport: {{ player.get_json_ogg_support }},
+                    customCssIds: true,
+                    // errorAlerts: true,
+                    // warningAlerts: true,
 
-					{% endblock %}
-				}
-			);
-		});
-		</script>
-	{% endcomment %}
+                    {% endblock %}
+                }
+            );
+        });
+        </script>
+    {% endcomment %}
 
-	<script type="text/javascript">
-	//<![CDATA[
-	$(document).ready(function(){
+    <script type="text/javascript">
+    //<![CDATA[
+    $(document).ready(function(){
 
 	    new jPlayerPlaylist({
 	        jPlayer: "#jquery_jplayer_{{ player.id }}",
@@ -102,7 +125,7 @@
 	     /* [{
                 title:"Hidden",
                 mp3:"http://www.jplayer.org/audio/mp3/Miaow-02-Hidden.mp3",
-                oga: "http://www.jplayer.org/audio/ogg/Miaow-02-Hidden.ogg"
+                oga:"http://www.jplayer.org/audio/ogg/Miaow-02-Hidden.ogg"
             },
             {
                 title:"Lentement",
@@ -122,9 +145,9 @@
             //warningAlerts: true,
 	     });
 	});
-	//]]>
-	</script>
+    //]]>
+    </script>
 
 
-	{% endblock %}
+    {% endblock %}
 {% endblock %}
