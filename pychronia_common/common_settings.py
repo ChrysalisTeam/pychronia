@@ -160,10 +160,6 @@ INSTALLED_APPS = [
     'easy_thumbnails',
 ]
 
-MIGRATION_MODULES = {
-    # all common ones are standard now
-}
-
 TEST_RUNNER = 'django.test.runner.DiscoverRunner'
 
 # use a basic in-process cache by default

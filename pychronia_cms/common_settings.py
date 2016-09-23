@@ -26,8 +26,8 @@ INSTALLED_APPS += [
     'djangocms_text_ckeditor',  # must be before django-cms entry
 
     'cms',
-    'mptt',  # now only for zinnia
-    'treebeard',
+    'mptt',  # menu handler, now only for zinnia
+    'treebeard',  # new menu handler for djangocms
     'menus',
 
     'cmsplugin_rst',
@@ -35,25 +35,17 @@ INSTALLED_APPS += [
 
     # 'djangocms_flash',
     # 'djangocms_googlemap',
-    # 'djangocms_text',
     'djangocms_link',
     'djangocms_snippet',
 
-    ## too weak versions of plugins ##
-    # 'djangocms_file',
-    # 'djangocms_picture',
-    # 'djangocms_teaser',
-    # 'djangocms_video',
-
-    ## OR BETTER: ##
     'filer',
-
     'cmsplugin_filer_file',
     'cmsplugin_filer_folder',
     'cmsplugin_filer_image',
     'cmsplugin_filer_teaser',
     'cmsplugin_filer_video',
-    'jplayer',  # cmsplugin too
+
+    'jplayer',
 
     'django_comments',  # for zinnia blog
     'tagging',
@@ -64,35 +56,6 @@ INSTALLED_APPS += [
 
     'debug_toolbar',
 ]
-
-MIGRATION_MODULES.update({
-    'cms': 'cms.migrations',
-    'menus': 'menus.migrations',
-
-    'filer': 'filer.migrations',
-
-    ##'reversion': 'reversion.migrations_django', - NOPE DIRECTLY USE STD MIGRATIONS
-
-    # Add also the following modules if you're using these plugins:
-    #'djangocms_file': 'djangocms_file.migrations_django',
-    #'djangocms_flash': 'djangocms_flash.migrations_django',
-    #'djangocms_googlemap': 'djangocms_googlemap.migrations_django',
-    #'djangocms_inherit': 'djangocms_inherit.migrations_django',
-    'djangocms_link': 'djangocms_link.migrations',
-    #'djangocms_picture': 'djangocms_picture.migrations_django',
-    'djangocms_snippet': 'djangocms_snippet.migrations',
-    #'djangocms_teaser': 'djangocms_teaser.migrations_django',
-    #'djangocms_video': 'djangocms_video.migrations_django',
-
-    'djangocms_text_ckeditor': 'djangocms_text_ckeditor.migrations',
-
-    'cmsplugin_filer_file': 'cmsplugin_filer_file.migrations_django',
-    'cmsplugin_filer_folder': 'cmsplugin_filer_folder.migrations_django',
-    #'cmsplugin_filer_link': 'cmsplugin_filer_link.migrations_django',
-    'cmsplugin_filer_image': 'cmsplugin_filer_image.migrations_django',
-    'cmsplugin_filer_teaser': 'cmsplugin_filer_teaser.migrations_django',
-    'cmsplugin_filer_video': 'cmsplugin_filer_video.migrations_django',
-})
 
 TEMPLATES[0]["OPTIONS"]["context_processors"].append(
     "cms.context_processors.cms_settings"  # for CMS_MEDIA_URL etc.
