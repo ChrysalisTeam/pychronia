@@ -2,8 +2,7 @@
 
 from pychronia_common.common_settings import *
 
-TEMPLATE_CONTEXT_PROCESSORS = TEMPLATE_CONTEXT_PROCESSORS + (
-"pychronia_game.context_processors.pychronia_template_context",)
+TEMPLATES[0]["OPTIONS"]["context_processors"].append("pychronia_game.context_processors.pychronia_template_context")
 
 _old_middlewares = list(MIDDLEWARE_CLASSES)
 if "debug_toolbar.middleware.DebugToolbarMiddleware" in _old_middlewares:

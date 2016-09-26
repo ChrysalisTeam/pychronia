@@ -11,7 +11,7 @@ from pychronia_game.common import exception_swallower, game_file_url as real_gam
     reverse, game_view_url, _
 
 import django.template
-from django.templatetags.future import url as default_url_tag
+from django.template.defaulttags import url as default_url_tag
 from django.utils.safestring import SafeData, EscapeData, mark_safe, mark_for_escaping
 from django.utils.html import escape
 from django.utils.http import urlencode

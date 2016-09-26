@@ -16,7 +16,7 @@ DATABASES = {
     },
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'chrysalis_cms_dev',
+        'NAME': 'chrysalis_cms_dev_empty',
         'USER': 'root',
         'PASSWORD': 'root',
         'HOST': '127.0.0.1',

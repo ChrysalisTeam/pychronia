@@ -74,6 +74,8 @@ jinja-macro-tags==0.1
 
 odict==1.5.1
 
+relstorage>=2.0.0b6
+
 # for relstorage mainly
 perfmetrics==2.0
 
