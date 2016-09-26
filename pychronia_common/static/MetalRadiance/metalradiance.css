@@ -2088,6 +2088,9 @@ button.pretty_button {
   margin-left: -30px;
   margin-right: -30px;
 }
+.hentry img {
+  max-width: 100%;
+}
 .hentry img.center {
   margin-top: 15px;
   margin-bottom: 15px;
@@ -2278,6 +2281,27 @@ body .notification_panel .notification_panel_decorations .notification_panel_con
     margin-top: 50px;
     height: 13px;
   }
+  #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu a {
+    display: none;
+    color: #f5af09;
+    font-size: 18px;
+    text-decoration: none;
+    line-height: 27px;
+    padding: 0px 6px;
+    text-align: left;
+    float: none;
+  }
+  #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu a:hover {
+    text-decoration: underline;
+  }
+  #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu ul {
+    border: 1px solid #f5af09;
+  }
+  #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu ul a,
+  #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu ul span {
+    background-color: #342716;
+    padding: 0 6px;
+  }
   #full_content {
     margin: 0 auto;
     text-align: center;
@@ -2360,29 +2384,6 @@ body .notification_panel .notification_panel_decorations .notification_panel_con
     display: none;
   }
 }
-@media (max-width: 991px) {
-  #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu a {
-    display: none;
-    color: #f5af09;
-    font-size: 18px;
-    text-decoration: none;
-    line-height: 27px;
-    padding: 0px 6px;
-    text-align: left;
-    float: none;
-  }
-  #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu a:hover {
-    text-decoration: underline;
-  }
-  #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu ul {
-    border: 1px solid #f5af09;
-  }
-  #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu ul a,
-  #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu ul span {
-    background-color: #342716;
-    padding: 0 6px;
-  }
-}
 @media (min-width: 992px) {
   .parallax {
     position: absolute;
@@ -2436,8 +2437,8 @@ body .notification_panel .notification_panel_decorations .notification_panel_con
         url('img/backgrounds/tube_bronze_small.png'),
         url('img/backgrounds/dropdown_menu.png'),
         url("img/backgrounds/notification_panel_decorations.png"),
-        url("img/backgrounds/antique_large_decorated_frame.png"),
-        url("img/backgrounds/ricepaper-hue-orange.jpg"),
+        url("img//backgrounds/antique_large_decorated_frame.png"),
+        url("img//backgrounds/ricepaper-hue-orange.jpg"),
         url('img/backgrounds/decorated_golden_frame.png'),
         url('img/backgrounds/ricepaper-hue-gold.jpg');
     background-repeat: no-repeat;
@@ -2597,6 +2598,88 @@ body .notification_panel .notification_panel_decorations .notification_panel_con
     border-color: transparent;
     border-width: 18px 52px 20px 55px;
     border-image: url('img/backgrounds/menu_border.png') 18 52 20 55 fill stretch stretch;
+    image-rendering: optimizequality;
+  }
+  #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu {
+    margin: 0;
+    padding: 0;
+    height: 35px;
+    line-height: 35px;
+    position: relative;
+  }
+  #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu > li {
+    display: inline-block;
+    list-style: none outside none;
+    position: relative;
+    margin: 0px;
+    padding: 0px;
+    float: none;
+  }
+  #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu > li a,
+  #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu > li span {
+    display: block;
+    white-space: nowrap;
+    text-shadow: 1px 1px 0 black, -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black;
+    color: #f8d85b;
+    font-family: black_chancery, serif;
+    margin: 2px;
+    letter-spacing: 0px;
+    text-align: left;
+    font-size: 25px;
+    margin: 0;
+    padding: 0px 4px;
+    color: white;
+    list-style-type: none;
+    list-style-image: none;
+    text-decoration: none;
+  }
+  #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu > li span {
+    color: black !important;
+    text-shadow: 1px 1px 0 white, -1px -1px 0 white, 1px -1px 0 white, -1px 1px 0 white !important;
+  }
+  #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu > li li a,
+  #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu > li li span {
+    font-size: 17pt;
+    background-color: transparent;
+    border-color: transparent;
+    border-style: solid;
+    border-width: 0px 32px 0px 33px;
+    border-image: url('img/backgrounds/tube_gold_small.png') 0 32 0 33 fill stretch;
+    image-rendering: optimizequality;
+  }
+  #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu > li li li a,
+  #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu > li li li span {
+    border-image: url('img/backgrounds/tube_silver_small.png') 0 32 0 33 fill stretch;
+    image-rendering: optimizequality;
+  }
+  #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu > li li li li a,
+  #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu > li li li li span {
+    border-image: url('img/backgrounds/tube_bronze_small.png') 0 32 0 33 fill stretch;
+    image-rendering: optimizequality;
+  }
+  #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu > li {
+    border-width: 0;
+    border-right: 3px ridge #9D8126;
+  }
+  #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu > li:last-child {
+    border-width: 0;
+  }
+  #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu > li a.hover,
+  #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu > li span.hover {
+    color: #AAA;
+  }
+  #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu > li ul {
+    display: none;
+    margin: 0;
+    padding: 0;
+    background-image: url('img/backgrounds/dropdown_menu.png');
+    background-size: 100% 100%;
+    background-clip: content-box;
+    image-rendering: optimizequality;
+    border-color: transparent;
+    border-style: solid;
+    border-width: 4px 3px;
+    border-image: url('img/backgrounds/dropdown_menu.png') 4 3 fill stretch;
     image-rendering: optimizequality;
   }
   #menu-bar {
@@ -2833,89 +2916,5 @@ body .notification_panel .notification_panel_decorations .notification_panel_con
     content: url('img/decorations/low_footer_deco_right.png');
     padding: 0;
     position: absolute;
-  }
-}
-@media (min-width: 992px) {
-  #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu {
-    margin: 0;
-    padding: 0;
-    height: 35px;
-    line-height: 35px;
-    position: relative;
-  }
-  #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu > li {
-    display: inline-block;
-    list-style: none outside none;
-    position: relative;
-    margin: 0px;
-    padding: 0px;
-    float: none;
-  }
-  #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu > li a,
-  #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu > li span {
-    display: block;
-    white-space: nowrap;
-    text-shadow: 1px 1px 0 black, -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black;
-    color: #f8d85b;
-    font-family: black_chancery, serif;
-    margin: 2px;
-    letter-spacing: 0px;
-    text-align: left;
-    font-size: 25px;
-    margin: 0;
-    padding: 0px 4px;
-    color: white;
-    list-style-type: none;
-    list-style-image: none;
-    text-decoration: none;
-  }
-  #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu > li span {
-    color: black !important;
-    text-shadow: 1px 1px 0 white, -1px -1px 0 white, 1px -1px 0 white, -1px 1px 0 white !important;
-  }
-  #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu > li li a,
-  #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu > li li span {
-    font-size: 17pt;
-    background-color: transparent;
-    border-color: transparent;
-    border-style: solid;
-    border-width: 0px 32px 0px 33px;
-    border-image: url('img/backgrounds/tube_gold_small.png') 0 32 0 33 fill stretch;
-    image-rendering: optimizequality;
-  }
-  #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu > li li li a,
-  #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu > li li li span {
-    border-image: url('img/backgrounds/tube_silver_small.png') 0 32 0 33 fill stretch;
-    image-rendering: optimizequality;
-  }
-  #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu > li li li li a,
-  #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu > li li li li span {
-    border-image: url('img/backgrounds/tube_bronze_small.png') 0 32 0 33 fill stretch;
-    image-rendering: optimizequality;
-  }
-  #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu > li {
-    border-width: 0;
-    border-right: 3px ridge #9D8126;
-  }
-  #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu > li:last-child {
-    border-width: 0;
-  }
-  #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu > li a.hover,
-  #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu > li span.hover {
-    color: #AAA;
-  }
-  #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu > li ul {
-    display: none;
-    margin: 0;
-    padding: 0;
-    background-image: url('img/backgrounds/dropdown_menu.png');
-    background-size: 100% 100%;
-    background-clip: content-box;
-    image-rendering: optimizequality;
-    border-color: transparent;
-    border-style: solid;
-    border-width: 4px 3px;
-    border-image: url('img/backgrounds/dropdown_menu.png') 4 3 fill stretch;
-    image-rendering: optimizequality;
   }
 }
