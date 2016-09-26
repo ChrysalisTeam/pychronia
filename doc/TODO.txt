@@ -3,10 +3,11 @@ TODO LIST CHRYSALIS
 =========================
 
 
+
 FEATURES
 ------------
 
-ATTENTION trou de sécurité car les joueurs peuvent utiliser GAME_FILE_URL en rst OU aussi en raw text ????
+- update to latest django ? Mais avec django-retrocomaptibility......
 
 Version mobile: Sous android, que ce soit en affichage Portrait que Paysage, la version mobile charge mais le texte est coupé sur le bord droit, avec impossibilité de scroll sur les côtés.
 
@@ -16,16 +17,12 @@ Version mobile: Sous android, que ce soit en affichage Portrait que Paysage, la 
 SCRIPT
 ----------
 
-- ajouter instructions ou systèmes pour éviter abus de mercenaires ? -> distribution progressive d'argent, à detailler
-
-- faire CHRONOLOGIE détaillée des évènements pour aider énigmes
-
+- les MEDIAS avec S
 - regler les "HERE GAMEMASTER HINTS" et autres FIXME/TODO, dans YAML spécifiquement
 
-- update abilities settings and prices
+- update abilities settings and prices ??
 
 - add manual for TTS acapela !!
-
 
 GAMEMASTER_HINTS in:
     - characters
@@ -34,14 +31,6 @@ GAMEMASTER_HINTS in:
     - radio spots
     - game items
     - static pages
-
-Faire page d'introduction
-	- situation de l'univers
-	- situation géopolitique -> gazette sabarite quick
-	- bestaire des ennemis ?
-    - add description of partners in intro/instruction page !
-    - add more content for game startup
-
 
 
 
@@ -95,6 +84,11 @@ PAUSED BUGLETS:
 TASKS DONE
 ---------------
 
+- ENLEVER les bords pulsants des admin-notes, ca casse tout sous IE/EDGE - DONE
+- faire exemples de CHECKLISTS et CHRONOLOGIE détaillée des évènements pour aider MJ - DONE
+- LG DOIT AVOIR SECURITE DU MANOIR ALWAYS !!! - DONE
+- évoquer quête de MAGNUS dans le manuel - DONE
+- ajouter instructions ou systèmes pour éviter abus de mercenaires, avec soldes d'argent - DONE
 - Add typography fixer like in https://code.google.com/p/markdown-typografix - DONE with cmsplugin_rst for punctuation!
 - Use "strict=True" param in check_coherence, to check relational fields only at YAML loading - DONE
 - rethink and repair telecom archive investigation - DONE
