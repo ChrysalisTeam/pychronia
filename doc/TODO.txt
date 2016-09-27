@@ -8,6 +8,8 @@ FEATURES
 
 ATTENTION trou de sécurité car les joueurs peuvent utiliser GAME_FILE_URL en rst OU aussi en raw text ????
 
+Version mobile: Sous android, que ce soit en affichage Portrait que Paysage, la version mobile charge mais le texte est coupé sur le bord droit, avec impossibilité de scroll sur les côtés.
+
 
 SCRIPT
 ----------

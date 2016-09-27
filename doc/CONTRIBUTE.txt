@@ -24,6 +24,7 @@ If everything goes fine (except some deprecation warnings), you can skip the rem
 ELSE:
 
 With or without sudo (depending on whether you use a system python or a virtualenv):
+
 $ pip install -r  pip_requirements.txt
 
 On windows : if some C-backed python modules fail at installing (ex. because VC++ environment is not setup), then comment problematic module(s) out of the pip_requirements.txt, and install them via precompiled packages (*.msi, *.exe...)
@@ -68,7 +69,7 @@ Launching tests
 
 Tests are run with py.test against fake databases stored in temp directories::
 
-    py.test -vl pychronia_game/tests/ZODB_tests.py
+    py.test -vl pychronia_game/tests/test_zodb.py
     py.test -vl pychronia_game/tests/test_game.py
 
     CF http://pytest.org/latest/usage.html#usage for more usage info
@@ -92,7 +93,7 @@ Sources Tree Overview for pychronia_game package
 
 Most of the *pychronia_game* package consists of standard django components, and other common python modules:
 
-- xxx_urls.py: django url routing files
+- urls.py: django url routing files
 - common_settings.py: default settinsg for all deployments using pychronia_game
 - context_processors.py: to add variables to default contexts of template rendering
 - forms.py: django declarative web forms
