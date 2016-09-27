@@ -121,7 +121,7 @@ div, span, p {
 
 p {
     margin: 8px 0 8px;
-    min-width: 200px; // to prevent horrors with inline images, when screen gets small
+    min-width: 190px; // to prevent horrors with inline images, when screen gets small
 }
 
 @include mobile-only {

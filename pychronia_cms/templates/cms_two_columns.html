@@ -34,12 +34,14 @@
     {% usekwacro side_panel_end %}
     {% endif %}
 
+    {% comment %}
     {% assign name="sidebar3" %}{% placeholder "sidebar3" %}{% endassign %}
     {% if sidebar3 %}
     {% usekwacro side_panel_start frame_class="mini_frame float_left" decos="3" %}
         {{ sidebar3 }}
     {% usekwacro side_panel_end %}
     {% endif %}
+    {%  endcomment %}
 
 
 {% endblock %}

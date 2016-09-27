@@ -2,7 +2,7 @@
 {% load cms_tags menu_tags sekizai_tags heading kwacros i18n %}
 {% loadkwacros "metalradiance_kwacros.html" %}
 
-{% block html_title %}{% trans "Chrysalis Game" %}{% endblock %}
+{% block html_title %}{% page_attribute "title" %} - {% trans "Chrysalis Game" %}{% endblock %}
 
 {% block sekizai_calls %}
     {{ block.super }}
@@ -86,7 +86,7 @@
 
 
 {% block up_footer_left_content %}
-<div style="font-size: 12px; line-height: 1em;">
+<div style="font-size: 11px; line-height: 1em; margin: 1px 0;">
 {% blocktrans %}
 This site requires a fully CSS3-enabled browser like Firefox, Chrome, Safari or Edge. Internet Explorer users might experience glitches.
 {% endblocktrans %}
@@ -103,6 +103,9 @@ Game only available in French for now. Translations will arrive later.
 
 
 {% block low_footer_content %}
-<div style="font-size: 12px; line-height: 13px;"><a href="#">Webdesign "Metal Radiance" <br/>
-by R-gun for Chrysalis</a> </div>
+<div style="font-size: 11px; line-height: 1em; margin: 1px 0;">
+{% blocktrans %}
+Webdesign "Metal Radiance" <br/> by R-gun for Chrysalis
+{% endblocktrans %}
+ </div>
 {% endblock %}
