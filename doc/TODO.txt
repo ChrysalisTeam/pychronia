@@ -11,6 +11,42 @@ ATTENTION trou de sécurité car les joueurs peuvent utiliser GAME_FILE_URL en r
 Version mobile: Sous android, que ce soit en affichage Portrait que Paysage, la version mobile charge mais le texte est coupé sur le bord droit, avec impossibilité de scroll sur les côtés.
 
 
+MINDSTORM
+~~~~~~~~~~
+
+Apolline
+En effet, l'univers et les missions des personnages sont complexes. Mais commençons par le
+début. C'est-à-dire, accrocher le joueur, même si il vient de son plein gré.
+En ulisant des phrase plus courtes où la phrase suit l'ordre de base sujet + verbe +
+complément, cela rend déjà l'effort d'imaginaon plus fluide à qui souhaite s'y intégrer. Laissons
+les fioritures à Oscar Wilde et autres Flaubert modernes, c'est leur méer. ;)
+Pour faciliter encore plus la lecture, je conseillerais de ne garder QUE l'essenel (ce dont on aura
+sûrement besoin pendant le jeu) car le joueur pourrait se concentrer sur un détail qu'il pensait
+être important et vice versa ( oui, oui. ça sent le vécu... ) pour finalement suivre une mauvaise
+piste.
+
+aussi expliciter les contrats "cer2fiés" qu'ils peuvent passer avec l'inspecteur pour passer
+l'éponge sur certains de leurs méfaits (sans risquer d’être escroqués)
+
+
+AUCTION
+~~~~~~~~~~~~
+
+Rappeler que les compétences sont pas tjrs cliquables mais c'est normal
+
+JEAN
+Je pense que demander en début de jeu aux joueurs de créer leur Perso (pas forcément avec des stats mais son histoire, d'où il vient dans l'univers, sa méthode de pensée, ses idéaux, ses motivations et ses compétences particulières...) en leur donnant un résumé rapide et interactif de l'univers pour les aider (comme un MJ qui présente son jeu à ses joueurs autour d'une table avant d'entamer la création de Perso) aiderait les joueurs à s'impliquer plus  dans l'univers.  Tu pourrais par exemple donner une semaine aux joueurs pour qu'ils s'imprègnent du monde et créent  leur Perso ensuite tu contrôles la fiche en faisant les retouches nécessaires et ensuite on commence la partie. Ça serait plus fluide à mon sens.
+
+- Je pense que la première séance d'enchère mériterait d'être faite en GN afin de donner l’ambiance et l'allant à la partie.
+
+voir à simplifier le style trop "li/éraire" des fiches perso ? Ou plutôt, le compenser en ajoutant
+des tableaux récapitula2fs, bien plus lisibles dans le feu de l'ac2on ?
+
+- Si l'objec2f est que le joueur trahisse sa patrie, on peut insister sur le mauvais salaire de l'agent
+secret, une mauvaise ambiance de travail, l'a/rait pour une vie meilleure.
+
+
+
 SCRIPT
 ----------
 
