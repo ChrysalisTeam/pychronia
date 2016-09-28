@@ -952,7 +952,7 @@ msgstr "Enchères"
 
 #: .\menus.py:91
 msgid "Media"
-msgstr "Média"
+msgstr "Médias"
 
 #: .\menus.py:103
 msgid "Messaging"
@@ -3423,7 +3423,7 @@ msgstr "Mail envoyé"
 
 #: .\views\admin_views\__init__.py:277
 msgid "Media Display Test"
-msgstr "Test d'affichage des média"
+msgstr "Test d'affichage des médias"
 
 #: .\views\admin_views\admin_dashboard_mod.py:17
 msgid "Game is paused?"
