@@ -11,40 +11,6 @@ ATTENTION trou de sécurité car les joueurs peuvent utiliser GAME_FILE_URL en r
 Version mobile: Sous android, que ce soit en affichage Portrait que Paysage, la version mobile charge mais le texte est coupé sur le bord droit, avec impossibilité de scroll sur les côtés.
 
 
-MINDSTORM
-~~~~~~~~~~
-
-Apolline
-En effet, l'univers et les missions des personnages sont complexes. Mais commençons par le
-début. C'est-à-dire, accrocher le joueur, même si il vient de son plein gré.
-En ulisant des phrase plus courtes où la phrase suit l'ordre de base sujet + verbe +
-complément, cela rend déjà l'effort d'imaginaon plus fluide à qui souhaite s'y intégrer. Laissons
-les fioritures à Oscar Wilde et autres Flaubert modernes, c'est leur méer. ;)
-Pour faciliter encore plus la lecture, je conseillerais de ne garder QUE l'essenel (ce dont on aura
-sûrement besoin pendant le jeu) car le joueur pourrait se concentrer sur un détail qu'il pensait
-être important et vice versa ( oui, oui. ça sent le vécu... ) pour finalement suivre une mauvaise
-piste.
-
-aussi expliciter les contrats "cer2fiés" qu'ils peuvent passer avec l'inspecteur pour passer
-l'éponge sur certains de leurs méfaits (sans risquer d’être escroqués)
-
-
-AUCTION
-~~~~~~~~~~~~
-
-Rappeler que les compétences sont pas tjrs cliquables mais c'est normal
-
-JEAN
-Je pense que demander en début de jeu aux joueurs de créer leur Perso (pas forcément avec des stats mais son histoire, d'où il vient dans l'univers, sa méthode de pensée, ses idéaux, ses motivations et ses compétences particulières...) en leur donnant un résumé rapide et interactif de l'univers pour les aider (comme un MJ qui présente son jeu à ses joueurs autour d'une table avant d'entamer la création de Perso) aiderait les joueurs à s'impliquer plus  dans l'univers.  Tu pourrais par exemple donner une semaine aux joueurs pour qu'ils s'imprègnent du monde et créent  leur Perso ensuite tu contrôles la fiche en faisant les retouches nécessaires et ensuite on commence la partie. Ça serait plus fluide à mon sens.
-
-- Je pense que la première séance d'enchère mériterait d'être faite en GN afin de donner l’ambiance et l'allant à la partie.
-
-voir à simplifier le style trop "li/éraire" des fiches perso ? Ou plutôt, le compenser en ajoutant
-des tableaux récapitula2fs, bien plus lisibles dans le feu de l'ac2on ?
-
-- Si l'objec2f est que le joueur trahisse sa patrie, on peut insister sur le mauvais salaire de l'agent
-secret, une mauvaise ambiance de travail, l'a/rait pour une vie meilleure.
-
 
 
 SCRIPT
@@ -112,8 +78,8 @@ PAUSED BUGLETS:
 - test log_game_event() visibility lists setting in views
 - test localstorage in PROD
 - test broken notify_chess_player_victory()
-# TODO - test that messages are well propagated through session
-# TODO - test interception of "POST" when impersonating user
+- TODO - test that messages are well propagated through session
+- TODO - test interception of "POST" when impersonating user
 - test DISPLAY_STATIC_CONTENT handling
 - test message compose form and attachments, it's VERY sensitive
 - test proper hiding (or not) of characters' belongings depending on permissions, in characters page
@@ -129,6 +95,11 @@ PAUSED BUGLETS:
 TASKS DONE
 ---------------
 
+- Add typography fixer like in https://code.google.com/p/markdown-typografix - DONE with cmsplugin_rst for punctuation!
+- Use "strict=True" param in check_coherence, to check relational fields only at YAML loading - DONE
+- rethink and repair telecom archive investigation - DONE
+- make impersonation per-browser-tab in URL - DONE
+- make most gamemaster_hints editable (items too) - DONE
 - clarifier règles absolues (pas de triche, emails uniquement valables à l'intérieur du site), dans initial email - DONE
 - où parle-t-on des balises d'email ? dans manual ? marchent-elles vraiment ? OUI "balises mémo", all is OK
 - Better explain player/master "log events" page - DONE
@@ -494,10 +465,13 @@ CONTROVERSIAL ENHANCEMENTS
 - fix shaky forms when floated left in number - should be DONE now
 - ajouter formulaires de pognon dans la page character_management ?
 - rendre la page "messages interceptés" activable ?? bad idea, let it be ALWAYS there
+- possibilité désactiver les admin-tips pour partage écran ??
 
 
 FUTUR ENHANCEMENTS
 --------------------------
+
+- possibilité désactiver les admin-tips, pour partage écran ??
 
 - add all biophysics reports, runic translations,locations etc., to "admin info" page
 
@@ -507,7 +481,8 @@ FUTUR ENHANCEMENTS
 
 - TODO add lookup of conf value via tags in static manual stuffs ? nope useless ATM...
 
-- separate "public" and "private" GAME MASTER MANUAL !!
+- separate "public" and "private" GAME MASTER MANUAL - nope, "EXTRACT" manual instead
+
 - les notifications doivent etre plus explicites dans leur contenu !?
 - TO UPDATE when behaviour is changed, in the future
             - vous pouvez attacher un de vos fichiers personnels à un message, grâce au champ de sélection dédié
@@ -516,21 +491,18 @@ FUTUR ENHANCEMENTS
 - carte du monde : un clic sur un pays/ville principal pour un zoom plus détaillé (un peu comme hurlevent wow) -> intégrer touch map prototype
 - FIX medias videos on website, for video / firefox, on WINDOWS10 (use jplayer)
 - fix support of mp4 format and others (JPLAYER FTW)
-- automate the retrieval of radio spots (ex. TTS) to local backup  files
+- automate the retrieval of radio spots (ex. TTS) to local backup files
 - allow to DUPLICATE a game item to the "new" form, with a dedicated button
-  -> permettre de modifier les OBJETS (ex. cloner) pas d"jà fait ?
+  -> permettre de modifier les OBJETS (ex. cloner), pas déjà fait ?
 - Make DataTable records "editable" and "deletable/renamable", separately
-- Use "strict" param in check_coherence, to check relational fields only at YAML loading
+
 - Add tests to ensure that clearing tables is OK, for check_coherence(strict=false) - abilities must be robust to that
 
 - TRADUIRE les noms des permissions - quite hard (autogenerated)
 - corrupt the content of wiretapped emails, via duplication (but trouble with direct access links) ?
 
 - système pour créer partie - WIP, quasi fini mais plus tard, pour l'instant en manuel
-
-- make ALL gamemaster_hints editable (items too) - done ??
-- dire quand AUTRE perso (ami) a nouveaux messages/autres ?
-- make impersonation per-browser-tab in URL - DONE
+- dire quand AUTRE perso (ami) a nouveaux messages/autres ? nope bof...
 
 - enforce placeholder detection ({{ PUT NAME HERE }}) everywhere, not only in message sending form.
 - restaurer et compléter les djinns, valeurs par défaut si pas de réponses surtout
@@ -540,9 +512,7 @@ FUTUR ENHANCEMENTS
 - restore "personal audio messages" feature for gamemaster (per player sending)
 - display admin tips with UserAccess and all kinds of permissions required, for each page
 
-- add typography fixer like in https://code.google.com/p/markdown-typografix/source/browse/mdx_typografix/__init__.py - DONE with cmsplugin_rst for punctuation!
-
-- improve compatibility with IE 10+ (menus are buggy) --> red\9 HACK
+- improve compatibility with IE 10+ (menus are buggy) --> ok with IE11 so let it be...
 - reorganize top headers of game (motto left=real, motto right=impersonation, carvings=GAME_DATA)
   -> add money and gems to page top headers
 - CMS : stop float pbs when EDIT=ON, on main frames (use clearfix) - should be OK actually
@@ -551,11 +521,10 @@ FUTUR ENHANCEMENTS
 - grant/revoke private_contact_access_to_character (ex. mercenaries)
 - securize the "_action_" form-less system, since it bypasses input data validation !!!
 - add "stop impersonation" link in menu ?
-- better menus for meta admin pages
+- put menus for meta admin pages
 - better handling of 503 (maintenance) state on both cms and instance
 - add real automated "geoip localization" ability
 - memorize "real player authentications", to know who really hacks accounts -> already wip?
-- rethink and repair telecom archive investigation - DONE
 - add to specific index any (external) visualized document in "personal files"
 - add RST context summary to all forms, especially admin ones ??? not needed right ATM
 - allow accumulation of visibility reasons, to have both sender and recipient together in msg for same user? useless I guess...
@@ -581,11 +550,6 @@ StorageError: Unable to acquire commit lock
 
 
 
-ELITE RPG:
-eclectic <-------- BEST
-enchanting -> bewitching, captivating, enthralling, entrancing, fascinating
-enrapturing
-enlightening/edifying
 
 
 
