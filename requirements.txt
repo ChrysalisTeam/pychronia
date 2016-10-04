@@ -35,6 +35,8 @@ django-mptt==0.8.6
 
 django-cms==3.2.5
 
+djangocms-page-sitemap==0.3.1
+
 git+https://github.com/pakal/cmsplugin-simple-gallery.git
 git+https://github.com/pakal/django-cms-jplayer.git
 
@@ -98,7 +100,7 @@ requests==2.11.1
 
 Sphinx==1.4
 
-ZEO==5.0.1
+# USELESS ZEO==5.0.1
 ZODB==5.0.0
 
 

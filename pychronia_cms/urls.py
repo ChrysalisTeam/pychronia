@@ -3,11 +3,13 @@
 from django.conf.urls import *
 from django.contrib import admin
 from django.conf import settings
-from cms.views import details
 from django.views.generic import RedirectView
 from django.core.urlresolvers import reverse_lazy
 from django.conf.urls.i18n import i18n_patterns
 from django.http.response import HttpResponse
+
+from cms.views import details
+from djangocms_page_sitemap.sitemap import ExtendedSitemap
 
 admin.autodiscover()
 
@@ -15,16 +17,21 @@ ROBOTS_TEXT = """\
 User-agent: *
 Disallow: /static/ 
 Disallow: /media/ 
-Disallow: *.pdf  
+Disallow: *.pdf
+
+Sitemap: http://chrysalis-game.com/sitemap.xml
 """
 
 urlpatterns = patterns('',
 
-                       (r'^robots.txt$', lambda r: HttpResponse(ROBOTS_TEXT, content_type="text/plain")),
+                       url(r'^robots.txt$', lambda r: HttpResponse(ROBOTS_TEXT, content_type="text/plain")),
 
-                       (r'^admin/', include(admin.site.urls)),
+                       url(r'^sitemap\.xml$', 'django.contrib.sitemaps.views.sitemap',
+                           {'sitemaps': {'cmspages': ExtendedSitemap}}),
 
-                       (r'^i18n/', include('django.conf.urls.i18n')),  # to set language
+                       url(r'^admin/', include(admin.site.urls)),
+
+                       url(r'^i18n/', include('django.conf.urls.i18n')),  # to set language
                        )
 
 urlpatterns += i18n_patterns('',
@@ -38,7 +45,7 @@ urlpatterns += i18n_patterns('',
 
                              url(r'^$', RedirectView.as_view(url=reverse_lazy('pages-root'))),
                              # REDIRECT TO CMS HOMEPAGE
-                             (r'^cms/', include('cms.urls')),  # this MUST end with '/' or be empty
+                             url(r'^cms/', include('cms.urls')),  # this MUST end with '/' or be empty
                              )
 
 # Django Debug Toolbar

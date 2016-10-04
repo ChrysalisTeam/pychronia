@@ -23,6 +23,9 @@ INSTALLED_APPS += [
     #'userprofiles',
     #'userprofiles.contrib.profiles',
 
+    'django.contrib.sitemaps',
+    'djangocms_page_sitemap',
+
     'djangocms_text_ckeditor',  # must be before django-cms entry
 
     'cms',
