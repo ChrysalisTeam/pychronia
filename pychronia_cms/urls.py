@@ -9,7 +9,10 @@ from django.conf.urls.i18n import i18n_patterns
 from django.http.response import HttpResponse
 
 from cms.views import details
+
 from djangocms_page_sitemap.sitemap import ExtendedSitemap
+from zinnia.sitemaps import EntrySitemap, CategorySitemap
+
 
 admin.autodiscover()
 
@@ -22,12 +25,18 @@ Disallow: *.pdf
 Sitemap: http://chrysalis-game.com/sitemap.xml
 """
 
+sitemaps = {'cmspages': ExtendedSitemap,
+            #'tags': TagSitemap,
+            'blog': EntrySitemap,
+            #'authors': AuthorSitemap,
+            'categories': CategorySitemap, }
+
 urlpatterns = patterns('',
 
                        url(r'^robots.txt$', lambda r: HttpResponse(ROBOTS_TEXT, content_type="text/plain")),
 
                        url(r'^sitemap\.xml$', 'django.contrib.sitemaps.views.sitemap',
-                           {'sitemaps': {'cmspages': ExtendedSitemap}}),
+                           {'sitemaps': sitemaps}),
 
                        url(r'^admin/', include(admin.site.urls)),
 
