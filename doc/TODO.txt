@@ -3,7 +3,6 @@ TODO LIST CHRYSALIS
 =========================
 
 
-
 FEATURES
 ------------
 
@@ -13,24 +12,14 @@ Version mobile: Sous android, que ce soit en affichage Portrait que Paysage, la 
 
 
 
-
 SCRIPT
 ----------
 
-- les MEDIAS avec S
 - regler les "HERE GAMEMASTER HINTS" et autres FIXME/TODO, dans YAML spécifiquement
 
 - update abilities settings and prices ??
 
 - add manual for TTS acapela !!
-
-GAMEMASTER_HINTS in:
-    - characters
-    - contacts
-    - templates
-    - radio spots
-    - game items
-    - static pages
 
 
 
@@ -84,6 +73,7 @@ PAUSED BUGLETS:
 TASKS DONE
 ---------------
 
+- List WHAT COMPONENTS gamemaster hints are attached to
 - ENLEVER les bords pulsants des admin-notes, ca casse tout sous IE/EDGE - DONE
 - faire exemples de CHECKLISTS et CHRONOLOGIE détaillée des évènements pour aider MJ - DONE
 - LG DOIT AVOIR SECURITE DU MANOIR ALWAYS !!! - DONE
