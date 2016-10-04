@@ -1,4 +1,6 @@
-:loop
+rem :loop
+
+python -m scss scss/metalradiance.scss -o metalradiance.css -I scss -I ../bootstrap-sass/assets/stylesheets -I ../bootstrap-sass/assets/stylesheets/bootstrap -C
 
 watchmedo shell-command scss -c "python -m scss scss/metalradiance.scss -o metalradiance.css -I scss -I ../bootstrap-sass/assets/stylesheets -I ../bootstrap-sass/assets/stylesheets/bootstrap -C"
 
