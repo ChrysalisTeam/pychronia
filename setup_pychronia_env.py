@@ -11,5 +11,8 @@ if dependencies not in sys.path:
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "pychronia_settings")  # not erased if already set, eg. for tests
 
+##import django_compat_patcher
+##django_compat_patcher.patch()
+
 import django
 django.setup()
