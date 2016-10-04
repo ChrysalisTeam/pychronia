@@ -2,11 +2,6 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
-# TEMPORARY
-#import django_compatibility
-#import django
-#assert django.get_version() == "1.6.4", django.get_version()
-
 import os, sys, pytest, unittest, traceback
 
 ## TEST CONFIGURATION ##
@@ -315,10 +310,7 @@ class BaseGameTestCase(TestCase):  # one day, use pytest-django module to make i
     def _reset_django_db(self):
         from django.test.utils import setup_test_environment
         from django.core import management
-        try:
-            management.call_command('flush', verbosity=0,
-                                    interactive=False)  # we try to empty tables,  if already created
-        except Exception:
-            management.call_command('syncdb', verbosity=1, interactive=False)
-            #management.call_command('migrate', verbosity=1, interactive=False)
+        management.call_command('migrate', verbosity=1, interactive=False)
+        management.call_command('flush', verbosity=0,
+                                interactive=False)  # we try to empty tables, if already created
         config.INSTALLED_APPS[:] = ORIGINAL_CONFIG_INSTALLED_APPS[:]  # SOUTH might nastily monkey patch settings...
