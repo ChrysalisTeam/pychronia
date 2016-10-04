@@ -2,7 +2,7 @@
 {% load cms_tags menu_tags sekizai_tags heading kwacros i18n %}
 {% loadkwacros "metalradiance_kwacros.html" %}
 
-{% block html_title %}{% page_attribute "title" %} - {% trans "Chrysalis Game" %}{% endblock %}
+{% block html_title %}{% page_attribute "page_title" %} - {% trans "Chrysalis Game" %}{% endblock %}
 
 {% block sekizai_calls %}
     {{ block.super }}
