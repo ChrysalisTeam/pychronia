@@ -17,7 +17,10 @@
     <!-- no need - link href="{{ STATIC_URL }}libs/jquery-ui/ui.dropdownchecklist.css" rel="stylesheet" type="text/css" /-->
     <link href="{{ STATIC_URL }}libs/zoomy/zoomy.css" rel="stylesheet" type="text/css" />
     <link href="{{ STATIC_URL }}libs/p4wn/p4wn.css" rel="stylesheet" type="text/css" />
+
+    {% autoescape off %}
     {% import_django_select2_css %}
+    {% endautoescape %}
 
 {% endaddtoblock %}
 
@@ -48,9 +51,9 @@
     <script src="{{ STATIC_URL }}libs/p4wn/engine.js" type="text/javascript"></script>
     <script src="{{ STATIC_URL }}libs/p4wn/display.js" type="text/javascript"></script>
 
-
-
+    {% autoescape off %}
     {% import_django_select2_js %}
+    {% endautoescape %}
 
 {% endaddtoblock %}
 

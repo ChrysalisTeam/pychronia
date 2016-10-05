@@ -393,7 +393,7 @@ def rich_text(context, content, initial_header_level=None, report_level=None, ex
 @register.simple_tag
 def fontawesome_icon(icon, large=True, fixed=False, spin=False, li=False,
                      rotate=False, border=False, color=False):
-    return '<i class="{prefix} {prefix}-{icon}{large}{fixed}{spin}{li}{rotate}{border}"{color}></i>'.format(
+    res = '<i class="{prefix} {prefix}-{icon}{large}{fixed}{spin}{li}{rotate}{border}"{color}></i>'.format(
         prefix='fa',
         icon=icon,
         large=' fa-lg' if large is True else '',
@@ -404,6 +404,8 @@ def fontawesome_icon(icon, large=True, fixed=False, spin=False, li=False,
         border=' fa-border' if border else '',
         color='style="color:%s;"' % color if color else ''
     )
+
+    return mark_safe(res)
 
 
 '''
