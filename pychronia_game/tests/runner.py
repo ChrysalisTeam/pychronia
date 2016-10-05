@@ -7,12 +7,10 @@ sys.path.insert(0, root)
 sys.path.insert(0, os.path.join(root, "dependencies"))
 #print ">>>>>>>", sys.path
 
-os.environ[
-    "DJANGO_SETTINGS_MODULE"] = settings_module = "pychronia_game.tests.persistent_mode_settings"  # with DB not in temp dir
+os.environ["DJANGO_SETTINGS_MODULE"] = settings_module = "pychronia_game.tests.persistent_mode_settings"  # with DB not in temp dir
 
-import django
+import setup_pychronia_env
 
-django.setup()
 from django.core.management import execute_from_command_line
 from django.conf import settings
 
