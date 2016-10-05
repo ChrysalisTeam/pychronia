@@ -4,8 +4,8 @@ from __future__ import unicode_literals
 
 import threading
 from pychronia_game.common import *
-from pychronia_game.datamanager import readonly_method, transaction_watcher, register_view, AbstractAbility, \
-    AbstractGameForm
+from pychronia_game.datamanager import readonly_method, transaction_watcher, register_view, AbstractAbility, AbstractGameForm
+from pychronia_game.datamanager.abstract_form import autostrip_form_charfields
 from django import forms
 from django.http import Http404
 from ConfigParser import ConfigParser
@@ -23,6 +23,7 @@ class DjinnContactForm(AbstractGameForm):
 djinn_singleton_lock = threading.Lock()  # cfor oncurrent access to singleton
 
 
+@autostrip_form_charfields
 class DjinnContactForm(AbstractGameForm):
     djinn_name = forms.CharField(label=ugettext_lazy("Djinn"), required=True)
 

@@ -13,6 +13,7 @@ from pychronia_game.utilities.select2_extensions import Select2TagsField
 from django.core.exceptions import ValidationError
 from pychronia_game.templatetags.helpers import format_enriched_text
 from pychronia_game import utilities
+from pychronia_game.datamanager.abstract_form import autostrip_form_charfields
 
 """
     categories = Select2TagsField(label=ugettext_lazy("Categories"), required=False)
@@ -28,6 +29,7 @@ FILTERABLE_MSG_FIELDS = [
 ]
 
 
+@autostrip_form_charfields
 class MessageComposeForm(AbstractGameForm):
     """
     A form for text-based messages.

@@ -18,6 +18,7 @@ def _get_bank_choice(datamanager):
     return (datamanager.get_global_parameter("bank_name"), '<' + _("Bank") + '>')
 
 
+@autostrip_form_charfields
 class MoneyTransferForm(AbstractGameForm):
     def __init__(self, datamanager, *args, **kwargs):
         super(MoneyTransferForm, self).__init__(datamanager, *args, **kwargs)
