@@ -17,9 +17,9 @@ SCRIPT
 
 - regler les "HERE GAMEMASTER HINTS" et autres FIXME/TODO, dans YAML spécifiquement
 
-- update abilities settings and prices ??
+- tweak abilities settings and prices ??
 
-- add manual for TTS acapela !!
+- add quick manual for TTS acapela !!
 
 
 
@@ -73,6 +73,8 @@ PAUSED BUGLETS:
 TASKS DONE
 ---------------
 
+- Expliciter dans les mails d'intro, que les compétences non cliquables sont débloquables - DONE
+- Auto strip all relevant charfields with @autostrip_form_charfields - DONE
 - List WHAT COMPONENTS gamemaster hints are attached to
 - ENLEVER les bords pulsants des admin-notes, ca casse tout sous IE/EDGE - DONE
 - faire exemples de CHECKLISTS et CHRONOLOGIE détaillée des évènements pour aider MJ - DONE
@@ -439,6 +441,7 @@ TASKS DONE
 CONTROVERSIAL ENHANCEMENTS
 -----------------------------------
 
+- PREVOIR booléen AUTO-RESPONSE *PAR* compétence spéciale, pas global ?
 - mon compte (PAS "profile personnel"), ou Mon profil - bof
 - enlever la homepage "enchères" inutile, amener de suite sur les persos ??
 - trier contacts par autre ordre, dans "nouveau message" ?? c'est déjà par domaine...
@@ -454,6 +457,10 @@ CONTROVERSIAL ENHANCEMENTS
 
 FUTUR ENHANCEMENTS
 --------------------------
+
+- permettre un suivi visuel des activités des agents obérons et de leurs missions en cours
+
+- un bloc note intégré à chaque page pour noter les infos importantes
 
 - possibilité désactiver les admin-tips, pour partage écran ??
 
