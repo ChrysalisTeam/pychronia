@@ -12,7 +12,7 @@
     <h2>{% trans "Playlist" %}</h2>
 
     <div class="rice_paper_rose full_width">
-        <ul id="current_playlist" class="tiny_bullets" style="min-height:30px; font-size:0.8em;">
+        <ul id="current_playlist" class="tiny_bullets smaller_text" style="min-height: 30px;">
         {% for audio_id, audio_properties in pending_audio_messages %}
              {% include "utilities/radio_spot_placeholder.html" with audio_id=audio_id audio_properties=audio_properties %}
         {% endfor %}

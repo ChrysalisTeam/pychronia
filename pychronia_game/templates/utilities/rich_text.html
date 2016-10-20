@@ -3,7 +3,7 @@
 {{ result|safe }}
 
 {% if display_admin_tips %}
-<div class="markup_source_link admin-note inner_center center" style="width: 200px; font-size:0.8em;"><a id="lk_{{content_id}}" href="#">{% trans "Show Markup Sources" %}</a></div>
+<div class="markup_source_link admin-note inner_center center smaller_text" style="width: 200px;"><a id="lk_{{content_id}}" href="#">{% trans "Show Markup Sources" %}</a></div>
 <div style="display: none"><div id="fb_{{content_id}}">
 <pre style="white-space: pre-wrap;"> {# PREFORMATTED WRAPPING #}
 {{ source|linebreaksbr }}

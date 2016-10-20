@@ -6,7 +6,7 @@
     <h2>{% trans "Entries" %}</h2>
 
 
-    <div class="rice_paper_rose tiny_bullets full_width" style="font-size:0.8em;">
+    <div class="rice_paper_rose tiny_bullets smaller_text full_width">
         {% if immutable_table_items %}
             <div class="form_title">{% trans "Mutable" %}</div>
         {% endif %}
@@ -19,7 +19,7 @@
 
     {% if immutable_table_items %}
 
-    <div class="rice_paper_rose tiny_bullets full_width" style="font-size:0.8em;">
+    <div class="rice_paper_rose tiny_bullets smaller_text full_width">
         <div class="form_title">{% trans "Immutable" %}</div>
     <ul>
         {% for identifier, form in immutable_table_items %}
