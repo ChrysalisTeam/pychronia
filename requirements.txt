@@ -19,7 +19,7 @@ decorator==4.0.10
 Django==1.9.6
 
 #Django-Select2==4.2.2 OUTDATED - think about periodically updating the tag below
-git+https://github.com/applegrew/django-select2@b9400e235b7c047eb73ba0cfcb581a5dcf9153d2
+git+https://github.com/pakal/django-select2.git@0bcb6f5d18002c79afeb93899872f59d9c87bc24
 
 django-admin-jqueryui==1.8.22
 django-appconf==1.0.2
