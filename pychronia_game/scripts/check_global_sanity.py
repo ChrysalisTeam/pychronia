@@ -12,6 +12,7 @@ from pychronia_game.datamanager.datamanager_administrator import delete_game_ins
 
 def execute():
     result = True
+    idx = 0
     for idx, metadata in enumerate(get_all_instances_metadata(), start=1):
         instance_id = metadata["instance_id"]
         dm = retrieve_game_instance(instance_id)

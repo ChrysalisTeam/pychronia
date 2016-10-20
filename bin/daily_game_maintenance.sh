@@ -19,7 +19,7 @@ python -c "from pychronia_game.scripts import reset_demo_account; reset_demo_acc
 res=$(($res + $?))
 
 echo -e "\n***PACKING ZODB DATABASE***\n"
-python dependencies/relstorage/zodbpack.py -d 2 zodbpack.conf
+python -m relstorage.zodbpack -d 2 zodbpack.conf
 res=$(($res + $?))
 
 

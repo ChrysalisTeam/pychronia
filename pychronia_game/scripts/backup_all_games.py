@@ -9,6 +9,7 @@ from pychronia_game.datamanager.datamanager_administrator import backup_game_ins
 
 
 def execute():
+    idx = 0
     for idx, metadata in enumerate(get_all_instances_metadata(), start=1):
         instance_id = metadata["instance_id"]
         backup_game_instance_data(instance_id, comment="nightly_autosave")
