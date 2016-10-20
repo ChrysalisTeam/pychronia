@@ -182,8 +182,8 @@ except ImportError:
 
 ## AUTHENTICATION CONF ##
 LOGIN_REDIRECT_URL = '/'  # changed from /accounts/profile/
-LOGIN_URL = '/accounts/login/'
-LOGOUT_URL = '/accounts/logout/'
+LOGIN_URL = '/admin/login/'
+LOGOUT_URL = '/admin/logout/'
 PASSWORD_RESET_TIMEOUT_DAYS = 3
 
 ## DJANGO-SELECT2 CONF ##
