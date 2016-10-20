@@ -52,7 +52,7 @@
 
                 {% if ctx.template_id %}
                     <a class="mark_ignored_tag" title="{% trans "Mark as ignored" %}" onclick="ajax_set_message_template_state_flags('{{ ctx.template_id|escapejs }}', {is_ignored: true}); return false;" href="#">{% fontawesome_icon "times-circle " %}</a>
-                    <a class="mark_unignored_tag" title="{% trans "Mark as non-ignored" %}" onclick="ajax_set_message_template_state_flags('{{ ctx.template_id|escapejs }}', {is_ignored: false}); return false;" href="#">{% fontawesome_icon "trash" %}</a>
+                    <a class="mark_unignored_tag" title="{% trans "Mark as non-ignored" %}" onclick="ajax_set_message_template_state_flags('{{ ctx.template_id|escapejs }}', {is_ignored: false}); return false;" href="#">{% fontawesome_icon "times-circle" %}</a>
                 {% endif %}
 
                 &nbsp;&nbsp;
