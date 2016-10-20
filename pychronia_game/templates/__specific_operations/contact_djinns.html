@@ -51,9 +51,9 @@
 
 {% if djinn_form %}
 
-    <h3>
+    <div class="form_title">
         {% trans "Contact specific djinn" %}
-    </h3>
+    </div>
     <form action="{% game_view_url "pychronia_game.views.chat_with_djinn" %}" method="post">
     <table style="margin:auto;width:200px;">
         {{ djinn_form.as_table }}

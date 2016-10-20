@@ -1272,6 +1272,11 @@ table.footnote {
   border-bottom: 1px solid #9D8126;
   z-index: 100;
 }
+@media (max-width: 991px) {
+  #domslideshow #toclist li ul {
+    background: #482b04;
+  }
+}
 #domslideshow #toclist li ul li#closeToc {
   text-align: right;
   position: relative;
@@ -1880,7 +1885,7 @@ h2:after {
 }
 h3 {
   color: black;
-  font-size: 1.6em;
+  font-size: 1.4em;
   margin: 18px 5px 7px;
 }
 h4 {
@@ -1897,6 +1902,9 @@ h4 {
   font-size: 40px;
   line-height: 30px;
   margin-top: 5px;
+}
+.form_title {
+  font-size: 1.3em;
 }
 .justified p, .section p {
   text-align: justify;

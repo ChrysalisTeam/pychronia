@@ -272,6 +272,9 @@
     }
     #toclist li ul {
         background: #DCCBB5;
+        @include mobile-only {
+            background: #482b04;
+        }
         padding: 10px;
         width: 300px;
         position: absolute;
