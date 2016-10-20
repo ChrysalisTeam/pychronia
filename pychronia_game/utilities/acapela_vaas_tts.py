@@ -33,10 +33,10 @@ class AcapelaClient(object):
                 final_params[self.ARGUMENT_MAPPER[key]] = value
         del kwargs, key, value
 
-        print("INPUT", final_params)
+        print("ACAPELA WS INPUT", final_params)
 
         res = requests.post(self._url, data=final_params)
-        print("TTS RESULT:", res.content)
+        print("ACAPELA RESPONSE RAW:", res.content)
         res.raise_for_status()
 
         if final_params.get("response_type") not in (None, "INFO"):
@@ -45,7 +45,7 @@ class AcapelaClient(object):
 
             raw = res.text
 
-            print("RAW",
+            print("ACAPELA RESPONSE TEXT",
                   raw)  # ex: raw = "w=&snd_time=1892.75&get_count=0&snd_id=221335548_cba848475cb40&asw_pos_init_offset=0&asw_pos_text_offset=0&snd_url=http://vaas.acapela-group.com/MESSAGES/009086065076095086065065083/EVAL_4775608/sounds/221335548_cba848475cb40.mp3&snd_size=13279&res=OK&create_echo="
 
             values = dict(urlparse.parse_qsl(raw, keep_blank_values=True, strict_parsing=__debug__))
@@ -54,6 +54,8 @@ class AcapelaClient(object):
                 klass = EnvironmentError  # at the moment, no need to distinguish errors...
                 msg = "VAAS %s: %s" % (values["err_code"], values["err_msg"])
                 raise klass(msg)
+
+            print("ACAPELA DECODED RESPONSE", values)
 
             res = dict(sound_id=values["snd_id"],
                        sound_url=values["snd_url"],
@@ -67,7 +69,7 @@ class AcapelaClient(object):
                        warning=values["w"],
                        # ignore asw_pos_init_offset and asw_pos_text_offset and create_echo ATM
                        )
-            print("RESPONSE", res)
+            print("ACAPELA FINAL RESPONSE", res)
             return res
 
     def create_sample(self,
