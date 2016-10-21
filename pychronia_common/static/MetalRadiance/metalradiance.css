@@ -333,7 +333,7 @@ div.abstract p.topic-title {
 div.admonition, div.attention, div.caution, div.danger, div.error, div.hint,
 div.important, div.note, div.tip, div.warning {
   margin: 2em;
-  border: medium outset;
+  border: #d2b685 medium outset;
   padding: 1em;
 }
 div.admonition p.admonition-title, div.hint p.admonition-title,
