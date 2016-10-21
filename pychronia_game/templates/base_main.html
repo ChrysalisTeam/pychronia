@@ -270,7 +270,7 @@
 		});
 
 
-        var submissionControls = $('input[type="button"], input[type="submit"]');
+        var submissionControls = $('input[type="button"]:not(.nofreeze), input[type="submit"]:not(.nofreeze)');
         {% if disable_widgets %}
             submissionControls.add('input.autosubmit');
             submissionControls.attr('disabled', 'disabled');
