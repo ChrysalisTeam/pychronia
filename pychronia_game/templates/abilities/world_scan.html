@@ -11,7 +11,7 @@
 
 
     {% if scan_form %}
-    <div class="form_scroll_medium center inner_center">
+    <div class="form_scroll_medium center">
     <form action="{{ scan_form.url }}" method="post">
     {{ scan_form.as_p }}
     <input type="submit" name="scan" value="{% trans "Submit Scan Request" %}" />

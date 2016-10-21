@@ -6,7 +6,7 @@
 
     {% if translation_form %}
 
-        <div class="form_scroll_medium center inner_center" >
+        <div class="form_scroll_medium center" >
         <form action="{{ translation_form.url }}" method="post">
         {{ translation_form.as_p }}
         <input type="submit" name="translate" value="{% trans "Translate" %}" />
