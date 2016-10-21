@@ -73,6 +73,11 @@ PAUSED BUGLETS:
 TASKS DONE
 ---------------
 
+- Fix message.attachment, resolved TWICE -> must display without /files/xxxx/ - DONE
+- Use {% fontawesome_icon "times-circle " %} pour email modeles - DONE
+- Change <h4>{{ title }}</h4> --> use ".form_title" class - DONE
+- Pour open_webradio_popup() --> pas dupliquer fenetre - DONE
+- Enlever le disabled de 1 seconde sur les boutons du formulaire de house_locking - DONE
 - Expliciter dans les mails d'intro, que les compétences non cliquables sont débloquables - DONE
 - Auto strip all relevant charfields with @autostrip_form_charfields - DONE
 - List WHAT COMPONENTS gamemaster hints are attached to
