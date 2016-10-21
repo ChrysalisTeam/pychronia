@@ -237,7 +237,7 @@ class FriendshipManagementView(AbstractGameView):
                     _("You've been proposed a friendship by that user."))
         elif relation_type == "recent_friend":
             return (None, None, _(
-                "You've been friend with that user for a too short time (impossible to break that friendship at the moment)."))
+                "You've been friend with that user for a short time (impossible to break this friendship at the moment)."))
         elif relation_type == "old_friend":
             return ("do_cancel_friendship", _("Abort friendship."), _("You're friends with that user."))
         else:

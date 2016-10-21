@@ -174,13 +174,16 @@ def exception_swallower():
     try:
         yield
     except Exception, e:
+
+        msg = _("Unexpected exception occurred in exception swallower context: %r !")
+
         try:
-            logging.critical(_("Unexpected exception occurred in exception swallower context : %r !"), e, exc_info=True)
+            logging.critical(msg, e, exc_info=True)
         except Exception:
             print >> sys.stderr, _("Exception Swallower logging is broken !!!")
 
         if __debug__:
-            raise RuntimeError(_("Unexpected exception occurred in exception swallower context : %r !") % e)
+            raise RuntimeError(msg % e)
 
 
 def hash_url_path(url_path):
