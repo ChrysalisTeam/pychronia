@@ -8,7 +8,7 @@
     <h2>{% trans "Terms of Use" %}</h2>
     {% for action_name, explanations in action_explanations %}
     <div>
-    	<h2>{{ action_name }}</h2>
+    	<h3>{{ action_name }}</h3>
     	<ul>
     		{% for strings_list in explanations %}
     		<li>{{ strings_list|join:" " }}</li>
