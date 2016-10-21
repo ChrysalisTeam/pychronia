@@ -205,6 +205,8 @@ if(!block_autosave) {
 
         {{ message_form.as_p }}
 
+        <br/>
+
         <p><input type="button" name="preview" value="{% trans "Preview Message Body As Restructuredtext" %}" onclick="preview_message();" /></p>
         <p><input type="submit" name="send_message" value="{% trans "Send Message" %}" onclick="save_current_content(); return true;" /></p>
 
