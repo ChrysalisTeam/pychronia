@@ -779,27 +779,6 @@ def is_past_datetime(dt):
     return (dt <= datetime.utcnow())
 
 
-@contextlib.contextmanager
-def exception_swallower():
-    """
-    When called, this function returns a context manager which
-    catches and logs all exceptions raised inside its
-    block of code (useful for rarely crossed try...except clauses,
-    to swallow unexpected name or string formatting errors).
-    """
-
-    try:
-        yield
-    except Exception, e:
-        try:
-            logging.critical(_("Unexpected exception occurred in exception swallower context : %r !"), e, exc_info=True)
-        except Exception:
-            print >> sys.stderr, _("Exception Swallower logging is broken !!!")
-
-        if __debug__:
-            raise RuntimeError(_("Unexpected exception occurred in exception swallower context : %r !") % e)
-
-
 def make_bi_usage_decorator(decorator):
     """
     Transforms a decorator taking default arguments, into a decorator that can both
