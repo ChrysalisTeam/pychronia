@@ -101,8 +101,11 @@ class GemsTransferForm(AbstractGameForm, GemHandlingFormUtils):
 
 
 class ArtefactTransferForm(AbstractGameForm):
-    artefact_name = forms.ChoiceField(label=ugettext_lazy("Artefact"), required=True)
+
     recipient_name = forms.ChoiceField(label=ugettext_lazy("Recipient"), required=True)
+
+    artefact_name = forms.ChoiceField(label=ugettext_lazy("Artefact"), required=True)
+
 
     def __init__(self, datamanager, *args, **kwargs):
         super(ArtefactTransferForm, self).__init__(datamanager, *args, **kwargs)
