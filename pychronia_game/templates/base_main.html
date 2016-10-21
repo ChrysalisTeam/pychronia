@@ -66,9 +66,9 @@
 
     {% game_view_url "pychronia_game.views.personal_webradio_popup" as player_view_url %}
     function open_webradio_popup(){
-        window.open('{{ player_view_url|escapejs }}', '_blank',
+        window.open('{{ player_view_url|escapejs }}', 'webradio_popup',
                     'width=400,height=200,directories=no,location=no,menubar=no,resizeable=yes,scrollbars=no,status=no,titlebar=no,toolbar=no',
-                    false); // new history entry
+                    false); // no replace : we create new history entry
     }
 
     function display_bug_report_panel(){
