@@ -1713,18 +1713,32 @@ class TestDatamanager(BaseGameTestCase):
 
         files1bis = self.dm.get_personal_files("guy2")
         self.assertEqual(len(files1), len(files1bis))
-        self.assertTrue(files1bis[0].startswith("/"))
+        self.assertFalse(files1bis[0].startswith("/"))
 
-        files2 = self.dm.get_personal_files(self.dm.master_login)  # private game master files
+        files2 = self.dm.get_personal_files(self.dm.master_login, absolute_urls=True)  # private game master files
         self.assertTrue(files2)
 
         c = Client()  # file retrievals
         response = c.get(files1[0])
         self.assertEqual(response.status_code, 200)
-        response = c.get(files1bis[0])
-        self.assertEqual(response.status_code, 200)
-        response = c.get(files1bis[0] + ".dummy")
+
+        files1bis_without_hash = files1bis[0]
+        assert not files1bis_without_hash.startswith("/files/")
+        response = c.get(files1bis_without_hash)
+        self.assertEqual(response.status_code, 404) # missing security hash
+
+        files1bis_with_hash = game_file_url(files1bis[0])
+        assert files1bis_with_hash.startswith("/files/")
+        response = c.get(files1bis_with_hash)
+        self.assertEqual(response.status_code, 200)  #now ok
+
+        response = c.get(files1bis_with_hash + ".dummy")
         self.assertEqual(response.status_code, 404)
+
+        files2_with_hash = game_file_url(files2[0])
+        assert files2_with_hash.startswith("http")
+        response = c.get(files2_with_hash)
+        self.assertEqual(response.status_code, 200)
 
         for username in self.dm.get_character_usernames():
             self.dm.get_personal_files(username, absolute_urls=random.choice([True, False]))
@@ -1886,7 +1900,7 @@ class TestDatamanager(BaseGameTestCase):
                                        body="qsdqsd",
                                        template_id=tpl_id,
                                        transferred_msg=msg_id2,
-                                       attachment="/urlbidon")
+                                       attachment="local_url_bidon")
 
         msg = self.dm.get_dispatched_message_by_id(msg_id4)
         self.assertFalse(msg["has_replied"])  # new message isn't impacted
@@ -1909,7 +1923,7 @@ class TestDatamanager(BaseGameTestCase):
         assert new_tpl == {u'body': u'qsdqsd', 'gamemaster_hints': u'',
                            u'recipient_emails': [u'guy1@pangea.com'],
                            u'transferred_msg': u'1_1ef3', u'attachment': None, u'sender_email': u'guy3@pangea.com',
-                           u'categories': [u'unsorted'], u'subject': u'ssd', u'attachment': u'/urlbidon'}
+                           u'categories': [u'unsorted'], u'subject': u'ssd', u'attachment': u'local_url_bidon'}
 
     @for_core_module(Chatroom)
     def test_chatroom_operations(self):
@@ -4956,7 +4970,7 @@ class TestHttpRequests(BaseGameTestCase):
 
         base_parameters = dict(
             _ability_form="pychronia_game.views.messaging_views.MessageComposeForm",
-            attachment="/files/e797ff6b/personal_files/_common_files_/Ninja-cat.mp4",
+            attachment="personal_files/_common_files_/Ninja-cat.mp4",
             body="sdfsdfsdfsdf",
             delay_h="-1",
             parent_id=str(parent_msg_id),

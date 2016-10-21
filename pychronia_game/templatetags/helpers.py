@@ -510,8 +510,6 @@ register.filter('utctolocal', utctolocal)
 
 def _determine_asset_url(properties):
     return determine_asset_url(properties)
-
-
 register.filter('determine_asset_url', _determine_asset_url)
 
 
@@ -525,8 +523,6 @@ def mediaplayer(properties, autostart="false"):
     except:
         logging.error("mediaplayer filter failed", exc_info=True)
         return mark_safe("<a href=" + fileurl + ">" + fileurl + "</a>")
-
-
 mediaplayer.is_safe = True
 register.filter('mediaplayer', mediaplayer)
 
@@ -536,15 +532,11 @@ def has_permission(user, permission):
         return True
     else:
         return False
-
-
 register.filter('has_permission', has_permission)
 
 
 def split(var, sep):
     return var.split(sep)
-
-
 register.filter('split', split)
 
 

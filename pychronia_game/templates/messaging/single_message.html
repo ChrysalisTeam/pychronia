@@ -204,8 +204,8 @@
         {% if message.attachment %}
         <hr/>
         <div class="inner_center">
-            <div class="file_url_block">{{ message.attachment }}</div>
-            {{ message.attachment|mediaplayer:"false" }} {# ALREADY A COMPLETE URL #}
+            {# <div class="file_url_block">{{ message.attachment }}</div> #}
+            {{ message.attachment|mediaplayer:"false" }}
         </div>
         {% endif %}
 

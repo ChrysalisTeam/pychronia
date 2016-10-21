@@ -305,7 +305,7 @@ def personal_folder(request, template_name='information/personal_folder.html'):
     try:
 
         personal_files = request.datamanager.get_personal_files(
-            absolute_urls=False)  # to allow easier stealing of files from Loyd's session
+            absolute_urls=True)
 
     except EnvironmentError, e:
         personal_files = []

@@ -1667,9 +1667,8 @@ class TextMessagingCore(BaseDataManager):
             msg.setdefault("body_format",
                            self.AVAILABLE_TEXT_FORMATS.rst)  # beware, initial content is considered as RICH TEXT
 
+            # absolute URL, or relative file without hash
             msg["attachment"] = msg.get("attachment", None)
-            if msg["attachment"]:
-                msg["attachment"] = game_file_url(msg["attachment"])
 
             msg["is_certified"] = msg.get("is_certified", False)
 
@@ -1749,7 +1748,7 @@ class TextMessagingCore(BaseDataManager):
                     utilities.check_is_restructuredtext(msg["body"], strict=strict)
 
                 if msg["attachment"]:
-                    assert msg["attachment"].startswith("/") or msg["attachment"].startswith("http")
+                    pass  # could be local file or absolute URL, tough to check...
 
                 if msg["transferred_msg"]:
                     msg["transferred_msg"].encode("ascii")
@@ -3571,9 +3570,12 @@ class PersonalFiles(BaseDataManager):
     @readonly_method
     def get_personal_files(self, username=CURRENT_USER, absolute_urls=False):
         """
+        Returns a relative game file (suitable for "mediaplayer" filter), or
+        and absolute one with both domain and security hash.
+
         Might raise environment errors.
         
-        Game master has a reserved folder with game administration files
+        Game master has a reserved folder with game administration files.
         """
         username = self._resolve_username(username)
         assert self.is_master(username) or self.is_character(username), username
@@ -3592,13 +3594,13 @@ class PersonalFiles(BaseDataManager):
             """
 
         common_folder_path = os.path.join(config.GAME_FILES_ROOT, "personal_files", self.COMMON_FILES_DIRS)
-        common_files = [game_file_url("personal_files/" + self.COMMON_FILES_DIRS + "/" + filename) for filename in
+        common_files = [("personal_files/" + self.COMMON_FILES_DIRS + "/" + filename) for filename in
                         os.listdir(common_folder_path)
                         if os.path.isfile(os.path.join(common_folder_path, filename))
                         and not filename.startswith(".") and not filename.startswith("~")]  # hidden files removed
 
         personal_folder_path = os.path.join(config.GAME_FILES_ROOT, "personal_files", username)
-        personal_files = [game_file_url("personal_files/" + username + "/" + filename) for filename in
+        personal_files = [("personal_files/" + username + "/" + filename) for filename in
                           os.listdir(personal_folder_path)
                           if os.path.isfile(os.path.join(personal_folder_path, filename))
                           and not filename.startswith(".") and not filename.startswith("~")]  # hidden files removed
@@ -3607,7 +3609,7 @@ class PersonalFiles(BaseDataManager):
 
         if absolute_urls:
             domain = config.SITE_DOMAIN  # "http://%s" % Site.objects.get_current().domain
-            all_files = [domain + user_file for user_file in all_files]
+            all_files = [domain + game_file_url(user_file) for user_file in all_files]
 
         return all_files
 
