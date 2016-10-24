@@ -12,7 +12,9 @@ beautifulsoup4==4.5.1
 
 cmsplugin-filer==1.1.3
 
-cmsplugin-zinnia==0.8.1
+# beware - breaks with "KeyError('request')" : cmsplugin-zinnia==0.8.1
+# soon TODO : switch to zinnia.plugins instead !
+git+https://github.com/django-blog-zinnia/cmsplugin-zinnia
 
 decorator==4.0.10
 
