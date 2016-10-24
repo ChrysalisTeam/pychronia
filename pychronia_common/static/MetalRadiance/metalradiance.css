@@ -1883,13 +1883,15 @@ h2:after {
   position: relative;
 }
 h3 {
+  text-shadow: 1px 1px 0 white, -1px -1px 0 white, 1px -1px 0 white, -1px 1px 0 white;
   color: black;
   font-size: 1.4em;
   margin: 18px 5px 7px;
 }
 h4 {
+  text-shadow: 1px 1px 0 white, -1px -1px 0 white, 1px -1px 0 white, -1px 1px 0 white;
   color: black;
-  font-size: 1.3em;
+  font-size: 1.2em;
   margin: 15px 20px 6px;
 }
 .drop_cap, .drop-cap, .dropcap {
@@ -2094,6 +2096,9 @@ button.pretty_button {
 }
 .entry-body .info {
   background-color: transparent;
+}
+.entry-body p {
+  text-align: justify;
 }
 .hentry {
   margin-left: -30px;

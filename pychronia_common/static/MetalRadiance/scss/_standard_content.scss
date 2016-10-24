@@ -53,14 +53,16 @@ h2 {
 }
 
 h3 {
+    @include text_shadow($white_color);
     color: black;
     font-size: 1.4em;
     margin: 18px 5px 7px;
 }
 
 h4 {
+    @include text_shadow($white_color);
     color: black;
-    font-size: 1.3em;
+    font-size: 1.2em;
     margin: 15px 20px 6px; // left-aligned with paragraph first-line indent
 }
 
