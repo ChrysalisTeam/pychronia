@@ -2297,6 +2297,9 @@ body .notification_panel .notification_panel_decorations .notification_panel_con
     margin-top: 50px;
     height: 13px;
   }
+  #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu {
+    padding: 0 15px;
+  }
   #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu a {
     display: none;
     color: #f5af09;
