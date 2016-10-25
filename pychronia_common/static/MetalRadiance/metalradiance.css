@@ -1938,7 +1938,10 @@ div, span, p {
 }
 p {
   margin: 8px 0 8px;
+}
+h1, h2, h3, h4, p {
   min-width: 190px;
+  overflow: hidden;
 }
 @media (max-width: 991px) {
   p {
@@ -1949,9 +1952,6 @@ p {
   p {
     font-size: 1em;
   }
-}
-img {
-  max-width: 100%;
 }
 a img {
   border-width: 0;
@@ -2178,6 +2178,9 @@ body .notification_panel .notification_panel_decorations .notification_panel_con
   text-decoration: none;
   text-decoration: blink;
   border: none !important;
+}
+#full_content img {
+  max-width: 100%;
 }
 #bug_report_panel {
   color: black;

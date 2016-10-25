@@ -124,10 +124,13 @@ div, span, p {
     border-color: transparent;
     overflow: visible;
 }
-
 p {
     margin: 8px 0 8px;
+}
+
+h1, h2, h3, h4, p {
     min-width: 190px; // to prevent horrors with inline images, when screen gets small
+    overflow: hidden;  // enforces min-width
 }
 
 @include mobile-only {
@@ -140,10 +143,6 @@ p {
     p {
         font-size: 1em;
     }
-}
-
-img {
-    max-width: 100%;
 }
 
 a img {

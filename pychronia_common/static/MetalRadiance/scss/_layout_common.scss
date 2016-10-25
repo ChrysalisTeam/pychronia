@@ -67,6 +67,11 @@ body .notification_panel {
     }
 }
 
+#full_content img {
+    // menu icons etc. might be in 0-width divs, so they must not have that style
+    max-width: 100%;
+}
+
 #bug_report_panel {
 
     color: black;
