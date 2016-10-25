@@ -137,6 +137,9 @@ inner_game_urlpatterns = patterns('pychronia_game.views',
 
 support_urlpatterns = patterns('',
 
+                               (r'^$',
+                                lambda r: HttpResponse("Access to the root of this domain is not allowed, please check your url.", content_type="text/plain")),
+
                                (r'^robots.txt$',
                                 lambda r: HttpResponse("User-agent: *\nDisallow: /", content_type="text/plain")),
 
