@@ -2189,7 +2189,7 @@ body .notification_panel .notification_panel_decorations .notification_panel_con
   body {
     color: #ffeaa3;
     min-width: 320px;
-    font-size: 110%;
+    font-size: 100%;
   }
   body a:link {
     color: #62CB4B;
@@ -2302,7 +2302,7 @@ body .notification_panel .notification_panel_decorations .notification_panel_con
     font-size: 18px;
     text-decoration: none;
     line-height: 27px;
-    padding: 0px 6px;
+    padding: 0 6px;
     text-align: left;
     float: none;
   }
@@ -2315,7 +2315,7 @@ body .notification_panel .notification_panel_decorations .notification_panel_con
   #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu ul a,
   #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu ul span {
     background-color: #342716;
-    padding: 0 6px;
+    padding: 2px 6px;
   }
   #full_content {
     margin: 0 auto;
