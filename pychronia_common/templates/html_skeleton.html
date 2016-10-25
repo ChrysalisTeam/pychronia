@@ -6,7 +6,9 @@
     <title>{% block html_title %}{% trans "Welcome" %}{% endblock %}</title>
     
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <meta name="viewport" content="minimum-scale=1.0, width=device-width, maximum-scale=1.0, user-scalable=no" >
+
+    {# TODO ONE DAY : use @viewport instead when ready to use #}
+    <meta name="viewport" content="minimum-scale=1.0, width=device-width" >
         
     {% render_block "meta" %}
     {% render_block "css" %}

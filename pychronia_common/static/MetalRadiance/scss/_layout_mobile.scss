@@ -3,7 +3,8 @@ body {
 
     @include light-texts;
 
-    min-width: 400px;
+    // real CSS min-width of smarthones, 1.5x smaller than physical width
+    min-width: 320px;
 
     font-size: 110%;
 
