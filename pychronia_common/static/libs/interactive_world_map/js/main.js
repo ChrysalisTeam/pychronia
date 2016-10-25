@@ -6,22 +6,20 @@ var newWidth = 0;
 var newHeight = 0;
 var $section ;
 var $panzoom ;
-    
-$('html').on('mousemove', function(e){
+
+var displayTooltip = function(e){
     //console.log("Pointer mousemove to", e.target);
     var target = $(e.target);
+    var tooltip = $("#world-map-tooltip");
     if(target.attr("class")=='coords-ref' && target.attr('alt') !== ""){
         //console.log("Pointer at coords-ref");
-        var tooltip = $("#world-map-tooltip");
         tooltip.html(target.attr('alt'));
         tooltip.css('visibility','visible');
-        tooltip.css('top',''+e.clientY+'px');
-        tooltip.css('left',''+(e.clientX+5)+'px');
-
-        $(e.target).on('mouseleave',function(){
-            tooltip.css('visibility','hidden');
-        });
-    };
+        tooltip.css('top',''+e.clientY+'px');  // will fallback to 0 on touch devices
+        tooltip.css('left',''+(e.clientX+5)+'px');  // will fallback to 0 on touch devices
+    } else {
+        tooltip.css('visibility','hidden');
+    }
 
     // var percentWidth= (e.offsetX / width)*100;
     // var percentHeight= (e.offsetY / height)*100;
@@ -30,11 +28,15 @@ $('html').on('mousemove', function(e){
     //        ' width '+width+' height '+height+' percentWidth '+percentWidth+' percentHeight '+percentHeight+' newwidth' +newWidth+' newheight' +newHeight);
     //
 
-});
+}
+
+$('html').on('mousemove', displayTooltip);
+$('html').on('touchend', displayTooltip);
+
 
 $(document).ready(function(){
 
-    var minScale = 1, maxScale = 3, increment = 0.1;
+    var minScale = 1, maxScale = 5, increment = 0.1;
 
     $('map').imageMapResize();
     //$('map')[0]._resize();
