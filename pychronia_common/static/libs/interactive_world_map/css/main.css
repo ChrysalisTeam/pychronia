@@ -6,25 +6,26 @@
  Purpose of the stylesheet follows.
  */
 
-html{
+html {
     background-color: #50A3DE;
 }
 
-body{
-    position:absolute;
-    width:100%;
-    height:100%;
-    margin:0;
+body {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    margin: 0;
 }
 
-.Vcentering{
+.Vcentering {
     /* Safari, Opera, and Chrome */
-    display:-webkit-box;
-    -webkit-box-pack:center;
+    display: -webkit-box;
+    -webkit-box-pack: center;
     -webkit-box-orient: vertical;
-    -webkit-box-align:stretch;
+    -webkit-box-align: stretch;
 }
-.Hcentering{
+
+.Hcentering {
     /* Safari, Opera, and Chrome */
     display: -webkit-box;
     -webkit-box-pack: center;
@@ -33,67 +34,67 @@ body{
 
 }
 
-.zoom-buttons{
+.zoom-buttons {
     background-color: transparent;
     z-index: 100;
     position: absolute;
 }
 
-.map-container{
-    width:100%;
-    height:100%;
-    overflow:hidden;
-}
-
-.panzoom-parent{
-    width:100%;
-    height:100%;
-}
-
-.dynamic-world-map{
+.map-container {
     width: 100%;
-    height:100%;
-    text-align:center;
+    height: 100%;
+    overflow: hidden;
 }
 
-#world-map-tooltip{
-    width:auto;
+.panzoom-parent {
+    width: 100%;
+    height: 100%;
+}
+
+.dynamic-world-map {
+    width: 100%;
+    height: 100%;
+    text-align: center;
+}
+
+#world-map-tooltip {
+    width: auto;
     max-width: 300px;
-    height:auto;
-    
-    visibility:hidden;
+    height: auto;
+
+    visibility: hidden;
     background-color: #F7F6C1;
-    
+
     border: solid 1px red;
     border-color: black;
     border-radius: 10px;
-    -webkit-box-shadow: 5px 5px 20px 5px rgba(0,0,0,0.5);
-    padding:10px;
-    position:absolute;
-    top:0px;
-    left:0px;
-    z-index:3000;
+    -webkit-box-shadow: 5px 5px 20px 5px rgba(0, 0, 0, 0.5);
+    padding: 10px;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    z-index: 3000;
 }
 
-.panzoom{
-    margin:0 px;
+.panzoom {
+    margin: 0px;
     /*left:25%;*/
     /*    -webkit-transform:  matrix(.2,0,0,.2,0,0);*/
     /*    -webkit-transform-origin:  0 0;*/
 }
 
-.panzoom img{
+.panzoom img {
     max-width: 100%;
     max-height: 100%;
 }
 
-.map-external-wrapper{
+.map-external-wrapper {
     /*    margin:auto;*/
     width: 100%;
     height: 100%;
     position: absolute;
 }
 
-img.map, map area{
-    //outline: 1px solid red;
+img.map, map area {
+/ / outline: 1 px solid red;
 }
