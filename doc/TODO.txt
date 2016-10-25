@@ -6,6 +6,10 @@ TODO LIST CHRYSALIS
 FEATURES
 ------------
 
+KNOWN BUG : bloposts and emails not readable in mobile mode on old smartphoens (border-image missing, impossible to fallback with a background color in this case)
+
+- cms : passer à zinnia.plugins et non cmsplugin_zinnia ?
+
 - update to latest django ? Mais avec django-retrocomaptibility......
 
 Version mobile: Sous android, que ce soit en affichage Portrait que Paysage, la version mobile charge mais le texte est coupé sur le bord droit, avec impossibilité de scroll sur les côtés.
