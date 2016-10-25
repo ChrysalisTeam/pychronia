@@ -1066,7 +1066,7 @@ table.footnote {
 }
 .ui-dropdownchecklist-dropcontainer {
   border: 1px solid #aaa;
-  padding: 2px;
+  padding: 2px 14px 2px 2px;
 }
 .select2-container-multi .select2-choices .select2-search-field input {
   padding: 0;
