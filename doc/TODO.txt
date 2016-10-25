@@ -6,7 +6,7 @@ TODO LIST CHRYSALIS
 FEATURES
 ------------
 
-KNOWN BUG : bloposts and emails not readable in mobile mode on old smartphoens (border-image missing, impossible to fallback with a background color in this case)
+KNOWN BUG : bloposts and emails not readable in mobile mode on old smartphones (border-image missing, impossible to fallback with a background color in this case)
 
 - cms : passer à zinnia.plugins et non cmsplugin_zinnia ?
 
@@ -77,6 +77,7 @@ PAUSED BUGLETS:
 TASKS DONE
 ---------------
 
+- Fix touch-hover qui ne marche pas sur dynamic world map - DONE
 - Fix message.attachment, resolved TWICE -> must display without /files/xxxx/ - DONE
 - Use {% fontawesome_icon "times-circle " %} pour email modeles - DONE
 - Change <h4>{{ title }}</h4> --> use ".form_title" class - DONE
