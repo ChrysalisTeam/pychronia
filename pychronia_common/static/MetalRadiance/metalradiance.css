@@ -1042,6 +1042,7 @@ table.footnote {
 }
 .jp-audio {
   margin: 10px auto;
+  max-width: 100%;
 }
 .jp-audio * {
   box-sizing: content-box !important;
