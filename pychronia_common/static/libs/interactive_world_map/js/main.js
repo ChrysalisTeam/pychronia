@@ -7,6 +7,10 @@ var newHeight = 0;
 var $section ;
 var $panzoom ;
 
+
+var isTouchDevice = (window.ontouchstart !== undefined);
+
+
 var displayTooltip = function(e){
     //console.log("Pointer mousemove to", e.target);
     var target = $(e.target);
@@ -15,8 +19,10 @@ var displayTooltip = function(e){
         //console.log("Pointer at coords-ref");
         tooltip.html(target.attr('alt'));
         tooltip.css('visibility','visible');
-        tooltip.css('top',''+e.clientY+'px');  // will fallback to 0 on touch devices
-        tooltip.css('left',''+(e.clientX+5)+'px');  // will fallback to 0 on touch devices
+        if (!isTouchDevice) {
+            tooltip.css('top',''+e.clientY+'px');  // will fallback to 0 on touch devices
+            tooltip.css('left',''+(e.clientX+5)+'px');  // will fallback to 0 on touch devices
+        }
     } else {
         tooltip.css('visibility','hidden');
     }
