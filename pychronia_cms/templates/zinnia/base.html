@@ -13,6 +13,8 @@
 {% endcomment %}
 
 
+{% block html_title %}{{ object.title|default:_("Articles") }} - {% trans "Chrysalis Game Blog" %}{% endblock %}
+
 {% block panels %}
 
     {% usekwacro main_panel_start frame_class="medium_frame float_right" %}
