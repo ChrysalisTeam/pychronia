@@ -6,6 +6,10 @@ TODO LIST CHRYSALIS
 FEATURES
 ------------
 
+Pages d'aide help-login et captcha inexistantes, normal ?
+
+Mettre Integerfield dans MoneyForm ?
+
 KNOWN BUG : bloposts and emails not readable in mobile mode on old smartphones (border-image missing, impossible to fallback with a background color in this case)
 
 - cms : passer à zinnia.plugins et non cmsplugin_zinnia ?
