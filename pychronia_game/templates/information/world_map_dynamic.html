@@ -57,7 +57,7 @@
                         <map class="overlay-map" name="planetmap">
                             {% for place, data in all_locations.items %}
                             
-                                {% if data.geolocation|length = 4 %}
+                                {% if data.geolocation|length == 4 %}
 
                                     <area id="{{place}}" shape="rect"
                                         class="coords-ref" coords="{{data.geolocation|join:","}}" alt="{{data.summary|default:summary_fallback}}" href="#{{place}}">

@@ -376,6 +376,7 @@ def rich_text(context, content, initial_header_level=None, report_level=None, ex
     #print("Using rich_text fragment_cache_key:", fragment_cache_key)
 
     # TODO - use get_or_set() when using Django>1.9
+    # BEWARE - because of this caching, new encyclopedia links will take some time to appear in rich texts
     result = cache.get(fragment_cache_key)
     if result is None:
         result = _generate_enriched_text()

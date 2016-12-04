@@ -27,7 +27,7 @@ from pychronia_game.templatetags.helpers import _generate_encyclopedia_links, \
     format_enriched_text, _generate_game_file_links, _generate_game_image_thumbnails, \
     rich_text
 from pychronia_game import views, utilities, authentication
-from pychronia_game.utilities import autolinker
+from pychronia_game.utilities import autolinker, to_snake_case
 from django.test.client import RequestFactory
 from pychronia_game.datamanager.datamanager_administrator import retrieve_game_instance, \
     _get_zodb_connection, GameDataManager, get_all_instances_metadata, \
@@ -4555,9 +4555,13 @@ class TestHttpRequests(BaseGameTestCase):
         from pychronia_game.urls import inner_game_urlpatterns
         # we test some views for which there is a distinction between master and player
         selected_patterns = """ compose_message view_sales personal_items_slideshow character_profile friendship_management""".split()
-        views = [url._callback_str for url in inner_game_urlpatterns if
-                 not isinstance(url, RegexURLResolver) and [match for match in selected_patterns if
-                                                            match in url._callback_str]]
+
+        views = []
+        for url in inner_game_urlpatterns:
+            url_repr = getattr(url, "_callback_str", to_snake_case(url.callback.__name__))
+            #print("-------> Trying with url_repr", url_repr)
+            if not isinstance(url, RegexURLResolver) and [match for match in selected_patterns if match in url_repr]:
+                views.append(url.callback)
         assert len(views) == len(selected_patterns)
 
         def test_views(views):
@@ -4565,7 +4569,7 @@ class TestHttpRequests(BaseGameTestCase):
                 url = neutral_url_reverse(view)
                 response = self.client.get(url)
                 # print response.content
-                self.assertEqual(response.status_code, 200, view + " | " + url + " | " + str(response.status_code))
+                self.assertEqual(response.status_code, 200, str(view) + " | " + url + " | " + str(response.status_code))
 
         test_views(views)
 
