@@ -1,5 +1,5 @@
 
-import os, sys
+import os, sys, warnings
 
 root = os.path.dirname(os.path.realpath(__file__))
 if root not in sys.path:
@@ -10,6 +10,8 @@ if dependencies not in sys.path:
     sys.path.insert(0, dependencies)
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "pychronia_settings")  # not erased if already set, eg. for tests
+
+#warnings.resetwarnings() # UNCOMMENT TO SHOW ALL WARNINGS (even deprecation stuffs)
 
 import django_compat_patcher
 django_compat_patcher.patch()

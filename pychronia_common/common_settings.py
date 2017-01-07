@@ -46,6 +46,11 @@ FORCE_SCRIPT_NAME = None  # if not mounted at /
 ######################################################################################################
 
 
+# Django-compat-patcher settings
+DCP_LOGGING_LEVEL = None
+DCP_ENABLE_WARNINGS = False  # to get DCP deprecation warnings
+
+
 ugettext = lambda s: s  # dummy placeholder for makemessages
 
 ROOT_PATH = os.path.dirname(
