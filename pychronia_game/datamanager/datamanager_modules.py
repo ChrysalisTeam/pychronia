@@ -114,12 +114,14 @@ class DescentRpgData(BaseDataManager):
 
             utilities.check_is_slug(player_id)
 
+            utilities.check_is_string(player_data["name"], multiline=False)
+
             for stat_name in "constitution agility observation".split():
                 stat = player_data["stats"][stat_name]
                 utilities.check_is_int(stat)
                 assert 1 <= stat <= 5  # 6 on dice is a FUMBLE always
 
-            for entry in player_data["abilities"] + player_data["equipment"]:
+            for entry in player_data["abilities"] + player_data["equipments"]:
                 utilities.check_is_string(entry, multiline=True)
 
 

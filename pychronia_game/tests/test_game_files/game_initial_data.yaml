@@ -724,6 +724,8 @@ descent_rpg:
 
         protector:
 
+            name: "Nom du Protecteur"
+
             stats:
                 constitution: 2
                 agility: 2
@@ -732,7 +734,7 @@ descent_rpg:
             abilities:
                 - "Ma Compétence: elle sert à ceci"
 
-            equipment:
+            equipments:
                 - "Loupe : sert à ceci"
 
 ...
