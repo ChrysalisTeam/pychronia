@@ -710,4 +710,29 @@ gamemaster_manual:
     spoiler_content: |
 
         Ceci est plein de spoilers !!
+
+
+
+descent_rpg:
+
+    story: |
+
+        Ceci est le manuel du RPG Descent
+
+
+    players:
+
+        protector:
+
+            stats:
+                constitution: 2
+                agility: 2
+                observation: 2
+
+            abilities:
+                - "Ma Compétence: elle sert à ceci"
+
+            equipment:
+                - "Loupe : sert à ceci"
+
 ...
