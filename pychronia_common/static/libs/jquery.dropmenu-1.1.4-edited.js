@@ -111,10 +111,9 @@
 				$('a, span', $menu).removeClass('hover');
 			});*/
 
-			$menu.find('li').hover(
 
-				//	showing submenu
-				function() {
+			//	showing submenu
+			var onHover = function() {
 					var listit = this,
 						subnav = $.fn.dropmenu.getSubnav(listit),
 						subcss = { zIndex: $.fn.dropmenu.zIndex++ };
@@ -158,7 +157,9 @@
 					}
 
 				//	hiding submenu
-				}, function() {
+				};
+
+			var onLeave = function() {
 					var listit = this,
 						subnav = $.fn.dropmenu.getSubnav(listit);
 
@@ -188,8 +189,14 @@
 						}
 
 					}, opts.timeout);
-				}
-			);
+				};
+
+            // for MOUSE devices
+            $menu.find('li').hover(onHover, onLeave);
+
+            // HACK for TOUCH devices
+            $menu.find('li').bind("touchstart", onHover);
+            $menu.find('li').bind("touchend", onLeave);
 		});
 	};
 
@@ -206,7 +213,7 @@
 	$.fn.dropmenu.defaults 	= {
 		effect			: 'none',		//	'slide', 'fade', or 'none'
 		speed			: 'normal',		//	'normal', 'fast', 'slow', 100, 1000, etc
-		timeout			: 250,
+		timeout			: 1000,
 		nbsp			: false,
 		maxWidth		: 0
 	};

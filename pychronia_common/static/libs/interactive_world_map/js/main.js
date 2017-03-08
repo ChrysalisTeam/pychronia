@@ -8,7 +8,7 @@ var $section ;
 var $panzoom ;
 
 
-var isTouchDevice = (window.ontouchstart !== undefined);
+var isTouchDevice = false;  // NOPE BROKEN NOW :(window.ontouchstart !== undefined);
 
 
 var displayTooltip = function(e){

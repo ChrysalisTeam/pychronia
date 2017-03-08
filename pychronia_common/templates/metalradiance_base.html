@@ -134,7 +134,8 @@
             }
         );
 
-        $( '#menulist li:has(ul)' ).doubleTapToGo();  // to make menu work on touch-devices
+        // FIXME OR REMOVE - CURRENTLY BROKEN since now all browsers expose touch APIs
+        // $( '#menulist li:has(ul)' ).doubleTapToGo();  // to make menu work on touch-devices
 
         $("#full_header").mmenu({
                                    navbar: {
@@ -143,7 +144,7 @@
                                        titleLink: null
                                    },
                                    // options : http://mmenu.frebsite.nl/documentation/options/
-                                   /* DO NOT enable swip-to-open, it might interfere with mobile touch-scrolling
+                                   /* DO NOT enable swipe-to-open, it might interfere with mobile touch-scrolling
                                     dragOpen: {
                                        open: $.mmenu.support.touch  // only on touch devices
                                    }*/

@@ -5,7 +5,7 @@
  See http://osvaldas.info/drop-down-navigation-responsive-and-touch-friendly
 */
 
-
+// FIXME - REMOVE THIS, NOT USED ANYMORE SINCE TOUCH DETECTION IS NOW BROKEN
 
 ;(function( $, window, document, undefined )
 {
