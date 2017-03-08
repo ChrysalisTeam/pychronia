@@ -105,16 +105,19 @@ class DescentRpgData(BaseDataManager):
     def _check_database_coherence(self, **kwargs):
         super(DescentRpgData, self)._check_database_coherence(**kwargs)
 
-        strict = kwargs.get("strict", False)
+        strict = kwargs.get("strict", False)  # unused atm
+
         descent_data = self.data["descent_rpg"]
 
-        utilities.assert_sets_equal(descent_data["players"], ["protector"])
+        for entry in descent_data["common_equipments"]:
+            utilities.check_is_string(entry, multiline=False)
 
         for player_id, player_data in descent_data["players"].items():
 
             utilities.check_is_slug(player_id)
 
             utilities.check_is_string(player_data["name"], multiline=False)
+            utilities.check_is_string(player_data["missions"], multiline=True)
 
             for stat_name in "constitution agility observation".split():
                 stat = player_data["stats"][stat_name]
@@ -122,7 +125,7 @@ class DescentRpgData(BaseDataManager):
                 assert 1 <= stat <= 5  # 6 on dice is a FUMBLE always
 
             for entry in player_data["abilities"] + player_data["equipments"]:
-                utilities.check_is_string(entry, multiline=True)
+                utilities.check_is_string(entry, multiline=False)
 
 
 

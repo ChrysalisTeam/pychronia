@@ -715,10 +715,8 @@ gamemaster_manual:
 
 descent_rpg:
 
-    story: |
-
-        Ceci est le manuel du RPG Descent
-
+    common_equipments:
+      - sac à dos étanche
 
     players:
 
@@ -728,13 +726,16 @@ descent_rpg:
 
             stats:
                 constitution: 2
-                agility: 2
-                observation: 2
+                agility: 3
+                observation: 4
+
+            missions: |
+               Défendre les amis.
 
             abilities:
-                - "Ma Compétence: elle sert à ceci"
+                - combat
 
             equipments:
-                - "Loupe : sert à ceci"
-
+            - 1 truc
+            - 2 autres trucs
 ...
