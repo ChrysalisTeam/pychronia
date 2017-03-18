@@ -2,17 +2,21 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
-import unittest, copy
-import ZODB
-import transaction
-from ZODB import DB
-from ZODB.PersistentList import PersistentList
-from ZODB.PersistentMapping import PersistentMapping
+import unittest, copy, time, random
+import traceback
 from unittest import TestCase
 import multiprocessing.pool
-import traceback
+
+
+import ZODB
+from ZODB import DB, FileStorage
+from ZODB.PersistentList import PersistentList
+from ZODB.PersistentMapping import PersistentMapping
 from ZODB.POSException import ConflictError
+
+import transaction
 from transaction.interfaces import TransactionFailedError
+
 
 pool = multiprocessing.pool.ThreadPool(3)
 
@@ -25,6 +29,7 @@ def transfer_list_value(db, origin, target):
     getattr(root, target)[0] = value
 
     transaction.commit()
+
     assert getattr(root, target)[0] == value
     conn.close()
 
@@ -38,6 +43,97 @@ def delete_container(db, name):
     transaction.commit()
     assert not hasattr(root, name)
     conn.close()
+
+
+
+HUGE_DATABASE_NAME = 'huge_database.fs'
+
+def _get_huge_db_root():
+    storage = FileStorage.FileStorage(HUGE_DATABASE_NAME)
+    db = DB(storage)
+    connection = db.open()
+    root = connection.root()
+    return db, connection, root
+
+
+def ___test_huge_db_ghosting_system():
+    """
+    Interactive testcase, to demonstrate the behaviour of ZODB regarding memory management and ghost objects.
+    Launch it with a "top"-like window opened next to it.
+
+    MIGHT TRIGGER THIS WARNING:
+
+        p:\development\.virtualenvs\pychronia\lib\site-packages\ZODB\Connection.py:550: UserWarning: The <class 'persistent.list.PersistentList'>
+        object you're saving is large. (20001339 bytes.)
+
+        Perhaps you're storing media which should be stored in blobs.
+
+        Perhaps you're using a non-scalable data structure, such as a
+        PersistentMapping or PersistentList.
+
+        Perhaps you're storing data in objects that aren't persistent at
+        all. In cases like that, the data is stored in the record of the
+        containing persistent object.
+
+        In any case, storing records this big is probably a bad idea.
+
+        If you insist and want to get rid of this warning, use the
+        large_record_size option of the ZODB.DB constructor (or the
+        large-record-size option in a configuration file) to specify a larger
+        size.
+
+    Playing with this test shows that:
+    
+    - contants of persistent lists and mappings are really only loaded when accessed (eg. when lookup is done on them..)
+    - non persistent types (list(), dict()) are badly treated, and remain in memory even when committed to file
+    """
+
+    use_non_persistent_types = False
+
+    PersistentList = globals()["PersistentList"]
+    PersistentMapping = globals()["PersistentMapping"]
+    if use_non_persistent_types:
+        PersistentList = list
+        PersistentMapping = dict
+
+    db, connection, root = _get_huge_db_root()
+
+    root["data"] = PersistentList(PersistentMapping({"toto": "tata"*random.randint(500, 600)}) for i in range(200000))
+
+    print("We have a HUGE database filled with transient data now!")
+    time.sleep(5)
+
+    transaction.commit()
+
+    print("We have committed the transaction!")
+    time.sleep(5)
+
+    connection.close()
+    db.close()
+
+    # ---------
+
+    db, connection, root = _get_huge_db_root()
+
+    print("We have reopened the huge database now!")
+    time.sleep(5)
+
+    data = root["data"]
+
+    print("We have accessed data list!", type(data))
+    time.sleep(5)
+
+    var1 = data[0]
+
+    print("We have accessed data list first element!", type(var1))
+    time.sleep(5)
+
+    for i in data:
+        i["toto"]  # THIS removes the ghosting effect on element
+
+    print("We have accessed data list all elements!", type(i))
+    time.sleep(15)
+
 
 
 class TestZODB(TestCase):
