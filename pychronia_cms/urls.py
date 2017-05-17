@@ -43,8 +43,7 @@ urlpatterns = patterns('',
                        url(r'^i18n/', include('django.conf.urls.i18n')),  # to set language
                        )
 
-urlpatterns += i18n_patterns('',
-
+urlpatterns += i18n_patterns(
                              #(r'^accounts/', include('userprofiles.urls')), # one-step registration
 
                              url(r'^weblog/', include('zinnia.urls')),
