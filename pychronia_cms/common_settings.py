@@ -40,6 +40,7 @@ INSTALLED_APPS += [
     # 'djangocms_googlemap',
     'djangocms_link',
     'djangocms_snippet',
+    'djangocms_rawhtml',
 
     'filer',
     'cmsplugin_filer_file',

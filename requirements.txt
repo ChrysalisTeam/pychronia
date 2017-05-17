@@ -60,6 +60,8 @@ djangocms-link==2.0.1
 
 djangocms-snippet==1.9.1
 
+djangocms-rawhtml==0.1
+
 djangocms-text-ckeditor==2.9.3
 
 git+https://github.com/pakal/cmsplugin-rst/
