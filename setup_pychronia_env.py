@@ -1,5 +1,5 @@
 
-import os, sys, warnings
+import os, sys
 
 root = os.path.dirname(os.path.realpath(__file__))
 if root not in sys.path:
@@ -14,7 +14,9 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "pychronia_settings")  # not era
 #warnings.resetwarnings() # UNCOMMENT TO SHOW ALL WARNINGS (even deprecation stuffs)
 
 import django_compat_patcher
-django_compat_patcher.patch()
+dcp_settings = dict(DCP_ENABLE_WARNINGS=False,
+                    DCP_LOGGING_LEVEL="INFO")
+django_compat_patcher.patch(dcp_settings)
 
 import django
 django.setup()
