@@ -909,6 +909,7 @@ table.realtable a:active {
   padding-top: 30px;
   height: 0;
   overflow: hidden;
+  margin: 20px auto 20px;
   text-align: center;
 }
 .video-container iframe, .video-container object, .video-container embed {
@@ -1910,10 +1911,11 @@ h4 {
   font-size: 1.2em;
   margin: 15px 20px 6px;
 }
-.drop_cap, .drop-cap, .dropcap {
+.drop_cap, .drop-cap, .dropcap, .drop_cap p, .drop-cap p, .dropcap p {
   text-indent: 0 !important;
 }
-.drop_cap:first-letter, .drop-cap:first-letter, .dropcap:first-letter {
+.drop_cap:first-letter, .drop-cap:first-letter, .dropcap:first-letter,
+.drop_cap p:first-letter, .drop-cap p:first-letter, .dropcap p:first-letter {
   color: #775F13;
   float: left;
   font-size: 40px;
