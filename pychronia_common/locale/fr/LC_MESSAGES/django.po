@@ -6,36 +6,36 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-12-28 19:10+0100\n"
+"POT-Creation-Date: 2017-05-18 18:42+0200\n"
 "PO-Revision-Date: 2015-12-28 19:12+0200\n"
 "Last-Translator: Pascal <chambon.pascal@gmail.com>\n"
 "Language-Team: Nothing\n"
-"Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: fr\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Generator: Virtaal 0.7.1\n"
 
-#: .\common_settings.py:72
+#: .\common_settings.py:82
 msgid "French"
 msgstr "Français"
 
-#: .\common_settings.py:73
+#: .\common_settings.py:83
 msgid "English"
 msgstr "Anglais"
 
-#: .\templates\metalradiance_base.html:6
+#: .\templates\html_skeleton.html:6
 msgid "Welcome"
 msgstr "Bienvenue"
 
-#: .\templates\metalradiance_base.html:172
-msgid "Click on the border of this notification panel to close it."
-msgstr "Cliquez sur le bord de ce panneau de notification pour le fermer."
-
-#: .\templates\metalradiance_base.html:424
+#: .\templates\metalradiance_base.html:143
 msgid "Controls"
 msgstr "Contrôles"
+
+#: .\templates\metalradiance_base.html:188
+msgid "Click on the border of this notification panel to close it."
+msgstr "Cliquez sur le bord de ce panneau de notification pour le fermer."
 
 #: .\templates\metalradiance_kwacros.html:9
 #: .\templates\metalradiance_kwacros.html:16
