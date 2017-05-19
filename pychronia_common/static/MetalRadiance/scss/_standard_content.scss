@@ -10,7 +10,7 @@ h1 {
     @include header_common;
     font-size: 2em;
     color: $title_gold;
-    margin-bottom: 20px;
+    margin-bottom: 40px;
     text-align: center;
 
     &:before {
@@ -177,7 +177,14 @@ hr {
     margin: 20px auto;
 }
 
-blockquote.antic, q.antic, cite.antic {
+
+blockquote {
+    font-style: italic;
+    padding-left: 20px;
+}
+
+blockquote.antic {
+    font-style: normal;
     font-size: 1.5em;
     line-height: 1.2em;
     text-shadow: 1px 1px 0px black;

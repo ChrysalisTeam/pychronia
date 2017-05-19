@@ -241,6 +241,7 @@
             {% endblock %}
 
             <div class="marble_menu_container">
+                {% spaceless %} {# IMPORTANT - inline-block elements below must not have spaces between them! #}
                 <div class="marble_menu">
                     {# <div class="marble_menu_inner_outline"> #}
                         <ul id="menulist" class="dropmenu" style="z-index: 100; display: none;">
@@ -286,6 +287,7 @@
                         </ul>
                     {# </div> #}
                 </div>
+            {% endspaceless %}
             </div>
 
             {% block right_big_icon_panel %}
