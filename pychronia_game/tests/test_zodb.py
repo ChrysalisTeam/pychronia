@@ -98,7 +98,8 @@ def ___test_huge_db_ghosting_system():
 
     db, connection, root = _get_huge_db_root()
 
-    root["data"] = PersistentList(PersistentMapping({"toto": "tata"*random.randint(500, 600)}) for i in range(200000))
+    root["data"] = PersistentList(PersistentMapping({"toto": "tata"*random.randint(5000, 6000)}) for i in range(20000))
+    root["data"][0] = PersistentMapping({"toto": "tata"*5000000})  # HUGE first element
 
     print("We have a HUGE database filled with transient data now!")
     time.sleep(5)
@@ -120,18 +121,29 @@ def ___test_huge_db_ghosting_system():
 
     data = root["data"]
 
-    print("We have accessed data list!", type(data))
+    print("We have accessed data list!")
     time.sleep(5)
 
     var1 = data[0]
 
-    print("We have accessed data list first element!", type(var1))
+    print("We have accessed first element of data list!")
+    time.sleep(5)
+
+    var1 = data[0]["toto"]
+
+    print("We have unghosted first element of data list!")
+    time.sleep(5)
+
+    for i in data:
+        i  # no unghosting
+
+    print("We have accessed all elements of data list!")
     time.sleep(5)
 
     for i in data:
         i["toto"]  # THIS removes the ghosting effect on element
 
-    print("We have accessed data list all elements!", type(i))
+    print("We have unghosted all elements of data list!")
     time.sleep(15)
 
 
