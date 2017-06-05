@@ -21,6 +21,7 @@ User-agent: *
 Disallow: /static/ 
 Disallow: /media/ 
 Disallow: *.pdf
+Disallow: *.zip
 
 Sitemap: http://chrysalis-game.com/sitemap.xml
 """
