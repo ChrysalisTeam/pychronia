@@ -4,6 +4,23 @@
 
 
 abilities:
+
+    house_reports:
+
+        settings:
+            dedicated_email: "surveillance@services.com"
+            result_delay: [4, 6] # minutes
+            reports:
+              "10h-12h":
+                  gamemaster_hints: null
+                  surveillance_analysis: |
+                      Ceci est tout un texte décrivant ce qui s'est passé dans le manoir entre ces 2 heures.
+              "12h-14h":
+                  gamemaster_hints: "Caméras en réalité piratées et gelées par un espion"
+                  surveillance_analysis: null
+
+
+
     chess_challenge:
         settings: {}
 
@@ -478,6 +495,8 @@ messaging:
         "mercenaries@brotherhood.pg": {}
 
         "investigator@spies.com": {}
+
+        "surveillance@services.com": {}
 
 
     messages_dispatched:  #-> list of messages processed

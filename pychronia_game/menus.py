@@ -117,6 +117,7 @@ def _generate_web_menu(request, menu_entry_generator):
                                                    menu_entry(view=views.wiretapping_management),
 
                                                    menu_entry(view=views.house_locking),
+                                                   menu_entry(view=views.house_reports),
 
                                                    menu_entry(view=views.runic_translation),
                                                    menu_entry(view=views.matter_analysis),

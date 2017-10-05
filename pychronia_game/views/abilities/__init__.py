@@ -6,6 +6,10 @@ from .house_locking_mod import HouseLockingAbility
 
 house_locking = HouseLockingAbility.as_view
 
+from .house_reports_mod import HouseReportsAbility
+
+house_reports = HouseReportsAbility.as_view
+
 from .runic_translation_mod import RunicTranslationAbility
 
 runic_translation = RunicTranslationAbility.as_view

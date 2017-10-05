@@ -120,6 +120,7 @@ inner_game_urlpatterns = patterns('pychronia_game.views',
 
                                   url(r'^ability/abilities/$', 'ability_introduction'),
                                   url(r'^ability/house_locking/$', 'house_locking'),
+                                  url(r'^ability/house_reports/$', 'house_reports'),
                                   url(r'^ability/runic_translation/$', 'runic_translation'),
                                   url(r'^ability/wiretapping_management/$', 'wiretapping_management'),
                                   url(r'^ability/admin_dashboard/$', 'admin_dashboard'),

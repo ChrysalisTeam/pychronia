@@ -48,7 +48,8 @@ from .messaging_views import (ajax_set_message_template_state_flags, ajax_set_di
 
 from .abilities import (house_locking, runic_translation, wiretapping_management, artificial_intelligence,
                         mercenaries_hiring, matter_analysis, world_scan, chess_challenge, geoip_location,
-                        business_escrow, black_market, ability_introduction, telecom_investigation)
+                        business_escrow, black_market, ability_introduction, telecom_investigation,
+                        house_reports)
 
 from .admin_views import (admin_dashboard, webradio_management, gamemaster_manual,
                           manage_databases, static_pages_management, global_contacts_management,

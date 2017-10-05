@@ -244,6 +244,23 @@ class RadioFrequencyForm(SimpleForm):
                                 widget=forms.TextInput(attrs={'autocomplete': 'off'}))
 
 
+
+class HouseReportForm(AbstractGameForm):
+
+    def __init__(self, ability, *args, **kwargs):
+        super(HouseReportForm, self).__init__(ability, *args, **kwargs)
+
+        periods_availability = ability.get_available_periods()
+
+        # we only display period having data
+        _periods_choices = [(key, key) for (key, value) in periods_availability if value]
+        assert _periods_choices, periods_availability  # always
+
+        _periods_choices = [("", _("Select a time period..."))] + _periods_choices
+        self.fields["period"] = forms.ChoiceField(label=_("Period"), choices=_periods_choices, required=True)
+
+
+
 class TranslationForm(SimpleForm):
     def __init__(self, datamanager, *args, **kwargs):
         super(TranslationForm, self).__init__(*args, **kwargs)

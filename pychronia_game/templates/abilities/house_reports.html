@@ -1,0 +1,24 @@
+
+
+{% extends "base_one_column.html" %}
+
+{% load i18n helpers %}
+
+{% block content %}
+
+{% if periods_form %}
+    <h2>
+        {% trans "Request surveillance data" %}
+    </h2>
+
+    <div class="form_scroll_medium center" >
+    <form action="{{ periods_form.url }}" method="post">
+    {{ periods_form.as_p }}
+    <input type="submit" name="submit_request" value="{% trans "Send request" %}" />
+    </form>
+
+    </div>
+{% endif %}
+
+
+{% endblock %}

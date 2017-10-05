@@ -277,8 +277,9 @@ class AbstractPartnershipAbility(AbstractAbility):
 
         assert parent_id == self._last_request_msg_id  # ATM always true
 
+        recipient = self.get_character_email()
         warning_msg = _(
-            "*Below is the output of the automated ability processing, for recipient %(recipient)s. Please review it, modify it, and mail it manually to the user, with a proper delay.*")
+            "*Below is the output of the automated ability processing, for recipient %(recipient)s. Please review it, modify it, and mail it manually to the user, with a proper delay.*") % SDICT(recipient=recipient)
 
         body_prefix = warning_msg + "\n\n-------\n\n"
 
@@ -304,8 +305,6 @@ class AbstractPartnershipAbility(AbstractAbility):
 
         auto_response_disabled = self.get_global_parameter("disable_automated_ability_responses")
 
-        auto_response_must_occur = response_msg_data and not auto_response_disabled
-
         request_msg_id = self._send_processing_request(subject=request_msg_data["subject"],
                                                        body=request_msg_data["body"],
                                                        mark_as_read_by_master=bool(response_msg_data))
@@ -318,18 +317,17 @@ class AbstractPartnershipAbility(AbstractAbility):
             self.set_dispatched_message_state_flags(username=self.master_login,
                                                     msg_id=request_msg_id,
                                                     has_starred=True)
-        elif auto_response_disabled:
-            response_msg_id = self._send_processing_result_to_master(parent_id=request_msg_id,
-                                                                     subject=response_msg_data["subject"],
-                                                                     body=response_msg_data["body"],
-                                                                     attachment=response_msg_data["attachment"])
         else:
-            # we have a response message, and we are allowed to send it directly to character
-            response_msg_id = self._send_back_processing_result(parent_id=request_msg_id,
-                                                                subject=response_msg_data["subject"],
-                                                                body=response_msg_data["body"],
-                                                                attachment=response_msg_data["attachment"])
+            # only send response message to player if it's allowed by game settings
+            processor_func = (self._send_processing_result_to_master
+                                if auto_response_disabled else
+                              self._send_back_processing_result)
 
+            response_msg_id = processor_func(parent_id=request_msg_id,
+                                                subject=response_msg_data["subject"],
+                                                body=response_msg_data["body"],
+                                                attachment=response_msg_data["attachment"])
+        return response_msg_id
 
 '''
     def _instantiate_game_form(self,
