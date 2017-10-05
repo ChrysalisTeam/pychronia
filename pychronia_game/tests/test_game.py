@@ -38,7 +38,7 @@ from pychronia_game.tests._test_tools import temp_datamanager
 from django.forms.fields import Field
 from django.core.urlresolvers import resolve, NoReverseMatch
 from pychronia_game.views import friendship_management
-from pychronia_game.views.abilities import house_locking, \
+from pychronia_game.views.abilities import house_locking, house_reports,\
     wiretapping_management, runic_translation, artificial_intelligence_mod, telecom_investigation_mod
 from pychronia_game.views.messaging_views import _filter_messages
 from django.contrib.auth.models import User
@@ -6554,6 +6554,50 @@ class TestSpecialAbilities(BaseGameTestCase):
 
         self.assertEqual(self.dm.get_event_count("DELAYED_ACTION_ERROR"), 0)
         self.assertEqual(self.dm.get_event_count("DELAYED_MESSAGE_ERROR"), 0)
+
+    @for_ability(house_reports)
+    def test_house_reports(self):
+
+        assert not self.dm.get_global_parameter("disable_automated_ability_responses")
+
+        self._reset_messages()
+
+        assert self.dm.data["abilities"]["house_reports"]["settings"]["result_delay"]
+        self.dm.data["abilities"]["house_reports"]["settings"]["result_delay"] = 0.03 / 45  # flexible time!
+        self.dm.commit()
+
+        house_reports = self.dm.instantiate_ability("house_reports")
+
+        report = house_reports._get_valid_report_for_period("10h-12h")
+        assert "dans le manoir" in report
+
+        with pytest.raises(AbnormalUsageError):
+            house_reports._get_valid_report_for_period("12h-14h")  # no analysis data
+
+        periods = house_reports.get_available_periods()
+        assert periods == [('10h-12h', True), ('12h-14h', False)]  # sorted
+
+
+        with pytest.raises(AbnormalUsageError):
+            house_reports.fetch_house_report(period="12h-14h")  # no analysis data
+
+        def ability_action():
+            house_reports.fetch_house_report(period="10h-12h")
+
+        def request_msg_checker(msg):
+            self.assertTrue("Please provide" in msg["body"], msg=msg)
+
+        def response_msg_checker(msg):
+            self.assertTrue("dans le manoir" in msg["body"].lower(), msg=msg)
+
+        ability_breaker = None  # no case where response can't be generated, in this ability
+
+        self._test_ability_standard_email_exchanges(ability_instance=house_reports,
+                                                    ability_action=ability_action,
+                                                    request_msg_checker=request_msg_checker,
+                                                    response_msg_checker=response_msg_checker,
+                                                    ability_breaker=ability_breaker)
+
 
     @for_ability(house_locking)
     def test_house_locking(self):
