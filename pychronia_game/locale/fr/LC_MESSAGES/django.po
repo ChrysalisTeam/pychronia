@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-10-07 21:00+0200\n"
+"POT-Creation-Date: 2017-10-07 22:09+0200\n"
 "PO-Revision-Date: 2017-10-07 20:55+0200\n"
 "Last-Translator: Pascal <chambon.pascal@gmail.com>\n"
 "Language-Team: Nothing\n"
@@ -1149,167 +1149,6 @@ msgstr ""
 msgid "Please come back later."
 msgstr "Veuillez revenir plus tard."
 
-#: .\templates\__specific_operations\armed_interventions.html:28
-msgid "Launch Operation"
-msgstr "Lancer l'opération"
-
-#: .\templates\__specific_operations\chat_with_djinn.html:90
-#, python-format
-msgid "You're cunn <strong>%(bot_name)s</strong>."
-msgstr ""
-
-#: .\templates\__specific_operations\chat_with_djinn.html:103
-#: .\templates\abilities\artificial_intelligence.html:116
-#: .\templates\messaging\compose.html:211
-msgid "Send Message"
-msgstr "Envoyer le Message"
-
-#: .\templates\__specific_operations\chat_with_djinn.html:107
-#: .\templates\abilities\artificial_intelligence.html:120
-msgid "Interferences when chatting with djinn..."
-msgstr "Interférences lors de la communication avec le djinn..."
-
-#: .\templates\__specific_operations\contact_djinns.html:11
-msgid "Welcome to the shrine of djinns."
-msgstr "Bienvenue au sanctuaire des djinns."
-
-#: .\templates\__specific_operations\contact_djinns.html:15
-#, python-format
-msgid ""
-"\n"
-"    Here you may enter in communication with some djinns, depending on the "
-"sacred objects you'll have retrieved for them.\n"
-"    By nature, djinns are somehow autistic, so if after about %"
-"(bots_max_answers)s exchanges, they don't want to talk with you anymore, \n"
-"    no need to take it personally - just let it be.\n"
-"    "
-msgstr ""
-
-#: .\templates\__specific_operations\contact_djinns.html:25
-msgid "At the moment, you have retrieved"
-msgstr "Pour l'instant, vous avez récupéré"
-
-#: .\templates\__specific_operations\contact_djinns.html:26
-#, python-format
-msgid ""
-"\n"
-"            %(team_gems)s gem.\n"
-"    "
-msgid_plural ""
-"\n"
-"            %(team_gems)s gems.\n"
-"    "
-msgstr[0] ""
-"\n"
-"            %(team_gems)s gemme.\n"
-"    "
-msgstr[1] ""
-"\n"
-"            %(team_gems)s gemmes.\n"
-"    "
-
-#: .\templates\__specific_operations\contact_djinns.html:39
-#, python-format
-msgid ""
-"\n"
-"        Djinn <strong>%(name)s</strong> compels your team to reclaim <strong>"
-"%(gems_required)s</strong> \n"
-"        gem before communicating with you.\n"
-"    "
-msgid_plural ""
-"\n"
-"        Djinn <strong>%(name)s</strong> compels your team to reclaim a total "
-"of <strong>%(gems_required)s</strong> \n"
-"        gems before communicating with you.\n"
-"    "
-msgstr[0] ""
-"\n"
-"        Le djinn <strong>%(name)s</strong> réclame que votre équipe récupère "
-"<strong>%(gems_required)s gemme</strong> \n"
-"        avant de bien vouloir communiquer avec vous.\n"
-"    "
-msgstr[1] ""
-"\n"
-"        Le djinn <strong>%(name)s</strong> réclame que votre équipe récupère "
-"<strong>%(gems_required)s gemmes</strong> \n"
-"        avant de bien vouloir communiquer avec vous.\n"
-"    "
-
-#: .\templates\__specific_operations\contact_djinns.html:55
-msgid "Contact specific djinn"
-msgstr "Contacter un djinn en particulier"
-
-#: .\templates\__specific_operations\contact_djinns.html:62
-#: .\templates\abilities\artificial_intelligence.html:130
-msgid "Contact Djinn"
-msgstr "Contacter le Djinn"
-
-#: .\templates\__specific_operations\contact_djinns.html:70
-msgid ""
-"You currently can't communicate with any djinn, reclaim some gems first."
-msgstr ""
-"Vous ne pouvez actuellement communiquer avec aucun djinn, récupérez des "
-"gemmes d'abord."
-
-#: .\templates\__specific_operations\personal_radio_messages.html:10
-msgid ""
-"\n"
-"        Since it is the only radio broadcasting its content over the whole "
-"of Pangea, <strong>Pangea Radio</strong> has quickly been \n"
-"        used by the most powerful political, economic and scientific "
-"organizations as a means to efficiently broadcast personal messages to their "
-"members. \n"
-"    "
-msgstr ""
-"\n"
-"        En tant qu'unique radio diffusant sur l'intégralité de Pangéa, "
-"<strong>Radio Pangéa</strong> a rapidement été \n"
-"        utilisée par les plus puissantes organisations politiques, "
-"économiques et scientifiques, comme un moyen efficace pour envoyer des "
-"messages personnels à leurs membres. \n"
-"    "
-
-#: .\templates\__specific_operations\personal_radio_messages.html:19
-msgid "As a game master, none of these personal messages is for you."
-msgstr ""
-"En tant que maître du jeu, aucun de ces messages personnels ne vous vise."
-
-#: .\templates\__specific_operations\personal_radio_messages.html:24
-msgid ""
-"You're part of one of these organizations, so here are the french texts or "
-"animal sounds you will have to listen to, and their meaning."
-msgstr ""
-"Vous faites partie d'une de ces organisation, voici donc les textes ou sons "
-"d'animaux qu'il vous faudra guetter, ainsi que leur signification."
-
-#: .\templates\__specific_operations\personal_radio_messages.html:29
-msgid "When you have received new email messages:"
-msgstr "Quand vous avez reçu de nouveaux messages :"
-
-#: .\templates\__specific_operations\personal_radio_messages.html:30
-msgid "When one of your missions had a successful ending:"
-msgstr "Quand l'une de vos missions a été couronnée de succès :"
-
-#: .\templates\__specific_operations\personal_radio_messages.html:31
-msgid "When one of your missions ended with an epic failure:"
-msgstr "Quand l'un de vos missions a lamentablement échoué :"
-
-#: .\templates\__specific_operations\personal_radio_messages.html:39
-msgid ""
-"\n"
-"                Concerning wiretapping : If you manage to guess which radio "
-"messages other guests are concerned by, \n"
-"                you'll detect more quickly the moments when you may have "
-"intercepted new email conversations. \n"
-"            "
-msgstr ""
-"\n"
-"                Concernant les mises sur écoute : si vous réussissez à "
-"deviner à quels messages radio les autres invités réagissent, \n"
-"                vous détecterez plus rapidement les moments où vous pouvez "
-"avoir intercepté de nouvelles conversations par email. \n"
-"            "
-
 #: .\templates\abilities\artificial_intelligence.html:105
 #, python-format
 msgid ""
@@ -1318,6 +1157,19 @@ msgid ""
 msgstr ""
 "Vous êtes actuellement en communication télépathique avec le djinn <strong>%"
 "(selected_djinn)s</strong>."
+
+#: .\templates\abilities\artificial_intelligence.html:116
+#: .\templates\messaging\compose.html:211
+msgid "Send Message"
+msgstr "Envoyer le Message"
+
+#: .\templates\abilities\artificial_intelligence.html:120
+msgid "Interferences when chatting with djinn..."
+msgstr "Interférences lors de la communication avec le djinn..."
+
+#: .\templates\abilities\artificial_intelligence.html:130
+msgid "Contact Djinn"
+msgstr "Contacter le Djinn"
 
 #: .\templates\abilities\chess_challenge.html:18
 msgid "Your victory has well been recorded!"
@@ -2243,24 +2095,6 @@ msgstr "Dézoomer"
 msgid "Download a simplified, printable world map."
 msgstr "Télécharger une version simplifiée, imprimable de la carte du monde."
 
-#: .\templates\messaging\__conversation.html:10
-#: .\templates\messaging\messages.html:11 .\views\messaging_views.py:464
-msgid "Conversations"
-msgstr "Conversations"
-
-#: .\templates\messaging\__conversation.html:15
-msgid "Display All Conversations"
-msgstr "Toutes Les Conversations"
-
-#: .\templates\messaging\__conversation.html:42
-#: .\templates\messaging\_templates.html:45
-msgid "No messages yet."
-msgstr "Aucun message actuellement."
-
-#: .\templates\messaging\__conversation.html:61
-msgid "No messages to be displayed."
-msgstr "Aucun message à afficher."
-
 #: .\templates\messaging\_single_message.html:16
 #: .\templates\messaging\view_single_message.html:20
 msgid "Message queued for delivery."
@@ -2294,6 +2128,10 @@ msgstr "Date :"
 #: .\templates\messaging\_templates.html:111
 msgid "[intercepted]"
 msgstr "[intercepté]"
+
+#: .\templates\messaging\_templates.html:45
+msgid "No messages yet."
+msgstr "Aucun message actuellement."
 
 #: .\templates\messaging\_templates.html:65
 #: .\templates\messaging\single_message.html:34
@@ -2452,6 +2290,10 @@ msgstr "Replier tous les messages"
 #: .\templates\messaging\global_message_controls.html:47
 msgid "Fold All"
 msgstr "Replier Tous"
+
+#: .\templates\messaging\messages.html:11 .\views\messaging_views.py:464
+msgid "Conversations"
+msgstr "Conversations"
 
 #: .\templates\messaging\messages.html:11
 msgid "Messages"
@@ -2953,7 +2795,7 @@ msgstr ""
 #: .\views\abilities\house_reports_mod.py:71
 #, python-format
 msgid "<Manor surveillance response for period %(period)s>"
-msgstr "<Rapports de surveillance du manoir pour la période %s>"
+msgstr "<Rapports de surveillance du manoir pour la période %(period)s>"
 
 #: .\views\abilities\house_reports_mod.py:81
 #, python-format
@@ -4076,6 +3918,124 @@ msgstr "Tous les Evénements du Jeu"
 msgid "Instructions"
 msgstr "Instructions"
 
+#~ msgid "Launch Operation"
+#~ msgstr "Lancer l'opération"
+
+#~ msgid "Welcome to the shrine of djinns."
+#~ msgstr "Bienvenue au sanctuaire des djinns."
+
+#~ msgid "At the moment, you have retrieved"
+#~ msgstr "Pour l'instant, vous avez récupéré"
+
+#~ msgid ""
+#~ "\n"
+#~ "            %(team_gems)s gem.\n"
+#~ "    "
+#~ msgid_plural ""
+#~ "\n"
+#~ "            %(team_gems)s gems.\n"
+#~ "    "
+#~ msgstr[0] ""
+#~ "\n"
+#~ "            %(team_gems)s gemme.\n"
+#~ "    "
+#~ msgstr[1] ""
+#~ "\n"
+#~ "            %(team_gems)s gemmes.\n"
+#~ "    "
+
+#~ msgid ""
+#~ "\n"
+#~ "        Djinn <strong>%(name)s</strong> compels your team to reclaim "
+#~ "<strong>%(gems_required)s</strong> \n"
+#~ "        gem before communicating with you.\n"
+#~ "    "
+#~ msgid_plural ""
+#~ "\n"
+#~ "        Djinn <strong>%(name)s</strong> compels your team to reclaim a "
+#~ "total of <strong>%(gems_required)s</strong> \n"
+#~ "        gems before communicating with you.\n"
+#~ "    "
+#~ msgstr[0] ""
+#~ "\n"
+#~ "        Le djinn <strong>%(name)s</strong> réclame que votre équipe "
+#~ "récupère <strong>%(gems_required)s gemme</strong> \n"
+#~ "        avant de bien vouloir communiquer avec vous.\n"
+#~ "    "
+#~ msgstr[1] ""
+#~ "\n"
+#~ "        Le djinn <strong>%(name)s</strong> réclame que votre équipe "
+#~ "récupère <strong>%(gems_required)s gemmes</strong> \n"
+#~ "        avant de bien vouloir communiquer avec vous.\n"
+#~ "    "
+
+#~ msgid "Contact specific djinn"
+#~ msgstr "Contacter un djinn en particulier"
+
+#~ msgid ""
+#~ "You currently can't communicate with any djinn, reclaim some gems first."
+#~ msgstr ""
+#~ "Vous ne pouvez actuellement communiquer avec aucun djinn, récupérez des "
+#~ "gemmes d'abord."
+
+#~ msgid ""
+#~ "\n"
+#~ "        Since it is the only radio broadcasting its content over the "
+#~ "whole of Pangea, <strong>Pangea Radio</strong> has quickly been \n"
+#~ "        used by the most powerful political, economic and scientific "
+#~ "organizations as a means to efficiently broadcast personal messages to "
+#~ "their members. \n"
+#~ "    "
+#~ msgstr ""
+#~ "\n"
+#~ "        En tant qu'unique radio diffusant sur l'intégralité de Pangéa, "
+#~ "<strong>Radio Pangéa</strong> a rapidement été \n"
+#~ "        utilisée par les plus puissantes organisations politiques, "
+#~ "économiques et scientifiques, comme un moyen efficace pour envoyer des "
+#~ "messages personnels à leurs membres. \n"
+#~ "    "
+
+#~ msgid "As a game master, none of these personal messages is for you."
+#~ msgstr ""
+#~ "En tant que maître du jeu, aucun de ces messages personnels ne vous vise."
+
+#~ msgid ""
+#~ "You're part of one of these organizations, so here are the french texts "
+#~ "or animal sounds you will have to listen to, and their meaning."
+#~ msgstr ""
+#~ "Vous faites partie d'une de ces organisation, voici donc les textes ou "
+#~ "sons d'animaux qu'il vous faudra guetter, ainsi que leur signification."
+
+#~ msgid "When you have received new email messages:"
+#~ msgstr "Quand vous avez reçu de nouveaux messages :"
+
+#~ msgid "When one of your missions had a successful ending:"
+#~ msgstr "Quand l'une de vos missions a été couronnée de succès :"
+
+#~ msgid "When one of your missions ended with an epic failure:"
+#~ msgstr "Quand l'un de vos missions a lamentablement échoué :"
+
+#~ msgid ""
+#~ "\n"
+#~ "                Concerning wiretapping : If you manage to guess which "
+#~ "radio messages other guests are concerned by, \n"
+#~ "                you'll detect more quickly the moments when you may have "
+#~ "intercepted new email conversations. \n"
+#~ "            "
+#~ msgstr ""
+#~ "\n"
+#~ "                Concernant les mises sur écoute : si vous réussissez à "
+#~ "deviner à quels messages radio les autres invités réagissent, \n"
+#~ "                vous détecterez plus rapidement les moments où vous "
+#~ "pouvez avoir intercepté de nouvelles conversations par email. \n"
+#~ "            "
+
+#~ msgid "Display All Conversations"
+#~ msgstr "Toutes Les Conversations"
+
+#~ msgid "No messages to be displayed."
+#~ msgstr "Aucun message à afficher."
+
 #~ msgid "Private dummy ability"
 #~ msgstr "Compétence bidon privée"
 
@@ -4105,6 +4065,14 @@ msgstr "Instructions"
 
 #~ msgid "*** termination planned at %(time)s ***"
 #~ msgstr "*** terminaison prévue à %(time)s ***"
+
+#, fuzzy
+#~ msgid ""
+#~ "Akarith attack launched by %(username)s on %(city_name)s, terminating at %"
+#~ "(time)s."
+#~ msgstr ""
+#~ "<Téléportation teldorienne sur la localisation %(scan_state)s %(city_name)"
+#~ "s>"
 
 #~ msgid ""
 #~ "Teleporters have exhausted all their energy, no more operations possible "
@@ -4137,6 +4105,19 @@ msgstr "Instructions"
 
 #~ msgid "<Mercenary Intervention on %(city_name)s>"
 #~ msgstr "<Intervention de mercenaires à %(city_name)s>"
+
+#, fuzzy
+#~ msgid ""
+#~ "Mercenary intervention launched by %(username)s on %(city_name)s, "
+#~ "terminating at %(time)s."
+#~ msgstr ""
+#~ "<Téléportation teldorienne sur la localisation %(scan_state)s %(city_name)"
+#~ "s>"
+
+#, fuzzy
+#~| msgid "Process Telecom Investigation"
+#~ msgid "Process telecom investigation"
+#~ msgstr "Lancer les Analyses Télécom"
 
 #~ msgid "From: "
 #~ msgstr "De :"
