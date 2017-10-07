@@ -4,22 +4,22 @@
 # Pakal, 2010.
 # Pakal, 2010.
 # Pakal <pythoniks@gmail.com>, 2010.
-# Pascal <chambon.pascal@gmail.com>, 2013, 2014, 2015, 2016.
-# Pascal Chambon <chambon.pascal@gmail.com>, 2016.
+# Pascal <chambon.pascal@gmail.com>, 2013, 2014, 2015, 2016, 2017.
+# Pascal Chambon <chambon.pascal@gmail.com>, 2016, 2017.
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-05-18 19:13+0200\n"
-"PO-Revision-Date: 2016-10-21 13:01+0200\n"
-"Last-Translator: Pascal Chambon <chambon.pascal@gmail.com>\n"
-"Language-Team: Pascal Chambon\n"
+"POT-Creation-Date: 2017-10-07 21:00+0200\n"
+"PO-Revision-Date: 2017-10-07 20:55+0200\n"
+"Last-Translator: Pascal <chambon.pascal@gmail.com>\n"
+"Language-Team: Nothing\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: fr\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"X-Generator: Virtaal 0.7.0\n"
+"X-Generator: Virtaal 0.7.1\n"
 
 #: .\common.py:133
 msgid "Operation successful."
@@ -51,7 +51,7 @@ msgstr " :"
 msgid "Game is currently paused for players."
 msgstr "le jeu est actuellement en pause pour les joueurs."
 
-#: .\datamanager\abstract_ability.py:281
+#: .\datamanager\abstract_ability.py:282
 #, python-format
 msgid ""
 "*Below is the output of the automated ability processing, for recipient %"
@@ -897,53 +897,60 @@ msgstr "Email"
 msgid "Radio Frequency"
 msgstr "Fréquence Radio"
 
-#: .\forms.py:258 .\forms.py:311 .\tests\_dummy_abilities.py:19
+#: .\forms.py:259
+msgid "Select a time period..."
+msgstr "Sélectionnez une période..."
+
+#: .\forms.py:260
+msgid "Period"
+msgstr "Période"
+
+#: .\forms.py:275 .\forms.py:328 .\tests\_dummy_abilities.py:19
 msgid "Object"
 msgstr "Objet"
 
-#: .\forms.py:259 .\tests\_dummy_abilities.py:20
+#: .\forms.py:276 .\tests\_dummy_abilities.py:20
 #: .\views\abilities\runic_translation_mod.py:31
 msgid "Transcription"
 msgstr "Transcription"
 
-#: .\forms.py:267
+#: .\forms.py:284
 msgid "< Use Description Instead >"
 msgstr "< Utiliser la Description >"
 
-#: .\forms.py:270
+#: .\forms.py:287
 msgid "Reference Object"
 msgstr "Objet de Référence"
 
-#: .\forms.py:273
+#: .\forms.py:290
 msgid "Or Description"
 msgstr "Ou Description"
 
-#: .\forms.py:278 .\templates\administration\game_events.html:15
-#: .\views\abilities\__telecom_investigation_mod.py:110
+#: .\forms.py:295 .\templates\administration\game_events.html:15
 msgid "Message"
 msgstr "Message"
 
-#: .\forms.py:285 .\views\abilities\mercenaries_hiring_mod.py:22
+#: .\forms.py:302 .\views\abilities\mercenaries_hiring_mod.py:22
 msgid "Location"
 msgstr "Lieu"
 
-#: .\forms.py:295
+#: .\forms.py:312
 msgid "Name"
 msgstr "Nom"
 
-#: .\forms.py:305
+#: .\forms.py:322
 msgid "No artefacts currently owned."
 msgstr "Vous ne possédez pas d'artefacts."
 
-#: .\forms.py:310
+#: .\forms.py:327
 msgid "Select your artefact..."
 msgstr "Sélectionnez votre artefact..."
 
-#: .\forms.py:320
+#: .\forms.py:337
 msgid "Select an acquaintance..."
 msgstr "Sélectionnez une connaissance..."
 
-#: .\forms.py:321
+#: .\forms.py:338
 msgid "User"
 msgstr "Utilisateur"
 
@@ -969,11 +976,11 @@ msgstr "Messagerie"
 msgid "Abilities"
 msgstr "Compétences"
 
-#: .\menus.py:143
+#: .\menus.py:144
 msgid "Admin"
 msgstr "Admin"
 
-#: .\menus.py:165
+#: .\menus.py:166
 msgid "Profile"
 msgstr "Profil"
 
@@ -1358,6 +1365,14 @@ msgstr "Réinitialiser"
 #: .\templates\utilities\bug_report.html:25
 msgid "Submit"
 msgstr "Soumettre"
+
+#: .\templates\abilities\house_reports.html:11
+msgid "Request surveillance data"
+msgstr "Demander les données de surveillance"
+
+#: .\templates\abilities\house_reports.html:17
+msgid "Send request"
+msgstr "Envoyer la requête"
 
 #: .\templates\abilities\matter_analysis.html:15
 msgid "Submit item for analysis"
@@ -2074,7 +2089,6 @@ msgid "Interface : "
 msgstr "Interface : "
 
 #: .\templates\base_main.html:543 .\templates\utilities\bug_report.html:5
-#: .\views\__init__.py:148
 msgid "Bug Report"
 msgstr "Rapporter un Bogue"
 
@@ -2764,78 +2778,6 @@ msgstr "mon titre de test 1"
 msgid "my test title 2"
 msgstr "mon titre de test 2"
 
-#: .\tests\test_game.py:3997
-msgid "Private dummy ability"
-msgstr "Compétence bidon privée"
-
-#: .\tests\test_game.py:5265
-msgid "test-title"
-msgstr "test-titre"
-
-#: .\tests\test_game.py:5288
-msgid "ssss"
-msgstr "ssss"
-
-#: .\tests\test_game.py:5295 .\tests\test_game.py:5317
-msgid "SSS"
-msgstr "SSS"
-
-#: .\tests\test_game.py:5298
-msgid "DSDSF"
-msgstr "DSDSF"
-
-#: .\tests\test_game.py:5305
-msgid "DDD"
-msgstr ""
-
-#: .\tests\test_game.py:5308
-msgid "LJKSG"
-msgstr ""
-
-#: .\tests\test_game.py:5327
-msgid "Hi"
-msgstr ""
-
-#: .\tests\test_game.py:5330
-msgid "Hi2"
-msgstr ""
-
-#: .\tests\test_game.py:5334
-msgid "Yowh1"
-msgstr ""
-
-#: .\tests\test_game.py:5338
-msgid "Yowh2"
-msgstr ""
-
-#: .\tests\test_game.py:5341
-msgid "Yowh3"
-msgstr ""
-
-#: .\tests\test_game.py:5344
-msgid "Yowh4"
-msgstr ""
-
-#: .\tests\test_game.py:5347
-msgid "Yayh1"
-msgstr ""
-
-#: .\tests\test_game.py:5351
-msgid "Yayh2"
-msgstr ""
-
-#: .\tests\test_game.py:5354
-msgid "Yayh3"
-msgstr ""
-
-#: .\tests\test_game.py:5357
-msgid "Yayh4"
-msgstr ""
-
-#: .\tests\test_game.py:5359
-msgid "Maaaster"
-msgstr ""
-
 #: .\utilities\mediaplayers.py:156
 msgid "Access file"
 msgstr "Accéder au fichier"
@@ -2851,134 +2793,6 @@ msgstr "Pas de fichier média disponible"
 #: .\utilities\select2_extensions.py:49
 msgid "Too many values sent."
 msgstr "Trop de valeurs envoyées."
-
-#: .\views\__init__.py:87
-msgid "Logo Animation"
-msgstr "Animation de Logo"
-
-#: .\views\__init__.py:115
-msgid "View Help Page"
-msgstr "Voir Page d'Aide"
-
-#: .\views\__init__.py:143
-msgid "Help"
-msgstr "Aide"
-
-#: .\views\abilities\__attacks_mod.py:22
-#, python-format
-msgid "<Akarith Attack on %(city_name)s>"
-msgstr "<Attaque akarite sur %(city_name)s>"
-
-#: .\views\abilities\__attacks_mod.py:28 .\views\abilities\__attacks_mod.py:62
-#: .\views\abilities\__attacks_mod.py:92
-#, python-format
-msgid "*** termination planned at %(time)s ***"
-msgstr "*** terminaison prévue à %(time)s ***"
-
-#: .\views\abilities\__attacks_mod.py:35
-#, python-format
-msgid ""
-"Akarith attack launched by %(username)s on %(city_name)s, terminating at %"
-"(time)s."
-msgstr ""
-
-#: .\views\abilities\__attacks_mod.py:46
-msgid ""
-"Teleporters have exhausted all their energy, no more operations possible "
-"before two days."
-msgstr ""
-"Les téléporteurs ont épuisé toute leur énergie, plus aucune opération n'est "
-"possible avant deux jours."
-
-#: .\views\abilities\__attacks_mod.py:55
-#, python-format
-msgid "<Teldorian Teleportation on %(scan_state)s location %(city_name)s>"
-msgstr ""
-"<Téléportation teldorienne sur la localisation %(scan_state)s %(city_name)s>"
-
-#: .\views\abilities\__attacks_mod.py:56
-msgid "scanned"
-msgstr "scannée"
-
-#: .\views\abilities\__attacks_mod.py:56
-msgid "unscanned"
-msgstr "non scannée"
-
-#: .\views\abilities\__attacks_mod.py:72
-#, fuzzy, python-format
-msgid ""
-"Teldorian teleportation launched by %(username)s on %(city_name)s, "
-"terminating at %(time)s."
-msgstr ""
-"<Téléportation teldorienne sur la localisation %(scan_state)s %(city_name)s>"
-
-#: .\views\abilities\__attacks_mod.py:81
-msgid "You must first hire mercenaries for this city"
-msgstr "Vous devez d'abord engager des mercenaires dans cette ville"
-
-#: .\views\abilities\__attacks_mod.py:86
-#, python-format
-msgid "<Mercenary Intervention on %(city_name)s>"
-msgstr "<Intervention de mercenaires à %(city_name)s>"
-
-#: .\views\abilities\__attacks_mod.py:100
-#, python-format
-msgid ""
-"Mercenary intervention launched by %(username)s on %(city_name)s, "
-"terminating at %(time)s."
-msgstr ""
-
-#: .\views\abilities\__telecom_investigation_mod.py:20
-#: .\views\abilities\__telecom_investigation_mod.py:52
-#: .\views\abilities\telecom_investigation_mod.py:19
-#: .\views\abilities\telecom_investigation_mod.py:47
-msgid "Telecom Investigation"
-msgstr "Analyse Télécom"
-
-#: .\views\abilities\__telecom_investigation_mod.py:23
-msgid "Process telecom investigation"
-msgstr ""
-
-#: .\views\abilities\__telecom_investigation_mod.py:110
-msgid "From: "
-msgstr "De :"
-
-#: .\views\abilities\__telecom_investigation_mod.py:111
-msgid "To: "
-msgstr "A :"
-
-#: .\views\abilities\__telecom_investigation_mod.py:112
-msgid "Subject: "
-msgstr "Sujet :"
-
-#: .\views\abilities\__telecom_investigation_mod.py:126
-msgid "Opening an inquiry into yourself doesn't make much sense."
-msgstr "Ouvrir une enquête sur vous-même n'a aucun sens."
-
-#: .\views\abilities\__telecom_investigation_mod.py:133
-#, python-format
-msgid "Investigation Request for character %(target_official_name)s"
-msgstr "Requête d'investigation sur le personnage %(target_official_name)s"
-
-#: .\views\abilities\__telecom_investigation_mod.py:135
-msgid "Please let me know anything you may discover about this individual."
-msgstr ""
-"Veuillez nous indiquer tout ce que vous pourriez découvrir sur cet individu."
-
-#: .\views\abilities\__telecom_investigation_mod.py:140
-#, python-format
-msgid "<Inquiry Results for %(target_official_name)s>"
-msgstr "<Résultats d'Investigation pour %(target_official_name)s>"
-
-#: .\views\abilities\__telecom_investigation_mod.py:150
-#, fuzzy, python-format
-msgid "Character inquiry opened into %(target_official_name)s"
-msgstr "<Résultats d'Investigation pour %(target_official_name)s>"
-
-#: .\views\abilities\__telecom_investigation_mod.py:155
-msgid ""
-"Telecom investigation is in process, you'll receive the result by email."
-msgstr "Investigation Télécom en cours, vous recevrez le résultat par email."
 
 #: .\views\abilities\_empty_abilities.py:26
 msgid "Extra Plugins"
@@ -3112,6 +2926,49 @@ msgstr "Mot de passe incorrect."
 msgid "Doors are already unlocked."
 msgstr "Portes déjà déverrouillées."
 
+#: .\views\abilities\house_reports_mod.py:16
+#: .\views\abilities\house_reports_mod.py:36
+msgid "Manor Surveillance Reports"
+msgstr "Rapports de Surveillance du Manoir"
+
+#: .\views\abilities\house_reports_mod.py:19
+msgid "Fetch report"
+msgstr "Récupérer le rapport"
+
+#: .\views\abilities\house_reports_mod.py:45
+msgid "Wrong surveillance report selected"
+msgstr "Mauvais rapport de surveillance sélectionné"
+
+#: .\views\abilities\house_reports_mod.py:62
+#, python-format
+msgid "Manor surveillance request for period %s"
+msgstr "Demande de rapports de surveillance du manoir pour la période %s"
+
+#: .\views\abilities\house_reports_mod.py:63
+msgid ""
+"Please provide me with an analysis of manor activity during this period."
+msgstr ""
+"Veuillez m'adresser une analyse de l'activité du manoir durant cette période."
+
+#: .\views\abilities\house_reports_mod.py:71
+#, python-format
+msgid "<Manor surveillance response for period %(period)s>"
+msgstr "<Rapports de surveillance du manoir pour la période %s>"
+
+#: .\views\abilities\house_reports_mod.py:81
+#, python-format
+msgid "Period '%(period)s' requested near manor surveillance center."
+msgstr "Période '%(period)s' demandée au du centre de surveillance du manoir."
+
+#: .\views\abilities\house_reports_mod.py:86
+#, python-format
+msgid ""
+"Request for surveillance data of period '%s' successfully submitted, you'll "
+"receive the result by email"
+msgstr ""
+"Requête pour les données de surveillance de la période '%s' bien envoyée, le "
+"résultat vous sera communiqué par email"
+
 #: .\views\abilities\matter_analysis_mod.py:28
 msgid "Biophysical Analysis"
 msgstr "Expertise Biophysique"
@@ -3243,6 +3100,11 @@ msgid ""
 msgstr ""
 "Transcription de runes bien envoyée, le résultat vous sera communiqué par "
 "email."
+
+#: .\views\abilities\telecom_investigation_mod.py:19
+#: .\views\abilities\telecom_investigation_mod.py:47
+msgid "Telecom Investigation"
+msgstr "Analyse Télécom"
 
 #: .\views\abilities\telecom_investigation_mod.py:22
 msgid "Process Telecom Investigation"
@@ -3393,56 +3255,6 @@ msgid "World scan submission in progress, the result will be emailed to you."
 msgstr ""
 "Requête de scan mondial bien envoyée, le résultat vous sera communiqué par "
 "email."
-
-#: .\views\admin_views\__init__.py:43
-msgid "View Database"
-msgstr "Voir les Données"
-
-#: .\views\admin_views\__init__.py:61
-msgid "Manage Characters"
-msgstr "Gérer les Personnages"
-
-#: .\views\admin_views\__init__.py:148
-#, python-format
-msgid "Attributes of user \"%(username)s\" have been modified:"
-msgstr "Des attributs de l'utilisateur \"%(username)s\" ont été modifiés :"
-
-#: .\views\admin_views\__init__.py:195
-msgid "Some character updates failed (see below)."
-msgstr "Certaines modifications de personnages ont échoué (CF ci-dessous)."
-
-#: .\views\admin_views\__init__.py:197
-msgid "Characters were properly updated."
-msgstr "Les personnages ont été mis à jour avec succès."
-
-#: .\views\admin_views\__init__.py:219
-msgid "Character Identities"
-msgstr "Identité des Personnages"
-
-#: .\views\admin_views\__init__.py:244
-msgid "Database Operations"
-msgstr "Opérations de base de données"
-
-#: .\views\admin_views\__init__.py:255
-msgid "Error - no operation specified"
-msgstr "Erreur - pas d'opération spécifiée"
-
-#: .\views\admin_views\__init__.py:258
-#, python-format
-msgid "Error : %r"
-msgstr "Erreur : %r"
-
-#: .\views\admin_views\__init__.py:261
-msgid "Fail Test"
-msgstr "Test d'Echec"
-
-#: .\views\admin_views\__init__.py:267
-msgid "Mail sent"
-msgstr "Mail envoyé"
-
-#: .\views\admin_views\__init__.py:273
-msgid "Media Display Test"
-msgstr "Test d'affichage des médias"
 
 #: .\views\admin_views\admin_dashboard_mod.py:14
 msgid "Game is paused?"
@@ -4263,6 +4075,136 @@ msgstr "Tous les Evénements du Jeu"
 #: .\views\profile_views.py:337 .\views\profile_views.py:346
 msgid "Instructions"
 msgstr "Instructions"
+
+#~ msgid "Private dummy ability"
+#~ msgstr "Compétence bidon privée"
+
+#~ msgid "test-title"
+#~ msgstr "test-titre"
+
+#~ msgid "ssss"
+#~ msgstr "ssss"
+
+#~ msgid "SSS"
+#~ msgstr "SSS"
+
+#~ msgid "DSDSF"
+#~ msgstr "DSDSF"
+
+#~ msgid "Logo Animation"
+#~ msgstr "Animation de Logo"
+
+#~ msgid "View Help Page"
+#~ msgstr "Voir Page d'Aide"
+
+#~ msgid "Help"
+#~ msgstr "Aide"
+
+#~ msgid "<Akarith Attack on %(city_name)s>"
+#~ msgstr "<Attaque akarite sur %(city_name)s>"
+
+#~ msgid "*** termination planned at %(time)s ***"
+#~ msgstr "*** terminaison prévue à %(time)s ***"
+
+#~ msgid ""
+#~ "Teleporters have exhausted all their energy, no more operations possible "
+#~ "before two days."
+#~ msgstr ""
+#~ "Les téléporteurs ont épuisé toute leur énergie, plus aucune opération "
+#~ "n'est possible avant deux jours."
+
+#~ msgid "<Teldorian Teleportation on %(scan_state)s location %(city_name)s>"
+#~ msgstr ""
+#~ "<Téléportation teldorienne sur la localisation %(scan_state)s %(city_name)"
+#~ "s>"
+
+#~ msgid "scanned"
+#~ msgstr "scannée"
+
+#~ msgid "unscanned"
+#~ msgstr "non scannée"
+
+#, fuzzy
+#~ msgid ""
+#~ "Teldorian teleportation launched by %(username)s on %(city_name)s, "
+#~ "terminating at %(time)s."
+#~ msgstr ""
+#~ "<Téléportation teldorienne sur la localisation %(scan_state)s %(city_name)"
+#~ "s>"
+
+#~ msgid "You must first hire mercenaries for this city"
+#~ msgstr "Vous devez d'abord engager des mercenaires dans cette ville"
+
+#~ msgid "<Mercenary Intervention on %(city_name)s>"
+#~ msgstr "<Intervention de mercenaires à %(city_name)s>"
+
+#~ msgid "From: "
+#~ msgstr "De :"
+
+#~ msgid "To: "
+#~ msgstr "A :"
+
+#~ msgid "Subject: "
+#~ msgstr "Sujet :"
+
+#~ msgid "Opening an inquiry into yourself doesn't make much sense."
+#~ msgstr "Ouvrir une enquête sur vous-même n'a aucun sens."
+
+#~ msgid "Investigation Request for character %(target_official_name)s"
+#~ msgstr "Requête d'investigation sur le personnage %(target_official_name)s"
+
+#~ msgid "Please let me know anything you may discover about this individual."
+#~ msgstr ""
+#~ "Veuillez nous indiquer tout ce que vous pourriez découvrir sur cet "
+#~ "individu."
+
+#~ msgid "<Inquiry Results for %(target_official_name)s>"
+#~ msgstr "<Résultats d'Investigation pour %(target_official_name)s>"
+
+#, fuzzy
+#~ msgid "Character inquiry opened into %(target_official_name)s"
+#~ msgstr "<Résultats d'Investigation pour %(target_official_name)s>"
+
+#~ msgid ""
+#~ "Telecom investigation is in process, you'll receive the result by email."
+#~ msgstr ""
+#~ "Investigation Télécom en cours, vous recevrez le résultat par email."
+
+#~ msgid "View Database"
+#~ msgstr "Voir les Données"
+
+#~ msgid "Manage Characters"
+#~ msgstr "Gérer les Personnages"
+
+#~ msgid "Attributes of user \"%(username)s\" have been modified:"
+#~ msgstr "Des attributs de l'utilisateur \"%(username)s\" ont été modifiés :"
+
+#~ msgid "Some character updates failed (see below)."
+#~ msgstr "Certaines modifications de personnages ont échoué (CF ci-dessous)."
+
+#~ msgid "Characters were properly updated."
+#~ msgstr "Les personnages ont été mis à jour avec succès."
+
+#~ msgid "Character Identities"
+#~ msgstr "Identité des Personnages"
+
+#~ msgid "Database Operations"
+#~ msgstr "Opérations de base de données"
+
+#~ msgid "Error - no operation specified"
+#~ msgstr "Erreur - pas d'opération spécifiée"
+
+#~ msgid "Error : %r"
+#~ msgstr "Erreur : %r"
+
+#~ msgid "Fail Test"
+#~ msgstr "Test d'Echec"
+
+#~ msgid "Mail sent"
+#~ msgstr "Mail envoyé"
+
+#~ msgid "Media Display Test"
+#~ msgstr "Test d'affichage des médias"
 
 #, fuzzy
 #~| msgid "Unexpected exception occurred in exception swallower context : %r!"
