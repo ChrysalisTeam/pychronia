@@ -172,7 +172,7 @@ $scroll_text_color: black;
     @include pretty_text;
 }
 
-.pretty_text img {
+.pretty_text img, .document img, img.filer_image { // for ingame or docutils sections
     border-radius: 6px;
 }
 
