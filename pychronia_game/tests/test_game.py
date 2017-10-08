@@ -6570,9 +6570,10 @@ class TestSpecialAbilities(BaseGameTestCase):
 
         report = house_reports._get_valid_report_for_period("10h-12h")
         assert "dans le manoir" in report
+        assert "Simon Bladstaffulovza!" in report  # RENDERED conten
 
         with pytest.raises(AbnormalUsageError):
-            house_reports._get_valid_report_for_period("12h-14h")  # no analysis data
+            msg = house_reports._get_valid_report_for_period("12h-14h")  # no analysis data
 
         periods = house_reports.get_available_periods()
         assert periods == [('10h-12h', True), ('12h-14h', False)]  # sorted
@@ -6582,7 +6583,8 @@ class TestSpecialAbilities(BaseGameTestCase):
             house_reports.fetch_house_report(period="12h-14h")  # no analysis data
 
         def ability_action():
-            house_reports.fetch_house_report(period="10h-12h")
+            msg = house_reports.fetch_house_report(period="10h-12h")
+            assert "Request for surveillance data" in msg
 
         def request_msg_checker(msg):
             self.assertTrue("Please provide" in msg["body"], msg=msg)

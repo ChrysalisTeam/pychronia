@@ -18,6 +18,8 @@ from persistent.list import PersistentList
 
 from django_zodb import database
 from django.conf import settings as django_settings
+from django.template import Template, Context
+
 from .. import default_game_settings
 
 # NOT very safe, borrowed from old Django, and adding brackets
@@ -530,6 +532,12 @@ def check_is_positive_int(value, non_zero=True):
     return True
 
 
+def check_is_django_template(value):
+    assert isinstance(value, basestring)
+    assert render_template_string(value, ctx={}).strip()
+    return True
+
+
 def check_is_restructuredtext(value, strict):
     from pychronia_game.templatetags.helpers import advanced_restructuredtext
     assert isinstance(value, basestring)  # NOT A LIST
@@ -777,6 +785,15 @@ def utc_to_local(utc_time):
 def is_past_datetime(dt):
     # WARNING - to compute delays, we always work in UTC TIME
     return (dt <= datetime.utcnow())
+
+
+def render_template_string(string, ctx):
+    """
+    Render a string using django templates and the provided context dict.
+    """
+    t = Template(string)
+    c = Context(ctx)
+    return t.render(c)
 
 
 def make_bi_usage_decorator(decorator):

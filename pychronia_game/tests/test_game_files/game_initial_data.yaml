@@ -14,7 +14,7 @@ abilities:
               "10h-12h":
                   gamemaster_hints: null
                   surveillance_analysis: |
-                      Ceci est tout un texte décrivant ce qui s'est passé dans le manoir entre ces 2 heures.
+                      Ceci est tout un texte décrivant ce qui s'est passé dans le manoir entre ces 2 heures. On y a vu {{character_properties.guy1.official_name}}!
               "12h-14h":
                   gamemaster_hints: "Caméras en réalité piratées et gelées par un espion"
                   surveillance_analysis: null

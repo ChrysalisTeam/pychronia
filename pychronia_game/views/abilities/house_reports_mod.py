@@ -8,6 +8,7 @@ from pychronia_game.datamanager.abstract_ability import AbstractAbility, Abstrac
 from pychronia_game.datamanager.abstract_game_view import register_view
 from pychronia_game.datamanager import readonly_method, \
     transaction_watcher
+from pychronia_game.utilities import render_template_string
 
 
 @register_view
@@ -40,9 +41,15 @@ class HouseReportsAbility(AbstractPartnershipAbility):
 
     @readonly_method
     def _get_valid_report_for_period(self, period):
-        report = self.settings["reports"][period]["surveillance_analysis"]
-        if not report:
+        report_tpl = self.settings["reports"][period]["surveillance_analysis"]
+
+        if not report_tpl:
             raise AbnormalUsageError(_("Wrong surveillance report selected"))
+
+        # render it only to resolve character official names
+        ctx = dict(character_properties=self.data["character_properties"])
+        report = render_template_string(report_tpl, ctx=ctx)
+
         return report
 
 
@@ -107,4 +114,4 @@ class HouseReportsAbility(AbstractPartnershipAbility):
             if report_data["gamemaster_hints"]:
                 assert utilities.check_is_string(report_data["gamemaster_hints"], multiline=True)
             if report_data["surveillance_analysis"]:
-                assert utilities.check_is_string(report_data["surveillance_analysis"], multiline=True)
+                assert utilities.check_is_django_template(report_data["surveillance_analysis"])
