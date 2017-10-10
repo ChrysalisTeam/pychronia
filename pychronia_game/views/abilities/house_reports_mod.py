@@ -17,7 +17,7 @@ class HouseReportsAbility(AbstractPartnershipAbility):
     TITLE = ugettext_lazy("Manor Surveillance Reports")
     NAME = "house_reports"
 
-    GAME_ACTIONS = dict(get_report=dict(title=ugettext_lazy("Fetch report"),
+    GAME_ACTIONS = dict(get_surveillance_report=dict(title=ugettext_lazy("Fetch report"),
                                           form_class=HouseReportForm,
                                           callback="fetch_house_report"),)
 
@@ -29,7 +29,7 @@ class HouseReportsAbility(AbstractPartnershipAbility):
 
     def get_template_vars(self, previous_form_data=None):
 
-        periods_form = self._instantiate_game_form(new_action_name="get_report",
+        periods_form = self._instantiate_game_form(new_action_name="get_surveillance_report",
                                                     hide_on_success=False,
                                                     previous_form_data=previous_form_data)
 

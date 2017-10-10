@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-10-07 22:09+0200\n"
+"POT-Creation-Date: 2017-10-10 16:05+0200\n"
 "PO-Revision-Date: 2017-10-07 20:55+0200\n"
 "Last-Translator: Pascal <chambon.pascal@gmail.com>\n"
 "Language-Team: Nothing\n"
@@ -1218,11 +1218,11 @@ msgstr "Réinitialiser"
 msgid "Submit"
 msgstr "Soumettre"
 
-#: .\templates\abilities\house_reports.html:11
-msgid "Request surveillance data"
-msgstr "Demander les données de surveillance"
+#: .\templates\abilities\house_reports.html:13
+msgid "Request report from yesterday"
+msgstr "Demander un rapport de la veille"
 
-#: .\templates\abilities\house_reports.html:17
+#: .\templates\abilities\house_reports.html:19
 msgid "Send request"
 msgstr "Envoyer la requête"
 
@@ -2591,7 +2591,7 @@ msgstr ""
 "Désolé, nous devons vérifier que vous n'êtes ni un robot, ni un zombie, "
 "grâce à ce captcha."
 
-#: .\templates\utilities\page_top.html:8
+#: .\templates\utilities\page_top.html:9
 msgid "Terms of Use"
 msgstr "Conditions d'utilisation"
 
@@ -2768,41 +2768,41 @@ msgstr "Mot de passe incorrect."
 msgid "Doors are already unlocked."
 msgstr "Portes déjà déverrouillées."
 
-#: .\views\abilities\house_reports_mod.py:16
-#: .\views\abilities\house_reports_mod.py:36
+#: .\views\abilities\house_reports_mod.py:17
+#: .\views\abilities\house_reports_mod.py:37
 msgid "Manor Surveillance Reports"
 msgstr "Rapports de Surveillance du Manoir"
 
-#: .\views\abilities\house_reports_mod.py:19
+#: .\views\abilities\house_reports_mod.py:20
 msgid "Fetch report"
-msgstr "Récupérer le rapport"
+msgstr "Récupérer un rapport"
 
-#: .\views\abilities\house_reports_mod.py:45
+#: .\views\abilities\house_reports_mod.py:47
 msgid "Wrong surveillance report selected"
 msgstr "Mauvais rapport de surveillance sélectionné"
 
-#: .\views\abilities\house_reports_mod.py:62
+#: .\views\abilities\house_reports_mod.py:69
 #, python-format
 msgid "Manor surveillance request for period %s"
 msgstr "Demande de rapports de surveillance du manoir pour la période %s"
 
-#: .\views\abilities\house_reports_mod.py:63
+#: .\views\abilities\house_reports_mod.py:70
 msgid ""
 "Please provide me with an analysis of manor activity during this period."
 msgstr ""
 "Veuillez m'adresser une analyse de l'activité du manoir durant cette période."
 
-#: .\views\abilities\house_reports_mod.py:71
+#: .\views\abilities\house_reports_mod.py:78
 #, python-format
 msgid "<Manor surveillance response for period %(period)s>"
 msgstr "<Rapports de surveillance du manoir pour la période %(period)s>"
 
-#: .\views\abilities\house_reports_mod.py:81
+#: .\views\abilities\house_reports_mod.py:88
 #, python-format
 msgid "Period '%(period)s' requested near manor surveillance center."
 msgstr "Période '%(period)s' demandée au du centre de surveillance du manoir."
 
-#: .\views\abilities\house_reports_mod.py:86
+#: .\views\abilities\house_reports_mod.py:93
 #, python-format
 msgid ""
 "Request for surveillance data of period '%s' successfully submitted, you'll "
