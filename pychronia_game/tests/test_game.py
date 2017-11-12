@@ -27,7 +27,7 @@ from pychronia_game.templatetags.helpers import _generate_encyclopedia_links, \
     format_enriched_text, _generate_game_file_links, _generate_game_image_thumbnails, \
     rich_text
 from pychronia_game import views, utilities, authentication
-from pychronia_game.utilities import autolinker, to_snake_case
+from pychronia_game.utilities import autolinker, to_snake_case, load_yaml_fixture
 from django.test.client import RequestFactory
 from pychronia_game.datamanager.datamanager_administrator import retrieve_game_instance, \
     _get_zodb_connection, GameDataManager, get_all_instances_metadata, \
@@ -611,6 +611,24 @@ class TestUtilities(BaseGameTestCase):
                                 </div>
                                 </div>
                                 """).strip()
+
+    def test_load_yaml_fixture(self):
+        fixture_file = config.GAME_INITIAL_DATA_PATH
+        fixture_dir = os.path.dirname(fixture_file)
+        assert os.path.isfile(fixture_file)  # single file for tests
+
+        data1 = load_yaml_fixture(fixture_file)
+        assert isinstance(data1, dict)
+        assert data1
+
+        data2 = load_yaml_fixture([fixture_file])
+        assert data2 == data1
+
+        data3 = load_yaml_fixture(fixture_dir)
+        assert data3 == data1
+
+        data4 = load_yaml_fixture([fixture_dir])
+        assert data4 == data1
 
 
 class TestMetaAdministration(unittest.TestCase):  # no django setup required ATM

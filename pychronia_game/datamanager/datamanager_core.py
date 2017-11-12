@@ -138,7 +138,7 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
 
     @transaction_watcher(always_writable=True)  # might operate on broken data
     def reset_game_data(self,
-                        yaml_fixture=None,
+                        yaml_fixture=None,  # may be a persistent mapping, or yaml files/dirs
                         skip_randomizations=False,  # randomize some values in dm.data
                         skip_initializations=False,  # used when an already-initialized fixture is used
                         skip_coherence_check=False,
@@ -161,7 +161,7 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
         # not rebind the attribute "data", else we lose ZODB support
         self.data.clear()
 
-        if isinstance(yaml_fixture, basestring):
+        if isinstance(yaml_fixture, (list, basestring)):
             initial_data = utilities.load_yaml_fixture(yaml_fixture)
         else:
             assert isinstance(yaml_fixture, PersistentMapping), yaml_fixture  # a preloaded data tree was provided

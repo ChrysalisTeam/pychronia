@@ -746,25 +746,37 @@ YAML_EXTENSIONS = ["*.yaml", "*.yml", "*/*.yaml", "*/*.yml"]  # works on windows
 
 def load_yaml_fixture(yaml_fixture):
     """
-    Can load a single yaml file, or a directory containing y[a]ml files.
+    Can load a single yaml file, or a list of files or directories containing y[a]ml files.
     Each file must only contain a single yaml document (which must be a mapping).
     """
 
-    if not os.path.exists(yaml_fixture):
-        raise ValueError(yaml_fixture)
-    if os.path.isfile(yaml_fixture):
-        data = load_yaml_file(yaml_fixture)
+    if isinstance(yaml_fixture, basestring):
+        yaml_entries =  [yaml_fixture]
     else:
-        assert os.path.isdir(yaml_fixture)
-        data = {}
-        yaml_files = [path for pattern in YAML_EXTENSIONS
-                      for path in glob.glob(os.path.join(yaml_fixture, pattern))]
+        assert isinstance(yaml_fixture, list)
+        yaml_entries = yaml_fixture
 
-        del yaml_fixture  # security
+    data = {}
+
+    for yaml_entry in yaml_entries:
+
+        if not os.path.exists(yaml_entry):
+            raise ValueError(yaml_entry)
+
+        if os.path.isfile(yaml_entry):
+            yaml_files = [yaml_entry]
+
+        else:
+            assert os.path.isdir(yaml_entry)
+
+            yaml_files = [path for pattern in YAML_EXTENSIONS
+                          for path in glob.glob(os.path.join(yaml_entry, pattern))]
+
         for yaml_file in yaml_files:
+
             if os.path.basename(yaml_file).startswith("_"):
                 continue  # skip deactivated yaml file
-            ##print("Loading yaml fixture %s" % yaml_file)
+
             part = load_yaml_file(yaml_file)
 
             if not isinstance(part, dict):
