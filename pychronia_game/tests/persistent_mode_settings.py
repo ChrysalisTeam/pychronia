@@ -103,8 +103,9 @@ def GAME_INITIAL_FIXTURE_SCRIPT(dm):
     item = dm.get_non_gem_items().keys()[0]
     dm.transfer_object_to_character(item, player_name)
 
-    dm.propose_friendship(player_name, player_name_bis)
-    dm.propose_friendship(player_name_bis, player_name)  # accept friendship
+    # NOPE no more auto-friendship here
+    #dm.propose_friendship(player_name, player_name_bis)
+    #dm.propose_friendship(player_name_bis, player_name)  # accept friendship
 
     logging.info("Finished special game fixture script...")
 
@@ -180,6 +181,22 @@ if os.path.exists(_chrysalis_data_dir):
         for excluded_static_page in excluded_static_pages:
             del dm.data["static_pages"][excluded_static_page]  # no need to commit
 
+        assert dm.get_global_parameter("game_theoretical_length_days")
+        dm.set_global_parameter("game_theoretical_length_days", 1)
+
+        friendships = [
+            ("amethyst", "garnet"),
+            ("malachite", "spinel"),
+            ("peridot", "topaz"),
+            ##("cynthia", "waden"), NO not blind confidence
+            ## ("opal", "lydia"), NO not blind confidence
+            ]
+        for (player_name, player_name_bis) in friendships:
+            _domains1 = dm.get_character_properties(player_name)["domains"]
+            _domains2 = dm.get_character_properties(player_name_bis)["domains"]
+            assert (_domains1 == _domains2), (player_name, player_name_bis, _domains1, _domains2)
+            dm.propose_friendship(player_name, player_name_bis)
+            dm.propose_friendship(player_name_bis, player_name)
 
         GAME_INITIAL_FIXTURE_SCRIPT_DEV(dm)  # call initial dev setup
 
