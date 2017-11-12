@@ -25,13 +25,13 @@ def view_world_map_static(request, template_name='information/world_map_static.h
 @register_view
 class DynamicWorldMapView(AbstractGameView):
     TITLE = ugettext_lazy("Dynamic World Map")
-    NAME = "view_world_map"
+    NAME = "view_world_map_dynamic"
 
     TEMPLATE = "information/world_map_dynamic.html"
 
     ACCESS = UserAccess.anonymous
     REQUIRES_CHARACTER_PERMISSION = False
-    REQUIRES_GLOBAL_PERMISSION = False
+    REQUIRES_GLOBAL_PERMISSION = True
 
     def get_template_vars(self, previous_form_data=None):
         all_locations = self.datamanager.get_locations()
