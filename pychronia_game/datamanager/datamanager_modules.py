@@ -2250,6 +2250,9 @@ class TextMessagingExternalContacts(BaseDataManager):
 
 @register_module
 class TextMessagingTemplates(BaseDataManager):
+
+    COMMON_TEMPLATE_AND_MESSAGE_PARAMETERS = "sender_email recipient_emails subject body attachment transferred_msg parent_id".split()
+
     def _load_initial_data(self, **kwargs):
         super(TextMessagingTemplates, self)._load_initial_data(**kwargs)
 
@@ -2323,8 +2326,8 @@ class TextMessagingTemplates(BaseDataManager):
         messaging = self.messaging_data
 
         #FIXME - BEWARE group_id not used yet, but it will be someday!!!
-        template_fields = set(
-            "sender_email recipient_emails subject body attachment transferred_msg is_used is_ignored parent_id gamemaster_hints categories sent_at group_id order mask_recipients".split())
+        template_fields = (set(self.COMMON_TEMPLATE_AND_MESSAGE_PARAMETERS) |
+                           set("order mask_recipients is_used is_ignored gamemaster_hints categories".split()))
 
         for msg in messaging["manual_messages_templates"].values():
 
@@ -2371,6 +2374,16 @@ class TextMessagingTemplates(BaseDataManager):
 
             if msg["parent_id"]:
                 assert self.get_dispatched_message_by_id(msg_id=msg["parent_id"])
+
+    def post_message_with_template(self, template_id, **kwargs):
+        template = self.get_message_template(template_id)
+
+        params = {k: template[k] for k in self.COMMON_TEMPLATE_AND_MESSAGE_PARAMETERS}
+        params.update(kwargs)
+        params["template_id"] = template_id
+
+        res = self.post_message(**params)
+        return res
 
     def _build_new_message(self, *args, **kwargs):
         template_id = kwargs.pop("template_id", None)  # we remove our specific template_id param

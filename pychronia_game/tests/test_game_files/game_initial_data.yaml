@@ -544,7 +544,6 @@ messaging:
         mind_opening_instructions_oracle:
             categories: ["misc", "other_misc"]
             order: 0
-            group_id: "22"
             sender_email: djinn-master@djinn-city.com
             recipient_emails: guy2
             subject: Reminder - mind opening operations
