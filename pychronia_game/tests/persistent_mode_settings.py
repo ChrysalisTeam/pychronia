@@ -116,4 +116,70 @@ _external_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(
 _chrysalis_data_dir = os.path.join(_external_dir, "Chrysalis")
 if os.path.exists(_chrysalis_data_dir):
     GAME_FILES_ROOT = _chrysalis_data_dir + os.sep
-    GAME_INITIAL_DATA_PATH = os.path.join(_chrysalis_data_dir, "script_fixtures")
+
+
+    # SELECT ONLY SOME FIXTURES, FOR MYSTERY PARTY
+
+    _GAME_INITIAL_DATA_DIR = os.path.join(_chrysalis_data_dir, "script_fixtures")
+
+    _selected_yaml_files = """
+        descent_rpg
+    
+        abilities.yaml
+        characters_factions.yaml
+        game_items.yaml
+        gamemaster_manual.yaml
+        global_data.yaml
+        locations.yaml
+        messaging_core.yaml
+        nightmare_captchas.yaml
+        radio_spots.yaml
+        static_pages.yaml
+        
+        encyclopedia/ability_related_subjects.yaml
+        encyclopedia/midolian_and_yodic_subjects.yaml
+        encyclopedia/pangea_misc_locations_and_events.yaml
+        encyclopedia/sabarim_locations_and_characters.yaml
+        
+        messaging/abilities.yaml
+        #messaging/cynthia_abduction.yaml
+        #messaging/doctor_honoris_causa_and_nazur.yaml
+        messaging/first_contacts.yaml
+        messaging/geopolitics.yaml
+        messaging/inquiries_between_players.yaml
+        #messaging/magnus_society_family_exchanges.yaml
+        #messaging/main_npcs_exchanges.yaml
+        messaging/news.yaml
+        messaging/npc_orbs.yaml
+        #messaging/player_instructions.yaml
+        #messaging/super_factions.yaml
+        #messaging/wiremind.yaml
+        """.split()
+
+    GAME_INITIAL_DATA_PATH = [os.path.join(_GAME_INITIAL_DATA_DIR, _selected_yaml_file)
+                              for _selected_yaml_file in _selected_yaml_files
+                              if _selected_yaml_file[0] != "#"]
+
+
+    GAME_INITIAL_FIXTURE_SCRIPT_DEV = GAME_INITIAL_FIXTURE_SCRIPT
+
+    def GAME_INITIAL_FIXTURE_SCRIPT(dm):
+
+        # remove useless static pages, especially in encyclopedia
+        excluded_static_pages = """
+            salt_deserts
+            cloudy_citadel
+            nalavut_council
+            hydroland
+            belez_academy
+            imuo_faculty
+            jungle_harmonies_album
+            alifir_deans
+        """.split()
+
+        for excluded_static_page in excluded_static_pages:
+            del dm.data["static_pages"][excluded_static_page]  # no need to commit
+
+
+        GAME_INITIAL_FIXTURE_SCRIPT_DEV(dm)  # call initial dev setup
+
