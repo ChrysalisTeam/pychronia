@@ -716,13 +716,22 @@ def check_settings_dictionary_with_template(my_dict, template, strict=False):
 
 def recursive_dict_sum(d1, d2):
     """Sums dictionaries recursively."""
+
+    def _append_or_replace(a, b):
+        assert type(a) == type(b), (a, b)
+        if isinstance(a, (list, tuple)):
+            return a + b
+        return b  # replace with latest value then!
+
     if not isinstance(d1, dict) or not isinstance(d2, dict):
         raise ValueError([d1, d2])
+
     all_keys = d1.keys() + d2.keys()
     #print("---->", repr(all_keys)[0:30])
     return dict((k, ((d1[k] if k in d1 else d2[k])
                      if k not in d1 or k not in d2
-                     else (d1[k] + d2[k] if not isinstance(d1[k], dict)
+                     else (_append_or_replace(d1[k], d2[k])
+                           if not isinstance(d1[k], dict)
                            else recursive_dict_sum(d1[k], d2[k]))))
                 for k in set(all_keys))
 
