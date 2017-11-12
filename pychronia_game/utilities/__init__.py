@@ -714,12 +714,12 @@ def check_settings_dictionary_with_template(my_dict, template, strict=False):
     return check_dictionary_with_template(my_dict, template, strict=strict)
 
 
-def recursive_dict_sum(d1, d2):
-    """Sums dictionaries recursively."""
+def recursive_dict_sum(d1, d2, appendable_fields):
+    """Sums dictionaries recursively, depending on the concerned fields."""
 
-    def _append_or_replace(a, b):
+    def _append_or_replace(key, a, b):
         assert type(a) == type(b), (a, b)
-        if isinstance(a, (list, tuple)):
+        if isinstance(a, (list, tuple)) and key in appendable_fields:
             return a + b
         return b  # replace with latest value then!
 
@@ -730,9 +730,10 @@ def recursive_dict_sum(d1, d2):
     #print("---->", repr(all_keys)[0:30])
     return dict((k, ((d1[k] if k in d1 else d2[k])
                      if k not in d1 or k not in d2
-                     else (_append_or_replace(d1[k], d2[k])
+                     else (_append_or_replace(k, d1[k], d2[k])
                            if not isinstance(d1[k], dict)
-                           else recursive_dict_sum(d1[k], d2[k]))))
+                           else recursive_dict_sum(d1[k], d2[k],
+                                                   appendable_fields=appendable_fields))))
                 for k in set(all_keys))
 
 
@@ -750,8 +751,10 @@ def load_yaml_file(yaml_file):
     return data
 
 
-YAML_EXTENSIONS = ["*.yaml", "*.yml", "*/*.yaml", "*/*.yml"]  # works on windows too
+YAML_FILE_GLOBS = ["*.yaml", "*.yml", "*/*.yaml", "*/*.yml"]  # works on windows too
 
+# fields which should be concatenated instead of replaces, when merging yaml trees
+APPENDABLE_FIELDS = """manual_messages_templates messages_dispatched messages_queued game_items""".split()
 
 def load_yaml_fixture(yaml_fixture):
     """
@@ -778,7 +781,7 @@ def load_yaml_fixture(yaml_fixture):
         else:
             assert os.path.isdir(yaml_entry)
 
-            yaml_files = [path for pattern in YAML_EXTENSIONS
+            yaml_files = [path for pattern in YAML_FILE_GLOBS
                           for path in glob.glob(os.path.join(yaml_entry, pattern))]
 
         for yaml_file in yaml_files:
@@ -791,7 +794,7 @@ def load_yaml_fixture(yaml_fixture):
             if not isinstance(part, dict):
                 raise ValueError("Improper content in %s" % yaml_file)
 
-            data = recursive_dict_sum(data, part)
+            data = recursive_dict_sum(data, part, appendable_fields=APPENDABLE_FIELDS)
 
     return data
 
