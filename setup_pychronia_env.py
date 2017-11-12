@@ -15,7 +15,7 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "pychronia_settings")  # not era
 
 import django_compat_patcher
 dcp_settings = dict(DCP_ENABLE_WARNINGS=False,
-                    DCP_LOGGING_LEVEL="INFO")
+                    DCP_LOGGING_LEVEL="WARNING")
 django_compat_patcher.patch(dcp_settings)
 
 import django
