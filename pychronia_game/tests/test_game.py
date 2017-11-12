@@ -1923,6 +1923,7 @@ class TestDatamanager(BaseGameTestCase):
         msg = self.dm.get_dispatched_message_by_id(msg_id4)
         self.assertFalse(msg["has_replied"])  # new message isn't impacted
         self.assertEqual(msg["has_read"], ["guy3"])
+        self.assertEqual(msg["template_id"], tpl_id)
 
         tpl = self.dm.get_message_template(tpl_id)
         self.assertEqual(tpl["is_used"],
@@ -2250,6 +2251,23 @@ class TestDatamanager(BaseGameTestCase):
             ["guy1@pangea.com", "judicators@akaris.com", "unknown@mydomain.com"], as_dict=True)
         assert set(res.keys()) == set(["guy1@pangea.com", "judicators@akaris.com", "unknown@mydomain.com"])
         assert sorted(res.values(), key=lambda x: x["address"]) == expected_res  # values are the same as above...
+
+    def test_post_message_with_template(self):
+        self._reset_messages()
+
+        msg_id_1 = self.dm.post_message_with_template("mind_opening_instructions_oracle")
+        msg1 = self.dm.get_dispatched_message_by_id(msg_id_1)
+        assert msg1["sender_email"] == "djinn-master@djinn-city.com"
+        assert msg1["template_id"] == "mind_opening_instructions_oracle"
+
+        with pytest.raises(UsageError):  # missing recipients in template
+            self.dm.post_message_with_template("feedback_akaris_threats_geoip")
+
+        msg_id_2 = self.dm.post_message_with_template("feedback_akaris_threats_geoip",
+                                                      recipient_emails="guy3")
+        msg2 = self.dm.get_dispatched_message_by_id(msg_id_2)
+        assert msg2["recipient_emails"] == ["guy3@pangea.com"]  # normalized
+        assert msg2["template_id"] == "feedback_akaris_threats_geoip"
 
     def test_message_archiving(self):
 

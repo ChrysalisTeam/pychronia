@@ -2375,6 +2375,7 @@ class TextMessagingTemplates(BaseDataManager):
             if msg["parent_id"]:
                 assert self.get_dispatched_message_by_id(msg_id=msg["parent_id"])
 
+    @transaction_watcher
     def post_message_with_template(self, template_id, **kwargs):
         template = self.get_message_template(template_id)
 
@@ -2386,7 +2387,7 @@ class TextMessagingTemplates(BaseDataManager):
         return res
 
     def _build_new_message(self, *args, **kwargs):
-        template_id = kwargs.pop("template_id", None)  # we remove our specific template_id param
+        template_id = kwargs.get("template_id", None)
         msg = super(TextMessagingTemplates, self)._build_new_message(*args, **kwargs)
 
         if template_id:
