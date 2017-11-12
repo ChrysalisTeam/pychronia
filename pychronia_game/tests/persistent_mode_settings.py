@@ -168,6 +168,8 @@ if os.path.exists(_chrysalis_data_dir):
 
     def GAME_INITIAL_FIXTURE_SCRIPT(dm):
 
+        GAME_INITIAL_FIXTURE_SCRIPT_DEV(dm)  # call initial dev setup
+
         # remove useless static pages, especially in encyclopedia
         excluded_static_pages = """
             salt_deserts
@@ -186,6 +188,29 @@ if os.path.exists(_chrysalis_data_dir):
         assert dm.get_global_parameter("game_theoretical_length_days")
         dm.set_global_parameter("game_theoretical_length_days", 1)
 
+        activable_views = [
+            #"artificial_intelligence",
+            "auction_items_slideshow",
+            #"black_market",
+            "business_escrow",
+            "chatroom",
+            #"chess_challenge",
+            "game_events",
+            #"geoip_location",
+            "house_locking",
+            "house_reports",
+            "matter_analysis",
+            "mercenaries_hiring",
+            "personal_items_slideshow",
+            "runic_translation",
+            #"telecom_investigation",
+            "view_sales",
+            #"view_world_map_dynamic",
+            #"wiretapping",   # SHOULD WE ACTIVATED IT??
+            "world_scan",
+        ]
+        dm.set_activated_game_views(activable_views)
+
         friendships = [
             ("amethyst", "garnet"),
             ("malachite", "spinel"),
@@ -199,6 +224,4 @@ if os.path.exists(_chrysalis_data_dir):
             assert (_domains1 == _domains2), (player_name, player_name_bis, _domains1, _domains2)
             dm.propose_friendship(player_name, player_name_bis)
             dm.propose_friendship(player_name_bis, player_name)
-
-        GAME_INITIAL_FIXTURE_SCRIPT_DEV(dm)  # call initial dev setup
 

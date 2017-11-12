@@ -4174,6 +4174,11 @@ class Items3dViewing(BaseDataManager):
 
 @register_module
 class GameViews(BaseDataManager):
+    """
+    Note that personal permissions can bypass the "activated=False"
+    status of a game view.
+    """
+
     GAME_VIEWS_REGISTRY = {}  # all game views, including abilities, register themselves here thanks to their metaclass
     ACTIVABLE_VIEWS_REGISTRY = {}  # only views that need to be activated by game master
 
