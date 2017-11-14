@@ -29,6 +29,8 @@
 
         {% if are_doors_open %}
 
+            <br/><p><b>{% trans "Security is current DISABLED." %}</b></p><br/>
+
             <form id="locking_form" action="" method="post">
                 <input type="hidden" name="_action_" value="lock"/>
                 <input type="submit" class="digit" value="{% trans "Lock Doors" %}"/>
@@ -36,38 +38,36 @@
 
         {% else %}
 
+            <br/><p><b></b>{% trans "Security is current ACTIVATED." %}</b></p><br/>
 
-             <div id="password_display"></div>
-
-             <br/>
-             <table>
-                 <tr>
+            <div id="password_display"></div>
+            <br/>
+            <table>
+                <tr>
                     <td><input type="button" class="digit nofreeze" value="7" onclick="javascript:append_digit('7');"/></td>
                     <td><input type="button" class="digit nofreeze" value="8" onclick="javascript:append_digit('8');"/></td>
                     <td><input type="button" class="digit nofreeze" value="9" onclick="javascript:append_digit('9');"/></td>
-                 </tr>
-                 <tr>
+                </tr>
+                <tr>
                     <td><input type="button" class="digit nofreeze" value="4" onclick="javascript:append_digit('4');"/></td>
                     <td><input type="button" class="digit nofreeze" value="5" onclick="javascript:append_digit('5');"/></td>
                     <td><input type="button" class="digit nofreeze" value="6" onclick="javascript:append_digit('6');"/></td>
-                 </tr>
-                 <tr>
+                </tr>
+                <tr>
                     <td><input type="button" class="digit nofreeze" value="1" onclick="javascript:append_digit('1');"/></td>
                     <td><input type="button" class="digit nofreeze" value="2" onclick="javascript:append_digit('2');"/></td>
                     <td><input type="button" class="digit nofreeze" value="3" onclick="javascript:append_digit('3');"/></td>
-                 </tr>
-                 <tr>
+                </tr>
+                <tr>
                     <td><input type="button" class="digit nofreeze" value="0" class="nofreeze" onclick="javascript:append_digit('0');"/></td>
                     <td><input type="button" class="digit nofreeze" value="{% trans "Reset" %}" onclick="javascript:$('#password_display').html('');"/></td>
-
-                     {# NOT nofreeze on submission button #}
+                    {# NOT nofreeze on submission button #}
                     <td><input type="button" class="digit" value="{% trans "Submit" %}" onclick="submit_password();"/></td>
-                 </tr>
-             </table>
-
-             <form id="unlocking_form" action="" method="post">
-                <input id="password" type="hidden" name="password" value=""/>
-                <input type="hidden" name="_action_" value="unlock"/>
+                </tr>
+            </table>
+            <form id="unlocking_form" action="" method="post">
+               <input id="password" type="hidden" name="password" value=""/>
+               <input type="hidden" name="_action_" value="unlock"/>
             </form>
 
          {% endif %}
