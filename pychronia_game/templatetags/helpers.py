@@ -214,8 +214,9 @@ def _generate_messaging_links(html_snippet, datamanager):
 
 def _generate_site_links(html_snippet, datamanager):
     """
-    Generates a site link, similarly to django's URL tag ; tag must be in the form [ GAME_PAGE_LINK "click here" "pychronia.views.homepage" ]
-    Rg, in rst-generated text.
+    Generates a site link, similarly to django's URL tag ; tag must be in the form [ GAME_PAGE_LINK "click here" "pychronia.views.homepage" ].
+
+    Escape this tag with ``verbatim text`` form, if it's first processed by restructuredtext, else smart-quotes will break this GAME_PAGE_LINK tag.
     """
     if __debug__: datamanager.notify_event("GENERATE_SITE_LINKS")
 
