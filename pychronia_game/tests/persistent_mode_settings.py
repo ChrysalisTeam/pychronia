@@ -201,7 +201,7 @@ if os.path.exists(_chrysalis_data_dir):
             "chatroom",
             #"chess_challenge",
             "game_events",
-            #"geoip_location",
+            #"geoip_location",   # COULD be enabled!
             "house_locking",
             "house_reports",
             "matter_analysis",
@@ -211,7 +211,7 @@ if os.path.exists(_chrysalis_data_dir):
             #"telecom_investigation",
             "view_sales",
             #"view_world_map_dynamic",
-            #"wiretapping",   # SHOULD WE ACTIVATED IT??
+            "wiretapping",
             "world_scan",
         ]
         dm.set_activated_game_views(activable_views)
@@ -230,6 +230,9 @@ if os.path.exists(_chrysalis_data_dir):
             dm.propose_friendship(player_name, player_name_bis)
             dm.propose_friendship(player_name_bis, player_name)
 
+        # HERE we could complete address books of characters
+        #for (name, character) in dm.get_character_sets().items():
+        #    address_book = dm.get_character_address_book(name)
 
         ml_address = dm.get_global_parameter("all_players_mailing_list")
         email_predispatches = [

@@ -10,8 +10,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-11-14 15:50+0100\n"
-"PO-Revision-Date: 2017-10-07 20:55+0200\n"
+"POT-Creation-Date: 2017-11-14 17:54+0100\n"
+"PO-Revision-Date: 2017-11-14 17:54+0200\n"
 "Last-Translator: Pascal <chambon.pascal@gmail.com>\n"
 "Language-Team: Nothing\n"
 "MIME-Version: 1.0\n"
@@ -1199,17 +1199,25 @@ msgstr "Cela réinitialisera votre partie actuelle, êtes-vous sûr ?"
 msgid "Create New Game"
 msgstr "Créer une Nouvelle Partie"
 
-#: .\templates\abilities\house_locking.html:34
+#: .\templates\abilities\house_locking.html:32
+msgid "Security is current DISABLED."
+msgstr "La sécurité est actuellement DÉSACTIVÉE."
+
+#: .\templates\abilities\house_locking.html:36
 msgid "Lock Doors"
 msgstr "Verrouillage des Portes"
 
-#: .\templates\abilities\house_locking.html:61
+#: .\templates\abilities\house_locking.html:41
+msgid "Security is current ACTIVATED."
+msgstr "La sécurité est actuellement ACTIVÉE."
+
+#: .\templates\abilities\house_locking.html:63
 #: .\templates\auction\view_sales.html:127
 #: .\templates\information\world_map_dynamic.html:49
 msgid "Reset"
 msgstr "Réinitialiser"
 
-#: .\templates\abilities\house_locking.html:64
+#: .\templates\abilities\house_locking.html:65
 #: .\templates\administration\game_items_management.html:31
 #: .\templates\administration\global_contacts_management.html:32
 #: .\templates\administration\static_pages_management.html:26
@@ -2760,7 +2768,7 @@ msgstr "Déverrouiller les portes de la maison"
 
 #: .\views\abilities\house_locking_mod.py:35
 msgid "Manor Security Management"
-msgstr "Sécurité des Portes du Manoir"
+msgstr "Sécurité du Manoir"
 
 #: .\views\abilities\house_locking_mod.py:47
 msgid "House doors successfully locked."
@@ -2948,9 +2956,9 @@ msgstr ""
 "                            Veuillez noter que toute erreur dans le décodage "
 "des runes peut avoir de lourds impacts sur cette traduction.\n"
 "    \n"
-"                            Transcription des runes: \"%(original)s\"\n"
+"                            Transcription des runes : \"%(original)s\"\n"
 "    \n"
-"                            Résultat de la traduction: \"%(translation)s\""
+"                            Résultat de la traduction : \"%(translation)s\""
 
 #: .\views\abilities\runic_translation_mod.py:245
 #, python-format
