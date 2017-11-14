@@ -264,8 +264,9 @@ class FlexibleTime(BaseDataManager):  # TODO REFINE
     def compute_effective_delay_s(self, delay_mn):
         """
         Components of delay_mn can be negative or zero, too.
+
+        IMPORTANT - we assume a standard game is actually 1 day long!
         """
-        # IMPORTANT - we assume a standard game is actually 1 day long!
         factor_to_s = self.get_global_parameter("game_theoretical_length_days") * 60
 
         if not isinstance(delay_mn, (int, long, float)):

@@ -29,7 +29,6 @@ def GAME_INITIAL_FIXTURE_SCRIPT(dm):
     logging.info("Loading special game fixture script...")
 
     #return # TODO TEMPORARY
-    from persistent.list import PersistentList
 
     # we activate ALL views
     activable_views = dm.ACTIVABLE_VIEWS_REGISTRY.keys()
@@ -39,7 +38,7 @@ def GAME_INITIAL_FIXTURE_SCRIPT(dm):
 
     # we give first player access to everything
     assert not dm.get_character_properties(player_name)["is_npc"]
-    dm.update_permissions(player_name, PersistentList(dm.PERMISSIONS_REGISTRY))
+    dm.update_permissions(player_name, dm.PERMISSIONS_REGISTRY)
 
     # we can (or not) see all articles
     dm.set_encyclopedia_index_visibility(False)
@@ -168,7 +167,13 @@ if os.path.exists(_chrysalis_data_dir):
 
     def GAME_INITIAL_FIXTURE_SCRIPT(dm):
 
-        GAME_INITIAL_FIXTURE_SCRIPT_DEV(dm)  # call initial dev setup
+        ## NOPE GAME_INITIAL_FIXTURE_SCRIPT_DEV(dm)  # call initial dev setup
+
+        # we give first player access to everything TEMPORARY
+        player_name = "amethyst"
+        assert not dm.get_character_properties(player_name)["is_npc"]
+        dm.update_permissions(player_name, dm.PERMISSIONS_REGISTRY)
+
 
         # remove useless static pages, especially in encyclopedia
         excluded_static_pages = """
@@ -225,3 +230,14 @@ if os.path.exists(_chrysalis_data_dir):
             dm.propose_friendship(player_name, player_name_bis)
             dm.propose_friendship(player_name_bis, player_name)
 
+
+        ml_address = dm.get_global_parameter("all_players_mailing_list")
+        email_predispatches = [
+            ("security_measures", dict(recipient_emails=[ml_address],)),
+        ]
+
+        for idx, (template_id, params) in enumerate(email_predispatches):
+            if "date_or_delay_mn" not in params:
+                params["date_or_delay_mn"] = (-5*24*60) + (idx * 30)  # send each template every 30mn
+            print(">>>>>>>>> Preposting message with template_id=%s and params=%s" % (template_id, params))
+            dm.post_message_with_template(template_id, **params)
