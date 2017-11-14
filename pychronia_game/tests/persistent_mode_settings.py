@@ -249,7 +249,7 @@ if os.path.exists(_chrysalis_data_dir):
                 assert "date_or_delay_mn" not in params
                 params["date_or_delay_mn"] = offset_days * 24 * 60
                 assert params["date_or_delay_mn"] < 0, params["date_or_delay_mn"]
-            print(">>>>>>>>> Preposting message with template_id=%s and params=%s" % (template_id, params))
+            #print(">>>>>>>>> Preposting message with template_id=%s and params=%s" % (template_id, params))
             dm.post_message_with_template(template_id, **params)
 
         for item_name, item_data in dm.data["game_items"].items():

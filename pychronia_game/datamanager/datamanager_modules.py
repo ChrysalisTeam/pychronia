@@ -1122,7 +1122,7 @@ class PlayerAuthentication(BaseDataManager):
         # WARNING - if by bug, no answer is actually expected, attempts must ALWAYS fail
         if expected_answer and (secret_answer_attempt == expected_answer):
             if target_email not in self.get_all_existing_emails():
-                raise UsageError(_("Right answer, but invalid email address %s." % target_email))
+                raise UsageError(_("Right answer, but invalid email address %s.") % target_email)
             # success !
 
             sender_email = "authenticator@hightech.com"  # dummy email

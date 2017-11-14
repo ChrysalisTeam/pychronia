@@ -10,8 +10,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-11-14 17:54+0100\n"
-"PO-Revision-Date: 2017-11-14 17:54+0200\n"
+"POT-Creation-Date: 2017-11-14 18:49+0100\n"
+"PO-Revision-Date: 2017-11-14 18:49+0200\n"
 "Last-Translator: Pascal <chambon.pascal@gmail.com>\n"
 "Language-Team: Nothing\n"
 "MIME-Version: 1.0\n"
@@ -2558,6 +2558,10 @@ msgstr "Authentifiez moi !"
 #: .\templates\profile\login.html:22
 msgid "Forgot password?"
 msgstr "Mot de passe oublié ?"
+
+#: .\templates\profile\secret_question.html:11
+msgid "Secret Question"
+msgstr "Question Secrète"
 
 #: .\templates\profile\secret_question.html:19
 msgid "Recover Password"
