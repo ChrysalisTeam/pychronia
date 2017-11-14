@@ -248,3 +248,7 @@ if os.path.exists(_chrysalis_data_dir):
                 assert params["date_or_delay_mn"] < 0, params["date_or_delay_mn"]
             print(">>>>>>>>> Preposting message with template_id=%s and params=%s" % (template_id, params))
             dm.post_message_with_template(template_id, **params)
+
+        for item_name, item_data in dm.data["game_items"].items():
+            if item_data["auction"] and len(item_data["auction"]) != 1:
+                item_data["auction"] = ""  # remove old auction items (now only A, B, C...)
