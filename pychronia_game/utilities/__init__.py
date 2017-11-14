@@ -718,7 +718,6 @@ def recursive_dict_sum(d1, d2, appendable_fields):
     """Sums dictionaries recursively, depending on the concerned fields."""
 
     def _append_or_replace(key, a, b):
-        assert type(a) == type(b), (a, b)
         if isinstance(a, (list, tuple)) and key in appendable_fields:
             return a + b
         return b  # replace with latest value then!
