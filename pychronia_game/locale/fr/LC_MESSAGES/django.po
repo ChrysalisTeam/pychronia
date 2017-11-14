@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-10-10 16:05+0200\n"
+"POT-Creation-Date: 2017-11-14 15:50+0100\n"
 "PO-Revision-Date: 2017-10-07 20:55+0200\n"
 "Last-Translator: Pascal <chambon.pascal@gmail.com>\n"
 "Language-Team: Nothing\n"
@@ -387,16 +387,16 @@ msgstr "Attention, votre usurpation d'identité est en mode écriture."
 msgid "Website currently in read-only mode, for maintenance."
 msgstr "Site web actuellement en lecture seule, pour maintenance."
 
-#: .\datamanager\datamanager_modules.py:612
+#: .\datamanager\datamanager_modules.py:613
 #, python-format
 msgid "Unknown username %s"
 msgstr "identifiant utilisateur inconnu %s"
 
-#: .\datamanager\datamanager_modules.py:637
+#: .\datamanager\datamanager_modules.py:638
 msgid "Unidentified"
 msgstr "Non identifié"
 
-#: .\datamanager\datamanager_modules.py:646 .\forms.py:116
+#: .\datamanager\datamanager_modules.py:647 .\forms.py:116
 #: .\templates\abilities\mercenaries_hiring.html:16
 #: .\templates\abilities\wiretapping_management.html:41
 #: .\templates\administration\character_management.html:20
@@ -415,72 +415,72 @@ msgstr "Non identifié"
 msgid "None"
 msgstr "Aucun(e)"
 
-#: .\datamanager\datamanager_modules.py:662
+#: .\datamanager\datamanager_modules.py:663
 #, python-format
 msgid "Wrong email %s"
 msgstr "Mauvais email %s"
 
-#: .\datamanager\datamanager_modules.py:736
+#: .\datamanager\datamanager_modules.py:737
 #, python-format
 msgid "Wrong domain name %s"
 msgstr "Mauvais nom de domaine %s"
 
-#: .\datamanager\datamanager_modules.py:953
+#: .\datamanager\datamanager_modules.py:954
 #, python-format
 msgid "Invalid instance username: '%s'"
 msgstr "Identifiant utilisateur invalide dans l'instance : '%s'"
 
-#: .\datamanager\datamanager_modules.py:956
+#: .\datamanager\datamanager_modules.py:957
 #, python-format
 msgid "Invalid requested impersonation target: %s"
 msgstr "Cible d'usurpation demandée invalide : %s"
 
-#: .\datamanager\datamanager_modules.py:964
+#: .\datamanager\datamanager_modules.py:965
 #, python-format
 msgid "Unauthorized user impersonation detected: %s"
 msgstr "Usurpation d'identité non autorisée détectée: %s"
 
-#: .\datamanager\datamanager_modules.py:1008
-#: .\datamanager\datamanager_modules.py:1011
+#: .\datamanager\datamanager_modules.py:1009
+#: .\datamanager\datamanager_modules.py:1012
 #, python-format
 msgid "Invalid session ticket: %s"
 msgstr "Ticket de session invalide: %s"
 
-#: .\datamanager\datamanager_modules.py:1074
+#: .\datamanager\datamanager_modules.py:1075
 msgid "Wrong password"
 msgstr "Mauvais mot de passe"
 
-#: .\datamanager\datamanager_modules.py:1084
+#: .\datamanager\datamanager_modules.py:1085
 msgid "Invalid new password submitted"
 msgstr "Mauvais nouveau mot de passe soumis"
 
-#: .\datamanager\datamanager_modules.py:1087
+#: .\datamanager\datamanager_modules.py:1088
 msgid "Wrong current password submitted"
 msgstr "Mauvais mot de passe actuel soumis"
 
-#: .\datamanager\datamanager_modules.py:1099
+#: .\datamanager\datamanager_modules.py:1100
 msgid "Game master can't recover his password through a secret question."
 msgstr ""
 "Le Maître du jeu ne peut récupérer son mot de passe via une question secrète."
 
-#: .\datamanager\datamanager_modules.py:1101
+#: .\datamanager\datamanager_modules.py:1102
 msgid "Invalid username."
 msgstr "Identifiant utilisateur invalide."
 
-#: .\datamanager\datamanager_modules.py:1105
+#: .\datamanager\datamanager_modules.py:1106
 msgid "That user has no secret question set up."
 msgstr "Cet utilisateur n'a pas de question secrète configurée."
 
-#: .\datamanager\datamanager_modules.py:1124
+#: .\datamanager\datamanager_modules.py:1125
 #, python-format
 msgid "Right answer, but invalid email address %s."
 msgstr "Bonne réponse, mais mauvaise adresse email %s."
 
-#: .\datamanager\datamanager_modules.py:1131
+#: .\datamanager\datamanager_modules.py:1132
 msgid "<Password Recovery System>"
 msgstr "<Récupération du Mot de Passe>"
 
-#: .\datamanager\datamanager_modules.py:1133
+#: .\datamanager\datamanager_modules.py:1134
 #, python-format
 msgid ""
 "\n"
@@ -496,51 +496,51 @@ msgstr ""
 "                    Gardez le précieusement et ne le partagez avec personne "
 "d'autre."
 
-#: .\datamanager\datamanager_modules.py:1144
+#: .\datamanager\datamanager_modules.py:1145
 #, python-format
 msgid "Password of %(username)s has been recovered by %(target_email)s."
 msgstr "Le mot de passe de %(username)s a été récupéré par %(target_email)s. "
 
-#: .\datamanager\datamanager_modules.py:1152
+#: .\datamanager\datamanager_modules.py:1153
 msgid "Wrong answer supplied."
 msgstr "Mauvaise réponse fournie."
 
-#: .\datamanager\datamanager_modules.py:1160
+#: .\datamanager\datamanager_modules.py:1161
 msgid "Invalid new secret question or secret answer submitted"
 msgstr "Question ou réponse secrète invalide soumise"
 
-#: .\datamanager\datamanager_modules.py:1164
+#: .\datamanager\datamanager_modules.py:1165
 msgid "Secret question and secret answer must be both set or both empty"
 msgstr ""
 "La question et la réponse secrète doivent être tous deux vides ou tous deux "
 "non-vides"
 
-#: .\datamanager\datamanager_modules.py:1385
+#: .\datamanager\datamanager_modules.py:1386
 #, python-format
 msgid "Forbidden friendship proposal: %(username)s -> %(recipient)s"
 msgstr "Proposition d'amitié interdite: %(username)s -> %(recipient)s"
 
-#: .\datamanager\datamanager_modules.py:1388
+#: .\datamanager\datamanager_modules.py:1389
 #, python-format
 msgid "User %s can't be friend with himself"
 msgstr "L'utilisateur %s ne peut être ami avec lui-même"
 
-#: .\datamanager\datamanager_modules.py:1391
+#: .\datamanager\datamanager_modules.py:1392
 #, python-format
 msgid "Already existing friendship between %(username)s and %(recipient)s"
 msgstr "Amitié déjà existante entre %(username)s et %(recipient)s"
 
-#: .\datamanager\datamanager_modules.py:1398
+#: .\datamanager\datamanager_modules.py:1399
 #, python-format
 msgid "%(username)s has already requested the friendship of %(recipient)s"
 msgstr "%(username)s a déjà demandé l'amitié de %(recipient)s"
 
-#: .\datamanager\datamanager_modules.py:1445
+#: .\datamanager\datamanager_modules.py:1446
 #, python-format
 msgid "Unexisting friendship: %(username1)s<->%(username1)s"
 msgstr "Amitié inexistante: %(username1)s<->%(username1)s"
 
-#: .\datamanager\datamanager_modules.py:1532
+#: .\datamanager\datamanager_modules.py:1533
 msgid ""
 "That friendship is too young to be terminated - please respect the waiting "
 "period"
@@ -548,70 +548,70 @@ msgstr ""
 "Cette amitié est trop jeune pour être annulée - veuillez respecter la "
 "période de jachère."
 
-#: .\datamanager\datamanager_modules.py:1883
+#: .\datamanager\datamanager_modules.py:1884
 msgid "Sender, recipient, and subject of the message mustn't be empty"
 msgstr "L'émetteur, destinataire et sujet du message ne doivent pas être vides"
 
-#: .\datamanager\datamanager_modules.py:1967
+#: .\datamanager\datamanager_modules.py:1968
 #, python-format
 msgid "Email address %s is invalid"
 msgstr "L'adresse email %s est invalide"
 
-#: .\datamanager\datamanager_modules.py:2071
+#: .\datamanager\datamanager_modules.py:2072
 #, python-format
 msgid "Unknown dispatched message id '%s'"
 msgstr "Identifiant de message expédié inconnu '%s'"
 
-#: .\datamanager\datamanager_modules.py:2079
+#: .\datamanager\datamanager_modules.py:2080
 #, python-format
 msgid "Unknown queued message id '%s'"
 msgstr "Identifiant de message en attente inconnu '%s'"
 
-#: .\datamanager\datamanager_modules.py:2138
+#: .\datamanager\datamanager_modules.py:2139
 #, python-format
 msgid "Mailbox %s has rejected your email"
 msgstr "La boîte aux lettres %s a rejeté votre email"
 
-#: .\datamanager\datamanager_modules.py:2147
+#: .\datamanager\datamanager_modules.py:2148
 msgid "contact"
 msgstr "contact"
 
-#: .\datamanager\datamanager_modules.py:2395
+#: .\datamanager\datamanager_modules.py:2410
 #, python-format
 msgid "Unexisting template id %r"
 msgstr "Identifiant de modèle %r inexistant"
 
-#: .\datamanager\datamanager_modules.py:2838
+#: .\datamanager\datamanager_modules.py:2853
 msgid "Unidentified contact"
 msgstr "Contact non identifié"
 
-#: .\datamanager\datamanager_modules.py:3060
+#: .\datamanager\datamanager_modules.py:3075
 #, python-format
 msgid "Unknown target username '%(target)s'"
 msgstr "Utilisateur cible inconnu '%(target)s'"
 
-#: .\datamanager\datamanager_modules.py:3144
+#: .\datamanager\datamanager_modules.py:3159
 msgid "radio spots"
 msgstr "spots radio"
 
-#: .\datamanager\datamanager_modules.py:3221
+#: .\datamanager\datamanager_modules.py:3236
 #, python-format
 msgid "Unknown radio message identifier - %(audio_id)s"
 msgstr "Identifiant de message radio inconnu - %(audio_id)s"
 
-#: .\datamanager\datamanager_modules.py:3268
+#: .\datamanager\datamanager_modules.py:3283
 msgid "Unknown radio frequency"
 msgstr "Fréquence radio inconnue"
 
-#: .\datamanager\datamanager_modules.py:3389
+#: .\datamanager\datamanager_modules.py:3404
 msgid "Only authenticated users may chat"
 msgstr "Seuls les utilisateurs authentifiés peuvent chatter"
 
-#: .\datamanager\datamanager_modules.py:3397
+#: .\datamanager\datamanager_modules.py:3412
 msgid "Chat message can't be empty"
 msgstr "Le message de chat ne peut être vide"
 
-#: .\datamanager\datamanager_modules.py:3507
+#: .\datamanager\datamanager_modules.py:3522
 #, python-format
 msgid ""
 "Only strings representing DataManager methods can be scheduled as delayed "
@@ -620,7 +620,7 @@ msgstr ""
 "Seules les chaines de caractère représentant des méthodes du DataManager "
 "peuvent être planifiées comme actions temporisées, et non %(function)s"
 
-#: .\datamanager\datamanager_modules.py:3510
+#: .\datamanager\datamanager_modules.py:3525
 #, python-format
 msgid ""
 "You can only register a callable object as a delayed action, not a %"
@@ -629,15 +629,15 @@ msgstr ""
 "Vous ne pouvez enregistrer que les objets appelables en tant qu'actions "
 "temporisées, non %(function)r"
 
-#: .\datamanager\datamanager_modules.py:3562
+#: .\datamanager\datamanager_modules.py:3577
 msgid "This encrypted archive doesn't exist."
 msgstr "Cette archive encodée n'existe pas."
 
-#: .\datamanager\datamanager_modules.py:3568
+#: .\datamanager\datamanager_modules.py:3583
 msgid "Wrong password for this encrypted folder."
 msgstr "Mauvais mot de passe pour cette archive chiffrée."
 
-#: .\datamanager\datamanager_modules.py:3581
+#: .\datamanager\datamanager_modules.py:3596
 #, python-format
 msgid ""
 "Encrypted folder '%(folder)s/%(password)s' accessed by user '%(username)s'."
@@ -645,33 +645,33 @@ msgstr ""
 "Dossier chiffré '%(folder)s/%(password)s' ouvert par l'utilisateur '%"
 "(username)s'."
 
-#: .\datamanager\datamanager_modules.py:3741
+#: .\datamanager\datamanager_modules.py:3756
 msgid "objects/gems"
 msgstr "objets/gemmes"
 
-#: .\datamanager\datamanager_modules.py:3859
+#: .\datamanager\datamanager_modules.py:3874
 #, python-format
 msgid "Unknown item %s"
 msgstr "Élément inconnu %s"
 
-#: .\datamanager\datamanager_modules.py:3876
+#: .\datamanager\datamanager_modules.py:3891
 msgid "Money amount must be positive"
 msgstr "La somme d'argent doit être positive"
 
-#: .\datamanager\datamanager_modules.py:3879
-#: .\datamanager\datamanager_modules.py:4055 .\views\auction_views.py:134
+#: .\datamanager\datamanager_modules.py:3894
+#: .\datamanager\datamanager_modules.py:4070 .\views\auction_views.py:134
 msgid "Sender and recipient must be different"
 msgstr "L'émetteur et le destinataire doivent être différents"
 
-#: .\datamanager\datamanager_modules.py:3890
+#: .\datamanager\datamanager_modules.py:3905
 msgid "Bank doesn't have enough money available"
 msgstr "La banque n'a plus assez d'argent en réserve"
 
-#: .\datamanager\datamanager_modules.py:3895
+#: .\datamanager\datamanager_modules.py:3910
 msgid "Sender doesn't have enough money"
 msgstr "L'émetteur n'a pas assez d'argent"
 
-#: .\datamanager\datamanager_modules.py:3907
+#: .\datamanager\datamanager_modules.py:3922
 #, python-format
 msgid ""
 "Bank operation: %(amount)s kashes transferred from %(from_name)s to %"
@@ -680,88 +680,88 @@ msgstr ""
 "Opération bancaire: %(amount)s kashes transférés de %(from_name)s à %"
 "(to_name)s."
 
-#: .\datamanager\datamanager_modules.py:3909
+#: .\datamanager\datamanager_modules.py:3924
 #, python-format
 msgid "Reason: %(reason)s"
 msgstr "Raison : %(reason)s"
 
-#: .\datamanager\datamanager_modules.py:3932
+#: .\datamanager\datamanager_modules.py:3947
 msgid ""
 "Impossible to free item, some gems from this package have already been used"
 msgstr ""
 "Impossible de libérer l'objet, des gemmes de ce lot ont déjà été utilisées"
 
-#: .\datamanager\datamanager_modules.py:3961
+#: .\datamanager\datamanager_modules.py:3976
 #, python-format
 msgid "Unknown user name '%s'"
 msgstr "Identifiant utilisateur inconnu '%s'"
 
-#: .\datamanager\datamanager_modules.py:3965
+#: .\datamanager\datamanager_modules.py:3980
 msgid "no one"
 msgstr "personne"
 
-#: .\datamanager\datamanager_modules.py:3969
+#: .\datamanager\datamanager_modules.py:3984
 #, python-format
 msgid "This object doesn't belong to %s"
 msgstr "Cet objet n'appartient pas à %s"
 
-#: .\datamanager\datamanager_modules.py:3972
+#: .\datamanager\datamanager_modules.py:3987
 msgid "Impossible to have same origin and destination for item transfer"
 msgstr ""
 "Impossible d'avoir même origine et destination pour le transfert d'objet"
 
-#: .\datamanager\datamanager_modules.py:3982
+#: .\datamanager\datamanager_modules.py:3997
 #, python-format
 msgid "Item %(item_name)s transferred from %(from_name)s to %(char_name)s."
 msgstr "Objet %(item_name)s transféré de %(from_name)s à %(char_name)s."
 
-#: .\datamanager\datamanager_modules.py:4058
+#: .\datamanager\datamanager_modules.py:4073
 msgid "You must transfer at least one gem"
 msgstr "Vous devez transférer au moins une gemme"
 
-#: .\datamanager\datamanager_modules.py:4062
-#: .\datamanager\datamanager_modules.py:4085
+#: .\datamanager\datamanager_modules.py:4077
+#: .\datamanager\datamanager_modules.py:4100
 msgid "Sender doesn't possess these gems"
 msgstr "L'émetteur ne possède pas ces gemmes"
 
-#: .\datamanager\datamanager_modules.py:4069
+#: .\datamanager\datamanager_modules.py:4084
 #, python-format
 msgid "Gems transferred from %(from_name)s to %(to_name)s: %(gems_choices)s."
 msgstr "Gemmes transférées de %(from_name)s à %(to_name)s : %(gems_choices)s."
 
-#: .\datamanager\datamanager_modules.py:4090
+#: .\datamanager\datamanager_modules.py:4105
 #, python-format
 msgid "Gems debited from %(username)s: %(gems_choices)s."
 msgstr "Gemmes débitées de %(username)s : %(gems_choices)s."
 
-#: .\datamanager\datamanager_modules.py:4107
+#: .\datamanager\datamanager_modules.py:4122
 msgid "Selected gems couldn't be found among spent gems"
 msgstr "Les gemmes sélectionnées sont introuvables parmi celles dépensées"
 
-#: .\datamanager\datamanager_modules.py:4112
+#: .\datamanager\datamanager_modules.py:4127
 #, python-format
 msgid "Gems credited to %(username)s: %(gems_choices)s."
 msgstr "Gemmes créditées à %(username)s : %(gems_choices)s."
 
-#: .\datamanager\datamanager_modules.py:4237
+#: .\datamanager\datamanager_modules.py:4257
 #, python-format
 msgid "Unknown view names detected in the set of views to be activated: %r"
 msgstr "Noms de vues inconnus détectés dans l'ensemble des vues à activer: %r"
 
-#: .\datamanager\datamanager_modules.py:4453
+#: .\datamanager\datamanager_modules.py:4473
 msgid "static pages"
 msgstr "pages statiques"
 
-#: .\datamanager\datamanager_modules.py:4739
+#: .\datamanager\datamanager_modules.py:4759
 #, python-format
 msgid "Unknown captcha id %s"
 msgstr "Identifiant de captcha inconnu %s"
 
-#: .\datamanager\datamanager_modules.py:4743
+#: .\datamanager\datamanager_modules.py:4763
 msgid "Nope, it looks like this captcha had no known answer..."
 msgstr "Nope, il semble que ce captcha n'avait pas de réponse connue..."
 
-#: .\datamanager\datamanager_modules.py:4749
+#: .\datamanager\datamanager_modules.py:4769
 #, python-format
 msgid "Incorrect captcha answer '%s'"
 msgstr "Réponse au captcha incorrecte '%s'"
@@ -1941,6 +1941,7 @@ msgid "Interface : "
 msgstr "Interface : "
 
 #: .\templates\base_main.html:543 .\templates\utilities\bug_report.html:5
+#: .\views\__init__.py:149
 msgid "Bug Report"
 msgstr "Rapporter un Bogue"
 
@@ -2095,6 +2096,24 @@ msgstr "Dézoomer"
 msgid "Download a simplified, printable world map."
 msgstr "Télécharger une version simplifiée, imprimable de la carte du monde."
 
+#: .\templates\messaging\__conversation.html:10
+#: .\templates\messaging\messages.html:11 .\views\messaging_views.py:464
+msgid "Conversations"
+msgstr "Conversations"
+
+#: .\templates\messaging\__conversation.html:15
+msgid "Display All Conversations"
+msgstr "Toutes Les Conversations"
+
+#: .\templates\messaging\__conversation.html:42
+#: .\templates\messaging\_templates.html:45
+msgid "No messages yet."
+msgstr "Aucun message actuellement."
+
+#: .\templates\messaging\__conversation.html:61
+msgid "No messages to be displayed."
+msgstr "Aucun message à afficher."
+
 #: .\templates\messaging\_single_message.html:16
 #: .\templates\messaging\view_single_message.html:20
 msgid "Message queued for delivery."
@@ -2128,10 +2147,6 @@ msgstr "Date :"
 #: .\templates\messaging\_templates.html:111
 msgid "[intercepted]"
 msgstr "[intercepté]"
-
-#: .\templates\messaging\_templates.html:45
-msgid "No messages yet."
-msgstr "Aucun message actuellement."
 
 #: .\templates\messaging\_templates.html:65
 #: .\templates\messaging\single_message.html:34
@@ -2290,10 +2305,6 @@ msgstr "Replier tous les messages"
 #: .\templates\messaging\global_message_controls.html:47
 msgid "Fold All"
 msgstr "Replier Tous"
-
-#: .\templates\messaging\messages.html:11 .\views\messaging_views.py:464
-msgid "Conversations"
-msgstr "Conversations"
 
 #: .\templates\messaging\messages.html:11
 msgid "Messages"
@@ -2635,6 +2646,18 @@ msgstr "Pas de fichier média disponible"
 #: .\utilities\select2_extensions.py:49
 msgid "Too many values sent."
 msgstr "Trop de valeurs envoyées."
+
+#: .\views\__init__.py:88
+msgid "Logo Animation"
+msgstr "Animation de Logo"
+
+#: .\views\__init__.py:116
+msgid "View Help Page"
+msgstr "Voir Page d'Aide"
+
+#: .\views\__init__.py:144
+msgid "Help"
+msgstr "Aide"
 
 #: .\views\abilities\_empty_abilities.py:26
 msgid "Extra Plugins"
@@ -3097,6 +3120,56 @@ msgid "World scan submission in progress, the result will be emailed to you."
 msgstr ""
 "Requête de scan mondial bien envoyée, le résultat vous sera communiqué par "
 "email."
+
+#: .\views\admin_views\__init__.py:43
+msgid "View Database"
+msgstr "Voir les Données"
+
+#: .\views\admin_views\__init__.py:61
+msgid "Manage Characters"
+msgstr "Gérer les Personnages"
+
+#: .\views\admin_views\__init__.py:148
+#, python-format
+msgid "Attributes of user \"%(username)s\" have been modified:"
+msgstr "Des attributs de l'utilisateur \"%(username)s\" ont été modifiés :"
+
+#: .\views\admin_views\__init__.py:195
+msgid "Some character updates failed (see below)."
+msgstr "Certaines modifications de personnages ont échoué (CF ci-dessous)."
+
+#: .\views\admin_views\__init__.py:197
+msgid "Characters were properly updated."
+msgstr "Les personnages ont été mis à jour avec succès."
+
+#: .\views\admin_views\__init__.py:219
+msgid "Character Identities"
+msgstr "Identité des Personnages"
+
+#: .\views\admin_views\__init__.py:244
+msgid "Database Operations"
+msgstr "Opérations de base de données"
+
+#: .\views\admin_views\__init__.py:255
+msgid "Error - no operation specified"
+msgstr "Erreur - pas d'opération spécifiée"
+
+#: .\views\admin_views\__init__.py:258
+#, python-format
+msgid "Error : %r"
+msgstr "Erreur : %r"
+
+#: .\views\admin_views\__init__.py:261
+msgid "Fail Test"
+msgstr "Test d'Echec"
+
+#: .\views\admin_views\__init__.py:267
+msgid "Mail sent"
+msgstr "Mail envoyé"
+
+#: .\views\admin_views\__init__.py:273
+msgid "Media Display Test"
+msgstr "Test d'affichage des médias"
 
 #: .\views\admin_views\admin_dashboard_mod.py:14
 msgid "Game is paused?"
@@ -4030,12 +4103,6 @@ msgstr "Instructions"
 #~ "pouvez avoir intercepté de nouvelles conversations par email. \n"
 #~ "            "
 
-#~ msgid "Display All Conversations"
-#~ msgstr "Toutes Les Conversations"
-
-#~ msgid "No messages to be displayed."
-#~ msgstr "Aucun message à afficher."
-
 #~ msgid "Private dummy ability"
 #~ msgstr "Compétence bidon privée"
 
@@ -4050,15 +4117,6 @@ msgstr "Instructions"
 
 #~ msgid "DSDSF"
 #~ msgstr "DSDSF"
-
-#~ msgid "Logo Animation"
-#~ msgstr "Animation de Logo"
-
-#~ msgid "View Help Page"
-#~ msgstr "Voir Page d'Aide"
-
-#~ msgid "Help"
-#~ msgstr "Aide"
 
 #~ msgid "<Akarith Attack on %(city_name)s>"
 #~ msgstr "<Attaque akarite sur %(city_name)s>"
@@ -4150,42 +4208,6 @@ msgstr "Instructions"
 #~ "Telecom investigation is in process, you'll receive the result by email."
 #~ msgstr ""
 #~ "Investigation Télécom en cours, vous recevrez le résultat par email."
-
-#~ msgid "View Database"
-#~ msgstr "Voir les Données"
-
-#~ msgid "Manage Characters"
-#~ msgstr "Gérer les Personnages"
-
-#~ msgid "Attributes of user \"%(username)s\" have been modified:"
-#~ msgstr "Des attributs de l'utilisateur \"%(username)s\" ont été modifiés :"
-
-#~ msgid "Some character updates failed (see below)."
-#~ msgstr "Certaines modifications de personnages ont échoué (CF ci-dessous)."
-
-#~ msgid "Characters were properly updated."
-#~ msgstr "Les personnages ont été mis à jour avec succès."
-
-#~ msgid "Character Identities"
-#~ msgstr "Identité des Personnages"
-
-#~ msgid "Database Operations"
-#~ msgstr "Opérations de base de données"
-
-#~ msgid "Error - no operation specified"
-#~ msgstr "Erreur - pas d'opération spécifiée"
-
-#~ msgid "Error : %r"
-#~ msgstr "Erreur : %r"
-
-#~ msgid "Fail Test"
-#~ msgstr "Test d'Echec"
-
-#~ msgid "Mail sent"
-#~ msgstr "Mail envoyé"
-
-#~ msgid "Media Display Test"
-#~ msgstr "Test d'affichage des médias"
 
 #, fuzzy
 #~| msgid "Unexpected exception occurred in exception swallower context : %r!"

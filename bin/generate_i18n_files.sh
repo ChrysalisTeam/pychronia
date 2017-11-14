@@ -19,7 +19,7 @@ fi
 for mydir in pychronia_game pychronia_cms pychronia_common
 do
     pushd $mydir
-    python $manager makemessages -l fr  --ignore '__*'  --ignore 'test_*.py' --ignore '__*/*.html'
+    python $manager makemessages -l fr  --ignore '___*'  --ignore 'test_*.py' --ignore '__*/*.html'
     # HERE - manually use virtaal to translate messages efficiently
     python $manager compilemessages
     popd
