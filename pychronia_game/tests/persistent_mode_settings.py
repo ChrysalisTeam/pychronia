@@ -233,11 +233,18 @@ if os.path.exists(_chrysalis_data_dir):
 
         ml_address = dm.get_global_parameter("all_players_mailing_list")
         email_predispatches = [
-            ("security_measures", dict(recipient_emails=[ml_address],)),
+            ("lg_interview", dict(), -25),
+            ("anonymous_threat_4", dict(), -20),
+            ("lg_welcome_message", dict(), -19),
+            ("waden_report_orb_analysis", dict(), -10),
+            ("inspector_shark_arrival", dict(recipient_emails=[ml_address],), -7),
+            ("security_measures", dict(recipient_emails=[ml_address],), -2),
         ]
 
-        for idx, (template_id, params) in enumerate(email_predispatches):
-            if "date_or_delay_mn" not in params:
-                params["date_or_delay_mn"] = (-5*24*60) + (idx * 30)  # send each template every 30mn
+        for idx, (template_id, params, offset_days) in enumerate(email_predispatches):
+            if offset_days:
+                assert "date_or_delay_mn" not in params
+                params["date_or_delay_mn"] = offset_days * 24 * 60
+                assert params["date_or_delay_mn"] < 0, params["date_or_delay_mn"]
             print(">>>>>>>>> Preposting message with template_id=%s and params=%s" % (template_id, params))
             dm.post_message_with_template(template_id, **params)
