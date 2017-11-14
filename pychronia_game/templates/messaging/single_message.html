@@ -87,7 +87,7 @@
     </div>
 
     <div class="collapsed_content">
-        <img class="collapse_icon" style="float:right" title="{% trans "Expand this message" %}" onclick="$('#{{ ctx.display_id|escapejs }}').removeClass('collapsed');" src="{{ STATIC_URL }}MetalRadiance/img/icons/expand_green.png"/>
+        <img class="expand_icon" style="float:right" title="{% trans "Expand this message" %}" onclick="$('#{{ ctx.display_id|escapejs }}').removeClass('collapsed');" src="{{ STATIC_URL }}MetalRadiance/img/icons/expand_green.png"/>
 
         <p style="color:{% usercolor message.sender_email %};">
             <strong><i>{{ message.subject }}</i></strong>

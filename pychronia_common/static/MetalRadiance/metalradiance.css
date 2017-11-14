@@ -606,7 +606,7 @@ ul.auto-toc {
   text-align: justify;
   text-indent: 0;
 }
-.pretty_text img {
+.pretty_text img, .document img, img.filer_image {
   border-radius: 6px;
 }
 .announce {
@@ -1804,7 +1804,12 @@ input.digit {
 }
 .collapse_icon {
   position: absolute;
-  right: 3px;
+  right: -40px;
+  top: -4px;
+}
+.expand_icon {
+  position: absolute;
+  right: -13px;
   top: -4px;
 }
 .shareable_message_link {

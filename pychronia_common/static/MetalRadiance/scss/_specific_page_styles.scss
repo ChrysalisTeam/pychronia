@@ -179,7 +179,13 @@ input.digit {
 
 .collapse_icon {
     position: absolute;
-    right: 3px;
+    right: -40px;
+    top: -4px;
+}
+
+.expand_icon {
+    position: absolute;
+    right: -13px;
     top: -4px;
 }
 
