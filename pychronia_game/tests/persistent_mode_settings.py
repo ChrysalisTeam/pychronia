@@ -155,7 +155,7 @@ if os.path.exists(_chrysalis_data_dir):
         #messaging/super_factions.yaml
         #messaging/wiremind.yaml
         
-        mysteryparty/mystery_party_anthropia_overrides.yaml
+        mysteryparty/anthropia_game_data_overrides.yaml
         """.split()
 
     GAME_INITIAL_DATA_PATH = [os.path.join(_GAME_INITIAL_DATA_DIR, _selected_yaml_file)
