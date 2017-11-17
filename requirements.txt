@@ -113,6 +113,8 @@ ZODB==5.0.0
 # django-sentry==1.13.5  # might be useful
 # other plugins, not well maintained, are embedded in this repository
 
+# for mindstorm sheets
+docx2txt
 
 
 ## DEV tools only ##
