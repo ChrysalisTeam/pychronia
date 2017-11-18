@@ -133,6 +133,8 @@ def generate_mindstorm_settings(chrysalis_data_dir):
         dm.update_permissions(player_name, dm.PERMISSIONS_REGISTRY)
         """
 
+        dm._set_user(dm.get_global_parameter("master_login"))  # to please some asserts...
+
         # remove useless static pages, especially in encyclopedia
         excluded_static_pages = """
             salt_deserts
