@@ -113,99 +113,128 @@
 
 
 			//	showing submenu
-			var onHover = function() {
-					var listit = this,
-						subnav = $.fn.dropmenu.getSubnav(listit),
-						subcss = { zIndex: $.fn.dropmenu.zIndex++ };
+			var onHover = function(event) {
 
-					$(listit).find('> a, > span').addClass('hover');
+				if (event.originalEvent.alreadyHandled)
+					return;
 
-					if (!subnav) return;
-					if ($(subnav).is(":animated")) return;
+				//console.log("HOVER CALLED ON", this, event, event.originalEvent.alreadyHandled);
 
-                    if ($.data(subnav, 'sub')) {
-                        var offset = window.innerWidth - ($(listit).offset().left + opts.maxWidth);
+				event.originalEvent.alreadyHandled = true;
 
-                        //console.log("SUBMENU", window.innerWidth, "and", $(listit).offset().left, "_", opts.maxWidth, "->", offset);
+				var listit = this,
+					subnav = $.fn.dropmenu.getSubnav(listit),
+					subcss = { zIndex: $.fn.dropmenu.zIndex++ };
 
-                        offset = Math.min(-3, offset);
-                        subcss["left"] = offset;
-                    }
-					else if ($.data(subnav, 'subsub')) {
-						var distance  = $(listit).outerWidth(),
-							itemWidth = $(listit).offset().left + distance - menuX,
-							position  = (opts.maxWidth < itemWidth) ? "right" : "left";
+				$(listit).find('> a, > span').addClass('hover');
 
-						subcss[position] = distance;
-					}
+				if (!subnav) return;
+				if ($(subnav).is(":animated")) return;
 
-					$(subnav).css(subcss);
-					$.data(subnav, 'stayOpen', true);
+				if ($.data(subnav, 'isOpen')) {
+					return;   // FIXME - useless additional check ???
+				}
+				$.data(subnav, 'isOpen', true);
 
+				event.preventDefault()  // no click on links
+
+
+				//console.log("SUBNAW IS", subnav);
+
+
+				if ($.data(subnav, 'sub')) {
+					var offset = window.innerWidth - ($(listit).offset().left + opts.maxWidth);
+
+					//console.log("SUBMENU", window.innerWidth, "and", $(listit).offset().left, "_", opts.maxWidth, "->", offset);
+
+					offset = Math.min(-3, offset);
+					subcss["left"] = offset;
+				}
+				else if ($.data(subnav, 'subsub')) {
+					var distance  = $(listit).outerWidth(),
+						itemWidth = $(listit).offset().left + distance - menuX,
+						position  = (opts.maxWidth < itemWidth) ? "right" : "left";
+
+					subcss[position] = distance;
+				}
+
+				$(subnav).css(subcss);
+				$.data(subnav, 'stayOpen', true);
+
+				switch (opts.effect) {
+					case 'slide':
+						$(subnav).slideDown(opts.speed);
+						break;
+
+					case 'fade':
+						$(subnav).fadeIn(opts.speed);
+						break;
+
+					default:
+						$(subnav).show();
+						break;
+				}
+
+			};
+
+			var onLeave = function() {
+
+				//console.log("ONLEAVE CALLED ON", this);
+
+				var listit = this,
+					subnav = $.fn.dropmenu.getSubnav(listit);
+
+				if (!subnav) {
+					$(listit).find('> a, > span').removeClass('hover');
+					return;
+				}
+
+				$.data(subnav, 'isOpen', false);
+
+				$.data(subnav, 'stayOpen', false);
+				setTimeout(function() {
+					if ($.data(subnav, 'stayOpen')) return;
+					$(listit).find('> a, > span').removeClass('hover');
+
+					$('ul', subnav).hide();
 					switch (opts.effect) {
 						case 'slide':
-							$(subnav).slideDown(opts.speed);
+							$(subnav).slideUp(opts.speed);
 							break;
 
 						case 'fade':
-							$(subnav).fadeIn(opts.speed);
+							$(subnav).fadeOut(opts.speed);
 							break;
 
 						default:
-							$(subnav).show();
+							$(subnav).hide();
 							break;
 					}
 
-				//	hiding submenu
-				};
+				}, opts.timeout);
+			};
 
-			var onLeave = function() {
-					var listit = this,
-						subnav = $.fn.dropmenu.getSubnav(listit);
+			// for MOUSE devices
+			$menu.find('li').click(onHover);
 
-					if (!subnav) {
-						$(listit).find('> a, > span').removeClass('hover');
-						return;
-					}
+			// HACK for TOUCH devices
 
-					$.data(subnav, 'stayOpen', false);
-					setTimeout(function() {
-						if ($.data(subnav, 'stayOpen')) return;
-						$(listit).find('> a, > span').removeClass('hover');
-
-						$('ul', subnav).hide();
-						switch (opts.effect) {
-							case 'slide':
-								$(subnav).slideUp(opts.speed);
-								break;
-
-							case 'fade':
-								$(subnav).fadeOut(opts.speed);
-								break;
-
-							default:
-								$(subnav).hide();
-								break;
-						}
-
-					}, opts.timeout);
-				};
-
-            // for MOUSE devices
-            $menu.find('li').hover(onHover, onLeave);
-
-            // HACK for TOUCH devices
-            $menu.find('li').bind("touchstart", onHover);
-            $menu.find('li').bind("touchend", onLeave);
+			//$menu.find('li').focus( onHover );
+			$menu.find('li').focusout(onLeave);
+			//$menu.find('li').bind("touchstart", onHover);
+			//$menu.find('li').bind("touchend", onLeave);
 		});
 	};
 
 	$.fn.dropmenu.getSubnav = function(ele) {
+		//console.log("Getting subnav on ", ele);
+
 		if (ele.nodeName.toLowerCase() == 'li') {
 			var subnav = $('> ul', ele);
 			return subnav.length ? subnav[0] : null;
 		} else {
-			return ele;
+			aaa;
+			return null;  // ele;
 		}
 	}
 
