@@ -18,6 +18,9 @@
                         {% trans "None" %}
                     {% endif %}</li>
             <li>{% trans "Objects:" %} {% if user_artefacts %}{{ user_artefacts|join:", " }}{% else %}{% trans "None" %}{% endif %}</li>
+            {% if character_properties.extra_goods %}
+                <li>{{ character_properties.extra_goods }}</li>
+            {% endif %}
         </ul>
         </b>
         </div>
