@@ -4,10 +4,14 @@
 
 {% block content %}
 
-    <div class="scroll_yellow_flat center medium_width" autocomplete="on">
+    <div class="scroll_yellow_flat center medium_width">
 
-        <form action="{% game_view_url "pychronia_game.views.login" %}?next={{ next_url|urlencode }}" method="post">
+        <form action="{% game_view_url "pychronia_game.views.login" %}?next={{ next_url|urlencode }}" method="post" autocomplete="off">
         <table class="center">
+
+        <!-- fake fields are a workaround for chrome autofill getting the wrong fields -->
+        <input style="display:none" type="text" name="fakeusernameremembered"/>
+        <input style="display:none" type="password" name="fakepasswordremembered"/>
 
         {{ login_form.as_table }}
         <tr>

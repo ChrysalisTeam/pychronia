@@ -204,9 +204,11 @@ class CleartextPasswordForm(SimpleForm):
 class AuthenticationForm(SimpleForm):
     secret_username = forms.CharField(label=ugettext_lazy("Username"), required=True, max_length=30,
                                       widget=forms.TextInput(attrs={'autocomplete': 'on'}))
+
+    # autocomplete OFF doesn't work anymore for password fields... so we workaround
     secret_password = forms.CharField(label=ugettext_lazy("Password"), required=False, max_length=30,
-                                      widget=forms.PasswordInput(attrs={
-                                          'autocomplete': 'off'}))  # not required for "password forgotten" action
+                                      widget=forms.TextInput(attrs={'style': '-webkit-text-security: disc',
+                                                                    'autocomplete': 'off'}))
 
 
 class PasswordChangeForm(AbstractGameForm):
