@@ -223,4 +223,8 @@ def generate_mindstorm_settings(chrysalis_data_dir):
             if item_data["auction"] and len(item_data["auction"]) != 1:
                 item_data["auction"] = ""  # remove old auction items (now only A, B, C...)
 
+        # initial objects
+        dm.transfer_object_to_character("three_eyes_skull", "loyd.georges")
+        dm.transfer_object_to_character("small_leather_bag", "loyd.georges")
+
     return (GAME_INITIAL_DATA_PATH, GAME_INITIAL_FIXTURE_SCRIPT)
