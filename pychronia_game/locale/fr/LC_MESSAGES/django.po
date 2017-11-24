@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-11-14 18:49+0100\n"
+"POT-Creation-Date: 2017-11-24 23:17+0100\n"
 "PO-Revision-Date: 2017-11-14 18:49+0200\n"
 "Last-Translator: Pascal <chambon.pascal@gmail.com>\n"
 "Language-Team: Nothing\n"
@@ -204,7 +204,7 @@ msgstr "Prix si paiement en argent: %s kashes."
 
 #: .\datamanager\action_middlewares.py:286
 msgid "Can't be bought with money."
-msgstr "Ne peut être acheté avec de l'argent"
+msgstr "Ne peut être acheté avec de l'argent."
 
 #: .\datamanager\action_middlewares.py:289
 #, python-format
@@ -861,7 +861,7 @@ msgstr "Nouvelle question secrète"
 msgid "New secret answer"
 msgstr "Nouvelle réponse secrète"
 
-#: .\forms.py:196 .\forms.py:200 .\forms.py:207
+#: .\forms.py:196 .\forms.py:200 .\forms.py:209
 msgid "Password"
 msgstr "Mot de passe"
 
@@ -869,88 +869,88 @@ msgstr "Mot de passe"
 msgid "Username"
 msgstr "Utilisateur"
 
-#: .\forms.py:213
+#: .\forms.py:215
 msgid "Current password"
 msgstr "Mot de passe actuel"
 
-#: .\forms.py:214
+#: .\forms.py:216
 msgid "New password"
 msgstr "Nouveau mot de passe"
 
-#: .\forms.py:215
+#: .\forms.py:217
 msgid "New password (again)"
 msgstr "Nouveau mot de passe (confirmation)"
 
-#: .\forms.py:225 .\views\profile_views.py:165
+#: .\forms.py:227 .\views\profile_views.py:165
 msgid "New passwords not matching"
 msgstr "Les nouveaux mots de passe ne correspondent pas."
 
-#: .\forms.py:233
+#: .\forms.py:235
 msgid "Answer"
 msgstr "Réponse"
 
-#: .\forms.py:235
+#: .\forms.py:237
 msgid "Email"
 msgstr "Email"
 
-#: .\forms.py:243
+#: .\forms.py:245
 msgid "Radio Frequency"
 msgstr "Fréquence Radio"
 
-#: .\forms.py:259
+#: .\forms.py:261
 msgid "Select a time period..."
 msgstr "Sélectionnez une période..."
 
-#: .\forms.py:260
+#: .\forms.py:262
 msgid "Period"
 msgstr "Période"
 
-#: .\forms.py:275 .\forms.py:328 .\tests\_dummy_abilities.py:19
+#: .\forms.py:277 .\forms.py:330 .\tests\_dummy_abilities.py:19
 msgid "Object"
 msgstr "Objet"
 
-#: .\forms.py:276 .\tests\_dummy_abilities.py:20
+#: .\forms.py:278 .\tests\_dummy_abilities.py:20
 #: .\views\abilities\runic_translation_mod.py:31
 msgid "Transcription"
 msgstr "Transcription"
 
-#: .\forms.py:284
+#: .\forms.py:286
 msgid "< Use Description Instead >"
 msgstr "< Utiliser la Description >"
 
-#: .\forms.py:287
+#: .\forms.py:289
 msgid "Reference Object"
 msgstr "Objet de Référence"
 
-#: .\forms.py:290
+#: .\forms.py:292
 msgid "Or Description"
 msgstr "Ou Description"
 
-#: .\forms.py:295 .\templates\administration\game_events.html:15
+#: .\forms.py:297 .\templates\administration\game_events.html:15
 msgid "Message"
 msgstr "Message"
 
-#: .\forms.py:302 .\views\abilities\mercenaries_hiring_mod.py:22
+#: .\forms.py:304 .\views\abilities\mercenaries_hiring_mod.py:22
 msgid "Location"
 msgstr "Lieu"
 
-#: .\forms.py:312
+#: .\forms.py:314
 msgid "Name"
 msgstr "Nom"
 
-#: .\forms.py:322
+#: .\forms.py:324
 msgid "No artefacts currently owned."
 msgstr "Vous ne possédez pas d'artefacts."
 
-#: .\forms.py:327
+#: .\forms.py:329
 msgid "Select your artefact..."
 msgstr "Sélectionnez votre artefact..."
 
-#: .\forms.py:337
+#: .\forms.py:339
 msgid "Select an acquaintance..."
 msgstr "Sélectionnez une connaissance..."
 
-#: .\forms.py:338
+#: .\forms.py:340
 msgid "User"
 msgstr "Utilisateur"
 
@@ -1470,7 +1470,7 @@ msgstr "Temps"
 msgid "Visibility"
 msgstr "Visibilité"
 
-#: .\templates\administration\game_events.html:48
+#: .\templates\administration\game_events.html:49
 msgid "No events have yet been recorded."
 msgstr "Aucun événement enregistré."
 
@@ -2527,11 +2527,11 @@ msgstr "Monnaie :"
 msgid "Objects:"
 msgstr "Objets :"
 
-#: .\templates\profile\character_profile.html:27
+#: .\templates\profile\character_profile.html:30
 msgid "Password change"
 msgstr "Modification du mot de passe"
 
-#: .\templates\profile\character_profile.html:34
+#: .\templates\profile\character_profile.html:37
 msgid "Change Password"
 msgstr "Changer le mot de passe"
 
@@ -2551,11 +2551,11 @@ msgstr "Requête d'Amitié"
 msgid "Further information is available in your mailbox."
 msgstr "Des informations supplémentaires vous attendent dans votre messagerie."
 
-#: .\templates\profile\login.html:17
+#: .\templates\profile\login.html:21
 msgid "Log Me In!"
 msgstr "Authentifiez moi !"
 
-#: .\templates\profile\login.html:22
+#: .\templates\profile\login.html:26
 msgid "Forgot password?"
 msgstr "Mot de passe oublié ?"
 
