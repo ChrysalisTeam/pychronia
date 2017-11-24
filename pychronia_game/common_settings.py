@@ -204,11 +204,16 @@ def generate_mindstorm_settings(chrysalis_data_dir):
             ("inspector_shark_arrival", dict(recipient_emails=[ml_address],), -7),
             ("security_measures", dict(recipient_emails=[ml_address],), -2),
 
+            ("cynthia_location_description", dict(), -2),
+
             ("masslavian_initial_orb_hint", dict(), -1),
             ("dorian_initial_orb_hint", dict(), -1),
             ("lordanian_initial_orb_hint", dict(), -1),
             ("magnus_initial_orb_hint", dict(), -1),
             ("cynthia_initial_orb_hint", dict(), -1),
+
+
+
         ]
 
         for idx, (template_id, params, offset_days) in enumerate(email_predispatches):
