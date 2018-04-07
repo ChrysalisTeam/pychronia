@@ -8,7 +8,8 @@
 <title>3D Viewer</title>
 
 <style type="text/css">
-    body	{ background-repeat:no-repeat; overflow:hidden; margin: 0px; padding: 0px; border-style:none; background-color: #BCBCBC;}
+    /* We force 3D transform to prevent flickering */
+    body	{ -webkit-transform: translate3d(0, 0, 0); backface-visibility: hidden; background-repeat:no-repeat; overflow:hidden; margin: 0px; padding: 0px; border-style:none; background-color: #BCBCBC;}
     html	{ border-style:none; }
     td,p	{ font-size: 10px; font-family: Verdana, Arial, Helvetica, sans-serif; color: #424242; text-decoration:none; }
     a		{ color: #424242; text-decoration: underline; font-weight:bold; }
@@ -79,17 +80,23 @@ var imagesProcessed = 0;
 var loadingcomplete = false;
 
 
-
+/* DEPRECATED
 if (document.captureEvents) {
 	document.captureEvents( Event.MOUSEMOVE | Event.MOUSEDOWN | Event.MOUSEUP | Event.KEYPRESS | Event.KEYDOWN | Event.KEYUP );
-}
+}*/
 
-document.onmousemove = mousepos;
-document.onmousedown = startHandler;
-document.onmouseup   = stopHandler;
-document.onkeypress  = keypressed; 
-/*document.onkeydown   = startHandler; 
-document.onkeyup     = stopHandler;*/
+document.addEventListener("touchstart", startHandler);
+document.addEventListener("mousedown", startHandler);
+
+document.addEventListener("touchend", stopHandler);
+document.addEventListener("touchcancel", stopHandler);
+document.addEventListener("mouseup", stopHandler);
+
+document.addEventListener("touchmove", mousepos);
+document.addEventListener("mousemove", mousepos);
+
+document.addEventListener("keydown", keypressed);
+
 
 // Functions
 
@@ -152,7 +159,12 @@ function rotate(old_x, old_y) {
 
 function mousepos(e) {
 
-	if (document.layers) {
+    //console.log("mousepos", e.x, e.y, e);
+    if (e.targetTouches) {
+        new_x = e.targetTouches[0].pageX
+        new_y = e.targetTouches[0].pageY
+    }
+	else if (document.layers) {
 		new_x = e.x;
 		new_y = e.y;
 	}
@@ -171,6 +183,7 @@ function refresh_visible_image() {
 	// javascript modulo is buggy...
 	current_index = ((current_index % per_level) + per_level) % per_level;
 	current_level = ((current_level % levels) + levels) % levels;
+	//console.log("In refresh_visible_image with current_index", current_index, "and current_level", current_level);
     document.body.style.backgroundImage = "url('" + ThreeDNPImage[current_level][current_index].src + "')"; // BACKGROUND attribute leads to problems with firefox (no refresh)
 }
 
@@ -292,7 +305,7 @@ function autorotate() {
 
 function keypressed(e) {
 	
-	// window.alert(e.keyCode)
+	//console.log("KEY PRESSED", e.keyCode)
 	
 	var code;
     
