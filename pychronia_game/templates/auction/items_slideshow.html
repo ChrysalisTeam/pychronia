@@ -12,6 +12,12 @@
 
 {% addtoblock "css" %}
 <!--link href="{{ STATIC_URL }}libs/domslides/domslides_styles.css" rel="stylesheet" type="text/css" /-->
+<style>
+    h2:before, h2:after {
+        /* else decorations look like previous/next arrows */
+        content: none;
+    }
+</style>
 {% endaddtoblock %}
 
 {% addtoblock "js" %}
@@ -62,7 +68,7 @@
 
 
                 <h2>
-                    {{ item_details.auction|default:"X" }} &nbsp; {{ item_details.title }}
+                    [{{ item_details.auction|default:"X" }}] &nbsp; {{ item_details.title }}
                 </h2>
 
 
@@ -75,7 +81,8 @@
                         <div class="item_display" align="center" style="max-width: {{ settings_3d.image_width }}px; max-height: {{ settings_3d.image_height }}px;">
                             <iframe src="{% game_view_url "pychronia_game.views.item_3d_view" item=item_name %}"
                             width="{{ settings_3d.image_width }}" height="{{ settings_3d.image_height }}"
-                            scrolling="no" marginheight="0" marginwidth="0" frameborder="0">
+                            scrolling="no" marginheight="0" marginwidth="0" frameborder="0"
+                            style="max-width:100%">
                                 <p>Error - your browser is not able to display IFrames.</p>
                             </iframe>
                         </div>

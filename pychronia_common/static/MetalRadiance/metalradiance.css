@@ -1553,11 +1553,6 @@ table.footnote {
     border-image-source: url('img/backgrounds/carved_square_frame_silver.png') !important;
   }
 }
-@media (max-width: 991px) {
-  .carved_square_frame_gold, .carved_square_frame_silver, .item_display {
-    display: none;
-  }
-}
 .rice_paper_beige {
   color: black;
   color: black;
