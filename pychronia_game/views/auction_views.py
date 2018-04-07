@@ -315,7 +315,8 @@ def _build_display_data_from_viewer_settings(viewer_settings):
         for rel_index in range(viewer_settings["per_level"] * level, viewer_settings["per_level"] * (level + 1)):
             abs_index = viewer_settings["index_offset"] + rel_index * viewer_settings["index_steps"]
             rel_url = viewer_settings["file_template"] % abs_index
-            level_urls.append(game_file_url(rel_url))
+            img_url = game_file_url(rel_url)
+            level_urls.append(img_url)
         if viewer_settings["autoreverse"]:
             level_urls = level_urls + list(reversed(level_urls))
         image_urls.append(level_urls)
