@@ -77,7 +77,7 @@ django-inline-ordering>=1.0.2
 
 # for rst->pdf builders
 jinja2==2.8
-jinja-macro-tags==0.1
+git+https://github.com/pakal/jinja-macro-tags
 
 
 odict==1.5.1
