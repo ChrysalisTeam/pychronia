@@ -159,11 +159,11 @@ def generate_mindstorm_settings(chrysalis_data_dir):
             "auction_items_slideshow",
             #"black_market",
             "business_escrow",
-            "chatroom",
+            #"chatroom",
             #"chess_challenge",
             "game_events",
             #"geoip_location",   # COULD be enabled!
-            "house_locking",
+            #"house_locking",
             "house_reports",
             "matter_analysis",
             "mercenaries_hiring",
@@ -211,8 +211,6 @@ def generate_mindstorm_settings(chrysalis_data_dir):
             ("lordanian_initial_orb_hint", dict(), -1),
             ("magnus_initial_orb_hint", dict(), -1),
             ("cynthia_initial_orb_hint", dict(), -1),
-
-
 
         ]
 
