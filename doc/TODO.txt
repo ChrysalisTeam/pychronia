@@ -1,6 +1,6 @@
 
-TODO LIST CHRYSALIS
-=========================
+TODO LIST PYCHRONIA FRAMEWORK
+================================
 
 
 FEATURES
@@ -18,28 +18,6 @@ KNOWN BUG : bloposts and emails not readable in mobile mode on old smartphones (
 
 Version mobile: Sous android, que ce soit en affichage Portrait que Paysage, la version mobile charge mais le texte est coupé sur le bord droit, avec impossibilité de scroll sur les côtés.
 
-
-
-SCRIPT
-----------
-
-- regler les "HERE GAMEMASTER HINTS" et autres FIXME/TODO, dans YAML spécifiquement
-
-- tweak abilities settings and prices ??
-
-- add quick manual for TTS acapela !!
-
-
-
-
-PROMOTION
---------------
-
-- change facebook page logo and put background image on it
-- add reviews on chrysalis page, from previous players
-- exchange links - regard humaniste with chrysalis site
-- print leaflets, with regard humaniste on the back ???
-- kakemono for conventions ?
 
 
 TESTS
