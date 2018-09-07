@@ -93,8 +93,7 @@ pip-review
 
 pytz
 
-# pip might fail with "autoconf error" for pycrypto, in this case install it manually via setup.py
-pycrypto==2.6.1  # no much used ATM
+pycryptodome==3.6.6
 
 python-memcached==1.58
 

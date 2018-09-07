@@ -11,7 +11,7 @@ _instance_secret_key = settings.SECRET_KEY[
                        0:32]  # ELSE os.urandom(32) # secret key usable only for data exchanges internal to process
 if len(_instance_secret_key) != 32:
     raise ValueError("Crypto needs a django secret key >= 32 chars long")
-_default_iv = "\0" * 16
+_default_iv = b"\0" * 16
 
 
 def hash(password, salt=_instance_secret_key, length=32):
