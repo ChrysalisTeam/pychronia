@@ -18,6 +18,10 @@ KNOWN BUG : bloposts and emails not readable in mobile mode on old smartphones (
 
 Version mobile: Sous android, que ce soit en affichage Portrait que Paysage, la version mobile charge mais le texte est coupé sur le bord droit, avec impossibilité de scroll sur les côtés.
 
+- fix autoresponses of abilities
+
+- fix permission system to send messages to abilities
+
 
 
 TESTS
