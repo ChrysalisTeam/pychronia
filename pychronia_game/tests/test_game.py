@@ -4702,7 +4702,7 @@ class TestHttpRequests(BaseGameTestCase):
             response = self.client.get(url_base + "?search=badkeyword")
             assert response.status_code == 200
             # print(repr(response.content))
-            assert "Please use the side controls" in response.content.decode("utf8")  # homepage of encylopedia
+            assert "whatever science you still lack" in response.content.decode("utf8")  # homepage of encylopedia
 
             response = self.client.get(url_base + "?search=animal")
             assert response.status_code == 200

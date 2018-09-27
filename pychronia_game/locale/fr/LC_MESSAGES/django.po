@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-11-24 23:17+0100\n"
+"POT-Creation-Date: 2018-09-27 19:19+0200\n"
 "PO-Revision-Date: 2017-11-14 18:49+0200\n"
 "Last-Translator: Pascal <chambon.pascal@gmail.com>\n"
 "Language-Team: Nothing\n"
@@ -405,7 +405,7 @@ msgstr "Non identifié"
 #: .\templates\administration\global_contacts_management.html:65
 #: .\templates\administration\global_contacts_management.html:67
 #: .\templates\administration\radio_spots_editing.html:101
-#: .\templates\auction\items_slideshow.html:46
+#: .\templates\auction\items_slideshow.html:52
 #: .\templates\auction\view_characters.html:85
 #: .\templates\auction\view_characters.html:99 .\templates\base_main.html:344
 #: .\templates\messaging\compose.html:153
@@ -1618,45 +1618,45 @@ msgstr "Le canal de communication semble défectueux..."
 msgid "Now chatting:"
 msgstr "Participants :"
 
-#: .\templates\auction\items_slideshow.html:36
+#: .\templates\auction\items_slideshow.html:42
 msgid "No objects to be shown"
 msgstr "Pas d'objets à montrer"
 
-#: .\templates\auction\items_slideshow.html:43
+#: .\templates\auction\items_slideshow.html:49
 msgid "3D visualization is enabled on this page."
 msgstr "La visualisation 3D est activée sur cette page."
 
-#: .\templates\auction\items_slideshow.html:44
+#: .\templates\auction\items_slideshow.html:50
 msgid "3D visualization is disabled on this page."
 msgstr "La visualisation 3D est désactivée sur cette page."
 
-#: .\templates\auction\items_slideshow.html:46
+#: .\templates\auction\items_slideshow.html:52
 msgid "Items with 3D data available"
 msgstr "Objets avec visualisation 3D disponible"
 
-#: .\templates\auction\items_slideshow.html:52
+#: .\templates\auction\items_slideshow.html:58
 msgid "Please wait while loading..."
 msgstr "Veuillez patienter durant le chargement..."
 
-#: .\templates\auction\items_slideshow.html:95
+#: .\templates\auction\items_slideshow.html:102
 msgid "Count"
 msgstr "Nombre"
 
-#: .\templates\auction\items_slideshow.html:100
+#: .\templates\auction\items_slideshow.html:107
 #: .\views\admin_views\game_items_management_mod.py:28
 msgid "Unit cost"
 msgstr "Prix unitaire"
 
-#: .\templates\auction\items_slideshow.html:100
-#: .\templates\auction\items_slideshow.html:105
+#: .\templates\auction\items_slideshow.html:107
+#: .\templates\auction\items_slideshow.html:112
 msgid "kashes"
 msgstr "kashes"
 
-#: .\templates\auction\items_slideshow.html:105
+#: .\templates\auction\items_slideshow.html:112
 msgid "Total Estimated Value"
 msgstr "Valeur Totale Estimée"
 
-#: .\templates\auction\items_slideshow.html:115
+#: .\templates\auction\items_slideshow.html:122
 msgid ""
 "Please note that this record is just a memo, these gems may already have "
 "been transferred to someone else, individually or not."
@@ -1664,7 +1664,7 @@ msgstr ""
 "Veuillez noter que cette fiche est juste un mémo, ces gemmes peuvent avoir "
 "déjà été transférées à quelqu'un d'autre, individuellement ou non."
 
-#: .\templates\auction\items_slideshow.html:121
+#: .\templates\auction\items_slideshow.html:128
 msgid "3D visualization is available for this object."
 msgstr "La visualisation 3D est disponible pour cet objet."
 
@@ -1995,13 +1995,11 @@ msgstr "Résultats de recherche pour"
 #: .\templates\information\encyclopedia.html:73
 msgid ""
 "\n"
-"                Please use the side controls to find whatever science you "
-"still lack.\n"
+"                Here you will find whatever science you still lack.\n"
 "            "
 msgstr ""
 "\n"
-"                Veuillez utilisez les contrôles latéraux pour accéder à la "
-"science qui vous manque."
+"                Vous trouverez ici la science qui vous manque."
 
 #: .\templates\information\encyclopedia.html:79
 #: .\templates\information\personal_folder.html:42
@@ -3476,15 +3474,15 @@ msgstr "Mes Objets"
 msgid "Item 3D View"
 msgstr "Vue 3D d'Objet"
 
-#: .\views\auction_views.py:340
+#: .\views\auction_views.py:341
 msgid "Ajax Chat"
 msgstr "Chat Ajax"
 
-#: .\views\auction_views.py:373
+#: .\views\auction_views.py:374
 msgid "system"
 msgstr "Système"
 
-#: .\views\auction_views.py:399
+#: .\views\auction_views.py:400
 msgid "Auction Chatroom"
 msgstr "Chatroom d'Enchères"
 
