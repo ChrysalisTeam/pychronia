@@ -172,7 +172,7 @@ def generate_mindstorm_settings(chrysalis_data_dir):
             #"telecom_investigation",
             "view_sales",
             #"view_world_map_dynamic",
-            "wiretapping",
+            #"wiretapping",  # IMPORTANT!!!
             "world_scan",
         ]
         dm.set_activated_game_views(activable_views)
