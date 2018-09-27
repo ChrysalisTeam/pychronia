@@ -8,8 +8,10 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
     {# TODO ONE DAY : use @viewport instead when ready to use #}
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        
+    {# UNUSED viewport properties: minimum-scale=0.3, maximum-scale=5, user-scalable=yes #}
+    {# you can have both stylesheets (via portrait/landscape) on mobile with initial-scale=0.7 #}
+    <meta name="viewport" content="width=device-width, initial-scale=0.85">
+
     {% render_block "meta" %}
     {% render_block "css" %}
     {% render_block "js" %}
