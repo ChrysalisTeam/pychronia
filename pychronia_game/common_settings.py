@@ -111,7 +111,6 @@ def generate_mindstorm_settings(chrysalis_data_dir):
         messaging/inquiries_between_players.yaml
         #messaging/magnus_society_family_exchanges.yaml
         #messaging/main_npcs_exchanges.yaml
-        messaging/mindstorm_clues.yaml
         messaging/news.yaml
         messaging/npc_orbs.yaml
         #messaging/player_instructions.yaml
