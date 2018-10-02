@@ -2,8 +2,11 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
-import time
+from datetime import datetime
+
 from django import forms
+from django.template.defaultfilters import slugify
+import requests
 
 from pychronia_game.common import *
 from pychronia_game.datamanager import register_view, AbstractGameView, DataTableForm, AbstractDataTableManagement
@@ -11,6 +14,11 @@ from pychronia_game.datamanager import register_view, AbstractGameView, DataTabl
 from pychronia_game.utilities.acapela_vaas_tts import AcapelaClient
 from pychronia_game.utilities import mediaplayers
 from pychronia_game.datamanager.abstract_form import GAMEMASTER_HINTS_FIELD
+
+
+GAME_RADIOSPOTS_BACKUPS_ABSPATH = (os.path.join(config.GAME_FILES_ROOT, config.GAME_BACKUPS_PATH)
+                                   if not os.path.isabs(config.GAME_BACKUPS_PATH)
+                                   else config.GAME_BACKUPS_PATH)
 
 
 class RadioSpotForm(DataTableForm):
@@ -65,13 +73,26 @@ class RadioSpotsEditing(AbstractDataTableManagement):
             try:
                 #res = {'alt_sound_size': None, 'sound_size': u'6799', 'sound_time': u'805.75', 'sound_id': u'289920127_cffb8f40d9f30', 'alt_sound_url': None, 'sound_url': u'http://vaas.acapela-group.com/MESSAGES/009086065076095086065065083/EVAL_4775608/sounds/289920127_cffb8f40d9f30.mp3', 'warning': u'', 'get_count': 0}
                 res = tts.create_sample(voice=voice, text=text, response_type="INFO")
-            except EnvironmentError, e:
+            except EnvironmentError as e:
                 self.logger.critical("TTS generation failed for %s/%r: %r", voice, text, e)
                 raise  # OK for AJAX request
 
             self.logger.info("TTS generation successful: %r", res)
 
             sound_url = res["sound_url"]
+
+        # we backup mp3 and text, for use in other game session
+        try:
+            _filename_base = datetime.now().strftime("%Y%m%d%H%M%S_") + slugify(text)[0:180]
+            full_filename_base = os.path.join(GAME_RADIOSPOTS_BACKUPS_ABSPATH, _filename_base)
+            r = requests.get(sound_url)
+            r.raise_for_status()
+            with open(full_filename_base + ".mp3", "wb") as code:
+                code.write(r.content)
+            with open(full_filename_base + ".txt", "wb") as code:
+                code.write(text.encode('utf8'))
+        except requests.exceptions.HTTPError as e:
+            self.logger.error("Could not save generated TTS mp3 for %s/%r: %r", voice, text, e)
 
         html_player = mediaplayers.build_proper_viewer(sound_url, autostart=True)
 
