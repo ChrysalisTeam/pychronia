@@ -492,7 +492,7 @@ def standard_conversations(request, template_name='messaging/messages.html'):
                        **variables))
 
 
-@register_view(access=UserAccess.character, requires_global_permission=False,
+@register_view(access=UserAccess.character, requires_global_permission=True,
                title=ugettext_lazy("Intercepted Messages"))  # master doesn't INTERCEPT messages...
 def intercepted_messages(request, template_name='messaging/messages.html'):
     visibility_reasons = [VISIBILITY_REASONS.interceptor]  # we EXCLUDE intercepted messages from this

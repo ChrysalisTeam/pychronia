@@ -156,6 +156,7 @@ def generate_mindstorm_settings(chrysalis_data_dir):
         activable_views = [
             #"artificial_intelligence",
             "auction_items_slideshow",
+            #"intercepted_messages",
             #"black_market",
             "business_escrow",
             #"chatroom",
