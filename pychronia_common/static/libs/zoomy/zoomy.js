@@ -48,7 +48,7 @@
       fixedY : 0
     },
       //Test for touch
-      touch = (('ontouchstart' in window) || window.DocumentTouch && document instanceof DocumentTouch) ? true : false,
+      touch = false, // BEWARE, FORCE DISABLED, SINCE NOW CP BROWSERS HAVE TOUCH # (('ontouchstart' in window) || window.DocumentTouch && document instanceof DocumentTouch) ? true : false,
       cssTranforms = (function () {
           var b = document.body || document.documentElement,
             s = b.style,
@@ -182,14 +182,14 @@
         collision : function(posX, posY, dataset){
 
           // Test for collisions
-          var a = -dataset.stop.main <= posX,
-            e2 = -dataset.stop.main > posX,
-            b = -dataset.stop.main <= posY,
-            f = -dataset.stop.main > posY,
-            d = dataset.stop.bottom > posY,
-            g = dataset.stop.bottom <= posY,
-            c = dataset.stop.right > posX,
-            j = dataset.stop.right <= posX;
+          var a   = -dataset.stop.main <= posX,
+            e2  = -dataset.stop.main > posX,
+            b   = -dataset.stop.main <= posY,
+            f   = -dataset.stop.main > posY,
+            d   = dataset.stop.bottom > posY,
+            g   = dataset.stop.bottom <= posY,
+            c   = dataset.stop.right > posX,
+            j   = dataset.stop.right <= posX;
 
             // Results of collision
           return(a && b && c && d) ? 0 : (e2) ? (b && d) ? 1 : (f) ? 2 : (g) ? 3 : null : (f) ? (c) ? 4 : 5 : (j) ? (d) ? 6 : 7 : (g) ? 8 : null;
@@ -235,15 +235,15 @@
         move : function (ele, zoom, e) {
 
           // need to stop as many of these variable in data object to avoid recalulation of variables
-          var id = zoom.attr('rel'),
-            l = ele.offset(),
-            dataset = ZoomyS[id],
-            yOffset = (touch) ? -70 : 0,
+          var id        = zoom.attr('rel'),
+            l           = ele.offset(),
+            dataset     = ZoomyS[id],
+            yOffset     = (touch) ? -70 : 0,
             // only dynamic variables
-            posX = utils.pos.mouse(e.pageX, l.left , dataset.size.half),
-            posY = utils.pos.mouse(e.pageY + yOffset , l.top, dataset.size.half),
-            leftX = utils.pos.zoom(e.pageX, l.left, dataset.size.ratioX, dataset.size.half, ZoomyS[id].zoom.border),
-            topY = utils.pos.zoom(e.pageY + yOffset, l.top , dataset.size.ratioY, dataset.size.half, ZoomyS[id].zoom.border),
+            posX        = utils.pos.mouse(e.pageX, l.left , dataset.size.half),
+            posY        = utils.pos.mouse(e.pageY + yOffset , l.top, dataset.size.half),
+            leftX       = utils.pos.zoom(e.pageX, l.left, dataset.size.ratioX, dataset.size.half, ZoomyS[id].zoom.border),
+            topY        = utils.pos.zoom(e.pageY + yOffset, l.top , dataset.size.ratioY, dataset.size.half, ZoomyS[id].zoom.border),
 
             cssArrIndex = change.collision(posX, posY, dataset),
             //Compile CSS object to move Zoomy
@@ -306,7 +306,7 @@
 
         //getting border-radius
         round : function (x, y) {
-          return (!options.round) ? 0 : ( x === undefined) ? '100%' : options.zoomSize / 2 + 'px ' + options.zoomSize / 2 + 'px 0px 0px';
+          return (!options.round) ? 0 : ( x === undefined) ?  '100%'  :  options.zoomSize / 2 + 'px ' +  options.zoomSize  / 2 + 'px 0px 0px';
         },
 
         //setting glare
@@ -314,9 +314,9 @@
           zoom
             .children('span')
             .css({
-              height : options.zoomSize / 2,
-              width : options.zoomSize - 10,
-              margin : '5px auto',
+              height          : options.zoomSize / 2,
+              width           : options.zoomSize - 10,
+              margin          : '5px auto',
               'border-radius' : style.round(0)
           });
         },
@@ -324,34 +324,34 @@
         //getting border
         border: function (zoom) {
 
-          var borderRaw = options.border.replace(/^\s*|\s*$/g,''),
-            borderArr = borderRaw.split(' '),
-            interger = parseFloat(borderArr[0]),
-            size = (borderArr.length > 2 && interger * 1 === interger ) ? interger : 0;
+          var borderRaw   = options.border.replace(/^\s*|\s*$/g,''),
+            borderArr   = borderRaw.split(' '),
+            interger    = parseFloat(borderArr[0]),
+            size        = (borderArr.length > 2 && interger * 1 === interger ) ? interger : 0;
 
           return [borderRaw, size];
         },
 
         // styling element appropiatly
         params : function (ele, zoom) {
-          var img = ele.children('img'),
+          var img             = ele.children('img'),
 
             // TODO: Create function to filter out percents
-            border = style.border(zoom),
+            border          = style.border(zoom),
             //margining
-            margin = {
-              'marginTop' : img.css('margin-top'),
-              'marginRight' : img.css('margin-right'),
-              'marginBottom' : img.css('margin-bottom'),
-              'marginLeft' : img.css('margin-left')
+            margin          = {
+              'marginTop'     : img.css('margin-top'),
+              'marginRight'   : img.css('margin-right'),
+              'marginBottom'  : img.css('margin-bottom'),
+              'marginLeft'    : img.css('margin-left')
             },
             //floats
-            floats = {
+            floats          = {
               'float': img.css('float')
             },
 
             //Zoomy needs these to work
-            zoomMin = {
+            zoomMin         = {
               'display': 'block',
               height: img.height(),
               width: img.width(),
@@ -359,17 +359,17 @@
             },
 
             //Checking parent text align
-            parentCenter = function () {
+            parentCenter    = function () {
 
               //Checking for parent text-align center
               var textAlign = ele.parent('*:first').css('text-align');
               if (textAlign === 'center') {
-                margin.marginRight = 'auto';
-                margin.marginLeft = 'auto';
+                margin.marginRight  = 'auto';
+                margin.marginLeft   = 'auto';
               }
 
             },
-            id = zoom.attr('rel'),
+            id  = zoom.attr('rel'),
             css = {};
 
           if (floats['float'] === 'none') {
@@ -676,18 +676,18 @@
               });
 
             },
-            //Add Button if is touch
+            //Add Button if  is touch
             magColor = '#efefef',
             icon = '<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="40px" height="40px" viewBox="0 0 50 50" overflow="inherit" xml:space="preserve">\
-<defs>\
-<filter id="drop-shadow">\
-<feGaussianBlur in="SourceAlpha" result="blur-out" stdDeviation="1" />\
-<feOffset in="blur-out" result="the-shadow" dx="0" dy="1"/>\
-<feBlend in="SourceGraphic" in2="the-shadow" mode="normal"/>\
-</filter>\
-</defs>\
-<path filter="url(#drop-shadow)" fill="' + magColor + '" d="M23.265,30.324l-9.887,9.887l-3.64-3.641l9.942-9.941c-2.687-4.42-2.134-10.246,1.668-14.049 c4.469-4.469,11.732-4.451,16.224,0.04c4.491,4.491,4.509,11.754,0.04,16.224C33.723,32.732,27.718,33.223,23.265,30.324z M24.601,15.833c-2.681,2.681-2.67,7.039,0.024,9.733s7.053,2.705,9.733,0.025c2.682-2.681,2.671-7.04-0.023-9.734 C31.641,13.162,27.282,13.152,24.601,15.833z"/>\
-</svg>',
+                <defs>\
+                  <filter id="drop-shadow">\
+                    <feGaussianBlur in="SourceAlpha" result="blur-out" stdDeviation="1" />\
+                    <feOffset in="blur-out" result="the-shadow" dx="0" dy="1"/>\
+                    <feBlend in="SourceGraphic" in2="the-shadow" mode="normal"/>\
+                  </filter>\
+                </defs>\
+                <path filter="url(#drop-shadow)" fill="' + magColor + '" d="M23.265,30.324l-9.887,9.887l-3.64-3.641l9.942-9.941c-2.687-4.42-2.134-10.246,1.668-14.049 c4.469-4.469,11.732-4.451,16.224,0.04c4.491,4.491,4.509,11.754,0.04,16.224C33.723,32.732,27.718,33.223,23.265,30.324z M24.601,15.833c-2.681,2.681-2.67,7.039,0.024,9.733s7.053,2.705,9.733,0.025c2.682-2.681,2.671-7.04-0.023-9.734 C31.641,13.162,27.282,13.152,24.601,15.833z"/>\
+              </svg>',
 
             button = (touch) ? ['<div class="zoomy-wrap" />', '<div class=" zoomy-btn zoomy-btn-' + i + '">' + icon + '</div>'] : ['', ''];
 
