@@ -4852,13 +4852,23 @@ class TestHttpRequests(BaseGameTestCase):
                       sender="guy1@pangea.com",
                       subject="Sujet de test")
 
+        for placeholder_field in ("body", "subject"):
+            _bad_params = params.copy()
+            _bad_params[placeholder_field] =  "Contenu ici {{ PLACEHOLDER_HERE }}"
+            response = self.client.post(url, data=_bad_params, follow=True)
+            #print("@@@@@@", response.content)
+            assert response.status_code == 200
+            html = response.content.decode("utf8")
+            assert "Errors in message fields" in html  # placeholder must be replaced in subject/body
+            assert "clear_saved_content();  // we do cleanup localstorage, since email was sent" not in html
+            msgs = self.dm.get_all_dispatched_messages()
+            assert len(msgs) == 0, msgs
+
         response = self.client.post(url, data=params, follow=True)
         #print("@@@@@@", response.content)
         assert response.status_code == 200
-
         html = response.content.decode("utf8")
-
-        assert "conversation" in html  # we got redirected
+        assert "Errors in message fields" not in html
         assert "clear_saved_content();  // we do cleanup localstorage, since email was sent" in html
 
         msgs = self.dm.get_all_dispatched_messages()
