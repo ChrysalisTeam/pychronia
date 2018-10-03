@@ -196,7 +196,7 @@ def generate_mindstorm_settings(chrysalis_data_dir):
         #    address_book = dm.get_character_address_book(name)
 
         ml_address = dm.get_global_parameter("all_players_mailing_list")
-        email_predispatches = [
+        email_predispatches = [  # format: (template_id, params, offset_days)
             ("lg_interview", dict(), -25),
             ("anonymous_threat_4", dict(), -20),
             ("lg_welcome_message", dict(), -19),
@@ -211,6 +211,7 @@ def generate_mindstorm_settings(chrysalis_data_dir):
             ("lordanian_initial_orb_hint", dict(), -1),
             ("magnus_initial_orb_hint", dict(), -1),
             ("cynthia_initial_orb_hint", dict(), -1),
+            ("sabarith_services_initial_instructions", dict(), -1),
 
         ]
 
@@ -229,5 +230,26 @@ def generate_mindstorm_settings(chrysalis_data_dir):
         # initial objects
         dm.transfer_object_to_character("three_eyes_skull", "loyd.georges")
         dm.transfer_object_to_character("small_leather_bag", "loyd.georges")
+
+        radio_spots = dm.radio_spots._table  # we bypass protections on "immutability"
+
+        assert not dm.connection  # no need for transaction then
+        for radio_spot in """
+            01_news_auction_bidders_chosen
+            10_commercial_anounces_weird
+            20_alifir_conference_announce
+            30_announce_nalavut_crisis_waves
+            35_three_paintings_stolen
+            40_news_council_explosion_alifir
+            50_theft_alifir
+            55_announce_lg_manor_theft
+            60_announce_nalavut_crisis_waves
+            62_news_akarith_riots
+            64_news_alifir_blaze_&_councils
+            65_wiremind_defeat_irony
+            70_sabarim_riots_and_dorian_treason
+            80_defeat_wiremind_standard
+            """.split():
+            del radio_spots[radio_spot]  # useless AUCTION-RELATED or REWRITTEN radio spots
 
     return (GAME_INITIAL_DATA_PATH, GAME_INITIAL_FIXTURE_SCRIPT)
