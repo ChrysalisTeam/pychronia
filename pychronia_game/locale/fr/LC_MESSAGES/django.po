@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-09-27 19:19+0200\n"
+"POT-Creation-Date: 2018-10-04 14:32+0200\n"
 "PO-Revision-Date: 2017-11-14 18:49+0200\n"
 "Last-Translator: Pascal <chambon.pascal@gmail.com>\n"
 "Language-Team: Nothing\n"
@@ -1543,13 +1543,13 @@ msgstr "Spots radio immuables"
 
 #: .\templates\administration\radio_spots_editing.html:97
 #: .\views\admin_views\game_items_management_mod.py:15
-#: .\views\admin_views\radio_spots_editing_mod.py:17
+#: .\views\admin_views\radio_spots_editing_mod.py:25
 #: .\views\admin_views\static_pages_management_mod.py:14
 msgid "Title"
 msgstr "Titre"
 
 #: .\templates\administration\radio_spots_editing.html:99
-#: .\views\admin_views\radio_spots_editing_mod.py:19
+#: .\views\admin_views\radio_spots_editing_mod.py:27
 #: .\views\admin_views\static_pages_management_mod.py:22
 msgid "Content"
 msgstr "Contenu"
@@ -3112,7 +3112,7 @@ msgid ""
 "                    "
 msgstr ""
 "\n"
-"                    Ci-dessous le résultat de l'oération de scan qui a été "
+"                    Ci-dessous le résultat de l'opération de scan qui a été "
 "effectuée selon les documents que vous avez fournis.\n"
 "                    Veuillez noter que les résultats peuvent être incomplets "
 "ou erronés, en fonctio nde la précision des informations disponibles.\n"
@@ -3337,23 +3337,23 @@ msgstr "Soumettre un contact"
 msgid "Delete a contact"
 msgstr "Supprimer un contact"
 
-#: .\views\admin_views\radio_spots_editing_mod.py:22
+#: .\views\admin_views\radio_spots_editing_mod.py:30
 msgid "File (url or local file)"
 msgstr "Fichier (url ou fichier local)"
 
-#: .\views\admin_views\radio_spots_editing_mod.py:29
+#: .\views\admin_views\radio_spots_editing_mod.py:37
 msgid "Edit Radio Spots"
 msgstr "Editer les Spots Radio"
 
-#: .\views\admin_views\radio_spots_editing_mod.py:32
+#: .\views\admin_views\radio_spots_editing_mod.py:40
 msgid "Submit radio spot"
 msgstr "Envoyer le spot radio"
 
-#: .\views\admin_views\radio_spots_editing_mod.py:35
+#: .\views\admin_views\radio_spots_editing_mod.py:43
 msgid "Delete radio spot"
 msgstr "Détruire le spot radio"
 
-#: .\views\admin_views\radio_spots_editing_mod.py:38
+#: .\views\admin_views\radio_spots_editing_mod.py:46
 msgid "Generate text-to-speech sample"
 msgstr "Générer le morceau de synthèse vocale"
 
