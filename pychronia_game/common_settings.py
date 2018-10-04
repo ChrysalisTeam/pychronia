@@ -95,7 +95,7 @@ def generate_mindstorm_settings(chrysalis_data_dir):
         locations.yaml
         messaging_core.yaml
         nightmare_captchas.yaml
-        radio_spots.yaml
+        #radio_spots.yaml
         static_pages.yaml
         
         encyclopedia/ability_related_subjects.yaml
@@ -231,8 +231,8 @@ def generate_mindstorm_settings(chrysalis_data_dir):
         dm.transfer_object_to_character("three_eyes_skull", "loyd.georges")
         dm.transfer_object_to_character("small_leather_bag", "loyd.georges")
 
+        '''  # auction spots actually not included in YAML fixtures
         radio_spots = dm.radio_spots._table  # we bypass protections on "immutability"
-
         assert not dm.connection  # no need for transaction then
         for radio_spot in """
             01_news_auction_bidders_chosen
@@ -243,7 +243,6 @@ def generate_mindstorm_settings(chrysalis_data_dir):
             40_news_council_explosion_alifir
             50_theft_alifir
             55_announce_lg_manor_theft
-            60_announce_nalavut_crisis_waves
             62_news_akarith_riots
             64_news_alifir_blaze_&_councils
             65_wiremind_defeat_irony
@@ -251,5 +250,6 @@ def generate_mindstorm_settings(chrysalis_data_dir):
             80_defeat_wiremind_standard
             """.split():
             del radio_spots[radio_spot]  # useless AUCTION-RELATED or REWRITTEN radio spots
+        '''
 
     return (GAME_INITIAL_DATA_PATH, GAME_INITIAL_FIXTURE_SCRIPT)
