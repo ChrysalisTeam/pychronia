@@ -73,14 +73,27 @@ class WorldScanAbility(AbstractPartnershipAbility):
         for (name, scan_set) in settings["scanning_sets"].items():
             utilities.check_is_slug(name)
             utilities.check_no_duplicates(scan_set)
+            utilities.usage_assert(scan_set)  # NOT EMPTY
             for location in scan_set:
                 assert location in all_locations, location
 
-        assert utilities.assert_set_smaller_or_equal(settings["item_locations"].keys(),
-                                                     all_artefact_items)  # some items might have no scanning locations
-        for (item_name, scan_set_name) in settings["item_locations"].items():
+        # for now items can't be deleted, so we're OK
+        utilities.assert_set_smaller_or_equal(settings["item_locations"].keys(),
+                                              all_artefact_items)  # some items might have no scanning locations
+
+        for (item_name, scan_set_details) in settings["item_locations"].items():
             utilities.check_is_slug(item_name)  # in case it's NOT a valid item name, in unstrict mode...
-            assert scan_set_name in settings["scanning_sets"].keys()
+
+            if strict:
+                utilities.check_num_keys(scan_set_details, 2)  # fields must be present even if None
+
+            if scan_set_details["message"] is not None:
+                utilities.check_is_string(scan_set_details["message"])
+            if scan_set_details["scanning_set"] is not None:
+                assert scan_set_details["scanning_set"] in settings["scanning_sets"].keys()
+
+            # at least SOME data must be available
+            assert scan_set_details["message"] or scan_set_details["scanning_set"], scan_set_details
 
         if strict:
             utilities.check_num_custom_settings(settings, 4)  # with dedicated email
@@ -92,11 +105,16 @@ class WorldScanAbility(AbstractPartnershipAbility):
     def _compute_scanning_result_or_none(self, item_name):
         assert not self.get_item_properties(item_name)["is_gem"], item_name
         # Potential evolution - in the future, it might be possible to remove some locations depending on hints provided !
-        scanning_set_name = self.settings["item_locations"].get(item_name, None)
-        if scanning_set_name is None:
+        scanning_set_details = self.settings["item_locations"].get(item_name, None)
+        if scanning_set_details is None:
             return None
-        locations = self.settings["scanning_sets"][scanning_set_name]  # MUST exist
-        return locations  # list of city names, migh tbe empty
+
+        message = scanning_set_details["message"]  # might be None
+
+        scanning_set_name = scanning_set_details["scanning_set"]  # might be None
+        locations = self.settings["scanning_sets"][scanning_set_name] if scanning_set_name else None  # list of city names
+
+        return (message, locations)  # one of them might be None
 
     '''
     # WARNING - do not put inside a transaction manager, else too many levels of transaction when processing scheduled tasks...
@@ -105,6 +123,24 @@ class WorldScanAbility(AbstractPartnershipAbility):
         self.data["global_parameters"]["scanned_locations"] = PersistentList(set(self.data["global_parameters"][
                                                                                  "scanned_locations"] + locations)) # we let the _check_coherence system ensure it's OK
     '''
+
+
+    @staticmethod
+    def _format_scanning_result(scanning_result):
+        """
+        Returns a string message suitable for inclusion in an email.
+        """
+        (message, locations) = scanning_result
+        assert message or locations, scanning_result  # sanity check
+        assert not isinstance(locations, basestring), locations  # prevent dumb bug
+
+        locations_found = ", ".join(locations) if locations else ""
+
+        if message:
+            locations_found += "\n\n" + message
+
+        return locations_found
+
 
     @transaction_watcher
     def process_world_scan_submission(self, item_name, use_gems=()):
@@ -123,9 +159,11 @@ class WorldScanAbility(AbstractPartnershipAbility):
 
         # answer email
         response_msg_data = None
-        locations = self._compute_scanning_result_or_none(item_name)  # might raise if item is not analysable
-        if locations:
-            locations_found = ", ".join(locations)
+        scanning_result = self._compute_scanning_result_or_none(item_name)
+
+        if scanning_result:
+
+            locations_found_msg = self._format_scanning_result(scanning_result)
 
             subject = _("<World Scan Result - %(item)s>") % SDICT(item=item_title)
 
@@ -133,8 +171,10 @@ class WorldScanAbility(AbstractPartnershipAbility):
                     Below is the result of the scanning operation which has been performed according to the documents you sent.
                     Please note that these results might be incomplete or erroneous, depending on the accuracy of the information available.
     
-                    Potential locations of similar items: %(locations_found)s
-                    """)) % SDICT(locations_found=locations_found)
+                    Potential locations of similar items: 
+                    
+                    %(locations_found)s
+                    """)) % SDICT(locations_found=locations_found_msg)
 
             response_msg_data = dict(subject=subject,
                                      body=body,

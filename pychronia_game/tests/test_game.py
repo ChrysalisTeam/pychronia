@@ -6916,7 +6916,7 @@ class TestSpecialAbilities(BaseGameTestCase):
         assert scanner._compute_scanning_result_or_none("statue") is None  # not analyzable
 
         res = scanner._compute_scanning_result_or_none("sacred_chest")
-        self.assertEqual(res, ["Alifir", "Baynon"])
+        self.assertEqual(res, (u'Here are SPECIFIC SCANNER RESPONSE DETAILS', ["Alifir", "Baynon"]))
 
         with pytest.raises(AssertionError):
             scanner.process_world_scan_submission("several_misc_gems")  # no gems allowed here
@@ -6924,6 +6924,26 @@ class TestSpecialAbilities(BaseGameTestCase):
         # ##self.assertEqual(self.dm.get_global_parameter("scanned_locations"), [])
 
 
+        # we check that message formatting works in diffeerent scenarios
+        scanning_result = ("mymessage", ["Alifir"])
+        msg = scanner._format_scanning_result(scanning_result)
+        assert "mymessage" in msg, msg
+        assert "Alifir" in msg, msg
+
+        scanning_result = ("mymessage", None)
+        msg = scanner._format_scanning_result(scanning_result)
+        assert "mymessage" in msg, msg
+
+        scanning_result = (None, ["Alifir"])
+        msg = scanner._format_scanning_result(scanning_result)
+        assert "Alifir" in msg, msg
+
+        scanning_result = (None, None)
+        with self.assertRaises(AssertionError):
+            scanner._format_scanning_result(scanning_result)
+        scanning_result = (None, [])
+        with self.assertRaises(AssertionError):
+            scanner._format_scanning_result(scanning_result)
 
         def ability_action():
             return scanner.process_world_scan_submission("sacred_chest")
@@ -6934,12 +6954,13 @@ class TestSpecialAbilities(BaseGameTestCase):
         def response_msg_checker(msg):
             self.assertTrue("scanning" in msg["body"].lower(), msg=msg)
             self.assertTrue("Alifir" in msg["body"], msg=msg)
+            self.assertTrue("SPECIFIC SCANNER RESPONSE DETAILS" in msg["body"], msg=msg)
 
         def ability_breaker():
             scanner.settings["item_locations"] = utilities.PersistentMapping()
             scanner.commit()
             assert scanner._compute_scanning_result_or_none(
-                "sacred_chest") == None  # no reference items available at all
+                "sacred_chest") is None  # no reference items available at all
 
         self._test_ability_standard_email_exchanges(ability_instance=scanner,
                                                     ability_action=ability_action,

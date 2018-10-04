@@ -228,8 +228,7 @@ def generate_mindstorm_settings(chrysalis_data_dir):
                 item_data["auction"] = ""  # remove old auction items (now only A, B, C...)
 
         # initial objects
-        dm.transfer_object_to_character("three_eyes_skull", "loyd.georges")
-        dm.transfer_object_to_character("small_leather_bag", "loyd.georges")
+        dm.transfer_object_to_character("small_leather_bag", "loyd.georges")  # transfered by Rodok
 
         '''  # auction spots actually not included in YAML fixtures
         radio_spots = dm.radio_spots._table  # we bypass protections on "immutability"

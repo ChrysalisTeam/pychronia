@@ -135,11 +135,13 @@ abilities:
             result_delay: [4, 10]
 
             scanning_sets:
-                unique_artefacts_locations: []
+                unique_artefacts_locations: ["Holdamis"]
                 varied_artefacts_locations: ["Alifir", "Baynon"]
 
             item_locations:
-                sacred_chest: "varied_artefacts_locations"
+                sacred_chest:
+                    message: "Here are SPECIFIC SCANNER RESPONSE DETAILS"
+                    scanning_set: "varied_artefacts_locations"
 
         data:
             guy1:  # special

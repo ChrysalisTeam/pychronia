@@ -436,7 +436,7 @@ def check_is_lazy_translation(value):
 def check_is_string(value, multiline=True, forbidden_chars=None, empty=False, comment=None):
     usage_assert(isinstance(value, basestring), value or comment)
     if not empty:
-        usage_assert(value, comment)
+        usage_assert(value.strip(), comment)
     if not multiline:
         usage_assert("\n" not in value, comment)
     if forbidden_chars:

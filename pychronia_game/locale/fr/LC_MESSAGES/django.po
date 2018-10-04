@@ -4,14 +4,14 @@
 # Pakal, 2010.
 # Pakal, 2010.
 # Pakal <pythoniks@gmail.com>, 2010.
-# Pascal <chambon.pascal@gmail.com>, 2013, 2014, 2015, 2016, 2017.
-# Pascal Chambon <chambon.pascal@gmail.com>, 2016, 2017.
+# Pascal <chambon.pascal@gmail.com>, 2013, 2014, 2015, 2016, 2017, 2018.
+# Pascal Chambon <chambon.pascal@gmail.com>, 2016, 2017, 2018.
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-10-04 14:32+0200\n"
-"PO-Revision-Date: 2017-11-14 18:49+0200\n"
+"POT-Creation-Date: 2018-10-04 17:02+0200\n"
+"PO-Revision-Date: 2018-10-04 16:42+0200\n"
 "Last-Translator: Pascal <chambon.pascal@gmail.com>\n"
 "Language-Team: Nothing\n"
 "MIME-Version: 1.0\n"
@@ -3083,22 +3083,22 @@ msgstr "Scan Mondial"
 msgid "Choose world scan model"
 msgstr "Choisir cible du scan mondial"
 
-#: .\views\abilities\world_scan_mod.py:118
+#: .\views\abilities\world_scan_mod.py:154
 #, python-format
 msgid "<Scanning Request - \"%s\">"
 msgstr "<Requête de Scan - \"%s\">"
 
-#: .\views\abilities\world_scan_mod.py:119
+#: .\views\abilities\world_scan_mod.py:155
 msgid "Please scan the world according to the features of this object."
 msgstr ""
 "Veuillez scanner la planète en fonction des caractéristiques de cet objet."
 
-#: .\views\abilities\world_scan_mod.py:130
+#: .\views\abilities\world_scan_mod.py:168
 #, python-format
 msgid "<World Scan Result - %(item)s>"
 msgstr "<Résultat de Scan Mondial - %(item)s>"
 
-#: .\views\abilities\world_scan_mod.py:132
+#: .\views\abilities\world_scan_mod.py:170
 #, python-format
 msgid ""
 "\n"
@@ -3107,25 +3107,27 @@ msgid ""
 "                    Please note that these results might be incomplete or "
 "erroneous, depending on the accuracy of the information available.\n"
 "    \n"
-"                    Potential locations of similar items: %(locations_found)"
-"s\n"
+"                    Potential locations of similar items: \n"
+"                    \n"
+"                    %(locations_found)s\n"
 "                    "
 msgstr ""
 "\n"
 "                    Ci-dessous le résultat de l'opération de scan qui a été "
 "effectuée selon les documents que vous avez fournis.\n"
 "                    Veuillez noter que les résultats peuvent être incomplets "
-"ou erronés, en fonctio nde la précision des informations disponibles.\n"
+"ou erronés, en fonction de la précision des informations disponibles.\n"
 "    \n"
-"                    Localisations possible d'objets similaires: %"
-"(locations_found)s"
+"                    Localisations possible d'objets similaires: \n"
+"                    \n"
+"                    %(locations_found)s"
 
-#: .\views\abilities\world_scan_mod.py:147
+#: .\views\abilities\world_scan_mod.py:187
 #, python-format
 msgid "Automated scanning request sent for item '%(item_title)s'."
 msgstr "Requête de scan envoyée pour l'objet '%(item_title)s'."
 
-#: .\views\abilities\world_scan_mod.py:152
+#: .\views\abilities\world_scan_mod.py:192
 msgid "World scan submission in progress, the result will be emailed to you."
 msgstr ""
 "Requête de scan mondial bien envoyée, le résultat vous sera communiqué par "
