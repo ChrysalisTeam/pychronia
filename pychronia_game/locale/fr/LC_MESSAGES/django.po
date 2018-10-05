@@ -10,8 +10,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-10-04 17:02+0200\n"
-"PO-Revision-Date: 2018-10-04 16:42+0200\n"
+"POT-Creation-Date: 2018-10-05 11:41+0200\n"
+"PO-Revision-Date: 2018-10-05 11:41+0200\n"
 "Last-Translator: Pascal <chambon.pascal@gmail.com>\n"
 "Language-Team: Nothing\n"
 "MIME-Version: 1.0\n"
@@ -1212,7 +1212,7 @@ msgid "Security is current ACTIVATED."
 msgstr "La sécurité est actuellement ACTIVÉE."
 
 #: .\templates\abilities\house_locking.html:63
-#: .\templates\auction\view_sales.html:127
+#: .\templates\auction\view_sales.html:128
 #: .\templates\information\world_map_dynamic.html:49
 msgid "Reset"
 msgstr "Réinitialiser"
@@ -1771,54 +1771,58 @@ msgid ""
 "<strong>%(total_bank_account_available)s</strong> kashes in their bank "
 "accounts,\n"
 "while the total value of items listed below is <strong>%(total_items_price)"
-"s</strong> kashes.\n"
+"s</strong> kashes\n"
+"(<strong>%(total_auction_items_price)s</strong> kashes for auction items "
+"only).\n"
 msgstr ""
 "\n"
 "Les joueurs ont actuellement un total de\n"
 "<strong>%(total_bank_account_available)s</strong> kashes dans leurs comptes "
 "bancaires,\n"
 "tandis que la valeur totale des objets listés ci-dessous est <strong>%"
-"(total_items_price)s</strong> kashes.\n"
+"(total_items_price)s</strong> kashes\n"
+"(<strong>%(total_auction_items_price)s</strong> kashes pour les seuls objets "
+"en enchères).\n"
 
-#: .\templates\auction\view_sales.html:30
+#: .\templates\auction\view_sales.html:31
 msgid "Id"
 msgstr "Id"
 
-#: .\templates\auction\view_sales.html:31
+#: .\templates\auction\view_sales.html:32
 msgid "Photo"
 msgstr "Photo"
 
-#: .\templates\auction\view_sales.html:32
+#: .\templates\auction\view_sales.html:33
 msgid "Details"
 msgstr "Détails"
 
-#: .\templates\auction\view_sales.html:33
+#: .\templates\auction\view_sales.html:34
 msgid "Comments"
 msgstr "Commentaires"
 
-#: .\templates\auction\view_sales.html:35
-#: .\templates\auction\view_sales.html:118
+#: .\templates\auction\view_sales.html:36
+#: .\templates\auction\view_sales.html:119
 #: .\templates\messaging\single_message.html:69
 msgid "Transfer"
 msgstr "Transférer"
 
-#: .\templates\auction\view_sales.html:72
+#: .\templates\auction\view_sales.html:73
 msgid "gem"
 msgstr "gemme"
 
-#: .\templates\auction\view_sales.html:74
+#: .\templates\auction\view_sales.html:75
 msgid "object"
 msgstr "objet"
 
-#: .\templates\auction\view_sales.html:80
+#: .\templates\auction\view_sales.html:81
 msgid "Unit"
 msgstr "Unité"
 
-#: .\templates\auction\view_sales.html:84
+#: .\templates\auction\view_sales.html:85
 msgid "Total"
 msgstr "Total"
 
-#: .\templates\auction\view_sales.html:124
+#: .\templates\auction\view_sales.html:125
 msgid "Owner"
 msgstr "Propriétaire"
 
@@ -3460,31 +3464,31 @@ msgstr "Destinataire invalide"
 msgid "Sale successfully canceled for '%s'."
 msgstr "Vente correctement annulée pour '%s'."
 
-#: .\views\auction_views.py:246
+#: .\views\auction_views.py:249
 msgid "Auction Slideshow"
 msgstr "Diaporama d'Enchères"
 
-#: .\views\auction_views.py:247
+#: .\views\auction_views.py:250
 msgid "Items Slideshow"
 msgstr "Diaporama d'Objets"
 
-#: .\views\auction_views.py:271
+#: .\views\auction_views.py:274
 msgid "My Items"
 msgstr "Mes Objets"
 
-#: .\views\auction_views.py:291
+#: .\views\auction_views.py:294
 msgid "Item 3D View"
 msgstr "Vue 3D d'Objet"
 
-#: .\views\auction_views.py:341
+#: .\views\auction_views.py:344
 msgid "Ajax Chat"
 msgstr "Chat Ajax"
 
-#: .\views\auction_views.py:374
+#: .\views\auction_views.py:377
 msgid "system"
 msgstr "Système"
 
-#: .\views\auction_views.py:400
+#: .\views\auction_views.py:403
 msgid "Auction Chatroom"
 msgstr "Chatroom d'Enchères"
 

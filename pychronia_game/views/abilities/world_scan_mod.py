@@ -73,7 +73,7 @@ class WorldScanAbility(AbstractPartnershipAbility):
         for (name, scan_set) in settings["scanning_sets"].items():
             utilities.check_is_slug(name)
             utilities.check_no_duplicates(scan_set)
-            utilities.usage_assert(scan_set)  # NOT EMPTY
+            utilities.usage_assert(scan_set, comment=name)  # NOT EMPTY
             for location in scan_set:
                 assert location in all_locations, location
 

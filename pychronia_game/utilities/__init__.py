@@ -93,7 +93,7 @@ allowed_python_types = ATOMIC_PYTHON_TYPES + (tuple, dict, list)
 def usage_assert(value, comment=None):
     from pychronia_game.common import UsageError
     if not value:
-        raise UsageError("Check failed: %r (comment: '%s')" % (value, comment))
+        raise UsageError("Check failed: %r (comment: %r)" % (value, comment))
     return True
 
 

@@ -229,6 +229,8 @@ def generate_mindstorm_settings(chrysalis_data_dir):
 
         # initial objects
         dm.transfer_object_to_character("small_leather_bag", "loyd.georges")  # transfered by Rodok
+        dm.transfer_object_to_character("7_smoky_quartzes", "loyd.georges")  # good to be stolen
+
 
         '''  # auction spots actually not included in YAML fixtures
         radio_spots = dm.radio_spots._table  # we bypass protections on "immutability"

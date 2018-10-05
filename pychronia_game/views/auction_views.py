@@ -206,10 +206,12 @@ def view_sales(request, template_name='auction/view_sales.html'):
 
     if request.datamanager.should_display_admin_tips():  # security
         total_items_price = sum((item["total_price"] or 0) for item in items_for_sales.values())
+        total_auction_items_price = sum((item["total_price"] or 0) for item in items_for_sales.values() if item["auction"])
         total_bank_account_available = sum(
             character["account"] for character in request.datamanager.get_character_sets().values())
     else:
         total_items_price = None
+        total_auction_items_price = None
         total_bank_account_available = None
 
     total_gems_number = sum(item["num_items"] for item in items_for_sales.values() if item["is_gem"])
@@ -223,6 +225,7 @@ def view_sales(request, template_name='auction/view_sales.html'):
                       'usernames': request.datamanager.get_character_usernames(),
                       #'character_names': request.datamanager.get_character_official_names(),
                       'total_items_price': total_items_price,
+                      'total_auction_items_price': total_auction_items_price,
                       'total_bank_account_available': total_bank_account_available,
                       'total_gems_number': total_gems_number,
                       'total_archaeological_objects_number': total_archaeological_objects_number
