@@ -22,6 +22,7 @@ Version mobile: Sous android, que ce soit en affichage Portrait que Paysage, la 
 
 - fix permission system to send messages to abilities
 
+- Improve gems transfer from/to bank, filter those belonging to a "FROM" character, remove the unicode sign in u"7_topaz" in their event message, show gems available in bank
 
 
 TESTS
