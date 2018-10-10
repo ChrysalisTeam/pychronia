@@ -28,6 +28,8 @@ Version mobile: Sous android, que ce soit en affichage Portrait que Paysage, la 
 TESTS
 ----------
 
+Tester que la cache_key de rich_text() inclut le dm.username, par sécurité
+
 TESTER multi recipients done ?
 
 PAUSED BUGLETS:

@@ -201,9 +201,11 @@ def hash_url_path(url_path):
     '''
 
 
-def game_view_url(view, datamanager, **kwargs):
+def game_view_url(view, datamanager, neutral_link=False, **kwargs):
+    from .authentication import UNIVERSAL_URL_USERNAME
+    game_username = UNIVERSAL_URL_USERNAME if neutral_link else datamanager.username
     return reverse(view, kwargs=dict(game_instance_id=datamanager.game_instance_id,
-                                     game_username=datamanager.username,
+                                     game_username=game_username,
                                      **kwargs))
 
 

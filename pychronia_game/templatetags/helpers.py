@@ -178,7 +178,7 @@ def _generate_encyclopedia_links(html_snippet, datamanager, excluded_link=None):
         matched_str = match.group(0)
         assert matched_str
         # detecting here WHICH keyword triggered the match would be possible, but expensive... let's postpone that
-        link = game_view_url("pychronia_game.views.view_encyclopedia", datamanager=datamanager)
+        link = game_view_url("pychronia_game.views.view_encyclopedia", datamanager=datamanager, neutral_link=True)
         link += "?search=%s" % urllib.quote_plus(matched_str.encode("utf8"), safe=b"")
         return dict(href=link)
 
@@ -203,7 +203,7 @@ def _generate_messaging_links(html_snippet, datamanager):
 
     def email_link_attr_generator(match):
         matched_str = match.group(0)
-        link = game_view_url("pychronia_game.views.compose_message", datamanager=datamanager)
+        link = game_view_url("pychronia_game.views.compose_message", datamanager=datamanager, neutral_link=True)
         link += "?recipient=%s" % urllib.quote_plus(matched_str.encode("utf8"), safe=b"")
         return dict(href=link)
 
@@ -225,7 +225,7 @@ def _generate_site_links(html_snippet, datamanager):
         if "." not in matched_str:
             matched_str = "pychronia_game.views." + matched_str
         try:
-            link = game_view_url(matched_str, datamanager=datamanager)
+            link = game_view_url(matched_str, datamanager=datamanager, neutral_link=True)
             return dict(href=link)
         except Exception:
             logging.warning("Error in generate_site_links for match %r", matched_str, exc_info=True)
@@ -364,23 +364,21 @@ def rich_text(context, content, initial_header_level=None, report_level=None, ex
     extra_params = dict(initial_header_level=initial_header_level,
                         report_level=report_level,
                         excluded_link=excluded_link,
-                        text_format=text_format)
-
-    def _generate_enriched_text():
-        return format_enriched_text(request.datamanager, content, **extra_params)
+                        text_format=text_format )
 
     # NOOOO too slow: content_hash = hashlib.md5(content.encode("ascii", "replace")).hexdigest()[:30]
     content_hash = abs(hash(content))
 
-    fragment_cache_key = "%s_%s_%s" % (
-    content_hash, len(content), "_".join(str(x[1]) for x in sorted(extra_params.items())))
+    # IMPORTANT : datamanager.username may change site links and the likes, in the future!
+    fragment_cache_key = "%s_%s_%s_%s" % (
+    content_hash, len(content), request.datamanager.username, "_".join(str(x[1]) for x in sorted(extra_params.items())))
     #print("Using rich_text fragment_cache_key:", fragment_cache_key)
 
     # TODO - use get_or_set() when using Django>1.9
     # BEWARE - because of this caching, new encyclopedia links will take some time to appear in rich texts
     result = cache.get(fragment_cache_key)
     if result is None:
-        result = _generate_enriched_text()
+        result = format_enriched_text(request.datamanager, content, **extra_params)
         cache.set(fragment_cache_key, result, FRAGMENT_CACHING_TIMOUT_S)
 
     content_id = str(random.randint(1, 10000000000))

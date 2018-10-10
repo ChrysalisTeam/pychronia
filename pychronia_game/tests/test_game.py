@@ -212,9 +212,12 @@ class TestUtilities(BaseGameTestCase):
 
         start = time.time()
         for content in range(count):
-            rich_text(context, content="qfdsfqd\nsqdfsqdff\n\nfsdfsdfsdfsdfsdfdsfsd")
+            rich_text(context,
+                      content="qfdsfqd\nsqdfsqdff\n\nfsdfsdfsdfsdfsdfdsfsd",  # same content each time
+                      text_format="rst")
         delay_cache_hits2 = time.time() - start
 
+        # uncached calls always slower than cached calls
         assert delay1 > 10 * delay_cache_hits1
         assert delay2 > 10 * delay_cache_hits1
         assert delay1 > 10 * delay_cache_hits2
@@ -516,14 +519,14 @@ class TestUtilities(BaseGameTestCase):
 
         html = _generate_site_links(rst, self.dm)
 
-        print("------->", html)
+        #print("------->", html)
         assert html.strip() == dedent(r"""
                                 hi
 
                                 hello
                                 
-                                <a href="/TeStiNg/guest/">good1</a>
-                                <a href="/TeStiNg/guest/view_sales/">good2</a>
+                                <a href="/TeStiNg/anyuser/">good1</a>
+                                <a href="/TeStiNg/anyuser/view_sales/">good2</a>
                                 
                                 [ GAME_PAGE_LINK "bad\"string" "view_sales" ]
                                 """).strip()
@@ -575,7 +578,7 @@ class TestUtilities(BaseGameTestCase):
                             <h2>hi</h2>
                             <p>lokons</p>
                             <p>rodents</p>
-                            <p><a href="/TeStiNg/guest/encyclopedia/?search=gerbils">gerbils</a></p>
+                            <p><a href="/TeStiNg/anyuser/encyclopedia/?search=gerbils">gerbils</a></p>
                             <p>ugly</p>
                             <p>TeStiNg</p>
                             <p>hi<br />you</p>
@@ -1838,20 +1841,20 @@ class TestDatamanager(BaseGameTestCase):
         # generation of entry links
         res = _generate_encyclopedia_links("animals lokons lokonsu", self.dm)
         expected = """<a href="@@@?search=animals">animals</a> lokons lokonsu"""
-        expected = expected.replace("@@@", game_view_url(views.view_encyclopedia, datamanager=self.dm))
+        expected = expected.replace("@@@", game_view_url(views.view_encyclopedia, datamanager=self.dm, neutral_link=True))
         assert res == expected
 
         res = _generate_encyclopedia_links(
             u"""wu\\gly_é gerbil \n lokongerbil dummy gerb\nil <a href="#">lokon\n</a> lokons""", self.dm)
-        print(repr(res))
+        #print(repr(res))
         expected = u'wu\\gly_é <a href="@@@?search=gerbil">gerbil</a> \n lokongerbil dummy gerb\nil <a href="#">lokon\n</a> lokons'
-        expected = expected.replace("@@@", game_view_url(views.view_encyclopedia, datamanager=self.dm))
+        expected = expected.replace("@@@", game_view_url(views.view_encyclopedia, datamanager=self.dm, neutral_link=True))
         assert res == expected
 
         res = _generate_encyclopedia_links(u"""i<à hi""", self.dm)
-        print(repr(res))
-        expected = u'<a href="/TeStiNg/guest/encyclopedia/?search=i%3C%C3%A0">i&lt;\xe0</a> hi'
-        expected = expected.replace("@@@", game_view_url(views.view_encyclopedia, datamanager=self.dm))
+        #print(repr(res))
+        expected = u'<a href="/TeStiNg/anyuser/encyclopedia/?search=i%3C%C3%A0">i&lt;\xe0</a> hi'
+        expected = expected.replace("@@@", game_view_url(views.view_encyclopedia, datamanager=self.dm, neutral_link=True))
         assert res == expected
 
         # knowledge of article ids #
@@ -2230,7 +2233,7 @@ class TestDatamanager(BaseGameTestCase):
         res = _generate_messaging_links(sample, self.dm)
 
         # the full email is well linked, not the incomplete one
-        assert res == u' Hello <a href="/TeStiNg/guest/messages/compose/?recipient=h%C3%A9lloaaxsjjs%40gma%C3%AFl.fr">h\xe9lloaaxsjjs@gma\xefl.fr</a>. please write to h\xe9rb\xe8rt@h\xe9l\xe9nia.'
+        assert res == u' Hello <a href="/TeStiNg/anyuser/messages/compose/?recipient=h%C3%A9lloaaxsjjs%40gma%C3%AFl.fr">h\xe9lloaaxsjjs@gma\xefl.fr</a>. please write to h\xe9rb\xe8rt@h\xe9l\xe9nia.'
 
         expected_res = [
             {'description': 'Simon Bladstaffulovza - whatever', 'avatar': os.path.normpath('images/avatars/guy1.png'),
