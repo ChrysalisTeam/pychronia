@@ -3,6 +3,10 @@ ul.dropmenu {
 
     padding: 0 15px;
 
+    a, span {
+        text-align: left;
+    }
+
     a {
         display: none;
         color: $dark_orange;
@@ -10,7 +14,6 @@ ul.dropmenu {
         text-decoration: none;
         line-height: 27px;
         padding: 0 6px;
-        text-align: left;
         float: none;
 
         &:hover {

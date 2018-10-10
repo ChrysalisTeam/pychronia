@@ -67,6 +67,7 @@ PAUSED BUGLETS:
 TASKS DONE
 ---------------
 
+- Déboguer les CSS (propriétés margin-top fausses etc.)
 - Fix touch-hover qui ne marche pas sur dynamic world map - DONE
 - Fix message.attachment, resolved TWICE -> must display without /files/xxxx/ - DONE
 - Use {% fontawesome_icon "times-circle " %} pour email modeles - DONE

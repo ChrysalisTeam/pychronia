@@ -2068,7 +2068,7 @@ body .ui-dropdownchecklist-dropcontainer:disabled, body .markItUp:disabled {
   background-color: #E4E4E4;
 }
 input[type=submit] {
-  margin-top: 25px 10px;
+  margin-top: 25px;
 }
 input[readonly=True] {
   background-color: lightgrey !important;
@@ -2328,6 +2328,10 @@ body .notification_panel .notification_panel_decorations .notification_panel_con
   #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu {
     padding: 0 15px;
   }
+  #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu a,
+  #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu span {
+    text-align: left;
+  }
   #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu a {
     display: none;
     color: #f5af09;
@@ -2335,7 +2339,6 @@ body .notification_panel .notification_panel_decorations .notification_panel_con
     text-decoration: none;
     line-height: 27px;
     padding: 0 6px;
-    text-align: left;
     float: none;
   }
   #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu a:hover {
@@ -2483,8 +2486,8 @@ body .notification_panel .notification_panel_decorations .notification_panel_con
         url('img/backgrounds/tube_bronze_small.png'),
         url('img/backgrounds/dropdown_menu.png'),
         url("img/backgrounds/notification_panel_decorations.png"),
-        url("img//backgrounds/antique_large_decorated_frame.png"),
-        url("img//backgrounds/ricepaper-hue-orange.jpg"),
+        url("img/backgrounds/antique_large_decorated_frame.png"),
+        url("img/backgrounds/ricepaper-hue-orange.jpg"),
         url('img/backgrounds/decorated_golden_frame.png'),
         url('img/backgrounds/ricepaper-hue-gold.jpg');
     background-repeat: no-repeat;
