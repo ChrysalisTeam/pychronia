@@ -24,6 +24,8 @@ Version mobile: Sous android, que ce soit en affichage Portrait que Paysage, la 
 
 - Improve gems transfer from/to bank, filter those belonging to a "FROM" character, remove the unicode sign in u"7_topaz" in their event message, show gems available in bank
 
+- Always put links to radio spots in playlist editing, existing spot edition form etc.
+
 
 TESTS
 ----------
