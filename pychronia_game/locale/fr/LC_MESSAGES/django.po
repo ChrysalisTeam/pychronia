@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-10-05 11:41+0200\n"
+"POT-Creation-Date: 2018-10-10 11:37+0200\n"
 "PO-Revision-Date: 2018-10-05 11:41+0200\n"
 "Last-Translator: Pascal <chambon.pascal@gmail.com>\n"
 "Language-Team: Nothing\n"
@@ -1839,8 +1839,8 @@ msgid "Take the identity of another user."
 msgstr "Prendre l'identité d'un autre utilisateur"
 
 #: .\templates\base_main.html:342
-msgid "Identity:"
-msgstr "Identité:"
+msgid "Impersonation:"
+msgstr "Usurpation:"
 
 #: .\templates\base_main.html:362
 msgid "Whether or not you can modify the game during impersonations."
@@ -4007,6 +4007,9 @@ msgstr "Tous les Evénements du Jeu"
 msgid "Instructions"
 msgstr "Instructions"
 
+#~ msgid "Identity:"
+#~ msgstr "Identité:"
+
 #~ msgid "Launch Operation"
 #~ msgstr "Lancer l'opération"
 
@@ -4251,9 +4254,6 @@ msgstr "Instructions"
 
 #~ msgid "Log In"
 #~ msgstr "Se connecter"
-
-#~ msgid "Impersonation:"
-#~ msgstr "Usurpation:"
 
 #~ msgid "Game Items Management"
 #~ msgstr "Gestion des Objets du Jeu"
