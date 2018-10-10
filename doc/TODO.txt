@@ -20,11 +20,13 @@ Version mobile: Sous android, que ce soit en affichage Portrait que Paysage, la 
 
 - fix autoresponses of abilities
 
-- fix permission system to send messages to abilities
+- update permission system to send prevent sending messages to abilities-contact-emails
 
 - Improve gems transfer from/to bank, filter those belonging to a "FROM" character, remove the unicode sign in u"7_topaz" in their event message, show gems available in bank
 
 - Always put links to radio spots in playlist editing, existing spot edition form etc.
+
+- fix encyclopedia search button in maintenance mode, is disabled but can be reenabled via F12
 
 
 TESTS
@@ -482,7 +484,7 @@ FUTUR ENHANCEMENTS
 - les notifications doivent etre plus explicites dans leur contenu !?
 - TO UPDATE when behaviour is changed, in the future
             - vous pouvez attacher un de vos fichiers personnels à un message, grâce au champ de sélection dédié
-            - si vous transférez un ancien message à un de vos contacts, ce "message transféré" pourra être lu dans une nouvelle fenêtre, grâce au lien automatiquement inséré dans le nouveau message
+            - si vous transférez un ancien message à l'un de vos contacts, ce "message transféré" pourra être lu dans une nouvelle fenêtre, grâce au lien automatiquement inséré dans le nouveau message
 
 - carte du monde : un clic sur un pays/ville principal pour un zoom plus détaillé (un peu comme hurlevent wow) -> intégrer touch map prototype
 - FIX medias videos on website, for video / firefox, on WINDOWS10 (use jplayer)

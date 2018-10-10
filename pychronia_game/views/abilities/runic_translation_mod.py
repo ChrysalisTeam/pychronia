@@ -53,13 +53,9 @@ class RunicTranslationAbility(AbstractPartnershipAbility):
                                                        hide_on_success=False,
                                                        previous_form_data=previous_form_data)
 
-        translation_delay = self.get_ability_parameter("result_delay")  # TODO - translate this
-
         return {
             'page_title': _("Runic translations"),
             "translation_form": translation_form,
-            'min_delay_mn': translation_delay[0],
-            'max_delay_mn': translation_delay[1],
         }
 
     @staticmethod
