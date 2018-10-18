@@ -28,6 +28,10 @@ Version mobile: Sous android, que ce soit en affichage Portrait que Paysage, la 
 
 - fix encyclopedia search button in maintenance mode, is disabled but can be reenabled via F12
 
+- FIX RST formatting in " Runes transcription: "%(original)s"" when newlines are inserted in transcription
+
+- Add summary of pending text messages, in "admin summary" info page
+
 
 TESTS
 ----------
