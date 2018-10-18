@@ -126,12 +126,10 @@ def generate_mindstorm_settings(chrysalis_data_dir):
 
     def GAME_INITIAL_FIXTURE_SCRIPT(dm):
 
-        """ NOT ANYMORE
-        # we give first player access to everything TEMPORARY
-        player_name = "amethyst"
-        assert not dm.get_character_properties(player_name)["is_npc"]
+        # we give this special character access to everything
+        player_name = "emogladys"
+        assert dm.get_character_properties(player_name)["is_npc"]
         dm.update_permissions(player_name, dm.PERMISSIONS_REGISTRY)
-        """
 
         dm._set_user(dm.get_global_parameter("master_login"))  # to please some asserts...
 
