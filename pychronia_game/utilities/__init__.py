@@ -398,7 +398,7 @@ def dump_data_tree_to_yaml(data_tree, convert=True, **kwargs):
 
 
 def load_data_tree_from_yaml(string, convert=True):
-    data_tree = yaml.load(string)
+    data_tree = yaml.load(string, Loader=yaml.PythonLoader)
 
     if convert:
         data_tree = convert_object_tree(data_tree, python_to_zodb_types)
@@ -746,7 +746,7 @@ def load_yaml_file(yaml_file):
             raise ValueError(
                 "Forbidden tabulation found at line %d in yaml file %s : '%r'!" % (lineno, yaml_file, linestr))
 
-    data = yaml.load(raw_data)
+    data = load_data_tree_from_yaml(raw_data, convert=False)
     return data
 
 

@@ -18,7 +18,7 @@ git+https://github.com/django-blog-zinnia/cmsplugin-zinnia
 
 decorator==4.0.10
 
-Django==1.9.6
+Django==1.11.18
 
 django-compat-patcher==0.3
 
@@ -70,7 +70,7 @@ git+https://github.com/pakal/cmsplugin-rst/
 
 django-zodb==0.3dev
 
-easy-thumbnails==2.3
+easy-thumbnails==2.5
 
 # for cmsplugin-gallery
 django-inline-ordering>=1.0.2
@@ -99,9 +99,9 @@ python-memcached==1.58
 
 pyparsing==2.1.9
 
-PyYAML==3.12
+PyYAML==4.2b1
 
-requests==2.11.1
+requests==2.20.0
 
 Sphinx==1.4
 

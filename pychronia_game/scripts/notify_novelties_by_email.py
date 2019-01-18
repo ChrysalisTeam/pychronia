@@ -14,7 +14,7 @@ from django.core.mail import send_mail
 
 SUBJECT = "Notification - Portail Anthropia"
 
-TEMPLATE = """\
+TEMPLATE = u"""\
 Cher(ère) %(username)s,
 
 de nouveaux contenus sont apparus sur votre compte depuis votre dernier passage.
@@ -56,11 +56,11 @@ def execute():
                 signal_new_radio_messages, signal_new_text_messages = pack["signal_new_radio_messages"], pack[
                     "signal_new_text_messages"]
 
-                novelties = ""
+                novelties = u""
                 if signal_new_radio_messages:
-                    novelties += "- la liste de lecture de la webradio a été mise à jour.\n"
+                    novelties += u"- la liste de lecture de la webradio a été mise à jour.\n"
                 if signal_new_text_messages:
-                    novelties += "- vous avez reçu %s nouveaux messages textuels.\n" % signal_new_text_messages
+                    novelties += u"- vous avez reçu %s nouveaux messages textuels.\n" % signal_new_text_messages
 
                 if not novelties:
                     continue  # no news for the player
