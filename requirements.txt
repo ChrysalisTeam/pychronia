@@ -20,7 +20,7 @@ decorator==4.0.10
 
 Django==1.11.18
 
-django-compat-patcher==0.3
+django-compat-patcher==0.4
 
 #Django-Select2==4.2.2 OUTDATED - think about periodically updating the tag below
 git+https://github.com/pakal/django-select2.git@0bcb6f5d18002c79afeb93899872f59d9c87bc24
