@@ -143,13 +143,13 @@ def generate_mindstorm_settings(chrysalis_data_dir):
             imuo_faculty
             jungle_harmonies_album
             alifir_deans
-            
-            yodic_theology
-            yodic_quotes
-        """.split()  # do not let "easy theology" be found
+        """.split()
 
         for excluded_static_page in excluded_static_pages:
             del dm.data["static_pages"][excluded_static_page]  # no need to commit
+
+        for sensitive_static_page in ("yodic_theology", "yodic_quotes"):
+            del dm.data["static_pages"][sensitive_static_page]["keywords"][:]  # do not let theology be found easily
 
         assert dm.get_global_parameter("game_theoretical_length_days")
         dm.set_global_parameter("game_theoretical_length_days", 1)
