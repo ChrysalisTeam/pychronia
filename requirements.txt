@@ -99,7 +99,7 @@ python-memcached==1.58
 
 pyparsing==2.1.9
 
-PyYAML==4.2b1
+PyYAML==5.1
 
 requests==2.20.0
 

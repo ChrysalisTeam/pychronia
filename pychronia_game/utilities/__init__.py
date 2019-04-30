@@ -389,16 +389,17 @@ def dump_data_tree_to_yaml(data_tree, convert=True, **kwargs):
                      indent=4,
                      default_style="|",
                      default_flow_style=False,  # not BLOCK
-                     allow_unicode=True, )
+                     allow_unicode=True,
+                     Dumper=yaml.Dumper)
     dump_args.update(kwargs)
 
-    string = yaml.dump(data_tree, **dump_args)  # TODO fix safe_dump() to accept unicode in input!!
+    string = yaml.dump(data_tree, **dump_args)
 
     return string
 
 
 def load_data_tree_from_yaml(string, convert=True):
-    data_tree = yaml.load(string, Loader=yaml.PythonLoader)
+    data_tree = yaml.load(string, Loader=yaml.FullLoader)  # FullLoader necessary for python tuples
 
     if convert:
         data_tree = convert_object_tree(data_tree, python_to_zodb_types)
