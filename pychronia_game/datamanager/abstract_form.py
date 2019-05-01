@@ -196,8 +196,7 @@ class GemPayementFormMixin(GemHandlingFormUtils):
 
 # REAL abstract base class for the game forms
 # Adds both auto-recognition of form class, and additional fields like payment controls
-AbstractGameForm = type("AbstractGameForm".encode("ascii"),  # can't be unicode
-                        (GemPayementFormMixin, BaseAbstractGameForm), {})
+AbstractGameForm = type("AbstractGameForm", (GemPayementFormMixin, BaseAbstractGameForm), {})
 assert issubclass(AbstractGameForm, SimpleForm)
 assert issubclass(AbstractGameForm, forms.Form)
 

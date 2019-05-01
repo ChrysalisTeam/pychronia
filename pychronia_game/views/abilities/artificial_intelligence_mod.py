@@ -306,9 +306,9 @@ class DjinnProxy(object):
         self._update_substitutions(substitutions_file)
 
         """
-        print ("INITIALIZED SESSION  for %s : " % name, self.data["AI_bots"]["bot_properties"][name]["bot_sessions"])
+        print("INITIALIZED SESSION  for %s : " % name, self.data["AI_bots"]["bot_properties"][name]["bot_sessions"])
         props["bot_sessions"] = kernel.getSessionData() # IMPORTANT - initialized values, with I/O history etc.
-        print ("COMMITTING DATA for %s :" % name, self.data["AI_bots"]["bot_properties"][name])
+        print("COMMITTING DATA for %s :" % name, self.data["AI_bots"]["bot_properties"][name])
         """
 
     def _update_substitutions(self, substitutions_file):

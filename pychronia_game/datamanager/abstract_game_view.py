@@ -149,7 +149,7 @@ class GameViewMetaclass(type):
                 RESERVED_CALLBACK_NAMES = list(AbstractGameView.__dict__.keys())
 
                 def _check_callback(callback):
-                    ###print ("CALLBACK", callback)
+                    ###print("CALLBACK", callback)
                     assert getattr(NewClass, callback, None), callback
                     assert callback not in RESERVED_CALLBACK_NAMES, (callback, RESERVED_CALLBACK_NAMES)
                     assert not callback.startswith("_")
@@ -895,7 +895,7 @@ def register_view(view_object=None,
             class_data["_process_standard_request"] = staticmethod(
                 real_view_object)  # we install the real request handler, not expecting a "self"
 
-            ###print ("BUILDING VIEW", real_view_object.__name__, class_data)
+            ###print("BUILDING VIEW", real_view_object.__name__, class_data)
             # we build new GameView subclass on the fly
             KlassName = utilities.to_pascal_case(final_view_name)
             NewViewType = type(KlassName, (AbstractGameView,), class_data)  # metaclass checks everything for us

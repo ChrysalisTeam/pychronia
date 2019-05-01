@@ -293,7 +293,7 @@ class FlexibleTime(BaseDataManager):  # TODO REFINE
         """
 
         new_time = datetime.utcnow()
-        # print (">>>>>>>>>>>>>>>>>> DATETIME", new_time, "WITH DELAYS", delay_mn)
+        # print(">>>>>>>>>>>>>>>>>> DATETIME", new_time, "WITH DELAYS", delay_mn)
 
         if delay_mn:
             actual_delay_s = self.compute_effective_delay_s(delay_mn=delay_mn)
@@ -1495,7 +1495,7 @@ class FriendshipHandling(BaseDataManager):
                                old_friend=old_friend)
 
         if __debug__:
-            #print (">>>", relation_groups.values())
+            #print(">>>", relation_groups.values())
             _users = sum(list(relation_groups.values()), [])
             assert len(set(_users)) == len(_users), relation_groups  # no duplicates!
 
@@ -1679,14 +1679,14 @@ class TextMessagingCore(BaseDataManager):
     _alternate = list(string.ascii_letters)
     random.shuffle(_alternate)
     _alternate = "".join(_alternate)
-    OBFUSCATOR_TRANSTABLE = string.maketrans(string.ascii_letters, _alternate)
+    OBFUSCATOR_TRANSTABLE = str.maketrans(string.ascii_letters, _alternate)
     del _alternate
 
     @classmethod
     def _obfuscate_initial_id(cls, my_id):
         """Beware, only works with ascii strings atm..."""
         my_id = my_id.encode("ascii")  # required by string.translate()
-        return str(string.translate(my_id, cls.OBFUSCATOR_TRANSTABLE))
+        return str(str.translate(my_id, cls.OBFUSCATOR_TRANSTABLE))
 
     def _load_initial_data(self, **kwargs):
         super(TextMessagingCore, self)._load_initial_data(**kwargs)
@@ -2480,7 +2480,7 @@ class TextMessagingForCharacters(BaseDataManager):  # TODO REFINE
         all_emails = self.get_all_existing_emails()  # ALL available
 
         ''' TODO FIXME BETTER CHECK ??
-        #print (">>>>>>>>###", all_emails)
+        #print(">>>>>>>>###", all_emails)
         for msg in messaging["messages_dispatched"] + messaging["messages_queued"]:
             assert msg["sender_email"] in all_emails, (msg["sender_email"], all_emails)
             for recipient_email in msg["recipient_emails"]:
@@ -2579,7 +2579,7 @@ class TextMessagingForCharacters(BaseDataManager):  # TODO REFINE
         super(TextMessagingForCharacters, self)._message_dispatching_post_hook(frozen_msg)
 
         self._update_address_book(msg=frozen_msg)
-        #print (">>>>>>>>>>>", frozen_msg["visible_by"])
+        #print(">>>>>>>>>>>", frozen_msg["visible_by"])
         characters = set(self.get_character_usernames())
 
         # can't use get_characters_for_visibility_reason() since it's a negation here
@@ -3190,7 +3190,7 @@ class RadioMessaging(BaseDataManager):  # TODO REFINE
 
         def _check_item_validity(self, key, value, strict=False):
 
-            #print ("RADIOSPOT IS", key, value)
+            #print("RADIOSPOT IS", key, value)
 
             radio_spot_fields = set("initial gamemaster_hints title text file".split())
             assert set(value.keys()) == radio_spot_fields, (set(value.keys()) - radio_spot_fields, key)
@@ -3486,7 +3486,7 @@ class ActionScheduling(BaseDataManager):
                     args = action["args"]
                     kwargs = action["kwargs"]
                     function(*args, **kwargs)
-                    # print (">>>> executed ", function)
+                    # print(">>>> executed ", function)
                 except:
                     if __debug__: self.notify_event("DELAYED_ACTION_ERROR")
                     self.logger.critical("Delayed action raised an error when executing : %s" % action, exc_info=True)
@@ -3516,7 +3516,7 @@ class ActionScheduling(BaseDataManager):
         # print >>sys.stderr, "REGISTERING ONE SHOT  ", function
 
         if isinstance(function, str):
-            # print ("SEARCHING", function, "IN", sorted(dir(self)))
+            # print("SEARCHING", function, "IN", sorted(dir(self)))
             if not hasattr(self, function) or not hasattr(getattr(self, function), '__call__'):
                 raise TypeError(_(
                     "Only strings representing DataManager methods can be scheduled as delayed actions, not %(function)s") %
@@ -3725,7 +3725,7 @@ class MoneyItemsOwnership(BaseDataManager):
 
         total_digital_money = game_data["global_parameters"]["bank_account"]
         total_gems = game_data["global_parameters"]["spent_gems"][:]  # COPY!
-        # print ("^^^^^^^^^^^^", "spent_gems", total_gems.count(500))
+        # print("^^^^^^^^^^^^", "spent_gems", total_gems.count(500))
 
         _check_gems(game_data["global_parameters"]["spent_gems"])
 
@@ -3743,7 +3743,7 @@ class MoneyItemsOwnership(BaseDataManager):
 
             _check_gems(character["gems"])
             total_gems += character["gems"]
-            # print ("---------", name, total_gems.count(500))
+            # print("---------", name, total_gems.count(500))
 
         old_total_digital_money = game_data["global_parameters"]["total_digital_money"]
         assert old_total_digital_money == total_digital_money, "%s != %s" % (
@@ -4654,7 +4654,7 @@ class Encyclopedia(BaseDataManager):
                 mapping[keyword].append(article_id)
                 if only_primary_keywords:
                     break  # other keywords are not meant eg. for auto-linking
-        ###print (">>>>>>>>>>>", mapping)
+        ###print(">>>>>>>>>>>", mapping)
         return mapping
 
     @readonly_method

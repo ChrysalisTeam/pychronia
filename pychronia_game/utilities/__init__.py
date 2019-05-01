@@ -161,7 +161,7 @@ def open_zodb_url(zodb_url):
 
 def open_zodb_file(zodb_file):
     #print ("RETRIEVING DB FROM FILE", zodb_file)
-    url = "file://" + zodb_file.replace("\\", "/")
+    url = "file:///" + zodb_file.replace("\\", "/")  # note the 3 "/" after scheme!
     return open_zodb_url(url)
     # .replace(":", "|") # or "mem://"    # we have problems with URIs in win32, so replace : with |
     #print (">>>>>>", URI)
@@ -340,7 +340,7 @@ _mapping_tag = yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG
 
 
 def dict_representer(dumper, data):
-    return dumper.represent_dict(iter(data.items()))
+    return dumper.represent_dict(iter(list(data.items())))
 
 
 def dict_constructor(loader, node):
@@ -739,13 +739,15 @@ def recursive_dict_sum(d1, d2, appendable_fields):
 
 def load_yaml_file(yaml_file):
     logging.info("Loading yaml fixture %s" % yaml_file)
-    with open(yaml_file, "U") as f:
+    with open(yaml_file, "r", encoding="utf-8-sig") as f:  # beware of the unicode BOM
         raw_data = f.read()
 
-    for (lineno, linestr) in enumerate(raw_data.split(b"\n"), start=1):
-        if b"\t" in linestr:
+    for (lineno, linestr) in enumerate(raw_data.split("\n"), start=1):
+        if "\t" in linestr:
             raise ValueError(
                 "Forbidden tabulation found at line %d in yaml file %s : '%r'!" % (lineno, yaml_file, linestr))
+
+    #print("LOADING RAW DATA", repr(raw_data[:100]))
 
     data = load_data_tree_from_yaml(raw_data, convert=False)
     return data

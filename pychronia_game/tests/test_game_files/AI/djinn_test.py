@@ -40,6 +40,6 @@ def ___disabled_broken_ai_test():
     print("\n")
 
     while True:
-        q = input("> ")
+        q = eval(input("> "))
         time.sleep(float(random.randint(1, 3)) / 3)
         print(kernel.respond(q))

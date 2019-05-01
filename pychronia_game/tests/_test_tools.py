@@ -205,7 +205,7 @@ class BaseGameTestCase(TestCase):  # one day, use pytest-django module to make i
 
     def __call__(self, *args, **kwds):
         #self._reset_django_db()
-        #print ("USING CONF", config.DATABASES, config.INSTALLED_APPS)
+        #print("USING CONF", config.DATABASES, config.INSTALLED_APPS)
         ##return super(BaseGameTestCase, self).__call__(*args, **kwds)
         return unittest.TestCase.run(self, *args,
                                      **kwds)  # we bypass test setups from django's TestCase, to use py.test instead

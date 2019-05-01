@@ -224,7 +224,7 @@ class TestUtilities(BaseGameTestCase):
         assert delay2 > 10 * delay_cache_hits2
 
     def test_sphinx_publisher_settings(self):
-        from django.utils.encoding import smart_str, force_unicode
+        from django.utils.encoding import smart_str, force_str
         from docutils.core import publish_parts
         docutils_settings = {"initial_header_level": 3,
                              "doctitle_xform": False,
@@ -668,8 +668,8 @@ class TestMetaAdministration(unittest.TestCase):  # no django setup required ATM
 
         backup_file_path = os.path.join(_get_backup_folder(game_instance_id), res[0])
 
-        with open(backup_file_path, "U") as f:
-            raw_yaml_data = f.read().decode("utf8")
+        with open(backup_file_path, "r") as f:
+            raw_yaml_data = f.read()
 
         raw_yaml_data = raw_yaml_data.replace("pangea.com", "planeta.fr")  # MASS REPLACE in data
 
@@ -6349,7 +6349,7 @@ class TestActionMiddlewares(BaseGameTestCase):
 
         res = world_scan(request)
         assert res.status_code == 200
-        print(res.content.decode("utf8"))
+        print((res.content.decode("utf8")))
         assert "World scan submission in progress" in res.content.decode("utf8")
 
         assert request.datamanager.get_character_properties("guy1")["account"] < old_account

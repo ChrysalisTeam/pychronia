@@ -30,10 +30,10 @@ AbstractGameView,)  # middlewares FIRST, so that they can override game view stu
 AbstractAbilityBasesAdapter = AbilityMetaclass(str('AbstractAbilityBasesAdapter'), AbstractAbilityBases, {})
 
 """
-print (">>>>>>>>>", AbstractAbilityBases)
+print(">>>>>>>>>", AbstractAbilityBases)
 
 for _base in AbstractAbilityBases:
-    print (_base, type(_base))
+    print(_base, type(_base))
     assert issubclass(AbilityMetaclass, type(_base))
 """
 

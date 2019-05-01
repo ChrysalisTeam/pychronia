@@ -4,15 +4,15 @@
 
 import sys, os, math, random, traceback, hashlib, logging, types, base64, re
 import types, contextlib, collections, time, glob, copy, atexit, inspect
+from urllib.parse import urlparse
+
 from datetime import datetime, timedelta
 
-from contextlib import contextmanager, closing, nested
+from contextlib import contextmanager, closing
 from decorator import decorator
 from functools import partial
 from textwrap import dedent
-from urllib.parse import urlparse
 
-from odict import odict as OrderedDict
 from collections import Counter
 
 import yaml, pyparsing
@@ -138,12 +138,12 @@ def action_failure_handler(request, success_message=ugettext_lazy("Operation suc
         # nothing in __enter__()
         yield None
     except UsageError as e:
-        #print (">YYYY", repr(e))
+        #print(">YYYY", repr(e))
         user.add_error(str(e))
         if isinstance(e, AbnormalUsageError):
             logger.critical(str(e), exc_info=True)
     except Exception as e:
-        #print (">OOOOOOO", repr(e))
+        #print(">OOOOOOO", repr(e))
         #import traceback
         #traceback.print_exc()
         # we must locate this serious error, as often (eg. assertion errors) there is no specific message attached...
@@ -180,7 +180,7 @@ def exception_swallower():
         try:
             logging.critical(msg, e, exc_info=True)
         except Exception:
-            print >> sys.stderr, _("Exception Swallower logging is broken !!!")
+            print(_("Exception Swallower logging is broken !!!"), file=sys.stderr)
 
         if __debug__:
             raise RuntimeError(msg % e)

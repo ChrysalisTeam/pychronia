@@ -73,7 +73,7 @@ def game_view_url_tag(parser, token):
     """
     Only works if a "game_instance_id" and "game_username" template variables are available (use request processors for that).
     """
-    #print ("PARSING IN GAMLEURL", token.contents, "\n")
+    #print("PARSING IN GAMLEURL", token.contents, "\n")
     redirector = False
     content = token.contents
 
@@ -183,7 +183,7 @@ def _generate_encyclopedia_links(html_snippet, datamanager, excluded_link=None):
         return dict(href=link)
 
     regex = autolinker.join_regular_expressions_as_disjunction(list(keywords_mapping.keys()), as_words=True)
-    ##print (">>>>>>>> REGEX", repr(regex))
+    ##print(">>>>>>>> REGEX", repr(regex))
     if regex:
         html_res = autolinker.generate_links(html_snippet, regex=regex,
                                              link_attr_generator=encyclopedia_link_attr_generator)
@@ -268,7 +268,7 @@ def advanced_restructuredtext(value,
     '''
     from django import template
     from django.conf import settings
-    from django.utils.encoding import smart_str, force_unicode
+    from django.utils.encoding import smart_str, force_str
     assert initial_header_level is None or isinstance(initial_header_level, int)
     assert report_level is None or isinstance(report_level, int)  ### NO, TOO RECENT or report_level in "info warning error severe none".split()
     try:
@@ -277,7 +277,7 @@ def advanced_restructuredtext(value,
         if settings.DEBUG:
             raise template.TemplateSyntaxError(
                 "Error in 'restructuredtext' filter: The Python docutils library isn't installed.")
-        return force_unicode(value)
+        return force_str(value)
     else:
         docutils_settings = DOCUTILS_RENDERER_SETTINGS_DEFAULTS.copy()
         _docutils_overrides = getattr(settings, "CMSPLUGIN_RST_SETTINGS_OVERRIDES",
@@ -293,7 +293,7 @@ def advanced_restructuredtext(value,
 
         #print(">><<", docutils_settings, value, file=sys.stderr)
         parts = publish_parts(source=smart_str(value), writer_name="html4css1", settings_overrides=docutils_settings)
-        return mark_safe(force_unicode(parts["html_body"]))
+        return mark_safe(force_str(parts["html_body"]))
 
 
 def format_enriched_text(datamanager, content, initial_header_level=None, report_level=None, excluded_link=None,

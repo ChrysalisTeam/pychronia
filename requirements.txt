@@ -79,9 +79,6 @@ django-inline-ordering>=1.0.2
 jinja2==2.8
 git+https://github.com/pakal/jinja-macro-tags
 
-
-odict==1.5.1
-
 relstorage>=2.0.0b6
 
 # for relstorage mainly

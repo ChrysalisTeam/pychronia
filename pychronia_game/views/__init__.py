@@ -157,7 +157,7 @@ def bug_report_treatment(request):
     """
     from django.views import debug
     res = debug.technical_500_response(request, None, None, None)
-    print (res.content)
+    print(res.content)
     """
     dm = request.datamanager
     message = dedent("""

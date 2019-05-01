@@ -12,5 +12,5 @@ def google_analytics(request):
         'GOOGLE_ANALYTICS_PROPERTY_ID': ga_prop_id,
         'GOOGLE_ANALYTICS_DOMAIN': ga_domain,
     }
-    #print (">>>>>>>>google_analytics>>>>>>>", res, file=sys.stderr)
+    #print(">>>>>>>>google_analytics>>>>>>>", res, file=sys.stderr)
     return res
