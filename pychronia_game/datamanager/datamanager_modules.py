@@ -67,9 +67,9 @@ class GameMasterManual(BaseDataManager):
 
         full_content = self._get_gamemaster_manual_for_html(game_data["gamemaster_manual"])
 
-        if __debug__ and False:
-            with open("DEBUG_GAMEMASTER_RST.rst", "w") as f:
-                f.write(full_content.encode("ascii", "replace"))
+        #if __debug__ and False:
+        #    with open("DEBUG_GAMEMASTER_RST.rst", "w") as f:
+        #        f.write(full_content.encode("ascii", "replace"))
 
         utilities.check_is_restructuredtext(full_content,
                                             strict=strict)
@@ -1685,7 +1685,6 @@ class TextMessagingCore(BaseDataManager):
     @classmethod
     def _obfuscate_initial_id(cls, my_id):
         """Beware, only works with ascii strings atm..."""
-        my_id = my_id.encode("ascii")  # required by string.translate()
         return str(str.translate(my_id, cls.OBFUSCATOR_TRANSTABLE))
 
     def _load_initial_data(self, **kwargs):
@@ -1766,7 +1765,7 @@ class TextMessagingCore(BaseDataManager):
             previous_sent_at = None
             for msg in msg_list:
 
-                # let's keep these IDs simple for now: ASCII...
+                # let's keep these IDs simple for now: check full ASCII...
                 msg["id"].encode("ascii")
                 msg["group_id"].encode("ascii")
 

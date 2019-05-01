@@ -348,8 +348,7 @@ class TestUtilities(BaseGameTestCase):
             print(">> temp dir", my_dir)
 
             for filename, file_data in list(mydict.items()):
-                with open(os.path.join(my_dir, filename), "w") as fd:
-                    fd.write(file_data)
+                utilities.write_to_file(os.path.join(my_dir, filename), content=file_data)
 
             return my_dir
 

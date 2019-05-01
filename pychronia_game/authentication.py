@@ -70,7 +70,7 @@ def _lookup_enforced_session_or_none(request):
         login_data = request.REQUEST.get(ENFORCED_SESSION_TICKET_NAME)
         if login_data:
             try:
-                login_data = login_data.encode("ascii", "strict")
+                login_data = login_data.encode("ascii", "strict")  # should be hexadecimal
                 login_data = encryption.unicode_decrypt(login_data)  # decode using site's SECRET_KEY
             except (TypeError, ValueError, UnicodeError) as e:
                 logging.warning("Error when trying to decode enforced ticket: %r" % e)

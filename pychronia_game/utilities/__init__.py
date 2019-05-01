@@ -351,6 +351,12 @@ yaml.add_representer(collections.OrderedDict, dict_representer)
 yaml.add_constructor(_mapping_tag, dict_constructor)
 
 
+def write_to_file(filename, content):
+    """Write an Unicode string to a file in utf8 encoding."""
+    with open(filename, "w", encoding="utf8") as f:
+        f.write(content)
+
+
 def dump_data_tree_to_yaml(data_tree, convert=True, **kwargs):
     """
     BEWARE - if the end of a string is made of spaces, the double-quotes dump style is forced,
@@ -358,29 +364,31 @@ def dump_data_tree_to_yaml(data_tree, convert=True, **kwargs):
     
     Valid keywords for the method def dump(data, stream=None, Dumper=Dumper, **kwds) in python-yaml :
     
-    default_style : indicates the style of the scalar. Possible values are None, '', '\'', '"', '|', '>'.
-    
-    default_flow_style :  indicates if a collection is block or flow. The possible values are None, True, False.
-    
-    canonical : if True export tag type to the output file
-    
-    indent :  sets the preferred indentation
-    
-    width : set the preferred line width
-    
-    allow_unicode : allow unicode in output file
-    
-    line_break : specify the line break you need
-    
-    encoding : output encoding, defaults to utf-8
-    
-    explicit_start : if True, adds an explicit start using “—”
-    
-    explicit_end: if True, adds an explicit end using “—”
-    
-    version : version of the YAML parser, tuple (major, minor), supports only major version 1
-    
-    tags : I didn’t find any information about this parameter … and no time to test it ;-). Comments are welcome !
+        default_style : indicates the style of the scalar. Possible values are None, '', '\'', '"', '|', '>'.
+
+        default_flow_style :  indicates if a collection is block or flow. The possible values are None, True, False.
+
+        canonical : if True export tag type to the output file
+
+        indent :  sets the preferred indentation
+
+        width : set the preferred line width
+
+        allow_unicode : allow unicode in output file
+
+        line_break : specify the line break you need
+
+        encoding : output encoding, defaults to utf-8
+
+        explicit_start : if True, adds an explicit start using “—”
+
+        explicit_end: if True, adds an explicit end using “—”
+
+        version : version of the YAML parser, tuple (major, minor), supports only major version 1
+
+        tags : I didn’t find any information about this parameter … and no time to test it ;-). Comments are welcome !
+
+    Returns an unicode string.
     """
     if convert:
         data_tree = convert_object_tree(data_tree, zodb_to_python_types)
@@ -395,6 +403,7 @@ def dump_data_tree_to_yaml(data_tree, convert=True, **kwargs):
 
     string = yaml.dump(data_tree, **dump_args)
 
+    assert isinstance(string, str), string
     return string
 
 
@@ -444,6 +453,14 @@ def check_is_string(value, multiline=True, forbidden_chars=None, empty=False, co
         usage_assert(not any(x in value for x in forbidden_chars), comment)
     return True
 
+
+""" TODO : use this utility in datamanager checks!
+def check_is_ascii_string(value)
+    try:
+        value.encode("ascii")
+    except (TypeError, ValueError) as e:
+        raise UsageError(.......)
+"""
 
 def check_is_float(value):
     usage_assert(isinstance(value, (int, float)), value)  # integers are considered as floats too!!

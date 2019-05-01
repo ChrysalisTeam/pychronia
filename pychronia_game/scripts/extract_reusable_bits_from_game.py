@@ -8,7 +8,7 @@ import setup_pychronia_env
 
 import pychronia_game.models  # initializes everything
 from pychronia_game.datamanager.datamanager_administrator import UsageError, retrieve_game_instance
-from pychronia_game.utilities import dump_data_tree_to_yaml
+from pychronia_game import utilities
 
 
 def execute():
@@ -20,15 +20,14 @@ def execute():
     tpls = [dm.convert_msg_to_template(msg) for msg in msgs]
     #pprint.pprint(tpls)
 
-    data = dump_data_tree_to_yaml(tpls, default_style=">", width=100)
-    data = data.replace("\n-", "\n\n\n-")  # separate atomic templates
+    yaml_str = utilities.dump_data_tree_to_yaml(tpls, default_style=">", width=100)
+    yaml_str = yaml_str.replace("\n-", "\n\n\n-")  # separate atomic templates
 
-    filename = "%s_extracted_message_templates.yaml" % instance_id
-    with open(filename, "wb") as f:
-        f.write(data)
+    output_file = "%s_extracted_message_templates.yaml" % instance_id
+    utilities.write_to_file(output_file, content=yaml_str)
 
     #print(data)
-    print((">> Extract file %s successfully created" % filename))
+    print((">> Extract file %s successfully created" % output_file))
 
 
 if __name__ == "__main__":

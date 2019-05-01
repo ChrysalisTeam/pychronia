@@ -333,7 +333,7 @@ def backup_game_instance_data(game_instance_id, comment=None):
     if not game_root:
         raise AbnormalUsageError(_("Unexisting instance %r") % game_instance_id)
 
-    json_bytes_str = utilities.dump_data_tree_to_yaml(game_root["data"],
+    yaml_str = utilities.dump_data_tree_to_yaml(game_root["data"],
                                                       convert=True,  # should be output in UTF8
                                                       default_style="|")  # will output very long lines
 
@@ -342,5 +342,4 @@ def backup_game_instance_data(game_instance_id, comment=None):
     wanted_folder = _ensure_instance_backup_folder(game_instance_id)
     final_file_path = os.path.join(wanted_folder, basename)
 
-    with open(final_file_path, "wb") as f:
-        f.write(json_bytes_str)
+    utilities.write_to_file(final_file_path, content=yaml_str)
