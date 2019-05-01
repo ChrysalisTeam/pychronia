@@ -24,11 +24,11 @@ if __name__ == "__main__":
     arguments = [arg.lower() for arg in sys.argv]
 
     if any(help_key in arguments for help_key in ("help", "-h", "--help")):
-        print "Usage: python %s [reset_django|reset_zodb|pack_file|runserver]" % sys.argv[0]
-        print "- reset_zodb: reset ZODB databases (game data) to their initial state"
-        print "- reset_django: reset django databases (authentication sessions) to their initial state"
-        print "- pack_file: cleans and compresses ZODB file, in case it gets too heavy (test server must not be running)"
-        print "- runserver: run local django dev server, against persistent databases"
+        print("Usage: python %s [reset_django|reset_zodb|pack_file|runserver]" % sys.argv[0])
+        print("- reset_zodb: reset ZODB databases (game data) to their initial state")
+        print("- reset_django: reset django databases (authentication sessions) to their initial state")
+        print("- pack_file: cleans and compresses ZODB file, in case it gets too heavy (test server must not be running)")
+        print("- runserver: run local django dev server, against persistent databases")
         sys.exit(1)
 
     elif "reset_zodb" in arguments:
@@ -68,7 +68,7 @@ if __name__ == "__main__":
         assert utilities.config.ZODB_FILE
         DB = utilities.open_zodb_file(utilities.config.ZODB_FILE)  # only works if we use a local ZODB file
         DB.pack(days=1)
-        print "Successfully packed ZODB items older than 1 day in %s" % utilities.config.ZODB_FILE
+        print("Successfully packed ZODB items older than 1 day in %s" % utilities.config.ZODB_FILE)
 
     else:
         sys.argv[1:] = (

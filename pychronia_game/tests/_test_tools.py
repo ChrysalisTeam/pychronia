@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from __future__ import print_function
-from __future__ import unicode_literals
+
+
 
 import os, sys, pytest, unittest, traceback
 
@@ -71,14 +71,14 @@ def for_core_module(klass):
 def for_gameview(view):
     # TODO - track proper testing of ability module
     view = getattr(view, "klass", view)
-    assert view in GameViews.GAME_VIEWS_REGISTRY.values(), view
+    assert view in list(GameViews.GAME_VIEWS_REGISTRY.values()), view
     return lambda func: func
 
 
 def for_ability(view):
     # TODO - track proper testing of gameview module
     view = getattr(view, "klass", view)
-    assert view in SpecialAbilities.ABILITIES_REGISTRY.values(), view
+    assert view in list(SpecialAbilities.ABILITIES_REGISTRY.values()), view
     return lambda func: func
 
 
@@ -140,7 +140,7 @@ class RequestMock(RequestFactory):
 def raises_with_content(klass, string):
     with pytest.raises(klass) as exc:
         yield exc
-    assert string.lower() in unicode(exc.value).lower()
+    assert string.lower() in str(exc.value).lower()
 
 
 class AutoCheckingDM(object):
@@ -168,7 +168,7 @@ class AutoCheckingDM(object):
                     res = attr(*args, **kwargs)
                 except GameError:
                     raise
-                except Exception, e:
+                except Exception as e:
                     print("Abnormal exception seen in AutoCheckingDM:", repr(e), file=sys.stderr)
                     traceback.print_exc()
                     raise
@@ -267,7 +267,7 @@ class BaseGameTestCase(TestCase):  # one day, use pytest-django module to make i
                     "BASE_CHECK_DB_COHERENCE_PUBLIC_CALLED") == 1  # no bypassing because of wrong override
 
             self.dm.set_game_state(True)
-            self.dm.set_activated_game_views(self.dm.get_activable_views().keys())  # QUICK ACCESS FIXTURE
+            self.dm.set_activated_game_views(list(self.dm.get_activable_views().keys()))  # QUICK ACCESS FIXTURE
 
             self.dm.clear_all_event_stats()
 

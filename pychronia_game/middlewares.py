@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from __future__ import print_function
-from __future__ import unicode_literals
+
+
 
 from pychronia_game.common import *
 from django.http import Http404, HttpResponse
@@ -33,7 +33,7 @@ class ZodbTransactionMiddleware(object):
 
         if __debug__: request.start_time = time.time()
 
-        if view_kwargs.has_key("game_instance_id"):
+        if "game_instance_id" in view_kwargs:
             # TOFIX select the proper subtree of ZODB
             # Manage possible errors of wrong game_id !
             ##request.game_instance_id = view_kwargs["game_instance_id"]
@@ -46,9 +46,9 @@ class ZodbTransactionMiddleware(object):
                 request.datamanager = retrieve_game_instance(game_instance_id=game_instance_id,
                                                              request=request,
                                                              update_timestamp=update_timestamp)
-            except GameMaintenanceError, e:
+            except GameMaintenanceError as e:
                 # TODO - better handling of 503 code, with dedicated template #
-                return HttpResponse(content=unicode(e) + "<br/>" + _("Please come back later."),
+                return HttpResponse(content=str(e) + "<br/>" + _("Please come back later."),
                                     status=503)
             except UsageError:
                 raise Http404  # unexisting instance
@@ -92,7 +92,7 @@ class ZodbTransactionMiddleware(object):
                     #request.datamanager.check_database_coherence() # checking after each request, then
                     #logger.info("Pychronia debug mode: post-processing check_database_coherence() is over (might take a long time)")
                 request.datamanager.close()
-        except Exception, e:
+        except Exception as e:
             # exception should NEVER flow out of response processing middlewares
             logger.critical("Exception occurred in ZODB middleware process_response - %r" % e, exc_info=True)
 
@@ -117,7 +117,7 @@ class AuthenticationMiddleware(object):
                 "The game authentication middleware requires session middleware to be installed. Edit your MIDDLEWARE_CLASSES setting to insert 'django.contrib.sessions.middleware.SessionMiddleware'.")
 
         raw_url_game_username = None
-        if view_kwargs.has_key("game_username"):
+        if "game_username" in view_kwargs:
             raw_url_game_username = view_kwargs["game_username"]
             del view_kwargs["game_username"]  # don't interfere with final view
 
@@ -153,7 +153,7 @@ class PeriodicProcessingMiddleware(object):
         try:
             if datamanager.is_game_writable():  # important
                 datamanager.process_periodic_tasks()  # eg. to send pending emails
-        except Exception, e:
+        except Exception as e:
             try:
                 msg = "PeriodicProcessingMiddleware error : %r" % e
                 datamanager.logger.error(msg, exc_info=True)

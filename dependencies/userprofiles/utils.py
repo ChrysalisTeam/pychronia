@@ -44,7 +44,7 @@ def get_form_class(path):
     module, attr = path[:i], path[i + 1:]
     try:
         mod = import_module(module)
-    except ImportError, e:
+    except ImportError as e:
         raise ImproperlyConfigured(
             'Error loading module %s: "%s"' % (module, e))
     try:

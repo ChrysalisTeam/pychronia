@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from __future__ import print_function
-from __future__ import unicode_literals
+
+
 
 from BTrees.OOBTree import OOBTree
 
@@ -45,7 +45,7 @@ def _ensure_zodb_is_open():
                 try:
                     local_copy.close()  # do NOT target global var ZODB_INSTANCE
                     time.sleep(0.5)  # to help daemon threads stop cleanly, just in case
-                except Exception, e:
+                except Exception as e:
                     print("Problem when closing ZODB instance: %e" % e,
                           file=sys.stderr)  # logging might already have disappeared
 
@@ -69,7 +69,7 @@ def check_zodb_structure():
     Return True iff DB was already OK.
     """
     root = _get_zodb_connection().root()
-    if not root.has_key(GAME_INSTANCES_MOUNT_POINT):
+    if GAME_INSTANCES_MOUNT_POINT not in root:
         logging.warning("Uninitialized ZODB root found - initializing...")
         root[GAME_INSTANCES_MOUNT_POINT] = OOBTree()
         return False
@@ -145,7 +145,7 @@ def create_game_instance(game_instance_id,
 
         game_instances[game_instance_id] = game_root  # NOW only we link data to ZODB
 
-    except Exception, e:
+    except Exception as e:
         logging.critical("Impossible to initialize game instance %r..." % game_instance_id, exc_info=True)
         raise
 
@@ -173,7 +173,7 @@ def replace_existing_game_instance_data(game_instance_id, new_data):
 
 # no need for transaction management
 def game_instance_exists(game_instance_id):
-    res = _get_game_instances_mapping().has_key(game_instance_id)
+    res = game_instance_id in _get_game_instances_mapping()
     return res
 
 
@@ -290,7 +290,7 @@ def get_all_instances_metadata():
     """
     Returns a list of copies of metadata dicts.
     """
-    instances = _get_game_instances_mapping().itervalues()
+    instances = iter(_get_game_instances_mapping().values())
     res = sorted((inst["metadata"].copy() for inst in instances), key=lambda x: x["creation_time"],
                  reverse=True)  # metadata contains instance id too
     return res

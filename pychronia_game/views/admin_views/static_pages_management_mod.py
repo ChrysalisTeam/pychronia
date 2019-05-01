@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from __future__ import print_function
-from __future__ import unicode_literals
+
+
 
 from pychronia_game.datamanager.abstract_form import GAMEMASTER_HINTS_FIELD
 from pychronia_game.datamanager.datamanager_modules import StaticPages, Encyclopedia

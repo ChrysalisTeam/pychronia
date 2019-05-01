@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from __future__ import print_function
-from __future__ import unicode_literals
+
+
 
 from pychronia_game.forms import HouseReportForm
 from pychronia_game.common import *
@@ -56,7 +56,7 @@ class HouseReportsAbility(AbstractPartnershipAbility):
     @readonly_method
     def get_available_periods(self):
         reports = self.settings["reports"]
-        result = sorted((k, bool(reports[k]["surveillance_analysis"])) for k in reports.keys())
+        result = sorted((k, bool(reports[k]["surveillance_analysis"])) for k in list(reports.keys()))
         return result
 
 
@@ -107,9 +107,9 @@ class HouseReportsAbility(AbstractPartnershipAbility):
         house_reports = settings["reports"]
 
         # at least one period must have surveillance data available!
-        assert utilities.usage_assert(any(x["surveillance_analysis"] for x in house_reports.values()))
+        assert utilities.usage_assert(any(x["surveillance_analysis"] for x in list(house_reports.values())))
 
-        for (period, report_data) in house_reports.items():
+        for (period, report_data) in list(house_reports.items()):
             assert utilities.check_is_string(period)
             if report_data["gamemaster_hints"]:
                 assert utilities.check_is_string(report_data["gamemaster_hints"], multiline=True)

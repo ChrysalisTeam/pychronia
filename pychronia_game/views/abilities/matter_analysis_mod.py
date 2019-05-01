@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from __future__ import print_function
-from __future__ import unicode_literals
+
+
 
 from pychronia_game.common import *
 
@@ -47,9 +47,9 @@ class MatterAnalysisAbility(AbstractPartnershipAbility):
                                                     previous_form_data=previous_form_data,
                                                     propagate_errors=True)
             specific_message = None
-        except UninstantiableFormError, e:
+        except UninstantiableFormError as e:
             item_form = None
-            specific_message = unicode(e)
+            specific_message = str(e)
 
         return {
             'page_title': _("Deep Matter Analysis"),
@@ -113,9 +113,9 @@ class MatterAnalysisAbility(AbstractPartnershipAbility):
         settings = self.settings
 
         def reports_checker(reports):
-            utilities.assert_set_smaller_or_equal(reports.keys(),
-                                                  self.get_non_gem_items().keys())  # some items might have no analysis data
-            for body in reports.values():
+            utilities.assert_set_smaller_or_equal(list(reports.keys()),
+                                                  list(self.get_non_gem_items().keys()))  # some items might have no analysis data
+            for body in list(reports.values()):
                 utilities.check_is_restructuredtext(body, strict=strict)
             return True
 

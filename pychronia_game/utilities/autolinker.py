@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from __future__ import print_function
-from __future__ import unicode_literals
+
+
 from bs4 import BeautifulSoup, NavigableString, Tag
 import re, functools
 
@@ -33,7 +33,7 @@ def generate_links(html_snippet, regex, link_attr_generator):
         if attrs:
             tag = soup.new_tag("a", **attrs)
             tag.string = content
-            return unicode(tag)
+            return str(tag)
         else:
             return content
 
@@ -54,7 +54,7 @@ def generate_links(html_snippet, regex, link_attr_generator):
         children = tuple(element.contents)  # we freeze current children, as they'll be modified here
         for child in children:  # no enumerate() here, as the tree changes all the time
             if isinstance(child, NavigableString):
-                new_children = insert_links(unicode(child))
+                new_children = insert_links(str(child))
                 if new_children:
                     current_index = element.index(child)
                     child.extract()
@@ -66,7 +66,7 @@ def generate_links(html_snippet, regex, link_attr_generator):
                     recurse_elements(child)
 
     recurse_elements(soup)
-    return unicode(soup)
+    return str(soup)
 
 
 if __name__ == "__main__":

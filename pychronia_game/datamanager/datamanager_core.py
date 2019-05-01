@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from __future__ import print_function
-from __future__ import unicode_literals
+
+
 
 import weakref
 
@@ -154,14 +154,14 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
             yaml_fixture = config.GAME_INITIAL_DATA_PATH
 
         self.logger.info("Resetting game data for instance '%s' with fixture '%s'",
-                         self.game_instance_id, yaml_fixture if isinstance(yaml_fixture, basestring) else "<data-tree>")
+                         self.game_instance_id, yaml_fixture if isinstance(yaml_fixture, str) else "<data-tree>")
         #print "RESETTING DATABASE !"
 
         # ZODB reset - warning, we must replace content of dictionary "data",
         # not rebind the attribute "data", else we lose ZODB support
         self.data.clear()
 
-        if isinstance(yaml_fixture, (list, basestring)):
+        if isinstance(yaml_fixture, (list, str)):
             initial_data = utilities.load_yaml_fixture(yaml_fixture)
         else:
             assert isinstance(yaml_fixture, PersistentMapping), yaml_fixture  # a preloaded data tree was provided
@@ -176,7 +176,7 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
 
         # NOW only we normalize and check the object tree
         # normal python types are transformed to ZODB-persistent types
-        for key in self.data.keys():
+        for key in list(self.data.keys()):
             self.data[key] = utilities.convert_object_tree(self.data[key], utilities.python_to_zodb_types)
             utilities.check_object_tree(self.data[key], allowed_types=utilities.allowed_zodb_types, path=["game_data"])
 

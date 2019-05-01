@@ -60,11 +60,11 @@ def contact_djinns(request, template_name='specific_operations/contact_djinns.ht
     bots_properties = request.datamanager.get_bots_properties()
 
     if user.is_master:  # FIXME
-        available_bots = bots_properties.keys()
+        available_bots = list(bots_properties.keys())
         # team_gems = None
     else:
         domain = request.datamanager.get_character_properties()["domain"]
-        available_bots = [bot_name for bot_name in bots_properties.keys() if
+        available_bots = [bot_name for bot_name in list(bots_properties.keys()) if
                           request.datamanager.is_bot_accessible(bot_name, domain)]
         # team_gems = request.datamanager.get_team_gems_count(domain)
 
@@ -73,7 +73,7 @@ def contact_djinns(request, template_name='specific_operations/contact_djinns.ht
     else:
         djinn_form = None
 
-    all_bots = bots_properties.items()
+    all_bots = list(bots_properties.items())
     all_bots.sort(key=lambda t: t[1]["gems_required"])
 
     return render(request,

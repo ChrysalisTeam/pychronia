@@ -16,7 +16,7 @@ WARNING - ATM mutable types are not supported.
 
 """
 
-ATOMIC_TYPES = (basestring, long, int, float, bool, tuple, set, NoneType, datetime, timedelta)
+ATOMIC_TYPES = (str, int, int, float, bool, tuple, set, NoneType, datetime, timedelta)
 LOOKUP_TYPES = (dict, list)  # other are considered as instances, with editable attributes
 
 
@@ -30,7 +30,7 @@ def freeze_tree(tree):
         return tree
     except TypeError:  # unhashable type
         if isinstance(tree, collections.MutableMapping):  # for DICTS
-            return tuple(my_sorted((k, freeze_tree(v)) for (k, v) in tree.items()))  # keys always hashable
+            return tuple(my_sorted((k, freeze_tree(v)) for (k, v) in list(tree.items())))  # keys always hashable
         elif isinstance(tree, collections.Set):  # for SETS
             return tuple(my_sorted(v for v in tree))  # their elements are always hashable
         elif isinstance(tree, collections.MutableSequence):  # for LISTS
@@ -142,7 +142,7 @@ if __name__ == "__main__":
     a = dict(cat=True,
              dog=[22, 33],
              bird=None,
-             stuffs=TestClass(obj=u"hello"),
+             stuffs=TestClass(obj="hello"),
              missing=set((1, 2, 3)))
 
     b = dict(cat=True,
@@ -171,7 +171,7 @@ if __name__ == "__main__":
           (1, 2): False,
           "key": set(["yesh", "huu"])},
          None,
-         TestClass(kkk=1.23, ml=1233L),
+         TestClass(kkk=1.23, ml=1233),
          222,
          [111, 981], ]
 
@@ -190,15 +190,15 @@ if __name__ == "__main__":
     # we test freeze_tree()
 
     initial = dict(a=3,
-                   b=[[True, u"hi", [8.6]]],
+                   b=[[True, "hi", [8.6]]],
                    c=set([1, 2, datetime(2000, 10, 7)]),
                    d=TestClass(k=None, m=22)
                    )
     final = freeze_tree(initial)
 
     assert final == (('a', 3),
-                     ('b', ((u'hi', (8.6,), True),)),
+                     ('b', (('hi', (8.6,), True),)),
                      ('c', (1, 2, datetime(2000, 10, 7))),
                      ('d', TestClass(k=None, m=22)))
 
-    print ">> EVERYTHING OK <<"
+    print(">> EVERYTHING OK <<")

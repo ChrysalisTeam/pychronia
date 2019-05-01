@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from __future__ import print_function
-from __future__ import unicode_literals
+
+
 
 from pychronia_game.common import *
 from pychronia_game.datamanager.abstract_game_view import AbstractGameView, register_view
@@ -65,7 +65,7 @@ class StaticPageView(AbstractGameView):
         page_id = self.kwargs.get("page_id")
 
         if not page_id or page_id not in self.datamanager.static_pages:
-            print(">>>>", page_id, self.datamanager.static_pages.keys())
+            print(">>>>", page_id, list(self.datamanager.static_pages.keys()))
             raise Http404  # unexisting static page
 
         entry = self.datamanager.static_pages[page_id]
@@ -124,7 +124,7 @@ class EncyclopediaView(AbstractGameView):
 
         def _conditionally_update_known_article_ids(ids_list):
             assert isinstance(ids_list, list)
-            assert all(isinstance(i, basestring) for i in ids_list)
+            assert all(isinstance(i, str) for i in ids_list)
             if dm.is_character() and dm.is_game_writable():  # not for master or anonymous!!
                 dm.update_character_known_article_ids(article_ids=ids_list)
                 #print ("Really IN _conditionally_update_known_article_ids", ids_list, self.datamanager.user.username)
@@ -148,7 +148,7 @@ class EncyclopediaView(AbstractGameView):
                     dm.user.add_error(
                         _("Sorry, no matching encyclopedia article has been found for '%s'") % search_string)
                 else:
-                    assert not isinstance(search_results_ids, basestring)  # already a list
+                    assert not isinstance(search_results_ids, str)  # already a list
                     _conditionally_update_known_article_ids(search_results_ids)
                     if len(search_results_ids) == 1:
                         dm.user.add_message(_("Your search has led to a single article, below."))
@@ -307,11 +307,11 @@ def personal_folder(request, template_name='information/personal_folder.html'):
         personal_files = request.datamanager.get_personal_files(
             absolute_urls=True)
 
-    except EnvironmentError, e:
+    except EnvironmentError as e:
         personal_files = []
         user.add_error(_("Your personal folder is unreachable."))
 
-    files_to_display = zip([os.path.basename(file) for file in personal_files], personal_files)
+    files_to_display = list(zip([os.path.basename(file) for file in personal_files], personal_files))
 
     if not files_to_display:
         user.add_message = _("You currently don't have any files in your personal folder.")
@@ -378,7 +378,7 @@ def encrypted_folder(request, folder, entry_template_name="information/encrypted
 
     else:  # necessarily, we've managed to decrypt the folder
         assert files is not None
-        files_to_display = zip([os.path.basename(myfile) for myfile in files], files)
+        files_to_display = list(zip([os.path.basename(myfile) for myfile in files], files))
 
         if not files_to_display:
             user.add_message = _("No files were found in the folder.")

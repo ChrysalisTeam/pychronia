@@ -50,7 +50,7 @@ class ViewTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertFormError(response, 'form', 'new_email',
-            [u'This email address is already in use. Please supply a different email address.'])
+            ['This email address is already in use. Please supply a different email address.'])
 
     def test_email_change_approve(self):
         verification = EmailVerification.objects.create(

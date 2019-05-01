@@ -20,7 +20,7 @@ def ___disabled_broken_ai_test():
     kernel = aimllib.Kernel()
     kernel.bootstrap(brainFile=kernelfile, learnFiles=aimlfiles)
     kernel.saveBrain(BRAIN_FILE)
-    print ">>>>>>> dumped brain !"
+    print(">>>>>>> dumped brain !")
 
     aimlfiles += glob.glob(os.path.join(DIRECTORY, "djinn_specific_aiml", "*.aiml"))
 
@@ -33,13 +33,13 @@ def ___disabled_broken_ai_test():
 
     kernel.bootstrap(brainFile=kernelfile, learnFiles=aimlfiles)
 
-    print "\n"
+    print("\n")
 
-    print "*** Welcome to the shrine of the Oracles, young zealot ! ***"
+    print("*** Welcome to the shrine of the Oracles, young zealot ! ***")
 
-    print "\n"
+    print("\n")
 
     while True:
-        q = raw_input("> ")
+        q = input("> ")
         time.sleep(float(random.randint(1, 3)) / 3)
-        print kernel.respond(q)
+        print(kernel.respond(q))

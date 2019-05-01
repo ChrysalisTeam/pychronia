@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from __future__ import print_function
-from __future__ import unicode_literals
+
+
 
 from django import forms
 import json
@@ -40,7 +40,7 @@ def autostrip_form_charfields(cls):
     
     Does NOT work with dynamically created fields though.
     """
-    fields = [(key, value) for key, value in cls.base_fields.iteritems() if isinstance(value, forms.CharField)]
+    fields = [(key, value) for key, value in cls.base_fields.items() if isinstance(value, forms.CharField)]
     for field_name, field_object in fields:
         def get_clean_func(original_clean):
             return lambda value: original_clean(value and value.strip())
@@ -63,7 +63,7 @@ class SimpleForm(forms.Form):
         cleaned_data = super(forms.Form, self).clean()
 
         for field in cleaned_data:
-            if isinstance(self.cleaned_data[field], basestring):
+            if isinstance(self.cleaned_data[field], str):
                 # note that Field "required=True" constraints might be already passed here, use autostrip() instead to prevent "space-only" inputs
                 cleaned_data[field] = cleaned_data[field].strip()
 
@@ -141,8 +141,8 @@ class GemPayementFormMixin(GemHandlingFormUtils):
         if datamanager.is_character():
 
             _gems = datamanager.get_character_properties()["gems"]
-            _gems_choices = zip(self._encode_gems(_gems),
-                                [self._gem_display(gem) for gem in _gems])  # gem is (value, origin) here
+            _gems_choices = list(zip(self._encode_gems(_gems),
+                                [self._gem_display(gem) for gem in _gems]))  # gem is (value, origin) here
             _gems_choices.sort(key=lambda x: x[1])  # sort by labels
 
             if payment_by_money:
@@ -179,7 +179,7 @@ class GemPayementFormMixin(GemHandlingFormUtils):
             try:
                 parameters["use_gems"] = self._decode_gems(parameters["gems_list"])
                 del parameters["gems_list"]
-            except (TypeError, ValueError), e:
+            except (TypeError, ValueError) as e:
                 self.logger.critical("Wrong data submitted - %r", parameters["gems_list"], exc_info=True)
                 raise AbnormalUsageError(_("Wrong data submitted"))
 

@@ -63,7 +63,7 @@ class RegistrationForm(forms.Form):
             username = self.cleaned_data['username']
             if User.objects.filter(username__iexact=username):
                 raise forms.ValidationError(
-                    _(u'A user with that username already exists.'))
+                    _('A user with that username already exists.'))
 
         return username
 
@@ -83,7 +83,7 @@ class RegistrationForm(forms.Form):
 
         if emails > 0:
             raise forms.ValidationError(
-                _(u'This email address is already in use. Please supply a different email address.'))
+                _('This email address is already in use. Please supply a different email address.'))
 
         return new_email
 

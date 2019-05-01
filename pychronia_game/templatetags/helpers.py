@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from __future__ import print_function
-from __future__ import unicode_literals
+
+
 
 import sys, re, logging, random, logging, json, hashlib
 from datetime import datetime
@@ -23,7 +23,7 @@ from django.core.cache import cache
 
 from cmsplugin_rst.utils import french_insecable
 
-import urllib
+import urllib.request, urllib.parse, urllib.error
 from textwrap import dedent
 from easy_thumbnails.templatetags.thumbnail import thumbnail_url
 from easy_thumbnails.files import get_thumbnailer
@@ -47,7 +47,7 @@ def _try_generating_thumbnail_url(rel_path, alias=None):
         try:
             thumb = get_game_thumbnailer(rel_path)[alias]  # we enforce the GAME_FILES storage here!
             return thumb.url
-        except Exception, e:
+        except Exception as e:
             logging.warning("Error generating game_file_img %s (alias=%s): %r", rel_path, alias, e)
             pass  # fallback to plain file
 
@@ -100,7 +100,7 @@ def game_file_url_tag(context, a="", b="", c="", d="", e="", f="", varname=None)
     """
     Here "varname" is the varuiable under which to store the result, if any.
     """
-    assert not isinstance(context, basestring)
+    assert not isinstance(context, str)
     rel_path = "".join((a, b, c, d, e, f))
     full_url = real_game_file_url(rel_path)
     if varname is not None:
@@ -179,10 +179,10 @@ def _generate_encyclopedia_links(html_snippet, datamanager, excluded_link=None):
         assert matched_str
         # detecting here WHICH keyword triggered the match would be possible, but expensive... let's postpone that
         link = game_view_url("pychronia_game.views.view_encyclopedia", datamanager=datamanager, neutral_link=True)
-        link += "?search=%s" % urllib.quote_plus(matched_str.encode("utf8"), safe=b"")
+        link += "?search=%s" % urllib.parse.quote_plus(matched_str.encode("utf8"), safe=b"")
         return dict(href=link)
 
-    regex = autolinker.join_regular_expressions_as_disjunction(keywords_mapping.keys(), as_words=True)
+    regex = autolinker.join_regular_expressions_as_disjunction(list(keywords_mapping.keys()), as_words=True)
     ##print (">>>>>>>> REGEX", repr(regex))
     if regex:
         html_res = autolinker.generate_links(html_snippet, regex=regex,
@@ -204,7 +204,7 @@ def _generate_messaging_links(html_snippet, datamanager):
     def email_link_attr_generator(match):
         matched_str = match.group(0)
         link = game_view_url("pychronia_game.views.compose_message", datamanager=datamanager, neutral_link=True)
-        link += "?recipient=%s" % urllib.quote_plus(matched_str.encode("utf8"), safe=b"")
+        link += "?recipient=%s" % urllib.parse.quote_plus(matched_str.encode("utf8"), safe=b"")
         return dict(href=link)
 
     regex = r"\b[-_\w.]+@\w+\.\w+\b"
@@ -269,9 +269,8 @@ def advanced_restructuredtext(value,
     from django import template
     from django.conf import settings
     from django.utils.encoding import smart_str, force_unicode
-    assert initial_header_level is None or isinstance(initial_header_level, (int, long))
-    assert report_level is None or isinstance(report_level, (
-    int, long))  ### NO, TOO RECENT or report_level in "info warning error severe none".split()
+    assert initial_header_level is None or isinstance(initial_header_level, int)
+    assert report_level is None or isinstance(report_level, int)  ### NO, TOO RECENT or report_level in "info warning error severe none".split()
     try:
         from docutils.core import publish_parts
     except ImportError:
@@ -304,7 +303,7 @@ def format_enriched_text(datamanager, content, initial_header_level=None, report
     
     *excluded_link* is the ENCYCLOPEDIA article_id in which we currently are, if any.
     """
-    assert isinstance(content, basestring)
+    assert isinstance(content, str)
 
     #print(">>>format_enriched_text", content[:30], "----", excluded_link)
 
@@ -336,7 +335,7 @@ def format_enriched_text(datamanager, content, initial_header_level=None, report
 
     # note that conf-enforced RST roles might be used too (|BR|, |NBSP|)...
     html = html.replace("[BR]", "<br />")  # line breaks, handy for vertical spacing
-    html = html.replace("[NBSP]", unichr(160))  # non-breaking spaces, handy for punctuation mainly
+    html = html.replace("[NBSP]", chr(160))  # non-breaking spaces, handy for punctuation mainly
 
     return html
 
@@ -500,7 +499,7 @@ def list_append_to_each(value, suffix):
     """
     Appends a suffix to each value of the strings list.
     """
-    return [unicode(val) + suffix for val in value]
+    return [str(val) + suffix for val in value]
 
 
 register.filter('list_append_to_each', list_append_to_each)

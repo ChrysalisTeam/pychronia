@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from __future__ import print_function
-from __future__ import unicode_literals
+
+
 
 from pychronia_game.common import *
 from pychronia_game.datamanager import register_view, AbstractGameView
@@ -42,7 +42,7 @@ class WebradioManagement(AbstractGameView):
         ## UNUSED ATM - LATER ON - all_new_message_notifications = self.datamanager.get_all_new_message_notification_sounds()
 
         # we filter out numerous "new emails" messages, which can be summoned in batch anyway
-        all_audio_messages = self.datamanager.get_all_available_audio_messages().items()
+        all_audio_messages = list(self.datamanager.get_all_available_audio_messages().items())
         special_audio_messages = all_audio_messages
         # NOPE - we don't use "new_message_notifications" atm - special_audio_messages = [msg for msg in all_audio_messages if msg[0] not in all_new_message_notifications]
 
@@ -64,24 +64,24 @@ class WebradioManagement(AbstractGameView):
         result = None
 
         # manual form management, since there are hell a lot of stuffs...
-        if POST.has_key("turn_radio_off"):
+        if "turn_radio_off" in POST:
             result = False
             with action_failure_handler(request, _("Web Radio has been turned OFF.")):
                 self.datamanager.set_radio_state(is_on=False)
                 result = True
-        elif POST.has_key("turn_radio_on"):
+        elif "turn_radio_on" in POST:
             result = False
             with action_failure_handler(request, _("Web Radio has been turned ON.")):
                 self.datamanager.set_radio_state(is_on=True)
                 result = True
-        elif POST.has_key("notify_new_messages"):
+        elif "notify_new_messages" in POST:
             result = False
             with action_failure_handler(request, _("Player notifications have been enqueued.")):
                 self.datamanager.add_radio_message("intro_audio_messages")
-                for (username, audio_id) in self.datamanager.get_pending_new_message_notifications().items():
+                for (username, audio_id) in list(self.datamanager.get_pending_new_message_notifications().items()):
                     self.datamanager.add_radio_message(audio_id)
                 result = True
-        elif POST.has_key("add_audio_message"):
+        elif "add_audio_message" in POST:
             result = False
             with action_failure_handler(request, _("Player notifications have been enqueued.")):
                 audio_id = request.POST["audio_message_added"]  # might raise KeyError

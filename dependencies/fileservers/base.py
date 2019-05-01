@@ -27,7 +27,7 @@ class ServerBase(object):
             filename = save_as
         else:
             filename = os.path.basename(path)
-        response['Content-Disposition'] = smart_str(u'attachment; filename=%s' % filename)
+        response['Content-Disposition'] = smart_str('attachment; filename=%s' % filename)
 
     def size_header(self, response, size=None, path=None, **kwargs):
         if size is None and path:

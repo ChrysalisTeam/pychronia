@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from __future__ import print_function
-from __future__ import unicode_literals
+
+
 
 from pychronia_game.common import *
 from pychronia_game.datamanager.abstract_game_view import AbstractGameView, register_view, readonly_method
@@ -62,7 +62,7 @@ def manage_databases(request, template_name='administration/database_management.
 def manage_characters(request, template_name='administration/character_management.html'):
     dm = request.datamanager
 
-    characters_items = sorted(dm.get_character_sets().items(), key=lambda x: (x[1]["is_npc"], x[0]))
+    characters_items = sorted(list(dm.get_character_sets().items()), key=lambda x: (x[1]["is_npc"], x[0]))
 
     character_forms = []
 
@@ -127,7 +127,7 @@ def manage_characters(request, template_name='administration/character_managemen
 
                     new_data = dm.get_character_properties(username=target_username)
 
-                    utilities.assert_sets_equal(previous_data.keys(), new_data.keys())
+                    utilities.assert_sets_equal(list(previous_data.keys()), list(new_data.keys()))
 
                     successful_character_updates_count += 1  # NOW ONLY, we know that forms are OK and that updates really worked
 
@@ -220,7 +220,7 @@ def manage_characters(request, template_name='administration/character_managemen
 def CHARACTERS_IDENTITIES(request):
     user = request.datamanager.user
 
-    char_sets = request.datamanager.get_character_sets().items()
+    char_sets = list(request.datamanager.get_character_sets().items())
 
     # real_life_email: flaviensoual@hotmail.com
 
@@ -254,7 +254,7 @@ def DATABASE_OPERATIONS(request):
         else:
             return HttpResponse(_("Error - no operation specified"))
 
-    except Exception, e:
+    except Exception as e:
         return Http404(_("Error : %r") % e)
 
 
@@ -265,7 +265,7 @@ def FAIL_TEST(request):
     try:
         send_mail("hello", "bye", "gamemaster@prolifik.net", ["chambon.pascal@gmail.com"])
         return HttpResponse(_("Mail sent"))
-    except Exception, e:
+    except Exception as e:
         raise
         # return HttpResponse(repr(e))
 

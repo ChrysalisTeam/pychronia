@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from __future__ import print_function
-from __future__ import unicode_literals
+
+
 
 from pychronia_game import utilities
 from pychronia_game.common import *
@@ -25,7 +25,7 @@ class DataTableManager(object):
     def _check_database_coherence(self, **kwargs):
         # NO NEED TO CALL UPPER CLASS !
         strict = kwargs.get("strict", False)
-        for key, value in self._table.items():
+        for key, value in list(self._table.items()):
             self._check_item_validity(key, value)
 
     def _preprocess_new_item(self, key, value):
@@ -98,7 +98,7 @@ class DataTableManager(object):
         
         If mutability is not None, then its value is enforced for selected items.
         """
-        items_gen = self._table.items()
+        items_gen = list(self._table.items())
         if mutability is not None:
             items_gen = ((k, v) for (k, v) in items_gen if bool(self._item_can_be_modified(k, v)) == bool(mutability))
 
@@ -117,7 +117,7 @@ class DataTableManager(object):
 
     @readonly_method
     def get_undeletable_identifiers(self):
-        items_gen = self._table.items()
+        items_gen = list(self._table.items())
         items_gen = (k for (k, v) in items_gen if not self._item_can_be_deleted(k, v))
         return set(items_gen)
 

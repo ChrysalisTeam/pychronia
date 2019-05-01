@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from __future__ import print_function
-from __future__ import unicode_literals
+
+
 
 from pychronia_game.common import *
 from pychronia_game.datamanager.abstract_ability import AbstractPartnershipAbility
@@ -41,9 +41,9 @@ class WorldScanAbility(AbstractPartnershipAbility):
                                                     previous_form_data=previous_form_data,
                                                     propagate_errors=True, )
             specific_message = None
-        except UninstantiableFormError, e:
+        except UninstantiableFormError as e:
             scan_form = None
-            specific_message = unicode(e)
+            specific_message = str(e)
 
         return {
             'page_title': _("World Scan"),
@@ -67,10 +67,10 @@ class WorldScanAbility(AbstractPartnershipAbility):
 
         settings = self.settings
 
-        all_artefact_items = self.get_non_gem_items().keys()
-        all_locations = self.get_locations().keys()
+        all_artefact_items = list(self.get_non_gem_items().keys())
+        all_locations = list(self.get_locations().keys())
 
-        for (name, scan_set) in settings["scanning_sets"].items():
+        for (name, scan_set) in list(settings["scanning_sets"].items()):
             utilities.check_is_slug(name)
             utilities.check_no_duplicates(scan_set)
             utilities.usage_assert(scan_set, comment=name)  # NOT EMPTY
@@ -78,10 +78,10 @@ class WorldScanAbility(AbstractPartnershipAbility):
                 assert location in all_locations, location
 
         # for now items can't be deleted, so we're OK
-        utilities.assert_set_smaller_or_equal(settings["item_locations"].keys(),
+        utilities.assert_set_smaller_or_equal(list(settings["item_locations"].keys()),
                                               all_artefact_items)  # some items might have no scanning locations
 
-        for (item_name, scan_set_details) in settings["item_locations"].items():
+        for (item_name, scan_set_details) in list(settings["item_locations"].items()):
             utilities.check_is_slug(item_name)  # in case it's NOT a valid item name, in unstrict mode...
 
             if strict:
@@ -90,7 +90,7 @@ class WorldScanAbility(AbstractPartnershipAbility):
             if scan_set_details["message"] is not None:
                 utilities.check_is_string(scan_set_details["message"])
             if scan_set_details["scanning_set"] is not None:
-                assert scan_set_details["scanning_set"] in settings["scanning_sets"].keys()
+                assert scan_set_details["scanning_set"] in list(settings["scanning_sets"].keys())
 
             # at least SOME data must be available
             assert scan_set_details["message"] or scan_set_details["scanning_set"], scan_set_details
@@ -98,7 +98,7 @@ class WorldScanAbility(AbstractPartnershipAbility):
         if strict:
             utilities.check_num_custom_settings(settings, 4)  # with dedicated email
 
-        assert not any(x for x in self.all_private_data.values()
+        assert not any(x for x in list(self.all_private_data.values())
                        if set(x.keys()) - set(["middlewares"]))
 
     @readonly_method
@@ -132,7 +132,7 @@ class WorldScanAbility(AbstractPartnershipAbility):
         """
         (message, locations) = scanning_result
         assert message or locations, scanning_result  # sanity check
-        assert not isinstance(locations, basestring), locations  # prevent dumb bug
+        assert not isinstance(locations, str), locations  # prevent dumb bug
 
         locations_found = ", ".join(locations) if locations else ""
 

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from __future__ import print_function
-from __future__ import unicode_literals
+
+
 
 import time
 from ZODB.POSException import ConflictError
@@ -96,7 +96,7 @@ def _call_with_transaction_watcher(datamanager, always_writable, func, args, kwa
             datamanager.check_no_pending_transaction()  # on real commit
         return res
 
-    except Exception, e:
+    except Exception as e:
         #logger.warning("ROLLING BACK", exc_info=True)
         datamanager.rollback(savepoint)
         if not savepoint:
@@ -190,6 +190,6 @@ def zodb_transaction(func, *args, **kwargs):
             else:
                 transaction.commit()
                 return res
-        except ConflictError, e:
+        except ConflictError as e:
             time.sleep(0.5)
     raise AbnormalUsageError(_("Couldn't solve 'concurrent access' conflict on the resource"))

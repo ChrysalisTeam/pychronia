@@ -31,7 +31,7 @@ class Select2TagsWidget(Select2Mixin,
         if '__prefix__' in id_:
             return ''
         else:
-            js = u'''
+            js = '''
                   window.django_select2.%s = function (selector, fieldID) {
                     var hashedSelector = "#" + selector;
                     $(hashedSelector).data("field_id", fieldID);
@@ -46,7 +46,7 @@ class Select2TagsField(HeavySelect2MultipleChoiceField):
     widget = Select2TagsWidget
 
     default_error_messages = {
-        'too_many': ugettext_lazy(u'Too many values sent.'),
+        'too_many': ugettext_lazy('Too many values sent.'),
     }
 
     def __init__(self, **kwargs):

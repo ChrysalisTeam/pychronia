@@ -19,32 +19,32 @@ class RegistrationFormTests(TestCase):
 
     def test_email_repeat_disabled(self):
         form = RegistrationForm()
-        self.assertFalse('email_repeat' in form.fields.keys())
+        self.assertFalse('email_repeat' in list(form.fields.keys()))
 
     @override_settings(USERPROFILES_DOUBLE_CHECK_EMAIL=True)
     def test_email_repeat_enabled(self):
         form = RegistrationForm()
-        self.assertTrue('email_repeat' in form.fields.keys())
+        self.assertTrue('email_repeat' in list(form.fields.keys()))
 
     def test_password_repeat_disabled(self):
         form = RegistrationForm()
-        self.assertFalse('password_repeat' in form.fields.keys())
+        self.assertFalse('password_repeat' in list(form.fields.keys()))
 
     @override_settings(USERPROFILES_DOUBLE_CHECK_PASSWORD=True)
     def test_password_repeat_enabled(self):
         form = RegistrationForm()
-        self.assertTrue('password_repeat' in form.fields.keys())
+        self.assertTrue('password_repeat' in list(form.fields.keys()))
 
     def test_fullname_disabled(self):
         form = RegistrationForm()
-        self.assertFalse('first_name' in form.fields.keys())
-        self.assertFalse('last_name' in form.fields.keys())
+        self.assertFalse('first_name' in list(form.fields.keys()))
+        self.assertFalse('last_name' in list(form.fields.keys()))
 
     @override_settings(USERPROFILES_REGISTRATION_FULLNAME=True)
     def test_fullname_enabled(self):
         form = RegistrationForm()
-        self.assertTrue('first_name' in form.fields.keys())
-        self.assertTrue('last_name' in form.fields.keys())
+        self.assertTrue('first_name' in list(form.fields.keys()))
+        self.assertTrue('last_name' in list(form.fields.keys()))
 
     def test_clean_username_email_only_disabled(self):
         form = RegistrationForm({

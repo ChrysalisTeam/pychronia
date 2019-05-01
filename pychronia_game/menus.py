@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from __future__ import print_function
-from __future__ import unicode_literals
+
+
 
 from pychronia_game.common import *
 
@@ -10,7 +10,7 @@ from pychronia_game import views
 class MenuEntry:
     def __init__(self, request, title=None, view=None, submenus=None,
                  view_kwargs=None, forced_visibility=None, title_suffix=None):
-        assert isinstance(title, unicode) or view, (title, view)
+        assert isinstance(title, str) or view, (title, view)
         assert view or submenus
         assert view or not view_kwargs
         assert forced_visibility is None or isinstance(forced_visibility, bool)
@@ -54,22 +54,22 @@ def _generate_web_menu(request, menu_entry_generator):
 
     if user.is_authenticated and (not processed_view or processed_view.NAME != views.standard_conversations.NAME):
         ##unread_msgs_count = datamanager.get_unread_messages_count()
-        standard_conversations_suffix = u""  ### TODO FIXME NBSP + u"(%d)" % unread_msgs_count
+        standard_conversations_suffix = ""  ### TODO FIXME NBSP + u"(%d)" % unread_msgs_count
     else:
-        standard_conversations_suffix = u""
+        standard_conversations_suffix = ""
 
     if user.is_authenticated and (not processed_view or processed_view.NAME != views.chatroom.NAME):
         # same for chatroom
         num_chatters = len(request.datamanager.get_chatting_users(exclude_current=True))
-        chatroom_suffix = u"(%d)" % num_chatters
+        chatroom_suffix = "(%d)" % num_chatters
     else:
-        chatroom_suffix = u""
+        chatroom_suffix = ""
 
-    full_menu_tree = menu_entry(_(u"Anthropia"), views.homepage,
+    full_menu_tree = menu_entry(_("Anthropia"), views.homepage,
                                 (
                                     # encoding note : \xa0 <-> &nbsp <-> alt+0160;
 
-                                    menu_entry(_(u"Auction"), views.homepage,
+                                    menu_entry(_("Auction"), views.homepage,
                                                (
                                                    ###menu_entry(_(u"Home"), views.homepage),
                                                    ###menu_entry(_(u"Opening"), views.opening),
@@ -83,7 +83,7 @@ def _generate_web_menu(request, menu_entry_generator):
                                                    # menu_entry(_(u"Radio Messages"), views.personal_radio_messages_listing), # TODO INTEGRATE TO INFO PAGES ???
                                                )),
 
-                                    menu_entry(_(u"Media"), views.view_encyclopedia,
+                                    menu_entry(_("Media"), views.view_encyclopedia,
                                                (
                                                    menu_entry(view=views.view_encyclopedia),
 
@@ -95,7 +95,7 @@ def _generate_web_menu(request, menu_entry_generator):
 
                                                )),
 
-                                    menu_entry(_(u"Messaging"), (
+                                    menu_entry(_("Messaging"), (
                                     views.all_dispatched_messages if user.is_master else views.standard_conversations),
                                                (
                                                    menu_entry(view=views.all_dispatched_messages),  # master only
@@ -109,7 +109,7 @@ def _generate_web_menu(request, menu_entry_generator):
                                                    menu_entry(view=views.compose_message),
                                                )),
 
-                                    menu_entry(_(u"Abilities"), views.ability_introduction,
+                                    menu_entry(_("Abilities"), views.ability_introduction,
                                                (
                                                    menu_entry(view=views.ability_introduction),
 
@@ -141,7 +141,7 @@ def _generate_web_menu(request, menu_entry_generator):
                                                    # menu_entry(_(u"World Scans"), view=views.scanning_management),
                                                )),
 
-                                    menu_entry(_(u"Admin"), views.game_events,
+                                    menu_entry(_("Admin"), views.game_events,
                                                (
                                                    menu_entry(view=views.game_events,
                                                               forced_visibility=(True if user.is_master else False)),
@@ -163,7 +163,7 @@ def _generate_web_menu(request, menu_entry_generator):
                                                ),
                                                forced_visibility=(True if user.is_master else False)),
 
-                                    menu_entry(_(u"Profile"), (
+                                    menu_entry(_("Profile"), (
                                     views.character_profile if user.is_character else views.personal_folder),
                                                (
                                                    menu_entry(view=views.character_profile,

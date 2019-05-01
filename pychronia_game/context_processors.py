@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from __future__ import print_function
-from __future__ import unicode_literals
+
+
 
 from pychronia_game.common import reverse, config, NBSP, _
 from pychronia_game import menus as menus_module, utilities

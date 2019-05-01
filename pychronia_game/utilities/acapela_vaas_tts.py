@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-from __future__ import print_function
-from __future__ import unicode_literals
 
-import requests, urlparse
+
+
+import requests, urllib.parse
 
 
 class AcapelaClient(object):
@@ -28,7 +28,7 @@ class AcapelaClient(object):
 
         final_params = self.connection_fields.copy()
 
-        for key, value in kwargs.items():
+        for key, value in list(kwargs.items()):
             if value is not None:
                 final_params[self.ARGUMENT_MAPPER[key]] = value
         del kwargs, key, value
@@ -48,7 +48,7 @@ class AcapelaClient(object):
             print("ACAPELA RESPONSE TEXT",
                   raw)  # ex: raw = "w=&snd_time=1892.75&get_count=0&snd_id=221335548_cba848475cb40&asw_pos_init_offset=0&asw_pos_text_offset=0&snd_url=http://vaas.acapela-group.com/MESSAGES/009086065076095086065065083/EVAL_4775608/sounds/221335548_cba848475cb40.mp3&snd_size=13279&res=OK&create_echo="
 
-            values = dict(urlparse.parse_qsl(raw, keep_blank_values=True, strict_parsing=__debug__))
+            values = dict(urllib.parse.parse_qsl(raw, keep_blank_values=True, strict_parsing=__debug__))
 
             if values["res"] != "OK":
                 klass = EnvironmentError  # at the moment, no need to distinguish errors...

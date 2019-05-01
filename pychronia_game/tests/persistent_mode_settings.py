@@ -31,7 +31,7 @@ def __DISABLED_TEST_GAME_INITIAL_FIXTURE_SCRIPT(dm):
     #return # TODO TEMPORARY
 
     # we activate ALL views
-    activable_views = dm.ACTIVABLE_VIEWS_REGISTRY.keys()
+    activable_views = list(dm.ACTIVABLE_VIEWS_REGISTRY.keys())
     dm.set_activated_game_views(activable_views)
 
     player_name, player_name_bis, player_name_ter, player_name_quater = dm.get_character_usernames()[0:4]
@@ -97,9 +97,9 @@ def __DISABLED_TEST_GAME_INITIAL_FIXTURE_SCRIPT(dm):
     # transient mode here, no need to commit
 
     # we distribute auction items
-    gem = dm.get_gem_items().keys()[0]
+    gem = list(dm.get_gem_items().keys())[0]
     dm.transfer_object_to_character(gem, player_name)
-    item = dm.get_non_gem_items().keys()[0]
+    item = list(dm.get_non_gem_items().keys())[0]
     dm.transfer_object_to_character(item, player_name)
 
     # NOPE no more auto-friendship here

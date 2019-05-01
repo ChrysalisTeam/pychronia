@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from __future__ import print_function
-from __future__ import unicode_literals
+
+
 
 from pychronia_game.common import *
 from pychronia_game.datamanager.datamanager_tools import readonly_method
@@ -35,8 +35,8 @@ class AbstractActionMiddleware(object):
         settings.setdefault("middlewares",
                             PersistentMapping())  # mapping action_name => dict of (middleware_name => data_dict) entries
 
-        for action_name, action_middlewares in settings["middlewares"].items():
-            for middleware_name, data_dict in action_middlewares.items():
+        for action_name, action_middlewares in list(settings["middlewares"].items()):
+            for middleware_name, data_dict in list(action_middlewares.items()):
                 data_dict.setdefault("is_active", True)  # all middlewares ON by default
 
     def _setup_private_action_middleware_data(self, private_data):
@@ -50,16 +50,16 @@ class AbstractActionMiddleware(object):
         These methods must call their parent.
         """
         settings = self.settings
-        for action_name, action_middlewares in settings["middlewares"].items():
-            for middleware_name, data_dict in action_middlewares.items():
+        for action_name, action_middlewares in list(settings["middlewares"].items()):
+            for middleware_name, data_dict in list(action_middlewares.items()):
                 utilities.check_is_bool(data_dict["is_active"])  # common to all middleware confs
 
         # we check below that no unknown middleware NAME is in settings or private data (could be a typo),
         # and that activated middlewares are well compatible with current ability (security measure)
-        all_middleware_data_packs = self.settings["middlewares"].values()
+        all_middleware_data_packs = list(self.settings["middlewares"].values())
 
-        for user_id, private_data in self.all_private_data.items():
-            for action_name, tree in private_data.get("middlewares", {}).items():
+        for user_id, private_data in list(self.all_private_data.items()):
+            for action_name, tree in list(private_data.get("middlewares", {}).items()):
                 all_middleware_data_packs.append(tree)  # maps middleware class names to their data
 
         known_middleware_names_set = set([klass.__name__ for klass in ACTION_MIDDLEWARES])
@@ -85,14 +85,14 @@ class AbstractActionMiddleware(object):
         """
         action_settings_dicts = {}
 
-        for action_name, tree in self.settings["middlewares"].items():
+        for action_name, tree in list(self.settings["middlewares"].items()):
             if middleware_class.__name__ in tree:
                 action_settings_dicts[action_name] = tree[middleware_class.__name__]
 
         #print("----action_settings_dicts AA --->", middleware_class.__name__, action_settings_dicts)
 
-        for user_id, private_data in self.all_private_data.items():
-            for action_name, tree in private_data.get("middlewares", {}).items():
+        for user_id, private_data in list(self.all_private_data.items()):
+            for action_name, tree in list(private_data.get("middlewares", {}).items()):
                 if middleware_class.__name__ in tree and "settings_overrides" in tree[middleware_class.__name__]:
                     user_specific_settings = {}  # NEW container, copy.copy() has bugs with persistent mappings and their ID
                     user_specific_settings.update(action_settings_dicts[
@@ -136,8 +136,8 @@ class AbstractActionMiddleware(object):
         """
         assert middleware_class
         data_dicts = []
-        for user_id, private_data in self.all_private_data.items():
-            for action_name, tree in private_data.get("middlewares", {}).items():
+        for user_id, private_data in list(self.all_private_data.items()):
+            for action_name, tree in list(private_data.get("middlewares", {}).items()):
                 if filter_by_action_name is not None and filter_by_action_name != action_name:
                     continue
                 if middleware_class.__name__ in tree:
@@ -225,7 +225,7 @@ class AbstractActionMiddleware(object):
         Useful to auto-add utility controls in forms, 
         like for money/gems payments.
         """
-        assert isinstance(action_name, basestring)
+        assert isinstance(action_name, str)
         return self._get_game_form_extra_params(action_name=action_name)
 
 
@@ -261,7 +261,7 @@ class CostlyActionMiddleware(AbstractActionMiddleware):
     def _check_action_middleware_data_sanity(self, strict=False):
         super(CostlyActionMiddleware, self)._check_action_middleware_data_sanity(strict=strict)
 
-        for _action_name_, settings in self.get_all_middleware_settings(CostlyActionMiddleware).items():
+        for _action_name_, settings in list(self.get_all_middleware_settings(CostlyActionMiddleware).items()):
 
             for setting in "money_price gems_price".split():
                 if settings[setting] is not None:  # None means "impossible to buy this way"
@@ -328,7 +328,7 @@ class CostlyActionMiddleware(AbstractActionMiddleware):
                     self.log_game_event(ugettext_noop(
                         "A payment of %(cost)s¤ was issued with gems %(gems_list)s for service '%(service)s'"),
                                         PersistentMapping(cost=gems_price, service=action_name,
-                                                          gems_list=unicode(use_gems)),
+                                                          gems_list=str(use_gems)),
                                         url=None,
                                         visible_by=[self.user.username])
 
@@ -422,7 +422,7 @@ class CountLimitedActionMiddleware(AbstractActionMiddleware):
         super(CountLimitedActionMiddleware, self)._check_action_middleware_data_sanity(strict=strict)
 
         settings = self.settings
-        for action_name, settings in self.get_all_middleware_settings(CountLimitedActionMiddleware).items():
+        for action_name, settings in list(self.get_all_middleware_settings(CountLimitedActionMiddleware).items()):
 
             assert settings["max_per_character"] is not None or settings[
                                                                     "max_per_game"] is not None  # else misconfiguration
@@ -541,7 +541,7 @@ class TimeLimitedActionMiddleware(AbstractActionMiddleware):
         settings = self.settings
         now = datetime.utcnow()
 
-        for action_name, settings in self.get_all_middleware_settings(TimeLimitedActionMiddleware).items():
+        for action_name, settings in list(self.get_all_middleware_settings(TimeLimitedActionMiddleware).items()):
 
             # all these settings must be > 0 !!
             utilities.check_is_positive_float(settings["waiting_period_mn"], non_zero=True)  # beware, RELATIVE delay

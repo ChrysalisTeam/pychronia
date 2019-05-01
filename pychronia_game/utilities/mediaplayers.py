@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from __future__ import print_function
-from __future__ import unicode_literals
+
+
 
 from pychronia_game.common import *
 
@@ -146,7 +146,7 @@ def generate_media_player(fileurl, image="", autostart=False, width=450, height=
     extension = os.path.splitext(fileurl)[1][
                 1:].lower()  # we remove the dot and lower-case the extension -> might result in an empty string
 
-    for extensions in _media_player_templates.keys():
+    for extensions in list(_media_player_templates.keys()):
         if extension in extensions:
             template = _media_player_templates[extensions]
             return template % options
@@ -206,7 +206,7 @@ def generate_image_viewer(imageurl, width=500, height=400, preset=None, align=""
             if preset:
                 try:
                     thumb = thumbnailer[preset]
-                except Exception, e:  # eg. if preset name is unexisting
+                except Exception as e:  # eg. if preset name is unexisting
                     logging.critical("generate_image_viewer preset selection failed for %s/%s", imageurl, preset,
                                      exc_info=True)
                     pass
@@ -218,7 +218,7 @@ def generate_image_viewer(imageurl, width=500, height=400, preset=None, align=""
                 }
                 thumb = thumbnailer.get_thumbnail(options)
             thumburl = thumb.url
-        except Exception, e:
+        except Exception as e:
             logging.critical("generate_image_viewer thumbnail generation failed %s - %s", imageurl, preset,
                              exc_info=True)
             thumburl = imageurl  # we give up thumbnailing...

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from __future__ import print_function
-from __future__ import unicode_literals
+
+
 
 from pychronia_game.common import *
 from pychronia_game.datamanager import AbstractGameForm, AbstractAbility, register_view, transaction_watcher
@@ -50,7 +50,7 @@ class GameViewActivationForm(AbstractGameForm):
         if not activable_views:
             raise UninstantiableFormError(_("No views to be activated"))
 
-        activable_views_choices = [(view_name, view_klass.TITLE) for (view_name, view_klass) in activable_views.items()]
+        activable_views_choices = [(view_name, view_klass.TITLE) for (view_name, view_klass) in list(activable_views.items())]
         activable_views_choices.sort()
         self.fields['activated_views'].choices = activable_views_choices
         self.fields['activated_views'].initial = datamanager.get_activated_game_views()

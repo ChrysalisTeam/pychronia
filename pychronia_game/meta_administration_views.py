@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from __future__ import print_function
-from __future__ import unicode_literals
+
+
 
 import sys
 import os
@@ -105,7 +105,7 @@ def create_instance(request):
             creator_email = cleaned_data["creator_email"] or None
 
             if datamanager_administrator.game_instance_exists(game_instance_id):
-                messages.add_message(request, messages.ERROR, _(u"Please choose another game identifier."))
+                messages.add_message(request, messages.ERROR, _("Please choose another game identifier."))
 
             else:
 
@@ -120,12 +120,12 @@ def create_instance(request):
                               from_email=settings.SERVER_EMAIL,
                               recipient_list=[creator_email],
                               fail_silently=False)
-                except (SMTPException, EnvironmentError), e:
+                except (SMTPException, EnvironmentError) as e:
                     logging.error("Couldn't send game instance activation email to %s", creator_email, exc_info=True)
-                    messages.add_message(request, messages.ERROR, _(u"Couldn't send activation email."))
+                    messages.add_message(request, messages.ERROR, _("Couldn't send activation email."))
                 else:
                     messages.add_message(request, messages.INFO, _(
-                        u"Game instance '%(game_instance_id)s' successfully created for '%(creator_login)s/%(creator_email)s'") %
+                        "Game instance '%(game_instance_id)s' successfully created for '%(creator_login)s/%(creator_email)s'") %
                                          SDICT(game_instance_id=game_instance_id, creator_login=creator_login,
                                                creator_email=creator_email))
                     game_creation_form = None
@@ -137,7 +137,7 @@ def create_instance(request):
                     information += " " + _("Debug Information: [%(activation_link)s].") % SDICT(
                         activation_link=activation_link)
         else:
-            messages.add_message(request, messages.ERROR, _(u"Invalid game creation form submitted."))
+            messages.add_message(request, messages.ERROR, _("Invalid game creation form submitted."))
 
     return render(request,
                   "meta_administration/create_instance.html",
@@ -188,7 +188,7 @@ def activate_instance(request):
             target_url=target_url)
         return HttpResponseRedirect(target_url, content=content)
 
-    except (ValueError, TypeError, LookupError, AttributeError, UnicodeError), e:
+    except (ValueError, TypeError, LookupError, AttributeError, UnicodeError) as e:
         logging.warning("Game activation key not recognized : %s", token, exc_info=True)
         return HttpResponseForbidden(_("Activation key not recognized"))
 
@@ -214,26 +214,26 @@ def manage_instances(request):
                                                                    creator_email=creator_email,
                                                                    skip_randomizations=False)
                     messages.add_message(request, messages.INFO, _(
-                        u"Game instance '%(game_instance_id)s' successfully created for '%(creator_login)s/%(creator_email)s'") %
+                        "Game instance '%(game_instance_id)s' successfully created for '%(creator_login)s/%(creator_email)s'") %
                                          SDICT(game_instance_id=game_instance_id, creator_login=creator_login,
                                                creator_email=creator_email))
                     game_creation_form = None
                 else:
-                    messages.add_message(request, messages.ERROR, _(u"Invalid game creation form submitted."))
+                    messages.add_message(request, messages.ERROR, _("Invalid game creation form submitted."))
             elif request.POST.get("lock_instance"):
                 game_instance_id = request.POST["lock_instance"]
                 maintenance_until = datetime.utcnow() + timedelta(minutes=GAME_INSTANCE_MAINTENANCE_LOCKING_DELAY_MN)
                 datamanager_administrator.change_game_instance_status(game_instance_id=game_instance_id,
                                                                       maintenance_until=maintenance_until)
                 messages.add_message(request, messages.INFO,
-                                     _(u"Game instance '%(game_instance_id)s' successfully locked") % SDICT(
+                                     _("Game instance '%(game_instance_id)s' successfully locked") % SDICT(
                                          game_instance_id=game_instance_id))
             elif request.POST.get("unlock_instance"):
                 game_instance_id = request.POST["unlock_instance"]
                 datamanager_administrator.change_game_instance_status(game_instance_id=game_instance_id,
                                                                       maintenance_until=None)  # removes maintenance
                 messages.add_message(request, messages.INFO,
-                                     _(u"Game instance '%(game_instance_id)s' successfully unlocked") % SDICT(
+                                     _("Game instance '%(game_instance_id)s' successfully unlocked") % SDICT(
                                          game_instance_id=game_instance_id))
             elif request.POST.get("change_instance_status"):
                 game_instance_id = request.POST["change_instance_status"]
@@ -241,13 +241,13 @@ def manage_instances(request):
                 datamanager_administrator.change_game_instance_status(game_instance_id=game_instance_id,
                                                                       new_status=new_status)  # change status
                 messages.add_message(request, messages.INFO, _(
-                    u"Game instance '%(game_instance_id)s' status changed to '%(new_status)s'") % SDICT(
+                    "Game instance '%(game_instance_id)s' status changed to '%(new_status)s'") % SDICT(
                     game_instance_id=game_instance_id, new_status=new_status))
             elif request.POST.get("delete_game_instance"):
                 game_instance_id = request.POST["delete_game_instance"]
                 datamanager_administrator.delete_game_instance(game_instance_id=game_instance_id)
                 messages.add_message(request, messages.INFO,
-                                     _(u"Game instance '%(game_instance_id)s' was deleted") % SDICT(
+                                     _("Game instance '%(game_instance_id)s' was deleted") % SDICT(
                                          game_instance_id=game_instance_id))
             elif request.POST.get("backup_game_instance"):
                 game_instance_id = request.POST["backup_game_instance"]
@@ -255,9 +255,9 @@ def manage_instances(request):
                 datamanager_administrator.backup_game_instance_data(game_instance_id=game_instance_id,
                                                                     comment=backup_comment)
                 messages.add_message(request, messages.INFO, _(
-                    u"Game instance '%(game_instance_id)s' backup with comment '%(backup_comment)s' done") %
+                    "Game instance '%(game_instance_id)s' backup with comment '%(backup_comment)s' done") %
                                      SDICT(game_instance_id=game_instance_id,
-                                           backup_comment=(backup_comment or u"<empty>")))
+                                           backup_comment=(backup_comment or "<empty>")))
             elif request.POST.get("compute_enforced_session_ticket"):
                 game_instance_id = request.POST["game_instance_id"].strip()  # manually entered
                 login = request.POST["login"].strip()
@@ -265,14 +265,14 @@ def manage_instances(request):
                 authentication_token = authentication.compute_enforced_login_token(game_instance_id=game_instance_id,
                                                                                    login=login, is_observer=is_observer)
                 messages.add_message(request, messages.INFO, _(
-                    u"Auto-connection token for instance=%(game_instance_id)s, login=%(login)s and is_observer=%(is_observer)s is displayed below") %
+                    "Auto-connection token for instance=%(game_instance_id)s, login=%(login)s and is_observer=%(is_observer)s is displayed below") %
                                      SDICT(game_instance_id=game_instance_id, login=login, is_observer=is_observer))
                 session_token_display = urlencode({authentication.ENFORCED_SESSION_TICKET_NAME: authentication_token})
             else:
                 raise ValueError(_("Unknown admin action"))
 
     except Exception as e:
-        messages.add_message(request, messages.ERROR, _(u"Unexpected error: %s") % e)
+        messages.add_message(request, messages.ERROR, _("Unexpected error: %s") % e)
 
     instances_metadata = datamanager_administrator.get_all_instances_metadata()
 
@@ -317,12 +317,12 @@ def edit_instance_db(request, target_instance_id):
                 data_tree = dm.load_zope_database_from_string(yaml_input)  # checks data
             except Exception as e:
                 messages.add_message(request, messages.ERROR,
-                                     _(u"Data check error (%(exception)r), see details below.") % SDICT(exception=e))
+                                     _("Data check error (%(exception)r), see details below.") % SDICT(exception=e))
                 special_message = traceback.format_exc()
                 formatted_data = None  # we force refresh of data
             else:
                 datamanager_administrator.replace_existing_game_instance_data(target_instance_id, new_data=data_tree)
-                messages.add_message(request, messages.INFO, _(u"Game instance data was properly replaced."))
+                messages.add_message(request, messages.INFO, _("Game instance data was properly replaced."))
 
         if not formatted_data:  # even if success occurred
             if not special_message:
@@ -331,9 +331,9 @@ def edit_instance_db(request, target_instance_id):
                                                                   metadata_checker=datamanager_administrator.check_game_is_in_maintenance)
             formatted_data = dm.dump_zope_database(width=80)
 
-    except GameMaintenanceError, e:
+    except GameMaintenanceError as e:
         # formatted_data might remain as yaml_input
-        messages.add_message(request, messages.ERROR, unicode(e))
+        messages.add_message(request, messages.ERROR, str(e))
         editing_allowed = False
         special_message = _(
             "DB modification is now forbidden, please stash your potential modifications elsewhere and begin the process again.")

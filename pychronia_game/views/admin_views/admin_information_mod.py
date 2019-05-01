@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from __future__ import print_function
-from __future__ import unicode_literals
+
+
 
 from pychronia_game.datamanager.abstract_form import GAMEMASTER_HINTS_FIELD
 from pychronia_game.datamanager.datamanager_modules import StaticPages, Encyclopedia
@@ -29,7 +29,7 @@ class AdminInformation(AbstractGameView):
 
         # we sort these by view identifier, for now
         admin_summaries = self.datamanager.get_game_view_admin_summaries()
-        admin_summaries = sorted(admin_summaries.items(), key=lambda x: x[0])
+        admin_summaries = sorted(list(admin_summaries.items()), key=lambda x: x[0])
 
         return dict(global_parameters=global_parameters,
                     folders_info=sorted(folders_info.items()),

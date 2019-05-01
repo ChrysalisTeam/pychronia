@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from __future__ import print_function
-from __future__ import unicode_literals
+
+
 
 from pychronia_game.common import *
 from pychronia_game.datamanager import AbstractGameView, register_view, AbstractGameForm, transaction_watcher
@@ -57,7 +57,7 @@ def login(request, template_name='profile/login.html'):
         request.session.set_test_cookie()
         form = forms.AuthenticationForm()
 
-    assert isinstance(next_url, basestring)  # not NONE, else pb when displaying it!
+    assert isinstance(next_url, str)  # not NONE, else pb when displaying it!
     return render(request,
                   template_name,
                   {
@@ -146,7 +146,7 @@ class CharacterProfile(AbstractGameView):
                                                            previous_form_data=previous_form_data)
 
         user_gems = [x[0] for x in character_properties["gems"]]
-        user_artefacts = [value["title"] for (key, value) in self.datamanager.get_user_artefacts().items()]
+        user_artefacts = [value["title"] for (key, value) in list(self.datamanager.get_user_artefacts().items())]
 
         return {
             'page_title': _("User Profile"),
@@ -191,7 +191,7 @@ class FriendshipRequestForm(AbstractGameForm):
 
     def clean_other_username(self):
         data = self.cleaned_data['other_username']
-        assert not isinstance(data, basestring)
+        assert not isinstance(data, str)
         return data[0] if data else None
 
 
@@ -249,7 +249,7 @@ class FriendshipManagementView(AbstractGameView):
         friendship_statuses = self.datamanager.get_other_characters_friendship_statuses()
 
         friendship_actions = sorted([(other_username, self._relation_type_to_action(relation_type))
-                                     for (other_username, relation_type) in friendship_statuses.items()
+                                     for (other_username, relation_type) in list(friendship_statuses.items())
                                      if
                                      relation_type])  # list of pairs (other_username, relation_type), ONLY when a relation of some kind exists
 

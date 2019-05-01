@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from __future__ import print_function
-from __future__ import unicode_literals
+
+
 
 from ..urls import *  # including OUR HTTPXXX handlers
 from django.contrib.staticfiles.urls import urlpatterns as staticfiles_urlpatterns

@@ -28,7 +28,7 @@ def execute():
         f.write(data)
 
     #print(data)
-    print(">> Extract file %s successfully created" % filename)
+    print((">> Extract file %s successfully created" % filename))
 
 
 if __name__ == "__main__":

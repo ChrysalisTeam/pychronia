@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-from __future__ import print_function
-from __future__ import unicode_literals
 
-import urllib
+
+
+import urllib.request, urllib.parse, urllib.error
 from pprint import pprint
 
 from pychronia_game.common import *
@@ -158,7 +158,7 @@ class MessageComposeForm(AbstractGameForm):
 
             sender = Select2TagsField(label=ugettext_lazy("Sender"), required=True,
                                       initial=([sender] if sender else []))  # initial MUST be a 1-item list!
-            master_emails = datamanager.global_contacts.keys() + datamanager.get_character_emails(
+            master_emails = list(datamanager.global_contacts.keys()) + datamanager.get_character_emails(
                 is_npc=True)  # PLAYERS EMAILS are not included!
             sender.choice_tags = datamanager.sort_email_addresses_list(master_emails)
             assert sender.max_selection_size is not None
@@ -232,7 +232,7 @@ class MessageComposeForm(AbstractGameForm):
 
 def _check_message_display_context(ctx, msg):
     assert ctx["display_id"]
-    for k, v in ctx.items():
+    for k, v in list(ctx.items()):
         if "can_" in k and v:
             assert msg.get("id")  # neeeded for message controls
 
@@ -377,7 +377,7 @@ def messages_templates(request, template_name='messaging/messages.html'):
     if not selected_category or selected_category == NO_CATEGORY_PLACEHOLDER:
         enriched_templates = []  # security, because too many placeholders
     else:
-        templates = request.datamanager.get_messages_templates().items()  # PAIRS (template_id, template_dict)
+        templates = list(request.datamanager.get_messages_templates().items())  # PAIRS (template_id, template_dict)
         templates.sort(key=lambda msg: (msg[1]["order"], msg[0]))  # we sort by order and then template name
         enriched_templates = [
             (_determine_template_display_context(request.datamanager, template_id=tpl[0], template=tpl[1]), tpl[1])
@@ -394,8 +394,8 @@ def messages_templates(request, template_name='messaging/messages.html'):
 
 
 def _filter_messages(messages_list, filter_field, filter_text, as_conversations):
-    assert isinstance(filter_field, basestring), filter_field
-    assert isinstance(filter_text, basestring), filter_text
+    assert isinstance(filter_field, str), filter_field
+    assert isinstance(filter_text, str), filter_text
 
     filter_text = filter_text.strip().lower()  # case-insensitive search
 
@@ -405,7 +405,7 @@ def _filter_messages(messages_list, filter_field, filter_text, as_conversations)
             assert all(x[0] in msg for x in FILTERABLE_MSG_FIELDS), msg  # coherence
             field_value = msg[filter_field]
             # we normalize if it's a list, eg. "recipients_emails"
-            field_value = "|".join(field_value) if not isinstance(field_value, basestring) else field_value
+            field_value = "|".join(field_value) if not isinstance(field_value, str) else field_value
             if filter_text in field_value.lower():
                 res.append((ctx, msg))
         return res
@@ -660,7 +660,7 @@ def compose_message(request, template_name='messaging/compose.html'):
                 target_view = "pychronia_game.views.all_queued_messages"
 
         conversations_url = game_view_url(target_view, datamanager=request.datamanager)
-        conversations_url += '?' + urllib.urlencode(dict(message_sent="1"))
+        conversations_url += '?' + urllib.parse.urlencode(dict(message_sent="1"))
         return HttpResponseRedirect(redirect_to=conversations_url)
 
     user_contacts = request.datamanager.get_sorted_user_contacts()  # properly SORTED list

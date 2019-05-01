@@ -111,9 +111,9 @@ def flatten_function_signature(func):
 
     #defaults = old_function.__defaults__
     argcount = pos_arg_values[0]
-    assert isinstance(argcount, (int, long))
+    assert isinstance(argcount, int)
     flags = pos_arg_values[3]
-    assert isinstance(flags, (int, long))
+    assert isinstance(flags, int)
 
     if flags & inspect.CO_VARARGS:
         # positional arguments were activated
@@ -210,4 +210,4 @@ if __name__ == "__main__":
     assert func4(1) == "<SESSION>"
     assert func4(1, my=8) == dict(my=8)
 
-    print "All tests OK"
+    print("All tests OK")

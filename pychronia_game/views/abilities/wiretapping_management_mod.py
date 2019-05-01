@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from __future__ import print_function
-from __future__ import unicode_literals
+
+
 
 from pychronia_game.common import *
 from pychronia_game.datamanager import UninstantiableFormError, AbstractAbility, register_view, readonly_method, \
@@ -40,9 +40,9 @@ class WiretappingTargetsForm(AbstractGameForm):
     def clean(self):
         cleaned_data = super(WiretappingTargetsForm, self).clean()
 
-        for (key, value) in cleaned_data.items():
+        for (key, value) in list(cleaned_data.items()):
             if key.startswith("target_"):
-                assert not isinstance(value, basestring)  # we expect a container
+                assert not isinstance(value, str)  # we expect a container
                 value = value[0].strip().lower() if value else None
                 if value:
                     for real_username in self._usernames:
@@ -60,7 +60,7 @@ class WiretappingTargetsForm(AbstractGameForm):
         parameters = super(WiretappingTargetsForm, self).get_normalized_values()
 
         targets = set()
-        for (key, value) in parameters.items():
+        for (key, value) in list(parameters.items()):
             if key.startswith("target_") and value:
                 targets.add(value)  # no need to delete the "target_%d" field
 
@@ -150,7 +150,7 @@ class WiretappingAbility(AbstractAbility):
             'wiretapping_targets_form': targets_form,
             'slots_purchase_form': self._instantiate_game_form(new_action_name="purchase_wiretapping_slot"),
             'has_confidentiality_activated': self.get_confidentiality_protection_status(),
-            'broken_wiretapping_targets': self.determine_broken_wiretapping_data().keys(),
+            'broken_wiretapping_targets': list(self.determine_broken_wiretapping_data().keys()),
         }
 
     @transaction_watcher
@@ -216,7 +216,7 @@ class WiretappingAbility(AbstractAbility):
         )
         utilities.check_settings_dictionary_with_template(settings, _settings_reference, strict=strict)
 
-        for username, data in self.all_private_data.items():
+        for username, data in list(self.all_private_data.items()):
             assert len(self.get_wiretapping_targets(username=username)) <= data["max_wiretapping_targets"]
 
             '''

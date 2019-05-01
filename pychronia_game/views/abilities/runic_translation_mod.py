@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from __future__ import print_function
-from __future__ import unicode_literals
+
+
 
 from django import forms
 
@@ -99,7 +99,7 @@ class RunicTranslationAbility(AbstractPartnershipAbility):
         assert len(set(real_rune_tokens)) == len(
             real_rune_tokens), "No unicity of real rune tokens"  # rune phrases must be unique in the message, to allow proper translation
 
-        translator = PersistentMapping(zip(real_rune_tokens, translated_tokens))
+        translator = PersistentMapping(list(zip(real_rune_tokens, translated_tokens)))
         return translator
 
     @classmethod
@@ -122,7 +122,7 @@ class RunicTranslationAbility(AbstractPartnershipAbility):
         decoded_rune_string = cls._normalize_string(decoded_rune_string)
 
         keywords = None
-        for token in translator.keys():
+        for token in list(translator.keys()):
             """
             if not token:
                 print ">>>>>>>>", translator
@@ -147,7 +147,7 @@ class RunicTranslationAbility(AbstractPartnershipAbility):
 
         translated_tokens = []
         for token in parsed_decoded_rune:
-            if translator.has_key(token):
+            if token in translator:
                 translated_tokens.append(translator[token])
             else:
                 translated_tokens.append(my_random.choice(random_words))
@@ -169,7 +169,7 @@ class RunicTranslationAbility(AbstractPartnershipAbility):
             return None
 
         results = dict((utilities.string_similarity(decoding_attempt, translation_settings["decoding"]), item_name)
-                       for item_name, translation_settings in all_translation_settings.items())
+                       for item_name, translation_settings in list(all_translation_settings.items()))
 
         best_score = min(results.keys())
 
@@ -180,7 +180,7 @@ class RunicTranslationAbility(AbstractPartnershipAbility):
         assert item_name is None or item_name  # may be unknown
         assert rune_transcription
 
-        if not item_name or item_name not in self.get_ability_parameter("references").keys():
+        if not item_name or item_name not in list(self.get_ability_parameter("references").keys()):
             translator = {}  # we let random words translation deal with that
         else:
             translation_settings = self.get_ability_parameter("references")[item_name]
@@ -262,14 +262,14 @@ class RunicTranslationAbility(AbstractPartnershipAbility):
         if strict:
             utilities.check_num_custom_settings(settings, 4)  # with dedicated email
 
-        for (name, properties) in references.items():
+        for (name, properties) in list(references.items()):
             if strict:
                 utilities.check_num_custom_settings(properties, 2)
-            assert name in self.get_all_items().keys(), name
+            assert name in list(self.get_all_items().keys()), name
             utilities.check_is_string(properties["decoding"])
             utilities.check_is_string(properties["translation"])
             assert self._build_translation_dictionary(properties["decoding"],
                                                       properties["translation"])  # we ensure tokens are well matching
 
-        assert not any(x for x in self.all_private_data.values()
+        assert not any(x for x in list(self.all_private_data.values())
                        if set(x.keys()) - set(["middlewares"]))

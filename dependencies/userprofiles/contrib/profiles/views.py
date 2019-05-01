@@ -40,7 +40,7 @@ class ProfileChangeView(LoginRequiredMixin, FormView):
 
     def form_valid(self, form):
         form.save()
-        messages.success(self.request, _(u'Profile changed'))
+        messages.success(self.request, _('Profile changed'))
         return redirect(up_settings.PROFILE_CHANGE_DONE_URL)
 
 profile_change = ProfileChangeView.as_view()

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from __future__ import print_function
-from __future__ import unicode_literals
+
+
 
 import sys, os, math, random, traceback, hashlib, logging, types, base64, re
 import types, contextlib, collections, time, glob, copy, atexit, inspect
@@ -10,7 +10,7 @@ from contextlib import contextmanager, closing, nested
 from decorator import decorator
 from functools import partial
 from textwrap import dedent
-from urlparse import urlparse
+from urllib.parse import urlparse
 
 from odict import odict as OrderedDict
 from collections import Counter
@@ -137,12 +137,12 @@ def action_failure_handler(request, success_message=ugettext_lazy("Operation suc
     try:
         # nothing in __enter__()
         yield None
-    except UsageError, e:
+    except UsageError as e:
         #print (">YYYY", repr(e))
-        user.add_error(unicode(e))
+        user.add_error(str(e))
         if isinstance(e, AbnormalUsageError):
-            logger.critical(unicode(e), exc_info=True)
-    except Exception, e:
+            logger.critical(str(e), exc_info=True)
+    except Exception as e:
         #print (">OOOOOOO", repr(e))
         #import traceback
         #traceback.print_exc()
@@ -173,7 +173,7 @@ def exception_swallower():
 
     try:
         yield
-    except Exception, e:
+    except Exception as e:
 
         msg = _("Unexpected exception occurred in exception swallower context: %r !")
 
@@ -241,7 +241,7 @@ def checked_game_file_path(url):
     try:
         path = urlparse(url).path
         match_obj = re.match("%s(?P<hash>[^/]*)/(?P<path>.*)$" % _game_files_url_prefix, path)
-    except Exception, e:
+    except Exception as e:
         # FIXME, log error
         pass
 
@@ -259,7 +259,7 @@ def checked_game_file_path(url):
 def determine_asset_url(properties, absolute=True):
     if properties is None:
         file_base = properties  # let it be handled below
-    elif isinstance(properties, basestring):
+    elif isinstance(properties, str):
         file_base = properties
     elif properties.get("file"):
         file_base = properties["file"]

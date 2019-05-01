@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from __future__ import print_function
-from __future__ import unicode_literals
+
+
 
 from django import forms
 from django.utils.translation import ugettext_lazy as _
@@ -18,7 +18,7 @@ class RegistrationForm(DefaultRegistrationForm):
         antibot_check = self.cleaned_data['antibot_check'].strip().lower()
 
         if antibot_check != "14" and antibot_check != "fourteen":
-            raise forms.ValidationError(_(u'Improper answer to special question.'))
+            raise forms.ValidationError(_('Improper answer to special question.'))
 
         return antibot_check
 

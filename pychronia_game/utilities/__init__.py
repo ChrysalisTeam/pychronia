@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from __future__ import print_function
-from __future__ import unicode_literals
+
+
 
 ### NO import from pychronia_game.common, else circular import !! ###
 
@@ -77,14 +77,14 @@ def normalize(v):
 
 ## Python <-> ZODB types conversion and checking ##
 
-ATOMIC_PYTHON_TYPES = (types.NoneType, int, long, float, basestring, datetime, collections.Callable)
+ATOMIC_PYTHON_TYPES = (type(None), int, int, float, str, datetime, collections.Callable)
 
 python_to_zodb_types = {list: PersistentList,
                         dict: PersistentMapping,
                         str: lambda x: normalize(x),
-                        unicode: lambda x: normalize(x)}
+                        str: lambda x: normalize(x)}
 zodb_to_python_types = dict((value, key) if isinstance(value, type) else (key, value)  # NOT ALL are reversed
-                            for (key, value) in python_to_zodb_types.items())
+                            for (key, value) in list(python_to_zodb_types.items()))
 
 allowed_zodb_types = ATOMIC_PYTHON_TYPES + (tuple, PersistentMapping, PersistentList)
 allowed_python_types = ATOMIC_PYTHON_TYPES + (tuple, dict, list)
@@ -107,7 +107,7 @@ class Enum(set):
         self.update(iterable)
 
     def update(self, iterable):
-        if isinstance(iterable, basestring):
+        if isinstance(iterable, str):
             iterable = iterable.split()
         set.update(self, iterable)
 
@@ -175,7 +175,7 @@ def convert_object_tree(tree, type_mapping):
     Operations might occur IN PLACE.
     """
 
-    for (A, B) in type_mapping.items():
+    for (A, B) in list(type_mapping.items()):
         if isinstance(tree, A):
             tree = B(tree)
             break
@@ -186,7 +186,7 @@ def convert_object_tree(tree, type_mapping):
         for (index, item) in enumerate(tree):
             tree[index] = convert_object_tree(item, type_mapping)
     elif isinstance(tree, collections.MutableMapping):
-        for (key, value) in tree.items():
+        for (key, value) in list(tree.items()):
             tree[key] = convert_object_tree(value, type_mapping)
     elif isinstance(tree, collections.MutableSet):
         for value in tree:
@@ -195,7 +195,7 @@ def convert_object_tree(tree, type_mapping):
     elif isinstance(tree, tuple):
         tree = tuple(convert_object_tree(value, type_mapping) for value in tree)
     elif hasattr(tree, "__dict__"):
-        for (key, value) in tree.__dict__.items():
+        for (key, value) in list(tree.__dict__.items()):
             setattr(tree, key, convert_object_tree(value, type_mapping))
     else:
         raise ValueError("Can't handle value %r (type=%s) in convert_object_tree" % (tree, type(tree)))
@@ -212,7 +212,7 @@ def check_object_tree(tree, allowed_types, path):
         for (index, item) in enumerate(tree):
             check_object_tree(item, allowed_types, path + [index])
     elif isinstance(tree, collections.MutableMapping):
-        for (key, value) in tree.items():
+        for (key, value) in list(tree.items()):
             check_object_tree(value, allowed_types, path + [key])
     elif isinstance(tree, collections.MutableSet):
         for value in tree:
@@ -221,7 +221,7 @@ def check_object_tree(tree, allowed_types, path):
         for value in tree:
             check_object_tree(value, allowed_types, path + ["<tuple>"])
     elif hasattr(tree, "__dict__"):
-        for (key, value) in tree.__dict__.items():
+        for (key, value) in list(tree.__dict__.items()):
             check_object_tree(value, allowed_types, path + [key])
     else:
         raise ValueError("Can't check value %r (type=%s) in check_object_tree" % (tree, type(tree)))
@@ -245,7 +245,7 @@ def add_to_ordered_dict(odict, idx, name, value):
     """
     returns the altered ordered dict.
     """
-    data = odict.items()
+    data = list(odict.items())
     data.insert(idx, (name, value))
     return OrderedDict(data)
 
@@ -264,7 +264,7 @@ def string_similarity(first, second):
         distance_matrix[i][0] = i
     for j in range(second_length):
         distance_matrix[0][j] = j
-    for i in xrange(1, first_length):
+    for i in range(1, first_length):
         for j in range(1, second_length):
             deletion = distance_matrix[i - 1][j] + 1
             insertion = distance_matrix[i][j - 1] + 1
@@ -315,32 +315,32 @@ def adapt_parameters_to_func(all_parameters, func):
     if keywords is not None:
         relevant_args = all_parameters  # exceeding args will be handled properly
     else:
-        relevant_args = dict((key, value) for (key, value) in all_parameters.items() if key in args)
+        relevant_args = dict((key, value) for (key, value) in list(all_parameters.items()) if key in args)
 
     try:
         #print("#<<<<<<<", func, relevant_args)
         inspect.getcallargs(func, **relevant_args)
-    except (TypeError, ValueError), e:
+    except (TypeError, ValueError) as e:
         raise  # signature problem, probably
 
     return relevant_args
 
 
 def load_multipart_rst(val):
-    if val is None or isinstance(val, basestring):
+    if val is None or isinstance(val, str):
         return val
     assert isinstance(val, (list, tuple))
-    return u"\n\n".join(val)  # we assume a sequence of strings dedicated to restructuredtext format!
+    return "\n\n".join(val)  # we assume a sequence of strings dedicated to restructuredtext format!
 
 
 # IMPORTANT - globally registered encoder for unicode strings and OrderedDict #
-yaml.add_representer(unicode, lambda dumper, value: dumper.represent_scalar(u'tag:yaml.org,2002:str', value))
+yaml.add_representer(str, lambda dumper, value: dumper.represent_scalar('tag:yaml.org,2002:str', value))
 
 _mapping_tag = yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG
 
 
 def dict_representer(dumper, data):
-    return dumper.represent_dict(data.iteritems())
+    return dumper.represent_dict(iter(data.items()))
 
 
 def dict_constructor(loader, node):
@@ -417,13 +417,13 @@ def check_no_duplicates(value):
 
 
 def check_is_range_or_num(value):
-    if isinstance(value, (int, long, float)):
+    if isinstance(value, (int, float)):
         pass  # nothing to check
     else:
         usage_assert(isinstance(value, (tuple, PersistentList)), value)
         usage_assert(len(value) == 2, value)
-        usage_assert(isinstance(value[0], (int, long, float)), value)
-        usage_assert(isinstance(value[1], (int, long, float)), value)
+        usage_assert(isinstance(value[0], (int, float)), value)
+        usage_assert(isinstance(value[1], (int, float)), value)
         usage_assert(value[0] <= value[1], value)
     return True
 
@@ -435,7 +435,7 @@ def check_is_lazy_translation(value):
 
 
 def check_is_string(value, multiline=True, forbidden_chars=None, empty=False, comment=None):
-    usage_assert(isinstance(value, basestring), value or comment)
+    usage_assert(isinstance(value, str), value or comment)
     if not empty:
         usage_assert(value.strip(), comment)
     if not multiline:
@@ -446,12 +446,12 @@ def check_is_string(value, multiline=True, forbidden_chars=None, empty=False, co
 
 
 def check_is_float(value):
-    usage_assert(isinstance(value, (int, long, float)), value)  # integers are considered as floats too!!
+    usage_assert(isinstance(value, (int, float)), value)  # integers are considered as floats too!!
     return True
 
 
 def check_is_int(value):
-    usage_assert(isinstance(value, (int, long)), value)
+    usage_assert(isinstance(value, int), value)
     return True
 
 
@@ -467,7 +467,7 @@ def check_is_email(value):
 
 
 def check_is_slug(value):
-    usage_assert(isinstance(value, basestring) and value, repr(value))
+    usage_assert(isinstance(value, str) and value, repr(value))
     usage_assert(" " not in value, repr(value))
     usage_assert("\n" not in value, repr(value))
     return True
@@ -499,7 +499,7 @@ def check_is_dict(value):
 
 
 def check_has_keys(value, keys, strict=False):
-    actual_keys = value.keys()
+    actual_keys = list(value.keys())
     if strict:
         usage_assert(len(actual_keys) == len(keys))
     for key in keys:
@@ -507,7 +507,7 @@ def check_has_keys(value, keys, strict=False):
 
 
 def check_num_keys(value, num):
-    usage_assert(len(value.keys()) == num, (value, num))
+    usage_assert(len(list(value.keys())) == num, (value, num))
     return True
 
 
@@ -534,14 +534,14 @@ def check_is_positive_int(value, non_zero=True):
 
 
 def check_is_django_template(value):
-    assert isinstance(value, basestring)
+    assert isinstance(value, str)
     assert render_template_string(value, ctx={}).strip()
     return True
 
 
 def check_is_restructuredtext(value, strict):
     from pychronia_game.templatetags.helpers import advanced_restructuredtext
-    assert isinstance(value, basestring)  # NOT A LIST
+    assert isinstance(value, str)  # NOT A LIST
     #print("LOADING RST...", repr(value[0:70]))
 
     regex = r"""\[\s*(GAME_FILE_URL|GAME_THUMBNAIL_URL).+?\s*]"""
@@ -684,7 +684,7 @@ def assert_set_smaller_or_equal(set1, set2):
 
 
 def validate_value(value, validator):
-    if issubclass(type(validator), types.TypeType) or isinstance(validator, (list, tuple)):  # should be a list of types
+    if issubclass(type(validator), type) or isinstance(validator, (list, tuple)):  # should be a list of types
         usage_assert(isinstance(value, validator), locals())
 
     elif isinstance(validator, collections.Callable):
@@ -699,12 +699,12 @@ def check_dictionary_with_template(my_dict, template, strict=False):
     # checks that the keys and value types of a dictionary matches that of a template
     #print("==> we check_dictionary_with_template", my_dict, template)
     if strict:
-        assert_sets_equal(my_dict.keys(), template.keys())
+        assert_sets_equal(list(my_dict.keys()), list(template.keys()))
     else:
         usage_assert(set(template.keys()) <= set(my_dict.keys()),
                      comment=(set(template.keys()) - set(my_dict.keys()), my_dict))
 
-    for key in template.keys():
+    for key in list(template.keys()):
         #print("WE VALIDATE MORE PRECISELY", key, my_dict[key], template[key])
         validate_value(my_dict[key], template[key])
 
@@ -726,7 +726,7 @@ def recursive_dict_sum(d1, d2, appendable_fields):
     if not isinstance(d1, dict) or not isinstance(d2, dict):
         raise ValueError([d1, d2])
 
-    all_keys = d1.keys() + d2.keys()
+    all_keys = list(d1.keys()) + list(d2.keys())
     #print("---->", repr(all_keys)[0:30])
     return dict((k, ((d1[k] if k in d1 else d2[k])
                      if k not in d1 or k not in d2
@@ -762,7 +762,7 @@ def load_yaml_fixture(yaml_fixture):
     Each file must only contain a single yaml document (which must be a mapping).
     """
 
-    if isinstance(yaml_fixture, basestring):
+    if isinstance(yaml_fixture, str):
         yaml_entries =  [yaml_fixture]
     else:
         assert isinstance(yaml_fixture, list)
@@ -865,7 +865,7 @@ class TechnicalEventsMixin(object):
         Records the sending of event *event_name*.
         """
         calling_frame = traceback.extract_stack(limit=2)[0]  # we capture the frame which called notify_event()
-        if not self._event_registry.has_key(event_name):
+        if event_name not in self._event_registry:
             self._event_registry[event_name] = (calling_frame, 1)
         else:
             (old_calling_frame, cur_count) = self._event_registry[event_name]
@@ -879,7 +879,7 @@ class TechnicalEventsMixin(object):
         Returns the number of times the event *event_name* has been sent since the last
         clearing of its statistics.
         """
-        if not self._event_registry.has_key(event_name):
+        if event_name not in self._event_registry:
             return 0
         else:
             return self._event_registry[event_name][1]

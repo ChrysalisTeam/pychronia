@@ -44,12 +44,12 @@ class EmailChangeApproveView(LoginRequiredMixin, RedirectView):
             verification.is_approved = True
             verification.save()
 
-            messages.success(self.request, _(u'E-mail address changed to %(email)s' % {
+            messages.success(self.request, _('E-mail address changed to %(email)s' % {
                 'email': verification.new_email}))
 
         except EmailVerification.DoesNotExist:
             messages.error(self.request,
-                _(u'Unable to change e-mail address. Confirmation link is invalid.'))
+                _('Unable to change e-mail address. Confirmation link is invalid.'))
 
         return reverse(up_settings.EMAIL_VERIFICATION_DONE_URL)
 

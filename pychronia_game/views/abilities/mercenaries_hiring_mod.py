@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from __future__ import print_function
-from __future__ import unicode_literals
+
+
 
 import json
 from django import forms
@@ -17,9 +17,9 @@ class AgentsHiringForm(AbstractGameForm):
         super(AgentsHiringForm, self).__init__(datamanager, *args, **kwargs)
 
         _locations = sorted(datamanager.get_locations().keys())
-        _location_choices = zip(_locations, _locations)
+        _location_choices = list(zip(_locations, _locations))
 
-        self.fields["location"] = forms.ChoiceField(label=ugettext_lazy(u"Location"), choices=_location_choices)
+        self.fields["location"] = forms.ChoiceField(label=ugettext_lazy("Location"), choices=_location_choices)
 
 
 class MercenariesHiringAbility(AbstractPartnershipAbility):
@@ -38,7 +38,7 @@ class MercenariesHiringAbility(AbstractPartnershipAbility):
 
     def _get_admin_summary_html(self):
         assert self.is_master()
-        data = self.all_private_data.items()
+        data = list(self.all_private_data.items())
         all_mercenaries_locations = sorted((k, v["mercenaries_locations"])
                                            for (k, v) in data
                                            if v["mercenaries_locations"])
@@ -116,14 +116,14 @@ class MercenariesHiringAbility(AbstractPartnershipAbility):
         utilities.check_dictionary_with_template(settings, _reference, strict=strict)
         '''
 
-        for data in self.all_private_data.values():
+        for data in list(self.all_private_data.values()):
 
             if strict:
                 utilities.check_num_custom_settings(data, 1)
 
             utilities.check_no_duplicates(data["mercenaries_locations"])
 
-            all_locations = self.datamanager.get_locations().keys()
+            all_locations = list(self.datamanager.get_locations().keys())
             assert set(data["mercenaries_locations"]) <= set(all_locations), data["mercenaries_locations"]
 
 

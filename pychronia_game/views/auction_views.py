@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from __future__ import print_function
-from __future__ import unicode_literals
+
+
 
 from pychronia_game.common import *
 from pychronia_game.datamanager import AbstractGameView, register_view, transaction_watcher
@@ -73,9 +73,9 @@ class CharactersView(AbstractGameView):
         # we display the list of available character accounts
 
         if self.datamanager.is_master():
-            characters = self.datamanager.get_character_sets().items()
+            characters = list(self.datamanager.get_character_sets().items())
         else:
-            characters = [(k, v) for (k, v) in self.datamanager.get_character_sets().items() if not v["is_npc"]]
+            characters = [(k, v) for (k, v) in list(self.datamanager.get_character_sets().items()) if not v["is_npc"]]
 
         characters = copy.deepcopy(characters)  # we ensure we don't touch real DB data
 
@@ -87,7 +87,7 @@ class CharactersView(AbstractGameView):
             user_data["email_address"] = self.datamanager.get_character_email(username=username)
             if username == self.datamanager.user.username or show_others_belongings:
                 user_data["user_items"] = sorted(
-                    self.datamanager.get_available_items_for_user(username=username, auction_only=False).values(),
+                    list(self.datamanager.get_available_items_for_user(username=username, auction_only=False).values()),
                     key=lambda x: x["title"])  # it's all or nothing, we don't discriminate by auction
             else:
                 del user_data["account"]  # security
@@ -161,7 +161,7 @@ def _sorted_game_items(items_dict):
     
     A modified COPY of item data is returned, as a list of (k, v) pairs.
     """
-    items_list = copy.deepcopy(items_dict.items())
+    items_list = copy.deepcopy(list(items_dict.items()))
     res = sorted(items_list, key=lambda x: (x[1]['auction'] if x[1]['auction'] else "ZZZZZZZ", x[0]))
     return res
 
@@ -205,18 +205,18 @@ def view_sales(request, template_name='auction/view_sales.html'):
     sorted_items_for_sale = _sorted_game_items(items_for_sales)  # we push non-auction items to the end of list
 
     if request.datamanager.should_display_admin_tips():  # security
-        total_items_price = sum((item["total_price"] or 0) for item in items_for_sales.values())
-        total_auction_items_price = sum((item["total_price"] or 0) for item in items_for_sales.values() if item["auction"])
+        total_items_price = sum((item["total_price"] or 0) for item in list(items_for_sales.values()))
+        total_auction_items_price = sum((item["total_price"] or 0) for item in list(items_for_sales.values()) if item["auction"])
         total_bank_account_available = sum(
-            character["account"] for character in request.datamanager.get_character_sets().values())
+            character["account"] for character in list(request.datamanager.get_character_sets().values()))
     else:
         total_items_price = None
         total_auction_items_price = None
         total_bank_account_available = None
 
-    total_gems_number = sum(item["num_items"] for item in items_for_sales.values() if item["is_gem"])
+    total_gems_number = sum(item["num_items"] for item in list(items_for_sales.values()) if item["is_gem"])
     total_archaeological_objects_number = sum(
-        item["num_items"] for item in items_for_sales.values() if not item["is_gem"])
+        item["num_items"] for item in list(items_for_sales.values()) if not item["is_gem"])
 
     return render(request,
                   template_name,
@@ -235,7 +235,7 @@ def view_sales(request, template_name='auction/view_sales.html'):
 def _get_items_slideshow_common_data(dm, items):
     items_3d_settings = dm.get_items_3d_settings()
 
-    items_3d_titles = sorted(items[k]["title"] for k in items_3d_settings.keys() if k in items)
+    items_3d_titles = sorted(items[k]["title"] for k in list(items_3d_settings.keys()) if k in items)
 
     sorted_items = _sorted_game_items(items)
 
@@ -295,11 +295,11 @@ def personal_items_slideshow(request, template_name='auction/items_slideshow.htm
 def item_3d_view(request, item, template_name='utilities/item_3d_viewer.html'):
     available_items = request.datamanager.get_available_items_for_user()
 
-    if item not in available_items.keys():
+    if item not in list(available_items.keys()):
         raise Http404  # important security
 
     viewers_settings = request.datamanager.get_items_3d_settings()
-    if item not in viewers_settings.keys():
+    if item not in list(viewers_settings.keys()):
         raise Http404
 
     viewer_settings = viewers_settings[item]

@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-from __future__ import print_function
-from __future__ import unicode_literals
 
-import urllib
+
+
+import urllib.request, urllib.parse, urllib.error
 import json
 
 from ZODB.POSException import POSError  # parent of ConflictError
@@ -37,7 +37,7 @@ def transform_usage_error(caller, self, request, *args, **kwargs):
     return_to_login_next_url = request.build_absolute_uri()
     # we do a HACK to deal with in-url usernames (except UNIVERSAL_URL_USERNAME username, which stays as is)
     return_to_login_next_url = return_to_login_next_url.replace("/%s/" % dm.user.username, "/%s/" % TEMP_URL_USERNAME)
-    return_to_login_qs = urllib.urlencode(dict(next=return_to_login_next_url))
+    return_to_login_qs = urllib.parse.urlencode(dict(next=return_to_login_next_url))
     return_to_login = HttpResponseRedirect("%s?%s" % (return_to_login_url, return_to_login_qs))
 
     assert urlresolvers.resolve(return_to_home_url)
@@ -45,7 +45,7 @@ def transform_usage_error(caller, self, request, *args, **kwargs):
 
         return caller(self, request, *args, **kwargs)
 
-    except AccessDeniedError, e:
+    except AccessDeniedError as e:
 
         if request.is_ajax():
             return HttpResponseForbidden(repr(e))
@@ -61,14 +61,14 @@ def transform_usage_error(caller, self, request, *args, **kwargs):
             return return_to_login  # special case for REAL anonymous users
         return return_to_home
 
-    except (GameError, POSError), e:
+    except (GameError, POSError) as e:
 
         if request.is_ajax():
             return HttpResponseBadRequest(repr(e))
 
         dm.logger.critical("Unexpected game error in %s" % self.NAME, exc_info=True)
         dm.user.add_error(_("An unexpected server error occurred, please retry (%s)") % (
-        e if dm.is_master() else _(u"contact webmaster if it persists")))
+        e if dm.is_master() else _("contact webmaster if it persists")))
         return return_to_home
 
     # else, we let 500 handler take are of all other (very abnormal) exceptions
@@ -146,7 +146,7 @@ class GameViewMetaclass(type):
                 if NewClass.TEMPLATE is not None:
                     pass  # cant' do that anymore due to new app initialization system: assert loader.get_template(NewClass.TEMPLATE)
 
-                RESERVED_CALLBACK_NAMES = AbstractGameView.__dict__.keys()
+                RESERVED_CALLBACK_NAMES = list(AbstractGameView.__dict__.keys())
 
                 def _check_callback(callback):
                     ###print ("CALLBACK", callback)
@@ -155,12 +155,12 @@ class GameViewMetaclass(type):
                     assert not callback.startswith("_")
 
                 def _check_action_registry(action_registry, form_class_required, allow_permission_requirement):
-                    for (action_name, action_properties) in action_registry.items():
+                    for (action_name, action_properties) in list(action_registry.items()):
                         utilities.check_is_slug(action_name)
                         action_properties_reference = {
                             "title": Promise,  # LAZILY translated string!!
-                            "form_class": (types.NoneType, types.TypeType),
-                            "callback": basestring,
+                            "form_class": (type(None), type),
+                            "callback": str,
                         }
                         utilities.check_dictionary_with_template(action_properties, action_properties_reference,
                                                                  strict=False)
@@ -191,7 +191,7 @@ class GameViewMetaclass(type):
                 _check_action_registry(NewClass.ADMIN_ACTIONS, form_class_required=True,
                                        allow_permission_requirement=False)  # must be auto-exposed via forms
 
-                game_form_classes = [props["form_class"] for props in NewClass.GAME_ACTIONS.values() if
+                game_form_classes = [props["form_class"] for props in list(NewClass.GAME_ACTIONS.values()) if
                                      props["form_class"] is not None]
                 utilities.check_no_duplicates(
                     game_form_classes)  # at the moment, forms recognize themselves the action, so they can't be reused in same view
@@ -226,7 +226,7 @@ class SubmittedGameForm(object):
         self.action_successful = action_successful
 
 
-class AbstractGameView(object):
+class AbstractGameView(object, metaclass=GameViewMetaclass):
     """
     By default, concrete subclasses just need to implement the _process_standard_request() method 
     of that class, and they are then suitable to process multiple http requests related to multiple datamanagers,
@@ -234,7 +234,6 @@ class AbstractGameView(object):
     
     But special subclasses might break that genericity by binding the instance to a particular request/datamanager.
     """
-    __metaclass__ = GameViewMetaclass
 
     TITLE = None  # must be a ugettext_lazy() string
     TITLE_FOR_MASTER = None  # must be a ugettext_lazy() string or None
@@ -349,7 +348,7 @@ class AbstractGameView(object):
                 assert access_result == AccessResult.globally_forbidden
                 raise AccessDeniedError(_("Access globally forbidden."))
             assert False
-        except Exception, e:
+        except Exception as e:
             self.logger.error("check_standard_access failed: %r", e)
             raise
 
@@ -458,7 +457,7 @@ class AbstractGameView(object):
         try:
             relevant_args = utilities.adapt_parameters_to_func(data, func)
             return relevant_args
-        except (TypeError, ValueError), e:
+        except (TypeError, ValueError) as e:
             self.logger.error("Wrong signature when calling %s : %s (exception is %r)", func.__name__, data, e)
             raise UsageError(_("Wrong arguments when calling method %s") % func.__name__)
 
@@ -501,7 +500,7 @@ class AbstractGameView(object):
         if not action_name or action_name not in self.GAME_ACTIONS:
             raise AbnormalUsageError(
                 _("Abnormal action name: %(action_name)s (available: %(actions)r)") % SDICT(action_name=action_name,
-                                                                                            actions=self.GAME_ACTIONS.keys()))
+                                                                                            actions=list(self.GAME_ACTIONS.keys())))
 
         res = self.execute_game_action_callback(action_name=action_name, unfiltered_params=data)
 
@@ -546,7 +545,7 @@ class AbstractGameView(object):
                 success_message = execution_processor(action_name=action_name,
                                                       unfiltered_params=normalized_values)
                 res["result"] = action_successful = True
-                if isinstance(success_message, basestring) and success_message:
+                if isinstance(success_message, str) and success_message:
                     user.add_message(success_message)
                 else:
                     self.logger.error("Action %s returned wrong success message: %r", callback_name, success_message)
@@ -583,12 +582,12 @@ class AbstractGameView(object):
             res["result"] = False  # by default
             with action_failure_handler(self.request, success_message=None):  # only for unhandled exceptions
                 result = self._try_processing_formless_game_action(data)
-                if isinstance(result, basestring) and result:
+                if isinstance(result, str) and result:
                     user.add_message(result)  # since we're NOT in ajax here
                 res["result"] = True
 
         else:  # it must be a call using registered django newforms
-            for (action_name, action_data) in self.GAME_ACTIONS.items():
+            for (action_name, action_data) in list(self.GAME_ACTIONS.items()):
                 FormClass = action_data["form_class"]  # MIGHT BE NONE
                 if FormClass and FormClass.matches(data):  # class method
                     res = self._do_process_form_submission(action_registry=self.GAME_ACTIONS,
@@ -887,7 +886,7 @@ def register_view(view_object=None,
                                                                        attach_to=local_attach_to)
 
             class_data = dict(
-                (key.upper(), value) for key, value in normalized_access_args.items())  # auto build access attributes
+                (key.upper(), value) for key, value in list(normalized_access_args.items()))  # auto build access attributes
             class_data["TITLE"] = title
             class_data["TITLE_FOR_MASTER"] = title_for_master
             class_data["NAME"] = final_view_name

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from __future__ import print_function
-from __future__ import unicode_literals
+
+
 
 import json
 
@@ -57,13 +57,13 @@ class GemsTransferForm(AbstractGameForm, GemHandlingFormUtils):
         if user.is_master:
             available_gems = datamanager.get_global_parameter("spent_gems")[
                              :]  # COPY, gems taken so that we can "revive" them
-            for character, properties in datamanager.get_character_sets().items():
+            for character, properties in list(datamanager.get_character_sets().items()):
                 available_gems += properties["gems"]
         else:
             available_gems = datamanager.get_character_properties()["gems"]
 
         # we prepare the choice sets for gems
-        gems_choices = zip(self._encode_gems(available_gems), [self._gem_display(gem) for gem in available_gems])
+        gems_choices = list(zip(self._encode_gems(available_gems), [self._gem_display(gem) for gem in available_gems]))
         gems_choices.sort(key=lambda x: x[1])
         if not gems_choices:
             raise UninstantiableFormError("no gems available")
@@ -111,7 +111,7 @@ class ArtefactTransferForm(AbstractGameForm):
         super(ArtefactTransferForm, self).__init__(datamanager, *args, **kwargs)
 
         artefacts = datamanager.get_user_artefacts()  # dicts
-        artefacts_choices = [(name, value["title"]) for (name, value) in artefacts.items()]
+        artefacts_choices = [(name, value["title"]) for (name, value) in list(artefacts.items())]
         artefacts_choices.sort(key=lambda x: x[1])  # sorted by title
         self.fields["artefact_name"].choices = [("", _("None"))] + artefacts_choices
 
@@ -242,7 +242,7 @@ class SecretQuestionForm(SimpleForm):
 
 
 class RadioFrequencyForm(SimpleForm):
-    frequency = forms.CharField(label=ugettext_lazy(u"Radio Frequency"),
+    frequency = forms.CharField(label=ugettext_lazy("Radio Frequency"),
                                 widget=forms.TextInput(attrs={'autocomplete': 'off'}))
 
 
@@ -267,10 +267,10 @@ class TranslationForm(SimpleForm):
     def __init__(self, datamanager, *args, **kwargs):
         super(TranslationForm, self).__init__(*args, **kwargs)
 
-        _translatable_items_ids = datamanager.get_translatable_items().keys()
+        _translatable_items_ids = list(datamanager.get_translatable_items().keys())
         _translatable_items_pretty_names = [datamanager.get_all_items()[item_name]["title"] for item_name in
                                             _translatable_items_ids]
-        _translatable_items_choices = zip(_translatable_items_ids, _translatable_items_pretty_names)
+        _translatable_items_choices = list(zip(_translatable_items_ids, _translatable_items_pretty_names))
         _translatable_items_choices.sort(key=lambda double: double[1])
 
         # WARNING - we always put ALL runic items, even before they have been sold at auction - it's OK !
@@ -284,7 +284,7 @@ class ScanningForm(SimpleForm):
         super(ScanningForm, self).__init__(*args, **kwargs)
         # dynamic fields here ...
         reference_items_choices = [("", _("< Use Description Instead >"))]
-        reference_items_choices += [(name, value["title"]) for (name, value) in available_items.items()]
+        reference_items_choices += [(name, value["title"]) for (name, value) in list(available_items.items())]
 
         self.fields["item_name"] = forms.ChoiceField(label=_("Reference Object"), choices=reference_items_choices,
                                                      required=False)
@@ -323,7 +323,7 @@ class ArtefactForm(AbstractGameForm):
         if not _user_artefacts:
             raise UninstantiableFormError(_("No artefacts currently owned."))
 
-        _user_artefacts_choices = [(key, value["title"]) for (key, value) in _user_artefacts.items()]
+        _user_artefacts_choices = [(key, value["title"]) for (key, value) in list(_user_artefacts.items())]
         _user_artefacts_choices.sort(key=lambda pair: pair[1])
 
         _user_artefacts_choices = [("", _("Select your artefact..."))] + _user_artefacts_choices

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from __future__ import print_function
-from __future__ import unicode_literals
+
+
 
 import os, sys
 from Crypto.Cipher import AES
@@ -31,7 +31,7 @@ def bytes_encrypt(value, key=_instance_secret_key, iv=_default_iv):
     """
     Returns a lowercase hexadecimal string (length unknown) with the encrypted value.
     """
-    assert not isinstance(value, unicode)
+    assert not isinstance(value, str)
     padded_key = hash(key, length=32)
     encryptor = AES.new(padded_key, AES.MODE_CFB, IV=iv)  # no padding neeeded thus
     return encryptor.encrypt(value).encode("hex").lower()
@@ -41,7 +41,7 @@ def bytes_decrypt(value, key=_instance_secret_key, iv=_default_iv):
     """
     Returns a byte string (length unknown) with the decrypted value.
     """
-    assert not isinstance(value, unicode)
+    assert not isinstance(value, str)
     padded_key = hash(key, length=32)
     decryptor = AES.new(padded_key, AES.MODE_CFB, IV=iv)  # no padding neeeded thus
     return decryptor.decrypt(value.decode("hex"))

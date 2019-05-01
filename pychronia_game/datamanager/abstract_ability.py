@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from __future__ import print_function
-from __future__ import unicode_literals
+
+
 
 from pychronia_game.common import *
 
@@ -167,7 +167,7 @@ class AbstractAbility(AbstractAbilityBasesAdapter):
     def perform_lazy_initializations(self):
         private_key = self._get_private_key()
         #print ("@@@@@@@@@@", self.ability_data)
-        if not self.ability_data["data"].has_key(private_key):
+        if private_key not in self.ability_data["data"]:
             self.logger.warning("Setting up private data for '%s'", private_key)
             private_data = self.ability_data["data"].setdefault(private_key, PersistentMapping())
             self._setup_private_ability_data(private_data=private_data)  # FIRST
@@ -188,9 +188,9 @@ class AbstractAbility(AbstractAbilityBasesAdapter):
         assert isinstance(self.ability_data["data"], collections.Mapping), self.ability_data["data"]
 
         if strict:
-            assert len(self.ability_data.keys()) == 2  # prevents misconfigurations
+            assert len(list(self.ability_data.keys())) == 2  # prevents misconfigurations
             available_logins = self._inner_datamanager.get_available_logins()
-            for name, value in self.ability_data["data"].items():
+            for name, value in list(self.ability_data["data"].items()):
                 assert name in available_logins
                 assert isinstance(value, collections.Mapping)
 
