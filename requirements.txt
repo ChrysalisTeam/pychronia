@@ -68,7 +68,7 @@ djangocms-text-ckeditor==2.9.3
 
 git+https://github.com/pakal/cmsplugin-rst/
 
-django-zodb==0.3dev
+###django-zodb==0.3dev
 
 easy-thumbnails==2.5
 

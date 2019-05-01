@@ -135,7 +135,7 @@ class SDICT(dict):
         return mydict
     '''
 
-
+''' FIXME REMOVE THIS
 def monkey_patch_django_zodb_parser():
     import django_zodb.utils, django_zodb.config, django_zodb.tests.test_utils
     from django_zodb.utils import parse_uri as original_parse_uri
@@ -152,7 +152,7 @@ def monkey_patch_django_zodb_parser():
 
 
 monkey_patch_django_zodb_parser()
-
+'''
 
 def open_zodb_url(zodb_url):
     db = database.get_database_from_uris([zodb_url])
