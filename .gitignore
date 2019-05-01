@@ -15,6 +15,7 @@ ___*
 .vagrant
 
 .cache
+.pytest_cache
 thumbs/
 /bits and pieces of old pychronia.py
 savegames
