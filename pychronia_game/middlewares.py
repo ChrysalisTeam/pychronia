@@ -7,6 +7,7 @@ from django.http import Http404, HttpResponse
 import django.core.mail as mail
 from django.utils.cache import patch_vary_headers
 from django.core.exceptions import MiddlewareNotUsed
+from django.utils.deprecation import MiddlewareMixin
 
 from . import authentication
 from pychronia_game.datamanager.datamanager_administrator import retrieve_game_instance
@@ -18,7 +19,7 @@ del settings  # use config instead
 assert logging
 
 
-class ZodbTransactionMiddleware(object):
+class ZodbTransactionMiddleware(MiddlewareMixin):
     def process_request(self, request):
         # on exception : normal 500 handling takes place
         pass
@@ -26,8 +27,7 @@ class ZodbTransactionMiddleware(object):
     def process_view(self, request, view_func, view_args, view_kwargs):
         # on exception : normal 500 handling takes place
 
-        assert hasattr(request,
-                       'session'), "The game authentication middleware requires session middleware to be installed. Edit your MIDDLEWARE_CLASSES setting to insert 'django.contrib.sessions.middleware.SessionMiddleware'."
+        assert hasattr(request, 'session'), "The game authentication middleware requires session middleware to be installed. Edit your MIDDLEWARE setting to insert 'django.contrib.sessions.middleware.SessionMiddleware'."
 
         request.process_view = None  # GameView instance will attach itself here on execution
 
@@ -99,22 +99,17 @@ class ZodbTransactionMiddleware(object):
         return response
 
 
-class AuthenticationMiddleware(object):
+class AuthenticationMiddleware(MiddlewareMixin):
     def process_view(self, request, view_func, view_args, view_kwargs):
 
         if not hasattr(request, "datamanager"):
             return None  # not a valid game instance
 
-        ## Screw the immutability of these QueryDicts, we need FREEDOM ##
-        request._post = request.POST.copy()
-        request._get = request.GET.copy()
-        if hasattr(request, "_request"):
-            del request._request  # force regeneration of MergeDict
-        assert request._post._mutable and request._get._mutable
+        utilities.make_request_querydicts_mutable(request)
 
         if not hasattr(request, 'session'):
             raise RuntimeError(
-                "The game authentication middleware requires session middleware to be installed. Edit your MIDDLEWARE_CLASSES setting to insert 'django.contrib.sessions.middleware.SessionMiddleware'.")
+                "The game authentication middleware requires session middleware to be installed. Edit your MIDDLEWARE setting to insert 'django.contrib.sessions.middleware.SessionMiddleware'.")
 
         raw_url_game_username = None
         if "game_username" in view_kwargs:
@@ -141,7 +136,7 @@ class AuthenticationMiddleware(object):
         return None
 
 
-class PeriodicProcessingMiddleware(object):
+class PeriodicProcessingMiddleware(MiddlewareMixin):
     def process_view(self, request, view_func, view_args, view_kwargs):
 
         if not hasattr(request, "datamanager"):

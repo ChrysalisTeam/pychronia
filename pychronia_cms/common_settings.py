@@ -65,10 +65,10 @@ TEMPLATES[0]["OPTIONS"]["context_processors"].append(
     "cms.context_processors.cms_settings"  # for CMS_MEDIA_URL etc.
 )
 
-MIDDLEWARE_CLASSES = \
+MIDDLEWARE = \
     ('django.middleware.cache.UpdateCacheMiddleware',) + \
-    MIDDLEWARE_CLASSES + (
-        'debug_toolbar.middleware.DebugToolbarMiddleware',
+    MIDDLEWARE + (
+        'debug_toolbar.middleware.DebugToolbarMiddleware', #### PASCAL 
         'django.middleware.clickjacking.XFrameOptionsMiddleware',
         'django.middleware.csrf.CsrfViewMiddleware',
         # #'cms.middleware.multilingual.MultilingualURLMiddleware', OBSOLETE

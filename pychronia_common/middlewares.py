@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
+from django.utils.deprecation import MiddlewareMixin
 
 
-
-
-class ReverseProxyFixer(object):
+class ReverseProxyFixer(MiddlewareMixin):
     """
     Sets 'REMOTE_ADDR' based on 'HTTP_X_FORWARDED_FOR', if the latter is set.
 

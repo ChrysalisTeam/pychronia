@@ -127,12 +127,12 @@ TEMPLATES = [
 ]
 
 # no need for CSRF by default
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = (
     'django.middleware.gzip.GZipMiddleware',
     'pychronia_common.middlewares.ReverseProxyFixer',
     # TODO Later 'django.middleware.http.ConditionalGetMiddleware', # checks E-tag and last-modification-time to avoid sending data
     #'django.middleware.common.BrokenLinkEmailsMiddleware', FIXME - ONLY SOON IN 1.5
-    'sessionprofile.middleware.SessionProfileMiddleware',  # to bridge auth with PHPBB
+    ##'sessionprofile.middleware.SessionProfileMiddleware',  # to bridge auth with PHPBB (ABORTED)
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',

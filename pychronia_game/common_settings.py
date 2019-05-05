@@ -4,18 +4,19 @@ from pychronia_common.common_settings import *
 
 TEMPLATES[0]["OPTIONS"]["context_processors"].append("pychronia_game.context_processors.pychronia_template_context")
 
-_old_middlewares = list(MIDDLEWARE_CLASSES)
+_old_middlewares = list(MIDDLEWARE)
 if "debug_toolbar.middleware.DebugToolbarMiddleware" in _old_middlewares:
     # Django Debug Toolbar bugs on pychronia_game, troubles with ZODB late access...
     _old_middlewares.remove("debug_toolbar.middleware.DebugToolbarMiddleware")
 
 # beware of ordering here
 # no need for CSRF in pychronia_game, data is not sensitive
-MIDDLEWARE_CLASSES = (tuple(_old_middlewares) +
+MIDDLEWARE = (tuple(_old_middlewares) +
                       ('pychronia_game.middlewares.ZodbTransactionMiddleware',
                        'pychronia_game.middlewares.AuthenticationMiddleware',
                        'pychronia_game.middlewares.PeriodicProcessingMiddleware',
-                       'django_cprofile_middleware.middleware.ProfilerMiddleware',))  # use in DEBUG mode with '?prof' at the end of URL
+                       ##### PASCAL 'django_cprofile_middleware.middleware.ProfilerMiddleware', # use in DEBUG mode with '?prof' at the end of URL
+                       ))
 
 INSTALLED_APPS += [
     'pychronia_game',
