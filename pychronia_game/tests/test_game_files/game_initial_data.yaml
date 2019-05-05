@@ -656,7 +656,7 @@ static_pages:
 
     "wu\\gly_é":
         categories: encyclopedia
-        keywords: ["ugly", r"wu\\gly<_é", "éàk"]
+        keywords: ["ugly", "ku\\\\gly<_é", "éàk"]
         content:   |
             Just to ensure that this ugly slug gets well encoded in urls and regexes...
 

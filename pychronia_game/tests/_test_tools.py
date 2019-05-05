@@ -26,7 +26,7 @@ from pychronia_game.datamanager.abstract_game_view import AbstractGameView, regi
 # do NOT use the django.test.TestCase version, with SQL session management
 #from django.utils.unittest.case import TestCase
 #from django.test.testcases import TransactionTestCase as TestCase
-from django.test import TestCase
+from django.test import TestCase, TransactionTestCase
 from django.test.client import Client, RequestFactory
 from django.core.handlers.base import BaseHandler
 import django.utils.translation
@@ -35,6 +35,8 @@ if not config.ZODB_RESET_ALLOWED:
     raise RuntimeError("Can't launch tests - we must be in a production environment !!")
 
 ORIGINAL_CONFIG_INSTALLED_APPS = config.INSTALLED_APPS[:]
+
+DJANGO_TEST_CLIENT = Client()
 
 
 def neutral_url_reverse(view, **more_kwargs):
@@ -108,30 +110,52 @@ class RequestMock(RequestFactory):
         request = RequestFactory.request(self, **request_args)
         ###pprint.pprint(request)
 
-        handler = BaseHandler()
+        utilities.make_request_querydicts_mutable(request)
 
-        handler.load_middleware()
+        request.session = DJANGO_TEST_CLIENT.session  # hack
 
-        for middleware_method in handler._request_middleware:
-            #print("APPLYING REQUEST MIDDLEWARE ", middleware_method, file=sys.stderr)
-            if middleware_method(request):
-                raise Exception("Couldn't create request mock object - "
-                                "request middleware returned a response")
+        # we mimick django authentication middleware
+        from django.contrib.auth.models import AnonymousUser
+        request.user = AnonymousUser()  # default
 
-        urlconf = settings.ROOT_URLCONF
-        urlresolvers.set_urlconf(urlconf)
-        resolver = urlresolvers.RegexURLResolver(r'^/', urlconf)
+        # we mimick messages middleware
+        from django.contrib.messages.storage import default_storage
+        request._messages = default_storage(request)
 
-        callback, callback_args, callback_kwargs = resolver.resolve(
-            request.path_info)
+        # we mimick ZODB middleware
+        datamanager = retrieve_game_instance(game_instance_id=TEST_GAME_INSTANCE_ID,
+                                             request=request,
+                                             update_timestamp=False)
+        request.datamanager = datamanager  # for template tags and the likes
 
-        # Apply view middleware
-        for middleware_method in handler._view_middleware:
-            #print("APPLYING VIEW MIDDLEWARE ", middleware_method, file=sys.stderr)
-            response = middleware_method(request, callback, callback_args, callback_kwargs)
-            if response:
-                raise Exception("Couldn't create request mock object - "
-                                "view middleware returned a response")
+
+        """ Old version, before Django2.0 middlewares
+
+            handler = BaseHandler()
+
+            handler.load_middleware()
+
+            for middleware_method in handler._request_middleware:
+                #print("APPLYING REQUEST MIDDLEWARE ", middleware_method, file=sys.stderr)
+                if middleware_method(request):
+                    raise Exception("Couldn't create request mock object - "
+                                    "request middleware returned a response")
+
+            urlconf = settings.ROOT_URLCONF
+            urlresolvers.set_urlconf(urlconf)
+            resolver = urlresolvers.RegexURLResolver(r'^/', urlconf)
+
+            callback, callback_args, callback_kwargs = resolver.resolve(
+                request.path_info)
+
+            # Apply view middleware
+            for middleware_method in handler._view_middleware:
+                #print("APPLYING VIEW MIDDLEWARE ", middleware_method, file=sys.stderr)
+                response = middleware_method(request, callback, callback_args, callback_kwargs)
+                if response:
+                    raise Exception("Couldn't create request mock object - "
+                                    "view middleware returned a response")
+        """
 
         return request
 
@@ -194,7 +218,7 @@ def temp_datamanager(game_instance_id, request=None):
     dm.close()
 
 
-class BaseGameTestCase(TestCase):  # one day, use pytest-django module to make it cleaner
+class BaseGameTestCase(TransactionTestCase):  # one day, use pytest-django module to make it cleaner
 
     """
     WARNING - when directly modifying "self.dm.data" content, 
@@ -207,10 +231,12 @@ class BaseGameTestCase(TestCase):  # one day, use pytest-django module to make i
         #self._reset_django_db()
         #print("USING CONF", config.DATABASES, config.INSTALLED_APPS)
         ##return super(BaseGameTestCase, self).__call__(*args, **kwds)
+        self._reset_django_db(really=True)
         return unittest.TestCase.run(self, *args,
                                      **kwds)  # we bypass test setups from django's TestCase, to use py.test instead
 
     def setUp(self):
+
 
         assert settings.DEBUG == True
 
@@ -242,21 +268,21 @@ class BaseGameTestCase(TestCase):  # one day, use pytest-django module to make i
 
             test_http_host = "localhost:80"
 
-            self.client = Client()
-            self.factory = RequestMock(HTTP_HOST=test_http_host)
+            self.client = DJANGO_TEST_CLIENT
 
-            self.request = self.factory.get(HOME_URL)
-            assert self.request.user
-            assert self.request.datamanager.user.datamanager.request  # double linking
-            assert self.request.session
-            assert self.request._messages is not None
-            assert self.request.datamanager
+            self.request_factory = RequestMock(HTTP_HOST=test_http_host, session=self.client.session)
 
-            # we mimic messages middleware
-            from django.contrib.messages.storage import default_storage
-            self.request._messages = default_storage(self.request)
+            request = self.request_factory.get(HOME_URL)
+            # this request is empty, not gone through middlewares!
+            assert request.datamanager
+            assert request.session
+            assert request.session is not self.client.session, \
+                (request.session, self.client.session) # generated on demand
+            assert request.user.is_anonymous
+            self.request = request
 
             self.dm = self.request.datamanager
+
             assert self.dm.is_initialized
             assert self.dm.connection
 
@@ -279,6 +305,7 @@ class BaseGameTestCase(TestCase):  # one day, use pytest-django module to make i
 
             # comment this to have eclipse's autocompletion to work for datamanager anyway
             self.dm = AutoCheckingDM(self.dm)  # protection against uncommitted, pending changes
+            assert object.__getattribute__(self.dm, "_real_dm") == self.request.datamanager  # WRAPPED
 
             # NO NEED TO COMMIT - transaction watcher should do it all #
 
@@ -287,7 +314,6 @@ class BaseGameTestCase(TestCase):  # one day, use pytest-django module to make i
             self.tearDown(check=False)  # cleanup of connection
             raise
 
-        assert object.__getattribute__(self.dm, "_real_dm") == self.request.datamanager  # WRAPPED
 
     def tearDown(self, check=True):
         if hasattr(self, "dm"):
@@ -307,7 +333,9 @@ class BaseGameTestCase(TestCase):  # one day, use pytest-django module to make i
         self.dm.messaging_data["messages_queued"] = PersistentList()
         self.dm.commit()
 
-    def _reset_django_db(self):
+    def _reset_django_db(self, really=False):
+        if not really:
+            return  # PASCAL HACK TODO BEWARE
         from django.test.utils import setup_test_environment
         from django.core import management
         management.call_command('migrate', verbosity=1, interactive=False)
