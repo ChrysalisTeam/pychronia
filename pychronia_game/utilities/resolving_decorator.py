@@ -1,7 +1,9 @@
-import types, inspect, functools
+import sys, types, inspect, functools
 from decorator import decorator
 from functools import partial
 
+
+IS_PY3K = (sys.version_info >= (3, 0))
 
 def resolving_decorator(caller, func=None):
     """
@@ -100,19 +102,42 @@ def flatten_function_signature(func):
     old_code_object = old_function.__code__
 
     """
-    Note on python2 code type:
+    Notes on python2 code type:
     types.CodeType(argcount, nlocals, stacksize, flags, codestring, constants, names,
                  varnames, filename, name, firstlineno, lnotab[,freevars[, cellvars]])
+                 
+    Notes on python3 code type:             
+    types.CodeType(co_argcount = ...  # type: int
+                    co_kwonlyargcount = ...  # type: int
+                    co_nlocals = ...  # type: int
+                    co_stacksize = ...  # type: int
+                    co_flags = ...  # type: int
+                    co_code = ...  # type: bytes
+                    co_consts = ...  # type: Tuple[Any, ...]
+                    co_names = ...  # type: Tuple[str, ...]
+                    co_varnames = ...  # type: Tuple[str, ...]
+                    co_filename = ...  # type: Optional[str]
+                    co_name = ...  # type: str
+                    co_firstlineno = ...  # type: int
+                    co_lnotab = ...  # type: bytes
+                    co_freevars = ...  # type: Tuple[str, ...]
+                    co_cellvars = ...  # type: Tuple[str, ...])
     """
-    pos_arg_names = """co_argcount co_nlocals co_stacksize co_flags co_code co_consts co_names
-            co_varnames co_filename co_name co_firstlineno co_lnotab co_freevars co_cellvars""".split()
+
+    # TODO - could be optimized out
+    if IS_PY3K:  # adds co_kwonlyargcount
+        pos_arg_names = """co_argcount co_kwonlyargcount co_nlocals co_stacksize co_flags co_code co_consts co_names
+                co_varnames co_filename co_name co_firstlineno co_lnotab co_freevars co_cellvars""".split()
+    else:
+        pos_arg_names = """co_argcount co_nlocals co_stacksize co_flags co_code co_consts co_names
+                co_varnames co_filename co_name co_firstlineno co_lnotab co_freevars co_cellvars""".split()
 
     pos_arg_values = [getattr(old_code_object, name) for name in pos_arg_names]
 
     #defaults = old_function.__defaults__
     argcount = pos_arg_values[0]
     assert isinstance(argcount, int)
-    flags = pos_arg_values[3]
+    flags = pos_arg_values[pos_arg_names.index("co_flags")]  # TODO - could be optimized out
     assert isinstance(flags, int)
 
     if flags & inspect.CO_VARARGS:
