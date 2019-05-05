@@ -3,6 +3,8 @@
 
 
 import os, sys
+import binascii
+
 from Crypto.Cipher import AES
 
 from django.conf import settings
@@ -34,31 +36,48 @@ def hash(password, salt=_instance_secret_key, length=32):
     return hasher(hashable).hexdigest()[0:length]
 
 
+def get_padded_key(key):
+    return hash(key, length=32).encode("utf8")
+
+
 def bytes_encrypt(value, key=_instance_secret_key, iv=_default_iv):
     """
-    Returns a lowercase hexadecimal string (length unknown) with the encrypted value.
+    Encrypts a bytes string.
+
+    Returns a lowercase hexadecimal bytes string (length unknown).
     """
-    assert not isinstance(value, str)
-    padded_key = hash(key, length=32)
+    assert isinstance(value, bytes)
+    padded_key = get_padded_key(key)
     encryptor = AES.new(padded_key, AES.MODE_CFB, IV=iv)  # no padding neeeded thus
-    return encryptor.encrypt(value).encode("hex").lower()
+    encrypted = encryptor.encrypt(value)
+    hexdata = binascii.hexlify(encrypted)
+    assert hexdata.lower() == hexdata, hexdata
+    return hexdata
 
 
 def bytes_decrypt(value, key=_instance_secret_key, iv=_default_iv):
     """
+    Decrypts an hexadecimal bytes string.
+
     Returns a byte string (length unknown) with the decrypted value.
     """
-    assert not isinstance(value, str)
-    padded_key = hash(key, length=32)
+    assert isinstance(value, bytes)
+    padded_key = get_padded_key(key)
     decryptor = AES.new(padded_key, AES.MODE_CFB, IV=iv)  # no padding neeeded thus
-    return decryptor.decrypt(value.decode("hex"))
+    encrypted = binascii.unhexlify(value)
+    decrypted = decryptor.decrypt(encrypted)
+    return decrypted
 
 
 def unicode_encrypt(value, key=_instance_secret_key, iv=_default_iv):
+    """Turns any str into an encrypted hewxadecimal str."""
     value = value.encode("utf8")
-    return bytes_encrypt(value, key=key, iv=iv)
+    encrypted_hex_bytes = bytes_encrypt(value, key=key, iv=iv)
+    return encrypted_hex_bytes.decode("ascii", "strict")
 
 
 def unicode_decrypt(value, key=_instance_secret_key, iv=_default_iv):
-    res = bytes_decrypt(value, key=key, iv=iv)
+    """Turns back an encrypted hexadeximal str into the original str."""
+    encrypted_hex_str = value.encode("ascii", "strict")
+    res = bytes_decrypt(encrypted_hex_str, key=key, iv=iv)
     return res.decode("utf8")

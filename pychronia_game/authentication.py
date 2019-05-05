@@ -67,11 +67,10 @@ def _lookup_enforced_session_or_none(request):
     is_observer = False
 
     if config.GAME_ALLOW_ENFORCED_LOGIN:
-        login_data = request.REQUEST.get(ENFORCED_SESSION_TICKET_NAME)
-        if login_data:
+        login_data_encrypted = request.REQUEST.get(ENFORCED_SESSION_TICKET_NAME)
+        if login_data_encrypted:
             try:
-                login_data = login_data.encode("ascii", "strict")  # should be hexadecimal
-                login_data = encryption.unicode_decrypt(login_data)  # decode using site's SECRET_KEY
+                login_data = encryption.unicode_decrypt(login_data_encrypted)  # decode using site's SECRET_KEY
             except (TypeError, ValueError, UnicodeError) as e:
                 logging.warning("Error when trying to decode enforced ticket: %r" % e)
             else:

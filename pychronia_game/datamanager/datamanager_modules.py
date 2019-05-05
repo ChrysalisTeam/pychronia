@@ -3,6 +3,7 @@
 
 
 import string, random
+from collections import OrderedDict
 
 from pychronia_game.common import *
 from pychronia_game.common import _, ugettext_lazy, ugettext_noop, _undefined  # mainly to shut up the static checker...
@@ -1809,6 +1810,8 @@ class TextMessagingCore(BaseDataManager):
         # (the first queued messages might actually be younger than the last ones of the sent messages list)
         _check_message_list(messaging["messages_dispatched"])
         _check_message_list(messaging["messages_queued"])
+        assert isinstance(messaging["messages_dispatched"], PersistentList)
+        assert isinstance(messaging["messages_queued"], PersistentList)
 
     def _process_periodic_tasks(self, report):
         super(TextMessagingCore, self)._process_periodic_tasks(report)
@@ -1830,8 +1833,10 @@ class TextMessagingCore(BaseDataManager):
                 break  # since messages are queued in CHRONOLOGICAL order...
 
         if last_index_processed is not None:
-            self.messaging_data["messages_queued"] = self.messaging_data["messages_queued"][
-                                                     last_index_processed + 1:]  # cleanup
+            # BEWARE - PersistentList slicing is buggy on python3
+            self.messaging_data["messages_queued"] = PersistentList(self.messaging_data["messages_queued"][
+                                                        last_index_processed + 1:])  # cleanup
+            assert isinstance(self.messaging_data["messages_queued"], PersistentList)
             report["messages_dispatched"] = last_index_processed + 1
         else:
             report["messages_dispatched"] = 0
@@ -1848,6 +1853,7 @@ class TextMessagingCore(BaseDataManager):
         if is_future_msg:
             self.messaging_data["messages_queued"].append(msg)
             self.messaging_data["messages_queued"].sort(key=lambda msg: msg["sent_at"])  # python sorting is stable !
+            assert isinstance(self.messaging_data["messages_queued"], PersistentList)
         else:
             self._immediately_dispatch_message(msg)
 
@@ -2057,11 +2063,11 @@ class TextMessagingCore(BaseDataManager):
 
     @readonly_method
     def get_all_queued_messages(self):
-        return self.messaging_data["messages_queued"][:]
+        return self.messaging_data["messages_queued"][:]  # might give a regular list
 
     @readonly_method
     def get_all_dispatched_messages(self):
-        return self.messaging_data["messages_dispatched"][:]
+        return self.messaging_data["messages_dispatched"][:]  # might give a regular list
 
     @readonly_method
     def get_dispatched_message_by_id(self, msg_id):
@@ -3494,10 +3500,11 @@ class ActionScheduling(BaseDataManager):
                 break  # since actions are queued in CHRONOLOGICAL order...
 
         if last_index_processed is not None:
-            self.data["scheduled_actions"] = self.data["scheduled_actions"][last_index_processed + 1:]
+            self.data["scheduled_actions"] = PersistentList(self.data["scheduled_actions"][last_index_processed + 1:])
             report["actions_executed"] = last_index_processed + 1
         else:
             report["actions_executed"] = 0
+        assert isinstance(self.data["scheduled_actions"], PersistentList)
 
     @transaction_watcher
     def schedule_delayed_action(self, date_or_delay_mn, function, *args, **kwargs):

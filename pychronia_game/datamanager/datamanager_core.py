@@ -175,8 +175,8 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
             assert skip_randomizations == True
 
         # NOW only we normalize and check the object tree
-        # normal python types are transformed to ZODB-persistent types
-        for key in list(self.data.keys()):
+        # mutable python types are transformed to ZODB-persistent types
+        for key in sorted(self.data.keys()):
             self.data[key] = utilities.convert_object_tree(self.data[key], utilities.python_to_zodb_types)
             utilities.check_object_tree(self.data[key], allowed_types=utilities.allowed_zodb_types, path=["game_data"])
 
@@ -308,8 +308,9 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
         *strict* must be False by default, because the game backup might
         contains eg. badly formatted RST mails or static pages edited
         by the gamemaster.
-        """
 
+        Also CHECKS game coherence of loaded data.
+        """
         data_tree = utilities.load_data_tree_from_yaml(string, convert=True)
         assert isinstance(data_tree, PersistentMapping)
 

@@ -56,8 +56,7 @@ def pychronia_template_context(request):
                                           impersonation_writability_post_variable=IMPERSONATION_WRITABILITY_POST_VARIABLE)
 
         notifications = get_messages(request)  # lazy 'messages' context variable.
-        notifications = utilities.remove_duplicates(
-            notifications)  # order doesn't matter, and we don't want duplicates!
+        notifications = utilities.remove_duplicates(notifications)  # we force computation there
         notification_type = "mixed"  # DEFAULT
         levels = list(set(msg.tags for msg in notifications))
         if len(levels) == 1:

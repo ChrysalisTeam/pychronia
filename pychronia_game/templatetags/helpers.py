@@ -12,7 +12,7 @@ from pychronia_game.common import exception_swallower, game_file_url as real_gam
 
 import django.template
 from django.template.defaulttags import url as default_url_tag
-from django.utils.safestring import SafeData, EscapeData, mark_safe, mark_for_escaping
+from django.utils.safestring import mark_safe
 from django.utils.html import escape
 from django.utils.http import urlencode
 from django.core.serializers import serialize

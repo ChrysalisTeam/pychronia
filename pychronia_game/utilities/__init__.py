@@ -5,9 +5,9 @@
 ### NO import from pychronia_game.common, else circular import !! ###
 
 import io
-import sys, os, collections, logging, inspect, types, traceback, re, glob, copy
+import sys, os, collections.abc, logging, inspect, types, traceback, re, glob, copy
 import yaml, random, contextlib
-from collections import Counter, OrderedDict
+from collections import Counter, OrderedDict, Callable
 from datetime import datetime, timedelta
 
 import ZODB  # must be first !
@@ -77,7 +77,7 @@ def normalize(v):
 
 ## Python <-> ZODB types conversion and checking ##
 
-ATOMIC_PYTHON_TYPES = (type(None), int, int, float, str, datetime, collections.Callable)
+ATOMIC_PYTHON_TYPES = (type(None), int, int, float, str, datetime, Callable)
 
 python_to_zodb_types = {list: PersistentList,
                         dict: PersistentMapping,
@@ -86,8 +86,8 @@ python_to_zodb_types = {list: PersistentList,
 zodb_to_python_types = dict((value, key) if isinstance(value, type) else (key, value)  # NOT ALL are reversed
                             for (key, value) in list(python_to_zodb_types.items()))
 
-allowed_zodb_types = ATOMIC_PYTHON_TYPES + (tuple, PersistentMapping, PersistentList)
-allowed_python_types = ATOMIC_PYTHON_TYPES + (tuple, dict, list)
+allowed_zodb_types = (tuple, PersistentMapping, PersistentList) + ATOMIC_PYTHON_TYPES
+allowed_python_types = (tuple, dict, list) + ATOMIC_PYTHON_TYPES
 
 
 def usage_assert(value, comment=None):
@@ -182,13 +182,13 @@ def convert_object_tree(tree, type_mapping):
 
     if isinstance(tree, ATOMIC_PYTHON_TYPES):
         return tree  # Warning - we must thus avoid infinite recursion on character sequences (aka strings)...
-    elif isinstance(tree, collections.MutableSequence):
+    elif isinstance(tree, collections.abc.MutableSequence):
         for (index, item) in enumerate(tree):
             tree[index] = convert_object_tree(item, type_mapping)
-    elif isinstance(tree, collections.MutableMapping):
-        for (key, value) in list(tree.items()):
+    elif isinstance(tree, collections.abc.MutableMapping):
+        for (key, value) in sorted(tree.items()):
             tree[key] = convert_object_tree(value, type_mapping)
-    elif isinstance(tree, collections.MutableSet):
+    elif isinstance(tree, collections.abc.MutableSet):
         for value in tree:
             tree.remove(value)
             tree.add(convert_object_tree(value, type_mapping))
@@ -203,18 +203,19 @@ def convert_object_tree(tree, type_mapping):
 
 
 def check_object_tree(tree, allowed_types, path):
+
     if not isinstance(tree, allowed_types):
         raise RuntimeError("Bad object type detected : %s - %s via path %s" % (type(tree), tree, path))
 
     if isinstance(tree, ATOMIC_PYTHON_TYPES):
         return
-    elif isinstance(tree, collections.MutableSequence):
+    elif isinstance(tree, collections.abc.MutableSequence):
         for (index, item) in enumerate(tree):
             check_object_tree(item, allowed_types, path + [index])
-    elif isinstance(tree, collections.MutableMapping):
-        for (key, value) in list(tree.items()):
+    elif isinstance(tree, collections.abc.MutableMapping):
+        for (key, value) in reversed(sorted(tree.items())):
             check_object_tree(value, allowed_types, path + [key])
-    elif isinstance(tree, collections.MutableSet):
+    elif isinstance(tree, collections.abc.MutableSet):
         for value in tree:
             check_object_tree(value, allowed_types, path + ["<set-item>"])
     elif isinstance(tree, tuple):
@@ -276,11 +277,13 @@ def string_similarity(first, second):
 
 
 def remove_duplicates(seq):
+    """
+    Remove duplicates (in the "equality" sense) from a sequence, without requiring hashability.
+    Preserves order of elements, and first elements win.
+    """
     res = []
-    seen = set()
     for item in seq:
-        if item not in seen:
-            seen.add(item)
+        if item not in res:
             res.append(item)
     return res
 
@@ -344,10 +347,10 @@ def dict_representer(dumper, data):
 
 
 def dict_constructor(loader, node):
-    return collections.OrderedDict(loader.construct_pairs(node))
+    return OrderedDict(loader.construct_pairs(node))
 
 
-yaml.add_representer(collections.OrderedDict, dict_representer)
+yaml.add_representer(OrderedDict, dict_representer)
 yaml.add_constructor(_mapping_tag, dict_constructor)
 
 
@@ -408,6 +411,7 @@ def dump_data_tree_to_yaml(data_tree, convert=True, **kwargs):
 
 
 def load_data_tree_from_yaml(string, convert=True):
+    assert "Ã©" not in string  # corrupted utf8 input...
     data_tree = yaml.load(string, Loader=yaml.FullLoader)  # FullLoader necessary for python tuples
 
     if convert:
@@ -506,12 +510,12 @@ def check_is_subset(value, main_set):
 
 
 def check_is_list(value):
-    usage_assert(isinstance(value, collections.Sequence), value)
+    usage_assert(isinstance(value, collections.abc.Sequence), value)
     return True
 
 
 def check_is_dict(value):
-    usage_assert(isinstance(value, collections.Mapping), value)
+    usage_assert(isinstance(value, collections.abc.Mapping), value)
     return True
 
 
@@ -704,7 +708,7 @@ def validate_value(value, validator):
     if issubclass(type(validator), type) or isinstance(validator, (list, tuple)):  # should be a list of types
         usage_assert(isinstance(value, validator), locals())
 
-    elif isinstance(validator, collections.Callable):
+    elif isinstance(validator, Callable):
         res = validator(value)
         usage_assert(res, (repr(res), repr(validator)))
 
@@ -864,6 +868,15 @@ def make_bi_usage_decorator(decorator):
         return factory
 
     return bidecorator
+
+
+def make_request_querydicts_mutable(request):
+    """Screw the immutability of Django QueryDicts, we need FREEDOM"""
+    request._post = request.POST.copy()
+    request._get = request.GET.copy()
+    if hasattr(request, "_request"):
+        del request._request  # force regeneration of MergeDict
+    assert request._post._mutable and request._get._mutable
 
 
 class TechnicalEventsMixin(object):
