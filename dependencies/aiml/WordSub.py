@@ -67,9 +67,9 @@ class WordSub(dict):
     def __setitem__(self, i, y):
         self._regexIsDirty = True
         # for each entry the user adds, we actually add three entrys:
-        super(type(self), self).__setitem__(string.lower(i), string.lower(y)) # key = value
+        super(type(self), self).__setitem__(i.lower(), y.lower()) # key = value
         super(type(self), self).__setitem__(string.capwords(i), string.capwords(y)) # Key = Value
-        super(type(self), self).__setitem__(string.upper(i), string.upper(y)) # KEY = VALUE
+        super(type(self), self).__setitem__(i.upper(), y.upper()) # KEY = VALUE
 
     def sub(self, text):
         """Translate text, returns the modified text."""

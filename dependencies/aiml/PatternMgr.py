@@ -23,7 +23,7 @@ class PatternMgr:
 		self._botName = "Nameless"
 		punctuation = "\"`~!@#$%^&*()-_=+[{]}\|;:',<.>/?"
 		self._puncStripRE = re.compile("[" + re.escape(punctuation) + "]")
-		self._whitespaceRE = re.compile("\s+", re.LOCALE | re.UNICODE)
+		self._whitespaceRE = re.compile("\s+", re.UNICODE)
 
 	def numTemplates(self):
 		"""Return the number of templates currently stored."""
@@ -35,7 +35,7 @@ class PatternMgr:
 
 		"""
 		# Collapse a multi-word name into a single word
-		self._botName = str(string.join(name.split()))
+		self._botName = "".join(name.split())
 
 	def dump(self):
 		"""Print all learned patterns, for debugging purposes."""
