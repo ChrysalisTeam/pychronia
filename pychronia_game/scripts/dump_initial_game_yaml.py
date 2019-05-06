@@ -30,8 +30,8 @@ def execute(output_file):
                        yaml_fixture=False)
 
     yaml_str = utilities.dump_data_tree_to_yaml(dm.data,
-                                                  convert=True,  # should be output in UTF8
-                                                  default_style="|")  # will output very long lines
+                                                convert_types=True,  # should be output in UTF8
+                                                default_style="|")  # will output very long lines
 
     print((">> Dumping whole initial data to file %r" % output_file))
 

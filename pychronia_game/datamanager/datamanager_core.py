@@ -303,7 +303,7 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
         return string
 
     @transaction_watcher
-    def load_zope_database_from_string(self, string, strict=False):
+    def load_zope_database_from_string_or_tree(self, string_or_tree, strict=False):
         """
         *strict* must be False by default, because the game backup might
         contains eg. badly formatted RST mails or static pages edited
@@ -311,7 +311,10 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
 
         Also CHECKS game coherence of loaded data.
         """
-        data_tree = utilities.load_data_tree_from_yaml(string, convert=True)
+        if isinstance(string_or_tree, str):
+            data_tree = utilities.load_data_tree_from_yaml(string_or_tree, convert_types=True)
+        else:
+            data_tree = string_or_tree  # must have already been converted to PersistentMapping
         assert isinstance(data_tree, PersistentMapping)
 
         try:

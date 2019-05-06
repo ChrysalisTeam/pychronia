@@ -360,7 +360,7 @@ def write_to_file(filename, content):
         f.write(content)
 
 
-def dump_data_tree_to_yaml(data_tree, convert=True, **kwargs):
+def dump_data_tree_to_yaml(data_tree, convert_types=True, **kwargs):
     """
     BEWARE - if the end of a string is made of spaces, the double-quotes dump style is forced,
     see (http://sourceforge.net/p/yaml/mailman/message/30159253/)
@@ -393,7 +393,7 @@ def dump_data_tree_to_yaml(data_tree, convert=True, **kwargs):
 
     Returns an unicode string.
     """
-    if convert:
+    if convert_types:
         data_tree = convert_object_tree(data_tree, zodb_to_python_types)
 
     dump_args = dict(width=100,  # NOT canonical
@@ -410,11 +410,11 @@ def dump_data_tree_to_yaml(data_tree, convert=True, **kwargs):
     return string
 
 
-def load_data_tree_from_yaml(string, convert=True):
+def load_data_tree_from_yaml(string, convert_types=True):
     assert "Ã©" not in string  # corrupted utf8 input...
     data_tree = yaml.load(string, Loader=yaml.FullLoader)  # FullLoader necessary for python tuples
 
-    if convert:
+    if convert_types:
         data_tree = convert_object_tree(data_tree, python_to_zodb_types)
 
     return data_tree
@@ -758,7 +758,11 @@ def recursive_dict_sum(d1, d2, appendable_fields):
                 for k in set(all_keys))
 
 
-def load_yaml_file(yaml_file):
+def load_yaml_file(yaml_file, pretreatment=None, convert_types=False):
+    """Load yaml data from a file, without coherence check.
+
+    pretreatment can be a callback applied on the string before it gets actually parsed as yaml.
+    """
     logging.info("Loading yaml fixture %s" % yaml_file)
     with open(yaml_file, "r", encoding="utf-8-sig") as f:  # beware of the unicode BOM
         raw_data = f.read()
@@ -768,9 +772,11 @@ def load_yaml_file(yaml_file):
             raise ValueError(
                 "Forbidden tabulation found at line %d in yaml file %s : '%r'!" % (lineno, yaml_file, linestr))
 
+    if pretreatment:
+        raw_data = pretreatment(raw_data)
     #print("LOADING RAW DATA", repr(raw_data[:100]))
 
-    data = load_data_tree_from_yaml(raw_data, convert=False)
+    data = load_data_tree_from_yaml(raw_data, convert_types=convert_types)
     return data
 
 
@@ -778,6 +784,7 @@ YAML_FILE_GLOBS = ["*.yaml", "*.yml", "*/*.yaml", "*/*.yml"]  # works on windows
 
 # fields which should be concatenated instead of replaces, when merging yaml trees
 APPENDABLE_FIELDS = """manual_messages_templates messages_dispatched messages_queued game_items""".split()
+
 
 def load_yaml_fixture(yaml_fixture):
     """

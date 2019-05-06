@@ -334,7 +334,7 @@ def backup_game_instance_data(game_instance_id, comment=None):
         raise AbnormalUsageError(_("Unexisting instance %r") % game_instance_id)
 
     yaml_str = utilities.dump_data_tree_to_yaml(game_root["data"],
-                                                      convert=True,  # should be output in UTF8
+                                                      convert_types=True,  # should be output in UTF8
                                                       default_style="|")  # will output very long lines
 
     basename = "backup_" + game_instance_id + "_" + datetime.utcnow().strftime(

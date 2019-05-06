@@ -667,14 +667,16 @@ class TestMetaAdministration(unittest.TestCase):  # no django setup required ATM
 
         backup_file_path = os.path.join(_get_backup_folder(game_instance_id), res[0])
 
-        yaml_data = utilities.load_yaml_file(backup_file_path)
-        yaml_data = yaml_data.replace("pangea.com", "planeta.fr")  # MASS REPLACE in data
+        pretreatment = lambda y: y.replace("pangea.com", "planeta.fr")  # MASS REPLACE in data
+        data_tree = utilities.load_yaml_file(backup_file_path, pretreatment=pretreatment, convert_types=True)
 
         dm = datamanager_administrator.retrieve_game_instance(game_instance_id=game_instance_id,
                                                               request=None,
                                                               metadata_checker=None)
+
         assert not dm.get_event_count("BASE_CHECK_DB_COHERENCE_PUBLIC_CALLED")
-        data_tree = dm.load_zope_database_from_string(yaml_data)
+
+        data_tree = dm.load_zope_database_from_string_or_tree(data_tree)
         assert dm.get_event_count("BASE_CHECK_DB_COHERENCE_PUBLIC_CALLED") == 1  # data well checked
 
         assert "metadata" not in data_tree  # it's well ONLY the "data" part of the game instance tree
