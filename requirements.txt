@@ -1,7 +1,5 @@
 
 
-###MySQL-python>=1.2.4
-
 PyMySQL==0.7.9
 
 Pillow>=2.7.0
@@ -22,8 +20,8 @@ Django==1.11.18
 
 django-compat-patcher==0.5
 
-#Django-Select2==4.2.2 OUTDATED - think about periodically updating the tag below
-git+https://github.com/pakal/django-select2.git@0bcb6f5d18002c79afeb93899872f59d9c87bc24
+#Django-Select2==4.2.2 is OUTDATED, and then form "fields" were removed from project...
+git+https://github.com/pakal/django-select2.git@6b1adada50ce53f4c51dd6d409371705627fa17e
 
 django-admin-jqueryui==1.8.22
 django-appconf==1.0.2
@@ -68,7 +66,7 @@ djangocms-text-ckeditor==2.9.3
 
 git+https://github.com/pakal/cmsplugin-rst/
 
-git+https://github.com/pakal/django-zodb.git@d2808f1e7679f97e96a6b6898104bafdd186f89d
+git+https://github.com/pakal/django-zodb.git@556c54da5a8b32f632097449fffcb25d0f607c5f
 
 easy-thumbnails==2.5
 
@@ -116,7 +114,7 @@ docx2txt
 
 ## DEV tools only ##
 
-pytest==3.0.2
+pytest==4.4.1
 pyScss==1.3.5
 rst2pdf>=0.9
 

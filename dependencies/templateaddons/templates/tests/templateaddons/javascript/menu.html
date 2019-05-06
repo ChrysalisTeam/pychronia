@@ -1,0 +1,12 @@
+{% load javascript %}
+{% javascript_assign %}<script type="text/javascript" src="/second_lib.js" />{% endjavascript_assign %}
+{% javascript_assign %}
+<script type="text/javascript">
+    /* some javascript code that uses "second_lib.js" */
+    var b = 2;
+</script>
+{% endjavascript_assign %}
+<ul>
+  <li><a href="/">Home</a></li>
+  <!-- the menu... -->
+</ul>

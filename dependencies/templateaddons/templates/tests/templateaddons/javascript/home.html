@@ -1,0 +1,13 @@
+{% extends "tests/templateaddons/javascript/base.html" %}
+{% load javascript %}
+
+{% block content %}
+{% javascript_assign %}<script type="text/javascript" src="/first_lib.js" />{% endjavascript_assign %}
+{% javascript_assign %}<script type="text/javascript" src="/second_lib.js" />{% endjavascript_assign %}
+{% javascript_assign %}<script type="text/javascript">
+    /* some javascript code that uses both "first_lib.js" and "second_lib.js" */
+    var c = 3;
+</script>
+{% endjavascript_assign %}
+<p>This is the content</p>
+{% endblock content %}

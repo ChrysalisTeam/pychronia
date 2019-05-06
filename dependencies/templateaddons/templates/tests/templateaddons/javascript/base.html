@@ -1,0 +1,23 @@
+<html>
+  {% load javascript %}
+  <head>
+{% javascript_assign %}<script type="text/javascript" src="/first_lib.js" />{% endjavascript_assign %}
+{% javascript_assign %}
+<script type="text/javascript">
+    /* some javascript code that uses "first_lib.js" */
+    var a = 1;
+    /* Notice that the "left aligned" indentation helps avoiding whitespace differences between two code fragments. */
+</script>
+{% endjavascript_assign %}
+  </head>
+  <body>
+    <div id="menu">
+      {% include "tests/templateaddons/javascript/menu.html" %}
+    </div>
+    <div id="content">
+      {% block content %}{% endblock content %}
+    </div>
+    <!--  JAVASCRIPT CODE -->
+    {% javascript_render %}
+  </body>
+</html>
