@@ -20,7 +20,7 @@ decorator==4.0.10
 
 Django==1.11.18
 
-django-compat-patcher==0.4
+django-compat-patcher==0.5
 
 #Django-Select2==4.2.2 OUTDATED - think about periodically updating the tag below
 git+https://github.com/pakal/django-select2.git@0bcb6f5d18002c79afeb93899872f59d9c87bc24
@@ -29,7 +29,7 @@ django-admin-jqueryui==1.8.22
 django-appconf==1.0.2
 django-apptemplates==1.2
 
-django-cprofile-middleware==0.1
+django-cprofile-middleware==1.0.4
 
 django-debug-toolbar==1.4
 
@@ -68,7 +68,7 @@ djangocms-text-ckeditor==2.9.3
 
 git+https://github.com/pakal/cmsplugin-rst/
 
-###django-zodb==0.3dev
+git+https://github.com/pakal/django-zodb.git@d2808f1e7679f97e96a6b6898104bafdd186f89d
 
 easy-thumbnails==2.5
 

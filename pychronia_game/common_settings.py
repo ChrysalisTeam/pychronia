@@ -15,7 +15,7 @@ MIDDLEWARE = (tuple(_old_middlewares) +
                       ('pychronia_game.middlewares.ZodbTransactionMiddleware',
                        'pychronia_game.middlewares.AuthenticationMiddleware',
                        'pychronia_game.middlewares.PeriodicProcessingMiddleware',
-                       ##### PASCAL 'django_cprofile_middleware.middleware.ProfilerMiddleware', # use in DEBUG mode with '?prof' at the end of URL
+                       'django_cprofile_middleware.middleware.ProfilerMiddleware', # use in DEBUG mode with '?prof' at the end of URL
                        ))
 
 INSTALLED_APPS += [
