@@ -7,7 +7,8 @@
 import io
 import sys, os, collections.abc, logging, inspect, types, traceback, re, glob, copy
 import yaml, random, contextlib
-from collections import Counter, OrderedDict, Callable
+from collections.abc import Callable
+from collections import Counter, OrderedDict
 from datetime import datetime, timedelta
 
 import ZODB  # must be first !
