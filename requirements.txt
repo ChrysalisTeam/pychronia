@@ -16,7 +16,7 @@ git+https://github.com/django-blog-zinnia/cmsplugin-zinnia
 
 decorator==4.0.10
 
-Django==1.11.18
+Django==2.2.1
 
 django-compat-patcher==0.5
 
