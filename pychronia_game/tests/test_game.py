@@ -7282,7 +7282,7 @@ class TestSpecialAbilities(BaseGameTestCase):
 
         '''
 
-    def ___test_artificial_intelligence(self):  # TODO PUT BOTS BACK AFETR FIXING BRAIN MARSHALLING!!!
+    def test_artificial_intelligence(self):
 
         if not config.ACTIVATE_AIML_BOTS:
             pytest.skip("No AIML bot is configured for testing")

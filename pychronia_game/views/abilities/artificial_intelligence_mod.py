@@ -321,7 +321,7 @@ class DjinnProxy(object):
         """
         subbers = self.bot_kernel._subbers
         del self
-        with open(substitutions_file, "rb") as inFile:
+        with open(substitutions_file, "r") as inFile:
             parser = ConfigParser()
             parser.readfp(inFile, substitutions_file)
             inFile.close()

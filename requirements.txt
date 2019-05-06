@@ -105,6 +105,7 @@ Sphinx==1.4
 # USELESS ZEO==5.0.1
 ZODB==5.0.0
 
+git+https://github.com/paulovn/python-aiml
 
 # django-sentry==1.13.5  # might be useful
 # other plugins, not well maintained, are embedded in this repository
