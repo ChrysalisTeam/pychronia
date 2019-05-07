@@ -1,19 +1,12 @@
 # -*- coding: utf-8 -*-
 
-
-# bugfix, to prevent djangoscms.models.monkeypatch_reverse from breaking i18n_patterns standard system #
-import django.core.urlresolvers
-
-django.core.urlresolvers.reverse.cms_monkeypatched = True
-
-# bugfix for missing language prefixes in urls #
-import menus.base
-
-menus.base.NavigationNode._remove_current_root = lambda self, url: url
-
 from pychronia_common.common_settings import *
 
 LANGUAGE_CODE = 'fr'  # for now, CMS content is french only so....
+
+
+SILENCED_SYSTEM_CHECKS = ["admin.E012"]  # duplicate field(s) in 'fieldsets
+
 
 INSTALLED_APPS += [
     'pychronia_cms',
@@ -71,7 +64,6 @@ MIDDLEWARE = \
         'debug_toolbar.middleware.DebugToolbarMiddleware', #### PASCAL 
         'django.middleware.clickjacking.XFrameOptionsMiddleware',
         'django.middleware.csrf.CsrfViewMiddleware',
-        # #'cms.middleware.multilingual.MultilingualURLMiddleware', OBSOLETE
         'cms.middleware.page.CurrentPageMiddleware',
         'cms.middleware.user.CurrentUserMiddleware',
         'request.middleware.RequestMiddleware',

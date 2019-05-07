@@ -47,8 +47,7 @@ urlpatterns = patterns('',
 urlpatterns += i18n_patterns(
                              #(r'^accounts/', include('userprofiles.urls')), # one-step registration
 
-                             url(r'^weblog/', include('zinnia.urls')),
-                             # TOO MANY URLS, but required by cms menu integration  ## , namespace='zinnia')
+                             # not needed, CMS does it: (r'^weblog/', include('zinnia.urls')),
 
                              #url(r'^comments/', include('django.contrib.comments.urls')), useless ATM ?
 
