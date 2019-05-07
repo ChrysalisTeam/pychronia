@@ -1,3 +1,6 @@
+"""
+Install dependencies and initialize zodb/django databases.
+"""
 
 import sys, os, subprocess
 
