@@ -2,7 +2,7 @@
 
 import os, sys, warnings
 
-# equivalent of " set DJANGO_SETTINGS_MODULE=pychronia_game.tests.persistent_mode_settings " on windows shell
+# equivalent of "set DJANGO_SETTINGS_MODULE=pychronia_game.tests.persistent_mode_settings" on windows shell
 os.environ["DJANGO_SETTINGS_MODULE"] = settings_module = \
     "pychronia_game.tests.persistent_mode_settings"  # with DB not in temp dir
 

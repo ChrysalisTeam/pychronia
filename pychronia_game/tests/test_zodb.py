@@ -63,7 +63,7 @@ def ___test_huge_db_ghosting_system():
 
     MIGHT TRIGGER THIS WARNING:
 
-        p:\development\.virtualenvs\pychronia\lib\site-packages\ZODB\Connection.py:550: UserWarning: The <class 'persistent.list.PersistentList'>
+        <...>Connection.py:550: UserWarning: The <class 'persistent.list.PersistentList'>
         object you're saving is large. (20001339 bytes.)
 
         Perhaps you're storing media which should be stored in blobs.
@@ -338,6 +338,18 @@ class TestZODB(TestCase):
         root.target[0] = value  # we use a value whose origin has now been deleted in other thread
 
         transaction.commit()  # here it's OK, the deleted object still remains in the DB history even if unreachable
+
+    def test_persistent_types_buglets(self):
+
+        l = PersistentList([1, 2, 3])
+        self.assertTrue(isinstance(l, PersistentList))
+        self.assertFalse(isinstance(l, list))  # dangerous
+        self.assertFalse(isinstance(l[:], PersistentList))
+
+        d = PersistentMapping({1: 2})
+        self.assertTrue(isinstance(d, PersistentMapping))
+        self.assertFalse(isinstance(d, dict))  # dangerous
+        self.assertTrue(isinstance(d.copy(), PersistentMapping))
 
 
 if __name__ == '__main__':

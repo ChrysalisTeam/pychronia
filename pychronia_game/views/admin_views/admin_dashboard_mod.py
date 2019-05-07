@@ -53,7 +53,9 @@ class GameViewActivationForm(AbstractGameForm):
         activable_views_choices = [(view_name, view_klass.TITLE) for (view_name, view_klass) in list(activable_views.items())]
         activable_views_choices.sort()
         self.fields['activated_views'].choices = activable_views_choices
-        self.fields['activated_views'].initial = datamanager.get_activated_game_views()
+        assert hasattr(self.fields['activated_views'], "initial")
+        self.fields['activated_views'].initial = list(datamanager.get_activated_game_views())  # prevents ZODB types...
+        assert isinstance(self.fields['activated_views'].initial, list)
 
 
 class GameDurationForm(AbstractGameForm):
