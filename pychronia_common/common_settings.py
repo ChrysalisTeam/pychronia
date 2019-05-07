@@ -4,19 +4,19 @@ import sys, os, tempfile, random, logging, re
 
 try:
     import PIL.Image  # that monolithic package has been exploded in several packages now
-
     sys.modules['Image'] = PIL.Image  # WORKAROUND - prevents "AccessInit: hash collision: 3 for both 1 and 1"
 except ImportError:
-    pass
+    raise
 
 try:
     import pymysql
-
     pymysql.install_as_MySQLdb()  # drop-in replacement
+    import MySQLdb as Database
+    #if Database.version_info < (1, 3, 13):
+    #    print("! PATCHING PYMYSQL VERSION INFO TO PLEASE DJANGO !")
+    #    Database.version_info = (1, 3, 13)
 except ImportError:
-    pass
-
-import pychronia_common.default_logging_config  # base handlers
+    raise
 
 ##################### SETTINGS TO BE OVERRIDDEN BY DEPLOYMENT-SPECIFIC CONF FILE ####################
 
