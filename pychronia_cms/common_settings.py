@@ -5,7 +5,8 @@ from pychronia_common.common_settings import *
 LANGUAGE_CODE = 'fr'  # for now, CMS content is french only so....
 
 
-SILENCED_SYSTEM_CHECKS = ["admin.E012"]  # duplicate field(s) in 'fieldsets
+SILENCED_SYSTEM_CHECKS = ["admin.E012", # duplicate field(s) in 'fieldsets
+                          "urls.W001"]  # wrong "is_endpoint" checks by Django
 
 
 INSTALLED_APPS += [
