@@ -151,7 +151,7 @@ class BaseDataManager(utilities.TechnicalEventsMixin):
             raise RuntimeError("Can't reset existing databases in this environment")
 
         if not yaml_fixture:
-            yaml_fixture = config.GAME_INITIAL_DATA_PATH
+            yaml_fixture = config.GAME_INITIAL_DATA_PATH  # might be a list of files/dirs
 
         self.logger.info("Resetting game data for instance '%s' with fixture '%s'",
                          self.game_instance_id, yaml_fixture if isinstance(yaml_fixture, str) else "<data-tree>")
