@@ -8,9 +8,7 @@ logging_tree
 
 beautifulsoup4==4.7.1
 
-# beware - breaks with "KeyError('request')" : cmsplugin-zinnia==0.8.1
-# soon TODO : switch to zinnia.plugins instead !
-git+https://github.com/GabrielDumbrava/cmsplugin-zinnia
+git+https://github.com/pakal/cmsplugin-zinnia.git@76f8de72a37b0525a8a5f65e99f0412d0a55563c
 
 decorator==4.4.0
 
@@ -103,6 +101,7 @@ requests==2.21.0
 Sphinx==2.0.1
 
 ZODB==5.5.1
+persistent==4.4.0  # if bigger, we can have "failed to map segment from shared object"
 
 git+https://github.com/paulovn/python-aiml
 
