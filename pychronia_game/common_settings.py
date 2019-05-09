@@ -271,8 +271,6 @@ def generate_auction_settings(chrysalis_data_dir):
     """
     import time
 
-    logging.warning("Loading special AUCTION game fixture script...")
-
     _GAME_INITIAL_DATA_DIR = os.path.join(chrysalis_data_dir, "script_fixtures")
     assert os.path.isdir(_GAME_INITIAL_DATA_DIR), _GAME_INITIAL_DATA_DIR
 
@@ -301,6 +299,8 @@ def generate_auction_settings(chrysalis_data_dir):
 
 
     def GAME_INITIAL_FIXTURE_SCRIPT(dm):
+
+        logging.warning("Loading special AUCTION game fixture script...")
 
         # we activate ALL views
         activable_views = list(dm.ACTIVABLE_VIEWS_REGISTRY.keys())
