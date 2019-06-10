@@ -15,7 +15,7 @@ def resolving_decorator(caller, func=None):
     
     The main effect of this preprocessing is that ``*args`` and ``**kwargs``
     arguments become simple "args" and "kwargs" variables (respectively
-    expecting a tupel and a dict asvalues).
+    expecting a tuple and a dict as values).
     
     Example::
     
