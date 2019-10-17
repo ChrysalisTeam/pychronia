@@ -53,13 +53,13 @@ When dev server is launched, the test game instance (created by "reset_zodb") ca
     Standard manage.py scripts, pointing to the "persistent test DB" configuration, are
     also available in /test folders, so as to launch dev servers or issue any other standard django commands.
 
-    Note that the manage.py at depot roor expects a PROD setup, with a "pychronia_settings.py" file available ; in dev environment, you won't need it.
+    Note that the manage.py at depot root expects a PROD setup, with a "pychronia_settings.py" file available; in dev environment, you won't need it.
 
 
 Regenerating CSS files
 =======================
 
-If you modify SCSS files of the website, you'll have to recompile them with pyscss.
+If you modify SCSS files of the website, you'll have to recompile them with pyScss.
 
 See pychronia_common/static/MetalRadiance/build.bat for related commands.
 
@@ -69,10 +69,9 @@ Launching tests
 
 Tests are run with py.test against fake databases stored in temp directories::
 
-    py.test -vl pychronia_game/tests/test_zodb.py
-    py.test -vl pychronia_game/tests/test_game.py
+    cd pychronia_game/tests/ ; pytest -vl 
 
-    CF http://pytest.org/latest/usage.html#usage for more usage info
+See http://pytest.org/latest/usage.html#usage for more usage info
 
 WARNING - if you use a virtualenv, "python -m pytest" might be safer to use, so that you're sure to use the proper python executable.
 
@@ -141,7 +140,7 @@ Development tips
 
 - Only *persistent* versions of mutable types should be stored into the ZODB
   (and this is enforced by pychronia_game's checking system),
-  so use Persistent\* types instead of standard lists/dicts/sets.
+  so use Persistent subtypes instead of standard lists/dicts/sets.
 - Regarding persistent objects: do NOT use PersistentMapping.copy() since it marks data as changed, and copy.copy() might cause troubles by copying object ZODB-IDs ; so use utilities.safe_copy(), or dict()/list() constructors, instead.
 - All public methods of the datamanager must have a decorator (readonly_method, transaction_watcher...)
   to take care of ZODB transactions, depending on whether it may modify content or not.
@@ -149,7 +148,8 @@ Development tips
 - Gameviews offer a powerful API to process forms, and turn them into method calls - no need to manually validate forms anymore.
 - *register_view()* can be used to turn a standard django view into a GameView.
 - An old Django debug toolbar might require a fix in django core/handlers/base.py to work with custom urlconfs::
-  SEE https://code.djangoproject.com/ticket/19784#ticket::
+  SEE https://code.djangoproject.com/ticket/19784#ticket
+  More generally, django debug toolbar doesn't play well with our ZODB use, so you'd better keep it deactivated
 - if layout gets screwed up in Chrome (a vertical spacing before the anthropia header, "&#65279;." appearing in web debugger), it's probably due to Byte Order Marks in html templates - just remove them.
 
 
