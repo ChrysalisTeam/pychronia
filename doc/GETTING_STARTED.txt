@@ -55,7 +55,7 @@ The script "runner.py", in pychronia_game/tests/ folder, can be used to "reset_d
 
 The demo game which gets created, is by default filled with the content of test_game_files/game_initial_data.yaml, and then altered by the GAME_INITIAL_FIXTURE_SCRIPT() function if it exists in settings.
 
-You may modify GAME_FILES_ROOT and GAME_INITIAL_DATA_PATH settings to point respectively to a different tree of game assets, and a different yaml fixture file (or folder of yaml files).
+You may modify GAME_FILES_ROOT and GAME_INITIAL_DATA_PATH settings to point respectively to a different tree of game assets, and a different yaml fixture file (or list of folders or yaml files).
 
 In addition to resetting DBs, the runner.py script of pychronia_game package can pack persistent ZODB, and run django dev server against test DBs located in the same directory::
 
@@ -66,6 +66,17 @@ When dev server is launched, the test game instance (created by "reset_zodb") ca
     Standard manage.py scripts, pointing to the "persistent test DB" configuration, are also available in /test folders, so as to launch standard dev servers, or issue any other standard django commands.
 
     Note that the "manage.py" file at depot root expects a PROD setup, with a "pychronia_settings.py" file (or symlink) available; in dev environment, you won't need it.
+
+
+Special support for Chrysalis RPG
+============================================
+
+There is specific tooling to load the "Chrysalis" RPG campaign (https://chrysalis-game.com/fr/cms/). 
+
+If the game data repository of this RPG is stored in a "Chrysalis/" folder which is sibling with the root folder of your Pychronia repository, then it'll be automatically detected,
+and the `generate_auction_settings()` or `generate_mindstorm_settings()` functions can be used to automatically setup the game in either murder-party or alternate-reality-game mode.
+
+See "pychronia_game/tests/persistent_mode_settings.py" for more information.
 
 
 Launching game tests
