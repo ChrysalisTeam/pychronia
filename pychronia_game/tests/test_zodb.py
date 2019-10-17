@@ -173,7 +173,7 @@ class TestZODB(TestCase):
 
         del a["a"]
         assert b["a"]  # NOT impacted
-        assert "a" not in c, c  # BUG, is impacted!
+        assert "a" in c  # NOT impacted
         assert d["a"]  # NOT impacted
 
     def test_savepoints(self):
@@ -344,7 +344,7 @@ class TestZODB(TestCase):
         l = PersistentList([1, 2, 3])
         self.assertTrue(isinstance(l, PersistentList))
         self.assertFalse(isinstance(l, list))  # dangerous
-        self.assertFalse(isinstance(l[:], PersistentList))
+        self.assertTrue(isinstance(l[:], PersistentList))
 
         d = PersistentMapping({1: 2})
         self.assertTrue(isinstance(d, PersistentMapping))
