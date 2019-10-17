@@ -16,7 +16,6 @@ Nothing forces you to contribute back the bugfixes or features that you might ad
 
 
 
-
 Pychronia Code License (BSD 3-Clause)
 ======================================
 

@@ -5,67 +5,71 @@ PYCHRONIA README
 Prerequisites
 =================
 
-- Install Git, and have it in your PATH
-- Setup and activate a virtual python environment, if you wish
-- Ensure you have the root of this Git depot in your PYTHONPATH (eg. via your windows environment variables, or ~/.bashrc on linux, or virtualenv's activate script...)
+- You need to have Python3.5+ installed on your system
+- Setup and activate a python3 virtual environment, if you wish
 
-On a debian/ubuntu, install additional dev files:
+- On a debian/ubuntu, install additional dev files:
 
-    $ sudo apt-get install python python-dev python-pip libjpeg8-dev libmysqlclient-dev"
+     $ sudo apt-get install python python-dev python-pip libjpeg8-dev libmysqlclient-dev"
 
+- Checkout the repository to your system with GIT, or download/extract it as a zip
 
-Installing dependencies and creating DBs
-=========================================
-
-
-The quick way is to launch "python BOOTSTRAP.py" from the root of the depot, if you needn't sudo.
-If everything goes fine (except some deprecation warnings), you can skip the remainder of this section.
-
-ELSE:
-
-With or without sudo (depending on whether you use a system python or a virtualenv):
-
-$ pip install -r  pip_requirements.txt
-
-On windows : if some C-backed python modules fail at installing (ex. because VC++ environment is not setup), then comment problematic module(s) out of the pip_requirements.txt, and install them via precompiled packages (*.msi, *.exe...)
-
-Then reset both Mysql DB and Zope Object DB, using the "runner.py" described below.
+- To ensure that the initializer "setup_pychronia_env.py" is well found by the different scripts, its' advised to have the root of repository in your PYTHONPATH (eg. via your Windows environment variables, or ~/.bashrc on linux, or virtualenv's activate script...)
 
 
-Utilities and servers
-========================
+Installing dependencies and creating game DBs
+==============================================
 
-The script "runner.py" in pychronia_game/tests package, can be used to "reset_django" (the MySQL DB storing sesssions) and then "reset_zodb" (the object DB containing game data).
+The quick way to setup the engine is to launch "python BOOTSTRAP.py" from the root of the depot (provided that you don't need admin rights to install python packages).
 
-The demo game which gets created, is by default filled with the content of test_game_files/game_initial_data.yaml, which gets altered by the GAME_INITIAL_FIXTURE_SCRIPT() function if it exists in the settings.
+If no errors occur (except some deprecation warnings), then the game portal is ready for use.
 
-You may modify GAME_FILES_ROOT and GAME_INITIAL_DATA_PATH settings to point respectively to a different tree of game assets, and a different yaml "fixture" file (or folder of complementary yaml files).
+Else::
 
-In addition to resetting DBs, the runner.py script of pychronia_game package can pack persistent ZODB, and run django dev server against persistent DBs
-located in the same directory::
+	With or without sudo (depending on whether you use a system python or a virtualenv):
 
-    python pychronia_game/tests/runner.py --help
+	$ pip install -r  requirements.txt
 
-When dev server is launched, the test game instance (created by "reset_zodb") can be reached at "http://localhost:8000/DEMO/"
+	On windows : if some C-backed python modules fail at installing (ex. because VC++ environment is not setup), then comment the problematic modules out of the requirements.txt, and install them via precompiled packages (*.msi, *.exe...)
 
-..note::
+	Then reset both Mysql DB and Zope Object DB for the game portal, using the "runner.py" described below.
 
-    Standard manage.py scripts, pointing to the "persistent test DB" configuration, are
-    also available in /test folders, so as to launch dev servers or issue any other standard django commands.
-
-    Note that the manage.py at depot root expects a PROD setup, with a "pychronia_settings.py" file available; in dev environment, you won't need it.
+The Django-CMS app, located in "pychronia_cms" package, behaves like a quite standard Django application, in development mode you can setup its databases and run a test server via the "pychronia_cms/tests/manage.py" script.
+So the remaindee of this doc focuses on the non-standard "pychronia_game" package.
 
 
 Regenerating CSS files
 =======================
 
-If you modify SCSS files of the website, you'll have to recompile them with pyScss.
+If you modify SCSS files (used by both game portal and django-cms), you'll have to recompile them with pyScss.
 
 See pychronia_common/static/MetalRadiance/build.bat for related commands.
 
 
-Launching tests
-==================
+Utilities and servers
+========================
+
+The script "runner.py", in pychronia_game/tests/ folder, can be used to "reset_django" (the MySQL DB storing sesssions) and then "reset_zodb" (the object DB containing game data), see its help::
+
+    python pychronia_game/tests/runner.py --help
+
+The demo game which gets created, is by default filled with the content of test_game_files/game_initial_data.yaml, and then altered by the GAME_INITIAL_FIXTURE_SCRIPT() function if it exists in settings.
+
+You may modify GAME_FILES_ROOT and GAME_INITIAL_DATA_PATH settings to point respectively to a different tree of game assets, and a different yaml fixture file (or folder of yaml files).
+
+In addition to resetting DBs, the runner.py script of pychronia_game package can pack persistent ZODB, and run django dev server against test DBs located in the same directory::
+
+When dev server is launched, the test game instance (created by "reset_zodb") can be reached at "http://localhost:8000/DEMO/"
+
+..note::
+
+    Standard manage.py scripts, pointing to the "persistent test DB" configuration, are also available in /test folders, so as to launch standard dev servers, or issue any other standard django commands.
+
+    Note that the "manage.py" file at depot root expects a PROD setup, with a "pychronia_settings.py" file (or symlink) available; in dev environment, you won't need it.
+
+
+Launching game tests
+=======================
 
 Tests are run with py.test against fake databases stored in temp directories::
 
@@ -76,15 +80,14 @@ See http://pytest.org/latest/usage.html#usage for more usage info
 WARNING - if you use a virtualenv, "python -m pytest" might be safer to use, so that you're sure to use the proper python executable.
 
 
-Managing games as an admin
-===============================
+Managing games as a super admin
+=================================
 
 First use "manage.py createsuperuser" to create a standard django admin account, from within the pychronia_game/tests folder.
 
 Then sign in via the dev server at http://localhost:8000/admin/
 
 Now you can manage the different pychronia games at http://localhost:8000/administration/
-
 
 
 Sources Tree Overview for pychronia_game package
@@ -94,10 +97,9 @@ Most of the *pychronia_game* package consists of standard django components, and
 
 - urls.py: django url routing files
 - common_settings.py: default settinsg for all deployments using pychronia_game
-- context_processors.py: to add variables to default contexts of template rendering
+- context_processors.py: add common game info in HTML template contexts
 - forms.py: django declarative web forms
 - middlewares.py: django middlewares, for pre and post processing of request
-- context_processors.py: add common game info in template contexts
 - models.py: required by django, but empty here (we don't use django's SQL ORM for our data)
 - locale/: standard gettext files, for site translation
 - template/: standard django templates
@@ -109,7 +111,7 @@ Most of the *pychronia_game* package consists of standard django components, and
   some of these gameviews are "abilities", that are linked more closely to the datamanager, in which they have
   a private storage area - they actually behave as "extensions" of the datamanager.
 
-Pychronia adds to these some layers dedicated to the game system:
+Pychronia adds to these standard entries some layers dedicated to the game system:
 
 - authentication.py: utilities to log in and out as a character or game master
 - common.py: centralizes most useful variables of the application, to be imported as "from pychronia_game.common import *"
@@ -125,18 +127,16 @@ Summary of HTTP request processing in pychronia_game
 When a HTTP request reaches the site, the following tasks are performed:
 
 - pychronia_game middlewares determine which instance of the game is concerned
-- they attach to the request a proper datamanager instance, perform user authentication, and process
-  pending tasks that might remain (delayed actions, email sendings...)
+- they attach to the request a proper datamanager instance, perform user authentication, and process pending tasks that might remain (delayed actions, email sendings...)
 - the targeted GameView is instantiated, and called with the request object as parameter
 - the GameView performs access checks, returning HTTP error responses if needed
-- depending on the kind of request (ajax or not), and the presence (or not) of POST data, the
-  GameView modifies the content of the datamanager (via its public API) according to game rules, and action mixins
+- depending on the kind of request (ajax or not), and the presence (or not) of POST data, the GameView modifies the content of the datamanager (via its public API) according to game rules, and action mixins
 - the json or html response is built with templates and their associated data contexts
 - middlewares perform some cleanup, and the response is returned to the user
 
 
-Development tips
-====================
+Development tips for pychronia_game
+======================================
 
 - Only *persistent* versions of mutable types should be stored into the ZODB
   (and this is enforced by pychronia_game's checking system),
