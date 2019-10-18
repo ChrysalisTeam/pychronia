@@ -53,13 +53,15 @@ The script "runner.py", in pychronia_game/tests/ folder, can be used to "reset_d
 
     python pychronia_game/tests/runner.py --help
 
-The demo game which gets created, is by default filled with the content of test_game_files/game_initial_data.yaml, and then altered by the GAME_INITIAL_FIXTURE_SCRIPT() function if it exists in settings.
+The demo game which gets created, is by default filled with the content of "pychronia_game/tests/test_game_files/game_initial_data.yaml", and then altered by the GAME_INITIAL_FIXTURE_SCRIPT() function if it exists in settings.
 
-You may modify GAME_FILES_ROOT and GAME_INITIAL_DATA_PATH settings to point respectively to a different tree of game assets, and a different yaml fixture file (or list of folders or yaml files).
+You may modify GAME_FILES_ROOT and GAME_INITIAL_DATA_PATH settings to point respectively to a different tree of game assets, and a different yaml fixture file (or list of folders/files).
 
 In addition to resetting DBs, the runner.py script of pychronia_game package can pack persistent ZODB, and run django dev server against test DBs located in the same directory::
 
 When dev server is launched, the test game instance (created by "reset_zodb") can be reached at "http://localhost:8000/DEMO/"
+
+**Game master credentials are the "master_login" and "master_password" fields of your game data "global_parameters". They are master/ultimate by default, in test fixtures.**
 
 ..note::
 
@@ -94,7 +96,7 @@ WARNING - if you use a virtualenv, "python -m pytest" might be safer to use, so 
 Managing games as a super admin
 =================================
 
-First use "manage.py createsuperuser" to create a standard django admin account, from within the pychronia_game/tests folder.
+First use "python manage.py createsuperuser" to create a standard django admin account, from within the "pychronia_game/tests/" folder.
 
 Then sign in via the dev server at http://localhost:8000/admin/
 
