@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import sys, os, warnings
+import sys, os, warnings, logging
 
 root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))  # CHRYSALIS/ root dir
 sys.path.insert(0, root)
@@ -19,13 +19,17 @@ from django.core.management import call_command
 call_command('my_command', 'foo', bar='baz')
 """
 
+# Quick setup of logging
+logging.basicConfig()
+logging.getLogger('').setLevel(logging.INFO)
+
 if __name__ == "__main__":
 
     arguments = [arg.lower() for arg in sys.argv]
 
     if any(help_key in arguments for help_key in ("help", "-h", "--help")):
         print("Usage: python %s [reset_django|reset_zodb|pack_file|runserver]" % sys.argv[0])
-        print("- reset_zodb: reset ZODB databases (game data) to their initial state")
+        print("- reset_zodb: reset ZODB databases (game data) to their initial state; see sources for how to use the 'use_fixture' subcommand")
         print("- reset_django: reset django databases (authentication sessions) to their initial state")
         print("- pack_file: cleans and compresses ZODB file, in case it gets too heavy (test server must not be running)")
         print("- runserver: run local django dev server, against persistent databases")
