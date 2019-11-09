@@ -13,17 +13,64 @@ Features include:
 - rich text including sounds, images and videos
 - ownership of money and 2D/3D artefacts
 - special abilities (spying, mercenaries, data analysis...)
-- internal CMS system, allowing to create multimedia content, NPCs, radio spots (with Acapela text-to-speech)
+- internal CMS system, allowing to create multimedia content, characters, radio spots (with Acapela text-to-speech)
 - bots with artificial intelligence (AIML)
 - special abilities for game masters and game observers (impersonation of users, ingame hints, full control of game data)
 
 
-Technically, Pychronia is a bundle of django applications, using zodb for game data persistence.
-It also contains a Django-CMS application with a blog, useable for example to present games created with this engine.
+Technically, Pychronia is a bundle of Django framework applications, using Zodb for game data persistence.
+It also contains a Django-CMS application with a blog, meant to present games created with this engine.
 
-See the "doc/" folder for more information on installing, contributing, licenses, etc.
-
-Related roleplay-game campaign (in French only at the moment): http://chrysalis-game.com/
+See the "docs/" folder for more information on installing, contributing, licenses, etc.
 
 **Beware, python sources are available under BSD license, but embedded javascript and css libraries have licenses of their own. Also note that the included webdesign "Metal radiance" is licensed as "Creative Commons Attribution Non-Commercial 2.0". Contact us if you want to use it for a commercial project.**
 
+Chrysalis RPG Campaign
+---------------------------
+
+A multi-styles roleplay-game campaign (texts in French only) can be found at http://chrysalis-game.com/
+The media and scenarios of this campaign are available in the `dedicated chrysalis repository <https://github.com/ChrysalisTeam/chrysalis>`_.
+
+
+
+Screenshots of the pychronia portal
+----------------------------------------
+
+.. image:: docs/screenshots/anthropia1.png
+    :align: center
+
+.. image:: docs/screenshots/anthropia2.png
+    :align: center
+    
+.. image:: docs/screenshots/anthropia3.png
+    :align: center
+    
+.. image:: docs/screenshots/anthropia4.png
+    :align: center
+    
+.. image:: docs/screenshots/anthropia5.png
+    :align: center
+    
+.. image:: docs/screenshots/anthropia6.png
+    :align: center
+    
+.. image:: docs/screenshots/anthropia7.png
+    :align: center
+    
+.. image:: docs/screenshots/anthropia8.png
+    :align: center
+    
+.. image:: docs/screenshots/anthropia9.png
+    :align: center
+    
+.. image:: docs/screenshots/anthropia1.png
+    :align: center
+    
+.. image:: docs/screenshots/anthropiamob1.png
+    :align: center
+    
+.. image:: docs/screenshots/anthropiamob2.png
+    :align: center
+    
+.. image:: docs/screenshots/anthropiamob3.png
+    :align: center
