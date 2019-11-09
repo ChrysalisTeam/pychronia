@@ -16,9 +16,9 @@ ___*
 
 .cache
 .pytest_cache
-thumbs/
-/bits and pieces of old pychronia.py
+
 savegames
+thumbs
 
 /media
 /static
