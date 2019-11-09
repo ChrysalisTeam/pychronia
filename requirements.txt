@@ -73,10 +73,6 @@ easy-thumbnails==2.6
 # for cmsplugin-gallery
 django-inline-ordering>=1.0.2
 
-# for rst->pdf builders
-jinja2==2.10.1
-git+https://github.com/pakal/jinja-macro-tags
-
 relstorage>=2.0.0b6
 
 # for relstorage mainly
@@ -108,15 +104,10 @@ git+https://github.com/paulovn/python-aiml
 # django-sentry==1.13.5  # might be useful
 # other plugins, not well maintained, are embedded in this repository
 
-# for mindstorm sheets
-docx2txt
-
-
 ## DEV tools only ##
 
 pytest==4.4.1
 pyScss==1.3.5
-rst2pdf>=0.9
 
 
 
