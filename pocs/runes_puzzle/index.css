@@ -1,0 +1,17 @@
+img{
+	padding-bottom: 0;
+  	margin-bottom: 0;
+}
+#tble{
+	margin-left: auto;
+	margin-right: auto;
+	width: 50%;
+}
+body{
+	background-color: green;
+}
+td:hover {
+	box-shadow: -1px 2px 5px 1px rgba(0, 0, 0, 0.7),
+            -1px 2px 20px rgba(255, 255, 255, 0.6) inset; 
+
+}
