@@ -1,12 +1,15 @@
 var images="images\\";
-function createPuzzle() {
+function createPuzzle(x,y) {
 	damier={};
 
+	damier.x=x; // x nombre of column
+	damier.y=y; //y nombre of line
+	
 	damier.PUZZLE_SUCCESS_STATE = [
-    [true,false,false,true],
-    [false,false,false,false],
-    [false,false,false,false],
-    [false,false,false,false]
+    [true, false,false, true],
+    [false, false,false, false],
+    [false, false,false, false],
+    [false, false,false, false]
     ];
 
 	damier.PUZZLE_CURRENT_STATE = new Array(damier.PUZZLE_SUCCESS_STATE.length);
@@ -16,7 +19,6 @@ function createPuzzle() {
 	 		damier.PUZZLE_CURRENT_STATE[i][j]=false;
 	 	}
 	}
-
 	
 	return damier;
 }
@@ -27,7 +29,6 @@ function drawCheckerboard(damier) {
 		lengthColumn[i]=damier.PUZZLE_SUCCESS_STATE[i].length;
 	}
 	x=Math.max(...lengthColumn);
-
 	y=damier.PUZZLE_SUCCESS_STATE.length;
 
 	var width = window.innerWidth / (2 *x); //4 max nbre of column
@@ -35,10 +36,10 @@ function drawCheckerboard(damier) {
 	var size = Math.min(width, height);
 	var content = "<table>";
 
-	for (var j = 0; j<y; j++) {
+	for (var j = y-1; j >=0; j--) {
 		content += "<tr>";
 		for (var i = 0; i < damier.PUZZLE_SUCCESS_STATE[j].length; i++) {
-			content += "<td> <img id='"+i+"_"+(damier.PUZZLE_SUCCESS_STATE.length-j-1)+"' height="+size+ "px width="+size+"px src='"+images+"puzzle_cell_"+i+"_"+(damier.PUZZLE_SUCCESS_STATE.length-j-1)+".png'> </td>"; 
+			content += "<td> <img id='"+i+"_"+j+"' height="+size+ "px width="+size+"px src='"+images+"puzzle_cell_"+i+"_"+j+".png'> </td>"; 
 		}
 		content += "</tr>";
 	}
@@ -54,25 +55,24 @@ function clickEvent(){
 	   var myId = $(this).attr("id");
 	   
 	   $('#'+myId).fadeOut('fast', function () {
-
 	  //puzzle_cell_1_1(_alt).png
 	    var	x=parseInt((myId).substr(0,1));
 		var y=parseInt((myId).substr(2));	
 
 		   	// Turn the image to the back
-		   	if (damier.PUZZLE_CURRENT_STATE[damier.PUZZLE_SUCCESS_STATE.length-1-y][x]==false){
-		   		damier.PUZZLE_CURRENT_STATE[damier.PUZZLE_SUCCESS_STATE.length-1-y][x] = true;
+		   	if (damier.PUZZLE_CURRENT_STATE[damier.y-1-y][x]==false){
+		   		damier.PUZZLE_CURRENT_STATE[damier.y-1-y][x] = true;
 		   		var newImage=images+'puzzle_cell_'+x+'_'+y+'(_alt).png';
 		   		$('#'+myId).attr("src", newImage);
 		   	}
 		   	else{
-		   		damier.PUZZLE_CURRENT_STATE[damier.PUZZLE_SUCCESS_STATE.length-1-y][x]=false;
+		   		damier.PUZZLE_CURRENT_STATE[damier.y-1-y][x]=false;
 				var newImage=images+'puzzle_cell_'+x+'_'+y+'.png';
 				$('#'+myId).attr("src", newImage);
 		   	}
 
 			if(damier.PUZZLE_CURRENT_STATE.toString()==damier.PUZZLE_SUCCESS_STATE.toString()){
-				$("#overlay").css("display", "block");
+				$("#win").show();
 				var snd = new Audio("audios\\chime.mp3"); // buffers automatically when created
 				snd.play();
 				$("img").off('click');
@@ -90,18 +90,9 @@ function clickEvent(){
 
 }
 
-function reset(){
-	$("table").remove();
-	$("#overlay").css("display", "none");
-	damier=createPuzzle();
-	drawCheckerboard(damier);
-	clickEvent();
-}
+$("#win").hide();
+damier=createPuzzle(4,4);
 
-function main(){
-	damier=createPuzzle();
-	drawCheckerboard(damier);
-	clickEvent();
-}
 
-main();
+drawCheckerboard(damier);
+clickEvent();
