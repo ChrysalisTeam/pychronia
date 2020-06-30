@@ -7,10 +7,10 @@ Created on Mon Jun 29 17:01:36 2020
 
 import shutil
 
-size = 4
+size = 10
 
-original = r'images\dino.png'
+original = r'images\rouge.png'
 
 for i in range(0, size):
     for j in range(0, size):
-        shutil.copyfile(original, r'images\puzzle_cell_'+str(i)+'_'+str(j)+'(_alt).png')
+        shutil.copyfile(original, r'images\puzzle_cell_'+str(i)+'_'+str(j)+'.png')

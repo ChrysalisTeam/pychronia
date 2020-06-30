@@ -4,18 +4,26 @@
 	<title>Rune Enigma</title>
 
 	<script src="jquery-3.5.1.js"></script>
+	
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
 	<link rel="stylesheet" type="text/css" href="index.css">
 
 </head>
 <body>
-	<h1>Welcome !!</h1>
 	
+	<h1>Welcome in Rune Enigma !!</h1>
+	
+	<!-- Puzzle -->
 	<div id="tble">
-		
 	</div>
-	<div id="win">
-	<img  width ="450px" height="250px"src="images\youWin.gif">
+
+	
+	<!-- winning message-->
+	<div id="overlay" >
+		<img id="win" width ="450px" height="250px" src="images\youWin.gif">
+		<button id="reset" onclick="reset()" class="btn btn-primary btn-lg">Reset</button>
 	</div>
+
 	<script type="text/javascript" src="monscript.js"></script>
 	<script src="easyaudioeffects-master\jquery.easyaudioeffects.1.0.0.js"></script>
 </body>
