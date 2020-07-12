@@ -165,7 +165,7 @@ class GemPayementFormMixin(GemHandlingFormUtils):
                                                                              attrs={"class": "multichecklist"}))
                 else:
                     self.fields["gems_list"] = forms.MultipleChoiceField(required=False,
-                                                                         widget=forms.HiddenInput)  # we could just
+                                                                         widget=forms.HiddenInput)
 
                 assert "gems_list" in self.fields
 

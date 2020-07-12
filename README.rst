@@ -25,12 +25,12 @@ See the "docs/" folder for more information on installing, contributing, license
 
 **Beware, python sources are available under BSD license, but embedded javascript and css libraries have licenses of their own. Also note that the included webdesign "Metal radiance" is licensed as "Creative Commons Attribution Non-Commercial 2.0". Contact us if you want to use it for a commercial project.**
 
+
 Chrysalis RPG Campaign
 ---------------------------
 
 A multi-styles roleplay-game campaign (texts in French only) can be found at http://chrysalis-game.com/
 The media and scenarios of this campaign are available in the `dedicated chrysalis repository <https://github.com/ChrysalisTeam/chrysalis>`_.
-
 
 
 Screenshots of the pychronia portal
