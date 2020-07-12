@@ -5,7 +5,6 @@
 import json
 
 from django import forms
-from django_select2 import Select2MultipleWidget
 
 from pychronia_game.common import *
 from pychronia_game.datamanager.abstract_form import (AbstractGameForm, SimpleForm, UninstantiableFormError,

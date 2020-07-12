@@ -177,8 +177,8 @@ def manage_characters(request, template_name='administration/character_managemen
                 initial=dict(target_username=username,
                              official_name=character_data["official_name"],
                              official_role=character_data["official_role"],
-                             allegiances=character_data["domains"],
-                             permissions=character_data["permissions"],
+                             allegiances=list(character_data["domains"]),  # IMPORTANT - coerce to normal list!
+                             permissions=list(character_data["permissions"]),  # IMPORTANT - coerce to normal list!
                              real_life_identity=character_data["real_life_identity"],
                              real_life_email=character_data["real_life_email"],
                              gamemaster_hints=character_data["gamemaster_hints"],
