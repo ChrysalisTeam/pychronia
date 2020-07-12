@@ -604,7 +604,7 @@ class TestUtilities(BaseGameTestCase):
                                 <h2>hello</h2>
                                 <div class="system-message">
                                 <p class="system-message-title">System Message: ERROR/3 (<tt class="docutils">&lt;string&gt;</tt>, line 5)</p>
-                                <p>Unknown directive type \u201cbaddirective\u201d.</p>
+                                <p>Unknown directive type "baddirective".</p>
                                 <pre class="literal-block">
                                 .. baddirective:: aaa
                                 

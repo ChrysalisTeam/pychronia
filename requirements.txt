@@ -14,7 +14,7 @@ decorator==4.4.0
 
 Django==2.2.13  # can't switch to 2.2.1 until PyMysql gets updated to match MySQLdb
 
-django-compat-patcher==0.5
+django-compat-patcher==0.7.1
 
 html5lib==0.999999999  # last version with "html5lib.sanitizer" required (or not anymore?) by djangocms_text_ckeditor
 
