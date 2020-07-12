@@ -56,6 +56,8 @@ class SimpleForm(forms.Form):
     """
     required_css_class = "required"
 
+    AUTOCOMPLETION_DISABLING_ATTRS = {'style': '-webkit-text-security: disc', 'autocomplete': 'off'}
+
     def clean(self):
         """
         We never need fields with leading/trailing spaces in that game, so we strip everything...

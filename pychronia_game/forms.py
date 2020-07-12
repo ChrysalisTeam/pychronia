@@ -206,8 +206,7 @@ class AuthenticationForm(SimpleForm):
 
     # autocomplete OFF doesn't work anymore for password fields... so we workaround
     secret_password = forms.CharField(label=ugettext_lazy("Password"), required=False, max_length=30,
-                                      widget=forms.TextInput(attrs={'style': '-webkit-text-security: disc',
-                                                                    'autocomplete': 'off'}))
+                                      widget=forms.TextInput(attrs=SimpleForm.AUTOCOMPLETION_DISABLING_ATTRS))
 
 
 class PasswordChangeForm(AbstractGameForm):
@@ -244,6 +243,16 @@ class RadioFrequencyForm(SimpleForm):
     frequency = forms.CharField(label=ugettext_lazy("Radio Frequency"),
                                 widget=forms.TextInput(attrs={'autocomplete': 'off'}))
 
+
+class HiddenClueForm(SimpleForm):
+    """
+    We do not use password inputs, to avoid triggering credentials saving in browser...
+    """
+    clue_category = forms.CharField(label=ugettext_lazy("Category"), required=True, max_length=30,
+                                    widget=forms.TextInput(attrs=SimpleForm.AUTOCOMPLETION_DISABLING_ATTRS))
+
+    clue_code = forms.CharField(label=ugettext_lazy("Code"), required=True, max_length=30,
+                                      widget=forms.TextInput(attrs=SimpleForm.AUTOCOMPLETION_DISABLING_ATTRS))
 
 
 class HouseReportForm(AbstractGameForm):

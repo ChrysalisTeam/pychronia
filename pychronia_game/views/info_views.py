@@ -7,6 +7,8 @@ from pychronia_game.datamanager.abstract_game_view import AbstractGameView, regi
 from pychronia_game import forms
 from django.http import Http404, HttpResponseRedirect, HttpResponse
 import json
+
+from pychronia_game.forms import HiddenClueForm
 from pychronia_game.utilities import mediaplayers
 from pychronia_game.datamanager.abstract_form import AbstractGameForm
 from django import forms as django_forms
@@ -65,7 +67,7 @@ class StaticPageView(AbstractGameView):
         page_id = self.kwargs.get("page_id")
 
         if not page_id or page_id not in self.datamanager.static_pages:
-            print(">>>>", page_id, list(self.datamanager.static_pages.keys()))
+            #print(">>>>", page_id, list(self.datamanager.static_pages.keys()))
             raise Http404  # unexisting static page
 
         entry = self.datamanager.static_pages[page_id]
@@ -74,6 +76,44 @@ class StaticPageView(AbstractGameView):
 
 
 view_static_page = StaticPageView.as_view
+
+
+@register_view
+class HiddenClueView(AbstractGameView):
+    """
+    This view allows anyone (even anonymous) to access a specific entry of the static pages, thanks to
+    its category and a short "clue code" exactly matching one of its keywords.
+    """
+
+    TITLE = ugettext_lazy("Clue")
+    NAME = "view_hidden_clue"
+
+    TEMPLATE = "information/view_hidden_clue.html"
+
+    ACCESS = UserAccess.anonymous
+    REQUIRES_CHARACTER_PERMISSION = False
+    REQUIRES_GLOBAL_PERMISSION = False
+
+    def get_template_vars(self, previous_form_data=None):
+        clue_category = self.request.POST.get("clue_category")
+        clue_code = self.request.POST.get("clue_code")
+
+        clue_content = ""
+        if clue_category and clue_code:
+            try:
+                clue_content = self.datamanager.get_hidden_clue_content(clue_category=clue_category, clue_code=clue_code)
+            except NormalUsageError as exc:
+                self.datamanager.user.add_warning(str(exc))  # Should have proper information!
+
+        return dict(clue_content=clue_content,
+                    clue_form=HiddenClueForm())
+
+    def _process_html_post_data(self):
+        """We bypass normal form processing, here."""
+        return dict(result=None, form_data=None)
+    
+
+view_hidden_clue = HiddenClueView.as_view
 
 
 class EnyclopediaIndexVisibilityForm(AbstractGameForm):

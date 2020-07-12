@@ -57,6 +57,8 @@ inner_game_urlpatterns = patterns('pychronia_game.views',
 
                                   url(r'^pages/(?P<page_id>[^/]*)/$', 'view_static_page'),
 
+                                  url(r'^clues/$', 'view_hidden_clue'),
+
                                   url(r'^encyclopedia/$', 'view_encyclopedia'),
                                   url(r'^encyclopedia/(?P<current_article_id>[^/]*)/$', 'view_encyclopedia'),
 

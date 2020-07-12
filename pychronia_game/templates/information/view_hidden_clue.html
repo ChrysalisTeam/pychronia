@@ -1,0 +1,23 @@
+
+{% extends "base_one_column_isolated.html" %}
+
+{% load i18n helpers kwacros %}
+{% loadkwacros "metalradiance_kwacros.html" %}
+
+
+
+{% block content %}
+
+    {% if clue_content %}
+    <div class="pretty_text">
+        {% rich_text clue_content %}
+    </div>
+    {% endif %}
+
+
+    <div style="margin: 10px auto; text-align: center;">
+    {% include "utilities/scroll_form.html" with title=_("Enter Clue Code") form=clue_form class="center" button_title=_("Submit") button_name="request_clue" %}
+    </div>
+
+
+{% endblock %}

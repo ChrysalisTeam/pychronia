@@ -4574,17 +4574,17 @@ class HiddenClues(BaseDataManager):
     # No need for specific initializations or checks, we just reuse static-pages!
 
     @readonly_method
-    def get_hidden_clue_content(self, category, clue_code):
+    def get_hidden_clue_content(self, clue_category, clue_code):
         """
         Return the first entry found for category and (exact) keyword, or raise an Usage error.
         Fetching is case-insensitive.
         """
-        assert category and clue_code, locals()
-        category = category.strip().lower()
+        assert clue_category and clue_code, locals()
+        clue_category = clue_category.strip().lower()
         clue_code = clue_code.strip().lower()
-        potential_clues_for_category = self.get_static_pages_for_category(category)
+        potential_clues_for_category = self.get_static_pages_for_category(clue_category)
         if not potential_clues_for_category:
-            raise NormalUsageError(_("Data category '%s' not found") % category)
+            raise NormalUsageError(_("Data category '%s' not found") % clue_category)
         for (key, value) in sorted(potential_clues_for_category.items()):
             if any(clue_code == keyword for keyword in value["keywords"]):
                 return value["content"]
