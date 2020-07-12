@@ -4485,12 +4485,14 @@ class StaticPages(BaseDataManager):
                                    False)  # we assume ANY static page is optional for the game, and can be edited/deleted
 
                 details.setdefault("categories", [])  # distinguishes possibles uses of static pages
-                details["categories"] = [details["categories"]] if isinstance(details["categories"], str) else \
-                details["categories"]
+                details["categories"] = ([details["categories"]] if isinstance(details["categories"], str)
+                                         else details["categories"])
 
                 details.setdefault("keywords", [])  # useful for encyclopedia articles mainly
-                details["keywords"] = [details["keywords"]] if isinstance(details["keywords"], str) else details[
-                    "keywords"]
+                details["keywords"] = ([details["keywords"]] if isinstance(details["keywords"], str)
+                                       else details["keywords"])
+
+                details.setdefault("keywords", [])  # useful for encyclopedia articles mainly
 
                 details.setdefault("gamemaster_hints", "")  # for gamemaster only
                 details["gamemaster_hints"] = details["gamemaster_hints"].strip()
@@ -4525,10 +4527,12 @@ class StaticPages(BaseDataManager):
 
             utilities.check_is_list(value["categories"])
             for category in (value["categories"]):
+                assert category == category.lower(), category  # For use in hidden clues...
                 utilities.check_is_slug(category)
 
             utilities.check_is_list(value["keywords"])
             for keyword in (value["keywords"]):
+                assert keyword == keyword.lower(), keyword  # For use in hidden clues...
                 utilities.check_is_string(keyword, multiline=False)
 
             if value.get("gamemaster_hints"):  # optional
@@ -4565,6 +4569,29 @@ class StaticPages(BaseDataManager):
 
 
 @register_module
+class HiddenClues(BaseDataManager):
+
+    # No need for specific initializations or checks, we just reuse static-pages!
+
+    @readonly_method
+    def get_hidden_clue_content(self, category, clue_code):
+        """
+        Return the first entry found for category and (exact) keyword, or raise an Usage error.
+        Fetching is case-insensitive.
+        """
+        assert category and clue_code, locals()
+        category = category.strip().lower()
+        clue_code = clue_code.strip().lower()
+        potential_clues_for_category = self.get_static_pages_for_category(category)
+        if not potential_clues_for_category:
+            raise NormalUsageError(_("Data category '%s' not found") % category)
+        for (key, value) in sorted(potential_clues_for_category.items()):
+            if any(clue_code == keyword for keyword in value["keywords"]):
+                return value["content"]
+        raise NormalUsageError(_("Data code '%s' not found") % clue_code)
+
+
+@register_module
 class Encyclopedia(BaseDataManager):
     ENCYCLOPEDIA_CATEGORY = "encyclopedia"
 
@@ -4587,7 +4614,7 @@ class Encyclopedia(BaseDataManager):
 
         all_keywords = []
 
-        for (key, value) in list(self.get_static_pages_for_category(self.ENCYCLOPEDIA_CATEGORY).items()):
+        for (key, value) in self.get_static_pages_for_category(self.ENCYCLOPEDIA_CATEGORY).items():
             assert key.lower() == key  # of course, since these are static pages...
             utilities.check_is_slug(key)
 

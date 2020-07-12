@@ -1798,6 +1798,32 @@ class TestDatamanager(BaseGameTestCase):
         response = c.get(files2[0] + ".dummy")
         self.assertEqual(response.status_code, 404)
 
+    @for_core_module(HiddenClues)
+    def test_hidden_clues_retrieval(self):
+
+        content = self.dm.get_hidden_clue_content(category="magic", clue_code="kxz")
+        assert "magic-clue" in content
+
+        content = self.dm.get_hidden_clue_content(category=" Magic  ", clue_code="kxZ ")
+        assert "magic-clue" in content
+
+        content = self.dm.get_hidden_clue_content(category="physiCs", clue_code=" kXz")
+        assert "physics-clue" in content  # FIRST sorted entry is retrieved
+
+        with pytest.raises(NormalUsageError, match="category"):
+            self.dm.get_hidden_clue_content(category="magi", clue_code="kxz")  # Substring refused
+        with pytest.raises(NormalUsageError, match="category"):
+            self.dm.get_hidden_clue_content(category="magician", clue_code="kxz")  # Superstring refused
+        with pytest.raises(NormalUsageError, match="category"):
+            self.dm.get_hidden_clue_content(category="unexisting", clue_code="tada")
+
+        with pytest.raises(NormalUsageError, match="code"):
+            self.dm.get_hidden_clue_content(category="magic", clue_code="kx")  # Substring refused
+        with pytest.raises(NormalUsageError, match="code"):
+            self.dm.get_hidden_clue_content(category="magic", clue_code="kxzh")  # Superstring refused
+        with pytest.raises(NormalUsageError, match="code"):
+            self.dm.get_hidden_clue_content(category="magic", clue_code="okay")
+
     @for_core_module(Encyclopedia)
     def test_encyclopedia_api_and_keywords(self):
 

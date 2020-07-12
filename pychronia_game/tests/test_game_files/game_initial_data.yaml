@@ -668,8 +668,25 @@ static_pages:
 
 
 
+    # HIDDEN CLUES #
 
+    some_clue1:
+        categories: magic
+        keywords: ["magiciens?", "kxz"]
+        content:   |
+            You have found a trace of magic-clue here!
 
+    some_clue2:
+        categories: physics
+        keywords: ["phyisiciens?", "kxz"]  # Same code but different category
+        content:   |
+            You have found a trace of physics-clue here!
+
+    some_clue2bis:
+        categories: physics
+        keywords: ["kxz"]  # Same code and category, but shadowed by the other
+        content:   |
+            You have found a trace of physics-other-clue here!
 
 
 nightmare_captchas:
