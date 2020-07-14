@@ -4494,6 +4494,8 @@ class StaticPages(BaseDataManager):
 
                 details.setdefault("keywords", [])  # useful for encyclopedia articles mainly
 
+                details.setdefault("clue_code", "")  # useful for hidden clues mainly
+
                 details.setdefault("gamemaster_hints", "")  # for gamemaster only
                 details["gamemaster_hints"] = details["gamemaster_hints"].strip()
 
@@ -4534,6 +4536,10 @@ class StaticPages(BaseDataManager):
             for keyword in (value["keywords"]):
                 assert keyword == keyword.lower(), keyword  # For use in hidden clues...
                 utilities.check_is_string(keyword, multiline=False)
+
+            if value["clue_code"] != "":  # Can't be None!
+                utilities.check_is_slug(value["clue_code"])
+                assert value["clue_code"].lower() == value["clue_code"], repr(value["clue_code"])
 
             if value.get("gamemaster_hints"):  # optional
                 utilities.check_is_restructuredtext(value["gamemaster_hints"], strict=strict)
@@ -4586,8 +4592,12 @@ class HiddenClues(BaseDataManager):
         if not potential_clues_for_category:
             raise NormalUsageError(_("Data category '%s' not found") % clue_category)
         for (key, value) in sorted(potential_clues_for_category.items()):
-            if any(clue_code == keyword for keyword in value["keywords"]):
-                return value["content"]
+            item_clue_code = value["clue_code"]
+            if not item_clue_code:
+                continue  # Safety
+            assert item_clue_code.lower() == item_clue_code, repr(item_clue_code)  # Double check
+            if clue_code == item_clue_code:
+                return value["content"]  # First one gets taken!
         raise NormalUsageError(_("Data code '%s' not found") % clue_code)
 
 

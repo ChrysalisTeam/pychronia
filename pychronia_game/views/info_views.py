@@ -111,7 +111,7 @@ class HiddenClueView(AbstractGameView):
     def _process_html_post_data(self):
         """We bypass normal form processing, here."""
         return dict(result=None, form_data=None)
-    
+
 
 view_hidden_clue = HiddenClueView.as_view
 

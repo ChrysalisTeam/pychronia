@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
-
-
+from django.core.exceptions import ValidationError
 
 from pychronia_game.datamanager.abstract_form import GAMEMASTER_HINTS_FIELD
 from pychronia_game.datamanager.datamanager_modules import StaticPages, Encyclopedia
@@ -19,10 +18,18 @@ class StaticPageForm(DataTableForm):
 
     keywords = Select2TagsField(label=ugettext_lazy("Keywords"), required=False)
 
+    clue_code = forms.CharField(label=ugettext_lazy("Clue code (lowercase slug)"), required=False)
+
     content = forms.CharField(label=ugettext_lazy("Content"), widget=forms.Textarea(attrs={'rows': '8', 'cols': '40'}),
                               required=True)
 
     gamemaster_hints = GAMEMASTER_HINTS_FIELD()
+
+    def clean_clue_code(self):
+        data = self.cleaned_data['clue_code']
+        if " " in data or "\n" in data or data.lower() != data:
+            raise ValidationError(_("Clue code must be a lowercase spaceless slug"))
+        return data
 
 
 ### TODO - DEAL WITH IMMUTABLES ???

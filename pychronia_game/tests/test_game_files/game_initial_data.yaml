@@ -672,21 +672,29 @@ static_pages:
 
     some_clue1:
         categories: magic
-        keywords: ["magiciens?", "kxz"]
+        keywords: ["magiciens?", "whatever"]
+        clue_code: "kxz"
         content:   |
             You have found a trace of magic-clue here!
 
     some_clue2:
         categories: physics
-        keywords: ["phyisiciens?", "kxz"]  # Same code but different category
+        keywords: ["physiciens?", "kxz"]  # Same code but different category
+        clue_code: "kxz"
         content:   |
             You have found a trace of physics-clue here!
 
     some_clue2bis:
         categories: physics
-        keywords: ["kxz"]  # Same code and category, but shadowed by the other
+        clue_code: "kxz"
         content:   |
             You have found a trace of physics-other-clue here!
+
+    some_clue3:
+        categories: physics
+        clue_code: ""
+        content:   |
+            You have found a trace of oil here!
 
 
 nightmare_captchas:
