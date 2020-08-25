@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Rune Enigma 2</title>
+
+    <script src="jquery-3.5.1.js"></script>
+
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+	<link rel="stylesheet" type="text/css" href="enigma2.css">
+
+</head>
+<body>
+
+    <h1>Welcome in Rune Enigma 2 !</h1>
+
+    <!-- Puzzle -->
+	<div id="cards">
+	</div>
+
+
+	<!-- winning message-->
+	<div id="overlay" >
+		<img id="win" width ="450px" height="250px" src="images\youWin.gif">
+		<button id="reset" onclick="reset()" class="btn btn-primary btn-lg">Reset</button>
+	</div>
+
+	<script type="text/javascript" src="enigma2.js"></script>
+	<script src="https://requirejs.org/docs/release/2.3.6/r.js"></script>
+	<script src="easyaudioeffects-master\jquery.easyaudioeffects.1.0.0.js"></script>
+
+</body>
+</html>
