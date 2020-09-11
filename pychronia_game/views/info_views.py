@@ -392,7 +392,6 @@ def encrypted_folder(request, folder, entry_template_name="information/encrypted
 
     user = request.datamanager.user
     files = None
-    form = None
 
     if request.method == "POST":
         form = forms.CleartextPasswordForm(request.POST)
@@ -430,3 +429,15 @@ def encrypted_folder(request, folder, entry_template_name="information/encrypted
                           "files": files_to_display,
                           "display_maintenance_notice": False,  # upload disabled notification
                       })
+
+
+
+@register_view(access=UserAccess.anonymous, requires_global_permission=False,
+               title=ugettext_lazy("Forbidden Area Entrance"))
+def enigma_runes_puzzle(request, template_name="information/enigma_runes_puzzle.html"):
+    return render(request,
+                  template_name,
+                  {
+                      # "page_title": _("xxx")
+                  })
+
