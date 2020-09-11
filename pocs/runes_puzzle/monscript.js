@@ -3,10 +3,9 @@ function createPuzzle() {
 	damier={};
 
 	damier.PUZZLE_SUCCESS_STATE = [
-    [true,false,false,true],
-    [false,false,false,false],
-    [false,false,false,false],
-    [false,false,false,false]
+    [true,true,true],
+    [false,true,false],
+    [false,true,false]
     ];
 
 	damier.PUZZLE_CURRENT_STATE = new Array(damier.PUZZLE_SUCCESS_STATE.length);
@@ -30,8 +29,8 @@ function drawCheckerboard(damier) {
 
 	y=damier.PUZZLE_SUCCESS_STATE.length;
 
-	var width = window.innerWidth / (2 *x); //4 max nbre of column
-	var height = window.innerHeight / (2 *y);
+	var width = window.innerWidth / (x);
+	var height = window.innerHeight / (y);
 	var size = Math.min(width, height);
 	var content = "<table>";
 
@@ -62,7 +61,7 @@ function clickEvent(){
 		   	// Turn the image to the back
 		   	if (damier.PUZZLE_CURRENT_STATE[damier.PUZZLE_SUCCESS_STATE.length-1-y][x]==false){
 		   		damier.PUZZLE_CURRENT_STATE[damier.PUZZLE_SUCCESS_STATE.length-1-y][x] = true;
-		   		var newImage=images+'puzzle_cell_'+x+'_'+y+'(_alt).png';
+		   		var newImage=images+'puzzle_cell_'+x+'_'+y+'_alt.png';
 		   		$('#'+myId).attr("src", newImage);
 		   	}
 		   	else{
