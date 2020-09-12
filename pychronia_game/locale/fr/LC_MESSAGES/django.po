@@ -10,8 +10,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-12 14:25+0200\n"
-"PO-Revision-Date: 2020-09-12 14:28+0200\n"
+"POT-Creation-Date: 2020-09-12 17:31+0200\n"
+"PO-Revision-Date: 2020-09-12 17:32+0200\n"
 "Last-Translator: Pascal <chambon.pascal@gmail.com>\n"
 "Language-Team: Nothing\n"
 "Language: fr\n"
@@ -754,13 +754,11 @@ msgstr "pages statiques"
 
 #: .\datamanager\datamanager_modules.py:4593
 #, python-format
-#| msgid "Entry '%s' not found"
 msgid "Data category '%s' not found"
 msgstr "Catégorie de données '%s' introuvable"
 
 #: .\datamanager\datamanager_modules.py:4601
 #, python-format
-#| msgid "Entry '%s' not found"
 msgid "Data code '%s' not found"
 msgstr "Code de données '%s' introuvable"
 
@@ -915,7 +913,6 @@ msgid "Category"
 msgstr "Catégorie"
 
 #: .\forms.py:254
-#| msgid "Folder"
 msgid "Code"
 msgstr "Code"
 
@@ -2215,6 +2212,15 @@ msgstr ""
 "réussi à récupérer une petite partie de l'index encyclopédique.\n"
 "                        Nous continuerons l'investigation quand nous aurons "
 "le budget pour cela, dans un an ou plus."
+
+#: .\templates\information\enigma_runes_cards.html:26
+#| msgid "Unlock house doors"
+msgid "Unlock Music Box"
+msgstr "Déverrouiller la Boîte à Musique"
+
+#: .\templates\information\enigma_runes_cards.html:32
+msgid "The mill can now produce treasures"
+msgstr "Le moulin peut désormais produire des trésors"
 
 #: .\templates\information\enigma_runes_puzzle.html:27
 msgid "The magic portal is now open"
@@ -4010,6 +4016,10 @@ msgstr "Décoder l'archive"
 #: .\views\info_views.py:436
 msgid "Forbidden Area Entrance"
 msgstr "Entrée du Domaine Interdit"
+
+#: .\views\info_views.py:444
+msgid "Song of Treasure Mill"
+msgstr "Chant du Moulin au Trésor"
 
 #: .\views\messaging_views.py:25 .\views\messaging_views.py:48
 msgid "Body"
