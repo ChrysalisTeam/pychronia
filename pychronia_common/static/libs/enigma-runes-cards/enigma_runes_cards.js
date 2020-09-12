@@ -6,7 +6,10 @@ var enigmaRunesCardsSndRoot = enigmaRunesCardsAssetsRoot+"snds/";
 var chimeSnd = new Audio(enigmaRunesCardsSndRoot + "chime.mp3"); // buffers automatically when created
 chimeSnd.volume = 0.3;
 
-var victorySnd = new Audio(enigmaRunesCardsSndRoot + "angels.mp3"); // buffers automatically when created
+var victorySnd = new Audio(enigmaRunesCardsSndRoot + "angels.mp3");
+
+var failureSound = new Audio(enigmaRunesCardsSndRoot + "fail-sound.mp3");
+failureSound.volume = 0.3;
 
 function createPuzzle() {
 
@@ -88,6 +91,24 @@ function object_equals( x, y ) {
   return true;
 }
 
+function checkCardsStatus() {
+    $("#submit-cards").prop('disabled', true);
+    var currentState = Counter(card_hand.PUZZLE_CURRENT_STATE);
+    var successState = Counter(card_hand.SUCCESS_SYMBOLS);
+    var successful = object_equals(currentState, successState)
+
+    if (successful == true){
+        $("#victory-overlay").css("display", "block");
+        victorySnd.play();
+        $("img").off('click');
+    } else {
+        failureSound.pause();
+        failureSound.currentTime = 0;
+        failureSound.play();
+    }
+    setTimeout(function(){$("#submit-cards").prop('disabled', false);}, 1000)
+}
+
 
 function clickEvent(){
     $("img").click(function() {
@@ -102,20 +123,8 @@ function clickEvent(){
             var newIndex = (currentIndex + 1) % card_hand.AVAILABLE_SYMBOLS.length;
             newImage = enigmaRunesCardsImgRoot+card_hand.AVAILABLE_SYMBOLS[newIndex];
 
-            card_hand.PUZZLE_CURRENT_STATE[number] = newImage.split("/").pop()
+            card_hand.PUZZLE_CURRENT_STATE[number] = card_hand.AVAILABLE_SYMBOLS[newIndex];
             $('#'+id).attr("src", newImage);
-
-            var currentState = Counter(card_hand.PUZZLE_CURRENT_STATE);
-            var successState = Counter(card_hand.SUCCESS_SYMBOLS);
-            var successful = object_equals(currentState, successState)
-
-            if (successful == true){
-                $("#victory-overlay").css("display", "block");
-
-                victorySnd.play();
-				$("img").off('click');
-            }
-
             $('#'+id).fadeIn('fast');
         });
 
