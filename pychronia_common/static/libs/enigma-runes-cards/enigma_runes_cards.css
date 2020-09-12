@@ -3,11 +3,11 @@
 	margin-left: auto;
 	margin-right: auto;
 	width: 100%;
-	background: rgba(255, 255, 255, 0.5);
 }
 
 #enigma-container table{
 	margin: auto;
+	background: rgba(255, 255, 255, 0.5);
 }
 
 #enigma-container img {

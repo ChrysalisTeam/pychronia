@@ -3,6 +3,9 @@
 var enigmaRunesPuzzleImgRoot = enigmaRunesPuzzleAssetsRoot+"imgs/";
 var enigmaRunesPuzzleSndRoot = enigmaRunesPuzzleAssetsRoot+"snds/";
 
+var swapSnd = new Audio(enigmaRunesPuzzleSndRoot + "swap.mp3"); // buffers automatically when created
+var victorySnd = new Audio(enigmaRunesPuzzleSndRoot + "victory.mp3"); // buffers automatically when created
+
 function createPuzzle() {
 	damier={};
 
@@ -77,8 +80,7 @@ function clickEvent(){
 
 			if(damier.PUZZLE_CURRENT_STATE.toString()==damier.PUZZLE_SUCCESS_STATE.toString()){
 				$("#victory-overlay").css("display", "block");
-				var snd = new Audio(enigmaRunesPuzzleSndRoot + "victory.mp3"); // buffers automatically when created
-				snd.play();
+				victorySnd.play();
 				$("img").off('click');
 			}
 
@@ -86,8 +88,9 @@ function clickEvent(){
 	   $('#'+myId).fadeIn('fast');
     	});
 
-	   var snd = new Audio(enigmaRunesPuzzleSndRoot + "swap.mp3"); // buffers automatically when created
-		snd.play();
+		swapSnd.pause();
+		swapSnd.currentTime = 0;
+		swapSnd.play();
 
 	});
 

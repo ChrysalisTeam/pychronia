@@ -3,6 +3,11 @@
 var enigmaRunesCardsImgRoot = enigmaRunesCardsAssetsRoot+"imgs/";
 var enigmaRunesCardsSndRoot = enigmaRunesCardsAssetsRoot+"snds/";
 
+var chimeSnd = new Audio(enigmaRunesCardsSndRoot + "chime.mp3"); // buffers automatically when created
+chimeSnd.volume = 0.3;
+
+var victorySnd = new Audio(enigmaRunesCardsSndRoot + "angels.mp3"); // buffers automatically when created
+
 function createPuzzle() {
 
     card_hand = {};
@@ -106,17 +111,17 @@ function clickEvent(){
 
             if (successful == true){
                 $("#victory-overlay").css("display", "block");
-				var snd = new Audio(enigmaRunesCardsSndRoot + "angels.mp3"); // buffers automatically when created
-				snd.play();
+
+                victorySnd.play();
 				$("img").off('click');
             }
 
             $('#'+id).fadeIn('fast');
         });
 
-        var snd = new Audio(enigmaRunesCardsSndRoot + "chime.mp3"); // buffers automatically when created
-        snd.volume = 0.3;
-		snd.play();
+        chimeSnd.pause();
+        chimeSnd.currentTime = 0;
+        chimeSnd.play();
 
     });
 }
