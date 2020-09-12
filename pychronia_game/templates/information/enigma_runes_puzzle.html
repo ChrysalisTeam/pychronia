@@ -23,9 +23,10 @@
    	</div>
 
    	<!-- winning message-->
-   	<div id="overlay" >
-   		<img id="win" width ="450px" height="250px" src="{{ STATIC_URL }}libs/enigma-runes-puzzle/imgs/victory.gif">
-   		<button id="reset" onclick="resetEnigmaRunesPuzzle()" class="btn btn-primary btn-lg">Reset</button>
+   	<div id="victory-overlay" >
+        <h1 style="text-align: center;">{% trans "The magic portal is now open" %}</h1>
+   		<img id="victory-splash" width ="400px" height="400px" src="{{ STATIC_URL }}libs/enigma-runes-puzzle/imgs/victory.gif">
+   		<!--button id="reset-enigma" onclick="resetEnigmaRunesPuzzle()" class="btn btn-primary btn-lg">Reset</button-->
    	</div>
 
 {% endblock %}

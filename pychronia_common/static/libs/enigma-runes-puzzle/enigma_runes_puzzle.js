@@ -42,7 +42,7 @@ function drawCheckerboard(damier) {
 	for (var j = 0; j<y; j++) {
 		content += "<tr>";
 		for (var i = 0; i < damier.PUZZLE_SUCCESS_STATE[j].length; i++) {
-			content += "<td> <img id='"+i+"_"+(damier.PUZZLE_SUCCESS_STATE.length-j-1)+"' height="+size+ "px width="+size+"px src='"+enigmaRunesPuzzleImgRoot+"puzzle_cell_"+i+"_"+(damier.PUZZLE_SUCCESS_STATE.length-j-1)+".png'> </td>";
+			content += "<td> <img class=\"rune\" id='"+i+"_"+(damier.PUZZLE_SUCCESS_STATE.length-j-1)+"' height="+size+ "px width="+size+"px src='"+enigmaRunesPuzzleImgRoot+"puzzle_cell_"+i+"_"+(damier.PUZZLE_SUCCESS_STATE.length-j-1)+".png'> </td>";
 		}
 		content += "</tr>";
 	}
@@ -76,7 +76,7 @@ function clickEvent(){
 		   	}
 
 			if(damier.PUZZLE_CURRENT_STATE.toString()==damier.PUZZLE_SUCCESS_STATE.toString()){
-				$("#overlay").css("display", "block");
+				$("#victory-overlay").css("display", "block");
 				var snd = new Audio(enigmaRunesPuzzleSndRoot + "victory.mp3"); // buffers automatically when created
 				snd.play();
 				$("img").off('click');
@@ -95,7 +95,7 @@ function clickEvent(){
 
 function resetEnigmaRunesPuzzle(){
 	$("table").remove();
-	$("#overlay").css("display", "none");
+	$("#victory-overlay").css("display", "none");
 	damier=createPuzzle();
 	drawCheckerboard(damier);
 	clickEvent();
