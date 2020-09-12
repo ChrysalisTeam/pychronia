@@ -37,7 +37,7 @@ from .info_views import (view_encyclopedia, view_static_page, view_hidden_clue,
                          personal_webradio_popup, personal_webradio_page, get_radio_xml_conf, public_webradio,
                          ajax_get_next_audio_message, ajax_notify_audio_message_finished,
                          personal_folder, view_media, encrypted_folder, view_world_map_static, view_world_map_dynamic,
-                         enigma_runes_puzzle)
+                         enigma_runes_puzzle, enigma_runes_cards)
 
 from .profile_views import login, logout, secret_question, character_profile, friendship_management, game_events
 

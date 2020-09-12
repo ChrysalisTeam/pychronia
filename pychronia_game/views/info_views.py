@@ -437,7 +437,14 @@ def encrypted_folder(request, folder, entry_template_name="information/encrypted
 def enigma_runes_puzzle(request, template_name="information/enigma_runes_puzzle.html"):
     return render(request,
                   template_name,
-                  {
-                      # "page_title": _("xxx")
-                  })
+                  {})
+
+
+@register_view(access=UserAccess.anonymous, requires_global_permission=False,
+               title=ugettext_lazy("Song of Treasure Mill"))
+def enigma_runes_cards(request, template_name="information/enigma_runes_cards.html"):
+    return render(request,
+                  template_name,
+                  {})
+
 

@@ -37,6 +37,7 @@ inner_game_urlpatterns = patterns('pychronia_game.views',
                                   url(r'^encrypted_folders/(?P<folder>[^/]*)/$', 'encrypted_folder'),
 
                                   url(r'^enigma_runes_puzzle/$', 'enigma_runes_puzzle'),
+                                  url(r'^enigma_runes_cards/$', 'enigma_runes_cards'),
 
                                   url(r'^auction_items/$', 'auction_items_slideshow'),
                                   url(r'^personal_items/$', 'personal_items_slideshow'),
