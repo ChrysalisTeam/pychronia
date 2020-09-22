@@ -99,12 +99,13 @@ h4 {
     padding: 0 3px; // necessary to workaround "sliced" letters near edges, when in italic style
 
     /* useful and little known properties */
+    // TODE USE MIXIN
     word-spacing: normal; // or length measure
     word-wrap: break-word; // or normal
     word-break: normal; // or break-all/hyphenate
     white-space: normal; // or nowrap/pre/pre-line/pre-wrap
     quotes: none; // or string string string string
-    text-overflow: ellipsis; // or clip or string, not inherited
+    // NOPE buggy with justified content - text-overflow: ellipsis; // or clip or string, not inherited
 }
 
 em {
