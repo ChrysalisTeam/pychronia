@@ -50,7 +50,7 @@ git+https://github.com/django-request/django-request.git
 
 django-reversion==3.0.3
 
-django-templateaddons==0.1
+# django-templateaddons==0.1 VENDORED
 
 djangocms-admin-style==1.4.0
 
