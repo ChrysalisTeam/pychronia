@@ -27,7 +27,7 @@ django-apptemplates==1.4
 
 django-cprofile-middleware==1.0.4
 
-django-debug-toolbar==1.11
+django-debug-toolbar==1.11.1
 
 # if trouble with "Unknown column 'zinnia_entry.content_placeholder_id' in 'field list" : python manage.py reset zinnia
 django-blog-zinnia==0.20
