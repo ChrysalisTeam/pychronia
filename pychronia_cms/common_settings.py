@@ -120,9 +120,22 @@ CMS_LANGUAGES = {
         {
             'code': 'fr',
             'name': ugettext('French'),
+            'fallbacks': ["en"],
+            'public': True,
+        },
+        {
+            'code': 'en',
+            'name': ugettext('English'),
+            'fallbacks': ["fr"],
             'public': True,
         },
     ],
+    'default': {
+        'fallbacks': ['en', 'fr'],
+        'redirect_on_fallback': True,
+        'public': True,
+        'hide_untranslated': False,
+    }
 }
 
 ## DJANGO CMS CONF ##
