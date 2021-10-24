@@ -6364,7 +6364,10 @@ class TestActionMiddlewares(BaseGameTestCase):
 
         assert res.status_code == 200
         #print(res.content.decode("utf8"))
-        assert "this item can&#39;t be analyzed" in res.content.decode("utf8")
+        decoded_content = res.content.decode("utf8")
+        assert ("this item can&#39;t be analyzed" in decoded_content or
+                "this item can&#x27;t be analyzed" in decoded_content)  # In new Django versions
+
         assert request.datamanager.get_character_properties("guy1")["account"] == old_account
 
         # now success case just to be sure
