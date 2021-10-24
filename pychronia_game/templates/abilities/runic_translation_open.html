@@ -1,4 +1,4 @@
-{% extends "base_one_column.html" %}
+{% extends "base_one_column_isolated.html" %}
 
 {% load i18n helpers %}
 
@@ -8,6 +8,7 @@
     <p>
         {{ result_message|linebreaksbr }}
     </p>
+        <br><br>
     {% endif %}
 
     {% if translation_form %}

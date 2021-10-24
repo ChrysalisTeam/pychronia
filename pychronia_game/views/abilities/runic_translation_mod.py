@@ -49,9 +49,12 @@ class RunicTranslationAbility(AbstractPartnershipAbility):
 
     def get_template_vars(self, previous_form_data=None):
 
-        translation_form = self._instantiate_game_form(new_action_name="translation_form",
-                                                       hide_on_success=False,
-                                                       previous_form_data=previous_form_data)
+        if previous_form_data:
+            translation_form = previous_form_data.form_instance  # Put back form with input data
+        else:
+            translation_form = self._instantiate_game_form(new_action_name="translation_form",
+                                                           hide_on_success=False,
+                                                           previous_form_data=previous_form_data)
 
         return {
             'page_title': _("Runic translations"),

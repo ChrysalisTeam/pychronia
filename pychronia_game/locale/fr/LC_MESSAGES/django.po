@@ -6,13 +6,14 @@
 # Pakal <pythoniks@gmail.com>, 2010.
 # Pascal <chambon.pascal@gmail.com>, 2013, 2014, 2015, 2016, 2017, 2018, 2020.
 # Pascal Chambon <chambon.pascal@gmail.com>, 2016, 2017, 2018, 2020.
+# Pascal <pythoniks@gmail.com>, 2021.
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-12 17:31+0200\n"
-"PO-Revision-Date: 2020-09-12 17:32+0200\n"
-"Last-Translator: Pascal <chambon.pascal@gmail.com>\n"
+"POT-Creation-Date: 2021-10-24 22:17+0200\n"
+"PO-Revision-Date: 2021-10-24 22:20+0200\n"
+"Last-Translator: Pascal <pythoniks@gmail.com>\n"
 "Language-Team: Nothing\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
@@ -147,47 +148,47 @@ msgstr "contactez le webmaster si cela persiste"
 msgid "You are not allowed to submit changes to that page"
 msgstr "Vous n'êtes pas autorisé à soumettre des changements à cette page"
 
-#: .\datamanager\abstract_game_view.py:343
+#: .\datamanager\abstract_game_view.py:344
 msgid "Access reserved to privileged members."
 msgstr "Accès réservé aux membres autorisés."
 
-#: .\datamanager\abstract_game_view.py:346
-#: .\datamanager\abstract_game_view.py:357
+#: .\datamanager\abstract_game_view.py:347
+#: .\datamanager\abstract_game_view.py:358
 msgid "Authentication required."
 msgstr "Authentification requise."
 
-#: .\datamanager\abstract_game_view.py:349
+#: .\datamanager\abstract_game_view.py:350
 msgid "Access globally forbidden."
 msgstr "Accès interdit à tous."
 
-#: .\datamanager\abstract_game_view.py:410
+#: .\datamanager\abstract_game_view.py:411
 msgid "This action requires personal permissions"
 msgstr "Cette action requiert des permissions particulières"
 
-#: .\datamanager\abstract_game_view.py:462
+#: .\datamanager\abstract_game_view.py:463
 #, python-format
 msgid "Wrong arguments when calling method %s"
 msgstr "Mauvais paramètres lors de l'appel à la méthode %s"
 
-#: .\datamanager\abstract_game_view.py:487
+#: .\datamanager\abstract_game_view.py:488
 #, python-format
 msgid "Forbidden action '%s' called by unauthorized user"
 msgstr "Action interdite '%s' appelée par un utilisateur non autorisé"
 
-#: .\datamanager\abstract_game_view.py:502
+#: .\datamanager\abstract_game_view.py:503
 #, python-format
 msgid "Abnormal action name: %(action_name)s (available: %(actions)r)"
 msgstr "Nom d'action anormal: %(action_name)s (disponibles: %(actions)r)"
 
-#: .\datamanager\abstract_game_view.py:552
+#: .\datamanager\abstract_game_view.py:553
 msgid "Operation successful"
 msgstr "Opération réussie"
 
-#: .\datamanager\abstract_game_view.py:556
+#: .\datamanager\abstract_game_view.py:557
 msgid "Submitted data is invalid"
 msgstr "Les données soumises sont invalides"
 
-#: .\datamanager\abstract_game_view.py:599
+#: .\datamanager\abstract_game_view.py:600
 msgid "Submitted form data hasn't been recognized"
 msgstr "Les données de formulaire n'ont pas été reconnues "
 
@@ -1439,7 +1440,8 @@ msgstr "Aucun mercenaire n'a été engagé jusqu'à présent."
 msgid "Mercenaries:"
 msgstr "Mercenaires :"
 
-#: .\templates\abilities\runic_translation.html:12
+#: .\templates\abilities\runic_translation.html:18
+#: .\templates\abilities\runic_translation_open.html:19
 msgid "Translate"
 msgstr "Traduire"
 
@@ -2214,7 +2216,6 @@ msgstr ""
 "le budget pour cela, dans un an ou plus."
 
 #: .\templates\information\enigma_runes_cards.html:26
-#| msgid "Unlock house doors"
 msgid "Unlock Music Box"
 msgstr "Déverrouiller la Boîte à Musique"
 
@@ -3285,38 +3286,41 @@ msgid "Mercenaries have been successfully hired"
 msgstr "Les mercenaires ont bien été engagés"
 
 #: .\views\abilities\runic_translation_mod.py:37
-msgid "Runic Translation"
+#, fuzzy
+#| msgid "Runic Translation"
+msgid "Runic Translation XXXXXXXXX"
 msgstr "Traduction Runique"
 
 #: .\views\abilities\runic_translation_mod.py:40
 msgid "Translate runes"
 msgstr "Traduire les runes"
 
-#: .\views\abilities\runic_translation_mod.py:57
+#: .\views\abilities\runic_translation_mod.py:60
 msgid "Runic translations"
 msgstr "Traductions Runiques"
 
-#: .\views\abilities\runic_translation_mod.py:204
+#: .\views\abilities\runic_translation_mod.py:207
+#: .\views\abilities\runic_translation_open_mod.py:36
 msgid "The transcription submitted is empty."
 msgstr "La transcription envoyée est vide."
 
-#: .\views\abilities\runic_translation_mod.py:207
+#: .\views\abilities\runic_translation_mod.py:210
 msgid "Translation Request"
 msgstr "Requête de Traduction"
 
-#: .\views\abilities\runic_translation_mod.py:208
+#: .\views\abilities\runic_translation_mod.py:211
 msgid "Runes: "
 msgstr "Runes : "
 
-#: .\views\abilities\runic_translation_mod.py:220
+#: .\views\abilities\runic_translation_mod.py:223
 msgid "unknown"
 msgstr "inconnu"
 
-#: .\views\abilities\runic_translation_mod.py:223
+#: .\views\abilities\runic_translation_mod.py:226
 msgid "<Rune Translation Result>"
 msgstr "<Résultat de Traduction Runique>"
 
-#: .\views\abilities\runic_translation_mod.py:224
+#: .\views\abilities\runic_translation_mod.py:227
 #, python-format
 msgid ""
 "\n"
@@ -3340,19 +3344,71 @@ msgstr ""
 "    \n"
 "                            Résultat de la traduction : \"%(translation)s\""
 
-#: .\views\abilities\runic_translation_mod.py:241
+#: .\views\abilities\runic_translation_mod.py:244
 #, python-format
 msgid "Translation request submitted (presumably for item '%(item_title)s')."
 msgstr ""
 "Requête de traduction envoyée (probablement pour l'objet '%(item_title)s')."
 
-#: .\views\abilities\runic_translation_mod.py:246
+#: .\views\abilities\runic_translation_mod.py:249
 msgid ""
 "Runic transcription successfully submitted, the result will be emailed to "
 "you."
 msgstr ""
 "Transcription de runes bien envoyée, le résultat vous sera communiqué par "
 "email."
+
+#: .\views\abilities\runic_translation_open_mod.py:11
+#, fuzzy
+#| msgid "Runic Translation"
+msgid "Open Runic Translation"
+msgstr "Traduction Runique"
+
+#: .\views\abilities\runic_translation_open_mod.py:42
+msgid "No matching runic pattern found."
+msgstr "Aucun motif de runes correspondant trouvé."
+
+#: .\views\abilities\runic_translation_open_mod.py:47
+#, python-format
+#| msgid ""
+#| "\n"
+#| "                            Below is the output of the automated "
+#| "translation process for the runes of the targeted object.\n"
+#| "                            Please note that any error in the decoding of "
+#| "runes may lead to important errors in the translation result.\n"
+#| "    \n"
+#| "                            Runes transcription: \"%(original)s\"\n"
+#| "    \n"
+#| "                            Translation result: \"%(translation)s\"\n"
+#| "                          "
+msgid ""
+"\n"
+"                        Below is the output of the automated translation "
+"process for the runes of the targeted object.\n"
+"                        Please note that any error in the decoding of runes "
+"may lead to important errors in the translation result.\n"
+"\n"
+"                        Runes transcription: \"%(original)s\"\n"
+"\n"
+"                        Translation result: \"%(translation)s\"\n"
+"                      "
+msgstr ""
+"\n"
+"                            Ci-dessous le résultat du processus de "
+"traduction automatisée pour les runes de l'objet ciblé.\n"
+"                            Veuillez noter que toute erreur dans le décodage "
+"des runes peut avoir de lourds impacts sur cette traduction.\n"
+"    \n"
+"                            Transcription des runes : \"%(original)s\"\n"
+"    \n"
+"                            Résultat de la traduction : \"%(translation)s\""
+
+#: .\views\abilities\runic_translation_open_mod.py:60
+#| msgid ""
+#| "Runic transcription successfully submitted, the result will be emailed to "
+#| "you."
+msgid "Runic transcription successfully submitted, see results below."
+msgstr "Transcription de runes bien traitée, voici le résultat ci-dessous."
 
 #: .\views\abilities\telecom_investigation_mod.py:22
 msgid "Process Telecom Investigation"
