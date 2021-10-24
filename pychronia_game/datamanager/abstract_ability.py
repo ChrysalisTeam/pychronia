@@ -225,7 +225,7 @@ class AbstractPartnershipAbility(AbstractAbility):
     def check_data_sanity(self, strict=False):
         super(AbstractPartnershipAbility, self).check_data_sanity(strict=strict)
 
-        assert self.ACCESS in (UserAccess.character, UserAccess.authenticated)  # WORKAROUND
+        assert self.ACCESS in (UserAccess.character, UserAccess.authenticated, UserAccess.anonymous)  # WORKAROUND
 
         email = self.dedicated_email
         utilities.check_is_email(email)
