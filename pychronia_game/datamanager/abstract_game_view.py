@@ -204,10 +204,10 @@ class GameViewMetaclass(type):
     @property
     def as_view(cls):
         """
-        To be used in django urls conf ; similar to standard class-based views of django,
-        except that a separate instance is created for each request!
+        To be used in django urls conf ; similar to standard class-based views of django!
         """
-        if not hasattr(cls, "_instantiation_proxy"):
+         # Beware of class inheritance, each class must stored its own singleton in its __dict__!
+        if "_instantiation_proxy" not in cls.__dict__:
             cls._instantiation_proxy = ClassInstantiationProxy(cls)
         return cls._instantiation_proxy  # ALWAYS THE SAME RETURNED
 
@@ -334,6 +334,7 @@ class AbstractGameView(object, metaclass=GameViewMetaclass):
         user.is_master or self.datamanager.is_game_started())) or self.ALWAYS_ALLOW_POST or not self.request.POST
 
     def _check_standard_access(self):
+        print(">>>> CHECKING STANDARD ACCESS FOR", self, "with", self.ACCESS)
         try:
             access_result = self.get_access_token(self.datamanager)
 
