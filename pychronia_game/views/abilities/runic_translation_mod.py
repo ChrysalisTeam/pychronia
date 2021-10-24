@@ -231,7 +231,7 @@ class RunicTranslationAbility(AbstractPartnershipAbility):
                             Runes transcription: "%(original)s"
     
                             Translation result: "%(translation)s"
-                          """)) % SDICT(original=transcription, translation=translation)
+                          """)).strip() % SDICT(original=transcription, translation=translation)
 
             response_msg_data = dict(subject=subject,
                                      body=body,

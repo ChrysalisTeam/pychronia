@@ -10,9 +10,9 @@ from .house_reports_mod import HouseReportsAbility
 
 house_reports = HouseReportsAbility.as_view
 
-#from .runic_translation_mod import RunicTranslationAbility
+from .runic_translation_mod import RunicTranslationAbility
 
-#runic_translation = RunicTranslationAbility.as_view
+runic_translation = RunicTranslationAbility.as_view
 
 from .runic_translation_open_mod import OpenRunicTranslationAbility
 

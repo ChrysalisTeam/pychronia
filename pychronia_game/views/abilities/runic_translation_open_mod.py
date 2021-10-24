@@ -51,7 +51,7 @@ class OpenRunicTranslationAbility(RunicTranslationAbility):
                         Runes transcription: "%(original)s"
 
                         Translation result: "%(translation)s"
-                      """)) % SDICT(original=transcription, translation=translation)
+                      """)).strip() % SDICT(original=transcription, translation=translation)
 
         # HACKS to transmit data to TEMPLATE and FORM!
         self.transcription = transcription
