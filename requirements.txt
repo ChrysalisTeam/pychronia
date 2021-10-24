@@ -54,13 +54,13 @@ django-reversion==3.0.3
 
 djangocms-admin-style==1.4.0
 
-djangocms-link==2.4.0
+djangocms-link==2.6.1
 
 djangocms-snippet==2.2.0
 
 djangocms-rawhtml==0.1
 
-djangocms-text-ckeditor==3.7.0
+djangocms-text-ckeditor==3.10.0
 
 cmsplugin-filer==1.1.3
 
