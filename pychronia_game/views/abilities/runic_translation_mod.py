@@ -268,7 +268,7 @@ class RunicTranslationAbility(AbstractPartnershipAbility):
         for (name, properties) in list(references.items()):
             if strict:
                 utilities.check_num_custom_settings(properties, 2)
-            assert name in list(self.get_all_items().keys()), name
+            # DISABLED FOR OPEN RUNIC TRANSLATOR  assert name in list(self.get_all_items().keys()), name
             utilities.check_is_string(properties["decoding"])
             utilities.check_is_string(properties["translation"])
             assert self._build_translation_dictionary(properties["decoding"],
