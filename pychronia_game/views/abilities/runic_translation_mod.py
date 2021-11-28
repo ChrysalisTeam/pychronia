@@ -113,7 +113,7 @@ class RunicTranslationAbility(AbstractPartnershipAbility):
         Parameter random_seed, if not None, is used to initialize the random generator.
         """
 
-        assert len(random_words) >= 5, random_words
+        assert len(random_words) >= 1, random_words
 
         my_random = random.Random(x=random_seed)
 

@@ -8,7 +8,11 @@
     <p>
         {{ result_message|linebreaksbr }}
     </p>
-        <br><br>
+    <br><br>
+    {% else %}
+    <p>
+        Entrez sur cette page la transcription de runes akarites, pour en avoir une traduction.
+    </p><br>
     {% endif %}
 
     {% if translation_form %}
@@ -18,6 +22,8 @@
         {{ translation_form.as_p }}
         <input type="submit" name="translate" value="{% trans "Translate" %}" />
         </form>
+
+        <br><b>Format attendu</b> : syllabes séparées par des espaces (ex. "su ki ta ko...")</b>
         </div>
 
     {% endif %}
