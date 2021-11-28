@@ -18,13 +18,19 @@
 
 {% block content %}
 
+    <!-- HELP -->
+    <p>
+        Pour ouvrir l'accès vers l'étage interdit, veuillez entrer ici le symbole familial secret des Maupertuis.
+        Rappel : une copie cachée se trouve dans la malle familiale.
+    </p>
+
     <!-- Puzzle -->
    	<div id="enigma-container">
    	</div>
 
    	<!-- winning message-->
    	<div id="victory-overlay" >
-        <h1 style="text-align: center;">{% trans "The magic portal is now open" %}</h1>
+        <h1 style="text-align: center;">{% trans "The magic gate is now beginning to open" %}</h1>
    		<img id="victory-splash" width ="400px" height="400px" src="{{ STATIC_URL }}libs/enigma-runes-puzzle/imgs/victory.gif">
    		<!--button id="reset-enigma" onclick="resetEnigmaRunesPuzzle()" class="btn btn-primary btn-lg">Reset</button-->
    	</div>
