@@ -12,14 +12,13 @@
     <div class="pretty_text">
         {% rich_text clue_content %}
     </div>
-    <br/>
+    <br/><br/>
     {% endif %}
 
-    <p>Vous pouvez rentrer ici la catégorie, et le code (souvent à 3 caractères) d'un indice, pour en avoir la signification.</p>
+    <p><i>Vous pouvez rentrer ici la catégorie, et le code (souvent à 3 lettres) d'un indice, pour en avoir la signification.</i></p>
 
     <div style="margin: 10px auto; text-align: center;">
     {% include "utilities/scroll_form.html" with title=_("Enter Clue Code") form=clue_form class="center" button_title=_("Submit") button_name="request_clue" %}
     </div>
-
 
 {% endblock %}
