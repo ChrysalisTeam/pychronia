@@ -1,66 +1,76 @@
-
+six
+atomicwrites
+tzdata
+iniconfig
+reportlab
+packaging
+tomli
+svglib
 
 PyMySQL==1.0.2
 
-Pillow>=2.7.0
+Pillow<=8.3.0  # Crash of _imagingft.cp38-win_amd64.pyd of too recent versions on python3.8
 
 logging_tree
 
-beautifulsoup4==4.7.1
+beautifulsoup4==4.11.1
 
+# TO UPDATE:
 git+https://github.com/pakal/cmsplugin-zinnia.git@76f8de72a37b0525a8a5f65e99f0412d0a55563c
 
-decorator==4.4.0
+decorator==4.4.0  # -> decorator==5.1.1
 
-Django==2.2.13  # can't switch to 2.2.1 until PyMysql gets updated to match MySQLdb
+Django==4.0.5  # OBSOLETE COMMENT can't switch to 2.2.1 until PyMysql gets updated to match MySQLdb
 
-django-compat-patcher==0.7.1
+django-compat-patcher==0.11
 
 html5lib==0.999999999  # last version with "html5lib.sanitizer" required (or not anymore?) by djangocms_text_ckeditor
 
-#Django-Select2==4.2.2 is OUTDATED, and then form "fields" were removed from project...
+# Django-Select2==4.2.2 is OUTDATED, and then form "fields" were removed from project...
 git+https://github.com/pakal/django-select2.git@6b1adada50ce53f4c51dd6d409371705627fa17e
 
-django-admin-jqueryui==1.8.22
-django-appconf==1.0.3
-django-apptemplates==1.4
+django-admin-jqueryui==1.8.22  # obsolete stuff
 
-django-cprofile-middleware==1.0.4
+django-appconf==1.0.5
+django-apptemplates==1.5
 
-django-debug-toolbar==1.11
+django-cprofile-middleware==1.0.5
+
+########  RESTORE django-debug-toolbar==3.4.0
 
 # if trouble with "Unknown column 'zinnia_entry.content_placeholder_id' in 'field list" : python manage.py reset zinnia
 django-blog-zinnia==0.20
-django-mptt==0.10.0
+django-mptt==0.13.4
 
-django-cms==3.6.0
+django-cms==3.10
+# UNUSED django-treebeard==4.5.1
 
-djangocms-page-sitemap==0.5.3
+djangocms-page-sitemap==1.0.0
 
 git+https://github.com/pakal/cmsplugin-simple-gallery.git
 git+https://github.com/pakal/django-cms-jplayer.git
 
-django-contrib-comments==1.9.1
+django-contrib-comments==2.2.0
 
-django-polymorphic==2.0.3
-django-filer==1.5.0
+django-polymorphic==3.1.0
+django-filer==2.2.1
 
 # for quick HTTP visit stats:
-git+https://github.com/django-request/django-request.git
+django-request==1.6.1
 
-django-reversion==3.0.3
+django-reversion==5.0.0
 
 # django-templateaddons==0.1 VENDORED
 
-djangocms-admin-style==1.4.0
+djangocms-admin-style==3.2.0
 
-djangocms-link==2.6.1
+djangocms-link==3.0.0
 
-djangocms-snippet==2.2.0
+djangocms-snippet==3.0.0
 
-djangocms-rawhtml==0.1
+djangocms-rawhtml==1.2
 
-djangocms-text-ckeditor==3.10.0
+djangocms-text-ckeditor==5.1.0
 
 cmsplugin-filer==1.1.3
 
@@ -68,15 +78,15 @@ git+https://github.com/pakal/cmsplugin-rst/
 
 git+https://github.com/pakal/django-zodb.git@556c54da5a8b32f632097449fffcb25d0f607c5f
 
-easy-thumbnails==2.6
+easy-thumbnails==2.8.1
 
 # for cmsplugin-gallery
-django-inline-ordering>=1.0.2
+django-inline-ordering==1.0.2
 
-RelStorage==2.1.1
+###RelStorage==2.1.1
 
 # for relstorage mainly
-perfmetrics==2.0
+perfmetrics==3.2.0.post0
 
 # exposes pip-dump, pip-sync and pip-review
 pip-tools
@@ -84,30 +94,30 @@ pip-review
 
 pytz
 
-pycryptodome==3.8.1
+pycryptodome==3.14.1
 
-python-memcached==1.59
+python-memcached==1.59  # SWITCH to pymemcache !!
 
-pyparsing==2.4.0
+pyparsing==3.0.9
 
-PyYAML==5.1
+PyYAML==6.0
 
-requests==2.21.0
+requests==2.28.0
 
-Sphinx==2.0.1
+Sphinx==5.0.1
 
-ZODB==5.6.0
-persistent==4.6.4
+ZODB==5.7.0
+persistent==4.9.0
 
-git+https://github.com/paulovn/python-aiml
+git+https://github.com/paulovn/python-aiml@21c77d5e204dfdbaef315e570fdd918b852c738b
 
 # django-sentry==1.13.5  # might be useful
 # other plugins, not well maintained, are embedded in this repository
 
 ## DEV tools only ##
 
-pytest==4.4.1
-pyScss==1.3.5
+pytest==7.1.2
+###pyScss==1.3.5  => Go to 1.4.0 ???
 
 
 
