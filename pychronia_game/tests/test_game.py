@@ -254,21 +254,24 @@ class TestUtilities(BaseGameTestCase):
         <head><title>Page title one</title></head>
         <body>
         <div>Hi</div>
-        <p id="firstpara" class="one red" align="center">This is one paragraph <b>ones</b>.</a>
+        <p id="firstpara" class="one red" align="center">This is one paragraph <b>ones</b>.</p>
         <a href="http://aaa">This is one paragraph <b>one</b>.</a>
+        </body>
         </html>''')
 
         res = autolinker.generate_links(input, "ones?", lambda x: dict(href="TARGET_" + x.group(0), title="mytitle"))
 
-        #print(">>>", res)
+        print(">>>>>>>>>", res)
 
         assert res.strip() == dedent('''
         <html>
         <head><title>Page title one</title></head>
         <body>
         <div>Hi</div>
-        <p align="center" class="one red" id="firstpara">This is <a href="TARGET_one" title="mytitle">one</a> paragraph <b><a href="TARGET_ones" title="mytitle">ones</a></b>.</p></body></html>
-        <a href="http://aaa">This is one paragraph <b>one</b>.</a>''').strip()
+        <p align="center" class="one red" id="firstpara">This is <a href="TARGET_one" title="mytitle">one</a> paragraph <b><a href="TARGET_ones" title="mytitle">ones</a></b>.</p>
+        <a href="http://aaa">This is one paragraph <b>one</b>.</a>
+        </body>
+        </html>''').strip()
 
     def test_generate_image_viewer(self):
 
