@@ -6,6 +6,16 @@ reportlab
 packaging
 tomli
 svglib
+cssselect2
+certifi
+colorama
+asgiref
+docutils
+
+attr
+attrs
+pluggy
+py
 
 PyMySQL==1.0.2
 
@@ -23,8 +33,9 @@ decorator==4.4.0  # -> decorator==5.1.1
 Django==4.0.5  # OBSOLETE COMMENT can't switch to 2.2.1 until PyMysql gets updated to match MySQLdb
 
 django-compat-patcher==0.11
+compat-patcher-core==2.1
 
-html5lib==0.999999999  # last version with "html5lib.sanitizer" required (or not anymore?) by djangocms_text_ckeditor
+html5lib==1.1
 
 # Django-Select2==4.2.2 is OUTDATED, and then form "fields" were removed from project...
 git+https://github.com/pakal/django-select2.git@6b1adada50ce53f4c51dd6d409371705627fa17e
@@ -36,13 +47,14 @@ django-apptemplates==1.5
 
 django-cprofile-middleware==1.0.5
 
-########  RESTORE django-debug-toolbar==3.4.0
+django-debug-toolbar==3.4.0
 
 # if trouble with "Unknown column 'zinnia_entry.content_placeholder_id' in 'field list" : python manage.py reset zinnia
 django-blog-zinnia==0.20
 django-mptt==0.13.4
 
 django-cms==3.10
+django-sekizai
 # UNUSED django-treebeard==4.5.1
 
 djangocms-page-sitemap==1.0.0
@@ -54,6 +66,7 @@ django-contrib-comments==2.2.0
 
 django-polymorphic==3.1.0
 django-filer==2.2.1
+unidecode
 
 # for quick HTTP visit stats:
 django-request==1.6.1
@@ -77,8 +90,10 @@ cmsplugin-filer==1.1.3
 git+https://github.com/pakal/cmsplugin-rst/
 
 git+https://github.com/pakal/django-zodb.git@556c54da5a8b32f632097449fffcb25d0f607c5f
+zope
 
 easy-thumbnails==2.8.1
+lxml
 
 # for cmsplugin-gallery
 django-inline-ordering==1.0.2
@@ -104,7 +119,7 @@ PyYAML==6.0
 
 requests==2.28.0
 
-Sphinx==5.0.1
+Sphinx==5.0.2
 
 ZODB==5.7.0
 persistent==4.9.0
