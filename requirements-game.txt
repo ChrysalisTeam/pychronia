@@ -1,0 +1,29 @@
+-r requirements-base.txt
+
+ZODB==5.7.0
+
+# This will install ZODB3 but it's OK, it's just a metapackage!
+git+https://github.com/pakal/django-zodb.git@556c54da5a8b32f632097449fffcb25d0f607c5f
+
+PyYAML==6.0
+
+pycryptodome==3.14.1
+
+git+https://github.com/paulovn/python-aiml@21c77d5e204dfdbaef315e570fdd918b852c738b
+
+# Django-Select2==4.2.2 is OUTDATED, and then form "fields" were removed from project...
+git+https://github.com/pakal/django-select2.git@6b1adada50ce53f4c51dd6d409371705627fa17e
+
+beautifulsoup4==4.11.1
+
+django-sekizai==3.0.1
+
+decorator==4.4.0  # -> decorator==5.1.1
+
+requests==2.28.0
+
+pytz
+
+docutils
+
+django-cprofile-middleware==1.0.5

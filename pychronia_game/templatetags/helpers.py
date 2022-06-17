@@ -21,8 +21,6 @@ from django.template.defaultfilters import stringfilter
 from django.template.defaultfilters import linebreaks
 from django.core.cache import cache
 
-from cmsplugin_rst.utils import french_insecable
-
 import urllib.request, urllib.parse, urllib.error
 from textwrap import dedent
 from easy_thumbnails.templatetags.thumbnail import thumbnail_url
@@ -31,6 +29,8 @@ from pychronia_game.storage import protected_game_file_system_storage, \
     get_game_thumbnailer
 from pychronia_game.common import config, utctolocal
 from django.template.loader import render_to_string
+
+from pychronia_game.utilities.typography import french_insecable
 
 register = django.template.Library()  # IMPORTANT, module-level object used by templates !
 

@@ -17,35 +17,31 @@ attrs
 pluggy
 py
 
-PyMySQL==1.0.2
 
-Pillow<=8.3.0  # Crash of _imagingft.cp38-win_amd64.pyd of too recent versions on python3.8
+
+
 
 logging_tree
 
-beautifulsoup4==4.11.1
+
 
 # TO UPDATE:
 git+https://github.com/pakal/cmsplugin-zinnia.git@76f8de72a37b0525a8a5f65e99f0412d0a55563c
 
-decorator==4.4.0  # -> decorator==5.1.1
 
-Django==4.0.5  # OBSOLETE COMMENT can't switch to 2.2.1 until PyMysql gets updated to match MySQLdb
 
-django-compat-patcher==0.11
-compat-patcher-core==2.1
+
 
 html5lib==1.1
 
-# Django-Select2==4.2.2 is OUTDATED, and then form "fields" were removed from project...
-git+https://github.com/pakal/django-select2.git@6b1adada50ce53f4c51dd6d409371705627fa17e
+
 
 django-admin-jqueryui==1.8.22  # obsolete stuff
 
 django-appconf==1.0.5
 django-apptemplates==1.5
 
-django-cprofile-middleware==1.0.5
+
 
 django-debug-toolbar==3.4.0
 
@@ -54,7 +50,7 @@ django-blog-zinnia==0.20
 django-mptt==0.13.4
 
 django-cms==3.10
-django-sekizai
+
 # UNUSED django-treebeard==4.5.1
 
 djangocms-page-sitemap==1.0.0
@@ -65,7 +61,7 @@ git+https://github.com/pakal/django-cms-jplayer.git
 django-contrib-comments==2.2.0
 
 django-polymorphic==3.1.0
-django-filer==2.2.1
+
 unidecode
 
 # for quick HTTP visit stats:
@@ -75,7 +71,7 @@ django-reversion==5.0.0
 
 # django-templateaddons==0.1 VENDORED
 
-djangocms-admin-style==3.2.0
+
 
 djangocms-link==3.0.0
 
@@ -89,10 +85,10 @@ cmsplugin-filer==1.1.3
 
 git+https://github.com/pakal/cmsplugin-rst/
 
-git+https://github.com/pakal/django-zodb.git@556c54da5a8b32f632097449fffcb25d0f607c5f
+
 zope
 
-easy-thumbnails==2.8.1
+
 lxml
 
 # for cmsplugin-gallery
@@ -105,33 +101,33 @@ perfmetrics==3.2.0.post0
 
 # exposes pip-dump, pip-sync and pip-review
 pip-tools
-pip-review
+
 
 pytz
 
-pycryptodome==3.14.1
+
 
 python-memcached==1.59  # SWITCH to pymemcache !!
 
 pyparsing==3.0.9
 
-PyYAML==6.0
 
-requests==2.28.0
+
+
 
 Sphinx==5.0.2
 
-ZODB==5.7.0
+
 persistent==4.9.0
 
-git+https://github.com/paulovn/python-aiml@21c77d5e204dfdbaef315e570fdd918b852c738b
+
 
 # django-sentry==1.13.5  # might be useful
 # other plugins, not well maintained, are embedded in this repository
 
 ## DEV tools only ##
 
-pytest==7.1.2
+
 ###pyScss==1.3.5  => Go to 1.4.0 ???
 
 

@@ -10,6 +10,11 @@ SILENCED_SYSTEM_CHECKS = ["admin.E012", # duplicate field(s) in 'fieldsets
 
 
 INSTALLED_APPS += [
+
+    'djangocms_admin_style',  # must come BEFORE admin
+
+    'django.contrib.admin',
+
     'pychronia_cms',
 
     'request',  # stats on HTTP requests
@@ -55,8 +60,13 @@ INSTALLED_APPS += [
     'debug_toolbar',
 ]
 
-TEMPLATES[0]["OPTIONS"]["context_processors"].append(
+_TEMPLATE_OPTIONS = TEMPLATES[0]["OPTIONS"]
+
+_TEMPLATE_OPTIONS["context_processors"].append(
     "cms.context_processors.cms_settings"  # for CMS_MEDIA_URL etc.
+)
+_TEMPLATE_OPTIONS["loaders"].insert(0,
+    "apptemplates.Loader"  # allows the use of {% extends "admin:admin/base.html" %}
 )
 
 MIDDLEWARE = \

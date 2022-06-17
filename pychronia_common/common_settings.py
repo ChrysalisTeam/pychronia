@@ -118,7 +118,6 @@ TEMPLATES = [
                 'pychronia_common.context_processors.google_analytics',
             ],
             'loaders': [
-                'apptemplates.Loader',  # allows the use of {% extends "admin:admin/base.html" %}
                 'django.template.loaders.filesystem.Loader',
                 'django.template.loaders.app_directories.Loader',
             ],
@@ -144,10 +143,7 @@ MIDDLEWARE = (
 INSTALLED_APPS = [
     'pychronia_common',  # common templates, tags, static files etc. BEFORE OTHER APPS for overrides!
 
-    'djangocms_admin_style',  # must come BEFORE admin
-
     'django.contrib.auth',
-    'django.contrib.admin',
     'django.contrib.contenttypes',
     'django.contrib.sessions',  # only these sessions are scalable for "sharding"
     'django.contrib.sites',
@@ -155,12 +151,12 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.messages',  # for both game and cms now
 
-    'sekizai',
-
     #'sessionprofile',  # keeps track of sessions/users in DB table, for PHPBB integration
     'templateaddons',  # assign and headers tags
     'django_select2',  # advanced select box
     'easy_thumbnails',
+
+    'sekizai',
 ]
 
 TEST_RUNNER = 'django.test.runner.DiscoverRunner'

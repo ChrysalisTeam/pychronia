@@ -20,6 +20,8 @@ MIDDLEWARE = (tuple(_old_middlewares) +
 
 INSTALLED_APPS += [
     'pychronia_game',
+
+    'django.contrib.admin',
 ]
 
 ############# DJANGO-APP CONFS ############
