@@ -1,9 +1,10 @@
-import sys, types, inspect, functools
+import sys, types, inspect
 from decorator import decorator
 from functools import partial
 
 IS_PY3K8 = (sys.version_info >= (3, 8))
 IS_PY3K = (sys.version_info >= (3, 0))
+
 
 def resolving_decorator(caller, func=None):
     """
@@ -142,6 +143,8 @@ def flatten_function_signature(func):
                     co_cellvars = ...  # type: Tuple[str, ...])
     """
 
+    print(">>>>>> inspect.getfullargspec OLD FUNCTION:", old_function.__name__, inspect.getfullargspec(old_function))
+
     # TODO - could be optimized out
     if IS_PY3K8:  # adds co_posonlyargcount
         pos_arg_names = """co_argcount co_posonlyargcount co_kwonlyargcount co_nlocals co_stacksize co_flags co_code co_consts co_names
@@ -154,6 +157,10 @@ def flatten_function_signature(func):
                 co_varnames co_filename co_name co_firstlineno co_lnotab co_freevars co_cellvars""".split()
 
     pos_arg_values = [getattr(old_code_object, name) for name in pos_arg_names]
+    print(">>>>>>>pos_arg_values", pos_arg_values)
+
+    func_param_names = pos_arg_values[pos_arg_names.index("co_varnames")]
+    print(">>>>>>>func_param_names", func_param_names)
 
     #defaults = old_function.__defaults__
     argcount = pos_arg_values[0]
@@ -181,16 +188,41 @@ def flatten_function_signature(func):
 
     new_function = types.FunctionType(new_code_object,
                                       old_function.__globals__,
-                                      old_function.__name__,
+                                      old_function.__name__ + "PATCHED",
                                       (),
                                       # Function defaults are useless, since they must be resolved before by inspect.getcallargs()
                                       old_function.__closure__)
 
-    new_function.original_function = old_function
-    new_function.resolve_call_args = functools.partial(inspect.getcallargs, old_function)
+    new_signature = old_function.__func__.__signature__ if getattr(old_function, "__func__") else old_function.__signature__
+    print(">>>> we use types.FunctionType", types.FunctionType, "to build new_function", new_function, "with signature", new_signature)
 
-    #print inspect.getargspec(new_function)
-    assert new_function.__name__ == old_function.__name__
+    # See https://github.com/micheles/decorator/blob/master/docs/documentation.md
+    # Everything breaks when old_code_object has been corrupted by decorator module
+    # Only those using decoratorx will work!!!
+
+    new_function.__signature__ = new_signature
+    new_function.__wrapped__ = old_function
+    new_function.__qualname__ = old_function.__qualname__ + "PATCHED"
+    new_function.__annotations__ = func.__annotations__
+    new_function.__kwdefaults__ = func.__kwdefaults__
+    new_function.__doc__ = func.__doc__
+    new_function.__dict__.update(func.__dict__)
+
+    ## OBSOLETE new_function.original_function = old_function  # Equivalent of __wrapped__ of decorator module
+
+    def specific_resolve_call_args(*args, **kwargs):
+        result = inspect.getcallargs(old_function, *args, **kwargs)
+        #if inspect.ismethod(old_function) and old_function.__self__:
+        #    del result[func_param_names[0]]
+        print(">>>>> inspect.getcallargs(old_function, ...) returned", result, "for arguments:", old_function, args, kwargs)
+        return result
+
+    new_function.resolve_call_args = specific_resolve_call_args
+
+    print(">>>>>> inspect.getfullargspec NEW FUNCTION:", new_function.__name__, inspect.getfullargspec(new_function))
+    assert new_function.__name__ == old_function.__name__ + "PATCHED"
+
+    print(">>>>>> flatten_function_signature on", old_function, "returned", new_function)
     return new_function
 
 
@@ -214,7 +246,7 @@ if __name__ == "__main__":
 
     for old_function in (f, gen(1, 2)):
         new_function = flatten_function_signature(old_function)
-        assert new_function.original_function == old_function
+        assert new_function.__wrapped__ == old_function
 
         res1 = old_function(1, 2, 3, 4, 5, kw1="a", kw2="b")
 
@@ -258,5 +290,26 @@ if __name__ == "__main__":
     assert func3(1, 8) == (8,)
     assert func4(1) == "<SESSION>"
     assert func4(1, my=8) == dict(my=8)
+
+
+    class DummyClass:
+        def dummy_method(self, a, b=5, c=10, *d, **e):
+            return locals()
+
+        @inject_session
+        def dummy_method_with_session(self, session):
+            return locals()
+
+    dummy_instance = DummyClass()
+
+    flattened_method = flatten_function_signature(dummy_instance.dummy_method)
+    call_args = resolve_call_args(flattened_method, "a_value")
+    assert "self" in call_args, call_args  # flattened_method is UNBOUND now
+
+    result = flattened_method(**call_args)
+    assert result["self"] is dummy_instance
+    del result["self"]
+    assert result == {'a': 'a_value', 'd': (), 'e': {}, 'b': 5, 'c': 10}
+
 
     print("All tests OK")
