@@ -851,7 +851,7 @@ def render_template_string(string, ctx):
     return t.render(c)
 
 
-def make_bi_usage_decorator(decorator):
+def make_bi_usage_decorator(decorator):  # FIXME unused?
     """
     Transforms a decorator taking default arguments, into a decorator that can both
     be applied directly to a callable, or first parameterized with keyword arguments and then applied.

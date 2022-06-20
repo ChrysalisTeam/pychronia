@@ -18,7 +18,7 @@ beautifulsoup4==4.11.1
 
 django-sekizai==3.0.1
 
-decorator==4.4.0  # -> decorator==5.1.1
+decorator==4.4.0  # -> decorator==5.1.1 cannot work with resolving_decorator for now, we need decoratorx instead
 
 requests==2.28.0
 

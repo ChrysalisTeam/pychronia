@@ -193,14 +193,15 @@ def flatten_function_signature(func):
                                       # Function defaults are useless, since they must be resolved before by inspect.getcallargs()
                                       old_function.__closure__)
 
-    new_signature = old_function.__func__.__signature__ if getattr(old_function, "__func__") else old_function.__signature__
-    print(">>>> we use types.FunctionType", types.FunctionType, "to build new_function", new_function, "with signature", new_signature)
+    reference_func = old_function.__func__ if getattr(old_function, "__func__") else old_function
+    if hasattr(reference_func, "__signature__"):
+        new_signature = old_function.__func__.__signature__ if getattr(old_function, "__func__") else old_function.__signature__
+        new_function.__signature__ = new_signature
 
     # See https://github.com/micheles/decorator/blob/master/docs/documentation.md
     # Everything breaks when old_code_object has been corrupted by decorator module
     # Only those using decoratorx will work!!!
-
-    new_function.__signature__ = new_signature
+    
     new_function.__wrapped__ = old_function
     new_function.__qualname__ = old_function.__qualname__ + "PATCHED"
     new_function.__annotations__ = func.__annotations__
