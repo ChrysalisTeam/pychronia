@@ -4,24 +4,31 @@ from pychronia_common.common_settings import *
 
 TEMPLATES[0]["OPTIONS"]["context_processors"].append("pychronia_game.context_processors.pychronia_template_context")
 
+'''
 _old_middlewares = list(MIDDLEWARE)
 if "debug_toolbar.middleware.DebugToolbarMiddleware" in _old_middlewares:
     # Django Debug Toolbar bugs on pychronia_game, troubles with ZODB late access...
     _old_middlewares.remove("debug_toolbar.middleware.DebugToolbarMiddleware")
+'''
 
 # beware of ordering here
 # no need for CSRF in pychronia_game, data is not sensitive
-MIDDLEWARE = (tuple(_old_middlewares) +
-                      ('pychronia_game.middlewares.ZodbTransactionMiddleware',
+MIDDLEWARE = (tuple(MIDDLEWARE) +
+                      (
+                          'pychronia_game.middlewares.ZodbTransactionMiddleware',
                        'pychronia_game.middlewares.AuthenticationMiddleware',
                        'pychronia_game.middlewares.PeriodicProcessingMiddleware',
                        'django_cprofile_middleware.middleware.ProfilerMiddleware', # use in DEBUG mode with '?prof' at the end of URL
                        ))
 
+print(">>>>>>>>>>>>>>>>", MIDDLEWARE)
+
 INSTALLED_APPS += [
     'pychronia_game',
 
     'django.contrib.admin',
+
+    'debug_toolbar',
 ]
 
 ############# DJANGO-APP CONFS ############
@@ -384,3 +391,23 @@ def generate_auction_settings(chrysalis_data_dir):
 
 
     return (GAME_INITIAL_DATA_PATH, GAME_INITIAL_FIXTURE_SCRIPT)
+
+
+INTERNAL_IPS = ("127.0.0.1",)
+
+
+def show_toolbar_to_superusers_only(request):
+    print(">>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<")
+    return True
+    if request.user.is_superuser:
+        return True
+    return False
+
+
+DEBUG_TOOLBAR_CONFIG = {
+    'SHOW_TOOLBAR_CALLBACK': show_toolbar_to_superusers_only,  # only show toolbar to authenticated users
+    'SHOW_COLLAPSED': False,
+}
+
+import mimetypes
+mimetypes.add_type("application/javascript", ".js", True)

@@ -179,3 +179,11 @@ urlpatterns = patterns('',
                        url(r'^(?P<game_instance_id>[^/]+)/(?P<game_username>[^/]+)/', include(inner_game_urlpatterns)),
                        # beware - accept all kinds of characters here!
                        )
+
+
+# Django Debug Toolbar
+import debug_toolbar
+
+urlpatterns += patterns('',
+                        url('__debug__/', include('debug_toolbar.urls')),
+                        )

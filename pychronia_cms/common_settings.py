@@ -94,6 +94,8 @@ ABSOLUTE_URL_OVERRIDES = {
 
 ## DJANGO DEBUG TOOLBAR CONF ##
 def show_toolbar_to_superusers_only(request):
+    print(">>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<")
+    return True
     if request.user.is_superuser:
         return True
     return False
