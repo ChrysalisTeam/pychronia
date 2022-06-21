@@ -52,8 +52,11 @@ Object.assign(MediaElementPlayer.prototype, {
 		controls.style.zIndex = 5;
 
 		player.endedCallback = function () {
-			if (player.currentPlaylistItem < player.listItems.length) {
-				player.setSrc(player.playlist[++player.currentPlaylistItem]);
+			console.log("CURRENT PLAYLIST", player.currentPlaylistItem, player.playlist, player.listItems);
+			if (player.currentPlaylistItem < player.listItems.length - 1) {  // PATCHED, else out-of-bounds troubles
+				let newEntry = player.playlist[++player.currentPlaylistItem];
+				console.log("CALLING SETSRC", newEntry);
+				player.setSrc(newEntry);
 				player.load();
 				setTimeout(function () {
 					player.play();

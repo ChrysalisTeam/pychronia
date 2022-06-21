@@ -922,6 +922,9 @@ var MediaElement = function MediaElement(idOrNode, options, sources) {
 		return t.mediaElement.renderer !== undefined && t.mediaElement.renderer !== null ? t.mediaElement.renderer.getSrc() : null;
 	},
 	    setSrc = function setSrc(value) {
+
+        console.log("Inside player we setsrc", value, typeof value);
+
 		var mediaFiles = [];
 		if (typeof value === 'string') {
 			mediaFiles.push({
