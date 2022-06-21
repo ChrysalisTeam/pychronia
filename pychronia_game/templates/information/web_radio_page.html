@@ -10,7 +10,27 @@
     <div align="center">
      <br/>
      {% game_view_url "pychronia_game.views.get_radio_xml_conf" as player_conf_url %}
-     {% include "utilities/multi_mp3_player.html" with player_width="400" player_height="200" player_conf_url=player_conf_url %}
+     {# % include "utilities/multi_mp3_player.html" with player_width="400" player_height="200" player_conf_url=player_conf_url % #}
+
+        -- {{ playlist.0|determine_asset_url }} --
+        <audio controls>
+         <source src="{{ playlist.0|determine_asset_url }}" type="audio/mp3">
+         Your browser does not support the audio tag.
+       </audio>
+
+        <script>
+        var params = {
+            //pluginPath: '/path-to-mediaelement-dir/',
+            iconSprite: '{{ STATIC_URL }}libs/mediaelement/mejs-controls.svg'
+        };
+        $('audio,video').mediaelementplayer(params);
+        </script>
+        <style>
+            .mejs__container {
+                background-color: sandybrown;
+            }
+        </style>
+
      <br/>
     </div>
 
