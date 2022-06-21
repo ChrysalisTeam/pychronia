@@ -296,7 +296,7 @@ def sanitize_query_dict(query_dict):
     
     *query_dict* must be mutable.
     """
-    for key in query_dict:
+    for key in list(query_dict.keys()):
         if key.endswith("[]"):  # standard js/php array notation
             new_key = key[:-2]
             query_dict[new_key] = query_dict.getlist(key)
