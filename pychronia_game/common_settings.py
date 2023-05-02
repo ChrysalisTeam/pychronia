@@ -28,7 +28,7 @@ INSTALLED_APPS += [
 
     'django.contrib.admin',
 
-    'debug_toolbar',
+    #'debug_toolbar',
 ]
 
 ############# DJANGO-APP CONFS ############

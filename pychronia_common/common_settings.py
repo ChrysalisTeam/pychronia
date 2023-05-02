@@ -128,7 +128,7 @@ TEMPLATES = [
 # no need for CSRF by default
 MIDDLEWARE = (
     'django.middleware.gzip.GZipMiddleware',
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
+    #'debug_toolbar.middleware.DebugToolbarMiddleware',
     'pychronia_common.middlewares.ReverseProxyFixer',
     # TODO Later 'django.middleware.http.ConditionalGetMiddleware', # checks E-tag and last-modification-time to avoid sending data
     #'django.middleware.common.BrokenLinkEmailsMiddleware', FIXME - ONLY SOON IN 1.5

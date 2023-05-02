@@ -183,7 +183,8 @@ urlpatterns = patterns('',
 
 # Django Debug Toolbar
 import debug_toolbar
-
+'''
 urlpatterns += patterns('',
                         url('__debug__/', include('debug_toolbar.urls')),
                         )
+'''

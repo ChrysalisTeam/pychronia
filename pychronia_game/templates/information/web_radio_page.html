@@ -13,20 +13,45 @@
      {# % include "utilities/multi_mp3_player.html" with player_width="400" player_height="200" player_conf_url=player_conf_url % #}
 
         -- {{ playlist.0|determine_asset_url }} --
-        <audio controls preload="none"
+        <!--audio-- controls preload="none"
                data-cast-title="Jazz Example"
                data-cast-description="This is a description for audio only"
-               data-cast-poster="http://mediaelementjs.com/images/big_buck_bunny.jpg">
+               data-cast-poster="http://mediaelementjs.com/images/big_buck_bunny.jpg"
+
+               class="mep-playlist"
+            	data-showplaylist="true"
 
         >
 
          <source src="{{ playlist.0|determine_asset_url }}" type="audio/mp3"  title="Jazz Example 1" data-playlist-description="Lorem ipsum dolor sit amet" >
          <source src="{{ playlist.1|determine_asset_url }}" type="audio/mp3"  title="Jazz Example 2" data-playlist-description="sdfsdf sdfsdfsdf">
          Your browser does not support the audio tag.
-       </audio>
+       </audio-->
+
+        <br><br>
+
+        <!-- IF PROBLEMS ONE DAY TRY https://github.com/voerro/calamansi-js -->
+
+        <audio
+      			class="mep-playlist"
+      			data-showplaylist="true"
+
+      			width="400"
+      			height="220"
+      			controls="controls"
+      			preload="auto"
+      			>
+
+            <source src="{{ playlist.0|determine_asset_url }}" type="audio/mp3"  title="Jazz Example 1" data-playlist-description="Lorem ipsum dolor sit amet" >
+            <source src="{{ playlist.1|determine_asset_url }}" type="audio/mp3"  title="Jazz Example 2" data-playlist-description="sdfsdf sdfsdfsdf">
+
+      		</audio>
+
+
+
 
         <script>
-        var params = {
+        var __params = {
             //pluginPath: '/path-to-mediaelement-dir/',
             iconSprite: '{{ STATIC_URL }}libs/mediaelement/mejs-controls.svg',
             features: ['prevtrack', 'playpause', 'nexttrack', 'current', 'progress', 'duration', 'volume', 'playlist'],
@@ -38,9 +63,14 @@
        	for (var i = 0, total = mediaElements.length; i < total; i++) {
        		new MediaElementPlayer(mediaElements[i], {
                 iconSprite: '{{ STATIC_URL }}libs/mediaelement/mejs-controls.svg',
-       			features: ['prevtrack', 'playpause', 'nexttrack', 'current', 'progress', 'duration', 'volume', 'playlist'],
-       		});
+                "features": ['playlistfeature', 'prevtrack', 'playpause', 'nexttrack', 'current', 'progress', 'duration', 'volume'],  // 'loop', 'shuffle', 'playlist'
+                playlistposition: 'bottom', // IGNORED??
+                playlist: true,
+                loop: "true",
+            });
        	}
+
+
 
 
         </script>
@@ -49,6 +79,10 @@
                 background-color: sandybrown;
             }
         </style>
+
+
+
+
 
      <br/>
     </div>

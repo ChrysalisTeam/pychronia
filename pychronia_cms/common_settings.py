@@ -57,7 +57,7 @@ INSTALLED_APPS += [
 
     'reversion',
 
-    'debug_toolbar',
+    #'debug_toolbar',
 ]
 
 _TEMPLATE_OPTIONS = TEMPLATES[0]["OPTIONS"]
@@ -72,7 +72,7 @@ _TEMPLATE_OPTIONS["loaders"].insert(0,
 MIDDLEWARE = \
     ('django.middleware.cache.UpdateCacheMiddleware',) + \
     MIDDLEWARE + (
-        'debug_toolbar.middleware.DebugToolbarMiddleware', #### PASCAL 
+        #'debug_toolbar.middleware.DebugToolbarMiddleware', #### PASCAL
         'django.middleware.clickjacking.XFrameOptionsMiddleware',
         'django.middleware.csrf.CsrfViewMiddleware',
         'cms.middleware.page.CurrentPageMiddleware',
@@ -95,7 +95,7 @@ ABSOLUTE_URL_OVERRIDES = {
 ## DJANGO DEBUG TOOLBAR CONF ##
 def show_toolbar_to_superusers_only(request):
     print(">>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<")
-    return True
+    return False  # Buggy in DjangoCMS prod.....
     if request.user.is_superuser:
         return True
     return False

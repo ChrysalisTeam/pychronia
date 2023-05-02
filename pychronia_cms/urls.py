@@ -57,12 +57,12 @@ urlpatterns += i18n_patterns(
                              )
 
 # Django Debug Toolbar
-import debug_toolbar
-
+##import debug_toolbar
+'''
 urlpatterns += patterns('',
                         url(r'^__debug__/', include(debug_toolbar.urls)),
                         )
-
+'''
 #from pprint import pprint
 #pprint(urlpatterns)
 
