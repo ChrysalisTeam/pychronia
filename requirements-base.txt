@@ -7,7 +7,7 @@ Django==4.0.5
 django-compat-patcher==0.11
 compat-patcher-core==2.1
 
-Pillow<=8.3.0  # Crash of _imagingft.cp38-win_amd64.pyd of too recent versions on python3.8
+Pillow==10
 
 easy-thumbnails==2.8.1
 django-filer==2.2.1
