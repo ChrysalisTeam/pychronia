@@ -28,6 +28,6 @@ docutils
 
 django-cprofile-middleware==1.0.5
 
-debug_toolbar
+django_debug_toolbar
 
 pyparsing==3.1.1
