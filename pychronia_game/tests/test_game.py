@@ -5237,7 +5237,7 @@ class TestGameViewSystem(BaseGameTestCase):
                 callback_name = action_properties["callback"]
                 callback = getattr(game_view, callback_name)
 
-                (args, varargs, varkw, defaults) = inspect.getargspec(
+                (args, varargs, varkw, defaults, _kwonlyargs, _kwonlydefaults, _annotations) = inspect.getfullargspec(
                     callback)  # will fail if keyword-only arguments are used, in the future
 
                 if action_name in game_view.GAME_ACTIONS and game_view.ACCESS in (

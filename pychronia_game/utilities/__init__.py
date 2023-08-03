@@ -313,7 +313,7 @@ def adapt_parameters_to_func(all_parameters, func):
     Returns a dict of relevant parameters, or raises common signature exceptions.
     """
 
-    (args, _varargs, keywords, _defaults) = inspect.getargspec(func)
+    (args, _varargs, keywords, _defaults, _kwonlyargs, _kwonlydefaults, _annotations) = inspect.getfullargspec(func)
     ##print("########>>>", func, all_parameters, args)
 
     if keywords is not None:
