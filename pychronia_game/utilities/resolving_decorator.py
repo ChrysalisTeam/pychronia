@@ -2,6 +2,7 @@ import sys, types, inspect
 from decorator import decorator
 from functools import partial
 
+IS_PY3K11 = (sys.version_info >= (3, 11))
 IS_PY3K8 = (sys.version_info >= (3, 8))
 IS_PY3K = (sys.version_info >= (3, 0))
 
@@ -141,12 +142,36 @@ def flatten_function_signature(func):
                     co_lnotab = ...  # type: bytes
                     co_freevars = ...  # type: Tuple[str, ...]
                     co_cellvars = ...  # type: Tuple[str, ...])
+                    
+    Notes on python3.11 code type __init__() args:
+        ['argcount', 
+        'posonlyargcount', 
+        'kwonlyargcount', 
+        'nlocals', 
+        'stacksize', 
+        'flags', 
+        'codestring', 
+        'constants', 
+        'names', 
+        'varnames', 
+        'filename', 
+        'name', 
+        'qualname',  << NEW
+        'firstlineno', 
+        'linetable', 
+        'exceptiontable',  << NEW
+        'freevars', 
+        'cellvars']
+    
     """
 
-    print(">>>>>> inspect.getfullargspec OLD FUNCTION:", old_function.__name__, inspect.getfullargspec(old_function))
+    #print(">>>>>> inspect.getfullargspec OLD FUNCTION:", old_function.__name__, inspect.getfullargspec(old_function))
 
     # TODO - could be optimized out
-    if IS_PY3K8:  # adds co_posonlyargcount
+    if IS_PY3K11:  # adds co_qualname and co_exceptiontable
+        pos_arg_names = """co_argcount co_posonlyargcount co_kwonlyargcount co_nlocals co_stacksize co_flags co_code co_consts co_names
+                co_varnames co_filename co_name co_qualname co_firstlineno co_lnotab co_exceptiontable co_freevars co_cellvars""".split()
+    elif IS_PY3K8:  # adds co_posonlyargcount
         pos_arg_names = """co_argcount co_posonlyargcount co_kwonlyargcount co_nlocals co_stacksize co_flags co_code co_consts co_names
                 co_varnames co_filename co_name co_firstlineno co_lnotab co_freevars co_cellvars""".split()
     elif IS_PY3K:  # adds co_kwonlyargcount
@@ -193,7 +218,7 @@ def flatten_function_signature(func):
                                       # Function defaults are useless, since they must be resolved before by inspect.getcallargs()
                                       old_function.__closure__)
 
-    reference_func = old_function.__func__ if getattr(old_function, "__func__") else old_function
+    reference_func = old_function.__func__ if hasattr(old_function, "__func__") else old_function
     if hasattr(reference_func, "__signature__"):
         new_signature = old_function.__func__.__signature__ if getattr(old_function, "__func__") else old_function.__signature__
         new_function.__signature__ = new_signature
