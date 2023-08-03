@@ -178,6 +178,7 @@ class TestUtilities(BaseGameTestCase):
                                 report_level=1)
         ## print (">>>>>>>>>>", html)
         assert "<h2" in html
+        assert "<p>" in html
         assert "System Message" in html  # specific error divs
         assert 'class="problematic"' in html  # spans around faulty strings
 
@@ -186,8 +187,9 @@ class TestUtilities(BaseGameTestCase):
                                 report_level=4)
         ## print (">>>>>>>>>>", html)
         assert "<h2" in html
+        assert "<p>" in html
         assert "System Message" not in html  # no additional error divs
-        assert 'class="problematic"' in html  # spans remain though
+        assert 'class="problematic"' not in html  # no additional error spans
 
     def test_rich_text_tag_caching(self):
 
