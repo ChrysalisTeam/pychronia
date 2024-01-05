@@ -7,7 +7,7 @@ git+https://github.com/pakal/django-zodb.git@556c54da5a8b32f632097449fffcb25d0f6
 
 PyYAML==6.0
 
-pycryptodome==3.14.1
+pycryptodome==3.19.1
 
 git+https://github.com/paulovn/python-aiml@21c77d5e204dfdbaef315e570fdd918b852c738b
 
