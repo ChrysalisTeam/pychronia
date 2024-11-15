@@ -44,9 +44,12 @@ def _try_generating_thumbnail_url(rel_path, alias=None):
     Falls back to original fail url if thumbnail generation fails, or if no alias is provided.
     """
     if alias:
+        #print(">>>>>>>>> WE _try_generating_thumbnail_url", rel_path, "alias=", alias)
         try:
             thumb = get_game_thumbnailer(rel_path)[alias]  # we enforce the GAME_FILES storage here!
-            return thumb.url
+            res = thumb.url
+            #print(">>>>>>>>> _try_generating_thumbnail_url GAVE", res)
+            return res
         except Exception as e:
             logging.warning("Error generating game_file_img %s (alias=%s): %r", rel_path, alias, e)
             pass  # fallback to plain file
