@@ -397,6 +397,7 @@ INTERNAL_IPS = ("127.0.0.1",)
 
 
 def show_toolbar_to_superusers_only(request):
+    return False  # DISABLE DUE TO ZODB
     print(">>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<")
     return True
     if request.user.is_superuser:
