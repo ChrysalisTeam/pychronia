@@ -9,7 +9,7 @@ from urllib.parse import urlparse
 from datetime import datetime, timedelta
 
 from contextlib import contextmanager, closing
-from decorator import decorator
+from decorator import decoratorx as decorator
 from functools import partial
 from textwrap import dedent
 

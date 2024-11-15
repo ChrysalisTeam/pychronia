@@ -1,5 +1,5 @@
 import sys, types, inspect
-from decorator import decorator
+from decorator import decoratorx as decorator
 from functools import partial
 
 IS_PY3K11 = (sys.version_info >= (3, 11))
