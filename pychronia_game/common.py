@@ -6,7 +6,7 @@ import sys, os, math, random, traceback, hashlib, logging, types, base64, re
 import types, contextlib, collections, time, glob, copy, atexit, inspect
 from urllib.parse import urlparse
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, UTC
 
 from contextlib import contextmanager, closing
 from decorator import decoratorx as decorator
@@ -279,16 +279,25 @@ def determine_asset_url(properties, absolute=True):
     return file_url
 
 
-def utctolocal(value):
+def get_utc_now():
+    """Returns an AWARE datetime"""
+    return datetime.now(UTC)
+
+
+def utc_to_local(value):
     """
-    Convert naive UTC datetime to wanted gameserver timezone.
+    Convert an aware UTC datetime to wanted gameserver timezone.
     """
     import pytz
     if not value:
         pass  ## return "@@%r@@" % value  # if we need to debug troubles
-    now_utc = pytz.utc.localize(value)
-    local_time = now_utc.astimezone(config.GAME_LOCAL_TZ)
+    local_time = value.astimezone(config.GAME_LOCAL_TZ)
     return local_time
+
+
+def is_past_datetime(dt):
+    # WARNING - to compute delays, we always work in UTC TIME
+    return (dt <= get_utc_now())
 
 
 def __obsolete_render_rst_template(rst_tpl, datamanager):

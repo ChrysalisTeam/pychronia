@@ -293,7 +293,7 @@ class FlexibleTime(BaseDataManager):  # TODO REFINE
         We always work in UTC
         """
 
-        new_time = datetime.utcnow()
+        new_time = get_utc_now()
         # print(">>>>>>>>>>>>>>>>>> DATETIME", new_time, "WITH DELAYS", delay_mn)
 
         if delay_mn:
@@ -385,7 +385,7 @@ class GameEvents(BaseDataManager):  # TODO REFINE
             assert "%(" not in message, "Message %s needs substitution arguments" % message
             pass
 
-        utcnow = datetime.utcnow()  # NAIVE UTC datetime
+        utcnow = get_utc_now()  # NAIVE UTC datetime
 
         record = PersistentMapping({
             "time": utcnow,
@@ -1400,7 +1400,7 @@ class FriendshipHandling(BaseDataManager):
                 _("%(username)s has already requested the friendship of %(recipient)s") % SDICT(username=username,
                                                                                                 recipient=recipient))
 
-        current_date = datetime.utcnow()
+        current_date = get_utc_now()
         if (recipient, username) in friendship_proposals:
             # we seal the deal, with "recipient" as the initial proposer!
             existing_data = friendship_proposals[(recipient, username)]
@@ -1512,7 +1512,7 @@ class FriendshipHandling(BaseDataManager):
     @readonly_method
     def is_friendship_too_young_to_be_terminated(self, friendship_data):
         min_delay = self.get_global_parameter("friendship_minimum_duration_mn_abs")
-        return (friendship_data["acceptance_date"] > datetime.utcnow() - timedelta(minutes=min_delay))
+        return (friendship_data["acceptance_date"] > get_utc_now() - timedelta(minutes=min_delay))
 
     @transaction_watcher
     def terminate_friendship(self, username=CURRENT_USER, rejected_user=None):
@@ -1639,7 +1639,7 @@ class OnlinePresence(BaseDataManager):
         super(OnlinePresence, self)._check_database_coherence(**kwargs)
         for character in list(self.get_character_sets().values()):
             assert not character["last_online_time"] or (isinstance(character["last_online_time"], datetime)
-                                                         and character["last_online_time"] <= datetime.utcnow())
+                                                         and character["last_online_time"] <= get_utc_now())
 
         utilities.check_is_positive_int(self.get_global_parameter("online_presence_timeout_s"))
 
@@ -1650,7 +1650,7 @@ class OnlinePresence(BaseDataManager):
                 self.set_online_status(username)
 
     def _set_online_status(self, username):  # no fallback system here
-        self.data["character_properties"][username]["last_online_time"] = datetime.utcnow()
+        self.data["character_properties"][username]["last_online_time"] = get_utc_now()
 
     @transaction_watcher
     def set_online_status(self, username=CURRENT_USER):
@@ -1662,7 +1662,7 @@ class OnlinePresence(BaseDataManager):
         username = self._resolve_username(username)
         timestamp = self.data["character_properties"][username]["last_online_time"]
         return timestamp and timestamp >= (
-        datetime.utcnow() - timedelta(seconds=self.get_global_parameter("online_presence_timeout_s")))
+        get_utc_now() - timedelta(seconds=self.get_global_parameter("online_presence_timeout_s")))
 
     @readonly_method
     def get_online_users(self):
@@ -1819,7 +1819,7 @@ class TextMessagingCore(BaseDataManager):
         # WE SEND DELAYED MESSAGES #
 
         last_index_processed = None
-        utcnow = datetime.utcnow()
+        utcnow = get_utc_now()
 
         for (index, msg) in enumerate(self.messaging_data["messages_queued"]):
             if msg["sent_at"] <= utcnow:
@@ -1847,7 +1847,7 @@ class TextMessagingCore(BaseDataManager):
         msg = self._build_new_message(*args, **kwargs)
         sent_at = msg["sent_at"]
 
-        is_future_msg = (sent_at > datetime.utcnow())
+        is_future_msg = (sent_at > get_utc_now())
 
         self.logger.info("Posting %s message %r", "future" if is_future_msg else "past", msg)
         if is_future_msg:
@@ -2016,7 +2016,7 @@ class TextMessagingCore(BaseDataManager):
         if not msg:
             return False
 
-        msg["sent_at"] = datetime.utcnow()  # we force the timestamp to UTCNOW
+        msg["sent_at"] = get_utc_now()  # we force the timestamp to UTCNOW
         self._immediately_dispatch_message(msg)
         return True
 
@@ -3102,7 +3102,7 @@ class TextMessagingInterception(BaseDataManager):
         """
         username = self._resolve_username(username)
         data = self.get_character_properties(username)
-        data["confidentiality_activation_datetime"] = (datetime.utcnow() if has_confidentiality else None)
+        data["confidentiality_activation_datetime"] = (get_utc_now() if has_confidentiality else None)
 
     @readonly_method
     def get_confidentiality_protection_status(self, username=CURRENT_USER):
@@ -3360,7 +3360,7 @@ class Chatroom(BaseDataManager):
         for (name, character) in list(game_data["character_properties"].items()):
             assert character["last_chatting_time"] is None or (
                 isinstance(character["last_chatting_time"], datetime) and
-                character["last_chatting_time"] <= datetime.utcnow())
+                character["last_chatting_time"] <= get_utc_now())
 
         chatroom_msg_reference = {
             "time": datetime,
@@ -3383,7 +3383,7 @@ class Chatroom(BaseDataManager):
     @transaction_watcher  # allows micro-transaction inside readonly method
     def _set_chatting_status(self, username=CURRENT_USER):
         username = self._resolve_username(username)
-        self.data["character_properties"][username]["last_chatting_time"] = datetime.utcnow()
+        self.data["character_properties"][username]["last_chatting_time"] = get_utc_now()
         self._set_online_status(username=username)  # chatting means being there too...
 
     @readonly_method
@@ -3391,7 +3391,7 @@ class Chatroom(BaseDataManager):
         username = self._resolve_username(username)
         timestamp = self.data["character_properties"][username]["last_chatting_time"]
         return timestamp and timestamp >= (
-        datetime.utcnow() - timedelta(seconds=self.get_global_parameter("chatroom_presence_timeout_s")))
+        get_utc_now() - timedelta(seconds=self.get_global_parameter("chatroom_presence_timeout_s")))
 
     @readonly_method
     def get_chatting_users(self, exclude_current=False):
@@ -3416,7 +3416,7 @@ class Chatroom(BaseDataManager):
         if not message:
             raise UsageError(_("Chat message can't be empty"))
 
-        record = PersistentMapping(time=datetime.utcnow(), username=self.user.username, message=message)
+        record = PersistentMapping(time=get_utc_now(), username=self.user.username, message=message)
         self.data["chatroom_messages"].append(record)
 
     @readonly_method  # inner mini-transactions might occur though
@@ -3480,7 +3480,7 @@ class ActionScheduling(BaseDataManager):
         super(ActionScheduling, self)._process_periodic_tasks(report)
 
         last_index_processed = None
-        utcnow = datetime.utcnow()
+        utcnow = get_utc_now()
 
         for (index, action) in enumerate(self.data["scheduled_actions"]):
             if action["execute_at"] <= utcnow:

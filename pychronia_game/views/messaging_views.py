@@ -603,7 +603,7 @@ def compose_message(request, template_name='messaging/compose.html'):
                 use_restructuredtext = form.cleaned_data["use_restructuredtext"]
                 body_format = "rst" if use_restructuredtext else "raw"
 
-                sending_date = datetime.utcnow() + timedelta(hours=delay_h)
+                sending_date = get_utc_now() + timedelta(hours=delay_h)
                 assert isinstance(sending_date, datetime)
                 del delay_h
 

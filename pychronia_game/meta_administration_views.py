@@ -222,7 +222,7 @@ def manage_instances(request):
                     messages.add_message(request, messages.ERROR, _("Invalid game creation form submitted."))
             elif request.POST.get("lock_instance"):
                 game_instance_id = request.POST["lock_instance"]
-                maintenance_until = datetime.utcnow() + timedelta(minutes=GAME_INSTANCE_MAINTENANCE_LOCKING_DELAY_MN)
+                maintenance_until = get_utc_now() + timedelta(minutes=GAME_INSTANCE_MAINTENANCE_LOCKING_DELAY_MN)
                 datamanager_administrator.change_game_instance_status(game_instance_id=game_instance_id,
                                                                       maintenance_until=maintenance_until)
                 messages.add_message(request, messages.INFO,
@@ -286,7 +286,7 @@ def manage_instances(request):
                   "meta_administration/manage_instances.html",
                   {
                       'instances_metadata': instances_metadata,  # enriched info
-                      'utc_now': datetime.utcnow(),
+                      'utc_now': get_utc_now(),
                       'notifications': get_messages(request),
                       'possible_game_statuses': sorted(GAME_STATUSES),
                       'deletable_statuses': [GAME_STATUSES.terminated, GAME_STATUSES.aborted],

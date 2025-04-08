@@ -181,6 +181,7 @@ def flatten_function_signature(func):
         pos_arg_names = """co_argcount co_nlocals co_stacksize co_flags co_code co_consts co_names
                 co_varnames co_filename co_name co_firstlineno co_lnotab co_freevars co_cellvars""".split()
 
+    # TODO - DeprecationWarning: co_lnotab is deprecated, use co_lines instead
     pos_arg_values = [getattr(old_code_object, name) for name in pos_arg_names]
     print(">>>>>>>pos_arg_values", pos_arg_values)
 

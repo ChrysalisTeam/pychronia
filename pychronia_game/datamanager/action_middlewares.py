@@ -539,7 +539,7 @@ class TimeLimitedActionMiddleware(AbstractActionMiddleware):
         super(TimeLimitedActionMiddleware, self)._check_action_middleware_data_sanity(strict=strict)
 
         settings = self.settings
-        now = datetime.utcnow()
+        now = get_utc_now()
 
         for action_name, settings in list(self.get_all_middleware_settings(TimeLimitedActionMiddleware).items()):
 
@@ -623,11 +623,11 @@ class TimeLimitedActionMiddleware(AbstractActionMiddleware):
                     middleware_settings=middleware_settings, last_use_times=private_data["last_use_times"])
 
                 last_use_times = private_data["last_use_times"]
-                now = datetime.utcnow()  # to debug
+                now = get_utc_now()  # to debug
                 if len(last_use_times) >= middleware_settings["max_uses_per_period"]:
                     raise NormalUsageError(_("You must respect a waiting period to use that asset."))
 
-            private_data["last_use_times"].append(datetime.utcnow())  # updated in any case
+            private_data["last_use_times"].append(get_utc_now())  # updated in any case
 
         return super(TimeLimitedActionMiddleware, self)._process_action_through_middlewares(action_name=action_name,
                                                                                             method=method,

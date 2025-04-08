@@ -89,7 +89,7 @@ def _create_metadata_record(game_instance_id, creator_login, creator_email):
     utilities.check_is_string(creator_login)  # NOT necessarily a slug
     if creator_email is not None:
         utilities.check_is_email(creator_email)
-    utcnow = datetime.utcnow()
+    utcnow = get_utc_now()
     game_metadata = PersistentMapping(instance_id=game_instance_id,
                                       creator_login=creator_login,
                                       creator_email=creator_email,
@@ -224,14 +224,14 @@ def _fetch_available_game_data(game_instance_id, metadata_checker, update_timest
 
     game_metadata["accesses_count"] += 1
     if update_timestamp:
-        game_metadata["last_access_time"] = datetime.utcnow()
+        game_metadata["last_access_time"] = get_utc_now()
 
     game_data = game_root["data"]  # we don't care about game STATUS, we fetch it anyway
     return game_data
 
 
 def _game_is_maintenance(game_metadata):
-    return (game_metadata["maintenance_until"] and game_metadata["maintenance_until"] > datetime.utcnow())
+    return (game_metadata["maintenance_until"] and game_metadata["maintenance_until"] > get_utc_now())
 
 
 def check_game_not_in_maintenance(game_instance_id, game_metadata):
@@ -279,10 +279,10 @@ def change_game_instance_status(game_instance_id, new_status=None, maintenance_u
         game_metadata["status"] = new_status
 
     if maintenance_until is not _undefined:
-        assert maintenance_until is None or maintenance_until >= datetime.utcnow()
+        assert maintenance_until is None or maintenance_until >= get_utc_now()
         game_metadata["maintenance_until"] = maintenance_until
 
-    game_metadata["last_status_change_time"] = datetime.utcnow()
+    game_metadata["last_status_change_time"] = get_utc_now()
 
 
 # NO transaction management here!
@@ -337,7 +337,7 @@ def backup_game_instance_data(game_instance_id, comment=None):
                                                       convert_types=True,  # should be output in UTF8
                                                       default_style="|")  # will output very long lines
 
-    basename = "backup_" + game_instance_id + "_" + datetime.utcnow().strftime(
+    basename = "backup_" + game_instance_id + "_" + get_utc_now().strftime(
         "%Y%m%d_%H%M%S") + "_" + comment + ".yaml"
     wanted_folder = _ensure_instance_backup_folder(game_instance_id)
     final_file_path = os.path.join(wanted_folder, basename)

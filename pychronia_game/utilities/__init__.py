@@ -72,7 +72,7 @@ def normalize(v):
     if hasattr(v, "strip"):
         v = v.strip(" \t")  # we LET extra newlines, might be necessary for RST markups
         v = v.replace("\r\n", "\n")  # all UNIX newlines
-        v = re.sub("[ \t]+\n", "\n", v, flags=re.MULTILINE)  # remove trailing spaces/tabs at ends of regular lines
+        v = re.sub(r"[ \t]+\n", "\n", v, flags=re.MULTILINE)  # remove trailing spaces/tabs at ends of regular lines
     return v
 
 
@@ -830,18 +830,6 @@ def load_yaml_fixture(yaml_fixture):
     return data
 
 
-### Date operations ###
-
-def utc_to_local(utc_time):
-    timedelta = datetime.now() - datetime.utcnow()
-    return utc_time + timedelta
-
-
-def is_past_datetime(dt):
-    # WARNING - to compute delays, we always work in UTC TIME
-    return (dt <= datetime.utcnow())
-
-
 def render_template_string(string, ctx):
     """
     Render a string using django templates and the provided context dict.
@@ -940,14 +928,14 @@ class TechnicalEventsMixin(object):
 ## conversions between variable naming conventions ##
 
 def to_snake_case(text):
-    s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', text)
-    return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
+    s1 = re.sub(r'(.)([A-Z][a-z]+)', r'\1_\2', text)
+    return re.sub(r'([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
 
 
 def to_pascal_case(text):
     if "_" in text:
         callback = lambda pat: pat.group(1).lower() + pat.group(2).upper()
-        text = re.sub("(\w)_(\w)", callback, text)
+        text = re.sub(r"(\w)_(\w)", callback, text)
         if text[0].islower():
             text = text[0].upper() + text[1:]
         return text
