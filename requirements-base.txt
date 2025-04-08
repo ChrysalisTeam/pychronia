@@ -7,7 +7,7 @@ Django==4.2.4
 django-compat-patcher==0.12
 compat-patcher-core==2.2
 
-Pillow==10
+Pillow>=10
 
 easy-thumbnails==2.8.5
 django-filer==3.0.3
