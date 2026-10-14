@@ -12,11 +12,11 @@ git+https://github.com/pakal/cmsplugin-zinnia.git@76f8de72a37b0525a8a5f65e99f041
 
 decorator==4.4.0
 
-Django==4.2.30
+Django==5.0.14
 
 django-compat-patcher==0.14
 
-html5lib==0.999999999  # last version with "html5lib.sanitizer" required (or not anymore?) by djangocms_text_ckeditor
+html5lib==1.1  # rung 9: bumped past 0.999999999 (used removed "collections.Mapping" alias, Python 3.10 dropped it); 1.1 still ships html5lib.sanitizer
 
 #Django-Select2==4.2.2 is OUTDATED, and then form "fields" were removed from project...
 git+https://github.com/pakal/django-select2.git@6b1adada50ce53f4c51dd6d409371705627fa17e
@@ -33,7 +33,7 @@ django-debug-toolbar==2.2.1
 django-blog-zinnia==0.20
 django-mptt==0.10.0
 
-django-cms==3.11.0
+django-cms==3.11.11
 
 djangocms-page-sitemap==1.1.0
 
@@ -84,13 +84,13 @@ pip-review
 
 pytz
 
-pycryptodome==3.9.9
+pycryptodome==3.21.0
 
 python-memcached==1.59
 
 pyparsing==2.4.0
 
-PyYAML==5.1
+PyYAML==6.0.2
 
 requests==2.21.0
 
@@ -107,7 +107,10 @@ git+https://github.com/paulovn/python-aiml
 ## DEV tools only ##
 
 pytest==4.4.1
-pyScss==1.3.5
+# pyScss removed (rung 9): unused anywhere in this codebase (confirmed via grep for
+# scss/SCSS/pyscss across all .py files), abandoned upstream (last release ~2016),
+# and its setup.py imports the long-removed setuptools.Feature API, so it can no
+# longer even be built from source past old setuptools versions.
 
 
 
