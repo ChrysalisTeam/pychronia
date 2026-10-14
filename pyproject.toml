@@ -68,6 +68,10 @@ dev = [
     "logging_tree",
     "django-cprofile-middleware>=1.0.5",
     "django_debug_toolbar",
+    # used to compile MetalRadiance SCSS sources, see pychronia_common/static/MetalRadiance/build.bat ;
+    # pyscss==1.4.0 is abandoned and incompatible with Python 3.11+'s stricter "re" module, so it is
+    # patched at runtime by scss_build.py before compiling
+    "pyscss==1.4.0",
 ]
 
 

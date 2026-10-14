@@ -1351,6 +1351,7 @@ dev = [
     { name = "django-debug-toolbar" },
     { name = "logging-tree" },
     { name = "pip-review" },
+    { name = "pyscss" },
     { name = "pytest" },
 ]
 
@@ -1407,6 +1408,7 @@ dev = [
     { name = "django-debug-toolbar" },
     { name = "logging-tree" },
     { name = "pip-review" },
+    { name = "pyscss", specifier = "==1.4.0" },
     { name = "pytest", specifier = ">=7.1.2" },
 ]
 
@@ -1475,6 +1477,15 @@ sdist = { url = "https://files.pythonhosted.org/packages/e4/11/b213bebff18258436
 wheels = [
     { url = "https://files.pythonhosted.org/packages/38/bb/d215ee7c73b61497b28a5503f9f53523f294fcc936762b7caf90e0c1c2b5/pyparsing-3.3.3-py3-none-any.whl", hash = "sha256:ece8c00a69cf01b45d0b1dedabb469c90d8caf996d4fda40f147627a122849a4", size = 126420, upload-time = "2026-09-20T20:59:04.025Z" },
 ]
+
+[[package]]
+name = "pyscss"
+version = "1.4.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "six" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/92/30/64c818fd317e03138f98ca67800edb6a916f59fc07b3d7e535e84c3c333a/pyScss-1.4.0.tar.gz", hash = "sha256:8f35521ffe36afa8b34c7d6f3195088a7057c185c2b8f15ee459ab19748669ff", size = 122100, upload-time = "2022-02-23T12:53:39.735Z" }
 
 [[package]]
 name = "pytest"
