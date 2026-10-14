@@ -12,8 +12,11 @@ if REPO_ROOT not in sys.path and REPO_ROOT + os.sep not in sys.path:
    print("""-------> WARNING, it seems you don't have the folder "%s" in your python paths, please add it (eg. via the PYTHONPATH environment variable) so that all scripts in this project manage to bootstrap themselves.""" % REPO_ROOT)
 
 print(">>>>> Installing python/pip modules")
-retcode = subprocess.call("python -m pip install -r requirements-game.txt", shell=True)
-assert not retcode, "Error when installing python/pip dependencies (if problems with compiled extensions like MysqlDB, on windows, see docs)"
+assert sys.prefix != sys.base_prefix, "Please launch this script with the python executable of a virtualenv"
+# uv installs into the virtualenv of the current python, instead of its default ".venv" folder
+uv_env = dict(os.environ, UV_PROJECT_ENVIRONMENT=sys.prefix)
+retcode = subprocess.call(["uv", "sync", "--frozen", "--inexact"], env=uv_env, cwd=REPO_ROOT)
+assert not retcode, "Error when installing python/pip dependencies with uv (see https://docs.astral.sh/uv/ to install it)"
 
 print(">>>>> Resetting sqlite django DB")
 retcode = subprocess.call("python \"%s\" reset_django" % RUNNER, shell=True)
