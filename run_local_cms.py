@@ -25,9 +25,30 @@ _original_check_custom_error_handlers = URLResolver._check_custom_error_handlers
 URLResolver._check_custom_error_handlers = \
     lambda self: [] if self.urlconf_name == "app_resolver" else _original_check_custom_error_handlers(self)
 
+# django-filer 1.x's AdminFolderFormField.__init__ calls forms.Field.__init__() directly
+# (skipping ModelChoiceField.__init__, which is the only place that knows to consume a
+# 'blank' kwarg). Since Django 3.1, ForeignKey.formfield() always passes 'blank' along,
+# so building the folder widget crashes with "unexpected keyword argument 'blank'".
+# Never fixed in the filer 1.x line (only filer 2.x's cms-plugin rewrite, which
+# cmsplugin-filer 1.1.3 doesn't support, avoids this code path).
+# Patched on the base Field class (not on AdminFolderFormField itself) and BEFORE
+# django.setup()/setup_pychronia_env: the crash happens during admin autodiscovery,
+# itself triggered deep inside django.setup() (via django_compat_patcher), too early
+# for a post-setup patch to still beat it; importing filer.fields.folder this early
+# would itself crash (needs the app registry + django.utils.six, neither ready yet).
+# Only ModelChoiceField ever legitimately consumes 'blank', so dropping it in the
+# base Field is safe framework-wide.
+from django.forms.fields import Field
+_original_Field_init = Field.__init__
+def _patched_Field_init(self, *args, **kwargs):
+    kwargs.pop("blank", None)
+    _original_Field_init(self, *args, **kwargs)
+Field.__init__ = _patched_Field_init
+
 # Same as pychronia_cms/tests/manage.py, but inlined so that sys.argv[0] stays this launcher,
 # and the runserver autoreloader respawns it WITH the patches above
 os.environ["DJANGO_SETTINGS_MODULE"] = "pychronia_cms.tests.persistent_mode_settings"
-import setup_pychronia_env
+import setup_pychronia_env  # noqa: E402
+
 from django.core.management import execute_from_command_line
 execute_from_command_line(sys.argv)
