@@ -12,7 +12,7 @@ if REPO_ROOT not in sys.path and REPO_ROOT + os.sep not in sys.path:
    print("""-------> WARNING, it seems you don't have the folder "%s" in your python paths, please add it (eg. via the PYTHONPATH environment variable) so that all scripts in this project manage to bootstrap themselves.""" % REPO_ROOT)
 
 print(">>>>> Installing python/pip modules")
-retcode = subprocess.call("python -m pip install -r requirements.txt", shell=True)
+retcode = subprocess.call("python -m pip install -r requirements-game.txt", shell=True)
 assert not retcode, "Error when installing python/pip dependencies (if problems with compiled extensions like MysqlDB, on windows, see docs)"
 
 print(">>>>> Resetting sqlite django DB")

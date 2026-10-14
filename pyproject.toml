@@ -3,7 +3,7 @@ name = "pychronia"
 version = "0.1.0"
 description = ""
 authors = ["PKL <pythoniks@gmail.com>"]
-readme = "README.md"
+readme = "README.rst"
 
 
 [tool.poetry.dependencies]
