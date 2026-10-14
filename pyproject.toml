@@ -61,6 +61,10 @@ django-cprofile-middleware = "^1.0.5"
 django_debug_toolbar = "*"
 
 
+[tool.pytest.ini_options]
+testpaths = ["pychronia_game/tests"]
+
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
