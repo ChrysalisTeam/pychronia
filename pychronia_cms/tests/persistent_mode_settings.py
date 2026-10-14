@@ -12,10 +12,9 @@ _curdir = os.path.dirname(os.path.abspath(__file__))
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'chrysaliscms_dev',
+        'NAME': 'chryscms_local',  # TEMPORARY (do not commit): local MariaDB sandbox
         'USER': 'root',
-        'PASSWORD': 'root',
-        'HOST': '127.0.0.1',
-        'PORT': '3306',
+        'PASSWORD': '',
+        'HOST': 'localhost',
     }
 }
