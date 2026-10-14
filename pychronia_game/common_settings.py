@@ -21,7 +21,7 @@ MIDDLEWARE = (tuple(MIDDLEWARE) +
                        'django_cprofile_middleware.middleware.ProfilerMiddleware', # use in DEBUG mode with '?prof' at the end of URL
                        ))
 
-print(">>>>>>>>>>>>>>>>", MIDDLEWARE)
+#print(">>>>>>>>>>>>>>>>", MIDDLEWARE)
 
 INSTALLED_APPS += [
     'pychronia_game',
