@@ -12,7 +12,7 @@ git+https://github.com/pakal/cmsplugin-zinnia.git@76f8de72a37b0525a8a5f65e99f041
 
 decorator==4.4.0
 
-Django==3.2.25
+Django==4.0.10
 
 django-compat-patcher==0.14
 
@@ -33,7 +33,7 @@ django-debug-toolbar==2.2.1
 django-blog-zinnia==0.20
 django-mptt==0.10.0
 
-django-cms==3.10.1
+django-cms==3.11.0
 
 djangocms-page-sitemap==1.1.0
 
@@ -73,10 +73,10 @@ easy-thumbnails==2.6
 # for cmsplugin-gallery
 django-inline-ordering>=1.0.2
 
-RelStorage==2.1.1
+RelStorage==4.0.0
 
 # for relstorage mainly
-perfmetrics==2.0
+perfmetrics==4.1.0
 
 # exposes pip-dump, pip-sync and pip-review
 pip-tools
@@ -84,7 +84,7 @@ pip-review
 
 pytz
 
-pycryptodome==3.8.1
+pycryptodome==3.9.9
 
 python-memcached==1.59
 
@@ -96,8 +96,8 @@ requests==2.21.0
 
 Sphinx==2.0.1
 
-ZODB==5.6.0
-persistent==4.6.4
+ZODB==6.0.1
+persistent==6.1.1
 
 git+https://github.com/paulovn/python-aiml
 
