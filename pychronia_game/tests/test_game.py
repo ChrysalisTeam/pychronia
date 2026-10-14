@@ -933,32 +933,32 @@ class TestDatamanager(BaseGameTestCase):
                 castrated_dm.__init__(game_instance_id=my_id,
                                       game_root=root[my_id],
                                       request=self.request)
-            except Exception:
+            except Exception as e:
                 transaction.abort()
             assert castrated_dm.get_event_count("BASE_DATA_MANAGER_INIT_CALLED") == 1
 
             try:
                 castrated_dm._init_from_db()
-            except Exception:
+            except Exception as e:
                 transaction.abort()
             assert castrated_dm.get_event_count("BASE_DATA_MANAGER_INIT_FROM_DB_CALLED") == 1
 
             try:
                 castrated_dm._load_initial_data()
-            except Exception:
+            except Exception as e:
                 transaction.abort()
             assert castrated_dm.get_event_count("BASE_LOAD_INITIAL_DATA_CALLED") == 1
 
             try:
                 castrated_dm._check_database_coherence()
-            except Exception:
+            except Exception as e:
                 transaction.abort()
             assert castrated_dm.get_event_count("BASE_CHECK_DB_COHERENCE_PRIVATE_CALLED") == 1
 
             try:
                 report = PersistentList()
                 castrated_dm._process_periodic_tasks(report)
-            except Exception:
+            except Exception as e:
                 transaction.abort()
             assert castrated_dm.get_event_count("BASE_PROCESS_PERIODIC_TASK_CALLED") == 1
 
@@ -1916,7 +1916,7 @@ class TestDatamanager(BaseGameTestCase):
         # no strict checks on sender/recipient of original message, when using parent_id feature
         msg_id2 = self.dm.post_message(email("guy2"), email("guy1"), subject="ssd", body="qsdqsd", parent_id=msg_id,
                                        delay_mn=-2)
-        self.dm.post_message(email("guy3"), email("guy2"), subject="ssd", body="qsdqsd", parent_id=msg_id)
+        msg_id3 = self.dm.post_message(email("guy3"), email("guy2"), subject="ssd", body="qsdqsd", parent_id=msg_id)
         msg_id4 = self.dm.post_message(email("my_npc"), email("guy2"), subject="ssd", body="qsdqsd", parent_id=msg_id)
         msg_id4 = self.dm.post_message("judicators@akaris.com", email("guy2"), subject="ssd", body="qsdqsd",
                                        parent_id=msg_id)
@@ -3396,7 +3396,10 @@ class TestDatamanager(BaseGameTestCase):
         # TODO check that staff django_user doesn't mess with friendship impersonations either!!!!!!!!
 
         master_login = self.dm.get_global_parameter("master_login")
+        master_password = self.dm.get_global_parameter("master_password")
         player_login = "guy1"
+        player_password = "elixir"
+        player_login_bis = "guy2"
         anonymous_login = self.dm.get_global_parameter("anonymous_login")
 
         # use django user, without privileges or inactive #
@@ -3506,6 +3509,7 @@ class TestDatamanager(BaseGameTestCase):
         master_login = self.dm.get_global_parameter("master_login")
         master_password = self.dm.get_global_parameter("master_password")
         player_login = "guy1"
+        player_password = "elixir"
         player_login_bis = "guy2"
         anonymous_login = self.dm.get_global_parameter("anonymous_login")
 
@@ -6644,7 +6648,7 @@ class TestSpecialAbilities(BaseGameTestCase):
         assert "Simon Bladstaffulovza!" in report  # RENDERED conten
 
         with pytest.raises(AbnormalUsageError):
-            house_reports._get_valid_report_for_period("12h-14h")  # no analysis data
+            msg = house_reports._get_valid_report_for_period("12h-14h")  # no analysis data
 
         periods = house_reports.get_available_periods()
         assert periods == [('10h-12h', True), ('12h-14h', False)]  # sorted
@@ -7032,18 +7036,21 @@ class TestSpecialAbilities(BaseGameTestCase):
         email_guy4 = self.dm.get_character_email("guy4")
         email_external = self.dm.get_global_parameter("all_players_mailing_list")
 
-        self.dm.post_message(sender_email=email_guy1, recipient_emails=email_external, subject="test_1",
-                             body="test")
+        msg_id1 = self.dm.post_message(sender_email=email_guy1, recipient_emails=email_external, subject="test_1",
+                                       body="test")
+        msg1 = self.dm.get_dispatched_message_by_id(msg_id1)
 
         msg_id2 = self.dm.post_message(sender_email=email_guy3, recipient_emails=email_guy4, subject="test_2",
                                        body="test2")
         msg2 = self.dm.get_dispatched_message_by_id(msg_id2)
         time.sleep(1)
-        self.dm.post_message(sender_email=email_guy4, recipient_emails=email_guy1, subject=msg2["subject"],
-                             body="test3", parent_id=msg_id2)
+        msg_id3 = self.dm.post_message(sender_email=email_guy4, recipient_emails=email_guy1, subject=msg2["subject"],
+                                       body="test3", parent_id=msg_id2)
+        msg3 = self.dm.get_dispatched_message_by_id(msg_id3)
 
-        self.dm.post_message(sender_email=email_guy1, recipient_emails=email_guy2, subject="sujet",
-                             body="mon message")
+        msg_id4 = self.dm.post_message(sender_email=email_guy1, recipient_emails=email_guy2, subject="sujet",
+                                       body="mon message")
+        msg4 = self.dm.get_dispatched_message_by_id(msg_id4)
 
         # test extract_conversation_summary utility
 
