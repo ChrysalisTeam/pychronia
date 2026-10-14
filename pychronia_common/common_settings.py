@@ -115,7 +115,6 @@ TEMPLATES = [
                 "django.contrib.messages.context_processors.messages",
                 # note that we use our own version in pychronia-game!  FIXME what ??
                 "sekizai.context_processors.sekizai",
-                'pychronia_common.context_processors.google_analytics',
             ],
             'loaders': [
                 'django.template.loaders.filesystem.Loader',
@@ -236,8 +235,3 @@ THUMBNAIL_EXTENSION = "jpg"
 THUMBNAIL_TRANSPARENCY_EXTENSION = "png"
 THUMBNAIL_PRESERVE_EXTENSIONS = True  # or a tuple like ('png',)
 THUMBNAIL_CHECK_CACHE_MISS = True  # can regenerate SQL table from storage - unset it if everything works fine
-
-
-# override these to activate Google Analytics stats
-GOOGLE_ANALYTICS_PROPERTY_ID = None
-GOOGLE_ANALYTICS_DOMAIN = None
