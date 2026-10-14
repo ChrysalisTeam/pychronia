@@ -488,6 +488,18 @@ body .notification_panel {
     }
 }
 
+// small-print notes inside footers
+.footer_note {
+    font-size: 11px;
+    line-height: 1em;
+    margin: 1px 0;
+
+    &.larger {
+        font-size: 12px;
+        margin: 0;
+    }
+}
+
 #low_footer_wrapper {
 
     position: relative;

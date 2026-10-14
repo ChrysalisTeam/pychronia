@@ -2337,7 +2337,7 @@ body .notification_panel .notification_panel_decorations .notification_panel_con
     font-size: 18px;
     text-decoration: none;
     line-height: 27px;
-    padding: 0 6px;
+    padding: 10px 10px;
     float: none;
   }
   #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu a:hover {
@@ -2349,7 +2349,7 @@ body .notification_panel .notification_panel_decorations .notification_panel_con
   #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu ul a,
   #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu ul span {
     background-color: #342716;
-    padding: 2px 6px;
+    padding: 10px 10px;
   }
   #full_content {
     margin: 0 auto;
@@ -2430,6 +2430,11 @@ body .notification_panel .notification_panel_decorations .notification_panel_con
   }
   #up_footer_border_center {
     display: none;
+  }
+  .footer_note {
+    font-size: 14px;
+    line-height: 1.3em;
+    margin: 4px 10px;
   }
 }
 @media (min-width: 992px) {
@@ -2926,6 +2931,15 @@ body .notification_panel .notification_panel_decorations .notification_panel_con
     position: absolute;
     left: 9px;
     top: 10px;
+  }
+  .footer_note {
+    font-size: 11px;
+    line-height: 1em;
+    margin: 1px 0;
+  }
+  .footer_note.larger {
+    font-size: 12px;
+    margin: 0;
   }
   #low_footer_wrapper {
     position: relative;

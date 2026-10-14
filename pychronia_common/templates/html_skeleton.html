@@ -7,10 +7,9 @@
     
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
-    {# TODO ONE DAY : use @viewport instead when ready to use #}
-    {# UNUSED viewport properties: minimum-scale=0.3, maximum-scale=5, user-scalable=yes #}
-    {# you can have both stylesheets (via portrait/landscape) on mobile with initial-scale=0.7 #}
-    <meta name="viewport" content="width=device-width, initial-scale=0.85">
+    {# BEWARE: initial-scale MUST be >= 1, else Chrome/Google don't consider the page as "mobile-optimized" #}
+    {# (Search Console then reports "Viewport not set", "Text too small to read" and "Clickable elements too close together") #}
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
     {% render_block "meta" %}
     {% render_block "css" %}
