@@ -6,7 +6,6 @@ from django import forms
 import json
 
 from pychronia_game.common import *
-from django import forms
 from django.core.exceptions import ValidationError
 
 GAMEMASTER_HINTS_FIELD = lambda: forms.CharField(label=ugettext_lazy("Hints for Game Master"),
@@ -20,18 +19,6 @@ class UninstantiableFormError(Exception):
     the instance would be meaningless (eg. no data to choose from).
     """
     pass
-
-
-def form_field_jsonify(value):
-    """Value must be ASCII."""
-    res = json.dumps(value, indent=None)
-    assert "\n" not in res  # must be compact form
-    return res
-
-
-def form_field_unjsonify(value):
-    res = json.loads(value)
-    return res
 
 
 def autostrip_form_charfields(cls):
@@ -181,7 +168,7 @@ class GemPayementFormMixin(GemHandlingFormUtils):
             try:
                 parameters["use_gems"] = self._decode_gems(parameters["gems_list"])
                 del parameters["gems_list"]
-            except (TypeError, ValueError) as e:
+            except (TypeError, ValueError):
                 self.logger.critical("Wrong data submitted - %r", parameters["gems_list"], exc_info=True)
                 raise AbnormalUsageError(_("Wrong data submitted"))
 

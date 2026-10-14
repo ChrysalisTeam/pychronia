@@ -3,8 +3,7 @@
 
 
 from pychronia_game.common import *
-from pychronia_game.datamanager import register_view, AbstractGameForm, AbstractDataTableManagement, DataTableForm
-from django_select2 import Select2MultipleChoiceField
+from pychronia_game.datamanager import register_view, AbstractDataTableManagement, DataTableForm
 from django import forms
 from pychronia_game.datamanager.abstract_form import GAMEMASTER_HINTS_FIELD
 

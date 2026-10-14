@@ -2,19 +2,16 @@
 
 
 
-import sys, re, logging, random, logging, json, hashlib
-from datetime import datetime
+import re, logging, random, json
 
 from pychronia_game.utilities import (mediaplayers, autolinker,
                                       rst_directives, is_absolute_url)  # important to register RST extensions
 from pychronia_game.common import exception_swallower, game_file_url as real_game_file_url, determine_asset_url, \
-    reverse, game_view_url, _, utc_to_local
+    game_view_url, utc_to_local
 
 import django.template
 from django.template.defaulttags import url as default_url_tag
 from django.utils.safestring import mark_safe
-from django.utils.html import escape
-from django.utils.http import urlencode
 from django.core.serializers import serialize
 from django.db.models.query import QuerySet
 from django.template.defaultfilters import stringfilter
@@ -22,11 +19,7 @@ from django.template.defaultfilters import linebreaks
 from django.core.cache import cache
 
 import urllib.request, urllib.parse, urllib.error
-from textwrap import dedent
-from easy_thumbnails.templatetags.thumbnail import thumbnail_url
-from easy_thumbnails.files import get_thumbnailer
-from pychronia_game.storage import protected_game_file_system_storage, \
-    get_game_thumbnailer
+from pychronia_game.storage import get_game_thumbnailer
 from pychronia_game.common import config
 from django.template.loader import render_to_string
 

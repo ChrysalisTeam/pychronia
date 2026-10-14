@@ -1,13 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import os
-import sys
 import logging
 import setup_pychronia_env
 
 import pychronia_game.models  # initializes everything
-from pychronia_game.datamanager.datamanager_administrator import delete_game_instance, create_game_instance, \
-    change_game_instance_status, UsageError, retrieve_game_instance, get_all_instances_metadata
+from pychronia_game.datamanager.datamanager_administrator import retrieve_game_instance, get_all_instances_metadata
 
 
 def execute():
@@ -18,7 +15,7 @@ def execute():
         dm = retrieve_game_instance(instance_id)
         try:
             dm.check_database_coherence()  # NO strict mode enforced
-        except Exception as e:
+        except Exception:
             result = False
             logging.critical("Error during checking of game instance '%s'", instance_id, exc_info=True)
         else:

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import re, copy
-from django_select2 import HeavySelect2MultipleChoiceField, Select2MultipleWidget
+from django_select2 import HeavySelect2MultipleChoiceField
 from django_select2.widgets import MultipleSelect2HiddenInput, Select2Mixin
 from django.utils.translation import ugettext_lazy
 from django.core.exceptions import ValidationError

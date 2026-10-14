@@ -145,7 +145,7 @@ def create_game_instance(game_instance_id,
 
         game_instances[game_instance_id] = game_root  # NOW only we link data to ZODB
 
-    except Exception as e:
+    except Exception:
         logging.critical("Impossible to initialize game instance %r..." % game_instance_id, exc_info=True)
         raise
 

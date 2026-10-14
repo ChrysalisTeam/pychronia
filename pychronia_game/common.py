@@ -2,44 +2,42 @@
 
 
 
-import sys, os, math, random, traceback, hashlib, logging, types, base64, re
-import types, contextlib, collections, time, glob, copy, atexit, inspect
+import sys, os, math, random, hashlib, logging, types, re
+import contextlib, collections, time, glob, copy, atexit, inspect
 from urllib.parse import urlparse
 
 from datetime import datetime, timedelta, UTC
 
-from contextlib import contextmanager, closing
+from contextlib import contextmanager
 from decorator import decoratorx as decorator
 from functools import partial
 from textwrap import dedent
 
 from collections import Counter
 
-import yaml, pyparsing
+import pyparsing
 
 import ZODB  # must be first !
 from ZODB.POSException import ConflictError
 
 import transaction
-from persistent import Persistent
 from persistent.mapping import PersistentMapping
 from persistent.list import PersistentList
 
 from django.conf import settings
 from django.utils.html import escape
-from django.utils.translation import ungettext, ugettext as _, ugettext_lazy, ugettext_noop
-from django.template.response import SimpleTemplateResponse, TemplateResponse
+from django.utils.translation import ugettext as _, ugettext_lazy, ugettext_noop
+from django.template.response import TemplateResponse
 from django.template.loader import render_to_string
 from django.shortcuts import render
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import user_passes_test
 ## from django.utils.text import slugify - FIXME - for 1.5 only
 from django.template.defaultfilters import slugify
-from django.template import Template, Context
 
 from . import utilities
 from .utilities import config, SDICT, Enum
-from .utilities.encryption import unicode_decrypt, unicode_encrypt, hash
+from .utilities.encryption import hash
 
 _undefined = object()
 
@@ -241,7 +239,7 @@ def checked_game_file_path(url):
     try:
         path = urlparse(url).path
         match_obj = re.match("%s(?P<hash>[^/]*)/(?P<path>.*)$" % _game_files_url_prefix, path)
-    except Exception as e:
+    except Exception:
         # FIXME, log error
         pass
 
@@ -253,7 +251,6 @@ def checked_game_file_path(url):
             return url_path  # path has NO leading /
         # FIXME, log error
         return None
-        hash_url_path
 
 
 def determine_asset_url(properties, absolute=True):
@@ -288,7 +285,6 @@ def utc_to_local(value):
     """
     Convert an aware UTC datetime to wanted gameserver timezone.
     """
-    import pytz
     if not value:
         pass  ## return "@@%r@@" % value  # if we need to debug troubles
     local_time = value.astimezone(config.GAME_LOCAL_TZ)
@@ -298,18 +294,6 @@ def utc_to_local(value):
 def is_past_datetime(dt):
     # WARNING - to compute delays, we always work in UTC TIME
     return (dt <= get_utc_now())
-
-
-def __obsolete_render_rst_template(rst_tpl, datamanager):
-    template = Template(rst_tpl)
-
-    context = Context(dict(a="bbbbbbbb"))
-
-    rst_text = template.render(context)
-
-    print("RST TEXT", rst_text)
-
-    return rst_text
 
 
 __all__ = [key for key in globals().copy() if not key.startswith("_")]

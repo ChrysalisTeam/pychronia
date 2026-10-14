@@ -5,15 +5,13 @@
 ### NO import from pychronia_game.common, else circular import !! ###
 
 import io
-import sys, os, collections.abc, logging, inspect, types, traceback, re, glob, copy
-import yaml, random, contextlib
+import os, collections.abc, logging, inspect, traceback, re, glob, copy
+import yaml
 from collections.abc import Callable
 from collections import Counter, OrderedDict
-from datetime import datetime, timedelta
+from datetime import datetime
 
 import ZODB  # must be first !
-import transaction
-from persistent import Persistent
 from persistent.mapping import PersistentMapping
 from persistent.list import PersistentList
 
@@ -324,7 +322,7 @@ def adapt_parameters_to_func(all_parameters, func):
     try:
         #print("#<<<<<<<", func, relevant_args)
         inspect.getcallargs(func, **relevant_args)
-    except (TypeError, ValueError) as e:
+    except (TypeError, ValueError):
         raise  # signature problem, probably
 
     return relevant_args
@@ -658,17 +656,6 @@ def find_game_file_or_url(*rel_path_globs):
     return find_game_file(*rel_path_globs)
 
 
-def ___complete_game_file_path(filename, *elements):
-    """
-    Now SUPERSEDED by find_game_file().
-    """
-    assert filename
-    basename = os.path.basename(filename)
-    if basename == filename:
-        return os.path.join(*(elements + (filename,)))
-    return filename  # already contains dirs...
-
-
 def _make_elements_hashable(sequence):
     # mass conversion here, eg. for gems that are sequences of unhashable lists
     return [tuple(i) if isinstance(i, (list, PersistentList)) else i for i in sequence]
@@ -839,33 +826,6 @@ def render_template_string(string, ctx):
     return t.render(c)
 
 
-def make_bi_usage_decorator(decorator):  # FIXME unused?
-    """
-    Transforms a decorator taking default arguments, into a decorator that can both
-    be applied directly to a callable, or first parameterized with keyword arguments and then applied.
-    
-    i.e:
-    
-        @decorator(a=3, b=5)
-        def myfunc...
-        
-        OR
-        
-        @decorator # default arguments are applied
-        def myfunc...
-        
-    The trouble is that static code analysis loses track of decorator signature...
-    """
-
-    def bidecorator(object=None, **kwargs):
-        factory = lambda x: decorator(x, **kwargs)
-        if object:
-            return factory(object)
-        return factory
-
-    return bidecorator
-
-
 def make_request_querydicts_mutable(request):
     """Screw the immutability of Django QueryDicts, we need FREEDOM"""
     request._post = request.POST.copy()
@@ -942,6 +902,3 @@ def to_pascal_case(text):
     return text[0].upper() + text[1:]
 
 
-def to_camel_case(text):
-    text = to_pascal_case(text)
-    return text[0].lower() + text[1:]

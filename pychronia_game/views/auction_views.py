@@ -4,7 +4,6 @@
 
 from pychronia_game.common import *
 from pychronia_game.datamanager import AbstractGameView, register_view, transaction_watcher
-from pychronia_game import forms
 from django.http import Http404, HttpResponse
 import json
 from pychronia_game.forms import (MoneyTransferForm, GemsTransferForm, ArtefactTransferForm)

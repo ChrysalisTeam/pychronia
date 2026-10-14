@@ -9,7 +9,7 @@ from django.template.defaultfilters import slugify
 import requests
 
 from pychronia_game.common import *
-from pychronia_game.datamanager import register_view, AbstractGameView, DataTableForm, AbstractDataTableManagement
+from pychronia_game.datamanager import register_view, DataTableForm, AbstractDataTableManagement
 
 from pychronia_game.utilities.acapela_vaas_tts import AcapelaClient
 from pychronia_game.utilities import mediaplayers

@@ -142,7 +142,7 @@ def try_authenticating_with_session(request, url_game_username=None):
         #print("NEW AUTHENTICATION DATA IN SESSION", res)
         request.session[instance_key] = res  # this refreshes expiry time, and ensures we properly modify session
 
-    except UsageError as e:
+    except UsageError:
         # invalid session data, or request vars...
         logging.critical("Error in try_authenticating_with_session with locals %r" % repr(locals()), exc_info=True)
         request.session[instance_key] = None  # important cleanup!

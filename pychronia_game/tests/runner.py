@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import sys, os, warnings, logging
+import sys, os, logging
 
 root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))  # CHRYSALIS/ root dir
 sys.path.insert(0, root)

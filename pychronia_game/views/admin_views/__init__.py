@@ -3,11 +3,10 @@
 
 
 from pychronia_game.common import *
-from pychronia_game.datamanager.abstract_game_view import AbstractGameView, register_view, readonly_method
+from pychronia_game.datamanager.abstract_game_view import register_view
 from pychronia_game import forms
 from django.http import Http404, HttpResponse
 from pychronia_game.utilities import mediaplayers
-from django.core.mail import send_mail
 
 from .admin_dashboard_mod import AdminDashboardAbility
 
@@ -261,13 +260,6 @@ def DATABASE_OPERATIONS(request):
 @register_view(access=UserAccess.master, title=ugettext_lazy("Fail Test"))
 def FAIL_TEST(request):
     raise IOError("Dummy error to test email sending")
-
-    try:
-        send_mail("hello", "bye", "gamemaster@prolifik.net", ["chambon.pascal@gmail.com"])
-        return HttpResponse(_("Mail sent"))
-    except Exception as e:
-        raise
-        # return HttpResponse(repr(e))
 
 
 @register_view(access=UserAccess.master, title=ugettext_lazy("Media Display Test"))

@@ -3,12 +3,11 @@
 
 
 import urllib.request, urllib.parse, urllib.error
-from pprint import pprint
 
 from pychronia_game.common import *
-from pychronia_game.datamanager import AbstractGameView, register_view, VISIBILITY_REASONS, AbstractGameForm
+from pychronia_game.datamanager import register_view, VISIBILITY_REASONS, AbstractGameForm
 from django import forms
-from django.http import Http404, HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse
 from pychronia_game.utilities.select2_extensions import Select2TagsField
 from django.core.exceptions import ValidationError
 from pychronia_game.templatetags.helpers import format_enriched_text
@@ -675,7 +674,7 @@ def compose_message(request, template_name='messaging/compose.html'):
             # for now, only the DIRECT parent is displayed...
             parent_messages = _determine_message_list_display_context(request.datamanager, messages=[_parent_msg],
                                                                       is_pending=False)
-        except UsageError as e:
+        except UsageError:
             request.datamanager.logger.error("Ignoring invalid parent_id %s in message composition view", parent_msg_id,
                                              exc_info=True)
 

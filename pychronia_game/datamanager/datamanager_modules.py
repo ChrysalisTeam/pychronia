@@ -101,12 +101,10 @@ class DescentRpgData(BaseDataManager):
 
     def _load_initial_data(self, **kwargs):
         super(DescentRpgData, self)._load_initial_data(**kwargs)
-        game_data = self.data
 
     def _check_database_coherence(self, **kwargs):
         super(DescentRpgData, self)._check_database_coherence(**kwargs)
 
-        strict = kwargs.get("strict", False)  # unused atm
 
         descent_data = self.data["descent_rpg"]
 
@@ -1312,7 +1310,6 @@ class PermissionsHandling(BaseDataManager):  # TODO REFINE
 class FriendshipHandling(BaseDataManager):
     def _load_initial_data(self, **kwargs):
         super(FriendshipHandling, self)._load_initial_data(**kwargs)
-        strict = kwargs.get("strict", False)
         game_data = self.data
         game_data.setdefault("friendships", PersistentMapping())
         game_data["friendships"].setdefault("proposed",
@@ -1797,7 +1794,7 @@ class TextMessagingCore(BaseDataManager):
                     try:
                         assert self.get_dispatched_message_by_id(
                             msg_id=msg["transferred_msg"])  # must ALREADY be dispatched
-                    except UsageError as e:
+                    except UsageError:
                         pass  # message might have been deleted by game master, we ignore this
 
                 if msg["template_id"]:
@@ -2372,7 +2369,7 @@ class TextMessagingTemplates(BaseDataManager):
                 try:
                     assert self.get_dispatched_message_by_id(
                         msg_id=msg["transferred_msg"])  # must ALREADY be dispatched
-                except UsageError as e:
+                except UsageError:
                     pass  # message might have been deleted by game master, we ignore this
 
             utilities.check_is_bool(msg["is_used"])
@@ -3012,7 +3009,6 @@ class TextMessagingInterception(BaseDataManager):
         super(TextMessagingInterception, self)._load_initial_data(**kwargs)
 
         game_data = self.data
-        messaging = self.messaging_data
 
         for (name, data) in list(game_data["character_properties"].items()):
             data.setdefault("wiretapping_targets", PersistentList())
@@ -3022,8 +3018,6 @@ class TextMessagingInterception(BaseDataManager):
     def _check_database_coherence(self, **kwargs):
         super(TextMessagingInterception, self)._check_database_coherence(**kwargs)
 
-        game_data = self.data
-        messaging = self.messaging_data
 
         character_names = self.get_character_usernames()
         for (name, data) in list(self.get_character_sets().items()):
@@ -4820,7 +4814,6 @@ class NoveltyNotifications(BaseDataManager):
     def _check_database_coherence(self, **kwargs):
         super(NoveltyNotifications, self)._check_database_coherence(**kwargs)
 
-        strict = kwargs.get("strict", False)
         self.data["global_parameters"].setdefault("disable_real_email_notifications", False)  ## TEMP FIXME
         utilities.check_is_bool(self.get_global_parameter("disable_real_email_notifications"))
 

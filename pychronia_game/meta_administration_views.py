@@ -2,26 +2,16 @@
 
 
 
-import sys
-import os
-from datetime import datetime, timedelta
-import json
+from datetime import timedelta
 import traceback
-import collections
-import copy
-import math
 from smtplib import SMTPException
-from contextlib import contextmanager
 
 from django.conf import settings
-from django.core.mail import mail_admins, send_mail
-from django.http import Http404, HttpResponseRedirect, HttpResponse, \
-    HttpResponseForbidden
+from django.core.mail import send_mail
+from django.http import HttpResponseRedirect, HttpResponseForbidden
 from django.shortcuts import render
-from django.template import RequestContext
-from django.utils.html import escape
 from django.contrib import messages
-from django.utils.translation import ugettext as _, ugettext_lazy, ungettext
+from django.utils.translation import ugettext as _, ugettext_lazy
 from django import forms
 from django.contrib.messages import get_messages
 from django.utils.http import urlencode
@@ -120,7 +110,7 @@ def create_instance(request):
                               from_email=settings.SERVER_EMAIL,
                               recipient_list=[creator_email],
                               fail_silently=False)
-                except (SMTPException, EnvironmentError) as e:
+                except (SMTPException, EnvironmentError):
                     logging.error("Couldn't send game instance activation email to %s", creator_email, exc_info=True)
                     messages.add_message(request, messages.ERROR, _("Couldn't send activation email."))
                 else:
@@ -187,7 +177,7 @@ def activate_instance(request):
             target_url=target_url)
         return HttpResponseRedirect(target_url, content=content)
 
-    except (ValueError, TypeError, LookupError, AttributeError, UnicodeError) as e:
+    except (ValueError, TypeError, LookupError, AttributeError, UnicodeError):
         logging.warning("Game activation key not recognized : %s", token, exc_info=True)
         return HttpResponseForbidden(_("Activation key not recognized"))
 
