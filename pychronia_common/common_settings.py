@@ -18,6 +18,9 @@ try:
 except ImportError:
     raise
 
+from pychronia_common.relstorage_patches import apply_mariadb_patches
+apply_mariadb_patches()  # RelStorage generates MySQL-8-only SQL on MariaDB servers
+
 ##################### SETTINGS TO BE OVERRIDDEN BY DEPLOYMENT-SPECIFIC CONF FILE ####################
 
 SITE_ID = None

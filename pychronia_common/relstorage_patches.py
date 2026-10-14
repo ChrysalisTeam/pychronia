@@ -1,0 +1,32 @@
+# -*- coding: utf-8 -*-
+"""
+Compatibility patches for running RelStorage (MySQL adapter) on a MariaDB server.
+
+RelStorage only supports MySQL, and picks SQL dialect features by comparing the
+server version against MySQL version numbers. MariaDB reports versions >= 10,
+so it is wrongly assumed to support MySQL 8.0.19's row alias syntax for upserts
+(``INSERT ... VALUES (...) AS excluded ON DUPLICATE KEY UPDATE col = excluded.col``),
+which MariaDB doesn't implement (https://jira.mariadb.org/browse/MDEV-29919):
+every commit then fails with a SQL syntax error (packing isn't affected).
+"""
+
+from relstorage.adapters.mysql.schema import MySQLVersionDetector
+
+
+def _is_mariadb(version_detector, cursor):
+    return "mariadb" in version_detector.get_version(cursor).lower()
+
+
+def apply_mariadb_patches():
+    if getattr(MySQLVersionDetector, "_pychronia_mariadb_patched", False):
+        return
+
+    original_requires_values_upsert_alias = MySQLVersionDetector.requires_values_upsert_alias
+
+    def requires_values_upsert_alias(self, cursor):
+        if _is_mariadb(self, cursor):
+            return False  # fall back to "col = VALUES(col)", which MariaDB supports
+        return original_requires_values_upsert_alias(self, cursor)
+
+    MySQLVersionDetector.requires_values_upsert_alias = requires_values_upsert_alias
+    MySQLVersionDetector._pychronia_mariadb_patched = True
