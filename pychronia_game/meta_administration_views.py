@@ -152,9 +152,8 @@ def activate_instance(request):
     token = request.GET.get("token", "")
 
     try:
-        encrypted_data = token.encode(
-            "ascii")  # encrypted json containing the game id, the user login and a validity timestamp
-        (game_instance_id, creator_login, creator_email) = decode_game_activation_token(encrypted_data)
+        # encrypted hex str containing the game id, the creator login and the creator email
+        (game_instance_id, creator_login, creator_email) = decode_game_activation_token(token)
 
         if not datamanager_administrator.game_instance_exists(game_instance_id):
             datamanager_administrator.create_game_instance(game_instance_id=game_instance_id,
