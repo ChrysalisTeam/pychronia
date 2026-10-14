@@ -353,6 +353,11 @@ body .notification_panel {
         .mini_frame {
             // mini-frames that are inside sidebar must beware of their margins!
             margin: 0 0 20px 0;
+
+            .mini_frame_content {
+                max-height: 500px;
+                overflow: auto;
+            }
         }
     }
 

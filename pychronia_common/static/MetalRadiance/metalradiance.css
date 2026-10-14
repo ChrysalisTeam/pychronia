@@ -2776,6 +2776,10 @@ body .notification_panel .notification_panel_decorations .notification_panel_con
   #full_content .main_sidebar .mini_frame {
     margin: 0 0 20px 0;
   }
+  #full_content .main_sidebar .mini_frame .mini_frame_content {
+    max-height: 500px;
+    overflow: auto;
+  }
   #full_content .medium_frame {
     position: relative;
     padding: 10px;
