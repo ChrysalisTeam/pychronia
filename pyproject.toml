@@ -18,6 +18,8 @@ dependencies = [
     "django-filer>=3.0.3",
     "ZODB>=5.7.0",
     "django-zodb",  # see [tool.uv.sources]
+    # needed by django-zodb for mysql:// ZODB_URL (prod) and by bin/daily_game_maintenance.sh (zodbpack)
+    "RelStorage>=3.5",
     "PyYAML>=6.0.2",
     "pycryptodome>=3.14.1",
     "python-aiml",  # see [tool.uv.sources]
@@ -25,8 +27,9 @@ dependencies = [
     "Django-Select2",  # see [tool.uv.sources]
     "beautifulsoup4>=4.11.1",
     "django-sekizai>=4",
-    # decorator==5.1.1 cannot work with resolving_decorator for now, we need decoratorx instead
+    # pychronia_game.common uses decoratorx, so that rsdecorator can flatten the signatures of decorated methods
     "decorator>=5",
+    "RSDecorator>=0.1.0",
     "requests>=2.28.0",
     "pytz",
     "docutils",
