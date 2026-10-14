@@ -13,6 +13,13 @@ sys.path.insert(0, root)
 # backport of the Django 3.0 implementation.
 import pymysql
 pymysql.install_as_MySQLdb()
+
+# PyMySQL hardcodes version_info=(1, 4, 0, ...) to advertise its mysqlclient-API compatibility level
+# (unrelated to its own package version, 1.0.2). Django 4.2 raised its hard minimum check to
+# mysqlclient>=1.4.3, which now rejects that hardcoded value even though PyMySQL's DB-API shim
+# itself hasn't changed. Bumping the advertised tuple is the standard workaround.
+pymysql.version_info = (1, 4, 3, "final", 0)
+
 from django.db.backends.mysql.operations import DatabaseOperations
 from django.utils.encoding import force_str
 DatabaseOperations.last_executed_query = \
