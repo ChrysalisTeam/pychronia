@@ -686,7 +686,7 @@ img.center {
 .clearfix:after, .hentry:after, #full_content:after,
 #full_content .mini_frame .mini_frame_content:after,
 #full_content .main_frame_border .main_frame_content:after {
-  content: ".";
+  content: "";
   visibility: hidden;
   display: block;
   width: 0;
