@@ -12,9 +12,12 @@ try:
     import pymysql
     pymysql.install_as_MySQLdb()  # drop-in replacement
     import MySQLdb as Database
-    #if Database.version_info < (1, 3, 13):
-    #    print("! PATCHING PYMYSQL VERSION INFO TO PLEASE DJANGO !")
-    #    Database.version_info = (1, 3, 13)
+    # PyMySQL hardcodes version_info=(1, 4, 0, ...) to advertise its mysqlclient-API compatibility
+    # level (unrelated to its own package version). Django 4.2 raised its hard minimum check to
+    # mysqlclient>=1.4.3, which now rejects that hardcoded value even though PyMySQL's DB-API shim
+    # itself hasn't changed. Bumping the advertised tuple is the standard workaround.
+    if Database.version_info < (1, 4, 3):
+        Database.version_info = (1, 4, 3, "final", 0)
 except ImportError:
     raise
 
