@@ -227,6 +227,13 @@ PARLER_LANGUAGES = {
     },
 }
 
+# django-meta (used by djangocms_stories' category pages to build their "meta" context, see
+# djangocms_stories.views.CategoryEntriesView.get_context_data) has no default for these two and
+# raises ImproperlyConfigured if unset; only affects generated OG/canonical meta tags, not
+# routing/ALLOWED_HOSTS, so a static value is fine here regardless of environment.
+META_SITE_PROTOCOL = "https"
+META_SITE_DOMAIN = "chrysalis-game.com"
+
 ## CMSPLUGIN JPLAYER CONF ##
 JPLAYER_BASE_PATH = STATIC_URL + "libs/jquery-jplayer-2.3.0/"  # for Jplayer SWF object mainly
 
