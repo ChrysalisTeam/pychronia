@@ -70,18 +70,14 @@ cms = [
     "django-cms-jplayer",  # see [tool.uv.sources]
     # django-blog-zinnia + cmsplugin-zinnia replaced by djangocms-stories (django-cms's own
     # officially-endorsed blog successor for cms4+, since the zinnia line is abandoned and
-    # has no cms4+-compatible release). Kept temporarily alongside djangocms-stories during
-    # the migration, see DJANGO_CMS_UPGRADE_REPORT.md.
-    "django-blog-zinnia==0.20",
-    "cmsplugin-zinnia",  # see [tool.uv.sources]
+    # has no cms4+-compatible release); entries migrated by
+    # cms4_data_fix_migrate_zinnia_to_stories.py, see DJANGO_CMS_UPGRADE_REPORT.md.
     "djangocms-stories==0.9.3",
     "django-meta>=2",
     "django-parler>=2",
     "django-sortedm2m",
     "django-taggit>=1",
     "django-taggit-templatetags",
-    "django-contrib-comments==1.9.1",
-    "django-mptt==0.10.0",
     "django-treebeard",
     "django-reversion==3.0.3",
     "django-request",  # see [tool.uv.sources]; for quick HTTP visit stats
@@ -121,7 +117,6 @@ python-aiml = { git = "https://github.com/paulovn/python-aiml", rev = "21c77d5e2
 Django-Select2 = { git = "https://github.com/pakal/django-select2.git", rev = "6b1adada50ce53f4c51dd6d409371705627fa17e" }
 cmsplugin-simple-gallery = { git = "https://github.com/pakal/cmsplugin-simple-gallery.git" }
 django-cms-jplayer = { git = "https://github.com/pakal/django-cms-jplayer.git" }
-cmsplugin-zinnia = { git = "https://github.com/pakal/cmsplugin-zinnia.git", rev = "76f8de72a37b0525a8a5f65e99f0412d0a55563c" }
 django-request = { git = "https://github.com/django-request/django-request.git" }
 
 
