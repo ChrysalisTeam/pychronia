@@ -56,6 +56,15 @@ INSTALLED_APPS += [
     'zinnia',
     'cmsplugin_zinnia',
 
+    # djangocms-stories replaces zinnia/cmsplugin_zinnia above (abandoned, no cms4+ release).
+    # Kept alongside zinnia during the migration; zinnia will be removed once all entries are
+    # migrated over, see DJANGO_CMS_UPGRADE_REPORT.md.
+    'parler',
+    'sortedm2m',
+    'taggit',
+    'meta',
+    'djangocms_stories',
+
     'reversion',
 
     'debug_toolbar',
@@ -224,6 +233,20 @@ ZINNIA_USE_TWITTER = False  # todo later
 CMSPLUGIN_ZINNIA_HIDE_ENTRY_MENU = True
 CMSPLUGIN_ZINNIA_TEMPLATES = []
 CMSPLUGIN_ZINNIA_APP_MENUS = []
+
+## DJANGOCMS-STORIES CONF (replaces zinnia/cmsplugin_zinnia above) ##
+# django-parler needs to know which languages exist per site; mirrors LANGUAGE_CODE='fr' (CMS
+# content is french-only) + LANGUAGES=('fr', 'en') from pychronia_common.common_settings.
+PARLER_LANGUAGES = {
+    1: (  # SITE_ID
+        {'code': 'fr'},
+        {'code': 'en'},
+    ),
+    'default': {
+        'fallbacks': ['fr'],
+        'hide_untranslated': False,
+    },
+}
 
 ## CMSPLUGIN JPLAYER CONF ##
 JPLAYER_BASE_PATH = STATIC_URL + "libs/jquery-jplayer-2.3.0/"  # for Jplayer SWF object mainly
