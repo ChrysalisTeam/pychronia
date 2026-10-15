@@ -285,16 +285,26 @@ class AbstractGameView(object, metaclass=GameViewMetaclass):
 
     @classmethod
     def get_access_token(cls, datamanager):
+        return cls.get_access_token_for_username(datamanager, datamanager.user.username)
 
-        user = datamanager.user
+    @classmethod
+    def get_access_token_for_username(cls, datamanager, username):
+        """Same logic as get_access_token(), but resolved for an arbitrary *username*
+        instead of the datamanager's currently logged-in/impersonated user. Read-only
+        (never mutates datamanager.user). Used by get_access_token() itself, and also by
+        the e2e test suite (see pychronia_game/tests/e2e/_inventory.py) to compute
+        expected access for every identity without needing a live session per identity."""
 
-        if ((cls.ACCESS == UserAccess.master and not user.is_master) or
-                (cls.ACCESS == UserAccess.authenticated and not user.is_authenticated) or
-                (cls.ACCESS == UserAccess.character and not user.is_character)):
-            #print(">>>>>>>>>>", cls.ACCESS, "|", user.is_master, user.is_authenticated, user.is_character, user.username)
+        is_master = datamanager.is_master(username)
+        is_character = datamanager.is_character(username)
+        is_authenticated = datamanager.is_authenticated(username)
+
+        if ((cls.ACCESS == UserAccess.master and not is_master) or
+                (cls.ACCESS == UserAccess.authenticated and not is_authenticated) or
+                (cls.ACCESS == UserAccess.character and not is_character)):
             return AccessResult.authentication_required  # that view is UNABLE to handle that kind of user!
 
-        if user.is_master:
+        if is_master:
             return AccessResult.available  # game master does what he wants then!
 
         view_is_globally_available = True
@@ -304,7 +314,7 @@ class AbstractGameView(object, metaclass=GameViewMetaclass):
 
         if cls.REQUIRES_CHARACTER_PERMISSION:
             assert cls.ACCESS in (UserAccess.character, UserAccess.authenticated)
-            if user.has_permission(cls.get_access_permission_name()):
+            if datamanager.has_permission(username=username, permission=cls.get_access_permission_name()):
                 return AccessResult.available  # OVERRIDE: even if not view_is_globally_available, this user has access then!
             elif view_is_globally_available:
                 return AccessResult.permission_required  # thus the menu entry will be disabled but VISIBLE
