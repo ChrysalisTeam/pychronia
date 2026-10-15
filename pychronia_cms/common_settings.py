@@ -73,7 +73,9 @@ _TEMPLATE_OPTIONS["loaders"].insert(0,
 MIDDLEWARE = \
     ('django.middleware.cache.UpdateCacheMiddleware',) + \
     MIDDLEWARE + (
-        'debug_toolbar.middleware.DebugToolbarMiddleware', #### PASCAL 
+        # 'debug_toolbar.middleware.DebugToolbarMiddleware' no longer added here: the
+        # inherited pychronia_common MIDDLEWARE now already includes it (post origin/dev
+        # merge), and a second copy trips debug_toolbar.W002.
         'django.middleware.clickjacking.XFrameOptionsMiddleware',
         'django.middleware.csrf.CsrfViewMiddleware',
         'cms.middleware.page.CurrentPageMiddleware',
