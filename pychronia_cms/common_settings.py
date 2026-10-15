@@ -30,7 +30,6 @@ INSTALLED_APPS += [
     'djangocms_text',  # must be before django-cms entry; replaces djangocms_text_ckeditor (deprecated upstream)
 
     'cms',
-    'mptt',  # menu handler, now only for zinnia
     'treebeard',  # new menu handler for djangocms
     'menus',
     'djangocms_versioning',  # required by cms4+ (versioned PageContent/placeholders)
@@ -51,14 +50,8 @@ INSTALLED_APPS += [
 
     'jplayer',
 
-    'django_comments',  # for zinnia blog
-    'tagging',
-    'zinnia',
-    'cmsplugin_zinnia',
-
-    # djangocms-stories replaces zinnia/cmsplugin_zinnia above (abandoned, no cms4+ release).
-    # Kept alongside zinnia during the migration; zinnia will be removed once all entries are
-    # migrated over, see DJANGO_CMS_UPGRADE_REPORT.md.
+    # djangocms-stories replaces zinnia/cmsplugin_zinnia (abandoned, no cms4+ release); entries
+    # migrated by cms4_data_fix_migrate_zinnia_to_stories.py, see DJANGO_CMS_UPGRADE_REPORT.md.
     'parler',
     'sortedm2m',
     'taggit',
@@ -220,21 +213,7 @@ CMS_SIMPLEGALLERY_THUMBNAIL_OPTIONS = {
     'quality': 80,
 }
 
-## ORIGINAL ZINNIA CONF ##
-# note: if error "Unknown column 'zinnia_entry.content_placeholder_id' in 'field list" => python manage.py reset zinnia
-ZINNIA_ENTRY_BASE_MODEL = 'cmsplugin_zinnia.placeholder.EntryPlaceholder'
-ZINNIA_PAGINATION = 10
-ZINNIA_UPLOAD_TO = "uploads/zinnia"
-ZINNIA_PROTOCOL = "http"
-ZINNIA_COPYRIGHT = "ChrysalisGame"
-ZINNIA_USE_TWITTER = False  # todo later
-
-## CMSPLUGIN ZINNIA CONF ##
-CMSPLUGIN_ZINNIA_HIDE_ENTRY_MENU = True
-CMSPLUGIN_ZINNIA_TEMPLATES = []
-CMSPLUGIN_ZINNIA_APP_MENUS = []
-
-## DJANGOCMS-STORIES CONF (replaces zinnia/cmsplugin_zinnia above) ##
+## DJANGOCMS-STORIES CONF (replaces zinnia/cmsplugin_zinnia, see cms4_data_fix_migrate_zinnia_to_stories.py) ##
 # django-parler needs to know which languages exist per site; mirrors LANGUAGE_CODE='fr' (CMS
 # content is french-only) + LANGUAGES=('fr', 'en') from pychronia_common.common_settings.
 PARLER_LANGUAGES = {
