@@ -68,9 +68,18 @@ cms = [
     "cmsplugin-simple-gallery",  # see [tool.uv.sources]
     "django-inline-ordering>=1.0.2",  # for cmsplugin-simple-gallery
     "django-cms-jplayer",  # see [tool.uv.sources]
-    # if trouble with "Unknown column 'zinnia_entry.content_placeholder_id' in 'field list" : python manage.py reset zinnia
+    # django-blog-zinnia + cmsplugin-zinnia replaced by djangocms-stories (django-cms's own
+    # officially-endorsed blog successor for cms4+, since the zinnia line is abandoned and
+    # has no cms4+-compatible release). Kept temporarily alongside djangocms-stories during
+    # the migration, see DJANGO_CMS_UPGRADE_REPORT.md.
     "django-blog-zinnia==0.20",
     "cmsplugin-zinnia",  # see [tool.uv.sources]
+    "djangocms-stories==0.9.3",
+    "django-meta>=2",
+    "django-parler>=2",
+    "django-sortedm2m",
+    "django-taggit>=1",
+    "django-taggit-templatetags",
     "django-contrib-comments==1.9.1",
     "django-mptt==0.10.0",
     "django-treebeard",

@@ -631,6 +631,15 @@ wheels = [
 ]
 
 [[package]]
+name = "django-meta"
+version = "2.5.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/b7/a3/4cf42f67c44e193db994aad15732aedce1e94e94ab21dcfe93e233b1cf40/django_meta-2.5.1.tar.gz", hash = "sha256:0699e585444d59286c25bc301b865e56814e2473a069cd1046840669204cec2a", size = 29308, upload-time = "2026-02-17T10:33:29.162Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/f2/3d/d839a42f52187c05abe9b8e517a98a71baff5241222dfb36792d2818c8c6/django_meta-2.5.1-py2.py3-none-any.whl", hash = "sha256:35941347c39fa69139cdede3fe39f408330eb586819c7a9c4610991479e1ae57", size = 27935, upload-time = "2026-02-17T10:33:28.124Z" },
+]
+
+[[package]]
 name = "django-mptt"
 version = "0.10.0"
 source = { registry = "https://pypi.org/simple" }
@@ -714,6 +723,14 @@ version = "4.3.1"
 source = { git = "https://github.com/pakal/django-select2.git?rev=6b1adada50ce53f4c51dd6d409371705627fa17e#6b1adada50ce53f4c51dd6d409371705627fa17e" }
 
 [[package]]
+name = "django-sortedm2m"
+version = "4.0.0"
+source = { registry = "https://pypi.org/simple" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/4f/59/368d68a415b2818dcf95044a14caa435d0140960be3b23ea8b264c8afda7/django_sortedm2m-4.0.0-py2.py3-none-any.whl", hash = "sha256:7e76f3f3ea3184b4ca1d4043ec75316c606d00f5534fc71e69981d8b2198ff33", size = 37782, upload-time = "2024-08-11T23:33:44.926Z" },
+]
+
+[[package]]
 name = "django-stubs-ext"
 version = "6.1.2"
 source = { registry = "https://pypi.org/simple" }
@@ -734,6 +751,40 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/d2/9b/a137d764eb990ac353399d244aa96c7cf02aabe3c58be5a74418406bb838/django-tagging-0.5.0.tar.gz", hash = "sha256:28d68fa4831705e51ad7d1e845ed6dd9e354f9b6f8a5f63b655a430646ef4e8d", size = 42827, upload-time = "2020-03-06T18:00:29.308Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/84/26/5f9eb215feda7465627dc0902611e27075b526e2072f03fd29302c9a44fb/django_tagging-0.5.0-py3-none-any.whl", hash = "sha256:5932ddcac9aec67cf605eeee06e9c498a022d145fa38d00c82088510d221f315", size = 33752, upload-time = "2020-03-06T18:00:27.143Z" },
+]
+
+[[package]]
+name = "django-taggit"
+version = "6.1.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "django", version = "5.2.18", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
+    { name = "django", version = "6.1.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/34/a6/f1beaf8f552fe90c153cc039316ebab942c23dfbc88588dde081fefca816/django_taggit-6.1.0.tar.gz", hash = "sha256:c4d1199e6df34125dd36db5eb0efe545b254dec3980ce5dd80e6bab3e78757c3", size = 38151, upload-time = "2024-09-29T08:07:39.477Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/6b/34/4185c345530b91d05cb82e05d07148f481a5eb5dc2ac44e092b3daa6f206/django_taggit-6.1.0-py3-none-any.whl", hash = "sha256:ab776264bbc76cb3d7e49e1bf9054962457831bd21c3a42db9138b41956e4cf0", size = 75749, upload-time = "2024-09-29T08:07:14.612Z" },
+]
+
+[[package]]
+name = "django-taggit-templatetags"
+version = "0.2.5"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "django", version = "5.2.18", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
+    { name = "django", version = "6.1.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
+    { name = "django-taggit" },
+    { name = "django-templatetag-sugar" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/32/6c/a60bd37e93dcc96eaf7463056709266453062be969853764c078d1f3cb34/django-taggit-templatetags-0.2.5.tar.gz", hash = "sha256:9c5eea1d6e4f350176cdc86e6cbdbb26b6efd64b22b43ca89cae6357a9af829e", size = 6210, upload-time = "2010-07-12T13:45:59.96Z" }
+
+[[package]]
+name = "django-templatetag-sugar"
+version = "1.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/95/45/0f2b31e4e86a9df1151c4c3a5f8ff1fb9bd882785d7c90ef1629fce37636/django-templatetag-sugar-1.0.tar.gz", hash = "sha256:e9f630549f6c174cf328b385190e18bfe308f74dc7eca13458163d316ed29a5e", size = 2810, upload-time = "2014-03-24T04:29:22.066Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/72/61/ec7b883ff5f8d0641eea522b23e382918d214b27c1f63c5449ac0bcba1e7/django_templatetag_sugar-1.0-py2.py3-none-any.whl", hash = "sha256:90beafe5bc84686c328dcf685ce9f59f814104efd9a1fb5fb826e3ee3b7c2626", size = 5179, upload-time = "2014-03-24T04:29:27.964Z" },
 ]
 
 [[package]]
@@ -865,6 +916,28 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/42/51/9c7f181024280920d5c1a347ad69c22c788fa9508b123992dbacacd64bfd/djangocms_snippet-5.0.2.tar.gz", hash = "sha256:d3b19abc62b8f665e104b7aa5489292b397e46d61fc4f3ee27b7f122d8b8bb65", size = 44141, upload-time = "2025-09-03T18:44:42.417Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/00/92/cf1c4714cec92683a0c7564ee268311faa4a8bb0a722af269e26998bcd92/djangocms_snippet-5.0.2-py3-none-any.whl", hash = "sha256:42fdf0a37a80175184197315fc20475a1e019b72d01cc1621c04f3cb7d0f797c", size = 156575, upload-time = "2025-09-03T18:44:40.996Z" },
+]
+
+[[package]]
+name = "djangocms-stories"
+version = "0.9.3"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "django-cms" },
+    { name = "django-filer" },
+    { name = "django-meta" },
+    { name = "django-parler" },
+    { name = "django-sortedm2m" },
+    { name = "django-taggit" },
+    { name = "django-taggit-templatetags" },
+    { name = "djangocms-text" },
+    { name = "easy-thumbnails" },
+    { name = "lxml" },
+    { name = "pytz" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/26/cb/03d80e48b3076262192e993b81b8ab095f7106df09063988bfdb4310752a/djangocms_stories-0.9.3.tar.gz", hash = "sha256:36f35cc564a62dc1a09622924cdca77023f1f8656586afab251402967218ef36", size = 383170, upload-time = "2026-06-28T12:32:42.125Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/34/fc/287db74ff20fe745b750603e6f33d058655f04f324b3be393efe4d14b0dc/djangocms_stories-0.9.3-py3-none-any.whl", hash = "sha256:8b913f33641bace648b19f6a7d65b2a90fae59fe26dd5a2108c1272236554343", size = 400715, upload-time = "2026-06-28T12:32:40.521Z" },
 ]
 
 [[package]]
@@ -1588,9 +1661,14 @@ cms = [
     { name = "django-contrib-comments" },
     { name = "django-filer" },
     { name = "django-inline-ordering" },
+    { name = "django-meta" },
     { name = "django-mptt" },
+    { name = "django-parler" },
     { name = "django-request" },
     { name = "django-reversion" },
+    { name = "django-sortedm2m" },
+    { name = "django-taggit" },
+    { name = "django-taggit-templatetags" },
     { name = "django-treebeard" },
     { name = "djangocms-admin-style" },
     { name = "djangocms-alias" },
@@ -1599,6 +1677,7 @@ cms = [
     { name = "djangocms-picture" },
     { name = "djangocms-rawhtml" },
     { name = "djangocms-snippet" },
+    { name = "djangocms-stories" },
     { name = "djangocms-text" },
     { name = "djangocms-versioning" },
     { name = "djangocms-video" },
@@ -1638,11 +1717,16 @@ requires-dist = [
     { name = "django-filer", specifier = ">=3.0.3" },
     { name = "django-filer", marker = "extra == 'cms'", specifier = ">=3.6.0" },
     { name = "django-inline-ordering", marker = "extra == 'cms'", specifier = ">=1.0.2" },
+    { name = "django-meta", marker = "extra == 'cms'", specifier = ">=2" },
     { name = "django-mptt", marker = "extra == 'cms'", specifier = "==0.10.0" },
+    { name = "django-parler", marker = "extra == 'cms'", specifier = ">=2" },
     { name = "django-request", marker = "extra == 'cms'", git = "https://github.com/django-request/django-request.git" },
     { name = "django-reversion", marker = "extra == 'cms'", specifier = "==3.0.3" },
     { name = "django-sekizai", specifier = ">=4" },
     { name = "django-select2", git = "https://github.com/pakal/django-select2.git?rev=6b1adada50ce53f4c51dd6d409371705627fa17e" },
+    { name = "django-sortedm2m", marker = "extra == 'cms'" },
+    { name = "django-taggit", marker = "extra == 'cms'", specifier = ">=1" },
+    { name = "django-taggit-templatetags", marker = "extra == 'cms'" },
     { name = "django-treebeard", marker = "extra == 'cms'" },
     { name = "django-zodb", git = "https://github.com/pakal/django-zodb.git?rev=556c54da5a8b32f632097449fffcb25d0f607c5f" },
     { name = "djangocms-admin-style", marker = "extra == 'cms'", specifier = "==3.3.1" },
@@ -1652,6 +1736,7 @@ requires-dist = [
     { name = "djangocms-picture", marker = "extra == 'cms'", specifier = "==4.1.1" },
     { name = "djangocms-rawhtml", marker = "extra == 'cms'", specifier = "==1.3.0" },
     { name = "djangocms-snippet", marker = "extra == 'cms'", specifier = "==5.0.2" },
+    { name = "djangocms-stories", marker = "extra == 'cms'", specifier = "==0.9.3" },
     { name = "djangocms-text", marker = "extra == 'cms'", specifier = "==1.0.2" },
     { name = "djangocms-versioning", marker = "extra == 'cms'", specifier = "==2.8.0" },
     { name = "djangocms-video", marker = "extra == 'cms'", specifier = "==3.1.0" },
