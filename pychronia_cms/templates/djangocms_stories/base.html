@@ -1,0 +1,27 @@
+{% extends "cms_one_column.html" %}
+{% load cms_tags menu_tags sekizai_tags heading kwacros i18n %}
+{% loadkwacros "metalradiance_kwacros.html" %}
+
+{# Project override of djangocms_stories/base.html, mirroring the pre-existing
+   pychronia_cms/templates/zinnia/base.html override for the same reason: the stock template
+   assumes the project's CMS_TEMPLATE defines generic "meta"/"content" blocks (a typical
+   bare-bones django-cms example layout), but this project's real CMS templates
+   (cms_one_column.html/cms_two_columns.html) only expose a "panels" block with a hardcoded
+   title+placeholder layout and never define "meta"/"content" at all - those blocks would be
+   dead code here regardless of their contents. Overriding "panels" directly, the same way the
+   zinnia override already does, is how third-party blog apps actually plug into this
+   project's page layout. #}
+
+{% block html_title %}{% block title %}{% trans "Blog" %}{% endblock %} - {% trans "Chrysalis Game" %}{% endblock %}
+
+{% block panels %}
+
+    {% usekwacro main_panel_start frame_class="big_frame bare_forms" %}
+
+        <div class="app app-blog">
+            {% block content_blog %}{% endblock %}
+        </div>
+
+    {% usekwacro main_panel_end %}
+
+{% endblock %}
