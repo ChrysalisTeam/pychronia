@@ -37,30 +37,44 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-# Django-CMS portal (pychronia_cms package), NOT functional with current Django versions
+# Django-CMS portal (pychronia_cms package). Verified working on Django 5.1.15 as of the
+# 2026-10-15 cms-upgrade-ladder (Django 2.2.13 -> 5.1.15, django-cms 3.6.0 -> 5.0.13), run
+# from the detached "cms-upgrade-ladder" worktree/branch - see DJANGO_CMS_UPGRADE_REPORT.md
+# for the full rung-by-rung history and data-migration steps. Versions below are the ones
+# actually exercised by that ladder (not aspirational pins); some differ from what this
+# extra used to declare because those older pins were never actually verified to work.
 cms = [
-    "django-cms==3.10",
-    "djangocms-admin-style",
-    "djangocms-page-sitemap==1.0.0",
-    "djangocms-text-ckeditor==5.1.0",
-    "djangocms-link==3.0.0",
-    "djangocms-snippet==3.0.0",
-    "djangocms-rawhtml==1.2",
-    "cmsplugin-filer==1.1.3",
+    "django-cms==5.0.13",
+    # cms4+ architecture (Title->PageContent, PageUrl, versioned placeholders) requires these two:
+    "djangocms-versioning==2.8.0",
+    "djangocms-alias==3.2.0",
+    "djangocms-admin-style==3.3.1",
+    "djangocms-page-sitemap==1.1.0",
+    "djangocms-text-ckeditor==5.1.7",  # deprecated upstream but still cms4+-compatible; keeps existing TextPlugin rows as-is
+    "djangocms-link==5.2.0",
+    "djangocms-snippet==5.0.2",
+    "djangocms-rawhtml==1.3.0",
+    # cmsplugin-filer removed (rung 11 Stage B): abandoned, no cms4+ release. Its live
+    # FilerImagePlugin/FilerVideoPlugin rows were migrated in-place to the two plugins below.
+    "djangocms-picture==4.1.1",
+    "djangocms-video==3.1.0",
+    "django-filer>=3.6.0",  # bumped past the 1.x line now that cmsplugin-filer is removed above
+    "easy-thumbnails[svg]>=2.10.1",  # <2.10.1's scale_and_crop processor hardcodes the Pillow-10-removed Image.ANTIALIAS
     "cmsplugin-rst",  # see [tool.uv.sources]
     "cmsplugin-simple-gallery",  # see [tool.uv.sources]
-    "django-inline-ordering==1.0.2",  # for cmsplugin-simple-gallery
+    "django-inline-ordering>=1.0.2",  # for cmsplugin-simple-gallery
     "django-cms-jplayer",  # see [tool.uv.sources]
     # if trouble with "Unknown column 'zinnia_entry.content_placeholder_id' in 'field list" : python manage.py reset zinnia
     "django-blog-zinnia==0.20",
     "cmsplugin-zinnia",  # see [tool.uv.sources]
-    "django-contrib-comments==2.2.0",
-    "django-mptt==0.13.4",
+    "html5lib==1.1",  # djangocms-text-ckeditor needs html5lib.sanitizer; 0.999999999 used the Python-3.10-removed "collections.Mapping" alias
+    "django-contrib-comments==1.9.1",
+    "django-mptt==0.10.0",
     "django-treebeard",
-    "django-reversion==5.0.0",
-    "django-request==1.6.1",  # for quick HTTP visit stats
-    "django-apptemplates==1.5",
-    "django-appconf==1.0.5",
+    "django-reversion==3.0.3",
+    "django-request",  # see [tool.uv.sources]; for quick HTTP visit stats
+    "django-apptemplates==1.4",
+    "django-appconf==1.0.3",
     "django-admin-jqueryui==1.8.22",  # obsolete stuff
 ]
 
@@ -79,9 +93,12 @@ dev = [
 
 
 [tool.uv]
-# The legacy pins of the "cms" extra declare obsolete upper bounds, which we ignore
+# The legacy pins of the "cms" extra declare obsolete upper bounds, which we ignore.
+# django-polymorphic: django-filer's own metadata caps it below what cms4+/Django 5.1 needs
+# (already proven safe to override, verified throughout the cms-upgrade-ladder).
 override-dependencies = [
     "Django>=4.2.4",
+    "django-polymorphic>=3.0.0",
 ]
 package = false  # this is an application, scripts bootstrap sys.path via setup_pychronia_env.py
 
@@ -93,6 +110,7 @@ cmsplugin-rst = { git = "https://github.com/pakal/cmsplugin-rst" }
 cmsplugin-simple-gallery = { git = "https://github.com/pakal/cmsplugin-simple-gallery.git" }
 django-cms-jplayer = { git = "https://github.com/pakal/django-cms-jplayer.git" }
 cmsplugin-zinnia = { git = "https://github.com/pakal/cmsplugin-zinnia.git", rev = "76f8de72a37b0525a8a5f65e99f0412d0a55563c" }
+django-request = { git = "https://github.com/django-request/django-request.git" }
 
 
 [tool.pytest.ini_options]
