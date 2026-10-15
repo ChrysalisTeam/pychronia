@@ -27,7 +27,7 @@ INSTALLED_APPS += [
     'django.contrib.sitemaps',
     'djangocms_page_sitemap',
 
-    'djangocms_text_ckeditor',  # must be before django-cms entry
+    'djangocms_text',  # must be before django-cms entry; replaces djangocms_text_ckeditor (deprecated upstream)
 
     'cms',
     'mptt',  # menu handler, now only for zinnia
@@ -111,7 +111,7 @@ DEBUG_TOOLBAR_CONFIG = {
 DEBUG_TOOLBAR_PATCH_SETTINGS = False  # let us configure MANUALLY
 
 FILER_IMAGE_USE_ICON = True  # use django-filer icons for plugins
-TEXT_SAVE_IMAGE_FUNCTION = 'djangocms_text_ckeditor.picture_save.create_picture_plugin'
+TEXT_SAVE_IMAGE_FUNCTION = 'pychronia_cms.text_picture_save.create_picture_plugin'  # djangocms_text ships no default impl
 
 ## DJANGO-REQUEST STATS CONF ##
 # most settings only work with dev version of module, as of 2013/06
@@ -287,7 +287,9 @@ WYM_STYLES = ",\n".join([
 '''
 
 ## CKEDITOR SETTINGS ##
-# remember, when installing it over standard django-cms text plugins : launch python manage.py migrate djangocms_text_ckeditor 0001 --fake
+# djangocms_text now defaults to the TipTap editor (no CKEditor4 contrib app installed), so
+# this config is currently dormant - kept in case djangocms_text.contrib.text_ckeditor4 is
+# enabled later (TEXT_EDITOR setting) to restore the legacy CKEditor4 editing experience.
 #See http://docs.cksource.com/ckeditor_api/symbols/CKEDITOR.config.html for all settings
 
 CKEDITOR_SETTINGS = {
@@ -297,7 +299,7 @@ CKEDITOR_SETTINGS = {
     #'toolbar': 'CMS',
     'toolbar_CMS': [
         ['Undo', 'Redo'],
-        ['cmsplugins', '-', 'ShowBlocks'],
+        ['CMSPlugins', '-', 'ShowBlocks'],
         ['Font', 'FontSize', 'Format', 'Styles'],
         ['TextColor', 'BGColor', '-', 'PasteText', 'PasteFromWord'],
         ['Maximize', ''],
