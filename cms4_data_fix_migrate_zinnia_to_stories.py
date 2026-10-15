@@ -3,6 +3,10 @@ One-off data fix, run once against chryscms_utf8mb4_local (and, later, against p
 djangocms_stories' own migrations have been applied (see commit wiring djangocms_stories into
 INSTALLED_APPS alongside zinnia/cmsplugin_zinnia).
 
+Requires zinnia/cmsplugin_zinnia to still be installed and in INSTALLED_APPS at the time this
+script runs (it reads straight from zinnia's own models) - run this BEFORE the follow-up commit
+that drops zinnia/cmsplugin_zinnia from pyproject.toml/INSTALLED_APPS, not after.
+
 Migrates the 34 zinnia_entry rows into djangocms_stories' Post/PostContent models:
 - All 34 entries are status=PUBLISHED (zinnia.managers.PUBLISHED == 2), single author "admin",
   3 flat (non-hierarchical) categories, no tags in use, no main_image/lead in use.
@@ -15,9 +19,12 @@ Migrates the 34 zinnia_entry rows into djangocms_stories' Post/PostContent model
   existing plugin row - this re-parents the placeholder (and all its plugins, untouched) onto
   the new PostContent instead of copying/recreating plugin content.
 
-Creates one StoriesConfig (namespace "blog") and one CMS Page with the Stories apphook attached
-at /weblog/ (zinnia's old URL prefix), replacing the direct `include('zinnia.urls...')` entries
-in pychronia_cms/urls.py (removed in a follow-up commit once this script's output is verified).
+Creates one StoriesConfig (namespace "blog") and re-points the pre-existing zinnia apphook page
+(application_urls="ZinniaApphook") onto the new StoriesApp apphook in place, preserving its real
+slug/URL ("blog", not "weblog" - zinnia's own URLs were year/month/day/slug-based, matching
+djangocms_stories' default "full_date" permalink style, so no URL-pattern change is needed
+either). If no such page exists (e.g. a from-scratch install), falls back to creating a new one
+at slug "weblog".
 
 Run via:
 PYTHONPATH=. .venv/Scripts/python.exe pychronia_cms/tests/manage.py shell -c "exec(open(r'cms4_data_fix_migrate_zinnia_to_stories.py').read())"
@@ -60,9 +67,19 @@ print("StoriesConfig:", config, "(created)" if config_created else "(existing)")
 from cms.models import Page, PageContent
 
 existing_blog_page = Page.objects.filter(application_namespace="blog").first()
+legacy_zinnia_page = Page.objects.filter(application_urls="ZinniaApphook").first()
+
 if existing_blog_page:
     blog_page = existing_blog_page
     print("Blog apphook page already exists:", blog_page)
+elif legacy_zinnia_page:
+    # Re-point the pre-existing zinnia apphook page in place, instead of creating a new one,
+    # so its real slug/URL ("blog") is preserved rather than switching to a different slug.
+    blog_page = legacy_zinnia_page
+    blog_page.application_urls = "StoriesApp"
+    blog_page.application_namespace = "blog"
+    blog_page.save()
+    print("Re-pointed legacy zinnia apphook page onto StoriesApp:", blog_page)
 else:
     # Note: `published=True` is a no-op here (recent cms versions warn and ignore it) and
     # `created_by="admin"` as a bare username (rather than the User instance) means create_page
