@@ -92,6 +92,7 @@ dev = [
     # pyscss==1.4.0 is abandoned and incompatible with Python 3.11+'s stricter "re" module, so it is
     # patched at runtime by scss_build.py before compiling
     "pyscss==1.4.0",
+    "pytest-playwright>=0.10.0",
 ]
 
 
@@ -118,3 +119,5 @@ django-request = { git = "https://github.com/django-request/django-request.git" 
 
 [tool.pytest.ini_options]
 testpaths = ["pychronia_game/tests"]
+norecursedirs = ["e2e", "____backup", "test_game_files", ".*", "__pycache__"]
+markers = ["e2e: Playwright browser end-to-end tests (run with: pytest pychronia_game/tests/e2e)"]
