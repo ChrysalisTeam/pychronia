@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import os, sys
+import os
 
 os.environ[
     "DJANGO_SETTINGS_MODULE"] = settings_module = "pychronia_common.tests.persistent_mode_settings"  # with DB not in temp dir

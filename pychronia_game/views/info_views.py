@@ -347,7 +347,7 @@ def personal_folder(request, template_name='information/personal_folder.html'):
         personal_files = request.datamanager.get_personal_files(
             absolute_urls=True)
 
-    except EnvironmentError as e:
+    except EnvironmentError:
         personal_files = []
         user.add_error(_("Your personal folder is unreachable."))
 

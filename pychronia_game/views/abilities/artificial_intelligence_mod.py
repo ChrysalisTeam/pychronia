@@ -323,7 +323,7 @@ class DjinnProxy(object):
         del self
         with open(substitutions_file, "r") as inFile:
             parser = ConfigParser()
-            parser.readfp(inFile, substitutions_file)
+            parser.read_file(inFile, substitutions_file)
             inFile.close()
             for s in parser.sections():
                 assert s in subbers, (s, list(subbers.keys()))

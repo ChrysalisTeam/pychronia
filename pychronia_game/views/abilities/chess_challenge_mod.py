@@ -3,8 +3,7 @@
 
 
 from pychronia_game.common import *
-from pychronia_game.datamanager import readonly_method, transaction_watcher, register_view, AbstractAbility, \
-    AbstractGameForm
+from pychronia_game.datamanager import transaction_watcher, register_view, AbstractAbility
 
 
 @register_view
@@ -27,10 +26,10 @@ class ChessChallengeAbility(AbstractAbility):
         pass
 
     def _setup_private_ability_data(self, private_data):
-        settings = self.settings
+        pass
 
     def _check_data_sanity(self, strict=False):
-        settings = self.settings
+        pass
 
     def get_template_vars(self, previous_form_data=None):
         return {

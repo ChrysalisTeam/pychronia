@@ -18,8 +18,12 @@ admin.autodiscover()
 
 ROBOTS_TEXT = """\
 User-agent: *
-Disallow: /static/ 
-Disallow: /media/ 
+Disallow: /static/
+Allow: /static/*.css$
+Allow: /static/*.js$
+Allow: /static/MetalRadiance/img/
+Allow: /static/FontAwesome/fonts/
+Disallow: /media/
 Disallow: *.pdf
 Disallow: *.zip
 

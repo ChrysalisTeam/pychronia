@@ -4,7 +4,6 @@
 
 from pychronia_game.common import *
 
-from django.utils.http import urlencode
 from django.utils.html import escape
 from pychronia_game.storage import get_game_thumbnailer
 import json
@@ -206,7 +205,7 @@ def generate_image_viewer(imageurl, width=500, height=400, preset=None, align=""
             if preset:
                 try:
                     thumb = thumbnailer[preset]
-                except Exception as e:  # eg. if preset name is unexisting
+                except Exception:  # eg. if preset name is unexisting
                     logging.critical("generate_image_viewer preset selection failed for %s/%s", imageurl, preset,
                                      exc_info=True)
                     pass
@@ -218,7 +217,7 @@ def generate_image_viewer(imageurl, width=500, height=400, preset=None, align=""
                 }
                 thumb = thumbnailer.get_thumbnail(options)
             thumburl = thumb.url
-        except Exception as e:
+        except Exception:
             logging.critical("generate_image_viewer thumbnail generation failed %s - %s", imageurl, preset,
                              exc_info=True)
             thumburl = imageurl  # we give up thumbnailing...

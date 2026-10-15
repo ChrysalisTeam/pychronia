@@ -2,13 +2,12 @@
 
 
 
-from pychronia_game.common import reverse, config, NBSP, _
+from pychronia_game.common import config, NBSP, _
 from pychronia_game import menus as menus_module, utilities
 from pychronia_game.authentication import IMPERSONATION_TARGET_POST_VARIABLE, \
     IMPERSONATION_WRITABILITY_POST_VARIABLE  # TODO USE WRITABILITY
 from django.contrib.messages.api import get_messages
 from pychronia_game.views.admin_views.webradio_management_mod import WebradioManagement
-from django.core.urlresolvers import reverse
 
 
 def pychronia_template_context(request):

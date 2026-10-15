@@ -39,7 +39,6 @@ def chat_with_djinn(request, template_name='specific_operations/chat_with_djinn.
 @register_view(attach_to=chat_with_djinn,
                title=ugettext_lazy("Consult Djinn"))  # access=UserAccess.character)(permission="contact_djinns")
 def ajax_consult_djinns(request):
-    user = request.datamanager.user
     message = request.REQUEST.get("message", "")
     bot_name = request.REQUEST.get("djinn", None)
 

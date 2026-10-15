@@ -686,7 +686,7 @@ img.center {
 .clearfix:after, .hentry:after, #full_content:after,
 #full_content .mini_frame .mini_frame_content:after,
 #full_content .main_frame_border .main_frame_content:after {
-  content: ".";
+  content: "";
   visibility: hidden;
   display: block;
   width: 0;
@@ -2151,7 +2151,8 @@ ul.paginator .index {
 .grey_layer {
   margin: 0;
   padding: 0;
-  background: transparent url("img/backgrounds/vertical_grey_2x2.png") repeat scroll 0 0;
+  background: transparent repeating-linear-gradient(to right, rgba(127, 127, 127, 0.99) 0,
+    rgba(127, 127, 127, 0.99) 2px, transparent 2px, transparent 4px);
   position: relative;
 }
 body .notification_panel {
@@ -2336,7 +2337,7 @@ body .notification_panel .notification_panel_decorations .notification_panel_con
     font-size: 18px;
     text-decoration: none;
     line-height: 27px;
-    padding: 0 6px;
+    padding: 10px 10px;
     float: none;
   }
   #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu a:hover {
@@ -2348,7 +2349,7 @@ body .notification_panel .notification_panel_decorations .notification_panel_con
   #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu ul a,
   #full_menu #main_menu .marble_menu_container .marble_menu ul.dropmenu ul span {
     background-color: #342716;
-    padding: 2px 6px;
+    padding: 10px 10px;
   }
   #full_content {
     margin: 0 auto;
@@ -2429,6 +2430,11 @@ body .notification_panel .notification_panel_decorations .notification_panel_con
   }
   #up_footer_border_center {
     display: none;
+  }
+  .footer_note {
+    font-size: 14px;
+    line-height: 1.3em;
+    margin: 4px 10px;
   }
 }
 @media (min-width: 992px) {
@@ -2630,6 +2636,7 @@ body .notification_panel .notification_panel_decorations .notification_panel_con
     z-index: 0;
     padding-top: 12px;
     height: 73px;
+    vertical-align: middle;
   }
   #full_menu #main_menu .marble_menu_container .marble_menu {
     box-sizing: content-box !important;
@@ -2774,6 +2781,10 @@ body .notification_panel .notification_panel_decorations .notification_panel_con
   }
   #full_content .main_sidebar .mini_frame {
     margin: 0 0 20px 0;
+  }
+  #full_content .main_sidebar .mini_frame .mini_frame_content {
+    max-height: 500px;
+    overflow: auto;
   }
   #full_content .medium_frame {
     position: relative;
@@ -2920,6 +2931,15 @@ body .notification_panel .notification_panel_decorations .notification_panel_con
     position: absolute;
     left: 9px;
     top: 10px;
+  }
+  .footer_note {
+    font-size: 11px;
+    line-height: 1em;
+    margin: 1px 0;
+  }
+  .footer_note.larger {
+    font-size: 12px;
+    margin: 0;
   }
   #low_footer_wrapper {
     position: relative;

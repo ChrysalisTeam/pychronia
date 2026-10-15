@@ -2,26 +2,16 @@
 
 
 
-import sys
-import os
-from datetime import datetime, timedelta
-import json
+from datetime import timedelta
 import traceback
-import collections
-import copy
-import math
 from smtplib import SMTPException
-from contextlib import contextmanager
 
 from django.conf import settings
-from django.core.mail import mail_admins, send_mail
-from django.http import Http404, HttpResponseRedirect, HttpResponse, \
-    HttpResponseForbidden
+from django.core.mail import send_mail
+from django.http import HttpResponseRedirect, HttpResponseForbidden
 from django.shortcuts import render
-from django.template import RequestContext
-from django.utils.html import escape
 from django.contrib import messages
-from django.utils.translation import ugettext as _, ugettext_lazy, ungettext
+from django.utils.translation import ugettext as _, ugettext_lazy
 from django import forms
 from django.contrib.messages import get_messages
 from django.utils.http import urlencode
@@ -120,7 +110,7 @@ def create_instance(request):
                               from_email=settings.SERVER_EMAIL,
                               recipient_list=[creator_email],
                               fail_silently=False)
-                except (SMTPException, EnvironmentError) as e:
+                except (SMTPException, EnvironmentError):
                     logging.error("Couldn't send game instance activation email to %s", creator_email, exc_info=True)
                     messages.add_message(request, messages.ERROR, _("Couldn't send activation email."))
                 else:
@@ -152,9 +142,8 @@ def activate_instance(request):
     token = request.GET.get("token", "")
 
     try:
-        encrypted_data = token.encode(
-            "ascii")  # encrypted json containing the game id, the user login and a validity timestamp
-        (game_instance_id, creator_login, creator_email) = decode_game_activation_token(encrypted_data)
+        # encrypted hex str containing the game id, the creator login and the creator email
+        (game_instance_id, creator_login, creator_email) = decode_game_activation_token(token)
 
         if not datamanager_administrator.game_instance_exists(game_instance_id):
             datamanager_administrator.create_game_instance(game_instance_id=game_instance_id,
@@ -188,7 +177,7 @@ def activate_instance(request):
             target_url=target_url)
         return HttpResponseRedirect(target_url, content=content)
 
-    except (ValueError, TypeError, LookupError, AttributeError, UnicodeError) as e:
+    except (ValueError, TypeError, LookupError, AttributeError, UnicodeError):
         logging.warning("Game activation key not recognized : %s", token, exc_info=True)
         return HttpResponseForbidden(_("Activation key not recognized"))
 
@@ -222,7 +211,7 @@ def manage_instances(request):
                     messages.add_message(request, messages.ERROR, _("Invalid game creation form submitted."))
             elif request.POST.get("lock_instance"):
                 game_instance_id = request.POST["lock_instance"]
-                maintenance_until = datetime.utcnow() + timedelta(minutes=GAME_INSTANCE_MAINTENANCE_LOCKING_DELAY_MN)
+                maintenance_until = get_utc_now() + timedelta(minutes=GAME_INSTANCE_MAINTENANCE_LOCKING_DELAY_MN)
                 datamanager_administrator.change_game_instance_status(game_instance_id=game_instance_id,
                                                                       maintenance_until=maintenance_until)
                 messages.add_message(request, messages.INFO,
@@ -286,7 +275,7 @@ def manage_instances(request):
                   "meta_administration/manage_instances.html",
                   {
                       'instances_metadata': instances_metadata,  # enriched info
-                      'utc_now': datetime.utcnow(),
+                      'utc_now': get_utc_now(),
                       'notifications': get_messages(request),
                       'possible_game_statuses': sorted(GAME_STATUSES),
                       'deletable_statuses': [GAME_STATUSES.terminated, GAME_STATUSES.aborted],

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 
-from bs4 import BeautifulSoup, NavigableString, Tag
+from bs4 import BeautifulSoup, NavigableString
 import re, functools
 
 clean_parser = functools.partial(BeautifulSoup, features="html.parser")

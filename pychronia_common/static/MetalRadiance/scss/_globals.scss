@@ -286,7 +286,7 @@ img.center {
 .clearfix {
     &:after {
         /* quick fix for the dumb problem of "float collapsing - better than using overflow:hidden/auto */
-        content: ".";
+        content: "";  // empty, else the text line overflows and triggers scrollbars on "overflow: auto" parents
         @include clearfixer;
     }
     * html & {

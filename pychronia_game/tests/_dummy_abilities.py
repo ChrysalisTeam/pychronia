@@ -7,7 +7,7 @@ from django import forms
 from pychronia_game.common import *
 from pychronia_game.datamanager.abstract_ability import AbstractAbility
 from pychronia_game.datamanager.abstract_game_view import register_view
-from pychronia_game.forms import AbstractGameForm, MoneyTransferForm
+from pychronia_game.forms import AbstractGameForm
 from pychronia_game.datamanager.datamanager_tools import transaction_watcher
 
 
@@ -75,7 +75,7 @@ class DummyTestAbility(AbstractAbility):
         pass
 
     def _check_data_sanity(self, strict=False):
-        settings = self.settings
+        pass
 
     # test utilities
 

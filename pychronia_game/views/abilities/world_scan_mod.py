@@ -4,7 +4,6 @@
 
 from pychronia_game.common import *
 from pychronia_game.datamanager.abstract_ability import AbstractPartnershipAbility
-import functools
 from pychronia_game import utilities
 from pychronia_game.forms import ArtefactForm, UninstantiableFormError
 from pychronia_game.datamanager.datamanager_tools import transaction_watcher, \

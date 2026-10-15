@@ -6,7 +6,6 @@ from pychronia_game.common import *
 from pychronia_game.datamanager import UninstantiableFormError, AbstractAbility, register_view, readonly_method, \
     transaction_watcher
 from pychronia_game.forms import AbstractGameForm
-from django import forms
 from django.forms.fields import ChoiceField
 from django.core.exceptions import ValidationError
 from pychronia_game.utilities.select2_extensions import Select2TagsField

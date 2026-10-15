@@ -18,6 +18,9 @@ try:
 except ImportError:
     raise
 
+from pychronia_common.relstorage_patches import apply_mariadb_patches
+apply_mariadb_patches()  # RelStorage generates MySQL-8-only SQL on MariaDB servers
+
 ##################### SETTINGS TO BE OVERRIDDEN BY DEPLOYMENT-SPECIFIC CONF FILE ####################
 
 SITE_ID = None
@@ -115,10 +118,8 @@ TEMPLATES = [
                 "django.contrib.messages.context_processors.messages",
                 # note that we use our own version in pychronia-game!  FIXME what ??
                 "sekizai.context_processors.sekizai",
-                'pychronia_common.context_processors.google_analytics',
             ],
             'loaders': [
-                'apptemplates.Loader',  # allows the use of {% extends "admin:admin/base.html" %}
                 'django.template.loaders.filesystem.Loader',
                 'django.template.loaders.app_directories.Loader',
             ],
@@ -129,6 +130,7 @@ TEMPLATES = [
 # no need for CSRF by default
 MIDDLEWARE = (
     'django.middleware.gzip.GZipMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'pychronia_common.middlewares.ReverseProxyFixer',
     # TODO Later 'django.middleware.http.ConditionalGetMiddleware', # checks E-tag and last-modification-time to avoid sending data
     #'django.middleware.common.BrokenLinkEmailsMiddleware', FIXME - ONLY SOON IN 1.5
@@ -144,10 +146,7 @@ MIDDLEWARE = (
 INSTALLED_APPS = [
     'pychronia_common',  # common templates, tags, static files etc. BEFORE OTHER APPS for overrides!
 
-    'djangocms_admin_style',  # must come BEFORE admin
-
     'django.contrib.auth',
-    'django.contrib.admin',
     'django.contrib.contenttypes',
     'django.contrib.sessions',  # only these sessions are scalable for "sharding"
     'django.contrib.sites',
@@ -155,12 +154,12 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.messages',  # for both game and cms now
 
-    'sekizai',
-
     #'sessionprofile',  # keeps track of sessions/users in DB table, for PHPBB integration
     'templateaddons',  # assign and headers tags
     'django_select2',  # advanced select box
     'easy_thumbnails',
+
+    'sekizai',
 ]
 
 TEST_RUNNER = 'django.test.runner.DiscoverRunner'
@@ -239,8 +238,3 @@ THUMBNAIL_EXTENSION = "jpg"
 THUMBNAIL_TRANSPARENCY_EXTENSION = "png"
 THUMBNAIL_PRESERVE_EXTENSIONS = True  # or a tuple like ('png',)
 THUMBNAIL_CHECK_CACHE_MISS = True  # can regenerate SQL table from storage - unset it if everything works fine
-
-
-# override these to activate Google Analytics stats
-GOOGLE_ANALYTICS_PROPERTY_ID = None
-GOOGLE_ANALYTICS_DOMAIN = None
