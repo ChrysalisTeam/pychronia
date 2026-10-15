@@ -18,7 +18,12 @@ echo "=== runserver ==="
 SERVER_PID=$!
 sleep 8
 
-urls=(/fr/cms/ /en/cms/ /fr/cms/blog/ /admin/login/)
+urls=(
+  /fr/cms/ /en/cms/ /fr/cms/blog/ /admin/login/
+  /fr/cms/contacts/                         # RstPlugin
+  /fr/cms/medias/                           # JPlayerPlugin + SimpleGalleryPlugin
+  /fr/cms/a-propos/historique-du-projet/    # SimpleGalleryPlugin, FilerImagePlugin
+)
 # first blog post URL, if any
 BLOGPOST=$(curl -s --max-time 30 http://127.0.0.1:8000/fr/cms/blog/ | grep -oE 'href="/fr/cms/blog/[0-9]{4}/[^"#]+' | head -1 | sed 's/href="//')
 [ -n "$BLOGPOST" ] && urls+=("$BLOGPOST")
